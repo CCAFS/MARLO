@@ -78,7 +78,7 @@ public class IpLiaisonInstitutionMySQLDAO implements IpLiaisonInstitutionDAO {
 
   @Override
   public List<IpLiaisonInstitution> getLiaisonInstitutionsCrpsIndicator() {
-    String query = "from " + IpLiaisonInstitution.class.getName() + " where where id not in(1)";
+    String query = "from " + IpLiaisonInstitution.class.getName() + " where id not in(1)";
     List<IpLiaisonInstitution> list = dao.findAll(query);
     if (list.size() > 0) {
       return list;

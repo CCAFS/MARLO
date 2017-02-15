@@ -56,7 +56,7 @@ public class CrpIndicatorTypeMySQLDAO implements CrpIndicatorTypeDAO {
 
   @Override
   public List<CrpIndicatorType> findAll() {
-    String query = "from " + CrpIndicatorType.class.getName() + " where is_active=1";
+    String query = "from " + CrpIndicatorType.class.getName();
     List<CrpIndicatorType> list = dao.findAll(query);
     if (list.size() > 0) {
       return list;

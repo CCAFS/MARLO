@@ -6,6 +6,7 @@ import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.CaseStudy;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
@@ -122,6 +123,35 @@ public class BaseValidator {
       status.setDeliverable(deliverable);
       status.setSectionName(sectionName);
       status.setProject(deliverable.getProject());
+
+    }
+    status.setMissingFields(this.missingFields.toString());
+    sectionStatusManager.saveSectionStatus(status);
+    this.missingFields.setLength(0);
+
+
+  }
+
+  /**
+   * This method saves the missing fields into the database for a section at deliverable level.
+   * 
+   * @param ipLiaisonInstitution is a ipLiaisonInstitution.
+   * @param cycle could be 'Planning' or 'Reporting'
+   * @param sectionName is the name of the section inside deliverables.
+   */
+  protected void saveMissingFields(IpLiaisonInstitution ipLiaisonInstitution, String cycle, int year,
+    String sectionName) {
+    // Reporting missing fields into the database.
+
+    SectionStatus status =
+      sectionStatusManager.getSectionStatusByCrpIndicators(ipLiaisonInstitution.getId(), cycle, year, sectionName);
+    if (status == null) {
+
+      status = new SectionStatus();
+      status.setCycle(cycle);
+      status.setYear(year);
+      status.setIpLiaisonInstitution(ipLiaisonInstitution);;
+      status.setSectionName(sectionName);
 
     }
     status.setMissingFields(this.missingFields.toString());

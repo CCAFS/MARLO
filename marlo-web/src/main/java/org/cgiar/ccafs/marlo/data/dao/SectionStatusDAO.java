@@ -59,6 +59,9 @@ public interface SectionStatusDAO {
 
   public SectionStatus getSectionStatusByCaseStudy(long caseStudyID, String cycle, int year, String sectionName);
 
+  public SectionStatus getSectionStatusByCrpIndicators(long ipLiaisonInstitutionID, String cycle, int year,
+    String sectionName);
+
   public SectionStatus getSectionStatusByCrpProgam(long crpProgramID, String sectionName);
 
   public SectionStatus getSectionStatusByDeliverable(long deliverableID, String cycle, int year, String sectionName);

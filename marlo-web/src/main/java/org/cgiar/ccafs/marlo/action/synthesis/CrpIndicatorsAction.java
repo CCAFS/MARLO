@@ -31,6 +31,7 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -55,19 +56,20 @@ public class CrpIndicatorsAction extends BaseAction {
   // Model for the front-end
   private List<IpLiaisonInstitution> liaisonInstitutions;
 
-
   private List<CrpIndicatorReport> indicatorReports;
 
 
   private List<CrpIndicatorType> indicatorsType;
 
 
-  private Long liaisonInstitutionID;
+  private IpLiaisonInstitution currentLiaisonInstitution;
 
+
+  private Long liaisonInstitutionID;
 
   private Long indicatorTypeID;
 
-
+  @Inject
   public CrpIndicatorsAction(APConfig config, CrpManager crpManager, CrpIndicatorReportManager indicatorsReportManager,
     IpLiaisonInstitutionManager liaisonInstitutionManager, CrpIndicatorTypeManager crpIndicatorTypeManager) {
     super(config);
@@ -75,6 +77,35 @@ public class CrpIndicatorsAction extends BaseAction {
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.indicatorsReportManager = indicatorsReportManager;
     this.crpIndicatorTypeManager = crpIndicatorTypeManager;
+  }
+
+
+  public List<CrpIndicatorReport> getCrpIndicatorsByType(long type) {
+    List<CrpIndicatorReport> lst = new ArrayList<CrpIndicatorReport>();
+    for (CrpIndicatorReport indicatorReport : indicatorReports) {
+      long indType = indicatorReport.getCrpIndicator().getCrpIndicatorType().getId();
+      if (indType == type) {
+        lst.add(indicatorReport);
+      }
+    }
+    return lst;
+
+  }
+
+  public IpLiaisonInstitution getCurrentLiaisonInstitution() {
+    return currentLiaisonInstitution;
+  }
+
+  public int getIndicatorIndex(long id, long type) {
+    int c = 0;
+    for (CrpIndicatorReport indicatorReport : currentLiaisonInstitution.getIndicatorReports()) {
+      if (indicatorReport.getCrpIndicator().getId() == id
+        && indicatorReport.getCrpIndicator().getCrpIndicatorType().getId() == type) {
+        return c;
+      }
+      c++;
+    }
+    return -1;
   }
 
   public List<CrpIndicatorReport> getIndicatorReports() {
@@ -107,6 +138,7 @@ public class CrpIndicatorsAction extends BaseAction {
     }
   }
 
+
   @Override
   public void prepare() throws Exception {
     try {
@@ -134,6 +166,7 @@ public class CrpIndicatorsAction extends BaseAction {
       }
     }
 
+    currentLiaisonInstitution = liaisonInstitutionManager.getIpLiaisonInstitutionById(liaisonInstitutionID);
 
     try {
       indicatorTypeID =
@@ -146,10 +179,16 @@ public class CrpIndicatorsAction extends BaseAction {
     indicatorReports =
       indicatorsReportManager.getIndicatorReportsList(liaisonInstitutionID, this.getCurrentCycleYear());
 
+    currentLiaisonInstitution.setIndicatorReports(indicatorReports);
+
     // Get the list of liaison institutions.
     liaisonInstitutions = liaisonInstitutionManager.getLiaisonInstitutionsCrpsIndicator();
     indicatorsType = new ArrayList<>(crpIndicatorTypeManager.findAll());
 
+  }
+
+  public void setCurrentLiaisonInstitution(IpLiaisonInstitution currentLiaisonInstitution) {
+    this.currentLiaisonInstitution = currentLiaisonInstitution;
   }
 
   public void setIndicatorReports(List<CrpIndicatorReport> indicatorReports) {

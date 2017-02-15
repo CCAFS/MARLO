@@ -72,7 +72,7 @@ public class CrpIndicatorReportMySQLDAO implements CrpIndicatorReportDAO {
   public List<CrpIndicatorReport> getIndicatorReportsList(long leader, int year) {
 
     StringBuilder query = new StringBuilder();
-    query.append("SELECT ir.id, ir.target, ir.actual, ir.support_links, ");
+    query.append("SELECT ir.id as id, ir.target, ir.actual, ir.support_links, ");
     query.append("ir.deviation, i.id as 'indicator_id', i.serial as 'indicator_serial', ");
     query.append("i.name as 'indicator_name', i.description as 'indicator_description', ");
     query.append("i.is_active as 'indicator_active', it.id as 'indicator_type_id', ");
@@ -84,7 +84,7 @@ public class CrpIndicatorReportMySQLDAO implements CrpIndicatorReportDAO {
     query.append(" AND ir.liaison_institution_id = ");
     query.append(leader);
     query.append(" LEFT JOIN `crp_indicator_types` it ON i.indicator_type_id = it.id  ");
-    // query.append(" where i.serial not in ('ind01','ind02','ind03','ind04','ind05','ind06')");
+    query.append(" where i.serial not in ('ind01','ind02','ind03','ind04','ind05','ind06')");
     query.append(" ORDER BY i.id  ");
 
     List<Map<String, Object>> rList = dao.findCustomQuery(query.toString());
@@ -93,8 +93,12 @@ public class CrpIndicatorReportMySQLDAO implements CrpIndicatorReportDAO {
 
     if (rList != null) {
       for (Map<String, Object> map : rList) {
-        CrpIndicatorReport indicatorReport = this.find(Long.parseLong(map.get("id").toString()));
-        indicatorReports.add(indicatorReport);
+
+        Long indReportID = Long.parseLong(map.get("id").toString());
+        if (indReportID != null) {
+          indicatorReports.add(this.find(indReportID));
+        }
+
       }
     }
 

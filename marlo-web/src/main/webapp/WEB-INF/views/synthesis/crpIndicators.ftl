@@ -1,50 +1,6 @@
 [#ftl]
 [#assign canEdit = true /]
 [#assign editable = true /]
-[#assign liaisonInstitutionID = 2 /]
-[#assign liaisonInstitutions = [
-  { 'id': 1, 'acronym': 'F1', 'name': 'Priorities and Policies for CSA'},
-  { 'id': 2, 'acronym': 'F2', 'name': 'Climate-Smart Technologies and Practices'},
-  { 'id': 3, 'acronym': 'F3', 'name': 'Low emissions development'},
-  { 'id': 4, 'acronym': 'F4', 'name': 'Climate services and safety nets'},
-  { 'id': 5, 'acronym': 'AfricaRice', 'name': ''},
-  { 'id': 6, 'acronym': 'BI', 'name': ''},
-  { 'id': 7, 'acronym': 'CIAT', 'name': ''},
-  { 'id': 8, 'acronym': 'CIFOR', 'name': ''},
-  { 'id': 9, 'acronym': 'CIMMYT', 'name': ''},
-  { 'id': 10, 'acronym': 'CIP', 'name': ''},
-  { 'id': 11, 'acronym': 'ICARDA', 'name': ''},
-  { 'id': 12, 'acronym': 'ICRAF', 'name': ''},
-  { 'id': 13, 'acronym': 'ICRISAT', 'name': ''},
-  { 'id': 14, 'acronym': 'IFPRI', 'name': ''},
-  { 'id': 15, 'acronym': 'IITA', 'name': ''},
-  { 'id': 16, 'acronym': 'ILRI', 'name': ''},
-  { 'id': 17, 'acronym': 'IRRI', 'name': ''},
-  { 'id': 18, 'acronym': 'IWMI', 'name': ''},
-  { 'id': 19, 'acronym': 'WorldFish', 'name': ''}
-] /]
-[#assign indicatorsType = [
-  { 'id': 1, 'name': 'Knowledge, tools, data'},
-  { 'id': 2, 'name': 'Capacity enhancement and innovation platforms'},
-  { 'id': 3, 'name': 'Technologies/practices in various stages of development'},
-  { 'id': 4, 'name': 'Pollicies in varius stages of development'},
-  { 'id': 5, 'name': 'Outcomes on the ground'}
-] /]
-[#assign indicatorsByType = [
-  { 'id': 1, 
-    'indicator': {'id': 1, 'name': 'Number of top “products” produced by CRP', 'description': 'These are frameworks and concepts that are significant and complete enough to have been highlighted on web pages, publicized through blog stories, press releases and/or policy briefs. They are significant in that they should be likely to change the way stakeholders along the impact pathway allocate resources and/or implement activities. They should be products that change the way these stakeholders think and act. Tools, decision-support tools, guidelines and/or training manuals are not included in this indicator'}
-  },
-  { 'id': 2, 
-    'indicator': {'id': 2, 'name': '% of top products produced that have explicit target of women farmers/NRM managers', 'description': 'The web pages, blog stories, press releases and policy briefs supporting indicator #1 must have an explicit focus on women farmers/NRM managers to be counted'}
-  },
-  { 'id': 3, 
-    'indicator': {'id': 3, 'name': '% of top products produced that have been assessed for likely gender-disaggregated impact', 'description': 'Reports/papers describing the products should include a focus on gender-disaggregated impacts if they are to be counted'}
-  },
-  { 'id': 4, 
-    'indicator': {'id': 4, 'name': 'Number of ”tools” produced by CRP', 'description': ''}
-  }
-] /]
-
 
 [#assign title = "CRP Indicators" /]
 [#assign currentSectionString = "synthesis-${actionName?replace('/','-')}-${liaisonInstitutionID}" /]
@@ -91,6 +47,8 @@
             [/#list]
           </ul>
           
+          [#-- Messages --]
+          [#include "/WEB-INF/views/synthesis/messages-crpIndicators.ftl" /]
            
           [#-- Title --]
           <h3 class="headTitle">[@s.text name="synthesis.crpIndicators.title" /]</h3>
@@ -106,19 +64,20 @@
             <div class="tab-content">
             [#list indicatorsType as indicatorType]
               <div id="indicatorType-${indicatorType.id}" class="tab-pane indicatorsByType [#if indicatorType_index == 0]active[/#if]" role="tabpanel">
-                [#assign customIndex = (action.getIndicatorIndex(indicatorReport.indicator.id,indicatorReport.indicator.type.id))!-1 ]
-                [#assign customName= "indicatorReports[${customIndex}]"]
+                
                 
                 [#-- List of indicators by type --> action.getCrpIndicatorsByType(indicatorType.id) as indicatorReport --]
-                [#list indicatorsByType as indicatorReport]
+                [#list action.getCrpIndicatorsByType(indicatorType.id) as indicatorReport]
+                [#assign customIndex = (action.getIndicatorIndex(indicatorReport.crpIndicator.id,indicatorReport.crpIndicator.crpIndicatorType.id))!-1 ]
+                [#assign customName= "currentLiaisonInstitution.indicatorReports[${customIndex}]"]
                 <div class="simpleBox">
-                  <h6 class="title" style="font-size: 1.2em;margin-bottom: 5px;">${indicatorReport.indicator.id}.  ${indicatorReport.indicator.name}
-                    [#if indicatorReport.indicator.description?has_content]
-                      <a id="showIndicatorDesc-${indicatorReport.indicator.id}" class="showIndicatorDesc" href="#"><img src="${baseUrl}/images/global/icon-info.png" title="Show indicator description" alt="" /></a>
+                  <h6 class="title" style="font-size: 1.2em;margin-bottom: 5px;">${indicatorReport.crpIndicator.id}  ${indicatorReport.crpIndicator.name}
+                    [#if indicatorReport.crpIndicator.description?has_content]
+                      <a id="showIndicatorDesc-${indicatorReport.crpIndicator.id}" class="showIndicatorDesc" href="#"><img src="${baseUrl}/images/global/icon-info.png" title="Show indicator description" alt="" /></a>
                     [/#if]
                   </h6>
-                  [#if indicatorReport.indicator.description?has_content]
-                    <div class="fullPartBlock"><p id="indicatorDesc-${indicatorReport.indicator.id}" style="display:none">${indicatorReport.indicator.description}</p></div>
+                  [#if indicatorReport.crpIndicator.description?has_content]
+                    <div class="fullPartBlock"><p id="indicatorDesc-${indicatorReport.crpIndicator.id}" style="display:none">${indicatorReport.crpIndicator.description}</p></div>
                   [/#if]
                   [#-- Targets --]
                   <div class="fullPartBlock">
@@ -140,10 +99,10 @@
             [/#list]
             </div>
           </div>
+
           
-          [#-- Hidden inputs --]
-          <input type="hidden" name="liaisonInstitutionID" value="${liaisonInstitutionID}"  /> 
-          
+          [#-- Section Buttons & hidden inputs--]
+          [#include "/WEB-INF/views/synthesis/buttons-crpIndicators.ftl" /]
            
           [/@s.form] 
         </article>

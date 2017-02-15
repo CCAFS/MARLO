@@ -34,10 +34,14 @@ public class IpLiaisonInstitution implements java.io.Serializable, IAuditLog {
   @Expose
   private String acronym;
 
+
   @Expose
   private Integer ipProgram;
+
+
   private Set<CrpIndicatorReport> crpIndicatorReportses = new HashSet<CrpIndicatorReport>(0);
 
+  private Set<SectionStatus> sectionStatus = new HashSet<SectionStatus>(0);
   private List<CrpIndicatorReport> indicatorReports;
   private Set<IpLiaisonUser> ipLiaisonUsers = new HashSet<IpLiaisonUser>(0);
 
@@ -58,11 +62,9 @@ public class IpLiaisonInstitution implements java.io.Serializable, IAuditLog {
     this.ipLiaisonUsers = ipLiaisonUsers;
   }
 
-
   public String getAcronym() {
     return acronym;
   }
-
 
   public Set<CrpIndicatorReport> getCrpIndicatorReportses() {
     return crpIndicatorReportses;
@@ -89,9 +91,11 @@ public class IpLiaisonInstitution implements java.io.Serializable, IAuditLog {
     return ipLiaisonUsers;
   }
 
+
   public Integer getIpProgram() {
     return ipProgram;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -119,6 +123,10 @@ public class IpLiaisonInstitution implements java.io.Serializable, IAuditLog {
     return name;
   }
 
+  public Set<SectionStatus> getSectionStatus() {
+    return sectionStatus;
+  }
+
   @Override
   public boolean isActive() {
     return true;
@@ -132,15 +140,14 @@ public class IpLiaisonInstitution implements java.io.Serializable, IAuditLog {
     this.crpIndicatorReportses = crpIndicatorReportses;
   }
 
-
   public void setId(Long id) {
     this.id = id;
   }
 
+
   public void setIndicatorReports(List<CrpIndicatorReport> indicatorReports) {
     this.indicatorReports = indicatorReports;
   }
-
 
   public void setInstitution(Institution institution) {
     this.institution = institution;
@@ -159,6 +166,11 @@ public class IpLiaisonInstitution implements java.io.Serializable, IAuditLog {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+
+  public void setSectionStatus(Set<SectionStatus> sectionStatus) {
+    this.sectionStatus = sectionStatus;
   }
 
 

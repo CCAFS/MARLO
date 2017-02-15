@@ -5,9 +5,15 @@
   <package name="synthesis" namespace="/synthesis" extends="marlo-default">
 
     <!-- CRP Indicators -->
-    <action name="{crp}/crpIndicators" class="org.cgiar.ccafs.marlo.action.BaseAction">
+    <action name="{crp}/crpIndicators" class="org.cgiar.ccafs.marlo.action.synthesis.CrpIndicatorsAction">
       <interceptor-ref name="homeStack" />
       <result name="input">/WEB-INF/views/synthesis/crpIndicators.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/crpIndicators</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="indicatorTypeID">${indicatorTypeID}</param>
+        <param name="edit">true</param>
+      </result>
     </action>
     
     <!-- Outcomes Synthesis -->

@@ -28,5 +28,11 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.IpLiaisonUser" />
         </set>
+        <set name="sectionStatus" table="section_statuses" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="ip_liaison_id" />            
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.SectionStatus" />
+        </set>
     </class>
 </hibernate-mapping>
