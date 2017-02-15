@@ -463,7 +463,7 @@
   
 <div class="simpleBox" > 
   [#-- Findable --] 
-  <div class="fairCompliant findable [#if action.isF(deliverable.id)??][#if action.isF(deliverable.id)]achieved[#else]not-achieved[/#if][/#if]">
+  <div class="fairCompliant findable [#attempt][#if action.isF(deliverable.id)??][#if action.isF(deliverable.id)] achieved [#else] not-achieved [/#if][/#if][#recover][/#attempt]">
     <div class="row">
       <div class="col-md-2">
         <div class="sign">F</div>
@@ -478,7 +478,7 @@
   </div>
   
   [#-- Accessible --] 
-  <div class="fairCompliant accessible [#if action.isA(deliverable.id)??][#if action.isA(deliverable.id)]achieved[#else]not-achieved[/#if][/#if]">
+  <div class="fairCompliant accessible [#attempt][#if action.isA(deliverable.id)??][#if action.isA(deliverable.id)] achieved [#else] not-achieved [/#if][/#if][#recover][/#attempt]">
     <div class="row">
       <div class="col-md-2">
         <div class="sign">A</div>
@@ -493,7 +493,7 @@
   </div>
   
   [#-- Interoperable --] 
-  <div class="fairCompliant interoperable [#if action.isI(deliverable.id)??][#if action.isI(deliverable.id)]achieved[#else]not-achieved[/#if][/#if]">
+  <div class="fairCompliant interoperable [#attempt][#if action.isI(deliverable.id)??][#if action.isI(deliverable.id)] achieved [#else] not-achieved [/#if][/#if][#recover][/#attempt]">
     <div class="row">
       <div class="col-md-2">
         <div class="sign">I</div>
@@ -508,7 +508,7 @@
   </div>
   
   [#-- Reusable --] 
-  <div class="fairCompliant reusable [#if action.isR(deliverable.id)??][#if action.isR(deliverable.id)]achieved[#else]not-achieved[/#if][/#if]">
+  <div class="fairCompliant reusable [#attempt][#if action.isR(deliverable.id)??][#if action.isR(deliverable.id)] achieved [#else] not-achieved [/#if][/#if][#recover][/#attempt]">
     <div class="row">
       <div class="col-md-2">
         <div class="sign">R</div>
