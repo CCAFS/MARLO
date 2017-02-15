@@ -18,8 +18,10 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.ProjectHighligthManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
+import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.Date;
@@ -39,7 +41,7 @@ public class ProjectHighListAction extends BaseAction {
 
   // Manager
   private ProjectHighligthManager projectHighligthManager;
-
+  private SectionStatusManager sectionStatusManager;
   private ProjectManager projectManager;
 
   // Model for the back-end
@@ -53,10 +55,10 @@ public class ProjectHighListAction extends BaseAction {
 
   @Inject
   public ProjectHighListAction(APConfig config, ProjectHighligthManager projectHighligthManager,
-    ProjectManager projectManager) {
+    SectionStatusManager sectionStatusManager, ProjectManager projectManager) {
     super(config);
     this.projectHighligthManager = projectHighligthManager;
-
+    this.sectionStatusManager = sectionStatusManager;
     this.projectManager = projectManager;
   }
 
@@ -116,6 +118,12 @@ public class ProjectHighListAction extends BaseAction {
     // Deleting deliverable.
     for (ProjectHighlight projectHighlight : project.getHighligths()) {
       if (projectHighlight.getId().longValue() == higlightID) {
+
+        ProjectHighlight projectHighlightBD = projectHighligthManager.getProjectHighligthById(higlightID);
+
+        for (SectionStatus sectionStatus : projectHighlightBD.getSectionStatuses()) {
+          sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+        }
         projectHighligthManager.deleteProjectHighligth(projectHighlight.getId());
 
 

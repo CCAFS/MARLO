@@ -74,14 +74,16 @@ public class ProjectHighlight implements java.io.Serializable, IAuditLog {
   private List<Long> countriesIds = new ArrayList<>();
   private List<ProjectHighligthsTypeEnum> TypesIds = new ArrayList<>();
 
+  private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
+
 
   private String typesidsText;
+
 
   private String countriesIdsText;
 
 
   private List<String> typesids = new ArrayList<>();
-
 
   private List<ProjectHighlightCountry> countries;
 
@@ -118,6 +120,7 @@ public class ProjectHighlight implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
+
   public Date getActiveSince() {
     return activeSince;
   }
@@ -126,7 +129,6 @@ public class ProjectHighlight implements java.io.Serializable, IAuditLog {
   public String getAuthor() {
     return author;
   }
-
 
   public List<ProjectHighlightCountry> getCountries() {
     return countries;
@@ -142,6 +144,7 @@ public class ProjectHighlight implements java.io.Serializable, IAuditLog {
     return countriesIdsText;
   }
 
+
   public User getCreatedBy() {
     return createdBy;
   }
@@ -150,7 +153,6 @@ public class ProjectHighlight implements java.io.Serializable, IAuditLog {
   public String getDescription() {
     return description;
   }
-
 
   public Date getEndDate() {
     return endDate;
@@ -230,6 +232,11 @@ public class ProjectHighlight implements java.io.Serializable, IAuditLog {
 
   public String getResults() {
     return results;
+  }
+
+
+  public Set<SectionStatus> getSectionStatuses() {
+    return sectionStatuses;
   }
 
 
@@ -401,6 +408,11 @@ public class ProjectHighlight implements java.io.Serializable, IAuditLog {
 
   public void setResults(String results) {
     this.results = results;
+  }
+
+
+  public void setSectionStatuses(Set<SectionStatus> sectionStatuses) {
+    this.sectionStatuses = sectionStatuses;
   }
 
 
