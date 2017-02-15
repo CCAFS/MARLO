@@ -32,6 +32,7 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpParameter;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
@@ -40,6 +41,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableGenderTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
+import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
 import org.cgiar.ccafs.marlo.data.model.Institution;
@@ -1054,6 +1056,16 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return cycle;
   }
 
+  private String getDeliverableDataSharingFilePath() {
+    String upload = config.getDownloadURL();
+    return upload + "/" + this.getDeliverableDataSharingFileRelativePath().replace('\\', '/');
+  }
+
+  private String getDeliverableDataSharingFileRelativePath() {
+    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + projectID + File.separator
+      + "deliverableDataSharing" + File.separator;
+  }
+
   private TypedTableModel getDeliverablesReportingTableModel() {
     // TODO: Auto-generated method stub
     TypedTableModel model = new TypedTableModel(
@@ -1064,18 +1076,52 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         "keywordsMetadata", "citationMetadata", "HandleMetadata", "DOIMetadata", "creator_authors", "data_sharing",
         "qualityAssurance", "dataDictionary", "tools", "showFAIR", "F", "A", "I", "R", "isDisseminated", "disseminated",
         "restricted_access", "isRestricted", "restricted_date", "isLastTwoRestricted", "deliv_license_modifications",
-        "show_deliv_license_modifications"},
+        "show_deliv_license_modifications", "volume", "issue", "pages", "journal", "journal_indicators", "acknowledge",
+        "fl_contrib", "show_publication", "showCompilance"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         Boolean.class, String.class, String.class, String.class, String.class, Boolean.class, String.class,
-        String.class, Boolean.class, String.class, Boolean.class, String.class, Boolean.class},
+        String.class, Boolean.class, String.class, Boolean.class, String.class, Boolean.class, String.class,
+        String.class, String.class, String.class, String.class, String.class, String.class, Boolean.class,
+        Boolean.class},
       0);
     if (!project.getDeliverables().isEmpty()) {
-      for (Deliverable deliverable : project.getDeliverables().stream()
-        .sorted((d1, d2) -> Long.compare(d1.getId(), d2.getId())).filter(c -> c.isActive())
-        .collect(Collectors.toList())) {
+
+      // get On going deliverables
+      List<Deliverable> deliverables =
+        new ArrayList<>(project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList()));
+
+      deliverables.sort((p1, p2) -> p1.isRequieriedReporting(year).compareTo(p2.isRequieriedReporting(year)));
+
+      List<Deliverable> openA = deliverables.stream()
+        .filter(a -> a.isActive()
+          && ((a.getStatus() == null || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+            || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+              || a.getStatus().intValue() == 0))))
+        .collect(Collectors.toList());
+
+      openA.addAll(deliverables.stream()
+        .filter(d -> d.isActive() && d.getYear() == this.getCurrentCycleYear() && d.getStatus() != null
+          && d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))
+        .collect(Collectors.toList()));
+
+      openA.addAll(deliverables.stream()
+        .filter(d -> d.isActive() && d.getNewExpectedYear() != null
+          && d.getNewExpectedYear().intValue() == this.getCurrentCycleYear() && d.getStatus() != null
+          && d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))
+        .collect(Collectors.toList()));
+
+      openA.sort((p1, p2) -> p1.isRequieriedReporting(this.getCurrentCycleYear())
+        .compareTo(p2.isRequieriedReporting(this.getCurrentCycleYear())));
+
+      HashSet<Deliverable> deliverablesHL = new HashSet<>();
+      deliverablesHL.addAll(openA);
+      openA.clear();
+      openA.addAll(deliverablesHL);
+
+      for (Deliverable deliverable : openA) {
         String deliv_type = null;
         String deliv_sub_type = null;
         String deliv_status = deliverable.getStatusName();
@@ -1085,6 +1131,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         String institution = null;
         String funding_sources = "";
         Boolean showFAIR = false;
+        Boolean show_publication = false;
+        Boolean showCompilance = false;
 
         if (deliverable.getDeliverableType() != null) {
           deliv_sub_type = deliverable.getDeliverableType().getName();
@@ -1100,12 +1148,16 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
             || deliverable.getDeliverableType().getId() == 73) {
             showFAIR = true;
           }
+          if (deliverable.getDeliverableType().getId() == 51 || deliverable.getDeliverableType().getId() == 74) {
+            showCompilance = true;
+          }
 
           if (deliverable.getDeliverableType().getDeliverableType() != null) {
             deliv_type = deliverable.getDeliverableType().getDeliverableType().getName();
-            // FAIR
+            // FAIR and deliverable publication
             if (deliverable.getDeliverableType().getDeliverableType().getId() == 49) {
               showFAIR = true;
+              show_publication = true;
             }
           }
         }
@@ -1306,6 +1358,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           }
         }
 
+        if (deliv_license != null && deliv_license.isEmpty()) {
+          deliv_license = null;
+        }
+
         String titleMetadata = null;
         String descriptionMetadata = null;
         String dateMetadata = null;
@@ -1411,7 +1467,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           }
 
           if (deliverableDataSharingFile.getFile() != null && deliverableDataSharingFile.getFile().isActive()) {
-            data_sharing += deliverableDataSharingFile.getFile().getFileName();
+            data_sharing +=
+              this.getDeliverableDataSharingFilePath() + deliverableDataSharingFile.getFile().getFileName() + "<br>";
+
           }
         }
         if (data_sharing.isEmpty()) {
@@ -1435,6 +1493,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
               if (deliverableQualityCheck.getFileAssurance() != null
                 && deliverableQualityCheck.getFileAssurance().isActive()) {
                 qualityAssurance += "<br>File: <font size=2 face='Segoe UI' color='blue'>"
+                  + this.getDeliverableUrl("Assurance", deliverable)
                   + deliverableQualityCheck.getFileAssurance().getFileName() + "</font>";
               }
               if (deliverableQualityCheck.getLinkAssurance() != null
@@ -1447,12 +1506,14 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
             }
           }
 
+
           // Data dictionary
           if (deliverableQualityCheck.getDataDictionary() != null) {
             if (deliverableQualityCheck.getDataDictionary().getId() == 2) {
               if (deliverableQualityCheck.getFileDictionary() != null
                 && deliverableQualityCheck.getFileDictionary().isActive()) {
                 dataDictionary += "<br>File: <font size=2 face='Segoe UI' color='blue'>"
+                  + this.getDeliverableUrl("Dictionary", deliverable)
                   + deliverableQualityCheck.getFileDictionary().getFileName() + "</font>";
               }
               if (deliverableQualityCheck.getLinkDictionary() != null
@@ -1469,8 +1530,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           if (deliverableQualityCheck.getDataTools() != null) {
             if (deliverableQualityCheck.getDataTools().getId() == 2) {
               if (deliverableQualityCheck.getFileTools() != null && deliverableQualityCheck.getFileTools().isActive()) {
-                tools += "<br>File: <font size=2 face='Segoe UI' color='blue'>"
-                  + deliverableQualityCheck.getFileTools().getFileName() + "</font>";
+                tools +=
+                  "<br>File: <font size=2 face='Segoe UI' color='blue'>" + this.getDeliverableUrl("Tools", deliverable)
+                    + deliverableQualityCheck.getFileTools().getFileName() + "</font>";
               }
               if (deliverableQualityCheck.getLinkTools() != null && !deliverableQualityCheck.getLinkTools().isEmpty()) {
                 tools += "<br>Link: <font size=2 face='Segoe UI' color='blue'>" + deliverableQualityCheck.getLinkTools()
@@ -1540,6 +1602,71 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           }
         }
 
+
+        String volume = null;
+        String issue = null;
+        String pages = null;
+        String journal = null;
+        String journal_indicators = "";
+        String acknowledge = null;
+        String fl_contrib = "";
+        // Publication metadata
+        // Verify if the deliverable is of type Articles and Books
+
+
+        if (deliverable.getDeliverablePublicationMetadatas().stream().filter(dpm -> dpm.isActive())
+          .collect(Collectors.toList()).size() > 0
+          && deliverable.getDeliverablePublicationMetadatas().stream().filter(dpm -> dpm.isActive())
+            .collect(Collectors.toList()).get(0) != null) {
+          DeliverablePublicationMetadata deliverablePublicationMetadata =
+            deliverable.getDeliverablePublicationMetadatas().stream().filter(dpm -> dpm.isActive())
+              .collect(Collectors.toList()).get(0);
+          volume = deliverablePublicationMetadata.getVolume();
+          issue = deliverablePublicationMetadata.getIssue();
+          pages = deliverablePublicationMetadata.getPages();
+          journal = deliverablePublicationMetadata.getJournal();
+          if (deliverablePublicationMetadata.getIsiPublication() != null
+            && deliverablePublicationMetadata.getIsiPublication() == true) {
+            journal_indicators += "This journal article is an ISI publication <br>";
+          }
+          if (deliverablePublicationMetadata.getNasr() != null && deliverablePublicationMetadata.getNasr() == true) {
+            journal_indicators +=
+              "This article have a co-author from a developing country National Agricultural Research System (NARS)<br>";
+          }
+          if (deliverablePublicationMetadata.getCoAuthor() != null
+            && deliverablePublicationMetadata.getCoAuthor() == true) {
+            journal_indicators +=
+              "This article have a co-author based in an Earth System Science-related academic department";
+          }
+          if (journal_indicators.isEmpty()) {
+            journal_indicators = null;
+          }
+
+          if (deliverablePublicationMetadata.getPublicationAcknowledge() != null
+            && deliverablePublicationMetadata.getPublicationAcknowledge() == true) {
+            acknowledge = "Yes";
+          } else {
+            acknowledge = "No";
+          }
+
+
+          for (DeliverableCrp deliverableCrp : deliverable.getDeliverableCrps().stream().filter(dc -> dc.isActive())
+            .collect(Collectors.toList())) {
+
+            if (deliverableCrp.getCrpPandr() != null && deliverableCrp.getIpProgram() != null) {
+              fl_contrib += deliverableCrp.getCrpPandr().getAcronym().toUpperCase() + " - "
+                + deliverableCrp.getIpProgram().getAcronym().toUpperCase() + "<br>";
+            } else {
+              if (deliverableCrp.getCrpPandr() != null) {
+                fl_contrib += deliverableCrp.getCrpPandr().getName().toUpperCase() + "<br>";
+              }
+            }
+          }
+
+
+        }
+
+
         model.addRow(new Object[] {deliverable.getId(), deliverable.getTitle(), deliv_type, deliv_sub_type,
           deliv_status, deliv_year, key_output, leader, institution, funding_sources, cross_cutting, deliv_new_year,
           deliv_new_year_justification, deliv_dissemination_channel, deliv_dissemination_url, deliv_open_access,
@@ -1547,7 +1674,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           keywordsMetadata, citationMetadata, HandleMetadata, DOIMetadata, creator_authors, data_sharing,
           qualityAssurance, dataDictionary, tools, showFAIR, F, A, I, R, isDisseminated, disseminated,
           restricted_access, isRestricted, restricted_date, isLastTwoRestricted, deliv_license_modifications,
-          show_deliv_license_modifications});
+          show_deliv_license_modifications, volume, issue, pages, journal, journal_indicators, acknowledge, fl_contrib,
+          show_publication, showCompilance});
       }
     }
     return model;
@@ -1671,6 +1799,17 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     }
     return model;
   }
+
+  public String getDeliverableUrl(String fileType, Deliverable deliverable) {
+    return config.getDownloadURL() + "/" + this.getDeliverableUrlPath(fileType, deliverable).replace('\\', '/');
+  }
+
+
+  public String getDeliverableUrlPath(String fileType, Deliverable deliverable) {
+    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + deliverable.getId() + File.separator
+      + "deliverable" + File.separator + fileType + File.separator;
+  }
+
 
   private TypedTableModel getDescCoAsTableModel() {
     TypedTableModel model = new TypedTableModel(new String[] {"description"}, new Class[] {String.class}, 0);
@@ -1802,7 +1941,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return file;
   }
 
-
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
@@ -1814,7 +1952,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return fileName.toString();
 
   }
-
 
   public IpIndicator getFinalIndicator(IpIndicator ipIndicator) {
     IpIndicator newIpIndicator = ipIndicator;
@@ -1921,6 +2058,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   public Crp getLoggedCrp() {
     return loggedCrp;
   }
+
 
   private TypedTableModel getMasterTableModel(List<CrpProgram> flagships, List<CrpProgram> regions,
     ProjectPartner projectLeader) {
@@ -2059,6 +2197,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
   }
 
+
   private TypedTableModel getOtherContributionsCrpsTableModel() {
     TypedTableModel model = new TypedTableModel(new String[] {"crp_name", "collaboration_description"},
       new Class[] {String.class, String.class}, 0);
@@ -2125,7 +2264,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
     return model;
   }
-
 
   private TypedTableModel getOtherContributionsTableModel() {
     TypedTableModel model = new TypedTableModel(new String[] {"contribution"}, new Class[] {String.class}, 0);
