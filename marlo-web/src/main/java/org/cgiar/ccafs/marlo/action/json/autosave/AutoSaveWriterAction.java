@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
@@ -147,7 +148,10 @@ public class AutoSaveWriterAction extends BaseAction {
         jSon = jSon.replaceAll("program\\.", "");
 
       }
+      if (nameClass.equals(IpLiaisonInstitution.class.getName())) {
+        jSon = jSon.replaceAll("currentLiaisonInstitution\\.", "");
 
+      }
       if (nameClass.equals(ProjectHighlight.class.getName())) {
         jSon = jSon.replaceAll("highlight\\.", "");
         jSon = jSon.replaceAll("typesids", "typesidsText");

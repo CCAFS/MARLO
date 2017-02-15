@@ -27,11 +27,19 @@ import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.validation.sythesis.CrpIndicatorsValidator;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
@@ -84,6 +92,14 @@ public class CrpIndicatorsAction extends BaseAction {
     this.crpIndicatorTypeManager = crpIndicatorTypeManager;
   }
 
+
+  private Path getAutoSaveFilePath() {
+    String composedClassName = currentLiaisonInstitution.getClass().getSimpleName();
+    String actionFile = this.getActionName().replace("/", "_");
+    String autoSaveFile = currentLiaisonInstitution.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+
+    return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+  }
 
   public List<CrpIndicatorReport> getCrpIndicatorsByType(long type) {
     List<CrpIndicatorReport> lst = new ArrayList<CrpIndicatorReport>();
@@ -180,10 +196,37 @@ public class CrpIndicatorsAction extends BaseAction {
     }
 
 
-    indicatorReports =
-      indicatorsReportManager.getIndicatorReportsList(liaisonInstitutionID, this.getCurrentCycleYear());
+    if (currentLiaisonInstitution != null) {
+      Path path = this.getAutoSaveFilePath();
 
-    currentLiaisonInstitution.setIndicatorReports(indicatorReports);
+      if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
+
+        BufferedReader reader = null;
+
+        reader = new BufferedReader(new FileReader(path.toFile()));
+
+        Gson gson = new GsonBuilder().create();
+
+
+        JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+
+        AutoSaveReader autoSaveReader = new AutoSaveReader();
+
+        currentLiaisonInstitution = (IpLiaisonInstitution) autoSaveReader.readFromJson(jReader);
+
+        liaisonInstitutionID = currentLiaisonInstitution.getId();
+
+        this.setDraft(true);
+        reader.close();
+      } else {
+        indicatorReports =
+          indicatorsReportManager.getIndicatorReportsList(liaisonInstitutionID, this.getCurrentCycleYear());
+
+        currentLiaisonInstitution.setIndicatorReports(indicatorReports);
+        this.setDraft(false);
+      }
+    }
+
 
     // Get the list of liaison institutions.
     liaisonInstitutions = liaisonInstitutionManager.getLiaisonInstitutionsCrpsIndicator();
