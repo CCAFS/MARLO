@@ -85,7 +85,7 @@ public class CrpIndicatorsAction extends BaseAction {
     IpLiaisonInstitutionManager liaisonInstitutionManager, CrpIndicatorTypeManager crpIndicatorTypeManager,
     CrpIndicatorsValidator validator) {
     super(config);
-    crpManager = crpManager;
+    this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.indicatorsReportManager = indicatorsReportManager;
     this.validator = validator;
@@ -193,6 +193,7 @@ public class CrpIndicatorsAction extends BaseAction {
 
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+
     try {
       liaisonInstitutionID =
         Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.LIAISON_INSTITUTION_REQUEST_ID)));
