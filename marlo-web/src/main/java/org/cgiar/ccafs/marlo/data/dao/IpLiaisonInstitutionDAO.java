@@ -90,4 +90,6 @@ public interface IpLiaisonInstitutionDAO {
    *         or -1 is some error occurred.
    */
   public long save(IpLiaisonInstitution ipLiaisonInstitution);
+
+  public long save(IpLiaisonInstitution ipLiaisonInstitution, String section, List<String> relationsName);
 }

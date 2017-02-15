@@ -4,6 +4,7 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -39,11 +40,23 @@ public class IpLiaisonInstitution implements java.io.Serializable, IAuditLog {
   private Integer ipProgram;
 
 
+  @Expose
+  private Date activeSince;
+
+
+  @Expose
+  private User modifiedBy;
+
+
   private Set<CrpIndicatorReport> crpIndicatorReportses = new HashSet<CrpIndicatorReport>(0);
 
+
   private Set<SectionStatus> sectionStatus = new HashSet<SectionStatus>(0);
+
   private List<CrpIndicatorReport> indicatorReports;
+
   private Set<IpLiaisonUser> ipLiaisonUsers = new HashSet<IpLiaisonUser>(0);
+
 
   public IpLiaisonInstitution() {
   }
@@ -66,21 +79,22 @@ public class IpLiaisonInstitution implements java.io.Serializable, IAuditLog {
     return acronym;
   }
 
+  public Date getActiveSince() {
+    return activeSince;
+  }
+
   public Set<CrpIndicatorReport> getCrpIndicatorReportses() {
     return crpIndicatorReportses;
   }
-
 
   @Override
   public Long getId() {
     return id;
   }
 
-
   public List<CrpIndicatorReport> getIndicatorReports() {
     return indicatorReports;
   }
-
 
   public Institution getInstitution() {
     return institution;
@@ -107,17 +121,18 @@ public class IpLiaisonInstitution implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+
   @Override
   public String getModificationJustification() {
     return "";
   }
 
+
   @Override
   public User getModifiedBy() {
-    User user = new User();
-    user.setId(new Long(3));
-    return user;
+    return modifiedBy;
   }
+
 
   public String getName() {
     return name;
@@ -136,6 +151,10 @@ public class IpLiaisonInstitution implements java.io.Serializable, IAuditLog {
     this.acronym = acronym;
   }
 
+  public void setActiveSince(Date activeSince) {
+    this.activeSince = activeSince;
+  }
+
   public void setCrpIndicatorReportses(Set<CrpIndicatorReport> crpIndicatorReportses) {
     this.crpIndicatorReportses = crpIndicatorReportses;
   }
@@ -144,15 +163,14 @@ public class IpLiaisonInstitution implements java.io.Serializable, IAuditLog {
     this.id = id;
   }
 
-
   public void setIndicatorReports(List<CrpIndicatorReport> indicatorReports) {
     this.indicatorReports = indicatorReports;
   }
 
+
   public void setInstitution(Institution institution) {
     this.institution = institution;
   }
-
 
   public void setIpLiaisonUsers(Set<IpLiaisonUser> ipLiaisonUsers) {
     this.ipLiaisonUsers = ipLiaisonUsers;
@@ -161,6 +179,11 @@ public class IpLiaisonInstitution implements java.io.Serializable, IAuditLog {
 
   public void setIpProgram(Integer ipProgram) {
     this.ipProgram = ipProgram;
+  }
+
+
+  public void setModifiedBy(User modifiedBy) {
+    this.modifiedBy = modifiedBy;
   }
 
 

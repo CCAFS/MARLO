@@ -93,6 +93,11 @@ public class IpLiaisonInstitutionManagerImpl implements IpLiaisonInstitutionMana
   }
 
   @Override
+  public long save(IpLiaisonInstitution ipLiaisonInstitution, String section, List<String> relationsName) {
+    return ipLiaisonInstitutionDAO.save(ipLiaisonInstitution, section, relationsName);
+  }
+
+  @Override
   public long saveIpLiaisonInstitution(IpLiaisonInstitution ipLiaisonInstitution) {
 
     return ipLiaisonInstitutionDAO.save(ipLiaisonInstitution);

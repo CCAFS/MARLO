@@ -104,5 +104,15 @@ public class IpLiaisonInstitutionMySQLDAO implements IpLiaisonInstitutionDAO {
     return ipLiaisonInstitution.getId();
   }
 
+  @Override
+  public long save(IpLiaisonInstitution ipLiaisonInstitution, String section, List<String> relationsName) {
+    if (ipLiaisonInstitution.getId() == null) {
+      dao.save(ipLiaisonInstitution, section, relationsName);
+    } else {
+      dao.update(ipLiaisonInstitution, section, relationsName);
+    }
+    return ipLiaisonInstitution.getId();
+  }
+
 
 }

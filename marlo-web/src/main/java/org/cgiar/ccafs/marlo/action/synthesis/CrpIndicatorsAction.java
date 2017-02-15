@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpIndicatorReportManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpIndicatorTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.IpLiaisonInstitutionManager;
+import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpIndicatorReport;
 import org.cgiar.ccafs.marlo.data.model.CrpIndicatorType;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
@@ -28,7 +29,11 @@ import org.cgiar.ccafs.marlo.data.model.IpLiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import com.google.inject.Inject;
@@ -61,13 +66,16 @@ public class CrpIndicatorsAction extends BaseAction {
 
   private List<CrpIndicatorType> indicatorsType;
 
-
   private IpLiaisonInstitution currentLiaisonInstitution;
 
 
   private Long liaisonInstitutionID;
 
+
   private Long indicatorTypeID;
+
+
+  private Crp loggedCrp;
 
   @Inject
   public CrpIndicatorsAction(APConfig config, CrpManager crpManager, CrpIndicatorReportManager indicatorsReportManager,
@@ -79,6 +87,38 @@ public class CrpIndicatorsAction extends BaseAction {
     this.crpIndicatorTypeManager = crpIndicatorTypeManager;
   }
 
+  @Override
+  public String cancel() {
+
+    Path path = this.getAutoSaveFilePath();
+
+    if (path.toFile().exists()) {
+
+      boolean fileDeleted = path.toFile().delete();
+    }
+
+    this.setDraft(false);
+    Collection<String> messages = this.getActionMessages();
+    if (!messages.isEmpty()) {
+      String validationMessage = messages.iterator().next();
+      this.setActionMessages(null);
+      this.addActionMessage("draft:" + this.getText("cancel.autoSave"));
+    } else {
+      this.addActionMessage("draft:" + this.getText("cancel.autoSave"));
+    }
+    messages = this.getActionMessages();
+
+    return SUCCESS;
+  }
+
+  private Path getAutoSaveFilePath() {
+    String composedClassName = currentLiaisonInstitution.getClass().getSimpleName();
+    String actionFile = this.getActionName().replace("/", "_");
+    String autoSaveFile = currentLiaisonInstitution.getId() + "_" + composedClassName + "_" + loggedCrp.getAcronym()
+      + "_" + actionFile + ".json";
+
+    return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+  }
 
   public List<CrpIndicatorReport> getCrpIndicatorsByType(long type) {
     List<CrpIndicatorReport> lst = new ArrayList<CrpIndicatorReport>();
@@ -91,6 +131,7 @@ public class CrpIndicatorsAction extends BaseAction {
     return lst;
 
   }
+
 
   public IpLiaisonInstitution getCurrentLiaisonInstitution() {
     return currentLiaisonInstitution;
@@ -128,6 +169,10 @@ public class CrpIndicatorsAction extends BaseAction {
     return liaisonInstitutions;
   }
 
+  public Crp getLoggedCrp() {
+    return loggedCrp;
+  }
+
   @Override
   public String next() {
     String result = this.save();
@@ -138,9 +183,11 @@ public class CrpIndicatorsAction extends BaseAction {
     }
   }
 
-
   @Override
   public void prepare() throws Exception {
+
+    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
     try {
       liaisonInstitutionID =
         Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.LIAISON_INSTITUTION_REQUEST_ID)));
@@ -187,6 +234,47 @@ public class CrpIndicatorsAction extends BaseAction {
 
   }
 
+
+  @Override
+  public String save() {
+    IpLiaisonInstitution ipLiaisonInstitution =
+      liaisonInstitutionManager.getIpLiaisonInstitutionById(liaisonInstitutionID);
+
+    for (CrpIndicatorReport crpIndicatorReport : currentLiaisonInstitution.getIndicatorReports()) {
+      crpIndicatorReport.setIpLiaisonInstitution(ipLiaisonInstitution);
+      indicatorsReportManager.saveCrpIndicatorReport(crpIndicatorReport);
+    }
+
+    currentLiaisonInstitution = liaisonInstitutionManager.getIpLiaisonInstitutionById(liaisonInstitutionID);
+    currentLiaisonInstitution.setActiveSince(new Date());
+    currentLiaisonInstitution.setModifiedBy(this.getCurrentUser());
+
+    List<String> relationsName = new ArrayList<>();
+    relationsName.add(APConstants.IPLIAISON_INDICATORS_REPORT);
+    liaisonInstitutionManager.save(ipLiaisonInstitution, this.getActionName(), relationsName);
+
+    Path path = this.getAutoSaveFilePath();
+
+    if (path.toFile().exists()) {
+      path.toFile().delete();
+    }
+
+
+    Collection<String> messages = this.getActionMessages();
+    if (!this.getInvalidFields().isEmpty()) {
+      this.setActionMessages(null);
+      List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+      for (String key : keys) {
+        this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+      }
+
+    } else {
+      this.addActionMessage("message:" + this.getText("saving.saved"));
+    }
+    return SUCCESS;
+
+  }
+
   public void setCurrentLiaisonInstitution(IpLiaisonInstitution currentLiaisonInstitution) {
     this.currentLiaisonInstitution = currentLiaisonInstitution;
   }
@@ -209,6 +297,10 @@ public class CrpIndicatorsAction extends BaseAction {
 
   public void setLiaisonInstitutions(List<IpLiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
+  }
+
+  public void setLoggedCrp(Crp loggedCrp) {
+    this.loggedCrp = loggedCrp;
   }
 
 }

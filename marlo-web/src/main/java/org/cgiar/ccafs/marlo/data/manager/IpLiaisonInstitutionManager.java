@@ -85,6 +85,16 @@ public interface IpLiaisonInstitutionManager {
   public List<IpLiaisonInstitution> getLiaisonInstitutionSynthesisByMog();
 
   /**
+   * This method saves the information of the given ip program and save the history in the auditlog
+   * 
+   * @param ipLiaisonInstitution - is the ipLiaisonInstitution object with the new information to be added/updated.
+   * @param section - the action name of the section that execute the save method
+   * @param relationsName - the model class relations of deliverables that save in the auditlog.
+   * @return
+   */
+  public long save(IpLiaisonInstitution ipLiaisonInstitution, String section, List<String> relationsName);
+
+  /**
    * This method saves the information of the given ipLiaisonInstitution
    * 
    * @param ipLiaisonInstitution - is the ipLiaisonInstitution object with the new information to be added/updated.
@@ -93,6 +103,5 @@ public interface IpLiaisonInstitutionManager {
    *         or -1 is some error occurred.
    */
   public long saveIpLiaisonInstitution(IpLiaisonInstitution ipLiaisonInstitution);
-
 
 }
