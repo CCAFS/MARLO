@@ -2091,7 +2091,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   }
 
   private TypedTableModel getLeveragesTableModel() {
-    // TODO Auto-generated method stub
     // Decimal format
     DecimalFormat myFormatter = new DecimalFormat("###,###.00");
     TypedTableModel model =
@@ -2664,6 +2663,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       0);
 
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
+
+
     for (ProjectHighlight projectHighlight : project.getProjectHighligths().stream().filter(ph -> ph.isActive())
       .collect(Collectors.toList())) {
       String title = null, author = null, subject = null, publisher = null, highlights_types = "",
