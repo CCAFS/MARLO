@@ -847,7 +847,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       0);
 
     // Get ppaPartners of project
-    for (ProjectPartner pp : project.getProjectPartners()) {
+    for (ProjectPartner pp : project.getProjectPartners().stream().filter(pp -> pp.isActive())
+      .collect(Collectors.toList())) {
       if (this.isPPA(pp.getInstitution())) {
         DecimalFormat myFormatter = new DecimalFormat("###,###.00");
 
@@ -953,7 +954,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       explainIndicatorRelation =
         caseStudy.getExplainIndicatorRelation().trim().isEmpty() ? null : caseStudy.getExplainIndicatorRelation();
 
-      List<CaseStudyProject> studyProjects = new ArrayList<>(caseStudy.getCaseStudyProjects());
+      List<CaseStudyProject> studyProjects = new ArrayList<>(
+        caseStudy.getCaseStudyProjects().stream().filter(csp -> csp.isActive()).collect(Collectors.toList()));
 
       for (CaseStudyProject caseStudyProjectList : studyProjects) {
         if (caseStudyProjectList.isCreated()) {
@@ -1315,7 +1317,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
               cross_cutting += "<br><b>Gender level(s):</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&lt;Not Defined&gt;";
             } else {
               cross_cutting += "<br><b>Gender level(s): </b><br>";
-              for (DeliverableGenderLevel dgl : deliverable.getDeliverableGenderLevels()) {
+              for (DeliverableGenderLevel dgl : deliverable.getDeliverableGenderLevels().stream()
+                .filter(dgl -> dgl.isActive()).collect(Collectors.toList())) {
                 if (dgl.getGenderLevel() != 0.0) {
                   cross_cutting += "&nbsp;&nbsp;&nbsp;&nbsp;● "
                     + DeliverableGenderTypeEnum.getValue(dgl.getGenderLevel()).getValue() + "<br>";
@@ -1523,7 +1526,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         }
 
         String creator_authors = "";
-        for (DeliverableUser deliverableUser : deliverable.getDeliverableUsers().stream()
+        for (DeliverableUser deliverableUser : deliverable.getDeliverableUsers().stream().filter(du -> du.isActive())
           .collect(Collectors.toList())) {
           creator_authors += "<br>";
           if (!deliverableUser.getLastName().isEmpty()) {
@@ -1859,7 +1862,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
               cross_cutting += "<br><b>Gender level(s):</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&lt;Not Defined&gt;";
             } else {
               cross_cutting += "<br><b>Gender level(s): </b><br>";
-              for (DeliverableGenderLevel dgl : deliverable.getDeliverableGenderLevels()) {
+              for (DeliverableGenderLevel dgl : deliverable.getDeliverableGenderLevels().stream()
+                .filter(dgl -> dgl.isActive()).collect(Collectors.toList())) {
                 if (dgl.getGenderLevel() != 0.0) {
                   cross_cutting += "&nbsp;&nbsp;&nbsp;&nbsp;● "
                     + DeliverableGenderTypeEnum.getValue(dgl.getGenderLevel()).getValue() + "<br>";
