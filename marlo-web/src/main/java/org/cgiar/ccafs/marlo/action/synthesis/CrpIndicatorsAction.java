@@ -247,8 +247,25 @@ public class CrpIndicatorsAction extends BaseAction {
 
         currentLiaisonInstitution.setIndicatorReports((currentLiaisonInstitution.getCrpIndicatorReportses().stream()
           .filter(c -> c.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList())));
+        List<CrpIndicatorReport> crpIndicatorReports = new ArrayList<>();
+        crpIndicatorReports.addAll(currentLiaisonInstitution.getIndicatorReports());
+        for (CrpIndicatorReport crpIndicatorReport : crpIndicatorReports) {
+          switch (crpIndicatorReport.getCrpIndicator().getId().intValue()) {
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+              currentLiaisonInstitution.getIndicatorReports().remove(crpIndicatorReport);
+              break;
 
-
+            default:
+              break;
+          }
+        }
+        currentLiaisonInstitution.getIndicatorReports()
+          .sort((p1, p2) -> p1.getCrpIndicator().getId().compareTo(p2.getCrpIndicator().getId()));
       } else {
         this.transaction = null;
 

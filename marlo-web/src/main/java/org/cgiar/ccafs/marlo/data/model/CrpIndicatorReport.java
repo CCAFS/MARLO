@@ -28,8 +28,10 @@ public class CrpIndicatorReport implements java.io.Serializable, IAuditLog {
   @Expose
   private String target;
 
+
   @Expose
   private String nextTarget;
+
 
   @Expose
   private String actual;
@@ -46,10 +48,8 @@ public class CrpIndicatorReport implements java.io.Serializable, IAuditLog {
   @Expose
   private Date lastUpdate;
 
-
   public CrpIndicatorReport() {
   }
-
 
   public CrpIndicatorReport(CrpIndicator crpIndicator, int year, Date lastUpdate) {
     this.crpIndicator = crpIndicator;
@@ -69,6 +69,27 @@ public class CrpIndicatorReport implements java.io.Serializable, IAuditLog {
     this.deviation = deviation;
     this.year = year;
     this.lastUpdate = lastUpdate;
+  }
+
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+
+    CrpIndicatorReport other = (CrpIndicatorReport) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!id.equals(other.id)) {
+      return false;
+    }
+    return true;
   }
 
 
@@ -109,6 +130,7 @@ public class CrpIndicatorReport implements java.io.Serializable, IAuditLog {
     return null;
   }
 
+
   @Override
   public String getModificationJustification() {
     // TODO Auto-generated method stub
@@ -136,6 +158,14 @@ public class CrpIndicatorReport implements java.io.Serializable, IAuditLog {
 
   public int getYear() {
     return year;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
   }
 
   @Override
