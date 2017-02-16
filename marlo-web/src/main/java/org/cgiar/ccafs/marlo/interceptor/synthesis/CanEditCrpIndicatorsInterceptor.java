@@ -122,9 +122,7 @@ public class CanEditCrpIndicatorsInterceptor extends AbstractInterceptor impleme
         }
       }
 
-      if (baseAction.isCrpClosed()) {
-        canEdit = false;
-      }
+
     }
 
     // TODO Validate is the project is new

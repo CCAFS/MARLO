@@ -132,9 +132,7 @@ public class CanEditSynthesisInterceptor extends AbstractInterceptor implements 
         }
       }
 
-      if (baseAction.isCrpClosed()) {
-        canEdit = false;
-      }
+
     }
 
     // TODO Validate is the project is new

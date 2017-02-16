@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
+import org.cgiar.ccafs.marlo.data.manager.IpLiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectComponentLessonManager;
@@ -47,6 +48,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
@@ -231,6 +233,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private UserRoleManager userRoleManager;
   @Inject
   private IpProgramManager ipProgramManager;
+
+
+  @Inject
+  private IpLiaisonInstitutionManager ipLiaisonInstitutionManager;
 
   @Inject
   public BaseAction(APConfig config) {
@@ -1206,6 +1212,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+  public boolean hasPermissionCrpIndicators(long liaisonID) {
+    String params[] = {this.getCrpSession(), liaisonID + "",};
+    boolean permission =
+      this.hasPermissionNoBase(this.generatePermission(Permission.CRP_INDICATORS_PERMISSION, params));
+    return permission;
+  }
+
   public boolean hasPermissionNoBase(String fieldName) {
 
     return securityContext.hasPermission(fieldName);
@@ -1290,6 +1303,28 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return canSwitchProject;
   }
 
+
+  public boolean isCompleteCrpIndicator(long liaisonIntitution) {
+    List<SectionStatus> sectionStatus = null;
+    IpLiaisonInstitution ipLiaisonInstitution =
+      ipLiaisonInstitutionManager.getIpLiaisonInstitutionById(liaisonIntitution);
+
+    sectionStatus = ipLiaisonInstitution.getSectionStatus().stream()
+      .filter(c -> c.getSectionName().equals(ProjectSectionStatusEnum.CRP_INDICATORS.getStatus())
+        && c.getYear().intValue() == this.getCurrentCycleYear() && c.getCycle().equals(this.getCurrentCycle()))
+      .collect(Collectors.toList());
+
+    for (SectionStatus sectionStatus2 : sectionStatus) {
+      if (sectionStatus2.getMissingFields().length() > 0) {
+        return false;
+      }
+    }
+
+    if (sectionStatus.isEmpty()) {
+      return false;
+    }
+    return true;
+  }
 
   public boolean isCompleteImpact(long crpProgramID) {
 
