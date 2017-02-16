@@ -64,6 +64,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlightCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlightType;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighligthsTypeEnum;
+import org.cgiar.ccafs.marlo.data.model.ProjectLeverage;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocationElementType;
 import org.cgiar.ccafs.marlo.data.model.ProjectOtherContribution;
@@ -441,6 +442,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
           // Subreport BudgetsbyCoas
           this.fillSubreport((SubReport) hm.get("budgets_by_coas"), "budgets_by_coas_list", args);
+        } else {
+          // Subreport Leverages for reporting
+          this.fillSubreport((SubReport) hm.get("leverages"), "leverages", args);
+
         }
 
       }
@@ -558,6 +563,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         break;
       case "project_highlight":
         model = this.getProjectHighlightReportingTableModel();
+        break;
+      case "leverages":
+        model = this.getLeveragesTableModel();
         break;
 
 
@@ -828,6 +836,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
+
   private TypedTableModel getBudgetsbyPartnersTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"year", "institution", "w1w2", "w3", "bilateral", "center", "institution_id", "p_id", "w1w2Gender",
@@ -894,7 +903,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   public byte[] getBytesPDF() {
     return bytesPDF;
   }
-
 
   private TypedTableModel getCaseStudiesTableModel() {
     // Code Author: Hermes Jimenez
@@ -983,15 +991,16 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
+
   public String getCaseStudyUrl(String project) {
     return config.getDownloadURL() + "/" + this.getCaseStudyUrlPath(project).replace('\\', '/');
   }
-
 
   public String getCaseStudyUrlPath(String project) {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project + File.separator + "caseStudy"
       + File.separator;
   }
+
 
   private TypedTableModel getccafsOutcomesTableModel() {
 
@@ -1116,11 +1125,11 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
-
   @Override
   public int getContentLength() {
     return bytesPDF.length;
   }
+
 
   @Override
   public String getContentType() {
@@ -1883,7 +1892,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       + "deliverable" + File.separator + fileType + File.separator;
   }
 
-
   private TypedTableModel getDescCoAsTableModel() {
     TypedTableModel model = new TypedTableModel(new String[] {"description"}, new Class[] {String.class}, 0);
 
@@ -2007,6 +2015,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
+
   private File getFile(String fileName) {
 
     // Get file from resources folder
@@ -2079,6 +2088,41 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       inputStream = new ByteArrayInputStream(bytesPDF);
     }
     return inputStream;
+  }
+
+  private TypedTableModel getLeveragesTableModel() {
+    // Decimal format
+    DecimalFormat myFormatter = new DecimalFormat("###,###.00");
+    TypedTableModel model =
+      new TypedTableModel(new String[] {"id", "title", "partner_name", "leverage_year", "flagship", "budget"},
+        new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class}, 0);
+    for (ProjectLeverage projectLeverage : project.getProjectLeverages().stream()
+      .filter(pl -> pl.isActive() && pl.getYear() == year).collect(Collectors.toList())) {
+      String title = null, partner_name = null, leverage_year = null, flagship = null, budget = null;
+
+      if (projectLeverage.getTitle() != null && !projectLeverage.getTitle().isEmpty()) {
+        title = projectLeverage.getTitle();
+      }
+
+      if (projectLeverage.getInstitution() != null && !projectLeverage.getInstitution().getComposedName().isEmpty()) {
+        partner_name = projectLeverage.getInstitution().getComposedName();
+      }
+
+      if (projectLeverage.getYear() != null) {
+        leverage_year = projectLeverage.getYear() + "";
+      }
+
+      if (projectLeverage.getCrpProgram() != null && !projectLeverage.getCrpProgram().getComposedName().isEmpty()) {
+        flagship = projectLeverage.getCrpProgram().getComposedName();
+      }
+
+      if (projectLeverage.getBudget() != null) {
+        budget = myFormatter.format(projectLeverage.getBudget());
+      }
+
+      model.addRow(new Object[] {projectLeverage.getId(), title, partner_name, leverage_year, flagship, budget});
+    }
+    return model;
   }
 
   private TypedTableModel getLocationsTableModel() {
@@ -2619,6 +2663,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       0);
 
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
+
+
     for (ProjectHighlight projectHighlight : project.getProjectHighligths().stream().filter(ph -> ph.isActive())
       .collect(Collectors.toList())) {
       String title = null, author = null, subject = null, publisher = null, highlights_types = "",
@@ -2718,6 +2764,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         } catch (IOException e) {
           System.out.println("Unable to retrieve Image!!!");
           e.printStackTrace();
+          image = "";
         }
       }
 
