@@ -328,6 +328,9 @@ public class DeliverableValidator extends BaseValidator {
           if (dissemination.getLimitedExclusivity() != null && dissemination.getLimitedExclusivity().booleanValue()) {
             hasOne = true;
           }
+          if (dissemination.getNotDisseminated() != null && dissemination.getNotDisseminated().booleanValue()) {
+            hasOne = true;
+          }
           if (dissemination.getRestrictedUseAgreement() != null
             && dissemination.getRestrictedUseAgreement().booleanValue()) {
             hasOne = true;
@@ -463,6 +466,10 @@ public class DeliverableValidator extends BaseValidator {
       }
 
       boolean indicators = false;
+
+      if (deliverable.getDeliverableType().getId() != 63 || deliverable.getDeliverableType().getId() != 79) {
+        indicators = true;
+      }
 
       if (metadata.getIsiPublication() != null) {
         if (metadata.getIsiPublication().booleanValue()) {

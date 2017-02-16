@@ -36,14 +36,19 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
   @Expose
   private Boolean limitedExclusivity;
 
+
   @Expose
   private Boolean restrictedUseAgreement;
+
 
   @Expose
   private Date restrictedAccessUntil;
 
   @Expose
   private Boolean effectiveDateRestriction;
+
+  @Expose
+  private Boolean notDisseminated;
 
   @Expose
   private Date restrictedEmbargoed;
@@ -87,7 +92,6 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
     this.disseminationChannelName = disseminationChannelName;
   }
 
-
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
@@ -114,10 +118,10 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
     return alreadyDisseminated;
   }
 
+
   public Deliverable getDeliverable() {
     return deliverable;
   }
-
 
   public String getDisseminationChannel() {
     return disseminationChannel;
@@ -127,10 +131,10 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
     return disseminationChannelName;
   }
 
+
   public String getDisseminationUrl() {
     return disseminationUrl;
   }
-
 
   public Boolean getEffectiveDateRestriction() {
     return effectiveDateRestriction;
@@ -145,7 +149,6 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
   public Boolean getIntellectualProperty() {
     return intellectualProperty;
   }
-
 
   public Boolean getIsOpenAccess() {
     return isOpenAccess;
@@ -180,6 +183,11 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
   }
 
 
+  public Boolean getNotDisseminated() {
+    return notDisseminated;
+  }
+
+
   public Date getRestrictedAccessUntil() {
     return restrictedAccessUntil;
   }
@@ -188,6 +196,7 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
   public Date getRestrictedEmbargoed() {
     return restrictedEmbargoed;
   }
+
 
   public Boolean getRestrictedUseAgreement() {
     return restrictedUseAgreement;
@@ -249,6 +258,10 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
 
   public void setLimitedExclusivity(Boolean limitedExclusivity) {
     this.limitedExclusivity = limitedExclusivity;
+  }
+
+  public void setNotDisseminated(Boolean notDisseminated) {
+    this.notDisseminated = notDisseminated;
   }
 
   public void setRestrictedAccessUntil(Date restrictedAccessUntil) {

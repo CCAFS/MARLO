@@ -630,7 +630,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       new String[] {"activity_id", "title", "description", "start_date", "end_date", "institution", "activity_leader",
         "status"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class},
+        String.class},
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
 

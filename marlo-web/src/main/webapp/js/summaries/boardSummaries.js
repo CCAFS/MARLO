@@ -5,8 +5,7 @@ var genderArray =
         "social differentiation", "social inclusion", "youth", "social class", "children", "child"
     ];
 var termsArray = [];
-var reportYear = $("#reportYear").find("option:selected").val();
-
+var reportYear = "2017";
 function init() {
   // addGenderTerms();
   addSelect2();
@@ -15,27 +14,6 @@ function init() {
 }
 
 function attachEvents() {
-  if(reportYear == "-1") {
-    if($("input[name='cycle']").val() == "Planning") {
-      reportYear = $(".planningYear").text();
-    } else {
-      reportYear = $(".reportingYear").text();
-    }
-  }
-
-  $("#reportYear").on("change", function() {
-    reportYear = $(this).find("option:selected").val();
-    if(reportYear == "-1") {
-      if($("input[name='cycle']").val() == "Planning") {
-        reportYear = $(".planningYear").text();
-      } else {
-        reportYear = $(".reportingYear").text();
-      }
-    }
-    if($(".summariesOptions").find(".selected").exists()) {
-      updateUrl($(".summariesOptions").find(".selected"));
-    }
-  });
 
   $("input[name='cycle']").on("change", function() {
     if($(this).val() == "Planning") {
@@ -311,15 +289,15 @@ function reportTypes($selected) {
       url =
           baseURL + "/projects/" + currentCrpSession + "/" + formOption + ".do" + "?cycle="
               + $("input[name='cycle']:checked").val() + "&keys=" + termsArray.join("~/");
-      if($($selected).find(".onlyYear").exists()) {
-        reportYear = $($selected).find(".onlyYear").val();
+
+      console.log(reportYear);
+
+      if($("input[name='cycle']:checked").val() == "Planning") {
+        reportYear = $(".planningYear").text();
       } else {
-        if($("input[name='cycle']:checked").val() == "Planning") {
-          reportYear = "2017";
-        } else {
-          reportYear = "2016";
-        }
+        reportYear = $(".reportingYear").text();
       }
+
       url += '&year=' + reportYear;
       var replace = url.replace(/ /g, "%20");
       setUrl(replace);
@@ -341,6 +319,7 @@ function reportTypes($selected) {
 function updateUrl(element) {
   var generateUrl = "";
   var formOption = "";
+  var $formOptions = $(element).find('input[name=formOptions]');
   var type = $(element).find(".fileTypes").text().split("-")[0];
 // Check type of file
   if($("#optionsPopUp").find(".pdfIcon").parent().hasClass("choose")) {
@@ -351,27 +330,26 @@ function updateUrl(element) {
     formOption = $(element).find(".excelType").text();
   } else {
     console.log("here3");
-    var $formOptions = $(element).find('input[name=formOptions]');
     formOption = $formOptions.val() || 0;
   }
+  // Check extra options
   var extraOptions = $('form [name!="formOptions"]').serialize() || 0;
+  console.log(formOption);
   if(formOption != 0) {
+    console.log("create url yes");
     generateUrl =
         baseURL + "/projects/" + currentCrpSession + "/" + formOption + ".do?" + "cycle="
             + $("input[name='cycle']:checked").val();
     if(extraOptions != 0) {
       generateUrl += '&' + extraOptions;
     }
-// console.log(reportYear);
-    if($(element).find(".onlyYear").exists()) {
-      reportYear = $(element).find(".onlyYear").val();
+    console.log(reportYear);
+    if($("input[name='cycle']:checked").val() == "Planning") {
+      reportYear = $(".planningYear").text();
     } else {
-      if($("input[name='cycle']:checked").val() == "Planning") {
-        reportYear = "2017";
-      } else {
-        reportYear = "2016";
-      }
+      reportYear = $(".reportingYear").text();
     }
+
 // console.log(reportYear);
     generateUrl += '&year=' + reportYear;
     setUrl(generateUrl, element);

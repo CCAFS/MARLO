@@ -35,6 +35,9 @@
         <property name="alreadyDisseminated" type="java.lang.Boolean">
             <column name="already_disseminated" />
         </property>
+        <property name="notDisseminated" type="java.lang.Boolean">
+            <column name="not_disseminated" />
+        </property>
         <property name="disseminationChannel" type="string">
             <column name="dissemination_channel" length="50" />
         </property>

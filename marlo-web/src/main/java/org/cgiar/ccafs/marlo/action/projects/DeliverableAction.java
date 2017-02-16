@@ -1176,7 +1176,7 @@ public class DeliverableAction extends BaseAction {
             deliverablePrew.getDeliverablePartnerships().stream()
               .filter(dp -> dp.isActive()
                 && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
-            .collect(Collectors.toList()).get(0);
+              .collect(Collectors.toList()).get(0);
         } catch (Exception e) {
           partnershipResponsible = null;
         }
@@ -1444,7 +1444,7 @@ public class DeliverableAction extends BaseAction {
           if (type != null) {
             switch (type) {
               case "intellectualProperty":
-
+                dissemination.setNotDisseminated(false);
                 dissemination.setIntellectualProperty(true);
                 dissemination.setLimitedExclusivity(false);
                 dissemination.setRestrictedUseAgreement(false);
@@ -1456,7 +1456,7 @@ public class DeliverableAction extends BaseAction {
 
                 break;
               case "limitedExclusivity":
-
+                dissemination.setNotDisseminated(false);
                 dissemination.setIntellectualProperty(false);
                 dissemination.setLimitedExclusivity(true);
                 dissemination.setRestrictedUseAgreement(false);
@@ -1467,7 +1467,7 @@ public class DeliverableAction extends BaseAction {
 
                 break;
               case "restrictedUseAgreement":
-
+                dissemination.setNotDisseminated(false);
                 dissemination.setIntellectualProperty(false);
                 dissemination.setLimitedExclusivity(false);
                 dissemination.setRestrictedUseAgreement(true);
@@ -1478,7 +1478,7 @@ public class DeliverableAction extends BaseAction {
 
                 break;
               case "effectiveDateRestriction":
-
+                dissemination.setNotDisseminated(false);
                 dissemination.setIntellectualProperty(false);
                 dissemination.setLimitedExclusivity(false);
                 dissemination.setRestrictedUseAgreement(false);
@@ -1488,14 +1488,28 @@ public class DeliverableAction extends BaseAction {
                 dissemination.setRestrictedEmbargoed(deliverable.getDissemination().getRestrictedEmbargoed());
 
                 break;
+              case "notDisseminated":
 
+                dissemination.setNotDisseminated(true);
+                dissemination.setIntellectualProperty(false);
+                dissemination.setLimitedExclusivity(false);
+                dissemination.setRestrictedUseAgreement(false);
+                dissemination.setEffectiveDateRestriction(false);
+
+                dissemination.setRestrictedAccessUntil(null);
+                dissemination.setRestrictedEmbargoed(null);
+
+                dissemination.setRestrictedAccessUntil(null);
+                dissemination.setRestrictedEmbargoed(null);
+
+                break;
               default:
                 break;
             }
           }
         } else {
 
-
+          dissemination.setNotDisseminated(false);
           dissemination.setIntellectualProperty(false);
           dissemination.setLimitedExclusivity(false);
           dissemination.setRestrictedUseAgreement(false);
@@ -1507,7 +1521,7 @@ public class DeliverableAction extends BaseAction {
       } else {
 
         dissemination.setIsOpenAccess(null);
-
+        dissemination.setNotDisseminated(false);
         dissemination.setIntellectualProperty(false);
         dissemination.setLimitedExclusivity(false);
         dissemination.setRestrictedUseAgreement(false);

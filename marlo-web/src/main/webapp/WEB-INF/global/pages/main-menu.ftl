@@ -8,7 +8,7 @@
   { 'slug': 'publications', 'name': 'menu.publications',      'namespace': '/publications',       'action': '${(crpSession)!}/publicationsList',    'visible': logged && reportingActive, 'active': action.canAcessPublications() , 'help': true },
   { 'slug': 'synthesis', 'name': 'menu.synthesis',      'namespace': '/synthesis',       'action': '${(crpSession)!}/crpIndicators',    'visible': logged && reportingActive, 'active': action.canAcessCrp(),
     'subItems' : [
-      { 'slug': 'crpIndicators', 'name': 'menu.synthesis.crpIndicators', 'namespace': '/synthesis',  'action': '${(crpSession)!}/crpIndicators',  'visible': logged, 'active': action.canAcessCrp() },
+      { 'slug': 'crpIndicators', 'name': 'menu.synthesis.crpIndicators', 'namespace': '/synthesis',  'action': '${(crpSession)!}/crpIndicators',  'visible': logged, 'active': action.canAcessCrp() && !config.production },
       [#-- PHASE 1 --]
       { 'slug': 'outcomeSynthesis', 'name': 'menu.synthesis.outcomeSynthesis', 'namespace': '/synthesis',  'action': '${(crpSession)!}/outcomeSynthesisPandR',  'visible': logged && phaseOne, 'active': action.canAcessSynthesisMog() },
       { 'slug': 'synthesisByMog', 'name': 'menu.synthesis.synthesisByMog', 'namespace': '/synthesis',  'action': '${(crpSession)!}/synthesisByMog',  'visible': logged && phaseOne, 'active': action.canAcessSynthesisMog() },

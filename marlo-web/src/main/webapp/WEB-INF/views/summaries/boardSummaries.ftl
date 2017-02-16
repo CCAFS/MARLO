@@ -30,18 +30,6 @@
     <div class="summariesContent borderBox col-md-12">
       <div class="loading" style="display:none"></div>
       <form action="">
-      <div class="headerBlock">
-        <div class="col-md-3" style="display:none;">
-        <label for="">Select a year</label>
-          <select name="" id="reportYear">
-            <option value="-1">Select an option...</option>
-          [#list years as year]
-            <option value="${(year)!}">${(year)!}</option>
-          [/#list]
-          </select>
-        </div>
-        <div class="clearfix"></div>
-      </div>
       
       <h4 class="col-md-12 selectReport-title">[@s.text name="summaries.board.selectReportType" /]</h4>
       <div class="summariesOptions col-md-12">
@@ -167,6 +155,7 @@
             <div class="extraOptions" style="display:none"> 
             <span class="hidden forPlanningCycle forCycle"></span>
             <span class="hidden forReportingCycle forCycle"></span>
+            <span class="hidden fileTypes excelType">leadProjectInstitutionsSummary</span>
             <div class="pull-right">
               <a style="display:none;" target="_blank" class="generateReport addButton pull-right" style="" href="#">[@s.text name="form.buttons.generate" /]</a>
             </div>
@@ -181,7 +170,8 @@
             <span class="description col-md-12">[@s.text name="summaries.board.report.partnersWorkingWithProjects.description" /]</span>
             <div class="extraOptions" style="display:none">
             <span class="hidden forPlanningCycle forCycle"></span>
-            <span class="hidden forReportingCycle forCycle"></span> 
+            <span class="hidden forReportingCycle forCycle"></span>
+            <span class="hidden fileTypes excelType">projectPartnersSummary</span> 
             <div class="pull-right">
               <a style="display:none;" target="_blank" class="generateReport addButton pull-right" style="" href="#">[@s.text name="form.buttons.generate" /]</a>
             </div>
@@ -201,6 +191,7 @@
             <span class="description col-md-12">[@s.text name="summaries.board.report.expectedDeliverables.description" /]</span>
             <div class="extraOptions" style="display:none">
             <span class="hidden forPlanningCycle forCycle"></span>
+            <span class="hidden fileTypes excelType">expectedDeliverablesSummary</span> 
             <div class="pull-right">
               <a style="display:none;" target="_blank" class="generateReport addButton pull-right" style="" href="#">[@s.text name="form.buttons.generate" /]</a>
             </div>
@@ -227,6 +218,7 @@
             <span class="description col-md-12">[@s.text name="summaries.board.report.powb.description" /]</span>
             <div class="extraOptions" style="display:none"> 
             <span class="hidden forPlanningCycle forCycle"></span>
+            <span class="hidden fileTypes excelType">budgetPerPartnersSummary</span> 
               <div class="pull-right">
                 <a style="display:none;" target="_blank" class="generateReport addButton pull-right" style="" href="#">[@s.text name="form.buttons.generate" /]</a>
               </div>
@@ -241,6 +233,7 @@
             <span class="description col-md-12">[@s.text name="This report summarizes the project budget that is allocated to each CoA by source of funding (e.g. W1/W2, W3 and Bilateral)." /]</span>
             <div class="extraOptions" style="display:none"> 
             <span class="hidden forPlanningCycle forCycle"></span>
+            <span class="hidden fileTypes excelType">budgetByCoAsSummary</span> 
               <div class="pull-right">
                 <a style="display:none;" target="_blank" class="generateReport addButton pull-right" style="" href="#">[@s.text name="form.buttons.generate" /]</a>
               </div>
@@ -256,6 +249,7 @@
             <span class="description col-md-12">[@s.text name="This report provides a summary of the funding sources. The first tab lists each funding source, lead partner(s), project(s) to which it contributes, its annual budget, and allows you to see how much of the funding source budget has been allocated to projects. The second tab provides funding source information by managing partner. So in cases when more than one managing partner leads a funding source, this tab will show you how the funding source budget is allocated to the different managing partners." /]</span>
             <div class="extraOptions" style="display:none">
             <span class="hidden forPlanningCycle forCycle"></span>
+            <span class="hidden fileTypes excelType">FundingSourcesSummary</span> 
               <div class="pull-right">
                 <a style="display:none;" target="_blank" class="generateReport addButton pull-right" style="" href="#">[@s.text name="form.buttons.generate" /]</a>
               </div>
