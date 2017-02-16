@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.action.synthesis;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpIndicatorReportManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpIndicatorTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
@@ -40,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -71,7 +73,8 @@ public class CrpIndicatorsAction extends BaseAction {
   private List<IpLiaisonInstitution> liaisonInstitutions;
 
   private List<CrpIndicatorReport> indicatorReports;
-
+  private String transaction;
+  private AuditLogManager auditLogManager;
 
   private List<CrpIndicatorType> indicatorsType;
 
@@ -91,12 +94,13 @@ public class CrpIndicatorsAction extends BaseAction {
   @Inject
   public CrpIndicatorsAction(APConfig config, CrpManager crpManager, CrpIndicatorReportManager indicatorsReportManager,
     IpLiaisonInstitutionManager liaisonInstitutionManager, CrpIndicatorTypeManager crpIndicatorTypeManager,
-    CrpIndicatorsValidator validator) {
+    CrpIndicatorsValidator validator, AuditLogManager auditLogManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.indicatorsReportManager = indicatorsReportManager;
     this.validator = validator;
+    this.auditLogManager = auditLogManager;
     this.crpIndicatorTypeManager = crpIndicatorTypeManager;
   }
 
@@ -135,7 +139,7 @@ public class CrpIndicatorsAction extends BaseAction {
 
   public List<CrpIndicatorReport> getCrpIndicatorsByType(long type) {
     List<CrpIndicatorReport> lst = new ArrayList<CrpIndicatorReport>();
-    for (CrpIndicatorReport indicatorReport : indicatorReports) {
+    for (CrpIndicatorReport indicatorReport : currentLiaisonInstitution.getIndicatorReports()) {
       long indType = indicatorReport.getCrpIndicator().getCrpIndicatorType().getId();
       if (indType == type) {
         lst.add(indicatorReport);
@@ -185,6 +189,10 @@ public class CrpIndicatorsAction extends BaseAction {
     return loggedCrp;
   }
 
+  public String getTransaction() {
+    return transaction;
+  }
+
   @Override
   public String next() {
     String result = this.save();
@@ -194,6 +202,7 @@ public class CrpIndicatorsAction extends BaseAction {
       return result;
     }
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -226,8 +235,30 @@ public class CrpIndicatorsAction extends BaseAction {
       }
     }
 
-    currentLiaisonInstitution = liaisonInstitutionManager.getIpLiaisonInstitutionById(liaisonInstitutionID);
 
+    if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
+
+      transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
+      IpLiaisonInstitution history = (IpLiaisonInstitution) auditLogManager.getHistory(transaction);
+
+      if (history != null) {
+        currentLiaisonInstitution = history;
+        liaisonInstitutionID = currentLiaisonInstitution.getId();
+
+        currentLiaisonInstitution.setIndicatorReports((currentLiaisonInstitution.getCrpIndicatorReportses().stream()
+          .filter(c -> c.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList())));
+
+
+      } else {
+        this.transaction = null;
+
+        this.setTransaction("-1");
+      }
+
+    } else {
+
+      currentLiaisonInstitution = liaisonInstitutionManager.getIpLiaisonInstitutionById(liaisonInstitutionID);
+    }
     try {
       indicatorTypeID =
         Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.INDICATOR_TYPE_REQUEST_ID)));
@@ -259,10 +290,14 @@ public class CrpIndicatorsAction extends BaseAction {
         this.setDraft(true);
         reader.close();
       } else {
-        indicatorReports =
-          indicatorsReportManager.getIndicatorReportsList(liaisonInstitutionID, this.getCurrentCycleYear());
 
-        currentLiaisonInstitution.setIndicatorReports(indicatorReports);
+        if (transaction == null) {
+          indicatorReports =
+            indicatorsReportManager.getIndicatorReportsList(liaisonInstitutionID, this.getCurrentCycleYear());
+
+          currentLiaisonInstitution.setIndicatorReports(indicatorReports);
+        }
+
         this.setDraft(false);
       }
     }
@@ -344,6 +379,10 @@ public class CrpIndicatorsAction extends BaseAction {
 
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
+  }
+
+  public void setTransaction(String transaction) {
+    this.transaction = transaction;
   }
 
   @Override
