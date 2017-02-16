@@ -78,24 +78,26 @@ public class CrpIndicatorsValidator extends BaseValidator {
       .filter(c -> c.getYear() == action.getCurrentCycleYear()).collect(Collectors.toList())) {
       try {
         if (crpIndicatorReport.getActual() == null || Double.parseDouble(crpIndicatorReport.getActual()) < 0) {
-          this.addMessage(action.getText("crpIndicatorReport.validator.target",
-            crpIndicatorReport.getCrpIndicator().getId().toString()));
+
+          this.addMessage("crpIndicatorReport.validator.target");
           action.getInvalidFields().put("input-currentLiaisonInstitution.indicatorReports[" + index + "].actual",
             InvalidFieldsMessages.EMPTYFIELD);
         }
       } catch (Exception e) {
+        this.addMessage("crpIndicatorReport.validator.target");
+
         action.getInvalidFields().put("input-currentLiaisonInstitution.indicatorReports[" + index + "].actual",
           InvalidFieldsMessages.EMPTYFIELD);
       }
 
       try {
         if (crpIndicatorReport.getNextTarget() == null || Double.parseDouble(crpIndicatorReport.getNextTarget()) < 0) {
-          this.addMessage(action.getText("crpIndicatorReport.validator.nextTarget",
-            crpIndicatorReport.getCrpIndicator().getId().toString()));
+          this.addMessage("crpIndicatorReport.validator.nextTarget");
           action.getInvalidFields().put("input-currentLiaisonInstitution.indicatorReports[" + index + "].nextTarget",
             InvalidFieldsMessages.EMPTYFIELD);
         }
       } catch (Exception e) {
+        this.addMessage("crpIndicatorReport.validator.nextTarget");
         action.getInvalidFields().put("input-currentLiaisonInstitution.indicatorReports[" + index + "].nextTarget",
           InvalidFieldsMessages.EMPTYFIELD);
       }
