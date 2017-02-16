@@ -29,6 +29,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 
@@ -73,7 +74,8 @@ public class CrpIndicatorsValidator extends BaseValidator {
 
 
     int index = 0;
-    for (CrpIndicatorReport crpIndicatorReport : indicatorReports) {
+    for (CrpIndicatorReport crpIndicatorReport : indicatorReports.stream()
+      .filter(c -> c.getYear() == action.getCurrentCycleYear()).collect(Collectors.toList())) {
       try {
         if (crpIndicatorReport.getActual() == null || Double.parseDouble(crpIndicatorReport.getActual()) < 0) {
           this.addMessage(action.getText("crpIndicatorReport.validator.target",
