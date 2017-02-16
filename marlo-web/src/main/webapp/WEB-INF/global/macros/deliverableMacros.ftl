@@ -120,6 +120,7 @@
     [#if deliverable.dissemination.limitedExclusivity?? && deliverable.dissemination.limitedExclusivity]<p class="checked">Limited Exclusivity Agreements </p>[/#if]
     [#if deliverable.dissemination.restrictedUseAgreement?? && deliverable.dissemination.restrictedUseAgreement]<p class="checked">Restricted Use Agreement - Restricted access (if so, what are these periods?) </p>[/#if]
     [#if deliverable.dissemination.effectiveDateRestriction?? && deliverable.dissemination.effectiveDateRestriction]<p class="checked">Effective Date Restriction - embargoed periods (if so, what are these periods?) </p>[/#if]
+    [#if deliverable.dissemination.notDisseminated?? && deliverable.dissemination.notDisseminated]<p class="checked">Not Disseminated </p>[/#if]
     [/#if]
     <div class="row restrictionDate-block" style="display:[#if (deliverable.dissemination.restrictedUseAgreement)?? && (deliverable.dissemination.restrictedUseAgreement)||(deliverable.dissemination.effectiveDateRestriction)?? && (deliverable.dissemination.effectiveDateRestriction) ]block[#else]none [/#if];">
       <div class="col-md-5">
@@ -272,7 +273,7 @@
     [@customForm.input name="deliverable.publication.journal" i18nkey="project.deliverable.dissemination.journalName" className="" type="text" disabled=!editable  required=true editable=editable /]
   </div>
   <div class="form-group">
-    <label for="">[@s.text name="project.deliverable.dissemination.indicatorsJournal" /]:<span class="red">*</span></label>
+    <label for="">[@s.text name="project.deliverable.dissemination.indicatorsJournal" /]:[@customForm.req required=isJournalArticle /]
     <div class="checkbox">
       [#if editable]
         <label for="isiPublication"><input type="checkbox" id="isiPublication"  name="deliverable.publication.isiPublication" value="true" [#if deliverable.publication?? && deliverable.publication.isiPublication?? && deliverable.publication.isiPublication]checked[/#if]/>Tick this box if this journal article is an ISI publication <small>(check at http://ip-science.thomsonreuters.com/mjl/ for the list)</small></label>  
@@ -590,4 +591,13 @@
     [#return "none"]
   [/#if]
   [#return "none"]
+[/#function]
+
+[#function isJournalArticle]
+  [#if (deliverable.deliverableType.id==63 || deliverable.deliverableType.id==79)!false]
+    [#return true]
+  [#else]
+    [#return false]
+  [/#if]
+  [#return false]
 [/#function]
