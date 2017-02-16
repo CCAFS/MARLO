@@ -1,6 +1,4 @@
 [#ftl]
-[#assign canEdit = true /]
-[#assign editable = true /]
 
 [#assign title = "CRP Indicators" /]
 [#assign currentSectionString = "synthesis-${actionName?replace('/','-')}-${liaisonInstitutionID}" /]

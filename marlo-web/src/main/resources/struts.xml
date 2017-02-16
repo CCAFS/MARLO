@@ -83,6 +83,9 @@
 
 			<interceptor name="canEditSynthesis"
 				class="org.cgiar.ccafs.marlo.interceptor.synthesis.CanEditSynthesisInterceptor" />
+				
+				  <interceptor name="canEditCrp"
+        class="org.cgiar.ccafs.marlo.interceptor.synthesis.CanEditCrpIndicatorsInterceptor" />
 
 			<!-- SuperAdmin interceptors -->
 			<interceptor name="superAdminValidation"
@@ -172,6 +175,17 @@
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
 
+      <interceptor-stack name="editCrpIndicatorsStack">
+        <interceptor-ref name="i18nFile" />
+        <interceptor-ref name="validCrp" />
+        <interceptor-ref name="requireUser" />
+        <interceptor-ref name="validSessionCrp" />
+        <interceptor-ref name="canEditCrp" />
+        <interceptor-ref name="keepRedirectMessages" />
+        <interceptor-ref name="accessibleStage" />
+        <interceptor-ref name="trimInputs" />
+        <interceptor-ref name="defaultStack" />
+      </interceptor-stack>
 			<interceptor-stack name="editPublicationStack">
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />

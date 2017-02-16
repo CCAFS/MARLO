@@ -75,14 +75,14 @@ public class CrpIndicatorsValidator extends BaseValidator {
     int index = 0;
     for (CrpIndicatorReport crpIndicatorReport : indicatorReports) {
       try {
-        if (crpIndicatorReport.getTarget() == null || Double.parseDouble(crpIndicatorReport.getTarget()) < 0) {
+        if (crpIndicatorReport.getActual() == null || Double.parseDouble(crpIndicatorReport.getActual()) < 0) {
           this.addMessage(action.getText("crpIndicatorReport.validator.target",
             crpIndicatorReport.getCrpIndicator().getId().toString()));
-          action.getInvalidFields().put("input-currentLiaisonInstitution.indicatorReports[" + index + "].target",
+          action.getInvalidFields().put("input-currentLiaisonInstitution.indicatorReports[" + index + "].actual",
             InvalidFieldsMessages.EMPTYFIELD);
         }
       } catch (Exception e) {
-        action.getInvalidFields().put("input-currentLiaisonInstitution.indicatorReports[" + index + "].target",
+        action.getInvalidFields().put("input-currentLiaisonInstitution.indicatorReports[" + index + "].actual",
           InvalidFieldsMessages.EMPTYFIELD);
       }
 

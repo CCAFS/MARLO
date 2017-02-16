@@ -259,6 +259,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.securityContext.hasAllPermissions(Permission.FULL_PRIVILEGES);
   }
 
+  public boolean canAcessCrp() {
+    return this.canAcessPublications() || this.canAcessSynthesisMog();
+  }
+
   public boolean canAcessCrpAdmin() {
     String permission = this.generatePermission(Permission.CRP_ADMIN_VISIBLE_PRIVILEGES, this.getCrpSession());
     return securityContext.hasPermission(permission);
@@ -282,7 +286,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     String params[] = {this.getCrpSession()};
     return (this.hasPermission(this.generatePermission(Permission.PUBLICATION_ADD, params)));
   }
-
 
   public boolean canAcessSynthesisMog() {
     String permission = this.generatePermission(Permission.SYNTHESIS_BY_MOG_PERMISSION, this.getCrpSession());

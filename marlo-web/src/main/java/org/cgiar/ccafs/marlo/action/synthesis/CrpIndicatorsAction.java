@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpIndicatorType;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
+import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.validation.sythesis.CrpIndicatorsValidator;
@@ -269,6 +270,9 @@ public class CrpIndicatorsAction extends BaseAction {
     // Get the list of liaison institutions.
     liaisonInstitutions = liaisonInstitutionManager.getLiaisonInstitutionsCrpsIndicator();
     indicatorsType = new ArrayList<>(crpIndicatorTypeManager.findAll());
+    String params[] = {loggedCrp.getAcronym(), currentLiaisonInstitution.getId() + ""};
+    this.setBasePermission(this.getText(Permission.CRP_INDICATORS_BASE_PERMISSION, params));
+
 
   }
 

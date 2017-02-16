@@ -6,9 +6,9 @@
   { 'slug': 'projects',       'name': 'menu.projects',      'namespace': '/projects',       'action': '${(crpSession)!}/projectsList',                      'visible': logged, 'active': true },
   { 'slug': 'fundingSources', 'name': 'menu.fundingSources',      'namespace': '/fundingSources',       'action': '${(crpSession)!}/fundingSourcesList',    'visible': logged, 'active': true },
   { 'slug': 'publications', 'name': 'menu.publications',      'namespace': '/publications',       'action': '${(crpSession)!}/publicationsList',    'visible': logged && reportingActive, 'active': action.canAcessPublications() , 'help': true },
-  { 'slug': 'synthesis', 'name': 'menu.synthesis',      'namespace': '/synthesis',       'action': '${(crpSession)!}/crpIndicators',    'visible': logged && reportingActive, 'active': action.canAcessSynthesisMog(),
+  { 'slug': 'synthesis', 'name': 'menu.synthesis',      'namespace': '/synthesis',       'action': '${(crpSession)!}/crpIndicators',    'visible': logged && reportingActive, 'active': action.canAcessCrp(),
     'subItems' : [
-      { 'slug': 'crpIndicators', 'name': 'menu.synthesis.crpIndicators', 'namespace': '/synthesis',  'action': '${(crpSession)!}/crpIndicators',  'visible': logged, 'active': action.canAcessSynthesisMog() },
+      { 'slug': 'crpIndicators', 'name': 'menu.synthesis.crpIndicators', 'namespace': '/synthesis',  'action': '${(crpSession)!}/crpIndicators',  'visible': logged, 'active': action.canAcessCrp() },
       [#-- PHASE 1 --]
       { 'slug': 'outcomeSynthesis', 'name': 'menu.synthesis.outcomeSynthesis', 'namespace': '/synthesis',  'action': '${(crpSession)!}/outcomeSynthesisPandR',  'visible': logged && phaseOne, 'active': action.canAcessSynthesisMog() },
       { 'slug': 'synthesisByMog', 'name': 'menu.synthesis.synthesisByMog', 'namespace': '/synthesis',  'action': '${(crpSession)!}/synthesisByMog',  'visible': logged && phaseOne, 'active': action.canAcessSynthesisMog() },
