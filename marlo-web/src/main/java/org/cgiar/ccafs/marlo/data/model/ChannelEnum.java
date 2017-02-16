@@ -22,9 +22,26 @@ public enum ChannelEnum {
   // IFPRI("ifpri", "IFPRI E-BRARY")
   CGSPACE("cgspace", "CGSpace"), OTHER("other", "Other"), DATAVERSE("dataverse", "Dataverse (Harvard)");
 
+  /**
+   * Get ChannelEnum value from the id parameter
+   * 
+   * @param id
+   * @return ChannelEnum
+   */
+  public static ChannelEnum getValue(String id) {
+    ChannelEnum[] lst = ChannelEnum.values();
+    for (ChannelEnum channelEnum : lst) {
+      if (channelEnum.getId().equals(id)) {
+        return channelEnum;
+      }
+    }
+    return null;
+  }
 
   private String id;
+
   private String desc;
+
 
   private ChannelEnum(String id, String desc) {
     this.desc = desc;
@@ -46,9 +63,7 @@ public enum ChannelEnum {
     this.desc = desc;
   }
 
-
   public void setId(String id) {
     this.id = id;
   }
-
 }
