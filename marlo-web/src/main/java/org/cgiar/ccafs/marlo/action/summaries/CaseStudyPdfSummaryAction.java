@@ -256,7 +256,8 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
           explainIndicatorRelation =
             caseStudy.getExplainIndicatorRelation().trim().isEmpty() ? null : caseStudy.getExplainIndicatorRelation();
 
-          List<CaseStudyProject> studyProjects = new ArrayList<>(caseStudy.getCaseStudyProjects());
+          List<CaseStudyProject> studyProjects = new ArrayList<>(
+            caseStudy.getCaseStudyProjects().stream().filter(csp -> csp.isActive()).collect(Collectors.toList()));
 
           for (CaseStudyProject caseStudyProject : studyProjects) {
             if (caseStudyProject.isCreated()) {

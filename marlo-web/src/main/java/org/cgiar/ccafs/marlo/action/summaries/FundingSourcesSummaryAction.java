@@ -378,7 +378,8 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
       }
 
 
-      for (FundingSourceInstitution fs_ins : fundingSource.getFundingSourceInstitutions()) {
+      for (FundingSourceInstitution fs_ins : fundingSource.getFundingSourceInstitutions().stream()
+        .filter(fsi -> fsi.isActive()).collect(Collectors.toList())) {
         if (lead_partner.isEmpty()) {
           lead_partner = fs_ins.getInstitution().getComposedName();
         } else {
