@@ -49,6 +49,7 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
+ * @author Christian Garcia - CIAT/CCAFS
  */
 public class CrpIndicatorsAction extends BaseAction {
 
@@ -293,7 +294,7 @@ public class CrpIndicatorsAction extends BaseAction {
 
     List<String> relationsName = new ArrayList<>();
     relationsName.add(APConstants.IPLIAISON_INDICATORS_REPORT);
-    liaisonInstitutionManager.save(ipLiaisonInstitution, this.getActionName(), relationsName);
+    liaisonInstitutionManager.save(currentLiaisonInstitution, this.getActionName(), relationsName);
 
     Path path = this.getAutoSaveFilePath();
 
