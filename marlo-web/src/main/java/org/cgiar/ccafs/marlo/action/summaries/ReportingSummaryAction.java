@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.CaseStudy;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyIndicator;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
+import org.cgiar.ccafs.marlo.data.model.ChannelEnum;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpParameter;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
@@ -1064,29 +1065,29 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           .collect(Collectors.toList())) {
           ultimoProjectIndicatorCount++;
 
-          String program_outcome = "", program_outcome_description = "", indicator = "", indicator_description = "",
-            target_value = "", target_cumulative = "", target_narrative = "", target_achieved_narrative = "",
-            achieved_annual_gender = "", annual_gender = "", outputs = "";
-          int ipProjectIndicatoryear = 0;
+          String program_outcome = null, program_outcome_description = null, indicator = null,
+            indicator_description = null, target_value = null, target_cumulative = null, target_narrative = null,
+            target_achieved_narrative = null, achieved_annual_gender = null, annual_gender = null, outputs = "";
+          Integer ipProjectIndicatoryear = null;
           Double target_achieved = 0.0;
           Boolean is_current = false;
 
-          if (outcome.getIpProgram() != null) {
+          if (outcome.getIpProgram() != null && !outcome.getIpProgram().getAcronym().isEmpty()) {
             program_outcome = outcome.getIpProgram().getAcronym() + " Outcome " + APConstants.MID_OUTCOME_YEAR;
           }
 
-          if (outcome.getDescription() != null) {
+          if (outcome.getDescription() != null && !outcome.getDescription().isEmpty()) {
             program_outcome_description = outcome.getDescription();
           }
+
           if (ipProjectIndicator.getIpIndicator() != null) {
             indicator_description = this.getFinalIndicator(ipProjectIndicator.getIpIndicator()).getDescription();
             indicator = "Indicator #" + indicator_number;
           }
 
-
           ipProjectIndicatoryear = ipProjectIndicator.getYear();
 
-          if (ipProjectIndicator.getTarget() != null) {
+          if (ipProjectIndicator.getTarget() != null && !ipProjectIndicator.getTarget().isEmpty()) {
             target_value = ipProjectIndicator.getTarget();
           }
 
@@ -1094,12 +1095,18 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           if (ipProjectIndicator.getArchived() != null) {
             target_achieved = ipProjectIndicator.getArchived();
           }
-
-          target_narrative = ipProjectIndicator.getDescription();
-          target_achieved_narrative = ipProjectIndicator.getNarrativeTargets();
-          achieved_annual_gender = ipProjectIndicator.getNarrativeGender();
-          annual_gender = ipProjectIndicator.getGender();
-
+          if (ipProjectIndicator.getDescription() != null && !ipProjectIndicator.getDescription().isEmpty()) {
+            target_narrative = ipProjectIndicator.getDescription();
+          }
+          if (ipProjectIndicator.getNarrativeTargets() != null && !ipProjectIndicator.getNarrativeTargets().isEmpty()) {
+            target_achieved_narrative = ipProjectIndicator.getNarrativeTargets();
+          }
+          if (ipProjectIndicator.getNarrativeGender() != null && !ipProjectIndicator.getNarrativeGender().isEmpty()) {
+            achieved_annual_gender = ipProjectIndicator.getNarrativeGender();
+          }
+          if (ipProjectIndicator.getGender() != null && !ipProjectIndicator.getGender().isEmpty()) {
+            annual_gender = ipProjectIndicator.getGender();
+          }
           if (ipProjectIndicator.getYear() == year) {
             is_current = true;
           }
@@ -1112,6 +1119,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
               outputs += ipElement.getIpProgram().getAcronym() + ": " + ipElement.getDescription() + "<br><br>";
             }
 
+          }
+          if (outputs.isEmpty()) {
+            outputs = null;
           }
 
           model.addRow(new Object[] {program_outcome, program_outcome_description, indicator, indicator_description,
@@ -1375,7 +1385,12 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
           if (deliverableDissemination.getDisseminationChannel() != null
             && !deliverableDissemination.getDisseminationChannel().isEmpty()) {
-            deliv_dissemination_channel = deliverableDissemination.getDisseminationChannel();
+            if (ChannelEnum.getValue(deliverableDissemination.getDisseminationChannel()) != null) {
+              deliv_dissemination_channel =
+                ChannelEnum.getValue(deliverableDissemination.getDisseminationChannel()).getDesc();
+            }
+
+            // deliv_dissemination_channel = deliverableDissemination.getDisseminationChannel();
           }
 
           if (deliverableDissemination.getDisseminationUrl() != null
@@ -1398,6 +1413,11 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
               if (deliverableDissemination.getLimitedExclusivity() != null
                 && deliverableDissemination.getLimitedExclusivity() == true) {
                 restricted_access = "Limited Exclusivity Agreements";
+              }
+
+              if (deliverableDissemination.getNotDisseminated() != null
+                && deliverableDissemination.getNotDisseminated() == true) {
+                restricted_access = "Not Disseminated";
               }
 
               if (deliverableDissemination.getRestrictedUseAgreement() != null
@@ -2338,7 +2358,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       .filter(pcc -> pcc.isActive()).collect(Collectors.toList())) {
       String crp_name = null, collaboration_description = null;
 
-      if (projectCrpContribution.getCrp() != null) {
+      if (projectCrpContribution.getCrp() != null && !projectCrpContribution.getCrp().getName().isEmpty()) {
         crp_name = projectCrpContribution.getCrp().getName();
       }
       if (projectCrpContribution.getCollaborationNature() != null) {
@@ -2362,7 +2382,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     for (OtherContribution otherContribution : project.getOtherContributions().stream().filter(oc -> oc.isActive())
       .collect(Collectors.toList())) {
       String region = null, indicator = null, contribution_description = null;
-      int target_contribution = 0;
+      Integer target_contribution = null;
       int otherContributionyear = 0;
       if (otherContribution.getIpProgram() != null) {
         if (otherContribution.getIpProgram().getAcronym() != null) {
@@ -2371,7 +2391,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           }
         }
       }
-      if (otherContribution.getIpIndicator() != null) {
+      if (otherContribution.getIpIndicator() != null
+        && !otherContribution.getIpIndicator().getComposedName().isEmpty()) {
         indicator = otherContribution.getIpIndicator().getComposedName();
       }
 
@@ -2402,11 +2423,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
     for (ProjectOtherContribution projectOtherContribution : project.getProjectOtherContributions().stream()
       .filter(poc -> poc.isActive()).collect(Collectors.toList())) {
-      if (projectOtherContribution.getContribution() != null) {
-        if (!projectOtherContribution.getContribution().isEmpty()) {
-          contribution = projectOtherContribution.getContribution();
 
-        }
+      if (projectOtherContribution.getContribution() != null && !projectOtherContribution.getContribution().isEmpty()) {
+        contribution = projectOtherContribution.getContribution();
+
       }
     }
     model.addRow(new Object[] {contribution});
@@ -2585,7 +2605,11 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         .sorted((p1, p2) -> p1.getYear() - p2.getYear()).filter(c -> c.isActive()
           && c.getComponentName().equals("partners") && c.getCycle().equals(cycle) && c.getYear() == this.getYear())
         .collect(Collectors.toList())) {
-        model.addRow(new Object[] {pcl.getYear(), pcl.getLessons()});
+        String lessons = null;
+        if (pcl.getLessons() != null && !pcl.getLessons().isEmpty()) {
+          lessons = pcl.getLessons();
+        }
+        model.addRow(new Object[] {pcl.getYear(), lessons});
       }
     }
     return model;
