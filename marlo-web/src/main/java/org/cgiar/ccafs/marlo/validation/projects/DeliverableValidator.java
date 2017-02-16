@@ -467,7 +467,7 @@ public class DeliverableValidator extends BaseValidator {
 
       boolean indicators = false;
 
-      if (deliverable.getDeliverableType().getId() == 63 || deliverable.getDeliverableType().getId() == 79) {
+      if (deliverable.getDeliverableType().getId() != 63 || deliverable.getDeliverableType().getId() != 79) {
         indicators = true;
       }
 
