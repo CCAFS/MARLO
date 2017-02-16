@@ -112,6 +112,9 @@
     <div class="radio">
       <label><input type="radio" name="deliverable.dissemination.type" value="effectiveDateRestriction"[#if deliverable.dissemination.effectiveDateRestriction?? && (deliverable.dissemination.effectiveDateRestriction)]checked="checked"[/#if] >Effective Date Restriction - embargoed periods (if so, what are these periods?)</label>
     </div>
+    <div class="radio">
+      <label><input type="radio" name="deliverable.dissemination.type" value="notDisseminated" [#if (deliverable.dissemination.notDisseminated?? && (deliverable.dissemination.notDisseminated))]checked="checked"[/#if]>Not Disseminated</label>
+    </div>
     [#else]
     [#if deliverable.dissemination.intellectualProperty?? && deliverable.dissemination.intellectualProperty]<p class="checked">Intellectual Property Rights (confidential information) </p>[/#if]
     [#if deliverable.dissemination.limitedExclusivity?? && deliverable.dissemination.limitedExclusivity]<p class="checked">Limited Exclusivity Agreements </p>[/#if]

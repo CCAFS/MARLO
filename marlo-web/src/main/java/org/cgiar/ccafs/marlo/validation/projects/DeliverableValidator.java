@@ -328,6 +328,9 @@ public class DeliverableValidator extends BaseValidator {
           if (dissemination.getLimitedExclusivity() != null && dissemination.getLimitedExclusivity().booleanValue()) {
             hasOne = true;
           }
+          if (dissemination.getNotDisseminated() != null && dissemination.getNotDisseminated().booleanValue()) {
+            hasOne = true;
+          }
           if (dissemination.getRestrictedUseAgreement() != null
             && dissemination.getRestrictedUseAgreement().booleanValue()) {
             hasOne = true;
