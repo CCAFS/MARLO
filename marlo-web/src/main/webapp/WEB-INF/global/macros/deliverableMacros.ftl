@@ -273,7 +273,7 @@
     [@customForm.input name="deliverable.publication.journal" i18nkey="project.deliverable.dissemination.journalName" className="" type="text" disabled=!editable  required=true editable=editable /]
   </div>
   <div class="form-group">
-    <label for="">[@s.text name="project.deliverable.dissemination.indicatorsJournal" /]:[@customForm.req required=isJournalArticle /]
+    <label for="">[@s.text name="project.deliverable.dissemination.indicatorsJournal" /]:[@customForm.req required=isJournalArticle() /]
     <div class="checkbox">
       [#if editable]
         <label for="isiPublication"><input type="checkbox" id="isiPublication"  name="deliverable.publication.isiPublication" value="true" [#if deliverable.publication?? && deliverable.publication.isiPublication?? && deliverable.publication.isiPublication]checked[/#if]/>Tick this box if this journal article is an ISI publication <small>(check at http://ip-science.thomsonreuters.com/mjl/ for the list)</small></label>  
