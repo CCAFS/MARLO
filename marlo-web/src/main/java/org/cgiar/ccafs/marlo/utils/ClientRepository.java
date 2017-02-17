@@ -143,7 +143,7 @@ public class ClientRepository {
     String urlIFPRI = "https://server15738.contentdm.oclc.org/dmwebservices/index.php";
 
     try {
-      return readUrl(urlIFPRI + "?" + id);
+      return readUrl(urlIFPRI + "?q=" + id);
     } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();

@@ -104,7 +104,12 @@ public class MetadataByLink extends BaseAction {
   public void prepare() throws Exception {
     Map<String, Object> parameters = this.getParameters();
     // If there is a parameter take its values
-    id = StringUtils.trim(((String[]) parameters.get(APConstants.METADATA_REQUEST_ID))[0]);
+    try {
+      id = StringUtils.trim(((String[]) parameters.get(APConstants.METADATA_REQUEST_ID))[0]);
+    } catch (Exception e) {
+      id = StringUtils.trim(((String[]) parameters.get("q"))[0]);
+    }
+
     page = StringUtils.trim(((String[]) parameters.get(APConstants.PAGE_ID))[0]);
 
   }
