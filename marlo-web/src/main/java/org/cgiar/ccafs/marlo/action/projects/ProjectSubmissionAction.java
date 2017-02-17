@@ -272,25 +272,23 @@ public class ProjectSubmissionAction extends BaseAction {
     ByteBuffer buffer = null;
     String fileName = null;
     String contentType = null;
-    if (this.isPlanningActive()) {
-      try {
+    try {
 
-        reportingSummaryAction.setSession(this.getSession());
-        reportingSummaryAction.setYear(this.getCurrentCycleYear());
-        //
-        reportingSummaryAction.setCycle(this.getCurrentCycle());
-        reportingSummaryAction.setProjectID(projectID);
-        reportingSummaryAction.execute();
-        // Getting the file data.
-        //
-        buffer = ByteBuffer.wrap(reportingSummaryAction.getBytesPDF());
-        fileName = this.getFileName();
-        contentType = "application/pdf";
-        //
-      } catch (Exception e) {
-        // // Do nothing.
-        LOG.error("There was an error trying to get the URL to download the PDF file: " + e.getMessage());
-      }
+      reportingSummaryAction.setSession(this.getSession());
+      reportingSummaryAction.setYear(this.getCurrentCycleYear());
+      //
+      reportingSummaryAction.setCycle(this.getCurrentCycle());
+      reportingSummaryAction.setProjectID(projectID);
+      reportingSummaryAction.execute();
+      // Getting the file data.
+      //
+      buffer = ByteBuffer.wrap(reportingSummaryAction.getBytesPDF());
+      fileName = this.getFileName();
+      contentType = "application/pdf";
+      //
+    } catch (Exception e) {
+      // // Do nothing.
+      LOG.error("There was an error trying to get the URL to download the PDF file: " + e.getMessage());
     }
 
 
