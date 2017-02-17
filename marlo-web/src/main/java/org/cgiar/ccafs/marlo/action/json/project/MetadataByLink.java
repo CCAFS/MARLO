@@ -81,16 +81,17 @@ public class MetadataByLink extends BaseAction {
     switch (page) {
       case "cgspace":
         linkRequest = CGSPACE;
+        JSONObject metadataObject = clientRepository.getMetadata(linkRequest, id);
+        metadata = metadataObject.toString();
         break;
       case "ifpri":
         linkRequest = IFPRI;
+        metadata = clientRepository.getMetadataIFPRI(linkRequest, id);
         break;
       default:
         break;
     }
-    JSONObject metadataObject = clientRepository.getMetadata(linkRequest, id);
 
-    metadata = metadataObject.toString();
     return SUCCESS;
   }
 
