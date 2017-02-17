@@ -52,7 +52,7 @@ import org.pentaho.reporting.engine.classic.core.MasterReport;
 import org.pentaho.reporting.engine.classic.core.ReportFooter;
 import org.pentaho.reporting.engine.classic.core.SubReport;
 import org.pentaho.reporting.engine.classic.core.TableDataFactory;
-import org.pentaho.reporting.engine.classic.core.modules.output.pageable.pdf.PdfReportUtil;
+import org.pentaho.reporting.engine.classic.core.modules.output.table.xls.ExcelReportUtil;
 import org.pentaho.reporting.engine.classic.core.util.TypedTableModel;
 import org.pentaho.reporting.libraries.resourceloader.Resource;
 import org.pentaho.reporting.libraries.resourceloader.ResourceManager;
@@ -60,7 +60,7 @@ import org.pentaho.reporting.libraries.resourceloader.ResourceManager;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Summary {
+public class ProjectHighlightsExcelSummaryAction extends BaseAction implements Summary {
 
 
   private static final long serialVersionUID = 1L;
@@ -70,14 +70,14 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
 
   private Crp loggedCrp;
   // XLSX bytes
-  private byte[] bytesPDF;
+  private byte[] bytesXLSX;
   // Streams
   InputStream inputStream;
 
   private int year;
 
   @Inject
-  public ProjectHighlightsPDFSummaryAction(APConfig config, CrpManager crpManager,
+  public ProjectHighlightsExcelSummaryAction(APConfig config, CrpManager crpManager,
     ProjectHighligthManager projectHighLightManager) {
     super(config);
     this.crpManager = crpManager;
@@ -94,7 +94,7 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
     manager.registerDefaults();
 
     Resource reportResource =
-      manager.createDirectly(this.getClass().getResource("/pentaho/projectHighlightsPDF.prpt"), MasterReport.class);
+      manager.createDirectly(this.getClass().getResource("/pentaho/projectHighlightsExcel.prpt"), MasterReport.class);
 
     MasterReport masterReport = (MasterReport) reportResource.getResource();
     String center = loggedCrp.getName();
@@ -131,9 +131,8 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
     // System.out.println("Pentaho SubReports: " + hm);
 
     this.fillSubreport((SubReport) hm.get("project_highlight"), "project_highlight");
-
-    PdfReportUtil.createPDF(masterReport, os);
-    bytesPDF = os.toByteArray();
+    ExcelReportUtil.createXLSX(masterReport, os);
+    bytesXLSX = os.toByteArray();
     os.close();
 
     return SUCCESS;
@@ -205,21 +204,21 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
     }
   }
 
-  public byte[] getBytesPDF() {
-    return bytesPDF;
+
+  public byte[] getBytesXLSX() {
+    return bytesXLSX;
   }
 
   @Override
   public int getContentLength() {
-    return bytesPDF.length;
+    return bytesXLSX.length;
   }
 
 
   @Override
   public String getContentType() {
-    return "application/pdf";
+    return "application/xlsx";
   }
-
 
   private File getFile(String fileName) {
     // Get file from resources folder
@@ -232,9 +231,9 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("projectHighlightsSummaryPDF_");
+    fileName.append("projectHighlightsSummaryExcel_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
-    fileName.append(".pdf");
+    fileName.append(".xlsx");
 
     return fileName.toString();
 
@@ -270,7 +269,7 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
   @Override
   public InputStream getInputStream() {
     if (inputStream == null) {
-      inputStream = new ByteArrayInputStream(bytesPDF);
+      inputStream = new ByteArrayInputStream(bytesXLSX);
     }
     return inputStream;
   }
@@ -455,6 +454,7 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
 
   }
 
+
   @Override
   public void prepare() throws Exception {
     try {
@@ -470,8 +470,9 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
     }
   }
 
-  public void setBytesPDF(byte[] bytesPDF) {
-    this.bytesPDF = bytesPDF;
+
+  public void setBytesXLSX(byte[] bytesXLSX) {
+    this.bytesXLSX = bytesXLSX;
   }
 
   public void setInputStream(InputStream inputStream) {
