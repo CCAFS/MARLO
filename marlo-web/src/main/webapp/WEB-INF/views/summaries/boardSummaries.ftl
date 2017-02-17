@@ -47,6 +47,7 @@
             <div class="extraOptions col-md-12" style="display:none">
               <span class="hidden fileTypes pdfType">reportingSummary</span>
               <span class="hidden forPlanningCycle forCycle"></span>
+              <span class="hidden forReportingCycle forCycle"></span>
               <div class="row">
                 <div class="col-md-9">
                   [@customForm.select name="projectID"   label=""  i18nkey="Select a project"  listName="allProjects"  keyFieldName="id"  displayFieldName="composedName" className="allProjects"   multiple=false required=true   editable=true/]
