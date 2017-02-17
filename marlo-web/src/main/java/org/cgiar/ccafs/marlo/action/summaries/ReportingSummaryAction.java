@@ -974,7 +974,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
       for (CaseStudyIndicator caseStudyIndicator : studyIndicators) {
         if (caseStudyIndicator.isActive()) {
-          indicatorsS.append(caseStudyIndicator.getIpIndicator().getDescription() + "<br>");
+          indicatorsS.append("● " + caseStudyIndicator.getIpIndicator().getDescription() + "<br>");
         }
       }
 
@@ -1116,7 +1116,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
             List<IpElement> outputsList = this.getMidOutcomeOutputs(outcome.getId());
 
             for (IpElement ipElement : outputsList) {
-              outputs += ipElement.getIpProgram().getAcronym() + ": " + ipElement.getDescription() + "<br><br>";
+              outputs += "● " + ipElement.getIpProgram().getAcronym() + ": " + ipElement.getDescription() + "<br><br>";
             }
 
           }
@@ -1263,6 +1263,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           deliv_year = "" + deliverable.getYear();
         }
         if (deliverable.getCrpClusterKeyOutput() != null) {
+          key_output += "● ";
 
           if (deliverable.getCrpClusterKeyOutput().getCrpClusterOfActivity().getCrpProgram() != null) {
             key_output +=
@@ -1301,7 +1302,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         String cross_cutting = "";
         if (deliverable.getCrossCuttingNa() != null) {
           if (deliverable.getCrossCuttingNa() == true) {
-            cross_cutting += "&nbsp;&nbsp;&nbsp;&nbsp; N/A <br>";
+            cross_cutting += "&nbsp;&nbsp;&nbsp;&nbsp;● N/A <br>";
           }
         }
         if (deliverable.getCrossCuttingGender() != null) {
@@ -1548,7 +1549,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         String creator_authors = "";
         for (DeliverableUser deliverableUser : deliverable.getDeliverableUsers().stream().filter(du -> du.isActive())
           .collect(Collectors.toList())) {
-          creator_authors += "<br>";
+          creator_authors += "<br>● ";
           if (!deliverableUser.getLastName().isEmpty()) {
             creator_authors += deliverableUser.getLastName() + " - ";
           }
@@ -1598,17 +1599,17 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
             if (deliverableQualityCheck.getQualityAssurance().getId() == 2) {
               if (deliverableQualityCheck.getFileAssurance() != null
                 && deliverableQualityCheck.getFileAssurance().isActive()) {
-                qualityAssurance += "<br>File: <font size=2 face='Segoe UI' color='blue'>"
+                qualityAssurance += "<br>● File: <font size=2 face='Segoe UI' color='blue'>"
                   + this.getDeliverableUrl("Assurance", deliverable)
                   + deliverableQualityCheck.getFileAssurance().getFileName() + "</font>";
               }
               if (deliverableQualityCheck.getLinkAssurance() != null
                 && !deliverableQualityCheck.getLinkAssurance().isEmpty()) {
-                qualityAssurance += "<br>Link: <font size=2 face='Segoe UI' color='blue'>"
+                qualityAssurance += "<br>● Link: <font size=2 face='Segoe UI' color='blue'>"
                   + deliverableQualityCheck.getLinkAssurance() + "</font>";
               }
             } else {
-              qualityAssurance = deliverableQualityCheck.getQualityAssurance().getName();
+              qualityAssurance = "● " + deliverableQualityCheck.getQualityAssurance().getName();
             }
           }
 
@@ -1618,17 +1619,17 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
             if (deliverableQualityCheck.getDataDictionary().getId() == 2) {
               if (deliverableQualityCheck.getFileDictionary() != null
                 && deliverableQualityCheck.getFileDictionary().isActive()) {
-                dataDictionary += "<br>File: <font size=2 face='Segoe UI' color='blue'>"
+                dataDictionary += "<br>● File: <font size=2 face='Segoe UI' color='blue'>"
                   + this.getDeliverableUrl("Dictionary", deliverable)
                   + deliverableQualityCheck.getFileDictionary().getFileName() + "</font>";
               }
               if (deliverableQualityCheck.getLinkDictionary() != null
                 && !deliverableQualityCheck.getLinkDictionary().isEmpty()) {
-                dataDictionary += "<br>Link: <font size=2 face='Segoe UI' color='blue'>"
+                dataDictionary += "<br>● Link: <font size=2 face='Segoe UI' color='blue'>"
                   + deliverableQualityCheck.getLinkDictionary() + "</font>";
               }
             } else {
-              dataDictionary = deliverableQualityCheck.getDataDictionary().getName();
+              dataDictionary = "● " + deliverableQualityCheck.getDataDictionary().getName();
             }
           }
 
@@ -1636,16 +1637,16 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           if (deliverableQualityCheck.getDataTools() != null) {
             if (deliverableQualityCheck.getDataTools().getId() == 2) {
               if (deliverableQualityCheck.getFileTools() != null && deliverableQualityCheck.getFileTools().isActive()) {
-                tools +=
-                  "<br>File: <font size=2 face='Segoe UI' color='blue'>" + this.getDeliverableUrl("Tools", deliverable)
-                    + deliverableQualityCheck.getFileTools().getFileName() + "</font>";
-              }
-              if (deliverableQualityCheck.getLinkTools() != null && !deliverableQualityCheck.getLinkTools().isEmpty()) {
-                tools += "<br>Link: <font size=2 face='Segoe UI' color='blue'>" + deliverableQualityCheck.getLinkTools()
+                tools += "<br>● File: <font size=2 face='Segoe UI' color='blue'>"
+                  + this.getDeliverableUrl("Tools", deliverable) + deliverableQualityCheck.getFileTools().getFileName()
                   + "</font>";
               }
+              if (deliverableQualityCheck.getLinkTools() != null && !deliverableQualityCheck.getLinkTools().isEmpty()) {
+                tools += "<br>● Link: <font size=2 face='Segoe UI' color='blue'>"
+                  + deliverableQualityCheck.getLinkTools() + "</font>";
+              }
             } else {
-              tools = deliverableQualityCheck.getDataTools().getName();
+              tools = "● " + deliverableQualityCheck.getDataTools().getName();
             }
           }
         }
@@ -1733,16 +1734,16 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           journal = deliverablePublicationMetadata.getJournal();
           if (deliverablePublicationMetadata.getIsiPublication() != null
             && deliverablePublicationMetadata.getIsiPublication() == true) {
-            journal_indicators += "This journal article is an ISI publication <br>";
+            journal_indicators += "● This journal article is an ISI publication <br>";
           }
           if (deliverablePublicationMetadata.getNasr() != null && deliverablePublicationMetadata.getNasr() == true) {
             journal_indicators +=
-              "This article have a co-author from a developing country National Agricultural Research System (NARS)<br>";
+              "● This article have a co-author from a developing country National Agricultural Research System (NARS)<br>";
           }
           if (deliverablePublicationMetadata.getCoAuthor() != null
             && deliverablePublicationMetadata.getCoAuthor() == true) {
             journal_indicators +=
-              "This article have a co-author based in an Earth System Science-related academic department";
+              "● This article have a co-author based in an Earth System Science-related academic department";
           }
           if (journal_indicators.isEmpty()) {
             journal_indicators = null;
@@ -1755,23 +1756,18 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
             acknowledge = "No";
           }
 
-
           for (DeliverableCrp deliverableCrp : deliverable.getDeliverableCrps().stream().filter(dc -> dc.isActive())
             .collect(Collectors.toList())) {
-
             if (deliverableCrp.getCrpPandr() != null && deliverableCrp.getIpProgram() != null) {
-              fl_contrib += deliverableCrp.getCrpPandr().getAcronym().toUpperCase() + " - "
+              fl_contrib += "● " + deliverableCrp.getCrpPandr().getAcronym().toUpperCase() + " - "
                 + deliverableCrp.getIpProgram().getAcronym().toUpperCase() + "<br>";
             } else {
               if (deliverableCrp.getCrpPandr() != null) {
-                fl_contrib += deliverableCrp.getCrpPandr().getName().toUpperCase() + "<br>";
+                fl_contrib += "● " + deliverableCrp.getCrpPandr().getName().toUpperCase() + "<br>";
               }
             }
           }
-
-
         }
-
 
         model.addRow(new Object[] {deliverable.getId(), deliverable.getTitle(), deliv_type, deliv_sub_type,
           deliv_status, deliv_year, key_output, leader, institution, funding_sources, cross_cutting, deliv_new_year,
@@ -1819,7 +1815,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           deliv_year = "" + deliverable.getYear();
         }
         if (deliverable.getCrpClusterKeyOutput() != null) {
-
+          key_output += "● ";
           if (deliverable.getCrpClusterKeyOutput().getCrpClusterOfActivity().getCrpProgram() != null) {
             key_output +=
               deliverable.getCrpClusterKeyOutput().getCrpClusterOfActivity().getCrpProgram().getAcronym() + " - ";
@@ -1856,7 +1852,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         String cross_cutting = "";
         if (deliverable.getCrossCuttingNa() != null) {
           if (deliverable.getCrossCuttingNa() == true) {
-            cross_cutting += "&nbsp;&nbsp;&nbsp;&nbsp; N/A <br>";
+            cross_cutting += "&nbsp;&nbsp;&nbsp;&nbsp;● N/A <br>";
           }
         }
         if (deliverable.getCrossCuttingGender() != null) {
@@ -2722,7 +2718,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         .filter(pht -> pht.isActive()).collect(Collectors.toList())) {
         if (ProjectHighligthsTypeEnum.getEnum(projectHighlightType.getIdType() + "") != null) {
           highlights_types +=
-            "<br>" + ProjectHighligthsTypeEnum.getEnum(projectHighlightType.getIdType() + "").getDescription();
+            "<br>● " + ProjectHighligthsTypeEnum.getEnum(projectHighlightType.getIdType() + "").getDescription();
         }
       }
       if (highlights_types.isEmpty()) {
