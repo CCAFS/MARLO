@@ -1,0 +1,1 @@
+INSERT INTO `crp_parameters` (`crp_id`, `key`, `value`, `is_active`, `created_by`, `active_since`, `modified_by`, `modification_justification`) VALUES ('1', 'crp_real_reporting_date', '2017-02-01', '1', '1082', '2017-01-16 09:34:39', '1082', ' ');
