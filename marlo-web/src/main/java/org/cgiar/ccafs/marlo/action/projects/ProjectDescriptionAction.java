@@ -671,9 +671,11 @@ public class ProjectDescriptionAction extends BaseAction {
             FileManager.copyFile(fileReporting, this.getAnnualReportAbsolutePath() + fileReportingFileName);
 
           }
-          if (project.getAnnualReportToDonnor().getFileName().isEmpty()) {
-            project.setAnnualReportToDonnor(null);
-          }
+          /*
+           * if (project.getAnnualReportToDonnor().getFileName().isEmpty()) {
+           * project.setAnnualReportToDonnor(null);
+           * }
+           */
         }
 
       }

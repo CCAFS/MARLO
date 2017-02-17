@@ -25,7 +25,6 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
-import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
@@ -166,8 +165,8 @@ public class SendMailS {
 
       LOG.info("Message ID: \n" + msg.getMessageID());
       msg.setContent(mimeMultipart);
-      Transport.send(msg);
-      LOG.info("Message sent: \n" + subject);
+      ThreadSendMail thread = new ThreadSendMail(msg, subject);
+      thread.start();
 
 
     } catch (MessagingException e) {
