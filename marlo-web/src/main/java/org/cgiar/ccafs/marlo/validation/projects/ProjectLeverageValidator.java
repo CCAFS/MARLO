@@ -76,8 +76,25 @@ public class ProjectLeverageValidator extends BaseValidator {
         for (int c = 0; c < project.getLeverages().size(); c++) {
 
           this.validateTitleLeverage(action, project.getLeverages().get(c).getTitle(), c);
-          this.validatePartner(action, project.getLeverages().get(c).getInstitution().getId(), c);
-          this.validateFlagship(action, project.getLeverages().get(c).getCrpProgram().getId(), c);
+
+          if (project.getLeverages().get(c).getInstitution() != null) {
+            this.validatePartner(action, project.getLeverages().get(c).getInstitution().getId(), c);
+          } else {
+            this.addMessage("Leverage #" + (c + 1) + ": Partner");
+            this.addMissingField("project.leverages[" + c + "].Partner");
+            action.getInvalidFields().put("input-project.leverages[" + c + "].institution.id",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+
+          if (project.getLeverages().get(c).getCrpProgram() != null) {
+            this.validateFlagship(action, project.getLeverages().get(c).getCrpProgram().getId(), c);
+          } else {
+            this.addMessage("Leverage #" + (c + 1) + ": FlagShip");
+            this.addMissingField("project.leverages[" + c + ".flagship");
+            action.getInvalidFields().put("input-project.leverages[" + c + "].crpProgram.id",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+
           this.validateBudget(action, project.getLeverages().get(c).getBudget(), c);
 
 
