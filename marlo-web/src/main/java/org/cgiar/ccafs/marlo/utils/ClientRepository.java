@@ -15,7 +15,9 @@
 
 package org.cgiar.ccafs.marlo.utils;
 
+import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -54,6 +56,33 @@ public class ClientRepository {
       return saxReader.read(stream).getRootElement();
     } catch (DocumentException de) {
       throw new RuntimeException(de);
+    }
+  }
+
+  /**
+   * Read a restul JSON Url page and return these information into a String
+   * 
+   * @param urlString - the URL
+   * @return - String whit the JSON Metadata Structure
+   * @throws Exception - Can not connect The url.
+   */
+  private static String readUrl(String urlString) throws Exception {
+    BufferedReader reader = null;
+    try {
+      URL url = new URL(urlString);
+      reader = new BufferedReader(new InputStreamReader(url.openStream()));
+      StringBuffer buffer = new StringBuffer();
+      int read;
+      char[] chars = new char[1024];
+      while ((read = reader.read(chars)) != -1) {
+        buffer.append(chars, 0, read);
+      }
+
+      return buffer.toString();
+    } finally {
+      if (reader != null) {
+        reader.close();
+      }
     }
   }
 
@@ -107,6 +136,19 @@ public class ClientRepository {
     }
 
     return jo;
+  }
+
+  public String getMetadataIFPRI(String linkRequest, String id) {
+
+    String urlIFPRI = "https://server15738.contentdm.oclc.org/dmwebservices/index.php";
+
+    try {
+      return readUrl(urlIFPRI + "?" + id);
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+      return "Not Found";
+    }
   }
 
   public Element getXmlRestClient(String linkRequest) {
