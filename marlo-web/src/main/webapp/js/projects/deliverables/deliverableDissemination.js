@@ -464,7 +464,7 @@ function getIfpriMetadata(channel,url,uri) {
 
   var data = {
       pageID: "ifpri",
-      q: "dmGetItemInfo/" + itemInfo.collection + "/" + itemInfo.id + "/json"
+      metadataID: "dmGetItemInfo/" + itemInfo.collection + "/" + itemInfo.id + "/json"
   }
 
   // get data from url
