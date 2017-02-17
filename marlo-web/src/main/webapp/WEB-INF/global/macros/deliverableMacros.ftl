@@ -165,17 +165,17 @@
   <div class="col-md-8">
     [#if editable]
     [#-- CGSpace examples & instructions --]
-    <div class="exampleUrl-block channel-cgspace" style="display:[#if deliverable.dissemination.disseminationChannel?? && deliverable.dissemination.disseminationChannel=="cgspace"]block[#else]none[/#if];">
+    <div class="exampleUrl-block channel-cgspace" style="display:[#if deliverable.dissemination?? && deliverable.dissemination.disseminationChannel?? && deliverable.dissemination.disseminationChannel=="cgspace"]block[#else]none[/#if];">
       <label for="">[@s.text name="project.deliverable.dissemination.exampleUrl" /]:</label>
       <p><small>https://cgspace.cgiar.org/handle/10568/79435</small></p>
     </div>
     [#-- Dataverse examples & instructions --]
-    <div class="exampleUrl-block channel-dataverse" style="display:[#if deliverable.dissemination.disseminationChannel?? &&  deliverable.dissemination.disseminationChannel=="dataverse"]block[#else]none[/#if];">
+    <div class="exampleUrl-block channel-dataverse" style="display:[#if deliverable.dissemination?? && deliverable.dissemination.disseminationChannel?? &&  deliverable.dissemination.disseminationChannel=="dataverse"]block[#else]none[/#if];">
       <label for="">[@s.text name="project.deliverable.dissemination.exampleUrl" /]:</label>
       <p><small>https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/0ZEXKC</small></p>
     </div>
     [#-- IFPRI examples & instructions --]
-    <div class="exampleUrl-block channel-ifpri" style="display:[#if deliverable.dissemination.disseminationChannel?? &&  deliverable.dissemination.disseminationChannel=="ifpri"]block[#else]none[/#if];">
+    <div class="exampleUrl-block channel-ifpri" style="display:[#if deliverable.dissemination?? && deliverable.dissemination.disseminationChannel?? &&  deliverable.dissemination.disseminationChannel=="ifpri"]block[#else]none[/#if];">
       <label for="">[@s.text name="project.deliverable.dissemination.exampleUrl" /]:</label>
       <p><small>http://ebrary.ifpri.org/cdm/singleitem/collection/p15738coll5/id/5388/rec/1</small></p>
     </div>
@@ -183,14 +183,14 @@
   </div>
 </div>
  
-<div id="disseminationUrl" style="display:[#if deliverable.dissemination.disseminationChannel?? && (deliverable.dissemination.disseminationChannel=="cgspace" || deliverable.dissemination.disseminationChannel=="dataverse" || deliverable.dissemination.disseminationChannel=="other" || deliverable.dissemination.disseminationChannel=="ifpri")]block[#else]none[/#if];">
+<div id="disseminationUrl" style="display:[#if deliverable.dissemination?? && deliverable.dissemination.disseminationChannel?? && (deliverable.dissemination.disseminationChannel=="cgspace" || deliverable.dissemination.disseminationChannel=="dataverse" || deliverable.dissemination.disseminationChannel=="other" || deliverable.dissemination.disseminationChannel=="ifpri")]block[#else]none[/#if];">
   <div class="form-group row"> 
     <div class="col-md-10">
       [@customForm.input name="deliverable.dissemination.disseminationUrl" type="text" i18nkey="project.deliverable.dissemination.disseminationUrl"  placeholder="" className="deliverableDisseminationUrl" required=true editable=editable /]
     </div>
     <div class="col-md-2">
       <br />
-      [#if editable]<div id="fillMetadata" class="checkButton" style="display:[#if deliverable.dissemination.disseminationChannel?? && (deliverable.dissemination.disseminationChannel=="cgspace" || deliverable.dissemination.disseminationChannel=="dataverse" || deliverable.dissemination.disseminationChannel=="ifpri")]block[#else]none[/#if];">[@s.text name="project.deliverable.dissemination.sync" /]</div>[/#if]
+      [#if editable]<div id="fillMetadata" class="checkButton" style="display:[#if deliverable.dissemination?? && deliverable.dissemination.disseminationChannel?? && (deliverable.dissemination.disseminationChannel=="cgspace" || deliverable.dissemination.disseminationChannel=="dataverse" || deliverable.dissemination.disseminationChannel=="ifpri")]block[#else]none[/#if];">[@s.text name="project.deliverable.dissemination.sync" /]</div>[/#if]
     </div>
   </div>
 </div>

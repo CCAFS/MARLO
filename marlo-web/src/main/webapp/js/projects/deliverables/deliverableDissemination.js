@@ -447,14 +447,7 @@ function loadAndFillMetadata() {
 
 function getIfpriMetadata(channel,url,uri) {
 
-  // http://CdmServer.com:port/dmwebservices/index.php?q=dmGetItemInfo/alias/pointer/format
-  // alias is a collection alias
-  // pointer is the pointer to the item for which you want metadata
-  // format is either xml or json
-
-  // https://server15738.contentdm.oclc.org/dmwebservices/index.php?q=dmGetItemInfo/p15738coll2/127687/json
-
-  // http://ebrary.ifpri.org/cdm/singleitem/collection/p15738coll5/id/5388/rec/1
+  // https://www.oclc.org/support/services/contentdm/help/customizing-website-help/other-customizations/contentdm-api-reference.en.html
 
   var pathArray = uri.path().split('/');
   var itemInfo = {
@@ -473,7 +466,6 @@ function getIfpriMetadata(channel,url,uri) {
       'url': baseURL + '/metadataByLink.do',
       'type': "GET",
       'data': data,
-      dataType: 'jsonp',
       beforeSend: function() {
         $(".deliverableDisseminationUrl").addClass('input-loading');
         $('#metadata-output').html("Searching ... " + data.metadataID);
@@ -481,7 +473,38 @@ function getIfpriMetadata(channel,url,uri) {
       success: function(m) {
         console.log(m);
 
-        $('#metadata-output').empty().append("Found metadata for " + data.q);
+        if(jQuery.isEmptyObject(m.metadata)) {
+          $('#metadata-output').html("Metadata empty");
+        } else {
+
+          var sendDataJson = {};
+          sendDataJson.title = m.metadata['title'];
+          sendDataJson.citation = m.metadata['identifier.citation'];
+          var date = m.metadata['date.available'].split("T");
+          sendDataJson.publicationDate = date[0];
+          sendDataJson.languaje = m.metadata['language.iso'];
+          sendDataJson.description = m.metadata['description.abstract'];
+          sendDataJson.handle = m.metadata['identifier.uri'];
+          sendDataJson.doi = m.metadata['identifier.doi'];
+          sendDataJson.country = m.metadata['coverage.country'];
+          sendDataJson.keywords = m.metadata['subject'];
+          setMetadata(sendDataJson);
+
+          // Getting authors
+          var authors = [];
+          $.each(m.metadata['contributor.author'], function(i,element) {
+            authors.push({
+                lastName: (element).split(',')[0],
+                firstName: (element).split(',')[1]
+            });
+          });
+
+          // Set Authors
+          authorsByService(authors);
+
+          $('#metadata-output').empty().append("Found metadata for " + data.metadataID);
+        }
+
       },
       complete: function() {
         $(".deliverableDisseminationUrl").removeClass('input-loading');
@@ -553,8 +576,10 @@ function getCGSpaceMetadata(channel,url,uri) {
               });
             });
 
+            // Set Authors
             authorsByService(authors);
 
+            // Open Acces Validation
             var $input = $(".accessible ").parent().find('input');
             if(m.metadata['identifier.status'] == "Open Access") {
               $input.val(true);
@@ -569,7 +594,6 @@ function getCGSpaceMetadata(channel,url,uri) {
             }
 
             $('#metadata-output').empty().append("Found metadata for " + data.metadataID);
-            // " <br /> " + fields.reverse().join(', '));
           }
         }
       },
