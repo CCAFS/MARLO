@@ -2276,10 +2276,15 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         + fisrtSubmission.getYear() + ")";
     } else {
       if (!cycle.isEmpty() && year != 0) {
-        submission = "Submission for " + cycle + " cycle " + year + ": &lt;pending&gt;";
+        if (cycle.equals("Reporting")) {
+          submission = "Submission for " + cycle + " cycle " + year + ": &lt;not submited&gt;";
+        } else {
+          submission = "Submission for " + cycle + " cycle " + year + ": &lt;pending&gt;";
+        }
+
       } else {
-        submission =
-          "Submission for " + "&lt;Not Defined&gt;" + " cycle " + "&lt;Not Defined&gt;" + " year" + ": &lt;pending&gt;";
+        submission = "Submission for " + "&lt;Not Defined&gt;" + " cycle " + "&lt;Not Defined&gt;" + " year"
+          + ": &lt;Not Defined&gt;";
       }
     }
 
