@@ -463,13 +463,14 @@ function getIfpriMetadata(channel,url,uri) {
   }
 
   var data = {
-    q: "dmGetItemInfo/" + itemInfo.collection + "/" + itemInfo.id + "/json"
+      pageID: "ifpri",
+      q: "dmGetItemInfo/" + itemInfo.collection + "/" + itemInfo.id + "/json"
   }
 
   // get data from url
   // Ajax to service
   $.ajax({
-      'url': 'https://server15738.contentdm.oclc.org/dmwebservices/index.php',
+      'url': baseURL + '/metadataByLink.do',
       'type': "GET",
       'data': data,
       dataType: 'jsonp',
@@ -480,18 +481,7 @@ function getIfpriMetadata(channel,url,uri) {
       success: function(m) {
         console.log(m);
 
-        if(m.errorMessage) {
-          $('#metadata-output').html(data.errorMessage);
-        } else {
-          m.metadata = JSON.parse(m.metadata);
-          if(jQuery.isEmptyObject(m.metadata)) {
-            $('#metadata-output').html("Metadata empty");
-          } else {
-
-            $('#metadata-output').empty().append("Found metadata for " + data.metadataID);
-            // " <br /> " + fields.reverse().join(', '));
-          }
-        }
+        $('#metadata-output').empty().append("Found metadata for " + data.q);
       },
       complete: function() {
         $(".deliverableDisseminationUrl").removeClass('input-loading');

@@ -55,7 +55,7 @@ public class MetadataByLink extends BaseAction {
 
   // http://cdm15738.contentdm.oclc.org/oai/oai.php?verb=GetRecord&metadataPrefix=oai_dc&identifier=oai:cdm15738.contentdm.oclc.org:p15738coll2/541
   private final String CGSPACE = "https://cgspace.cgiar.org/rest/items/{0}/metadata";
-  private final String IFPRI = "http://cdm15738.contentdm.oclc.org/oai/oai.php";
+  private final String IFPRI = "https://server15738.contentdm.oclc.org/dmwebservices/index.php";
   private final String AGTRIALS = "http://oai2.agtrials.org/oai2.php";
   private final String AMKN = "http://lab.amkn.org/oai/";
 

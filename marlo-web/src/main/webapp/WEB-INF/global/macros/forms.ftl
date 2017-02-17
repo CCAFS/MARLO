@@ -226,7 +226,7 @@
   </div>
   
 [/#macro] 
-
+ 
 [#macro req required=true ][#if required]<span class="red">*</span>[/#if][/#macro]
 
 [#macro confirmJustification action="" namespace="/" nameId="" title="" projectID=""]
