@@ -78,12 +78,12 @@ import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.Submission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -103,9 +103,9 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import javax.imageio.ImageIO;
-
 import com.google.inject.Inject;
+import com.lowagie.text.BadElementException;
+import com.lowagie.text.Image;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.pentaho.reporting.engine.classic.core.Band;
@@ -2773,27 +2773,45 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         image = this.getHighlightsImagesUrl() + projectHighlight.getFile().getFileName();
 
         // get Height and Width
+
+        Image imageFile = null;
+        image = image.replace(" ", "%20");
+        URL url;
         try {
-          BufferedImage imageFile = null;
-          image = image.replace(" ", "%20");
-          URL url = new URL(image);
-          imageFile = ImageIO.read(url);
-          // System.out.println("W: " + imageFile.getWidth() + " \nH: " + imageFile.getHeight());
-          if (imageFile.getWidth() >= imageFile.getHeight()) {
-            imageWidth = pageWidth;
-            imageHeigth = imageFile.getHeight() * (((pageWidth * 100) / imageFile.getWidth()) / 100);
-          } else {
-            imageHeigth = pageHeigth;
-            imageWidth = imageFile.getWidth() * (((pageHeigth * 100) / imageFile.getHeight()) / 100);
-          }
-          // System.out.println("New W: " + imageWidth + " \nH: " + imageHeigth);
-          width = (int) imageWidth;
-          heigth = (int) imageHeigth;
-          // If successful, process the message
-        } catch (IOException e) {
-          System.out.println("Unable to retrieve Image!!!");
+          url = new URL(image);
+        } catch (MalformedURLException e) {
           e.printStackTrace();
-          image = "";
+          url = null;
+        }
+        if (url != null) {
+          System.out.println("Project: " + projectHighlight.getProject().getId() + " PH: " + projectHighlight.getId());
+          try {
+            imageFile = Image.getInstance(url);
+            // System.out.println("W: " + imageFile.getWidth() + " \nH: " + imageFile.getHeight());
+            if (imageFile.getWidth() >= imageFile.getHeight()) {
+              imageWidth = pageWidth;
+              imageHeigth = imageFile.getHeight() * (((pageWidth * 100) / imageFile.getWidth()) / 100);
+            } else {
+              imageHeigth = pageHeigth;
+              imageWidth = imageFile.getWidth() * (((pageHeigth * 100) / imageFile.getHeight()) / 100);
+            }
+            // System.out.println("New W: " + imageWidth + " \nH: " + imageHeigth);
+            width = (int) imageWidth;
+            heigth = (int) imageHeigth;
+            // If successful, process the message
+          } catch (BadElementException e) {
+            System.out.println("Unable to retrieve Image!!");
+            image = "";
+            e.printStackTrace();
+          } catch (MalformedURLException e) {
+            System.out.println("Unable to retrieve Image!!");
+            image = "";
+            e.printStackTrace();
+          } catch (IOException e) {
+            System.out.println("Unable to retrieve Image!!");
+            image = "";
+            e.printStackTrace();
+          }
         }
       }
 
