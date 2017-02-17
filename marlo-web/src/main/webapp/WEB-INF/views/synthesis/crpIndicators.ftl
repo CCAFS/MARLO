@@ -59,7 +59,7 @@
             <ul class="nav nav-tabs" role="tablist">
               [#list indicatorsType as indicatorType]  
                 <li title="${indicatorType.name}" class="[#if indicatorType_index == 0]active[/#if]">
-                  <a href="#indicatorType-${indicatorType.id}" role="tab" data-toggle="tab">[@utilities.wordCutter string=indicatorType.name maxPos=36 /]</a>
+                  <a href="#indicatorType-${indicatorType.id}" role="tab" data-toggle="tab">[@utilities.wordCutter string=indicatorType.name maxPos=34 /]</a>
                 </li>
               [/#list]
             </ul>
