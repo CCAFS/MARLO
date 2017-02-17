@@ -494,7 +494,7 @@ function getIfpriMetadata(channel,url,uri) {
 
           function validateKeyObject(Obj) {
             if(typeof Obj === 'object') {
-              if(jQuery.isEmptyObject(m.metadata)) {
+              if(jQuery.isEmptyObject(Obj)) {
                 return "";
               }
             } else {
@@ -504,17 +504,23 @@ function getIfpriMetadata(channel,url,uri) {
           }
 
           // Getting authors
-          // var authors = [];
-          // $.each(m.data.metadata_blocks.citation.author, function(i,element) {
-          // authors.push({
-          // lastName: (element.authorName).split(',')[0],
-          // firstName: (element.authorName).split(',')[1],
-          // orcidId: element.authorIdentifier
-          // });
-          // });
+          var authors = [];
+          var authorsMetadata = m.metadata.orcid.split(';');
+          $.each(authorsMetadata, function(i,element) {
+            var elementArray = $.trim(element).split(' ');
+            var orcid = elementArray[0]
+            elementArray.shift();
+            var name = elementArray.join('');
+
+            authors.push({
+                lastName: name.split(',')[0],
+                firstName: name.split(',')[1],
+                orcidId: orcid
+            });
+          });
 
           // Set Authors
-          // authorsByService(authors);
+          authorsByService(authors);
 
           $('#metadata-output').empty().append("Found metadata for " + data.metadataID);
         }
