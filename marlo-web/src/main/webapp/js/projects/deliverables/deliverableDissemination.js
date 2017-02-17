@@ -471,36 +471,50 @@ function getIfpriMetadata(channel,url,uri) {
         $('#metadata-output').html("Searching ... " + data.metadataID);
       },
       success: function(m) {
-        console.log(m);
+
+        m.metadata = JSON.parse(m.metadata);
+        console.log(m.metadata);
 
         if(jQuery.isEmptyObject(m.metadata)) {
           $('#metadata-output').html("Metadata empty");
         } else {
 
-          var sendDataJson = {};
-          sendDataJson.title = m.metadata['title'];
-          sendDataJson.citation = m.metadata['identifier.citation'];
-          var date = m.metadata['date.available'].split("T");
-          sendDataJson.publicationDate = date[0];
-          sendDataJson.languaje = m.metadata['language.iso'];
-          sendDataJson.description = m.metadata['description.abstract'];
-          sendDataJson.handle = m.metadata['identifier.uri'];
-          sendDataJson.doi = m.metadata['identifier.doi'];
-          sendDataJson.country = m.metadata['coverage.country'];
-          sendDataJson.keywords = m.metadata['subject'];
-          setMetadata(sendDataJson);
-
-          // Getting authors
-          var authors = [];
-          $.each(m.metadata['contributor.author'], function(i,element) {
-            authors.push({
-                lastName: (element).split(',')[0],
-                firstName: (element).split(',')[1]
-            });
+          // Setting Metadata
+          setMetadata({
+              title: validateKeyObject(m.metadata.title),
+              description: validateKeyObject(m.metadata.descri),
+              citation: validateKeyObject(m.metadata.full),
+              publicationDate: validateKeyObject(m.metadata.date) + "-01-01",
+              languaje: validateKeyObject(m.metadata.langua),
+              keywords: validateKeyObject(m.metadata.loc),
+              handle: '',
+              country: validateKeyObject(m.metadata.contri),
+              doi: validateKeyObject(m.metadata.doi)
           });
 
+          function validateKeyObject(Obj) {
+            if(typeof Obj === 'object') {
+              if(jQuery.isEmptyObject(m.metadata)) {
+                return "";
+              }
+            } else {
+              return Obj;
+            }
+            return "";
+          }
+
+          // Getting authors
+          // var authors = [];
+          // $.each(m.data.metadata_blocks.citation.author, function(i,element) {
+          // authors.push({
+          // lastName: (element.authorName).split(',')[0],
+          // firstName: (element.authorName).split(',')[1],
+          // orcidId: element.authorIdentifier
+          // });
+          // });
+
           // Set Authors
-          authorsByService(authors);
+          // authorsByService(authors);
 
           $('#metadata-output').empty().append("Found metadata for " + data.metadataID);
         }
