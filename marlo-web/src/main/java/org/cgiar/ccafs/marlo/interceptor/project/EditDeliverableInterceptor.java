@@ -160,10 +160,7 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
         canEdit = true;
       }
 
-      if (baseAction.isSubmit(deliverable.getProject().getId())) {
-        canEdit = false;
 
-      }
       // Set the variable that indicates if the user can edit the section
       baseAction.setEditableParameter(hasPermissionToEdit && canEdit);
       baseAction.setCanEdit(canEdit);

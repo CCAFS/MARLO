@@ -121,6 +121,10 @@ public class EditCaseStudyInterceptor extends AbstractInterceptor implements Ser
           canEdit = true;
 
         }
+        if (baseAction.isSubmit(project.getId())) {
+          canEdit = false;
+
+        }
       }
 
       // TODO Validate is the project is new
@@ -142,10 +146,6 @@ public class EditCaseStudyInterceptor extends AbstractInterceptor implements Ser
         canSwitchProject = true;
       }
 
-      if (baseAction.isSubmit(project.getId())) {
-        canEdit = false;
-
-      }
 
       for (CaseStudyProject studyProject : caseStudy.getCaseStudyProjects()) {
         System.out.println(studyProject.getProject().getId());
@@ -156,7 +156,7 @@ public class EditCaseStudyInterceptor extends AbstractInterceptor implements Ser
           caseStudy
             .getCaseStudyProjects().stream().filter(cs -> cs.isActive()
               && cs.getProject().getId().longValue() == project.getId().longValue() && cs.isCreated())
-            .collect(Collectors.toList()));
+          .collect(Collectors.toList()));
 
       if (caseStudyProjects.isEmpty()) {
         canEdit = false;

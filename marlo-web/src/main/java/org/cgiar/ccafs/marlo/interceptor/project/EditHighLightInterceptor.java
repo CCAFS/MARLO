@@ -106,6 +106,10 @@ public class EditHighLightInterceptor extends AbstractInterceptor implements Ser
           .hasPermission(baseAction.generatePermission(Permission.PROJECT_HIGH_LIGHTS_EDIT_PERMISSION, params))) {
           canEdit = true;
         }
+        if (baseAction.isSubmit(projectHighlight.getProject().getId())) {
+          canEdit = false;
+
+        }
       }
 
       // TODO Validate is the project is new
@@ -127,10 +131,7 @@ public class EditHighLightInterceptor extends AbstractInterceptor implements Ser
         canSwitchProject = true;
       }
 
-      if (baseAction.isSubmit(projectHighlight.getProject().getId())) {
-        canEdit = false;
 
-      }
       if (projectHighlight.getStatus() != null) {
         if (projectHighlight.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
           canEdit = false;
