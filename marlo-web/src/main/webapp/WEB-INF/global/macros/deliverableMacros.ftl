@@ -116,13 +116,13 @@
       <label><input type="radio" name="deliverable.dissemination.type" value="notDisseminated" [#if (deliverable.dissemination?? &&  deliverable.dissemination.notDisseminated?? && (deliverable.dissemination.notDisseminated))]checked="checked"[/#if]>Not Disseminated</label>
     </div>
     [#else]
-    [#if deliverable.dissemination?? &&  deliverable.dissemination.intellectualProperty?? && deliverable.dissemination.intellectualProperty]<p class="checked">Intellectual Property Rights (confidential information) </p>[/#if]
-    [#if deliverable.dissemination?? &&  deliverable.dissemination.limitedExclusivity?? && deliverable.dissemination.limitedExclusivity]<p class="checked">Limited Exclusivity Agreements </p>[/#if]
-    [#if deliverable.dissemination?? &&  deliverable.dissemination.restrictedUseAgreement?? && deliverable.dissemination.restrictedUseAgreement]<p class="checked">Restricted Use Agreement - Restricted access (if so, what are these periods?) </p>[/#if]
-    [#if deliverable.dissemination?? &&  deliverable.dissemination.effectiveDateRestriction?? && deliverable.dissemination.effectiveDateRestriction]<p class="checked">Effective Date Restriction - embargoed periods (if so, what are these periods?) </p>[/#if]
-    [#if deliverable.dissemination?? &&  deliverable.dissemination.notDisseminated?? && deliverable.dissemination.notDisseminated]<p class="checked">Not Disseminated </p>[/#if]
+    [#if (deliverable.dissemination??) &&  deliverable.dissemination.intellectualProperty?? && deliverable.dissemination.intellectualProperty]<p class="checked">Intellectual Property Rights (confidential information) </p>[/#if]
+    [#if (deliverable.dissemination??) &&  deliverable.dissemination.limitedExclusivity?? && deliverable.dissemination.limitedExclusivity]<p class="checked">Limited Exclusivity Agreements </p>[/#if]
+    [#if (deliverable.dissemination??) &&  deliverable.dissemination.restrictedUseAgreement?? && deliverable.dissemination.restrictedUseAgreement]<p class="checked">Restricted Use Agreement - Restricted access (if so, what are these periods?) </p>[/#if]
+    [#if (deliverable.dissemination??) &&  deliverable.dissemination.effectiveDateRestriction?? && deliverable.dissemination.effectiveDateRestriction]<p class="checked">Effective Date Restriction - embargoed periods (if so, what are these periods?) </p>[/#if]
+    [#if (deliverable.dissemination??) &&  deliverable.dissemination.notDisseminated?? && deliverable.dissemination.notDisseminated]<p class="checked">Not Disseminated </p>[/#if]
     [/#if]
-    <div class="row restrictionDate-block" style="display:[#if deliverable.dissemination?? && (deliverable.dissemination.restrictedUseAgreement)?? && (deliverable.dissemination.restrictedUseAgreement)||(deliverable.dissemination.effectiveDateRestriction)?? && (deliverable.dissemination.effectiveDateRestriction) ]block[#else]none [/#if];">
+    <div class="row restrictionDate-block" style="display:[#if (deliverable.dissemination??) && (deliverable.dissemination.restrictedUseAgreement)?? && (deliverable.dissemination.restrictedUseAgreement)||(deliverable.dissemination.effectiveDateRestriction)?? && (deliverable.dissemination.effectiveDateRestriction) ]block[#else]none [/#if];">
       <div class="col-md-5">
         [@customForm.input name="deliverable.dissemination.${(deliverable.dissemination.restrictedUseAgreement?string('restrictedAccessUntil','restrictedEmbargoed'))!'restrictedAccessUntil'}" type="text" i18nkey="${(deliverable.dissemination.restrictedUseAgreement?string('Restricted access until','Restricted embargoed date'))!}"  placeholder="" className="restrictionDate col-md-6" required=true editable=editable /]
       </div>
@@ -159,23 +159,23 @@
       [@customForm.select name="deliverable.dissemination.disseminationChannel" value="'${(deliverable.dissemination.disseminationChannel)!}'"  stringKey=true label=""  i18nkey="project.deliverable.dissemination.selectChannelLabel" listName="channels" className="disseminationChannel"   multiple=false required=true   editable=editable/]
     [#else]
     <label for="disChannel" style="display:block;">Dissemination channel:</label>
-    <p>${(deliverable.dissemination?? &&  deliverable.dissemination.disseminationChannel)!'Prefilled if available'}</p>
+    <p>${((deliverable.dissemination.disseminationChannel)!false)!'Prefilled if available'}</p>
     [/#if]
   </div>
   <div class="col-md-8">
     [#if editable]
     [#-- CGSpace examples & instructions --]
-    <div class="exampleUrl-block channel-cgspace" style="display:[#if deliverable.dissemination?? && deliverable.dissemination.disseminationChannel?? && deliverable.dissemination.disseminationChannel=="cgspace"]block[#else]none[/#if];">
+    <div class="exampleUrl-block channel-cgspace" style="display:[#if (deliverable.dissemination??) && deliverable.dissemination.disseminationChannel?? && deliverable.dissemination.disseminationChannel=="cgspace"]block[#else]none[/#if];">
       <label for="">[@s.text name="project.deliverable.dissemination.exampleUrl" /]:</label>
       <p><small>https://cgspace.cgiar.org/handle/10568/79435</small></p>
     </div>
     [#-- Dataverse examples & instructions --]
-    <div class="exampleUrl-block channel-dataverse" style="display:[#if deliverable.dissemination?? && deliverable.dissemination.disseminationChannel?? &&  deliverable.dissemination.disseminationChannel=="dataverse"]block[#else]none[/#if];">
+    <div class="exampleUrl-block channel-dataverse" style="display:[#if (deliverable.dissemination??) && deliverable.dissemination.disseminationChannel?? &&  deliverable.dissemination.disseminationChannel=="dataverse"]block[#else]none[/#if];">
       <label for="">[@s.text name="project.deliverable.dissemination.exampleUrl" /]:</label>
       <p><small>https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/0ZEXKC</small></p>
     </div>
     [#-- IFPRI examples & instructions --]
-    <div class="exampleUrl-block channel-ifpri" style="display:[#if deliverable.dissemination?? && deliverable.dissemination.disseminationChannel?? &&  deliverable.dissemination.disseminationChannel=="ifpri"]block[#else]none[/#if];">
+    <div class="exampleUrl-block channel-ifpri" style="display:[#if (deliverable.dissemination??) && deliverable.dissemination.disseminationChannel?? &&  deliverable.dissemination.disseminationChannel=="ifpri"]block[#else]none[/#if];">
       <label for="">[@s.text name="project.deliverable.dissemination.exampleUrl" /]:</label>
       <p><small>http://ebrary.ifpri.org/cdm/singleitem/collection/p15738coll5/id/5388/rec/1</small></p>
     </div>
@@ -183,14 +183,14 @@
   </div>
 </div>
  
-<div id="disseminationUrl" style="display:[#if deliverable.dissemination?? && deliverable.dissemination.disseminationChannel?? && (deliverable.dissemination.disseminationChannel=="cgspace" || deliverable.dissemination.disseminationChannel=="dataverse" || deliverable.dissemination.disseminationChannel=="other" || deliverable.dissemination.disseminationChannel=="ifpri")]block[#else]none[/#if];">
+<div id="disseminationUrl" style="display:[#if (deliverable.dissemination??) && deliverable.dissemination.disseminationChannel?? && (deliverable.dissemination.disseminationChannel=="cgspace" || deliverable.dissemination.disseminationChannel=="dataverse" || deliverable.dissemination.disseminationChannel=="other" || deliverable.dissemination.disseminationChannel=="ifpri")]block[#else]none[/#if];">
   <div class="form-group row"> 
     <div class="col-md-10">
       [@customForm.input name="deliverable.dissemination.disseminationUrl" type="text" i18nkey="project.deliverable.dissemination.disseminationUrl"  placeholder="" className="deliverableDisseminationUrl" required=true editable=editable /]
     </div>
     <div class="col-md-2">
       <br />
-      [#if editable]<div id="fillMetadata" class="checkButton" style="display:[#if deliverable.dissemination?? && deliverable.dissemination.disseminationChannel?? && (deliverable.dissemination.disseminationChannel=="cgspace" || deliverable.dissemination.disseminationChannel=="dataverse" || deliverable.dissemination.disseminationChannel=="ifpri")]block[#else]none[/#if];">[@s.text name="project.deliverable.dissemination.sync" /]</div>[/#if]
+      [#if editable]<div id="fillMetadata" class="checkButton" style="display:[#if (deliverable.dissemination??) && deliverable.dissemination.disseminationChannel?? && (deliverable.dissemination.disseminationChannel=="cgspace" || deliverable.dissemination.disseminationChannel=="dataverse" || deliverable.dissemination.disseminationChannel=="ifpri")]block[#else]none[/#if];">[@s.text name="project.deliverable.dissemination.sync" /]</div>[/#if]
     </div>
   </div>
 </div>
