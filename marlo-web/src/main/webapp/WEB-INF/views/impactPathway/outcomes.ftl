@@ -321,7 +321,7 @@
         <div class="input"><p> <strong>${index+1}.</strong> ${(assumption.description)!}</p></div>
       [/#if] 
     [#else]
-      [@customForm.input name="${assumptionCustomName}.description" type="text" showTitle=false placeholder="outcome.subIDOs.assumptions.statement" className="statement limitWords-100" required=true editable=editable /]
+      [@customForm.input name="${assumptionCustomName}.description" type="text" showTitle=false placeholder="" className="statement limitWords-100" required=true editable=editable /]
     [/#if]
     <div class="clearfix"></div>
   </div>
