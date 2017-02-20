@@ -138,7 +138,7 @@
           [/#list]
         [/#if]
         </ul>
-        <p class="text-center inf" style="display:${(cluster.leaders?has_content)?string('none','block')}">[@s.text name="siteIntegration.notUsers" /]</p>
+        <p class="text-center inf" style="display:${(cluster.leaders?has_content)?string('none','block')}">[@s.text name="cluster.notLeaders" /]</p>
       </div>
       [#-- Add CoA Leader --]
       [#if editable]
