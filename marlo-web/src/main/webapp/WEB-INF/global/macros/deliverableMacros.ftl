@@ -159,7 +159,7 @@
       [@customForm.select name="deliverable.dissemination.disseminationChannel" value="'${(deliverable.dissemination.disseminationChannel)!}'"  stringKey=true label=""  i18nkey="project.deliverable.dissemination.selectChannelLabel" listName="channels" className="disseminationChannel"   multiple=false required=true   editable=editable/]
     [#else]
     <label for="disChannel" style="display:block;">Dissemination channel:</label>
-    <p>${((deliverable.dissemination.disseminationChannel)!false)!'Prefilled if available'}</p>
+    <p>${((deliverable.dissemination.disseminationChannel)!)!'Prefilled if available'}</p>
     [/#if]
   </div>
   <div class="col-md-8">
