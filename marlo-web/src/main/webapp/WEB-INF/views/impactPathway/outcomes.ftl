@@ -232,8 +232,10 @@
     </div>
     <div class="row form-group target-block">
       [#-- Target Year --]
-      ${(outcome.milestone.targetYears)!}
-      <div class="col-md-4">[@customForm.select name="${milestoneCustomName}.year" value="${(milestone.year)!-1}"  i18nkey="outcome.milestone.inputTargetYear" listName="milestoneYears"  required=true  className=" targetYear milestoneYear"  disabled=!editable/]</div>
+      <div class="col-md-4">
+        [@customForm.select name="${milestoneCustomName}.year" value="${(milestone.year)!-1}"  i18nkey="outcome.milestone.inputTargetYear" listName="milestoneYears"  required=true  className=" targetYear milestoneYear" editable=editable  disabled=!editable/]
+        [#if !editable][#if (milestone.year??) && (milestone.year != -1)]${(milestone.year)!}[/#if][/#if]
+      </div>
       [#-- Target Unit --]
       <div class="col-md-4">
         [@customForm.select name="${milestoneCustomName}.srfTargetUnit.id"  i18nkey="outcome.milestone.selectTargetUnit" placeholder="outcome.selectTargetUnit.placeholder" className="targetUnit" listName="targetUnitList" editable=editable  /]
@@ -270,7 +272,7 @@
     <br />
     <div class="form-group">
       <div class="subIdoBlock" >
-        <label for="">[@s.text name="outcome.subIDOs.inputSubIDO.label"/]:<span class="red">*</span></label>
+        <label for="">[@s.text name="outcome.subIDOs.inputSubIDO.label"/]:[#if editable]<span class="red">*</span>[/#if]</label>
         <div id="" class="${"${subIDOCustomName}.srfSubIdo.id"?replace("\\W+", "", "r")} subIdoSelected ${editable?string(' selectSubIDO',' ')} " title="${(subIdo.getSrfSubIdo().getDescription())!}">[@utils.wordCutter string=(subIdo.getSrfSubIdo().getDescription())!"${editable?string('<i>Please select a Sub-IDO by clicking here</i>','<i>subIdo not selected yet</i>')}" maxPos=65 substr=" "/]</div>
         <input type="hidden" class="subIdoId" name="${subIDOCustomName}.srfSubIdo.id" value="${(subIdo.srfSubIdo.id)!}" />
       </div>
