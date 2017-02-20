@@ -109,11 +109,10 @@ public class EditCaseStudyInterceptor extends AbstractInterceptor implements Ser
       String params[] = {crp.getAcronym(), projectIDParameter};
 
       if (baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin()) {
-        if (!baseAction.isSubmit(Long.parseLong(projectIDParameter))) {
-          canEdit = true;
-          canSwitchProject = true;
 
-        }
+        canEdit = true;
+        canSwitchProject = true;
+
       } else {
         List<Project> projects = projectManager.getUserProjects(user.getId(), crp.getAcronym());
         if (projects.contains(project) && baseAction

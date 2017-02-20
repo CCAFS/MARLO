@@ -96,10 +96,10 @@ public class EditHighLightInterceptor extends AbstractInterceptor implements Ser
       String params[] = {crp.getAcronym(), projectHighlight.getProject().getId() + ""};
 
       if (baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin()) {
-        if (!baseAction.isSubmit(projectHighlight.getProject().getId())) {
-          canEdit = true;
-          canSwitchProject = true;
-        }
+
+        canEdit = true;
+        canSwitchProject = true;
+
       } else {
         List<Project> projects = projectManager.getUserProjects(user.getId(), crp.getAcronym());
         if (projects.contains(projectHighlight.getProject()) && baseAction
