@@ -29,10 +29,7 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -41,8 +38,6 @@ import java.util.HashMap;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
-import com.lowagie.text.BadElementException;
-import com.lowagie.text.Image;
 import org.pentaho.reporting.engine.classic.core.Band;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
@@ -291,11 +286,11 @@ public class ProjectHighlightsExcelSummaryAction extends BaseAction implements S
 
     TypedTableModel model = new TypedTableModel(
       new String[] {"id", "title", "author", "subject", "publisher", "year_reported", "highlights_types",
-        "highlights_is_global", "start_date", "end_date", "keywords", "countries", "image", "highlight_desc",
-        "introduction", "results", "partners", "links", "width", "heigth", "project_id"},
+        "highlights_is_global", "start_date", "end_date", "keywords", "countries", "highlight_desc", "introduction",
+        "results", "partners", "links", "project_id", "image", "imageurl"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, Long.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, Integer.class, Integer.class, String.class},
+        String.class, String.class, String.class, String.class, String.class},
       0);
 
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
@@ -304,11 +299,10 @@ public class ProjectHighlightsExcelSummaryAction extends BaseAction implements S
       .sorted((h1, h2) -> Long.compare(h1.getId(), h2.getId())).filter(ph -> ph.isActive())
       .collect(Collectors.toList())) {
       String title = null, author = null, subject = null, publisher = null, highlights_types = "",
-        highlights_is_global = null, start_date = null, end_date = null, keywords = null, countries = "", image = "",
-        highlight_desc = null, introduction = null, results = null, partners = null, links = null, project_id = null;
+        highlights_is_global = null, start_date = null, end_date = null, keywords = null, countries = "",
+        highlight_desc = null, introduction = null, results = null, partners = null, links = null, project_id = null,
+        image = null, imageurl = null;
       Long year_reported = null;
-      int width = 0;
-      int heigth = 0;
 
       if (projectHighlight.getTitle() != null && !projectHighlight.getTitle().isEmpty()) {
         title = projectHighlight.getTitle();
@@ -330,7 +324,7 @@ public class ProjectHighlightsExcelSummaryAction extends BaseAction implements S
         .filter(pht -> pht.isActive()).collect(Collectors.toList())) {
         if (ProjectHighligthsTypeEnum.getEnum(projectHighlightType.getIdType() + "") != null) {
           highlights_types +=
-            "<br>● " + ProjectHighligthsTypeEnum.getEnum(projectHighlightType.getIdType() + "").getDescription();
+            "\n● " + ProjectHighligthsTypeEnum.getEnum(projectHighlightType.getIdType() + "").getDescription();
         }
       }
       if (highlights_types.isEmpty()) {
@@ -371,60 +365,6 @@ public class ProjectHighlightsExcelSummaryAction extends BaseAction implements S
       if (countries.isEmpty()) {
         countries = null;
       }
-
-
-      if (projectHighlight.getFile() != null) {
-        double pageWidth = 612 * 0.4;
-        double pageHeigth = 792 * 0.4;
-        double imageWidth = 0;
-        double imageHeigth = 0;
-        image = this.getHighlightsImagesUrl(projectHighlight.getProject().getId().toString())
-          + projectHighlight.getFile().getFileName();
-
-        // get Height and Width
-
-        Image imageFile = null;
-        image = image.replace(" ", "%20");
-        URL url;
-        try {
-          url = new URL(image);
-        } catch (MalformedURLException e) {
-          e.printStackTrace();
-          url = null;
-        }
-        if (url != null) {
-          // System.out.println("Project: " + projectHighlight.getProject().getId() + " PH: " +
-          // projectHighlight.getId());
-          try {
-            imageFile = Image.getInstance(url);
-            // System.out.println("W: " + imageFile.getWidth() + " \nH: " + imageFile.getHeight());
-            if (imageFile.getWidth() >= imageFile.getHeight()) {
-              imageWidth = pageWidth;
-              imageHeigth = imageFile.getHeight() * (((pageWidth * 100) / imageFile.getWidth()) / 100);
-            } else {
-              imageHeigth = pageHeigth;
-              imageWidth = imageFile.getWidth() * (((pageHeigth * 100) / imageFile.getHeight()) / 100);
-            }
-            // System.out.println("New W: " + imageWidth + " \nH: " + imageHeigth);
-            width = (int) imageWidth;
-            heigth = (int) imageHeigth;
-            // If successful, process the message
-          } catch (BadElementException e) {
-            System.out.println("Unable to retrieve Image!!");
-            image = "";
-            e.printStackTrace();
-          } catch (MalformedURLException e) {
-            System.out.println("Unable to retrieve Image!!");
-            image = "";
-            e.printStackTrace();
-          } catch (IOException e) {
-            System.out.println("Unable to retrieve Image!!");
-            image = "";
-            e.printStackTrace();
-          }
-        }
-      }
-
       if (projectHighlight.getDescription() != null && !projectHighlight.getDescription().isEmpty()) {
         highlight_desc = projectHighlight.getDescription();
       }
@@ -444,10 +384,15 @@ public class ProjectHighlightsExcelSummaryAction extends BaseAction implements S
       if (projectHighlight.getProject() != null) {
         project_id = projectHighlight.getProject().getId().toString();
       }
+      if (projectHighlight.getFile() != null) {
+        image = projectHighlight.getFile().getFileName();
+        imageurl = this.getHighlightsImagesUrl(projectHighlight.getProject().getId().toString())
+          + projectHighlight.getFile().getFileName();
+      }
 
       model.addRow(new Object[] {projectHighlight.getId(), title, author, subject, publisher, year_reported,
-        highlights_types, highlights_is_global, start_date, end_date, keywords, countries, image, highlight_desc,
-        introduction, results, partners, links, width, heigth, project_id});
+        highlights_types, highlights_is_global, start_date, end_date, keywords, countries, highlight_desc, introduction,
+        results, partners, links, project_id, image, imageurl});
     }
 
     return model;
