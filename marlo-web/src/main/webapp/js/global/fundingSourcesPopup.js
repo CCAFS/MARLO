@@ -41,6 +41,15 @@ $(document).ready(
 
       /** Events */
 
+      $(".type").on("change", function() {
+        var option = $(this).find("option:selected");
+        var url = baseURL + "/institutionsByBudgetType.do";
+        var data = {
+          budgetTypeID: option.val()
+        };
+        ajaxService(url, data);
+      });
+
       // Event for manage the accordion function
       $('#create-user').on('click', function() {
         $(this).siblings('.accordion-block').slideUp('slow');
@@ -501,4 +510,24 @@ function addDropzone() {
       }
   });
 
+}
+
+function ajaxService(url,data) {
+  var $select = $("#institution");
+  $.ajax({
+      url: url,
+      type: 'GET',
+      data: data,
+      success: function(m) {
+        $select.empty();
+        $select.addOption("-1", "Select an option...");
+        $.each(m.institutions, function(i,e) {
+          $select.addOption(e.id, e.name);
+        });
+        $select.trigger("change.select2");
+      },
+      error: function(e) {
+        console.log(e);
+      }
+  });
 }

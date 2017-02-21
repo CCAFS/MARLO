@@ -40,7 +40,6 @@ import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.ChannelEnum;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpPandr;
-import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
@@ -52,6 +51,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableProgram;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
+import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -559,11 +559,9 @@ public class PublicationAction extends BaseAction {
     }
     institutions = new HashMap<>();
 
-    for (CrpPpaPartner crpPpaPartner : crpPpaPartnerManager.findAll().stream()
-      .filter(c -> c.getCrp().getId().longValue() == loggedCrp.getId().longValue() && c.isActive())
-      .collect(Collectors.toList())) {
-      institutions.put(crpPpaPartner.getInstitution().getId().toString(),
-        crpPpaPartner.getInstitution().getComposedName());
+    for (Institution institution : institutionManager.findAll().stream()
+      .filter(c -> c.isActive() && c.getHeadquarter() == null).collect(Collectors.toList())) {
+      institutions.put(institution.getId().toString(), institution.getComposedName());
 
     }
 

@@ -32,16 +32,19 @@ function init() {
   var lastDonor = -1;
   $(".type").on("change", function() {
     var option = $(this).find("option:selected");
-    var institutionSelect = $(".donor");
-    var institutionSelected = $(".institution").find("option:selected").val();
-    console.log(institutionSelected);
-    // If the option selected is center
+    var url = baseURL + "/institutionsByBudgetType.do";
+    var data = {
+      budgetTypeID: option.val()
+    };
+    ajaxService(url, data);
     /*
-     * if(option.val() == 4) { if(institutionSelect.val() != "-1") { lastDonor = institutionSelect.val(); }
-     * institutionSelect.attr("disabled", "disabled"); institutionSelect.val(institutionSelected);
-     * institutionSelect.trigger('change.select2'); $(".note").hide("slow"); } else { $(".note").show("slow");
-     * if(institutionSelect.attr("disabled") == "disabled") { institutionSelect.removeAttr("disabled");
-     * institutionSelect.val(lastDonor); institutionSelect.trigger('change.select2'); } }
+     * var institutionSelect = $(".donor"); var institutionSelected = $(".institution").find("option:selected").val();
+     * console.log(institutionSelected); // If the option selected is center if(option.val() == 4) {
+     * if(institutionSelect.val() != "-1") { lastDonor = institutionSelect.val(); } institutionSelect.attr("disabled",
+     * "disabled"); institutionSelect.val(institutionSelected); institutionSelect.trigger('change.select2');
+     * $(".note").hide("slow"); } else { $(".note").show("slow"); if(institutionSelect.attr("disabled") == "disabled") {
+     * institutionSelect.removeAttr("disabled"); institutionSelect.val(lastDonor);
+     * institutionSelect.trigger('change.select2'); } }
      */
   });
 
@@ -274,4 +277,24 @@ function addDataTable() {
       ]
   });
 
+}
+
+function ajaxService(url,data) {
+  var $select = $(".donor");
+  $.ajax({
+      url: url,
+      type: 'GET',
+      data: data,
+      success: function(m) {
+        $select.empty();
+        $select.addOption("-1", "Select an option...");
+        $.each(m.institutions, function(i,e) {
+          $select.addOption(e.id, e.name);
+        });
+        $select.trigger("change.select2");
+      },
+      error: function(e) {
+        console.log(e);
+      }
+  });
 }
