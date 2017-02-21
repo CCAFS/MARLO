@@ -78,6 +78,10 @@ $(document).ready(function() {
   $('.loadingBlock').hide().next().fadeIn(500);
 
   addJustificationPopUp();
+
+  $('.dataTables_filter input').on("keyup", function() {
+    $(this).removeClass("fieldFocus");
+  })
 });
 
 function filterTablesBy(query) {
@@ -87,6 +91,7 @@ function filterTablesBy(query) {
 
 function filterByProgram() {
   $(this).parents('.dataTables_wrapper').find('.dataTables_filter input').val($(this).text()).trigger('keyup');
+  $(this).parents('.dataTables_wrapper').find('.dataTables_filter input').addClass("fieldFocus");
 }
 
 // Justification popup global vars
