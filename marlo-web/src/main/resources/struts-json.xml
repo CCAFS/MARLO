@@ -257,6 +257,15 @@
       </result>
     </action>
     
+        <action name="institutionsByBudgetType"
+      class="org.cgiar.ccafs.marlo.action.json.project.InstitutionsByBudgetTypeAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
+    
+    
     <action name="geopositionByElement"
       class="org.cgiar.ccafs.marlo.action.json.project.GeopositionByLocElementAction">
       <result type="json">
