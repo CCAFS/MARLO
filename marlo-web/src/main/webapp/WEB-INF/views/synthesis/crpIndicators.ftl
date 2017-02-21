@@ -73,7 +73,7 @@
                 [#assign customIndex = (action.getIndicatorIndex(indicatorReport.crpIndicator.id,indicatorReport.crpIndicator.crpIndicatorType.id))!-1 ]
                 [#assign customName= "currentLiaisonInstitution.indicatorReports[${customIndex}]"]
                 <div class="simpleBox">
-                  <h6 class="title" style="font-size: 1.2em;margin-bottom: 5px;">${indicatorReport.crpIndicator.id}  ${indicatorReport.crpIndicator.name}
+                  <h6 class="title" style="font-size: 1.2em;margin-bottom: 5px;">${indicatorReport.crpIndicator.id}.  ${indicatorReport.crpIndicator.name}
                     [#if indicatorReport.crpIndicator.description?has_content]
                       <a id="showIndicatorDesc-${indicatorReport.crpIndicator.id}" class="showIndicatorDesc" href="#"><img src="${baseUrl}/images/global/icon-info.png" title="Show indicator description" alt="" /></a>
                     [/#if]
