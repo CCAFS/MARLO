@@ -15,6 +15,8 @@
         <th>[@s.text name="publicationsList.column.id" /]</th>
         [#-- Title / Name --]
         <th>[@s.text name="publicationsList.column.title" /]</th>
+        [#-- Added by --]
+        <th>[@s.text name="publicationsList.column.addedBy" /]</th>
         [#-- Lead partner(s) --]
         <th>[@s.text name="publicationsList.column.lead" /]</th>
         [#-- Flagship / Region --]
@@ -40,7 +42,7 @@
             <a href="${projectUrl}">${(deliverable.id)!}</a>
           </td>
           [#-- Title / Name --]
-          <td class="col-md-5 left">
+          <td class="col-md-4 left">
             <a href="${projectUrl}">
               [#if deliverable.title?has_content]
                 ${(deliverable.title)!}
@@ -48,6 +50,14 @@
                 Not defined
               [/#if]
             </a>
+          </td>
+          [#-- Added by --]
+          <td >
+              [#if deliverable.createdBy?has_content]
+                ${(deliverable.createdBy.composedName)!}
+              [#else]
+                Not defined
+              [/#if]
           </td>
           [#-- Lead partner(s) --]
           <td class="">
