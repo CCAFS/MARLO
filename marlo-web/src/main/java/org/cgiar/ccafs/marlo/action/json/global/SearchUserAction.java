@@ -69,6 +69,8 @@ public class SearchUserAction extends BaseAction {
       userFound.put("lastName", user.getLastName());
       userFound.put("username", user.getUsername());
       userFound.put("email", user.getEmail());
+      userFound.put("cgiar", user.isCgiarUser());
+      userFound.put("active", user.isActive());
 
       return SUCCESS;
     } else {
@@ -82,14 +84,17 @@ public class SearchUserAction extends BaseAction {
           userFound.put("lastName", userLDAP.getLastName());
           userFound.put("username", userLDAP.getLogin().toLowerCase());
           userFound.put("email", userLDAP.getEmail().toLowerCase());
+          userFound.put("cgiar", true);
 
         } else {
           userFound.put("newUser", false);
+          userFound.put("cgiar", false);
         }
       } else {
         userFound.put("newUser", true);
         userFound.put("id", -1);
         userFound.put("email", userEmail.toLowerCase());
+        userFound.put("cgiar", false);
       }
     }
 
