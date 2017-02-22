@@ -41,6 +41,9 @@ $(document).ready(
 
       /** Events */
 
+      // Principal investigator auto-complete
+      addContactAutoComplete();
+
       $(".type").on("change", function() {
         var option = $(this).find("option:selected");
         var url = baseURL + "/institutionsByBudgetType.do";
@@ -530,4 +533,37 @@ function ajaxService(url,data) {
         console.log(e);
       }
   });
+}
+
+function addContactAutoComplete() {
+  var autocompleteOptions = {
+      source: searchSource,
+      minLength: 2,
+      select: selectUser
+  }
+
+  function searchSource(request,response) {
+    $.ajax({
+        url: baseURL + '/searchUsers.do',
+        data: {
+          q: request.term
+        },
+        success: function(data) {
+          response(data.users);
+        }
+    });
+  }
+
+  function selectUser(event,ui) {
+    $("input.contactName").val(ui.item.name);
+    $("input.contactEmail").val(ui.item.email);
+    return false;
+  }
+
+  function renderItem(ul,item) {
+    return $("<li>").append("<div>" + escapeHtml(item.composedName) + "</div>").appendTo(ul);
+  }
+
+  $("input.contactName").autocomplete(autocompleteOptions).autocomplete("instance")._renderItem = renderItem;
+  $("input.contactEmail").autocomplete(autocompleteOptions).autocomplete("instance")._renderItem = renderItem;
 }

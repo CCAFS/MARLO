@@ -95,6 +95,8 @@ public class ManageUsersAction extends BaseAction {
       Map<String, Object> userMap = new HashMap<>();
       userMap.put("id", newUser.getId());
       userMap.put("composedName", newUser.getComposedName());
+      userMap.put("name", newUser.getComposedCompleteName());
+      userMap.put("email", newUser.getEmail());
       this.users.add(userMap);
 
       return true;
@@ -222,6 +224,8 @@ public class ManageUsersAction extends BaseAction {
       Map<String, Object> userMap = new HashMap<>();
       userMap.put("id", user.getId());
       userMap.put("composedName", user.getComposedName());
+      userMap.put("name", user.getComposedCompleteName());
+      userMap.put("email", user.getEmail());
       this.users.add(userMap);
     }
 

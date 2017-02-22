@@ -83,7 +83,7 @@
         </div>
       </div>
       [#-- CGIAR lead center --]
-      <div class="row">
+      <div class="form-group row">
         <div class="panel tertiary col-md-12">
          <div class="panel-head"><label for=""> [@customForm.text name="fundingSource.leadPartner" readText=!editable /]:[@customForm.req required=editable /]</label></div>
           <div id="leadPartnerList" class="panel-body" listname="deliverable.fundingSources"> 
@@ -111,11 +111,9 @@
         </div>
       </div>
       [#-- Contact person name and email --]
-      <div class="form-group">
-        <div class="row">
-          <div class="col-md-6">[@customForm.input name="fundingSource.contactPersonName" i18nkey="projectCofunded.contactName" required=true editable=editable /]</div>
-          <div class="col-md-6">[@customForm.input name="fundingSource.contactPersonEmail" i18nkey="projectCofunded.contactEmail" required=true editable=editable /]</div>
-        </div>
+      <div class="form-group row">
+          <div class="col-md-6">[@customForm.input name="fundingSource.contactPersonName" i18nkey="projectCofunded.contactName" className="contactName" required=true editable=editable /]</div>
+          <div class="col-md-6">[@customForm.input name="fundingSource.contactPersonEmail" i18nkey="projectCofunded.contactEmail" className="contactEmail" required=true editable=editable /]</div>
       </div>
       [#-- Donor --]
       <div class="form-group">
