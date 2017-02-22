@@ -17,7 +17,9 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.CrpIndicatorReportDAO;
+import org.cgiar.ccafs.marlo.data.model.CrpIndicator;
 import org.cgiar.ccafs.marlo.data.model.CrpIndicatorReport;
+import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,7 +86,7 @@ public class CrpIndicatorReportMySQLDAO implements CrpIndicatorReportDAO {
     query.append(" AND ir.liaison_institution_id = ");
     query.append(leader);
     query.append(" LEFT JOIN `crp_indicator_types` it ON i.indicator_type_id = it.id  ");
-    query.append(" where i.serial not in ('ind01','ind02','ind03','ind04','ind05','ind06')");
+    // query.append(" where i.serial not in ('ind01','ind02','ind03','ind04','ind05','ind06')");
     query.append(" ORDER BY i.id  ");
 
     List<Map<String, Object>> rList = dao.findCustomQuery(query.toString());
@@ -94,9 +96,23 @@ public class CrpIndicatorReportMySQLDAO implements CrpIndicatorReportDAO {
     if (rList != null) {
       for (Map<String, Object> map : rList) {
 
-        Long indReportID = Long.parseLong(map.get("id").toString());
-        if (indReportID != null) {
-          indicatorReports.add(this.find(indReportID));
+        try {
+          Long indReportID = Long.parseLong(map.get("id").toString());
+          if (indReportID != null) {
+            indicatorReports.add(this.find(indReportID));
+          }
+        } catch (Exception e) {
+
+          CrpIndicatorReport report = new CrpIndicatorReport();
+          report.setActual("");
+          report.setCrpIndicator(dao.find(CrpIndicator.class, Long.parseLong(map.get("indicator_id").toString())));
+          report.setDeviation("");
+          report.setIpLiaisonInstitution(dao.find(IpLiaisonInstitution.class, leader));
+          report.setNextTarget("");
+          report.setSupportLinks("");
+          report.setTarget("");
+          report.setYear(year);
+          indicatorReports.add(report);
         }
 
       }
