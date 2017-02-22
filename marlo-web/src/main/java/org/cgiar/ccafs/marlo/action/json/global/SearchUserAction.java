@@ -46,18 +46,19 @@ public class SearchUserAction extends BaseAction {
 
   private UserManager userManager;
 
+
   private String userEmail;
 
 
   private User user;
 
-
   private Map<String, Object> userFound;
 
 
-  private Map<String, Object> crpUserFound;
+  private List<Map<String, Object>> crpUserFound;
 
   private List<Map<String, Object>> roleUserFound;
+
 
   @Inject
   public SearchUserAction(APConfig config, UserManager userManager) {
@@ -69,7 +70,7 @@ public class SearchUserAction extends BaseAction {
   @Override
   public String execute() throws Exception {
     userFound = new HashMap<String, Object>();
-    crpUserFound = new HashMap<String, Object>();
+    crpUserFound = new ArrayList<>();;
     roleUserFound = new ArrayList<>();
     boolean emailExists = false;
     // We need to validate that the email does not exist yet into our database.
@@ -93,10 +94,11 @@ public class SearchUserAction extends BaseAction {
 
       if (!crpUsers.isEmpty()) {
         for (CrpUser crpUser : crpUsers) {
-          crpUserFound.put("crpUserId", crpUser.getId());
-          crpUserFound.put("crpId", crpUser.getCrp().getId());
-          crpUserFound.put("crpName", crpUser.getCrp().getName());
-          crpUserFound.put("crpAcronym", crpUser.getCrp().getAcronym());
+          Map<String, Object> crp = new HashMap<>();
+          crp.put("crpUserId", crpUser.getId());
+          crp.put("crpId", crpUser.getCrp().getId());
+          crp.put("crpName", crpUser.getCrp().getName());
+          crp.put("crpAcronym", crpUser.getCrp().getAcronym());
 
 
           List<UserRole> userRoles = new ArrayList<>(user.getUserRoles().stream()
@@ -105,15 +107,19 @@ public class SearchUserAction extends BaseAction {
           for (UserRole userRole : userRoles) {
             Map<String, Object> role = new HashMap<>();
             role.put("role", userRole.getRole().getAcronym());
+            List<String> roleInfo = new ArrayList<>();
             switch (userRole.getRole().getAcronym()) {
-              case "ML":
 
+              case "ML":
                 break;
 
             }
 
             roleUserFound.add(role);
           }
+          crp.put("role", roleUserFound);
+
+          crpUserFound.add(crp);
 
         }
 
@@ -150,9 +156,11 @@ public class SearchUserAction extends BaseAction {
     return SUCCESS;
   }
 
-  public Map<String, Object> getCrpUserFound() {
+
+  public List<Map<String, Object>> getCrpUserFound() {
     return crpUserFound;
   }
+
 
   public String getUserEmail() {
     return userEmail;
@@ -163,13 +171,15 @@ public class SearchUserAction extends BaseAction {
     return userFound;
   }
 
+
   @Override
   public void prepare() throws Exception {
     Map<String, Object> parameters = this.getParameters();
     userEmail = StringUtils.trim(((String[]) parameters.get(APConstants.USER_EMAIL))[0]);
   }
 
-  public void setCrpUserFound(Map<String, Object> crpUserFound) {
+
+  public void setCrpUserFound(List<Map<String, Object>> crpUserFound) {
     this.crpUserFound = crpUserFound;
   }
 
