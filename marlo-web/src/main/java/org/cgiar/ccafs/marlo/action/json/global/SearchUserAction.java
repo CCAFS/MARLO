@@ -19,6 +19,8 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
+import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -111,6 +113,32 @@ public class SearchUserAction extends BaseAction {
             switch (userRole.getRole().getAcronym()) {
 
               case "ML":
+                List<LiaisonUser> liaisonMLUsers = new ArrayList<>(user.getLiasonsUsers().stream()
+                  .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().getCrpProgram() != null)
+                  .collect(Collectors.toList()));
+                for (LiaisonUser liaisonUser : liaisonMLUsers) {
+                  roleInfo.add(liaisonUser.getComposedName());
+                }
+                role.put("roleInfo", roleInfo);
+                break;
+
+              case "CP":
+                List<LiaisonUser> liaisonCPUsers = new ArrayList<>(user.getLiasonsUsers().stream()
+                  .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().getCrpProgram() == null)
+                  .collect(Collectors.toList()));
+                for (LiaisonUser liaisonUser : liaisonCPUsers) {
+                  roleInfo.add(liaisonUser.getComposedName());
+                }
+                role.put("roleInfo", roleInfo);
+                break;
+
+              case "PL":
+                List<ProjectPartnerPerson> partnerPersons = new ArrayList<>(user.getProjectPartnerPersons().stream()
+                  .filter(pp -> pp.isActive() && pp.getContactType().equals("PL")).collect(Collectors.toList()));
+                for (ProjectPartnerPerson partnerPerson : partnerPersons) {
+                  roleInfo.add(partnerPerson.getProjectPartner().getProject().getComposedName());
+                }
+                role.put("roleInfo", roleInfo);
                 break;
 
             }
