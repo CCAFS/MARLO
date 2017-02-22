@@ -82,6 +82,7 @@ public class SearchUserAction extends BaseAction {
       userFound.put("email", user.getEmail());
       userFound.put("cgiar", user.isCgiarUser());
       userFound.put("active", user.isActive());
+      userFound.put("autosave", user.isAutoSave());
 
       List<CrpUser> crpUsers =
         new ArrayList<CrpUser>(user.getCrpUsers().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
