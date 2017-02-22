@@ -12,6 +12,7 @@
   {"label":"marloUsers", "nameSpace":"", "action":""}
 ]/]
 
+
 [#include "/WEB-INF/global/pages/header.ftl" /]
 <hr />
 
@@ -33,7 +34,11 @@
         <h4 class="sectionTitle">[@s.text name="Users" /]</h4>
         <div class="row">
           <div class="col-md-7 form-group">
-            [@customForm.input name="" i18nkey="User email" value="" className="checkEmail" type="text"  required=true editable=true /]
+            [@customForm.input name="" i18nkey="Search by user email" value="" className="checkEmail" type="text"  required=true editable=true /]
+          </div>
+          <div class="col-md-5">
+          <br />
+            <span class="infoService" style="height:25px;"></span>
           </div>
         </div>
         
@@ -42,22 +47,22 @@
             <hr />
           <div class="row">
             <div class="col-md-2">
-              [@customForm.input name="" i18nkey="Id" value="" className="" type="text"  required=true disabled=true editable=true /]
+              [@customForm.input name="" i18nkey="Id" value="" className="userId" type="text"  required=true disabled=true editable=true /]
             </div>
             <div class="col-md-3 col-md-offset-2">
-              [@customForm.input name="" i18nkey="First name" value="" className="" type="text"  required=true editable=true /]
+              [@customForm.input name="" i18nkey="First name" value="" className="userFirstName" type="text"  required=true disabled=true editable=true /]
             </div>
             <div class="col-md-3 form-group col-md-offset-1">
-              [@customForm.input name="" i18nkey="Last name" value="" className="" type="text"  required=true editable=true /]
+              [@customForm.input name="" i18nkey="Last name" value="" className="userLastName" type="text"  required=true disabled=true editable=true /]
             </div>
             <div class="col-md-3 ">
-              [@customForm.input name="" i18nkey="Email" value="" className="" type="text"  required=true editable=true /]
+              [@customForm.input name="" i18nkey="Email" value="" className="userEmail" type="text"  required=true disabled=true editable=true /]
             </div>
             <div class="col-md-3 col-md-offset-1">
-              [@customForm.input name="" i18nkey="Username" value="" className="" type="text"  required=true editable=true /]
+              [@customForm.input name="" i18nkey="Username" value="" className="userUsername" type="text"  required=true disabled=true editable=true /]
             </div>
             <div class="col-md-3 form-group col-md-offset-1">
-              [@customForm.input name="" i18nkey="Password" value="" className="" type="text"  required=true editable=true /]
+              [@customForm.input name="" i18nkey="Password" value="" className="userPassword" type="text"  required=true disabled=true editable=true /]
             </div>
           </div>
           <h4 style="text-align:center;">Configuration</h4>
@@ -65,13 +70,13 @@
             
             <div class="row form-group">
             <div class="col-md-2">
-              [@customForm.select name="" label=""  i18nkey="CGIAR use" listName="" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" " editable=true/]
+              [@customForm.select header=false name="" label=""  i18nkey="CGIAR use" listName="" keyFieldName="value"  displayFieldName="name"  multiple=false required=true disabled=true  className="cgiarUser" editable=true/]
             </div>
             <div class="col-md-2 col-md-offset-2">
-              [@customForm.select name="" label=""  i18nkey="Is active" listName="" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" " editable=true/]
+              [@customForm.select header=false name="" label=""  i18nkey="Is active" listName="" keyFieldName="value"  displayFieldName="name"  multiple=false required=true  className="isActive" editable=true/]
             </div>
             <div class="col-md-2 form-group col-md-offset-2">
-              [@customForm.select name="" label=""  i18nkey="Autosave" listName="" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" " editable=true/]
+              [@customForm.select header=false name="" label=""  i18nkey="Autosave" listName="" keyFieldName="value"  displayFieldName="name"  multiple=false required=true  className="autosave" editable=true/]
             </div>
           </div>
           
