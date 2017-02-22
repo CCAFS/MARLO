@@ -533,7 +533,8 @@ function addContactEvent(e) {
   // applyWordCounter($newElement.find("textarea.resp"), lWordsResp);
   // Activate the select2 plugin for new partners created
   $newElement.find("select").select2({
-    width: '100%'
+      templateResult: formatState,
+      width: '100%'
   });
 
   $.ajax({

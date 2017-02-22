@@ -19,7 +19,10 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
+import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import org.cgiar.ciat.auth.LDAPService;
@@ -45,16 +48,17 @@ public class SearchUserAction extends BaseAction {
 
   private UserManager userManager;
 
+
   private String userEmail;
 
 
   private User user;
 
-
   private Map<String, Object> userFound;
 
 
-  private Map<String, Object> crpUserFound;
+  private List<Map<String, Object>> crpUserFound;
+
 
   @Inject
   public SearchUserAction(APConfig config, UserManager userManager) {
@@ -66,7 +70,8 @@ public class SearchUserAction extends BaseAction {
   @Override
   public String execute() throws Exception {
     userFound = new HashMap<String, Object>();
-    crpUserFound = new HashMap<String, Object>();
+    crpUserFound = new ArrayList<>();;
+
     boolean emailExists = false;
     // We need to validate that the email does not exist yet into our database.
     emailExists = userManager.getUserByEmail(userEmail) == null ? false : true;
@@ -89,11 +94,63 @@ public class SearchUserAction extends BaseAction {
 
       if (!crpUsers.isEmpty()) {
         for (CrpUser crpUser : crpUsers) {
-          crpUserFound.put("crpUserId", crpUser.getId());
-          crpUserFound.put("crpId", crpUser.getCrp().getId());
-          crpUserFound.put("crpName", crpUser.getCrp().getName());
-          crpUserFound.put("crpAcronym", crpUser.getCrp().getAcronym());
+          Map<String, Object> crp = new HashMap<>();
+          crp.put("crpUserId", crpUser.getId());
+          crp.put("crpId", crpUser.getCrp().getId());
+          crp.put("crpName", crpUser.getCrp().getName());
+          crp.put("crpAcronym", crpUser.getCrp().getAcronym().toUpperCase());
+
+
+          List<UserRole> userRoles = new ArrayList<>(user.getUserRoles().stream()
+            .filter(ur -> ur.getRole().getCrp().getId() == crpUser.getCrp().getId()).collect(Collectors.toList()));
+
+          List<Map<String, Object>> roleUserFound = new ArrayList<>();;
+          for (UserRole userRole : userRoles) {
+            Map<String, Object> role = new HashMap<>();
+
+            role.put("role", userRole.getRole().getAcronym());
+            List<String> roleInfo = new ArrayList<>();
+            switch (userRole.getRole().getDescription()) {
+
+              case "ML":
+                List<LiaisonUser> liaisonMLUsers = new ArrayList<>(user.getLiasonsUsers().stream()
+                  .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().getCrpProgram() != null)
+                  .collect(Collectors.toList()));
+                for (LiaisonUser liaisonUser : liaisonMLUsers) {
+                  roleInfo.add(liaisonUser.getLiaisonInstitution().getComposedName());
+                }
+                role.put("roleInfo", roleInfo);
+                break;
+
+              case "CP":
+                List<LiaisonUser> liaisonCPUsers = new ArrayList<>(user.getLiasonsUsers().stream()
+                  .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().getCrpProgram() == null)
+                  .collect(Collectors.toList()));
+                for (LiaisonUser liaisonUser : liaisonCPUsers) {
+                  roleInfo.add(liaisonUser.getLiaisonInstitution().getComposedName());
+                }
+                role.put("roleInfo", roleInfo);
+                break;
+
+              case "PL":
+                List<ProjectPartnerPerson> partnerPersons = new ArrayList<>(user.getProjectPartnerPersons().stream()
+                  .filter(pp -> pp.isActive() && pp.getContactType().equals("PL")).collect(Collectors.toList()));
+                for (ProjectPartnerPerson partnerPerson : partnerPersons) {
+                  roleInfo.add(partnerPerson.getProjectPartner().getProject().getComposedName());
+                }
+                role.put("roleInfo", roleInfo);
+                break;
+
+            }
+
+            roleUserFound.add(role);
+          }
+          crp.put("role", roleUserFound);
+
+          crpUserFound.add(crp);
+
         }
+
 
       }
 
@@ -127,9 +184,11 @@ public class SearchUserAction extends BaseAction {
     return SUCCESS;
   }
 
-  public Map<String, Object> getCrpUserFound() {
+
+  public List<Map<String, Object>> getCrpUserFound() {
     return crpUserFound;
   }
+
 
   public String getUserEmail() {
     return userEmail;
@@ -140,13 +199,15 @@ public class SearchUserAction extends BaseAction {
     return userFound;
   }
 
+
   @Override
   public void prepare() throws Exception {
     Map<String, Object> parameters = this.getParameters();
     userEmail = StringUtils.trim(((String[]) parameters.get(APConstants.USER_EMAIL))[0]);
   }
 
-  public void setCrpUserFound(Map<String, Object> crpUserFound) {
+
+  public void setCrpUserFound(List<Map<String, Object>> crpUserFound) {
     this.crpUserFound = crpUserFound;
   }
 
