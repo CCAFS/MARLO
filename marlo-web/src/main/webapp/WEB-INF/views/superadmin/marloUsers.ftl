@@ -33,7 +33,7 @@
         <h4 class="sectionTitle">[@s.text name="Users" /]</h4>
         <div class="row">
           <div class="col-md-7 form-group">
-            [@customForm.input name="" i18nkey="User email" value="" className="" type="text"  required=true editable=true /]
+            [@customForm.input name="" i18nkey="User email" value="" className="checkEmail" type="text"  required=true editable=true /]
           </div>
         </div>
         

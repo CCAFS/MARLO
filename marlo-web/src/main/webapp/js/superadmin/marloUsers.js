@@ -24,4 +24,21 @@ function attachEvents() {
     });
   });
 
+  $(".checkEmail").on("keyup", function() {
+    var email = $(this).val();
+    $.ajax({
+        url: baseURL + "/searchUserByEmail.do",
+        type: 'GET',
+        data: {
+          userEmail: email
+        },
+        success: function(m) {
+          console.log(m);
+        },
+        error: function(e) {
+          console.log(e);
+        }
+    });
+  });
+
 }
