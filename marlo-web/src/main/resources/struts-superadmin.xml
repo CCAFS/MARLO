@@ -23,6 +23,15 @@
       </result>
     </action>
     
+    <action name="guestUser" class="org.cgiar.ccafs.marlo.action.superadmin.GuestUsersAction">
+      <interceptor-ref name="superAdminStack" />   
+      <result name="input">/WEB-INF/views/superadmin/marloUsers.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">guestUser</param>
+        <param name="edit">true</param>
+      </result>
+    </action>
+    
     <action name="marloCrossCutting" class="org.cgiar.ccafs.marlo.action.superadmin.SLOsAction">
       <interceptor-ref name="superAdminStack" />   
       <result name="input">/WEB-INF/views/superadmin/marloCrossCutting.ftl</result>

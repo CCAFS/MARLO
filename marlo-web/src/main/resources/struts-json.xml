@@ -157,6 +157,15 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		
+		<action name="searchUserByEmail"
+      class="org.cgiar.ccafs.marlo.action.json.global.SearchUserAction"
+      method="create">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
 
 		<action name="autosaveWriter"
 			class="org.cgiar.ccafs.marlo.action.json.autosave.AutoSaveWriterAction">
