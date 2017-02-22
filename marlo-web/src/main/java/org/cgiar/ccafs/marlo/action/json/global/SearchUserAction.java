@@ -103,7 +103,7 @@ public class SearchUserAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
     Map<String, Object> parameters = this.getParameters();
-    userEmail = StringUtils.trim(((String[]) parameters.get(APConstants.USER_DISABLED))[0]);
+    userEmail = StringUtils.trim(((String[]) parameters.get(APConstants.USER_EMAIL))[0]);
   }
 
   public void setUserFound(Map<String, Object> userFound) {
