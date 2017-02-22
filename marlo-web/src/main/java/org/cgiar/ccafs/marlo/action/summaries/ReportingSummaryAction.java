@@ -90,6 +90,7 @@ import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -584,41 +585,53 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
 
+
     if (!project.getActivities().isEmpty()) {
       for (Activity activity : project.getActivities().stream().sorted((d1, d2) -> Long.compare(d1.getId(), d2.getId()))
-        .filter(a -> a.isActive() && (a.getActivityStatus() == 2 || a.getActivityStatus() == 4))
+        .filter(
+          a -> a.isActive() && (a.getActivityStatus() == 2 || a.getActivityStatus() == 4 || a.getActivityStatus() == 3)
+            && a.getStartDate() != null && a.getEndDate() != null)
         .collect(Collectors.toList())) {
-        String institution = null;
-        String activity_leader = null;
-        String status = null;
-        String start_date = null;
-        String end_date = null;
-        String overall = null;
+        // Filter by date
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(activity.getStartDate());
+        Calendar cal2 = Calendar.getInstance();
+        cal2.setTime(activity.getEndDate());
+        if (cal.get(Calendar.YEAR) >= year || cal2.get(Calendar.YEAR) >= year) {
 
-        if (activity.getStartDate() != null) {
-          start_date = formatter.format(activity.getStartDate());
+
+          String institution = null;
+          String activity_leader = null;
+          String status = null;
+          String start_date = null;
+          String end_date = null;
+          String overall = null;
+
+          if (activity.getStartDate() != null) {
+            start_date = formatter.format(activity.getStartDate());
+          }
+
+          if (activity.getEndDate() != null) {
+            end_date = formatter.format(activity.getEndDate());
+          }
+
+          if (activity.getProjectPartnerPerson() != null) {
+            institution = activity.getProjectPartnerPerson().getProjectPartner().getInstitution().getComposedName();
+            activity_leader = activity.getProjectPartnerPerson().getUser().getComposedName() + "\n&lt;"
+              + activity.getProjectPartnerPerson().getUser().getEmail() + "&gt;";
+          }
+
+          status = ProjectStatusEnum.getValue(activity.getActivityStatus().intValue()).getStatus();
+
+          // Reporting
+          if (activity.getActivityProgress() != null && !activity.getActivityProgress().isEmpty()) {
+            overall = activity.getActivityProgress();
+          }
+
+
+          model.addRow(new Object[] {activity.getId(), activity.getTitle(), activity.getDescription(), start_date,
+            end_date, institution, activity_leader, status, overall});
         }
-
-        if (activity.getEndDate() != null) {
-          end_date = formatter.format(activity.getEndDate());
-        }
-
-        if (activity.getProjectPartnerPerson() != null) {
-          institution = activity.getProjectPartnerPerson().getProjectPartner().getInstitution().getComposedName();
-          activity_leader = activity.getProjectPartnerPerson().getUser().getComposedName() + "\n&lt;"
-            + activity.getProjectPartnerPerson().getUser().getEmail() + "&gt;";
-        }
-
-        status = ProjectStatusEnum.getValue(activity.getActivityStatus().intValue()).getStatus();
-
-        // Reporting
-        if (activity.getActivityProgress() != null && !activity.getActivityProgress().isEmpty()) {
-          overall = activity.getActivityProgress();
-        }
-
-
-        model.addRow(new Object[] {activity.getId(), activity.getTitle(), activity.getDescription(), start_date,
-          end_date, institution, activity_leader, status, overall});
       }
     }
 
@@ -923,9 +936,13 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       nonResearchPartneres = "", outputUsers = "", evidenceOutcome = "", outputUsed = "", referencesCase = "",
       explainIndicatorRelation = "", anex = "", owner = "", shared = "", indicators = "", year = "";
 
-    for (CaseStudyProject caseStudyProject : project.getCaseStudyProjects().stream()
-      .filter(csp -> csp.isActive() && csp.getCaseStudy() != null).collect(Collectors.toList())) {
+    for (CaseStudyProject caseStudyProject : project
+      .getCaseStudyProjects().stream().filter(csp -> csp.isActive() && csp.getCaseStudy() != null
+        && csp.getCaseStudy().getYear() != null && csp.getCaseStudy().getYear() >= this.year)
+      .collect(Collectors.toList())) {
       CaseStudy caseStudy = caseStudyProject.getCaseStudy();
+      System.out.println(this.year);
+      System.out.println(caseStudy.getYear());
 
       id = caseStudy.getId();
 
@@ -981,7 +998,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       indicators = indicatorsS.toString();
 
       if (caseStudy.getFile() != null) {
-        anex = this.getCaseStudyUrl(shared) + caseStudy.getFile().getFileName();
+        anex = (this.getCaseStudyUrl(shared) + caseStudy.getFile().getFileName()).replace(" ", "%20");
       }
 
 
@@ -1396,7 +1413,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
           if (deliverableDissemination.getDisseminationUrl() != null
             && !deliverableDissemination.getDisseminationUrl().isEmpty()) {
-            deliv_dissemination_url = deliverableDissemination.getDisseminationUrl();
+            deliv_dissemination_url = deliverableDissemination.getDisseminationUrl().replace(" ", "%20");
           }
 
           if (deliverableDissemination.getIsOpenAccess() != null) {
@@ -1570,12 +1587,13 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           .stream().filter(ds -> ds.isActive()).collect(Collectors.toList())) {
           if (deliverableDataSharingFile.getExternalFile() != null
             && !deliverableDataSharingFile.getExternalFile().isEmpty()) {
-            data_sharing += deliverableDataSharingFile.getExternalFile() + "<br>";
+            data_sharing += deliverableDataSharingFile.getExternalFile().replace(" ", "%20") + "<br>";
           }
 
           if (deliverableDataSharingFile.getFile() != null && deliverableDataSharingFile.getFile().isActive()) {
             data_sharing +=
-              this.getDeliverableDataSharingFilePath() + deliverableDataSharingFile.getFile().getFileName() + "<br>";
+              (this.getDeliverableDataSharingFilePath() + deliverableDataSharingFile.getFile().getFileName())
+                .replace(" ", "%20") + "<br>";
 
           }
         }
@@ -1600,13 +1618,14 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
               if (deliverableQualityCheck.getFileAssurance() != null
                 && deliverableQualityCheck.getFileAssurance().isActive()) {
                 qualityAssurance += "<br>● File: <font size=2 face='Segoe UI' color='blue'>"
-                  + this.getDeliverableUrl("Assurance", deliverable)
-                  + deliverableQualityCheck.getFileAssurance().getFileName() + "</font>";
+                  + (this.getDeliverableUrl("Assurance", deliverable)
+                    + deliverableQualityCheck.getFileAssurance().getFileName()).replace(" ", "%20")
+                  + "</font>";
               }
               if (deliverableQualityCheck.getLinkAssurance() != null
                 && !deliverableQualityCheck.getLinkAssurance().isEmpty()) {
                 qualityAssurance += "<br>● Link: <font size=2 face='Segoe UI' color='blue'>"
-                  + deliverableQualityCheck.getLinkAssurance() + "</font>";
+                  + deliverableQualityCheck.getLinkAssurance().replace(" ", "%20") + "</font>";
               }
             } else {
               qualityAssurance = "● " + deliverableQualityCheck.getQualityAssurance().getName();
@@ -1620,13 +1639,14 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
               if (deliverableQualityCheck.getFileDictionary() != null
                 && deliverableQualityCheck.getFileDictionary().isActive()) {
                 dataDictionary += "<br>● File: <font size=2 face='Segoe UI' color='blue'>"
-                  + this.getDeliverableUrl("Dictionary", deliverable)
-                  + deliverableQualityCheck.getFileDictionary().getFileName() + "</font>";
+                  + (this.getDeliverableUrl("Dictionary", deliverable)
+                    + deliverableQualityCheck.getFileDictionary().getFileName()).replace(" ", "%20")
+                  + "</font>";
               }
               if (deliverableQualityCheck.getLinkDictionary() != null
                 && !deliverableQualityCheck.getLinkDictionary().isEmpty()) {
                 dataDictionary += "<br>● Link: <font size=2 face='Segoe UI' color='blue'>"
-                  + deliverableQualityCheck.getLinkDictionary() + "</font>";
+                  + deliverableQualityCheck.getLinkDictionary().replace(" ", "%20") + "</font>";
               }
             } else {
               dataDictionary = "● " + deliverableQualityCheck.getDataDictionary().getName();
@@ -1638,12 +1658,13 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
             if (deliverableQualityCheck.getDataTools().getId() == 2) {
               if (deliverableQualityCheck.getFileTools() != null && deliverableQualityCheck.getFileTools().isActive()) {
                 tools += "<br>● File: <font size=2 face='Segoe UI' color='blue'>"
-                  + this.getDeliverableUrl("Tools", deliverable) + deliverableQualityCheck.getFileTools().getFileName()
+                  + (this.getDeliverableUrl("Tools", deliverable)
+                    + deliverableQualityCheck.getFileTools().getFileName()).replace(" ", "%20")
                   + "</font>";
               }
               if (deliverableQualityCheck.getLinkTools() != null && !deliverableQualityCheck.getLinkTools().isEmpty()) {
                 tools += "<br>● Link: <font size=2 face='Segoe UI' color='blue'>"
-                  + deliverableQualityCheck.getLinkTools() + "</font>";
+                  + deliverableQualityCheck.getLinkTools().replace(" ", "%20") + "</font>";
               }
             } else {
               tools = "● " + deliverableQualityCheck.getDataTools().getName();
@@ -2117,7 +2138,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       new TypedTableModel(new String[] {"id", "title", "partner_name", "leverage_year", "flagship", "budget"},
         new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class}, 0);
     for (ProjectLeverage projectLeverage : project.getProjectLeverages().stream()
-      .filter(pl -> pl.isActive() && pl.getYear() == year).collect(Collectors.toList())) {
+      .filter(pl -> pl.isActive() && pl.getYear() == this.year).collect(Collectors.toList())) {
       String title = null, partner_name = null, leverage_year = null, flagship = null, budget = null;
 
       if (projectLeverage.getTitle() != null && !projectLeverage.getTitle().isEmpty()) {
@@ -2694,7 +2715,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
 
 
-    for (ProjectHighlight projectHighlight : project.getProjectHighligths().stream().filter(ph -> ph.isActive())
+    for (ProjectHighlight projectHighlight : project.getProjectHighligths().stream()
+      .filter(ph -> ph.isActive() && ph.getYear() != null && ph.getYear() >= this.getYear())
       .collect(Collectors.toList())) {
       String title = null, author = null, subject = null, publisher = null, highlights_types = "",
         highlights_is_global = null, start_date = null, end_date = null, keywords = null, countries = "", image = "",
@@ -2784,7 +2806,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           url = null;
         }
         if (url != null) {
-          System.out.println("Project: " + projectHighlight.getProject().getId() + " PH: " + projectHighlight.getId());
+          // System.out.println("Project: " + projectHighlight.getProject().getId() + " PH: " +
+          // projectHighlight.getId());
           try {
             imageFile = Image.getInstance(url);
             // System.out.println("W: " + imageFile.getWidth() + " \nH: " + imageFile.getHeight());
@@ -2906,7 +2929,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         }
 
         if (projectOutcomePandr.getFile() != null) {
-          file = this.getProjectOutcomeUrl() + projectOutcomePandr.getFile().getFileName();
+          file = (this.getProjectOutcomeUrl() + projectOutcomePandr.getFile().getFileName()).replace(" ", "%20");
         }
 
       }
