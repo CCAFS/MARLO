@@ -76,7 +76,12 @@
             <div class="form-group">
               <div class="row form-group" style="display:${showOutcomeValue?string('block', 'none')}">
                 <div class="col-md-5">
-                  [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className="targetValue" required=true editable=editable /]
+                  [#if editable]
+                    [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className="targetValue" required=true  /]
+                  [#else]
+                    <label for="">[@s.text name="projectOutcome.expectedValue" /]:</label>
+                    <div class="input"><p>${(projectOutcome.expectedValue)!'Prefilled if available'}</p></div>
+                  [/#if]
                 </div>
                 <div class="col-md-7">
                   <div class="select">
@@ -99,7 +104,14 @@
             <h5 class="sectionSubTitle">Achieved Target</h5>
             <div class="form-group">
               <div class="row form-group" style="display:${showOutcomeValue?string('block', 'none')}">
-                <div class="col-md-5">[@customForm.input name="projectOutcome.achievedValue" type="text"  placeholder="" className="targetValue ${reportingActive?string('fieldFocus','')}" required=true editable=editable /]</div>
+                <div class="col-md-5">
+                  [#if editable]
+                    [@customForm.input name="projectOutcome.achievedValue" type="text"  placeholder="" className="targetValue ${reportingActive?string('fieldFocus','')}" required=true /]
+                  [#else]
+                    <label for="">[@s.text name="projectOutcome.achievedValue" /]:</label>
+                    <div class="input"><p>${(projectOutcome.achievedValue)!'Prefilled if available'}</p></div>
+                  [/#if]
+                </div>
                 <div class="col-md-7">
                   <div class="select">
                     <label for="">[@s.text name="projectOutcome.achievedUnit" /]:</label>

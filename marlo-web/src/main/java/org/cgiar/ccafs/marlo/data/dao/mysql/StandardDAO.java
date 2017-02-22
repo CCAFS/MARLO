@@ -107,7 +107,7 @@ public class StandardDAO {
       Query query = session.createSQLQuery(sqlQuery);
       System.out.println(sqlQuery);
       query.executeUpdate();
-
+      tx.commit();
       return true;
     } catch (Exception e) {
       if (tx != null) {

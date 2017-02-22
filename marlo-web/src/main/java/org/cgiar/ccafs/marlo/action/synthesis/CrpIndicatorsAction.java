@@ -22,11 +22,13 @@ import org.cgiar.ccafs.marlo.data.manager.CrpIndicatorReportManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpIndicatorTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.IpLiaisonInstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpIndicatorReport;
 import org.cgiar.ccafs.marlo.data.model.CrpIndicatorType;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonUser;
+import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -82,6 +84,7 @@ public class CrpIndicatorsAction extends BaseAction {
 
 
   private Long liaisonInstitutionID;
+  private IpProgramManager ipProgramManager;
 
   private Long indicatorTypeID;
 
@@ -93,12 +96,13 @@ public class CrpIndicatorsAction extends BaseAction {
   @Inject
   public CrpIndicatorsAction(APConfig config, CrpManager crpManager, CrpIndicatorReportManager indicatorsReportManager,
     IpLiaisonInstitutionManager liaisonInstitutionManager, CrpIndicatorTypeManager crpIndicatorTypeManager,
-    CrpIndicatorsValidator validator, AuditLogManager auditLogManager) {
+    CrpIndicatorsValidator validator, AuditLogManager auditLogManager, IpProgramManager ipProgramManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.indicatorsReportManager = indicatorsReportManager;
     this.validator = validator;
+    this.ipProgramManager = ipProgramManager;
     this.auditLogManager = auditLogManager;
     this.crpIndicatorTypeManager = crpIndicatorTypeManager;
   }
@@ -192,6 +196,18 @@ public class CrpIndicatorsAction extends BaseAction {
     return transaction;
   }
 
+  public boolean isFlagship() {
+    boolean isFP = false;
+    if (currentLiaisonInstitution.getIpProgram() != null) {
+      IpProgram ipProgram = ipProgramManager.getIpProgramById(currentLiaisonInstitution.getIpProgram().longValue());
+      if (ipProgram.isFlagshipProgram()) {
+        isFP = true;
+      }
+    }
+    return isFP;
+  }
+
+
   @Override
   public String next() {
     String result = this.save();
@@ -201,7 +217,6 @@ public class CrpIndicatorsAction extends BaseAction {
       return result;
     }
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -246,23 +261,33 @@ public class CrpIndicatorsAction extends BaseAction {
 
         currentLiaisonInstitution.setIndicatorReports((currentLiaisonInstitution.getCrpIndicatorReportses().stream()
           .filter(c -> c.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList())));
-        List<CrpIndicatorReport> crpIndicatorReports = new ArrayList<>();
-        crpIndicatorReports.addAll(currentLiaisonInstitution.getIndicatorReports());
-        for (CrpIndicatorReport crpIndicatorReport : crpIndicatorReports) {
-          switch (crpIndicatorReport.getCrpIndicator().getId().intValue()) {
-            case 1:
-            case 2:
-            case 3:
-            case 4:
-            case 5:
-            case 6:
-              currentLiaisonInstitution.getIndicatorReports().remove(crpIndicatorReport);
-              break;
-
-            default:
-              break;
+        boolean isFP = false;
+        if (currentLiaisonInstitution.getIpProgram() != null) {
+          IpProgram ipProgram = ipProgramManager.getIpProgramById(currentLiaisonInstitution.getIpProgram().longValue());
+          if (ipProgram.isFlagshipProgram()) {
+            isFP = true;
           }
         }
+        if (!isFP) {
+          List<CrpIndicatorReport> crpIndicatorReports = new ArrayList<>();
+          crpIndicatorReports.addAll(currentLiaisonInstitution.getIndicatorReports());
+          for (CrpIndicatorReport crpIndicatorReport : crpIndicatorReports) {
+            switch (crpIndicatorReport.getCrpIndicator().getId().intValue()) {
+              case 1:
+              case 2:
+              case 3:
+              case 4:
+              case 5:
+              case 6:
+                currentLiaisonInstitution.getIndicatorReports().remove(crpIndicatorReport);
+                break;
+
+              default:
+                break;
+            }
+          }
+        }
+
         currentLiaisonInstitution.getIndicatorReports()
           .sort((p1, p2) -> p1.getCrpIndicator().getId().compareTo(p2.getCrpIndicator().getId()));
       } else {
@@ -314,6 +339,35 @@ public class CrpIndicatorsAction extends BaseAction {
           currentLiaisonInstitution.setIndicatorReports(indicatorReports);
         }
 
+        boolean isFP = false;
+        if (currentLiaisonInstitution.getIpProgram() != null) {
+          IpProgram ipProgram = ipProgramManager.getIpProgramById(currentLiaisonInstitution.getIpProgram().longValue());
+          if (ipProgram.isFlagshipProgram()) {
+            isFP = true;
+          }
+        }
+        if (!isFP) {
+
+          List<CrpIndicatorReport> crpIndicatorReports = new ArrayList<>();
+          crpIndicatorReports.addAll(currentLiaisonInstitution.getIndicatorReports());
+          for (CrpIndicatorReport crpIndicatorReport : crpIndicatorReports) {
+            switch (crpIndicatorReport.getCrpIndicator().getId().intValue()) {
+              case 1:
+              case 2:
+              case 3:
+              case 4:
+              case 5:
+              case 6:
+                currentLiaisonInstitution.getIndicatorReports().remove(crpIndicatorReport);
+                break;
+
+              default:
+                break;
+            }
+          }
+
+        }
+
         this.setDraft(false);
       }
     }
@@ -336,6 +390,7 @@ public class CrpIndicatorsAction extends BaseAction {
 
     for (CrpIndicatorReport crpIndicatorReport : currentLiaisonInstitution.getIndicatorReports()) {
       crpIndicatorReport.setIpLiaisonInstitution(ipLiaisonInstitution);
+      crpIndicatorReport.setLastUpdate(new Date());
       indicatorsReportManager.saveCrpIndicatorReport(crpIndicatorReport);
     }
 
