@@ -110,14 +110,14 @@ public class SearchUserAction extends BaseAction {
 
             role.put("role", userRole.getRole().getAcronym());
             List<String> roleInfo = new ArrayList<>();
-            switch (userRole.getRole().getAcronym()) {
+            switch (userRole.getRole().getDescription()) {
 
               case "ML":
                 List<LiaisonUser> liaisonMLUsers = new ArrayList<>(user.getLiasonsUsers().stream()
                   .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().getCrpProgram() != null)
                   .collect(Collectors.toList()));
                 for (LiaisonUser liaisonUser : liaisonMLUsers) {
-                  roleInfo.add(liaisonUser.getComposedName());
+                  roleInfo.add(liaisonUser.getLiaisonInstitution().getComposedName());
                 }
                 role.put("roleInfo", roleInfo);
                 break;
@@ -127,7 +127,7 @@ public class SearchUserAction extends BaseAction {
                   .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().getCrpProgram() == null)
                   .collect(Collectors.toList()));
                 for (LiaisonUser liaisonUser : liaisonCPUsers) {
-                  roleInfo.add(liaisonUser.getComposedName());
+                  roleInfo.add(liaisonUser.getLiaisonInstitution().getComposedName());
                 }
                 role.put("roleInfo", roleInfo);
                 break;
