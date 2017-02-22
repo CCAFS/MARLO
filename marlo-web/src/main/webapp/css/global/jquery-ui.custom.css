@@ -746,6 +746,19 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
 .ui-autocomplete a{background-color:#ffffff;color:#525252;}
 .ui-autocomplete .ui-state-hover{background:#47939C;color:#ffffff;}
 
+.ui-autocomplete {
+    max-height: 200px;
+    overflow-y: auto;
+    /* prevent horizontal scrollbar */
+    overflow-x: hidden;
+}
+/* IE 6 doesn't support max-height
+* we use height instead, but this forces the menu to always be this tall
+*/
+* html .ui-autocomplete {
+  height: 100px;
+}
+
 /* Datepicker */
 .ui-datepicker {border-color:#47939C;}
 .ui-datepicker .ui-datepicker-header{background-color:#47939C;color:#ffffff;}
