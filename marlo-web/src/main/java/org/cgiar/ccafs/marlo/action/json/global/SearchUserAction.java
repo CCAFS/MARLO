@@ -18,14 +18,18 @@ package org.cgiar.ccafs.marlo.action.json.global;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import org.cgiar.ciat.auth.LDAPService;
 import org.cgiar.ciat.auth.LDAPUser;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
@@ -43,9 +47,14 @@ public class SearchUserAction extends BaseAction {
 
   private String userEmail;
 
+
   private User user;
 
+
   private Map<String, Object> userFound;
+
+
+  private Map<String, Object> crpUserFound;
 
   @Inject
   public SearchUserAction(APConfig config, UserManager userManager) {
@@ -53,9 +62,11 @@ public class SearchUserAction extends BaseAction {
     this.userManager = userManager;
   }
 
+
   @Override
   public String execute() throws Exception {
     userFound = new HashMap<String, Object>();
+    crpUserFound = new HashMap<String, Object>();
     boolean emailExists = false;
     // We need to validate that the email does not exist yet into our database.
     emailExists = userManager.getUserByEmail(userEmail) == null ? false : true;
@@ -71,6 +82,19 @@ public class SearchUserAction extends BaseAction {
       userFound.put("email", user.getEmail());
       userFound.put("cgiar", user.isCgiarUser());
       userFound.put("active", user.isActive());
+
+      List<CrpUser> crpUsers =
+        new ArrayList<CrpUser>(user.getCrpUsers().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+      if (!crpUsers.isEmpty()) {
+        for (CrpUser crpUser : crpUsers) {
+          crpUserFound.put("crpUserId", crpUser.getId());
+          crpUserFound.put("crpId", crpUser.getCrp().getId());
+          crpUserFound.put("crpName", crpUser.getCrp().getName());
+          crpUserFound.put("crpAcronym", crpUser.getCrp().getAcronym());
+        }
+
+      }
 
       return SUCCESS;
     } else {
@@ -102,6 +126,14 @@ public class SearchUserAction extends BaseAction {
     return SUCCESS;
   }
 
+  public Map<String, Object> getCrpUserFound() {
+    return crpUserFound;
+  }
+
+  public String getUserEmail() {
+    return userEmail;
+  }
+
 
   public Map<String, Object> getUserFound() {
     return userFound;
@@ -111,6 +143,15 @@ public class SearchUserAction extends BaseAction {
   public void prepare() throws Exception {
     Map<String, Object> parameters = this.getParameters();
     userEmail = StringUtils.trim(((String[]) parameters.get(APConstants.USER_EMAIL))[0]);
+  }
+
+  public void setCrpUserFound(Map<String, Object> crpUserFound) {
+    this.crpUserFound = crpUserFound;
+  }
+
+
+  public void setUserEmail(String userEmail) {
+    this.userEmail = userEmail;
   }
 
   public void setUserFound(Map<String, Object> userFound) {
