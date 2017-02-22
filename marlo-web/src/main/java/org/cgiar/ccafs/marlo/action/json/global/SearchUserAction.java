@@ -57,8 +57,6 @@ public class SearchUserAction extends BaseAction {
 
   private List<Map<String, Object>> crpUserFound;
 
-  private List<Map<String, Object>> roleUserFound;
-
 
   @Inject
   public SearchUserAction(APConfig config, UserManager userManager) {
@@ -71,7 +69,7 @@ public class SearchUserAction extends BaseAction {
   public String execute() throws Exception {
     userFound = new HashMap<String, Object>();
     crpUserFound = new ArrayList<>();;
-    roleUserFound = new ArrayList<>();
+
     boolean emailExists = false;
     // We need to validate that the email does not exist yet into our database.
     emailExists = userManager.getUserByEmail(userEmail) == null ? false : true;
@@ -98,14 +96,16 @@ public class SearchUserAction extends BaseAction {
           crp.put("crpUserId", crpUser.getId());
           crp.put("crpId", crpUser.getCrp().getId());
           crp.put("crpName", crpUser.getCrp().getName());
-          crp.put("crpAcronym", crpUser.getCrp().getAcronym());
+          crp.put("crpAcronym", crpUser.getCrp().getAcronym().toUpperCase());
 
 
           List<UserRole> userRoles = new ArrayList<>(user.getUserRoles().stream()
-            .filter(ur -> ur.getRole().getCrp().equals(crpUser)).collect(Collectors.toList()));
+            .filter(ur -> ur.getRole().getCrp().getId() == crpUser.getCrp().getId()).collect(Collectors.toList()));
 
+          List<Map<String, Object>> roleUserFound = new ArrayList<>();;
           for (UserRole userRole : userRoles) {
             Map<String, Object> role = new HashMap<>();
+
             role.put("role", userRole.getRole().getAcronym());
             List<String> roleInfo = new ArrayList<>();
             switch (userRole.getRole().getAcronym()) {
