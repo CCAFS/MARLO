@@ -18,7 +18,7 @@
             <column name="funding_source_id" />
         </many-to-one>
         <property name="budget" type="java.lang.Double">
-            <column name="budget" precision="20" scale="0" />
+            <column name="budget" precision="20" scale="5" />
         </property>
         <property name="year" type="java.lang.Integer">
             <column name="year" />
