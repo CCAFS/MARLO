@@ -27,6 +27,7 @@ import org.cgiar.ciat.auth.LDAPUser;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -46,6 +47,7 @@ public class SearchUserAction extends BaseAction {
 
   private Map<String, Object> userFound;
 
+  @Inject
   public SearchUserAction(APConfig config, UserManager userManager) {
     super(config);
     this.userManager = userManager;
