@@ -73,6 +73,7 @@
                 [#assign customIndex = (action.getIndicatorIndex(indicatorReport.crpIndicator.id,indicatorReport.crpIndicator.crpIndicatorType.id))!-1 ]
                 [#assign customName= "currentLiaisonInstitution.indicatorReports[${customIndex}]"]
                 <div class="simpleBox">
+                  [#-- title --]
                   <h6 class="title" style="font-size: 1.2em;margin-bottom: 5px;">${indicatorReport.crpIndicator.id}.  ${indicatorReport.crpIndicator.name}
                     [#if indicatorReport.crpIndicator.description?has_content]
                       <a id="showIndicatorDesc-${indicatorReport.crpIndicator.id}" class="showIndicatorDesc" href="#"><img src="${baseUrl}/images/global/icon-info.png" title="Show indicator description" alt="" /></a>
@@ -81,6 +82,16 @@
                   [#if indicatorReport.crpIndicator.description?has_content]
                     <div class="fullPartBlock"><p id="indicatorDesc-${indicatorReport.crpIndicator.id}" >${indicatorReport.crpIndicator.description}</p></div>
                   [/#if]
+                  
+                  [#-- Label --]
+                  [#if action.isFlagship()]
+                    [#if indicatorReport.crpIndicator.id lte 6] 
+                      <div class="form-group"><span class="label label-warning"><strong> [@s.text name="synthesis.crpIndicators.lookAtCenter" /]</strong></span></div>
+                    [#else]
+                      <div class="form-group"><span class="label label-info"><strong> [@s.text name="synthesis.crpIndicators.reportOnFlagship" /]</strong></span></div>
+                    [/#if]
+                  [/#if]
+                  
                   [#-- Targets --]
                   <div class="fullPartBlock">
                     <div class="thirdPartBlock">[@customForm.input name="${customName}.target" type="text" i18nkey="synthesis.crpIndicators.target" className="isNumeric" help="form.message.numericValue" paramText="${reportingYear}" editable=false /]</div>
