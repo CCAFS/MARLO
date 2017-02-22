@@ -79,7 +79,7 @@
                     [/#if]
                   </h6>
                   [#if indicatorReport.crpIndicator.description?has_content]
-                    <div class="fullPartBlock"><p id="indicatorDesc-${indicatorReport.crpIndicator.id}" style="display:none">${indicatorReport.crpIndicator.description}</p></div>
+                    <div class="fullPartBlock"><p id="indicatorDesc-${indicatorReport.crpIndicator.id}" >${indicatorReport.crpIndicator.description}</p></div>
                   [/#if]
                   [#-- Targets --]
                   <div class="fullPartBlock">
