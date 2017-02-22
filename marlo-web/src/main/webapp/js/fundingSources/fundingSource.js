@@ -81,6 +81,42 @@ function init() {
     $uploadBlock.find('.fileUpload').show();
     $('input#fileID').val('');
   });
+
+  // Principal investigator auto-complete
+  addContactAutoComplete();
+}
+
+function addContactAutoComplete() {
+  var autocompleteOptions = {
+      source: searchSource,
+      minLength: 2,
+      select: selectUser
+  }
+
+  function searchSource(request,response) {
+    $.ajax({
+        url: baseURL + '/searchUsers.do',
+        data: {
+          q: request.term
+        },
+        success: function(data) {
+          response(data.users);
+        }
+    });
+  }
+
+  function selectUser(event,ui) {
+    $("input.contactName").val(ui.item.name);
+    $("input.contactEmail").val(ui.item.email);
+    return false;
+  }
+
+  function renderItem(ul,item) {
+    return $("<li>").append("<div>" + escapeHtml(item.composedName) + "</div>").appendTo(ul);
+  }
+
+  $("input.contactName").autocomplete(autocompleteOptions).autocomplete("instance")._renderItem = renderItem;
+  $("input.contactEmail").autocomplete(autocompleteOptions).autocomplete("instance")._renderItem = renderItem;
 }
 
 // Add a new lead partner element

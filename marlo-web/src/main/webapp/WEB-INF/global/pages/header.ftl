@@ -76,7 +76,7 @@
               <span class="label label-danger text-left">Testing Environment</span> 
               [#-- Planning / Reporting tag --]
               [#if reportingActive??]
-                <span class="label label-${(reportingActive)?string('default','primary')} text-left">${(reportingActive)?string('Reporting','Planning')}</span> 
+                <span class="label label-${(reportingActive)?string('default','primary')} text-left">${(reportingActive)?string('Reporting','Planning')} ${(currentCycleYear)!}</span> 
               [/#if]
               </h4>
             [/#if]

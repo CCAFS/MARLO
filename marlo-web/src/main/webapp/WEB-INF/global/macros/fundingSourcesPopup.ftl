@@ -90,8 +90,8 @@
           </div>
           <div class="form-group">
             <div class="row">
-              <div class="col-md-6">[@customForm.input name="contactName" i18nkey="projectCofunded.contactName" required=true/]</div>
-              <div class="col-md-6">[@customForm.input name="contactEmail" i18nkey="projectCofunded.contactEmail" required=true/]</div>
+              <div class="col-md-6">[@customForm.input name="contactName" i18nkey="projectCofunded.contactName" className="contactName" required=true/]</div>
+              <div class="col-md-6">[@customForm.input name="contactEmail" i18nkey="projectCofunded.contactEmail" className="contactEmail" required=true/]</div>
             </div>
           </div>
           <div class="form-group">
