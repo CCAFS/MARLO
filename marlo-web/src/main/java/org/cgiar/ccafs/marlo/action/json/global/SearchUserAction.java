@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import org.cgiar.ciat.auth.LDAPService;
@@ -56,6 +57,8 @@ public class SearchUserAction extends BaseAction {
 
   private Map<String, Object> crpUserFound;
 
+  private List<Map<String, Object>> roleUserFound;
+
   @Inject
   public SearchUserAction(APConfig config, UserManager userManager) {
     super(config);
@@ -67,6 +70,7 @@ public class SearchUserAction extends BaseAction {
   public String execute() throws Exception {
     userFound = new HashMap<String, Object>();
     crpUserFound = new HashMap<String, Object>();
+    roleUserFound = new ArrayList<>();
     boolean emailExists = false;
     // We need to validate that the email does not exist yet into our database.
     emailExists = userManager.getUserByEmail(userEmail) == null ? false : true;
@@ -93,7 +97,26 @@ public class SearchUserAction extends BaseAction {
           crpUserFound.put("crpId", crpUser.getCrp().getId());
           crpUserFound.put("crpName", crpUser.getCrp().getName());
           crpUserFound.put("crpAcronym", crpUser.getCrp().getAcronym());
+
+
+          List<UserRole> userRoles = new ArrayList<>(user.getUserRoles().stream()
+            .filter(ur -> ur.getRole().getCrp().equals(crpUser)).collect(Collectors.toList()));
+
+          for (UserRole userRole : userRoles) {
+            Map<String, Object> role = new HashMap<>();
+            role.put("role", userRole.getRole().getAcronym());
+            switch (userRole.getRole().getAcronym()) {
+              case "ML":
+
+                break;
+
+            }
+
+            roleUserFound.add(role);
+          }
+
         }
+
 
       }
 
