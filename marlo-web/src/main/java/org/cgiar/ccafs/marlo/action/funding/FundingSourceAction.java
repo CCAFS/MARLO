@@ -404,7 +404,18 @@ public class FundingSourceAction extends BaseAction {
       }
 
 
-      institutionsDonors = institutionManager.findAll();
+      if (fundingSource.getBudgetType().getId().longValue() == 1) {
+
+        institutionsDonors = institutionManager.findAll().stream()
+          .filter(i -> i.isActive() && i.getHeadquarter() == null && i.getInstitutionType().getId().intValue() == 3)
+          .collect(Collectors.toList());
+      } else {
+        institutionsDonors = institutionManager.findAll().stream()
+          .filter(i -> i.isActive() && i.getHeadquarter() == null && i.getInstitutionType().getId().intValue() != 3)
+          .collect(Collectors.toList());
+      }
+
+
       institutions.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
       institutionsDonors.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
 
