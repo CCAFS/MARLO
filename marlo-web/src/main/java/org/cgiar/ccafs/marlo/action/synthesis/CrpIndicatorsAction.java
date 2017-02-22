@@ -196,6 +196,18 @@ public class CrpIndicatorsAction extends BaseAction {
     return transaction;
   }
 
+  public boolean isFlagship() {
+    boolean isFP = false;
+    if (currentLiaisonInstitution.getIpProgram() != null) {
+      IpProgram ipProgram = ipProgramManager.getIpProgramById(currentLiaisonInstitution.getIpProgram().longValue());
+      if (ipProgram.isFlagshipProgram()) {
+        isFP = true;
+      }
+    }
+    return isFP;
+  }
+
+
   @Override
   public String next() {
     String result = this.save();
@@ -205,7 +217,6 @@ public class CrpIndicatorsAction extends BaseAction {
       return result;
     }
   }
-
 
   @Override
   public void prepare() throws Exception {
