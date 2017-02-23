@@ -108,9 +108,9 @@ public class SearchUserAction extends BaseAction {
           for (UserRole userRole : userRoles) {
             Map<String, Object> role = new HashMap<>();
 
-            role.put("role", userRole.getRole().getAcronym());
+            role.put("role", userRole.getRole().getDescription());
             List<String> roleInfo = new ArrayList<>();
-            switch (userRole.getRole().getDescription()) {
+            switch (userRole.getRole().getAcronym()) {
 
               case "ML":
                 List<LiaisonUser> liaisonMLUsers = new ArrayList<>(user.getLiasonsUsers().stream()
@@ -185,6 +185,8 @@ public class SearchUserAction extends BaseAction {
           userFound.put("username", userLDAP.getLogin().toLowerCase());
           userFound.put("email", userLDAP.getEmail().toLowerCase());
           userFound.put("cgiar", true);
+          userFound.put("active", false);
+          userFound.put("autosave", false);
 
         } else {
           userFound.put("newUser", false);

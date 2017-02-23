@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.google.gson.annotations.Expose;
@@ -47,6 +48,7 @@ public class User implements java.io.Serializable, IAuditLog {
   @Expose
   private String username;
 
+
   @Expose
   private String email;
 
@@ -66,11 +68,13 @@ public class User implements java.io.Serializable, IAuditLog {
 
   private String modificationJustification;
 
-
   private boolean active;
 
   private Date lastLogin;
+
+
   private Set<UserRole> userRoles = new HashSet<UserRole>(0);
+
   private Set<CrpUser> crpUsers = new HashSet<CrpUser>(0);
   private Set<CrpProgramLeader> crpProgramLeaders = new HashSet<CrpProgramLeader>(0);
   private Set<CrpSitesLeader> crpSitesLeaders = new HashSet<CrpSitesLeader>(0);
@@ -79,11 +83,10 @@ public class User implements java.io.Serializable, IAuditLog {
   private Set<IpLiaisonUser> ipLiaisonUsers = new HashSet<IpLiaisonUser>(0);
   private Set<Submission> submissions = new HashSet<Submission>(0);
   private Set<ProjectPartnerPerson> projectPartnerPersons = new HashSet<ProjectPartnerPerson>(0);
-
+  private List<CrpUser> crpUser;
 
   public User() {
   }
-
 
   public User(String email, String password, boolean cgiarUser, boolean active) {
     this.email = email;
@@ -91,6 +94,7 @@ public class User implements java.io.Serializable, IAuditLog {
     this.cgiarUser = cgiarUser;
     this.active = active;
   }
+
 
   public User(String firstName, String lastName, String username, String email, String password, boolean cgiarUser,
     User createdBy, boolean active, Date lastLogin, Set<UserRole> userRoles, Set<CrpUser> crpUsers) {
@@ -107,6 +111,7 @@ public class User implements java.io.Serializable, IAuditLog {
     this.userRoles = userRoles;
     this.crpUsers = crpUsers;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -130,11 +135,9 @@ public class User implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
   public Date getActiveSince() {
     return activeSince;
   }
-
 
   /**
    * This method returns the user's full name.
@@ -146,10 +149,12 @@ public class User implements java.io.Serializable, IAuditLog {
     return this.firstName + " " + this.lastName;
   }
 
+
   public String getComposedID() {
     String composedId = this.email.split("@")[0] + "-" + this.id;
     return composedId;
   }
+
 
   /**
    * This method returns a composed way to show a User.
@@ -168,11 +173,9 @@ public class User implements java.io.Serializable, IAuditLog {
     return createdBy;
   }
 
-
   public Set<CrpClusterActivityLeader> getCrpClusterActivityLeaders() {
     return crpClusterActivityLeaders;
   }
-
 
   public Set<CrpProgramLeader> getCrpProgramLeaders() {
     return crpProgramLeaders;
@@ -184,9 +187,15 @@ public class User implements java.io.Serializable, IAuditLog {
   }
 
 
+  public List<CrpUser> getCrpUser() {
+    return crpUser;
+  }
+
+
   public Set<CrpUser> getCrpUsers() {
     return this.crpUsers;
   }
+
 
   public String getEmail() {
     return this.email;
@@ -229,7 +238,6 @@ public class User implements java.io.Serializable, IAuditLog {
     return modificationJustification;
   }
 
-
   @Override
   public User getModifiedBy() {
     return modifiedBy;
@@ -245,14 +253,15 @@ public class User implements java.io.Serializable, IAuditLog {
     return projectPartnerPersons;
   }
 
+
   public Set<Submission> getSubmissions() {
     return submissions;
   }
 
-
   public String getUsername() {
     return this.username;
   }
+
 
   public Set<UserRole> getUserRoles() {
     return this.userRoles;
@@ -271,7 +280,6 @@ public class User implements java.io.Serializable, IAuditLog {
     return cgiarUser;
   }
 
-
   public void setActive(boolean active) {
     this.active = active;
   }
@@ -280,6 +288,7 @@ public class User implements java.io.Serializable, IAuditLog {
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
+
 
   public void setAutoSave(boolean autoSave) {
     this.autoSave = autoSave;
@@ -303,6 +312,10 @@ public class User implements java.io.Serializable, IAuditLog {
 
   public void setCrpSitesLeaders(Set<CrpSitesLeader> crpSitesLeaders) {
     this.crpSitesLeaders = crpSitesLeaders;
+  }
+
+  public void setCrpUser(List<CrpUser> crpUser) {
+    this.crpUser = crpUser;
   }
 
 
