@@ -74,12 +74,20 @@ public class GuestUsersAction extends BaseAction {
     crps = new ArrayList<>(
       crpManager.findAll().stream().filter(c -> c.isActive() && c.isMarlo()).collect(Collectors.toList()));
 
+
   }
 
   @Override
   public String save() {
-    // TODO Auto-generated method stub
-    return super.save();
+
+    if (true) {
+
+      User newUser = new User();
+
+
+    }
+
+    return SUCCESS;
   }
 
   public void setCigarUser(boolean cigarUser) {

@@ -8,7 +8,7 @@
 
 [#assign standards= [
   { 'slug': 'marloBoard',   'name': 'menu.superadmin.board', 'action': 'marloBoard',   'active': true },
-  { 'slug': 'users',            'name': 'Partner Types', 'action': 'marloUsers',   'active': false },
+  { 'slug': 'users.types',            'name': 'Partner Types', 'action': 'marloUsers',   'active': false },
   { 'slug': 'permissions',    'name': 'Locations', 'action': 'marloPermissions',   'active': false }
 ]/]
 

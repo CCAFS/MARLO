@@ -30,6 +30,8 @@
       <div class="col-md-9">
         [@s.form action=actionName enctype="multipart/form-data" ]
         
+        <input type="hidden" class="isNewUser" name="isNewUser" value=""/>
+        
         [#-- System Level Outcomes --]
         <h4 class="sectionTitle">[@s.text name="Users" /]</h4>
         <div class="row">
@@ -69,7 +71,7 @@
             
             <div class="row form-group">
             <div class="col-md-2">
-              [@customForm.select header=false name="user.cgiarUser" label=""  i18nkey="CGIAR use" listName="" keyFieldName="value"  displayFieldName="name"  multiple=false required=true disabled=true  className="cgiarUser" editable=true/]
+              [@customForm.select header=false name="user.cgiarUser" label=""  i18nkey="CGIAR user" listName="" keyFieldName="value"  displayFieldName="name"  multiple=false required=true disabled=true  className="cgiarUser" editable=true/]
             </div>
             <div class="col-md-2 col-md-offset-2">
               [@customForm.select header=false name="user.active" label=""  i18nkey="Is active" listName="" keyFieldName="value"  displayFieldName="name"  multiple=false required=true  className="isActive" editable=true/]
@@ -81,7 +83,6 @@
           
             <hr />
           <h4 style="text-align:center;">CRPs</h4>
-            
           <div class="row">
             <div class="col-md-12 crpList">
             </div>
