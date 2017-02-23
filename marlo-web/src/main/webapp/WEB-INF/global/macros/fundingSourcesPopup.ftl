@@ -136,7 +136,7 @@
       <li id="userTemplate">
         <div class="row">
           <div class="col-md-1">
-            F<span class="contactId">{userId}</span>
+            FS<span class="contactId">{userId}</span>
           </div>
           <div class="col-md-9">
             <small><span class="red noBudgetMessage pull-left glyphicon glyphicon-exclamation-sign" style="display:none" title="Insufficient funds for {year}"></span></small>

@@ -23,7 +23,7 @@
         <tr>
         [#-- ID --]
         <td class="projectId">
-          <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='fundingSourceID']${project.id}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]">F${project.id}</a>
+          <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='fundingSourceID']${project.id}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]">FS${project.id}</a>
         </td>
           [#-- Funding source Title --]
           <td class="left"> 

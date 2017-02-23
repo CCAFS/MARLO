@@ -47,6 +47,7 @@ function attachEvents() {
               $(".infoService").text("Found user.");
               enableFields(true);
               updateData(m.userFound);
+              updateCrps(m.crpUserFound);
             } else {
               enableFields(false);
               $(".infoService").css("color", "rgb(136, 72, 9)");
@@ -87,16 +88,40 @@ function updateData(user) {
   $(".userUsername").val(user.username);
   $(".userPassword").val();
   // Configuration
-  console.log(user.cgiar);
   $(".cgiarUser").val(user.cgiar.toString()).trigger("change");
   $(".isActive").val(user.active.toString()).trigger("change");
   $(".autosave").val(user.autosave.toString()).trigger("change");
 
+  // CRPS
+
+}
+
+function updateCrps(crps) {
+  var item, list = $(".crpList");
+  list.empty();
+  $.each(crps, function(i,e) {
+    item = $("#crp-template").clone(true).removeAttr("id");
+    item.find(".crpTitle").html(e.crpAcronym);
+    var rolesList = $(item).find(".rolesList");
+    // Roles
+    $.each(e.role, function(iRole,eRole) {
+      var infoList = "<br><ul>";
+      $.each(eRole.roleInfo, function(index,element) {
+        infoList = infoList + "<li>" + element + "</li>";
+      });
+      infoList = infoList + "</ul>";
+      var span = "<span class='roleSpan'>" + eRole.role + infoList + "</span>";
+      // Roles info
+
+      rolesList.append(span);
+    });
+    list.append(item);
+    item.show("slow");
+  });
 }
 
 function enableFields(state) {
   // User data
-  $(".userId").attr("disabled", state);
   $(".userFirstName").attr("disabled", state);
   $(".userLastName").attr("disabled", state);
   $(".userEmail").attr("disabled", state);

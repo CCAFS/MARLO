@@ -38,7 +38,7 @@
           </div>
           <div class="col-md-5">
           <br />
-            <span class="infoService" style="height:25px;"></span>
+            <span class="infoService"></span>
           </div>
         </div>
         
@@ -84,8 +84,8 @@
             <hr />
             
           <div class="row">
-            <div class="col-md-12">
-              [@crpItem element={} name='test' index=0 /]
+            <div class="col-md-12 crpList">
+
             </div>
             <div id="addPartnerBlock" class="addPerson text-right">
               <div class="button-blue  addPartner"><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="Add CRP" /]</div>
@@ -125,7 +125,7 @@
       </div>
      
     [/#if]
-    [#-- Flagship Title --]
+    [#-- crp Title --]
     <div class="blockTitle closed">
        <span title="" class="crpTitle col-md-9">[#if element.crp?has_content][@utils.wordCutter string=(element.crp) maxPos=70 substr=" "/][#else]CCAFS[/#if]</span>
     <div class="clearfix"></div>
@@ -134,51 +134,12 @@
     <div class="blockContent" style="display:none">
       <hr />
       [#-- ROLES --]
-      <div id="roles" class="roles expandableBlock borderBox"  style="display:${isTemplate?string('none','block')}">
-        [#if editable] [#--&& (isTemplate) --]
-         
-          <div class="removeLink">
-            <div id="removeRoles" class="removeRoles removeElement removeLink" title="[@s.text name='marloUsers.removeRoles' /]"></div>
-          </div>
-         
-        [/#if]
-        [#-- Roles Title --]
-        <div class="blockTitle closed">
-           <span title="" class="rolesTitle col-md-9">Roles</span>
-        <div class="clearfix"></div>
-        </div>
-        
-        <div class="blockContent" style="display:none">
-          <hr />
-          
-          <div class="rolesList">
-          </div>
+      <div id="roles" class="roles simpleBox"  >
+        <h5 class="sectionSubTitle">Roles</h5>
+        <div class="rolesList">
         </div>
       
         </div>
-        [#-- FLAGSHIPS --]
-      <div id="flagships" class="roles expandableBlock borderBox"  style="display:${isTemplate?string('none','block')}">
-        [#if editable] [#--&& (isTemplate) --]
-         
-          <div class="removeLink">
-            <div id="removeFlagships" class="removeFlagships removeElement removeLink" title="[@s.text name='marloUsers.removeRoles' /]"></div>
-          </div>
-         
-        [/#if]
-        [#-- Roles Title --]
-        <div class="blockTitle closed">
-           <span title="" class="flagshipsTitle col-md-9">Flagships and Regions</span>
-        <div class="clearfix"></div>
-        </div>
-        
-        <div class="blockContent" style="display:none">
-          <hr />
-          
-          <div class="rolesList">
-          </div>
-        </div>
-      
-      </div>
     </div>
   
   </div>
