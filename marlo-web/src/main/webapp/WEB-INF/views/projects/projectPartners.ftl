@@ -246,7 +246,7 @@
         <p class="fieldErrorInstitutions"></p>
         [#if ((editable && isTemplate) || (editable && !element.institution??) || (editable && element.institution.id?number == -1))]
           [#-- list=allInstitutions --]
-          [@customForm.select name="${name}.institution.id" value="${(element.institution.id)!}" className="institutionsList" required=true header=false  i18nkey="projectPartners.partner.name" listName="" keyFieldName="id"  displayFieldName="composedName"  /]
+          [@customForm.select name="${name}.institution.id" value="${(element.institution.id)!}" className="institutionsList" required=true header=false i18nkey="projectPartners.partner.name" listName="" keyFieldName="id"  displayFieldName="composedName"  /]
         [#else]
           <input type="hidden" name="${name}.institution.id" class="institutionsList" value="${(element.institution.id)!}"/>
         [/#if]
