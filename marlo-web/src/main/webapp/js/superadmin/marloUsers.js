@@ -1,5 +1,5 @@
 $(document).ready(init);
-
+var crpList = [];
 function init() {
   $(".button-save").hide();
   /* Declaring Events */
@@ -14,6 +14,15 @@ function init() {
   $(".isActive").addOption("true", "Yes");
   $(".autosave").addOption("false", "No");
   $(".autosave").addOption("true", "Yes");
+
+  $(".crpSelect").find("option").each(function(i,e) {
+    var option = {
+        "id": $(e).val(),
+        "name": $(e).html()
+    };
+    crpList.push(option);
+  });
+  console.log(crpList);
 }
 
 function attachEvents() {
@@ -36,51 +45,64 @@ function attachEvents() {
     addCrp(option);
   });
 
-  $(".checkEmail").on("keyup", function() {
-    var email = $(this).val();
-    if(validateEmail(email)) {
-      $.ajax({
-          url: baseURL + "/searchUserByEmail.do",
-          type: 'GET',
-          data: {
-            userEmail: email
-          },
-          success: function(m) {
-            console.log(m);
-            if(m.userFound.newUser == false) {
-              $(".infoService").css("color", "green");
-              $(".infoService").text("Found user.");
-              enableFields(true);
-              updateData(m.userFound);
-              updateCrps(m.crpUserFound);
-            } else {
-              $(".crpList").empty();
-              enableFields(false);
-              $(".infoService").css("color", "rgb(136, 72, 9)");
-              $(".infoService").text("This user doesn't exists, you can to create a new user as guest.");
-              var user = {
-                  id: "",
-                  name: "",
-                  lastName: "",
-                  email: m.userFound.email,
-                  username: "",
-                  cgiar: "false",
-                  active: "false",
-                  autosave: "false"
-              };
-              updateData(user);
-            }
-          },
-          error: function(e) {
-            console.log(e);
-          }
+  $(".checkEmail").on(
+      "keyup",
+      function() {
+        updateCrpSelect();
+        var email = $(this).val();
+        if(validateEmail(email)) {
+          $.ajax({
+              url: baseURL + "/searchUserByEmail.do",
+              type: 'GET',
+              data: {
+                userEmail: email
+              },
+              success: function(m) {
+                console.log(m);
+                if(m.userFound.newUser == false) {
+                  $(".infoService").css("color", "green");
+                  $(".infoService").text("Found user.");
+                  enableFields(true);
+                  updateData(m.userFound);
+                  updateCrps(m.crpUserFound);
+                  $(".crpSelect").attr("disabled", false);
+                } else {
+                  $(".infoService").css("color", "rgb(136, 72, 9)");
+                  $(".infoService").text(
+                      "This user doesn't exists into the MARLO database, you can to create a new user as guest.");
+                  $(".crpList").empty();
+                  // Check if is cgiar user
+                  if(m.userFound.cgiar == true) {
+                    updateData(m.userFound);
+                    enableFields(true);
+                    $(".crpSelect").attr("disabled", false);
+                    $(".button-save").show("slow");
+                  } else {
+                    enableFields(false);
+                    var user = {
+                        id: "",
+                        name: "",
+                        lastName: "",
+                        email: m.userFound.email,
+                        username: "",
+                        cgiar: "false",
+                        active: "false",
+                        autosave: "false"
+                    };
+                    updateData(user);
+                  }
+                }
+              },
+              error: function(e) {
+                console.log(e);
+              }
+          });
+        } else {
+          enableFields(true);
+          $(".infoService").css("color", "red");
+          $(".infoService").text("Please, write a valid email.");
+        }
       });
-    } else {
-      enableFields(true);
-      $(".infoService").css("color", "red");
-      $(".infoService").text("Please, write a valid email.");
-    }
-  });
 
 }
 
@@ -102,6 +124,14 @@ function updateData(user) {
 
 }
 
+function updateCrpSelect() {
+  var select = $(".crpSelect");
+  select.empty();
+  $.each(crpList, function(i,e) {
+    select.addOption(e.id, e.name);
+  });
+}
+
 function updateCrps(crps) {
   var item, list = $(".crpList");
   list.empty();
@@ -110,6 +140,9 @@ function updateCrps(crps) {
     item.find(".crpTitle").html(e.crpAcronym)
     item.find(".crpUserId").val(e.crpUserId)
     item.find(".crpUserCrpId").val(e.crpId);
+    // Remove crps from crpSelect
+    $(".crpSelect").find("option[value='" + e.crpId + "']").remove();
+    // Role list
     var rolesList = $(item).find(".rolesList");
     // Roles
     $.each(e.role, function(iRole,eRole) {
@@ -158,6 +191,7 @@ function addCrp(option) {
   rolesList.append(span);
   list.append(item);
   item.show("slow");
+  $(".crpSelect").find("option[value='" + $(option).val() + "']").remove();
 }
 
 function validateEmail(email) {
