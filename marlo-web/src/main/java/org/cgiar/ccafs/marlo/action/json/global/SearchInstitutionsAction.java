@@ -49,7 +49,7 @@ public class SearchInstitutionsAction extends BaseAction {
   private String actionName;
   private String queryParameter;
   private List<Map<String, Object>> institutions;
-
+  private int ppa;
 
   @Inject
   public SearchInstitutionsAction(APConfig config, InstitutionManager institutionManager) {
@@ -67,6 +67,7 @@ public class SearchInstitutionsAction extends BaseAction {
   public void prepare() throws Exception {
     Map<String, Object> parameters = this.getParameters();
     queryParameter = StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]);
+    ppa = Integer.parseInt(StringUtils.trim(((String[]) parameters.get(APConstants.PPA_PARAMETER))[0]));
 
   }
 
@@ -77,7 +78,8 @@ public class SearchInstitutionsAction extends BaseAction {
    * @throws Exception if some error appear.
    */
   public String search() throws Exception {
-    List<Institution> institutions = institutionManager.searchInstitutions(true);
+    List<Institution> institutions =
+      institutionManager.searchInstitution(queryParameter, ppa, this.getCrpID().longValue());
     this.institutions = new ArrayList<>();
     for (Institution institution : institutions) {
       Map<String, Object> institutionMap = new HashMap<>();

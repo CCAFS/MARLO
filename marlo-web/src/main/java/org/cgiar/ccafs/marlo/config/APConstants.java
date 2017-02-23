@@ -92,7 +92,7 @@ public final class APConstants {
 
   // Query parameter
   public static final String QUERY_PARAMETER = "q";
-
+  public static final String PPA_PARAMETER = "isPPA";
   // Outlook institutional email
   public static final String OUTLOOK_EMAIL = "cgiar.org";
 
