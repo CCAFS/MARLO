@@ -27,6 +27,8 @@ function init() {
 
 function attachEvents() {
 
+  $(".button-save").on("click", checkAllFields);
+
   $('.blockTitle.closed').on('click', function() {
     if($(this).hasClass('closed')) {
       $('.blockContent').slideUp();
@@ -60,6 +62,7 @@ function attachEvents() {
               success: function(m) {
                 console.log(m);
                 if(m.userFound.newUser == false) {
+                  $(".isNewUser").val(false);
                   $(".infoService").css("color", "green");
                   $(".infoService").text("Found user.");
                   enableFields(true);
@@ -67,6 +70,7 @@ function attachEvents() {
                   updateCrps(m.crpUserFound);
                   $(".crpSelect").attr("disabled", false);
                 } else {
+                  $(".isNewUser").val(true);
                   $(".infoService").css("color", "rgb(136, 72, 9)");
                   $(".infoService").text(
                       "This user doesn't exists into the MARLO database, you can to create a new user as guest.");
@@ -198,4 +202,32 @@ function validateEmail(email) {
   var re =
       /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return re.test(email);
+}
+
+function checkAllFields(e) {
+  var count = 0;
+  if($(".isNewUser").val() == "true") {
+    if($(".userFirstName").val().length != 0) {
+      count++;
+    }
+    if($(".userLastName").val().trim() != "") {
+      count++;
+    }
+    if($(".userUsername").val().trim() != "") {
+      count++;
+    }
+  }
+  if($(".crpList").find(".crpItem").length > 0) {
+    count++;
+  }
+  console.log(count);
+  if(count < 4) {
+    e.preventDefault();
+    var notyOptions = jQuery.extend({}, notyDefaultOptions);
+    notyOptions.text = 'Please complete the fields to create the user guest';
+    noty(notyOptions);
+  } else {
+    $(".button-save").trigger('submit');
+
+  }
 }

@@ -30,6 +30,8 @@
       <div class="col-md-9">
         [@s.form action=actionName enctype="multipart/form-data" ]
         
+        <input type="hidden" class="isNewUser" name="isNewUser" value=""/>
+        
         [#-- System Level Outcomes --]
         <h4 class="sectionTitle">[@s.text name="Users" /]</h4>
         <div class="row">
