@@ -668,12 +668,10 @@ function addSelect2() {
             };
           },
           processResults: function(data,params) {
-            console.log(data.institutions);
             return {
               results: data.institutions,
             };
-          },
-          cache: false
+          }
       },
       escapeMarkup: function(markup) {
         return markup;
@@ -687,8 +685,29 @@ function addSelect2() {
   });
 
   function formatRepo(repo) {
-    var markup =
-        "<div class='select2-result-repository clearfix'>" + repo.composedName + " <br> " + repo.type + "</div>";
+    var markup = "";
+    markup += "<div class='select2-result-repository clearfix'>";
+
+    // Is PPA
+    markup += "<small class='pull-right'>";
+    if(repo.isPPA) {
+      markup += "<span class='label label-warning'>Managing / PPA Partner</span>"
+    } else {
+      markup += "<span class='label label-default'>Partner</span>";
+    }
+    markup += "</small>";
+
+    // Acronym & Title
+    if(repo.acronym) {
+      markup += "<strong>" + repo.acronym + "</strong> - " + repo.name;
+    } else {
+      markup += "<strong>" + repo.name + "</strong>";
+    }
+
+    // Partner type
+    markup += "<br>";
+    markup += "<small> <i>" + repo.type + "</i> </small> ";
+    markup += "</div>";
     return markup;
   }
 
