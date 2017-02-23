@@ -31,10 +31,7 @@ function init() {
 
     // Activate the chosen to the existing partners
     addSelect2();
-    $("form select.partnerPersonType").select2({
-        templateResult: formatState,
-        width: "100%"
-    });
+
     // Applying word counters to form fields
     // applyWordCounter($("form textarea.resp"), lWordsResp);
     // applyWordCounter($("#lessons textarea"), lWordsResp);
@@ -659,10 +656,53 @@ function addItemList($option) {
 // Activate the chosen plugin to the countries, partner types and partners lists.
 function addSelect2() {
 
-  $("form select[class!='branchesSelect']").select2({
-    width: '100%'
+  $("form select.institutionsList").select2({
+      ajax: {
+          url: baseURL + '/searchInstitutions.do',
+          dataType: 'json',
+          delay: 250,
+          data: function(params) {
+            return {
+                q: params.term, // search term
+                isPPA: canUpdatePPAPartners ? 1 : 0
+            };
+          },
+          processResults: function(data,params) {
+            console.log(data.institutions);
+            return {
+              results: data.institutions,
+            };
+          },
+          cache: false
+      },
+      escapeMarkup: function(markup) {
+        return markup;
+      }, // let our custom formatter work
+      placeholder: "Search the organization here...",
+      minimumInputLength: 2,
+      templateResult: formatRepo,
+      templateSelection: formatRepoSelection,
+      width: "100%"
+
   });
 
+  function formatRepo(repo) {
+    var markup =
+        "<div class='select2-result-repository clearfix'>" + repo.composedName + " <br> " + repo.type + "</div>";
+    return markup;
+  }
+
+  function formatRepoSelection(repo) {
+    return repo.composedName;
+  }
+
+  // Role Selection
+  $("form select.partnerPersonType").select2({
+      templateResult: formatState,
+      width: "100%"
+  });
+
+  // Branch
   $("form select.branchesSelect ").select2({
       placeholder: "Select the branches where the project is working on...",
       width: '100%'

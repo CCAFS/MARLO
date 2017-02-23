@@ -46,8 +46,8 @@
 			</result>
 		</action>
 		
-		<action name="institutions"
-      class="org.cgiar.ccafs.marlo.action.json.global.ManageUsersAction"
+		<action name="searchInstitutions"
+      class="org.cgiar.ccafs.marlo.action.json.global.SearchInstitutionsAction"
       method="search">
       <result type="json">
         <param name="noCache">true</param>

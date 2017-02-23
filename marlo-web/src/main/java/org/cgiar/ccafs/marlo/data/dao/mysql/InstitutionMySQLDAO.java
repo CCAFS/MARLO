@@ -89,7 +89,7 @@ public class InstitutionMySQLDAO implements InstitutionDAO {
     query.append("OR website_link like '%" + searchValue + "%' ");
 
 
-    query.append("GROUP BY email ");
+    query.append("GROUP BY name ");
     query.append("ORDER BY CASE ");
     query.append("WHEN name like '" + searchValue + "%' THEN 0 ");
     query.append("WHEN name like '% %" + searchValue + "% %' THEN 1 ");

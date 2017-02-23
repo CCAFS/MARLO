@@ -51,6 +51,7 @@ public class SearchInstitutionsAction extends BaseAction {
   private List<Map<String, Object>> institutions;
   private int ppa;
 
+
   @Inject
   public SearchInstitutionsAction(APConfig config, InstitutionManager institutionManager) {
     super(config);
@@ -61,6 +62,10 @@ public class SearchInstitutionsAction extends BaseAction {
   public String execute() throws Exception {
     // Nothing to do here yet.
     return SUCCESS;
+  }
+
+  public List<Map<String, Object>> getInstitutions() {
+    return institutions;
   }
 
   @Override
@@ -85,11 +90,21 @@ public class SearchInstitutionsAction extends BaseAction {
       Map<String, Object> institutionMap = new HashMap<>();
       institutionMap.put("id", institution.getId());
       institutionMap.put("composedName", institution.getComposedName());
+      institutionMap.put("acronym", institution.getAcronym());
+      institutionMap.put("name", institution.getName());
+      institutionMap.put("type", institution.getInstitutionType().getName());
+      institutionMap.put("country", institution.getLocElement().getIsoAlpha2());
+      institutionMap.put("city", institution.getCity());
       this.institutions.add(institutionMap);
     }
 
+
     LOG.info("The search of institutions by '{}' was made successfully.", queryParameter);
     return SUCCESS;
+  }
+
+  public void setInstitutions(List<Map<String, Object>> institutions) {
+    this.institutions = institutions;
   }
 
 }
