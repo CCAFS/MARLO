@@ -148,8 +148,8 @@ public class GuestUsersAction extends BaseAction {
 
 
       if (!user.isCgiarUser()) {
-        String newPassword = RandomStringUtils.randomNumeric(6);
-        newUser.setPassword(newPassword);
+
+        newUser.setPassword(user.getPassword());
       }
 
       long newUserID = userManager.saveUser(newUser, this.getCurrentUser());
@@ -189,9 +189,7 @@ public class GuestUsersAction extends BaseAction {
                 long userRoleID = userRoleManager.saveUserRole(userRole);
 
                 if (userRoleID != -1) {
-                  // TODO send EMAIL.
-                  this.sendMailNewUser(newUser);
-
+                  this.sendMailNewUser(newUser, crpManager.getCrpById(crpUser.getCrp().getId()));
                 }
 
 
@@ -209,7 +207,7 @@ public class GuestUsersAction extends BaseAction {
     return SUCCESS;
   }
 
-  public void sendMailNewUser(User user) {
+  public void sendMailNewUser(User user, Crp crp) {
     // Building the Email message:
     StringBuilder message = new StringBuilder();
     message.append(this.getText("email.dear", new String[] {user.getFirstName()}));
@@ -220,7 +218,8 @@ public class GuestUsersAction extends BaseAction {
       // Applying the password to the user.
       user.setPassword(password);
     }
-    message.append(this.getText("email.newUser.part1", new String[] {config.getBaseUrl(), user.getEmail(), password}));
+    message.append(this.getText("email.newUser.part2",
+      new String[] {config.getBaseUrl(), user.getEmail(), password, crp.getName()}));
     message.append(this.getText("email.support"));
     message.append(this.getText("email.bye"));
 
