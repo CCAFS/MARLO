@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.google.gson.annotations.Expose;
 
@@ -247,25 +248,24 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
   }
 
-
   public Set<CrpPpaPartner> getCrpPpaPartners() {
     return crpPpaPartners;
   }
+
 
   public Set<FundingSource> getFundingSources() {
     return fundingSources;
   }
 
-
   public Institution getHeadquarter() {
     return headquarter;
   }
+
 
   @Override
   public Long getId() {
     return this.id;
   }
-
 
   public InstitutionType getInstitutionType() {
     return institutionType;
@@ -279,10 +279,10 @@ public class Institution implements java.io.Serializable, IAuditLog {
     return list;
   }
 
+
   public Set<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
   }
-
 
   public LocElement getLocElement() {
     return locElement;
@@ -298,6 +298,7 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
     return sb.toString();
   }
+
 
   @Override
   public String getModificationJustification() {
@@ -347,6 +348,14 @@ public class Institution implements java.io.Serializable, IAuditLog {
   @Override
   public boolean isActive() {
     return true;
+  }
+
+  public boolean isPPA(long crpID) {
+    if (this.getCrpPpaPartners().stream().filter(c -> c.getCrp().getId().longValue() == crpID && c.isActive())
+      .collect(Collectors.toList()).size() > 0) {
+      return true;
+    }
+    return false;
   }
 
   public void setAcronym(String acronym) {
