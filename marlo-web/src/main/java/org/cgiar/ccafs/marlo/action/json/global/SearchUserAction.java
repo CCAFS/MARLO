@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.action.json.global;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
@@ -150,14 +151,25 @@ public class SearchUserAction extends BaseAction {
                 role.put("roleInfo", roleInfo);
                 break;
 
-              // case "RPL":
-              // List<CrpProgramLeader> partnerPCPersons = new ArrayList<>(user.getProjectPartnerPersons().stream()
-              // .filter(pp -> pp.isActive() && pp.getContactType().equals("PC")).collect(Collectors.toList()));
-              // for (ProjectPartnerPerson partnerPerson : partnerPCPersons) {
-              // roleInfo.add(partnerPerson.getProjectPartner().getProject().getComposedName());
-              // }
-              // role.put("roleInfo", roleInfo);
-              // break;
+              case "RPL":
+                List<CrpProgramLeader> programRLeaders = new ArrayList<>(user.getCrpProgramLeaders().stream()
+                  .filter(pl -> pl.isActive() && pl.getCrpProgram().getProgramType() == 2)
+                  .collect(Collectors.toList()));
+                for (CrpProgramLeader crpProgramLeader : programRLeaders) {
+                  roleInfo.add(crpProgramLeader.getCrpProgram().getComposedName());
+                }
+                role.put("roleInfo", roleInfo);
+                break;
+
+              case "FPL":
+                List<CrpProgramLeader> programFLeaders = new ArrayList<>(user.getCrpProgramLeaders().stream()
+                  .filter(pl -> pl.isActive() && pl.getCrpProgram().getProgramType() == 1)
+                  .collect(Collectors.toList()));
+                for (CrpProgramLeader crpProgramLeader : programFLeaders) {
+                  roleInfo.add(crpProgramLeader.getCrpProgram().getComposedName());
+                }
+                role.put("roleInfo", roleInfo);
+                break;
 
             }
 

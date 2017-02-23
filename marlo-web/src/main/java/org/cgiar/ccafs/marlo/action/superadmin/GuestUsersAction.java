@@ -17,16 +17,28 @@ package org.cgiar.ccafs.marlo.action.superadmin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrpUser;
+import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.SendMailS;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
+import org.apache.commons.lang3.RandomStringUtils;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -37,27 +49,62 @@ public class GuestUsersAction extends BaseAction {
   private static final long serialVersionUID = 6860177996446505143L;
 
 
+  /**
+   * Helper method to read a stream into memory.
+   * 
+   * @param stream
+   * @return
+   * @throws IOException
+   */
+  public static byte[] readFully(InputStream stream) throws IOException {
+    byte[] buffer = new byte[8192];
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+    int bytesRead;
+    while ((bytesRead = stream.read(buffer)) != -1) {
+      baos.write(buffer, 0, bytesRead);
+    }
+    return baos.toByteArray();
+  }
+
   private UserManager userManager;
 
   private CrpManager crpManager;
+
+  private UserRoleManager userRoleManager;
+
+  private CrpUserManager crpUserManager;
+
+  private SendMailS sendMailS;
 
 
   private User user;
 
   private boolean cigarUser;
 
+  private Boolean isNewUser;
+
 
   private List<Crp> crps;
 
   @Inject
-  public GuestUsersAction(APConfig config, UserManager userManager, CrpManager crpManager) {
+  public GuestUsersAction(APConfig config, UserManager userManager, CrpManager crpManager,
+    CrpUserManager crpUserManager, UserRoleManager userRoleManager, SendMailS sendMailS) {
     super(config);
     this.userManager = userManager;
     this.crpManager = crpManager;
+    this.crpUserManager = crpUserManager;
+    this.userRoleManager = userRoleManager;
+    this.sendMailS = sendMailS;
   }
 
   public List<Crp> getCrps() {
     return crps;
+  }
+
+
+  public Boolean getIsNewUser() {
+    return isNewUser;
   }
 
   public User getUser() {
@@ -68,21 +115,93 @@ public class GuestUsersAction extends BaseAction {
     return cigarUser;
   }
 
+
   @Override
   public void prepare() throws Exception {
 
     crps = new ArrayList<>(
       crpManager.findAll().stream().filter(c -> c.isActive() && c.isMarlo()).collect(Collectors.toList()));
 
+    if (this.isHttpPost()) {
+      isNewUser = null;
+    }
 
   }
 
   @Override
   public String save() {
 
-    if (true) {
+    if (isNewUser) {
 
       User newUser = new User();
+
+      newUser.setActiveSince(new Date());
+      newUser.setFirstName(user.getFirstName());
+      newUser.setLastName(user.getLastName());
+      newUser.setUsername(user.getUsername());
+      newUser.setActive(user.isActive());
+      newUser.setCgiarUser(user.isCgiarUser());
+      newUser.setAutoSave(user.isAutoSave());
+      newUser.setEmail(user.getEmail());
+      newUser.setModificationJustification(" ");
+      newUser.setCreatedBy(this.getCurrentUser());
+
+
+      if (!user.isCgiarUser()) {
+        String newPassword = RandomStringUtils.randomNumeric(6);
+        newUser.setPassword(newPassword);
+      }
+
+      long newUserID = userManager.saveUser(newUser, this.getCurrentUser());
+
+      if (newUserID != -1) {
+
+        newUser = userManager.getUser(newUserID);
+
+        if (user.getCrpUser() != null) {
+          for (CrpUser crpUser : user.getCrpUser()) {
+            if (crpUser.getId() == -1) {
+
+
+              CrpUser newCrpUser = new CrpUser();
+              newCrpUser.setCrp(crpManager.getCrpById(crpUser.getCrp().getId()));
+              newCrpUser.setUser(newUser);
+              newCrpUser.setActiveSince(new Date());
+              newCrpUser.setCreatedBy(this.getCurrentUser());
+              newCrpUser.setModifiedBy(this.getCurrentUser());
+              newCrpUser.setModificationJustification(" ");
+              newCrpUser.setActive(true);
+
+              long newCrpUserID = crpUserManager.saveCrpUser(newCrpUser);
+
+              if (newCrpUserID != -1) {
+
+                newCrpUser = crpUserManager.getCrpUserById(newCrpUserID);
+
+                UserRole userRole = new UserRole();
+
+                Role guestRole = newCrpUser.getCrp().getRoles().stream().filter(r -> r.getAcronym() == "G")
+                  .collect(Collectors.toList()).get(0);
+
+                userRole.setRole(guestRole);
+                userRole.setUser(newUser);
+
+                long userRoleID = userRoleManager.saveUserRole(userRole);
+
+                if (userRoleID != -1) {
+                  // TODO send EMAIL.
+                  this.sendMailNewUser(newUser);
+
+                }
+
+
+              }
+            }
+          }
+        }
+
+
+      }
 
 
     }
@@ -90,12 +209,76 @@ public class GuestUsersAction extends BaseAction {
     return SUCCESS;
   }
 
-  public void setCigarUser(boolean cigarUser) {
-    this.cigarUser = cigarUser;
+  public void sendMailNewUser(User user) {
+    // Building the Email message:
+    StringBuilder message = new StringBuilder();
+    message.append(this.getText("email.dear", new String[] {user.getFirstName()}));
+    String password = this.getText("email.outlookPassword");
+    if (!user.isCgiarUser()) {
+      // Generating a random password.
+      password = RandomStringUtils.randomNumeric(6);
+      // Applying the password to the user.
+      user.setPassword(password);
+    }
+    message.append(this.getText("email.newUser.part1", new String[] {config.getBaseUrl(), user.getEmail(), password}));
+    message.append(this.getText("email.support"));
+    message.append(this.getText("email.bye"));
+
+
+    message.append(this.getText("email.newUser.part1", new String[] {config.getBaseUrl(), user.getEmail(), password}));
+    message.append(this.getText("email.support"));
+    message.append(this.getText("email.bye"));
+
+    // Send pdf
+    String contentType = "application/pdf";
+    String fileName = "MARLO_UserManual_V1.1.pdf";
+    byte[] buffer = null;
+    InputStream inputStream = null;
+
+    try {
+      inputStream = this.getClass().getResourceAsStream("/manual/MARLO_UserManual_20170111_AV_HT_AW.pdf");
+      buffer = readFully(inputStream);
+    } catch (FileNotFoundException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } finally {
+      if (inputStream != null) {
+        try {
+          inputStream.close();
+        } catch (IOException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+      }
+    }
+    String bbcEmails = this.config.getEmailNotification();
+
+    if (buffer != null && fileName != null && contentType != null) {
+      sendMailS.send(user.getEmail(), null, bbcEmails,
+        this.getText("email.newUser.subject", new String[] {user.getComposedName()}), message.toString(), buffer,
+        contentType, fileName, true);
+    } else {
+      sendMailS.send(user.getEmail(), null, bbcEmails,
+        this.getText("email.newUser.subject", new String[] {user.getComposedName()}), message.toString(), null, null,
+        null, true);
+    }
+
   }
+
 
   public void setCrps(List<Crp> crps) {
     this.crps = crps;
+  }
+
+  public void setIsNewUser(Boolean isNewUser) {
+    this.isNewUser = isNewUser;
+  }
+
+  public void setNewUser(boolean isNewUser) {
+    this.isNewUser = isNewUser;
   }
 
   public void setUser(User user) {
