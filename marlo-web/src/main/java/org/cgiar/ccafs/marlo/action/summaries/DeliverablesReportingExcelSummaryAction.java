@@ -75,7 +75,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author Hermes Jiménez - CIAT/CCAFS
+ * @author Andrés Valencia - CIAT/CCAFS
  */
 public class DeliverablesReportingExcelSummaryAction extends BaseAction implements Summary {
 
@@ -260,8 +260,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
         "dataDictionary", "tools", "F", "A", "I", "R", "disseminated", "restricted_access", "restricted_date",
         "deliv_license_modifications", "volume", "issue", "pages", "journal", "journal_indicators", "acknowledge",
         "fl_contrib", "project_ID", "project_title", "flagships", "regions", "others_responsibles"},
-      new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+      new Class[] {Long.class, String.class, String.class, String.class, String.class, Integer.class, String.class,
+        String.class, String.class, String.class, Integer.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
@@ -302,12 +302,15 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
       deliverablesHL.addAll(openA);
       openA.clear();
       openA.addAll(deliverablesHL);
-
+      int i = 0;
       for (Deliverable deliverable : openA) {
+        i++;
+        System.out.println(deliverable.getId());
+        System.out.println("#" + i);
         String deliv_type = null;
         String deliv_sub_type = null;
         String deliv_status = deliverable.getStatusName();
-        String deliv_year = null;
+        Integer deliv_year = null;
         String key_output = "";
         String leader = null;
         String others_responsibles = null;
@@ -359,7 +362,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
           deliv_status = null;
         }
         if (deliverable.getYear() != 0) {
-          deliv_year = "" + deliverable.getYear();
+          deliv_year = deliverable.getYear();
         }
         if (deliverable.getCrpClusterKeyOutput() != null) {
           key_output += "● ";
@@ -380,10 +383,9 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
           if (responisble.getProjectPartnerPerson() != null) {
             ProjectPartnerPerson responsibleppp = responisble.getProjectPartnerPerson();
 
-            leader =
-              responsibleppp.getUser().getComposedName() + "<br>&lt;" + responsibleppp.getUser().getEmail() + "&gt;";
-            if (responsibleppp.getInstitution() != null) {
-              leader += responsibleppp.getInstitution().getComposedName();
+            leader = responsibleppp.getUser().getComposedName();
+            if (responsibleppp.getInstitution() != null && responsibleppp.getInstitution().getAcronym() != null) {
+              leader += " - " + responsibleppp.getInstitution().getAcronym();
             }
           }
         }
@@ -391,7 +393,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
         // Get funding sources if exist
         for (DeliverableFundingSource dfs : deliverable.getDeliverableFundingSources().stream()
           .filter(d -> d.isActive()).collect(Collectors.toList())) {
-          funding_sources += "● " + dfs.getFundingSource().getTitle() + "<br>";
+          funding_sources += "● " + dfs.getFundingSource().getTitle() + "\n";
         }
         if (funding_sources.isEmpty()) {
           funding_sources = null;
@@ -401,22 +403,22 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
         String cross_cutting = "";
         if (deliverable.getCrossCuttingNa() != null) {
           if (deliverable.getCrossCuttingNa() == true) {
-            cross_cutting += "&nbsp;&nbsp;&nbsp;&nbsp;● N/A <br>";
+            cross_cutting += "● N/A \n";
           }
         }
         if (deliverable.getCrossCuttingGender() != null) {
           if (deliverable.getCrossCuttingGender() == true) {
-            cross_cutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Gender <br>";
+            cross_cutting += "● Gender \n";
           }
         }
         if (deliverable.getCrossCuttingYouth() != null) {
           if (deliverable.getCrossCuttingYouth() == true) {
-            cross_cutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Youth <br>";
+            cross_cutting += "● Youth \n";
           }
         }
         if (deliverable.getCrossCuttingCapacity() != null) {
           if (deliverable.getCrossCuttingCapacity() == true) {
-            cross_cutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Capacity Development <br>";
+            cross_cutting += "● Capacity Development \n";
           }
         }
 
@@ -424,14 +426,13 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
           if (deliverable.getCrossCuttingGender() == true) {
             if (deliverable.getDeliverableGenderLevels() == null
               || deliverable.getDeliverableGenderLevels().isEmpty()) {
-              cross_cutting += "<br><b>Gender level(s):</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&lt;Not Defined&gt;";
+              cross_cutting += "\nGender level(s):\n<Not Defined>";
             } else {
-              cross_cutting += "<br><b>Gender level(s): </b><br>";
+              cross_cutting += "\nGender level(s): \n";
               for (DeliverableGenderLevel dgl : deliverable.getDeliverableGenderLevels().stream()
                 .filter(dgl -> dgl.isActive()).collect(Collectors.toList())) {
                 if (dgl.getGenderLevel() != 0.0) {
-                  cross_cutting += "&nbsp;&nbsp;&nbsp;&nbsp;● "
-                    + DeliverableGenderTypeEnum.getValue(dgl.getGenderLevel()).getValue() + "<br>";
+                  cross_cutting += "● " + DeliverableGenderTypeEnum.getValue(dgl.getGenderLevel()).getValue() + "\n";
                 }
               }
             }
@@ -482,25 +483,32 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
             isDisseminated = true;
             disseminated = "Yes";
           }
-
-          if (deliverableDissemination.getDisseminationChannel() != null
-            && !deliverableDissemination.getDisseminationChannel().isEmpty()) {
-            if (ChannelEnum.getValue(deliverableDissemination.getDisseminationChannel()) != null) {
-              deliv_dissemination_channel =
-                ChannelEnum.getValue(deliverableDissemination.getDisseminationChannel()).getDesc();
+          if (isDisseminated) {
+            if (deliverableDissemination.getDisseminationChannel() != null
+              && !deliverableDissemination.getDisseminationChannel().isEmpty()) {
+              if (ChannelEnum.getValue(deliverableDissemination.getDisseminationChannel()) != null) {
+                deliv_dissemination_channel =
+                  ChannelEnum.getValue(deliverableDissemination.getDisseminationChannel()).getDesc();
+              }
+              // deliv_dissemination_channel = deliverableDissemination.getDisseminationChannel();
             }
-
-            // deliv_dissemination_channel = deliverableDissemination.getDisseminationChannel();
+          } else {
+            deliv_dissemination_channel = "<Not applicable>";
           }
 
-          if (deliverableDissemination.getDisseminationUrl() != null
-            && !deliverableDissemination.getDisseminationUrl().isEmpty()) {
-            deliv_dissemination_url = deliverableDissemination.getDisseminationUrl().replace(" ", "%20");
+          if (isDisseminated) {
+            if (deliverableDissemination.getDisseminationUrl() != null
+              && !deliverableDissemination.getDisseminationUrl().isEmpty()) {
+              deliv_dissemination_url = deliverableDissemination.getDisseminationUrl().replace(" ", "%20");
+            }
+          } else {
+            deliv_dissemination_url = "<Not applicable>";
           }
 
           if (deliverableDissemination.getIsOpenAccess() != null) {
             if (deliverableDissemination.getIsOpenAccess() == true) {
               deliv_open_access = "Yes";
+              restricted_access = "<Not applicable>";
             } else {
               // get the open access
               deliv_open_access = "No";
@@ -525,10 +533,9 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
                 restricted_access = "Restricted Use Agreement - Restricted access (if so, what are these periods?)";
                 isLastTwoRestricted = true;
                 if (deliverableDissemination.getRestrictedAccessUntil() != null) {
-                  restricted_date =
-                    "<b>Restricted access until: </b>" + deliverableDissemination.getRestrictedAccessUntil();
+                  restricted_date = "Restricted access until: " + deliverableDissemination.getRestrictedAccessUntil();
                 } else {
-                  restricted_date = "<b>Restricted access until: </b>&lt;Not Defined&gt;";
+                  restricted_date = "Restricted access until: <Not Defined>";
                 }
               }
 
@@ -537,11 +544,13 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
                 restricted_access = "Effective Date Restriction - embargoed periods (if so, what are these periods?)";
                 isLastTwoRestricted = true;
                 if (deliverableDissemination.getRestrictedEmbargoed() != null) {
-                  restricted_date =
-                    "<b>Restricted embargoed date: </b>" + deliverableDissemination.getRestrictedEmbargoed();
+                  restricted_date = "Restricted embargoed date: " + deliverableDissemination.getRestrictedEmbargoed();
                 } else {
-                  restricted_date = "<b>Restricted embargoed date: </b>&lt;Not Defined&gt;";
+                  restricted_date = "Restricted embargoed date: <Not Defined>";
                 }
+              }
+              if (!isLastTwoRestricted) {
+                restricted_date = "<Not applicable>";
               }
             }
           }
@@ -556,6 +565,10 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
                   deliv_license_modifications = "Yes";
                 } else {
                   deliv_license_modifications = "No";
+                }
+              } else {
+                if (!show_deliv_license_modifications) {
+                  deliv_license_modifications = "<Not applicable>";
                 }
               }
             } else {
@@ -648,7 +661,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
         String creator_authors = "";
         for (DeliverableUser deliverableUser : deliverable.getDeliverableUsers().stream().filter(du -> du.isActive())
           .collect(Collectors.toList())) {
-          creator_authors += "<br>● ";
+          creator_authors += "\n● ";
           if (!deliverableUser.getLastName().isEmpty()) {
             creator_authors += deliverableUser.getLastName() + " - ";
           }
@@ -656,7 +669,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
             creator_authors += deliverableUser.getFirstName();
           }
           if (!deliverableUser.getElementId().isEmpty()) {
-            creator_authors += "&lt;" + deliverableUser.getElementId() + "&gt;";
+            creator_authors += "<" + deliverableUser.getElementId() + ">";
           }
         }
 
@@ -665,93 +678,99 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
         }
 
         String data_sharing = "";
-        for (DeliverableDataSharingFile deliverableDataSharingFile : deliverable.getDeliverableDataSharingFiles()
-          .stream().filter(ds -> ds.isActive()).collect(Collectors.toList())) {
-          if (deliverableDataSharingFile.getExternalFile() != null
-            && !deliverableDataSharingFile.getExternalFile().isEmpty()) {
-            data_sharing += deliverableDataSharingFile.getExternalFile().replace(" ", "%20") + "<br>";
-          }
+        if (isDisseminated) {
 
-          if (deliverableDataSharingFile.getFile() != null && deliverableDataSharingFile.getFile().isActive()) {
-            data_sharing +=
-              (this.getDeliverableDataSharingFilePath(project_ID) + deliverableDataSharingFile.getFile().getFileName())
-                .replace(" ", "%20") + "<br>";
 
+          for (DeliverableDataSharingFile deliverableDataSharingFile : deliverable.getDeliverableDataSharingFiles()
+            .stream().filter(ds -> ds.isActive()).collect(Collectors.toList())) {
+            if (deliverableDataSharingFile.getExternalFile() != null
+              && !deliverableDataSharingFile.getExternalFile().isEmpty()) {
+              data_sharing += deliverableDataSharingFile.getExternalFile().replace(" ", "%20") + "\n";
+            }
+
+            if (deliverableDataSharingFile.getFile() != null && deliverableDataSharingFile.getFile().isActive()) {
+              data_sharing += (this.getDeliverableDataSharingFilePath(project_ID)
+                + deliverableDataSharingFile.getFile().getFileName()).replace(" ", "%20") + "\n";
+
+            }
           }
-        }
-        if (data_sharing.isEmpty()) {
-          data_sharing = null;
+          if (data_sharing.isEmpty()) {
+            data_sharing = null;
+          }
+        } else {
+          data_sharing = "<Not applicable>";
         }
 
 
         String qualityAssurance = "";
         String dataDictionary = "";
         String tools = "";
+        if (showCompilance) {
 
-        if (deliverable.getDeliverableQualityChecks().stream().filter(qc -> qc.isActive()).collect(Collectors.toList())
-          .size() > 0
-          && deliverable.getDeliverableQualityChecks().stream().filter(qc -> qc.isActive()).collect(Collectors.toList())
-            .get(0) != null) {
-          DeliverableQualityCheck deliverableQualityCheck = deliverable.getDeliverableQualityChecks().stream()
-            .filter(qc -> qc.isActive()).collect(Collectors.toList()).get(0);
-          // QualityAssurance
-          if (deliverableQualityCheck.getQualityAssurance() != null) {
-            if (deliverableQualityCheck.getQualityAssurance().getId() == 2) {
-              if (deliverableQualityCheck.getFileAssurance() != null
-                && deliverableQualityCheck.getFileAssurance().isActive()) {
-                qualityAssurance += "<br>● File: <font size=2 face='Segoe UI' color='blue'>"
-                  + (this.getDeliverableUrl("Assurance", deliverable)
-                    + deliverableQualityCheck.getFileAssurance().getFileName()).replace(" ", "%20")
-                  + "</font>";
+
+          if (deliverable.getDeliverableQualityChecks().stream().filter(qc -> qc.isActive())
+            .collect(Collectors.toList()).size() > 0
+            && deliverable.getDeliverableQualityChecks().stream().filter(qc -> qc.isActive())
+              .collect(Collectors.toList()).get(0) != null) {
+            DeliverableQualityCheck deliverableQualityCheck = deliverable.getDeliverableQualityChecks().stream()
+              .filter(qc -> qc.isActive()).collect(Collectors.toList()).get(0);
+            // QualityAssurance
+            if (deliverableQualityCheck.getQualityAssurance() != null) {
+              if (deliverableQualityCheck.getQualityAssurance().getId() == 2) {
+                if (deliverableQualityCheck.getFileAssurance() != null
+                  && deliverableQualityCheck.getFileAssurance().isActive()) {
+                  qualityAssurance += "\n● File: " + (this.getDeliverableUrl("Assurance", deliverable)
+                    + deliverableQualityCheck.getFileAssurance().getFileName()).replace(" ", "%20") + "";
+                }
+                if (deliverableQualityCheck.getLinkAssurance() != null
+                  && !deliverableQualityCheck.getLinkAssurance().isEmpty()) {
+                  qualityAssurance +=
+                    "\n● Link: " + deliverableQualityCheck.getLinkAssurance().replace(" ", "%20") + "";
+                }
+              } else {
+                qualityAssurance = "● " + deliverableQualityCheck.getQualityAssurance().getName();
               }
-              if (deliverableQualityCheck.getLinkAssurance() != null
-                && !deliverableQualityCheck.getLinkAssurance().isEmpty()) {
-                qualityAssurance += "<br>● Link: <font size=2 face='Segoe UI' color='blue'>"
-                  + deliverableQualityCheck.getLinkAssurance().replace(" ", "%20") + "</font>";
+            }
+
+
+            // Data dictionary
+            if (deliverableQualityCheck.getDataDictionary() != null) {
+              if (deliverableQualityCheck.getDataDictionary().getId() == 2) {
+                if (deliverableQualityCheck.getFileDictionary() != null
+                  && deliverableQualityCheck.getFileDictionary().isActive()) {
+                  dataDictionary += "\n● File: " + (this.getDeliverableUrl("Dictionary", deliverable)
+                    + deliverableQualityCheck.getFileDictionary().getFileName()).replace(" ", "%20") + "";
+                }
+                if (deliverableQualityCheck.getLinkDictionary() != null
+                  && !deliverableQualityCheck.getLinkDictionary().isEmpty()) {
+                  dataDictionary += "\n● Link: " + deliverableQualityCheck.getLinkDictionary().replace(" ", "%20") + "";
+                }
+              } else {
+                dataDictionary = "● " + deliverableQualityCheck.getDataDictionary().getName();
               }
-            } else {
-              qualityAssurance = "● " + deliverableQualityCheck.getQualityAssurance().getName();
+            }
+
+            // Tools
+            if (deliverableQualityCheck.getDataTools() != null) {
+              if (deliverableQualityCheck.getDataTools().getId() == 2) {
+                if (deliverableQualityCheck.getFileTools() != null
+                  && deliverableQualityCheck.getFileTools().isActive()) {
+                  tools += "\n● File: " + (this.getDeliverableUrl("Tools", deliverable)
+                    + deliverableQualityCheck.getFileTools().getFileName()).replace(" ", "%20") + "";
+                }
+                if (deliverableQualityCheck.getLinkTools() != null
+                  && !deliverableQualityCheck.getLinkTools().isEmpty()) {
+                  tools += "\n● Link: " + deliverableQualityCheck.getLinkTools().replace(" ", "%20") + "";
+                }
+              } else {
+                tools = "● " + deliverableQualityCheck.getDataTools().getName();
+              }
             }
           }
-
-
-          // Data dictionary
-          if (deliverableQualityCheck.getDataDictionary() != null) {
-            if (deliverableQualityCheck.getDataDictionary().getId() == 2) {
-              if (deliverableQualityCheck.getFileDictionary() != null
-                && deliverableQualityCheck.getFileDictionary().isActive()) {
-                dataDictionary += "<br>● File: <font size=2 face='Segoe UI' color='blue'>"
-                  + (this.getDeliverableUrl("Dictionary", deliverable)
-                    + deliverableQualityCheck.getFileDictionary().getFileName()).replace(" ", "%20")
-                  + "</font>";
-              }
-              if (deliverableQualityCheck.getLinkDictionary() != null
-                && !deliverableQualityCheck.getLinkDictionary().isEmpty()) {
-                dataDictionary += "<br>● Link: <font size=2 face='Segoe UI' color='blue'>"
-                  + deliverableQualityCheck.getLinkDictionary().replace(" ", "%20") + "</font>";
-              }
-            } else {
-              dataDictionary = "● " + deliverableQualityCheck.getDataDictionary().getName();
-            }
-          }
-
-          // Tools
-          if (deliverableQualityCheck.getDataTools() != null) {
-            if (deliverableQualityCheck.getDataTools().getId() == 2) {
-              if (deliverableQualityCheck.getFileTools() != null && deliverableQualityCheck.getFileTools().isActive()) {
-                tools += "<br>● File: <font size=2 face='Segoe UI' color='blue'>"
-                  + (this.getDeliverableUrl("Tools", deliverable)
-                    + deliverableQualityCheck.getFileTools().getFileName()).replace(" ", "%20")
-                  + "</font>";
-              }
-              if (deliverableQualityCheck.getLinkTools() != null && !deliverableQualityCheck.getLinkTools().isEmpty()) {
-                tools += "<br>● Link: <font size=2 face='Segoe UI' color='blue'>"
-                  + deliverableQualityCheck.getLinkTools().replace(" ", "%20") + "</font>";
-              }
-            } else {
-              tools = "● " + deliverableQualityCheck.getDataTools().getName();
-            }
-          }
+        } else {
+          tools = "<Not applicable>";
+          dataDictionary = "<Not applicable>";
+          qualityAssurance = "<Not applicable>";
         }
 
         if (qualityAssurance.isEmpty()) {
@@ -763,58 +782,64 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
         if (tools.isEmpty()) {
           tools = null;
         }
-
-
-        // FAIR
         String F = "";
-        if (this.isF(deliverable.getId()) == null) {
-          F = "#a3a3a3";
-        } else {
-          if (this.isF(deliverable.getId()) == true) {
-            F = "#008000";
-          } else {
-            F = "#ca1010";
-          }
-        }
-
         String A = "";
-
-        if (this.isA(deliverable.getId()) == null) {
-          A += "#a3a3a3";
-        } else {
-          if (this.isA(deliverable.getId()) == true) {
-            A += "#008000";
-          } else {
-            A += "#ca1010";
-          }
-        }
-
         String I = "";
+        String R = "";
+        if (showFAIR) {
+          // FAIR
 
-        try {
-          if (this.isI(deliverable.getId()) == null) {
-            I += "#a3a3a3";
+          if (this.isF(deliverable.getId()) == null) {
+            F = "X";
           } else {
-            if (this.isI(deliverable.getId()) == true) {
-              I += "#008000";
+            if (this.isF(deliverable.getId()) == true) {
+              F = "F";
             } else {
-              I += "#ca1010";
+              F = "X";
             }
           }
-        } catch (Exception e) {
-          I += "#a3a3a3";
-        }
 
 
-        String R = "";
-        if (this.isR(deliverable.getId()) == null) {
-          R += "#a3a3a3";
-        } else {
-          if (this.isR(deliverable.getId()) == true) {
-            R += "#008000";
+          if (this.isA(deliverable.getId()) == null) {
+            A += "X";
           } else {
-            R += "#ca1010";
+            if (this.isA(deliverable.getId()) == true) {
+              A += "A";
+            } else {
+              A += "X";
+            }
           }
+
+
+          try {
+            if (this.isI(deliverable.getId()) == null) {
+              I += "X";
+            } else {
+              if (this.isI(deliverable.getId()) == true) {
+                I += "I";
+              } else {
+                I += "X";
+              }
+            }
+          } catch (Exception e) {
+            I += "X";
+          }
+
+
+          if (this.isR(deliverable.getId()) == null) {
+            R += "X";
+          } else {
+            if (this.isR(deliverable.getId()) == true) {
+              R += "R";
+            } else {
+              R += "X";
+            }
+          }
+        } else {
+          F = "<Not applicable>";
+          A = "<Not applicable>";
+          I = "<Not applicable>";
+          R = "<Not applicable>";
         }
 
 
@@ -828,53 +853,62 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
         // Publication metadata
         // Verify if the deliverable is of type Articles and Books
 
+        if (show_publication) {
+          if (deliverable.getDeliverablePublicationMetadatas().stream().filter(dpm -> dpm.isActive())
+            .collect(Collectors.toList()).size() > 0
+            && deliverable.getDeliverablePublicationMetadatas().stream().filter(dpm -> dpm.isActive())
+              .collect(Collectors.toList()).get(0) != null) {
+            DeliverablePublicationMetadata deliverablePublicationMetadata =
+              deliverable.getDeliverablePublicationMetadatas().stream().filter(dpm -> dpm.isActive())
+                .collect(Collectors.toList()).get(0);
+            volume = deliverablePublicationMetadata.getVolume();
+            issue = deliverablePublicationMetadata.getIssue();
+            pages = deliverablePublicationMetadata.getPages();
+            journal = deliverablePublicationMetadata.getJournal();
+            if (deliverablePublicationMetadata.getIsiPublication() != null
+              && deliverablePublicationMetadata.getIsiPublication() == true) {
+              journal_indicators += "● This journal article is an ISI publication \n";
+            }
+            if (deliverablePublicationMetadata.getNasr() != null && deliverablePublicationMetadata.getNasr() == true) {
+              journal_indicators +=
+                "● This article have a co-author from a developing country National Agricultural Research System (NARS)\n";
+            }
+            if (deliverablePublicationMetadata.getCoAuthor() != null
+              && deliverablePublicationMetadata.getCoAuthor() == true) {
+              journal_indicators +=
+                "● This article have a co-author based in an Earth System Science-related academic department";
+            }
+            if (journal_indicators.isEmpty()) {
+              journal_indicators = null;
+            }
 
-        if (deliverable.getDeliverablePublicationMetadatas().stream().filter(dpm -> dpm.isActive())
-          .collect(Collectors.toList()).size() > 0
-          && deliverable.getDeliverablePublicationMetadatas().stream().filter(dpm -> dpm.isActive())
-            .collect(Collectors.toList()).get(0) != null) {
-          DeliverablePublicationMetadata deliverablePublicationMetadata =
-            deliverable.getDeliverablePublicationMetadatas().stream().filter(dpm -> dpm.isActive())
-              .collect(Collectors.toList()).get(0);
-          volume = deliverablePublicationMetadata.getVolume();
-          issue = deliverablePublicationMetadata.getIssue();
-          pages = deliverablePublicationMetadata.getPages();
-          journal = deliverablePublicationMetadata.getJournal();
-          if (deliverablePublicationMetadata.getIsiPublication() != null
-            && deliverablePublicationMetadata.getIsiPublication() == true) {
-            journal_indicators += "● This journal article is an ISI publication <br>";
-          }
-          if (deliverablePublicationMetadata.getNasr() != null && deliverablePublicationMetadata.getNasr() == true) {
-            journal_indicators +=
-              "● This article have a co-author from a developing country National Agricultural Research System (NARS)<br>";
-          }
-          if (deliverablePublicationMetadata.getCoAuthor() != null
-            && deliverablePublicationMetadata.getCoAuthor() == true) {
-            journal_indicators +=
-              "● This article have a co-author based in an Earth System Science-related academic department";
-          }
-          if (journal_indicators.isEmpty()) {
-            journal_indicators = null;
-          }
-
-          if (deliverablePublicationMetadata.getPublicationAcknowledge() != null
-            && deliverablePublicationMetadata.getPublicationAcknowledge() == true) {
-            acknowledge = "Yes";
-          } else {
-            acknowledge = "No";
-          }
-
-          for (DeliverableCrp deliverableCrp : deliverable.getDeliverableCrps().stream().filter(dc -> dc.isActive())
-            .collect(Collectors.toList())) {
-            if (deliverableCrp.getCrpPandr() != null && deliverableCrp.getIpProgram() != null) {
-              fl_contrib += "● " + deliverableCrp.getCrpPandr().getAcronym().toUpperCase() + " - "
-                + deliverableCrp.getIpProgram().getAcronym().toUpperCase() + "<br>";
+            if (deliverablePublicationMetadata.getPublicationAcknowledge() != null
+              && deliverablePublicationMetadata.getPublicationAcknowledge() == true) {
+              acknowledge = "Yes";
             } else {
-              if (deliverableCrp.getCrpPandr() != null) {
-                fl_contrib += "● " + deliverableCrp.getCrpPandr().getName().toUpperCase() + "<br>";
+              acknowledge = "No";
+            }
+
+            for (DeliverableCrp deliverableCrp : deliverable.getDeliverableCrps().stream().filter(dc -> dc.isActive())
+              .collect(Collectors.toList())) {
+              if (deliverableCrp.getCrpPandr() != null && deliverableCrp.getIpProgram() != null) {
+                fl_contrib += "● " + deliverableCrp.getCrpPandr().getAcronym().toUpperCase() + " - "
+                  + deliverableCrp.getIpProgram().getAcronym().toUpperCase() + "\n";
+              } else {
+                if (deliverableCrp.getCrpPandr() != null) {
+                  fl_contrib += "● " + deliverableCrp.getCrpPandr().getName().toUpperCase() + "\n";
+                }
               }
             }
           }
+        } else {
+          volume = "<Not applicable>";
+          issue = "<Not applicable>";
+          pages = "<Not applicable>";
+          journal = "<Not applicable>";
+          journal_indicators = "<Not applicable>";
+          acknowledge = "<Not applicable>";
+          fl_contrib = "<Not applicable>";
         }
         // get Flagships related to the project sorted by acronym
         for (ProjectFocus projectFocuses : deliverable.getProject().getProjectFocuses().stream()
@@ -885,7 +919,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
           if (flagships == null || flagships.isEmpty()) {
             flagships = programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
           } else {
-            flagships += ", " + programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
+            flagships += "\n " + programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
           }
         }
 
