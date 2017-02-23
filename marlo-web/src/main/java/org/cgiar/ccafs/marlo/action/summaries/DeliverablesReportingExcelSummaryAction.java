@@ -1,0 +1,1055 @@
+/*****************************************************************
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
+ * MARLO is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * at your option) any later version.
+ * MARLO is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
+ *****************************************************************/
+
+package org.cgiar.ccafs.marlo.action.summaries;
+
+import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectHighligthManager;
+import org.cgiar.ccafs.marlo.data.model.ChannelEnum;
+import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrpParameter;
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
+import org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile;
+import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
+import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
+import org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel;
+import org.cgiar.ccafs.marlo.data.model.DeliverableGenderTypeEnum;
+import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
+import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
+import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
+import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
+import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
+import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
+import org.cgiar.ccafs.marlo.data.model.ProgramType;
+import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
+import org.cgiar.ccafs.marlo.utils.APConfig;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.google.inject.Inject;
+import org.pentaho.reporting.engine.classic.core.Band;
+import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
+import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
+import org.pentaho.reporting.engine.classic.core.Element;
+import org.pentaho.reporting.engine.classic.core.ItemBand;
+import org.pentaho.reporting.engine.classic.core.MasterReport;
+import org.pentaho.reporting.engine.classic.core.ReportFooter;
+import org.pentaho.reporting.engine.classic.core.SubReport;
+import org.pentaho.reporting.engine.classic.core.TableDataFactory;
+import org.pentaho.reporting.engine.classic.core.modules.output.table.xls.ExcelReportUtil;
+import org.pentaho.reporting.engine.classic.core.util.TypedTableModel;
+import org.pentaho.reporting.libraries.resourceloader.Resource;
+import org.pentaho.reporting.libraries.resourceloader.ResourceManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * @author Hermes Jiménez - CIAT/CCAFS
+ */
+public class DeliverablesReportingExcelSummaryAction extends BaseAction implements Summary {
+
+
+  private static final long serialVersionUID = 1L;
+  private static Logger LOG = LoggerFactory.getLogger(DeliverablesReportingExcelSummaryAction.class);
+  private CrpManager crpManager;
+  private CrpProgramManager programManager;
+  private DeliverableManager deliverableManager;
+
+  private Crp loggedCrp;
+  // XLSX bytes
+  private byte[] bytesXLSX;
+  // Streams
+  InputStream inputStream;
+
+  private int year;
+
+  @Inject
+  public DeliverablesReportingExcelSummaryAction(APConfig config, CrpManager crpManager,
+    ProjectHighligthManager projectHighLightManager, CrpProgramManager programManager,
+    DeliverableManager deliverableManager) {
+    super(config);
+    this.crpManager = crpManager;
+    this.programManager = programManager;
+    this.deliverableManager = deliverableManager;
+  }
+
+  @Override
+  public String execute() throws Exception {
+
+    ClassicEngineBoot.getInstance().start();
+    ByteArrayOutputStream os = new ByteArrayOutputStream();
+
+    ResourceManager manager = new ResourceManager();
+    manager.registerDefaults();
+
+    Resource reportResource =
+      manager.createDirectly(this.getClass().getResource("/pentaho/deliverablesReporting.prpt"), MasterReport.class);
+
+    MasterReport masterReport = (MasterReport) reportResource.getResource();
+    String center = loggedCrp.getName();
+    try {
+      year = Integer.parseInt(this.getRequest().getParameter("year"));
+    } catch (Exception e) {
+      year = this.getCurrentCycleYear();
+    }
+
+    // Get datetime
+    ZonedDateTime timezone = ZonedDateTime.now();
+    DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
+    String zone = timezone.getOffset() + "";
+    if (zone.equals("Z")) {
+      zone = "+0";
+    }
+    String date = timezone.format(format) + "(GMT" + zone + ")";
+
+    // Set Main_Query
+    CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
+    String masterQueryName = "main";
+    TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
+    TypedTableModel model = this.getMasterTableModel(center, date, String.valueOf(year));
+    sdf.addTable(masterQueryName, model);
+    masterReport.setDataFactory(cdf);
+
+    // Get details band
+    ItemBand masteritemBand = masterReport.getItemBand();
+    // Create new empty subreport hash map
+    HashMap<String, Element> hm = new HashMap<String, Element>();
+    // method to get all the subreports in the prpt and store in the HashMap
+    this.getAllSubreports(hm, masteritemBand);
+    // Uncomment to see which Subreports are detecting the method getAllSubreports
+    // System.out.println("Pentaho SubReports: " + hm);
+
+    this.fillSubreport((SubReport) hm.get("deliverables_reporting_data"), "deliverables_reporting_data");
+    ExcelReportUtil.createXLSX(masterReport, os);
+    bytesXLSX = os.toByteArray();
+    os.close();
+
+    return SUCCESS;
+  }
+
+  private void fillSubreport(SubReport subReport, String query) {
+    CompoundDataFactory cdf = CompoundDataFactory.normalize(subReport.getDataFactory());
+    TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(query);
+    TypedTableModel model = null;
+    switch (query) {
+      case "deliverables_reporting_data":
+        model = this.getDeliverablesDataReportingTableModel();
+        break;
+    }
+    sdf.addTable(query, model);
+    subReport.setDataFactory(cdf);
+  }
+
+  /**
+   * Get all subreports and store then in a hash map.
+   * If it encounters a band, search subreports in the band
+   * 
+   * @param hm List to populate with subreports found
+   * @param itemBand details section in pentaho
+   */
+  private void getAllSubreports(HashMap<String, Element> hm, ItemBand itemBand) {
+    int elementCount = itemBand.getElementCount();
+    for (int i = 0; i < elementCount; i++) {
+      Element e = itemBand.getElement(i);
+      // verify if the item is a SubReport
+      if (e instanceof SubReport) {
+        hm.put(e.getName(), e);
+        if (((SubReport) e).getElementCount() != 0) {
+          this.getAllSubreports(hm, ((SubReport) e).getItemBand());
+          // If report footer is not null check for subreports
+          if (((SubReport) e).getReportFooter().getElementCount() != 0) {
+            this.getFooterSubreports(hm, ((SubReport) e).getReportFooter());
+          }
+        }
+      }
+      // If is a band, find the subreport if exist
+      if (e instanceof Band) {
+        this.getBandSubreports(hm, (Band) e);
+      }
+    }
+  }
+
+  /**
+   * Get all subreports in the band.
+   * If it encounters a band, search subreports in the band
+   * 
+   * @param hm
+   * @param band
+   */
+  private void getBandSubreports(HashMap<String, Element> hm, Band band) {
+    int elementCount = band.getElementCount();
+    for (int i = 0; i < elementCount; i++) {
+      Element e = band.getElement(i);
+      if (e instanceof SubReport) {
+        hm.put(e.getName(), e);
+        // If report footer is not null check for subreports
+        if (((SubReport) e).getReportFooter().getElementCount() != 0) {
+          this.getFooterSubreports(hm, ((SubReport) e).getReportFooter());
+        }
+      }
+      if (e instanceof Band) {
+        this.getBandSubreports(hm, (Band) e);
+      }
+    }
+  }
+
+
+  public byte[] getBytesXLSX() {
+    return bytesXLSX;
+  }
+
+  @Override
+  public int getContentLength() {
+    return bytesXLSX.length;
+  }
+
+
+  @Override
+  public String getContentType() {
+    return "application/xlsx";
+  }
+
+  private String getDeliverableDataSharingFilePath(String projectID) {
+    String upload = config.getDownloadURL();
+    return upload + "/" + this.getDeliverableDataSharingFileRelativePath(projectID).replace('\\', '/');
+  }
+
+  private String getDeliverableDataSharingFileRelativePath(String projectID) {
+    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + projectID + File.separator
+      + "deliverableDataSharing" + File.separator;
+  }
+
+  private TypedTableModel getDeliverablesDataReportingTableModel() {
+    TypedTableModel model = new TypedTableModel(
+      new String[] {"deliverable_id", "title", "deliv_type", "deliv_sub_type", "deliv_status", "deliv_year",
+        "key_output", "leader", "funding_sources", "cross_cutting", "deliv_new_year", "deliv_new_year_justification",
+        "deliv_dissemination_channel", "deliv_dissemination_url", "deliv_open_access", "deliv_license", "titleMetadata",
+        "descriptionMetadata", "dateMetadata", "languageMetadata", "countryMetadata", "keywordsMetadata",
+        "citationMetadata", "HandleMetadata", "DOIMetadata", "creator_authors", "data_sharing", "qualityAssurance",
+        "dataDictionary", "tools", "F", "A", "I", "R", "disseminated", "restricted_access", "restricted_date",
+        "deliv_license_modifications", "volume", "issue", "pages", "journal", "journal_indicators", "acknowledge",
+        "fl_contrib", "project_ID", "project_title", "flagships", "regions", "others_responsibles"},
+      new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class},
+      0);
+    if (!deliverableManager.findAll().isEmpty()) {
+
+      // get On going deliverables
+      List<Deliverable> deliverables =
+        new ArrayList<>(deliverableManager.findAll().stream().filter(d -> d.isActive() && d.getProject() != null
+          && d.getProject().getCrp() != null && d.getProject().getCrp().getId().equals(this.loggedCrp.getId()))
+          .collect(Collectors.toList()));
+
+      deliverables.sort((p1, p2) -> p1.isRequieriedReporting(year).compareTo(p2.isRequieriedReporting(year)));
+
+      List<Deliverable> openA = deliverables.stream()
+        .filter(a -> a.isActive()
+          && ((a.getStatus() == null || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+            || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+              || a.getStatus().intValue() == 0))))
+        .collect(Collectors.toList());
+
+      openA.addAll(deliverables.stream()
+        .filter(d -> d.isActive() && d.getYear() == this.year && d.getStatus() != null
+          && d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))
+        .collect(Collectors.toList()));
+
+      openA.addAll(deliverables.stream()
+        .filter(d -> d.isActive() && d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year
+          && d.getStatus() != null
+          && d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))
+        .collect(Collectors.toList()));
+
+      openA.sort((p1, p2) -> p1.isRequieriedReporting(this.year).compareTo(p2.isRequieriedReporting(this.year)));
+
+      HashSet<Deliverable> deliverablesHL = new HashSet<>();
+      deliverablesHL.addAll(openA);
+      openA.clear();
+      openA.addAll(deliverablesHL);
+
+      for (Deliverable deliverable : openA) {
+        String deliv_type = null;
+        String deliv_sub_type = null;
+        String deliv_status = deliverable.getStatusName();
+        String deliv_year = null;
+        String key_output = "";
+        String leader = null;
+        String others_responsibles = null;
+        String funding_sources = "";
+        Boolean showFAIR = false;
+        Boolean show_publication = false;
+        Boolean showCompilance = false;
+        String project_ID = null;
+        String project_title = null;
+        String flagships = null, regions = null;
+        String others_reponsibles = null;
+
+        if (deliverable.getProject() != null) {
+          project_ID = deliverable.getProject().getId().toString();
+          if (deliverable.getProject().getTitle() != null && !deliverable.getProject().getTitle().isEmpty()) {
+            project_title = deliverable.getProject().getTitle();
+          }
+        }
+
+
+        if (deliverable.getDeliverableType() != null) {
+          deliv_sub_type = deliverable.getDeliverableType().getName();
+          if (deliverable.getDeliverableType().getId() == 51 || deliverable.getDeliverableType().getId() == 56
+            || deliverable.getDeliverableType().getId() == 57 || deliverable.getDeliverableType().getId() == 76
+            || deliverable.getDeliverableType().getId() == 54 || deliverable.getDeliverableType().getId() == 81
+            || deliverable.getDeliverableType().getId() == 82 || deliverable.getDeliverableType().getId() == 83
+            || deliverable.getDeliverableType().getId() == 55 || deliverable.getDeliverableType().getId() == 62
+            || deliverable.getDeliverableType().getId() == 53 || deliverable.getDeliverableType().getId() == 60
+            || deliverable.getDeliverableType().getId() == 59 || deliverable.getDeliverableType().getId() == 58
+            || deliverable.getDeliverableType().getId() == 77 || deliverable.getDeliverableType().getId() == 75
+            || deliverable.getDeliverableType().getId() == 78 || deliverable.getDeliverableType().getId() == 72
+            || deliverable.getDeliverableType().getId() == 73) {
+            showFAIR = true;
+          }
+          if (deliverable.getDeliverableType().getId() == 51 || deliverable.getDeliverableType().getId() == 74) {
+            showCompilance = true;
+          }
+
+          if (deliverable.getDeliverableType().getDeliverableType() != null) {
+            deliv_type = deliverable.getDeliverableType().getDeliverableType().getName();
+            // FAIR and deliverable publication
+            if (deliverable.getDeliverableType().getDeliverableType().getId() == 49) {
+              showFAIR = true;
+              show_publication = true;
+            }
+          }
+        }
+        if (deliv_status.equals("")) {
+          deliv_status = null;
+        }
+        if (deliverable.getYear() != 0) {
+          deliv_year = "" + deliverable.getYear();
+        }
+        if (deliverable.getCrpClusterKeyOutput() != null) {
+          key_output += "● ";
+
+          if (deliverable.getCrpClusterKeyOutput().getCrpClusterOfActivity().getCrpProgram() != null) {
+            key_output +=
+              deliverable.getCrpClusterKeyOutput().getCrpClusterOfActivity().getCrpProgram().getAcronym() + " - ";
+          }
+          key_output += deliverable.getCrpClusterKeyOutput().getKeyOutput();
+        }
+
+
+        // Get partner responsible and institution
+        // Set responible;
+        DeliverablePartnership responisble = this.responsiblePartner(deliverable);
+
+        if (responisble != null) {
+          if (responisble.getProjectPartnerPerson() != null) {
+            ProjectPartnerPerson responsibleppp = responisble.getProjectPartnerPerson();
+
+            leader =
+              responsibleppp.getUser().getComposedName() + "<br>&lt;" + responsibleppp.getUser().getEmail() + "&gt;";
+            if (responsibleppp.getInstitution() != null) {
+              leader += responsibleppp.getInstitution().getComposedName();
+            }
+          }
+        }
+
+        // Get funding sources if exist
+        for (DeliverableFundingSource dfs : deliverable.getDeliverableFundingSources().stream()
+          .filter(d -> d.isActive()).collect(Collectors.toList())) {
+          funding_sources += "● " + dfs.getFundingSource().getTitle() + "<br>";
+        }
+        if (funding_sources.isEmpty()) {
+          funding_sources = null;
+        }
+
+        // Get cross_cutting dimension
+        String cross_cutting = "";
+        if (deliverable.getCrossCuttingNa() != null) {
+          if (deliverable.getCrossCuttingNa() == true) {
+            cross_cutting += "&nbsp;&nbsp;&nbsp;&nbsp;● N/A <br>";
+          }
+        }
+        if (deliverable.getCrossCuttingGender() != null) {
+          if (deliverable.getCrossCuttingGender() == true) {
+            cross_cutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Gender <br>";
+          }
+        }
+        if (deliverable.getCrossCuttingYouth() != null) {
+          if (deliverable.getCrossCuttingYouth() == true) {
+            cross_cutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Youth <br>";
+          }
+        }
+        if (deliverable.getCrossCuttingCapacity() != null) {
+          if (deliverable.getCrossCuttingCapacity() == true) {
+            cross_cutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Capacity Development <br>";
+          }
+        }
+
+        if (deliverable.getCrossCuttingGender() != null) {
+          if (deliverable.getCrossCuttingGender() == true) {
+            if (deliverable.getDeliverableGenderLevels() == null
+              || deliverable.getDeliverableGenderLevels().isEmpty()) {
+              cross_cutting += "<br><b>Gender level(s):</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&lt;Not Defined&gt;";
+            } else {
+              cross_cutting += "<br><b>Gender level(s): </b><br>";
+              for (DeliverableGenderLevel dgl : deliverable.getDeliverableGenderLevels().stream()
+                .filter(dgl -> dgl.isActive()).collect(Collectors.toList())) {
+                if (dgl.getGenderLevel() != 0.0) {
+                  cross_cutting += "&nbsp;&nbsp;&nbsp;&nbsp;● "
+                    + DeliverableGenderTypeEnum.getValue(dgl.getGenderLevel()).getValue() + "<br>";
+                }
+              }
+            }
+          }
+        }
+        if (cross_cutting.isEmpty()) {
+          cross_cutting = null;
+        }
+
+        if (key_output.isEmpty()) {
+          key_output = null;
+        }
+
+        // Reporting
+        Integer deliv_new_year = null;
+        String deliv_new_year_justification = null;
+
+        if (deliverable.getStatusName() != null) {
+          if (!deliverable.getStatusName().isEmpty()) {
+            if (deliverable.getStatusName().equals("Extended")) {
+              deliv_new_year = deliverable.getNewExpectedYear();
+              deliv_new_year_justification = deliverable.getStatusDescription();
+            }
+          }
+        }
+
+        String deliv_dissemination_channel = null;
+        String deliv_dissemination_url = null;
+        String deliv_open_access = null;
+        String deliv_license = null;
+        String deliv_license_modifications = null;
+        Boolean isDisseminated = false;
+        String disseminated = "No";
+        String restricted_access = null;
+        String restricted_date = null;
+        Boolean isRestricted = false;
+        Boolean isLastTwoRestricted = false;
+        Boolean show_deliv_license_modifications = false;
+
+        if (deliverable.getDeliverableDisseminations().stream().collect(Collectors.toList()).size() > 0
+          && deliverable.getDeliverableDisseminations().stream().collect(Collectors.toList()).get(0) != null) {
+          // Get deliverable dissemination
+          DeliverableDissemination deliverableDissemination =
+            deliverable.getDeliverableDisseminations().stream().collect(Collectors.toList()).get(0);
+
+          if (deliverableDissemination.getAlreadyDisseminated() != null
+            && deliverableDissemination.getAlreadyDisseminated() == true) {
+            isDisseminated = true;
+            disseminated = "Yes";
+          }
+
+          if (deliverableDissemination.getDisseminationChannel() != null
+            && !deliverableDissemination.getDisseminationChannel().isEmpty()) {
+            if (ChannelEnum.getValue(deliverableDissemination.getDisseminationChannel()) != null) {
+              deliv_dissemination_channel =
+                ChannelEnum.getValue(deliverableDissemination.getDisseminationChannel()).getDesc();
+            }
+
+            // deliv_dissemination_channel = deliverableDissemination.getDisseminationChannel();
+          }
+
+          if (deliverableDissemination.getDisseminationUrl() != null
+            && !deliverableDissemination.getDisseminationUrl().isEmpty()) {
+            deliv_dissemination_url = deliverableDissemination.getDisseminationUrl().replace(" ", "%20");
+          }
+
+          if (deliverableDissemination.getIsOpenAccess() != null) {
+            if (deliverableDissemination.getIsOpenAccess() == true) {
+              deliv_open_access = "Yes";
+            } else {
+              // get the open access
+              deliv_open_access = "No";
+              isRestricted = true;
+              if (deliverableDissemination.getIntellectualProperty() != null
+                && deliverableDissemination.getIntellectualProperty() == true) {
+                restricted_access = "Intellectual Property Rights (confidential information)";
+              }
+
+              if (deliverableDissemination.getLimitedExclusivity() != null
+                && deliverableDissemination.getLimitedExclusivity() == true) {
+                restricted_access = "Limited Exclusivity Agreements";
+              }
+
+              if (deliverableDissemination.getNotDisseminated() != null
+                && deliverableDissemination.getNotDisseminated() == true) {
+                restricted_access = "Not Disseminated";
+              }
+
+              if (deliverableDissemination.getRestrictedUseAgreement() != null
+                && deliverableDissemination.getRestrictedUseAgreement() == true) {
+                restricted_access = "Restricted Use Agreement - Restricted access (if so, what are these periods?)";
+                isLastTwoRestricted = true;
+                if (deliverableDissemination.getRestrictedAccessUntil() != null) {
+                  restricted_date =
+                    "<b>Restricted access until: </b>" + deliverableDissemination.getRestrictedAccessUntil();
+                } else {
+                  restricted_date = "<b>Restricted access until: </b>&lt;Not Defined&gt;";
+                }
+              }
+
+              if (deliverableDissemination.getEffectiveDateRestriction() != null
+                && deliverableDissemination.getEffectiveDateRestriction() == true) {
+                restricted_access = "Effective Date Restriction - embargoed periods (if so, what are these periods?)";
+                isLastTwoRestricted = true;
+                if (deliverableDissemination.getRestrictedEmbargoed() != null) {
+                  restricted_date =
+                    "<b>Restricted embargoed date: </b>" + deliverableDissemination.getRestrictedEmbargoed();
+                } else {
+                  restricted_date = "<b>Restricted embargoed date: </b>&lt;Not Defined&gt;";
+                }
+              }
+            }
+          }
+
+          if (deliverable.getAdoptedLicense() != null) {
+            if (deliverable.getAdoptedLicense() == true) {
+              deliv_license = deliverable.getLicense();
+              if (deliv_license.equals("OTHER")) {
+                deliv_license = deliverable.getOtherLicense();
+                show_deliv_license_modifications = true;
+                if (deliverable.getAllowModifications() != null && deliverable.getAllowModifications() == true) {
+                  deliv_license_modifications = "Yes";
+                } else {
+                  deliv_license_modifications = "No";
+                }
+              }
+            } else {
+              deliv_license = "No";
+            }
+          }
+        }
+
+        if (deliv_license != null && deliv_license.isEmpty()) {
+          deliv_license = null;
+        }
+
+        String titleMetadata = null;
+        String descriptionMetadata = null;
+        String dateMetadata = null;
+        String languageMetadata = null;
+        String countryMetadata = null;
+        String keywordsMetadata = null;
+        String citationMetadata = null;
+        String HandleMetadata = null;
+        String DOIMetadata = null;
+
+        for (DeliverableMetadataElement deliverableMetadataElement : deliverable.getDeliverableMetadataElements()
+          .stream().filter(dm -> dm.isActive() && dm.getMetadataElement() != null).collect(Collectors.toList())) {
+
+          if (deliverableMetadataElement.getMetadataElement().getId() == 1) {
+            if (deliverableMetadataElement.getElementValue() != null
+              && !deliverableMetadataElement.getElementValue().isEmpty()) {
+              titleMetadata = deliverableMetadataElement.getElementValue();
+            }
+          }
+
+          if (deliverableMetadataElement.getMetadataElement().getId() == 8) {
+            if (deliverableMetadataElement.getElementValue() != null
+              && !deliverableMetadataElement.getElementValue().isEmpty()) {
+              descriptionMetadata = deliverableMetadataElement.getElementValue();
+            }
+          }
+
+          if (deliverableMetadataElement.getMetadataElement().getId() == 17) {
+            if (deliverableMetadataElement.getElementValue() != null
+              && !deliverableMetadataElement.getElementValue().isEmpty()) {
+              dateMetadata = deliverableMetadataElement.getElementValue();
+            }
+          }
+
+          if (deliverableMetadataElement.getMetadataElement().getId() == 24) {
+            if (deliverableMetadataElement.getElementValue() != null
+              && !deliverableMetadataElement.getElementValue().isEmpty()) {
+              languageMetadata = deliverableMetadataElement.getElementValue();
+            }
+          }
+
+          if (deliverableMetadataElement.getMetadataElement().getId() == 28) {
+            if (deliverableMetadataElement.getElementValue() != null
+              && !deliverableMetadataElement.getElementValue().isEmpty()) {
+              countryMetadata = deliverableMetadataElement.getElementValue();
+            }
+          }
+
+          if (deliverableMetadataElement.getMetadataElement().getId() == 37) {
+            if (deliverableMetadataElement.getElementValue() != null
+              && !deliverableMetadataElement.getElementValue().isEmpty()) {
+              keywordsMetadata = deliverableMetadataElement.getElementValue();
+            }
+          }
+
+          if (deliverableMetadataElement.getMetadataElement().getId() == 22) {
+            if (deliverableMetadataElement.getElementValue() != null
+              && !deliverableMetadataElement.getElementValue().isEmpty()) {
+              citationMetadata = deliverableMetadataElement.getElementValue();
+            }
+          }
+
+          if (deliverableMetadataElement.getMetadataElement().getId() == 35) {
+            if (deliverableMetadataElement.getElementValue() != null
+              && !deliverableMetadataElement.getElementValue().isEmpty()) {
+              HandleMetadata = deliverableMetadataElement.getElementValue();
+            }
+          }
+
+          if (deliverableMetadataElement.getMetadataElement().getId() == 36) {
+            if (deliverableMetadataElement.getElementValue() != null
+              && !deliverableMetadataElement.getElementValue().isEmpty()) {
+              DOIMetadata = deliverableMetadataElement.getElementValue();
+            }
+          }
+        }
+
+        String creator_authors = "";
+        for (DeliverableUser deliverableUser : deliverable.getDeliverableUsers().stream().filter(du -> du.isActive())
+          .collect(Collectors.toList())) {
+          creator_authors += "<br>● ";
+          if (!deliverableUser.getLastName().isEmpty()) {
+            creator_authors += deliverableUser.getLastName() + " - ";
+          }
+          if (!deliverableUser.getFirstName().isEmpty()) {
+            creator_authors += deliverableUser.getFirstName();
+          }
+          if (!deliverableUser.getElementId().isEmpty()) {
+            creator_authors += "&lt;" + deliverableUser.getElementId() + "&gt;";
+          }
+        }
+
+        if (creator_authors.isEmpty()) {
+          creator_authors = null;
+        }
+
+        String data_sharing = "";
+        for (DeliverableDataSharingFile deliverableDataSharingFile : deliverable.getDeliverableDataSharingFiles()
+          .stream().filter(ds -> ds.isActive()).collect(Collectors.toList())) {
+          if (deliverableDataSharingFile.getExternalFile() != null
+            && !deliverableDataSharingFile.getExternalFile().isEmpty()) {
+            data_sharing += deliverableDataSharingFile.getExternalFile().replace(" ", "%20") + "<br>";
+          }
+
+          if (deliverableDataSharingFile.getFile() != null && deliverableDataSharingFile.getFile().isActive()) {
+            data_sharing +=
+              (this.getDeliverableDataSharingFilePath(project_ID) + deliverableDataSharingFile.getFile().getFileName())
+                .replace(" ", "%20") + "<br>";
+
+          }
+        }
+        if (data_sharing.isEmpty()) {
+          data_sharing = null;
+        }
+
+
+        String qualityAssurance = "";
+        String dataDictionary = "";
+        String tools = "";
+
+        if (deliverable.getDeliverableQualityChecks().stream().filter(qc -> qc.isActive()).collect(Collectors.toList())
+          .size() > 0
+          && deliverable.getDeliverableQualityChecks().stream().filter(qc -> qc.isActive()).collect(Collectors.toList())
+            .get(0) != null) {
+          DeliverableQualityCheck deliverableQualityCheck = deliverable.getDeliverableQualityChecks().stream()
+            .filter(qc -> qc.isActive()).collect(Collectors.toList()).get(0);
+          // QualityAssurance
+          if (deliverableQualityCheck.getQualityAssurance() != null) {
+            if (deliverableQualityCheck.getQualityAssurance().getId() == 2) {
+              if (deliverableQualityCheck.getFileAssurance() != null
+                && deliverableQualityCheck.getFileAssurance().isActive()) {
+                qualityAssurance += "<br>● File: <font size=2 face='Segoe UI' color='blue'>"
+                  + (this.getDeliverableUrl("Assurance", deliverable)
+                    + deliverableQualityCheck.getFileAssurance().getFileName()).replace(" ", "%20")
+                  + "</font>";
+              }
+              if (deliverableQualityCheck.getLinkAssurance() != null
+                && !deliverableQualityCheck.getLinkAssurance().isEmpty()) {
+                qualityAssurance += "<br>● Link: <font size=2 face='Segoe UI' color='blue'>"
+                  + deliverableQualityCheck.getLinkAssurance().replace(" ", "%20") + "</font>";
+              }
+            } else {
+              qualityAssurance = "● " + deliverableQualityCheck.getQualityAssurance().getName();
+            }
+          }
+
+
+          // Data dictionary
+          if (deliverableQualityCheck.getDataDictionary() != null) {
+            if (deliverableQualityCheck.getDataDictionary().getId() == 2) {
+              if (deliverableQualityCheck.getFileDictionary() != null
+                && deliverableQualityCheck.getFileDictionary().isActive()) {
+                dataDictionary += "<br>● File: <font size=2 face='Segoe UI' color='blue'>"
+                  + (this.getDeliverableUrl("Dictionary", deliverable)
+                    + deliverableQualityCheck.getFileDictionary().getFileName()).replace(" ", "%20")
+                  + "</font>";
+              }
+              if (deliverableQualityCheck.getLinkDictionary() != null
+                && !deliverableQualityCheck.getLinkDictionary().isEmpty()) {
+                dataDictionary += "<br>● Link: <font size=2 face='Segoe UI' color='blue'>"
+                  + deliverableQualityCheck.getLinkDictionary().replace(" ", "%20") + "</font>";
+              }
+            } else {
+              dataDictionary = "● " + deliverableQualityCheck.getDataDictionary().getName();
+            }
+          }
+
+          // Tools
+          if (deliverableQualityCheck.getDataTools() != null) {
+            if (deliverableQualityCheck.getDataTools().getId() == 2) {
+              if (deliverableQualityCheck.getFileTools() != null && deliverableQualityCheck.getFileTools().isActive()) {
+                tools += "<br>● File: <font size=2 face='Segoe UI' color='blue'>"
+                  + (this.getDeliverableUrl("Tools", deliverable)
+                    + deliverableQualityCheck.getFileTools().getFileName()).replace(" ", "%20")
+                  + "</font>";
+              }
+              if (deliverableQualityCheck.getLinkTools() != null && !deliverableQualityCheck.getLinkTools().isEmpty()) {
+                tools += "<br>● Link: <font size=2 face='Segoe UI' color='blue'>"
+                  + deliverableQualityCheck.getLinkTools().replace(" ", "%20") + "</font>";
+              }
+            } else {
+              tools = "● " + deliverableQualityCheck.getDataTools().getName();
+            }
+          }
+        }
+
+        if (qualityAssurance.isEmpty()) {
+          qualityAssurance = null;
+        }
+        if (dataDictionary.isEmpty()) {
+          dataDictionary = null;
+        }
+        if (tools.isEmpty()) {
+          tools = null;
+        }
+
+
+        // FAIR
+        String F = "";
+        if (this.isF(deliverable.getId()) == null) {
+          F = "#a3a3a3";
+        } else {
+          if (this.isF(deliverable.getId()) == true) {
+            F = "#008000";
+          } else {
+            F = "#ca1010";
+          }
+        }
+
+        String A = "";
+
+        if (this.isA(deliverable.getId()) == null) {
+          A += "#a3a3a3";
+        } else {
+          if (this.isA(deliverable.getId()) == true) {
+            A += "#008000";
+          } else {
+            A += "#ca1010";
+          }
+        }
+
+        String I = "";
+
+        try {
+          if (this.isI(deliverable.getId()) == null) {
+            I += "#a3a3a3";
+          } else {
+            if (this.isI(deliverable.getId()) == true) {
+              I += "#008000";
+            } else {
+              I += "#ca1010";
+            }
+          }
+        } catch (Exception e) {
+          I += "#a3a3a3";
+        }
+
+
+        String R = "";
+        if (this.isR(deliverable.getId()) == null) {
+          R += "#a3a3a3";
+        } else {
+          if (this.isR(deliverable.getId()) == true) {
+            R += "#008000";
+          } else {
+            R += "#ca1010";
+          }
+        }
+
+
+        String volume = null;
+        String issue = null;
+        String pages = null;
+        String journal = null;
+        String journal_indicators = "";
+        String acknowledge = null;
+        String fl_contrib = "";
+        // Publication metadata
+        // Verify if the deliverable is of type Articles and Books
+
+
+        if (deliverable.getDeliverablePublicationMetadatas().stream().filter(dpm -> dpm.isActive())
+          .collect(Collectors.toList()).size() > 0
+          && deliverable.getDeliverablePublicationMetadatas().stream().filter(dpm -> dpm.isActive())
+            .collect(Collectors.toList()).get(0) != null) {
+          DeliverablePublicationMetadata deliverablePublicationMetadata =
+            deliverable.getDeliverablePublicationMetadatas().stream().filter(dpm -> dpm.isActive())
+              .collect(Collectors.toList()).get(0);
+          volume = deliverablePublicationMetadata.getVolume();
+          issue = deliverablePublicationMetadata.getIssue();
+          pages = deliverablePublicationMetadata.getPages();
+          journal = deliverablePublicationMetadata.getJournal();
+          if (deliverablePublicationMetadata.getIsiPublication() != null
+            && deliverablePublicationMetadata.getIsiPublication() == true) {
+            journal_indicators += "● This journal article is an ISI publication <br>";
+          }
+          if (deliverablePublicationMetadata.getNasr() != null && deliverablePublicationMetadata.getNasr() == true) {
+            journal_indicators +=
+              "● This article have a co-author from a developing country National Agricultural Research System (NARS)<br>";
+          }
+          if (deliverablePublicationMetadata.getCoAuthor() != null
+            && deliverablePublicationMetadata.getCoAuthor() == true) {
+            journal_indicators +=
+              "● This article have a co-author based in an Earth System Science-related academic department";
+          }
+          if (journal_indicators.isEmpty()) {
+            journal_indicators = null;
+          }
+
+          if (deliverablePublicationMetadata.getPublicationAcknowledge() != null
+            && deliverablePublicationMetadata.getPublicationAcknowledge() == true) {
+            acknowledge = "Yes";
+          } else {
+            acknowledge = "No";
+          }
+
+          for (DeliverableCrp deliverableCrp : deliverable.getDeliverableCrps().stream().filter(dc -> dc.isActive())
+            .collect(Collectors.toList())) {
+            if (deliverableCrp.getCrpPandr() != null && deliverableCrp.getIpProgram() != null) {
+              fl_contrib += "● " + deliverableCrp.getCrpPandr().getAcronym().toUpperCase() + " - "
+                + deliverableCrp.getIpProgram().getAcronym().toUpperCase() + "<br>";
+            } else {
+              if (deliverableCrp.getCrpPandr() != null) {
+                fl_contrib += "● " + deliverableCrp.getCrpPandr().getName().toUpperCase() + "<br>";
+              }
+            }
+          }
+        }
+        // get Flagships related to the project sorted by acronym
+        for (ProjectFocus projectFocuses : deliverable.getProject().getProjectFocuses().stream()
+          .sorted((o1, o2) -> o1.getCrpProgram().getAcronym().compareTo(o2.getCrpProgram().getAcronym()))
+          .filter(
+            c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+          .collect(Collectors.toList())) {
+          if (flagships == null || flagships.isEmpty()) {
+            flagships = programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
+          } else {
+            flagships += ", " + programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
+          }
+        }
+
+        List<CrpParameter> hasRegionsList = new ArrayList<>();
+        Boolean hasRegions = false;
+        for (CrpParameter hasRegionsParam : deliverable.getProject().getCrp().getCrpParameters().stream()
+          .filter(cp -> cp.isActive() && cp.getKey().equals(APConstants.CRP_HAS_REGIONS))
+          .collect(Collectors.toList())) {
+          hasRegionsList.add(hasRegionsParam);
+        }
+
+        if (!hasRegionsList.isEmpty()) {
+          if (hasRegionsList.size() > 1) {
+            LOG.warn("There is for more than 1 key of type: " + APConstants.CRP_HAS_REGIONS);
+          }
+          hasRegions = Boolean.valueOf(hasRegionsList.get(0).getValue());
+        }
+
+
+        // If has regions, add the regions to regionsArrayList
+        // Get Regions related to the project sorted by acronym
+        if (hasRegions != false) {
+          for (ProjectFocus projectFocuses : deliverable.getProject().getProjectFocuses().stream()
+            .sorted((c1, c2) -> c1.getCrpProgram().getAcronym().compareTo(c2.getCrpProgram().getAcronym()))
+            .filter(
+              c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+            .collect(Collectors.toList())) {
+            if (regions == null || regions.isEmpty()) {
+              regions = programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
+            } else {
+              regions += ", " + programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
+            }
+          }
+        } else {
+          regions = null;
+        }
+
+
+        model.addRow(new Object[] {deliverable.getId(), deliverable.getTitle(), deliv_type, deliv_sub_type,
+          deliv_status, deliv_year, key_output, leader, funding_sources, cross_cutting, deliv_new_year,
+          deliv_new_year_justification, deliv_dissemination_channel, deliv_dissemination_url, deliv_open_access,
+          deliv_license, titleMetadata, descriptionMetadata, dateMetadata, languageMetadata, countryMetadata,
+          keywordsMetadata, citationMetadata, HandleMetadata, DOIMetadata, creator_authors, data_sharing,
+          qualityAssurance, dataDictionary, tools, F, A, I, R, disseminated, restricted_access, restricted_date,
+          deliv_license_modifications, volume, issue, pages, journal, journal_indicators, acknowledge, fl_contrib,
+          project_ID, project_title, flagships, regions, others_responsibles});
+      }
+    }
+    return model;
+  }
+
+  public String getDeliverableUrl(String fileType, Deliverable deliverable) {
+    return config.getDownloadURL() + "/" + this.getDeliverableUrlPath(fileType, deliverable).replace('\\', '/');
+  }
+
+  public String getDeliverableUrlPath(String fileType, Deliverable deliverable) {
+    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + deliverable.getId() + File.separator
+      + "deliverable" + File.separator + fileType + File.separator;
+  }
+
+  private File getFile(String fileName) {
+    // Get file from resources folder
+    ClassLoader classLoader = this.getClass().getClassLoader();
+    File file = new File(classLoader.getResource(fileName).getFile());
+    return file;
+  }
+
+  @Override
+  public String getFileName() {
+    StringBuffer fileName = new StringBuffer();
+    fileName.append("Deliverables_Reporting-");
+    fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
+    fileName.append(".xlsx");
+
+    return fileName.toString();
+
+  }
+
+  private void getFooterSubreports(HashMap<String, Element> hm, ReportFooter reportFooter) {
+
+    int elementCount = reportFooter.getElementCount();
+    for (int i = 0; i < elementCount; i++) {
+      Element e = reportFooter.getElement(i);
+      if (e instanceof SubReport) {
+        hm.put(e.getName(), e);
+        if (((SubReport) e).getElementCount() != 0) {
+          this.getAllSubreports(hm, ((SubReport) e).getItemBand());
+
+        }
+      }
+      if (e instanceof Band) {
+        this.getBandSubreports(hm, (Band) e);
+      }
+    }
+  }
+
+  public String getHighlightsImagesUrl(String project_id) {
+    return config.getDownloadURL() + "/" + this.getHighlightsImagesUrlPath(project_id).replace('\\', '/');
+  }
+
+
+  public String getHighlightsImagesUrlPath(String project_id) {
+    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project_id + File.separator
+      + "hightlightsImage" + File.separator;
+  }
+
+
+  @Override
+  public InputStream getInputStream() {
+    if (inputStream == null) {
+      inputStream = new ByteArrayInputStream(bytesXLSX);
+    }
+    return inputStream;
+  }
+
+  public Crp getLoggedCrp() {
+    return loggedCrp;
+  }
+
+  private TypedTableModel getMasterTableModel(String center, String date, String year) {
+    // Initialization of Model
+    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "year"},
+      new Class[] {String.class, String.class, String.class});
+    model.addRow(new Object[] {center, date, year});
+    return model;
+  }
+
+  @Override
+  public void prepare() throws Exception {
+    try {
+      loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
+      loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    } catch (Exception e) {
+    }
+
+    try {
+      year = Integer.parseInt(this.getRequest().getParameter("year"));
+    } catch (Exception e) {
+      year = this.getCurrentCycleYear();
+    }
+  }
+
+  private DeliverablePartnership responsiblePartner(Deliverable deliverable) {
+    try {
+      DeliverablePartnership partnership = deliverable.getDeliverablePartnerships().stream()
+        .filter(
+          dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
+        .collect(Collectors.toList()).get(0);
+      return partnership;
+    } catch (Exception e) {
+      return null;
+    }
+
+  }
+
+  public void setBytesXLSX(byte[] bytesXLSX) {
+    this.bytesXLSX = bytesXLSX;
+  }
+
+  public void setInputStream(InputStream inputStream) {
+    this.inputStream = inputStream;
+  }
+
+  public void setLoggedCrp(Crp loggedCrp) {
+    this.loggedCrp = loggedCrp;
+  }
+}
