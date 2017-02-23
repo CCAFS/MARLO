@@ -133,13 +133,31 @@ public class SearchUserAction extends BaseAction {
                 break;
 
               case "PL":
-                List<ProjectPartnerPerson> partnerPersons = new ArrayList<>(user.getProjectPartnerPersons().stream()
+                List<ProjectPartnerPerson> partnerPLPersons = new ArrayList<>(user.getProjectPartnerPersons().stream()
                   .filter(pp -> pp.isActive() && pp.getContactType().equals("PL")).collect(Collectors.toList()));
-                for (ProjectPartnerPerson partnerPerson : partnerPersons) {
+                for (ProjectPartnerPerson partnerPerson : partnerPLPersons) {
                   roleInfo.add(partnerPerson.getProjectPartner().getProject().getComposedName());
                 }
                 role.put("roleInfo", roleInfo);
                 break;
+
+              case "PC":
+                List<ProjectPartnerPerson> partnerPCPersons = new ArrayList<>(user.getProjectPartnerPersons().stream()
+                  .filter(pp -> pp.isActive() && pp.getContactType().equals("PC")).collect(Collectors.toList()));
+                for (ProjectPartnerPerson partnerPerson : partnerPCPersons) {
+                  roleInfo.add(partnerPerson.getProjectPartner().getProject().getComposedName());
+                }
+                role.put("roleInfo", roleInfo);
+                break;
+
+              // case "RPL":
+              // List<CrpProgramLeader> partnerPCPersons = new ArrayList<>(user.getProjectPartnerPersons().stream()
+              // .filter(pp -> pp.isActive() && pp.getContactType().equals("PC")).collect(Collectors.toList()));
+              // for (ProjectPartnerPerson partnerPerson : partnerPCPersons) {
+              // roleInfo.add(partnerPerson.getProjectPartner().getProject().getComposedName());
+              // }
+              // role.put("roleInfo", roleInfo);
+              // break;
 
             }
 
