@@ -44,51 +44,49 @@
         
         <div class="borderBox form-group">
             <h4 style="text-align:center;">User Data</h4>
-            <hr />
           <div class="row">
             <div class="col-md-2">
-              [@customForm.input name="" i18nkey="Id" value="" className="userId" type="text"  required=true disabled=true editable=true /]
+              [@customForm.input name="user.id" i18nkey="Id" value="" className="userId" type="text"  required=true disabled=true editable=true /]
             </div>
             <div class="col-md-3 col-md-offset-2">
-              [@customForm.input name="" i18nkey="First name" value="" className="userFirstName" type="text"  required=true disabled=true editable=true /]
+              [@customForm.input name="user.firstName" i18nkey="First name" value="" className="userFirstName" type="text"  required=true disabled=true editable=true /]
             </div>
             <div class="col-md-3 form-group col-md-offset-1">
-              [@customForm.input name="" i18nkey="Last name" value="" className="userLastName" type="text"  required=true disabled=true editable=true /]
+              [@customForm.input name="user.lastName" i18nkey="Last name" value="" className="userLastName" type="text"  required=true disabled=true editable=true /]
             </div>
             <div class="col-md-3 ">
-              [@customForm.input name="" i18nkey="Email" value="" className="userEmail" type="text"  required=true disabled=true editable=true /]
+              [@customForm.input name="user.email" i18nkey="Email" value="" className="userEmail" type="text"  required=true disabled=true editable=true /]
             </div>
             <div class="col-md-3 col-md-offset-1">
-              [@customForm.input name="" i18nkey="Username" value="" className="userUsername" type="text"  required=true disabled=true editable=true /]
+              [@customForm.input name="user.username" i18nkey="Username" value="" className="userUsername" type="text"  required=true disabled=true editable=true /]
             </div>
             <div class="col-md-3 form-group col-md-offset-1">
-              [@customForm.input name="" i18nkey="Password" value="" className="userPassword" type="text"  required=true disabled=true editable=true /]
+              [@customForm.input name="user.password" i18nkey="Password" value="" className="userPassword" type="text"  required=true disabled=true editable=true /]
             </div>
           </div>
-          <h4 style="text-align:center;">Configuration</h4>
             <hr />
+          <h4 style="text-align:center;">Configuration</h4>
             
             <div class="row form-group">
             <div class="col-md-2">
-              [@customForm.select header=false name="" label=""  i18nkey="CGIAR use" listName="" keyFieldName="value"  displayFieldName="name"  multiple=false required=true disabled=true  className="cgiarUser" editable=true/]
+              [@customForm.select header=false name="user.cgiarUser" label=""  i18nkey="CGIAR use" listName="" keyFieldName="value"  displayFieldName="name"  multiple=false required=true disabled=true  className="cgiarUser" editable=true/]
             </div>
             <div class="col-md-2 col-md-offset-2">
-              [@customForm.select header=false name="" label=""  i18nkey="Is active" listName="" keyFieldName="value"  displayFieldName="name"  multiple=false required=true  className="isActive" editable=true/]
+              [@customForm.select header=false name="user.active" label=""  i18nkey="Is active" listName="" keyFieldName="value"  displayFieldName="name"  multiple=false required=true  className="isActive" editable=true/]
             </div>
             <div class="col-md-2 form-group col-md-offset-2">
-              [@customForm.select header=false name="" label=""  i18nkey="Autosave" listName="" keyFieldName="value"  displayFieldName="name"  multiple=false required=true  className="autosave" editable=true/]
+              [@customForm.select header=false name="user.autoSave" label=""  i18nkey="Autosave" listName="" keyFieldName="value"  displayFieldName="name"  multiple=false required=true  className="autosave" editable=true/]
             </div>
           </div>
           
-          <h4 style="text-align:center;">CRPs</h4>
             <hr />
+          <h4 style="text-align:center;">CRPs</h4>
             
           <div class="row">
             <div class="col-md-12 crpList">
-
             </div>
-            <div id="addPartnerBlock" class="addPerson text-right">
-              <div class="button-blue  addPartner"><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="Add CRP" /]</div>
+            <div class="col-md-12 form-group">
+              [@customForm.select name="user.autoSave" label=""  i18nkey="Select to add a crp" listName="crps" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className="crpSelect" editable=true disabled=true/]
             </div>
           </div>
         </div>
@@ -125,6 +123,8 @@
       </div>
      
     [/#if]
+    <input type="hidden" class="crpUserId" name="user.crpUser.id" value=""/>
+    <input type="hidden" class="crpUserCrpId" name="user.crpUser.crp.id" value="" />
     [#-- crp Title --]
     <div class="blockTitle closed">
        <span title="" class="crpTitle col-md-9">[#if element.crp?has_content][@utils.wordCutter string=(element.crp) maxPos=70 substr=" "/][#else]CCAFS[/#if]</span>
