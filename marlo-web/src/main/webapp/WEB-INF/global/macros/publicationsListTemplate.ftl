@@ -63,7 +63,7 @@
           <td class="">
             [#if deliverable.leaders?has_content]
               [#list deliverable.leaders as institutionLead]
-                <p>${(institutionLead.institution.acronym)!'undefined'}</p>
+                <p>${(institutionLead.institution.acronym)!((institutionLead.institution.name)!'undefined')}</p>
               [/#list]
             [/#if]
           </td>
