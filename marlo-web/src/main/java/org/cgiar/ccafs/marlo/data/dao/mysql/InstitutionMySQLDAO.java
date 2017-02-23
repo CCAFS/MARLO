@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,7 +18,9 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.InstitutionDAO;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 
@@ -73,6 +75,53 @@ public class InstitutionMySQLDAO implements InstitutionDAO {
       dao.update(institution);
     }
     return institution.getId();
+  }
+
+  @Override
+  public List<Institution> searchInstitution(String searchValue, int ppaPartner, long crpID) {
+    StringBuilder query = new StringBuilder();
+
+    query.append("from " + Institution.class.getName());
+    query.append(" WHERE ");
+    query.append("name like '%" + searchValue + "%' ");
+    query.append("OR acronym like '%" + searchValue + "%' ");
+    query.append("OR city like '%" + searchValue + "%' ");
+    query.append("OR website_link like '%" + searchValue + "%' ");
+
+
+    query.append("GROUP BY email ");
+    query.append("ORDER BY CASE ");
+    query.append("WHEN name like '" + searchValue + "%' THEN 0 ");
+    query.append("WHEN name like '% %" + searchValue + "% %' THEN 1 ");
+    query.append("WHEN name like '%" + searchValue + "' THEN 2 ");
+    query.append("WHEN acronym like '" + searchValue + "%' THEN 3 ");
+    query.append("WHEN acronym like '% %" + searchValue + "% %' THEN 4 ");
+    query.append("WHEN acronym like '%" + searchValue + "' THEN 5 ");
+    query.append("WHEN city like '" + searchValue + "%' THEN 6 ");
+    query.append("WHEN city like '% %" + searchValue + "% %' THEN 7 ");
+    query.append("WHEN city like '%" + searchValue + "' THEN 8 ");
+    query.append("WHEN website_link like '%" + searchValue + "' THEN 9 ");
+    query.append("WHEN website_link like '%" + searchValue + "' THEN 10 ");
+    query.append("WHEN website_link like '%" + searchValue + "' THEN 11 ");
+    query.append("ELSE 12 ");
+    query.append("END, name, acronym, city,website_link ");
+
+
+    List<Institution> institutions = dao.findAll(query.toString());
+    List<Institution> institutionsAux = new ArrayList<Institution>();
+
+    if (ppaPartner == 1) {
+      institutionsAux.addAll(institutions);
+      for (Institution institution : institutionsAux) {
+        if (institution.getCrpPpaPartners().stream()
+          .filter(c -> c.isActive() && c.getCrp().getId().longValue() == crpID).collect(Collectors.toList())
+          .isEmpty()) {
+          institutions.remove(institution);
+        }
+      }
+    }
+
+    return institutions;
   }
 
 }

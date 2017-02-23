@@ -64,7 +64,6 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
   private Set<CrpPpaPartner> crpPpaPartners = new HashSet<CrpPpaPartner>(0);
 
-
   private Set<LiaisonInstitution> liaisonInstitutions = new HashSet<LiaisonInstitution>(0);
 
   private Set<ProjectPartner> projectPartners = new HashSet<ProjectPartner>(0);
@@ -72,10 +71,12 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
   private Set<ProjectBudget> projectBudgets = new HashSet<ProjectBudget>(0);
 
-
   private Set<FundingSource> fundingSources = new HashSet<FundingSource>(0);
 
+
   private Set<Institution> branches = new HashSet<Institution>(0);
+
+
   private Set<ProjectPartnerPerson> projectPartnerPersons = new HashSet<>(0);
 
   public Institution() {
@@ -102,6 +103,28 @@ public class Institution implements java.io.Serializable, IAuditLog {
     this.headquarter = headquarter;
     this.projectPartnerPersons = projectPartnerPersons;
     this.fundingSources = fundingSources;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    Institution other = (Institution) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!id.equals(other.id)) {
+      return false;
+    }
+    return true;
   }
 
   public String getAcronym() {
@@ -185,7 +208,6 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
   }
 
-
   public String getComposedNameLoc() {
     try {
       if (this.getLocElement() == null) {
@@ -225,19 +247,19 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
   }
 
+
   public Set<CrpPpaPartner> getCrpPpaPartners() {
     return crpPpaPartners;
   }
-
 
   public Set<FundingSource> getFundingSources() {
     return fundingSources;
   }
 
+
   public Institution getHeadquarter() {
     return headquarter;
   }
-
 
   @Override
   public Long getId() {
@@ -249,13 +271,13 @@ public class Institution implements java.io.Serializable, IAuditLog {
     return institutionType;
   }
 
+
   public List<Institution> getInstitutuionsBranches() {
     List<Institution> list = new ArrayList<Institution>();
     list.add(this);
     list.addAll(this.getBranches());
     return list;
   }
-
 
   public Set<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
@@ -265,6 +287,7 @@ public class Institution implements java.io.Serializable, IAuditLog {
   public LocElement getLocElement() {
     return locElement;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -311,6 +334,14 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
   public String getWebsiteLink() {
     return this.websiteLink;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
   }
 
   @Override
