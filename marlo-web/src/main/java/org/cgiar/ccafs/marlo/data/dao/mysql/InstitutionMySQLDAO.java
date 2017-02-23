@@ -110,10 +110,10 @@ public class InstitutionMySQLDAO implements InstitutionDAO {
     List<Institution> institutions = dao.findAll(query.toString());
     List<Institution> institutionsAux = new ArrayList<Institution>();
 
-    if (ppaPartner == 1) {
+    if (ppaPartner == 0) {
       institutionsAux.addAll(institutions);
       for (Institution institution : institutionsAux) {
-        if (institution.getCrpPpaPartners().stream()
+        if (!institution.getCrpPpaPartners().stream()
           .filter(c -> c.isActive() && c.getCrp().getId().longValue() == crpID).collect(Collectors.toList())
           .isEmpty()) {
           institutions.remove(institution);
