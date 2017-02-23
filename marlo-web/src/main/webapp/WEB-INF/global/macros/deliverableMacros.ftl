@@ -289,7 +289,10 @@
   
   <hr />
   <div class="row">
-    <label class="col-md-9" for="">[@s.text name="project.deliverable.dissemination.acknowledgeQuestion" /]</label>
+    <div class="col-md-9">
+      <label>[@s.text name="project.deliverable.dissemination.acknowledgeQuestion" ][@s.param]${(crpSession?upper_case)!}[/@s.param][/@s.text]</label>
+      <p class="message"><i><small>[@s.text name="project.deliverable.dissemination.acknowledgeQuestion.help" ][@s.param]${(crpSession?upper_case)!}[/@s.param][/@s.text]</small></i></p>
+    </div>
     <div class="col-md-3">[@customForm.yesNoInput name="deliverable.publication.publicationAcknowledge"  editable=editable inverse=false  cssClass="acknowledge text-center" /] </div> 
   </div>
   <hr />
