@@ -2298,12 +2298,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       url.toURI();
       return true;
     } catch (MalformedURLException e) {
-      e.printStackTrace();
+
       return false;
     } catch (URISyntaxException e) {
-      e.printStackTrace();
+
       return false;
     }
+
   }
 
 
