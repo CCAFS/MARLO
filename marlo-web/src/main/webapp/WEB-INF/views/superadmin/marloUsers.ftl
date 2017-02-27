@@ -87,7 +87,7 @@
             <div class="col-md-12 crpList">
             </div>
             <div class="col-md-12 form-group">
-              [@customForm.select name="user.autoSave" label=""  i18nkey="Select to add a crp" listName="crps" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className="crpSelect" editable=true disabled=true/]
+              [@customForm.select name="user.crps" label=""  i18nkey="Select to add a crp" listName="crps" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className="crpSelect" editable=true disabled=true/]
             </div>
           </div>
         </div>

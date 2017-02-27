@@ -68,7 +68,7 @@ function attachEvents() {
                   enableFields(true);
                   updateData(m.userFound);
                   updateCrps(m.crpUserFound);
-                  $(".crpSelect").attr("readonly", false);
+                  $(".crpSelect").attr("disabled", false);
                 } else {
                   $(".isNewUser").val(true);
                   $(".infoService").css("color", "rgb(136, 72, 9)");
@@ -79,7 +79,7 @@ function attachEvents() {
                   if(m.userFound.cgiar == true) {
                     updateData(m.userFound);
                     enableFields(true);
-                    $(".crpSelect").attr("readonly", false);
+                    $(".crpSelect").attr("disabled", false);
                     $(".button-save").show("slow");
                   } else {
                     enableFields(false);
