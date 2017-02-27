@@ -22,7 +22,6 @@ function init() {
     };
     crpList.push(option);
   });
-  console.log(crpList);
 }
 
 function attachEvents() {
@@ -60,40 +59,44 @@ function attachEvents() {
                 userEmail: email
               },
               success: function(m) {
-                console.log(m);
-                if(m.userFound.newUser == false) {
-                  $(".isNewUser").val(false);
-                  $(".infoService").css("color", "green");
-                  $(".infoService").text("Found user.");
-                  enableFields(true);
-                  updateData(m.userFound);
-                  updateCrps(m.crpUserFound);
-                  $(".crpSelect").attr("disabled", false);
+                if(m.userFound.newUser == false && m.userFound.cgiar == false) {
+                  $(".infoService").css("color", "red");
+                  $(".infoService").text("This user is not a member of CGIAR, please check the email you entered.");
                 } else {
-                  $(".isNewUser").val(true);
-                  $(".infoService").css("color", "rgb(136, 72, 9)");
-                  $(".infoService").text(
-                      "This user doesn't exists into the MARLO database, you can to create a new user as guest.");
-                  $(".crpList").empty();
-                  // Check if is cgiar user
-                  if(m.userFound.cgiar == true) {
-                    updateData(m.userFound);
+                  if(m.userFound.newUser == false) {
+                    $(".isNewUser").val(false);
+                    $(".infoService").css("color", "green");
+                    $(".infoService").text("Found user.");
                     enableFields(true);
+                    updateData(m.userFound);
+                    updateCrps(m.crpUserFound);
                     $(".crpSelect").attr("disabled", false);
-                    $(".button-save").show("slow");
                   } else {
-                    enableFields(false);
-                    var user = {
-                        id: "",
-                        name: "",
-                        lastName: "",
-                        email: m.userFound.email,
-                        username: "",
-                        cgiar: "false",
-                        active: "false",
-                        autosave: "false"
-                    };
-                    updateData(user);
+                    $(".isNewUser").val(true);
+                    $(".infoService").css("color", "rgb(136, 72, 9)");
+                    $(".infoService").text(
+                        "This user doesn't exists into the MARLO database, you can to create a new user as guest.");
+                    $(".crpList").empty();
+                    // Check if is cgiar user
+                    if(m.userFound.cgiar == true) {
+                      updateData(m.userFound);
+                      enableFields(true);
+                      $(".crpSelect").attr("disabled", false);
+                      $(".button-save").show("slow");
+                    } else {
+                      enableFields(false);
+                      var user = {
+                          id: "",
+                          name: "",
+                          lastName: "",
+                          email: m.userFound.email,
+                          username: "",
+                          cgiar: "false",
+                          active: "false",
+                          autosave: "false"
+                      };
+                      updateData(user);
+                    }
                   }
                 }
               },
@@ -222,7 +225,6 @@ function checkAllFields(e) {
   if($(".crpList").find(".crpItem").length > 0) {
     count++;
   }
-  console.log(count);
   if(count < 4) {
     e.preventDefault();
     var notyOptions = jQuery.extend({}, notyDefaultOptions);
