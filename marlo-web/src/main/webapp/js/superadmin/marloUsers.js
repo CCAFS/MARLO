@@ -60,6 +60,18 @@ function attachEvents() {
               },
               success: function(m) {
                 if(m.userFound.newUser == false && m.userFound.cgiar == false) {
+                  enableFields(true);
+                  var user = {
+                      id: "",
+                      name: "",
+                      lastName: "",
+                      email: m.userFound.email,
+                      username: "",
+                      cgiar: "false",
+                      active: "false",
+                      autosave: "false"
+                  };
+                  updateData(user);
                   $(".infoService").css("color", "red");
                   $(".infoService").text("This user is not a member of CGIAR, please check the email you entered.");
                 } else {
@@ -181,11 +193,7 @@ function enableFields(state) {
   // $(".autosave").attr("disabled", state);
 
   $(".crpSelect").attr("disabled", state);
-  if(state == true) {
-    $(".button-save").hide();
-  } else {
-    $(".button-save").show("slow");
-  }
+
 }
 
 function addCrp(option) {
