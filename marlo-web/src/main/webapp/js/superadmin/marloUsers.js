@@ -1,7 +1,7 @@
 $(document).ready(init);
 var crpList = [];
 function init() {
-  $(".button-save").hide();
+  // $(".button-save").hide();
   /* Declaring Events */
   attachEvents();
   $('form select').select2({
@@ -163,6 +163,7 @@ function updateCrps(crps) {
     list.append(item);
     item.show("slow");
   });
+  updateCrpIndex();
 }
 
 function enableFields(state) {
