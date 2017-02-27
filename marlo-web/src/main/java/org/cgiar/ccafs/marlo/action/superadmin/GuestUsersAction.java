@@ -32,13 +32,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
-import org.apache.commons.lang3.RandomStringUtils;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -144,7 +144,7 @@ public class GuestUsersAction extends BaseAction {
       newUser.setAutoSave(user.isAutoSave());
       newUser.setEmail(user.getEmail());
       newUser.setModificationJustification(" ");
-      newUser.setCreatedBy(this.getCurrentUser());
+      newUser.setModifiedBy(this.getCurrentUser());
 
 
       if (!user.isCgiarUser()) {
@@ -162,9 +162,10 @@ public class GuestUsersAction extends BaseAction {
           for (CrpUser crpUser : user.getCrpUser()) {
             if (crpUser.getId() == -1) {
 
+              Crp crp = crpManager.getCrpById(crpUser.getCrp().getId());
 
               CrpUser newCrpUser = new CrpUser();
-              newCrpUser.setCrp(crpManager.getCrpById(crpUser.getCrp().getId()));
+              newCrpUser.setCrp(crp);
               newCrpUser.setUser(newUser);
               newCrpUser.setActiveSince(new Date());
               newCrpUser.setCreatedBy(this.getCurrentUser());
@@ -180,8 +181,10 @@ public class GuestUsersAction extends BaseAction {
 
                 UserRole userRole = new UserRole();
 
-                Role guestRole = newCrpUser.getCrp().getRoles().stream().filter(r -> r.getAcronym() == "G")
-                  .collect(Collectors.toList()).get(0);
+                List<Role> roles = new ArrayList<>(crp.getRoles());
+
+                Role guestRole =
+                  roles.stream().filter(r -> r.getAcronym().equals("G")).collect(Collectors.toList()).get(0);
 
                 userRole.setRole(guestRole);
                 userRole.setUser(newUser);
@@ -189,7 +192,11 @@ public class GuestUsersAction extends BaseAction {
                 long userRoleID = userRoleManager.saveUserRole(userRole);
 
                 if (userRoleID != -1) {
-                  this.sendMailNewUser(newUser, crpManager.getCrpById(crpUser.getCrp().getId()));
+                  try {
+                    this.sendMailNewUser(newUser, crp);
+                  } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                  }
                 }
 
 
@@ -207,16 +214,13 @@ public class GuestUsersAction extends BaseAction {
     return SUCCESS;
   }
 
-  public void sendMailNewUser(User user, Crp crp) {
+  public void sendMailNewUser(User user, Crp crp) throws NoSuchAlgorithmException {
     // Building the Email message:
     StringBuilder message = new StringBuilder();
     message.append(this.getText("email.dear", new String[] {user.getFirstName()}));
     String password = this.getText("email.outlookPassword");
     if (!user.isCgiarUser()) {
-      // Generating a random password.
-      password = RandomStringUtils.randomNumeric(6);
-      // Applying the password to the user.
-      user.setPassword(password);
+      password = this.user.getPassword();
     }
     message.append(this.getText("email.newUser.part2",
       new String[] {config.getBaseUrl(), user.getEmail(), password, crp.getName()}));
