@@ -11,8 +11,6 @@
     [@s.fielderror cssClass="fieldError" fieldName="loginMessage"/]
     [#-- CRPs --]
     <div class="crpGroup form-group animated bounceIn clearfix">
-      <div class="alert alert-warning" role="alert"> We are currently experiencing technical difficulties. As a result, MARLO users with CGIAR credentials may not be able to login to the system. The MARLO technical team is working on resolving the issue. Please check back to see if the situation has been resolved. Thank you!</div>
-      
       <h4 class="headTitle text-center">[@s.text name="login.crp" /]</h4>
       <ul>
       [#if crpList?has_content]
