@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -29,6 +29,9 @@ import org.apache.struts2.ServletActionContext;
 public class InternationalitazionFileInterceptor extends AbstractInterceptor {
 
   /**
+   * For a specific file to work for a CRP, a parameter must be created
+   * Crp_custom_file in the Database, the value of that parameter should not have the .properties
+   * 
    * @author Christian David Garcia Oviedo
    */
   private static final long serialVersionUID = -3807232981762261100L;
@@ -43,13 +46,19 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
     if (session.containsKey(APConstants.CRP_LANGUAGE)) {
       language = (String) session.get(APConstants.CRP_LANGUAGE);
     }
+
+
     Locale locale = new Locale(language);
     LocalizedTextUtil.reset();
     LocalizedTextUtil.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
     ServletActionContext.getContext().setLocale(locale);
     if (session.containsKey(APConstants.CRP_CUSTOM_FILE)) {
       pathFile = pathFile + session.get(APConstants.CRP_CUSTOM_FILE);
+
       LocalizedTextUtil.addDefaultResourceBundle(pathFile);
+    } else {
+
+      LocalizedTextUtil.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
     }
 
 
