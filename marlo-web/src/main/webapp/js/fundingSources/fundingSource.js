@@ -22,9 +22,12 @@ function init() {
   // Setting Currency Inputs
   $('.currencyInput').currencyInput();
   date("form #fundingSource\\.startDate", "form #fundingSource\\.endDate");
+
   $('form select').select2({
     width: "100%"
   });
+  // $(".donor").select2(searchInstitutionsOptions(true));
+  // $(".donor").parent().find("span.select2-selection__placeholder").text(placeholderText);
 
   $(".removeLeadPartner").on("click", removeLeadPartner);
 
