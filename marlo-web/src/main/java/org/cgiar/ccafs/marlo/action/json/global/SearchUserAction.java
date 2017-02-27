@@ -203,6 +203,7 @@ public class SearchUserAction extends BaseAction {
         } else {
           userFound.put("newUser", false);
           userFound.put("cgiar", false);
+          userFound.put("cgiarNoExist", true);
         }
       } else {
         userFound.put("newUser", true);

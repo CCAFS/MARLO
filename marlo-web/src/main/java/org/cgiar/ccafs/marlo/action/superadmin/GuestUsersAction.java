@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -210,6 +211,17 @@ public class GuestUsersAction extends BaseAction {
 
 
     }
+
+
+    Collection<String> messages = this.getActionMessages();
+    if (!messages.isEmpty()) {
+      String validationMessage = messages.iterator().next();
+      this.setActionMessages(null);
+      this.addActionWarning(this.getText("saving.saved") + validationMessage);
+    } else {
+      this.addActionMessage(this.getText("saving.saved"));
+    }
+    messages = this.getActionMessages();
 
     return SUCCESS;
   }
