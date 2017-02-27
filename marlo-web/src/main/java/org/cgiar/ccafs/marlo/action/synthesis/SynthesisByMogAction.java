@@ -344,6 +344,10 @@ public class SynthesisByMogAction extends BaseAction {
 
         program.setSynthesis(new ArrayList<>(synthesis));
 
+        if (this.isLessonsActive()) {
+          this.loadLessonsSynthesis(loggedCrp, program);
+        }
+
         this.setDraft(false);
       }
     }
