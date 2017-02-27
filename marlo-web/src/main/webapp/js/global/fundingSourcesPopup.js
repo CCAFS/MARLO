@@ -9,7 +9,6 @@ Dropzone.autoDiscover = false;
 
 $(document).ready(
     function() {
-
       /** Initialize */
       $dialogContent = $("#dialog-searchProjects");
       $searchInput = $('.search-input .input input');
@@ -248,7 +247,6 @@ $(document).ready(
         date('#startDate', '#endDate');
 
         // Set file upload (blueimp-tmpl)
-
         var $uploadBlock = $('.fileUploadContainer');
         var $fileUpload = $uploadBlock.find('.upload')
         $fileUpload.fileupload({
@@ -284,6 +282,13 @@ $(document).ready(
 
         // Search initial projects
         getData('');
+
+        // Organization / institution
+        $("#institution").select2({
+            width: "100%",
+            dropdownParent: $('#dialog-searchProjects')
+        });
+
       }
 
       addProject = function(fundingSource) {
@@ -564,6 +569,7 @@ function addContactAutoComplete() {
     return $("<li>").append("<div>" + escapeHtml(item.composedName) + "</div>").appendTo(ul);
   }
 
+  // Auto-complete
   $("input.contactName").autocomplete(autocompleteOptions).autocomplete("instance")._renderItem = renderItem;
   $("input.contactEmail").autocomplete(autocompleteOptions).autocomplete("instance")._renderItem = renderItem;
 }

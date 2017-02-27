@@ -507,7 +507,7 @@ function addPartnerEvent(e) {
 
   // Activate the select2 plugin for new partners created
   // Organization
-  $newElement.find("select.institutionsList").select2(searchInstitutionsOptions);
+  $newElement.find("select.institutionsList").select2(searchInstitutionsOptions(canUpdatePPAPartners));
   $newElement.find("select.institutionsList").parent().find("span.select2-selection__placeholder")
       .text(placeholderText);
 
@@ -663,8 +663,8 @@ function addItemList($option) {
 // Activate the chosen plugin to the countries, partner types and partners lists.
 function addSelect2() {
 
-  // Organization
-  $("form select.institutionsList").select2(searchInstitutionsOptions);
+  // Organization / institution
+  $("form select.institutionsList").select2(searchInstitutionsOptions(canUpdatePPAPartners));
   $("form select.institutionsList").parent().find("span.select2-selection__placeholder").text(placeholderText);
 
   // Role Selection
@@ -887,67 +887,3 @@ function formatState(state) {
 
 };
 
-/**
- * Search institutions functions
- */
-
-var placeholderText = 'Search the organization here...'
-var searchInstitutionsOptions = {
-    ajax: {
-        url: baseURL + '/searchInstitutions.do',
-        dataType: 'json',
-        delay: 350,
-        data: function(params) {
-          return {
-              q: params.term, // search term
-              isPPA: canUpdatePPAPartners ? 1 : 0
-          };
-        },
-        processResults: function(data,params) {
-          return {
-            results: data.institutions,
-          };
-        }
-    },
-    escapeMarkup: function(markup) {
-      return markup;
-    }, // let our custom formatter work
-    minimumInputLength: 2,
-    templateResult: formatRepo,
-    templateSelection: formatRepoSelection,
-    placeholder: placeholderText,
-    width: '100%'
-
-}
-
-function formatRepo(repo) {
-  if(repo.loading) {
-    return repo.text;
-  }
-  var markup = "";
-  markup += "<div class='select2-result-repository clearfix'>";
-
-  // Is PPA
-  markup += "<small class='pull-right'>";
-  if(repo.isPPA) {
-    markup += "<span class='label label-warning'>Managing / PPA Partner</span>"
-  } else {
-    markup += "<span class='label label-default'>Partner</span>";
-  }
-  markup += "</small>";
-  // Acronym & Title
-  if(repo.acronym) {
-    markup += "<strong>" + repo.acronym + "</strong> - " + repo.name;
-  } else {
-    markup += "<strong>" + repo.name + "</strong>";
-  }
-  // Partner type
-  markup += "<br>";
-  markup += "<small> <i>" + repo.type + "</i> </small> ";
-  markup += "</div>";
-  return markup;
-}
-
-function formatRepoSelection(repo) {
-  return repo.composedName;
-}
