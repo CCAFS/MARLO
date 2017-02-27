@@ -128,6 +128,23 @@
             </div>
           </div>
           
+          [#-- PROJECT HIGHLIGHTS --]
+          <div class="summariesFiles borderBox col-md-12" >
+            <div class="col-md-12 title-file">
+              <input class="hidden" type="radio" name="formOptions" id="impactPathwayContributionsSummary" value="caseStudiesByYearSummary"/>
+              <label for="">[@s.text name="summaries.board.report.projectHighlights" /]</label>
+            </div>
+            <span class="description col-md-12">[@s.text name="summaries.board.report.projectHighlights.description" /]</span>
+              <div class="extraOptions" style="display:none">
+              <span class="hidden fileTypes pdfType">projectHighlightsPDFSummary</span>
+              <span class="hidden fileTypes excelType">projectHighlightsExcelSummary</span>
+              <span class="hidden forReportingCycle forCycle"></span>
+                <div class="pull-right">
+                  <a style="display:none;" target="_blank" class="generateReport addButton pull-right" style="" href="#">[@s.text name="form.buttons.generate" /]</a>
+                </div>
+            </div>
+          </div>
+          
           [#-- caseStudies By Year Summary PDF
           <div class="summariesFiles borderBox col-md-3 reportingCycle" style="display:none;">
             <span title="[@s.text name="" /]" class="info-file fa fa-info-circle "></span>
