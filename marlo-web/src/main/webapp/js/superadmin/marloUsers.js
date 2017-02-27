@@ -68,7 +68,7 @@ function attachEvents() {
                   enableFields(true);
                   updateData(m.userFound);
                   updateCrps(m.crpUserFound);
-                  $(".crpSelect").attr("disabled", false);
+                  $(".crpSelect").attr("readonly", false);
                 } else {
                   $(".isNewUser").val(true);
                   $(".infoService").css("color", "rgb(136, 72, 9)");
@@ -79,7 +79,7 @@ function attachEvents() {
                   if(m.userFound.cgiar == true) {
                     updateData(m.userFound);
                     enableFields(true);
-                    $(".crpSelect").attr("disabled", false);
+                    $(".crpSelect").attr("readonly", false);
                     $(".button-save").show("slow");
                   } else {
                     enableFields(false);
@@ -167,10 +167,10 @@ function updateCrps(crps) {
 
 function enableFields(state) {
   // User data
-  $(".userFirstName").attr("disabled", state);
-  $(".userLastName").attr("disabled", state);
-  $(".userUsername").attr("disabled", state);
-  $(".userPassword").attr("disabled", state);
+  $(".userFirstName").attr("readonly", state);
+  $(".userLastName").attr("readonly", state);
+  $(".userUsername").attr("readonly", state);
+  $(".userPassword").attr("readonly", state);
   // Configuration
   $(".cgiarUser").attr("disabled", state);
   // $(".isActive").attr("disabled", state);
@@ -196,6 +196,7 @@ function addCrp(option) {
   list.append(item);
   item.show("slow");
   $(".crpSelect").find("option[value='" + $(option).val() + "']").remove();
+  updateCrpIndex();
 }
 
 function validateEmail(email) {
@@ -230,4 +231,11 @@ function checkAllFields(e) {
     $(".button-save").trigger('submit');
 
   }
+}
+
+function updateCrpIndex() {
+  $(".crpList").find('.crpItem').each(function(i,e) {
+    // Set crp indexes
+    $(e).setNameIndexes(1, i);
+  });
 }
