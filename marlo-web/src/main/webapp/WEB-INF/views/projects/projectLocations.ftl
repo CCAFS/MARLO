@@ -84,15 +84,15 @@
                 <div class="selectWrapper row">
                 [#if project.locationsData?has_content]
                   [#list project.locationsData as locationLevels]
-                    [@locationLevel element=locationLevels name="${locationLevelName}" index=locationLevels_index list=locationLevels.list?? && locationLevels.list /]
+                    [#--  [@locationLevel element=locationLevels name="${locationLevelName}" index=locationLevels_index list=locationLevels.list?? && locationLevels.list /] --]
                   [/#list]
                 [/#if]
                 
                 </div>
               </div>
               
-            [#if editable]
-            [#-- locations level Select --]
+            [#--[#if editable]
+             locations level Select 
             <label for="locLevelSelect">Select to add a location level:</label>
             <select name="" id="locLevelSelect" class="selectLocationLevel select " >
             <option value="-1" >Select an option...</option>
@@ -103,6 +103,7 @@
               [/#list]
             </select>
             [/#if]
+            --]
           </div> 
           
           [#include "/WEB-INF/views/projects/buttons-projects.ftl" /]
