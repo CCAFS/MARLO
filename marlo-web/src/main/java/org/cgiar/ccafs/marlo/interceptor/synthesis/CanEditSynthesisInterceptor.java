@@ -84,7 +84,7 @@ public class CanEditSynthesisInterceptor extends AbstractInterceptor implements 
     baseAction.setSession(session);
 
     long liaisonInstitutionID;
-    user = userManager.getUser(user.getId());
+    user = userManager.getUser(baseAction.getCurrentUser().getId());
     try {
       liaisonInstitutionID = Long.parseLong(((String[]) parameters.get(APConstants.LIAISON_INSTITUTION_REQUEST_ID))[0]);
     } catch (Exception e) {

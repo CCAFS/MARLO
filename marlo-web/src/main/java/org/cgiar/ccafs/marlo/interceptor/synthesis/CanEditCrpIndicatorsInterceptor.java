@@ -83,7 +83,7 @@ public class CanEditCrpIndicatorsInterceptor extends AbstractInterceptor impleme
     boolean hasPermissionToEdit = false;
     boolean editParameter = false;
     baseAction.setSession(session);
-    user = userManager.getUser(user.getId());
+    user = userManager.getUser(baseAction.getCurrentUser().getId());
     long liaisonInstitutionID;
 
     try {
