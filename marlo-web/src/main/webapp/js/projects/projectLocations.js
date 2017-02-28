@@ -44,7 +44,7 @@ function init() {
 
   /* Array countries */
   $("input[value='Country']").parents(".locationLevel").find(".locElement").each(function(i,e) {
-    countries.push($(e).find(".locElementName").val());
+    countries.push($(e).find(".locElementCountry").val());
   });
   // calculateWidthSelect();
 }
@@ -281,20 +281,22 @@ function addLocationLevel(option) {
   var url = baseURL + "/searchCountryListPL.do";
   var data = {
     parentId: idLocationLevel
-  }
+  };
   $.ajax({
       url: url,
       type: 'GET',
       dataType: "json",
       data: data
-  }).done(function(m) {
-
-    select.empty();
-    select.append("<option value='-1' >Select a location</option>");
-    for(var i = 0; i < m.locElements.length; i++) {
-      select.append("<option value='" + m.locElements[i].id + "' >" + m.locElements[i].name + "</option>");
-    }
-  });
+  }).done(
+      function(m) {
+        console.log(m);
+        select.empty();
+        select.append("<option value='-1' >Select a location</option>");
+        for(var i = 0; i < m.locElements.length; i++) {
+          select.append("<option value='" + m.locElements[i].id + "-" + m.locElements[i].isoAlpha2 + "' >"
+              + m.locElements[i].name + "</option>");
+        }
+      });
   $item.show('slow');
   updateIndex();
 }
@@ -303,13 +305,15 @@ function addLocationLevel(option) {
 function addLocationList(parent,option) {
   var latitude = "";
   var longitude = "";
+  var locElementId = $(option).val().split("-")[0];
+  var locElementIsoAlpha = $(option).val().split("-")[1];
   /* GET COORDINATES */
   var url = baseURL + "/geopositionByElement.do";
   var data = {
-    "locElementID": option.val()
+    "locElementID": locElementId
   };
 
-  if(option.val() != "-1") {
+  if(locElementId != "-1") {
     countID++;
     var $list = parent.find(".optionSelect-content");
     var $item = $('#location-template').clone(true).removeAttr("id");
@@ -333,13 +337,14 @@ function addLocationList(parent,option) {
     var locLevelName = $(option).parents(".locationLevel").find(".locationLevelName").val();
     if(locLevelName == "Country") {
       layer.setMap(null);
-      countries.push(option.html());
+      countries.push(locElementIsoAlpha); // --------------------------------------------------------------------------------------------------------------------------------------------------------
       mappingCountries();
     }
     $item.attr("id", "location-" + (countID));
     $item.find('.locationName').html(option.html());
-    $item.find('.locElementId').val(option.val());
+    $item.find('.locElementId').val(locElementId);
     $item.find('.locElementName').val(option.html());
+    $item.find('.locElementCountry').val(locElementIsoAlpha);
     $list.append($item);
     // updateAllIndexes();
     $item.show('slow');
@@ -415,7 +420,7 @@ function removeLocationLevelItem() {
       layer.setMap(null);
       /* Remove of countries array */
 
-      var i = countries.indexOf($(item).find(".locElementName").val());
+      var i = countries.indexOf($(item).find(".locElementCountry").val());
       if(i > -1) {
         countries.splice(i, 1);
       }
@@ -453,7 +458,7 @@ function removeLocationItem() {
   layer.setMap(null);
   /* Remove of countries array */
 
-  var index = countries.indexOf($item.find(".locElementName").val());
+  var index = countries.indexOf($item.find(".locElementCountry").val());
   if(index > -1) {
     countries.splice(index, 1);
   }
@@ -832,8 +837,8 @@ function mappingCountries() {
         suppressInfoWindows: true,
         query: {
             select: 'kml_4326',
-            from: 1576681,
-            where: "'Country Name' IN (" + query + ") "
+            from: 2597535,
+            where: "'ISO_2DIGIT' IN (" + query + ") "
         },
         styles: [
           {

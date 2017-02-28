@@ -67,6 +67,7 @@ public class ProjectLocationCountryListAction extends BaseAction {
         locElement = new HashMap<String, Object>();
         locElement.put("id", element.getId());
         locElement.put("name", element.getName());
+        locElement.put("isoAlpha2", element.getIsoAlpha2());
         locElements.add(locElement);
       }
     }

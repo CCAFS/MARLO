@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.manager.IpLiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.OutcomeSynthesyManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.IpElement;
 import org.cgiar.ccafs.marlo.data.model.IpIndicator;
@@ -33,6 +34,7 @@ import org.cgiar.ccafs.marlo.data.model.IpLiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.IpProjectIndicator;
 import org.cgiar.ccafs.marlo.data.model.OutcomeSynthesy;
+import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -86,12 +88,14 @@ public class OutcomeSynthesisAction extends BaseAction {
   private IpProgram program;
 
   private long liaisonInstitutionID;
+  private UserManager userManager;
 
   @Inject
   public OutcomeSynthesisAction(APConfig config, LiaisonInstitutionManager liaisonInstitutionManager,
     IpProgramManager ipProgramManager, IpElementManager ipElementManager, CrpManager crpManager,
     IpLiaisonInstitutionManager IpLiaisonInstitutionManager, OutcomeSynthesyManager outcomeSynthesisManager,
-    SynthesisByOutcomeValidator validator, AuditLogManager auditLogManager, IpIndicatorManager ipIndicatorManager) {
+    SynthesisByOutcomeValidator validator, UserManager userManager, AuditLogManager auditLogManager,
+    IpIndicatorManager ipIndicatorManager) {
     super(config);
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.ipProgramManager = ipProgramManager;
@@ -101,6 +105,7 @@ public class OutcomeSynthesisAction extends BaseAction {
     this.IpLiaisonInstitutionManager = IpLiaisonInstitutionManager;
     this.auditLogManager = auditLogManager;
     this.validator = validator;
+    this.userManager = userManager;
     this.crpManager = crpManager;
 
 
@@ -216,9 +221,10 @@ public class OutcomeSynthesisAction extends BaseAction {
       liaisonInstitutionID =
         Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.LIAISON_INSTITUTION_REQUEST_ID)));
     } catch (Exception e) {
-      if (this.getCurrentUser().getIpLiaisonUsers() != null || !this.getCurrentUser().getIpLiaisonUsers().isEmpty()) {
+      User user = userManager.getUser(this.getCurrentUser().getId());
+      if (user.getIpLiaisonUsers() != null || !user.getIpLiaisonUsers().isEmpty()) {
 
-        List<IpLiaisonUser> liaisonUsers = new ArrayList<>(this.getCurrentUser().getIpLiaisonUsers());
+        List<IpLiaisonUser> liaisonUsers = new ArrayList<>(user.getIpLiaisonUsers());
 
         if (!liaisonUsers.isEmpty()) {
           IpLiaisonUser liaisonUser = new IpLiaisonUser();

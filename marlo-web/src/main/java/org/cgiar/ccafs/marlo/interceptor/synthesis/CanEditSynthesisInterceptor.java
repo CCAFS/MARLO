@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.IpLiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonUser;
@@ -49,12 +50,14 @@ public class CanEditSynthesisInterceptor extends AbstractInterceptor implements 
 
   private IpLiaisonInstitutionManager IpLiaisonInstitutionManager;
   private IpProgramManager ipProgramManager;
+  private UserManager userManager;
 
   @Inject
-  public CanEditSynthesisInterceptor(IpLiaisonInstitutionManager IpLiaisonInstitutionManager,
+  public CanEditSynthesisInterceptor(IpLiaisonInstitutionManager IpLiaisonInstitutionManager, UserManager userManager,
     IpProgramManager ipProgramManager) {
     this.IpLiaisonInstitutionManager = IpLiaisonInstitutionManager;
     this.ipProgramManager = ipProgramManager;
+    this.userManager = userManager;
   }
 
   @Override
@@ -81,14 +84,13 @@ public class CanEditSynthesisInterceptor extends AbstractInterceptor implements 
     baseAction.setSession(session);
 
     long liaisonInstitutionID;
-
+    user = userManager.getUser(baseAction.getCurrentUser().getId());
     try {
       liaisonInstitutionID = Long.parseLong(((String[]) parameters.get(APConstants.LIAISON_INSTITUTION_REQUEST_ID))[0]);
     } catch (Exception e) {
-      if (baseAction.getCurrentUser().getIpLiaisonUsers() != null
-        || !baseAction.getCurrentUser().getIpLiaisonUsers().isEmpty()) {
+      if (user.getIpLiaisonUsers() != null || !user.getIpLiaisonUsers().isEmpty()) {
 
-        List<IpLiaisonUser> liaisonUsers = new ArrayList<>(baseAction.getCurrentUser().getIpLiaisonUsers());
+        List<IpLiaisonUser> liaisonUsers = new ArrayList<>(user.getIpLiaisonUsers());
 
         if (!liaisonUsers.isEmpty()) {
           IpLiaisonUser liaisonUser = new IpLiaisonUser();

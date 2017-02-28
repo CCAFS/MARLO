@@ -59,7 +59,8 @@ function attachEvents() {
                 userEmail: email
               },
               success: function(m) {
-                if(m.userFound.newUser == false && m.userFound.cgiar == false) {
+                console.log(m);
+                if(m.userFound.newUser == false && m.userFound.cgiarNoExist == true) {
                   enableFields(true);
                   var user = {
                       id: "",
@@ -185,7 +186,7 @@ function enableFields(state) {
   // User data
   $(".userFirstName").attr("readonly", state);
   $(".userLastName").attr("readonly", state);
-  $(".userUsername").attr("readonly", state);
+  // $(".userUsername").attr("readonly", state);
   $(".userPassword").attr("readonly", state);
   // Configuration
   $(".cgiarUser").attr("disabled", state);
@@ -219,6 +220,9 @@ function validateEmail(email) {
 
 function checkAllFields(e) {
   var count = 0;
+  if($(".crpList").find(".crpItem").length > 0) {
+    count++;
+  }
   if($(".isNewUser").val() == "true") {
     if($(".userFirstName").val().length != 0) {
       count++;
@@ -226,22 +230,25 @@ function checkAllFields(e) {
     if($(".userLastName").val().trim() != "") {
       count++;
     }
-    if($(".userUsername").val().trim() != "") {
-      count++;
+    if(count < 3) {
+      e.preventDefault();
+      var notyOptions = jQuery.extend({}, notyDefaultOptions);
+      notyOptions.text = 'Please complete the fields to create the user guest';
+      noty(notyOptions);
+    } else {
+      $(".button-save").trigger('submit');
+    }
+  } else {
+    if(count < 1) {
+      e.preventDefault();
+      var notyOptions = jQuery.extend({}, notyDefaultOptions);
+      notyOptions.text = 'Please complete the fields to create the user guest';
+      noty(notyOptions);
+    } else {
+      $(".button-save").trigger('submit');
     }
   }
-  if($(".crpList").find(".crpItem").length > 0) {
-    count++;
-  }
-  if(count < 4) {
-    e.preventDefault();
-    var notyOptions = jQuery.extend({}, notyDefaultOptions);
-    notyOptions.text = 'Please complete the fields to create the user guest';
-    noty(notyOptions);
-  } else {
-    $(".button-save").trigger('submit');
 
-  }
 }
 
 function updateCrpIndex() {

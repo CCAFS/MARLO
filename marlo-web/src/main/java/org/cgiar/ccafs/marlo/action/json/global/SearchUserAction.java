@@ -187,7 +187,14 @@ public class SearchUserAction extends BaseAction {
       return SUCCESS;
     } else {
       if (userEmail.toLowerCase().endsWith(APConstants.OUTLOOK_EMAIL)) {
-        LDAPUser userLDAP = new LDAPService().searchUserByEmail(userEmail.toLowerCase());
+
+        LDAPUser userLDAP = null;
+        try {
+          userLDAP = new LDAPService().searchUserByEmail(userEmail.toLowerCase());
+        } catch (Exception e) {
+          userLDAP = null;
+        }
+
         if (userLDAP != null) {
 
           userFound.put("newUser", true);
