@@ -53,7 +53,7 @@ public class CanEditSynthesisInterceptor extends AbstractInterceptor implements 
   private UserManager userManager;
 
   @Inject
-  public CanEditSynthesisInterceptor(IpLiaisonInstitutionManager IpLiaisonInstitutionManager,
+  public CanEditSynthesisInterceptor(IpLiaisonInstitutionManager IpLiaisonInstitutionManager, UserManager userManager,
     IpProgramManager ipProgramManager) {
     this.IpLiaisonInstitutionManager = IpLiaisonInstitutionManager;
     this.ipProgramManager = ipProgramManager;
