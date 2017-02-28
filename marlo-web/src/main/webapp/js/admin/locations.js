@@ -107,10 +107,9 @@ function addLocElementCountry() {
   $item.find('input.locElementCountry').val(contryISO);
   
   // Add Flag
-  var $icon = $item.find('.glyphicon');
+  var $flag = $item.find('.flag-icon');
   var flag = '<i class="flag-sm flag-sm-' + contryISO.toUpperCase() + '"></i>';
-  $icon.removeClass('glyphicon glyphicon-map-marker');
-  $icon.html(flag);
+  $flag.html(flag);
   
   // Remove coordinates span
   $item.find('.coordinates').remove();
