@@ -15,27 +15,27 @@ li.targetUnit {
 
 /** SLOs **/
 
-.srfSlo .blockTitle {
+.srfSlo .blockTitle, .crpParameters .blockTitle {
   cursor: pointer;
   padding-left: 20px;
   background-repeat: no-repeat;
   background-position: -4px;
 }
 
-.srfSlo .blockTitle.opened {
+.srfSlo .blockTitle.opened, .crpParameters .blockTitle.opened {
   opacity: 0.5;
   background-image: url(../../images/global/arrow-up.png);
 }
 
-.srfSlo .blockTitle.closed {
+.srfSlo .blockTitle.closed, .crpParameters .blockTitle.closed {
   background-image: url(../../images/global/arrow-down.png);
 }
 
-.srfSlo .blockTitle small{
+.srfSlo .blockTitle small, .crpParameters .blockTitle small{
   color: #389b98;
 }
 
-.srfSlo .blockContent{
+.srfSlo .blockContent, .crpParameters .blockContent{
   padding: 0 15px 20px 15px;
 }
 
