@@ -32,6 +32,7 @@ import org.cgiar.ccafs.marlo.data.model.IpLiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.IpProjectContributionOverview;
 import org.cgiar.ccafs.marlo.data.model.MogSynthesy;
+import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -257,9 +258,10 @@ public class SynthesisByMogAction extends BaseAction {
       liaisonInstitutionID =
         Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.LIAISON_INSTITUTION_REQUEST_ID)));
     } catch (Exception e) {
-      if (this.getCurrentUser().getIpLiaisonUsers() != null || !this.getCurrentUser().getIpLiaisonUsers().isEmpty()) {
+      User user = userManager.getUser(this.getCurrentUser().getId());
+      if (user.getIpLiaisonUsers() != null || !user.getIpLiaisonUsers().isEmpty()) {
 
-        List<IpLiaisonUser> liaisonUsers = new ArrayList<>(this.getCurrentUser().getIpLiaisonUsers());
+        List<IpLiaisonUser> liaisonUsers = new ArrayList<>(user.getIpLiaisonUsers());
 
         if (!liaisonUsers.isEmpty()) {
           IpLiaisonUser liaisonUser = new IpLiaisonUser();

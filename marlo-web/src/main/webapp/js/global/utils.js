@@ -297,6 +297,10 @@ function getClassParameter(selector,cssName) {
   return((type.join(' ')) || 'none');
 }
 
+jQuery.fn.classParam = function(cssName) {
+  return getClassParameter(this, cssName)
+};
+
 function getSerializeForm() {
   var result = '';
   $("form").each(function(indexForm,form) {

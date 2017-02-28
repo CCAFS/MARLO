@@ -49,8 +49,15 @@ function attachEvents() {
  */
 
 function addLocationLevel() {
-  var $item = $('#locationLevel-template').clone(true).removeAttr('id');
-  var $list = $(".locations-list");
+  var $item, $list;
+  if($(this).classParam('type') == "location") {
+    $item = $('#locationLevel-location-template').clone(true).removeAttr('id');
+    $list = $(".locations-list");
+  } else {
+    $item = $('#locationLevel-scope-template').clone(true).removeAttr('id');
+    $list = $(".scopes-list");
+  }
+
   $list.append($item);
   updateLocationsIndexes();
   $item.show('slow');
@@ -141,7 +148,7 @@ function removeLocElement() {
  */
 
 function updateLocationsIndexes() {
-  $(".locations-list").find('.locationLevel').each(function(i,location) {
+  $(".locations-list, .scopes-list").find('.locationLevel').each(function(i,location) {
     var locationName = "loggedCrp.locationElementTypes" + "[" + i + "].";
 
     $(location).find('> .leftHead .index').text(i + 1);
