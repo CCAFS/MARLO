@@ -16,6 +16,7 @@
 package org.cgiar.ccafs.marlo.action.superadmin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
@@ -34,12 +35,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -70,6 +72,7 @@ public class GuestUsersAction extends BaseAction {
 
   private UserManager userManager;
 
+
   private CrpManager crpManager;
 
   private UserRoleManager userRoleManager;
@@ -78,15 +81,17 @@ public class GuestUsersAction extends BaseAction {
 
   private SendMailS sendMailS;
 
-
   private User user;
 
   private boolean cigarUser;
 
+
   private Boolean isNewUser;
 
-
   private List<Crp> crps;
+
+  private long userID;
+
 
   @Inject
   public GuestUsersAction(APConfig config, UserManager userManager, CrpManager crpManager,
@@ -103,7 +108,6 @@ public class GuestUsersAction extends BaseAction {
     return crps;
   }
 
-
   public Boolean getIsNewUser() {
     return isNewUser;
   }
@@ -112,13 +116,24 @@ public class GuestUsersAction extends BaseAction {
     return user;
   }
 
+
+  public long getUserID() {
+    return userID;
+  }
+
   public boolean isCigarUser() {
     return cigarUser;
   }
 
-
   @Override
   public void prepare() throws Exception {
+
+    try {
+      userID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.USER_ID)));
+      user = userManager.getUser(userID);
+    } catch (Exception e) {
+
+    }
 
     crps = new ArrayList<>(
       crpManager.findAll().stream().filter(c -> c.isActive() && c.isMarlo()).collect(Collectors.toList()));
@@ -129,12 +144,15 @@ public class GuestUsersAction extends BaseAction {
 
   }
 
+
   @Override
   public String save() {
+    User newUser;
+    long newUserID;
 
     if (isNewUser) {
 
-      User newUser = new User();
+      newUser = new User();
 
       newUser.setActiveSince(new Date());
       newUser.setFirstName(user.getFirstName());
@@ -149,80 +167,79 @@ public class GuestUsersAction extends BaseAction {
 
 
       if (!user.isCgiarUser()) {
-
         newUser.setPassword(user.getPassword());
       }
+      newUserID = userManager.saveUser(newUser, this.getCurrentUser());
 
-      long newUserID = userManager.saveUser(newUser, this.getCurrentUser());
 
-      if (newUserID != -1) {
+    } else {
 
-        newUser = userManager.getUser(newUserID);
+      newUser = userManager.getUser(user.getId());
 
-        if (user.getCrpUser() != null) {
-          for (CrpUser crpUser : user.getCrpUser()) {
-            if (crpUser.getId() == -1) {
+      newUser.setActive(user.isActive());
+      newUser.setAutoSave(user.isAutoSave());
+      newUser.setModificationJustification(" ");
+      newUser.setModifiedBy(this.getCurrentUser());
 
-              Crp crp = crpManager.getCrpById(crpUser.getCrp().getId());
+      if (!user.isCgiarUser()) {
+        newUser.setPassword(user.getPassword());
+      }
+      newUserID = userManager.saveUser(newUser, this.getCurrentUser());
+    }
 
-              CrpUser newCrpUser = new CrpUser();
-              newCrpUser.setCrp(crp);
-              newCrpUser.setUser(newUser);
-              newCrpUser.setActiveSince(new Date());
-              newCrpUser.setCreatedBy(this.getCurrentUser());
-              newCrpUser.setModifiedBy(this.getCurrentUser());
-              newCrpUser.setModificationJustification(" ");
-              newCrpUser.setActive(true);
 
-              long newCrpUserID = crpUserManager.saveCrpUser(newCrpUser);
+    if (newUserID != -1) {
+      userID = newUserID;
+      newUser = userManager.getUser(newUserID);
 
-              if (newCrpUserID != -1) {
+      if (user.getCrpUser() != null) {
+        for (CrpUser crpUser : user.getCrpUser()) {
+          if (crpUser.getId() == -1) {
 
-                newCrpUser = crpUserManager.getCrpUserById(newCrpUserID);
+            Crp crp = crpManager.getCrpById(crpUser.getCrp().getId());
 
-                UserRole userRole = new UserRole();
+            CrpUser newCrpUser = new CrpUser();
+            newCrpUser.setCrp(crp);
+            newCrpUser.setUser(newUser);
+            newCrpUser.setActiveSince(new Date());
+            newCrpUser.setCreatedBy(this.getCurrentUser());
+            newCrpUser.setModifiedBy(this.getCurrentUser());
+            newCrpUser.setModificationJustification(" ");
+            newCrpUser.setActive(true);
 
-                List<Role> roles = new ArrayList<>(crp.getRoles());
+            long newCrpUserID = crpUserManager.saveCrpUser(newCrpUser);
 
-                Role guestRole =
-                  roles.stream().filter(r -> r.getAcronym().equals("G")).collect(Collectors.toList()).get(0);
+            if (newCrpUserID != -1) {
 
-                userRole.setRole(guestRole);
-                userRole.setUser(newUser);
+              newCrpUser = crpUserManager.getCrpUserById(newCrpUserID);
 
-                long userRoleID = userRoleManager.saveUserRole(userRole);
+              UserRole userRole = new UserRole();
 
-                if (userRoleID != -1) {
-                  try {
-                    this.sendMailNewUser(newUser, crp);
-                  } catch (NoSuchAlgorithmException e) {
-                    e.printStackTrace();
-                  }
+              List<Role> roles = new ArrayList<>(crp.getRoles());
+
+              Role guestRole =
+                roles.stream().filter(r -> r.getAcronym().equals("G")).collect(Collectors.toList()).get(0);
+
+              userRole.setRole(guestRole);
+              userRole.setUser(newUser);
+
+              long userRoleID = userRoleManager.saveUserRole(userRole);
+
+              if (userRoleID != -1) {
+                try {
+                  this.sendMailNewUser(newUser, crp);
+                } catch (NoSuchAlgorithmException e) {
+                  e.printStackTrace();
                 }
-
-
               }
             }
           }
         }
-
-
       }
-
-
     }
 
-
-    Collection<String> messages = this.getActionMessages();
-    if (!messages.isEmpty()) {
-      String validationMessage = messages.iterator().next();
-      this.setActionMessages(null);
-      this.addActionWarning(this.getText("saving.saved") + validationMessage);
-    } else {
-      this.addActionMessage(this.getText("saving.saved"));
-    }
-    messages = this.getActionMessages();
-
+    this.setInvalidFields(new HashMap<>());
+    this.addActionMessage(this.getText("saving.saved"));
     return SUCCESS;
   }
 
@@ -283,10 +300,10 @@ public class GuestUsersAction extends BaseAction {
 
   }
 
-
   public void setCrps(List<Crp> crps) {
     this.crps = crps;
   }
+
 
   public void setIsNewUser(Boolean isNewUser) {
     this.isNewUser = isNewUser;
@@ -298,6 +315,10 @@ public class GuestUsersAction extends BaseAction {
 
   public void setUser(User user) {
     this.user = user;
+  }
+
+  public void setUserID(long userID) {
+    this.userID = userID;
   }
 
 }
