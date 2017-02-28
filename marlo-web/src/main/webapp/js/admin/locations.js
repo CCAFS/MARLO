@@ -7,8 +7,15 @@ function init() {
 
   /* Overwritten event from global.js */
   yesnoEvent = yesnoEventLocations;
+
   /* Numeric Inputs */
   $('.locationLatitude-input, .locationLongitude-input').numericInput();
+
+  /* Init Select2 plugin */
+  $('form select').select2({
+      width: "100%",
+      templateResult: formatState
+  });
 
   /* Coordinates verification */
   $('.locationLatitude-input, .locationLongitude-input').on("keyup", function(e) {
@@ -32,9 +39,10 @@ function attachEvents() {
 
   // Location Elements events
   $('.addLocElement').on('click', addLocElement);
+  $(".countriesList ").on('change', addLocElementCountry);
   $('.removeLocElement').on('click', removeLocElement);
 
-  // switch coordinates
+  // Switch coordinates
   $('.yes-button-label').on('click', function() {
     yesnoEventLocations(true, $(this));
   });
@@ -49,8 +57,20 @@ function attachEvents() {
  */
 
 function addLocationLevel() {
-  var $item = $('#locationLevel-template').clone(true).removeAttr('id');
-  var $list = $(".locations-list");
+  var $item, $list;
+  if($(this).classParam('type') == "location") {
+    $item = $('#locationLevel-location-template').clone(true).removeAttr('id');
+    $list = $(".locations-list");
+  } else {
+    $item = $('#locationLevel-scope-template').clone(true).removeAttr('id');
+    $list = $(".scopes-list");
+  }
+
+  $item.find('select').select2({
+      width: "100%",
+      templateResult: formatState
+  });
+
   $list.append($item);
   updateLocationsIndexes();
   $item.show('slow');
@@ -67,6 +87,47 @@ function removeLocationLevel() {
 /**
  * Location Element Funtions
  */
+
+function addLocElementCountry() {
+  var countrySelected = $(this).find("option:selected");
+  var contryISO = countrySelected.val();
+  var countryName = countrySelected.text();
+  if(contryISO == "-1"){
+    return
+  }
+  
+  var $item = $('#locElement-template').clone(true).removeAttr('id');
+  var $list = $(this).parents('.locationLevel').find(".items-list ul");
+  
+  
+  // Fill item values
+  $item.find('span.name').text(countryName);
+  $item.find('span.coordinates').text("");
+  $item.find('input.locElementName').val(countryName);
+  $item.find('input.locElementCountry').val(contryISO);
+  
+  // Add Flag
+  var $icon = $item.find('.glyphicon');
+  var flag = '<i class="flag-sm flag-sm-' + contryISO.toUpperCase() + '"></i>';
+  $icon.removeClass('glyphicon glyphicon-map-marker');
+  $icon.html(flag);
+  
+  // Remove coordinates span
+  $item.find('.coordinates').remove();
+  
+  // Adding item to the list
+  $list.append($item);
+  // Update Locations Indexes
+  updateLocationsIndexes();
+  // Show item
+  $item.show('slow');
+  // Remove message
+  $list.parent().find('p.message').hide();
+  
+  // Reset select
+  $(this).val('-1');
+  $(this).trigger('select2:change');
+}
 
 function addLocElement() {
   var $item = $('#locElement-template').clone(true).removeAttr('id');
@@ -141,11 +202,12 @@ function removeLocElement() {
  */
 
 function updateLocationsIndexes() {
-  $(".locations-list").find('.locationLevel').each(function(i,location) {
+  $(".locations-list, .scopes-list").find('.locationLevel').each(function(i,location) {
     var locationName = "loggedCrp.locationElementTypes" + "[" + i + "].";
 
     $(location).find('> .leftHead .index').text(i + 1);
     $(location).find('.locationLevelId').attr('name', locationName + "id");
+    $(location).find('.locationLevelType').attr('name', locationName + "scope");
     $(location).find('.locationName').attr('name', locationName + "name");
     $(location).find('input.onoffswitch-radio').attr('name', locationName + "hasCoordinates");
 
@@ -241,3 +303,16 @@ function getResultByType(results,type) {
     return undefined;
   }
 }
+
+/**
+ * Countries List Format
+ */
+
+function formatState(state) {
+  if(!state.id) {
+    return state.text;
+  }
+  var $state =
+      $('<span><i class="flag-sm flag-sm-' + state.element.value.toUpperCase() + '"></i> ' + state.text + '</span>');
+  return $state;
+};

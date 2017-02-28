@@ -1,6 +1,9 @@
 $(document).ready(init);
 var crpList = [];
 function init() {
+  if($(".checkEmail").val() != "") {
+    ajaxService($(".checkEmail").val());
+  }
   // $(".button-save").hide();
   /* Declaring Events */
   attachEvents();
@@ -46,84 +49,86 @@ function attachEvents() {
     addCrp(option);
   });
 
-  $(".checkEmail").on(
-      "keyup",
-      function() {
-        updateCrpSelect();
-        var email = $(this).val();
-        if(validateEmail(email)) {
-          $.ajax({
-              url: baseURL + "/searchUserByEmail.do",
-              type: 'GET',
-              data: {
-                userEmail: email
-              },
-              success: function(m) {
-                console.log(m);
-                if(m.userFound.newUser == false && m.userFound.cgiarNoExist == true) {
-                  enableFields(true);
-                  var user = {
-                      id: "",
-                      name: "",
-                      lastName: "",
-                      email: m.userFound.email,
-                      username: "",
-                      cgiar: "false",
-                      active: "false",
-                      autosave: "false"
-                  };
-                  updateData(user);
-                  $(".infoService").css("color", "red");
-                  $(".infoService").text("This user is not a member of CGIAR, please check the email you entered.");
-                } else {
-                  if(m.userFound.newUser == false) {
-                    $(".isNewUser").val(false);
-                    $(".infoService").css("color", "green");
-                    $(".infoService").text("Found user.");
-                    enableFields(true);
-                    updateData(m.userFound);
-                    updateCrps(m.crpUserFound);
-                    $(".crpSelect").attr("disabled", false);
-                  } else {
-                    $(".isNewUser").val(true);
-                    $(".infoService").css("color", "rgb(136, 72, 9)");
-                    $(".infoService").text(
-                        "This user doesn't exists into the MARLO database, you can to create a new user as guest.");
-                    $(".crpList").empty();
-                    // Check if is cgiar user
-                    if(m.userFound.cgiar == true) {
-                      updateData(m.userFound);
-                      enableFields(true);
-                      $(".crpSelect").attr("disabled", false);
-                      $(".button-save").show("slow");
-                    } else {
-                      enableFields(false);
-                      var user = {
-                          id: "",
-                          name: "",
-                          lastName: "",
-                          email: m.userFound.email,
-                          username: "",
-                          cgiar: "false",
-                          active: "false",
-                          autosave: "false"
-                      };
-                      updateData(user);
-                    }
-                  }
-                }
-              },
-              error: function(e) {
-                console.log(e);
-              }
-          });
-        } else {
-          enableFields(true);
-          $(".infoService").css("color", "red");
-          $(".infoService").text("Please, write a valid email.");
-        }
-      });
+  $(".checkEmail").on("keyup", function() {
+    updateCrpSelect();
+    var email = $(this).val();
+    if(validateEmail(email)) {
+      ajaxService(email);
+    } else {
+      enableFields(true);
+      $(".infoService").css("color", "red");
+      $(".infoService").text("Please, write a valid email.");
+    }
+  });
 
+}
+
+function ajaxService(email) {
+  $.ajax({
+      url: baseURL + "/searchUserByEmail.do",
+      type: 'GET',
+      data: {
+        userEmail: email
+      },
+      success: function(m) {
+        console.log(m);
+        if(m.userFound.newUser == false && m.userFound.cgiarNoExist == true) {
+          enableFields(true);
+          var user = {
+              id: "",
+              name: "",
+              lastName: "",
+              email: m.userFound.email,
+              username: "",
+              cgiar: "false",
+              active: "false",
+              autosave: "false"
+          };
+          updateData(user);
+          $(".infoService").css("color", "red");
+          $(".infoService").text("This user is not a member of CGIAR, please check the email you entered.");
+        } else {
+          if(m.userFound.newUser == false) {
+            $(".isNewUser").val(false);
+            $(".infoService").css("color", "green");
+            $(".infoService").text("Found user.");
+            enableFields(true);
+            updateData(m.userFound);
+            updateCrps(m.crpUserFound);
+            $(".crpSelect").attr("disabled", false);
+          } else {
+            $(".isNewUser").val(true);
+            $(".infoService").css("color", "rgb(136, 72, 9)");
+            $(".infoService").text(
+                "This user doesn't exists into the MARLO database, you can to create a new user as guest.");
+            $(".crpList").empty();
+            // Check if is cgiar user
+            if(m.userFound.cgiar == true) {
+              updateData(m.userFound);
+              enableFields(true);
+              $(".crpSelect").attr("disabled", false);
+              $(".button-save").show("slow");
+            } else {
+              enableFields(false);
+              var user = {
+                  id: "",
+                  name: "",
+                  lastName: "",
+                  email: m.userFound.email,
+                  username: "",
+                  cgiar: "false",
+                  active: "false",
+                  autosave: "false"
+              };
+              updateData(user);
+            }
+          }
+        }
+      },
+      error: function(e) {
+        console.log(e);
+      }
+  });
 }
 
 function updateData(user) {

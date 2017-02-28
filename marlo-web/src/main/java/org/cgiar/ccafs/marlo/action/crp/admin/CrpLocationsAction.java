@@ -44,24 +44,33 @@ public class CrpLocationsAction extends BaseAction {
 
 
   private static final long serialVersionUID = 7866923077836156028L;
-
+  // Managers
   private CrpManager crpManager;
   private LocElementManager locElementManager;
   private LocElementTypeManager locElementTypeManager;
   private LocGeopositionManager locGeopositionManager;
+  private LocElementManager locElementManger;
+  // Variables
   private Crp loggedCrp;
+  private List<LocElement> countriesList;
 
   private List<LocElementType> defaultLocationTypes;
 
 
   @Inject
   public CrpLocationsAction(APConfig config, CrpManager crpManager, LocElementManager locElementManager,
-    LocElementTypeManager locElementTypeManager, LocGeopositionManager locGeopositionManager) {
+    LocElementTypeManager locElementTypeManager, LocGeopositionManager locGeopositionManager,
+    LocElementManager locElementManger) {
     super(config);
     this.crpManager = crpManager;
     this.locElementManager = locElementManager;
     this.locElementTypeManager = locElementTypeManager;
     this.locGeopositionManager = locGeopositionManager;
+    this.locElementManger = locElementManger;
+  }
+
+  public List<LocElement> getCountriesList() {
+    return countriesList;
   }
 
 
@@ -189,6 +198,7 @@ public class CrpLocationsAction extends BaseAction {
     }
   }
 
+
   private void locationPreviousData() {
     List<LocElementType> locElementTypesPrew = new ArrayList<LocElementType>(loggedCrp.getLocElementTypes());
 
@@ -231,6 +241,12 @@ public class CrpLocationsAction extends BaseAction {
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
     String params[] = {loggedCrp.getAcronym()};
+
+    // Countries list
+    List<LocElement> locs =
+      locElementManger.findAll().stream().filter(c -> c.getLocElementType().getId() == 2).collect(Collectors.toList());
+    Collections.sort(locs, (l1, l2) -> l1.getName().compareTo(l2.getName()));
+    countriesList = locs;
 
     if (loggedCrp.getLocElementTypes() != null) {
       loggedCrp.setLocationElementTypes(new ArrayList<LocElementType>(
@@ -286,6 +302,10 @@ public class CrpLocationsAction extends BaseAction {
     } else {
       return NOT_AUTHORIZED;
     }
+  }
+
+  public void setCountriesList(List<LocElement> countriesList) {
+    this.countriesList = countriesList;
   }
 
   public void setDefaultLocationTypes(List<LocElementType> defaultLocationTypes) {

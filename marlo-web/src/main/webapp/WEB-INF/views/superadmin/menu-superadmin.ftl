@@ -16,6 +16,7 @@
   { 'slug': 'notifications',    'name': 'menu.superadmin.notifications', 'action': 'notifications',   'active': true },
   { 'slug': 'users',            'name': 'menu.superadmin.users', 'action': 'guestUser',   'active': true },
   { 'slug': 'permissions',    'name': 'menu.superadmin.permissions', 'action': 'marloPermissions',   'active': false }
+  { 'slug': 'parameters',    'name': 'menu.superadmin.parameters', 'action': 'marloParameters',   'active': true }
 ]/]
 
 <nav id="secondaryMenu">
