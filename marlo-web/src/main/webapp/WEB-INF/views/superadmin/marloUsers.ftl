@@ -36,7 +36,7 @@
         <h4 class="sectionTitle">[@s.text name="Users" /]</h4>
         <div class="row">
           <div class="col-md-7 form-group">
-            [@customForm.input name="" i18nkey="Search by user email" value="" className="checkEmail" type="text"  required=true editable=true /]
+            [@customForm.input name="user.email" i18nkey="Search by user email"  className="checkEmail" type="text"  required=true editable=true /]
           </div>
           <div class="col-md-5">
           <br />
