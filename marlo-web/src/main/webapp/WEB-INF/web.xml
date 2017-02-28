@@ -53,9 +53,7 @@
     <filter-name>guice</filter-name>
     <filter-class>com.google.inject.servlet.GuiceFilter</filter-class>
   </filter>
-   <listener>
-    <listener-class>org.cgiar.ccafs.marlo.config.SessionListener</listener-class>
-  </listener>
+  
 
 
   
