@@ -298,7 +298,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return securityContext.hasPermission(permission);
   }
 
-
   public boolean canAddBilateralProject() {
     String permission = this.generatePermission(Permission.PROJECT_BILATERAL_ADD, this.getCrpSession());
     return securityContext.hasPermission(permission);
@@ -419,6 +418,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   /* Override this method depending of the cancel action. */
   public String cancel() {
     return CANCEL;
@@ -459,6 +459,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public void clearPermissionsCache() {
     ((APCustomRealm) securityContext.getRealm())
       .clearCachedAuthorizationInfo(securityContext.getSubject().getPrincipals());
+  }
+
+  public String crpActivitesModule() {
+    return APConstants.CRP_ACTIVITES_MODULE;
   }
 
   /* Override this method depending of the delete action. */
@@ -1266,6 +1270,17 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     } catch (Exception e) {
       return false;
     }
+  }
+
+
+  public boolean hasSpecificities(String specificity) {
+    try {
+      int param = Integer.parseInt(this.getSession().get(specificity).toString());
+      return param == 1;
+    } catch (Exception e) {
+      return false;
+    }
+
   }
 
   public Boolean isA(long deliverableID) {
