@@ -62,7 +62,7 @@
           <div class="scopes-list">
           [#if loggedCrp.locationCustomElementTypes??]
             [#list loggedCrp.locationCustomElementTypes as level]
-              [@locationLevelMacro locLevel=level name="loggedCrp.locationElementTypes" index=level_index locationType=false  /]
+              [@locationLevelMacro locLevel=level name="loggedCrp.locationCustomElementTypes" index=level_index locationType=false  /]
             [/#list]
           [/#if]
           </div>
@@ -94,14 +94,16 @@
 
 
 [#-- Location Level Template --]
-[@locationLevelMacro locLevel={} name="" index=0 isTemplate=true /]
+[@locationLevelMacro locLevel={} name="loggedCrp.locationElementTypes" index=-1 isTemplate=true /]
 
 [#-- Scope/Region Level Template --]
-[@locationLevelMacro locLevel={} name="" index=0 isTemplate=true locationType=false /]
+[@locationLevelMacro locLevel={} name="loggedCrp.locationCustomElementTypes" index=-1 isTemplate=true locationType=false /]
 
 <ul style="display:none">
   [#-- Location Element Template --]
-  [@locElementMacro element={} name="" index=0 isTemplate=true /]
+  [@locElementMacro element={} name="loggedCrp.locationElementTypes[-1].locationElements" index=-1 isTemplate=true /]
+  [#-- Country Element Template --]
+  [@locElementMacro element={} name="loggedCrp.locationCustomElementTypes[-1].locationElements" index=-1 isTemplate=true locationType=false /]
 </ul>
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]
@@ -122,7 +124,7 @@
     <input type="hidden" class="locationLevelType" name="${customName}.scope" value="${(!locationType)?string}"/>
     [#-- Location level name --]
     <div class="form-group">
-      [@customForm.input name="${customName}.name" type="text"  i18nkey="location.levelName${locationType?string('','Scope')}" placeholder="location.inputName.placeholder" className="locationName" required=true editable=editable /]
+      [@customForm.input name="${customName}.name" value="${(locLevel.name)!}" type="text"  i18nkey="location.levelName${locationType?string('','Scope')}" placeholder="location.inputName.placeholder" className="locationName" required=true editable=editable /]
     </div>
     <div class="form-group">
       [#if locationType]
@@ -132,6 +134,8 @@
           <div class="info-icon"><span class="glyphicon glyphicon-info-sign"></span></div>
           <div class="info-text"><span>If so, the locations added below will prefill a dropdown menu for Project Leader to pick from. Otherwise, Project Leaders will define by themselves.</span></div>
         </div>
+      [#else]
+        <input type="hidden" name="${customName}.hasCoordinates" value="true" />
       [/#if]
       <div class="clearfix"></div>
       [#-- confirm popup --]
@@ -144,7 +148,7 @@
           <ul class="">
             [#if locLevel.locationElements?has_content]
               [#list locLevel.locationElements as locElement]
-                [@locElementMacro element=locElement name="${customName}.locationElements" index=locElement_index locationType=locationType /]
+                [@locElementMacro element=(locElement)!{} name="${customName}.locationElements" index=locElement_index locationType=locationType /]
               [/#list]
             [#else] 
               <p class="message text-center">[@s.text name="location.notSpecificCoordinates${locationType?string('','Scope')}"/]</p>
@@ -173,7 +177,7 @@
 [/#macro]
 
 [#macro locElementMacro element name index isTemplate=false locationType=true]
-  <li id="locElement-${isTemplate?string('template', index)}" class="locElement userItem" style="display:${isTemplate?string('none','block')}">
+  <li id="locElement-${locationType?string('location', 'scope')}-${isTemplate?string('template', index)}" class="locElement userItem" style="display:${isTemplate?string('none','block')}">
     [#assign locElementName = "${name}[${index}]" ]
     [#-- Remove Button --]
     [#if editable]
