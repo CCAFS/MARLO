@@ -13,4 +13,4 @@ INSERT INTO `crp_parameters` (`crp_id`, `key`, `value`, `is_active`, `created_by
 INSERT INTO `crp_parameters` (`crp_id`, `key`, `value`, `is_active`, `created_by`, `modified_by`, `modification_justification`) VALUES 
 ('22', 'crp_refresh', '0', '1', '3', '3', 'a');
 
-update crp_parameters set is_active=1, `value`=0 where `key`='crp_parameters' and crp_id=3;
+update crp_parameters set is_active=1, `value`=0 where `key`='crp_activities_module' and crp_id=3;
