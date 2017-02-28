@@ -5440,7 +5440,7 @@ table.evaluationRank thead th{
 }
 
 #debugPanel {
-  font-size: 0.8em;
+  font-size: 0.75em;
   position: absolute;
   padding: 5px;
   background: #fff;
@@ -5449,7 +5449,7 @@ table.evaluationRank thead th{
   top: 3px;
   left: 3px;
   opacity: 0.94;
-  width: 345px;
+  width: 450px;
 }
 
 #debugPanel p{
@@ -5458,7 +5458,7 @@ table.evaluationRank thead th{
 }
 
 #debugPanel p span{
-  color: #8c8888;
+  color: #4CAF50;
 }
 
 /********************  CRP ADMIN - Management  *********************/
