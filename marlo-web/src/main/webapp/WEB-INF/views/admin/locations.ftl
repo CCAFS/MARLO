@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "Locations" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
-[#assign pageLibs = [] /]
+[#assign pageLibs = [ "select2", "flat-flags" ] /]
 [#assign customJS = [ "${baseUrl}/js/admin/locations.js","${baseUrl}/js/global/fieldsValidation.js" ] /]
 [#assign customCSS = [ "${baseUrl}/css/admin/locations.css" ] /]
 [#assign currentSection = "admin" /]
@@ -59,7 +59,7 @@
           [#-- Scopes/Regions List --]
           <div class="scopes-list">            
             [#list loggedCrp.locationElementTypes as level]
-              [@locationLevelMacro locLevel=level name="loggedCrp.locationElementTypes" index=level_index locationType=false  /]
+              [#--  [@locationLevelMacro locLevel=level name="loggedCrp.locationElementTypes" index=level_index locationType=false  /] --]
             [/#list]
           </div>
           [#-- Add Location Level Button --]
@@ -143,7 +143,7 @@
                 [@locElementMacro element=locElement name="${customName}.locationElements" index=locElement_index /]
               [/#list]
             [#else] 
-              <p class="message text-center">[@s.text name="location.notSpecificCoordinates.span"/]</p>
+              <p class="message text-center">[@s.text name="location.notSpecificCoordinates${locationType?string('','Scope')}"/]</p>
             [/#if]
           </ul>
           <div class="clearfix"></div> 
@@ -158,7 +158,7 @@
               <div class="buttonBlock text-right"><div class="addLocElement button-blue"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addLocation"/]</div></div>
               <div class="clearfix"></div>
             [#else]
-              Contries list here
+              [@customForm.select name=""  i18nkey="location.select.country" listName="countriesList" header=true keyFieldName="isoAlpha2" displayFieldName="name" value="id" className="countriesList"/]
             [/#if]
             </div>
           [/#if]
