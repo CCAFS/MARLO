@@ -59,7 +59,8 @@ function attachEvents() {
                 userEmail: email
               },
               success: function(m) {
-                if(m.userFound.newUser == false && m.userFound.cgiar == false) {
+                console.log(m);
+                if(m.userFound.newUser == false && m.userFound.cgiarNoExist == true) {
                   enableFields(true);
                   var user = {
                       id: "",
@@ -185,7 +186,7 @@ function enableFields(state) {
   // User data
   $(".userFirstName").attr("readonly", state);
   $(".userLastName").attr("readonly", state);
-  $(".userUsername").attr("readonly", state);
+  // $(".userUsername").attr("readonly", state);
   $(".userPassword").attr("readonly", state);
   // Configuration
   $(".cgiarUser").attr("disabled", state);
@@ -226,14 +227,11 @@ function checkAllFields(e) {
     if($(".userLastName").val().trim() != "") {
       count++;
     }
-    if($(".userUsername").val().trim() != "") {
-      count++;
-    }
   }
   if($(".crpList").find(".crpItem").length > 0) {
     count++;
   }
-  if(count < 4) {
+  if(count < 3) {
     e.preventDefault();
     var notyOptions = jQuery.extend({}, notyDefaultOptions);
     notyOptions.text = 'Please complete the fields to create the user guest';
