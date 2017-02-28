@@ -43,10 +43,12 @@
         <h4 class="sectionTitle">[@s.text name="crpLocations.customize"] [@s.param]${(crpSession?upper_case)!}[/@s.param] [/@s.text]</h4>
         <div class="locationsBlock" listname="loggedCrp.locationElementTypes">
           [#-- Locations Levels List --]
-          <div class="locations-list">            
+          <div class="locations-list">
+          [#if loggedCrp.locationElementTypes??]
             [#list loggedCrp.locationElementTypes as level]
-              [@locationLevelMacro locLevel=level name="loggedCrp.locationElementTypes" index=level_index  /]
+              [@locationLevelMacro locLevel=level name="loggedCrp.locationElementTypes" index=level_index locationType=true  /]
             [/#list]
+          [/#if]
           </div>
           [#-- Add Location Level Button --]
           [#if editable]
@@ -57,10 +59,12 @@
         <h4 class="sectionTitle">[@s.text name="crpLocations.customizeScopes"] [@s.param]${(crpSession?upper_case)!}[/@s.param] [/@s.text]</h4>
         <div class="scopesBlock" listname="loggedCrp.locationElementTypes">
           [#-- Scopes/Regions List --]
-          <div class="scopes-list">            
-            [#list loggedCrp.locationElementTypes as level]
-              [#--  [@locationLevelMacro locLevel=level name="loggedCrp.locationElementTypes" index=level_index locationType=false  /] --]
+          <div class="scopes-list">
+          [#if loggedCrp.locationCustomElementTypes??]
+            [#list loggedCrp.locationCustomElementTypes as level]
+              [@locationLevelMacro locLevel=level name="loggedCrp.locationElementTypes" index=level_index locationType=false  /]
             [/#list]
+          [/#if]
           </div>
           [#-- Add Location Level Button --]
           [#if editable]
@@ -115,7 +119,7 @@
     [/#if]
     [#-- Location Level ID Hidden parameter --]
     <input type="hidden" class="locationLevelId" name="${customName}.id" value="${(locLevel.id)!}"/>
-    <input type="hidden" class="locationLevelType" name="${customName}.scope" value="${!locationType?string}"/>
+    <input type="hidden" class="locationLevelType" name="${customName}.scope" value="${(!locationType)?string}"/>
     [#-- Location level name --]
     <div class="form-group">
       [@customForm.input name="${customName}.name" type="text"  i18nkey="location.levelName${locationType?string('','Scope')}" placeholder="location.inputName.placeholder" className="locationName" required=true editable=editable /]
@@ -140,7 +144,7 @@
           <ul class="">
             [#if locLevel.locationElements?has_content]
               [#list locLevel.locationElements as locElement]
-                [@locElementMacro element=locElement name="${customName}.locationElements" index=locElement_index /]
+                [@locElementMacro element=locElement name="${customName}.locationElements" index=locElement_index locationType=locationType /]
               [/#list]
             [#else] 
               <p class="message text-center">[@s.text name="location.notSpecificCoordinates${locationType?string('','Scope')}"/]</p>
@@ -168,16 +172,21 @@
   </div>
 [/#macro]
 
-[#macro locElementMacro element name index isTemplate=false]
+[#macro locElementMacro element name index isTemplate=false locationType=true]
   <li id="locElement-${isTemplate?string('template', index)}" class="locElement userItem" style="display:${isTemplate?string('none','block')}">
     [#assign locElementName = "${name}[${index}]" ]
     [#-- Remove Button --]
     [#if editable]
       <div class="removeLocElement removeIcon" title="Remove Location"></div>
-    [/#if]
+    [/#if] 
+    
     [#-- Location Name --]
-    <span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span> <span class="name">${(element.name)!'{name}'}</span><br />
-    <span class="coordinates" title="${(element.locElement.name)!'Undefined'}"> [@utilities.wordCutter string=(element.locElement.name)!'Undefined' maxPos=15 /] (${(element.locGeoposition.latitude)!}, ${(element.locGeoposition.longitude)!})</span>
+    [#if locationType]
+      <span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span> <span class="name">${(element.name)!'{name}'}</span><br />
+      <span class="coordinates" title="${(element.locElement.name)!'Undefined'}"> [@utilities.wordCutter string=(element.locElement.name)!'Undefined' maxPos=15 /] (${(element.locGeoposition.latitude)!}, ${(element.locGeoposition.longitude)!})</span>
+    [#else]
+      <span class=""><i class="flag-sm flag-sm-${(element.locElement.isoAlpha2?upper_case)!}"></i></span> <span class="name">${(element.name)!'{name}'}</span><br />
+    [/#if]
     [#-- Hidden inputs --]
     <input type="hidden" class="locElementId" name="${locElementName}.id" value="${(element.id)!}"/>
     <input type="hidden" class="locElementName" name="${locElementName}.name" value="${(element.name)!}" />
