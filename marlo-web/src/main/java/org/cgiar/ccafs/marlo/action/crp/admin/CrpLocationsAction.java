@@ -147,6 +147,7 @@ public class CrpLocationsAction extends BaseAction {
               locElementManager.saveLocElement(locElement);
 
               elementType.setHasCoordinates(false);
+              elementType.setName(locElementType.getName());
               locElementTypeManager.saveLocElementType(elementType);
             }
           }
@@ -159,6 +160,7 @@ public class CrpLocationsAction extends BaseAction {
             }
           }
           elementType.setHasCoordinates(false);
+          elementType.setName(locElementType.getName());
           locElementTypeManager.saveLocElementType(elementType);
         }
       }
@@ -243,6 +245,7 @@ public class CrpLocationsAction extends BaseAction {
               locElementManager.saveLocElement(locElement);
 
               elementType.setHasCoordinates(true);
+              elementType.setName(locElementType.getName());
               locElementTypeManager.saveLocElementType(elementType);
             }
           }
@@ -257,6 +260,7 @@ public class CrpLocationsAction extends BaseAction {
             }
           }
           elementType.setHasCoordinates(false);
+          elementType.setName(locElementType.getName());
           locElementTypeManager.saveLocElementType(elementType);
         } else {
           if (locElementType.getLocationElements() != null) {
@@ -291,6 +295,7 @@ public class CrpLocationsAction extends BaseAction {
                 locElementManager.saveLocElement(locElement);
 
                 elementType.setHasCoordinates(true);
+                elementType.setName(locElementType.getName());
                 locElementTypeManager.saveLocElementType(elementType);
               }
             }
@@ -304,6 +309,7 @@ public class CrpLocationsAction extends BaseAction {
               }
             }
             elementType.setHasCoordinates(false);
+            elementType.setName(locElementType.getName());
             locElementTypeManager.saveLocElementType(elementType);
           }
         }
