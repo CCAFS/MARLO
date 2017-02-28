@@ -23,12 +23,14 @@ import org.cgiar.ccafs.marlo.data.manager.CrpIndicatorTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.IpLiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpIndicatorReport;
 import org.cgiar.ccafs.marlo.data.model.CrpIndicatorType;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
+import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -78,7 +80,7 @@ public class CrpIndicatorsAction extends BaseAction {
   private AuditLogManager auditLogManager;
 
   private List<CrpIndicatorType> indicatorsType;
-
+  private UserManager userManager;
 
   private IpLiaisonInstitution currentLiaisonInstitution;
 
@@ -96,7 +98,8 @@ public class CrpIndicatorsAction extends BaseAction {
   @Inject
   public CrpIndicatorsAction(APConfig config, CrpManager crpManager, CrpIndicatorReportManager indicatorsReportManager,
     IpLiaisonInstitutionManager liaisonInstitutionManager, CrpIndicatorTypeManager crpIndicatorTypeManager,
-    CrpIndicatorsValidator validator, AuditLogManager auditLogManager, IpProgramManager ipProgramManager) {
+    CrpIndicatorsValidator validator, AuditLogManager auditLogManager, IpProgramManager ipProgramManager,
+    UserManager userManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -105,6 +108,7 @@ public class CrpIndicatorsAction extends BaseAction {
     this.ipProgramManager = ipProgramManager;
     this.auditLogManager = auditLogManager;
     this.crpIndicatorTypeManager = crpIndicatorTypeManager;
+    this.userManager = userManager;
   }
 
   @Override
@@ -228,10 +232,10 @@ public class CrpIndicatorsAction extends BaseAction {
       liaisonInstitutionID =
         Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.LIAISON_INSTITUTION_REQUEST_ID)));
     } catch (NumberFormatException e) {
+      User user = userManager.getUser(this.getCurrentUser().getId());
+      if (user.getIpLiaisonUsers() != null || !user.getIpLiaisonUsers().isEmpty()) {
 
-      if (this.getCurrentUser().getIpLiaisonUsers() != null || !this.getCurrentUser().getIpLiaisonUsers().isEmpty()) {
-
-        List<IpLiaisonUser> liaisonUsers = new ArrayList<>(this.getCurrentUser().getIpLiaisonUsers());
+        List<IpLiaisonUser> liaisonUsers = new ArrayList<>(user.getIpLiaisonUsers());
 
         if (!liaisonUsers.isEmpty()) {
           IpLiaisonUser liaisonUser = new IpLiaisonUser();
