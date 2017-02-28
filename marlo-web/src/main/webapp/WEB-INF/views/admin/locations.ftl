@@ -115,7 +115,7 @@
     [/#if]
     [#-- Location Level ID Hidden parameter --]
     <input type="hidden" class="locationLevelId" name="${customName}.id" value="${(locLevel.id)!}"/>
-    <input type="hidden" class="locationLevelType" name="${customName}.scope" value="${locationType?string}"/>
+    <input type="hidden" class="locationLevelType" name="${customName}.scope" value="${!locationType?string}"/>
     [#-- Location level name --]
     <div class="form-group">
       [@customForm.input name="${customName}.name" type="text"  i18nkey="location.levelName${locationType?string('','Scope')}" placeholder="location.inputName.placeholder" className="locationName" required=true editable=editable /]
