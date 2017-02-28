@@ -162,7 +162,7 @@
         <option selected="selected" value="-1" >Select a location</option>
         [#if element.allElements?has_content ]
         [#list element.allElements as locElements]
-            <option value="${locElements.id}-${(locElements.isoAlpha2)!}" >${locElements.name}</option>
+            <option value="${(locElements.id)!'null'}-${(locElements.isoAlpha2)!'null'}" >${(locElements.name)!'null'}</option>
         [/#list]
         [/#if]
       </select>
