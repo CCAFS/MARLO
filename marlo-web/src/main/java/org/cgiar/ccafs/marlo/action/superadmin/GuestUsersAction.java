@@ -131,6 +131,7 @@ public class GuestUsersAction extends BaseAction {
     try {
       userID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.USER_ID)));
       user = userManager.getUser(userID);
+      System.out.println("");
     } catch (Exception e) {
 
     }
