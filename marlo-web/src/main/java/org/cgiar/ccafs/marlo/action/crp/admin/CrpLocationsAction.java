@@ -110,6 +110,7 @@ public class CrpLocationsAction extends BaseAction {
 
               locElement.setLocElementType(elementType);
               locElement.setLocElement(parentElement);
+              locElement.setLocGeoposition(null);
               locElement.setCrp(loggedCrp);
               locElement.setActive(true);
               locElement.setModifiedBy(this.getCurrentUser());
@@ -136,6 +137,7 @@ public class CrpLocationsAction extends BaseAction {
 
               locElement.setLocElementType(elementType);
               locElement.setLocElement(parentElement);
+              locElement.setLocGeoposition(null);
               locElement.setCrp(loggedCrp);
               locElement.setActive(true);
               locElement.setModifiedBy(this.getCurrentUser());
