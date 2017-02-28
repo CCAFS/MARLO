@@ -121,7 +121,7 @@
     [/#if]
     [#-- Location Level ID Hidden parameter --]
     <input type="hidden" class="locationLevelId" name="${customName}.id" value="${(locLevel.id)!}"/>
-    <input type="hidden" class="locationLevelType" name="${customName}.scope" value="${(!locationType)?string}"/>
+    
     [#-- Location level name --]
     <div class="form-group">
       [@customForm.input name="${customName}.name" value="${(locLevel.name)!}" type="text"  i18nkey="location.levelName${locationType?string('','Scope')}" placeholder="location.inputName.placeholder" className="locationName" required=true editable=editable /]
@@ -135,7 +135,7 @@
           <div class="info-text"><span>If so, the locations added below will prefill a dropdown menu for Project Leader to pick from. Otherwise, Project Leaders will define by themselves.</span></div>
         </div>
       [#else]
-        <input type="hidden" name="${customName}.hasCoordinates" value="true" />
+        <input type="hidden" name="${customName}.hasCoordinates" value="false" />
       [/#if]
       <div class="clearfix"></div>
       [#-- confirm popup --]
