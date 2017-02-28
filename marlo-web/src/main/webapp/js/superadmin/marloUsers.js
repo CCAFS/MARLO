@@ -220,6 +220,9 @@ function validateEmail(email) {
 
 function checkAllFields(e) {
   var count = 0;
+  if($(".crpList").find(".crpItem").length > 0) {
+    count++;
+  }
   if($(".isNewUser").val() == "true") {
     if($(".userFirstName").val().length != 0) {
       count++;
@@ -227,19 +230,25 @@ function checkAllFields(e) {
     if($(".userLastName").val().trim() != "") {
       count++;
     }
-  }
-  if($(".crpList").find(".crpItem").length > 0) {
-    count++;
-  }
-  if(count < 3) {
-    e.preventDefault();
-    var notyOptions = jQuery.extend({}, notyDefaultOptions);
-    notyOptions.text = 'Please complete the fields to create the user guest';
-    noty(notyOptions);
+    if(count < 3) {
+      e.preventDefault();
+      var notyOptions = jQuery.extend({}, notyDefaultOptions);
+      notyOptions.text = 'Please complete the fields to create the user guest';
+      noty(notyOptions);
+    } else {
+      $(".button-save").trigger('submit');
+    }
   } else {
-    $(".button-save").trigger('submit');
-
+    if(count < 1) {
+      e.preventDefault();
+      var notyOptions = jQuery.extend({}, notyDefaultOptions);
+      notyOptions.text = 'Please complete the fields to create the user guest';
+      noty(notyOptions);
+    } else {
+      $(".button-save").trigger('submit');
+    }
   }
+
 }
 
 function updateCrpIndex() {
