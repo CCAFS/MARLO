@@ -403,7 +403,7 @@ public class FundingSourceAction extends BaseAction {
         institutions.add(crpPpaPartner.getInstitution());
       }
 
-      if (fundingSource.getBudgetType() != null && fundingSource.getBudgetType().getId() != null) {
+      if (fundingSource.getBudgetType() != null) {
         if (fundingSource.getBudgetType().getId().longValue() == 1) {
 
           institutionsDonors = institutionManager.findAll().stream()
