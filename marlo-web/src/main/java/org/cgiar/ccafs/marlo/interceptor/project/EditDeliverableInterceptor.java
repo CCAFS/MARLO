@@ -116,7 +116,10 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
         }
 
         if (baseAction.isCrpClosed()) {
-          canEdit = false;
+          if (!(baseAction.hasSpecificities(APConstants.CRP_PMU) && baseAction.isPMU())) {
+            canEdit = false;
+          }
+
         }
       }
 

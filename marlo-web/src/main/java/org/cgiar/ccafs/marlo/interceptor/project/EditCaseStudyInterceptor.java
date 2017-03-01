@@ -124,6 +124,12 @@ public class EditCaseStudyInterceptor extends AbstractInterceptor implements Ser
           canEdit = false;
 
         }
+        if (baseAction.isCrpClosed()) {
+          if (!(baseAction.hasSpecificities(APConstants.CRP_PMU) && baseAction.isPMU())) {
+            canEdit = false;
+          }
+
+        }
       }
 
       // TODO Validate is the project is new

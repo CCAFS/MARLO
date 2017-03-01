@@ -17,10 +17,17 @@
 package org.cgiar.ccafs.marlo.interceptor;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpParameterManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrpParameter;
 
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import com.google.inject.Inject;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import com.opensymphony.xwork2.util.LocalizedTextUtil;
@@ -35,6 +42,22 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
    * @author Christian David Garcia Oviedo
    */
   private static final long serialVersionUID = -3807232981762261100L;
+
+  private UserManager userManager;
+
+  private CrpManager crpManager;
+
+
+  private CrpParameterManager crpParameterManager;
+
+  @Inject
+  public InternationalitazionFileInterceptor(UserManager userManager, CrpManager crpManager,
+    CrpParameterManager crpParameterManager) {
+    this.userManager = userManager;
+    this.crpManager = crpManager;
+    this.crpParameterManager = crpParameterManager;
+
+  }
 
   @Override
   public String intercept(ActionInvocation invocation) throws Exception {
@@ -62,7 +85,39 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
     }
 
 
+    Crp crp = (Crp) session.get(APConstants.SESSION_CRP);
+    if (crp != null) {
+      Crp loggedCrp = crpManager.getCrpById(crp.getId());
+
+      if (this.isCrpRefresh(loggedCrp)) {
+        for (CrpParameter parameter : loggedCrp.getCrpParameters()) {
+          if (parameter.isActive()) {
+            if (parameter.getKey().equals(APConstants.CRP_REFRESH)) {
+              session.put(parameter.getKey(), "0");
+              parameter.setValue("0");
+              crpParameterManager.saveCrpParameter(parameter);
+            } else {
+              session.put(parameter.getKey(), parameter.getValue());
+            }
+
+          }
+
+        }
+        System.out.println("actualiza");
+      }
+    }
+
+
     return invocation.invoke();
   }
 
+  public boolean isCrpRefresh(Crp crp) {
+    try {
+      // return Integer.parseInt(this.getSession().get(APConstants.CRP_CLOSED).toString()) == 1;
+      return Integer.parseInt(crpManager.getCrpById(crp.getId()).getCrpParameters().stream()
+        .filter(c -> c.getKey().equals(APConstants.CRP_REFRESH)).collect(Collectors.toList()).get(0).getValue()) == 1;
+    } catch (Exception e) {
+      return false;
+    }
+  }
 }

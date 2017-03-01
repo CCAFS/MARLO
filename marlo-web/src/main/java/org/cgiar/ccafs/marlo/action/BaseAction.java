@@ -1123,10 +1123,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return display;
   }
 
-
   public String getUrl() {
     return url;
   }
+
 
   public List<UserToken> getUsersOnline() {
     return SessionCounter.users;
@@ -1150,7 +1150,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return version;
   }
-
 
   public int goldDataValue(long deliverableID) {
     Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
@@ -1208,6 +1207,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return total;
   }
 
+
   public boolean hasPermission(String fieldName) {
     if (basePermission == null) {
       return securityContext.hasPermission(fieldName);
@@ -1248,7 +1248,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.hasPermission("submit");
   }
 
-
   public boolean hasPersmissionUnSubmit(long projectId) {
     String permission = this.generatePermission(Permission.PROJECT_UNSUBMISSION_PERMISSION,
       this.getCurrentCrp().getAcronym(), String.valueOf(projectId));
@@ -1264,6 +1263,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return permissions;
   }
 
+
   public boolean hasProgramnsRegions() {
     try {
       return Boolean.parseBoolean(this.getSession().get(APConstants.CRP_HAS_REGIONS).toString());
@@ -1271,7 +1271,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
   }
-
 
   public boolean hasSpecificities(String specificity) {
     try {
@@ -1282,6 +1281,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
 
   }
+
 
   public Boolean isA(long deliverableID) {
     try {
@@ -1318,7 +1318,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return canSwitchProject;
   }
 
-
   public boolean isCompleteCrpIndicator(long liaisonIntitution) {
     List<SectionStatus> sectionStatus = null;
     IpLiaisonInstitution ipLiaisonInstitution =
@@ -1340,6 +1339,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return true;
   }
+
 
   public boolean isCompleteImpact(long crpProgramID) {
 
@@ -1642,10 +1642,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+  public boolean isCrpRefresh() {
+    try {
+      // return Integer.parseInt(this.getSession().get(APConstants.CRP_CLOSED).toString()) == 1;
+      return Integer.parseInt(crpManager.getCrpById(this.getCrpID()).getCrpParameters().stream()
+        .filter(c -> c.getKey().equals(APConstants.CRP_REFRESH)).collect(Collectors.toList()).get(0).getValue()) == 1;
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
   public boolean isDataSaved() {
     return dataSaved;
   }
-
 
   public Boolean isDeliverableNew(long deliverableID) {
 
@@ -1687,10 +1696,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+
   public boolean isDraft() {
     return draft;
   }
-
 
   public boolean isEditable() {
     return isEditable;
@@ -1717,6 +1726,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
 
   }
+
 
   public boolean isFullEditable() {
     return fullEditable;
@@ -1813,6 +1823,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public boolean isPlanningActive() {
     return Integer.parseInt(this.getSession().get(APConstants.CRP_PLANNING_ACTIVE).toString()) == 1;
+  }
+
+  public boolean isPMU() {
+    String roles = this.getRoles();
+    if (roles.contains("PMU")) {
+      return true;
+    }
+    return false;
   }
 
   public Boolean isProjectNew(long projectID) {

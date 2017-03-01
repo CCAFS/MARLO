@@ -111,7 +111,12 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
           canEdit = false;
 
         }
+        if (baseAction.isCrpClosed()) {
+          if (!(baseAction.hasSpecificities(APConstants.CRP_PMU) && baseAction.isPMU())) {
+            canEdit = false;
+          }
 
+        }
 
       }
 

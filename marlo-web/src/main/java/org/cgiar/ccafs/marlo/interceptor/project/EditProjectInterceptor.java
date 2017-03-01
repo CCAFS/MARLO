@@ -137,7 +137,10 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
         }
 
         if (baseAction.isCrpClosed()) {
-          canEdit = false;
+          if (!(baseAction.hasSpecificities(APConstants.CRP_PMU) && baseAction.isPMU())) {
+            canEdit = false;
+          }
+
         }
 
 
