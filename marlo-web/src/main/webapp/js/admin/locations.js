@@ -110,10 +110,8 @@ function addLocElementCountry() {
   var $flag = $item.find('.flag-icon');
   var flag = '<i class="flag-sm flag-sm-' + contryISO.toUpperCase() + '"></i>';
   $flag.html(flag);
-  
   // Remove coordinates span
   $item.find('.coordinates').remove();
-  
   // Adding item to the list
   $list.append($item);
   // Update Locations Indexes
