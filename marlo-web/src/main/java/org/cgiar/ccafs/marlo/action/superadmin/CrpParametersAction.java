@@ -24,6 +24,8 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.google.inject.Inject;
+
 public class CrpParametersAction extends BaseAction {
 
   /**
@@ -36,6 +38,7 @@ public class CrpParametersAction extends BaseAction {
 
   private List<Crp> crps;
 
+  @Inject
   public CrpParametersAction(APConfig config, CrpManager crpManager) {
 
     super(config);
@@ -55,6 +58,13 @@ public class CrpParametersAction extends BaseAction {
     crps = crpManager.findAll().stream().filter(c -> c.isMarlo()).collect(Collectors.toList());
     for (Crp crp : crps) {
       crp.setParameters(crp.getCrpParameters().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+    }
+    if (this.isHttpPost()) {
+      for (Crp crp : crps) {
+        if (crp.getParameters() != null) {
+          crp.getParameters().clear();
+        }
+      }
     }
   }
 
