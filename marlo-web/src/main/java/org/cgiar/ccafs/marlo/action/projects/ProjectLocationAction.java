@@ -297,9 +297,9 @@ public class ProjectLocationAction extends BaseAction {
     locationsLevels = new ArrayList<>();
     List<CountryLocationLevel> countryLocationLevels = new ArrayList<>();
     countryLocationLevels = new ArrayList<>();
-    List<LocElementType> customElementTypes = locElementTypeManager.findAll().stream()
-      .filter(let -> let.isActive() && let.getCrp() != null && let.getCrp().equals(loggedCrp) && let.getId() != 1)
-      .collect(Collectors.toList());
+    List<LocElementType> customElementTypes =
+      locElementTypeManager.findAll().stream().filter(let -> let.isActive() && let.getCrp() != null
+        && let.getCrp().equals(loggedCrp) && let.getId() != 1 && !let.isScope()).collect(Collectors.toList());
 
     for (LocElementType locElementType : customElementTypes) {
       CountryLocationLevel countryLocationLevel = new CountryLocationLevel();
