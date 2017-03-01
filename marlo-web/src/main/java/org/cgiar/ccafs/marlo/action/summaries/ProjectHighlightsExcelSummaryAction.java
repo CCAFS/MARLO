@@ -295,8 +295,9 @@ public class ProjectHighlightsExcelSummaryAction extends BaseAction implements S
 
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
 
-    for (ProjectHighlight projectHighlight : projectHighLightManager.findAll().stream()
-      .sorted((h1, h2) -> Long.compare(h1.getId(), h2.getId())).filter(ph -> ph.isActive())
+    for (ProjectHighlight projectHighlight : projectHighLightManager.findAll()
+      .stream().sorted((h1, h2) -> Long.compare(h1.getId(), h2.getId())).filter(ph -> ph.isActive()
+        && ph.getProject() != null && ph.getProject().getReporting() != null && ph.getProject().getReporting())
       .collect(Collectors.toList())) {
       String title = null, author = null, subject = null, publisher = null, highlights_types = "",
         highlights_is_global = null, start_date = null, end_date = null, keywords = null, countries = "",
