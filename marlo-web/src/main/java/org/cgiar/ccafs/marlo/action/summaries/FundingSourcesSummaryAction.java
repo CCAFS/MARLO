@@ -23,7 +23,10 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
+import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
+import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
+import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.ByteArrayInputStream;
@@ -292,8 +295,11 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
 
   private TypedTableModel getFundingSourcesProjectsTableModel() {
     TypedTableModel model = new TypedTableModel(
-      new String[] {"fs_title", "fs_id", "finance_code", "lead_partner", "fs_window", "project_id", "total_budget"},
-      new Class[] {String.class, Long.class, String.class, String.class, String.class, String.class, Double.class}, 0);
+      new String[] {"fs_title", "fs_id", "finance_code", "lead_partner", "fs_window", "project_id", "total_budget",
+        "flagships", "coas"},
+      new Class[] {String.class, Long.class, String.class, String.class, String.class, String.class, Double.class,
+        String.class, String.class},
+      0);
 
     for (FundingSource fundingSource : loggedCrp.getFundingSources().stream()
       .filter(fs -> fs.isActive() && fs.getBudgetType() != null).collect(Collectors.toList())) {
@@ -311,15 +317,47 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
         String lead_partner = "";
         String project_id = "";
         Double total_budget = 0.0;
+        String flagships = null;
+        String coas = null;
 
         project_id = projectBudget.getProject().getId().toString();
+        if (project_id != null && !project_id.isEmpty()) {
+          // get Flagships related to the project sorted by acronym
+          for (ProjectFocus projectFocuses : projectBudget.getProject().getProjectFocuses().stream()
+            .sorted((o1, o2) -> o1.getCrpProgram().getAcronym().compareTo(o2.getCrpProgram().getAcronym()))
+            .filter(
+              c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+            .collect(Collectors.toList())) {
+            if (flagships == null || flagships.isEmpty()) {
+              flagships = programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
+            } else {
+              flagships +=
+                "\n " + programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
+            }
+          }
+
+          // get CoAs related to the project sorted by acronym
+          if (projectBudget.getProject().getProjectClusterActivities() != null) {
+            for (ProjectClusterActivity projectClusterActivity : projectBudget.getProject()
+              .getProjectClusterActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
+              if (coas == null || coas.isEmpty()) {
+                coas = projectClusterActivity.getCrpClusterOfActivity().getIdentifier();
+              } else {
+                coas += "\n " + projectClusterActivity.getCrpClusterOfActivity().getIdentifier();
+              }
+            }
+          }
+
+        }
+
         if (projectBudget.getInstitution() != null) {
           lead_partner = projectBudget.getInstitution().getComposedName();
         }
 
         total_budget = projectBudget.getAmount();
 
-        model.addRow(new Object[] {fs_title, fs_id, finance_code, lead_partner, fs_window, project_id, total_budget});
+        model.addRow(new Object[] {fs_title, fs_id, finance_code, lead_partner, fs_window, project_id, total_budget,
+          flagships, coas});
       }
 
     }
