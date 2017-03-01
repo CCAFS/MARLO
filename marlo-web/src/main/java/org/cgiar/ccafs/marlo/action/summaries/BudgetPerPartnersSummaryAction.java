@@ -54,7 +54,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
    */
   private static final long serialVersionUID = 1L;
 
-  private static Logger LOG = LoggerFactory.getLogger(ReportingSummaryAction.class);
+  private static Logger LOG = LoggerFactory.getLogger(BudgetPerPartnersSummaryAction.class);
   // Variables
   private Crp loggedCrp;
   private int year;

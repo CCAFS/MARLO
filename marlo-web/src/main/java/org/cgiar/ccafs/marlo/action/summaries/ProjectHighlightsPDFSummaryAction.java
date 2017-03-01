@@ -412,15 +412,15 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
             heigth = (int) imageHeigth;
             // If successful, process the message
           } catch (BadElementException e) {
-            System.out.println("Unable to retrieve Image!!");
+            // System.out.println("Unable to retrieve Image!!");
             image = "";
             e.printStackTrace();
           } catch (MalformedURLException e) {
-            System.out.println("Unable to retrieve Image!!");
+            // System.out.println("Unable to retrieve Image!!");
             image = "";
             e.printStackTrace();
           } catch (IOException e) {
-            System.out.println("Unable to retrieve Image!!");
+            // System.out.println("Unable to retrieve Image!!");
             image = "";
             e.printStackTrace();
           }

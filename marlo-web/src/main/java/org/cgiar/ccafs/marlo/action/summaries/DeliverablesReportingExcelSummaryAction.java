@@ -306,8 +306,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
       int i = 0;
       for (Deliverable deliverable : openA) {
         i++;
-        System.out.println(deliverable.getId());
-        System.out.println("#" + i);
+        // System.out.println(deliverable.getId());
+        // System.out.println("#" + i);
         String deliv_type = null;
         String deliv_sub_type = null;
         String deliv_status = deliverable.getStatusName();

@@ -941,8 +941,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         && csp.getCaseStudy().getYear() != null && csp.getCaseStudy().getYear() >= this.year)
       .collect(Collectors.toList())) {
       CaseStudy caseStudy = caseStudyProject.getCaseStudy();
-      System.out.println(this.year);
-      System.out.println(caseStudy.getYear());
+      // System.out.println(this.year);
+      // System.out.println(caseStudy.getYear());
 
       id = caseStudy.getId();
 
@@ -2823,15 +2823,15 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
             heigth = (int) imageHeigth;
             // If successful, process the message
           } catch (BadElementException e) {
-            System.out.println("Unable to retrieve Image!!");
+            // System.out.println("Unable to retrieve Image!!");
             image = "";
             e.printStackTrace();
           } catch (MalformedURLException e) {
-            System.out.println("Unable to retrieve Image!!");
+            // System.out.println("Unable to retrieve Image!!");
             image = "";
             e.printStackTrace();
           } catch (IOException e) {
-            System.out.println("Unable to retrieve Image!!");
+            // System.out.println("Unable to retrieve Image!!");
             image = "";
             e.printStackTrace();
           }
