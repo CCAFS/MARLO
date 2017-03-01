@@ -17,7 +17,12 @@
 package org.cgiar.ccafs.marlo.action.superadmin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class CrpParametersAction extends BaseAction {
 
@@ -26,9 +31,35 @@ public class CrpParametersAction extends BaseAction {
    */
   private static final long serialVersionUID = 2672633110828731495L;
 
-  public CrpParametersAction(APConfig config) {
+
+  private CrpManager crpManager;
+
+  private List<Crp> crps;
+
+  public CrpParametersAction(APConfig config, CrpManager crpManager) {
+
     super(config);
-    // TODO Auto-generated constructor stub
+    this.crpManager = crpManager;
   }
 
+
+  public List<Crp> getCrps() {
+    return crps;
+  }
+
+
+  @Override
+  public void prepare() throws Exception {
+
+    super.prepare();
+    crps = crpManager.findAll().stream().filter(c -> c.isMarlo()).collect(Collectors.toList());
+    for (Crp crp : crps) {
+      crp.setParameters(crp.getCrpParameters().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+    }
+  }
+
+
+  public void setCrps(List<Crp> crps) {
+    this.crps = crps;
+  }
 }

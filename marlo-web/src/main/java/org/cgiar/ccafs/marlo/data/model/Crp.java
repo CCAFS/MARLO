@@ -116,6 +116,8 @@ public class Crp implements java.io.Serializable, IAuditLog {
   private Set<Project> projects = new HashSet<Project>(0);
   private boolean hasRegions;
 
+  private List<CrpParameter> parameters;
+
 
   public Crp() {
   }
@@ -124,6 +126,7 @@ public class Crp implements java.io.Serializable, IAuditLog {
   public Crp(String name) {
     this.name = name;
   }
+
 
   public Crp(String name, String acronym, Set<CrpUser> crpUsers, Set<Role> roles, Set<CrpParameter> crpParameters) {
     this.name = name;
@@ -159,6 +162,7 @@ public class Crp implements java.io.Serializable, IAuditLog {
   public String getAcronym() {
     return acronym;
   }
+
 
   public Date getActiveSince() {
     return activeSince;
@@ -208,20 +212,20 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return deliverablesList;
   }
 
-
   public Set<FundingSource> getFundingSources() {
     return fundingSources;
   }
-
 
   @Override
   public Long getId() {
     return this.id;
   }
 
+
   public Set<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
   }
+
 
   public Set<LiaisonUser> getLiasonUsers() {
     return liasonUsers;
@@ -260,10 +264,14 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return modifiedBy;
   }
 
-
   public String getName() {
     return this.name;
   }
+
+  public List<CrpParameter> getParameters() {
+    return parameters;
+  }
+
 
   public List<UserRole> getProgramManagmenTeam() {
     return programManagmenTeam;
@@ -294,10 +302,10 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return active;
   }
 
-
   public boolean isHasRegions() {
     return hasRegions;
   }
+
 
   public boolean isMarlo() {
     return marlo;
@@ -327,7 +335,6 @@ public class Crp implements java.io.Serializable, IAuditLog {
     this.crpParameters = crpParameters;
   }
 
-
   public void setCrpPpaPartners(Set<CrpPpaPartner> crpPpaPartners) {
     this.crpPpaPartners = crpPpaPartners;
   }
@@ -347,6 +354,7 @@ public class Crp implements java.io.Serializable, IAuditLog {
     this.crpSubIdosContributions = crpSubIdosContributions;
   }
 
+
   public void setCrpTargetUnits(Set<CrpTargetUnit> crpTargetUnits) {
     this.crpTargetUnits = crpTargetUnits;
   }
@@ -354,7 +362,6 @@ public class Crp implements java.io.Serializable, IAuditLog {
   public void setCrpUsers(Set<CrpUser> crpUsers) {
     this.crpUsers = crpUsers;
   }
-
 
   public void setDeliverables(Set<Deliverable> deliverables) {
     this.deliverables = deliverables;
@@ -400,6 +407,7 @@ public class Crp implements java.io.Serializable, IAuditLog {
     this.locationElementTypes = locationElementTypes;
   }
 
+
   public void setLocElements(Set<LocElement> locElementses) {
     this.locElements = locElementses;
   }
@@ -422,6 +430,10 @@ public class Crp implements java.io.Serializable, IAuditLog {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public void setParameters(List<CrpParameter> parameters) {
+    this.parameters = parameters;
   }
 
   public void setProgramManagmenTeam(List<UserRole> programManagmenTeam) {
