@@ -271,10 +271,11 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
     if (!deliverableManager.findAll().isEmpty()) {
 
       // get On going deliverables
-      List<Deliverable> deliverables =
-        new ArrayList<>(deliverableManager.findAll().stream().filter(d -> d.isActive() && d.getProject() != null
-          && d.getProject().getCrp() != null && d.getProject().getCrp().getId().equals(this.loggedCrp.getId()))
-          .collect(Collectors.toList()));
+      List<Deliverable> deliverables = new ArrayList<>(deliverableManager.findAll().stream()
+        .filter(d -> d.isActive() && d.getProject() != null && d.getProject().getReporting() != null
+          && d.getProject().getReporting() && d.getProject().getCrp() != null
+          && d.getProject().getCrp().getId().equals(this.loggedCrp.getId()))
+        .collect(Collectors.toList()));
 
       deliverables.sort((p1, p2) -> p1.isRequieriedReporting(year).compareTo(p2.isRequieriedReporting(year)));
 
