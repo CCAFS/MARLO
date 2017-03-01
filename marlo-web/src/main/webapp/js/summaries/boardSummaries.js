@@ -326,8 +326,15 @@ function updateUrl(element) {
     console.log("here1");
     formOption = $(element).find(".pdfType").text();
   } else if($("#optionsPopUp").find(".excelIcon").parent().hasClass("choose")) {
+    if($("#optionsPopUp").find("input[name='cycle']:checked").val() == "Planning") {
+      console.log("aaa");
+      formOption = $(element).find(".excelType").text().split("-")[0];
+    } else {
+      console.log("bbb");
+      formOption = $(element).find(".excelType").text().split("-")[1];
+    }
     console.log("here2");
-    formOption = $(element).find(".excelType").text();
+
   } else {
     console.log("here3");
     formOption = $formOptions.val() || 0;
