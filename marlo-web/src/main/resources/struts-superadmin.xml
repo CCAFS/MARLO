@@ -69,7 +69,7 @@
       </result>
     </action>
     
-    <action name="marloParameters" class="org.cgiar.ccafs.marlo.action.BaseAction">
+    <action name="marloParameters" class="org.cgiar.ccafs.marlo.action.superadmin.CrpParametersAction">
       <interceptor-ref name="superAdminStack" />   
       <result name="input">/WEB-INF/views/superadmin/marloParameters.ftl</result>
       <result name="success" type="redirectAction">

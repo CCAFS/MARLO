@@ -408,6 +408,9 @@ public class CrpLocationsAction extends BaseAction {
 
     if (this.isHttpPost()) {
       loggedCrp.getLocationElementTypes().clear();
+
+      loggedCrp.getLocationCustomElementTypes().clear();
+
     }
   }
 
