@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrpParameter;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.ByteArrayInputStream;
@@ -28,7 +29,10 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
@@ -36,6 +40,8 @@ import org.pentaho.reporting.engine.classic.core.MasterReport;
 import org.pentaho.reporting.engine.classic.core.modules.output.table.xls.ExcelReportUtil;
 import org.pentaho.reporting.libraries.resourceloader.Resource;
 import org.pentaho.reporting.libraries.resourceloader.ResourceManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Andrés Felipe Valencia Rivera. CCAFS
@@ -48,6 +54,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
    */
   private static final long serialVersionUID = 1L;
 
+  private static Logger LOG = LoggerFactory.getLogger(ExpectedDeliverablesSummaryAction.class);
   // Variables
   private Crp loggedCrp;
 
@@ -79,7 +86,12 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
     MasterReport masterReport = (MasterReport) reportResource.getResource();
 
     Number idParam = loggedCrp.getId();
-    int yearParam = this.getCurrentCycleYear();
+    int yearParam;
+    try {
+      yearParam = Integer.parseInt(this.getRequest().getParameter("year"));
+    } catch (Exception e) {
+      yearParam = this.getCurrentCycleYear();
+    }
 
     // Get datetime
     ZonedDateTime timezone = ZonedDateTime.now();
@@ -94,6 +106,23 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
     masterReport.getParameterValues().put("crp_id", idParam);
     masterReport.getParameterValues().put("year", yearParam);
     masterReport.getParameterValues().put("date", current_date);
+
+    // Verify if the crp has regions avalaible
+    List<CrpParameter> hasRegionsList = new ArrayList<>();
+    Boolean hasRegions = false;
+    for (CrpParameter hasRegionsParam : this.loggedCrp.getCrpParameters().stream()
+      .filter(cp -> cp.isActive() && cp.getKey().equals(APConstants.CRP_HAS_REGIONS)).collect(Collectors.toList())) {
+      hasRegionsList.add(hasRegionsParam);
+    }
+
+    if (!hasRegionsList.isEmpty()) {
+      if (hasRegionsList.size() > 1) {
+        LOG.warn("There is for more than 1 key of type: " + APConstants.CRP_HAS_REGIONS);
+      }
+      hasRegions = Boolean.valueOf(hasRegionsList.get(0).getValue());
+    }
+
+    masterReport.getParameterValues().put("regionalAvalaible", hasRegions);
 
 
     ExcelReportUtil.createXLSX(masterReport, os);
