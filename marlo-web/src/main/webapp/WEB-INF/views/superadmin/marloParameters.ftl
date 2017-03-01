@@ -33,8 +33,8 @@
           [#-- MARLO CRPs--]
           <h4 class="sectionTitle">[@s.text name="marloParameters.title" /]</h4>
           <div class="crps-list">
-          [#if crpList?has_content]
-            [#list crpList as crp]
+          [#if crps?has_content]
+            [#list crps as crp]
               [@crpParametersMacro element=crp name="" index=crp_index  /]
             [/#list]
           [/#if]
