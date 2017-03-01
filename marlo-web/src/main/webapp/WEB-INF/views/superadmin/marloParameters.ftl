@@ -52,13 +52,17 @@
 
     [#-- CRP Title --]
     <div class="blockTitle closed">
-      <strong>${(element.acronym?upper_case)!}</strong> - ${(element.name)!} <small>(Parameters: ${(element.srfSloIndicators?size)!0})</small>
+      <strong>${(element.acronym?upper_case)!}</strong> - ${(element.name)!} <small>(Parameters: ${(element.parameters?size)!0})</small>
     </div>
     
     <div class="blockContent" style="display:none">
       <hr />
       
-      {parameters here}
+      [#if element.parameters??]
+        [#list element.parameters as parameter]
+          ${parameter}
+        [/#list]
+      [/#if]
       
     </div>
   </div>
