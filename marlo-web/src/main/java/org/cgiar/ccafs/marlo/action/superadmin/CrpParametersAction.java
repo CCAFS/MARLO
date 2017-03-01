@@ -18,9 +18,13 @@ package org.cgiar.ccafs.marlo.action.superadmin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpParameterManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrpParameter;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,14 +39,16 @@ public class CrpParametersAction extends BaseAction {
 
 
   private CrpManager crpManager;
+  private CrpParameterManager crpParameterManager;
 
   private List<Crp> crps;
 
   @Inject
-  public CrpParametersAction(APConfig config, CrpManager crpManager) {
+  public CrpParametersAction(APConfig config, CrpManager crpManager, CrpParameterManager crpParameterManager) {
 
     super(config);
     this.crpManager = crpManager;
+    this.crpParameterManager = crpParameterManager;
   }
 
 
@@ -68,6 +74,40 @@ public class CrpParametersAction extends BaseAction {
     }
   }
 
+  @Override
+  public String save() {
+    if (this.canAccessSuperAdmin()) {
+
+      for (Crp crp : crps) {
+        if (crp.getParameters() == null) {
+          crp.setParameters(new ArrayList<CrpParameter>());
+        }
+        Crp crpDB = crpManager.getCrpById(crp.getId());
+        for (CrpParameter parameter : crpDB.getCrpParameters()) {
+          if (!crp.getParameters().contains(parameter)) {
+            crpParameterManager.deleteCrpParameter(parameter.getId());
+          }
+        }
+
+        for (CrpParameter parameter : crp.getParameters()) {
+          if (parameter.getId() != null && parameter.getId().intValue() == -1) {
+            parameter.setId(null);
+          }
+          parameter.setActiveSince(new Date());
+          parameter.setActive(true);
+          parameter.setCreatedBy(this.getCurrentUser());
+          parameter.setCrp(crp);
+          parameter.setModificationJustification("");
+          parameter.setModifiedBy(this.getCurrentUser());
+          crpParameterManager.saveCrpParameter(parameter);
+        }
+
+      }
+      return SUCCESS;
+    } else {
+      return NOT_AUTHORIZED;
+    }
+  }
 
   public void setCrps(List<Crp> crps) {
     this.crps = crps;
