@@ -48,11 +48,9 @@
               <span class="hidden fileTypes pdfType">reportingSummary</span>
               <span class="hidden forPlanningCycle forCycle"></span>
               <span class="hidden forReportingCycle forCycle"></span>
-              <div class="row">
-                <div class="col-md-9">
-                  [@customForm.select name="projectID"   label=""  i18nkey="Select a project"  listName="allProjects"  keyFieldName="id"  displayFieldName="composedName" className="allProjects"   multiple=false required=true   editable=true/]
-                </div>
-                <div class="col-md-3">
+              <input type="hidden" id="projectID" name="projectID" value="" />
+              <div class="row">                
+                <div class="col-md-12">
                   <a id="generateProject" style="display:none;" target="_blank" class="generateReport addButton pull-right" style="" href="#">[@s.text name="form.buttons.generate" /]</a>
                 </div>
               </div>
@@ -333,7 +331,10 @@
     </div>
   </div>
   <br />
-  <div class="row">
+  <div class="col-md-12 form-group projectSelectWrapper" style="display:none;">
+    [@customForm.select name=""   label=""  i18nkey="Select a project"  listName="allProjects"  keyFieldName="id"  displayFieldName="composedName" className="allProjects"   multiple=false required=true   editable=true/]
+  </div>
+  <div class="row" style="margin-bottom:20px;">
   <div class="col-md-12">
     <div class="col-md-6">
       [@customForm.select name="reportYears"   label=""  i18nkey="Select a specific year"  listName=""  keyFieldName="id"  displayFieldName="composedName" className="reportYear"   multiple=false required=false   editable=true/]
