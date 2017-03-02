@@ -121,6 +121,7 @@
               <span class="hidden fileTypes pdfType">caseStudySummary</span>
               <span class="hidden fileTypes excelType">caseStudiesByYearSummary-caseStudiesByYearSummary</span>
               <span class="hidden forReportingCycle forCycle"></span>
+              <span class="hidden specificYears">2015-2016</span>
                 <div class="pull-right">
                   <a style="display:none;" target="_blank" class="generateReport addButton pull-right" style="" href="#">[@s.text name="form.buttons.generate" /]</a>
                 </div>
@@ -138,6 +139,7 @@
               <span class="hidden fileTypes pdfType">projectHighlightsPDFSummary</span>
               <span class="hidden fileTypes excelType">projectHighlightsExcelSummary-projectHighlightsExcelSummary</span>
               <span class="hidden forReportingCycle forCycle"></span>
+              <span class="hidden specificYears">2015-2016</span>
                 <div class="pull-right">
                   <a style="display:none;" target="_blank" class="generateReport addButton pull-right" style="" href="#">[@s.text name="form.buttons.generate" /]</a>
                 </div>
@@ -154,6 +156,7 @@
               <div class="extraOptions" style="display:none">
               <span class="hidden fileTypes excelType">LeveragesReportingSummary-LeveragesReportingSummary</span>
               <span class="hidden forReportingCycle forCycle"></span>
+              <span class="hidden specificYears">2015-2016</span>
                 <div class="pull-right">
                   <a style="display:none;" target="_blank" class="generateReport addButton pull-right" style="" href="#">[@s.text name="form.buttons.generate" /]</a>
                 </div>

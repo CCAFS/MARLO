@@ -226,6 +226,9 @@ function selectSummariesSection(e) {
 }
 
 function generateReport(e) {
+  var $select = $(".reportYear ");
+  $select.empty();
+  $select.attr("disabled", true);
   e.preventDefault();
   $("#optionsPopUp").find("#planning").removeAttr("disabled");
   $("#optionsPopUp").find("#reporting").removeAttr("disabled");
@@ -234,22 +237,22 @@ function generateReport(e) {
   if($($selected).find(".forCycle").hasClass("forPlanningCycle")
       && $($selected).find(".forCycle").hasClass("forReportingCycle")) {
     // Planning and Reporing
-    $(".reportYear").append(
-        "<option value='" + $(".planningYear").text() + "' selected>" + $(".planningYear").text() + "</option>");
+    $select.append("<option value='" + $(".planningYear").text() + "' selected>" + $(".planningYear").text()
+        + "</option>");
     $("#optionsPopUp").find("#planning").attr("checked", true).trigger("click");
     $("#optionsPopUp").find("#reporting").removeAttr("checked");
     $("#optionsPopUp").find("#reporting").removeAttr("disabled");
   } else if($($selected).find(".forCycle").hasClass("forPlanningCycle")) {
     // Planning
-    $(".reportYear").append(
-        "<option value='" + $(".planningYear").text() + "' selected>" + $(".planningYear").text() + "</option>");
+    $select.append("<option value='" + $(".planningYear").text() + "' selected>" + $(".planningYear").text()
+        + "</option>");
     $("#optionsPopUp").find("#planning").attr("checked", true).trigger("click");
     $("#optionsPopUp").find("#reporting").removeAttr("checked");
     $("#optionsPopUp").find("#reporting").attr("disabled", true);
   } else if($($selected).find(".forCycle").hasClass("forReportingCycle")) {
     // Reporting
-    $(".reportYear").append(
-        "<option value='" + $(".reportingYear").text() + "' selected>" + $(".reportingYear").text() + "</option>");
+    $select.append("<option value='" + $(".reportingYear").text() + "' selected>" + $(".reportingYear").text()
+        + "</option>");
     $("#optionsPopUp").find("#reporting").attr("checked", true).trigger("click");
     $("#optionsPopUp").find("#planning").removeAttr("checked");
     $("#optionsPopUp").find("#planning").attr("disabled", true);
@@ -258,17 +261,17 @@ function generateReport(e) {
     $("#optionsPopUp").find(".projectSelectWrapper").show();
     validateFileType($selected);
     openDialog();
-// if(extraOption.find("#projectID").find("option:selected").val() != "-1") {
-// validateFileType($selected);
-// openDialog();
-// } else {
-// var notyOptions = jQuery.extend({}, notyDefaultOptions);
-// notyOptions.text = 'You must to select a project';
-// noty(notyOptions);
-// }
   } else {
     validateFileType($selected);
     openDialog();
+  }
+
+  if($selected.find(".specificYears").exists()) {
+    $select.empty();
+    $select.attr("disabled", false);
+    $.each($selected.find(".specificYears").text().split("-"), function(i,e) {
+      $select.addOption(e, e);
+    })
   }
   validateAllData();
 }
