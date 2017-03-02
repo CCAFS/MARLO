@@ -67,6 +67,7 @@
             <div class="extraOptions col-md-12" style="display:none">
             <span class="hidden fileTypes excelType">searchTermsSummary-searchTermsSummary</span>
             <span class="hidden forPlanningCycle forCycle"></span>
+            <span class="hidden forReportingCycle forCycle"></span>
             [#-- predefined terms --]
             <label for="">Predefined terms:</label>
             <br />
