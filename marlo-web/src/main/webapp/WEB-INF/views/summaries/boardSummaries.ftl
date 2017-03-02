@@ -345,7 +345,7 @@
     </div>
     <div class="col-md-6 okButton">
     <span class="blockButton"></span>
-      <a style="" target="_blank" class=" addButton" style="" href="#">[@s.text name="Ok" /]</a>
+    <a style="" target="_blank" class=" addButton" style="" href="#">[@s.text name="Ok" /]</a>
     </div>
   </div>
   </div>

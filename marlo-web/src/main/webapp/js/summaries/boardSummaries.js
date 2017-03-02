@@ -37,6 +37,7 @@ function attachEvents() {
                       + "</option>");
 // console.log(reportYear);
         }
+        $("#projectID").val("-1");
         ajaxService();
         updateUrl($(".summariesOptions").find(".selected"));
         validateAllData();
@@ -280,6 +281,12 @@ function generateReport(e) {
 function validateAllData() {
   if($(".selected").find("#projectID").exists()) {
     if($("#projectID").val() == "-1") {
+      var notyOptions = jQuery.extend({}, notyDefaultOptions);
+      notyOptions.text = 'You must to select a project';
+      noty(notyOptions);
+      $("#optionsPopUp").find(".blockButton").remove();
+      $(".okButton").prepend('<span class="blockButton"></span>');
+      $(".okButton a").css("opacity", "0.4");
       return true;
     }
   }
