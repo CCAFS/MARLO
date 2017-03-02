@@ -310,11 +310,11 @@
       <h5 class="col-md-12">[@s.text name="summaries.board.projectResearchCycle" /] <span class="red">*</span></h5>
           
           <div class="summariesOption col-md-12">
-            <input type="radio" name="cycle" id="planning" value="Planning" />
+            <input type="radio" name="cycle" id="planning" value="Planning" checked="checked"/>
             <span >[@s.text name="summaries.board.projectResearchCycle.planning" /]</span>
           </div>
           <div class="summariesOption col-md-12">
-            <input type="radio" name="cycle" id="reporting" value="Reporting"   checked="checked"/>
+            <input type="radio" name="cycle" id="reporting" value="Reporting"   />
             <span for="reporting">[@s.text name="summaries.board.projectResearchCycle.reporting" /]</span>
           </div>
     </div>
@@ -332,7 +332,7 @@
   </div>
   <br />
   <div class="col-md-12 form-group projectSelectWrapper" style="display:none;">
-    [@customForm.select name=""   label=""  i18nkey="Select a project"  listName="allProjects"  keyFieldName="id"  displayFieldName="composedName" className="allProjects"   multiple=false required=true   editable=true/]
+    [@customForm.select name=""   label=""  i18nkey="Select a project"  listName=""  keyFieldName="id"  displayFieldName="composedName" className="allProjects"   multiple=false required=true   editable=true/]
   </div>
   <div class="row" style="margin-bottom:20px;">
   <div class="col-md-12">
