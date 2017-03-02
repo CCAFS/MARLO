@@ -271,7 +271,8 @@ function generateReport(e) {
     $select.attr("disabled", false);
     $.each($selected.find(".specificYears").text().split("-"), function(i,e) {
       $select.addOption(e, e);
-    })
+    });
+    $select.val($("span.reportingYear").text()).trigger("change");
   }
   validateAllData();
 }
@@ -418,6 +419,10 @@ function updateUrl(element) {
       reportYear = $(".planningYear").text();
     } else {
       reportYear = $(".reportingYear").text();
+    }
+
+    if($(element).find(".specificYears").exists()) {
+      reportYear = $(".reportYear").find("option:selected").val();
     }
 
 // console.log(reportYear);
