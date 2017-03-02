@@ -105,6 +105,7 @@ public class InstitutionsLeadersSummaryAction extends BaseAction implements Summ
 
     masterReport.getParameterValues().put("crp_id", idParam);
     masterReport.getParameterValues().put("date", current_date);
+    masterReport.getParameterValues().put("cycle", cycle);
 
 
     ExcelReportUtil.createXLSX(masterReport, os);

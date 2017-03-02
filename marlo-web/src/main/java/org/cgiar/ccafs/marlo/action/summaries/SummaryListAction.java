@@ -67,8 +67,7 @@ public class SummaryListAction extends BaseAction {
         .collect(Collectors.toList());
     } else {
       allProjects = loggedCrp.getProjects().stream()
-        .filter(
-          p -> p.isActive() && p.getStatus() != null && p.getReporting() != null && p.getReporting().booleanValue())
+        .filter(p -> p.isActive() && p.getReporting() != null && p.getReporting().booleanValue())
         .collect(Collectors.toList());
     }
 
