@@ -60,7 +60,7 @@ import org.pentaho.reporting.libraries.resourceloader.Resource;
 import org.pentaho.reporting.libraries.resourceloader.ResourceManager;
 
 /**
- * @author Hermes Jiménez - CIAT/CCAFS
+ * @author Andrés Valencia - CIAT/CCAFS
  */
 public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Summary {
 
@@ -257,6 +257,8 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
   }
 
   public String getHighlightsImagesUrl(String project_id) {
+    // "https://marlo.cgiar.org/data" +
+    // config.getDownloadURL() +
     return config.getDownloadURL() + "/" + this.getHighlightsImagesUrlPath(project_id).replace('\\', '/');
   }
 
@@ -308,8 +310,8 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
         highlights_is_global = null, start_date = null, end_date = null, keywords = null, countries = "", image = "",
         highlight_desc = null, introduction = null, results = null, partners = null, links = null, project_id = null;
       Long year_reported = null;
-      int width = 0;
-      int heigth = 0;
+      int width = 244;
+      int heigth = 163;
 
       if (projectHighlight.getTitle() != null && !projectHighlight.getTitle().isEmpty()) {
         title = projectHighlight.getTitle();
@@ -377,15 +379,18 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
       if (projectHighlight.getFile() != null) {
         double pageWidth = 612 * 0.4;
         double pageHeigth = 792 * 0.4;
-        double imageWidth = 0;
-        double imageHeigth = 0;
+        double imageWidth = 244;
+        double imageHeigth = 163;
         image = this.getHighlightsImagesUrl(projectHighlight.getProject().getId().toString())
           + projectHighlight.getFile().getFileName();
+        // System.out.println(image);
+        // image = "https://marlo.cgiar.org/data/ccafs/projects//113/hightlightsImage/roving%20workshop%20VN_03.JPG";
 
         // get Height and Width
 
         Image imageFile = null;
         image = image.replace(" ", "%20");
+        // System.out.println(image);
         URL url;
         try {
           url = new URL(image);
@@ -446,6 +451,8 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
         project_id = projectHighlight.getProject().getId().toString();
       }
 
+      // System.out.println(width);
+      // System.out.println(heigth);
       model.addRow(new Object[] {projectHighlight.getId(), title, author, subject, publisher, year_reported,
         highlights_types, highlights_is_global, start_date, end_date, keywords, countries, image, highlight_desc,
         introduction, results, partners, links, width, heigth, project_id});
