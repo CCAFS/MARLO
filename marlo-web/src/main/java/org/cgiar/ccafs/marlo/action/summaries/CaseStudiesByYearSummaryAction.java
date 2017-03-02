@@ -227,7 +227,7 @@ public class CaseStudiesByYearSummaryAction extends BaseAction implements Summar
     if (caseStudyManager.findAll() != null) {
 
       List<CaseStudy> caseStudies = new ArrayList<>(caseStudyManager.findAll().stream()
-        .filter(cs -> cs.isActive() && cs.getYear() == year).collect(Collectors.toList()));
+        .filter(cs -> cs.isActive() && cs.getYear() == this.year).collect(Collectors.toList()));
 
       if (!caseStudies.isEmpty()) {
         for (CaseStudy caseStudy : caseStudies) {
