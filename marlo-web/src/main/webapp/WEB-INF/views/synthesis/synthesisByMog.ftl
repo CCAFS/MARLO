@@ -142,7 +142,7 @@
       [#-- Synthesis Lessons --]
       <div id="lessons" class="borderBox">
         <div class="fullBlock">
-          <input type="hidden" name="program.projectComponentLesson.id" value=${(program.projectComponentLesson.projectLessons.id)!"-1"} />
+          <input type="hidden" name="program.projectComponentLesson.id" value=${(program.projectComponentLesson.id)!"-1"} />
           <input type="hidden" name="program.projectComponentLesson.year" value=${currentCycleYear} />
           <input type="hidden" name="program.projectComponentLesson.componentName" value="${actionName}">
           [@customForm.textArea name="program.projectComponentLesson.lessons" i18nkey="synthesisByMog.lessons" paramText="${program.flagshipProgram?string('project/regional', 'project')}" help="synthesisByMog.lessons.help" className="synthesisLessons limitWords-100" required=true editable=editable /]
