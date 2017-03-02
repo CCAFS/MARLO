@@ -30,6 +30,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.ByteArrayInputStream;
@@ -46,6 +47,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -82,6 +84,10 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
   private Crp loggedCrp;
   // Keys to be searched
   List<String> keys = new ArrayList<String>();
+
+  private String cycle;
+
+  private int year;
 
   // Managers
   private CrpManager crpManager;
@@ -195,8 +201,20 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
       // date format for star and end dates
       SimpleDateFormat dateFormatter = new SimpleDateFormat("MMM yyyy");
       // Search projects with activities
-      for (Project project : loggedCrp.getProjects().stream().filter(p -> p.isActive() && p.getActivities().size() > 0)
-        .collect(Collectors.toList())) {
+
+      List<Project> projects = new ArrayList<>();
+      if (!cycle.equals(APConstants.REPORTING)) {
+        projects = loggedCrp.getProjects().stream()
+          .filter(p -> p.isActive() && p.getStatus() != null
+            && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+            && p.getActivities().size() > 0)
+          .collect(Collectors.toList());
+      } else {
+        projects =
+          loggedCrp.getProjects().stream().filter(p -> p.isActive() && p.getStatus() != null && p.getReporting() != null
+            && p.getReporting().booleanValue() && p.getActivities().size() > 0).collect(Collectors.toList());
+      }
+      for (Project project : projects) {
         // Get active activities
         for (Activity activity : project.getActivities().stream().filter(a -> a.isActive())
           .collect(Collectors.toList())) {
@@ -390,8 +408,19 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
         String.class, String.class, String.class},
       0);
     if (!keys.isEmpty()) {
-      for (Project project : loggedCrp.getProjects().stream()
-        .filter(p -> p.isActive() && p.getDeliverables().size() > 0).collect(Collectors.toList())) {
+      List<Project> projects = new ArrayList<>();
+      if (!cycle.equals(APConstants.REPORTING)) {
+        projects = loggedCrp.getProjects().stream()
+          .filter(p -> p.isActive() && p.getStatus() != null
+            && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+            && p.getDeliverables().size() > 0)
+          .collect(Collectors.toList());
+      } else {
+        projects =
+          loggedCrp.getProjects().stream().filter(p -> p.isActive() && p.getStatus() != null && p.getReporting() != null
+            && p.getReporting().booleanValue() && p.getDeliverables().size() > 0).collect(Collectors.toList());
+      }
+      for (Project project : projects) {
 
         for (Deliverable deliverable : project.getDeliverables().stream().filter(d -> d.isActive())
           .collect(Collectors.toList())) {
@@ -562,8 +591,20 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
       SimpleDateFormat dateFormatter = new SimpleDateFormat("MMM yyyy");
       // Decimal format for budgets
       DecimalFormat decimalFormatter = new DecimalFormat("###,###.00");
+      List<Project> projects = new ArrayList<>();
 
-      for (Project project : loggedCrp.getProjects().stream().filter(p -> p.isActive()).collect(Collectors.toList())) {
+      if (!cycle.equals(APConstants.REPORTING)) {
+        projects = loggedCrp.getProjects().stream()
+          .filter(p -> p.isActive() && p.getStatus() != null
+            && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
+          .collect(Collectors.toList());
+      } else {
+        projects = loggedCrp.getProjects().stream()
+          .filter(
+            p -> p.isActive() && p.getStatus() != null && p.getReporting() != null && p.getReporting().booleanValue())
+          .collect(Collectors.toList());
+      }
+      for (Project project : projects) {
 
         String title = project.getTitle();
         String summary = project.getSummary();
@@ -755,8 +796,12 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
   @Override
   public void prepare() {
     try {
+      Map<String, Object> parameters = this.getParameters();
+
       loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
       loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+      cycle = (StringUtils.trim(((String[]) parameters.get(APConstants.CYCLE))[0]));
+      year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
     } catch (Exception e) {
     }
   }
