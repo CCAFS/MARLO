@@ -236,21 +236,21 @@ function generateReport(e) {
     // Planning and Reporing
     $(".reportYear").append(
         "<option value='" + $(".planningYear").text() + "' selected>" + $(".planningYear").text() + "</option>");
-    $("#optionsPopUp").find("#planning").attr("checked", true);
+    $("#optionsPopUp").find("#planning").attr("checked", true).trigger("click");
     $("#optionsPopUp").find("#reporting").removeAttr("checked");
     $("#optionsPopUp").find("#reporting").removeAttr("disabled");
   } else if($($selected).find(".forCycle").hasClass("forPlanningCycle")) {
     // Planning
     $(".reportYear").append(
         "<option value='" + $(".planningYear").text() + "' selected>" + $(".planningYear").text() + "</option>");
-    $("#optionsPopUp").find("#planning").attr("checked", true);
+    $("#optionsPopUp").find("#planning").attr("checked", true).trigger("click");
     $("#optionsPopUp").find("#reporting").removeAttr("checked");
     $("#optionsPopUp").find("#reporting").attr("disabled", true);
   } else if($($selected).find(".forCycle").hasClass("forReportingCycle")) {
     // Reporting
     $(".reportYear").append(
         "<option value='" + $(".reportingYear").text() + "' selected>" + $(".reportingYear").text() + "</option>");
-    $("#optionsPopUp").find("#reporting").attr("checked", true);
+    $("#optionsPopUp").find("#reporting").attr("checked", true).trigger("click");
     $("#optionsPopUp").find("#planning").removeAttr("checked");
     $("#optionsPopUp").find("#planning").attr("disabled", true);
   }
@@ -366,8 +366,6 @@ function reportTypes($selected) {
     } else {
       updateUrl($selected);
     }
-    $('.wordContent').empty();
-    addGenderTerms();
     termsArray = [];
     $("#gender").prop('checked', true);
     $("#gender").removeClass("view");
