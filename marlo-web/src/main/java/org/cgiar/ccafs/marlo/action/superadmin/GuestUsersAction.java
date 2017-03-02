@@ -226,7 +226,7 @@ public class GuestUsersAction extends BaseAction {
 
               long userRoleID = userRoleManager.saveUserRole(userRole);
 
-              if (userRoleID != -1) {
+              if (isNewUser && userRoleID != -1) {
                 try {
                   this.sendMailNewUser(newUser, crp);
                 } catch (NoSuchAlgorithmException e) {
