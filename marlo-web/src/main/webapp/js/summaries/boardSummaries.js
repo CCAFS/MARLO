@@ -15,6 +15,13 @@ function init() {
 
 function attachEvents() {
 
+  // On change of projects select
+  $(".allProjects").on("change", function() {
+    var option = $(this).find("option:selected");
+    $("#projectID").val(option.val());
+    validateAllData();
+  });
+
   $("input[name='cycle']").on("change", function() {
     if($(this).val() == "Planning") {
       $("select.reportYear").append("<option selected>2017</option>");
@@ -53,6 +60,9 @@ function attachEvents() {
 
   // Clicking other report
   $(".title-file , .description").on("click", function() {
+    $("#optionsPopUp").find(".projectSelectWrapper").hide("slow");
+    $("#projectID").val("-1");
+    $(".allProjects").val("-1").trigger("change");
     // fileTypes
     $("#optionsPopUp").find(".pdfIcon").parent().show();
     $("#optionsPopUp").find(".excelIcon").parent().show();
@@ -172,6 +182,9 @@ function selectSummariesSection(e) {
   $('.extraOptions').find('select, input').attr('disabled', true);
   // Clean URL
   setUrl('#');
+  $("#optionsPopUp").find(".projectSelectWrapper").hide("slow");
+  $("#projectID").val("-1");
+  $(".allProjects").val("-1").trigger("change");
 }
 
 function generateReport(e) {
@@ -196,18 +209,18 @@ function generateReport(e) {
     $("#optionsPopUp").find("#planning").removeAttr("checked");
     $("#optionsPopUp").find("#planning").attr("disabled", true);
   }
-  if($selected.find(".extraOptions").exists()) {
-    var extraOption = $selected.find(".extraOptions");
-    console.log(extraOption);
-    // Validate full report
-    if(extraOption.find("#projectID").find("option:selected").val() != "-1") {
-      validateFileType($selected);
-      openDialog();
-    } else {
-      var notyOptions = jQuery.extend({}, notyDefaultOptions);
-      notyOptions.text = 'You must to select a project';
-      noty(notyOptions);
-    }
+  if($selected.find("#generateProject").exists()) {
+    $("#optionsPopUp").find(".projectSelectWrapper").show();
+    validateFileType($selected);
+    openDialog();
+// if(extraOption.find("#projectID").find("option:selected").val() != "-1") {
+// validateFileType($selected);
+// openDialog();
+// } else {
+// var notyOptions = jQuery.extend({}, notyDefaultOptions);
+// notyOptions.text = 'You must to select a project';
+// noty(notyOptions);
+// }
   } else {
     validateFileType($selected);
     openDialog();
@@ -216,6 +229,11 @@ function generateReport(e) {
 }
 
 function validateAllData() {
+  if($(".selected").find("#projectID").exists()) {
+    if($("#projectID").val() == "-1") {
+      return true;
+    }
+  }
   console.log("validate");
   var count = 0;
   console.log($("input[name='cycle']:checked").val());
@@ -227,7 +245,7 @@ function validateAllData() {
     count++;
   }
   console.log(count);
-  if(count == 2) {
+  if(count >= 2) {
     $("#optionsPopUp").find(".blockButton").remove();
     $(".okButton a").css("opacity", "1");
   }
@@ -256,7 +274,6 @@ function openDialog() {
   $("#optionsPopUp").dialog({
       resizable: false,
       width: 500,
-      height: 230,
       modal: true,
       dialogClass: 'dialog-searchUsers',
       show: {
@@ -376,7 +393,7 @@ function setUrl(url,$this) {
 
 // Activate the select plugin.
 function addSelect2() {
-  $('form select').select2({
+  $('select').select2({
     width: '100%'
   });
   $("#genderKeywords").select2({

@@ -9,6 +9,9 @@ function init() {
 
 function attachEvents() {
 
+  $('.addParameter').on('click', addParameter);
+  $('.removeParameter').on('click', removeParameter);
+
   $('.blockTitle.closed').on('click', function() {
     if($(this).hasClass('closed')) {
       $('.blockContent').slideUp();
@@ -22,4 +25,32 @@ function attachEvents() {
     });
   });
 
+}
+
+function addParameter() {
+  var $item = $('#parameter-template').clone(true).removeAttr('id');
+  var $list = $(this).parents('.crpParameters').find("table tbody");
+  // Adding item to the list
+  $list.append($item);
+  // Update Indexes
+  updateParametersIndexes();
+  // Show item
+  $item.show('slow');
+}
+
+function removeParameter() {
+  var $parent = $(this).parents('tr');
+  $parent.hide('slow', function() {
+    $parent.remove();
+    updateParametersIndexes();
+  });
+}
+
+function updateParametersIndexes() {
+  $('.crpParameters').each(function(i,crpParameters) {
+    $(crpParameters).find('.parameter').each(function(j,parameter) {
+      $(parameter).setNameIndexes(1, i);
+      $(parameter).setNameIndexes(2, j);
+    });
+  });
 }
