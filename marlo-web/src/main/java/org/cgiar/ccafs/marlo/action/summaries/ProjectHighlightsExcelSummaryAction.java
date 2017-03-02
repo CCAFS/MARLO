@@ -35,9 +35,11 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
 import org.pentaho.reporting.engine.classic.core.Band;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
@@ -93,11 +95,7 @@ public class ProjectHighlightsExcelSummaryAction extends BaseAction implements S
 
     MasterReport masterReport = (MasterReport) reportResource.getResource();
     String center = loggedCrp.getName();
-    try {
-      year = Integer.parseInt(this.getRequest().getParameter("year"));
-    } catch (Exception e) {
-      year = this.getCurrentCycleYear();
-    }
+
 
     // Get datetime
     ZonedDateTime timezone = ZonedDateTime.now();
@@ -295,9 +293,10 @@ public class ProjectHighlightsExcelSummaryAction extends BaseAction implements S
 
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
 
-    for (ProjectHighlight projectHighlight : projectHighLightManager.findAll()
-      .stream().sorted((h1, h2) -> Long.compare(h1.getId(), h2.getId())).filter(ph -> ph.isActive()
-        && ph.getProject() != null && ph.getProject().getReporting() != null && ph.getProject().getReporting())
+    for (ProjectHighlight projectHighlight : projectHighLightManager.findAll().stream()
+      .sorted((h1, h2) -> Long.compare(h1.getId(), h2.getId()))
+      .filter(ph -> ph.isActive() && ph.getProject() != null && ph.getYear() == year
+        && ph.getProject().getCrp().getId().longValue() == loggedCrp.getId().longValue())
       .collect(Collectors.toList())) {
       String title = null, author = null, subject = null, publisher = null, highlights_types = "",
         highlights_is_global = null, start_date = null, end_date = null, keywords = null, countries = "",
@@ -410,7 +409,9 @@ public class ProjectHighlightsExcelSummaryAction extends BaseAction implements S
     }
 
     try {
-      year = Integer.parseInt(this.getRequest().getParameter("year"));
+      Map<String, Object> parameters = this.getParameters();
+
+      year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
     } catch (Exception e) {
       year = this.getCurrentCycleYear();
     }

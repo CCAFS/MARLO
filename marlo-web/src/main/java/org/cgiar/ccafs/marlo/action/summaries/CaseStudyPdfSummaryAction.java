@@ -36,9 +36,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
 import org.pentaho.reporting.engine.classic.core.Band;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
@@ -258,13 +260,16 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
 
           List<CaseStudyProject> studyProjects = new ArrayList<>(
             caseStudy.getCaseStudyProjects().stream().filter(csp -> csp.isActive()).collect(Collectors.toList()));
-
+          boolean add = false;
           for (CaseStudyProject caseStudyProject : studyProjects) {
             if (caseStudyProject.isCreated()) {
               shared = String.valueOf(caseStudyProject.getProject().getId());
             }
 
             owner = "P" + caseStudyProject.getProject().getId();
+            if (caseStudyProject.getProject().getCrp().getId().longValue() == loggedCrp.getId().longValue()) {
+              add = true;
+            }
           }
 
           List<CaseStudyIndicator> studyIndicators = new ArrayList<>(
@@ -285,10 +290,12 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
             anex = this.getCaseStudyUrl(shared) + caseStudy.getFile().getFileName();
           }
 
+          if (add) {
+            model.addRow(new Object[] {id, title, outcomeStatement, researchOutputs, researchPartners, activities,
+              nonResearchPartneres, outputUsers, evidenceOutcome, outputUsed, referencesCase, explainIndicatorRelation,
+              anex, owner.trim(), indicators.trim(), shared.trim(), year});
+          }
 
-          model.addRow(new Object[] {id, title, outcomeStatement, researchOutputs, researchPartners, activities,
-            nonResearchPartneres, outputUsers, evidenceOutcome, outputUsed, referencesCase, explainIndicatorRelation,
-            anex, owner.trim(), indicators.trim(), shared.trim(), year});
 
         }
       }
@@ -388,7 +395,10 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
     }
 
     try {
-      year = Integer.parseInt(this.getRequest().getParameter("year"));
+
+      Map<String, Object> parameters = this.getParameters();
+
+      year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
     } catch (Exception e) {
       year = this.getCurrentCycleYear();
     }
