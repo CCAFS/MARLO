@@ -53,7 +53,16 @@
   </div>
 </section>
 
+[#-- Parameter template --]
+<table>
+	<tbody>
+    [@parameterMacro element={} name="crps[-1].parameters" index=-1 isTemplate=true /]
+	</tbody>
+</table>
 
+[#include "/WEB-INF/global/pages/footer.ftl" /]
+
+[#-- MACROS --]
 [#macro crpParametersMacro element name index isTemplate=false]
   <div id="crpParameters-${isTemplate?string('template',index)}" class="crpParameters borderBox" style="display:${isTemplate?string('none','block')}">
     [#local customName = "${name}[${index}]"]
@@ -63,22 +72,46 @@
     </div>
     
     <div class="blockContent" style="display:none">
-      <hr />
-      
+      <hr /> 
       [#if element.parameters??]
-        [#list element.parameters as parameter]
-          [#local customNameParam = "${customName}.parameters[${parameter_index}]"]
-          <input type="hidden" name="${customNameParam}.id" value="${parameter.id}" />
-          <input type="hidden" name="${customNameParam}.key" value="${parameter.key}" />
-          <div class="row">
-            <div class="col-md-6"> <strong>${parameter.key}</strong> </div>
-            <div class="col-md-6">[@customForm.input name="${customNameParam}.value" showTitle=false /]</div>
-          </div>
-        [/#list]
+        <table class="table table-striped table-condensed ">
+          <tbody>
+          [#list element.parameters as parameter]
+            [@parameterMacro element=parameter name="${customName}.parameters" index=parameter_index /]
+          [/#list]
+          </tbody>
+        </table>
       [/#if]
+      [#-- Add parameter --]
+      <div class="buttonBlock text-right">
+        <div class="addParameter button-blue">
+          <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addParameter"/]
+        </div>
+      </div>
       
     </div>
   </div>
 [/#macro]
 
-[#include "/WEB-INF/global/pages/footer.ftl" /]
+[#macro parameterMacro element name index isTemplate=false]
+  [#local customName = "${name}[${index}]"]
+  <tr id="parameter-${isTemplate?string('template',index)}" class="parameter" style="display:${isTemplate?string('none','table-row')}">
+    <td>
+      <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
+      [#if isTemplate]
+        [@customForm.input name="${customName}.key" placeholder="Key" showTitle=false /]
+      [#else]
+        <input type="hidden" name="${customName}.key" value="${(element.key)!}" />
+        <strong>${(element.key)!}</strong>
+      [/#if]
+    </td>
+    <td>
+      [@customForm.input name="${customName}.value" placeholder="Value" showTitle=false /]
+    </td>
+    <td>
+      <div style="position:relative">
+        <div class="removeParameter removeIcon" title="Remove"></div>
+      </div>
+    </td>
+  </tr>
+[/#macro]
