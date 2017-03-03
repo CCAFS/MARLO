@@ -1200,40 +1200,30 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         Boolean.class},
       0);
     if (!project.getDeliverables().isEmpty()) {
-
-      // get On going deliverables
-      List<Deliverable> deliverables =
-        new ArrayList<>(project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList()));
+      // get Reporting deliverables
+      List<Deliverable> deliverables = new ArrayList<>(project.getDeliverables().stream()
+        .filter(d -> d.isActive() && d.getProject() != null && d.getProject().isActive()
+          && d.getProject().getReporting() != null && d.getProject().getReporting() && d.getProject().getCrp() != null
+          && d.getProject().getCrp().getId().equals(this.loggedCrp.getId()) && d.getStatus() != null
+          && ((d.getYear() == this.year
+            || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))
+            || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+              && (d.getYear() >= this.year
+                || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() >= this.year))))
+          && (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+            || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+            || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
+        .collect(Collectors.toList()));
 
       deliverables.sort((p1, p2) -> p1.isRequieriedReporting(year).compareTo(p2.isRequieriedReporting(year)));
 
-      List<Deliverable> openA = deliverables.stream()
-        .filter(a -> a.isActive()
-          && ((a.getStatus() == null || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-            || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-              || a.getStatus().intValue() == 0))))
-        .collect(Collectors.toList());
-
-      openA.addAll(deliverables.stream()
-        .filter(d -> d.isActive() && d.getYear() == this.getCurrentCycleYear() && d.getStatus() != null
-          && d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))
-        .collect(Collectors.toList()));
-
-      openA.addAll(deliverables.stream()
-        .filter(d -> d.isActive() && d.getNewExpectedYear() != null
-          && d.getNewExpectedYear().intValue() == this.getCurrentCycleYear() && d.getStatus() != null
-          && d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))
-        .collect(Collectors.toList()));
-
-      openA.sort((p1, p2) -> p1.isRequieriedReporting(this.getCurrentCycleYear())
-        .compareTo(p2.isRequieriedReporting(this.getCurrentCycleYear())));
-
       HashSet<Deliverable> deliverablesHL = new HashSet<>();
-      deliverablesHL.addAll(openA);
-      openA.clear();
-      openA.addAll(deliverablesHL);
+      deliverablesHL.addAll(deliverables);
+      deliverables.clear();
+      deliverables.addAll(deliverablesHL);
 
-      for (Deliverable deliverable : openA) {
+
+      for (Deliverable deliverable : deliverables) {
         String deliv_type = null;
         String deliv_sub_type = null;
         String deliv_status = deliverable.getStatusName();
@@ -1367,12 +1357,19 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         Integer deliv_new_year = null;
         String deliv_new_year_justification = null;
 
-        if (deliverable.getStatusName() != null) {
-          if (!deliverable.getStatusName().isEmpty()) {
-            if (deliverable.getStatusName().equals("Extended")) {
-              deliv_new_year = deliverable.getNewExpectedYear();
-              deliv_new_year_justification = deliverable.getStatusDescription();
-            }
+        if (deliverable.getStatus() != null) {
+          // Extended
+          if (deliverable.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+            deliv_new_year = deliverable.getNewExpectedYear();
+            deliv_new_year_justification = deliverable.getStatusDescription();
+          }
+          // Complete
+          if (deliverable.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+            deliv_new_year = deliverable.getNewExpectedYear();
+          }
+          // Canceled
+          if (deliverable.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
+            deliv_new_year_justification = deliverable.getStatusDescription();
           }
         }
 
@@ -2405,11 +2402,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   }
 
   private TypedTableModel getOtherContributionsDetailTableModel() {
-    TypedTableModel model =
-      new TypedTableModel(
-        new String[] {"region", "indicator", "contribution_description", "target_contribution",
-          "otherContributionyear"},
-        new Class[] {String.class, String.class, String.class, Integer.class, Integer.class}, 0);
+    TypedTableModel model = new TypedTableModel(
+      new String[] {"region", "indicator", "contribution_description", "target_contribution", "otherContributionyear"},
+      new Class[] {String.class, String.class, String.class, Integer.class, Integer.class}, 0);
 
 
     for (OtherContribution otherContribution : project.getOtherContributions().stream().filter(oc -> oc.isActive())
