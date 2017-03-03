@@ -77,6 +77,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.Submission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.FileManager;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -2396,9 +2397,11 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   }
 
   private TypedTableModel getOtherContributionsDetailTableModel() {
-    TypedTableModel model = new TypedTableModel(
-      new String[] {"region", "indicator", "contribution_description", "target_contribution", "otherContributionyear"},
-      new Class[] {String.class, String.class, String.class, Integer.class, Integer.class}, 0);
+    TypedTableModel model =
+      new TypedTableModel(
+        new String[] {"region", "indicator", "contribution_description", "target_contribution",
+          "otherContributionyear"},
+        new Class[] {String.class, String.class, String.class, Integer.class, Integer.class}, 0);
 
 
     for (OtherContribution otherContribution : project.getOtherContributions().stream().filter(oc -> oc.isActive())
@@ -2809,7 +2812,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           // System.out.println("Project: " + projectHighlight.getProject().getId() + " PH: " +
           // projectHighlight.getId());
           try {
-            imageFile = Image.getInstance(url);
+            imageFile = Image.getInstance(FileManager.readURL(url));
             // System.out.println("W: " + imageFile.getWidth() + " \nH: " + imageFile.getHeight());
             if (imageFile.getWidth() >= imageFile.getHeight()) {
               imageWidth = pageWidth;

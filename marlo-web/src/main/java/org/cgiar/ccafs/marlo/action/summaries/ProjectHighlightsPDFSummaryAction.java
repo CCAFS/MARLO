@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectHighlightCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlightType;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighligthsTypeEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.FileManager;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -386,8 +387,8 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
         double imageHeigth = 163;
         image = this.getHighlightsImagesUrl(projectHighlight.getProject().getId().toString())
           + projectHighlight.getFile().getFileName();
-        // System.out.println(image);
-        // image = "https://marlo.cgiar.org/data/ccafs/projects//113/hightlightsImage/roving%20workshop%20VN_03.JPG";
+          // System.out.println(image);
+          // image = "https://marlo.cgiar.org/data/ccafs/projects//113/hightlightsImage/roving%20workshop%20VN_03.JPG";
 
         // get Height and Width
 
@@ -406,7 +407,7 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
           // System.out.println("Project: " + projectHighlight.getProject().getId() + " PH: " +
           // projectHighlight.getId());
           try {
-            imageFile = Image.getInstance(url);
+            imageFile = Image.getInstance(FileManager.readURL(url));
             // System.out.println("W: " + imageFile.getWidth() + " \nH: " + imageFile.getHeight());
             if (imageFile.getWidth() >= imageFile.getHeight()) {
               imageWidth = pageWidth;
