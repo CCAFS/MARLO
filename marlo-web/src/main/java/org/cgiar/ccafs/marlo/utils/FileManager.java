@@ -73,19 +73,27 @@ public class FileManager {
   public static byte[] readURL(File url) {
 
     byte[] b = new byte[(int) url.length()];
+    FileInputStream fileInputStream = null;
     try {
-      FileInputStream fileInputStream = new FileInputStream(url);
+      fileInputStream = new FileInputStream(url);
       fileInputStream.read(b);
-      fileInputStream.close();
+
       return b;
     } catch (FileNotFoundException e) {
-      System.out.println("File Not Found.");
+      LOG.error("File Not Found.");
       e.printStackTrace();
     } catch (IOException e1) {
-      System.out.println("Error Reading The File.");
+      LOG.error("Error Reading The File.");
       e1.printStackTrace();
-    }
+    } finally {
 
+      try {
+        fileInputStream.close();
+      } catch (Exception e) {
+
+        LOG.error("Don't Close");
+      }
+    }
     return null;
 
   }
