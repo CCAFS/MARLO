@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+import javax.net.ssl.HttpsURLConnection;
+
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +77,8 @@ public class FileManager {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     InputStream is = null;
     try {
-      is = url.openStream();
+      HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+      is = con.getInputStream();
       byte[] byteChunk = new byte[4096]; // Or whatever size you want to read in at a time.
       int n;
 
