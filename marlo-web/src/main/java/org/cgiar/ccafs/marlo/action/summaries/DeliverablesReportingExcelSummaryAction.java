@@ -270,41 +270,29 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
       0);
     if (!deliverableManager.findAll().isEmpty()) {
 
-      // get On going deliverables
+      // get Reporting deliverables
       List<Deliverable> deliverables = new ArrayList<>(deliverableManager.findAll().stream()
-        .filter(d -> d.isActive() && d.getProject() != null && d.getProject().getReporting() != null
-          && d.getProject().getReporting() && d.getProject().getCrp() != null
-          && d.getProject().getCrp().getId().equals(this.loggedCrp.getId()))
+        .filter(d -> d.isActive() && d.getProject() != null && d.getProject().isActive()
+          && d.getProject().getReporting() != null && d.getProject().getReporting() && d.getProject().getCrp() != null
+          && d.getProject().getCrp().getId().equals(this.loggedCrp.getId()) && d.getStatus() != null
+          && ((d.getYear() == this.year
+            || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))
+            || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+              && (d.getYear() >= this.year
+                || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() >= this.year))))
+          && (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+            || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+            || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
         .collect(Collectors.toList()));
 
       deliverables.sort((p1, p2) -> p1.isRequieriedReporting(year).compareTo(p2.isRequieriedReporting(year)));
 
-      List<Deliverable> openA = deliverables.stream()
-        .filter(a -> a.isActive()
-          && ((a.getStatus() == null || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-            || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-              || a.getStatus().intValue() == 0))))
-        .collect(Collectors.toList());
-
-      openA.addAll(deliverables.stream()
-        .filter(d -> d.isActive() && d.getYear() == this.year && d.getStatus() != null
-          && d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))
-        .collect(Collectors.toList()));
-
-      openA.addAll(deliverables.stream()
-        .filter(d -> d.isActive() && d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year
-          && d.getStatus() != null
-          && d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))
-        .collect(Collectors.toList()));
-
-      openA.sort((p1, p2) -> p1.isRequieriedReporting(this.year).compareTo(p2.isRequieriedReporting(this.year)));
-
       HashSet<Deliverable> deliverablesHL = new HashSet<>();
-      deliverablesHL.addAll(openA);
-      openA.clear();
-      openA.addAll(deliverablesHL);
+      deliverablesHL.addAll(deliverables);
+      deliverables.clear();
+      deliverables.addAll(deliverablesHL);
       int i = 0;
-      for (Deliverable deliverable : openA) {
+      for (Deliverable deliverable : deliverables) {
         i++;
         // System.out.println(deliverable.getId());
         // System.out.println("#" + i);
@@ -451,14 +439,13 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
         Integer deliv_new_year = null;
         String deliv_new_year_justification = null;
 
-        if (deliverable.getStatusName() != null) {
-          if (!deliverable.getStatusName().isEmpty()) {
-            if (deliverable.getStatusName().equals("Extended")) {
-              deliv_new_year = deliverable.getNewExpectedYear();
-              deliv_new_year_justification = deliverable.getStatusDescription();
-            }
-          }
+        if (deliverable.getNewExpectedYear() != null) {
+          deliv_new_year = deliverable.getNewExpectedYear();
         }
+        if (deliverable.getStatusDescription() != null && !deliverable.getStatusDescription().isEmpty()) {
+          deliv_new_year_justification = deliverable.getStatusDescription();
+        }
+
 
         String deliv_dissemination_channel = null;
         String deliv_dissemination_url = null;
