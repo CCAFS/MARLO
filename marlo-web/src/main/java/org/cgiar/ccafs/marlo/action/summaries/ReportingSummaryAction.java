@@ -2807,11 +2807,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         image =
           this.getHightlightImagePath(projectHighlight.getProject().getId()) + projectHighlight.getFile().getFileName();
 
-
-        // get Height and Width
-
         Image imageFile = null;
-        image = image.replace(" ", "%20");
+
+        LOG.info("image.getURL.replace " + image);
         URL url;
         try {
           url = new URL(image);

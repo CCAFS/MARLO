@@ -403,7 +403,7 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
         // get Height and Width
 
         Image imageFile = null;
-        image = image.replace(" ", "%20");
+
         LOG.info("image.getURL.replace " + image);
         // System.out.println(image);
         URL url;
