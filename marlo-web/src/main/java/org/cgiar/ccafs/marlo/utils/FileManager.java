@@ -76,6 +76,7 @@ public class FileManager {
     try {
       FileInputStream fileInputStream = new FileInputStream(url);
       fileInputStream.read(b);
+      fileInputStream.close();
       return b;
     } catch (FileNotFoundException e) {
       System.out.println("File Not Found.");
