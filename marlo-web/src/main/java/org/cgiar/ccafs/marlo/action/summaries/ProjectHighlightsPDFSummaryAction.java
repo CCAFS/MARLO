@@ -58,6 +58,8 @@ import org.pentaho.reporting.engine.classic.core.modules.output.pageable.pdf.Pdf
 import org.pentaho.reporting.engine.classic.core.util.TypedTableModel;
 import org.pentaho.reporting.libraries.resourceloader.Resource;
 import org.pentaho.reporting.libraries.resourceloader.ResourceManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Andrés Valencia - CIAT/CCAFS
@@ -67,6 +69,7 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
 
   private static final long serialVersionUID = 1L;
 
+  private static Logger LOG = LoggerFactory.getLogger(ProjectHighlightsPDFSummaryAction.class);
   private CrpManager crpManager;
   private ProjectHighligthManager projectHighLightManager;
 
@@ -390,6 +393,7 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
 
         Image imageFile = null;
         image = image.replace(" ", "%20");
+        LOG.info("image.getURL.replace " + image);
         // System.out.println(image);
         URL url;
         try {
