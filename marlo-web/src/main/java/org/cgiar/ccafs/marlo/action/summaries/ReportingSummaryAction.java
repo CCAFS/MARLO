@@ -85,7 +85,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
@@ -2810,10 +2809,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         Image imageFile = null;
 
         LOG.info("image.getURL.replace " + image);
-        URL url;
+        File url;
         try {
-          url = new URL(image);
-        } catch (MalformedURLException e) {
+          url = new File(image);
+        } catch (Exception e) {
           e.printStackTrace();
           url = null;
         }

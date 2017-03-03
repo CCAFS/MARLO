@@ -33,7 +33,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -397,25 +396,19 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
         double imageHeigth = 163;
         image =
           this.getHightlightImagePath(projectHighlight.getProject().getId()) + projectHighlight.getFile().getFileName();
-          // System.out.println(image);
-          // image = "https://marlo.cgiar.org/data/ccafs/projects//113/hightlightsImage/roving%20workshop%20VN_03.JPG";
-
-        // get Height and Width
 
         Image imageFile = null;
 
         LOG.info("image.getURL.replace " + image);
-        // System.out.println(image);
-        URL url;
+        File url;
         try {
-          url = new URL(image);
-        } catch (MalformedURLException e) {
+          url = new File(image);
+        } catch (Exception e) {
           e.printStackTrace();
           url = null;
         }
         if (url != null) {
-          // System.out.println("Project: " + projectHighlight.getProject().getId() + " PH: " +
-          // projectHighlight.getId());
+
           try {
             imageFile = Image.getInstance(FileManager.readURL(url));
             // System.out.println("W: " + imageFile.getWidth() + " \nH: " + imageFile.getHeight());

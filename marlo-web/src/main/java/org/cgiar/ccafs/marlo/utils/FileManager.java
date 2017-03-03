@@ -13,13 +13,10 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.utils;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-
-import javax.net.ssl.HttpsURLConnection;
 
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -73,33 +70,21 @@ public class FileManager {
     return deleteFile.delete();
   }
 
-  public static byte[] readURL(URL url) {
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    InputStream is = null;
+  public static byte[] readURL(File url) {
+
+    byte[] b = new byte[(int) url.length()];
     try {
-      HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
-      is = con.getInputStream();
-      byte[] byteChunk = new byte[4096]; // Or whatever size you want to read in at a time.
-      int n;
-
-      while ((n = is.read(byteChunk)) > 0) {
-        baos.write(byteChunk, 0, n);
-      }
-      return byteChunk;
-    } catch (IOException e) {
-      System.err.printf("Failed while reading bytes from %s: %s", url.toExternalForm(), e.getMessage());
+      FileInputStream fileInputStream = new FileInputStream(url);
+      fileInputStream.read(b);
+      return b;
+    } catch (FileNotFoundException e) {
+      System.out.println("File Not Found.");
       e.printStackTrace();
-      // Perform any other exception handling that's appropriate.
-    } finally {
-      if (is != null) {
-        try {
-          is.close();
-        } catch (IOException e) {
-
-          e.printStackTrace();
-        }
-      }
+    } catch (IOException e1) {
+      System.out.println("Error Reading The File.");
+      e1.printStackTrace();
     }
+
     return null;
 
   }
