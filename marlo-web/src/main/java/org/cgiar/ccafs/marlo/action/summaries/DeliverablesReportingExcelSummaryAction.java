@@ -257,7 +257,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
         "deliv_dissemination_channel", "deliv_dissemination_url", "deliv_open_access", "deliv_license", "titleMetadata",
         "descriptionMetadata", "dateMetadata", "languageMetadata", "countryMetadata", "keywordsMetadata",
         "citationMetadata", "HandleMetadata", "DOIMetadata", "creator_authors", "data_sharing", "qualityAssurance",
-        "dataDictionary", "tools", "F", "A", "I", "R", "disseminated", "restricted_access", "restricted_date",
+        "dataDictionary", "tools", "F", "A", "I", "R", "disseminated", "restricted_access",
         "deliv_license_modifications", "volume", "issue", "pages", "journal", "journal_indicators", "acknowledge",
         "fl_contrib", "project_ID", "project_title", "flagships", "regions", "others_responsibles"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, Integer.class, String.class,
@@ -266,7 +266,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class},
+        String.class, String.class},
       0);
     if (!deliverableManager.findAll().isEmpty()) {
 
@@ -314,7 +314,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
 
         if (deliverable.getProject() != null) {
           project_ID = deliverable.getProject().getId().toString();
-          if (deliverable.getProject().getTitle() != null && !deliverable.getProject().getTitle().isEmpty()) {
+          if (deliverable.getProject().getTitle() != null && !deliverable.getProject().getTitle().trim().isEmpty()) {
             project_title = deliverable.getProject().getTitle();
           }
         }
@@ -439,11 +439,21 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
         Integer deliv_new_year = null;
         String deliv_new_year_justification = null;
 
-        if (deliverable.getNewExpectedYear() != null) {
-          deliv_new_year = deliverable.getNewExpectedYear();
-        }
-        if (deliverable.getStatusDescription() != null && !deliverable.getStatusDescription().isEmpty()) {
-          deliv_new_year_justification = deliverable.getStatusDescription();
+        if (deliverable.getStatus() != null) {
+          // Extended
+          if (deliverable.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+            deliv_new_year = deliverable.getNewExpectedYear();
+            deliv_new_year_justification = deliverable.getStatusDescription();
+          }
+          // Complete
+          if (deliverable.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+            deliv_new_year = deliverable.getNewExpectedYear();
+            deliv_new_year_justification = "<Not applicable>";
+          }
+          // Canceled
+          if (deliverable.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
+            deliv_new_year_justification = deliverable.getStatusDescription();
+          }
         }
 
 
@@ -455,9 +465,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
         Boolean isDisseminated = false;
         String disseminated = "No";
         String restricted_access = null;
-        String restricted_date = null;
         Boolean isRestricted = false;
-        Boolean isLastTwoRestricted = false;
         Boolean show_deliv_license_modifications = false;
 
         if (deliverable.getDeliverableDisseminations().stream().collect(Collectors.toList()).size() > 0
@@ -519,26 +527,23 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
               if (deliverableDissemination.getRestrictedUseAgreement() != null
                 && deliverableDissemination.getRestrictedUseAgreement() == true) {
                 restricted_access = "Restricted Use Agreement - Restricted access (if so, what are these periods?)";
-                isLastTwoRestricted = true;
                 if (deliverableDissemination.getRestrictedAccessUntil() != null) {
-                  restricted_date = "Restricted access until: " + deliverableDissemination.getRestrictedAccessUntil();
+                  restricted_access +=
+                    "\nRestricted access until: " + deliverableDissemination.getRestrictedAccessUntil();
                 } else {
-                  restricted_date = "Restricted access until: <Not Defined>";
+                  restricted_access += "\nRestricted access until: <Not Defined>";
                 }
               }
 
               if (deliverableDissemination.getEffectiveDateRestriction() != null
                 && deliverableDissemination.getEffectiveDateRestriction() == true) {
                 restricted_access = "Effective Date Restriction - embargoed periods (if so, what are these periods?)";
-                isLastTwoRestricted = true;
                 if (deliverableDissemination.getRestrictedEmbargoed() != null) {
-                  restricted_date = "Restricted embargoed date: " + deliverableDissemination.getRestrictedEmbargoed();
+                  restricted_access +=
+                    "\nRestricted embargoed date: " + deliverableDissemination.getRestrictedEmbargoed();
                 } else {
-                  restricted_date = "Restricted embargoed date: <Not Defined>";
+                  restricted_access += "\nRestricted embargoed date: <Not Defined>";
                 }
-              }
-              if (!isLastTwoRestricted) {
-                restricted_date = "<Not applicable>";
               }
             }
           }
@@ -666,7 +671,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
         }
 
         String data_sharing = "";
-        if (isDisseminated) {
+        if (isDisseminated && (deliv_dissemination_channel != null && !deliv_dissemination_channel.equals("Other"))) {
 
 
           for (DeliverableDataSharingFile deliverableDataSharingFile : deliverable.getDeliverableDataSharingFiles()
@@ -849,10 +854,23 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
             DeliverablePublicationMetadata deliverablePublicationMetadata =
               deliverable.getDeliverablePublicationMetadatas().stream().filter(dpm -> dpm.isActive())
                 .collect(Collectors.toList()).get(0);
-            volume = deliverablePublicationMetadata.getVolume();
-            issue = deliverablePublicationMetadata.getIssue();
-            pages = deliverablePublicationMetadata.getPages();
-            journal = deliverablePublicationMetadata.getJournal();
+            if (deliverablePublicationMetadata.getVolume() != null
+              && !deliverablePublicationMetadata.getVolume().trim().isEmpty()) {
+              volume = deliverablePublicationMetadata.getVolume();
+            }
+            if (deliverablePublicationMetadata.getIssue() != null
+              && !deliverablePublicationMetadata.getIssue().trim().isEmpty()) {
+              issue = deliverablePublicationMetadata.getIssue();
+            }
+            if (deliverablePublicationMetadata.getPages() != null
+              && !deliverablePublicationMetadata.getPages().trim().isEmpty()) {
+              pages = deliverablePublicationMetadata.getPages();
+            }
+            if (deliverablePublicationMetadata.getJournal() != null
+              && !deliverablePublicationMetadata.getJournal().trim().isEmpty()) {
+              journal = deliverablePublicationMetadata.getJournal();
+            }
+
             if (deliverablePublicationMetadata.getIsiPublication() != null
               && deliverablePublicationMetadata.getIsiPublication() == true) {
               journal_indicators += "● This journal article is an ISI publication \n";
@@ -866,7 +884,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
               journal_indicators +=
                 "● This article have a co-author based in an Earth System Science-related academic department";
             }
-            if (journal_indicators.isEmpty()) {
+            if (journal_indicators.trim().isEmpty()) {
               journal_indicators = null;
             }
 
@@ -898,6 +916,16 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
           acknowledge = "<Not applicable>";
           fl_contrib = "<Not applicable>";
         }
+
+        if (fl_contrib.trim().isEmpty()) {
+          fl_contrib = null;
+        }
+        if (journal_indicators != null) {
+          if (journal_indicators.trim().isEmpty()) {
+            journal_indicators = null;
+          }
+        }
+
         // get Flagships related to the project sorted by acronym
         for (ProjectFocus projectFocuses : deliverable.getProject().getProjectFocuses().stream()
           .sorted((o1, o2) -> o1.getCrpProgram().getAcronym().compareTo(o2.getCrpProgram().getAcronym()))
@@ -946,14 +974,15 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
         }
 
 
-        model.addRow(new Object[] {deliverable.getId(), deliverable.getTitle(), deliv_type, deliv_sub_type,
-          deliv_status, deliv_year, key_output, leader, funding_sources, cross_cutting, deliv_new_year,
-          deliv_new_year_justification, deliv_dissemination_channel, deliv_dissemination_url, deliv_open_access,
-          deliv_license, titleMetadata, descriptionMetadata, dateMetadata, languageMetadata, countryMetadata,
-          keywordsMetadata, citationMetadata, HandleMetadata, DOIMetadata, creator_authors, data_sharing,
-          qualityAssurance, dataDictionary, tools, F, A, I, R, disseminated, restricted_access, restricted_date,
-          deliv_license_modifications, volume, issue, pages, journal, journal_indicators, acknowledge, fl_contrib,
-          project_ID, project_title, flagships, regions, others_responsibles});
+        model.addRow(
+          new Object[] {deliverable.getId(), deliverable.getTitle().trim().isEmpty() ? null : deliverable.getTitle(),
+            deliv_type, deliv_sub_type, deliv_status, deliv_year, key_output, leader, funding_sources, cross_cutting,
+            deliv_new_year, deliv_new_year_justification, deliv_dissemination_channel, deliv_dissemination_url,
+            deliv_open_access, deliv_license, titleMetadata, descriptionMetadata, dateMetadata, languageMetadata,
+            countryMetadata, keywordsMetadata, citationMetadata, HandleMetadata, DOIMetadata, creator_authors,
+            data_sharing, qualityAssurance, dataDictionary, tools, F, A, I, R, disseminated, restricted_access,
+            deliv_license_modifications, volume, issue, pages, journal, journal_indicators, acknowledge, fl_contrib,
+            project_ID, project_title, flagships, regions, others_responsibles});
       }
     }
     return model;
@@ -1029,9 +1058,24 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
 
   private TypedTableModel getMasterTableModel(String center, String date, String year) {
     // Initialization of Model
-    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "year"},
-      new Class[] {String.class, String.class, String.class});
-    model.addRow(new Object[] {center, date, year});
+    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "year", "regionalAvalaible"},
+      new Class[] {String.class, String.class, String.class, Boolean.class});
+    // Verify if the crp has regions avalaible
+    List<CrpParameter> hasRegionsList = new ArrayList<>();
+    Boolean hasRegions = false;
+    for (CrpParameter hasRegionsParam : this.loggedCrp.getCrpParameters().stream()
+      .filter(cp -> cp.isActive() && cp.getKey().equals(APConstants.CRP_HAS_REGIONS)).collect(Collectors.toList())) {
+      hasRegionsList.add(hasRegionsParam);
+    }
+
+    if (!hasRegionsList.isEmpty()) {
+      if (hasRegionsList.size() > 1) {
+        LOG.warn("There is for more than 1 key of type: " + APConstants.CRP_HAS_REGIONS);
+      }
+      hasRegions = Boolean.valueOf(hasRegionsList.get(0).getValue());
+    }
+
+    model.addRow(new Object[] {center, date, year, hasRegions});
     return model;
   }
 
