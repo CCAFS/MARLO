@@ -407,7 +407,7 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
           e.printStackTrace();
           url = null;
         }
-        if (url != null) {
+        if (url != null && url.exists()) {
 
           try {
             imageFile = Image.getInstance(FileManager.readURL(url));

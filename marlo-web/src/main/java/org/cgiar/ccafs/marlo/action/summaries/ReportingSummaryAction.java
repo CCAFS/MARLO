@@ -2816,7 +2816,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           e.printStackTrace();
           url = null;
         }
-        if (url != null) {
+        if (url != null && url.exists()) {
           // System.out.println("Project: " + projectHighlight.getProject().getId() + " PH: " +
           // projectHighlight.getId());
           try {
