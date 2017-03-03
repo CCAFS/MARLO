@@ -2124,6 +2124,15 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       + "hightlightsImage" + File.separator;
   }
 
+  public String getHighlightsImagesUrlPath(long projectID) {
+    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + projectID + File.separator
+      + "hightlightsImage" + File.separator;
+  }
+
+  private String getHightlightImagePath(long projectID) {
+    return config.getUploadsBaseFolder() + File.separator + this.getHighlightsImagesUrlPath(projectID) + File.separator;
+  }
+
   @Override
   public InputStream getInputStream() {
     if (inputStream == null) {
@@ -2131,6 +2140,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     }
     return inputStream;
   }
+
 
   private TypedTableModel getLeveragesTableModel() {
     // Decimal format
@@ -2330,7 +2340,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       project.isLocationGlobal(), this.isPhaseOne()});
     return model;
   }
-
 
   public List<IpElement> getMidOutcomeOutputs(long midOutcomeID) {
     List<IpProjectContribution> ipProjectContributions =
@@ -2601,6 +2610,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
+
   private TypedTableModel getPartnerLeaderTableModel(ProjectPartner projectLeader) {
     TypedTableModel model =
       new TypedTableModel(new String[] {"org_leader", "pp_id"}, new Class[] {String.class, Long.class}, 0);
@@ -2704,7 +2714,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
-
   private TypedTableModel getProjectHighlightReportingTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"id", "title", "author", "subject", "publisher", "year_reported", "highlights_types",
@@ -2795,7 +2804,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         double pageHeigth = 792 * 0.4;
         double imageWidth = 0;
         double imageHeigth = 0;
-        image = this.getHighlightsImagesUrl() + projectHighlight.getFile().getFileName();
+        image =
+          this.getHightlightImagePath(projectHighlight.getProject().getId()) + projectHighlight.getFile().getFileName();
+
 
         // get Height and Width
 
@@ -2869,6 +2880,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   public long getProjectID() {
     return projectID;
   }
+
 
   private TypedTableModel getProjectOtherOutcomesTableModel() {
     TypedTableModel model =

@@ -260,15 +260,25 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
     }
   }
 
+
   public String getHighlightsImagesUrl(String project_id) {
     // "https://marlo.cgiar.org/data" +
     // config.getDownloadURL() +
     return config.getDownloadURL() + "/" + this.getHighlightsImagesUrlPath(project_id).replace('\\', '/');
   }
 
+  public String getHighlightsImagesUrlPath(long projectID) {
+    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + projectID + File.separator
+      + "hightlightsImage" + File.separator;
+  }
+
   public String getHighlightsImagesUrlPath(String project_id) {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project_id + File.separator
       + "hightlightsImage" + File.separator;
+  }
+
+  private String getHightlightImagePath(long projectID) {
+    return config.getUploadsBaseFolder() + File.separator + this.getHighlightsImagesUrlPath(projectID) + File.separator;
   }
 
   @Override
@@ -385,8 +395,8 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
         double pageHeigth = 792 * 0.4;
         double imageWidth = 244;
         double imageHeigth = 163;
-        image = this.getHighlightsImagesUrl(projectHighlight.getProject().getId().toString())
-          + projectHighlight.getFile().getFileName();
+        image =
+          this.getHightlightImagePath(projectHighlight.getProject().getId()) + projectHighlight.getFile().getFileName();
           // System.out.println(image);
           // image = "https://marlo.cgiar.org/data/ccafs/projects//113/hightlightsImage/roving%20workshop%20VN_03.JPG";
 
