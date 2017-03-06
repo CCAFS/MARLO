@@ -538,7 +538,8 @@ public class ProjectDescriptionAction extends BaseAction {
 
     liaisonInstitutions
       .addAll(loggedCrp.getLiaisonInstitutions().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-
+    liaisonInstitutions.addAll(
+      liaisonInstitutionManager.findAll().stream().filter(c -> c.getCrp() == null).collect(Collectors.toList()));
     programFlagships = new ArrayList<>();
     regionFlagships = new ArrayList<>();
     programFlagships.addAll(loggedCrp.getCrpPrograms().stream()
