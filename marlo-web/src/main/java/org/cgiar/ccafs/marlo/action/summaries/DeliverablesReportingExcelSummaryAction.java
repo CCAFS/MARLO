@@ -259,14 +259,14 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
         "citationMetadata", "HandleMetadata", "DOIMetadata", "creator_authors", "data_sharing", "qualityAssurance",
         "dataDictionary", "tools", "F", "A", "I", "R", "disseminated", "restricted_access",
         "deliv_license_modifications", "volume", "issue", "pages", "journal", "journal_indicators", "acknowledge",
-        "fl_contrib", "project_ID", "project_title", "flagships", "regions", "others_responsibles"},
+        "fl_contrib", "project_ID", "project_title", "flagships", "regions", "others_responsibles", "newExceptedFlag"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, Integer.class, String.class,
         String.class, String.class, String.class, Integer.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class},
+        String.class, String.class, String.class},
       0);
     if (!deliverableManager.findAll().isEmpty()) {
 
@@ -275,11 +275,14 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
         .filter(d -> d.isActive() && d.getProject() != null && d.getProject().isActive()
           && d.getProject().getReporting() != null && d.getProject().getReporting() && d.getProject().getCrp() != null
           && d.getProject().getCrp().getId().equals(this.loggedCrp.getId()) && d.getStatus() != null
-          && ((d.getYear() == this.year
-            || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))
-            || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-              && (d.getYear() >= this.year
-                || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() >= this.year))))
+          && ((d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+            && (d.getYear() >= this.year
+              || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() >= this.year)))
+            || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+              && (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))
+            || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+              && (d.getYear() == this.year
+                || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))))
           && (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
             || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
             || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
@@ -437,6 +440,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
 
         // Reporting
         Integer deliv_new_year = null;
+        String newExceptedFlag = "na";
         String deliv_new_year_justification = null;
 
         if (deliverable.getStatus() != null) {
@@ -444,11 +448,13 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
           if (deliverable.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
             deliv_new_year = deliverable.getNewExpectedYear();
             deliv_new_year_justification = deliverable.getStatusDescription();
+            newExceptedFlag = "nd";
           }
           // Complete
           if (deliverable.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
             deliv_new_year = deliverable.getNewExpectedYear();
             deliv_new_year_justification = "<Not applicable>";
+            newExceptedFlag = "nd";
           }
           // Canceled
           if (deliverable.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
@@ -982,7 +988,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
             countryMetadata, keywordsMetadata, citationMetadata, HandleMetadata, DOIMetadata, creator_authors,
             data_sharing, qualityAssurance, dataDictionary, tools, F, A, I, R, disseminated, restricted_access,
             deliv_license_modifications, volume, issue, pages, journal, journal_indicators, acknowledge, fl_contrib,
-            project_ID, project_title, flagships, regions, others_responsibles});
+            project_ID, project_title, flagships, regions, others_responsibles, newExceptedFlag});
       }
     }
     return model;
