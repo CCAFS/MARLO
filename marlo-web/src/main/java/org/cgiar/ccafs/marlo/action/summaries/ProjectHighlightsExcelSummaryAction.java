@@ -296,7 +296,8 @@ public class ProjectHighlightsExcelSummaryAction extends BaseAction implements S
     for (ProjectHighlight projectHighlight : projectHighLightManager.findAll().stream()
       .sorted((h1, h2) -> Long.compare(h1.getId(), h2.getId()))
       .filter(ph -> ph.isActive() && ph.getProject() != null && ph.getYear() == year
-        && ph.getProject().getCrp().getId().longValue() == loggedCrp.getId().longValue())
+        && ph.getProject().getCrp().getId().longValue() == loggedCrp.getId().longValue() && ph.getProject().isActive()
+        && ph.getProject().getReporting())
       .collect(Collectors.toList())) {
       String title = null, author = null, subject = null, publisher = null, highlights_types = "",
         highlights_is_global = null, start_date = null, end_date = null, keywords = null, countries = "",
