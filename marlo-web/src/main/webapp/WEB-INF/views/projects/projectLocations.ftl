@@ -74,20 +74,24 @@
               <div class="text-center col-md-12  alert alert-info"><span> [@s.text name="projectLocations.selectLocations" /] </span></div>
               [/#if]
                --]
-              
-              <div  class="col-md-12 map">
-                <div id="map" class="col-md-12"></div>
-              </div>
-              
-              <div id="selectsContent" class="col-md-12 simpleBox " listname="project.locationsData">
-                [#-- Content collapsible--]
-                <div class="selectWrapper row">
-                [#if project.locationsData?has_content]
-                  [#list project.locationsData as locationLevels]
-                    [#--  [@locationLevel element=locationLevels name="${locationLevelName}" index=locationLevels_index list=locationLevels.list?? && locationLevels.list /] --]
-                  [/#list]
-                [/#if]
+              <div class="row">
+                <div  class="col-md-12 map">
+                  <div id="map" class="col-md-12"></div>
+                </div>
                 
+                <div class="col-md-12">
+                <label for="">Locations list</label>
+                <div id="selectsContent" class="col-md-12 simpleBox " listname="project.locationsData">
+                  [#-- Content collapsible--]
+                  <div class="selectWrapper row">
+                  [#if project.locationsData?has_content]
+                    [#list project.locationsData as locationLevels]
+                      [@locationLevel element=locationLevels name="${locationLevelName}" index=locationLevels_index list=locationLevels.list?? && locationLevels.list /]
+                    [/#list]
+                  [/#if]
+                  
+                  </div>
+                </div>
                 </div>
               </div>
               
@@ -131,24 +135,13 @@
   [#-- Content collapsible--]
   <div id="locationLevel-${template?string('template',index)}" class="locationLevel col-md-12" style="display:${template?string('none','block')}">
     [#-- header element --]
-    <div class="col-md-12 locationName-content borderBox closed">
-      <div class="col-md-8 locationLevel-optionSelect">
-        <div class="glyphicon glyphicon-chevron-up collapsible" ></div>
-        <div class="locationLevel-option">${(element.name)!}</div>
-      </div>
-      <div class="col-md-4">
-        [#if editable]
-        <div class="checkBox" style="display:${list?string('block','none')}">
-          <span class="">[@s.text name="projectLocations.selectAllSites" /] </span>
-          <input  name="${customName}.allCountries" class=" allCountries" type="checkbox" [#if (element.allCountries?has_content)?string == "false"]value="false" [#else]value="true" checked[/#if]   />
-        </div>
-        [/#if]
-      </div>
-      [#if editable]
-      <div class="removeLocationLevel removeElement" title="Remove Location level"></div>
-      [/#if]
-    </div>
-    <div class="col-md-12 locationLevel-optionContent " listname="${customName}.locElements">
+    <h5 class="sectionSubTitle">${(element.name)!}:
+      <span class="allCountriesQuestion" style="display:${list?string('inline-block','none')}">
+        <span class="">[@s.text name="projectLocations.selectAllSites" /] </span>
+        [@customForm.yesNoInput name="${customName}.allCountries"  editable=editable inverse=false  cssClass="allCountries text-center" /]
+      </span>
+    </h5>
+    <div class=" locationLevel-optionContent " listname="${customName}.locElements">
       
       [#-- Content of locations--]
       <div class="optionSelect-content row">
@@ -158,12 +151,12 @@
           [/#list]
         [/#if]
       </div>
-      [#if editable]
+      [#if !editable]
       <select style="display:${(element.list?? && element.list)?string('block','none')}" [#if (element.allCountries?has_content)?string == "true"]disabled[/#if]  class="form-control selectLocation col-md-12" placeholder="select an option...">
         <option selected="selected" value="-1" >Select a location</option>
         [#if element.allElements?has_content ]
         [#list element.allElements as locElements]
-            <option value="${locElements.id}-${locElements.isoAlpha2}" >${locElements.name}</option>
+            <option value="${locElements.id}-${(locElements.isoAlpha2)!}" >${locElements.name}</option>
         [/#list]
         [/#if]
       </select>
@@ -185,7 +178,7 @@
   [#local customName = "${name}[${index}]" /]
   [#assign countID = countID+1/]
   [#-- Content collapsible--]
-  <div id="location-${template?string('template',countID)}" class="col-md-6 locElement" style="display:${template?string('none','block')}">
+  <div id="location-${template?string('template',countID)}" class="col-md-4 locElement" style="display:${template?string('none','block')}">
     <div class="locations col-md-12">
       <div class="locationName"><span class="lName">${(element.name)!}</span> [#if element.locGeoposition?? && element.locGeoposition.latitude?? && element.locGeoposition.longitude?? && element.locGeoposition.latitude!=0 && element.locGeoposition.longitude!=0] <span class="lPos">[#if isList!=true](${(element.locGeoposition.latitude)!}, ${(element.locGeoposition.longitude)!})[/#if]</span> [/#if] </div>
       [#if editable]
