@@ -536,9 +536,9 @@ public class ProjectDescriptionAction extends BaseAction {
     allOwners.addAll(loggedCrp.getLiasonUsers());
     liaisonInstitutions = new ArrayList<LiaisonInstitution>();
 
-    liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions());
-    liaisonInstitutions.addAll(
-      liaisonInstitutionManager.findAll().stream().filter(c -> c.getCrp() == null).collect(Collectors.toList()));
+    liaisonInstitutions
+      .addAll(loggedCrp.getLiaisonInstitutions().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
     programFlagships = new ArrayList<>();
     regionFlagships = new ArrayList<>();
     programFlagships.addAll(loggedCrp.getCrpPrograms().stream()
