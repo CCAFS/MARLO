@@ -407,6 +407,7 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
         } catch (Exception e) {
           e.printStackTrace();
           url = null;
+          image = "";
         }
         if (url != null && url.exists()) {
 
@@ -437,6 +438,8 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
             image = "";
             e.printStackTrace();
           }
+        } else {
+          image = "";
         }
       }
 
@@ -460,8 +463,6 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
         project_id = projectHighlight.getProject().getId().toString();
       }
 
-      // System.out.println(width);
-      // System.out.println(heigth);
       model.addRow(new Object[] {projectHighlight.getId(), title, author, subject, publisher, year_reported,
         highlights_types, highlights_is_global, start_date, end_date, keywords, countries, image, highlight_desc,
         introduction, results, partners, links, width, heigth, project_id});
