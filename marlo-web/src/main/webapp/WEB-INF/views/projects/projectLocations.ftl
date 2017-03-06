@@ -127,6 +127,30 @@
 
 <input type="hidden" id="locationLevelName" value="${locationLevelName}" />
 <input type="hidden" id="locationName" value="${locationName}" />
+
+<div id="infoWrapper" class="infoWrapper" style="display:none;">
+<h4 class="sectionSubTitle" style="text-align:center; width:450px;">Adding a new location</h4>
+<br />
+<div class="form-group">
+<label for="locLevelSelect" style="display:block;">Select to add a location level:</label>
+  <select name="" id="locLevelSelect" class="selectLocationLevel select " >
+    <option value="-1" >Select an option...</option>
+    [#list locationsLevels as locLevels]
+      [#list locLevels.locations as locations]
+        <option value="${locations.id}-${locations.list?string}-${locations.name}" >${locations.name}</option>
+      [/#list]
+    [/#list]
+  </select>
+  </div>
+  <div class=" form-group">
+    [@customForm.yesNoInput name="isBranch" label="Is this project working in all countries?"  inverse=false value="" cssClass="text-left " value="true" /]
+  </div>
+        <div class="selectLocations panel tertiary col-md-12"  style="display:none">
+            <div class="panel-body">
+              [@customForm.select name="" label="" required=true  i18nkey="Select country(ies)" listName="" keyFieldName="id"  displayFieldName="composedName" className="" value="" /]
+            </div>
+          </div>
+</div>
   
 [#include "/WEB-INF/global/pages/footer.ftl"]
 

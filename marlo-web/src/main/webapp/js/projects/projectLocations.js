@@ -29,8 +29,13 @@ function init() {
     }
   });
 
+  $("select").select2({
+    width: '100%'
+  })
+
   $(".selectLocationLevel").select2({
-    placeholder: "Select a location level"
+      placeholder: "Select a location level",
+      width: '100%'
   })
 
   // validate if regions list is empty
@@ -638,6 +643,10 @@ function initMap() {
     $(".locations").removeClass("selected");
   });
 
+  google.maps.event.addListener(map, 'rightclick', function(e) {
+    openInfoWindowForm(e);
+  });
+
   if(markers.length > 0) {
     map.setCenter(markers[markers.length - 1].getPosition());
     // console.log(markers[markers.length - 1].getPosition());
@@ -749,6 +758,31 @@ function clearMarkers() {
 // Shows any markers currently in the array.
 function showMarkers() {
   setAllMap(map);
+}
+
+// open info window with the form
+function openInfoWindowForm(e) {
+  console.log(e.latLng);
+  var content;
+  content = $("#infoWrapper").html();
+  infoWindow.setContent([
+    content
+  ].join(''));
+// var currentlatlng = new google.maps.LatLng(e.lat, e.lng);
+// console.log(currentlatlng);
+  infoWindow.open(map);
+  infoWindow.setPosition(e.latLng);
+  $(".no-button-label").on("click", function() {
+    $(".yes-button-label").removeClass("radio-checked");
+    $(this).addClass("radio-checked");
+    $(".selectLocations").slideDown("slow");
+  });
+
+  $(".yes-button-label").on("click", function() {
+    $(".no-button-label").removeClass("radio-checked");
+    $(this).addClass("radio-checked");
+    $(".selectLocations").slideUp("slow");
+  });
 }
 
 // Open info window for change the country name
