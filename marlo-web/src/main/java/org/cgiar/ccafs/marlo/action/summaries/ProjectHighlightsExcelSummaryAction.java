@@ -389,6 +389,19 @@ public class ProjectHighlightsExcelSummaryAction extends BaseAction implements S
         image = projectHighlight.getFile().getFileName();
         imageurl = this.getHighlightsImagesUrl(projectHighlight.getProject().getId().toString())
           + projectHighlight.getFile().getFileName();
+        File url;
+        try {
+          url = new File(imageurl);
+        } catch (Exception e) {
+          e.printStackTrace();
+          url = null;
+          imageurl = null;
+        }
+        if (url != null && url.exists()) {
+
+        } else {
+          imageurl = null;
+        }
       }
 
       model.addRow(new Object[] {projectHighlight.getId(), title, author, subject, publisher, year_reported,
