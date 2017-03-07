@@ -180,11 +180,15 @@ public class ProjectPartnersValidator extends BaseValidator {
               .filter(insti -> insti.isActive() && insti.getCrp().getId().longValue() == action.getCrpID().longValue())
               .collect(Collectors.toList()).isEmpty()) {
 
+
               if (partner.getPartnerContributors() == null || partner.getPartnerContributors().isEmpty()) {
                 this.addMissingField("project.partners[" + c + "].partnerContributors");
                 action.getInvalidFields().put("list-project.partners[" + c + "].partnerContributors",
                   action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Partner Contribution"}));
+
               }
+
+
             }
           }
 
@@ -200,7 +204,10 @@ public class ProjectPartnersValidator extends BaseValidator {
               this.validatePersonType(action, c, j, person);
               this.validateUser(action, c, j, person);
               if (project.isProjectEditLeader()) {
-                this.validatePersonResponsibilities(action, c, j, person);
+                if (action.hasSpecificities(APConstants.CRP_PARTNER_CONTRIBUTIONS)) {
+                  this.validatePersonResponsibilities(action, c, j, person);
+
+                }
               }
 
               j++;
