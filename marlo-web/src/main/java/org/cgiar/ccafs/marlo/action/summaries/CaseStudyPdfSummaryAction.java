@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.model.CaseStudy;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyIndicator;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.ByteArrayInputStream;
@@ -261,12 +262,37 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
           List<CaseStudyProject> studyProjects = new ArrayList<>(
             caseStudy.getCaseStudyProjects().stream().filter(csp -> csp.isActive()).collect(Collectors.toList()));
           boolean add = false;
+          owner = "";
+          List<Project> projects = new ArrayList<>();
           for (CaseStudyProject caseStudyProject : studyProjects) {
             if (caseStudyProject.isCreated()) {
               shared = String.valueOf(caseStudyProject.getProject().getId());
-              owner = "P" + caseStudyProject.getProject().getId();
-            }
+              if (owner.length() == 0) {
+                owner = "P" + caseStudyProject.getProject().getId();
+                projects.add(caseStudyProject.getProject());
 
+              } else {
+                if (!projects.contains(caseStudyProject.getProject())) {
+                  owner = owner + ", P" + caseStudyProject.getProject().getId();
+                  projects.add(caseStudyProject.getProject());
+                }
+
+
+              }
+            } else {
+              if (owner.length() == 0) {
+                owner = "P" + caseStudyProject.getProject().getId();
+                projects.add(caseStudyProject.getProject());
+
+              } else {
+                if (!projects.contains(caseStudyProject.getProject())) {
+                  owner = owner + ", P" + caseStudyProject.getProject().getId();
+                  projects.add(caseStudyProject.getProject());
+                }
+
+
+              }
+            }
 
             if (caseStudyProject.getProject().getCrp().getId().longValue() == loggedCrp.getId().longValue()) {
               add = true;
