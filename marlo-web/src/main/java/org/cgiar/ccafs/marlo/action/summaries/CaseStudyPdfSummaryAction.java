@@ -264,9 +264,10 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
           for (CaseStudyProject caseStudyProject : studyProjects) {
             if (caseStudyProject.isCreated()) {
               shared = String.valueOf(caseStudyProject.getProject().getId());
+              owner = "P" + caseStudyProject.getProject().getId();
             }
 
-            owner = "P" + caseStudyProject.getProject().getId();
+
             if (caseStudyProject.getProject().getCrp().getId().longValue() == loggedCrp.getId().longValue()) {
               add = true;
             }
