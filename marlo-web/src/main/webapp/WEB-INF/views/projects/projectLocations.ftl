@@ -128,11 +128,12 @@
 <input type="hidden" id="locationLevelName" value="${locationLevelName}" />
 <input type="hidden" id="locationName" value="${locationName}" />
 
+[#-- INFO WINDOW FORM - TEMPLATE --]
 <div id="infoWrapper" class="infoWrapper" style="display:none;">
 <h4 class="sectionSubTitle" style="text-align:center; width:450px;">Adding a new location</h4>
 <br />
 <div class="form-group">
-<label for="locLevelSelect" style="display:block;">Select to add a location level:</label>
+<label for="locLevelSelect" style="display:block;">Select a location level:</label>
   <select name="" id="locLevelSelect" class="selectLocationLevel select " >
     <option value="-1" >Select an option...</option>
     [#list locationsLevels as locLevels]
@@ -142,14 +143,22 @@
     [/#list]
   </select>
   </div>
-  <div class=" form-group">
-    [@customForm.yesNoInput name="isBranch" label="Is this project working in all countries?"  inverse=false value="" cssClass="text-left " value="true" /]
+  <div class=" form-group yesnoQuestion" style="display:none">
+    [@customForm.yesNoInput name="isBranch" label="Is this project working in all locations?"  inverse=false value="" cssClass="text-left " value="true" /]
   </div>
-        <div class="selectLocations panel tertiary col-md-12"  style="display:none">
-            <div class="panel-body">
-              [@customForm.select name="" label="" required=true  i18nkey="Select country(ies)" listName="" keyFieldName="id"  displayFieldName="composedName" className="" value="" /]
-            </div>
-          </div>
+  <div class="selectLocations panel tertiary col-md-12"  style="display:none">
+    <div class="panel-body">
+      [@customForm.select name="" label="" required=true  i18nkey="Select location(s)" listName="" keyFieldName="id"  displayFieldName="composedName" className="" value="" /]
+    </div>
+  </div>
+  [#-- Form 2 --]
+  <div id="inputFormWrapper" style="display:none; width: 450px;">
+    <div class="nameWrapper"><label for="">Location name:</label><input placeholder="name (Required)" class="name form-control" type="text" /></div>
+    <div class="latitudeWrapper"><label for="">Latitude:</label><input placeholder="Latitude" class="latitude form-control" type="text" readOnly=true /></div>
+    <div class="longitudeWrapper"><label for="">Longitude:</label><input placeholder="Longitude" class="longitude form-control " type="text" readOnly=true /></div>
+  </div>
+  [#-- Button --]
+  <a id="" class=" addButton pull-right"  href="#" style="display:none; margin-top:25px;">[@s.text name="Map out" /]</a>
 </div>
   
 [#include "/WEB-INF/global/pages/footer.ftl"]

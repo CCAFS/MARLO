@@ -103,19 +103,19 @@
 }
 
 .latitudeWrapper {
-    width: 17%;
+    width: 24%;
     float: left;
     margin-left: 1%;
 }
 
 .longitudeWrapper {
-    width: 17%;
+    width: 24%;
     float: left;
     margin-left: 1%;
 }
 
 .nameWrapper {
-    width: 43%;
+    width: 50%;
     float: left;
 }
 

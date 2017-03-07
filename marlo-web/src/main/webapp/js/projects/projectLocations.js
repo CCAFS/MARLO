@@ -4,12 +4,10 @@ var style;
 var infoWindow = null;
 var markers = [];
 var countID;
-var FT_TableID = "19lLpgsKdJRHL2O4fNmJ406ri9JtpIIk8a-AchA";
 var countries = [];
 var layer;
 
 function init() {
-
   loadScript();
 
   $('.latitude, .longitude').numericInput();
@@ -28,21 +26,6 @@ function init() {
       $parent.find('.latitude, .longitude').addClass('fieldError');
     }
   });
-
-  $("select").select2({
-    width: '100%'
-  })
-
-  $(".selectLocationLevel").select2({
-      placeholder: "Select a location level",
-      width: '100%'
-  })
-
-  // validate if regions list is empty
-  /*
-   * if($(".selectWrapper").find(".locationLevel").length > 0) { $(".map").show('slow', function() { }); } else {
-   * $(".map").hide(); }
-   */
 
   /* Declaring Events */
   attachEvents();
@@ -762,16 +745,46 @@ function showMarkers() {
 
 // open info window with the form
 function openInfoWindowForm(e) {
-  console.log(e.latLng);
+
+  resetInfoWindow();
   var content;
   content = $("#infoWrapper").html();
   infoWindow.setContent([
     content
   ].join(''));
-// var currentlatlng = new google.maps.LatLng(e.lat, e.lng);
-// console.log(currentlatlng);
   infoWindow.open(map);
   infoWindow.setPosition(e.latLng);
+  // Init select2
+  $("select").select2();
+  if($("select").hasClass("select2-hidden-accessible")) {
+    $("select").select2('destroy');
+    $('select').select2({
+      width: '100%'
+    });
+    $("select").next().next().remove();
+  }
+  // Set latLng
+  $("#inputFormWrapper").find("input.latitude").val(e.latLng.lat());
+  $("#inputFormWrapper").find("input.longitude").val(e.latLng.lng());
+  // Events
+  $("#locLevelSelect").on("change", function() {
+    var option = $(this).find("option:selected");
+    if(option.val() == "-1") {
+      resetInfoWindow();
+    } else {
+      if(option.val().split("-")[1] == "true") {
+        $("#inputFormWrapper").slideUp();
+        $(".yesnoQuestion").slideDown();
+      } else {
+        $(".yesnoQuestion").slideUp();
+        $(".selectLocations").hide();
+        $("#inputFormWrapper").slideDown();
+        $(".no-button-label").removeClass("radio-checked");
+        $(".yes-button-label").addClass("radio-checked");
+      }
+    }
+  });
+
   $(".no-button-label").on("click", function() {
     $(".yes-button-label").removeClass("radio-checked");
     $(this).addClass("radio-checked");
@@ -783,6 +796,14 @@ function openInfoWindowForm(e) {
     $(this).addClass("radio-checked");
     $(".selectLocations").slideUp("slow");
   });
+}
+
+function resetInfoWindow() {
+  $(".yesnoQuestion").hide();
+  $(".selectLocations").hide();
+  $("#inputFormWrapper").hide();
+  $(".no-button-label").removeClass("radio-checked");
+  $(".yes-button-label").addClass("radio-checked");
 }
 
 // Open info window for change the country name
