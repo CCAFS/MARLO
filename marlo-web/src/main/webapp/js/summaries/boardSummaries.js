@@ -27,6 +27,7 @@ function attachEvents() {
   $("input[name='cycle']").on(
       "change",
       function() {
+        $("select.reportYear").empty();
         if($(this).val() == "Planning") {
           $("select.reportYear").append(
               "<option value='" + $(".planningYear").text() + "' selected>" + $(".planningYear").text() + "</option>");
