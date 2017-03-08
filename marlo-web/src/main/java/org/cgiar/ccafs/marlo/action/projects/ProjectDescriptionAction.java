@@ -384,6 +384,10 @@ public class ProjectDescriptionAction extends BaseAction {
 
       transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
       Project history = (Project) auditLogManager.getHistory(transaction);
+      Map<String, String> specialList = new HashMap<>();
+      specialList.put(APConstants.PROJECT_FOCUSES_RELATION, "flagshipValue");
+
+      List<String> diffences = historyComparator.getDifferences(transaction, specialList, "project");
 
       if (history != null) {
         project = history;

@@ -77,6 +77,24 @@ public class AuditLogMySQLDao implements AuditLogDao {
 
   }
 
+
+  public Auditlog getAuditlog(String transactionID, IAuditLog auditLog) {
+
+    List<Auditlog> auditLogs =
+      dao.findAll("from " + Auditlog.class.getName() + " where transaction_id='" + transactionID + "' and ENTITY_ID="
+        + auditLog.getId() + " and ENTITY_NAME='" + auditLog.getClass().toString() + "'");
+
+    if (!auditLogs.isEmpty()) {
+
+      Auditlog log = auditLogs.get(0);
+
+      return log;
+
+    }
+    return null;
+
+  }
+
   @Override
   public List<Auditlog> getCompleteHistory(String transactionID) {
     List<Auditlog> auditLogs =

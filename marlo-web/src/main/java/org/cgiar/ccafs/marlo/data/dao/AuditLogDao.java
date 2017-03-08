@@ -32,6 +32,8 @@ public interface AuditLogDao {
 
   public Auditlog getAuditlog(String transactionID);
 
+  public Auditlog getAuditlog(String transactionID, IAuditLog auditLog);
+
   public List<Auditlog> getCompleteHistory(String transactionID);
 
   /**
