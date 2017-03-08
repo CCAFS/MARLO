@@ -28,6 +28,8 @@ import com.google.inject.ImplementedBy;
 public interface AuditLogManager {
 
 
+  public Auditlog getAuditlog(String transactionID);
+
   public List<Auditlog> getCompleteHistory(String transactionID);
 
   /**
@@ -48,5 +50,4 @@ public interface AuditLogManager {
    */
 
   public List<Auditlog> listLogs(Class classAudit, long id, String actionName);
-
 }

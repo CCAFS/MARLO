@@ -30,6 +30,7 @@ import com.google.inject.ImplementedBy;
 @ImplementedBy(AuditLogMySQLDao.class)
 public interface AuditLogDao {
 
+  public Auditlog getAuditlog(String transactionID);
 
   public List<Auditlog> getCompleteHistory(String transactionID);
 

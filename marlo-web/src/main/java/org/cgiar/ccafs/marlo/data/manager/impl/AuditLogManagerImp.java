@@ -36,6 +36,11 @@ public class AuditLogManagerImp implements AuditLogManager {
   }
 
   @Override
+  public Auditlog getAuditlog(String transactionID) {
+    return auditLogDao.getAuditlog(transactionID);
+  }
+
+  @Override
   public List<Auditlog> getCompleteHistory(String transactionID) {
     return auditLogDao.getCompleteHistory(transactionID);
   }
@@ -55,5 +60,4 @@ public class AuditLogManagerImp implements AuditLogManager {
   public List<Auditlog> listLogs(Class classAudit, long id, String actionName) {
     return auditLogDao.listLogs(classAudit, id, actionName);
   }
-
 }
