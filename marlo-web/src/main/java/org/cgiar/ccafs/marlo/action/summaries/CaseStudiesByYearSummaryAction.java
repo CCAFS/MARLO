@@ -221,9 +221,6 @@ public class CaseStudiesByYearSummaryAction extends BaseAction implements Summar
 
     Long id = null;
 
-    String title = "", outcomeStatement = "", researchOutputs = "", researchPartners = "", activities = "",
-      nonResearchPartneres = "", outputUsers = "", evidenceOutcome = "", outputUsed = "", referencesCase = "",
-      explainIndicatorRelation = "", anex = "", owner = "", shared = "", indicators = "";
 
     if (caseStudyManager.findAll() != null) {
 
@@ -232,6 +229,9 @@ public class CaseStudiesByYearSummaryAction extends BaseAction implements Summar
 
       if (!caseStudies.isEmpty()) {
         for (CaseStudy caseStudy : caseStudies) {
+          String title = "", outcomeStatement = "", researchOutputs = "", researchPartners = "", activities = "",
+            nonResearchPartneres = "", outputUsers = "", evidenceOutcome = "", outputUsed = "", referencesCase = "",
+            explainIndicatorRelation = "", anex = "", owner = "", shared = "", indicators = "";
 
           id = caseStudy.getId();
 

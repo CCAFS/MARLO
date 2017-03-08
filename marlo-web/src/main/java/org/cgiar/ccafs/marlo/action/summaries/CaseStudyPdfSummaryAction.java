@@ -219,9 +219,6 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
 
     Long id = null;
 
-    String title = "", outcomeStatement = "", researchOutputs = "", researchPartners = "", activities = "",
-      nonResearchPartneres = "", outputUsers = "", evidenceOutcome = "", outputUsed = "", referencesCase = "",
-      explainIndicatorRelation = "", anex = "", owner = "", shared = "", indicators = "", year = "";
 
     if (caseStudyManager.findAll() != null) {
 
@@ -230,7 +227,9 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
 
       if (!caseStudies.isEmpty()) {
         for (CaseStudy caseStudy : caseStudies) {
-
+          String title = "", outcomeStatement = "", researchOutputs = "", researchPartners = "", activities = "",
+            nonResearchPartneres = "", outputUsers = "", evidenceOutcome = "", outputUsed = "", referencesCase = "",
+            explainIndicatorRelation = "", anex = "", owner = "", shared = "", indicators = "", year = "";
           id = caseStudy.getId();
 
           year = String.valueOf(caseStudy.getYear());
