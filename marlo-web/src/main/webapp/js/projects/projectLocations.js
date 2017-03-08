@@ -453,16 +453,9 @@ function removeLocationItem() {
   mappingCountries();
 }
 
-// Update indexes
 function updateIndex() {
-  var name = $("#locationLevelName").val();
-  $(".selectWrapper").find('.locationLevel').each(function(i,item) {
-    var customName = name + '[' + i + ']';
-    $(item).find('.locationLevelId').attr('name', customName + '.id');
-    $(item).find('.locationLevelName').attr('name', customName + '.name');
-    $(item).find('.allCountries').attr('name', customName + '.allCountries');
-    $(item).find('.isList').attr('name', customName + '.isList');
-    updateLocationIndex(item, customName);
+  $('.selectWrapper ').find('.locationLevel').each(function(i,e) {
+    $(e).setNameIndexes(1, i);
   });
   // Update component event
   $(document).trigger('updateComponent');
@@ -862,6 +855,7 @@ function formWindowEvents() {
                 countries.push(locIso);
               });
               infoWindow.close();
+              layer.setMap(null);
               mappingCountries();
             } else {
               console.log("no existe");
@@ -982,7 +976,6 @@ function mappingCountries() {
     console.log(FT_Options);
     layer = new google.maps.FusionTablesLayer(FT_Options);
     layer.setMap(map);
-    google.maps.event.trigger(map, 'resize');
   }
 
 }

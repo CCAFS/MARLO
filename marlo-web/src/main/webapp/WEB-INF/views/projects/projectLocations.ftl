@@ -171,13 +171,15 @@
   <div id="locationLevel-${template?string('template',index)}" class="locationLevel col-md-12" style="display:${template?string('none','block')}">
     [#-- header element --]
     <h5 class="sectionSubTitle">${(element.name)!}:
-      <span class="allCountriesQuestion" style="display:${list?string('inline-block','none')}">
-        <span class="">[@s.text name="projectLocations.selectAllSites" /] </span>
-        [@customForm.yesNoInput name="${customName}.allCountries"  editable=editable inverse=false  cssClass="allCountries text-center" /]
-      </span>
+    [#-- Remove --]
+   [#if editable]<span class="listButton remove removeLocationLevel pull-right" style="padding: 0 5px 3px 5px;">[@s.text name="form.buttons.remove" /] location level</span>[/#if]
     </h5>
     <div class=" locationLevel-optionContent " listname="${customName}.locElements">
-      
+      <span class="allCountriesQuestion" style="display:${list?string('inline-block','none')}">
+        <span class="">[@s.text name="Is this project working on all " /][#if element?has_content && element.name?contains("Country")]countries[#else]climate smart village sites[/#if] ?</span>
+        [@customForm.yesNoInput name="${customName}.allCountries"  editable=editable inverse=false  cssClass="allCountries text-center" /]
+        <hr />
+      </span>
       [#-- Content of locations--]
       <div class="optionSelect-content row">
         [#if element.locElements?has_content]
