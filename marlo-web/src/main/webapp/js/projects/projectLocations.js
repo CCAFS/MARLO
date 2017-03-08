@@ -766,36 +766,111 @@ function openInfoWindowForm(e) {
   // Set latLng
   $("#inputFormWrapper").find("input.latitude").val(e.latLng.lat());
   $("#inputFormWrapper").find("input.longitude").val(e.latLng.lng());
-  // Events
-  $("#locLevelSelect").on("change", function() {
-    var option = $(this).find("option:selected");
-    if(option.val() == "-1") {
-      resetInfoWindow();
-    } else {
-      if(option.val().split("-")[1] == "true") {
-        $("#inputFormWrapper").slideUp();
-        $(".yesnoQuestion").slideDown();
-      } else {
-        $(".yesnoQuestion").slideUp();
-        $(".selectLocations").hide();
-        $("#inputFormWrapper").slideDown();
-        $(".no-button-label").removeClass("radio-checked");
-        $(".yes-button-label").addClass("radio-checked");
-      }
-    }
-  });
 
+  // Events
+  formWindowEvents();
+
+}
+
+function formWindowEvents() {
+// Events
+  $("#locLevelSelect").on(
+      "change",
+      function() {
+        var option = $(this).find("option:selected");
+        if(option.val() == "-1") {
+          $("#addLocationButton").hide("slow");
+          resetInfoWindow();
+        } else {
+          $("#addLocationButton").show("slow");
+          if(option.val().split("-")[1] == "true") {
+            // LocElements options using ajax
+            var select = $(".selectList select");
+            var url = baseURL + "/searchCountryListPL.do";
+            var data = {
+              parentId: option.val().split("-")[0]
+            };
+            $.ajax({
+                url: url,
+                type: 'GET',
+                dataType: "json",
+                data: data
+            }).done(
+                function(m) {
+                  console.log(m);
+                  select.empty();
+                  for(var i = 0; i < m.locElements.length; i++) {
+                    select.append("<option value='" + m.locElements[i].id + "-" + m.locElements[i].isoAlpha2 + "-"
+                        + m.locElements[i].name + "' >" + m.locElements[i].name + "</option>");
+                  }
+                });
+            $("#inputFormWrapper").slideUp();
+            $(".yesnoQuestion").slideDown();
+          } else {
+            $(".yesnoQuestion").slideUp();
+            $(".selectLocations").hide();
+            $("#inputFormWrapper").slideDown();
+            $(".no-button-label").removeClass("radio-checked");
+            $(".yes-button-label").addClass("radio-checked");
+          }
+        }
+      });
+
+  // Yes-no button
   $(".no-button-label").on("click", function() {
     $(".yes-button-label").removeClass("radio-checked");
     $(this).addClass("radio-checked");
     $(".selectLocations").slideDown("slow");
   });
-
   $(".yes-button-label").on("click", function() {
     $(".no-button-label").removeClass("radio-checked");
     $(this).addClass("radio-checked");
     $(".selectLocations").slideUp("slow");
   });
+
+  // Add location button
+  $("#addLocationButton").on(
+      "click",
+      function(e) {
+        console.log($(".selectList select").val());
+        var $locationLevelSelect = $("#locLevelSelect");
+        var locationId = $locationLevelSelect.val().split("-")[0];
+        var locationIsList = $locationLevelSelect.val().split("-")[1];
+        var locationName = $locationLevelSelect.val().split("-")[2];
+        // checking if is list
+        if(locationIsList == "true") {
+          var $locationSelect = $(".selectList select");
+          // Checking if locations select is empty
+          if($locationSelect.val() != null) {
+            // Checking if the location level exist in the bottom wrapper
+            if($(".selectWrapper").find("input.locationLevelId[value='" + locationId + "']").exists()) {
+              var locationContent =
+                  $(".selectWrapper").find("input.locationLevelId[value='" + locationId + "']").parent().find(
+                      ".optionSelect-content");
+              console.log(locationContent);
+              $.each($locationSelect.val(), function(i,e) {
+                var $item = $("#location-template").clone(true).removeAttr("id");
+                var locId = e.split("-")[0];
+                var locIso = e.split("-")[1];
+                var locName = e.split("-")[2];
+                $item.find(".lName").html(locName);
+                $item.find(".locElementName").val(locName);
+                $item.find(".locElementId").val(locId);
+                $item.find(".locElementCountry").val(locIso);
+                locationContent.append($item);
+                $item.show("slow");
+                countries.push(locIso);
+              });
+              infoWindow.close();
+              mappingCountries();
+            } else {
+              console.log("no existe");
+            }
+          }
+        } else {
+
+        }
+      });
 }
 
 function resetInfoWindow() {
@@ -904,8 +979,10 @@ function mappingCountries() {
           }
         ]
     };
+    console.log(FT_Options);
     layer = new google.maps.FusionTablesLayer(FT_Options);
     layer.setMap(map);
+    google.maps.event.trigger(map, 'resize');
   }
 
 }

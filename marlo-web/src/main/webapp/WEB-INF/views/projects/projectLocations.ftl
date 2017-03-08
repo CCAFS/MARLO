@@ -148,7 +148,7 @@
   </div>
   <div class="selectLocations panel tertiary col-md-12"  style="display:none">
     <div class="panel-body">
-      [@customForm.select name="" label="" required=true  i18nkey="Select location(s)" listName="" keyFieldName="id"  displayFieldName="composedName" className="" value="" /]
+      [@customForm.select name="" label="" required=true  i18nkey="Select location(s)" multiple=true listName="" keyFieldName="id"  displayFieldName="composedName" className="" value="" /]
     </div>
   </div>
   [#-- Form 2 --]
@@ -158,7 +158,9 @@
     <div class="longitudeWrapper"><label for="">Longitude:</label><input placeholder="Longitude" class="longitude form-control " type="text" readOnly=true /></div>
   </div>
   [#-- Button --]
-  <a id="" class=" addButton pull-right"  href="#" style="display:none; margin-top:25px;">[@s.text name="Map out" /]</a>
+  <div>
+    <span id="addLocationButton" class=" addButton pull-right" style="display:none; margin-top:10px; border-radius:8px;">[@s.text name="Map out" /]</span>
+  </div>
 </div>
   
 [#include "/WEB-INF/global/pages/footer.ftl"]

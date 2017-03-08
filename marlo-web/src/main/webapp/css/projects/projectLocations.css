@@ -84,7 +84,7 @@
 }
 
 .map {
-    height: 370px;
+    height: 400px;
     margin-bottom: 30px;
     margin-top: 15px;
 }
@@ -241,4 +241,8 @@ span.allCountriesQuestion {
 
 .allCountriesQuestion span {
     display: inline-block;
+}
+
+.selectLocations {
+    max-width: 450px;
 }
