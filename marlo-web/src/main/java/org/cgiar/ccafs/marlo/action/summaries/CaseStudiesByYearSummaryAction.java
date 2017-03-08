@@ -229,9 +229,10 @@ public class CaseStudiesByYearSummaryAction extends BaseAction implements Summar
 
       if (!caseStudies.isEmpty()) {
         for (CaseStudy caseStudy : caseStudies) {
-          String title = "", outcomeStatement = "", researchOutputs = "", researchPartners = "", activities = "",
-            nonResearchPartneres = "", outputUsers = "", evidenceOutcome = "", outputUsed = "", referencesCase = "",
-            explainIndicatorRelation = "", anex = "", owner = "", shared = "", indicators = "";
+          String title = null, outcomeStatement = null, researchOutputs = null, researchPartners = null,
+            activities = null, nonResearchPartneres = null, outputUsers = null, evidenceOutcome = null,
+            outputUsed = null, referencesCase = null, explainIndicatorRelation = null, anex = null, owner = null,
+            shared = null, indicators = null;
 
           id = caseStudy.getId();
 
@@ -365,7 +366,8 @@ public class CaseStudiesByYearSummaryAction extends BaseAction implements Summar
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("CaseStudiesSummary_");
+    fileName.append("OutcomesCaseStudies-");
+    fileName.append(this.year + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
 

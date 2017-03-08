@@ -396,11 +396,13 @@ public class ProjectHighlightsExcelSummaryAction extends BaseAction implements S
           e.printStackTrace();
           url = null;
           imageurl = null;
+          image = null;
         }
         if (url != null && url.exists()) {
 
         } else {
           imageurl = null;
+          image = null;
         }
       }
 
