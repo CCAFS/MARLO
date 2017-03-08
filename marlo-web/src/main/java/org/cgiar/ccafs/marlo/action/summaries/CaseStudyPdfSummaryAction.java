@@ -219,9 +219,6 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
 
     Long id = null;
 
-    String title = "", outcomeStatement = "", researchOutputs = "", researchPartners = "", activities = "",
-      nonResearchPartneres = "", outputUsers = "", evidenceOutcome = "", outputUsed = "", referencesCase = "",
-      explainIndicatorRelation = "", anex = "", owner = "", shared = "", indicators = "", year = "";
 
     if (caseStudyManager.findAll() != null) {
 
@@ -230,7 +227,10 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
 
       if (!caseStudies.isEmpty()) {
         for (CaseStudy caseStudy : caseStudies) {
-
+          String title = null, outcomeStatement = null, researchOutputs = null, researchPartners = null,
+            activities = null, nonResearchPartneres = null, outputUsers = null, evidenceOutcome = null,
+            outputUsed = null, referencesCase = null, explainIndicatorRelation = null, anex = null, owner = null,
+            shared = null, indicators = null, year = null;
           id = caseStudy.getId();
 
           year = String.valueOf(caseStudy.getYear());
@@ -366,10 +366,10 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("CaseStudiesSummaryPDF_");
+    fileName.append("OutcomesCaseStudies-");
+    fileName.append(this.year + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".pdf");
-
     return fileName.toString();
 
   }

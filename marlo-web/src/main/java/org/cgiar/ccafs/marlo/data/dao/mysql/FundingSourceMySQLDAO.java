@@ -105,7 +105,7 @@ public class FundingSourceMySQLDAO implements FundingSourceDAO {
   public List<FundingSource> searchFundingSources(String query, int year, long crpID) {
     StringBuilder q = new StringBuilder();
     q.append("from " + FundingSource.class.getName());
-    q.append(" where crp_id=" + crpID + " and (description like '%" + query + "%' ");
+    q.append(" where crp_id=" + crpID + " and (title like '%" + query + "%' ");
     q.append("OR id like '%" + query + "%') and is_active=1 and crp_id=" + crpID + " and ( type=1)");
 
     List<FundingSource> fundingSources = dao.findAll(q.toString());
@@ -119,8 +119,8 @@ public class FundingSourceMySQLDAO implements FundingSourceDAO {
   public List<FundingSource> searchFundingSourcesByInstitution(String query, long institutionID, int year, long crpID) {
     StringBuilder q = new StringBuilder();
     q.append("from " + FundingSource.class.getName());
-    q.append(" where is_active=1 and description like '%" + query + "%' ");
-    q.append("OR id like '%" + query + "%' and crp_id=" + crpID);
+    q.append(" where is_active=1 and (title like '%" + query + "%' ");
+    q.append("OR id like '%" + query + "%'  ) and crp_id=" + crpID);
 
 
     List<FundingSource> fundingSources = dao.findAll(q.toString());
@@ -130,8 +130,11 @@ public class FundingSourceMySQLDAO implements FundingSourceDAO {
       try {
         if (fundingSource.getEndDate() != null) {
           if (year <= Integer.parseInt(df.format(fundingSource.getEndDate()))) {
-
-            if (fundingSource.hasInstitution(institutionID)) {
+            if (fundingSource.getBudgetType().getId().intValue() != 1) {
+              if (fundingSource.hasInstitution(institutionID)) {
+                fundingSourcesReturn.add(fundingSource);
+              }
+            } else {
               fundingSourcesReturn.add(fundingSource);
             }
           }

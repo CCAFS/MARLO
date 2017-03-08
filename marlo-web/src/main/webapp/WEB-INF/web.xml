@@ -63,19 +63,24 @@
     <url-pattern>/*</url-pattern>
   </filter-mapping>
 
-  <filter>
-    <filter-name>struts2</filter-name>
-    <filter-class>
-      org.apache.struts2.dispatcher.ng.filter.StrutsPrepareAndExecuteFilter
-    </filter-class>
-  </filter>
-  <filter-mapping>
-    <filter-name>struts2</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping> 
+	<filter>
+		<filter-name>struts2</filter-name>
+		<filter-class>
+			org.apache.struts2.dispatcher.ng.filter.StrutsPrepareAndExecuteFilter
+		</filter-class>
+		<init-param>
+      <param-name>actionPackages</param-name>
+      <param-value>com.concretepage.action</param-value>
+    </init-param> 
+	</filter>
+	<filter-mapping>
+		<filter-name>struts2</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping> 
   
-  <!-- SSL settings. only allow HTTPS access to JIRA -->
-    <!-- 
+  <!-- SSL settings. only allow HTTPS access to JIRA -->  
+    <!--
+       
   <security-constraint>
     <web-resource-collection>
       <web-resource-name>Entire Application</web-resource-name>
