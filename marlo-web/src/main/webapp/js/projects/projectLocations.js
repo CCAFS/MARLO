@@ -34,7 +34,6 @@ function init() {
   $("input[value='Country']").parents(".locationLevel").find(".locElement").each(function(i,e) {
     countries.push($(e).find(".locElementCountry").val());
   });
-  // calculateWidthSelect();
 }
 
 function attachEvents() {
@@ -118,9 +117,6 @@ function attachEvents() {
     }
   });
 
-  $("#view1").on("click", changeLayout2);
-  $("#view2").on("click", changeLayout);
-
   $('.projectLocationsWrapper .button-label').on('click', function() {
     var $t = $(this).parent().find('input.onoffswitch-radio');
     var value = ($(this).hasClass('yes-button-label'));
@@ -144,42 +140,6 @@ function attachEvents() {
 }
 
 // FUNCTIONS
-
-// Changes layout
-function changeLayout() {
-  var selectWrapper = $("#selectsContent");
-  var map = $(".map")
-  map.insertAfter("#selectsContent");
-  selectWrapper.removeClass("col-md-12").addClass("col-md-6");
-  selectWrapper.removeClass("selectWrapper-horizontal");
-  map.removeClass("col-md-12").addClass("col-md-6");
-  selectWrapper.find(".locationLevel").removeClass("locationLevel-horizontal").addClass("col-md-12");
-  selectWrapper.find(".selectWrapper").removeClass("select-horizontal");
-  selectWrapper.find(".selectWrapper").css("width", "auto");
-  // calculateWidthSelect();
-  initMap();
-  showMarkers();
-}
-
-function changeLayout2() {
-  var selectWrapper = $("#selectsContent");
-  var map = $(".map")
-  selectWrapper.insertAfter(".map");
-  selectWrapper.removeClass("col-md-6").addClass("col-md-12");
-  selectWrapper.addClass("selectWrapper-horizontal");
-  map.removeClass("col-md-6").addClass("col-md-12");
-  selectWrapper.find(".locationLevel").removeClass("col-md-12").addClass("locationLevel-horizontal");
-  selectWrapper.find(".selectWrapper").addClass("select-horizontal");
-  calculateWidthSelect();
-  initMap();
-  showMarkers();
-}
-
-// Change width of selectWrapper
-function calculateWidthSelect() {
-  var widthSelect = ($("form .locationLevel").length) * 395;
-  $(".select-horizontal").css("width", widthSelect + "px");
-}
 
 function checkboxAllCountries() {
   $(this).val(true);
@@ -211,57 +171,6 @@ function checkboxAllCountries() {
         })
   }
   updateIndex();
-}
-
-// Add a location by select list
-function addLocationList(parent,option) {
-  var latitude = "";
-  var longitude = "";
-  var locElementId = $(option).val().split("-")[0];
-  var locElementIsoAlpha = $(option).val().split("-")[1];
-  /* GET COORDINATES */
-  var url = baseURL + "/geopositionByElement.do";
-  var data = {
-    "locElementID": locElementId
-  };
-
-  if(locElementId != "-1") {
-    countID++;
-    var $list = parent.find(".optionSelect-content");
-    var $item = $('#location-template').clone(true).removeAttr("id");
-    $.ajax({
-        url: url,
-        type: 'GET',
-        dataType: "json",
-        data: data
-    }).done(function(m) {
-      if(m.geopositions.length != 0) {
-        console.log(m);
-        latitude = m.geopositions[0].latitude;
-        longitude = m.geopositions[0].longitude;
-        $item.find('.geoLatitude').val(latitude);
-        $item.find('.geoLongitude').val(longitude);
-        addMarker(map, (countID), parseFloat(latitude), parseFloat(longitude), option.html(), "true");
-      }
-    });
-
-    /** Mapping if is country * */
-    var locLevelName = $(option).parents(".locationLevel").find(".locationLevelName").val();
-    if(locLevelName == "Country") {
-      layer.setMap(null);
-      countries.push(locElementIsoAlpha); // --------------------------------------------------------------------------------------------------------------------------------------------------------
-      mappingCountries();
-    }
-    $item.attr("id", "location-" + (countID));
-    $item.find('.locationName').html(option.html());
-    $item.find('.locElementId').val(locElementId);
-    $item.find('.locElementName').val(option.html());
-    $item.find('.locElementCountry').val(locElementIsoAlpha);
-    $list.append($item);
-    // updateAllIndexes();
-    $item.show('slow');
-    updateIndex();
-  }
 }
 
 // Add a location by coordinates inputs
@@ -344,7 +253,6 @@ function removeLocationLevelItem() {
   $item.hide(function() {
     $item.remove();
     updateIndex();
-    calculateWidthSelect();
   });
 }
 
@@ -700,18 +608,20 @@ function formWindowEvents() {
                   console.log(m);
                   select.empty();
                   for(var i = 0; i < m.locElements.length; i++) {
-                    select.append("<option value='" + m.locElements[i].id + "-" + m.locElements[i].isoAlpha2 + "-"
-                        + m.locElements[i].name + "' >" + m.locElements[i].name + "</option>");
+                    select.append("<option class='" + m.locElements[i].isoAlpha2 + "' value='" + m.locElements[i].id
+                        + "-" + m.locElements[i].isoAlpha2 + "-" + m.locElements[i].name + "' >"
+                        + m.locElements[i].name + "</option>");
+                  }
+                  if($("#locLevelSelect").val().split("-")[2] == "Country") {
+                    console.log("asdadsd");
+                    setCountryDefault();
                   }
                 });
             $("#inputFormWrapper").slideUp();
-            $(".yesnoQuestion").slideDown();
+            $(".selectLocations").slideDown();
           } else {
-            $(".yesnoQuestion").slideUp();
-            $(".selectLocations").hide();
+            $(".selectLocations").slideUp();
             $("#inputFormWrapper").slideDown();
-            $(".no-button-label").removeClass("radio-checked");
-            $(".yes-button-label").addClass("radio-checked");
           }
         }
       });
@@ -751,6 +661,32 @@ function formWindowEvents() {
     } else {
 
     }
+  });
+}
+
+// Set default country to countries select
+function setCountryDefault() {
+// Ajax for country name
+  $.ajax({
+      'url': 'https://maps.googleapis.com/maps/api/geocode/json',
+      'data': {
+          key: GOOGLE_API_KEY,
+          latlng: (infoWindow.getPosition().lat() + "," + infoWindow.getPosition().lng())
+      },
+      success: function(data) {
+        console.log(data);
+        if(data.status == 'OK') {
+          var country = getResultByType(data.results[0], 'country').short_name;
+          var $countrySelect = $(".selectList select");
+          console.log($countrySelect.find("option." + country).val());
+          $countrySelect.val([
+            $countrySelect.find("option." + country).val()
+          ]);
+          $countrySelect.select2().trigger("change");
+        } else {
+          console.log(data.status);
+        }
+      },
   });
 }
 
@@ -822,11 +758,8 @@ function addCountryIntoLocLevel(locationId,$locationSelect,locationName) {
 }
 
 function resetInfoWindow() {
-  $(".yesnoQuestion").hide();
   $(".selectLocations").hide();
   $("#inputFormWrapper").hide();
-  $(".no-button-label").removeClass("radio-checked");
-  $(".yes-button-label").addClass("radio-checked");
 }
 
 // Open info window for change the country name
@@ -909,7 +842,6 @@ function mappingCountries() {
         query = query + "'" + c + "',";
       }
     });
-
     console.log(query);
     var FT_Options = {
         suppressInfoWindows: true,

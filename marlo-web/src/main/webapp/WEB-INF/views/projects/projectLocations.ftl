@@ -143,13 +143,8 @@
     [/#list]
   </select>
   </div>
-  <div class=" form-group yesnoQuestion" style="display:none">
-    [@customForm.yesNoInput name="isBranch" label="Is this project working in all locations?"  inverse=false value="" cssClass="text-left " value="true" /]
-  </div>
-  <div class="selectLocations panel tertiary col-md-12"  style="display:none">
-    <div class="panel-body">
-      [@customForm.select name="" label="" required=true  i18nkey="Select location(s)" multiple=true listName="" keyFieldName="id"  displayFieldName="composedName" className="" value="" /]
-    </div>
+  <div class="selectLocations" >
+    [@customForm.select name="" label="" required=true  i18nkey="Select location(s)" multiple=true listName="" keyFieldName="id"  displayFieldName="composedName" className="" value="" /]
   </div>
   [#-- Form 2 --]
   <div id="inputFormWrapper" style="display:none; width: 450px;">
