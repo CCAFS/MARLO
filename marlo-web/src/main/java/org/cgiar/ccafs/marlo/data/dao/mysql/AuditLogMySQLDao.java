@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.utils.IntegerTypeAdapter;
 import org.cgiar.ccafs.marlo.utils.LongTypeAdapter;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -60,6 +61,31 @@ public class AuditLogMySQLDao implements AuditLogDao {
   }
 
 
+  public Auditlog getAuditlog(String transactionID) {
+
+    List<Auditlog> auditLogs =
+      dao.findAll("from " + Auditlog.class.getName() + " where transaction_id='" + transactionID + "' and main=1");
+
+    if (!auditLogs.isEmpty()) {
+
+      Auditlog log = auditLogs.get(0);
+
+      return log;
+
+    }
+    return null;
+
+  }
+
+  @Override
+  public List<Auditlog> getCompleteHistory(String transactionID) {
+    List<Auditlog> auditLogs =
+      dao.findAll("from " + Auditlog.class.getName() + " where transaction_id='" + transactionID + "'");
+    return auditLogs;
+
+  }
+
+
   @Override
   public IAuditLog getHistory(String transactionID) {
 
@@ -75,6 +101,23 @@ public class AuditLogMySQLDao implements AuditLogDao {
 
     }
     return null;
+
+  }
+
+  @Override
+  public List<Auditlog> getHistoryBefore(String transactionID) {
+
+    List<Auditlog> logs = new ArrayList<Auditlog>();
+    Auditlog principal = this.getAuditlog(transactionID);
+
+    List<Auditlog> auditLogs = dao.findAll("from " + Auditlog.class.getName() + " where transaction_id !='"
+      + transactionID + "' and main=1" + " and DETAIL='" + principal.getDetail() + "' ORDER BY CREATED_DATE desc");
+
+    if (!auditLogs.isEmpty()) {
+      logs.addAll(this.getCompleteHistory(auditLogs.get(0).getTransactionId()));
+    }
+
+    return logs;
 
   }
 

@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -31,6 +31,8 @@ import com.google.inject.ImplementedBy;
 public interface AuditLogDao {
 
 
+  public List<Auditlog> getCompleteHistory(String transactionID);
+
   /**
    * Get the element history from AuditLog
    * 
@@ -38,6 +40,8 @@ public interface AuditLogDao {
    * @return the histoy objet
    */
   public IAuditLog getHistory(String transactionID);
+
+  public List<Auditlog> getHistoryBefore(String transactionID);
 
   /**
    * List of AuditLogs from the class of parameter that has the entity id
