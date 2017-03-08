@@ -121,9 +121,9 @@
 [#--<script src="https://maps.googleapis.com/maps/api/js?key=${config.googleApiKey}&callback=initMap"></script>--]
 
 [#-- Section hidden inputs--]
-[@locationLevel element={} name="" index=0 template=true /]
+[@locationLevel element={} name="${locationLevelName}" index=-1 template=true /]
 
-[@locationMacro element={} name="" index=0 template=true /]
+[@locationMacro element={} name="${locationLevelName}[-1].${locationName}" index=-1 template=true /]
 
 <input type="hidden" id="locationLevelName" value="${locationLevelName}" />
 <input type="hidden" id="locationName" value="${locationName}" />
@@ -170,7 +170,10 @@
   [#-- Content collapsible--]
   <div id="locationLevel-${template?string('template',index)}" class="locationLevel col-md-12" style="display:${template?string('none','block')}">
     [#-- header element --]
-    <h5 class="sectionSubTitle">${(element.name)!}:
+    <h5 class="sectionSubTitle">
+    <span class="locLevelName">
+      ${(element.name)!}:
+    </span> 
     [#-- Remove --]
    [#if editable]<span class="listButton remove removeLocationLevel pull-right" style="padding: 0 5px 3px 5px;">[@s.text name="form.buttons.remove" /] location level</span>[/#if]
     </h5>
