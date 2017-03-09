@@ -316,6 +316,10 @@ table.default a{
     text-decoration: none;
 }
 
+.changedField label, .changedField p{
+  color: #7fb06f !important;
+}
+
 label.readOnly {
   cursor: initial;
 }
@@ -5777,7 +5781,7 @@ h4.testEnvironment {
   border: 1px solid #ccc;
 }
 
-.history-mode {background: #95a5a6;color: #fff;padding: 13px 0 6px 0;font-size: 1.2em;border-radius: 4px;font-weight: lighter;}
+.history-mode {background: #95a5a6;color: #fff;padding: 13px 0 6px 0;font-size: 1.2em;border-radius: 4px;font-weight: lighter;margin-bottom: 10px;}
 
 .history-mode a {
   color: #fff;
