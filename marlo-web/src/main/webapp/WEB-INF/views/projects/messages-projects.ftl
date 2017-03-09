@@ -14,6 +14,8 @@
           [@s.param]<a href="[@s.url][@s.param name="projectID" value=projectID /][@s.param name="edit" value="true"/][/@s.url]">here</a>[/@s.param]
          [/@s.text]
       </p>
+      
+      <p>${differences!}</p>
     [/#if]
   </div>
 [/#if]
