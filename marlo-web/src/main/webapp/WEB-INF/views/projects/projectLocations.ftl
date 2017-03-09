@@ -69,12 +69,12 @@
           </div>
           <div id="" class="borderBox projectLocationsWrapper">
             [#-- Content--]
-              
-              [#-- [#if editable]
-              <div class="text-center col-md-12  alert alert-info"><span> [@s.text name="projectLocations.selectLocations" /] </span></div>
-              [/#if]
-               --]
               <div class="row">
+                <div class="col-md-12">
+                <b>NOTE: </b>
+                <span>To get a detailed information of a specific location please use the left click <span><img src="${baseUrl}/images/global/left-click.jpg" alt="" /></span>.</span>
+                <span>To add a new locations please right click <span><img src="${baseUrl}/images/global/right-click.jpg" alt="" /></span> in some specific location inside the map.</span>
+                </div>
                 <div  class="col-md-12 map">
                   <div id="map" class="col-md-12"></div>
                 </div>

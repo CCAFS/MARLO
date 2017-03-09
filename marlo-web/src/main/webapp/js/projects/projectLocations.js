@@ -38,44 +38,6 @@ function init() {
 
 function attachEvents() {
 
-// ADD a location element by select list-Event
-  $('.selectLocation').on('change', function() {
-    var option = $(this).find("option:selected");
-    var content = $(this).parent().find(".optionSelect-content");
-    if($(content).find("input[value=" + option.val() + "]").exists()) {
-      var text = option.html() + ' already exists in this list';
-      notify(text);
-    } else {
-      if(option.parents(".locationLevel").find(".locationLevelName").val() == "Country") {
-        // countries.push(option.text());
-        // mappingCountries();
-      }
-      addLocationList($(this).parent(), option);
-    }
-
-  });
-
-// ADD a location element by coordinates inputs list-Event
-  $('.addLocation').on('click', function() {
-    var latitude = $(this).parent().find(".latitude").val();
-    var longitude = $(this).parent().find(".longitude").val();
-    var name = $(this).parent().find(".name").val();
-    if(name != "") {
-      $(this).parent().find(".name").removeClass('fieldError');
-      if(latitude != "" && latitude != null && longitude != "" && longitude != null) {
-        if(isCoordinateValid(latitude, longitude)) {
-          console.log("here1");
-          addLocationForm($(this).parent().parent(), latitude, longitude, name);
-        }
-      } else {
-        addLocationForm($(this).parent().parent(), "", "", name);
-      }
-    } else {
-      $(this).parent().find(".name").addClass('fieldError');
-    }
-
-  });
-
   // Remove a location level element-Event
   $(".removeLocationLevel").on("click", removeLocationLevelItem);
 
@@ -84,24 +46,6 @@ function attachEvents() {
 
   // Checkbox to working in all regions
   $(".allCountries").on("change", checkboxAllCountries);
-
-  // Collapsible
-  $('.locationLevel-optionSelect').on(
-      'click',
-      function() {
-        var content = $(this).parent().parent().find('.locationLevel-optionContent');
-        if($(this).hasClass('closed')) {
-          content.slideDown();
-          $(this).parent().find(".collapsible").removeClass("glyphicon glyphicon-chevron-down").addClass(
-              "glyphicon glyphicon-chevron-up");
-          $(this).removeClass('closed').addClass('opened');
-        } else {
-          $(this).parent().find(".collapsible").removeClass("glyphicon glyphicon-chevron-up").addClass(
-              "glyphicon glyphicon-chevron-down");
-          $(this).removeClass('opened').addClass('closed');
-          content.slideUp();
-        }
-      });
 
   // Clicking location
   $('.locationName').on('click', function() {
@@ -171,58 +115,6 @@ function checkboxAllCountries() {
         })
   }
   updateIndex();
-}
-
-// Add a location by coordinates inputs
-function addLocationForm(parent,latitude,longitude,name) {
-  var countryName = "";
-  var $list = parent.find(".optionSelect-content");
-  var $item = $('#location-template').clone(true).removeAttr("id");
-  countID++;
-  if(latitude == "" && longitude == "") {
-    latitude = map.getCenter().lat();
-    longitude = map.getCenter().lng();
-  }
-  // Ajax for country name
-  $.ajax({
-      'url': 'https://maps.googleapis.com/maps/api/geocode/json',
-      'data': {
-          key: GOOGLE_API_KEY,
-          latlng: (latitude + "," + longitude)
-      },
-      success: function(data) {
-        if(data.status == 'OK') {
-          $item.find('input.locElementCountry').val(getResultByType(data.results[0], 'country').short_name);
-          countryName = getResultByType(data.results[0], 'country').long_name;
-          // ADD country into countries list
-          // countries.push(countryName);
-        } else {
-          console.log(data.status);
-        }
-      },
-      complete: function(data) {
-        $item.attr("id", "location-" + (countID));
-        $item.find('.locationName').html(
-            '<span class="lName">' + name + '</span><span class="lPos"> (' + parseFloat(latitude).toFixed(4) + ', '
-                + parseFloat(longitude).toFixed(4) + ' )</span> ');
-        $item.find('.geoLatitude').val(latitude);
-        $item.find('.geoLongitude').val(longitude);
-        $item.find('.locElementName').val(name);
-        $item.find('.locElementId').val(-1);
-        $list.append($item);
-        // updateAllIndexes();
-        $item.show('slow');
-        // empty input fields
-        parent.find(".latitude").val("");
-        parent.find(".longitude").val("");
-        parent.find(".name").val("");
-        // add marker
-        addMarker(map, (countID), parseFloat(latitude), parseFloat(longitude), name, "false");
-        // update indexes
-        updateIndex();
-      }
-  });
-
 }
 
 // Remove a location level element-Function
@@ -305,7 +197,6 @@ function loadScript() {
         var latitude = $(locItem).find(".geoLatitude").val();
         var longitude = $(locItem).find(".geoLongitude").val();
         var isList = $(locItem).parent().parent().parent().find(".isList").val();
-        console.log(isList);
         var site = $(locItem).find(".locElementName").val();
         var idMarker = $(locItem).attr("id").split("-")[1];
         if(latitude != "" && longitude != "" && latitude != 0 && longitude != 0) {
@@ -441,7 +332,6 @@ function initMap() {
 
   if(markers.length > 0) {
     map.setCenter(markers[markers.length - 1].getPosition());
-    // console.log(markers[markers.length - 1].getPosition());
   }
 
   mappingCountries();
@@ -605,7 +495,6 @@ function formWindowEvents() {
                 data: data
             }).done(
                 function(m) {
-                  console.log(m);
                   select.empty();
                   for(var i = 0; i < m.locElements.length; i++) {
                     select.append("<option class='" + m.locElements[i].isoAlpha2 + "' value='" + m.locElements[i].id
@@ -613,7 +502,6 @@ function formWindowEvents() {
                         + m.locElements[i].name + "</option>");
                   }
                   if($("#locLevelSelect").val().split("-")[2] == "Country") {
-                    console.log("asdadsd");
                     setCountryDefault();
                   }
                 });
@@ -640,26 +528,29 @@ function formWindowEvents() {
 
   // Add location button
   $("#addLocationButton").on("click", function(e) {
-    console.log($(".selectList select").val());
     var $locationLevelSelect = $("#locLevelSelect");
     var locationId = $locationLevelSelect.val().split("-")[0];
     var locationIsList = $locationLevelSelect.val().split("-")[1];
     var locationName = $locationLevelSelect.val().split("-")[2];
+    var $locationSelect = $(".selectList select");
     // checking if is list
     if(locationIsList == "true") {
-      var $locationSelect = $(".selectList select");
       // Checking if locations select is empty
       if($locationSelect.val() != null) {
         // Checking if the location level exist in the bottom wrapper
         if($(".selectWrapper").find("input.locationLevelId[value='" + locationId + "']").exists()) {
           addCountryIntoLocLevel(locationId, $locationSelect, locationName)
         } else {
-          console.log("no existe");
-          addLocLevel(locationName, locationId, locationIsList, $locationSelect);
+          addLocLevel(locationName, locationId, locationIsList, $locationSelect, locationIsList);
         }
       }
     } else {
-
+      // Checking if the location level exist in the bottom wrapper
+      if($(".selectWrapper").find("input.locationLevelId[value='" + locationId + "']").exists()) {
+        addLocByCoordinates(locationId, $locationSelect, locationName)
+      } else {
+        addLocLevel(locationName, locationId, locationIsList, $locationSelect, locationIsList);
+      }
     }
   });
 }
@@ -691,7 +582,7 @@ function setCountryDefault() {
 }
 
 // Adding location level with locElements
-function addLocLevel(locationName,locationId,locationIsList,$locationSelect) {
+function addLocLevel(locationName,locationId,locationIsList,$locationSelect,locationIsList) {
   var $locationItem = $("#locationLevel-template").clone(true).removeAttr("id");
   $locationItem.find(".locLevelName").html(locationName);
   $locationItem.find("input.locationLevelId").val(locationId);
@@ -701,7 +592,54 @@ function addLocLevel(locationName,locationId,locationIsList,$locationSelect) {
   $locationItem.find(".allCountriesQuestion").show();
   $locationItem.show("slow");
   updateIndex();
-  addCountryIntoLocLevel(locationId, $locationSelect, locationName);
+  if(locationIsList == "true") {
+    addCountryIntoLocLevel(locationId, $locationSelect, locationName);
+  } else {
+    addLocByCoordinates(locationId, $locationSelect, locationName);
+  }
+}
+
+function addLocByCoordinates(locationId,$locationSelect,locationName) {
+  var countryName = "";
+  var $list =
+      $(".selectWrapper").find("input.locationLevelId[value='" + locationId + "']").parent().find(
+          ".optionSelect-content");
+  var $item = $('#location-template').clone(true).removeAttr("id");
+  countID++;
+  var latitude = infoWindow.getPosition().lat()
+  var longitude = infoWindow.getPosition().lng();
+  var name = $("#inputFormWrapper").find("input.name").val();
+  // Ajax for country name
+  $.ajax({
+      'url': 'https://maps.googleapis.com/maps/api/geocode/json',
+      'data': {
+          key: GOOGLE_API_KEY,
+          latlng: (latitude + "," + longitude)
+      },
+      success: function(data) {
+        if(data.status == 'OK') {
+          $item.find('input.locElementCountry').val(getResultByType(data.results[0], 'country').short_name);
+        } else {
+          console.log(data.status);
+        }
+      },
+      complete: function(data) {
+        $item.attr("id", "location-" + (countID));
+        $item.find('.locationName').html(
+            '<span class="lName">' + name + '</span><span class="lPos"> (' + parseFloat(latitude).toFixed(4) + ', '
+                + parseFloat(longitude).toFixed(4) + ' )</span> ');
+        $item.find('.geoLatitude').val(latitude);
+        $item.find('.geoLongitude').val(longitude);
+        $item.find('.locElementName').val(name);
+        $item.find('.locElementId').val(-1);
+        $list.append($item);
+        $item.show('slow');
+        // add marker
+        addMarker(map, (countID), parseFloat(latitude), parseFloat(longitude), name, "false");
+        // update indexes
+        updateIndex();
+      }
+  });
 }
 
 // Adding locElement into location level(Country and CSVS)
@@ -709,7 +647,6 @@ function addCountryIntoLocLevel(locationId,$locationSelect,locationName) {
   var locationContent =
       $(".selectWrapper").find("input.locationLevelId[value='" + locationId + "']").parent().find(
           ".optionSelect-content");
-  console.log(locationContent);
   $.each($locationSelect.val(), function(i,e) {
     var $item = $("#location-template").clone(true).removeAttr("id");
     var locId = e.split("-")[0];
@@ -728,7 +665,6 @@ function addCountryIntoLocLevel(locationId,$locationSelect,locationName) {
         data: data
     }).done(function(m) {
       if(m.geopositions.length != 0) {
-        console.log(m);
         latitude = m.geopositions[0].latitude;
         longitude = m.geopositions[0].longitude;
         $item.find('.geoLatitude').val(latitude);
@@ -859,7 +795,6 @@ function mappingCountries() {
           }
         ]
     };
-    console.log(FT_Options);
     layer = new google.maps.FusionTablesLayer(FT_Options);
     layer.setMap(map);
   }
