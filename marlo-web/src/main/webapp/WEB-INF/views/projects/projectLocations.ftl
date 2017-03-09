@@ -157,11 +157,17 @@
     <span id="addLocationButton" class=" addButton pull-right" style="display:none; margin-top:10px; border-radius:8px;">[@s.text name="Map out" /]</span>
   </div>
 </div>
+
+[#-- Country and CMVS templates --]
+<span class="hidden qCountry">[@s.text name="projectLocations.selectAllCountries" /]</span>
+<span class="hidden qCmvSites">[@s.text name="projectLocations.selectAllCmvs" /]</span>
   
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
 [#macro locationLevel element  name index template=false list=false]
   [#local customName = "${name}[${index}]" /]
+  [#local countryQuestion = '[@s.text name="projectLocations.selectAllCountries" /]'/]
+  [#local cmvsQuestion = '[@s.text name="projectLocations.selectAllCmvs" /]'/]
   [#-- Content collapsible--]
   <div id="locationLevel-${template?string('template',index)}" class="locationLevel col-md-12" style="display:${template?string('none','block')}">
     [#-- header element --]
@@ -174,7 +180,7 @@
     </h5>
     <div class=" locationLevel-optionContent " listname="${customName}.locElements">
       <span class="allCountriesQuestion" style="display:${list?string('inline-block','none')}">
-        <span class="">[@s.text name="Is this project working on all " /][#if element?has_content && element.name?contains("Country")]countries[#else]climate smart village sites[/#if] ?</span>
+        <span class="question">[#if element?has_content && element.name?contains("Country")][@s.text name="projectLocations.selectAllCountries" /][#else][@s.text name="projectLocations.selectAllCmvs" /][/#if]</span>
         [@customForm.yesNoInput name="${customName}.allCountries"  editable=editable inverse=false  cssClass="allCountries text-center" /]
         <hr />
       </span>

@@ -588,6 +588,11 @@ function addLocLevel(locationName,locationId,locationIsList,$locationSelect,loca
   $locationItem.find("input.locationLevelId").val(locationId);
   $locationItem.find("input.locationLevelName").val(locationName);
   $locationItem.find("input.isList").val(locationIsList);
+  if(locationName == "Country") {
+    $locationItem.find("span.question").html($("span.qCountry").text());
+  } else {
+    $locationItem.find("span.question").html($("span.qCmvSites").text());
+  }
   $(".selectWrapper").append($locationItem);
   $locationItem.find(".allCountriesQuestion").show();
   $locationItem.show("slow");
