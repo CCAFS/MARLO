@@ -44,9 +44,6 @@ function attachEvents() {
 // Remove a location element-Event
   $(".removeLocation").on("click", removeLocationItem);
 
-  // Checkbox to working in all regions
-  $(".allCountries").on("change", checkboxAllCountries);
-
   // Clicking location
   $('.locationName').on('click', function() {
     $(".locations").removeClass("selected");
@@ -81,17 +78,30 @@ function attachEvents() {
     }
   });
 
+// Yes-no button
+  $(".no-button-label").on("click", function() {
+    $(this).parent().find(".yes-button-label").removeClass("radio-checked");
+    $(this).addClass("radio-checked");
+    $(this).parent().find("input").val(false);
+    checkAllCountries(this);
+  });
+  $(".yes-button-label").on("click", function() {
+    $(this).parent().find(".no-button-label").removeClass("radio-checked");
+    $(this).addClass("radio-checked");
+    $(this).parent().find("input").val(true);
+    checkAllCountries(this);
+  });
+
 }
 
 // FUNCTIONS
 
-function checkboxAllCountries() {
-  $(this).val(true);
-  var parent = $(this).parents(".locationLevel");
-  if($(this).is(":checked") == true) {
+function checkAllCountries($this) {
+  console.log($($this).parent().find("input").val());
+  var parent = $($this).parents(".locationLevel");
+  console.log(parent);
+  if($($this).parent().find("input").val() == "true") {
 
-    parent.find(".selectLocation").attr("disabled", true);
-    parent.find("input.form-control").attr("disabled", true);
     parent.find(".locElement").each(function(i,e) {
       $(e).hide("slow");
       var id = $(e).attr("id").split('-')[1];
@@ -100,19 +110,17 @@ function checkboxAllCountries() {
       }
     })
   } else {
-    $(this).val(false);
-    parent.find(".selectLocation").attr("disabled", false);
-    parent.find("input.form-control").attr("disabled", false);
     parent.find(".locElement").each(
         function(i,e) {
           $(e).show("slow");
           var id = $(e).attr("id").split('-')[1];
-          var isList = $(e).parent().parent().parent().find(".isList");
-          if(isList.val() == "false") {
+          var locLevelName = $(e).parent().parent().parent().find(".locationLevelName");
+          console.log(locLevelName);
+          if(locLevelName.val() != "Country") {
             addMarker(map, id, parseFloat($(e).find(".geoLatitude").val()),
                 parseFloat($(e).find(".geoLongitude").val()), $(e).find(".locElementName").val());
           }
-        })
+        });
   }
   updateIndex();
 }
@@ -514,18 +522,6 @@ function formWindowEvents() {
         }
       });
 
-  // Yes-no button
-  $(".no-button-label").on("click", function() {
-    $(".yes-button-label").removeClass("radio-checked");
-    $(this).addClass("radio-checked");
-    $(".selectLocations").slideDown("slow");
-  });
-  $(".yes-button-label").on("click", function() {
-    $(".no-button-label").removeClass("radio-checked");
-    $(this).addClass("radio-checked");
-    $(".selectLocations").slideUp("slow");
-  });
-
   // Add location button
   $("#addLocationButton").on("click", function(e) {
     var $locationLevelSelect = $("#locLevelSelect");
@@ -588,16 +584,16 @@ function addLocLevel(locationName,locationId,locationIsList,$locationSelect,loca
   $locationItem.find("input.locationLevelId").val(locationId);
   $locationItem.find("input.locationLevelName").val(locationName);
   $locationItem.find("input.isList").val(locationIsList);
-  if(locationName == "Country") {
-    $locationItem.find("span.question").html($("span.qCountry").text());
-  } else {
-    $locationItem.find("span.question").html($("span.qCmvSites").text());
-  }
   $(".selectWrapper").append($locationItem);
-  $locationItem.find(".allCountriesQuestion").show();
   $locationItem.show("slow");
   updateIndex();
   if(locationIsList == "true") {
+    $locationItem.find(".allCountriesQuestion").show();
+    if(locationName == "Country") {
+      $locationItem.find("span.question").html($("span.qCountry").text());
+    } else {
+      $locationItem.find("span.question").html($("span.qCmvSites").text());
+    }
     addCountryIntoLocLevel(locationId, $locationSelect, locationName);
   } else {
     addLocByCoordinates(locationId, $locationSelect, locationName);
