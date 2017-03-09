@@ -169,7 +169,7 @@ public class HistoryComparator {
 
 
           differencesUniques.addAll(this.compareHistory(actual.getEntityJson(), before.getEntityJson(), subFixDelete));
-
+          differencesUniques.add("id");
 
         }
       }
