@@ -743,6 +743,7 @@ public class ClusterActivitiesAction extends BaseAction {
 
 
       Path path = this.getAutoSaveFilePath();
+
       if (path.toFile().exists()) {
         path.toFile().delete();
       }
@@ -766,7 +767,11 @@ public class ClusterActivitiesAction extends BaseAction {
         this.setActionMessages(null);
         return REDIRECT;
       }
-    } else {
+
+    } else
+
+    {
+
       return NOT_AUTHORIZED;
     }
 

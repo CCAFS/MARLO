@@ -167,9 +167,14 @@ public class HistoryComparator {
           differencesUniques.add("id");
         } else {
 
+          List<String> diffrencesFields =
+            this.compareHistory(actual.getEntityJson(), before.getEntityJson(), subFixDelete);
 
-          differencesUniques.addAll(this.compareHistory(actual.getEntityJson(), before.getEntityJson(), subFixDelete));
-          differencesUniques.add("id");
+          if (!diffrencesFields.isEmpty()) {
+            differencesUniques.addAll(diffrencesFields);
+            differencesUniques.add("id");
+          }
+
 
         }
       }
