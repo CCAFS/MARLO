@@ -201,7 +201,7 @@
     [#-- Partner Title --]
     <div class="blockTitle closed">
       [#-- Title --]
-      <span> <span class="index_number">${index+1}</span>. <span class="partnerTitle">${(element.institution.composedName)!'New Project Partner'}</span> </span>
+      <span class="${action.changedField('${name}.id')?string('changedField','')}"> <span class="index_number">${index+1}</span>. <span class="partnerTitle">${(element.institution.composedName)!'New Project Partner'}</span> </span>
 
       [#-- Tags --]
       <div class="partnerTags pull-right">

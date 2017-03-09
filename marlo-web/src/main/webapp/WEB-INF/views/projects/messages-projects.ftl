@@ -15,7 +15,7 @@
          [/@s.text]
       </p>
       
-      <p>${differences!}</p>
+      <p style="display:none">${differences!}</p>
     [/#if]
   </div>
 [/#if]

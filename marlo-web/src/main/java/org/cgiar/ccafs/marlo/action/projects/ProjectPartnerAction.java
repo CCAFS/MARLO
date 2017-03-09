@@ -656,7 +656,7 @@ public class ProjectPartnerAction extends BaseAction {
             indexPartners[0] = i;
             indexPartners[1] = j;
             differences.addAll(historyComparator.getDifferencesList(partnerPerson, transaction, specialList,
-              "project.partners[" + i + "].persons[" + j + "]", "project.projectPartner"));
+              "project.partners[" + i + "].partnerPersons[" + j + "]", "project.projectPartner"));
             j++;
           }
           i++;
