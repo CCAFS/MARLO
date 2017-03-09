@@ -78,6 +78,7 @@ public class AuditLogMySQLDao implements AuditLogDao {
   }
 
 
+  @Override
   public Auditlog getAuditlog(String transactionID, IAuditLog auditLog) {
 
     List<Auditlog> auditLogs =
@@ -127,9 +128,11 @@ public class AuditLogMySQLDao implements AuditLogDao {
 
     List<Auditlog> logs = new ArrayList<Auditlog>();
     Auditlog principal = this.getAuditlog(transactionID);
-
+    String sql = " where transaction_id !='" + transactionID + "' and main=1" + " and DETAIL='" + principal.getDetail()
+      + "'  and CREATED_DATE< '" + principal.getCreatedDate() + "'  ORDER BY CREATED_DATE desc";
     List<Auditlog> auditLogs = dao.findAll("from " + Auditlog.class.getName() + " where transaction_id !='"
-      + transactionID + "' and main=1" + " and DETAIL='" + principal.getDetail() + "' ORDER BY CREATED_DATE desc");
+      + transactionID + "' and main=1" + " and DETAIL='" + principal.getDetail() + "' and CREATED_DATE< '"
+      + principal.getCreatedDate() + "'  ORDER BY CREATED_DATE desc");
 
     if (!auditLogs.isEmpty()) {
       logs.addAll(this.getCompleteHistory(auditLogs.get(0).getTransactionId()));

@@ -668,7 +668,8 @@ public class ProjectPartnerAction extends BaseAction {
         differences.addAll(historyComparator.getDifferencesList(project.getProjectComponentLesson(), transaction,
           specialList, "project.projectComponentLesson", "project"));
 
-        System.out.println(differences);
+        this.setDifferences(differences);
+
       } else {
         this.transaction = null;
 

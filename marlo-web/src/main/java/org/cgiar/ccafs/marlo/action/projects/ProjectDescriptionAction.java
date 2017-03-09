@@ -387,7 +387,8 @@ public class ProjectDescriptionAction extends BaseAction {
       Map<String, String> specialList = new HashMap<>();
       specialList.put(APConstants.PROJECT_FOCUSES_RELATION, "flagshipValue");
 
-      List<String> diffences = historyComparator.getDifferences(transaction, specialList, "project");
+      this.setDifferences(historyComparator.getDifferences(transaction, specialList, "project"));
+
 
       if (history != null) {
         project = history;
