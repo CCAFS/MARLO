@@ -150,43 +150,45 @@ public class HistoryComparator {
 
   public List<String> getDifferencesList(IAuditLog iaAuditLog, String transactionID, Map<String, String> specialList,
     String subFix, String subFixDelete) throws ClassNotFoundException {
-
-    Auditlog principal = auditlogManager.getAuditlog(transactionID, iaAuditLog);
-
-    c = Class.forName(principal.getEntityName().replace("class ", ""));
-    Set<String> differencesUniques = new HashSet<>();
     List<String> differences = new ArrayList<>();
+    Auditlog principal = auditlogManager.getAuditlog(transactionID, iaAuditLog);
+    if (principal != null) {
+      c = Class.forName(principal.getEntityName().replace("class ", ""));
+      Set<String> differencesUniques = new HashSet<>();
 
-    List<Auditlog> beforeHistory = auditlogManager.getHistoryBefore(transactionID);
 
-    if (!beforeHistory.isEmpty()) {
-      Auditlog actual = principal;
-      {
-        Auditlog before = this.getSimiliar(actual, beforeHistory);
-        if (before == null) {
-          differencesUniques.add("id");
-        } else {
+      List<Auditlog> beforeHistory = auditlogManager.getHistoryBefore(transactionID);
 
-          List<String> diffrencesFields =
-            this.compareHistory(actual.getEntityJson(), before.getEntityJson(), subFixDelete);
-
-          if (!diffrencesFields.isEmpty()) {
-            differencesUniques.addAll(diffrencesFields);
+      if (!beforeHistory.isEmpty()) {
+        Auditlog actual = principal;
+        {
+          Auditlog before = this.getSimiliar(actual, beforeHistory);
+          if (before == null) {
             differencesUniques.add("id");
+          } else {
+
+            List<String> diffrencesFields =
+              this.compareHistory(actual.getEntityJson(), before.getEntityJson(), subFixDelete);
+
+            if (!diffrencesFields.isEmpty()) {
+              differencesUniques.addAll(diffrencesFields);
+              differencesUniques.add("id");
+            }
+
+
           }
-
-
         }
+
+      }
+
+
+      for (String str : differencesUniques) {
+        differences.add(subFix + "." + str);
       }
 
     }
 
-
-    for (String str : differencesUniques) {
-      differences.add(subFix + "." + str);
-    }
     return differences;
-
   }
 
   public String getListName(Class objectClass) {
