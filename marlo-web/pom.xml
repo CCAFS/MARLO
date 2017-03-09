@@ -14,8 +14,8 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<struts2.version>2.3.16</struts2.version>
-		<struts2-json.version>2.3.16</struts2-json.version>
+		<struts2.version>2.3.31</struts2.version>
+		<struts2-json.version>2.3.31</struts2-json.version>
 		<guice.version>3.0</guice.version>
 		<mysql.version>5.1.39</mysql.version>
 		<junit.version>4.12</junit.version>
@@ -66,12 +66,7 @@
 		<url>https://github.com/CCAFS/marlo/issues</url>
 	</issueManagement>
 	<dependencies>
-
-
-
-
 		<!-- Project dependecies -->
-
 		<dependency>
 			<groupId>org.cgiar.ccafs</groupId>
 			<artifactId>marlo-utils</artifactId>
@@ -96,10 +91,45 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+   <groupId>org.apache.struts</groupId>
+   <artifactId>struts2-java8-support-plugin</artifactId>
+   <version>2.3.31</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.struts.xwork</groupId>
+    <artifactId>xwork-core</artifactId>
+    <version>2.3.31</version>
+    <exclusions>
+        <exclusion>
+            <groupId>asm</groupId>
+            <artifactId>asm</artifactId>
+        </exclusion>
+        <exclusion>
+            <groupId>asm</groupId>
+            <artifactId>asm-commons</artifactId>
+        </exclusion>
+    </exclusions>
+</dependency>
+		<dependency>
 			<groupId>org.cgiar.ciat.auth</groupId>
 			<artifactId>adauth</artifactId>
 			<version>1.7</version>
 		</dependency>
+		
+		<!--  Struts 2 Rest Plugin -->
+	<dependency>
+		<groupId>org.apache.struts</groupId>
+		<artifactId>struts2-convention-plugin</artifactId>
+		<version>2.3.31</version>
+	</dependency>
+	
+	<dependency>
+		<groupId>org.apache.struts</groupId>
+		<artifactId>struts2-rest-plugin</artifactId>
+		<version>2.3.31</version>
+	</dependency>
+
+		
 		<!-- Although struts2-core has its own freemarker dependency, it seems 
 			there is an error with its version. Thus, we had to use this version (which 
 			is higher than the struts2-core). They said they fixed the problem in the 

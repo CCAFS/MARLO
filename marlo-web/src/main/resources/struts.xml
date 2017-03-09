@@ -7,7 +7,24 @@
 		value="false" />
 	<constant name="struts.patternMatcher" value="regex" />
 	<constant name="struts.multipart.saveDir" value="/tmp" />
+	
+	<!--  Rest api packages  -->
+	<constant name="struts.action.extension" value="do,,xml,json,action" />
+	<constant name="struts.mapper.class"
+		value="org.apache.struts2.dispatcher.mapper.PrefixBasedActionMapper" />		
+	<constant name="struts.mapper.prefixMapping" value="/api:rest,:struts" />
 
+	<constant name="struts.convention.action.suffix" value="Action, Controller" />
+	<constant name="struts.convention.action.mapAllMatches" value="true" />
+	<constant name="struts.convention.default.parent.package" value="rest-default"/>
+	<constant name="struts.convention.package.locators" value="rest"/>
+
+	<!-- set name space for REST, it should match with "struts.mapper.prefixMapping" -->
+	<constant name="struts.rest.namespace" value="/api" />
+
+	<!-- Default extension for REST calls -->
+	<constant name="struts.rest.defaultExtension" value="json" />
+	
 	<!-- Add addition packages and configuration here. -->
 	<package name="marlo-default" namespace="/" extends="struts-default">
 
@@ -253,8 +270,6 @@
 			<result name="input">/WEB-INF/global/pages/error/500.ftl</result>
 		</action>
 
-
-
 		<action name="glossary" class="org.cgiar.ccafs.marlo.action.BaseAction">
 			<result name="input">/WEB-INF/global/pages/glossary.ftl</result>
 		</action>
@@ -270,5 +285,6 @@
 	<include file="struts-summaries.xml" />
 	<include file="struts-synthesis.xml" />
 	<include file="struts-publications.xml" />
+	<include file="struts-rest.xml" />
 
 </struts>

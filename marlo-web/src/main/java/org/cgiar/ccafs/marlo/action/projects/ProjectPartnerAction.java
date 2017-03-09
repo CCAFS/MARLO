@@ -57,6 +57,7 @@ import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.utils.HistoryComparator;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectPartnersValidator;
 
@@ -150,6 +151,7 @@ public class ProjectPartnerAction extends BaseAction {
   private ProjectPartnerOverall partnerOverall;
   private AuditLogManager auditLogManager;
   private String transaction;
+  private HistoryComparator historyComparator;
 
   // Util
   private SendMailS sendMail;
@@ -163,7 +165,8 @@ public class ProjectPartnerAction extends BaseAction {
     ProjectPartnerContributionManager projectPartnerContributionManager, UserRoleManager userRoleManager,
     ProjectPartnerPersonManager projectPartnerPersonManager, AuditLogManager auditLogManager,
     ProjectComponentLesson projectComponentLesson, ProjectPartnersValidator projectPartnersValidator,
-    ProjectComponentLessonManager projectComponentLessonManager, CrpUserManager crpUserManager) {
+    HistoryComparator historyComparator, ProjectComponentLessonManager projectComponentLessonManager,
+    CrpUserManager crpUserManager) {
     super(config);
     this.projectPartnersValidator = projectPartnersValidator;
     this.auditLogManager = auditLogManager;
@@ -171,6 +174,7 @@ public class ProjectPartnerAction extends BaseAction {
     this.institutionManager = institutionManager;
     this.institutionTypeManager = institutionTypeManager;
     this.locationManager = locationManager;
+    this.historyComparator = historyComparator;
     this.projectManager = projectManager;
     this.userManager = userManager;
     this.crpManager = crpManager;
@@ -638,6 +642,33 @@ public class ProjectPartnerAction extends BaseAction {
       Project history = (Project) auditLogManager.getHistory(transaction);
       if (history != null) {
         project = history;
+        List<String> differences = new ArrayList<>();
+        Map<String, String> specialList = new HashMap<>();
+        int i = 0;
+        for (ProjectPartner projectPartner : project.getProjectPartners()) {
+          int[] index = new int[1];
+          index[0] = i;
+          differences.addAll(historyComparator.getDifferencesList(projectPartner, transaction, specialList,
+            "project.partners[" + i + "]", "project"));
+          int j = 0;
+          for (ProjectPartnerPerson partnerPerson : projectPartner.getProjectPartnerPersons()) {
+            int[] indexPartners = new int[2];
+            indexPartners[0] = i;
+            indexPartners[1] = j;
+            differences.addAll(historyComparator.getDifferencesList(partnerPerson, transaction, specialList,
+              "project.partners[" + i + "].persons[" + j + "]", "project.projectPartner"));
+            j++;
+          }
+          i++;
+        }
+
+        if (this.isLessonsActive()) {
+          this.loadLessons(loggedCrp, project);
+        }
+        differences.addAll(historyComparator.getDifferencesList(project.getProjectComponentLesson(), transaction,
+          specialList, "project.projectComponentLesson", "project"));
+
+        System.out.println(differences);
       } else {
         this.transaction = null;
 
