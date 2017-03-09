@@ -228,17 +228,16 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   private Submission submission;
   protected boolean submit;
-
   private String url;
+
   @Inject
   private UserRoleManager userRoleManager;
-
   @Inject
   private IpProgramManager ipProgramManager;
 
-
   @Inject
   private IpLiaisonInstitutionManager ipLiaisonInstitutionManager;
+
 
   @Inject
   public BaseAction(APConfig config) {
@@ -248,11 +247,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.justification = "";
   }
 
-
   /* Override this method depending of the save action. */
   public String add() {
     return SUCCESS;
   }
+
 
   /**
    * This function add a flag (--warn--) to the message in order to give
@@ -268,10 +267,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.securityContext.hasAllPermissions(Permission.FULL_PRIVILEGES);
   }
 
-
   public boolean canAcessCrp() {
     return this.canAcessPublications() || this.canAcessSynthesisMog();
   }
+
 
   public boolean canAcessCrpAdmin() {
     String permission = this.generatePermission(Permission.CRP_ADMIN_VISIBLE_PRIVILEGES, this.getCrpSession());
@@ -425,7 +424,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return CANCEL;
   }
 
-
   /**
    * Verify if the project have Cluster of Activity to activate Budget by CoA
    * 
@@ -455,6 +453,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean canProjectSubmited(long projectID) {
     String params[] = {crpManager.getCrpById(this.getCrpID()).getAcronym(), projectID + ""};
     return this.hasPermission(this.generatePermission(Permission.PROJECT_SUBMISSION_PERMISSION, params));
+  }
+
+
+  public boolean changedField(String field) {
+    if (differences != null) {
+      return differences.contains(field);
+    }
+    return false;
+
   }
 
   /**
