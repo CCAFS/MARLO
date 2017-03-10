@@ -642,10 +642,24 @@ public class ProjectPartnerAction extends BaseAction {
       Project history = (Project) auditLogManager.getHistory(transaction);
       if (history != null) {
         project = history;
+        project
+          .setPartners(project.getProjectPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        ProjectPartner leader = project.getLeader();
+        if (leader != null) {
+          // First we remove the element from the array.
+          project.getPartners().remove(leader);
+          // then we add it to the first position.
+          project.getPartners().add(0, leader);
+        }
+
+        Collections.sort(project.getPartners(),
+          (p1, p2) -> Boolean.compare(this.isPPA(p2.getInstitution()), this.isPPA(p1.getInstitution())));
+
+
         List<String> differences = new ArrayList<>();
         Map<String, String> specialList = new HashMap<>();
         int i = 0;
-        for (ProjectPartner projectPartner : project.getProjectPartners()) {
+        for (ProjectPartner projectPartner : project.getPartners()) {
           int[] index = new int[1];
           index[0] = i;
           differences.addAll(historyComparator.getDifferencesList(projectPartner, transaction, specialList,
@@ -675,7 +689,7 @@ public class ProjectPartnerAction extends BaseAction {
               .getDifferencesList(overalls.get(0), transaction, specialList,
                 "project.partners[" + i + "].partnerContributors[" + k + "]", "project.partnerContributors", 2)
               .isEmpty()) {
-              if (differences.contains("project.overall")) {
+              if (!differences.contains("project.overall")) {
                 differences.add("project.overall");
               }
             }
