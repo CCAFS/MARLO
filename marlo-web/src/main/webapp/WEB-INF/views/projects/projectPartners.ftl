@@ -201,7 +201,7 @@
     [#-- Partner Title --]
     <div class="blockTitle closed">
       [#-- Title --]
-      <span class="${action.changedField('${name}.id')?string('changedField','')}"> <span class="index_number">${index+1}</span>. <span class="partnerTitle">${(element.institution.composedName)!'New Project Partner'}</span> </span>
+      <span class="${customForm.changedField('${name}.id')}"> <span class="index_number">${index+1}</span>. <span class="partnerTitle">${(element.institution.composedName)!'New Project Partner'}</span> </span>
 
       [#-- Tags --]
       <div class="partnerTags pull-right">
@@ -306,7 +306,7 @@
 [/#macro]
 
 [#macro contactPersonMacro element name index=-1 partnerIndex=-1 isTemplate=false]
-  <div id="contactPerson-${isTemplate?string('template',(element.id)!)}" class="contactPerson simpleBox ${(element.contactType)!}" style="display:${isTemplate?string('none','block')}">
+  <div id="contactPerson-${isTemplate?string('template',(element.id)!)}" class="contactPerson simpleBox ${(element.contactType)!} ${customForm.changedField('${name}.id')}" style="display:${isTemplate?string('none','block')}">
     [#-- Remove link for all partners --]
     [#if editable]
       <div class="removePerson removeElement" title="[@s.text name="projectPartners.removePerson" /]"></div>
@@ -330,7 +330,7 @@
     <div class="form-group">
     	<div class="row">
     	    [#-- Contact Email --]
-          <div class="col-md-12 partnerPerson-email userField  ">
+          <div class="col-md-12 partnerPerson-email userField">
             [#attempt]
               [#assign canEditEmail=!((action.getActivitiesLedByUser((element.id)!-1)!false)?has_content) && canEditContactType/]
             [#recover]

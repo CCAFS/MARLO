@@ -2,7 +2,7 @@
 [#macro text name readText=false param="" ][#assign customName][#if readText]${name}.readText[#else]${name}[/#if][/#assign][@s.text name="${customName}"][@s.param]${param}[/@s.param][/@s.text][/#macro]
 
 [#macro input name value="-NULL" type="text" i18nkey="" disabled=false required=false errorField="" help="" display=true className="" paramText="" readOnly=false showTitle=true editable=true placeholder=""]
-  <div class="input ${action.changedField(name)?string('changedField','')}" style="display:${display?string('block','none')};">
+  <div class="input ${changedField(name)}" style="display:${display?string('block','none')};">
     [#assign labelTitle][#if i18nkey==""][@s.text name="${name}"][@s.param]${paramText}[/@s.param][/@s.text][#else][@s.text name="${i18nkey}"][@s.param]${paramText}[/@s.param][/@s.text][/#if][/#assign]
     [#if showTitle]
       <label for="${name}" class="${editable?string('editable', 'readOnly')}">${labelTitle}:[#if required && editable]<span class="red">*</span>[/#if]</label>
@@ -27,7 +27,7 @@
 [/#macro]
 
 [#macro textArea name editable value="-NULL" i18nkey="" disabled=false required=false errorfield="" help="" showTitle=true display=true className="-NULL" paramText="" editable=true placeholder=""]
-  <div class="textArea ${action.changedField(name)?string('changedField','')}" [#if !display]style="display: none;"[/#if]> 
+  <div class="textArea ${changedField(name)}" [#if !display]style="display: none;"[/#if]> 
     [#assign customName]${(i18nkey?has_content)?string(i18nkey,name)}[/#assign]  
     [#assign customLabel][#if !editable]${customName}.readText[#else]${customName}[/#if][/#assign]
     [#assign customValue][#if value=="-NULL"][@s.property value="${name}"/][#else]${value}[/#if][/#assign]
@@ -58,7 +58,7 @@
 [/#macro]
 
 [#macro checkbox name value="-NULL" label="" i18nkey="" disabled=false className="" checked=false required=false display=true help="" editable=true]
-  <div class="checkbox ${action.changedField(name)?string('changedField','')}" [#if !display]style="display: none;"[/#if]>
+  <div class="checkbox ${changedField(name)}" [#if !display]style="display: none;"[/#if]>
     [#if editable]
       <label for="${name}" class="${editable?string('editable', 'readOnly')}">
         <input type="checkbox" id="${name}" class="${className}" name="${name}" value="${value}" [#if checked]checked="checked"[/#if] [#if disabled]disabled="disabled[/#if] />
@@ -73,7 +73,7 @@
 [/#macro]
 
 [#macro checkboxGroup label name listName displayFieldName="" keyFieldName="" value="-NULL" i18nkey="" disabled=false required=false errorField="" checked=false display=true editable=true]
-  <div class="checkbox ${action.changedField(name)?string('changedField','')}" [#if !display]style="display: none;"[/#if]>
+  <div class="checkbox ${changedField(name)}" [#if !display]style="display: none;"[/#if]>
      [#if i18nkey==""]${label}[#else][@s.text name="${i18nkey}" /][/#if]:[#if required && editable]<span class="red">*</span>[/#if] 
     [#if errorField==""][@s.fielderror cssClass="fieldError" fieldName="${name}"/][#else][@s.fielderror cssClass="fieldError" fieldName="${errorfield}"/][/#if]
     <div class="checkboxList">
@@ -99,7 +99,7 @@
 [/#macro]
 
 [#macro radioButtonGroup label name listName class="" displayFieldName="" keyFieldName="" value="-NULL" i18nkey="" disabled=false required=false errorField="" checked=false help="" display=true editable=true]
-  <div class="radioGroup ${action.changedField(name)?string('changedField','')}" [#if !display]style="display: none;"[/#if]>
+  <div class="radioGroup ${changedField(name)}" [#if !display]style="display: none;"[/#if]>
     [#if i18nkey==""]${label}[#else][@s.text name="${i18nkey}" /][/#if]:[#if required && editable]<span class="red">*</span>[/#if]
     [#if errorField==""][@s.fielderror cssClass="fieldError" fieldName="${name}"/][#else][@s.fielderror cssClass="fieldError" fieldName="${errorfield}"/][/#if]
     <div class="radiosList">
@@ -121,7 +121,7 @@
 [/#macro]
 
 [#macro select name listName label="" keyFieldName="" displayFieldName="" paramText="" value="-NULL" i18nkey="" disabled=false required=false errorField="" selected=false className="" multiple=false help="" header=true display=true showTitle=true stringKey=false placeholder="" editable=true]
-  <div class="select ${action.changedField(name)?string('changedField','')}" [#if !display]style="display: none;"[/#if]>
+  <div class="select ${changedField(name)}" [#if !display]style="display: none;"[/#if]>
     [#assign labelTitle][#if i18nkey==""][@s.text name="${name}"][@s.param]${paramText}[/@s.param][/@s.text][#else][@s.text name="${i18nkey}"][@s.param]${paramText}[/@s.param][/@s.text][/#if][/#assign]
     [#assign placeholderText][@s.text name="${(placeholder?has_content)?string(placeholder,'form.select.placeholder')}" /][/#assign]
     [#if showTitle]
@@ -203,7 +203,7 @@
 [#macro inputFile name template=false className="" fileUrl="" fileName="" editable=true]
   [#local customId][#if template]${name}-template[#else]${name}[/#if][/#local]
   [#local customFileName][@s.property value="${fileName}"/][/#local]
-  <div id="${customId}" class="${className} ${action.changedField(name)?string('changedField','')} form-group" style="${template?string('display:none','block')}">
+  <div id="${customId}" class="${className} ${changedField(name)} form-group" style="${template?string('display:none','block')}">
     [#if customFileName?has_content && !template]
       <p class="inputFile"> 
         <span class="file"></span> <a href="${fileUrl}${customFileName}">${customFileName}</a>  
@@ -247,7 +247,7 @@
 
 [#macro rank name disabled=false editable=true]
   [#assign score][@s.property value="${name}"/][/#assign]
-  <div class="rankingBlock ${action.changedField(name)?string('changedField','')}" style="text-align:center;">
+  <div class="rankingBlock ${changedField(name)}" style="text-align:center;">
     [#if editable]
     <fieldset class="rating">
     <input type="radio" id="star5" name="rating" value="5" /><label class = "full" for="star5" title="5 stars"></label>
@@ -269,7 +269,7 @@
 
 [#macro advancedRank name stars=5 split=1 disabled=false editable=true]
   [#assign score][@s.property value="${name}"/][/#assign]
-  <div class="rankingBlock ${action.changedField(name)?string('changedField','')}" style="text-align:center;">
+  <div class="rankingBlock ${changedField(name)}" style="text-align:center;">
     <span class="rankSplit" style="display:none">${split}</span>
     [#if editable]
       [#list 1..(stars*split) as star]
@@ -289,7 +289,7 @@
   [#else]
     [#assign customValue=value /] 
   [/#if]
-  <div class="onoffswitch ${action.changedField(name)?string('changedField','')} ${cssClass}">
+  <div class="onoffswitch ${changedField(name)} ${cssClass}">
     [#if label?has_content]
       <label for="${name}">[@s.text name=label/]</label>
     [/#if]
@@ -309,3 +309,6 @@
 [/#macro]
 
 
+[#function changedField name]
+   [#return action.changedField(name)?string('changedField','')]
+[/#function]
