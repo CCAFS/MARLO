@@ -659,14 +659,39 @@ public class ProjectPartnerAction extends BaseAction {
               "project.partners[" + i + "].partnerPersons[" + j + "]", "project.projectPartner", 2));
             j++;
           }
+          int k = 0;
+          for (ProjectPartnerContribution projectPartnerContribution : projectPartner
+            .getProjectPartnerContributions()) {
+            differences
+              .addAll(historyComparator.getDifferencesList(projectPartnerContribution, transaction, specialList,
+                "project.partners[" + i + "].partnerContributors[" + k + "]", "project.partnerContributors", 2));
+            k++;
+          };
+
+          List<ProjectPartnerOverall> overalls =
+            projectPartner.getProjectPartnerOveralls().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+          if (!overalls.isEmpty()) {
+            if (!historyComparator
+              .getDifferencesList(overalls.get(0), transaction, specialList,
+                "project.partners[" + i + "].partnerContributors[" + k + "]", "project.partnerContributors", 2)
+              .isEmpty()) {
+              if (differences.contains("project.overall")) {
+                differences.add("project.overall");
+              }
+            }
+          }
+
           i++;
         }
 
         if (this.isLessonsActive()) {
           this.loadLessons(loggedCrp, project);
         }
-        differences.addAll(historyComparator.getDifferencesList(project.getProjectComponentLesson(), transaction,
-          specialList, "project.projectComponentLesson", "project", 1));
+        if (project.getProjectComponentLesson() != null) {
+          differences.addAll(historyComparator.getDifferencesList(project.getProjectComponentLesson(), transaction,
+            specialList, "project.projectComponentLesson", "project", 1));
+        }
+
 
         this.setDifferences(differences);
 
