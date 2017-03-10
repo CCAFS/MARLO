@@ -107,7 +107,7 @@ public class HistoryComparator {
   }
 
   public List<String> getDifferences(String transactionID, Map<String, String> specialList, String subFix)
-    throws ClassNotFoundException {
+    throws ClassNotFoundException, NoSuchFieldException, SecurityException {
 
     Auditlog principal = auditlogManager.getAuditlog(transactionID);
 
@@ -146,14 +146,27 @@ public class HistoryComparator {
 
 
     for (String str : differencesUniques) {
-      differences.add(subFix + "." + str);
+
+      try {
+
+        Field field = this.getField(str);
+        if (IAuditLog.class.isAssignableFrom(field.getType())) {
+          differences.add(subFix + "." + str + ".id");
+        } else {
+          differences.add(subFix + "." + str);
+        }
+      } catch (Exception e) {
+        differences.add(subFix + "." + str);
+      }
+
     }
     return differences;
 
   }
 
   public List<String> getDifferencesList(IAuditLog iaAuditLog, String transactionID, Map<String, String> specialList,
-    String subFix, String subFixDelete, int levels) throws ClassNotFoundException {
+    String subFix, String subFixDelete, int levels)
+      throws ClassNotFoundException, NoSuchFieldException, SecurityException {
     List<String> differences = new ArrayList<>();
     Auditlog principal = auditlogManager.getAuditlog(transactionID, iaAuditLog);
     if (principal != null) {
@@ -201,7 +214,16 @@ public class HistoryComparator {
 
       }
       for (String str : differencesUniques) {
-        differences.add(subFix + "." + str);
+        try {
+          Field field = this.getField(str);
+          if (field.getType().isAssignableFrom(IAuditLog.class)) {
+            differences.add(subFix + "." + str + ".id");
+          } else {
+            differences.add(subFix + "." + str);
+          }
+        } catch (Exception e) {
+          differences.add(subFix + "." + str);
+        }
         if (str.equals("id")) {
           differences.add(parent + ".id");
         }
@@ -210,6 +232,17 @@ public class HistoryComparator {
     }
 
     return differences;
+  }
+
+  public Field getField(String str) {
+    Field[] fields = c.getDeclaredFields();
+
+    for (Field field : fields) {
+      if (field.getName().equals(str)) {
+        return field;
+      }
+    }
+    return null;
   }
 
   private String getListName(Class objectClass) {
