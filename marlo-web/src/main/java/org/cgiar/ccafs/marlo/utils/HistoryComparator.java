@@ -54,7 +54,7 @@ public class HistoryComparator {
   }
 
 
-  public void addRelationField(Set<String> differencesUniques, Auditlog actual, Auditlog before, Auditlog principal,
+  private void addRelationField(Set<String> differencesUniques, Auditlog actual, Auditlog before, Auditlog principal,
     Map<String, String> specialList) throws ClassNotFoundException {
     Class classRelation = Class.forName(actual.getEntityName().replace("class ", ""));
     String listName = this.getListName(classRelation);
@@ -72,7 +72,7 @@ public class HistoryComparator {
     }
   }
 
-  public List<String> compareHistory(String jsonNew, String jsonOlder, String subFix) {
+  private List<String> compareHistory(String jsonNew, String jsonOlder, String subFix) {
     List<String> myDifferences = new ArrayList<>();
     Gson g = new Gson();
     Type mapType = new TypeToken<Map<String, Object>>() {
@@ -87,6 +87,8 @@ public class HistoryComparator {
     this.removeJSONField(jsonObjOld, "activeSince");
     this.removeJSONField(jsonObjNew, "modifiedBy");
     this.removeJSONField(jsonObjOld, "modifiedBy");
+    this.removeJSONField(jsonObjNew, "modificationJustification");
+    this.removeJSONField(jsonObjOld, "modificationJustification");
     String subFixStr[] = subFix.split("\\.");
     for (String string : subFixStr) {
       this.removeJSONField(jsonObjNew, string);
@@ -151,7 +153,7 @@ public class HistoryComparator {
   }
 
   public List<String> getDifferencesList(IAuditLog iaAuditLog, String transactionID, Map<String, String> specialList,
-    String subFix, String subFixDelete) throws ClassNotFoundException {
+    String subFix, String subFixDelete, int levels) throws ClassNotFoundException {
     List<String> differences = new ArrayList<>();
     Auditlog principal = auditlogManager.getAuditlog(transactionID, iaAuditLog);
     if (principal != null) {
@@ -184,9 +186,25 @@ public class HistoryComparator {
 
       }
 
+      String parent = "";
+      try {
+        String subFixSplit[] = subFix.split("\\.");
 
+        for (int i = 0; i <= levels; i++) {
+          if (parent.isEmpty()) {
+            parent = subFixSplit[i];
+          } else {
+            parent = parent + "." + subFixSplit[i];
+          }
+        }
+      } catch (Exception e) {
+
+      }
       for (String str : differencesUniques) {
         differences.add(subFix + "." + str);
+        if (str.equals("id")) {
+          differences.add(parent + ".id");
+        }
       }
 
     }
@@ -194,7 +212,7 @@ public class HistoryComparator {
     return differences;
   }
 
-  public String getListName(Class objectClass) {
+  private String getListName(Class objectClass) {
 
     Field[] fields = c.getDeclaredFields();
 
@@ -215,7 +233,7 @@ public class HistoryComparator {
     return null;
   }
 
-  public Auditlog getSimiliar(Auditlog actual, List<Auditlog> beforeHistory) {
+  private Auditlog getSimiliar(Auditlog actual, List<Auditlog> beforeHistory) {
     for (Auditlog before : beforeHistory) {
       switch (actual.getMain().intValue()) {
         case 1:
@@ -239,7 +257,7 @@ public class HistoryComparator {
 
   }
 
-  public void removeJSONField(JSONObject obj, String attribute) throws JSONException {
+  private void removeJSONField(JSONObject obj, String attribute) throws JSONException {
     obj.remove(attribute);
 
     Iterator<String> it = obj.keys();

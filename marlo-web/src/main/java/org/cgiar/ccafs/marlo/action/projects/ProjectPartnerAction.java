@@ -649,14 +649,14 @@ public class ProjectPartnerAction extends BaseAction {
           int[] index = new int[1];
           index[0] = i;
           differences.addAll(historyComparator.getDifferencesList(projectPartner, transaction, specialList,
-            "project.partners[" + i + "]", "project"));
+            "project.partners[" + i + "]", "project", 1));
           int j = 0;
           for (ProjectPartnerPerson partnerPerson : projectPartner.getProjectPartnerPersons()) {
             int[] indexPartners = new int[2];
             indexPartners[0] = i;
             indexPartners[1] = j;
             differences.addAll(historyComparator.getDifferencesList(partnerPerson, transaction, specialList,
-              "project.partners[" + i + "].partnerPersons[" + j + "]", "project.projectPartner"));
+              "project.partners[" + i + "].partnerPersons[" + j + "]", "project.projectPartner", 2));
             j++;
           }
           i++;
@@ -666,7 +666,7 @@ public class ProjectPartnerAction extends BaseAction {
           this.loadLessons(loggedCrp, project);
         }
         differences.addAll(historyComparator.getDifferencesList(project.getProjectComponentLesson(), transaction,
-          specialList, "project.projectComponentLesson", "project"));
+          specialList, "project.projectComponentLesson", "project", 1));
 
         this.setDifferences(differences);
 
