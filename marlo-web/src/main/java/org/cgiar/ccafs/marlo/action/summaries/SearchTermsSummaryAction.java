@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrpParameter;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
@@ -68,6 +69,8 @@ import org.pentaho.reporting.engine.classic.core.modules.output.table.xls.ExcelR
 import org.pentaho.reporting.engine.classic.core.util.TypedTableModel;
 import org.pentaho.reporting.libraries.resourceloader.Resource;
 import org.pentaho.reporting.libraries.resourceloader.ResourceManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Andrés Felipe Valencia Rivera. CCAFS
@@ -75,6 +78,7 @@ import org.pentaho.reporting.libraries.resourceloader.ResourceManager;
 
 public class SearchTermsSummaryAction extends BaseAction implements Summary {
 
+  private static Logger LOG = LoggerFactory.getLogger(SearchTermsSummaryAction.class);
   /**
    * 
    */
@@ -135,13 +139,27 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
         keys = Arrays.asList(parameters.split("~/"));
       }
     }
+    // Verify if the crp has regions avalaible
+    List<CrpParameter> hasRegionsList = new ArrayList<>();
+    Boolean regionalAvailable = false;
+    for (CrpParameter hasRegionsParam : this.loggedCrp.getCrpParameters().stream()
+      .filter(cp -> cp.isActive() && cp.getKey().equals(APConstants.CRP_HAS_REGIONS)).collect(Collectors.toList())) {
+      hasRegionsList.add(hasRegionsParam);
+    }
+
+    if (!hasRegionsList.isEmpty()) {
+      if (hasRegionsList.size() > 1) {
+        LOG.warn("There is for more than 1 key of type: " + APConstants.CRP_HAS_REGIONS);
+      }
+      regionalAvailable = Boolean.valueOf(hasRegionsList.get(0).getValue());
+    }
 
 
     // Set Main_Query
     CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
     String masterQueryName = "main";
     TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
-    TypedTableModel model = this.getMasterTableModel(center, current_date);
+    TypedTableModel model = this.getMasterTableModel(center, current_date, regionalAvailable);
     sdf.addTable(masterQueryName, model);
     masterReport.setDataFactory(cdf);
 
@@ -555,10 +573,10 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
     return loggedCrp;
   }
 
-  private TypedTableModel getMasterTableModel(String center, String date) {
+  private TypedTableModel getMasterTableModel(String center, String date, Boolean regionalAvailable) {
     // Initialization of Model
-    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "keys"},
-      new Class[] {String.class, String.class, String.class});
+    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "keys", "regionalAvailable"},
+      new Class[] {String.class, String.class, String.class, Boolean.class});
     String keysString = "";
     int countKeys = 0;
 
@@ -572,7 +590,7 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
       }
     }
 
-    model.addRow(new Object[] {center, date, keysString});
+    model.addRow(new Object[] {center, date, keysString, regionalAvailable});
     return model;
   }
 
