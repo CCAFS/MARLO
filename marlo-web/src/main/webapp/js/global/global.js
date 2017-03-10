@@ -22,6 +22,9 @@ $(document).ready(function() {
   showNotificationMessages();
   showHelpText();
 
+  // Changes detected
+  $('p.changesDetected strong').text($('.changedField').length);
+
   // Help text in each section
   $('.scrollup').click(function() {
     $("html, body").animate({
@@ -453,32 +456,32 @@ function isStatusOnGoing(statusId) {
  */
 
 var placeholderText = 'Search the organization here...'
-var searchInstitutionsOptions = function(includePPA){
+var searchInstitutionsOptions = function(includePPA) {
   return {
-    ajax: {
-        url: baseURL + '/searchInstitutions.do',
-        dataType: 'json',
-        delay: 350,
-        data: function(params) {
-          return {
-              q: params.term, // search term
-              isPPA: includePPA ? 1 : 0
-          };
-        },
-        processResults: function(data,params) {
-          return {
-            results: data.institutions,
-          };
-        }
-    },
-    escapeMarkup: function(markup) {
-      return markup;
-    }, // let our custom formatter work
-    minimumInputLength: 2,
-    templateResult: formatRepo,
-    templateSelection: formatRepoSelection,
-    placeholder: placeholderText,
-    width: '100%'
+      ajax: {
+          url: baseURL + '/searchInstitutions.do',
+          dataType: 'json',
+          delay: 350,
+          data: function(params) {
+            return {
+                q: params.term, // search term
+                isPPA: includePPA ? 1 : 0
+            };
+          },
+          processResults: function(data,params) {
+            return {
+              results: data.institutions,
+            };
+          }
+      },
+      escapeMarkup: function(markup) {
+        return markup;
+      }, // let our custom formatter work
+      minimumInputLength: 2,
+      templateResult: formatRepo,
+      templateSelection: formatRepoSelection,
+      placeholder: placeholderText,
+      width: '100%'
   };
 }
 

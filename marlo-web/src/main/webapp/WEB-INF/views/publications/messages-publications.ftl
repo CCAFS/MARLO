@@ -13,7 +13,8 @@
       </p>
       
       [#if differences??]
-        <p>Showing  <strong>${(differences?size)!'null'}</strong> changed fields.</p>
+        [#-- Changed fields is updated by global.js --]
+        <p class="changesDetected">Showing  <strong>${(differences?size)!'null'}</strong> changed fields.</p>
         <p style="display:none">${(differences)!'null'}</p>
       [/#if]
     [/#if]
