@@ -62,6 +62,12 @@ public class AuditLogManagerImp implements AuditLogManager {
   }
 
   @Override
+  public List<Auditlog> getHistoryBeforeList(String transactionID, String className, String entityID) {
+
+    return auditLogDao.getHistoryBeforeList(transactionID, className, entityID);
+  }
+
+  @Override
   public List<Auditlog> listLogs(Class classAudit, long id, String actionName) {
     return auditLogDao.listLogs(classAudit, id, actionName);
 

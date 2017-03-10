@@ -157,7 +157,8 @@ public class HistoryComparator {
       Set<String> differencesUniques = new HashSet<>();
 
 
-      List<Auditlog> beforeHistory = auditlogManager.getHistoryBefore(transactionID);
+      List<Auditlog> beforeHistory = auditlogManager.getHistoryBeforeList(transactionID,
+        iaAuditLog.getClass().toString(), iaAuditLog.getId().toString());
 
       if (!beforeHistory.isEmpty()) {
         Auditlog actual = principal;

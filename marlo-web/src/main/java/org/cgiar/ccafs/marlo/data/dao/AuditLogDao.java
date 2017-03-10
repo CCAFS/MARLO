@@ -46,6 +46,8 @@ public interface AuditLogDao {
 
   public List<Auditlog> getHistoryBefore(String transactionID);
 
+  public List<Auditlog> getHistoryBeforeList(String transactionID, String className, String entityID);
+
   /**
    * List of AuditLogs from the class of parameter that has the entity id
    * 

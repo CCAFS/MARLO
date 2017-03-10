@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.google.gson.Gson;
@@ -81,6 +82,7 @@ public class AuditLogMySQLDao implements AuditLogDao {
   @Override
   public Auditlog getAuditlog(String transactionID, IAuditLog auditLog) {
 
+
     List<Auditlog> auditLogs =
       dao.findAll("from " + Auditlog.class.getName() + " where transaction_id='" + transactionID + "' and ENTITY_ID="
         + auditLog.getId() + " and ENTITY_NAME='" + auditLog.getClass().toString() + "'");
@@ -128,14 +130,31 @@ public class AuditLogMySQLDao implements AuditLogDao {
 
     List<Auditlog> logs = new ArrayList<Auditlog>();
     Auditlog principal = this.getAuditlog(transactionID);
-    String sql = " where transaction_id !='" + transactionID + "' and main=1" + " and DETAIL='" + principal.getDetail()
-      + "'  and CREATED_DATE< '" + principal.getCreatedDate() + "'  ORDER BY CREATED_DATE desc";
-    List<Auditlog> auditLogs = dao.findAll("from " + Auditlog.class.getName() + " where transaction_id !='"
-      + transactionID + "' and main=1" + " and DETAIL='" + principal.getDetail() + "' and CREATED_DATE< '"
-      + principal.getCreatedDate() + "'  ORDER BY CREATED_DATE desc");
+    String sql = " select  transaction_id from auditlog where transaction_id !='" + transactionID + "' and ENTITY_ID='"
+      + principal.getEntityId() + "'" + " and ENTITY_NAME='" + principal.getEntityName() + "' and DETAIL = '"
+      + principal.getDetail() + "'  and CREATED_DATE< '" + principal.getCreatedDate() + "'  ORDER BY CREATED_DATE desc";
+    List<Map<String, Object>> auditLogs = dao.findCustomQuery(sql);
 
     if (!auditLogs.isEmpty()) {
-      logs.addAll(this.getCompleteHistory(auditLogs.get(0).getTransactionId()));
+      logs.addAll(this.getCompleteHistory(auditLogs.get(0).get("transaction_id").toString()));
+    }
+
+    return logs;
+
+  }
+
+  @Override
+  public List<Auditlog> getHistoryBeforeList(String transactionID, String className, String entityID) {
+
+    List<Auditlog> logs = new ArrayList<Auditlog>();
+    Auditlog principal = this.getAuditlog(transactionID);
+    String sql = " select  transaction_id from auditlog where transaction_id !='" + transactionID + "' and ENTITY_ID='"
+      + entityID + "'" + " and ENTITY_NAME='" + className + "'  and CREATED_DATE< '" + principal.getCreatedDate()
+      + "'  ORDER BY CREATED_DATE desc";
+    List<Map<String, Object>> auditLogs = dao.findCustomQuery(sql);
+
+    if (!auditLogs.isEmpty()) {
+      logs.addAll(this.getCompleteHistory(auditLogs.get(0).get("transaction_id").toString()));
     }
 
     return logs;

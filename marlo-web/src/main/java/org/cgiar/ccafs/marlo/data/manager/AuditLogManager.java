@@ -27,7 +27,6 @@ import com.google.inject.ImplementedBy;
 @ImplementedBy(AuditLogManagerImp.class)
 public interface AuditLogManager {
 
-
   public Auditlog getAuditlog(String transactionID);
 
   public Auditlog getAuditlog(String transactionID, IAuditLog auditLog);
@@ -43,6 +42,8 @@ public interface AuditLogManager {
   public IAuditLog getHistory(String transactionID);
 
   public List<Auditlog> getHistoryBefore(String transactionID);
+
+  public List<Auditlog> getHistoryBeforeList(String transactionID, String className, String entityID);
 
   /**
    * List of AuditLogs from the class of parameter that has the entity id
