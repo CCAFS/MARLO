@@ -163,7 +163,7 @@
             </div>
           </div>
           
-          [#-- Synthesis by Outcome --]
+          [#-- Synthesis by Outcome 
           <div class="summariesFiles borderBox col-md-12" >
             <div class="col-md-12 title-file">
               <input class="hidden" type="radio" name="formOptions" id="impactPathwayContributionsSummary" value="OutcomeSynthesisReportingSummary"/>
@@ -178,6 +178,7 @@
                 </div>
             </div>
           </div>
+          --]
           
           [#-- caseStudies By Year Summary PDF
           <div class="summariesFiles borderBox col-md-3 reportingCycle" style="display:none;">
