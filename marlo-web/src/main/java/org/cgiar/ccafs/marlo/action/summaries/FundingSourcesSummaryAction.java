@@ -43,10 +43,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
 import org.pentaho.reporting.engine.classic.core.Band;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
@@ -109,25 +111,8 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
 
     MasterReport masterReport = (MasterReport) reportResource.getResource();
     String center = loggedCrp.getName();
-    // Get parameters from URL
 
-    // Get cycle
-    if (this.getRequest().getParameter("cycle") != null) {
-      cycle = this.getRequest().getParameter("cycle");
-    } else {
-      cycle = this.getCurrentCycle();
-    }
 
-    // Get year
-    try {
-      year = Integer.parseInt(this.getRequest().getParameter("year"));
-    } catch (Exception e) {
-      if (cycle.equals("Planning")) {
-        year = this.getPlanningYear();
-      } else {
-        year = this.getReportingYear();
-      }
-    }
     // Get datetime
     ZonedDateTime timezone = ZonedDateTime.now();
     DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
@@ -266,7 +251,7 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("FundingSources-");
+    fileName.append("FundingSourcesSummary-");
     fileName.append(this.year + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
@@ -450,7 +435,6 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
       List<String> coasList = new ArrayList<String>();
 
       for (String projectString : s.stream().collect(Collectors.toList())) {
-        // TODO: Get project object
         Project projectById = this.projectManager.getProjectById(Long.parseLong(projectString));
 
         // get Flagships related to the project sorted by acronym
@@ -555,6 +539,22 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
       loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
       loggedCrp = crpManager.getCrpById(loggedCrp.getId());
     } catch (Exception e) {
+    }
+
+    // Get parameters from URL
+    // Get year
+    try {
+      Map<String, Object> parameters = this.getParameters();
+      year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
+    } catch (Exception e) {
+      year = this.getCurrentCycleYear();
+    }
+    // Get cycle
+    try {
+      Map<String, Object> parameters = this.getParameters();
+      cycle = (StringUtils.trim(((String[]) parameters.get(APConstants.CYCLE))[0]));
+    } catch (Exception e) {
+      cycle = this.getCurrentCycle();
     }
   }
 

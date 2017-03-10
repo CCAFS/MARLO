@@ -32,9 +32,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.MasterReport;
 import org.pentaho.reporting.engine.classic.core.modules.output.table.xls.ExcelReportUtil;
@@ -93,20 +95,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     MasterReport masterReport = (MasterReport) reportResource.getResource();
 
     Number idParam = loggedCrp.getId();
-    // Get parameters from URL
-    // Get year
-    try {
-      year = Integer.parseInt(this.getRequest().getParameter("year"));
-    } catch (Exception e) {
-      year = this.getCurrentCycleYear();
-    }
 
-    // Get cycle
-    try {
-      cycle = this.getRequest().getParameter("cycle");
-    } catch (Exception e) {
-      cycle = this.getCurrentCycle();
-    }
     // Get datetime
     ZonedDateTime timezone = ZonedDateTime.now();
     DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
@@ -180,6 +169,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
     fileName.append("BudgetPerPartnersSummary-");
+    fileName.append(this.year + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
 
@@ -211,7 +201,21 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
       loggedCrp = crpManager.getCrpById(loggedCrp.getId());
     } catch (Exception e) {
     }
-
+    // Get parameters from URL
+    // Get year
+    try {
+      Map<String, Object> parameters = this.getParameters();
+      year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
+    } catch (Exception e) {
+      year = this.getCurrentCycleYear();
+    }
+    // Get cycle
+    try {
+      Map<String, Object> parameters = this.getParameters();
+      cycle = (StringUtils.trim(((String[]) parameters.get(APConstants.CYCLE))[0]));
+    } catch (Exception e) {
+      cycle = this.getCurrentCycle();
+    }
   }
 
   public void setCycle(String cycle) {

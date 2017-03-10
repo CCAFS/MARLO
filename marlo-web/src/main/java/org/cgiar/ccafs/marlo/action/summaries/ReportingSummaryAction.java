@@ -2065,9 +2065,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("Full_Project_Report-");
+    fileName.append("FullProjectReportSummary-");
     fileName.append(project.getCrp().getName() + "-");
     fileName.append("P" + projectID + "-");
+    fileName.append(this.year + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".pdf");
     return fileName.toString();
@@ -3108,12 +3109,25 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       loggedCrp = crpManager.getCrpById(loggedCrp.getId());
       this
         .setProjectID(Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID))));
-      this.setYear(Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.YEAR_REQUEST))));
-      this.setCycle(StringUtils.trim(this.getRequest().getParameter(APConstants.CYCLE)));
       this.setCrpSession(loggedCrp.getAcronym());
 
     } catch (Exception e) {
 
+    }
+    // Get parameters from URL
+    // Get year
+    try {
+      Map<String, Object> parameters = this.getParameters();
+      year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
+    } catch (Exception e) {
+      year = this.getCurrentCycleYear();
+    }
+    // Get cycle
+    try {
+      Map<String, Object> parameters = this.getParameters();
+      cycle = (StringUtils.trim(((String[]) parameters.get(APConstants.CYCLE))[0]));
+    } catch (Exception e) {
+      cycle = this.getCurrentCycle();
     }
   }
 

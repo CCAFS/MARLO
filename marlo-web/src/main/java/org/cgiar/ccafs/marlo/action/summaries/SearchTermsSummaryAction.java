@@ -517,6 +517,7 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
     fileName.append("SearchTermsSummary-");
+    fileName.append(this.year + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
 
@@ -800,10 +801,25 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
 
       loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
       loggedCrp = crpManager.getCrpById(loggedCrp.getId());
-      cycle = (StringUtils.trim(((String[]) parameters.get(APConstants.CYCLE))[0]));
-      year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
     } catch (Exception e) {
     }
+
+    // Get parameters from URL
+    // Get year
+    try {
+      Map<String, Object> parameters = this.getParameters();
+      year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
+    } catch (Exception e) {
+      year = this.getCurrentCycleYear();
+    }
+    // Get cycle
+    try {
+      Map<String, Object> parameters = this.getParameters();
+      cycle = (StringUtils.trim(((String[]) parameters.get(APConstants.CYCLE))[0]));
+    } catch (Exception e) {
+      cycle = this.getCurrentCycle();
+    }
+
   }
 
   private DeliverablePartnership responsiblePartner(Deliverable deliverable) {
