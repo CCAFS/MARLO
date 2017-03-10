@@ -190,7 +190,7 @@ public class HistoryComparator {
       try {
         String subFixSplit[] = subFix.split("\\.");
 
-        for (int i = 0; i <= levels; i++) {
+        for (int i = 0; i < levels && levels > 1; i++) {
           if (parent.isEmpty()) {
             parent = subFixSplit[i];
           } else {
