@@ -366,12 +366,11 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("OutcomesCaseStudies-");
+    fileName.append("OutcomesCaseStudiesSummary-");
     fileName.append(this.year + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".pdf");
     return fileName.toString();
-
   }
 
   private void getFooterSubreports(HashMap<String, Element> hm, ReportFooter reportFooter) {
@@ -421,10 +420,10 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
     } catch (Exception e) {
     }
 
+    // Get parameters from URL
+    // Get year
     try {
-
       Map<String, Object> parameters = this.getParameters();
-
       year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
     } catch (Exception e) {
       year = this.getCurrentCycleYear();

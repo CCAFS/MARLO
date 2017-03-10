@@ -101,12 +101,6 @@ public class LeveragesReportingSummaryAction extends BaseAction implements Summa
     MasterReport masterReport = (MasterReport) reportResource.getResource();
     String center = loggedCrp.getName();
 
-    // Get cycle
-    try {
-      cycle = this.getRequest().getParameter("cycle");
-    } catch (Exception e) {
-      cycle = this.getCurrentCycle();
-    }
 
     // Get datetime
     ZonedDateTime timezone = ZonedDateTime.now();
@@ -237,7 +231,8 @@ public class LeveragesReportingSummaryAction extends BaseAction implements Summa
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("Leverages_Reporting-");
+    fileName.append("LeveragesReportingSummary-");
+    fileName.append(this.year + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
 
@@ -351,12 +346,20 @@ public class LeveragesReportingSummaryAction extends BaseAction implements Summa
     } catch (Exception e) {
     }
 
+    // Get parameters from URL
+    // Get year
     try {
       Map<String, Object> parameters = this.getParameters();
-
       year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
     } catch (Exception e) {
       year = this.getCurrentCycleYear();
+    }
+    // Get cycle
+    try {
+      Map<String, Object> parameters = this.getParameters();
+      cycle = (StringUtils.trim(((String[]) parameters.get(APConstants.CYCLE))[0]));
+    } catch (Exception e) {
+      cycle = this.getCurrentCycle();
     }
   }
 

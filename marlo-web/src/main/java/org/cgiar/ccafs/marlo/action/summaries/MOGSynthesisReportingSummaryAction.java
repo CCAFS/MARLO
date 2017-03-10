@@ -53,11 +53,11 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Andrés Valencia - CIAT/CCAFS
  */
-public class OutcomeSynthesisReportingSummaryAction extends BaseAction implements Summary {
+public class MOGSynthesisReportingSummaryAction extends BaseAction implements Summary {
 
 
   private static final long serialVersionUID = 1L;
-  private static Logger LOG = LoggerFactory.getLogger(OutcomeSynthesisReportingSummaryAction.class);
+  private static Logger LOG = LoggerFactory.getLogger(MOGSynthesisReportingSummaryAction.class);
 
   private CrpManager crpManager;
   private Crp loggedCrp;
@@ -72,7 +72,7 @@ public class OutcomeSynthesisReportingSummaryAction extends BaseAction implement
 
 
   @Inject
-  public OutcomeSynthesisReportingSummaryAction(APConfig config, CrpManager crpManager) {
+  public MOGSynthesisReportingSummaryAction(APConfig config, CrpManager crpManager) {
     super(config);
     this.crpManager = crpManager;
   }
@@ -88,7 +88,7 @@ public class OutcomeSynthesisReportingSummaryAction extends BaseAction implement
     manager.registerDefaults();
 
     Resource reportResource =
-      manager.createDirectly(this.getClass().getResource("/pentaho/outcomeSynthesis.prpt"), MasterReport.class);
+      manager.createDirectly(this.getClass().getResource("/pentaho/MOGSynthesis.prpt"), MasterReport.class);
 
     MasterReport masterReport = (MasterReport) reportResource.getResource();
     String center = loggedCrp.getName();
@@ -215,7 +215,7 @@ public class OutcomeSynthesisReportingSummaryAction extends BaseAction implement
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("SynthesisByOutcomeSummary-");
+    fileName.append("SynthesisByMogSummary-");
     fileName.append(this.year + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");

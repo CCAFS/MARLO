@@ -57,9 +57,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
 import org.pentaho.reporting.engine.classic.core.Band;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
@@ -120,11 +122,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
 
     MasterReport masterReport = (MasterReport) reportResource.getResource();
     String center = loggedCrp.getName();
-    try {
-      year = Integer.parseInt(this.getRequest().getParameter("year"));
-    } catch (Exception e) {
-      year = this.getCurrentCycleYear();
-    }
+
 
     // Get datetime
     ZonedDateTime timezone = ZonedDateTime.now();
@@ -1003,7 +1001,6 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
   }
 
   private TypedTableModel getDeliverablesPublicationsReportingTableModel() {
-    // TODO Auto-generated method stub
     TypedTableModel model = new TypedTableModel(
       new String[] {"publication_id", "title", "publication_sub_type", "deliv_year", "leader", "cross_cutting",
         "deliv_dissemination_channel", "deliv_dissemination_url", "deliv_open_access", "deliv_license", "titleMetadata",
@@ -1527,7 +1524,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("Deliverables_Reporting-");
+    fileName.append("DeliverablesReportingSummary-");
+    fileName.append(this.year + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
 
@@ -1607,8 +1605,11 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
     } catch (Exception e) {
     }
 
+    // Get parameters from URL
+    // Get year
     try {
-      year = Integer.parseInt(this.getRequest().getParameter("year"));
+      Map<String, Object> parameters = this.getParameters();
+      year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
     } catch (Exception e) {
       year = this.getCurrentCycleYear();
     }

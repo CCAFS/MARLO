@@ -224,7 +224,8 @@ public class ProjectHighlightsExcelSummaryAction extends BaseAction implements S
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("projectHighlightsSummaryExcel_");
+    fileName.append("ProjectHighlightsSummary-");
+    fileName.append(this.year + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
 
@@ -424,9 +425,10 @@ public class ProjectHighlightsExcelSummaryAction extends BaseAction implements S
     } catch (Exception e) {
     }
 
+    // Get parameters from URL
+    // Get year
     try {
       Map<String, Object> parameters = this.getParameters();
-
       year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
     } catch (Exception e) {
       year = this.getCurrentCycleYear();

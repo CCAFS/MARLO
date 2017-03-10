@@ -32,9 +32,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.MasterReport;
 import org.pentaho.reporting.engine.classic.core.modules.output.table.xls.ExcelReportUtil;
@@ -64,6 +66,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
   private byte[] bytesXLSX;
   // Streams
   InputStream inputStream;
+  private int year;
 
   @Inject
   public ExpectedDeliverablesSummaryAction(APConfig config, CrpManager crpManager) {
@@ -86,12 +89,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
     MasterReport masterReport = (MasterReport) reportResource.getResource();
 
     Number idParam = loggedCrp.getId();
-    int yearParam;
-    try {
-      yearParam = Integer.parseInt(this.getRequest().getParameter("year"));
-    } catch (Exception e) {
-      yearParam = this.getCurrentCycleYear();
-    }
+
 
     // Get datetime
     ZonedDateTime timezone = ZonedDateTime.now();
@@ -104,7 +102,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
 
 
     masterReport.getParameterValues().put("crp_id", idParam);
-    masterReport.getParameterValues().put("year", yearParam);
+    masterReport.getParameterValues().put("year", year);
     masterReport.getParameterValues().put("date", current_date);
 
     // Verify if the crp has regions avalaible
@@ -157,7 +155,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("Expected-deliverables-");
+    fileName.append("ExpectedDeliverablesSummary-");
+    fileName.append(this.year + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
 
@@ -178,6 +177,11 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
   }
 
 
+  public int getYear() {
+    return year;
+  }
+
+
   @Override
   public void prepare() {
     try {
@@ -185,12 +189,24 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
       loggedCrp = crpManager.getCrpById(loggedCrp.getId());
     } catch (Exception e) {
     }
-
+    // Get parameters from URL
+    // Get year
+    try {
+      Map<String, Object> parameters = this.getParameters();
+      year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
+    } catch (Exception e) {
+      year = this.getCurrentCycleYear();
+    }
   }
 
 
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
+  }
+
+
+  public void setYear(int year) {
+    this.year = year;
   }
 
 
