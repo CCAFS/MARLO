@@ -85,6 +85,8 @@ public class HistoryComparator {
 
     this.removeJSONField(jsonObjNew, "activeSince");
     this.removeJSONField(jsonObjOld, "activeSince");
+    this.removeJSONField(jsonObjNew, "modifiedBy");
+    this.removeJSONField(jsonObjOld, "modifiedBy");
     String subFixStr[] = subFix.split("\\.");
     for (String string : subFixStr) {
       this.removeJSONField(jsonObjNew, string);
