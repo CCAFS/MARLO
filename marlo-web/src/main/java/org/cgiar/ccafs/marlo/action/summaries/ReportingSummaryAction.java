@@ -1205,11 +1205,14 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         .filter(d -> d.isActive() && d.getProject() != null && d.getProject().isActive()
           && d.getProject().getReporting() != null && d.getProject().getReporting() && d.getProject().getCrp() != null
           && d.getProject().getCrp().getId().equals(this.loggedCrp.getId()) && d.getStatus() != null
-          && ((d.getYear() == this.year
-            || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))
-            || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-              && (d.getYear() >= this.year
-                || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() >= this.year))))
+          && ((d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+            && (d.getYear() >= this.year
+              || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() >= this.year)))
+            || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+              && (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))
+            || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+              && (d.getYear() == this.year
+                || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))))
           && (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
             || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
             || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
