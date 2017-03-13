@@ -103,5 +103,11 @@ public class HistoryDifference {
     this.oldValue = oldValue;
   }
 
+  @Override
+  public String toString() {
+
+    return difference;
+  }
+
 
 }
