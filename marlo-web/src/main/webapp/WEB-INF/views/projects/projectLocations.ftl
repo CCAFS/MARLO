@@ -72,8 +72,11 @@
               <div class="row">
                 <div class="col-md-12">
                 <b>NOTE: </b>
-                <span>To get a detailed information of a specific location please use the left click <span><img src="${baseUrl}/images/global/left-click.jpg" alt="" /></span>.</span>
-                <span>To add a new locations please right click <span><img src="${baseUrl}/images/global/right-click.jpg" alt="" /></span> in some specific location inside the map.</span>
+                <br />
+                <span><span><img style="width: 3%;" src="${baseUrl}/images/global/left-click.jpg" alt="" /></span>Left click to get detailed information of a specific location.</span>
+                <br />
+                <br />
+                <span><span><img style="width: 3%;" src="${baseUrl}/images/global/right-click.jpg" alt="" /></span>Right click in the map to add a new location.</span>
                 </div>
                 <div  class="col-md-12 map">
                   <div id="map" class="col-md-12"></div>
@@ -179,8 +182,8 @@
    [#if editable]<span class="listButton remove removeLocationLevel pull-right" style="padding: 0 5px 3px 5px;">[@s.text name="form.buttons.remove" /] location level</span>[/#if]
     </h5>
     <div class=" locationLevel-optionContent " listname="${customName}.locElements">
-      <span class="allCountriesQuestion" style="display:${list?string('inline-block','none')}">
-        <span class="question">[#if element?has_content && element.name?contains("Country")][@s.text name="projectLocations.selectAllCountries" /][#else][@s.text name="projectLocations.selectAllCmvs" /][/#if]</span>
+      <span class="allCountriesQuestion" style="display:[#if element?has_content && list && element.name?contains("Climate Smart Village Sites")]inline-block[#else]none[/#if]">
+        <span class="question">[@s.text name="projectLocations.selectAllCmvs" /]</span>
         [@customForm.yesNoInput name="${customName}.allCountries"  editable=editable inverse=false  cssClass="allCountries text-center" /]
         <hr />
       </span>

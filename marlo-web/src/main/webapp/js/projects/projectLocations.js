@@ -97,30 +97,60 @@ function attachEvents() {
 // FUNCTIONS
 
 function checkAllCountries($this) {
-  console.log($($this).parent().find("input").val());
   var parent = $($this).parents(".locationLevel");
   console.log(parent);
   if($($this).parent().find("input").val() == "true") {
-
     parent.find(".locElement").each(function(i,e) {
       $(e).hide("slow");
       var id = $(e).attr("id").split('-')[1];
       if(markers[id] != undefined) {
         removeMarker(id);
       }
-    })
+    });
+    var url = baseURL + "/searchCountryListPL.do";
+    var data = {
+      parentId: 10
+    };
+    $.ajax({
+        url: url,
+        type: 'GET',
+        dataType: "json",
+        data: data
+    }).done(function(m) {
+      console.log(m);
+      $.each(m.locElements, function(i,e) {
+        addMarker(map, e.id, e.lat, e.lng, e.name, "true", 2);
+      });
+    });
+    if($(parent).find(".locationLevelName").val() == "Climate Smart Village Sites") {
+      $("#locLevelSelect").find("option[value='10-true-Climate Smart Village Sites']").remove();
+    }
   } else {
+    // Delete all
+    $.each(markers, function(i,e) {
+      if(typeof e === 'undefined') {
+      } else {
+        if(e.type == 2) {
+          removeMarker(e.gElement.id);
+        }
+      }
+    });
+    // Add current
     parent.find(".locElement").each(
         function(i,e) {
+          console.log(e);
           $(e).show("slow");
           var id = $(e).attr("id").split('-')[1];
           var locLevelName = $(e).parent().parent().parent().find(".locationLevelName");
-          console.log(locLevelName);
-          if(locLevelName.val() != "Country") {
+          if(locLevelName.val() == "Climate Smart Village Sites") {
             addMarker(map, id, parseFloat($(e).find(".geoLatitude").val()),
-                parseFloat($(e).find(".geoLongitude").val()), $(e).find(".locElementName").val());
+                parseFloat($(e).find(".geoLongitude").val()), $(e).find(".locElementName").val(), "true", 2);
           }
         });
+    if($(parent).find(".locationLevelName").val() == "Climate Smart Village Sites") {
+      $("#locLevelSelect").append(
+          "<option value='10-true-Climate Smart Village Sites'>Climate Smart Village Sites</option>");
+    }
   }
   updateIndex();
 }
@@ -208,7 +238,12 @@ function loadScript() {
         var site = $(locItem).find(".locElementName").val();
         var idMarker = $(locItem).attr("id").split("-")[1];
         if(latitude != "" && longitude != "" && latitude != 0 && longitude != 0) {
-          addMarker(map, (idMarker), parseFloat(latitude), parseFloat(longitude), site, isList);
+          console.log($(item));
+          if($(item).find(".locationLevelName").val() == "Climate Smart Village Sites") {
+            addMarker(map, (idMarker), parseFloat(latitude), parseFloat(longitude), site, isList, 2);
+          } else {
+            addMarker(map, (idMarker), parseFloat(latitude), parseFloat(longitude), site, isList, 1);
+          }
         }
         // ADD country into countries list
         $.ajax({
@@ -348,7 +383,7 @@ function initMap() {
 
 // Map events
 
-function addMarker(map,idMarker,latitude,longitude,sites,isList) {
+function addMarker(map,idMarker,latitude,longitude,sites,isList,locType) {
   // Close info window
   infoWindow.close();
   var drag;
@@ -371,7 +406,10 @@ function addMarker(map,idMarker,latitude,longitude,sites,isList) {
       animation: google.maps.Animation.DROP,
       list: isList
   });
-  markers[idMarker] = marker;
+  markers[idMarker] = {
+      gElement: marker,
+      type: locType
+  };
 // To add the marker to the map, call setMap();
   marker.setMap(map);
   map.setCenter(marker.getPosition());
@@ -426,15 +464,15 @@ function deleteMarkers() {
 // Sets the map on all markers in the array.
 function setAllMap(map) {
   $.each(markers, function(index,marker) {
-    if(marker) {
-      marker.setMap(map);
+    if(marker.gElement) {
+      marker.gElement.setMap(map);
     }
   });
 }
 
 // Remove individual marker by id
 function removeMarker(id) {
-  marker = markers[id];
+  marker = markers[id].gElement;
   marker.setMap(null);
   delete markers[id];
 }
@@ -503,6 +541,7 @@ function formWindowEvents() {
                 data: data
             }).done(
                 function(m) {
+                  console.log(m);
                   select.empty();
                   for(var i = 0; i < m.locElements.length; i++) {
                     select.append("<option class='" + m.locElements[i].isoAlpha2 + "' value='" + m.locElements[i].id
@@ -636,7 +675,7 @@ function addLocByCoordinates(locationId,$locationSelect,locationName) {
         $list.append($item);
         $item.show('slow');
         // add marker
-        addMarker(map, (countID), parseFloat(latitude), parseFloat(longitude), name, "false");
+        addMarker(map, (countID), parseFloat(latitude), parseFloat(longitude), name, "false", 1);
         // update indexes
         updateIndex();
       }
@@ -670,7 +709,7 @@ function addCountryIntoLocLevel(locationId,$locationSelect,locationName) {
         longitude = m.geopositions[0].longitude;
         $item.find('.geoLatitude').val(latitude);
         $item.find('.geoLongitude').val(longitude);
-        addMarker(map, (countID), parseFloat(latitude), parseFloat(longitude), locName, "true");
+        addMarker(map, (countID), parseFloat(latitude), parseFloat(longitude), locName, "true", 2);
       }
     });
     $item.attr("id", "location-" + (countID));
