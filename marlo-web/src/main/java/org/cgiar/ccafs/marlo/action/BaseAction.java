@@ -462,7 +462,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     if (differences != null) {
       if (differences.contains(new HistoryDifference(field))) {
-        return differences.get(differences.indexOf(new HistoryDifference(field)));
+        int index = differences.indexOf(new HistoryDifference(field));
+        HistoryDifference historyDifference = differences.get(index);
+        historyDifference.setIndex(index);
+        return historyDifference;
       }
     }
     return null;

@@ -25,6 +25,7 @@ public class HistoryDifference {
   private boolean added;
 
   private String oldValue;
+  private int index;
 
 
   private String newValue;
@@ -43,6 +44,7 @@ public class HistoryDifference {
     this.oldValue = oldValue;
     this.newValue = newValue;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -72,6 +74,10 @@ public class HistoryDifference {
 
   public String getId() {
     return id;
+  }
+
+  public int getIndex() {
+    return index;
   }
 
   public String getNewValue() {
@@ -104,6 +110,10 @@ public class HistoryDifference {
 
   public void setId(String id) {
     this.id = id;
+  }
+
+  public void setIndex(int index) {
+    this.index = index;
   }
 
   public void setNewValue(String newValue) {
