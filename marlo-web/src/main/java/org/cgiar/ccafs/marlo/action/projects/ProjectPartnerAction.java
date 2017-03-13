@@ -675,6 +675,9 @@ public class ProjectPartnerAction extends BaseAction {
             j++;
           }
           int k = 0;
+          if (projectPartner.getId().intValue() == 170) {
+            System.out.println("a");
+          }
           for (ProjectPartnerContribution projectPartnerContribution : projectPartner
             .getProjectPartnerContributions()) {
             differences

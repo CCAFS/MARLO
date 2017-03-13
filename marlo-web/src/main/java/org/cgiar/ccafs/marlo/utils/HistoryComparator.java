@@ -203,6 +203,8 @@ public class HistoryComparator {
           }
         }
 
+      } else {
+        differencesUniques.add(new HistoryDifference("id", true, "", ""));
       }
 
       String parent = "";
@@ -222,7 +224,9 @@ public class HistoryComparator {
       for (HistoryDifference str : differencesUniques) {
         try {
           Field field = this.getField(str.getDifference());
-
+          if (str.getDifference().equals("id")) {
+            differences.add(new HistoryDifference(parent + ".id", true, "", ""));
+          }
           if (field.getType().isAssignableFrom(IAuditLog.class)) {
             str.setDifference(subFix + "." + str.getDifference() + ".id");
           } else {
@@ -232,9 +236,7 @@ public class HistoryComparator {
           str.setDifference(subFix + "." + str.getDifference());
         }
         differences.add(str);
-        if (str.getDifference().equals("id")) {
-          differences.add(new HistoryDifference(parent + ".id", true, "", ""));
-        }
+
       }
 
     }
