@@ -588,9 +588,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
     if (!project.getActivities().isEmpty()) {
       for (Activity activity : project.getActivities().stream().sorted((d1, d2) -> Long.compare(d1.getId(), d2.getId()))
-        .filter(
-          a -> a.isActive() && (a.getActivityStatus() == 2 || a.getActivityStatus() == 4 || a.getActivityStatus() == 3)
-            && a.getStartDate() != null && a.getEndDate() != null)
+        .filter(a -> a.isActive() && a.getActivityStatus() != null
+          && (a.getActivityStatus() == 2 || a.getActivityStatus() == 4 || a.getActivityStatus() == 3)
+          && a.getStartDate() != null && a.getEndDate() != null)
         .collect(Collectors.toList())) {
         // Filter by date
         Calendar cal = Calendar.getInstance();
