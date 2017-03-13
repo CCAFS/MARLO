@@ -14,11 +14,8 @@
           [@s.param]<a href="[@s.url][@s.param name="projectID" value=projectID /][@s.param name="edit" value="true"/][/@s.url]">here</a>[/@s.param]
          [/@s.text]
       </p>
-      
       [#-- Differences --]
       [#include "/WEB-INF/global/macros/historyDiff.ftl" /]
-      
-      
     [/#if]
   </div>
 [#else]

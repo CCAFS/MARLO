@@ -11,12 +11,8 @@
           [@s.param]<a href="[@s.url][@s.param name="liaisonInstitutionID" value=liaisonInstitutionID /][@s.param name="edit" value="true"/][/@s.url]">here</a>[/@s.param]
          [/@s.text]
       </p>
-      
-      [#if differences??]
-        [#-- Changed fields is updated by global.js --]
-        <p class="changesDetected">Showing  <strong>${(differences?size)!'null'}</strong> changed fields.</p>
-        <p style="display:none">${(differences)!'null'}</p>
-      [/#if]
+      [#-- Differences --]
+      [#include "/WEB-INF/global/macros/historyDiff.ftl" /]
     [/#if]
   </div>
 [#else]
