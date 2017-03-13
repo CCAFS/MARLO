@@ -24,6 +24,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -37,6 +38,7 @@ import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.inject.Inject;
+import com.ibm.icu.text.SimpleDateFormat;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -158,7 +160,21 @@ public class HistoryComparator {
           str.setDifference(subFix + "." + str.getDifference() + ".id");
           differences.add(str);
         } else {
-          str.setDifference(subFix + "." + str.getDifference());
+
+
+          if (Date.class.isAssignableFrom(field.getType())) {
+            SimpleDateFormat formatter = new SimpleDateFormat("MMM dd, yyyy HH:mm:ss a");
+            SimpleDateFormat formatterSystem = new SimpleDateFormat("yyyy-MM-dd");
+            str.setNewValue(formatterSystem.format(formatter.parse(str.getNewValue())));
+            str.setOldValue(formatterSystem.format(formatter.parse(str.getNewValue())));
+
+            str.setDifference(subFix + "." + str.getDifference());
+
+          } else {
+            str.setDifference(subFix + "." + str.getDifference());
+          }
+
+
           differences.add(str);
 
         }
@@ -229,10 +245,21 @@ public class HistoryComparator {
           if (str.getDifference().equals("id")) {
             differences.add(new HistoryDifference(UUID.randomUUID().toString(), parent + ".id", true, "", ""));
           }
-          if (field.getType().isAssignableFrom(IAuditLog.class)) {
+          if (IAuditLog.class.isAssignableFrom(field.getType())) {
             str.setDifference(subFix + "." + str.getDifference() + ".id");
           } else {
-            str.setDifference(subFix + "." + str.getDifference());
+            if (Date.class.isAssignableFrom(field.getType())) {
+              SimpleDateFormat formatter = new SimpleDateFormat("MMM dd, yyyy HH:mm:ss a");
+              SimpleDateFormat formatterSystem = new SimpleDateFormat("yyyy-MM-dd");
+              str.setNewValue(formatterSystem.format(formatter.parse(str.getNewValue())));
+              str.setOldValue(formatterSystem.format(formatter.parse(str.getNewValue())));
+
+              str.setDifference(subFix + "." + str.getDifference());
+
+            } else {
+              str.setDifference(subFix + "." + str.getDifference());
+            }
+
           }
         } catch (Exception e) {
           str.setDifference(subFix + "." + str.getDifference());
