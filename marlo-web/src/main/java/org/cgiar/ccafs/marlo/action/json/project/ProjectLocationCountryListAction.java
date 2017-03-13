@@ -68,8 +68,10 @@ public class ProjectLocationCountryListAction extends BaseAction {
         locElement.put("id", element.getId());
         locElement.put("name", element.getName());
         locElement.put("isoAlpha2", element.getIsoAlpha2());
-        locElement.put("lat", element.getLocGeoposition().getLatitude());
-        locElement.put("lng", element.getLocGeoposition().getLongitude());
+        if(element.getLocGeoposition()!=null && element.getLocGeoposition()!=null){
+          locElement.put("lat", element.getLocGeoposition().getLatitude());
+          locElement.put("lng", element.getLocGeoposition().getLongitude());
+        }
         locElements.add(locElement);
       }
     }

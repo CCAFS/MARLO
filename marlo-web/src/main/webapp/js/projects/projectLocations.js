@@ -48,7 +48,7 @@ function attachEvents() {
   $('.locationName').on('click', function() {
     $(".locations").removeClass("selected");
     var id = $(this).parent().parent().attr("id").split('-')[1];
-    var marker = markers[id];
+    var marker = markers[id].gElement;
     if(marker) {
       $(this).parent().addClass("selected");
       openInfoWindow(marker);
@@ -138,7 +138,6 @@ function checkAllCountries($this) {
     // Add current
     parent.find(".locElement").each(
         function(i,e) {
-          console.log(e);
           $(e).show("slow");
           var id = $(e).attr("id").split('-')[1];
           var locLevelName = $(e).parent().parent().parent().find(".locationLevelName");
@@ -238,7 +237,6 @@ function loadScript() {
         var site = $(locItem).find(".locElementName").val();
         var idMarker = $(locItem).attr("id").split("-")[1];
         if(latitude != "" && longitude != "" && latitude != 0 && longitude != 0) {
-          console.log($(item));
           if($(item).find(".locationLevelName").val() == "Climate Smart Village Sites") {
             addMarker(map, (idMarker), parseFloat(latitude), parseFloat(longitude), site, isList, 2);
           } else {
@@ -541,7 +539,6 @@ function formWindowEvents() {
                 data: data
             }).done(
                 function(m) {
-                  console.log(m);
                   select.empty();
                   for(var i = 0; i < m.locElements.length; i++) {
                     select.append("<option class='" + m.locElements[i].isoAlpha2 + "' value='" + m.locElements[i].id
@@ -600,7 +597,6 @@ function setCountryDefault() {
           latlng: (infoWindow.getPosition().lat() + "," + infoWindow.getPosition().lng())
       },
       success: function(data) {
-        console.log(data);
         if(data.status == 'OK') {
           var country = getResultByType(data.results[0], 'country').short_name;
           var $countrySelect = $(".selectList select");
