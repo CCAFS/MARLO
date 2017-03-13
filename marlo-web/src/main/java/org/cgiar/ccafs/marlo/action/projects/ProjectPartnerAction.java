@@ -77,6 +77,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
@@ -694,7 +695,7 @@ public class ProjectPartnerAction extends BaseAction {
                 "project.partners[" + i + "].partnerContributors[" + k + "]", "project.partnerContributors", 2)
               .isEmpty()) {
               if (!differences.contains("project.overall")) {
-                differences.add(new HistoryDifference("project.overall", true, "", ""));
+                differences.add(new HistoryDifference(UUID.randomUUID().toString(), "project.overall", true, "", ""));
               }
             }
           }

@@ -21,20 +21,23 @@ public class HistoryDifference {
 
 
   private String difference;
-
+  private String id;
   private boolean added;
 
   private String oldValue;
 
+
   private String newValue;
+
 
   public HistoryDifference(String difference) {
     super();
     this.difference = difference;
   }
 
-  public HistoryDifference(String difference, boolean added, String oldValue, String newValue) {
+  public HistoryDifference(String id, String difference, boolean added, String oldValue, String newValue) {
     super();
+    this.id = id;
     this.difference = difference;
     this.added = added;
     this.oldValue = oldValue;
@@ -67,6 +70,10 @@ public class HistoryDifference {
     return difference;
   }
 
+  public String getId() {
+    return id;
+  }
+
   public String getNewValue() {
     return newValue;
   }
@@ -93,6 +100,10 @@ public class HistoryDifference {
 
   public void setDifference(String difference) {
     this.difference = difference;
+  }
+
+  public void setId(String id) {
+    this.id = id;
   }
 
   public void setNewValue(String newValue) {

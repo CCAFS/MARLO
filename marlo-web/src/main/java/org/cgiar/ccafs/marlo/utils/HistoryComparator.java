@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import com.google.common.collect.MapDifference;
 import com.google.common.collect.MapDifference.ValueDifference;
@@ -59,12 +60,13 @@ public class HistoryComparator {
     Class classRelation = Class.forName(actual.getEntityName().replace("class ", ""));
     String listName = this.getListName(classRelation);
     if (listName != null) {
-      differencesUniques.add(new HistoryDifference(listName, true, "", ""));
+      differencesUniques.add(new HistoryDifference(UUID.randomUUID().toString(), listName, true, "", ""));
     } else {
       if (actual != null && actual.getRelationName() != null) {
         String relationName = actual.getRelationName().replace(":" + principal.getEntityId(), "");
         if (specialList.containsKey(relationName)) {
-          differencesUniques.add(new HistoryDifference(specialList.get(relationName), true, "", ""));
+          differencesUniques
+            .add(new HistoryDifference(UUID.randomUUID().toString(), specialList.get(relationName), true, "", ""));
         }
       }
 
@@ -101,9 +103,9 @@ public class HistoryComparator {
     MapDifference<String, Object> comparable = Maps.difference(firstMap, secondMap);
     Map<String, ValueDifference<Object>> diferences = comparable.entriesDiffering();
     Map<String, Object> diferencesLeft = comparable.entriesOnlyOnLeft();
-    diferences.forEach((k, v) -> myDifferences
-      .add(new HistoryDifference(k, false, v.rightValue().toString(), v.leftValue().toString())));
-    diferencesLeft.forEach((k, v) -> new HistoryDifference(k, true, "", ""));
+    diferences.forEach((k, v) -> myDifferences.add(new HistoryDifference(UUID.randomUUID().toString(), k, false,
+      v.rightValue().toString(), v.leftValue().toString())));
+    diferencesLeft.forEach((k, v) -> new HistoryDifference(UUID.randomUUID().toString(), k, true, "", ""));
     return myDifferences;
   }
 
@@ -188,7 +190,7 @@ public class HistoryComparator {
         {
           Auditlog before = this.getSimiliar(actual, beforeHistory);
           if (before == null) {
-            differencesUniques.add(new HistoryDifference("id", true, "", ""));
+            differencesUniques.add(new HistoryDifference(UUID.randomUUID().toString(), "id", true, "", ""));
           } else {
 
             List<HistoryDifference> diffrencesFields =
@@ -196,7 +198,7 @@ public class HistoryComparator {
 
             if (!diffrencesFields.isEmpty()) {
               differencesUniques.addAll(diffrencesFields);
-              differencesUniques.add(new HistoryDifference("id", true, "", ""));
+              differencesUniques.add(new HistoryDifference(UUID.randomUUID().toString(), "id", true, "", ""));
             }
 
 
@@ -204,7 +206,7 @@ public class HistoryComparator {
         }
 
       } else {
-        differencesUniques.add(new HistoryDifference("id", true, "", ""));
+        differencesUniques.add(new HistoryDifference(UUID.randomUUID().toString(), "id", true, "", ""));
       }
 
       String parent = "";
@@ -225,7 +227,7 @@ public class HistoryComparator {
         try {
           Field field = this.getField(str.getDifference());
           if (str.getDifference().equals("id")) {
-            differences.add(new HistoryDifference(parent + ".id", true, "", ""));
+            differences.add(new HistoryDifference(UUID.randomUUID().toString(), parent + ".id", true, "", ""));
           }
           if (field.getType().isAssignableFrom(IAuditLog.class)) {
             str.setDifference(subFix + "." + str.getDifference() + ".id");
