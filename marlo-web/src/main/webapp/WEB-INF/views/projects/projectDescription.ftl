@@ -114,7 +114,7 @@
             <div id="projectWorking" class="fullBlock clearfix">
               [#-- Flagships --] 
               <div class="col-md-6">
-                <div id="projectFlagshipsBlock" class="${action.changedField('project.flagshipValue')?string('changedField','')}">
+                <div id="projectFlagshipsBlock" class="${customForm.changedField('project.flagshipValue')}">
                   <p><label>[@s.text name="projectDescription.flagships" /]:[@customForm.req required=editable && action.hasPermission("flagships") /] </label></p>
                   [#if editable && action.hasPermission("flagships")]
                     [@s.fielderror cssClass="fieldError" fieldName="project.flagshipValue"/]
@@ -132,7 +132,7 @@
               [#-- Regions --] 
               <div class="col-md-6"> 
                 [#if regionFlagships?has_content] 
-                  <div id="projectRegionsBlock" class="${action.changedField('project.regionsValue')?string('changedField','')}">
+                  <div id="projectRegionsBlock" class="${customForm.changedField('project.regionsValue')}">
                     <p><label>[@s.text name="projectDescription.regions" /]:[@customForm.req required=editable && action.hasPermission("regions") /]</label></p>
                     [#if editable && action.hasPermission("regions")]
                       [@s.fielderror cssClass="fieldError" fieldName="project.regionsValue"/]
