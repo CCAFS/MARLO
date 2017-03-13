@@ -168,7 +168,7 @@ public class HistoryComparator {
             SimpleDateFormat formatter = new SimpleDateFormat("MMM dd, yyyy HH:mm:ss a");
             SimpleDateFormat formatterSystem = new SimpleDateFormat("yyyy-MM-dd");
             str.setNewValue(formatterSystem.format(formatter.parse(str.getNewValue())));
-            str.setOldValue(formatterSystem.format(formatter.parse(str.getNewValue())));
+            str.setOldValue(formatterSystem.format(formatter.parse(str.getOldValue())));
 
             str.setDifference(subFix + "." + str.getDifference());
 
@@ -256,7 +256,7 @@ public class HistoryComparator {
               SimpleDateFormat formatter = new SimpleDateFormat("MMM dd, yyyy HH:mm:ss a");
               SimpleDateFormat formatterSystem = new SimpleDateFormat("yyyy-MM-dd");
               str.setNewValue(formatterSystem.format(formatter.parse(str.getNewValue())));
-              str.setOldValue(formatterSystem.format(formatter.parse(str.getNewValue())));
+              str.setOldValue(formatterSystem.format(formatter.parse(str.getOldValue())));
 
               str.setDifference(subFix + "." + str.getDifference());
 
