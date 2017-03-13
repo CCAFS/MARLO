@@ -96,7 +96,7 @@ function addLocElementCountry() {
     return
   }
   
-  var $item = $('#locElement-template').clone(true).removeAttr('id');
+  var $item = $('#locElement-scope-template').clone(true).removeAttr('id');
   var $list = $(this).parents('.locationLevel').find(".items-list ul");
   
   
@@ -107,14 +107,11 @@ function addLocElementCountry() {
   $item.find('input.locElementCountry').val(contryISO);
   
   // Add Flag
-  var $icon = $item.find('.glyphicon');
+  var $flag = $item.find('.flag-icon');
   var flag = '<i class="flag-sm flag-sm-' + contryISO.toUpperCase() + '"></i>';
-  $icon.removeClass('glyphicon glyphicon-map-marker');
-  $icon.html(flag);
-  
+  $flag.html(flag);
   // Remove coordinates span
   $item.find('.coordinates').remove();
-  
   // Adding item to the list
   $list.append($item);
   // Update Locations Indexes
@@ -130,7 +127,7 @@ function addLocElementCountry() {
 }
 
 function addLocElement() {
-  var $item = $('#locElement-template').clone(true).removeAttr('id');
+  var $item = $('#locElement-location-template').clone(true).removeAttr('id');
   var $list = $(this).parents('.locationLevel').find(".items-list ul");
   var $inputs = $(this).parent().parent();
   var itemObject = {
@@ -202,35 +199,26 @@ function removeLocElement() {
  */
 
 function updateLocationsIndexes() {
-  $(".locations-list, .scopes-list").find('.locationLevel').each(function(i,location) {
-    var locationName = "loggedCrp.locationElementTypes" + "[" + i + "].";
+  $(".locations-list").find('.locationLevel').each(updateLocLevelIndexes);
+  $(".scopes-list").find('.locationLevel').each(updateLocLevelIndexes);
+}
 
-    $(location).find('> .leftHead .index').text(i + 1);
-    $(location).find('.locationLevelId').attr('name', locationName + "id");
-    $(location).find('.locationLevelType').attr('name', locationName + "scope");
-    $(location).find('.locationName').attr('name', locationName + "name");
-    $(location).find('input.onoffswitch-radio').attr('name', locationName + "hasCoordinates");
+function updateLocLevelIndexes(index,location){
+  $(location).find('> .leftHead .index').text(index + 1);
+  $(location).setNameIndexes(1, index);
 
-    // Updating radio buttons label attributes
-    var uniqueId = "hasCoordinates-" + i;
-    // Yes Button
-    $(location).find('input.yes-button-input').attr('id', "yes-button-" + uniqueId);
-    $(location).find('label.yes-button-label').attr('for', "yes-button-" + uniqueId);
-    // No Button
-    $(location).find('input.no-button-input').attr('id', "no-button-" + uniqueId);
-    $(location).find('label.no-button-label').attr('for', "no-button-" + uniqueId);
-
-    $(location).find('.locElement').each(function(i,element) {
-      var elementName = locationName + "locationElements" + "[" + i + "].";
-
-      $(element).find('.locElementId').attr('name', elementName + "id");
-      $(element).find('.locElementName').attr('name', elementName + "name");
-      $(element).find('.locElementCountry').attr('name', elementName + "locElement.isoAlpha2");
-      $(element).find('.geoId').attr('name', elementName + "locGeoposition.id");
-      $(element).find('.geoLat').attr('name', elementName + "locGeoposition.latitude");
-      $(element).find('.geoLng').attr('name', elementName + "locGeoposition.longitude");
-
-    });
+  // Updating radio buttons label attributes
+  var uniqueId = "hasCoordinates-" + index;
+  // Yes Button
+  $(location).find('input.yes-button-input').attr('id', "yes-button-" + uniqueId);
+  $(location).find('label.yes-button-label').attr('for', "yes-button-" + uniqueId);
+  // No Button
+  $(location).find('input.no-button-input').attr('id', "no-button-" + uniqueId);
+  $(location).find('label.no-button-label').attr('for', "no-button-" + uniqueId);
+  
+  // Loc Element
+  $(location).find('.locElement').each(function(i,element) {
+    $(element).setNameIndexes(2, i);
   });
 }
 

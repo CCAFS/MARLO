@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.model.CaseStudy;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyIndicator;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.ByteArrayInputStream;
@@ -36,9 +37,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
 import org.pentaho.reporting.engine.classic.core.Band;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
@@ -218,17 +221,18 @@ public class CaseStudiesByYearSummaryAction extends BaseAction implements Summar
 
     Long id = null;
 
-    String title = "", outcomeStatement = "", researchOutputs = "", researchPartners = "", activities = "",
-      nonResearchPartneres = "", outputUsers = "", evidenceOutcome = "", outputUsed = "", referencesCase = "",
-      explainIndicatorRelation = "", anex = "", owner = "", shared = "", indicators = "";
 
     if (caseStudyManager.findAll() != null) {
 
       List<CaseStudy> caseStudies = new ArrayList<>(caseStudyManager.findAll().stream()
-        .filter(cs -> cs.isActive() && cs.getYear() == year).collect(Collectors.toList()));
+        .filter(cs -> cs.isActive() && cs.getYear() == this.year).collect(Collectors.toList()));
 
       if (!caseStudies.isEmpty()) {
         for (CaseStudy caseStudy : caseStudies) {
+          String title = null, outcomeStatement = null, researchOutputs = null, researchPartners = null,
+            activities = null, nonResearchPartneres = null, outputUsers = null, evidenceOutcome = null,
+            outputUsed = null, referencesCase = null, explainIndicatorRelation = null, anex = null, owner = null,
+            shared = null, indicators = null;
 
           id = caseStudy.getId();
 
@@ -256,13 +260,44 @@ public class CaseStudiesByYearSummaryAction extends BaseAction implements Summar
 
           List<CaseStudyProject> studyProjects = new ArrayList<>(
             caseStudy.getCaseStudyProjects().stream().filter(csp -> csp.isActive()).collect(Collectors.toList()));
+          boolean add = false;
 
+          owner = "";
+          List<Project> projects = new ArrayList<>();
           for (CaseStudyProject caseStudyProject : studyProjects) {
             if (caseStudyProject.isCreated()) {
               shared = String.valueOf(caseStudyProject.getProject().getId());
+              if (owner.length() == 0) {
+                owner = "P" + caseStudyProject.getProject().getId();
+                projects.add(caseStudyProject.getProject());
+
+              } else {
+                if (!projects.contains(caseStudyProject.getProject())) {
+                  owner = owner + ", P" + caseStudyProject.getProject().getId();
+                  projects.add(caseStudyProject.getProject());
+                }
+
+
+              }
+            } else {
+              if (owner.length() == 0) {
+                owner = "P" + caseStudyProject.getProject().getId();
+                projects.add(caseStudyProject.getProject());
+
+              } else {
+                if (!projects.contains(caseStudyProject.getProject())) {
+                  owner = owner + ", P" + caseStudyProject.getProject().getId();
+                  projects.add(caseStudyProject.getProject());
+                }
+
+
+              }
             }
 
-            owner = "P" + caseStudyProject.getProject().getId();
+
+            if (caseStudyProject.getProject().getCrp().getId().longValue() == loggedCrp.getId().longValue()) {
+              add = true;
+            }
           }
 
           List<CaseStudyIndicator> studyIndicators = new ArrayList<>(
@@ -283,10 +318,12 @@ public class CaseStudiesByYearSummaryAction extends BaseAction implements Summar
             anex = this.getCaseStudyUrl(shared) + caseStudy.getFile().getFileName();
           }
 
+          if (add) {
+            model.addRow(new Object[] {id, title, outcomeStatement, researchOutputs, researchPartners, activities,
+              nonResearchPartneres, outputUsers, evidenceOutcome, outputUsed, referencesCase, explainIndicatorRelation,
+              anex, owner, indicators, shared});
+          }
 
-          model.addRow(new Object[] {id, title, outcomeStatement, researchOutputs, researchPartners, activities,
-            nonResearchPartneres, outputUsers, evidenceOutcome, outputUsed, referencesCase, explainIndicatorRelation,
-            anex, owner, indicators, shared});
 
         }
       }
@@ -329,7 +366,8 @@ public class CaseStudiesByYearSummaryAction extends BaseAction implements Summar
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("CaseStudiesSummary_");
+    fileName.append("OutcomesCaseStudiesSummary-");
+    fileName.append(this.year + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
 
@@ -387,8 +425,11 @@ public class CaseStudiesByYearSummaryAction extends BaseAction implements Summar
     } catch (Exception e) {
     }
 
+    // Get parameters from URL
+    // Get year
     try {
-      year = Integer.parseInt(this.getRequest().getParameter("year"));
+      Map<String, Object> parameters = this.getParameters();
+      year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
     } catch (Exception e) {
       year = this.getCurrentCycleYear();
     }

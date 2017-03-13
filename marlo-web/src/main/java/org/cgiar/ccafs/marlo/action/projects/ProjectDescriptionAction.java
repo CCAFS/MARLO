@@ -45,6 +45,7 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.utils.FileManager;
+import org.cgiar.ccafs.marlo.utils.HistoryComparator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectDescriptionValidator;
 
 import java.io.BufferedReader;
@@ -89,6 +90,8 @@ public class ProjectDescriptionAction extends BaseAction {
   private String transaction;
   private LiaisonInstitutionManager liaisonInstitutionManager;
   private LiaisonUserManager liaisonUserManager;
+  private HistoryComparator historyComparator;
+
   /*
    * private LiaisonInstitutionManager liaisonInstitutionManager;
    * private LiaisonUserManager liaisonUserManager;
@@ -135,7 +138,7 @@ public class ProjectDescriptionAction extends BaseAction {
     ProjectFocusManager projectFocusManager, FileDBManager fileDBManager, AuditLogManager auditLogManager,
     ProjectDescriptionValidator validator, ProjectClusterActivityManager projectClusterActivityManager,
     CrpClusterOfActivityManager crpClusterOfActivityManager, LocElementTypeManager locationManager,
-    ProjectScopeManager projectLocationManager) {
+    ProjectScopeManager projectLocationManager, HistoryComparator historyComparator) {
     super(config);
     this.projectManager = projectManager;
     this.programManager = programManager;
@@ -149,6 +152,7 @@ public class ProjectDescriptionAction extends BaseAction {
     this.auditLogManager = auditLogManager;
     this.projectClusterActivityManager = projectClusterActivityManager;
     this.fileDBManager = fileDBManager;
+    this.historyComparator = historyComparator;
     // this.liaisonUserManager = liaisonUserManager;
     this.liaisonUserManager = liaisonUserManager;
     this.projectScopeManager = projectLocationManager;
@@ -380,6 +384,11 @@ public class ProjectDescriptionAction extends BaseAction {
 
       transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
       Project history = (Project) auditLogManager.getHistory(transaction);
+      Map<String, String> specialList = new HashMap<>();
+      specialList.put(APConstants.PROJECT_FOCUSES_RELATION, "flagshipValue");
+
+      this.setDifferences(historyComparator.getDifferences(transaction, specialList, "project"));
+
 
       if (history != null) {
         project = history;
@@ -536,7 +545,8 @@ public class ProjectDescriptionAction extends BaseAction {
     allOwners.addAll(loggedCrp.getLiasonUsers());
     liaisonInstitutions = new ArrayList<LiaisonInstitution>();
 
-    liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions());
+    liaisonInstitutions
+      .addAll(loggedCrp.getLiaisonInstitutions().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
     liaisonInstitutions.addAll(
       liaisonInstitutionManager.findAll().stream().filter(c -> c.getCrp() == null).collect(Collectors.toList()));
     programFlagships = new ArrayList<>();

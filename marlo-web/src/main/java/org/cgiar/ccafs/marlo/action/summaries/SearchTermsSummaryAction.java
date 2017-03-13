@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrpParameter;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
@@ -30,6 +31,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.ByteArrayInputStream;
@@ -46,6 +48,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -66,6 +69,8 @@ import org.pentaho.reporting.engine.classic.core.modules.output.table.xls.ExcelR
 import org.pentaho.reporting.engine.classic.core.util.TypedTableModel;
 import org.pentaho.reporting.libraries.resourceloader.Resource;
 import org.pentaho.reporting.libraries.resourceloader.ResourceManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Andrés Felipe Valencia Rivera. CCAFS
@@ -73,6 +78,7 @@ import org.pentaho.reporting.libraries.resourceloader.ResourceManager;
 
 public class SearchTermsSummaryAction extends BaseAction implements Summary {
 
+  private static Logger LOG = LoggerFactory.getLogger(SearchTermsSummaryAction.class);
   /**
    * 
    */
@@ -82,6 +88,10 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
   private Crp loggedCrp;
   // Keys to be searched
   List<String> keys = new ArrayList<String>();
+
+  private String cycle;
+
+  private int year;
 
   // Managers
   private CrpManager crpManager;
@@ -129,13 +139,27 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
         keys = Arrays.asList(parameters.split("~/"));
       }
     }
+    // Verify if the crp has regions avalaible
+    List<CrpParameter> hasRegionsList = new ArrayList<>();
+    Boolean regionalAvailable = false;
+    for (CrpParameter hasRegionsParam : this.loggedCrp.getCrpParameters().stream()
+      .filter(cp -> cp.isActive() && cp.getKey().equals(APConstants.CRP_HAS_REGIONS)).collect(Collectors.toList())) {
+      hasRegionsList.add(hasRegionsParam);
+    }
+
+    if (!hasRegionsList.isEmpty()) {
+      if (hasRegionsList.size() > 1) {
+        LOG.warn("There is for more than 1 key of type: " + APConstants.CRP_HAS_REGIONS);
+      }
+      regionalAvailable = Boolean.valueOf(hasRegionsList.get(0).getValue());
+    }
 
 
     // Set Main_Query
     CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
     String masterQueryName = "main";
     TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
-    TypedTableModel model = this.getMasterTableModel(center, current_date);
+    TypedTableModel model = this.getMasterTableModel(center, current_date, regionalAvailable);
     sdf.addTable(masterQueryName, model);
     masterReport.setDataFactory(cdf);
 
@@ -195,8 +219,20 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
       // date format for star and end dates
       SimpleDateFormat dateFormatter = new SimpleDateFormat("MMM yyyy");
       // Search projects with activities
-      for (Project project : loggedCrp.getProjects().stream().filter(p -> p.isActive() && p.getActivities().size() > 0)
-        .collect(Collectors.toList())) {
+
+      List<Project> projects = new ArrayList<>();
+      if (!cycle.equals(APConstants.REPORTING)) {
+        projects = loggedCrp.getProjects().stream()
+          .filter(p -> p.isActive() && p.getStatus() != null
+            && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+            && p.getActivities().size() > 0)
+          .collect(Collectors.toList());
+      } else {
+        projects =
+          loggedCrp.getProjects().stream().filter(p -> p.isActive() && p.getStatus() != null && p.getReporting() != null
+            && p.getReporting().booleanValue() && p.getActivities().size() > 0).collect(Collectors.toList());
+      }
+      for (Project project : projects) {
         // Get active activities
         for (Activity activity : project.getActivities().stream().filter(a -> a.isActive())
           .collect(Collectors.toList())) {
@@ -390,8 +426,19 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
         String.class, String.class, String.class},
       0);
     if (!keys.isEmpty()) {
-      for (Project project : loggedCrp.getProjects().stream()
-        .filter(p -> p.isActive() && p.getDeliverables().size() > 0).collect(Collectors.toList())) {
+      List<Project> projects = new ArrayList<>();
+      if (!cycle.equals(APConstants.REPORTING)) {
+        projects = loggedCrp.getProjects().stream()
+          .filter(p -> p.isActive() && p.getStatus() != null
+            && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+            && p.getDeliverables().size() > 0)
+          .collect(Collectors.toList());
+      } else {
+        projects =
+          loggedCrp.getProjects().stream().filter(p -> p.isActive() && p.getStatus() != null && p.getReporting() != null
+            && p.getReporting().booleanValue() && p.getDeliverables().size() > 0).collect(Collectors.toList());
+      }
+      for (Project project : projects) {
 
         for (Deliverable deliverable : project.getDeliverables().stream().filter(d -> d.isActive())
           .collect(Collectors.toList())) {
@@ -488,6 +535,7 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
     fileName.append("SearchTermsSummary-");
+    fileName.append(this.year + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
 
@@ -525,10 +573,10 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
     return loggedCrp;
   }
 
-  private TypedTableModel getMasterTableModel(String center, String date) {
+  private TypedTableModel getMasterTableModel(String center, String date, Boolean regionalAvailable) {
     // Initialization of Model
-    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "keys"},
-      new Class[] {String.class, String.class, String.class});
+    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "keys", "regionalAvailable"},
+      new Class[] {String.class, String.class, String.class, Boolean.class});
     String keysString = "";
     int countKeys = 0;
 
@@ -542,7 +590,7 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
       }
     }
 
-    model.addRow(new Object[] {center, date, keysString});
+    model.addRow(new Object[] {center, date, keysString, regionalAvailable});
     return model;
   }
 
@@ -562,8 +610,20 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
       SimpleDateFormat dateFormatter = new SimpleDateFormat("MMM yyyy");
       // Decimal format for budgets
       DecimalFormat decimalFormatter = new DecimalFormat("###,###.00");
+      List<Project> projects = new ArrayList<>();
 
-      for (Project project : loggedCrp.getProjects().stream().filter(p -> p.isActive()).collect(Collectors.toList())) {
+      if (!cycle.equals(APConstants.REPORTING)) {
+        projects = loggedCrp.getProjects().stream()
+          .filter(p -> p.isActive() && p.getStatus() != null
+            && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
+          .collect(Collectors.toList());
+      } else {
+        projects = loggedCrp.getProjects().stream()
+          .filter(
+            p -> p.isActive() && p.getStatus() != null && p.getReporting() != null && p.getReporting().booleanValue())
+          .collect(Collectors.toList());
+      }
+      for (Project project : projects) {
 
         String title = project.getTitle();
         String summary = project.getSummary();
@@ -755,10 +815,29 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
   @Override
   public void prepare() {
     try {
+      Map<String, Object> parameters = this.getParameters();
+
       loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
       loggedCrp = crpManager.getCrpById(loggedCrp.getId());
     } catch (Exception e) {
     }
+
+    // Get parameters from URL
+    // Get year
+    try {
+      Map<String, Object> parameters = this.getParameters();
+      year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
+    } catch (Exception e) {
+      year = this.getCurrentCycleYear();
+    }
+    // Get cycle
+    try {
+      Map<String, Object> parameters = this.getParameters();
+      cycle = (StringUtils.trim(((String[]) parameters.get(APConstants.CYCLE))[0]));
+    } catch (Exception e) {
+      cycle = this.getCurrentCycle();
+    }
+
   }
 
   private DeliverablePartnership responsiblePartner(Deliverable deliverable) {

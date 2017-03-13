@@ -111,7 +111,17 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
           canEdit = false;
 
         }
+        if (baseAction.isCrpClosed()) {
+          if (!(baseAction.hasSpecificities(APConstants.CRP_PMU) && baseAction.isPMU())) {
+            canEdit = false;
+          }
 
+        }
+
+        // Temporal validation to grant access to the a4nh flagship leaders.
+        if (baseAction.getCurrentUser().getId() == 1148 || baseAction.getCurrentUser().getId() == 1149) {
+          canEdit = true;
+        }
 
       }
 

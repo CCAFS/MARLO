@@ -131,6 +131,7 @@ public class GuestUsersAction extends BaseAction {
     try {
       userID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.USER_ID)));
       user = userManager.getUser(userID);
+      System.out.println("");
     } catch (Exception e) {
 
     }
@@ -225,7 +226,7 @@ public class GuestUsersAction extends BaseAction {
 
               long userRoleID = userRoleManager.saveUserRole(userRole);
 
-              if (userRoleID != -1) {
+              if (isNewUser && userRoleID != -1) {
                 try {
                   this.sendMailNewUser(newUser, crp);
                 } catch (NoSuchAlgorithmException e) {

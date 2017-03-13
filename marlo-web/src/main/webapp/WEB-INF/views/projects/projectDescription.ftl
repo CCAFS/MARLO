@@ -114,8 +114,8 @@
             <div id="projectWorking" class="fullBlock clearfix">
               [#-- Flagships --] 
               <div class="col-md-6">
-                <div id="projectFlagshipsBlock" class="">
-                  <h5>[@s.text name="projectDescription.flagships" /]:[@customForm.req required=editable && action.hasPermission("flagships") /] </h5>
+                <div id="projectFlagshipsBlock" class="${action.changedField('project.flagshipValue')?string('changedField','')}">
+                  <p><label>[@s.text name="projectDescription.flagships" /]:[@customForm.req required=editable && action.hasPermission("flagships") /] </label></p>
                   [#if editable && action.hasPermission("flagships")]
                     [@s.fielderror cssClass="fieldError" fieldName="project.flagshipValue"/]
                     [@s.checkboxlist name="project.flagshipValue" list="programFlagships" listKey="id" listValue="composedName" cssClass="checkboxInput fpInput"  value="flagshipIds" /]
@@ -132,8 +132,8 @@
               [#-- Regions --] 
               <div class="col-md-6"> 
                 [#if regionFlagships?has_content] 
-                  <div id="projectRegionsBlock" class="">
-                    <h5>[@s.text name="projectDescription.regions" /]:[@customForm.req required=editable && action.hasPermission("regions") /]</h5>
+                  <div id="projectRegionsBlock" class="${action.changedField('project.regionsValue')?string('changedField','')}">
+                    <p><label>[@s.text name="projectDescription.regions" /]:[@customForm.req required=editable && action.hasPermission("regions") /]</label></p>
                     [#if editable && action.hasPermission("regions")]
                       [@s.fielderror cssClass="fieldError" fieldName="project.regionsValue"/]
                       <input type="checkbox" name="project.noRegional" value="true" id="projectNoRegional" class="checkboxInput" [#if (project.isNoRegional())!false ]checked="checked"[/#if] />

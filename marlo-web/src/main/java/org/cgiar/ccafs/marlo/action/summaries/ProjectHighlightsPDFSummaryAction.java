@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectHighlightCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlightType;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighligthsTypeEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.FileManager;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -32,17 +33,18 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import com.lowagie.text.BadElementException;
 import com.lowagie.text.Image;
+import org.apache.commons.lang3.StringUtils;
 import org.pentaho.reporting.engine.classic.core.Band;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
@@ -56,15 +58,18 @@ import org.pentaho.reporting.engine.classic.core.modules.output.pageable.pdf.Pdf
 import org.pentaho.reporting.engine.classic.core.util.TypedTableModel;
 import org.pentaho.reporting.libraries.resourceloader.Resource;
 import org.pentaho.reporting.libraries.resourceloader.ResourceManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * @author Hermes Jiménez - CIAT/CCAFS
+ * @author Andrés Valencia - CIAT/CCAFS
  */
 public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Summary {
 
 
   private static final long serialVersionUID = 1L;
 
+  private static Logger LOG = LoggerFactory.getLogger(ProjectHighlightsPDFSummaryAction.class);
   private CrpManager crpManager;
   private ProjectHighligthManager projectHighLightManager;
 
@@ -98,11 +103,7 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
 
     MasterReport masterReport = (MasterReport) reportResource.getResource();
     String center = loggedCrp.getName();
-    try {
-      year = Integer.parseInt(this.getRequest().getParameter("year"));
-    } catch (Exception e) {
-      year = this.getCurrentCycleYear();
-    }
+
 
     // Get datetime
     ZonedDateTime timezone = ZonedDateTime.now();
@@ -232,7 +233,8 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("projectHighlightsSummaryPDF_");
+    fileName.append("ProjectHighlightsSummary-");
+    fileName.append(this.year + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".pdf");
 
@@ -258,13 +260,25 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
     }
   }
 
+
   public String getHighlightsImagesUrl(String project_id) {
+    // "https://marlo.cgiar.org/data" +
+    // config.getDownloadURL() +
     return config.getDownloadURL() + "/" + this.getHighlightsImagesUrlPath(project_id).replace('\\', '/');
+  }
+
+  public String getHighlightsImagesUrlPath(long projectID) {
+    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + projectID + File.separator
+      + "hightlightsImage" + File.separator;
   }
 
   public String getHighlightsImagesUrlPath(String project_id) {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project_id + File.separator
       + "hightlightsImage" + File.separator;
+  }
+
+  private String getHightlightImagePath(long projectID) {
+    return config.getUploadsBaseFolder() + File.separator + this.getHighlightsImagesUrlPath(projectID) + File.separator;
   }
 
   @Override
@@ -302,14 +316,17 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
 
     for (ProjectHighlight projectHighlight : projectHighLightManager.findAll().stream()
-      .sorted((h1, h2) -> Long.compare(h1.getId(), h2.getId())).filter(ph -> ph.isActive())
+      .sorted((h1, h2) -> Long.compare(h1.getId(), h2.getId()))
+      .filter(ph -> ph.isActive() && ph.getProject() != null && ph.getYear() == year
+        && ph.getProject().getCrp().getId().longValue() == loggedCrp.getId().longValue() && ph.getProject().isActive()
+        && ph.getProject().getReporting())
       .collect(Collectors.toList())) {
       String title = null, author = null, subject = null, publisher = null, highlights_types = "",
         highlights_is_global = null, start_date = null, end_date = null, keywords = null, countries = "", image = "",
         highlight_desc = null, introduction = null, results = null, partners = null, links = null, project_id = null;
       Long year_reported = null;
-      int width = 0;
-      int heigth = 0;
+      int width = 244;
+      int heigth = 163;
 
       if (projectHighlight.getTitle() != null && !projectHighlight.getTitle().isEmpty()) {
         title = projectHighlight.getTitle();
@@ -377,27 +394,26 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
       if (projectHighlight.getFile() != null) {
         double pageWidth = 612 * 0.4;
         double pageHeigth = 792 * 0.4;
-        double imageWidth = 0;
-        double imageHeigth = 0;
-        image = this.getHighlightsImagesUrl(projectHighlight.getProject().getId().toString())
-          + projectHighlight.getFile().getFileName();
-
-        // get Height and Width
+        double imageWidth = 244;
+        double imageHeigth = 163;
+        image =
+          this.getHightlightImagePath(projectHighlight.getProject().getId()) + projectHighlight.getFile().getFileName();
 
         Image imageFile = null;
-        image = image.replace(" ", "%20");
-        URL url;
+
+        LOG.info("image.getURL.replace " + image);
+        File url;
         try {
-          url = new URL(image);
-        } catch (MalformedURLException e) {
+          url = new File(image);
+        } catch (Exception e) {
           e.printStackTrace();
           url = null;
+          image = "";
         }
-        if (url != null) {
-          // System.out.println("Project: " + projectHighlight.getProject().getId() + " PH: " +
-          // projectHighlight.getId());
+        if (url != null && url.exists()) {
+
           try {
-            imageFile = Image.getInstance(url);
+            imageFile = Image.getInstance(FileManager.readURL(url));
             // System.out.println("W: " + imageFile.getWidth() + " \nH: " + imageFile.getHeight());
             if (imageFile.getWidth() >= imageFile.getHeight()) {
               imageWidth = pageWidth;
@@ -411,18 +427,20 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
             heigth = (int) imageHeigth;
             // If successful, process the message
           } catch (BadElementException e) {
-            System.out.println("Unable to retrieve Image!!");
+            // System.out.println("Unable to retrieve Image!!");
             image = "";
             e.printStackTrace();
           } catch (MalformedURLException e) {
-            System.out.println("Unable to retrieve Image!!");
+            // System.out.println("Unable to retrieve Image!!");
             image = "";
             e.printStackTrace();
           } catch (IOException e) {
-            System.out.println("Unable to retrieve Image!!");
+            // System.out.println("Unable to retrieve Image!!");
             image = "";
             e.printStackTrace();
           }
+        } else {
+          image = "";
         }
       }
 
@@ -463,8 +481,11 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
     } catch (Exception e) {
     }
 
+    // Get parameters from URL
+    // Get year
     try {
-      year = Integer.parseInt(this.getRequest().getParameter("year"));
+      Map<String, Object> parameters = this.getParameters();
+      year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
     } catch (Exception e) {
       year = this.getCurrentCycleYear();
     }

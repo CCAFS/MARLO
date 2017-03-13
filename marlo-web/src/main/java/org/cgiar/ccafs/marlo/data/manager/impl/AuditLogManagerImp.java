@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -36,14 +36,40 @@ public class AuditLogManagerImp implements AuditLogManager {
   }
 
   @Override
+  public Auditlog getAuditlog(String transactionID) {
+    return auditLogDao.getAuditlog(transactionID);
+  }
+
+  @Override
+  public Auditlog getAuditlog(String transactionID, IAuditLog auditLog) {
+    return auditLogDao.getAuditlog(transactionID, auditLog);
+  }
+
+  @Override
+  public List<Auditlog> getCompleteHistory(String transactionID) {
+    return auditLogDao.getCompleteHistory(transactionID);
+  }
+
+  @Override
   public IAuditLog getHistory(String transactionID) {
 
     return auditLogDao.getHistory(transactionID);
   }
 
   @Override
-  public List<Auditlog> listLogs(Class classAudit, long id, String actionName) {
-    return auditLogDao.listLogs(classAudit, id, actionName);
+  public List<Auditlog> getHistoryBefore(String transactionID) {
+    return auditLogDao.getHistoryBefore(transactionID);
   }
 
+  @Override
+  public List<Auditlog> getHistoryBeforeList(String transactionID, String className, String entityID) {
+
+    return auditLogDao.getHistoryBeforeList(transactionID, className, entityID);
+  }
+
+  @Override
+  public List<Auditlog> listLogs(Class classAudit, long id, String actionName) {
+    return auditLogDao.listLogs(classAudit, id, actionName);
+
+  }
 }

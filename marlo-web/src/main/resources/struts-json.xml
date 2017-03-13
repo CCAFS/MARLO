@@ -216,8 +216,15 @@
 		</action>
 
 
-		<action name="clusterList"
-			class="org.cgiar.ccafs.marlo.action.json.project.ClusetrActivitiesListAction">
+    <action name="keyOutputList"
+      class="org.cgiar.ccafs.marlo.action.json.project.KeyOutputListAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
+		<action name="projectList"
+			class="org.cgiar.ccafs.marlo.action.json.project.ProjectListAction">
 			<result type="json">
 				<param name="noCache">true</param>
 				<param name="excludeNullProperties">true</param>

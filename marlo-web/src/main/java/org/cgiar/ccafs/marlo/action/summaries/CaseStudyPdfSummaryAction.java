@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.model.CaseStudy;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyIndicator;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.ByteArrayInputStream;
@@ -36,9 +37,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
 import org.pentaho.reporting.engine.classic.core.Band;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
@@ -216,9 +219,6 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
 
     Long id = null;
 
-    String title = "", outcomeStatement = "", researchOutputs = "", researchPartners = "", activities = "",
-      nonResearchPartneres = "", outputUsers = "", evidenceOutcome = "", outputUsed = "", referencesCase = "",
-      explainIndicatorRelation = "", anex = "", owner = "", shared = "", indicators = "", year = "";
 
     if (caseStudyManager.findAll() != null) {
 
@@ -227,7 +227,10 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
 
       if (!caseStudies.isEmpty()) {
         for (CaseStudy caseStudy : caseStudies) {
-
+          String title = null, outcomeStatement = null, researchOutputs = null, researchPartners = null,
+            activities = null, nonResearchPartneres = null, outputUsers = null, evidenceOutcome = null,
+            outputUsed = null, referencesCase = null, explainIndicatorRelation = null, anex = null, owner = null,
+            shared = null, indicators = null, year = null;
           id = caseStudy.getId();
 
           year = String.valueOf(caseStudy.getYear());
@@ -258,13 +261,42 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
 
           List<CaseStudyProject> studyProjects = new ArrayList<>(
             caseStudy.getCaseStudyProjects().stream().filter(csp -> csp.isActive()).collect(Collectors.toList()));
-
+          boolean add = false;
+          owner = "";
+          List<Project> projects = new ArrayList<>();
           for (CaseStudyProject caseStudyProject : studyProjects) {
             if (caseStudyProject.isCreated()) {
               shared = String.valueOf(caseStudyProject.getProject().getId());
+              if (owner.length() == 0) {
+                owner = "P" + caseStudyProject.getProject().getId();
+                projects.add(caseStudyProject.getProject());
+
+              } else {
+                if (!projects.contains(caseStudyProject.getProject())) {
+                  owner = owner + ", P" + caseStudyProject.getProject().getId();
+                  projects.add(caseStudyProject.getProject());
+                }
+
+
+              }
+            } else {
+              if (owner.length() == 0) {
+                owner = "P" + caseStudyProject.getProject().getId();
+                projects.add(caseStudyProject.getProject());
+
+              } else {
+                if (!projects.contains(caseStudyProject.getProject())) {
+                  owner = owner + ", P" + caseStudyProject.getProject().getId();
+                  projects.add(caseStudyProject.getProject());
+                }
+
+
+              }
             }
 
-            owner = "P" + caseStudyProject.getProject().getId();
+            if (caseStudyProject.getProject().getCrp().getId().longValue() == loggedCrp.getId().longValue()) {
+              add = true;
+            }
           }
 
           List<CaseStudyIndicator> studyIndicators = new ArrayList<>(
@@ -285,10 +317,12 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
             anex = this.getCaseStudyUrl(shared) + caseStudy.getFile().getFileName();
           }
 
+          if (add) {
+            model.addRow(new Object[] {id, title, outcomeStatement, researchOutputs, researchPartners, activities,
+              nonResearchPartneres, outputUsers, evidenceOutcome, outputUsed, referencesCase, explainIndicatorRelation,
+              anex, owner.trim(), indicators.trim(), shared.trim(), year});
+          }
 
-          model.addRow(new Object[] {id, title, outcomeStatement, researchOutputs, researchPartners, activities,
-            nonResearchPartneres, outputUsers, evidenceOutcome, outputUsed, referencesCase, explainIndicatorRelation,
-            anex, owner.trim(), indicators.trim(), shared.trim(), year});
 
         }
       }
@@ -332,12 +366,11 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("CaseStudiesSummaryPDF_");
+    fileName.append("OutcomesCaseStudiesSummary-");
+    fileName.append(this.year + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".pdf");
-
     return fileName.toString();
-
   }
 
   private void getFooterSubreports(HashMap<String, Element> hm, ReportFooter reportFooter) {
@@ -387,8 +420,11 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
     } catch (Exception e) {
     }
 
+    // Get parameters from URL
+    // Get year
     try {
-      year = Integer.parseInt(this.getRequest().getParameter("year"));
+      Map<String, Object> parameters = this.getParameters();
+      year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
     } catch (Exception e) {
       year = this.getCurrentCycleYear();
     }

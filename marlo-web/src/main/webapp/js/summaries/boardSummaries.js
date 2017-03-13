@@ -11,20 +11,38 @@ function init() {
   addSelect2();
   attachEvents();
   $(".reportYear").attr("disabled", "true");
+  updateYearSelect();
+  ajaxService();
 }
 
 function attachEvents() {
 
-  $("input[name='cycle']").on("change", function() {
-    if($(this).val() == "Planning") {
-      $("select.reportYear").append("<option selected>2017</option>");
-    } else {
-      $("select.reportYear").append("<option selected>2016</option>");
-// console.log(reportYear);
-    }
-    updateUrl($(".summariesOptions").find(".selected"));
+  // On change of projects select
+  $(".allProjects").on("change", function() {
+    var option = $(this).find("option:selected");
+    $("#projectID").val(option.val());
     validateAllData();
   });
+
+  $("input[name='cycle']").on(
+      "change",
+      function() {
+        $("select.reportYear").empty();
+        if($(this).val() == "Planning") {
+          $("select.reportYear").append(
+              "<option value='" + $(".planningYear").text() + "' selected>" + $(".planningYear").text() + "</option>");
+        } else {
+          $("select.reportYear")
+              .append(
+                  "<option value='" + $(".reportingYear").text() + "' selected>" + $(".reportingYear").text()
+                      + "</option>");
+// console.log(reportYear);
+        }
+        $("#projectID").val("-1");
+        ajaxService();
+        updateUrl($(".summariesOptions").find(".selected"));
+        validateAllData();
+      });
 
   $("#gender").on("change", function() {
 
@@ -53,6 +71,8 @@ function attachEvents() {
 
   // Clicking other report
   $(".title-file , .description").on("click", function() {
+    $("#optionsPopUp").find(".projectSelectWrapper").hide("slow");
+    $("#projectID").val("-1");
     // fileTypes
     $("#optionsPopUp").find(".pdfIcon").parent().show();
     $("#optionsPopUp").find(".excelIcon").parent().show();
@@ -95,6 +115,37 @@ function attachEvents() {
     validateAllData();
   });
 
+}
+
+function ajaxService() {
+  $(".allProjects").empty();
+  $(".allProjects").addOption("-1", "Select an option...");
+  $.ajax({
+      url: baseURL + "/projectList.do?",
+      type: 'GET',
+      data: {
+        cycle: $("input[name='cycle']:checked").val()
+      },
+      success: function(m) {
+        console.log(m);
+        $.each(m.projects, function(i,e) {
+          $(".allProjects").addOption(e.id, "P" + e.id + "-" + e.description);
+        })
+      },
+      error: function(e) {
+        console.log(e);
+      }
+  });
+}
+
+function updateYearSelect() {
+  if($("input[name='cycle']:checked").val() == "Planning") {
+    $("select.reportYear").append(
+        "<option value='" + $(".planningYear").text() + "' selected>" + $(".planningYear").text() + "</option>");
+  } else {
+    $("select.reportYear").append(
+        "<option value='" + $(".planningYear").text() + "' selected>" + $(".planningYear").text() + "</option>");
+  }
 }
 
 function addGenderTerms() {
@@ -172,9 +223,14 @@ function selectSummariesSection(e) {
   $('.extraOptions').find('select, input').attr('disabled', true);
   // Clean URL
   setUrl('#');
+  $("#optionsPopUp").find(".projectSelectWrapper").hide("slow");
+  $("#projectID").val("-1");
 }
 
 function generateReport(e) {
+  var $select = $(".reportYear ");
+  $select.empty();
+  $select.attr("disabled", true);
   e.preventDefault();
   $("#optionsPopUp").find("#planning").removeAttr("disabled");
   $("#optionsPopUp").find("#reporting").removeAttr("disabled");
@@ -183,39 +239,55 @@ function generateReport(e) {
   if($($selected).find(".forCycle").hasClass("forPlanningCycle")
       && $($selected).find(".forCycle").hasClass("forReportingCycle")) {
     // Planning and Reporing
-    $("#optionsPopUp").find("#planning").attr("checked", "checked");
+    $select.append("<option value='" + $(".planningYear").text() + "' selected>" + $(".planningYear").text()
+        + "</option>");
+    $("#optionsPopUp").find("#planning").attr("checked", true).trigger("click");
+    $("#optionsPopUp").find("#reporting").removeAttr("checked");
     $("#optionsPopUp").find("#reporting").removeAttr("disabled");
   } else if($($selected).find(".forCycle").hasClass("forPlanningCycle")) {
     // Planning
-    $("#optionsPopUp").find("#planning").attr("checked", true);
+    $select.append("<option value='" + $(".planningYear").text() + "' selected>" + $(".planningYear").text()
+        + "</option>");
+    $("#optionsPopUp").find("#planning").attr("checked", true).trigger("click");
     $("#optionsPopUp").find("#reporting").removeAttr("checked");
     $("#optionsPopUp").find("#reporting").attr("disabled", true);
   } else if($($selected).find(".forCycle").hasClass("forReportingCycle")) {
     // Reporting
-    $("#optionsPopUp").find("#reporting").attr("checked", true);
+    $select.append("<option value='" + $(".reportingYear").text() + "' selected>" + $(".reportingYear").text()
+        + "</option>");
+    $("#optionsPopUp").find("#reporting").attr("checked", true).trigger("click");
     $("#optionsPopUp").find("#planning").removeAttr("checked");
     $("#optionsPopUp").find("#planning").attr("disabled", true);
   }
-  if($selected.find(".extraOptions").exists()) {
-    var extraOption = $selected.find(".extraOptions");
-    console.log(extraOption);
-    // Validate full report
-    if(extraOption.find("#projectID").find("option:selected").val() != "-1") {
-      validateFileType($selected);
-      openDialog();
-    } else {
-      var notyOptions = jQuery.extend({}, notyDefaultOptions);
-      notyOptions.text = 'You must to select a project';
-      noty(notyOptions);
-    }
+  if($selected.find("#generateProject").exists()) {
+    $("#optionsPopUp").find(".projectSelectWrapper").show();
+    validateFileType($selected);
+    openDialog();
   } else {
     validateFileType($selected);
     openDialog();
+  }
+
+  if($selected.find(".specificYears").exists()) {
+    $select.empty();
+    $select.attr("disabled", false);
+    $.each($selected.find(".specificYears").text().split("-"), function(i,e) {
+      $select.addOption(e, e);
+    });
+    $select.val($("span.reportingYear").text()).trigger("change");
   }
   validateAllData();
 }
 
 function validateAllData() {
+  if($(".selected").find("#projectID").exists()) {
+    if($("#projectID").val() == "-1") {
+      $("#optionsPopUp").find(".blockButton").remove();
+      $(".okButton").prepend('<span class="blockButton"></span>');
+      $(".okButton a").css("opacity", "0.4");
+      return true;
+    }
+  }
   console.log("validate");
   var count = 0;
   console.log($("input[name='cycle']:checked").val());
@@ -227,7 +299,7 @@ function validateAllData() {
     count++;
   }
   console.log(count);
-  if(count == 2) {
+  if(count >= 2) {
     $("#optionsPopUp").find(".blockButton").remove();
     $(".okButton a").css("opacity", "1");
   }
@@ -256,7 +328,6 @@ function openDialog() {
   $("#optionsPopUp").dialog({
       resizable: false,
       width: 500,
-      height: 230,
       modal: true,
       dialogClass: 'dialog-searchUsers',
       show: {
@@ -304,8 +375,6 @@ function reportTypes($selected) {
     } else {
       updateUrl($selected);
     }
-    $('.wordContent').empty();
-    addGenderTerms();
     termsArray = [];
     $("#gender").prop('checked', true);
     $("#gender").removeClass("view");
@@ -326,8 +395,15 @@ function updateUrl(element) {
     console.log("here1");
     formOption = $(element).find(".pdfType").text();
   } else if($("#optionsPopUp").find(".excelIcon").parent().hasClass("choose")) {
+    if($("#optionsPopUp").find("input[name='cycle']:checked").val() == "Planning") {
+      console.log("aaa");
+      formOption = $(element).find(".excelType").text().split("-")[0];
+    } else {
+      console.log("bbb");
+      formOption = $(element).find(".excelType").text().split("-")[1];
+    }
     console.log("here2");
-    formOption = $(element).find(".excelType").text();
+
   } else {
     console.log("here3");
     formOption = $formOptions.val() || 0;
@@ -350,6 +426,10 @@ function updateUrl(element) {
       reportYear = $(".reportingYear").text();
     }
 
+    if($(element).find(".specificYears").exists()) {
+      reportYear = $(".reportYear").find("option:selected").val();
+    }
+
 // console.log(reportYear);
     generateUrl += '&year=' + reportYear;
     setUrl(generateUrl, element);
@@ -369,7 +449,7 @@ function setUrl(url,$this) {
 
 // Activate the select plugin.
 function addSelect2() {
-  $('form select').select2({
+  $('select').select2({
     width: '100%'
   });
   $("#genderKeywords").select2({
@@ -377,4 +457,7 @@ function addSelect2() {
         "red", "green", "blue"
     ]
   });
+  $.ui.dialog.prototype._allowInteraction = function(e) {
+    return !!$(e.target).closest('.ui-dialog, .ui-datepicker, .select2-dropdown').length;
+  };
 }

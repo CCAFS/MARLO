@@ -374,6 +374,7 @@ public class ProjectCaseStudyAction extends BaseAction {
     if (this.isHttpPost()) {
       if (caseStudy.getProjects() != null) {
         caseStudy.getProjects().clear();
+        caseStudy.setFile(null);
       }
 
 
@@ -407,10 +408,13 @@ public class ProjectCaseStudyAction extends BaseAction {
         System.out.println("CASE STUDY" + this.getCaseStudyPath() + "/" + fileFileName);
 
       }
+
       if (caseStudy.getFile() != null) {
-        if (caseStudy.getFile().getId() == null) {
+        if (caseStudy.getFile().getId() == null || caseStudy.getFile().getId().longValue() == -1) {
           caseStudy.setFile(null);
         }
+      } else {
+        caseStudy.setFile(null);
       }
 
       for (CaseStudyProject caseStudyProject : caseStudyDB.getCaseStudyProjects()) {

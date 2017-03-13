@@ -32,9 +32,11 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
 import org.pentaho.reporting.engine.classic.core.Band;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
@@ -98,17 +100,7 @@ public class LeveragesReportingSummaryAction extends BaseAction implements Summa
 
     MasterReport masterReport = (MasterReport) reportResource.getResource();
     String center = loggedCrp.getName();
-    try {
-      year = Integer.parseInt(this.getRequest().getParameter("year"));
-    } catch (Exception e) {
-      year = this.getCurrentCycleYear();
-    }
-    // Get cycle
-    try {
-      cycle = this.getRequest().getParameter("cycle");
-    } catch (Exception e) {
-      cycle = this.getCurrentCycle();
-    }
+
 
     // Get datetime
     ZonedDateTime timezone = ZonedDateTime.now();
@@ -239,7 +231,8 @@ public class LeveragesReportingSummaryAction extends BaseAction implements Summa
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("Leverages_Reporting-");
+    fileName.append("LeveragesReportingSummary-");
+    fileName.append(this.year + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
 
@@ -290,7 +283,8 @@ public class LeveragesReportingSummaryAction extends BaseAction implements Summa
 
     for (ProjectLeverage projectLeverage : this.projectLeverageManager.findAll().stream()
       .filter(l -> l.isActive() && l.getYear() != null && l.getYear() == this.year && l.getProject() != null
-        && l.getProject().getCrp() != null && l.getProject().getCrp().getId().equals(this.loggedCrp.getId()))
+        && l.getProject().getCrp() != null && l.getProject().getCrp().getId().equals(this.loggedCrp.getId())
+        && l.getProject().isActive() && l.getProject().getReporting())
       .collect(Collectors.toList())) {
       String title = null, partner_name = null, flagship = null;
       Long project_ID = null;
@@ -352,10 +346,20 @@ public class LeveragesReportingSummaryAction extends BaseAction implements Summa
     } catch (Exception e) {
     }
 
+    // Get parameters from URL
+    // Get year
     try {
-      year = Integer.parseInt(this.getRequest().getParameter("year"));
+      Map<String, Object> parameters = this.getParameters();
+      year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
     } catch (Exception e) {
       year = this.getCurrentCycleYear();
+    }
+    // Get cycle
+    try {
+      Map<String, Object> parameters = this.getParameters();
+      cycle = (StringUtils.trim(((String[]) parameters.get(APConstants.CYCLE))[0]));
+    } catch (Exception e) {
+      cycle = this.getCurrentCycle();
     }
   }
 

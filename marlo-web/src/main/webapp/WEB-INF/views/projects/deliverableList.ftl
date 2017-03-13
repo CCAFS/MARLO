@@ -40,11 +40,11 @@
         
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
            
-          <h3 class="headTitle">[@s.text name="Project Deliverables" /]</h3>  
+          <h3 class="headTitle">[@s.text name="project.deliverableList.title" /]</h3>  
 
           [#--  FAIR LEGEND --]
           <div class="form-group col-md-12 legendContent">
-            <div class="col-md-12 fairDiagram" >Please <u>click here</u> to display a diagram which describes how MARLO is identifying the FAIR compliance</div>
+            <div class="col-md-12 fairDiagram" >[@s.text name="project.deliverableList.fairExplanation" /] </div>
             <div class="col-md-6 explanation">
               <div class="col-md-12 form-group "><b>FAIR:</b></div>
               <div class="form-group col-md-6 "><span>F</span> Findable </div>
@@ -65,7 +65,9 @@
           
            <h3 class="subTitle headTitle">On going deliverables</h3>
            [#if reportingActive]
-             <p class="note">Please focus on those deliverables expected to be reported in ${currentCycleYear}, which are tagged with <span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span> at the bedining of the title. </p>
+             <p class="note">
+              [@s.text name="project.deliverableList.focusDeliverablesMessage"][@s.param]${currentCycleYear}[/@s.param][@s.param]<span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>[/@s.param][/@s.text]
+             </p>
            [/#if]
            <hr />
            <div style="">[@deliverableList.deliverablesList deliverables=action.getDeliverables(true) canValidate=true canEdit=candit namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/]</div> 

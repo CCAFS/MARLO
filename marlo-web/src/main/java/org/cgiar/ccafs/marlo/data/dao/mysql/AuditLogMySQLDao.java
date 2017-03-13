@@ -28,9 +28,11 @@ import org.cgiar.ccafs.marlo.utils.IntegerTypeAdapter;
 import org.cgiar.ccafs.marlo.utils.LongTypeAdapter;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.google.gson.Gson;
@@ -59,6 +61,51 @@ public class AuditLogMySQLDao implements AuditLogDao {
     this.userDao = userDao;
   }
 
+  @Override
+  public Auditlog getAuditlog(String transactionID) {
+
+    List<Auditlog> auditLogs =
+      dao.findAll("from " + Auditlog.class.getName() + " where transaction_id='" + transactionID + "' and main=1");
+
+    if (!auditLogs.isEmpty()) {
+
+      Auditlog log = auditLogs.get(0);
+
+      return log;
+
+    }
+    return null;
+
+  }
+
+
+  @Override
+  public Auditlog getAuditlog(String transactionID, IAuditLog auditLog) {
+
+
+    List<Auditlog> auditLogs =
+      dao.findAll("from " + Auditlog.class.getName() + " where transaction_id='" + transactionID + "' and ENTITY_ID="
+        + auditLog.getId() + " and ENTITY_NAME='" + auditLog.getClass().toString() + "'");
+
+    if (!auditLogs.isEmpty()) {
+
+      Auditlog log = auditLogs.get(0);
+
+      return log;
+
+    }
+    return null;
+
+  }
+
+  @Override
+  public List<Auditlog> getCompleteHistory(String transactionID) {
+    List<Auditlog> auditLogs =
+      dao.findAll("from " + Auditlog.class.getName() + " where transaction_id='" + transactionID + "'");
+    return auditLogs;
+
+  }
+
 
   @Override
   public IAuditLog getHistory(String transactionID) {
@@ -75,6 +122,42 @@ public class AuditLogMySQLDao implements AuditLogDao {
 
     }
     return null;
+
+  }
+
+  @Override
+  public List<Auditlog> getHistoryBefore(String transactionID) {
+
+    List<Auditlog> logs = new ArrayList<Auditlog>();
+    Auditlog principal = this.getAuditlog(transactionID);
+    String sql = " select  transaction_id from auditlog where transaction_id !='" + transactionID + "' and ENTITY_ID='"
+      + principal.getEntityId() + "'" + " and ENTITY_NAME='" + principal.getEntityName() + "' and DETAIL = '"
+      + principal.getDetail() + "'  and CREATED_DATE< '" + principal.getCreatedDate() + "'  ORDER BY CREATED_DATE desc";
+    List<Map<String, Object>> auditLogs = dao.findCustomQuery(sql);
+
+    if (!auditLogs.isEmpty()) {
+      logs.addAll(this.getCompleteHistory(auditLogs.get(0).get("transaction_id").toString()));
+    }
+
+    return logs;
+
+  }
+
+  @Override
+  public List<Auditlog> getHistoryBeforeList(String transactionID, String className, String entityID) {
+
+    List<Auditlog> logs = new ArrayList<Auditlog>();
+    Auditlog principal = this.getAuditlog(transactionID);
+    String sql = " select  transaction_id from auditlog where transaction_id !='" + transactionID + "' and ENTITY_ID='"
+      + entityID + "'" + " and ENTITY_NAME='" + className + "'  and CREATED_DATE< '" + principal.getCreatedDate()
+      + "'  ORDER BY CREATED_DATE desc";
+    List<Map<String, Object>> auditLogs = dao.findCustomQuery(sql);
+
+    if (!auditLogs.isEmpty()) {
+      logs.addAll(this.getCompleteHistory(auditLogs.get(0).get("transaction_id").toString()));
+    }
+
+    return logs;
 
   }
 

@@ -46,9 +46,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
 import org.pentaho.reporting.engine.classic.core.Band;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
@@ -123,20 +125,7 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
 
     MasterReport masterReport = (MasterReport) reportResource.getResource();
     String center = loggedCrp.getName();
-    // Get parameters from URL
-    // Get year
-    try {
-      year = Integer.parseInt(this.getRequest().getParameter("year"));
-    } catch (Exception e) {
-      year = this.getCurrentCycleYear();
-    }
 
-    // Get cycle
-    try {
-      cycle = this.getRequest().getParameter("cycle");
-    } catch (Exception e) {
-      cycle = this.getCurrentCycle();
-    }
     // Get datetime
     ZonedDateTime timezone = ZonedDateTime.now();
     DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
@@ -146,11 +135,26 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
     }
     String current_date = timezone.format(format) + "(GMT" + zone + ")";
 
+    // Verify if the crp has regions avalaible
+    List<CrpParameter> hasRegionsList = new ArrayList<>();
+    Boolean regionalAvailable = false;
+    for (CrpParameter hasRegionsParam : this.loggedCrp.getCrpParameters().stream()
+      .filter(cp -> cp.isActive() && cp.getKey().equals(APConstants.CRP_HAS_REGIONS)).collect(Collectors.toList())) {
+      hasRegionsList.add(hasRegionsParam);
+    }
+
+    if (!hasRegionsList.isEmpty()) {
+      if (hasRegionsList.size() > 1) {
+        LOG.warn("There is for more than 1 key of type: " + APConstants.CRP_HAS_REGIONS);
+      }
+      regionalAvailable = Boolean.valueOf(hasRegionsList.get(0).getValue());
+    }
+
     // Set Main_Query
     CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
     String masterQueryName = "main";
     TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
-    TypedTableModel model = this.getMasterTableModel(center, current_date);
+    TypedTableModel model = this.getMasterTableModel(center, current_date, regionalAvailable);
     sdf.addTable(masterQueryName, model);
     masterReport.setDataFactory(cdf);
 
@@ -278,7 +282,8 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("BudgetSummaryByCoAs_");
+    fileName.append("BudgetByCoAsSummary-");
+    fileName.append(this.year + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
 
@@ -317,11 +322,11 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
     return loggedCrp;
   }
 
-  private TypedTableModel getMasterTableModel(String center, String date) {
+  private TypedTableModel getMasterTableModel(String center, String date, Boolean regionalAvailable) {
     // Initialization of Model
-    TypedTableModel model =
-      new TypedTableModel(new String[] {"center", "date"}, new Class[] {String.class, String.class});
-    model.addRow(new Object[] {center, date});
+    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "regionalAvailable"},
+      new Class[] {String.class, String.class, Boolean.class});
+    model.addRow(new Object[] {center, date, regionalAvailable});
     return model;
   }
 
@@ -674,12 +679,25 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
 
   @Override
   public void prepare() {
-
-
     try {
       loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
       loggedCrp = crpManager.getCrpById(loggedCrp.getId());
     } catch (Exception e) {
+    }
+    // Get parameters from URL
+    // Get year
+    try {
+      Map<String, Object> parameters = this.getParameters();
+      year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
+    } catch (Exception e) {
+      year = this.getCurrentCycleYear();
+    }
+    // Get cycle
+    try {
+      Map<String, Object> parameters = this.getParameters();
+      cycle = (StringUtils.trim(((String[]) parameters.get(APConstants.CYCLE))[0]));
+    } catch (Exception e) {
+      cycle = this.getCurrentCycle();
     }
   }
 

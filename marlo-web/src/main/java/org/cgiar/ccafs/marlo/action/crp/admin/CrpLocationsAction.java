@@ -84,6 +84,120 @@ public class CrpLocationsAction extends BaseAction {
   }
 
 
+  private void locationCustomNewData() {
+    for (LocElementType locElementType : loggedCrp.getLocationCustomElementTypes()) {
+
+      if (locElementType.getId() == null) {
+
+        locElementType.setName(locElementType.getName());
+        locElementType.setCrp(loggedCrp);
+        locElementType.setActive(true);
+        locElementType.setModifiedBy(this.getCurrentUser());
+        locElementType.setCreatedBy(this.getCurrentUser());
+        locElementType.setActiveSince(new Date());
+        locElementType.setModificationJustification("");
+        locElementType.setScope(true);
+        Long newLocElementTypeId = locElementTypeManager.saveLocElementType(locElementType);
+
+        if (locElementType.getLocationElements() != null) {
+          for (LocElement locElement : locElementType.getLocationElements()) {
+            if (locElement.getId() == null) {
+
+
+              LocElementType elementType = locElementTypeManager.getLocElementTypeById(newLocElementTypeId);
+              LocElement parentElement =
+                locElementManager.getLocElementByISOCode(locElement.getLocElement().getIsoAlpha2());
+
+              locElement.setLocElementType(elementType);
+              locElement.setLocElement(parentElement);
+              locElement.setLocGeoposition(null);
+              locElement.setCrp(loggedCrp);
+              locElement.setActive(true);
+              locElement.setModifiedBy(this.getCurrentUser());
+              locElement.setCreatedBy(this.getCurrentUser());
+              locElement.setActiveSince(new Date());
+              locElement.setModificationJustification("");
+              locElementManager.saveLocElement(locElement);
+
+              elementType.setHasCoordinates(false);
+              locElementTypeManager.saveLocElementType(elementType);
+            }
+          }
+        }
+      } else {
+
+        if (locElementType.getLocationElements() != null) {
+          for (LocElement locElement : locElementType.getLocationElements()) {
+            if (locElement.getId() == null) {
+
+
+              LocElementType elementType = locElementTypeManager.getLocElementTypeById(locElementType.getId());
+              LocElement parentElement =
+                locElementManager.getLocElementByISOCode(locElement.getLocElement().getIsoAlpha2());
+
+              locElement.setLocElementType(elementType);
+              locElement.setLocElement(parentElement);
+              locElement.setLocGeoposition(null);
+              locElement.setCrp(loggedCrp);
+              locElement.setActive(true);
+              locElement.setModifiedBy(this.getCurrentUser());
+              locElement.setCreatedBy(this.getCurrentUser());
+              locElement.setActiveSince(new Date());
+              locElement.setModificationJustification("");
+              locElementManager.saveLocElement(locElement);
+
+              elementType.setHasCoordinates(false);
+              elementType.setName(locElementType.getName());
+              locElementTypeManager.saveLocElementType(elementType);
+            }
+          }
+        } else {
+          LocElementType elementType = locElementTypeManager.getLocElementTypeById(locElementType.getId());
+
+          if (elementType.getLocElements() != null) {
+            for (LocElement locElement : locElementType.getLocElements()) {
+              locElementManager.deleteLocElement(locElement.getId());
+            }
+          }
+          elementType.setHasCoordinates(false);
+          elementType.setName(locElementType.getName());
+          locElementTypeManager.saveLocElementType(elementType);
+        }
+      }
+    }
+  }
+
+  private void locationCustomPreviousData() {
+    List<LocElementType> locElementTypesPrew = new ArrayList<LocElementType>(loggedCrp.getLocElementTypes().stream()
+      .filter(let -> let.isActive() && let.isScope()).collect(Collectors.toList()));
+
+    if (locElementTypesPrew != null) {
+      for (LocElementType locElementType : locElementTypesPrew) {
+        if (!loggedCrp.getLocationCustomElementTypes().contains(locElementType)) {
+          if (locElementType.getLocElements() != null) {
+            for (LocElement locElement : locElementType.getLocElements()) {
+              locElementManager.deleteLocElement(locElement.getId());
+            }
+          }
+          locElementTypeManager.deleteLocElementType(locElementType.getId());
+        } else {
+          if (locElementType.getLocElements() != null) {
+
+            LocElementType elementType = loggedCrp.getLocationCustomElementTypes().stream()
+              .filter(le -> le.equals(locElementType)).collect(Collectors.toList()).get(0);
+            if (elementType.getLocationElements() != null) {
+              for (LocElement locElement : locElementType.getLocElements()) {
+                if (!elementType.getLocationElements().contains(locElement)) {
+                  locElementManager.deleteLocElement(locElement.getId());
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
   private void locationNewData() {
     for (LocElementType locElementType : loggedCrp.getLocationElementTypes()) {
 
@@ -96,6 +210,7 @@ public class CrpLocationsAction extends BaseAction {
         locElementType.setCreatedBy(this.getCurrentUser());
         locElementType.setActiveSince(new Date());
         locElementType.setModificationJustification("");
+        locElementType.setScope(false);
         Long newLocElementTypeId = locElementTypeManager.saveLocElementType(locElementType);
 
         if (locElementType.getLocationElements() != null) {
@@ -130,6 +245,7 @@ public class CrpLocationsAction extends BaseAction {
               locElementManager.saveLocElement(locElement);
 
               elementType.setHasCoordinates(true);
+              elementType.setName(locElementType.getName());
               locElementTypeManager.saveLocElementType(elementType);
             }
           }
@@ -144,6 +260,7 @@ public class CrpLocationsAction extends BaseAction {
             }
           }
           elementType.setHasCoordinates(false);
+          elementType.setName(locElementType.getName());
           locElementTypeManager.saveLocElementType(elementType);
         } else {
           if (locElementType.getLocationElements() != null) {
@@ -178,6 +295,7 @@ public class CrpLocationsAction extends BaseAction {
                 locElementManager.saveLocElement(locElement);
 
                 elementType.setHasCoordinates(true);
+                elementType.setName(locElementType.getName());
                 locElementTypeManager.saveLocElementType(elementType);
               }
             }
@@ -191,6 +309,7 @@ public class CrpLocationsAction extends BaseAction {
               }
             }
             elementType.setHasCoordinates(false);
+            elementType.setName(locElementType.getName());
             locElementTypeManager.saveLocElementType(elementType);
           }
         }
@@ -198,9 +317,9 @@ public class CrpLocationsAction extends BaseAction {
     }
   }
 
-
   private void locationPreviousData() {
-    List<LocElementType> locElementTypesPrew = new ArrayList<LocElementType>(loggedCrp.getLocElementTypes());
+    List<LocElementType> locElementTypesPrew = new ArrayList<LocElementType>(loggedCrp.getLocElementTypes().stream()
+      .filter(let -> let.isActive() && !let.isScope()).collect(Collectors.toList()));
 
     if (locElementTypesPrew != null) {
       for (LocElementType locElementType : locElementTypesPrew) {
@@ -249,8 +368,10 @@ public class CrpLocationsAction extends BaseAction {
     countriesList = locs;
 
     if (loggedCrp.getLocElementTypes() != null) {
-      loggedCrp.setLocationElementTypes(new ArrayList<LocElementType>(
-        loggedCrp.getLocElementTypes().stream().filter(let -> let.isActive()).collect(Collectors.toList())));
+
+      // Location Level
+      loggedCrp.setLocationElementTypes(new ArrayList<LocElementType>(loggedCrp.getLocElementTypes().stream()
+        .filter(let -> let.isActive() && !let.isScope()).collect(Collectors.toList())));
 
 
       Collections.sort(loggedCrp.getLocationElementTypes(), (le1, le2) -> le1.getName().compareTo(le2.getName()));
@@ -264,12 +385,32 @@ public class CrpLocationsAction extends BaseAction {
           (le1, le2) -> le1.getName().compareTo(le2.getName()));
       }
 
+
+      // Custom Location Scope
+      loggedCrp.setLocationCustomElementTypes(new ArrayList<LocElementType>(loggedCrp.getLocElementTypes().stream()
+        .filter(let -> let.isActive() && let.isScope()).collect(Collectors.toList())));
+
+
+      Collections.sort(loggedCrp.getLocationCustomElementTypes(), (le1, le2) -> le1.getName().compareTo(le2.getName()));
+
+      for (int i = 0; i < loggedCrp.getLocationCustomElementTypes().size(); i++) {
+        loggedCrp.getLocationCustomElementTypes().get(i)
+          .setLocationElements(new ArrayList<LocElement>(loggedCrp.getLocationCustomElementTypes().get(i)
+            .getLocElements().stream().filter(le -> le.isActive()).collect(Collectors.toList())));
+
+        Collections.sort(loggedCrp.getLocationCustomElementTypes().get(i).getLocationElements(),
+          (le1, le2) -> le1.getName().compareTo(le2.getName()));
+      }
+
     }
 
     this.setBasePermission(this.getText(Permission.CRP_ADMIN_BASE_PERMISSION, params));
 
     if (this.isHttpPost()) {
       loggedCrp.getLocationElementTypes().clear();
+
+      loggedCrp.getLocationCustomElementTypes().clear();
+
     }
   }
 
@@ -279,6 +420,9 @@ public class CrpLocationsAction extends BaseAction {
 
       this.locationPreviousData();
       this.locationNewData();
+
+      this.locationCustomPreviousData();
+      this.locationCustomNewData();
 
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {

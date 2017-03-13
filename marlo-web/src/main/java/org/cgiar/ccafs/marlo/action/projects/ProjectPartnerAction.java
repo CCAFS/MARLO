@@ -57,6 +57,7 @@ import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.utils.HistoryComparator;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectPartnersValidator;
 
@@ -150,6 +151,7 @@ public class ProjectPartnerAction extends BaseAction {
   private ProjectPartnerOverall partnerOverall;
   private AuditLogManager auditLogManager;
   private String transaction;
+  private HistoryComparator historyComparator;
 
   // Util
   private SendMailS sendMail;
@@ -163,7 +165,8 @@ public class ProjectPartnerAction extends BaseAction {
     ProjectPartnerContributionManager projectPartnerContributionManager, UserRoleManager userRoleManager,
     ProjectPartnerPersonManager projectPartnerPersonManager, AuditLogManager auditLogManager,
     ProjectComponentLesson projectComponentLesson, ProjectPartnersValidator projectPartnersValidator,
-    ProjectComponentLessonManager projectComponentLessonManager, CrpUserManager crpUserManager) {
+    HistoryComparator historyComparator, ProjectComponentLessonManager projectComponentLessonManager,
+    CrpUserManager crpUserManager) {
     super(config);
     this.projectPartnersValidator = projectPartnersValidator;
     this.auditLogManager = auditLogManager;
@@ -171,6 +174,7 @@ public class ProjectPartnerAction extends BaseAction {
     this.institutionManager = institutionManager;
     this.institutionTypeManager = institutionTypeManager;
     this.locationManager = locationManager;
+    this.historyComparator = historyComparator;
     this.projectManager = projectManager;
     this.userManager = userManager;
     this.crpManager = crpManager;
@@ -638,6 +642,73 @@ public class ProjectPartnerAction extends BaseAction {
       Project history = (Project) auditLogManager.getHistory(transaction);
       if (history != null) {
         project = history;
+        project
+          .setPartners(project.getProjectPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        ProjectPartner leader = project.getLeader();
+        if (leader != null) {
+          // First we remove the element from the array.
+          project.getPartners().remove(leader);
+          // then we add it to the first position.
+          project.getPartners().add(0, leader);
+        }
+
+        Collections.sort(project.getPartners(),
+          (p1, p2) -> Boolean.compare(this.isPPA(p2.getInstitution()), this.isPPA(p1.getInstitution())));
+
+
+        List<String> differences = new ArrayList<>();
+        Map<String, String> specialList = new HashMap<>();
+        int i = 0;
+        for (ProjectPartner projectPartner : project.getPartners()) {
+          int[] index = new int[1];
+          index[0] = i;
+          differences.addAll(historyComparator.getDifferencesList(projectPartner, transaction, specialList,
+            "project.partners[" + i + "]", "project", 1));
+          int j = 0;
+          for (ProjectPartnerPerson partnerPerson : projectPartner.getProjectPartnerPersons()) {
+            int[] indexPartners = new int[2];
+            indexPartners[0] = i;
+            indexPartners[1] = j;
+            differences.addAll(historyComparator.getDifferencesList(partnerPerson, transaction, specialList,
+              "project.partners[" + i + "].partnerPersons[" + j + "]", "project.projectPartner", 2));
+            j++;
+          }
+          int k = 0;
+          for (ProjectPartnerContribution projectPartnerContribution : projectPartner
+            .getProjectPartnerContributions()) {
+            differences
+              .addAll(historyComparator.getDifferencesList(projectPartnerContribution, transaction, specialList,
+                "project.partners[" + i + "].partnerContributors[" + k + "]", "project.partnerContributors", 2));
+            k++;
+          };
+
+          List<ProjectPartnerOverall> overalls =
+            projectPartner.getProjectPartnerOveralls().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+          if (!overalls.isEmpty()) {
+            if (!historyComparator
+              .getDifferencesList(overalls.get(0), transaction, specialList,
+                "project.partners[" + i + "].partnerContributors[" + k + "]", "project.partnerContributors", 2)
+              .isEmpty()) {
+              if (!differences.contains("project.overall")) {
+                differences.add("project.overall");
+              }
+            }
+          }
+
+          i++;
+        }
+
+        if (this.isLessonsActive()) {
+          this.loadLessons(loggedCrp, project);
+        }
+        if (project.getProjectComponentLesson() != null) {
+          differences.addAll(historyComparator.getDifferencesList(project.getProjectComponentLesson(), transaction,
+            specialList, "project.projectComponentLesson", "project", 1));
+        }
+
+
+        this.setDifferences(differences);
+
       } else {
         this.transaction = null;
 

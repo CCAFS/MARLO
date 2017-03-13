@@ -14,6 +14,8 @@
 package org.cgiar.ccafs.marlo.utils;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
@@ -66,5 +68,33 @@ public class FileManager {
     }
     // Attempt to delete it
     return deleteFile.delete();
+  }
+
+  public static byte[] readURL(File url) {
+
+    byte[] b = new byte[(int) url.length()];
+    FileInputStream fileInputStream = null;
+    try {
+      fileInputStream = new FileInputStream(url);
+      fileInputStream.read(b);
+
+      return b;
+    } catch (FileNotFoundException e) {
+      LOG.error("File Not Found.");
+      e.printStackTrace();
+    } catch (IOException e1) {
+      LOG.error("Error Reading The File.");
+      e1.printStackTrace();
+    } finally {
+
+      try {
+        fileInputStream.close();
+      } catch (Exception e) {
+
+        LOG.error("Don't Close");
+      }
+    }
+    return null;
+
   }
 }

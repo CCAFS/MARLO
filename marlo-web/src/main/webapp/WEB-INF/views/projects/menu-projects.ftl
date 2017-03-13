@@ -35,14 +35,14 @@
       { 'slug': 'highlights',  'name': 'Project Highlights',  'action': 'highlights',  'active': true ,'show': reportingActive }
       ]
     },
-    { 'title': 'Activities', 'show': true,
+    { 'title': 'Activities', 'show': action.hasSpecificities(action.crpActivitesModule()),
       'items': [
-      { 'slug': 'activities',  'name': 'projects.menu.activities',  'action': 'activities',  'active': true  }
+      { 'slug': 'activities',  'name': 'projects.menu.activities',  'action': 'activities',  'active': true  ,'show': true }
       ]
     },
     { 'title': 'Budget', 'show': true,
       'items': [
-      { 'slug': 'budgetByPartners',  'name': 'projects.menu.budgetByPartners',  'action': 'budgetByPartners',  'active': true, 'show': true },
+      { 'slug': 'budgetByPartners',  'name': 'projects.menu.budgetByPartners',  'action': 'budgetByPartners',  'active': true, 'show':true },
       { 'slug': 'budgetByCoAs',  'name': 'projects.menu.budgetByCoAs',  'action': 'budgetByCoAs', 'show': action.canEditBudgetByCoAs(project.id) && !project.administrative && !reportingActive && !phaseOne, 'active': true  },
       { 'slug': 'leverages',  'name': 'Leverages',  'action': 'leverages',  'active': true, 'show': reportingActive }
       ]

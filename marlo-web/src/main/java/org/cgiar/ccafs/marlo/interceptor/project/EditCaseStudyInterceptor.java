@@ -124,6 +124,17 @@ public class EditCaseStudyInterceptor extends AbstractInterceptor implements Ser
           canEdit = false;
 
         }
+        if (baseAction.isCrpClosed()) {
+          if (!(baseAction.hasSpecificities(APConstants.CRP_PMU) && baseAction.isPMU())) {
+            canEdit = false;
+          }
+
+        }
+
+        // Temporal validation to grant access to the a4nh flagship leaders.
+        if (baseAction.getCurrentUser().getId() == 1148 || baseAction.getCurrentUser().getId() == 1149) {
+          canEdit = true;
+        }
       }
 
       // TODO Validate is the project is new
@@ -155,7 +166,7 @@ public class EditCaseStudyInterceptor extends AbstractInterceptor implements Ser
           caseStudy
             .getCaseStudyProjects().stream().filter(cs -> cs.isActive()
               && cs.getProject().getId().longValue() == project.getId().longValue() && cs.isCreated())
-          .collect(Collectors.toList()));
+            .collect(Collectors.toList()));
 
       if (caseStudyProjects.isEmpty()) {
         canEdit = false;

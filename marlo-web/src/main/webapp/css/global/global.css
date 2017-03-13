@@ -316,6 +316,22 @@ table.default a{
     text-decoration: none;
 }
 
+.changedField > label,
+.changedField > span, 
+.changedField > p{
+  color: #0288D1 !important;
+}
+
+.changedField {
+  border-radius: 4px;
+  background-color: #eaffea !important;
+}
+
+.changedField.simpleBox,
+.changedField.borderBox{
+  border-color: #addbf5 !important;
+}
+
 label.readOnly {
   cursor: initial;
 }
@@ -5440,7 +5456,7 @@ table.evaluationRank thead th{
 }
 
 #debugPanel {
-  font-size: 0.8em;
+  font-size: 0.75em;
   position: absolute;
   padding: 5px;
   background: #fff;
@@ -5449,7 +5465,7 @@ table.evaluationRank thead th{
   top: 3px;
   left: 3px;
   opacity: 0.94;
-  width: 345px;
+  width: 450px;
 }
 
 #debugPanel p{
@@ -5458,7 +5474,7 @@ table.evaluationRank thead th{
 }
 
 #debugPanel p span{
-  color: #8c8888;
+  color: #4CAF50;
 }
 
 /********************  CRP ADMIN - Management  *********************/
@@ -5777,7 +5793,7 @@ h4.testEnvironment {
   border: 1px solid #ccc;
 }
 
-.history-mode {background: #95a5a6;color: #fff;padding: 13px 0 6px 0;font-size: 1.2em;border-radius: 4px;font-weight: lighter;}
+.history-mode {background: #95a5a6;color: #fff;padding: 13px 0 6px 0;font-size: 1.2em;border-radius: 4px;font-weight: lighter;margin-bottom: 10px;}
 
 .history-mode a {
   color: #fff;

@@ -77,6 +77,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.Submission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.FileManager;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -84,7 +85,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
@@ -941,8 +941,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         && csp.getCaseStudy().getYear() != null && csp.getCaseStudy().getYear() >= this.year)
       .collect(Collectors.toList())) {
       CaseStudy caseStudy = caseStudyProject.getCaseStudy();
-      System.out.println(this.year);
-      System.out.println(caseStudy.getYear());
+      // System.out.println(this.year);
+      // System.out.println(caseStudy.getYear());
 
       id = caseStudy.getId();
 
@@ -1200,40 +1200,30 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         Boolean.class},
       0);
     if (!project.getDeliverables().isEmpty()) {
-
-      // get On going deliverables
-      List<Deliverable> deliverables =
-        new ArrayList<>(project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList()));
+      // get Reporting deliverables
+      List<Deliverable> deliverables = new ArrayList<>(project.getDeliverables().stream()
+        .filter(d -> d.isActive() && d.getProject() != null && d.getProject().isActive()
+          && d.getProject().getReporting() != null && d.getProject().getReporting() && d.getProject().getCrp() != null
+          && d.getProject().getCrp().getId().equals(this.loggedCrp.getId()) && d.getStatus() != null
+          && ((d.getYear() == this.year
+            || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))
+            || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+              && (d.getYear() >= this.year
+                || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() >= this.year))))
+          && (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+            || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+            || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
+        .collect(Collectors.toList()));
 
       deliverables.sort((p1, p2) -> p1.isRequieriedReporting(year).compareTo(p2.isRequieriedReporting(year)));
 
-      List<Deliverable> openA = deliverables.stream()
-        .filter(a -> a.isActive()
-          && ((a.getStatus() == null || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-            || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-              || a.getStatus().intValue() == 0))))
-        .collect(Collectors.toList());
-
-      openA.addAll(deliverables.stream()
-        .filter(d -> d.isActive() && d.getYear() == this.getCurrentCycleYear() && d.getStatus() != null
-          && d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))
-        .collect(Collectors.toList()));
-
-      openA.addAll(deliverables.stream()
-        .filter(d -> d.isActive() && d.getNewExpectedYear() != null
-          && d.getNewExpectedYear().intValue() == this.getCurrentCycleYear() && d.getStatus() != null
-          && d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))
-        .collect(Collectors.toList()));
-
-      openA.sort((p1, p2) -> p1.isRequieriedReporting(this.getCurrentCycleYear())
-        .compareTo(p2.isRequieriedReporting(this.getCurrentCycleYear())));
-
       HashSet<Deliverable> deliverablesHL = new HashSet<>();
-      deliverablesHL.addAll(openA);
-      openA.clear();
-      openA.addAll(deliverablesHL);
+      deliverablesHL.addAll(deliverables);
+      deliverables.clear();
+      deliverables.addAll(deliverablesHL);
 
-      for (Deliverable deliverable : openA) {
+
+      for (Deliverable deliverable : deliverables) {
         String deliv_type = null;
         String deliv_sub_type = null;
         String deliv_status = deliverable.getStatusName();
@@ -1367,12 +1357,19 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         Integer deliv_new_year = null;
         String deliv_new_year_justification = null;
 
-        if (deliverable.getStatusName() != null) {
-          if (!deliverable.getStatusName().isEmpty()) {
-            if (deliverable.getStatusName().equals("Extended")) {
-              deliv_new_year = deliverable.getNewExpectedYear();
-              deliv_new_year_justification = deliverable.getStatusDescription();
-            }
+        if (deliverable.getStatus() != null) {
+          // Extended
+          if (deliverable.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+            deliv_new_year = deliverable.getNewExpectedYear();
+            deliv_new_year_justification = deliverable.getStatusDescription();
+          }
+          // Complete
+          if (deliverable.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+            deliv_new_year = deliverable.getNewExpectedYear();
+          }
+          // Canceled
+          if (deliverable.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
+            deliv_new_year_justification = deliverable.getStatusDescription();
           }
         }
 
@@ -2068,9 +2065,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("Full_Project_Report-");
+    fileName.append("FullProjectReportSummary-");
     fileName.append(project.getCrp().getName() + "-");
     fileName.append("P" + projectID + "-");
+    fileName.append(this.year + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".pdf");
     return fileName.toString();
@@ -2123,6 +2121,15 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       + "hightlightsImage" + File.separator;
   }
 
+  public String getHighlightsImagesUrlPath(long projectID) {
+    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + projectID + File.separator
+      + "hightlightsImage" + File.separator;
+  }
+
+  private String getHightlightImagePath(long projectID) {
+    return config.getUploadsBaseFolder() + File.separator + this.getHighlightsImagesUrlPath(projectID) + File.separator;
+  }
+
   @Override
   public InputStream getInputStream() {
     if (inputStream == null) {
@@ -2130,6 +2137,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     }
     return inputStream;
   }
+
 
   private TypedTableModel getLeveragesTableModel() {
     // Decimal format
@@ -2329,7 +2337,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       project.isLocationGlobal(), this.isPhaseOne()});
     return model;
   }
-
 
   public List<IpElement> getMidOutcomeOutputs(long midOutcomeID) {
     List<IpProjectContribution> ipProjectContributions =
@@ -2598,6 +2605,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
+
   private TypedTableModel getPartnerLeaderTableModel(ProjectPartner projectLeader) {
     TypedTableModel model =
       new TypedTableModel(new String[] {"org_leader", "pp_id"}, new Class[] {String.class, Long.class}, 0);
@@ -2701,7 +2709,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
-
   private TypedTableModel getProjectHighlightReportingTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"id", "title", "author", "subject", "publisher", "year_reported", "highlights_types",
@@ -2792,24 +2799,24 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         double pageHeigth = 792 * 0.4;
         double imageWidth = 0;
         double imageHeigth = 0;
-        image = this.getHighlightsImagesUrl() + projectHighlight.getFile().getFileName();
-
-        // get Height and Width
+        image =
+          this.getHightlightImagePath(projectHighlight.getProject().getId()) + projectHighlight.getFile().getFileName();
 
         Image imageFile = null;
-        image = image.replace(" ", "%20");
-        URL url;
+
+        LOG.info("image.getURL.replace " + image);
+        File url;
         try {
-          url = new URL(image);
-        } catch (MalformedURLException e) {
+          url = new File(image);
+        } catch (Exception e) {
           e.printStackTrace();
           url = null;
         }
-        if (url != null) {
+        if (url != null && url.exists()) {
           // System.out.println("Project: " + projectHighlight.getProject().getId() + " PH: " +
           // projectHighlight.getId());
           try {
-            imageFile = Image.getInstance(url);
+            imageFile = Image.getInstance(FileManager.readURL(url));
             // System.out.println("W: " + imageFile.getWidth() + " \nH: " + imageFile.getHeight());
             if (imageFile.getWidth() >= imageFile.getHeight()) {
               imageWidth = pageWidth;
@@ -2823,15 +2830,15 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
             heigth = (int) imageHeigth;
             // If successful, process the message
           } catch (BadElementException e) {
-            System.out.println("Unable to retrieve Image!!");
+            // System.out.println("Unable to retrieve Image!!");
             image = "";
             e.printStackTrace();
           } catch (MalformedURLException e) {
-            System.out.println("Unable to retrieve Image!!");
+            // System.out.println("Unable to retrieve Image!!");
             image = "";
             e.printStackTrace();
           } catch (IOException e) {
-            System.out.println("Unable to retrieve Image!!");
+            // System.out.println("Unable to retrieve Image!!");
             image = "";
             e.printStackTrace();
           }
@@ -2866,6 +2873,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   public long getProjectID() {
     return projectID;
   }
+
 
   private TypedTableModel getProjectOtherOutcomesTableModel() {
     TypedTableModel model =
@@ -3101,12 +3109,25 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       loggedCrp = crpManager.getCrpById(loggedCrp.getId());
       this
         .setProjectID(Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID))));
-      this.setYear(Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.YEAR_REQUEST))));
-      this.setCycle(StringUtils.trim(this.getRequest().getParameter(APConstants.CYCLE)));
       this.setCrpSession(loggedCrp.getAcronym());
 
     } catch (Exception e) {
 
+    }
+    // Get parameters from URL
+    // Get year
+    try {
+      Map<String, Object> parameters = this.getParameters();
+      year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
+    } catch (Exception e) {
+      year = this.getCurrentCycleYear();
+    }
+    // Get cycle
+    try {
+      Map<String, Object> parameters = this.getParameters();
+      cycle = (StringUtils.trim(((String[]) parameters.get(APConstants.CYCLE))[0]));
+    } catch (Exception e) {
+      cycle = this.getCurrentCycle();
     }
   }
 

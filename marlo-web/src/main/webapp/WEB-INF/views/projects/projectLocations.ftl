@@ -207,7 +207,7 @@
           <div class="longitudeWrapper"><input placeholder="Longitude" class="longitude form-control " type="text" /></div>
           <div class="buttonBlock addLocation text-right"><div class="button-blue"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addLocation"/]</div></div>
         </div>
-        [/#if]
+      [/#if]
     </div>
     <input class="locationLevelId" type="hidden" name="${locationLevelName}[${index}].id" value="${(element.id)!}"/>
     <input class="locationLevelName" type="hidden" name="${locationLevelName}[${index}].name" value="${(element.name)!}"/>

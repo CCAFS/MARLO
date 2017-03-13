@@ -137,7 +137,14 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
         }
 
         if (baseAction.isCrpClosed()) {
-          canEdit = false;
+          if (!(baseAction.hasSpecificities(APConstants.CRP_PMU) && baseAction.isPMU())) {
+            canEdit = false;
+          }
+        }
+
+        // Temporal validation to grant access to the a4nh flagship leaders.
+        if (baseAction.getCurrentUser().getId() == 1148 || baseAction.getCurrentUser().getId() == 1149) {
+          canEdit = true;
         }
 
 
