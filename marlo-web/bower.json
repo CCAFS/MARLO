@@ -41,7 +41,8 @@
     "intro.js": "^2.3.0",
     "font-awesome": "^4.7.0",
     "blueimp-file-upload": "^9.14.1",
-    "qtip2": "^2.2.1"
+    "qtip2": "^2.2.1",
+    "jquery-pretty-text-diff": "^1.0.5"
   },
   "overrides": {
     "jquery": {

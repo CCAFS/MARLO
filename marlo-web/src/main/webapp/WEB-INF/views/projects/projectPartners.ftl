@@ -306,7 +306,7 @@
 [/#macro]
 
 [#macro contactPersonMacro element name index=-1 partnerIndex=-1 isTemplate=false]
-  <div id="contactPerson-${isTemplate?string('template',(element.id)!)}" class="contactPerson simpleBox ${(element.contactType)!} ${customForm.changedField('${name}.id')}" style="display:${isTemplate?string('none','block')}">
+  <div id="contactPerson-${isTemplate?string('template',(element.id)!)}" class="contactPerson simpleBox ${(element.contactType)!}" style="display:${isTemplate?string('none','block')}">
     [#-- Remove link for all partners --]
     [#if editable]
       <div class="removePerson removeElement" title="[@s.text name="projectPartners.removePerson" /]"></div>
@@ -330,7 +330,7 @@
     <div class="form-group">
     	<div class="row">
     	    [#-- Contact Email --]
-          <div class="col-md-12 partnerPerson-email userField">
+          <div class="col-md-12 partnerPerson-email userField ${customForm.changedField('${name}.user.id')}">
             [#attempt]
               [#assign canEditEmail=!((action.getActivitiesLedByUser((element.id)!-1)!false)?has_content) && canEditContactType/]
             [#recover]
@@ -348,7 +348,7 @@
     <div class="form-group">
       <div class="row">
         [#-- Contact type --]
-        <div class="col-md-6 partnerPerson-type  ">
+        <div class="col-md-6 partnerPerson-type ${customForm.changedField('${name}.contactType')}">
           [#if canEditContactType]
             [@customForm.select name="${name}.contactType" className="partnerPersonType" disabled=!canEdit i18nkey="projectPartners.personType" stringKey=true header=false listName="partnerPersonTypes" value="'${(element.contactType)!'CP'}'" required=true /]
           [#else]
@@ -359,7 +359,7 @@
         </div>
         
         [#-- Contact Branch --]
-        <div class="col-md-6 partnerPerson-branch  ">
+        <div class="col-md-6 partnerPerson-branch ${customForm.changedField('${name}.institution.id')}">
           [#if canEditContactType]
             [@customForm.select name="${name}.institution.id" className="partnerPersonBranch" disabled=!canEdit i18nkey="projectPartners.personBranch" header=false listName="project.partners[${partnerIndex}].institution.institutuionsBranches" keyFieldName="id"  displayFieldName="branchName" required=true /]
           [#else]
@@ -373,7 +373,7 @@
     
     [#-- Responsibilities --]
     [#if project.projectEditLeader]
-    <div class="partnerResponsabilities chosen"> 
+    <div class="form-group partnerResponsabilities chosen"> 
       [@customForm.textArea name="${name}.responsibilities" className="resp limitWords-100" i18nkey="projectPartners.responsabilities" required=true editable=editable /]
       <div class="clearfix"></div>
     </div>

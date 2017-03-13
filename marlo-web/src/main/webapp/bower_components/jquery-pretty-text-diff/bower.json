@@ -1,0 +1,13 @@
+{
+    "name": "jquery-pretty-text-diff",
+    "version": "1.0.5",
+    "main": "jquery.pretty-text-diff.min.js",
+    "dependencies": {
+        "jquery": ">=1.10.2",
+        "google-diff-match-patch": "*"
+    },
+    "devDependencies": {
+        "jquery": ">=1.10.2",
+        "google-diff-match-patch": "*"
+    }
+}

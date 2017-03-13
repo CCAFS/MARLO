@@ -287,7 +287,7 @@
   [#if value == ""]
     [#assign customValue][@s.property value="${name}"/][/#assign]
   [#else]
-    [#assign customValue=value /] 
+    [#assign customValue=value /]
   [/#if]
   <div class="onoffswitch ${changedField(name)} ${cssClass}">
     [#if label?has_content]
@@ -311,7 +311,8 @@
 
 [#function changedField name]
   [#if action.changedField(name)??]
-    [#return 'changedField']
+    [#assign fieldObj = action.changedField(name)]
+    [#return 'changedField changedFieldId-'+ (fieldObj.id)!]
   [/#if]
   [#return '']
 [/#function]

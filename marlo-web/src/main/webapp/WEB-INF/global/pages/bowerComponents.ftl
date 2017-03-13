@@ -53,5 +53,7 @@
   [#if libraryName="cytoscape-qtip"]<script src="${baseUrl}/bower_components/cytoscape-qtip/cytoscape-qtip.js"></script>[/#if]
   [#if libraryName="intro.js"]<script src="${baseUrl}/bower_components/intro.js/intro.js"></script>[/#if]
   [#if libraryName="blueimp-file-upload"]<script src="${baseUrl}/bower_components/blueimp-file-upload/js/jquery.fileupload.js"></script>[/#if]
+  [#if libraryName="google-diff-match-patch"]<script src="${baseUrl}/bower_components/google-diff-match-patch/diff_match_patch.js"></script>[/#if]
+  [#if libraryName="jquery-pretty-text-diff"]<script src="${baseUrl}/bower_components/jquery-pretty-text-diff/jquery.pretty-text-diff.min.js"></script>[/#if]
   [#-- endbower --]
 [/#macro]

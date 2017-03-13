@@ -9,6 +9,15 @@ table{
   width: 100%;
 }
 
+ins {
+    background-color: #c6ffc6;
+    text-decoration: none;
+}
+
+del {
+    background-color: #ffc6c6;
+}
+
 label {
   margin-bottom: 2px;
   font-weight: 600;
@@ -324,7 +333,7 @@ table.default a{
 
 .changedField {
   border-radius: 4px;
-  background-color: #eaffea !important;
+  /*background-color: #eaffea !important;*/
 }
 
 .changedField.simpleBox,
