@@ -54,17 +54,17 @@ public class HistoryComparator {
   }
 
 
-  private void addRelationField(Set<String> differencesUniques, Auditlog actual, Auditlog before, Auditlog principal,
-    Map<String, String> specialList) throws ClassNotFoundException {
+  private void addRelationField(Set<HistoryDifference> differencesUniques, Auditlog actual, Auditlog before,
+    Auditlog principal, Map<String, String> specialList) throws ClassNotFoundException {
     Class classRelation = Class.forName(actual.getEntityName().replace("class ", ""));
     String listName = this.getListName(classRelation);
     if (listName != null) {
-      differencesUniques.add(listName);
+      differencesUniques.add(new HistoryDifference(listName, true, "", ""));
     } else {
       if (actual != null && actual.getRelationName() != null) {
         String relationName = actual.getRelationName().replace(":" + principal.getEntityId(), "");
         if (specialList.containsKey(relationName)) {
-          differencesUniques.add(specialList.get(relationName));
+          differencesUniques.add(new HistoryDifference(specialList.get(relationName), true, "", ""));
         }
       }
 
@@ -72,8 +72,8 @@ public class HistoryComparator {
     }
   }
 
-  private List<String> compareHistory(String jsonNew, String jsonOlder, String subFix) {
-    List<String> myDifferences = new ArrayList<>();
+  private List<HistoryDifference> compareHistory(String jsonNew, String jsonOlder, String subFix) {
+    List<HistoryDifference> myDifferences = new ArrayList<>();
     Gson g = new Gson();
     Type mapType = new TypeToken<Map<String, Object>>() {
     }.getType();
@@ -101,19 +101,20 @@ public class HistoryComparator {
     MapDifference<String, Object> comparable = Maps.difference(firstMap, secondMap);
     Map<String, ValueDifference<Object>> diferences = comparable.entriesDiffering();
     Map<String, Object> diferencesLeft = comparable.entriesOnlyOnLeft();
-    diferences.forEach((k, v) -> myDifferences.add(k));
-    diferencesLeft.forEach((k, v) -> myDifferences.add(k));
+    diferences.forEach((k, v) -> myDifferences
+      .add(new HistoryDifference(k, false, v.rightValue().toString(), v.leftValue().toString())));
+    diferencesLeft.forEach((k, v) -> new HistoryDifference(k, true, "", ""));
     return myDifferences;
   }
 
-  public List<String> getDifferences(String transactionID, Map<String, String> specialList, String subFix)
+  public List<HistoryDifference> getDifferences(String transactionID, Map<String, String> specialList, String subFix)
     throws ClassNotFoundException, NoSuchFieldException, SecurityException {
 
     Auditlog principal = auditlogManager.getAuditlog(transactionID);
 
     c = Class.forName(principal.getEntityName().replace("class ", ""));
-    Set<String> differencesUniques = new HashSet<>();
-    List<String> differences = new ArrayList<>();
+    Set<HistoryDifference> differencesUniques = new HashSet<>();
+    List<HistoryDifference> differences = new ArrayList<>();
     List<Auditlog> actualHistory = auditlogManager.getCompleteHistory(transactionID);
     List<Auditlog> beforeHistory = auditlogManager.getHistoryBefore(transactionID);
 
@@ -130,7 +131,8 @@ public class HistoryComparator {
 
             case 3:
 
-              List<String> diList = this.compareHistory(actual.getEntityJson(), before.getEntityJson(), subFix);
+              List<HistoryDifference> diList =
+                this.compareHistory(actual.getEntityJson(), before.getEntityJson(), subFix);
               if (!diList.isEmpty()) {
                 this.addRelationField(differencesUniques, actual, before, principal, specialList);
               }
@@ -145,18 +147,22 @@ public class HistoryComparator {
     }
 
 
-    for (String str : differencesUniques) {
+    for (HistoryDifference str : differencesUniques) {
 
       try {
 
-        Field field = this.getField(str);
+        Field field = this.getField(str.getDifference());
         if (IAuditLog.class.isAssignableFrom(field.getType())) {
-          differences.add(subFix + "." + str + ".id");
+          str.setDifference(subFix + "." + str.getDifference() + ".id");
+          differences.add(str);
         } else {
-          differences.add(subFix + "." + str);
+          str.setDifference(subFix + "." + str);
+          differences.add(str);
+
         }
       } catch (Exception e) {
-        differences.add(subFix + "." + str);
+        str.setDifference(subFix + "." + str);
+        differences.add(str);
       }
 
     }
@@ -164,14 +170,14 @@ public class HistoryComparator {
 
   }
 
-  public List<String> getDifferencesList(IAuditLog iaAuditLog, String transactionID, Map<String, String> specialList,
-    String subFix, String subFixDelete, int levels)
+  public List<HistoryDifference> getDifferencesList(IAuditLog iaAuditLog, String transactionID,
+    Map<String, String> specialList, String subFix, String subFixDelete, int levels)
       throws ClassNotFoundException, NoSuchFieldException, SecurityException {
-    List<String> differences = new ArrayList<>();
+    List<HistoryDifference> differences = new ArrayList<>();
     Auditlog principal = auditlogManager.getAuditlog(transactionID, iaAuditLog);
     if (principal != null) {
       c = Class.forName(principal.getEntityName().replace("class ", ""));
-      Set<String> differencesUniques = new HashSet<>();
+      Set<HistoryDifference> differencesUniques = new HashSet<>();
 
 
       List<Auditlog> beforeHistory = auditlogManager.getHistoryBeforeList(transactionID,
@@ -182,15 +188,15 @@ public class HistoryComparator {
         {
           Auditlog before = this.getSimiliar(actual, beforeHistory);
           if (before == null) {
-            differencesUniques.add("id");
+            differencesUniques.add(new HistoryDifference("id", true, "", ""));
           } else {
 
-            List<String> diffrencesFields =
+            List<HistoryDifference> diffrencesFields =
               this.compareHistory(actual.getEntityJson(), before.getEntityJson(), subFixDelete);
 
             if (!diffrencesFields.isEmpty()) {
               differencesUniques.addAll(diffrencesFields);
-              differencesUniques.add("id");
+              differencesUniques.add(new HistoryDifference("id", true, "", ""));
             }
 
 
@@ -213,19 +219,21 @@ public class HistoryComparator {
       } catch (Exception e) {
 
       }
-      for (String str : differencesUniques) {
+      for (HistoryDifference str : differencesUniques) {
         try {
-          Field field = this.getField(str);
+          Field field = this.getField(str.getDifference());
+
           if (field.getType().isAssignableFrom(IAuditLog.class)) {
-            differences.add(subFix + "." + str + ".id");
+            str.setDifference(subFix + "." + str + ".id");
           } else {
-            differences.add(subFix + "." + str);
+            str.setDifference(subFix + "." + str);
           }
         } catch (Exception e) {
-          differences.add(subFix + "." + str);
+          str.setDifference(subFix + "." + str);
         }
-        if (str.equals("id")) {
-          differences.add(parent + ".id");
+        differences.add(str);
+        if (str.getDifference().equals("id")) {
+          differences.add(new HistoryDifference(parent + ".id", true, "", ""));
         }
       }
 

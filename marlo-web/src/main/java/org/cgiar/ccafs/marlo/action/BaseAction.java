@@ -69,6 +69,7 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.security.SessionCounter;
 import org.cgiar.ccafs.marlo.security.UserToken;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.HistoryDifference;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -133,7 +134,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   private static final long serialVersionUID = -740360140511380630L;
 
-  private List<String> differences;
+  private List<HistoryDifference> differences;
 
   protected boolean add;
 
@@ -456,11 +457,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
 
-  public boolean changedField(String field) {
+  public HistoryDifference changedField(String field) {
+
+
     if (differences != null) {
-      return differences.contains(field);
+      if (differences.contains(new HistoryDifference(field))) {
+        return differences.get(differences.indexOf(new HistoryDifference(field)));
+      }
     }
-    return false;
+    return null;
 
   }
 
@@ -662,7 +667,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return null;
   }
 
-  public List<String> getDifferences() {
+  public List<HistoryDifference> getDifferences() {
     return differences;
   }
 
@@ -2249,7 +2254,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
 
-  public void setDifferences(List<String> differences) {
+  public void setDifferences(List<HistoryDifference> differences) {
     this.differences = differences;
   }
 

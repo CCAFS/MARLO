@@ -58,6 +58,7 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.utils.HistoryComparator;
+import org.cgiar.ccafs.marlo.utils.HistoryDifference;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectPartnersValidator;
 
@@ -656,7 +657,7 @@ public class ProjectPartnerAction extends BaseAction {
           (p1, p2) -> Boolean.compare(this.isPPA(p2.getInstitution()), this.isPPA(p1.getInstitution())));
 
 
-        List<String> differences = new ArrayList<>();
+        List<HistoryDifference> differences = new ArrayList<>();
         Map<String, String> specialList = new HashMap<>();
         int i = 0;
         for (ProjectPartner projectPartner : project.getPartners()) {
@@ -690,7 +691,7 @@ public class ProjectPartnerAction extends BaseAction {
                 "project.partners[" + i + "].partnerContributors[" + k + "]", "project.partnerContributors", 2)
               .isEmpty()) {
               if (!differences.contains("project.overall")) {
-                differences.add("project.overall");
+                differences.add(new HistoryDifference("project.overall", true, "", ""));
               }
             }
           }
