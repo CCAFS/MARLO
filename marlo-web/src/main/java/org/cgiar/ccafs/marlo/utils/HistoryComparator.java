@@ -156,12 +156,12 @@ public class HistoryComparator {
           str.setDifference(subFix + "." + str.getDifference() + ".id");
           differences.add(str);
         } else {
-          str.setDifference(subFix + "." + str);
+          str.setDifference(subFix + "." + str.getDifference());
           differences.add(str);
 
         }
       } catch (Exception e) {
-        str.setDifference(subFix + "." + str);
+        str.setDifference(subFix + "." + str.getDifference());
         differences.add(str);
       }
 
@@ -224,12 +224,12 @@ public class HistoryComparator {
           Field field = this.getField(str.getDifference());
 
           if (field.getType().isAssignableFrom(IAuditLog.class)) {
-            str.setDifference(subFix + "." + str + ".id");
+            str.setDifference(subFix + "." + str.getDifference() + ".id");
           } else {
-            str.setDifference(subFix + "." + str);
+            str.setDifference(subFix + "." + str.getDifference());
           }
         } catch (Exception e) {
-          str.setDifference(subFix + "." + str);
+          str.setDifference(subFix + "." + str.getDifference());
         }
         differences.add(str);
         if (str.getDifference().equals("id")) {
