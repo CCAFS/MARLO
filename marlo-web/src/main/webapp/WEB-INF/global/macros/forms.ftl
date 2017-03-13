@@ -310,5 +310,10 @@
 
 
 [#function changedField name]
-   [#return action.changedField(name)?string('changedField','')]
+  [#if action.changedField(name)??]
+    [#return 'changedField']
+  [/#if]
+  [#return '']
 [/#function]
+
+
