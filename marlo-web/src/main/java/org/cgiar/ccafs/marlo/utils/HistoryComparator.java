@@ -158,6 +158,8 @@ public class HistoryComparator {
         Field field = this.getField(str.getDifference());
         if (IAuditLog.class.isAssignableFrom(field.getType())) {
           str.setDifference(subFix + "." + str.getDifference() + ".id");
+          str.setAdded(true);
+
           differences.add(str);
         } else {
 
@@ -247,6 +249,8 @@ public class HistoryComparator {
           }
           if (IAuditLog.class.isAssignableFrom(field.getType())) {
             str.setDifference(subFix + "." + str.getDifference() + ".id");
+            str.setAdded(true);
+
           } else {
             if (Date.class.isAssignableFrom(field.getType())) {
               SimpleDateFormat formatter = new SimpleDateFormat("MMM dd, yyyy HH:mm:ss a");
