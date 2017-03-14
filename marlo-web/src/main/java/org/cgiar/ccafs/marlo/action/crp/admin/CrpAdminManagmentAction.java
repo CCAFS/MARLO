@@ -115,6 +115,10 @@ public class CrpAdminManagmentAction extends BaseAction {
   private UserManager userManager;
   private Role fplRole;
 
+
+  private Role fpmRole;
+
+
   // Util
   private SendMailS sendMail;
 
@@ -170,7 +174,6 @@ public class CrpAdminManagmentAction extends BaseAction {
     }
   }
 
-
   public List<CrpProgram> getFlagshipsPrograms() {
     return flagshipsPrograms;
   }
@@ -179,6 +182,10 @@ public class CrpAdminManagmentAction extends BaseAction {
     return fplRole;
   }
 
+
+  public Role getFpmRole() {
+    return fpmRole;
+  }
 
   public Crp getLoggedCrp() {
     return loggedCrp;
@@ -198,6 +205,7 @@ public class CrpAdminManagmentAction extends BaseAction {
   public Role getRolePmu() {
     return rolePmu;
   }
+
 
   /**
    * This method will validate if the user is deactivated. If so, it will send an email indicating the credentials to
@@ -388,7 +396,6 @@ public class CrpAdminManagmentAction extends BaseAction {
 
   }
 
-
   /**
    * This method notify the user that is been assigned as Program Leader for an specific Regional Program
    * 
@@ -430,6 +437,7 @@ public class CrpAdminManagmentAction extends BaseAction {
       new String[] {loggedCrp.getName(), managementRoleAcronym}), message.toString(), null, null, null, true);
 
   }
+
 
   private void pmuRoleData() {
     Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
@@ -511,7 +519,7 @@ public class CrpAdminManagmentAction extends BaseAction {
     loggedCrp.setProgramManagmenTeam(new ArrayList<UserRole>(rolePmu.getUserRoles()));
     String params[] = {loggedCrp.getAcronym()};
     fplRole = roleManager.getRoleById(Long.parseLong((String) this.getSession().get(APConstants.CRP_FPL_ROLE)));
-
+    fpmRole = roleManager.getRoleById(Long.parseLong((String) this.getSession().get(APConstants.CRP_FPM_ROLE)));
     // Get the Flagship list of this CRP
     flagshipsPrograms = loggedCrp.getCrpPrograms().stream()
       .filter(c -> c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive())
@@ -545,7 +553,6 @@ public class CrpAdminManagmentAction extends BaseAction {
 
     }
   }
-
 
   private void programLeaderData() {
     for (CrpProgram crpProgram : flagshipsPrograms) {
@@ -712,6 +719,7 @@ public class CrpAdminManagmentAction extends BaseAction {
     }
   }
 
+
   @Override
   public String save() {
     if (this.hasPermission("*")) {
@@ -783,9 +791,13 @@ public class CrpAdminManagmentAction extends BaseAction {
     this.flagshipsPrograms = flagshipsPrograms;
   }
 
-
   public void setFplRole(Role fplRole) {
     this.fplRole = fplRole;
+  }
+
+
+  public void setFpmRole(Role fpmRole) {
+    this.fpmRole = fpmRole;
   }
 
   public void setLoggedCrp(Crp loggedCrp) {
