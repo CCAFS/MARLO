@@ -35,5 +35,8 @@
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>
+		  <property name="manager" type="boolean">
+      <column name="manager" not-null="true" default="0" />
+    </property>
 	</class>
 </hibernate-mapping>
