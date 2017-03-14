@@ -112,7 +112,7 @@ function attachEvents() {
 }
 
 function addUserItem(composedName,userId) {
-  $usersList = $elementSelected.parent().parent().find(".items-list");
+  var $usersList = $elementSelected.parent().parent().find(".items-list");
   var $li = $("#user-template").clone(true).removeAttr("id");
   var item = {
       name: escapeHtml(composedName),
@@ -180,6 +180,7 @@ function updateProgramManagementTeamIndexes(list) {
 function updateProgramIndexes(list) {
   $(list).find('.program').each(function(index,item) {
     var programName = 'flagshipsPrograms' + '[' + index + '].';
+
     $(item).find('.index').text(index + 1);
 
     $(item).find('.acronym').attr('name', programName + 'acronym');
@@ -189,10 +190,17 @@ function updateProgramIndexes(list) {
     $(item).find('.id').attr('name', programName + 'id');
 
     // Program Leaders
-    $(item).find('.usersBlock li').each(function(i,leader) {
+    $(item).find('.usersBlock.leaders li').each(function(i,leader) {
       var leaderName = programName + 'leaders[' + i + '].';
       updateUserItemIndex(leader, leaderName);
     });
+
+    // Program Managers
+    $(item).find('.usersBlock.managers li').each(function(i,leader) {
+      var leaderName = programName + 'managers[' + i + '].';
+      updateUserItemIndex(leader, leaderName);
+    });
+
   });
 }
 
@@ -203,7 +211,7 @@ function updateUserItemIndex(element,name) {
 }
 
 function yesnoEventLocations(value,item) {
-  $t = item.parent().find('input.onoffswitch-radio');
+  var $t = item.parent().find('input.onoffswitch-radio');
   // AHORA
   if(value == true) {
     item.siblings().removeClass('radio-checked');
@@ -228,77 +236,5 @@ function yesnoEventLocations(value,item) {
             }
         }
     });
-  }
-}
-
-// test2
-function test2(errorList) {
-  console.log(errorList);
-  if(errorList.length != 0) {
-    errorList.each(function(i,e) {
-      var list = $(e).html();
-      var fieldName = list.split(":")[0].split("-")[1];
-      var type = list.split(":")[0].split("-")[0];
-      var message = list.split(":")[1];
-      if(type === "list") {
-        var elementQuery = $("div[listname='" + fieldName + "']")[0];
-        $(elementQuery).attr("data-hint", message);
-        $(elementQuery).attr("data-hintPosition", "top-right")
-        $(elementQuery).attr("data-position", "bottom-right-aligned");
-      } else {
-        var elementQuery = $("input[name='" + fieldName + "']");
-        $(elementQuery).attr("data-hint", message);
-        $(elementQuery).attr("data-hintPosition", "top-right")
-        $(elementQuery).attr("data-position", "bottom-right-aligned");
-      }
-
-      // console
-      console.log(fieldName);
-      console.log(type);
-      console.log(message);
-      console.log(elementQuery);
-    });
-
-    /*
-     * intro.setOptions({ steps: missingList }); intro.start();
-     */
-  }
-}
-
-// test1
-function test1(errorList) {
-  var missing;
-  var missingList = [];
-  console.log(errorList);
-  if(errorList.length != 0) {
-    errorList.each(function(i,e) {
-      var list = $(e).html();
-      var fieldName = list.split(":")[0].split("-")[1];
-      var type = list.split(":")[0].split("-")[0];
-      var message = list.split(":")[1];
-      if(type === "list") {
-        var elementQuery = $("div[listname='" + fieldName + "']")[0];
-      } else {
-        var elementQuery = $("input[name='" + fieldName + "']")[0];
-      }
-
-      missing = {
-          element: elementQuery,
-          intro: message
-      };
-      missingList.push(missing);
-
-      // console
-      console.log(fieldName);
-      console.log(type);
-      console.log(message);
-      console.log(elementQuery);
-    });
-
-    intro.setOptions({
-      steps: missingList
-    });
-    intro.start();
-
   }
 }

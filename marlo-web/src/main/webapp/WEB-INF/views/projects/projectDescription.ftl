@@ -111,7 +111,7 @@
               <h5>[@customForm.text name="projectDescription.projectWorking" readText=!editable /]:</h5>
             [/#if]
             
-            <div id="projectWorking" class="fullBlock clearfix">
+            <div id="projectWorking" class="fullBlock dottedBox clearfix">
               [#-- Flagships --] 
               <div class="col-md-6">
                 <div id="projectFlagshipsBlock" class="${customForm.changedField('project.flagshipValue')}">
