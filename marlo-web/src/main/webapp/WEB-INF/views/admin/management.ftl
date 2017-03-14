@@ -208,7 +208,7 @@
         <ul>
         [#if element.managers?has_content]
           [#list element.managers as leader]
-            [@userItem element=leader index=leader_index name="${customName}.managers" userRole=fplRole.id /]
+            [@userItem element=leader index=leader_index name="${customName}.managers" userRole=fpmRole.id /]
           [/#list]
         [/#if]
         </ul>
