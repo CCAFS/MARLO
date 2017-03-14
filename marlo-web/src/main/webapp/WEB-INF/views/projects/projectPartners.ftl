@@ -325,12 +325,14 @@
     [#else]
       [#local canEditContactType = editable || isTemplate /]
     [/#if]
-     
-     
+    
+    [#if customForm.changedField('${name}.id') != '']
+      <span class="label label-info pull-right">Added/Updated</span> 
+    [/#if]
     <div class="form-group">
     	<div class="row">
     	    [#-- Contact Email --]
-          <div class="col-md-12 partnerPerson-email userField ${customForm.changedField('${name}.user.id')}">
+          <div class="col-md-12 partnerPerson-email userField">
             [#attempt]
               [#assign canEditEmail=!((action.getActivitiesLedByUser((element.id)!-1)!false)?has_content) && canEditContactType/]
             [#recover]
@@ -339,7 +341,8 @@
             <input type="hidden" class="canEditEmail" value="${canEditEmail?string}" />
             [#-- Contact Person information is going to come from the users table, not from project_partner table (refer to the table project_partners in the database) --] 
             [#assign partnerClass = "${name}.user.id"?string?replace("\\W+", "", "r") /]
-            [@customForm.input name="partner-${partnerIndex}-person-${index}" value="${(element.user.composedName?html)!}" className='userName ${partnerClass}' type="text" disabled=!canEdit i18nkey="projectPartners.contactPersonEmail" required=true readOnly=true editable=editable && canEditEmail /]
+            [#assign changeFieldEmail = customForm.changedField('${name}.user.id') /]
+            [@customForm.input name="partner-${partnerIndex}-person-${index}" value="${(element.user.composedName?html)!}" className='userName ${partnerClass} ${changeFieldEmail}' type="text" disabled=!canEdit i18nkey="projectPartners.contactPersonEmail" required=true readOnly=true editable=editable && canEditEmail /]
             <input class="userId" type="hidden" name="${name}.user.id" value="${(element.user.id)!}" />   
             [#if editable && canEditEmail]<div class="searchUser button-blue button-float">[@s.text name="form.buttons.searchUser" /]</div>[/#if]
           </div>
