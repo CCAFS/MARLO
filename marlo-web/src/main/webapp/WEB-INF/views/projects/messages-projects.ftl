@@ -16,6 +16,8 @@
       </p>
       [#-- Differences --]
       [#include "/WEB-INF/global/macros/historyDiff.ftl" /]
+      [#-- Justification --]
+      <p><i>${(project.modificationJustification)!}</i></p>
     [/#if]
   </div>
 [#else]
