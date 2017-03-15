@@ -671,17 +671,9 @@ public class CrpAdminManagmentAction extends BaseAction {
         if (crpProgram.getManagers() == null) {
           crpProgram.setManagers(new ArrayList<>());
         }
-        if (!crpProgram.getLeaders().contains(leaderPreview)) {
+        if (!crpProgram.getManagers().contains(leaderPreview)) {
           crpProgramLeaderManager.deleteCrpProgramLeader(leaderPreview.getId());
-          Set<LiaisonInstitution> liaisonInstitutions = crpProgramPrev.getLiaisonInstitutions();
-          for (LiaisonInstitution liaisonInstitution : liaisonInstitutions) {
-            List<LiaisonUser> liaisonUsers = liaisonInstitution.getLiaisonUsers().stream()
-              .filter(c -> c.getUser().getId().equals(leaderPreview.getUser().getId())).collect(Collectors.toList());
-            for (LiaisonUser liaisonUser : liaisonUsers) {
-              liaisonUserManager.deleteLiaisonUser(liaisonUser.getId());
-            }
 
-          }
 
           User user = userManager.getUser(leaderPreview.getUser().getId());
 
@@ -713,8 +705,8 @@ public class CrpAdminManagmentAction extends BaseAction {
       }
 
 
-      if (crpProgram.getLeaders() != null) {
-        for (CrpProgramLeader crpProgramLeader : crpProgram.getLeaders()) {
+      if (crpProgram.getManagers() != null) {
+        for (CrpProgramLeader crpProgramLeader : crpProgram.getManagers()) {
           if (crpProgramLeader.getId() == null) {
             crpProgramLeader.setActive(true);
             crpProgramLeader.setCrpProgram(crpProgram);
@@ -729,15 +721,6 @@ public class CrpAdminManagmentAction extends BaseAction {
               .filter(c -> c.isActive() && c.getCrpProgram().equals(crpProgramLeader.getCrpProgram())
                 && c.getUser().equals(crpProgramLeader.getUser()))
               .collect(Collectors.toList()).isEmpty()) {
-
-              for (LiaisonInstitution liasonInstitution : crpProgramPrevLeaders.getLiaisonInstitutions()) {
-
-                LiaisonUser liaisonUser = new LiaisonUser();
-                liaisonUser.setCrp(loggedCrp);
-                liaisonUser.setLiaisonInstitution(liasonInstitution);
-                liaisonUser.setUser(crpProgramLeader.getUser());
-                liaisonUserManager.saveLiaisonUser(liaisonUser);
-              }
 
 
               crpProgramLeaderManager.saveCrpProgramLeader(crpProgramLeader);

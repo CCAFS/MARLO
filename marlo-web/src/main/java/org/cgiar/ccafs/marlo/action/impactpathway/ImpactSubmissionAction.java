@@ -76,7 +76,8 @@ public class ImpactSubmissionAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
-    if (this.hasPermission("submit")) {
+    if (this.hasPermissionNoBase(
+      this.generatePermission(Permission.IMPACT_PATHWAY_SUBMISSION_PERMISSION, crpProgram.getCrp().getAcronym()))) {
       if (this.isCompleteImpact(progamID)) {
         List<Submission> submissions = submissionManager.findAll();
         if (submissions != null) {
