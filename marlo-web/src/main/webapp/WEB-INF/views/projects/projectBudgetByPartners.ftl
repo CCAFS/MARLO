@@ -192,8 +192,8 @@
             </td>
             
           </tr>
-          [#-- Budget Percentage --]
-          [#if project.projectEditLeader]
+          [#-- Gender Budget Percentage --]
+          [#if project.projectEditLeader && action.hasSpecificities('crp_budget_gender')]
           <tr>
             <td class="amountType"> Gender %:</td> 
             [#-- W1/W2 --]
@@ -313,7 +313,7 @@
         </div>
       </div>
       <div class="col-md-4">
-        [#if project.projectEditLeader]
+        [#if project.projectEditLeader && action.hasSpecificities('crp_budget_gender')]
           <div class="row col-md-6"> <div class="row"><strong>Gender %:</strong></div> </div>
           <div class="row col-md-7">
           [#if (editable && isYearEditable(selectedYear)) || isTemplate]
