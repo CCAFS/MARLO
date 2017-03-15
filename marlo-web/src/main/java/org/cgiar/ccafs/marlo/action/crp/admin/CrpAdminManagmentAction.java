@@ -293,7 +293,7 @@ public class CrpAdminManagmentAction extends BaseAction {
     message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
     message.append(this.getText("email.flagship.assigned",
       new String[] {flasgshipRole, crpProgram.getName(), crpProgram.getAcronym(), loggedCrp.getName()}));
-    message.append(this.getText("email.flagship.responsabilities"));
+    message.append(this.getText("email.flagship.responsabilities", new String[] {flasgshipRole}));
     message.append(this.getText("email.support"));
     message.append(this.getText("email.bye"));
 
@@ -317,10 +317,15 @@ public class CrpAdminManagmentAction extends BaseAction {
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
 
+    if (role.equals(fplRole)) {
+      sendMail.send(toEmail, ccEmail, bbcEmails,
+        this.getText("email.flagship.assigned.subject", new String[] {crpProgram.getAcronym(), loggedCrp.getName()}),
+        message.toString(), null, null, null, true);
+    } else {
+      sendMail.send(toEmail, ccEmail, bbcEmails, this.getText("email.flagshipmanager.assigned.subject",
+        new String[] {crpProgram.getAcronym(), loggedCrp.getName()}), message.toString(), null, null, null, true);
+    }
 
-    sendMail.send(toEmail, ccEmail, bbcEmails,
-      this.getText("email.flagship.assigned.subject", new String[] {crpProgram.getAcronym(), loggedCrp.getName()}),
-      message.toString(), null, null, null, true);
 
   }
 
@@ -356,10 +361,14 @@ public class CrpAdminManagmentAction extends BaseAction {
     }
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
-    sendMail.send(toEmail, ccEmail, bbcEmails,
-      this.getText("email.flagship.unassigned.subject", new String[] {crpProgram.getAcronym(), loggedCrp.getName()}),
-      message.toString(), null, null, null, true);
-
+    if (role.equals(fplRole)) {
+      sendMail.send(toEmail, ccEmail, bbcEmails,
+        this.getText("email.flagship.unassigned.subject", new String[] {crpProgram.getAcronym(), loggedCrp.getName()}),
+        message.toString(), null, null, null, true);
+    } else {
+      sendMail.send(toEmail, ccEmail, bbcEmails, this.getText("email.flagshipmanager.unassigned.subject",
+        new String[] {crpProgram.getAcronym(), loggedCrp.getName()}), message.toString(), null, null, null, true);
+    }
   }
 
 
