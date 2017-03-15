@@ -95,7 +95,7 @@ public class FundingSourceListAction extends BaseAction {
     fundingSource.setActive(true);
     fundingSource.setActiveSince(new Date());
     fundingSource.setCrp(loggedCrp);
-    fundingSource.setCenterType(1);
+
 
     // project.setCrp(loggedCrp);
 

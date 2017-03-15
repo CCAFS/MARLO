@@ -129,7 +129,7 @@ public class FundingSourceAddAction extends BaseAction {
     fundingSource.setFinanceCode(StringUtils.trim(((String[]) parameters.get(FINANCE_CODE))[0]));
     fundingSource.setContactPersonEmail(StringUtils.trim(((String[]) parameters.get(CONTACT_EMAIL))[0]));
     fundingSource.setContactPersonName(StringUtils.trim(((String[]) parameters.get(CONTACT_NAME))[0]));
-    fundingSource.setCenterType(Integer.parseInt(StringUtils.trim(((String[]) parameters.get(CENTER_TYPE))[0])));
+
     fundingSource.setStatus(Integer.parseInt(StringUtils.trim(((String[]) parameters.get(STATUS))[0])));
     try {
       fundingSource
