@@ -284,7 +284,7 @@ public class CrpAdminManagmentAction extends BaseAction {
    */
   private void notifyRoleFlagshipAssigned(User userAssigned, Role role, CrpProgram crpProgram) {
     crpProgram = crpProgramManager.getCrpProgramById(crpProgram.getId());
-    String flasgshipRole = this.getText("programManagement.flagship.role");
+    String flasgshipRole = role.getDescription();
     String flasgshipRoleAcronym = this.getText("programManagement.flagship.role.acronym");
 
     userAssigned = userManager.getUser(userAssigned.getId());
@@ -326,8 +326,8 @@ public class CrpAdminManagmentAction extends BaseAction {
 
   private void notifyRoleFlagshipUnassigned(User userRemoved, Role role, CrpProgram crpProgram) {
     crpProgram = crpProgramManager.getCrpProgramById(crpProgram.getId());
-    String flasgshipRole = this.getText("programManagement.flagship.role");
-    String flasgshipRoleAcronym = this.getText("programManagement.flagship.role.acronym");
+    String flasgshipRole = role.getDescription();
+    String flasgshipRoleAcronym = role.getDescription();
 
     userRemoved = userManager.getUser(userRemoved.getId());
     StringBuilder message = new StringBuilder();
