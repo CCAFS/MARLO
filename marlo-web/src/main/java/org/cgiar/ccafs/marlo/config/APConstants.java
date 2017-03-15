@@ -74,6 +74,7 @@ public final class APConstants {
   public static final String CRP_PMU = "crp_pmu_closed";
 
   public static final String CRP_PARTNER_CONTRIBUTIONS = "crp_partner_contribution";
+  public static final String CRP_BUDGET_GENDER = "crp_budget_gender";
 
   public static final String CRP_CU = "crp_cu";
   public static final int MID_OUTCOME_YEAR = 2019;
