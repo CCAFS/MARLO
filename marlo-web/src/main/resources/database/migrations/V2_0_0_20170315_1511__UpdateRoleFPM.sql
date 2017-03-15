@@ -1,1 +1,1 @@
-UPDATE `roles` SET `description`='Flagship Managmet' WHERE acronym='FPM';
+UPDATE `roles` SET `description`='Flagship Manager' WHERE acronym='FPM';
