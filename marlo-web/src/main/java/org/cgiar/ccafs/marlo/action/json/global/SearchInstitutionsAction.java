@@ -49,7 +49,8 @@ public class SearchInstitutionsAction extends BaseAction {
   private String actionName;
   private String queryParameter;
   private List<Map<String, Object>> institutions;
-  private int ppa;
+  private int withPPA;
+  private int onlyPPA;
 
 
   @Inject
@@ -72,7 +73,8 @@ public class SearchInstitutionsAction extends BaseAction {
   public void prepare() throws Exception {
     Map<String, Object> parameters = this.getParameters();
     queryParameter = StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]);
-    ppa = Integer.parseInt(StringUtils.trim(((String[]) parameters.get(APConstants.PPA_PARAMETER))[0]));
+    withPPA = Integer.parseInt(StringUtils.trim(((String[]) parameters.get(APConstants.WITH_PPA_PARAMETER))[0]));
+    onlyPPA = Integer.parseInt(StringUtils.trim(((String[]) parameters.get(APConstants.ONLY_PPA_PARAMETER))[0]));
 
   }
 
@@ -84,7 +86,8 @@ public class SearchInstitutionsAction extends BaseAction {
    */
   public String search() throws Exception {
     List<Institution> institutions =
-      institutionManager.searchInstitution(queryParameter, ppa, this.getCrpID().longValue());
+      institutionManager.searchInstitution(queryParameter, withPPA, onlyPPA, this.getCrpID().longValue());
+
     this.institutions = new ArrayList<>();
     for (Institution institution : institutions) {
       Map<String, Object> institutionMap = new HashMap<>();

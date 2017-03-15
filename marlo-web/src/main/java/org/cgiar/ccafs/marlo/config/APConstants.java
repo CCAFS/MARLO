@@ -101,6 +101,8 @@ public final class APConstants {
   // Query parameter
   public static final String QUERY_PARAMETER = "q";
   public static final String PPA_PARAMETER = "isPPA";
+  public static final String WITH_PPA_PARAMETER = "withPPA";
+  public static final String ONLY_PPA_PARAMETER = "onlyPPA";
   // Outlook institutional email
   public static final String OUTLOOK_EMAIL = "cgiar.org";
 

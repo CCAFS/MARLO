@@ -324,9 +324,17 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
 
   private TypedTableModel getMasterTableModel(String center, String date, Boolean regionalAvailable) {
     // Initialization of Model
-    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "regionalAvailable"},
-      new Class[] {String.class, String.class, Boolean.class});
-    model.addRow(new Object[] {center, date, regionalAvailable});
+    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "regionalAvailable", "budget_gender"},
+      new Class[] {String.class, String.class, Boolean.class, Boolean.class});
+    Boolean hasGender = false;
+    try {
+      hasGender = Integer.parseInt(loggedCrp.getCrpParameters().stream()
+        .filter(cp -> cp.isActive() && cp.getKey().equals(APConstants.CRP_BUDGET_GENDER)).collect(Collectors.toList())
+        .get(0).getValue()) == 1;
+    } catch (Exception e) {
+      hasGender = false;
+    }
+    model.addRow(new Object[] {center, date, regionalAvailable, hasGender});
     return model;
   }
 

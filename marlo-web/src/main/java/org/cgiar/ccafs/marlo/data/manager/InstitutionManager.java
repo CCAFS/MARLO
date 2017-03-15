@@ -79,7 +79,7 @@ public interface InstitutionManager {
    * @param searchValue
    * @return the list of Institutions that match the search parameter or an empty list.
    */
-  public List<Institution> searchInstitution(String searchValue, int ppaPartner, long crpID);
+  public List<Institution> searchInstitution(String searchValue, int ppaPartner, int onlyPPA, long crpID);
 
 
 }

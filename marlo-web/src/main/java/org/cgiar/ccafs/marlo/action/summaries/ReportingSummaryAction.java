@@ -2244,9 +2244,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     // Initialization of Model
     TypedTableModel model = new TypedTableModel(
       new String[] {"title", "center", "current_date", "project_submission", "cycle", "isNew", "isAdministrative",
-        "type", "isGlobal", "isPhaseOne"},
+        "type", "isGlobal", "isPhaseOne", "budget_gender"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, Boolean.class, Boolean.class,
-        String.class, Boolean.class, Boolean.class});
+        String.class, Boolean.class, Boolean.class, Boolean.class});
 
     // Filling title
     String title = "";
@@ -2335,9 +2335,17 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
     Boolean isNew = this.isProjectNew(projectID);
 
+    Boolean hasGender = false;
+    try {
+      hasGender = Integer.parseInt(project.getCrp().getCrpParameters().stream()
+        .filter(cp -> cp.isActive() && cp.getKey().equals(APConstants.CRP_BUDGET_GENDER)).collect(Collectors.toList())
+        .get(0).getValue()) == 1;
+    } catch (Exception e) {
+      hasGender = false;
+    }
 
     model.addRow(new Object[] {title, centerAcry, current_date, submission, cycle, isNew, isAdministrative, type,
-      project.isLocationGlobal(), this.isPhaseOne()});
+      project.isLocationGlobal(), this.isPhaseOne(), hasGender});
     return model;
   }
 
