@@ -78,7 +78,7 @@ public class InstitutionMySQLDAO implements InstitutionDAO {
   }
 
   @Override
-  public List<Institution> searchInstitution(String searchValue, int ppaPartner, long crpID) {
+  public List<Institution> searchInstitution(String searchValue, int ppaPartner, int onlyPPA, long crpID) {
     StringBuilder query = new StringBuilder();
 
     query.append("from " + Institution.class.getName());
@@ -110,16 +110,29 @@ public class InstitutionMySQLDAO implements InstitutionDAO {
     List<Institution> institutions = dao.findAll(query.toString());
     List<Institution> institutionsAux = new ArrayList<Institution>();
 
-    if (ppaPartner == 0) {
+    if (onlyPPA == 1) {
+
       institutionsAux.addAll(institutions);
       for (Institution institution : institutionsAux) {
-        if (!institution.getCrpPpaPartners().stream()
+        if (institution.getCrpPpaPartners().stream()
           .filter(c -> c.isActive() && c.getCrp().getId().longValue() == crpID).collect(Collectors.toList())
           .isEmpty()) {
           institutions.remove(institution);
         }
       }
+    } else {
+      if (ppaPartner == 0) {
+        institutionsAux.addAll(institutions);
+        for (Institution institution : institutionsAux) {
+          if (!institution.getCrpPpaPartners().stream()
+            .filter(c -> c.isActive() && c.getCrp().getId().longValue() == crpID).collect(Collectors.toList())
+            .isEmpty()) {
+            institutions.remove(institution);
+          }
+        }
+      }
     }
+
 
     return institutions;
   }

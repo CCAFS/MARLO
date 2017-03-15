@@ -209,7 +209,7 @@ $(document).ready(function() {
 
   yesnoEvent = function(target) {
     // var isChecked = $(this).is(':checked');
-    $t = $(target);
+    var $t = $(target);
     var isChecked = ($t.val() === "true");
     $t.siblings().removeClass('radio-checked');
     $t.next().addClass('radio-checked');
@@ -465,7 +465,8 @@ var searchInstitutionsOptions = function(includePPA) {
           data: function(params) {
             return {
                 q: params.term, // search term
-                isPPA: includePPA ? 1 : 0
+                withPPA: includePPA ? 1 : 0,
+                onlyPPA: projectPreSetting
             };
           },
           processResults: function(data,params) {
