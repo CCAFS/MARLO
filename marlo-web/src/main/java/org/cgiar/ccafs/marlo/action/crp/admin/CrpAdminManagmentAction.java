@@ -626,7 +626,7 @@ public class CrpAdminManagmentAction extends BaseAction {
             crpProgramLeader.setModifiedBy(this.getCurrentUser());
             crpProgramLeader.setModificationJustification("");
             crpProgramLeader.setActiveSince(new Date());
-            crpProgramLeader.setManager(true);
+            crpProgramLeader.setManager(false);
             CrpProgram crpProgramPrevLeaders = crpProgramManager.getCrpProgramById(crpProgram.getId());
             if (crpProgramPrevLeaders.getCrpProgramLeaders().stream()
               .filter(c -> c.isActive() && c.getCrpProgram().equals(crpProgramLeader.getCrpProgram())
