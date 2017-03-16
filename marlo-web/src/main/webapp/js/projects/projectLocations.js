@@ -688,38 +688,44 @@ function addCountryIntoLocLevel(locationId,$locationSelect,locationName) {
     var locId = e.split("-")[0];
     var locIso = e.split("-")[1];
     var locName = e.split("-")[2];
-    /* GET COORDINATES */
-    var url = baseURL + "/geopositionByElement.do";
-    var data = {
-      "locElementID": locId
-    };
-    countID++;
-    $.ajax({
-        url: url,
-        type: 'GET',
-        dataType: "json",
-        data: data
-    }).done(function(m) {
-      if(m.geopositions.length != 0) {
-        latitude = m.geopositions[0].latitude;
-        longitude = m.geopositions[0].longitude;
-        $item.find('.geoLatitude').val(latitude);
-        $item.find('.geoLongitude').val(longitude);
-        addMarker(map, (countID), parseFloat(latitude), parseFloat(longitude), locName, "true", 2);
-      }
-    });
-    $item.attr("id", "location-" + (countID));
-    $item.find(".lName").html(locName);
-    $item.find(".locElementName").val(locName);
-    $item.find(".locElementId").val(locId);
-    // If is a country
-    if(locationName == "Country") {
-      countries.push(locIso);
-      $item.find(".locElementCountry").val(locIso);
-    }
-    locationContent.append($item);
-    $item.show("slow");
+    // Check if the item doesn't exists into the list
+    if(locationContent.find("input.locElementId[value='" + locId + "']").exists()) {
+      notify(locName + " already exists into the " + locationContent.parent().parent().find(".locationLevelName").val()
+          + " list")
+    } else {
+      /* GET COORDINATES */
+      var url = baseURL + "/geopositionByElement.do";
+      var data = {
+        "locElementID": locId
+      };
+      countID++;
+      $.ajax({
+          url: url,
+          type: 'GET',
+          dataType: "json",
+          data: data
+      }).done(function(m) {
+        if(m.geopositions.length != 0) {
+          latitude = m.geopositions[0].latitude;
+          longitude = m.geopositions[0].longitude;
+          $item.find('.geoLatitude').val(latitude);
+          $item.find('.geoLongitude').val(longitude);
+          addMarker(map, (countID), parseFloat(latitude), parseFloat(longitude), locName, "true", 2);
+        }
+      });
+      $item.attr("id", "location-" + (countID));
+      $item.find(".lName").html(locName);
+      $item.find(".locElementName").val(locName);
+      $item.find(".locElementId").val(locId);
 
+      // If is a country
+      if(locationName == "Country") {
+        countries.push(locIso);
+        $item.find(".locElementCountry").val(locIso);
+      }
+      locationContent.append($item);
+      $item.show("slow");
+    }
   });
   updateIndex();
   infoWindow.close();
@@ -727,6 +733,7 @@ function addCountryIntoLocLevel(locationId,$locationSelect,locationName) {
     layer.setMap(null);
     mappingCountries();
   }
+
 }
 
 function resetInfoWindow() {
