@@ -95,7 +95,9 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
         }
 
         if (baseAction.isCrpClosed()) {
-          canEdit = false;
+          if (!(baseAction.hasSpecificities(APConstants.CRP_PMU) && baseAction.isPMU())) {
+            canEdit = false;
+          }
         }
       }
 
