@@ -17,6 +17,7 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.FundingSourceDAO;
+import org.cgiar.ccafs.marlo.data.model.BudgetType;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 
 import java.util.ArrayList;
@@ -106,7 +107,9 @@ public class FundingSourceMySQLDAO implements FundingSourceDAO {
     StringBuilder q = new StringBuilder();
     q.append("from " + FundingSource.class.getName());
     q.append(" where crp_id=" + crpID + " and (title like '%" + query + "%' ");
-    q.append("OR id like '%" + query + "%') and is_active=1 and crp_id=" + crpID + " and ( type=1)");
+    q.append("OR id like '%" + query + "%' or concat('FS',id) like '%" + query + "%' or (select name from "
+      + BudgetType.class.getName() + " where id=type) like '%" + query + "%') and is_active=1 and crp_id=" + crpID
+      + " and ( type=1)");
 
     List<FundingSource> fundingSources = dao.findAll(q.toString());
     SimpleDateFormat df = new SimpleDateFormat("yyyy");
@@ -120,7 +123,8 @@ public class FundingSourceMySQLDAO implements FundingSourceDAO {
     StringBuilder q = new StringBuilder();
     q.append("from " + FundingSource.class.getName());
     q.append(" where is_active=1 and (title like '%" + query + "%' ");
-    q.append("OR id like '%" + query + "%'  ) and crp_id=" + crpID);
+    q.append("OR id like '%" + query + "%' or concat('FS',id) like '%" + query + "%' or (select name from "
+      + BudgetType.class.getName() + " where id=type) like '%" + query + "%') and crp_id=" + crpID);
 
 
     List<FundingSource> fundingSources = dao.findAll(q.toString());
