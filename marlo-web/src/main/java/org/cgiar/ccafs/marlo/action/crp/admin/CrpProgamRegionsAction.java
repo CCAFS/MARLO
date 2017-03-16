@@ -120,6 +120,8 @@ public class CrpProgamRegionsAction extends BaseAction {
   private LiaisonInstitutionManager liaisonInstitutionManager;
 
   private Role rplRole;
+  private Role rpmRole;
+
   private Long slRoleid;
 
   private Role slRole;
@@ -409,14 +411,20 @@ public class CrpProgamRegionsAction extends BaseAction {
    */
   private void notifyRoleAssigned(User userAssigned, Role role, CrpProgram crpProgram) {
     userAssigned = userManager.getUser(userAssigned.getId());
-    String regionRole = this.getText("regionalMapping.CrpProgram.leaders");
+    String regionRole = role.getDescription();
     String regionRoleAcronym = this.getText("regionalMapping.CrpProgram.leaders.acronym");
     userAssigned = userManager.getUser(userAssigned.getId());
     StringBuilder message = new StringBuilder();
     // Building the Email message:
     message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
-    message.append(
-      this.getText("email.region.assigned", new String[] {regionRole, crpProgram.getName(), crpProgram.getAcronym()}));
+    if (role.equals(rplRole)) {
+      message.append(this.getText("email.region.assigned",
+        new String[] {regionRole, crpProgram.getName(), crpProgram.getAcronym()}));
+    } else {
+      message.append(this.getText("email.regionmanager.assigned",
+        new String[] {regionRole, crpProgram.getName(), crpProgram.getAcronym()}));
+    }
+
     message.append(this.getText("email.support"));
     message.append(this.getText("email.bye"));
     String toEmail = null;
@@ -432,16 +440,20 @@ public class CrpProgamRegionsAction extends BaseAction {
     }
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
-    sendMail.send(toEmail, ccEmail, bbcEmails,
-      this.getText("email.region.assigned.subject", new String[] {loggedCrp.getName(), crpProgram.getAcronym()}),
-      message.toString(), null, null, null, true);
-
+    if (role.equals(rplRole)) {
+      sendMail.send(toEmail, ccEmail, bbcEmails,
+        this.getText("email.region.assigned.subject", new String[] {loggedCrp.getName(), crpProgram.getAcronym()}),
+        message.toString(), null, null, null, true);
+    } else {
+      sendMail.send(toEmail, ccEmail, bbcEmails, this.getText("email.regionmanager.assigned.subject",
+        new String[] {loggedCrp.getName(), crpProgram.getAcronym()}), message.toString(), null, null, null, true);
+    }
   }
 
 
   private void notifyRoleUnassigned(User userAssigned, Role role, CrpProgram crpProgram) {
     userAssigned = userManager.getUser(userAssigned.getId());
-    String regionRole = this.getText("regionalMapping.CrpProgram.leaders");
+    String regionRole = role.getDescription();
     String regionRoleAcronym = this.getText("regionalMapping.CrpProgram.leaders.acronym");
     userAssigned = userManager.getUser(userAssigned.getId());
     StringBuilder message = new StringBuilder();
@@ -464,10 +476,14 @@ public class CrpProgamRegionsAction extends BaseAction {
     }
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
-    sendMail.send(toEmail, ccEmail, bbcEmails,
-      this.getText("email.region.unassigned.subject", new String[] {loggedCrp.getName(), crpProgram.getAcronym()}),
-      message.toString(), null, null, null, true);
-
+    if (role.equals(rplRole)) {
+      sendMail.send(toEmail, ccEmail, bbcEmails,
+        this.getText("email.region.unassigned.subject", new String[] {loggedCrp.getName(), crpProgram.getAcronym()}),
+        message.toString(), null, null, null, true);
+    } else {
+      sendMail.send(toEmail, ccEmail, bbcEmails, this.getText("email.regionmanager.unassigned.subject",
+        new String[] {loggedCrp.getName(), crpProgram.getAcronym()}), message.toString(), null, null, null, true);
+    }
   }
 
   @Override
@@ -482,11 +498,13 @@ public class CrpProgamRegionsAction extends BaseAction {
     String params[] = {loggedCrp.getAcronym()};
     if (this.getSession().containsKey(APConstants.CRP_RPL_ROLE)) {
       rplRole = roleManager.getRoleById(Long.parseLong((String) this.getSession().get(APConstants.CRP_RPL_ROLE)));
+      rpmRole = roleManager.getRoleById(Long.parseLong((String) this.getSession().get(APConstants.CRP_RPM_ROLE)));
     }
 
     if (this.getSession().containsKey(APConstants.CRP_SL_ROLE)) {
       slRoleid = Long.parseLong((String) this.getSession().get(APConstants.CRP_SL_ROLE));
       slRole = roleManager.getRoleById(slRoleid);
+
     }
 
     List<LocElement> locs =
@@ -499,8 +517,10 @@ public class CrpProgamRegionsAction extends BaseAction {
       .collect(Collectors.toList());
 
     for (CrpProgram crpProgram : regionsPrograms) {
-      crpProgram
-        .setLeaders(crpProgram.getCrpProgramLeaders().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+      crpProgram.setLeaders(crpProgram.getCrpProgramLeaders().stream().filter(c -> c.isActive() && !c.isManager())
+        .collect(Collectors.toList()));
+      crpProgram.setManagers(crpProgram.getCrpProgramLeaders().stream().filter(c -> c.isActive() && c.isManager())
+        .collect(Collectors.toList()));
       List<String> countriesSelected = new ArrayList<>();
       for (CrpProgramCountry crpProgramCountry : crpProgram.getCrpProgramCountries().stream().filter(c -> c.isActive())
         .collect(Collectors.toList())) {
@@ -518,6 +538,94 @@ public class CrpProgamRegionsAction extends BaseAction {
     }
   }
 
+
+  private void programManagerData() {
+    for (CrpProgram crpProgram : regionsPrograms) {
+      CrpProgram crpProgramPrev = crpProgramManager.getCrpProgramById(crpProgram.getId());
+      for (CrpProgramLeader leaderPreview : crpProgramPrev.getCrpProgramLeaders().stream()
+        .filter(c -> c.isActive() && c.isManager()).collect(Collectors.toList())) {
+
+        if (crpProgram.getManagers() == null) {
+          crpProgram.setManagers(new ArrayList<>());
+        }
+        if (!crpProgram.getManagers().contains(leaderPreview)) {
+          crpProgramLeaderManager.deleteCrpProgramLeader(leaderPreview.getId());
+
+
+          User user = userManager.getUser(leaderPreview.getUser().getId());
+
+
+          List<CrpProgramLeader> existsUserLeader = user.getCrpProgramLeaders().stream()
+            .filter(u -> u.isActive() && u.getCrpProgram().getCrp().getId().longValue() == loggedCrp.getId().longValue()
+              && u.getCrpProgram().getProgramType() == crpProgramPrev.getProgramType())
+            .collect(Collectors.toList());
+
+
+          if (existsUserLeader == null || existsUserLeader.isEmpty()) {
+
+            if (crpProgramPrev.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()) {
+              List<UserRole> fplUserRoles =
+                user.getUserRoles().stream().filter(ur -> ur.getRole().equals(rpmRole)).collect(Collectors.toList());
+              if (fplUserRoles != null || !fplUserRoles.isEmpty()) {
+                for (UserRole userRole : fplUserRoles) {
+                  userRoleManager.deleteUserRole(userRole.getId());
+                  userRole.setUser(userManager.getUser(userRole.getUser().getId()));
+                  // Notifiy user been unasigned Program Leader to Flagship
+                  this.notifyRoleUnassigned(userRole.getUser(), userRole.getRole(), crpProgram);
+                }
+              }
+            }
+          }
+
+          this.checkCrpUserByRole(user);
+        }
+      }
+
+
+      if (crpProgram.getManagers() != null) {
+        for (CrpProgramLeader crpProgramLeader : crpProgram.getManagers()) {
+          if (crpProgramLeader.getId() == null) {
+            crpProgramLeader.setActive(true);
+            crpProgramLeader.setCrpProgram(crpProgram);
+            crpProgramLeader.setCreatedBy(this.getCurrentUser());
+            crpProgramLeader.setModifiedBy(this.getCurrentUser());
+            crpProgramLeader.setModificationJustification("");
+            crpProgramLeader.setManager(true);
+
+            crpProgramLeader.setActiveSince(new Date());
+            CrpProgram crpProgramPrevLeaders = crpProgramManager.getCrpProgramById(crpProgram.getId());
+            if (crpProgramPrevLeaders.getCrpProgramLeaders().stream()
+              .filter(c -> c.isActive() && c.getCrpProgram().equals(crpProgramLeader.getCrpProgram())
+                && c.getUser().equals(crpProgramLeader.getUser()))
+              .collect(Collectors.toList()).isEmpty()) {
+
+
+              crpProgramLeaderManager.saveCrpProgramLeader(crpProgramLeader);
+            }
+
+
+            User user = userManager.getUser(crpProgramLeader.getUser().getId());
+            UserRole userRole = new UserRole();
+            userRole.setUser(user);
+
+            if (crpProgram.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()) {
+              userRole.setRole(rpmRole);
+            }
+
+            if (!user.getUserRoles().contains(userRole)) {
+              userRoleManager.saveUserRole(userRole);
+              userRole.setUser(userManager.getUser(userRole.getUser().getId()));
+              this.notifyNewUserCreated(userRole.getUser());
+              // Notifiy user been asigned Program Leader to Flagship
+              this.notifyRoleAssigned(userRole.getUser(), userRole.getRole(), crpProgram);
+            }
+
+            this.addCrpUser(user);
+          }
+        }
+      }
+    }
+  }
 
   @Override
   public String save() {
@@ -725,7 +833,7 @@ public class CrpProgamRegionsAction extends BaseAction {
 
 
       }
-
+      this.programManagerData();
       Collection<String> messages = this.getActionMessages();
       if (!this.getInvalidFields().isEmpty()) {
 
