@@ -151,10 +151,10 @@
     [#-- Hidden inputs  --]
     <input class="type" type="hidden" name="${customName}.programType" value="${(element.programType)!'-1'}"/>
     <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
-    [#-- Leaders  --]
+    [#-- Region Leaders  --]
     <label for="">[@s.text name="regionalMapping.CrpProgram.leaders"/]:[@customForm.req required=true /]</label>
-    <div class="usersBlock form-group simpleBox" listname="${customName}.leaders">
-      [#-- Leaders List --]
+    <div class="usersBlock leaders form-group simpleBox" listname="${customName}.leaders">
+      [#-- List --]
       <div class="items-list" listname="regionsPrograms[${index}].leaders" >
         <ul>
         [#if element.leaders?has_content]
@@ -174,6 +174,31 @@
       [#-- Hidden Parameters --]
       <span class="usersType" style="display:none">programUser</span>
       <span class="usersRole" style="display:none">{rplRole.id}</span>
+    </div>
+    
+    [#-- Region Managers  --]
+    <label for="">[@s.text name="regionalMapping.CrpProgram.managers"/]:[@customForm.req required=true /]</label>
+    <div class="usersBlock managers form-group simpleBox" listname="${customName}.leaders">
+      [#-- List --]
+      <div class="items-list" listname="regionsPrograms[${index}].leaders" >
+        <ul>
+        [#if element.managers?has_content]
+          [#list element.managers as leader]
+            [@userItem element=leader index=leader_index name="${customName}.managers" userRole=rpmRole.id/]
+          [/#list]
+        [/#if]
+        </ul>
+        <p class="text-center usersMessage" style="display:${(element.leaders?has_content)?string('none','block')}">[@s.text name="regionalMapping.CrpProgram.notManagers.span"/]</p>
+      </div>
+      [#-- Add person Button --]
+      [#if editable]
+      <div class="text-center">
+        <div class="searchUser button-green"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addPerson" /]</div>
+      </div>
+      [/#if]
+      [#-- Hidden Parameters --]
+      <span class="usersType" style="display:none">programUser</span>
+      <span class="usersRole" style="display:none">{rpmRole.id}</span>
     </div>
     
     [#-- Countries  --]
