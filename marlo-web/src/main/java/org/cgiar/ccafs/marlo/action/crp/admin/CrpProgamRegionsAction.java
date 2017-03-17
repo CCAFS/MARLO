@@ -122,10 +122,11 @@ public class CrpProgamRegionsAction extends BaseAction {
   private Role rplRole;
   private Role rpmRole;
 
+
   private Long slRoleid;
 
-  private Role slRole;
 
+  private Role slRole;
 
   // Util
   private SendMailS sendMail;
@@ -154,6 +155,7 @@ public class CrpProgamRegionsAction extends BaseAction {
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.crpUserManager = crpUserManager;
   }
+
 
   public void addCrpUser(User user) {
     user = userManager.getUser(user.getId());
@@ -244,7 +246,6 @@ public class CrpProgamRegionsAction extends BaseAction {
     }
   }
 
-
   private void deleteSiteIntegrationLeader(CrpProgramCountry crpProgramCountry, User user) {
 
     for (CrpSitesLeader sitesLeader : user.getCrpSitesLeaders().stream().filter(sl -> sl.isActive())
@@ -304,7 +305,6 @@ public class CrpProgamRegionsAction extends BaseAction {
     return loggedCrp;
   }
 
-
   public long getPmuRol() {
     return pmuRol;
   }
@@ -314,12 +314,18 @@ public class CrpProgamRegionsAction extends BaseAction {
     return regionsPrograms;
   }
 
+
   public Role getRolePmu() {
     return rolePmu;
   }
 
+
   public Role getRplRole() {
     return rplRole;
+  }
+
+  public Role getRpmRole() {
+    return rpmRole;
   }
 
   /**
@@ -450,7 +456,6 @@ public class CrpProgamRegionsAction extends BaseAction {
     }
   }
 
-
   private void notifyRoleUnassigned(User userAssigned, Role role, CrpProgram crpProgram) {
     userAssigned = userManager.getUser(userAssigned.getId());
     String regionRole = role.getDescription();
@@ -485,6 +490,7 @@ public class CrpProgamRegionsAction extends BaseAction {
         new String[] {loggedCrp.getName(), crpProgram.getAcronym()}), message.toString(), null, null, null, true);
     }
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -537,7 +543,6 @@ public class CrpProgamRegionsAction extends BaseAction {
       regionsPrograms.clear();
     }
   }
-
 
   private void programManagerData() {
     for (CrpProgram crpProgram : regionsPrograms) {
@@ -626,6 +631,7 @@ public class CrpProgamRegionsAction extends BaseAction {
       }
     }
   }
+
 
   @Override
   public String save() {
@@ -965,10 +971,10 @@ public class CrpProgamRegionsAction extends BaseAction {
 
   }
 
-
   public void setCountriesList(List<LocElement> countriesList) {
     this.countriesList = countriesList;
   }
+
 
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
@@ -988,6 +994,10 @@ public class CrpProgamRegionsAction extends BaseAction {
 
   public void setRplRole(Role fplRole) {
     this.rplRole = fplRole;
+  }
+
+  public void setRpmRole(Role rpmRole) {
+    this.rpmRole = rpmRole;
   }
 
   @Override
