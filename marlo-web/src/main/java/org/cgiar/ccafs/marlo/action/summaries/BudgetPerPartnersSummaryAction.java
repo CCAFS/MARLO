@@ -108,6 +108,15 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     masterReport.getParameterValues().put("crp_id", idParam);
     masterReport.getParameterValues().put("year", year);
     masterReport.getParameterValues().put("date", current_date);
+    Boolean hasGender = false;
+    try {
+      hasGender = Integer.parseInt(loggedCrp.getCrpParameters().stream()
+        .filter(cp -> cp.isActive() && cp.getKey().equals(APConstants.CRP_BUDGET_GENDER)).collect(Collectors.toList())
+        .get(0).getValue()) == 1;
+    } catch (Exception e) {
+      hasGender = false;
+    }
+    masterReport.getParameterValues().put("budget_gender", hasGender);
 
     // Verify if the crp has regions avalaible
     List<CrpParameter> hasRegionsList = new ArrayList<>();

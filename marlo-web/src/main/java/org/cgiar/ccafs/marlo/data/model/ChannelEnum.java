@@ -21,7 +21,7 @@ public enum ChannelEnum {
 
   //
   CGSPACE("cgspace", "CGSpace"), OTHER("other", "Other"), DATAVERSE("dataverse", "Dataverse (Harvard)"),
-  IFPRI("ifpri", "IFPRI E-BRARY");
+  IFPRI("ifpri", "IFPRI E-BRARY"), ILRI("ilri", "ILRI Datasets");
 
   /**
    * Get ChannelEnum value from the id parameter
@@ -40,7 +40,6 @@ public enum ChannelEnum {
   }
 
   private String id;
-
   private String desc;
 
 

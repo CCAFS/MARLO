@@ -55,9 +55,7 @@
 		<property name="contactPersonEmail" type="string">
 			<column name="contact_person_email" length="65535" />
 		</property>
-		<property name="centerType" type="java.lang.Integer">
-			<column name="center_type" />
-		</property>
+	
 		<property name="status" type="java.lang.Integer">
 			<column name="status" />
 		</property>

@@ -111,7 +111,7 @@
               <h5>[@customForm.text name="projectDescription.projectWorking" readText=!editable /]:</h5>
             [/#if]
             
-            <div id="projectWorking" class="fullBlock clearfix">
+            <div id="projectWorking" class="fullBlock dottedBox clearfix">
               [#-- Flagships --] 
               <div class="col-md-6">
                 <div id="projectFlagshipsBlock" class="${customForm.changedField('project.flagshipValue')}">
@@ -132,7 +132,7 @@
               [#-- Regions --] 
               <div class="col-md-6"> 
                 [#if regionFlagships?has_content] 
-                  <div id="projectRegionsBlock" class="${customForm.changedField('project.regionsValue')}">
+                  <div id="projectRegionsBlock" class="${customForm.changedField('project.flagshipValue')}">
                     <p><label>[@s.text name="projectDescription.regions" /]:[@customForm.req required=editable && action.hasPermission("regions") /]</label></p>
                     [#if editable && action.hasPermission("regions")]
                       [@s.fielderror cssClass="fieldError" fieldName="project.regionsValue"/]
@@ -161,7 +161,7 @@
             [#-- Cluster of Activities --]
             [#if !project.administrative && !phaseOne]
             <div class="panel tertiary">
-              <div class="panel-head"> 
+              <div class="panel-head ${customForm.changedField('project.clusterActivities')}"> 
                 <label for="">[@customForm.text name="projectDescription.clusterActivities" readText=!editable /]:[@customForm.req required=editable  && action.hasPermission("activities") /]</label>
               </div>
               <div id="projectsList" class="panel-body" listname="project.clusterActivities"> 
@@ -210,10 +210,10 @@
                       <label class="checkbox-inline"><input type="checkbox" name="project.crossCuttingCapacity" id="capacity" value="true" [#if (project.crossCuttingCapacity)!false ]checked="checked"[/#if]> Capacity Development</label>
                       <label class="checkbox-inline"><input type="checkbox" name="project.crossCuttingNa"       id="na"       value="true" [#if (project.crossCuttingNa)!false ]checked="checked"[/#if]> N/A</label>
                     [#else]
-                      [#if (project.crossCuttingGender)!false ] <p class="checked"> Gender</p>[/#if]
-                      [#if (project.crossCuttingYouth)!false ] <p class="checked"> Youth</p>[/#if]
-                      [#if (project.crossCuttingCapacity)!false ] <p class="checked"> Capacity Development</p>[/#if]
-                      [#if (project.crossCuttingNa)!false ] <p class="checked"> N/A</p>[/#if]
+                      <div class="${customForm.changedField('project.crossCuttingGender')}">[#if (project.crossCuttingGender)!false ] <p class="checked"> Gender</p>[/#if] </div>
+                      <div class="${customForm.changedField('project.crossCuttingYouth')}">[#if (project.crossCuttingYouth)!false ] <p class="checked"> Youth</p>[/#if]</div>
+                      <div class="${customForm.changedField('project.crossCuttingCapacity')}">[#if (project.crossCuttingCapacity)!false ] <p class="checked"> Capacity Development</p>[/#if]</div>
+                      <div class="${customForm.changedField('project.crossCuttingNa')}">[#if (project.crossCuttingNa)!false ] <p class="checked"> N/A</p>[/#if]</div>
                     [/#if]
                   </div>
                 </div>

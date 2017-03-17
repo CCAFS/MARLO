@@ -434,7 +434,7 @@ public class OutcomesAction extends BaseAction {
 
   @Override
   public String save() {
-    if (this.hasPermission("*")) {
+    if (this.hasPermission("canEdit")) {
       /*
        * Removing outcomes
        */

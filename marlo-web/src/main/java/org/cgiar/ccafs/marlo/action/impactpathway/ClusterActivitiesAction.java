@@ -532,7 +532,7 @@ public class ClusterActivitiesAction extends BaseAction {
   @Override
   public String save() {
 
-    if (this.hasPermission("*")) {
+    if (this.hasPermission("canEdit")) {
 
       /*
        * Removing outcomes

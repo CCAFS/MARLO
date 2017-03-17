@@ -35,8 +35,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   @Expose
   private BudgetType budgetType;
-  @Expose
-  private Integer centerType;
 
 
   @Expose
@@ -116,9 +114,9 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   }
 
   public FundingSource(User modifiedBy, User createdBy, Institution institution, String description, Date startDate,
-    Date endDate, String financeCode, String contactPersonName, String contactPersonEmail, Integer centerType,
-    BudgetType type, boolean active, Date activeSince, String modificationJustification,
-    Set<FundingSourceBudget> fundingSourceBudgets, Set<ProjectBudget> projectBudgets, Crp crp) {
+    Date endDate, String financeCode, String contactPersonName, String contactPersonEmail, BudgetType type,
+    boolean active, Date activeSince, String modificationJustification, Set<FundingSourceBudget> fundingSourceBudgets,
+    Set<ProjectBudget> projectBudgets, Crp crp) {
     this.modifiedBy = modifiedBy;
     this.createdBy = createdBy;
     this.institution = institution;
@@ -128,7 +126,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     this.financeCode = financeCode;
     this.contactPersonName = contactPersonName;
     this.contactPersonEmail = contactPersonEmail;
-    this.centerType = centerType;
+
     this.budgetType = type;
     this.active = active;
     this.activeSince = activeSince;
@@ -172,9 +170,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return budgetType;
   }
 
-  public Integer getCenterType() {
-    return centerType;
-  }
 
   public String getComposedName() {
     try {
@@ -365,11 +360,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   public void setBudgetType(BudgetType budgetType) {
     this.budgetType = budgetType;
-  }
-
-
-  public void setCenterType(Integer centerType) {
-    this.centerType = centerType;
   }
 
 

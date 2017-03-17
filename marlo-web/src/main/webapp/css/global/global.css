@@ -325,9 +325,9 @@ table.default a{
     text-decoration: none;
 }
 
-.changedField > label,
-.changedField > span, 
-.changedField > p{
+.changedField label,
+.changedField span, 
+.changedField p{
   color: #0288D1 !important;
 }
 

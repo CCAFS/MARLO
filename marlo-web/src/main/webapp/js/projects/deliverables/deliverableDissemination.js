@@ -310,7 +310,9 @@ function setMetadata(data) {
     $(".citationMetadata").val(data.citation).autoGrow();
   }
   if($("#deliverableMetadataDate").val() == "") {
-    $("#deliverableMetadataDate").datepicker('setDate', data.publicationDate);
+    $("#deliverableMetadataDate").datepicker({
+      dateFormat: 'yyyy-mm-dd'
+    }).datepicker('setDate', data.publicationDate);
   }
   if($(".languageMetadata").val() == "") {
     $(".languageMetadata").val(data.languaje);
@@ -340,19 +342,22 @@ function setMetadata(data) {
 }
 
 function changeDisseminationChannel() {
+
   var channel = $(".disseminationChannel").val();
   $('#disseminationUrl').find("input").val("");
   $("#metadata-output").empty();
   $(".exampleUrl-block").hide();
+
+  var channelsList = [
+      "cgspace", "dataverse", "ifpri", "ilri"
+  ];
   if(channel != "-1") {
-    // CGSpace, IFPRI or Dataverse
-    if((channel == "cgspace") || channel == "dataverse" || channel == "ifpri") {
+    if(channelsList.indexOf(channel) != -1) {
       $("#fillMetadata").slideDown("slow");
       $(".exampleUrl-block.channel-" + channel).slideDown("slow");
     } else {
       $("#fillMetadata").slideUp("slow");
     }
-    $('#disseminationUrl').slideDown("slow");
   } else {
     $('#disseminationUrl').slideUp("slow");
   }
@@ -441,8 +446,93 @@ function loadAndFillMetadata() {
   } else if(channel == "ifpri") {
     // Get IFPRI E-BRARY Metadata from MARLO server
     getIfpriMetadata(channel, url, uri);
+  } else if(channel == "ilri") {
+    // Get IFPRI E-BRARY Metadata from MARLO server
+    getIlriMetadata(channel, url, uri);
   }
 
+}
+
+function getIlriMetadata(channel,url,uri) {
+  var pathArray = uri.path().split('/');
+
+  var data = {
+      pageID: channel,
+      metadataID: pathArray[pathArray.indexOf("dataset") + 1]
+  }
+
+  // get data from url
+  // Ajax to service
+  $.ajax({
+      'url': baseURL + '/metadataByLink.do',
+      'type': "GET",
+      'data': data,
+      beforeSend: function() {
+        $(".deliverableDisseminationUrl").addClass('input-loading');
+        $('#metadata-output').html("Searching ... " + data.metadataID);
+      },
+      success: function(m) {
+
+        m.metadata = JSON.parse(m.metadata);
+
+        console.log(m.metadata);
+
+        if(jQuery.isEmptyObject(m.metadata)) {
+          $('#metadata-output').html("Metadata empty");
+        } else {
+          var result = m.metadata.result;
+
+          // Setting Metadata
+          setMetadata({
+              title: result.title,
+              description: result.notes,
+              citation: result.ILRI_actycitation,
+              publicationDate: ilriDate(result.ILRI_actydatavailable),
+              languaje: '',
+              keywords: function() {
+                var output = [];
+                $.each(result.tags, function(i,element) {
+                  output.push(element.display_name);
+                })
+                return output.join(', ');
+              },
+              handle: '',
+              country: result.ILRI_actycountries.join(', '),
+              doi: ''
+          });
+
+          function ilriDate(date) {
+            var arrayDate = (date).split('/');
+            return arrayDate[2] + "-" + arrayDate[1] + "-" + arrayDate[0];
+          }
+
+          // Getting authors
+          var authors = [];
+          var authorsMetadata = result.ILRI_actystaff.split(',');
+          $.each(authorsMetadata, function(i,element) {
+            var elementArray = $.trim(element).split(' ');
+
+            authors.push({
+                lastName: elementArray[1],
+                firstName: elementArray[0],
+                orcidId: ''
+            });
+          });
+          // Set Authors
+          authorsByService(authors);
+
+          $('#metadata-output').empty().append("Found metadata for " + data.metadataID);
+        }
+
+      },
+      complete: function() {
+        $(".deliverableDisseminationUrl").removeClass('input-loading');
+      },
+      error: function() {
+        console.log("error");
+        $('#metadata-output').empty().append("Invalid URL for searching metadata");
+      }
+  });
 }
 
 function getIfpriMetadata(channel,url,uri) {
@@ -726,7 +816,7 @@ function authorsByService(authors) {
 }
 
 function validateAuthors(lastName,firstName) {
-  if($(".authorsList").find(".author input.lastNameInput[value='" + lastName + "']").exists()
+  if($(".authorsList").find('.author input.lastNameInput[value="' + lastName + '"]').exists()
       || $(".authorsList").find(".author input.firstNameInput[value='" + firstName + "']").exists()) {
     return true;
   } else {

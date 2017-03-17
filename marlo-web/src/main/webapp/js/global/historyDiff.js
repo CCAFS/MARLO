@@ -9,15 +9,17 @@ $(document).ready(function() {
     var $diffObj = $('li.diffContent-' + diffIndex);
     var $p = $(field).find('p');
     var added = ($diffObj.find('.added').text() === "true");
+    var oldValue = $diffObj.find('.oldValue').text();
+    var newValue = $diffObj.find('.newValue').text();
 
     console.log($diffObj.find('.id').text());
     console.log(added);
 
-    if((!added) && ($(field).is('.textArea, .input, .select'))) {
+    if((!added) && (oldValue) && ($(field).is('.textArea, .input, .select'))) {
       $(field).prettyTextDiff({
           cleanup: true,
-          originalContent: $diffObj.find('.oldValue').text(),
-          changedContent: $diffObj.find('.newValue').text(),
+          originalContent: oldValue,
+          changedContent: newValue,
           diffContainer: $p
       });
     }

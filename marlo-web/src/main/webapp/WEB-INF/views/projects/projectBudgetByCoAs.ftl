@@ -100,6 +100,7 @@
                         [/#if]
                       </div>
                       
+                      [#if  action.hasSpecificities('crp_budget_gender')]
                       <h5 class="title">Remaining ${year} gender amount</h5>
                       <div class="row">
                         [#-- W1/W2 --]
@@ -127,8 +128,10 @@
                         </div>
                         [/#if]
                       </div>
+                      [/#if]
+                    
                     </div>
-                  
+                    
                     [#-- Project Cluster of activities --]
                     [#list project.crpActivities as coa]
                       [@projectCoAMacro element=coa name="" index=-1 selectedYear=year /]
@@ -267,7 +270,8 @@
             [/#if]
           </tr>
           
-          [#-- Percentage of Amount --]
+          [#-- Percentage of Gender Amount --]
+          [#if  action.hasSpecificities('crp_budget_gender')]
           <tr>
             <td class="amountType"> % of gender</td>
             [#-- W1/W2 --]
@@ -315,6 +319,7 @@
             </td>
             [/#if]
           </tr>
+          [/#if]
         </tbody>
       </table>
 

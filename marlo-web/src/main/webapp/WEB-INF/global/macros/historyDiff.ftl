@@ -1,7 +1,7 @@
 [#ftl]
 [#if differences??]
   [#-- Changed fields is updated by global.js --]
-  <p class="changesDetected">Showing  <strong>${(differences?size)!'null'}</strong> changed fields.</p>
+  <p class="changesDetected">Showing  <strong></strong> changed fields.</p>
   <ul style="display:none">
     [#list differences as diff]
       <li class="diffContent-${diff.id}">
