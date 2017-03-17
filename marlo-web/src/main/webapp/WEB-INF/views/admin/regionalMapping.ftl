@@ -173,7 +173,7 @@
       [/#if]
       [#-- Hidden Parameters --]
       <span class="usersType" style="display:none">programUser</span>
-      <span class="usersRole" style="display:none">{rplRole.id}</span>
+      <span class="usersRole" style="display:none">${rplRole.id}</span>
     </div>
     
     [#-- Region Managers  --]
@@ -198,7 +198,7 @@
       [/#if]
       [#-- Hidden Parameters --]
       <span class="usersType" style="display:none">programUser</span>
-      <span class="usersRole" style="display:none">{rpmRole.id}</span>
+      <span class="usersRole" style="display:none">${rpmRole.id}</span>
     </div>
     
     [#-- Countries  --]
