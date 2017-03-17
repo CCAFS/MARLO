@@ -140,12 +140,25 @@ public class ClientRepository {
 
   public String getMetadataIFPRI(String linkRequest, String id) {
 
-    String urlIFPRI = "https://server15738.contentdm.oclc.org/dmwebservices/index.php";
+    // Documentation
+    // https://www.oclc.org/support/services/contentdm/help/customizing-website-help/other-customizations/contentdm-api-reference.en.html
 
     try {
-      return readUrl(urlIFPRI + "?q=" + id);
+      return readUrl(linkRequest + "?q=" + id);
     } catch (Exception e) {
-      // TODO Auto-generated catch block
+      e.printStackTrace();
+      return "Not Found";
+    }
+  }
+
+  public String getMetadataILRI(String linkRequest, String id) {
+
+    // ILRI outputs METADATA is harvest following an API in JSON Format
+    // http://data.ilri.org/portal/harvestinfo
+
+    try {
+      return readUrl(linkRequest + "?id=" + id);
+    } catch (Exception e) {
       e.printStackTrace();
       return "Not Found";
     }
