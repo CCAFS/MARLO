@@ -699,8 +699,8 @@ public class CrpProgamRegionsAction extends BaseAction {
 
       for (CrpProgram crpProgram : regionsPrograms) {
         CrpProgram crpProgramPrev = crpProgramManager.getCrpProgramById(crpProgram.getId());
-        for (CrpProgramLeader leaderPreview : crpProgramPrev.getCrpProgramLeaders().stream().filter(c -> c.isActive())
-          .collect(Collectors.toList())) {
+        for (CrpProgramLeader leaderPreview : crpProgramPrev.getCrpProgramLeaders().stream()
+          .filter(c -> c.isActive() && !c.isManager()).collect(Collectors.toList())) {
 
           if (crpProgram.getLeaders() == null) {
             crpProgram.setLeaders(new ArrayList<>());
@@ -789,10 +789,12 @@ public class CrpProgamRegionsAction extends BaseAction {
               crpProgramLeader.setModifiedBy(this.getCurrentUser());
               crpProgramLeader.setModificationJustification("");
               crpProgramLeader.setActiveSince(new Date());
+              crpProgramLeader.setManager(false);
               CrpProgram crpProgramPrevLeaders = crpProgramManager.getCrpProgramById(crpProgram.getId());
               if (crpProgramPrevLeaders.getCrpProgramLeaders().stream()
-                .filter(c -> c.isActive() && c.getCrpProgram().equals(crpProgramLeader.getCrpProgram())
-                  && c.getUser().equals(crpProgramLeader.getUser()))
+                .filter(
+                  c -> c.isActive() && !c.isManager() && c.getCrpProgram().equals(crpProgramLeader.getCrpProgram())
+                    && c.getUser().equals(crpProgramLeader.getUser()))
                 .collect(Collectors.toList()).isEmpty()) {
                 crpProgramLeaderManager.saveCrpProgramLeader(crpProgramLeader);
 
