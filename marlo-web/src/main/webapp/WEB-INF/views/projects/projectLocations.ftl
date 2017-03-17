@@ -87,12 +87,13 @@
                 <div id="selectsContent" class="col-md-12 simpleBox " listname="project.locationsData">
                   [#-- Content collapsible--]
                   <div class="selectWrapper row">
-                  [#if project.locationsData?has_content]
-                    [#list project.locationsData as locationLevels]
-                      [@locationLevel element=locationLevels name="${locationLevelName}" index=locationLevels_index list=locationLevels.list?? && locationLevels.list /]
-                    [/#list]
-                  [/#if]
-                  
+                    [#if project.locationsData?has_content]
+                      [#list project.locationsData as locationLevels]
+                        [@locationLevel element=locationLevels name="${locationLevelName}" index=locationLevels_index list=locationLevels.list?? && locationLevels.list /]
+                      [/#list]
+                    [#else]
+                    <p class="text-center borderBox inf">There is not locations added, please use the map to add new locations.</p>
+                    [/#if]
                   </div>
                 </div>
                 </div>
@@ -137,7 +138,7 @@
 <br />
 <div class="form-group">
 <label for="locLevelSelect" style="display:block;">Select a location level:</label>
-  <select name="" id="locLevelSelect" class="selectLocationLevel select " >
+  <select name="" id="locLevelSelect"  class="selectLocationLevel select " >
     <option value="-1" >Select an option...</option>
     [#list locationsLevels as locLevels]
       [#list locLevels.locations as locations]
@@ -147,7 +148,8 @@
   </select>
   </div>
   <div class="selectLocations" >
-    [@customForm.select name="" label="" required=true  i18nkey="Select location(s)" multiple=true listName="" keyFieldName="id"  displayFieldName="composedName" className="" value="" /]
+  <label for="">Select location(s)</label>
+  <select name="" data-placeholder="Click here to drop down the options" id="countriesCmvs" multiple="true"></select>
   </div>
   [#-- Form 2 --]
   <div id="inputFormWrapper" style="display:none; width: 450px;">
@@ -158,6 +160,52 @@
   [#-- Button --]
   <div>
     <span id="addLocationButton" class=" addButton pull-right" style="display:none; margin-top:10px; border-radius:8px;">[@s.text name="Map out" /]</span>
+  </div>
+</div>
+
+[#-- INFO WINDOW Information editable- TEMPLATE --]
+<div id="informationWrapper" class="infoWrapper" style="display:none;">
+<h4 class="sectionSubTitle" style="text-align:center; width:450px;">Location Information</h4>
+<br />
+  [#-- Form to editable location --]
+  <div class="editableLoc" >
+    <div class="form-group">
+    <label for="">Location level:</label> 
+    <br />
+    <span class="infoLocName">{test}</span>
+    </div>    
+    <div id="inputFormWrapper" style="width: 450px;">
+      <div class="nameWrapper"><label for="">Change name:</label><input placeholder="name" class="nameMap form-control" type="text" /></div>
+      <div class="latitudeWrapper"><label for="">Latitude:</label><input  placeholder="Latitude" class="latMap form-control" type="text" readOnly=true /></div>
+      <div class="longitudeWrapper"><label for="">Longitude:</label><input placeholder="Longitude" class="lngMap form-control " type="text" readOnly=true /></div>
+    </div>
+  </div>
+  [#-- Button --]
+  <div>
+    <span id="changeLocation" class=" addButton pull-right" style="margin-top:15px; border-radius:8px;">[@s.text name="Ok" /]</span>
+  </div>
+</div>
+
+[#-- INFO WINDOW Information dont editable- TEMPLATE --]
+<div id="notEditableInfoWrapper" class="infoWrapper" style="display:none;">
+<h4 class="sectionSubTitle" style="text-align:center; width:450px;">Location Information</h4>
+<br />
+[#-- Form to dont editable location --]
+  <div class="dontEditableLoc" >
+    <div class="form-group">
+    <label for="">Location level:</label> 
+    <br />
+    <span class="infoLocName">{test}</span>
+    </div>    
+    <div id="inputFormWrapper" style="width: 450px;">
+      <div class="nameWrapper"><label for="">Change name:</label><span class="nameMap">LocName</span></div>
+      <div class="latitudeWrapper"><label for="">Latitude:</label><br /><span class="latMap">Lat</span></div>
+      <div class="longitudeWrapper"><label for="">Longitude:</label><br /><span class="lngMap">long</span></div>
+    </div>
+  </div>
+  [#-- Button --]
+  <div>
+    <span id="okInfo" class=" addButton pull-right" style="margin-top:15px; border-radius:8px;">[@s.text name="Ok" /]</span>
   </div>
 </div>
 

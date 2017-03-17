@@ -156,6 +156,7 @@ function checkAllCountries($this) {
 
 // Remove a location level element-Function
 function removeLocationLevelItem() {
+  var globalList = $(this).parents('.locationLevel').parents("#selectsContent");
   var $item = $(this).parents('.locationLevel');
   if(markers != []) {
     // REMOVE all item of this element
@@ -182,11 +183,14 @@ function removeLocationLevelItem() {
   $item.hide(function() {
     $item.remove();
     updateIndex();
+    checkItems(globalList);
   });
 }
 
 // Remove a location element-Function
 function removeLocationItem() {
+  var globalList = $(this).parents("#selectsContent");
+  var list = $(this).parents(".optionSelect-content");
   var $item = $(this).parents('.locElement');
   if($item.find(".geoLatitude").val() != "" && $item.find(".geoLongitude").val() != "") {
     var optionValue = $item.attr("id").split('-');
@@ -199,7 +203,11 @@ function removeLocationItem() {
   }
   $item.hide(function() {
     $item.remove();
+    if($(list).find(".locElement").length == 0) {
+      $(list).parents(".locationLevel").remove();
+    }
     updateIndex();
+    checkItems(globalList);
   });
   layer.setMap(null);
   /* Remove of countries array */
@@ -428,6 +436,9 @@ function addMarker(map,idMarker,latitude,longitude,sites,isList,locType) {
     $item.find("input.geoLatitude").val(latitude);
     $item.find("span.lPos").html(" (" + latitude.toFixed(4) + ", " + longitude.toFixed(4) + ")");
     $item.find(".locations").addClass("selected");
+    // update Infowindow
+    $(".editableLoc").find(".latMap").attr("placeholder", latitude);
+    $(".editableLoc").find(".lngMap").attr("placeholder", longitude);
   });
 
   marker.addListener('dragend', function() {
@@ -501,7 +512,10 @@ function openInfoWindowForm(e) {
   if($("select").hasClass("select2-hidden-accessible")) {
     $("select").select2('destroy');
     $('select').select2({
-      width: '100%'
+        width: '100%',
+        placeholder: function() {
+          $(this).data('placeholder');
+        }
     });
     $("select").next().next().remove();
   }
@@ -527,7 +541,7 @@ function formWindowEvents() {
           $("#addLocationButton").show("slow");
           if(option.val().split("-")[1] == "true") {
             // LocElements options using ajax
-            var select = $(".selectList select");
+            var select = $("#countriesCmvs");
             var url = baseURL + "/searchCountryListPL.do";
             var data = {
               parentId: option.val().split("-")[0]
@@ -564,7 +578,7 @@ function formWindowEvents() {
     var locationId = $locationLevelSelect.val().split("-")[0];
     var locationIsList = $locationLevelSelect.val().split("-")[1];
     var locationName = $locationLevelSelect.val().split("-")[2];
-    var $locationSelect = $(".selectList select");
+    var $locationSelect = $("#countriesCmvs");
     // checking if is list
     if(locationIsList == "true") {
       // Checking if locations select is empty
@@ -599,7 +613,7 @@ function setCountryDefault() {
       success: function(data) {
         if(data.status == 'OK') {
           var country = getResultByType(data.results[0], 'country').short_name;
-          var $countrySelect = $(".selectList select");
+          var $countrySelect = $("#countriesCmvs");
           console.log($countrySelect.find("option." + country).val());
           $countrySelect.val([
             $countrySelect.find("option." + country).val()
@@ -623,10 +637,9 @@ function addLocLevel(locationName,locationId,locationIsList,$locationSelect,loca
   $locationItem.show("slow");
   updateIndex();
   if(locationIsList == "true") {
-    $locationItem.find(".allCountriesQuestion").show();
     if(locationName == "Country") {
-      $locationItem.find("span.question").html($("span.qCountry").text());
     } else {
+      $locationItem.find(".allCountriesQuestion").show();
       $locationItem.find("span.question").html($("span.qCmvSites").text());
     }
     addCountryIntoLocLevel(locationId, $locationSelect, locationName);
@@ -674,6 +687,7 @@ function addLocByCoordinates(locationId,$locationSelect,locationName) {
         addMarker(map, (countID), parseFloat(latitude), parseFloat(longitude), name, "false", 1);
         // update indexes
         updateIndex();
+        checkItems($list.parents("#selectsContent"));
       }
   });
 }
@@ -728,6 +742,7 @@ function addCountryIntoLocLevel(locationId,$locationSelect,locationName) {
     }
   });
   updateIndex();
+  checkItems(locationContent.parents("#selectsContent"));
   infoWindow.close();
   if(locationName == "Country") {
     layer.setMap(null);
@@ -743,15 +758,24 @@ function resetInfoWindow() {
 
 // Open info window for change the country name
 function openInfoWindow(marker) {
-  var content;
+  var contentItem;
+  console.log(marker);
+  // Check if the location is editable
   if(editable && marker.list == "false") {
-    content =
-        '<div id="infoContent"><label for="nameMapMarker">Change the location name:</label><input placeholder="'
-            + marker.name
-            + '" id="nameMapMarker" class="nameMap form-control" type="text" /><span class="editLocationName glyphicon glyphicon-ok button-green"></span></div>';
+    contentItem = $("#informationWrapper");
+    console.log((contentItem).find(".nameMap"));
+    $(contentItem).find(".nameMap").attr("placeholder", marker.name);
+    $(contentItem).find(".latMap").attr("placeholder", marker.getPosition().lat());
+    $(contentItem).find(".lngMap").attr("placeholder", marker.getPosition().lng());
   } else {
-    content = '<div id="infoContent"><div class=" form-control">' + marker.name + '</div></div>';
+    contentItem = $("#notEditableInfoWrapper");
+    $(contentItem).find(".nameMap").text(marker.name);
+    $(contentItem).find(".latMap").text(marker.getPosition().lat());
+    $(contentItem).find(".lngMap").text(marker.getPosition().lng());
   }
+  var locationLevel = $(contentItem).parent().find("#location-" + marker.id).parents(".locationLevel");
+  $(contentItem).find(".infoLocName").text($(locationLevel).find(".locLevelName").text());
+  var content = contentItem.html();
   var markerLatLng = marker.getPosition();
   infoWindow.setContent([
     content
@@ -759,11 +783,13 @@ function openInfoWindow(marker) {
   infoWindow.open(map, marker);
 
   // Edit location name from map
-  $(".editLocationName").on('click', function editLocationName() {
-    var parent = $(this).parent();
+  $("#changeLocation").on('click', function editLocationName() {
+    console.log(this);
+    var parent = $(this).parent().parent();
+    console.log(parent);
     var newName = parent.find(".nameMap").val();
-    var location = parent.parents().find("#location-" + marker.id);
-    var markerLatLng = marker.getPosition();
+    var location = parent.parents(".projectLocationsWrapper").find("#location-" + marker.id);
+    console.log(location);
 
     // Change data marker and inputs form
     if(newName != "") {
@@ -779,6 +805,17 @@ function openInfoWindow(marker) {
     $("#location-" + marker.id).find(".locations").removeClass("selected");
 
   });
+}
+
+function checkItems(block) {
+  console.log(block);
+  var items = $(block).find('.locElement').length;
+  console.log(items);
+  if(items == 0) {
+    $(block).find('p.inf').fadeIn();
+  } else {
+    $(block).find('p.inf').fadeOut();
+  }
 }
 
 // Edit location name from map function

@@ -246,3 +246,7 @@ span.allCountriesQuestion {
 .selectLocations {
     max-width: 450px;
 }
+
+li.select2-search.select2-search--inline{
+	width:100%;
+}]
