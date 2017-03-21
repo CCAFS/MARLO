@@ -125,7 +125,7 @@ $(document).ready(
         $dialogContent.find('.warning-info').empty().hide();
         var invalidFields = [];
         var project = {};
-        //project.cofundedMode = $dialogContent.find("input[name='cofundedMode']").val().trim();
+        // project.cofundedMode = $dialogContent.find("input[name='cofundedMode']").val().trim();
         project.description = $dialogContent.find("#description").val().trim();
         project.title = $dialogContent.find("#title").val().trim();
         project.startDate = $dialogContent.find("#startDate").val().trim();
@@ -156,7 +156,9 @@ $(document).ready(
         projectValidate.endDate = project.endDate;
         projectValidate.status = project.status;
         projectValidate.contactName = project.contactName;
-        projectValidate.contactEmail = project.contactEmail;
+        if($dialogContent.find("#contactEmail").classParam('validate') === "true") {
+          projectValidate.contactEmail = project.contactEmail;
+        }
         projectValidate.institution = project.institution;
 
         // Validate if fields are filled
@@ -174,9 +176,11 @@ $(document).ready(
         // }
 
         // Validate Email
-        var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
-        if(!emailReg.test(project.contactEmail)) {
-          invalidFields.push('valid contact email');
+        if($dialogContent.find("#contactEmail").classParam('validate') === "true") {
+          var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+          if(!emailReg.test(project.contactEmail)) {
+            invalidFields.push('valid contact email');
+          }
         }
 
         if(invalidFields.length > 0) {

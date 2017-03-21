@@ -103,9 +103,10 @@
         </div>
       </div>
       [#-- Contact person name and email --]
+      [#assign canSeePIEmail = action.hasSpecificities('crp_email_funding_source')]
       <div class="form-group row">
           <div class="col-md-6">[@customForm.input name="fundingSource.contactPersonName" i18nkey="projectCofunded.contactName" className="contactName" required=true editable=editable /]</div>
-          <div class="col-md-6">[@customForm.input name="fundingSource.contactPersonEmail" i18nkey="projectCofunded.contactEmail" className="contactEmail" required=true editable=editable /]</div>
+          <div class="col-md-6" style="display:${canSeePIEmail?string('block','none')}">[@customForm.input name="fundingSource.contactPersonEmail" i18nkey="projectCofunded.contactEmail" className="contactEmail" required=true editable=editable /]</div>
       </div>
       [#-- Donor --]
       <div class="form-group">
