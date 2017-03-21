@@ -78,7 +78,7 @@ public final class APConstants {
   public static final String CRP_BUDGET_GENDER = "crp_budget_gender";
   public static final String CRP_MULTIPLE_COA = "crp_multiple_coa";
   public static final String CRP_EMAIL_FUNDING_SOURCE = "crp_email_funding_source";
-
+  public static final long INSTITUTION_CGIAR = 221;
   public static final String CRP_CU = "crp_cu";
   public static final int MID_OUTCOME_YEAR = 2019;
   public static final String CRP_CLOSED = "crp_closed";

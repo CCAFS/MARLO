@@ -126,36 +126,37 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public static final String NOT_AUTHORIZED = "403";
 
+
   public static final String NOT_FOUND = "404";
   public static final String NOT_LOGGED = "401";
-
   public static final String REDIRECT = "redirect";
-  public static final String SAVED_STATUS = "savedStatus";
 
+  public static final String SAVED_STATUS = "savedStatus";
   private static final long serialVersionUID = -740360140511380630L;
 
   private List<HistoryDifference> differences;
 
   protected boolean add;
 
-
   @Inject
   private AuditLogManager auditLogManager;
+
 
   private String basePermission;
 
   protected boolean cancel;
 
-
   private boolean canEdit; // If user is able to edit the form.
+
 
   private boolean canSwitchProject; // If user is able to Switch Project. (generally is a project leader)
 
   protected APConfig config;
+
   @Inject
   private CrpClusterKeyOutputManager crpClusterKeyOutputManager;
-
   private Long crpID;
+
   // Managers
   @Inject
   private CrpManager crpManager;
@@ -163,9 +164,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private CrpPpaPartnerManager crpPpaPartnerManager;
   @Inject
   private CrpProgramLeaderManager crpProgramLeaderManager;
-
   @Inject
   private CrpProgramManager crpProgramManager;
+
   // Variables
   private String crpSession;
   private Crp currentCrp;
@@ -173,51 +174,50 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   protected boolean delete;
   @Inject
   private DeliverableManager deliverableManager;
-
-
   private boolean draft;
+
 
   @Inject
   private UserManager userManager;
+
   @Inject
   private FileDBManager fileDBManager;
   private boolean fullEditable; // If user is able to edit all the form.
-
-
   @Inject
   private FundingSourceManager fundingSourceManager;
 
+
   private HashMap<String, String> invalidFields;
+
   // User actions
   private boolean isEditable; // If user is able to edit the form.
   // Justification of the changes
   private String justification;
-
   private boolean lessonsActive;
 
   @Inject
   private LiaisonUserManager liaisonUserManager;
+
   protected boolean next;
   private Map<String, Object> parameters;
-
   private boolean planningActive;
 
   private int planningYear;
+
   @Inject
   private ProjectComponentLessonManager projectComponentLessonManager;
   @Inject
   private ProjectManager projectManager;
-
   @Inject
   private ProjectOutcomeManager projectOutcomeManager;
+
   private boolean reportingActive;
   private int reportingYear;
   private HttpServletRequest request;
   // button actions
   protected boolean save;
-
-
   private boolean saveable; // If user is able to see the save, cancel, delete buttons
+
 
   @Inject
   private SectionStatusManager sectionStatusManager;
@@ -225,20 +225,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   // Config Variables
   @Inject
   protected BaseSecurityContext securityContext;
-  private Map<String, Object> session;
 
+  private Map<String, Object> session;
   private Submission submission;
+
   protected boolean submit;
   private String url;
-
   @Inject
   private UserRoleManager userRoleManager;
+
   @Inject
   private IpProgramManager ipProgramManager;
-
   @Inject
   private IpLiaisonInstitutionManager ipLiaisonInstitutionManager;
-
 
   @Inject
   public BaseAction(APConfig config) {
@@ -248,11 +247,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.justification = "";
   }
 
+
   /* Override this method depending of the save action. */
   public String add() {
     return SUCCESS;
   }
-
 
   /**
    * This function add a flag (--warn--) to the message in order to give
@@ -264,6 +263,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.addActionMessage("--warn--" + message);
   }
 
+
   public boolean canAccessSuperAdmin() {
     return this.securityContext.hasAllPermissions(Permission.FULL_PRIVILEGES);
   }
@@ -272,11 +272,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.canAcessPublications() || this.canAcessSynthesisMog();
   }
 
-
   public boolean canAcessCrpAdmin() {
     String permission = this.generatePermission(Permission.CRP_ADMIN_VISIBLE_PRIVILEGES, this.getCrpSession());
     return securityContext.hasPermission(permission);
   }
+
 
   public boolean canAcessFunding() {
 
@@ -444,7 +444,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   public boolean canEditCenterType() {
     return this.hasPermissionNoBase(
       this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, this.getCrpSession()));
@@ -472,6 +471,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   /**
    * This method clears the cache and re-load the user permissions in the next iteration.
    */
@@ -488,7 +488,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public String delete() {
     return SUCCESS;
   }
-
 
   @Override
   public String execute() throws Exception {
@@ -508,6 +507,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return INPUT;
   }
 
+
   public String generatePermission(String permission, String... params) {
     return this.getText(permission, params);
 
@@ -523,6 +523,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public String getBaseUrl() {
     return config.getBaseUrl();
+  }
+
+  public long getCGIARInsitution() {
+    return APConstants.INSTITUTION_CGIAR;
   }
 
   public APConfig getConfig() {
