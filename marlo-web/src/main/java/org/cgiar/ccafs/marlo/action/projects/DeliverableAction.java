@@ -922,12 +922,17 @@ public class DeliverableAction extends BaseAction {
       this.fundingSources.clear();
       this.fundingSources.addAll(hs);
       this.fundingSources.sort((o1, o2) -> {
-        int cmp = o1.getBudgetType().getId().compareTo(o2.getBudgetType().getId());
-        if (cmp == 0) {
-          cmp = o1.getTitle().compareTo(o2.getTitle());
-        }
+        if (o1.getBudgetType() != null && o2.getBudgetType() != null && o1.getTitle() != null
+          && o2.getTitle() != null) {
 
-        return cmp;
+          int cmp = o1.getBudgetType().getId().compareTo(o2.getBudgetType().getId());
+          if (cmp == 0) {
+            cmp = o1.getTitle().compareTo(o2.getTitle());
+          }
+
+          return cmp;
+        }
+        return 0;
       });
 
     }
