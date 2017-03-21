@@ -133,7 +133,7 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
         if (baseAction.isAdmin()) {
           canEdit = true;
         } else {
-          if (baseAction.hasPermission(baseAction.generatePermission(Permission.IMPACT_PATHWAY_EDIT_PRIVILEGES,
+          if (baseAction.hasPermissionNoBase(baseAction.generatePermission(Permission.IMPACT_PATHWAY_EDIT_PRIVILEGES,
             crp.getAcronym(), crpProgramID + ""))) {
             canEdit = true;
           }
