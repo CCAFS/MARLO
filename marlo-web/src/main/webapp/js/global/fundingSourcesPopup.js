@@ -125,7 +125,7 @@ $(document).ready(
         $dialogContent.find('.warning-info').empty().hide();
         var invalidFields = [];
         var project = {};
-        project.cofundedMode = $dialogContent.find("input[name='cofundedMode']").val().trim();
+        //project.cofundedMode = $dialogContent.find("input[name='cofundedMode']").val().trim();
         project.description = $dialogContent.find("#description").val().trim();
         project.title = $dialogContent.find("#title").val().trim();
         project.startDate = $dialogContent.find("#startDate").val().trim();
