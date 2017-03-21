@@ -147,6 +147,9 @@ $(document).ready(function() {
   var coaSelectedIds = ($('#coaSelectedIds').text()).split(',');
   $coreSelect.clearOptions(coaSelectedIds);
 
+  // Validate more than one cluster and if has specific rule
+  validateClusters();
+
   /**
    * Scope of project
    */
@@ -294,7 +297,22 @@ $(document).ready(function() {
     });
   }
 
+  function validateClusters() {
+    var clusterNumber = $coreProjects.find('li.clusterActivity').length;
+    if($coreSelect.classParam('multipleCoA') === "false") {
+      if(clusterNumber == 0) {
+        $coreSelect.prop("disabled", false);
+      } else {
+        $coreSelect.prop("disabled", true);
+      }
+    }
+
+  }
+
   function setProjectsIndexes() {
+    // Validate more than one cluster and if has specific rule
+    validateClusters();
+
     $coreProjects.find('li.clusterActivity').each(function(i,item) {
       $(item).setNameIndexes(1, i);
     });

@@ -196,8 +196,9 @@
                 [/#if]  
                 </ul>
                 [#if editable  && action.hasPermission("activities")]
+                  [#assign multipleCoA = action.hasSpecificities('crp_multiple_coa')]
                   <span id="coaSelectedIds" style="display:none">[#if project.clusterActivities?has_content][#list project.clusterActivities as e]${e.crpClusterOfActivity.id}[#if e_has_next],[/#if][/#list][/#if]</span>  
-                  [@customForm.select name="" label="" disabled=!canEdit i18nkey="" listName="clusterofActivites" keyFieldName="id" displayFieldName="ComposedName" className="CoASelect" value="" /]
+                  [@customForm.select name="" label="" disabled=!canEdit i18nkey="" listName="clusterofActivites" keyFieldName="id" displayFieldName="ComposedName" className="CoASelect multipleCoA-${multipleCoA?string}" value="" /]
                 [/#if] 
               </div>
             </div>
