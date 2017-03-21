@@ -29,7 +29,6 @@ public class InstitutionController implements ModelDriven<Object> {
 
 
   private String id;
-
   private Object institutions;
 
 
@@ -67,10 +66,7 @@ public class InstitutionController implements ModelDriven<Object> {
   }
 
 
-  // GET /api/institution
   public HttpHeaders index() {
-
-    System.out.println("GET \t /user");
     return new DefaultHttpHeaders("index").disableCaching();
   }
 
@@ -88,10 +84,9 @@ public class InstitutionController implements ModelDriven<Object> {
     this.repository = repository;
   }
 
-  // GET /api/institution/1
+
   public HttpHeaders show() {
     institutions = repository.get(this.getId());
-    System.out.println("GET \t /user/{id}");
     return new DefaultHttpHeaders("show").disableCaching();
   }
 
