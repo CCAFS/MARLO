@@ -41,6 +41,8 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
 
   @Expose
   private Boolean fair;
+  @Expose
+  private Crp crp;
 
 
   private Set<DeliverableType> deliverableTypes = new HashSet<DeliverableType>(0);
@@ -51,6 +53,7 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
   public DeliverableType() {
   }
 
+
   public DeliverableType(DeliverableType deliverableType, String name, String description, Integer timeline,
     Set<DeliverableType> deliverableTypes, Set<Deliverable> deliverables) {
     this.deliverableType = deliverableType;
@@ -59,6 +62,10 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
     this.timeline = timeline;
     this.deliverableTypes = deliverableTypes;
     this.deliverables = deliverables;
+  }
+
+  public Crp getCrp() {
+    return crp;
   }
 
   public Set<Deliverable> getDeliverables() {
@@ -120,6 +127,10 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
   @Override
   public boolean isActive() {
     return true;
+  }
+
+  public void setCrp(Crp crp) {
+    this.crp = crp;
   }
 
   public void setDeliverables(Set<Deliverable> deliverables) {
