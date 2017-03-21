@@ -20,7 +20,17 @@
   <div class="helpMessage infoText">
     [#-- <div  class="removeHelp"><span class="glyphicon glyphicon-remove"></span></div> --]
     <img class="col-md-2" src="${baseUrl}/images/global/icon-help.jpg" />
-    <p class="col-md-10"> [#if project.projectEditLeader] [#if reportingActive] [@s.text name="projectDescription.help3" /] [#else] [@s.text name="projectDescription.help2" /] [/#if]  [#else] [@s.text name="projectDescription.help1" /] [/#if]</p>
+    <p class="col-md-10"> 
+      [#if project.projectEditLeader]  global.managementLiaison
+        [#if reportingActive] 
+          [@s.text name="projectDescription.help3" ] [@s.param][@s.text name="global.managementLiaison" /][/@s.param] [/@s.text]
+        [#else] 
+          [@s.text name="projectDescription.help2" ] [@s.param][@s.text name="global.managementLiaison" /][/@s.param] [/@s.text]
+        [/#if]  
+      [#else]
+        [@s.text name="projectDescription.help1" /] 
+      [/#if]
+    </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
 </div>
