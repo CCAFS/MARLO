@@ -334,6 +334,9 @@ function ajaxService(url,data) {
       },
       error: function(e) {
         console.log(e);
+      },
+      complete: function() {
+        console.log(data);
       }
   });
 }

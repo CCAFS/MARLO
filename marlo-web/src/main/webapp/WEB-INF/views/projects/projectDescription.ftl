@@ -21,7 +21,7 @@
     [#-- <div  class="removeHelp"><span class="glyphicon glyphicon-remove"></span></div> --]
     <img class="col-md-2" src="${baseUrl}/images/global/icon-help.jpg" />
     <p class="col-md-10"> 
-      [#if project.projectEditLeader]  global.managementLiaison
+      [#if project.projectEditLeader]
         [#if reportingActive] 
           [@s.text name="projectDescription.help3" ] [@s.param][@s.text name="global.managementLiaison" /][/@s.param] [/@s.text]
         [#else] 
