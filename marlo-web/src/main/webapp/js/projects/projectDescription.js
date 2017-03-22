@@ -335,8 +335,8 @@ function date(start,end) {
   var dateFormat = "yy-mm-dd";
   var from = $(start).datepicker({
       dateFormat: dateFormat,
-      minDate: '2010-01-01',
-      maxDate: '2030-12-31',
+      minDate: MIN_DATE,
+      maxDate: MAX_DATE,
       changeMonth: true,
       numberOfMonths: 1,
       changeYear: true,
@@ -347,12 +347,16 @@ function date(start,end) {
           $(end).datepicker("option", "minDate", selectedDate);
         }
       }
+  }).on("click", function() {
+    if(!$(this).val()) {
+      $(this).datepicker('setDate', new Date());
+    }
   });
 
   var to = $(end).datepicker({
       dateFormat: dateFormat,
-      minDate: '2010-01-01',
-      maxDate: '2030-12-31',
+      minDate: MIN_DATE,
+      maxDate: MAX_DATE,
       changeMonth: true,
       numberOfMonths: 1,
       changeYear: true,
@@ -363,6 +367,10 @@ function date(start,end) {
           $(start).datepicker("option", "maxDate", selectedDate);
         }
       }
+  }).on("click", function() {
+    if(!$(this).val()) {
+      $(this).datepicker('setDate', new Date());
+    }
   });
 
   function getDate(element) {
