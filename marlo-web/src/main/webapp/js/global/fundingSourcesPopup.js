@@ -315,7 +315,7 @@ $(document).ready(
             getData(query);
           }, 400);
         } else {
-          // getData('');
+          getData('');
         }
 
       }
@@ -538,8 +538,10 @@ function ajaxService(url,data) {
   var $select = $("#institution");
   $.ajax({
       url: url,
-      type: 'GET',
       data: data,
+      beforeSend: function() {
+        $('#fundingSourceForm').find('.loading').fadeIn();
+      },
       success: function(m) {
         $select.empty();
         $select.addOption("-1", "Select an option...");
@@ -547,9 +549,13 @@ function ajaxService(url,data) {
           $select.addOption(e.id, e.name);
         });
         $select.trigger("change.select2");
+        $('#fundingSourceForm').find('.loading').fadeOut();
       },
       error: function(e) {
         console.log(e);
+      },
+      complete: function() {
+        $('#fundingSourceForm').find('.loading').fadeOut();
       }
   });
 }
