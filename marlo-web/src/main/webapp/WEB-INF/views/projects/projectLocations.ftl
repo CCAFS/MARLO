@@ -198,7 +198,7 @@
     <span class="infoLocName">{test}</span>
     </div>    
     <div id="inputFormWrapper" style="width: 450px;">
-      <div class="nameWrapper"><label for="">Change name:</label><span class="nameMap">LocName</span></div>
+      <div class="nameWrapper"><label for="">Location name:</label><span class="nameMap">LocName</span></div>
       <div class="latitudeWrapper"><label for="">Latitude:</label><br /><span class="latMap">Lat</span></div>
       <div class="longitudeWrapper"><label for="">Longitude:</label><br /><span class="lngMap">long</span></div>
     </div>

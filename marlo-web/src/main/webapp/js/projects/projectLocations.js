@@ -756,10 +756,9 @@ function resetInfoWindow() {
   $("#inputFormWrapper").hide();
 }
 
-// Open info window for change the country name
+// Open info window
 function openInfoWindow(marker) {
   var contentItem;
-  console.log(marker);
   // Check if the location is editable
   if(editable && marker.list == "false") {
     contentItem = $("#informationWrapper");
@@ -804,6 +803,38 @@ function openInfoWindow(marker) {
     infoWindow.close();
     $("#location-" + marker.id).find(".locations").removeClass("selected");
 
+  });
+
+  $("#okInfo").on("click", function() {
+    infoWindow.close();
+  });
+}
+
+// Open info window for countries
+function openInfoWindowCountries(country) {
+  var contentItem;
+  // Check if the location is editable
+  contentItem = $("#notEditableInfoWrapper");
+  $(contentItem).find(".nameMap").text(country.row.Name.value);
+  $(contentItem).find(".latMap").text(country.latLng.lat().toFixed(4));
+  $(contentItem).find(".lngMap").text(country.latLng.lng().toFixed(4));
+
+  var locationLevel =
+      $(contentItem).parent().find("input.locElementCountry[value='" + country.row.ISO_2DIGIT.value + "']").parents(
+          ".locationLevel");
+  $(contentItem).find(".infoLocName").text($(locationLevel).find(".locLevelName").text());
+
+  var content = contentItem.html();
+  var countryLatLng = country.latLng;
+  infoWindow.setContent([
+    content
+  ].join(''));
+
+  infoWindow.setPosition(country.latLng);
+  infoWindow.open(map);
+
+  $("#okInfo").on("click", function() {
+    infoWindow.close();
   });
 }
 
@@ -877,6 +908,9 @@ function mappingCountries() {
     };
     layer = new google.maps.FusionTablesLayer(FT_Options);
     layer.setMap(map);
+    google.maps.event.addListener(layer, 'click', function(e) {
+      openInfoWindowCountries(e);
+    });
   }
 
 }
