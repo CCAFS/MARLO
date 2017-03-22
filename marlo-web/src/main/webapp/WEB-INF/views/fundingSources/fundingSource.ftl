@@ -113,11 +113,7 @@
       <div class="form-group">
         <div class="row">
           <div class="col-md-12">
-          [#if fundingSource.budgetType?? && fundingSource.budgetType.id==1]
-            [@customForm.select name="fundingSource.institution.id" value="${action.getCGIARInsitution()}" i18nkey="projectCofunded.donor" className="donor"  listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" required=true editable=editable /]
-          [#else]
             [@customForm.select name="fundingSource.institution.id" i18nkey="projectCofunded.donor" className="donor"  listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" required=true editable=editable /]
-          [/#if]
           </div>
         </div>
         
