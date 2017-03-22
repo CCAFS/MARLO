@@ -101,12 +101,16 @@ public class AuditLogInterceptor extends EmptyInterceptor {
         Set<IAuditLog> listRelation = new HashSet<>();
 
         Set<IAuditLog> entityRelation = (Set<IAuditLog>) propertyValue;
-        for (IAuditLog iAuditLog : entityRelation) {
+        try {
+          for (IAuditLog iAuditLog : entityRelation) {
 
-          if (iAuditLog.isActive()) {
+            if (iAuditLog.isActive()) {
 
-            listRelation.add(iAuditLog);
+              listRelation.add(iAuditLog);
+            }
           }
+        } catch (Exception e) {
+
         }
 
         objects.put(ENTITY, listRelation);
