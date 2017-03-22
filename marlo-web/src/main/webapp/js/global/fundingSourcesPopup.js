@@ -550,7 +550,7 @@ function ajaxService(url,data) {
           $select.addOption(e.id, e.name);
         });
         console.log(data.budgetTypeID);
-        if(data.budgetTypeID == "1") {
+        if(data.budgetTypeID == "1" && $select.find("option:selected").val() == "-1") {
           $select.val($(".cgiarConsortium").text());
         }
         $select.trigger("change.select2");
