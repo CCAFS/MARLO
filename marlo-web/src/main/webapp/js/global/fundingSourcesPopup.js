@@ -315,7 +315,7 @@ $(document).ready(
             getData(query);
           }, 400);
         } else {
-          // getData('');
+          getData('');
         }
 
       }
@@ -396,6 +396,7 @@ $(document).ready(
             institutionSelect.val(lastDonor);
           }
         }
+
       });
 
     });// End document ready event
@@ -538,18 +539,28 @@ function ajaxService(url,data) {
   var $select = $("#institution");
   $.ajax({
       url: url,
-      type: 'GET',
       data: data,
+      beforeSend: function() {
+        $('#fundingSourceForm').find('.loading').fadeIn();
+      },
       success: function(m) {
         $select.empty();
         $select.addOption("-1", "Select an option...");
         $.each(m.institutions, function(i,e) {
           $select.addOption(e.id, e.name);
         });
+        console.log(data.budgetTypeID);
+        if(data.budgetTypeID == "1") {
+          $select.val($(".cgiarConsortium").text());
+        }
         $select.trigger("change.select2");
+        $('#fundingSourceForm').find('.loading').fadeOut();
       },
       error: function(e) {
         console.log(e);
+      },
+      complete: function() {
+        $('#fundingSourceForm').find('.loading').fadeOut();
       }
   });
 }

@@ -2,6 +2,7 @@ $(document).ready(init);
 
 function init() {
 
+  changeDonorByFundingType($(".type").find("option:selected").val(), $(".donor"))
   // Popup
   popups();
 
@@ -334,6 +335,7 @@ function ajaxService(url,data) {
         $.each(m.institutions, function(i,e) {
           $select.addOption(e.id, e.name);
         });
+        changeDonorByFundingType(data.budgetTypeID, $select)
         $select.trigger("change.select2");
       },
       error: function(e) {
@@ -343,4 +345,14 @@ function ajaxService(url,data) {
         console.log(data);
       }
   });
+}
+
+function changeDonorByFundingType(budgetType,$select) {
+  var donorId = $select.find("option:selected").val();
+  console.log(donorId);
+  console.log(budgetType);
+  console.log($select);
+  if(donorId == "-1" && budgetType == "1") {
+    $select.val($(".cgiarConsortium").text()).trigger("change");
+  }
 }
