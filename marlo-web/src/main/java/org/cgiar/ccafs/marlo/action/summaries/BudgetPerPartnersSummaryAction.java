@@ -376,11 +376,11 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
 
           List<Double> list = new ArrayList<Double>();
           // Add institution w1w2 budget
-          Double totalBudgetW1W2 = totalPartners.containsKey(institution) ? totalPartners.get(institution).get(0) : 0;
+          Double totalBudgetW1W2 = totalPartners.containsKey(institution) ? totalPartners.get(institution).get(0) : 0.0;
           totalBudgetW1W2 += budgetW1W2;
           // Add institution w3bilateralcenter budget
           Double totalBudgetBilateralW3Center =
-            totalPartners.containsKey(institution) ? totalPartners.get(institution).get(1) : 0;
+            totalPartners.containsKey(institution) ? totalPartners.get(institution).get(1) : 0.0;
           totalBudgetBilateralW3Center += budgetW3 + budgetBilateral + budgetCenter;
           list.add(totalBudgetW1W2);
           list.add(totalBudgetBilateralW3Center);
@@ -585,8 +585,8 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     double totalGender = 0;
     if (budgets != null) {
       for (ProjectBudget projectBudget : budgets) {
-        double amount = projectBudget.getAmount() != null ? projectBudget.getAmount() : 0;
-        double gender = projectBudget.getGenderPercentage() != null ? projectBudget.getGenderPercentage() : 0;
+        double amount = projectBudget.getAmount() != null ? projectBudget.getAmount() : 0.0;
+        double gender = projectBudget.getGenderPercentage() != null ? projectBudget.getGenderPercentage() : 0.0;
 
         totalGender = totalGender + (amount * (gender / 100));
       }
