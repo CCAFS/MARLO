@@ -142,8 +142,15 @@
       <div class="tab-content col-md-12 contributionContent">
         [#list startYear .. endYear as year]
           <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="fundingYear-${year}">
-          [#assign budget = action.getBudget(year) /]
-          [#assign budgetIndex = action.getIndexBugets(year) /]
+          
+          
+          [#attempt]
+            [#assign budget = (action.getBudget(year))!{} /]
+            [#assign budgetIndex = (action.getIndexBugets(year))!'-1' /]
+          [#recover]
+            [#assign budget = {} /]
+            [#assign budgetIndex = '-1' /]
+          [/#attempt]
           
           <small class="grayLabel pull-right"> (Remaining budget US$ <span class="projectAmount">${((fundingSource.getRemaining(year))!0)?number?string(",##0.00")}</span>) </small>
           

@@ -417,6 +417,11 @@ function date(start,end) {
       }
   }).on("change", function() {
     getYears();
+  }).on("click", function() {
+    if(!$(this).val()) {
+      $(this).datepicker('setDate', new Date());
+      getYears();
+    }
   });
 
   var to = $(end).datepicker({
@@ -434,6 +439,11 @@ function date(start,end) {
       }
   }).on("change", function() {
     getYears();
+  }).on("click", function() {
+    if(!$(this).val()) {
+      $(this).datepicker('setDate', new Date());
+      getYears();
+    }
   });
 
   function getYears() {

@@ -200,6 +200,7 @@ function date(start,end) {
   var dateFormat = "yy-mm-dd";
   var from = $(start).datepicker({
       dateFormat: dateFormat,
+      minDate: MIN_DATE,
       changeMonth: true,
       numberOfMonths: 1,
       changeYear: true,
@@ -215,12 +216,14 @@ function date(start,end) {
     getYears();
   }).on("click", function() {
     if(!$(this).val()) {
-      $(this).datepicker('setDate', $(this).datepicker("option", "minDate"));
+      $(this).datepicker('setDate', new Date());
+      getYears();
     }
   });
 
   var to = $(end).datepicker({
       dateFormat: dateFormat,
+      maxDate: MAX_DATE,
       changeMonth: true,
       numberOfMonths: 1,
       changeYear: true,
@@ -236,7 +239,8 @@ function date(start,end) {
     getYears();
   }).on("click", function() {
     if(!$(this).val()) {
-      $(this).datepicker('setDate', $(this).datepicker("option", "maxDate"));
+      $(this).datepicker('setDate', new Date());
+      getYears();
     }
   });
 
