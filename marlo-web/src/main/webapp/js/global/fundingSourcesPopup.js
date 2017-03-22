@@ -396,6 +396,7 @@ $(document).ready(
             institutionSelect.val(lastDonor);
           }
         }
+
       });
 
     });// End document ready event
@@ -546,6 +547,10 @@ function ajaxService(url,data) {
         $.each(m.institutions, function(i,e) {
           $select.addOption(e.id, e.name);
         });
+        console.log(data.budgetTypeID);
+        if(data.budgetTypeID == "1") {
+          $select.val($(".cgiarConsortium").text());
+        }
         $select.trigger("change.select2");
       },
       error: function(e) {

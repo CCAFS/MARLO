@@ -109,10 +109,15 @@
           <div class="col-md-6" style="display:${canSeePIEmail?string('block','none')}">[@customForm.input name="fundingSource.contactPersonEmail" i18nkey="projectCofunded.contactEmail" className="contactEmail" required=true editable=editable /]</div>
       </div>
       [#-- Donor --]
+      
       <div class="form-group">
         <div class="row">
           <div class="col-md-12">
+          [#if fundingSource.budgetType?? && fundingSource.budgetType.id==1]
+            [@customForm.select name="fundingSource.institution.id" value="${action.getCGIARInsitution()}" i18nkey="projectCofunded.donor" className="donor"  listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" required=true editable=editable /]
+          [#else]
             [@customForm.select name="fundingSource.institution.id" i18nkey="projectCofunded.donor" className="donor"  listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" required=true editable=editable /]
+          [/#if]
           </div>
         </div>
         
@@ -165,7 +170,6 @@
               <div class="input">
               	<p>US$ <span>${((budget.budget)!0)?number?string(",##0.00")}</p>
               	 <input type="hidden" name="fundingSource.budgets[${budgetIndex}].budget" value="${(budget.budget)!0}"/>
-             
               </div>
                 
               [/#if]
@@ -234,5 +238,6 @@
   </li>
 </ul>
 
+<span class="hidden cgiarConsortium">${action.getCGIARInsitution()}</span>
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
