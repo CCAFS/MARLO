@@ -40,6 +40,7 @@
       </div>
       <div class="accordion-block create-user clearfix" style="display:none">
         <div class="create-user-block">
+          [#-- Loading --]
           <div class="loading" style="display:none"></div>
           [#-- Warning Info --]
           <p class="warning-info" style="display:none"></p> 
@@ -87,15 +88,16 @@
           </div>
           <div class="form-group">
             <div class="row">
-              <div class="col-md-6">[@customForm.input name="contactName" i18nkey="projectCofunded.contactName" className="contactName" required=true/]</div>
-              <div class="col-md-6">[@customForm.input name="contactEmail" i18nkey="projectCofunded.contactEmail" className="contactEmail" required=true/]</div>
+              <div class="col-md-12">
+                [@customForm.select name="institution" i18nkey="projectCofunded.donor" value="${action.getCGIARInsitution()}"  listName="institutions " keyFieldName="id"  displayFieldName="composedName" required=true /]
+              </div>
             </div>
           </div>
-          <div class="form-group">
+          <div class="form-group"> 
+            [#assign canSeePIEmail = action.hasSpecificities('crp_email_funding_source')]
             <div class="row">
-              <div class="col-md-12">
-                [@customForm.select name="institution" i18nkey="projectCofunded.donor"  listName="institutions " keyFieldName="id"  displayFieldName="composedName" required=true /]
-              </div>
+              <div class="col-md-6">[@customForm.input name="contactName" i18nkey="projectCofunded.contactName" className="contactName" required=true/]</div>
+              <div class="col-md-6" style="display:${canSeePIEmail?string('block','none')}">[@customForm.input name="contactEmail" i18nkey="projectCofunded.contactEmail" className="contactEmail validate-${canSeePIEmail?string}" required=true/]</div>
             </div>
           </div>
           [#--  
@@ -156,8 +158,8 @@
     <input type="hidden" id="created-message" value="[@s.text name="users.createUser.message" /]" />
     <input type="hidden" id="actionName" value="${(actionName)!}" />
   </div>  
+<span class="hidden cgiarConsortium">${action.getCGIARInsitution()}</span>
 </div>
-
 [#--  Funding Source Popup JS --]
 [#assign customJS =  [ "${baseUrl}/js/global/fundingSourcesPopup.js" ]  + customJS/]
   

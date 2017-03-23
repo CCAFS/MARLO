@@ -125,7 +125,7 @@ $(document).ready(
         $dialogContent.find('.warning-info').empty().hide();
         var invalidFields = [];
         var project = {};
-        //project.cofundedMode = $dialogContent.find("input[name='cofundedMode']").val().trim();
+        // project.cofundedMode = $dialogContent.find("input[name='cofundedMode']").val().trim();
         project.description = $dialogContent.find("#description").val().trim();
         project.title = $dialogContent.find("#title").val().trim();
         project.startDate = $dialogContent.find("#startDate").val().trim();
@@ -156,7 +156,9 @@ $(document).ready(
         projectValidate.endDate = project.endDate;
         projectValidate.status = project.status;
         projectValidate.contactName = project.contactName;
-        projectValidate.contactEmail = project.contactEmail;
+        if($dialogContent.find("#contactEmail").classParam('validate') === "true") {
+          projectValidate.contactEmail = project.contactEmail;
+        }
         projectValidate.institution = project.institution;
 
         // Validate if fields are filled
@@ -174,9 +176,11 @@ $(document).ready(
         // }
 
         // Validate Email
-        var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
-        if(!emailReg.test(project.contactEmail)) {
-          invalidFields.push('valid contact email');
+        if($dialogContent.find("#contactEmail").classParam('validate') === "true") {
+          var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+          if(!emailReg.test(project.contactEmail)) {
+            invalidFields.push('valid contact email');
+          }
         }
 
         if(invalidFields.length > 0) {
@@ -311,7 +315,7 @@ $(document).ready(
             getData(query);
           }, 400);
         } else {
-          // getData('');
+          getData('');
         }
 
       }
@@ -392,6 +396,7 @@ $(document).ready(
             institutionSelect.val(lastDonor);
           }
         }
+
       });
 
     });// End document ready event
@@ -413,6 +418,11 @@ function date(start,end) {
       }
   }).on("change", function() {
     getYears();
+  }).on("click", function() {
+    if(!$(this).val()) {
+      $(this).datepicker('setDate', new Date());
+      getYears();
+    }
   });
 
   var to = $(end).datepicker({
@@ -430,6 +440,11 @@ function date(start,end) {
       }
   }).on("change", function() {
     getYears();
+  }).on("click", function() {
+    if(!$(this).val()) {
+      $(this).datepicker('setDate', new Date());
+      getYears();
+    }
   });
 
   function getYears() {
@@ -524,18 +539,28 @@ function ajaxService(url,data) {
   var $select = $("#institution");
   $.ajax({
       url: url,
-      type: 'GET',
       data: data,
+      beforeSend: function() {
+        $('#fundingSourceForm').find('.loading').fadeIn();
+      },
       success: function(m) {
         $select.empty();
         $select.addOption("-1", "Select an option...");
         $.each(m.institutions, function(i,e) {
           $select.addOption(e.id, e.name);
         });
+        console.log(data.budgetTypeID);
+        if(data.budgetTypeID == "1" && $select.find("option:selected").val() == "-1") {
+          $select.val($(".cgiarConsortium").text());
+        }
         $select.trigger("change.select2");
+        $('#fundingSourceForm').find('.loading').fadeOut();
       },
       error: function(e) {
         console.log(e);
+      },
+      complete: function() {
+        $('#fundingSourceForm').find('.loading').fadeOut();
       }
   });
 }

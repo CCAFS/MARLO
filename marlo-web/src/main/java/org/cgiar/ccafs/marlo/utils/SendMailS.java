@@ -68,7 +68,10 @@ public class SendMailS {
 
     // Get a Properties object
     Properties properties = System.getProperties();
+    if (ccEmail != null) {
+      ccEmail = ccEmail.replaceAll(", " + toEmail, "");
 
+    }
     properties.put("mail.smtp.auth", "true");
     properties.put("mail.smtp.starttls.enable", "true");
     properties.put("mail.smtp.ssl.trust", config.getEmailHost());

@@ -2,6 +2,7 @@ $(document).ready(init);
 
 function init() {
 
+  changeDonorByFundingType($(".type").find("option:selected").val(), $(".donor"))
   // Popup
   popups();
 
@@ -200,6 +201,7 @@ function date(start,end) {
   var dateFormat = "yy-mm-dd";
   var from = $(start).datepicker({
       dateFormat: dateFormat,
+      minDate: MIN_DATE,
       changeMonth: true,
       numberOfMonths: 1,
       changeYear: true,
@@ -215,12 +217,14 @@ function date(start,end) {
     getYears();
   }).on("click", function() {
     if(!$(this).val()) {
-      $(this).datepicker('setDate', $(this).datepicker("option", "minDate"));
+      $(this).datepicker('setDate', new Date());
+      getYears();
     }
   });
 
   var to = $(end).datepicker({
       dateFormat: dateFormat,
+      maxDate: MAX_DATE,
       changeMonth: true,
       numberOfMonths: 1,
       changeYear: true,
@@ -236,7 +240,8 @@ function date(start,end) {
     getYears();
   }).on("click", function() {
     if(!$(this).val()) {
-      $(this).datepicker('setDate', $(this).datepicker("option", "maxDate"));
+      $(this).datepicker('setDate', new Date());
+      getYears();
     }
   });
 
@@ -330,10 +335,24 @@ function ajaxService(url,data) {
         $.each(m.institutions, function(i,e) {
           $select.addOption(e.id, e.name);
         });
+        changeDonorByFundingType(data.budgetTypeID, $select)
         $select.trigger("change.select2");
       },
       error: function(e) {
         console.log(e);
+      },
+      complete: function() {
+        console.log(data);
       }
   });
+}
+
+function changeDonorByFundingType(budgetType,$select) {
+  var donorId = $select.find("option:selected").val();
+  console.log(donorId);
+  console.log(budgetType);
+  console.log($select);
+  if(donorId == "-1" && budgetType == "1") {
+    $select.val($(".cgiarConsortium").text()).trigger("change");
+  }
 }

@@ -19,8 +19,10 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableFundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
@@ -29,6 +31,7 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.ByteArrayInputStream;
@@ -82,6 +85,7 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
   private CrpManager crpManager;
   private CrpProgramManager programManager;
   private ProjectManager projectManager;
+  private DeliverableFundingSourceManager deliverableFundingSourceManager;
 
   // XLSX bytes
   private byte[] bytesXLSX;
@@ -91,11 +95,12 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
 
   @Inject
   public FundingSourcesSummaryAction(APConfig config, CrpManager crpManager, CrpProgramManager programManager,
-    ProjectManager projectManager) {
+    ProjectManager projectManager, DeliverableFundingSourceManager deliverableFundingSourceManager) {
     super(config);
     this.crpManager = crpManager;
     this.programManager = programManager;
     this.projectManager = projectManager;
+    this.deliverableFundingSourceManager = deliverableFundingSourceManager;
   }
 
   @Override
@@ -287,9 +292,9 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
   private TypedTableModel getFundingSourcesProjectsTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"fs_title", "fs_id", "finance_code", "lead_partner", "fs_window", "project_id", "total_budget",
-        "flagships", "coas"},
+        "flagships", "coas", "deliverables"},
       new Class[] {String.class, Long.class, String.class, String.class, String.class, String.class, Double.class,
-        String.class, String.class},
+        String.class, String.class, String.class},
       0);
 
     for (FundingSource fundingSource : loggedCrp.getFundingSources().stream()
@@ -304,12 +309,16 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
 
 
       for (ProjectBudget projectBudget : fundingSource.getProjectBudgets().stream()
-        .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getProject() != null).collect(Collectors.toList())) {
+        .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getProject() != null && pb.getProject().isActive()
+          && pb.getProject().getStatus() != null
+          && pb.getProject().getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
+        .collect(Collectors.toList())) {
         String lead_partner = "";
         String project_id = "";
         Double total_budget = 0.0;
         String flagships = null;
         String coas = null;
+        String deliverables = "";
 
         project_id = projectBudget.getProject().getId().toString();
         if (project_id != null && !project_id.isEmpty()) {
@@ -325,8 +334,28 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
               flagships +=
                 "\n " + programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
             }
-          }
+            // get deliverable funding sources
+            Long projectID = Long.parseLong(project_id);
 
+            for (DeliverableFundingSource deliverableFundingSource : this.deliverableFundingSourceManager.findAll()
+              .stream()
+              .filter(df -> df.getFundingSource().getId().longValue() == fundingSource.getId().longValue()
+                && df.isActive() && df.getDeliverable() != null && df.getDeliverable().isActive()
+                && df.getDeliverable().getProject() != null
+                && df.getDeliverable().getProject().getId().longValue() == projectID.longValue())
+              .sorted((df1, df2) -> Long.compare(df1.getDeliverable().getId(), df2.getDeliverable().getId()))
+              .collect(Collectors.toList())) {
+              if (deliverables.length() == 0) {
+                deliverables = "D" + deliverableFundingSource.getDeliverable().getId();
+              } else {
+                deliverables += ", D" + deliverableFundingSource.getDeliverable().getId();
+              }
+            }
+
+          }
+          if (deliverables.isEmpty()) {
+            deliverables = null;
+          }
           // get CoAs related to the project sorted by acronym
           if (projectBudget.getProject().getProjectClusterActivities() != null) {
             for (ProjectClusterActivity projectClusterActivity : projectBudget.getProject()
@@ -348,7 +377,7 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
         total_budget = projectBudget.getAmount();
 
         model.addRow(new Object[] {fs_title, fs_id, finance_code, lead_partner, fs_window, project_id, total_budget,
-          flagships, coas});
+          flagships, coas, deliverables});
       }
 
     }
@@ -359,10 +388,10 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
     TypedTableModel model = new TypedTableModel(
       new String[] {"fs_title", "fs_id", "finance_code", "lead_partner", "fs_window", "project_id", "total_budget",
         "summary", "start_date", "end_date", "contract", "status", "pi_name", "pi_email", "donor",
-        "total_budget_projects", "contract_name", "flagships", "coas"},
+        "total_budget_projects", "contract_name", "flagships", "coas", "deliverables"},
       new Class[] {String.class, Long.class, String.class, String.class, String.class, String.class, Double.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        Double.class, String.class, String.class, String.class},
+        Double.class, String.class, String.class, String.class, String.class},
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
 
@@ -497,9 +526,26 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
         total_budget_projects += projectBudget.getAmount();
       }
 
+      // get deliverable funding sources
+      String deliverables = "";
+      for (DeliverableFundingSource deliverableFundingSource : this.deliverableFundingSourceManager.findAll().stream()
+        .filter(df -> df.getFundingSource().getId().longValue() == fundingSource.getId().longValue() && df.isActive()
+          && df.getDeliverable() != null && df.getDeliverable().isActive() && df.getDeliverable().getProject() != null
+          && df.getDeliverable().getProject().isActive())
+        .sorted((df1, df2) -> Long.compare(df1.getDeliverable().getId(), df2.getDeliverable().getId()))
+        .collect(Collectors.toList())) {
+        if (deliverables.length() == 0) {
+          deliverables = "D" + deliverableFundingSource.getDeliverable().getId();
+        } else {
+          deliverables += ", D" + deliverableFundingSource.getDeliverable().getId();
+        }
+      }
+      if (deliverables.isEmpty()) {
+        deliverables = null;
+      }
       model.addRow(new Object[] {fs_title, fs_id, finance_code, lead_partner, fs_window, project_id, total_budget,
         summary, start_date, end_date, contract, status, pi_name, pi_email, donor, total_budget_projects, contract_name,
-        flagships, coas});
+        flagships, coas, deliverables});
     }
     return model;
   }

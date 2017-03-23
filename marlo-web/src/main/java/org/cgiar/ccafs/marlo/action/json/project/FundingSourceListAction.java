@@ -35,6 +35,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
@@ -98,6 +99,12 @@ public class FundingSourceListAction extends BaseAction {
       fundingSources.addAll(hs);
 
     }
+
+    if (fundingSources != null) {
+      fundingSources = fundingSources.stream().filter(c -> c.getTitle() != null).collect(Collectors.toList());
+      fundingSources.sort((p1, p2) -> p1.getTitle().compareTo(p2.getTitle()));
+    }
+
 
     for (FundingSource fundingSource : fundingSources) {
       if (fundingSource.isActive()) {

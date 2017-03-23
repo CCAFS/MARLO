@@ -545,6 +545,7 @@ public class ProjectPartnerAction extends BaseAction {
    */
   private void notifyRoleUnassigned(User userUnassigned, Role role) {
     userUnassigned = userManager.getUser(userUnassigned.getId());
+    String managementLiaisonText = this.getText("global.managementLiaison");
     Project project = projectManager.getProjectById(this.projectID);
     String projectRole = null;
     if (role.getId() == plRole.getId().longValue()) {
@@ -556,13 +557,15 @@ public class ProjectPartnerAction extends BaseAction {
     // Building the Email message:
     message.append(this.getText("email.dear", new String[] {userUnassigned.getFirstName()}));
     if (role.getId() == plRole.getId().longValue()) {
-      message.append(
-        this.getText("email.project.leader.unAssigned", new String[] {projectRole, loggedCrp.getAcronym().toUpperCase(),
-          project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER) + " - " + project.getTitle()}));
+      message.append(this.getText("email.project.leader.unAssigned",
+        new String[] {projectRole, loggedCrp.getAcronym().toUpperCase(),
+          project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER) + " - " + project.getTitle(),
+          managementLiaisonText}));
     } else {
       message.append(this.getText("email.project.coordinator.unAssigned",
         new String[] {projectRole, loggedCrp.getAcronym().toUpperCase(),
-          project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER) + " - " + project.getTitle()}));
+          project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER) + " - " + project.getTitle(),
+          managementLiaisonText}));
     }
 
     message.append(this.getText("email.support"));
@@ -683,7 +686,7 @@ public class ProjectPartnerAction extends BaseAction {
               .addAll(historyComparator.getDifferencesList(projectPartnerContribution, transaction, specialList,
                 "project.partners[" + i + "].partnerContributors[" + k + "]", "project.partnerContributors", 2));
             k++;
-          };
+          } ;
 
           List<ProjectPartnerOverall> overalls =
             projectPartner.getProjectPartnerOveralls().stream().filter(c -> c.isActive()).collect(Collectors.toList());

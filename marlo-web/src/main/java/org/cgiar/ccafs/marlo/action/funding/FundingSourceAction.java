@@ -160,13 +160,13 @@ public class FundingSourceAction extends BaseAction {
     return SUCCESS;
   }
 
-
   public boolean canEditFundingSourceBudget() {
     return this.hasPermissionNoBase(this.generatePermission(Permission.PROJECT_FUNDING_SOURCE_BUDGET_PERMISSION,
       loggedCrp.getAcronym(), fundingSource.getId().toString()));
 
 
   }
+
 
   public boolean canEditInstitution() {
     User user = userManager.getUser(this.getCurrentUser().getId());
@@ -416,8 +416,7 @@ public class FundingSourceAction extends BaseAction {
         }
       } else {
         institutionsDonors = institutionManager.findAll().stream()
-          .filter(i -> i.isActive() && i.getHeadquarter() == null && i.getInstitutionType().getId().intValue() != 3)
-          .collect(Collectors.toList());
+          .filter(i -> i.isActive() && i.getHeadquarter() == null).collect(Collectors.toList());
       }
 
       institutions.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));

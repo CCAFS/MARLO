@@ -103,11 +103,13 @@
         </div>
       </div>
       [#-- Contact person name and email --]
+      [#assign canSeePIEmail = action.hasSpecificities('crp_email_funding_source')]
       <div class="form-group row">
           <div class="col-md-6">[@customForm.input name="fundingSource.contactPersonName" i18nkey="projectCofunded.contactName" className="contactName" required=true editable=editable /]</div>
-          <div class="col-md-6">[@customForm.input name="fundingSource.contactPersonEmail" i18nkey="projectCofunded.contactEmail" className="contactEmail" required=true editable=editable /]</div>
+          <div class="col-md-6" style="display:${canSeePIEmail?string('block','none')}">[@customForm.input name="fundingSource.contactPersonEmail" i18nkey="projectCofunded.contactEmail" className="contactEmail" required=true editable=editable /]</div>
       </div>
       [#-- Donor --]
+      
       <div class="form-group">
         <div class="row">
           <div class="col-md-12">
@@ -141,8 +143,15 @@
       <div class="tab-content col-md-12 contributionContent">
         [#list startYear .. endYear as year]
           <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="fundingYear-${year}">
-          [#assign budget = action.getBudget(year) /]
-          [#assign budgetIndex = action.getIndexBugets(year) /]
+          
+          
+          [#attempt]
+            [#assign budget = (action.getBudget(year))!{} /]
+            [#assign budgetIndex = (action.getIndexBugets(year))!'-1' /]
+          [#recover]
+            [#assign budget = {} /]
+            [#assign budgetIndex = '-1' /]
+          [/#attempt]
           
           <small class="grayLabel pull-right"> (Remaining budget US$ <span class="projectAmount">${((fundingSource.getRemaining(year))!0)?number?string(",##0.00")}</span>) </small>
           
@@ -151,13 +160,12 @@
             <div class="col-md-4">
               <input type="hidden" name="fundingSource.budgets[${budgetIndex}].year" value="${year}"/>
               <input type="hidden" name="fundingSource.budgets[${budgetIndex}].id" value="${(budget.id)!}"/>
-              [#if editable  && action.canEditFundingSourceBudget() ]
+              [#if editable   ]
                 [@customForm.input name="fundingSource.budgets[${budgetIndex}].budget" i18nkey="projectCofunded.budgetYear" paramText="${year}" className="currencyInput" required=true editable=editable /]
               [#else]
               <div class="input">
               	<p>US$ <span>${((budget.budget)!0)?number?string(",##0.00")}</p>
               	 <input type="hidden" name="fundingSource.budgets[${budgetIndex}].budget" value="${(budget.budget)!0}"/>
-             
               </div>
                 
               [/#if]
@@ -226,5 +234,6 @@
   </li>
 </ul>
 
+<span class="hidden cgiarConsortium">${action.getCGIARInsitution()}</span>
 
 [#include "/WEB-INF/global/pages/footer.ftl"]

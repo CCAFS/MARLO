@@ -278,7 +278,7 @@
     </p> 
     
     [#if !isTemplate]
-    <a href="[@s.url namespace="/fundingSources" action="${crpSession}/fundingSource"][@s.param name="fundingSourceID" value="${(element.fundingSource.id)!}" /][/@s.url]" class="" target="_BLANK"> 
+    <a href="[@s.url namespace="/fundingSources" action="${crpSession}/fundingSource"][@s.param name="fundingSourceID" value="${(element.fundingSource.id)!}" /][@s.param name="edit" value="true" /][/@s.url]" class="" target="_BLANK"> 
     [/#if]
       <p> <span class="title">${(element.fundingSource.title)!}</span> </p>
     [#if !isTemplate]

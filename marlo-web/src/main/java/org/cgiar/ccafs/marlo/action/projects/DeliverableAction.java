@@ -867,8 +867,11 @@ public class DeliverableAction extends BaseAction {
       }
 
       deliverableTypeParent = new ArrayList<>(deliverableTypeManager.findAll().stream()
-        .filter(dt -> dt.getDeliverableType() == null).collect(Collectors.toList()));
+        .filter(dt -> dt.getDeliverableType() == null && dt.getCrp() == null).collect(Collectors.toList()));
 
+      deliverableTypeParent.addAll(new ArrayList<>(
+        deliverableTypeManager.findAll().stream().filter(dt -> dt.getDeliverableType() == null && dt.getCrp() != null
+          && dt.getCrp().getId().longValue() == loggedCrp.getId().longValue()).collect(Collectors.toList())));
 
       if (deliverable.getDeliverableType() != null) {
         Long deliverableTypeParentId = deliverable.getDeliverableType().getDeliverableType().getId();
@@ -919,12 +922,17 @@ public class DeliverableAction extends BaseAction {
       this.fundingSources.clear();
       this.fundingSources.addAll(hs);
       this.fundingSources.sort((o1, o2) -> {
-        int cmp = o1.getBudgetType().getId().compareTo(o2.getBudgetType().getId());
-        if (cmp == 0) {
-          cmp = o1.getTitle().compareTo(o2.getTitle());
-        }
+        if (o1.getBudgetType() != null && o2.getBudgetType() != null && o1.getTitle() != null
+          && o2.getTitle() != null) {
 
-        return cmp;
+          int cmp = o1.getBudgetType().getId().compareTo(o2.getBudgetType().getId());
+          if (cmp == 0) {
+            cmp = o1.getTitle().compareTo(o2.getTitle());
+          }
+
+          return cmp;
+        }
+        return 0;
       });
 
     }
@@ -1176,7 +1184,7 @@ public class DeliverableAction extends BaseAction {
             deliverablePrew.getDeliverablePartnerships().stream()
               .filter(dp -> dp.isActive()
                 && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
-              .collect(Collectors.toList()).get(0);
+            .collect(Collectors.toList()).get(0);
         } catch (Exception e) {
           partnershipResponsible = null;
         }

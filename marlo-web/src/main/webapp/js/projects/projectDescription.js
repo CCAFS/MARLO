@@ -147,6 +147,9 @@ $(document).ready(function() {
   var coaSelectedIds = ($('#coaSelectedIds').text()).split(',');
   $coreSelect.clearOptions(coaSelectedIds);
 
+  // Validate more than one cluster and if has specific rule
+  validateClusters();
+
   /**
    * Scope of project
    */
@@ -294,7 +297,22 @@ $(document).ready(function() {
     });
   }
 
+  function validateClusters() {
+    var clusterNumber = $coreProjects.find('li.clusterActivity').length;
+    if($coreSelect.classParam('multipleCoA') === "false") {
+      if(clusterNumber == 0) {
+        $coreSelect.prop("disabled", false);
+      } else {
+        $coreSelect.prop("disabled", true);
+      }
+    }
+
+  }
+
   function setProjectsIndexes() {
+    // Validate more than one cluster and if has specific rule
+    validateClusters();
+
     $coreProjects.find('li.clusterActivity').each(function(i,item) {
       $(item).setNameIndexes(1, i);
     });
@@ -317,8 +335,8 @@ function date(start,end) {
   var dateFormat = "yy-mm-dd";
   var from = $(start).datepicker({
       dateFormat: dateFormat,
-      minDate: '2010-01-01',
-      maxDate: '2030-12-31',
+      minDate: MIN_DATE,
+      maxDate: MAX_DATE,
       changeMonth: true,
       numberOfMonths: 1,
       changeYear: true,
@@ -329,12 +347,16 @@ function date(start,end) {
           $(end).datepicker("option", "minDate", selectedDate);
         }
       }
+  }).on("click", function() {
+    if(!$(this).val()) {
+      $(this).datepicker('setDate', new Date());
+    }
   });
 
   var to = $(end).datepicker({
       dateFormat: dateFormat,
-      minDate: '2010-01-01',
-      maxDate: '2030-12-31',
+      minDate: MIN_DATE,
+      maxDate: MAX_DATE,
       changeMonth: true,
       numberOfMonths: 1,
       changeYear: true,
@@ -345,6 +367,10 @@ function date(start,end) {
           $(start).datepicker("option", "maxDate", selectedDate);
         }
       }
+  }).on("click", function() {
+    if(!$(this).val()) {
+      $(this).datepicker('setDate', new Date());
+    }
   });
 
   function getDate(element) {

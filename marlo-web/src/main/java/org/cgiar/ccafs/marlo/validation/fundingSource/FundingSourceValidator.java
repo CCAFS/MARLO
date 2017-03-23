@@ -17,6 +17,7 @@
 package org.cgiar.ccafs.marlo.validation.fundingSource;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
@@ -100,10 +101,14 @@ public class FundingSourceValidator extends BaseValidator {
       action.getInvalidFields().put("input-fundingSource.contactPersonName", InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    if (!this.isValidString(fundingSource.getContactPersonEmail())) {
-      this.addMessage(action.getText("fundingSource.contactPersonEmail"));
-      action.getInvalidFields().put("input-fundingSource.contactPersonEmail", InvalidFieldsMessages.EMPTYFIELD);
+
+    if (action.hasSpecificities(APConstants.CRP_EMAIL_FUNDING_SOURCE)) {
+      if (!this.isValidString(fundingSource.getContactPersonEmail())) {
+        this.addMessage(action.getText("fundingSource.contactPersonEmail"));
+        action.getInvalidFields().put("input-fundingSource.contactPersonEmail", InvalidFieldsMessages.EMPTYFIELD);
+      }
     }
+
 
     double totalYear = 0;
     FundingSource fundingSourceDB = fundingSourceManager.getFundingSourceById(fundingSource.getId());

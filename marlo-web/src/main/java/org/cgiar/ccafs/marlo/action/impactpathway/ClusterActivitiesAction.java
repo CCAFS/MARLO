@@ -273,9 +273,9 @@ public class ClusterActivitiesAction extends BaseAction {
 
       // BBC
       String bbcEmails = this.config.getEmailNotification();
-      // sendMail.send(toEmail, null, bbcEmails,
-      // this.getText("email.newUser.subject", new String[] {user.getComposedName()}), message.toString(), null, null,
-      // null, true);
+      sendMail.send(toEmail, null, bbcEmails,
+        this.getText("email.newUser.subject", new String[] {user.getComposedName()}), message.toString(), null, null,
+        null, true);
     }
   }
 
