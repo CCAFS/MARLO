@@ -27,6 +27,9 @@
     <listener-class>org.cgiar.ccafs.marlo.config.FlywayContextListener</listener-class>
   </listener>
     
+     <listener>
+    <listener-class>org.cgiar.ccafs.marlo.config.RulesListener</listener-class>
+  </listener>
     
     <!--  Hibernate listener  -->
    <listener>
