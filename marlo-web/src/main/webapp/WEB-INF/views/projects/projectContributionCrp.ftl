@@ -378,17 +378,7 @@
         [@customForm.textArea name="${customName}.strategies" i18nkey="projectOutcomeNextUser.strategies" help="projectOutcomeNextUser.strategies.help" required=true className="limitWords-50" editable=editable && !reportingActive /]
       </div>
       [#-- Status (Active, Inactive) --]
-      <div class="form-group">
-        <div class="row">
-          <div class="col-md-6">
-            <label for="${customName}.status">Status:</label>
-            <select name="${customName}.status" id="${customName}.status">
-              <option value="1">Active</option>
-              <option value="0">Inactive</option>
-            </select>
-          </div>
-        </div>
-      </div>
+     
     </div>
     
     [#-- Reporting --]

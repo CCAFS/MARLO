@@ -93,7 +93,9 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
   // Store total projects
   Integer totalProjects = 0;
   // Store parters budgets HashMap<Institution, List<w1w2,w3bilateralcenter>>
-  HashMap<Institution, List<Double>> totalPartners = new HashMap<Institution, List<Double>>();
+  HashMap<Institution, List<Double>> allPartnersBudgets = new HashMap<Institution, List<Double>>();
+  // Store projects budgets HashMap<Project, List<totalw1w2, totalw3bilateralcenter, totalw1w2Gender, totalw3Gender>>
+  HashMap<Project, List<Double>> allProjectsBudgets = new HashMap<Project, List<Double>>();
 
 
   private CrpManager crpManager;
@@ -149,11 +151,14 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     // method to get all the sub-reports in the prpt and store in the HashMap
     this.getAllSubreports(hm, masteritemBand);
     // Uncomment to see which Sub-reports are detecting the method getAllSubreports
-    System.out.println("Pentaho SubReports: " + hm);
+    // System.out.println("Pentaho SubReports: " + hm);
 
     this.fillSubreport((SubReport) hm.get("budgetperpartner_details"), "budgetperpartner_details");
-    // Sort partnersList by key
-    totalPartners = this.sortByComparator(totalPartners);
+    // Sort projectList by ProjectId
+    allProjectsBudgets = this.sortProjectByComparator(allProjectsBudgets);
+    this.fillSubreport((SubReport) hm.get("summaryByProject"), "summaryByProject");
+    // Sort partnersList by institution acronym or name
+    allPartnersBudgets = this.sortByComparator(allPartnersBudgets);
     this.fillSubreport((SubReport) hm.get("summaryByPPA"), "summaryByPPA");
     this.fillSubreport((SubReport) hm.get("partners_budgets"), "partners_budgets");
 
@@ -161,7 +166,6 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     bytesXLSX = os.toByteArray();
     os.close();
     return SUCCESS;
-
   }
 
   private void fillSubreport(SubReport subReport, String query) {
@@ -171,6 +175,9 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     switch (query) {
       case "budgetperpartner_details":
         model = this.getBudgetPerPartnersTableModel();
+        break;
+      case "summaryByProject":
+        model = this.getBudgetPerProjectsTableModel();
         break;
       case "summaryByPPA":
         model = this.getPPASummaryTableModel();
@@ -216,6 +223,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     }
   }
 
+
   /**
    * Get all subreports in the band.
    * If it encounters a band, search subreports in the band
@@ -243,7 +251,6 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
       }
     }
   }
-
 
   private TypedTableModel getBudgetPerPartnersTableModel() {
     TypedTableModel model = new TypedTableModel(
@@ -374,24 +381,69 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
           genderBilateral = this.getTotalGender(pp.getInstitution().getId(), year, 3, projectId);
           genderCenter = this.getTotalGender(pp.getInstitution().getId(), year, 4, projectId);
 
-          List<Double> list = new ArrayList<Double>();
+          // Fill institutions and their budgets
+          List<Double> budgetList = new ArrayList<Double>();
           // Add institution w1w2 budget
-          Double totalBudgetW1W2 = totalPartners.containsKey(institution) ? totalPartners.get(institution).get(0) : 0.0;
+          Double totalBudgetW1W2 =
+            allPartnersBudgets.containsKey(institution) ? allPartnersBudgets.get(institution).get(0) : 0.0;
           totalBudgetW1W2 += budgetW1W2;
           // Add institution w3bilateralcenter budget
           Double totalBudgetBilateralW3Center =
-            totalPartners.containsKey(institution) ? totalPartners.get(institution).get(1) : 0.0;
+            allPartnersBudgets.containsKey(institution) ? allPartnersBudgets.get(institution).get(1) : 0.0;
           totalBudgetBilateralW3Center += budgetW3 + budgetBilateral + budgetCenter;
-          list.add(totalBudgetW1W2);
-          list.add(totalBudgetBilateralW3Center);
+          budgetList.add(totalBudgetW1W2);
+          budgetList.add(totalBudgetBilateralW3Center);
+          allPartnersBudgets.put(institution, budgetList);
+          // End institutions fill
 
-          totalPartners.put(institution, list);
+          // Fill projects with their budgets
+          List<Double> projectBudgetList = new ArrayList<Double>();
+          // Add project w1w2 budget
+          Double totalProjectBudgetW1W2 =
+            allProjectsBudgets.containsKey(project) ? allProjectsBudgets.get(project).get(0) : 0.0;
+          totalProjectBudgetW1W2 += budgetW1W2;
+          projectBudgetList.add(totalProjectBudgetW1W2);
+          // Add project w3bilateralcenter budget
+          Double totalProjectBudgetBilateralW3Center =
+            allProjectsBudgets.containsKey(project) ? allProjectsBudgets.get(project).get(1) : 0.0;
+          totalProjectBudgetBilateralW3Center += budgetW3 + budgetBilateral + budgetCenter;
+          projectBudgetList.add(totalProjectBudgetBilateralW3Center);
+          // Add projects w1w2 gender
+          Double totalProjectGenderW1W2 =
+            allProjectsBudgets.containsKey(project) ? allProjectsBudgets.get(project).get(2) : 0.0;
+          totalProjectGenderW1W2 += genderW1W2;
+          projectBudgetList.add(totalProjectGenderW1W2);
+          // Add projects w3bilateralcenter gender
+          Double totalProjectGenderW3BilateralCenter =
+            allProjectsBudgets.containsKey(project) ? allProjectsBudgets.get(project).get(3) : 0.0;
+          totalProjectGenderW3BilateralCenter += genderW3 + genderBilateral + genderCenter;
+          projectBudgetList.add(totalProjectGenderW3BilateralCenter);
+
+          allProjectsBudgets.put(project, projectBudgetList);
+          // End projects fill
 
           model.addRow(new Object[] {projectId, projectTitle, ppaPartner, flagships, coas, regions, budgetW1W2,
             genderPeW1W2, genderW1W2, budgetW3, genderPeW3, genderW3, budgetBilateral, genderPeBilateral,
             genderBilateral, budgetCenter, genderPeCenter, genderCenter});
         }
       }
+    }
+    return model;
+  }
+
+
+  private TypedTableModel getBudgetPerProjectsTableModel() {
+    TypedTableModel model = new TypedTableModel(
+      new String[] {"projectID", "totalw1w2", "totalw3bilateralcenter", "totalw1w2Gender", "totalw3Gender"},
+      new Class[] {Long.class, Double.class, Double.class, Double.class, Double.class}, 0);
+    for (Project project : allProjectsBudgets.keySet()) {
+      String projectID = "P" + project.getId();
+      Double totalw1w2 = allProjectsBudgets.get(project).get(0);
+      Double totalw3bilateralcenter = allProjectsBudgets.get(project).get(1);
+      Double totalw1w2Gender = allProjectsBudgets.get(project).get(2);
+      Double totalw3Gender = allProjectsBudgets.get(project).get(3);
+
+      model.addRow(new Object[] {projectID, totalw1w2, totalw3bilateralcenter, totalw1w2Gender, totalw3Gender});
     }
     return model;
   }
@@ -521,9 +573,9 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
   private TypedTableModel getPartnersBudgetsSummaryTableModel() {
     TypedTableModel model =
       new TypedTableModel(new String[] {"partner", "budget"}, new Class[] {String.class, Double.class}, 0);
-    for (Institution institution : totalPartners.keySet()) {
-      Double w1w2budget = totalPartners.get(institution).get(0);
-      Double w3bilateralcenterbudget = totalPartners.get(institution).get(1);
+    for (Institution institution : allPartnersBudgets.keySet()) {
+      Double w1w2budget = allPartnersBudgets.get(institution).get(0);
+      Double w3bilateralcenterbudget = allPartnersBudgets.get(institution).get(1);
       String partner = institution.getAcronym();
 
       if (partner == null || partner.isEmpty()) {
@@ -538,9 +590,9 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     TypedTableModel model =
       new TypedTableModel(new String[] {"partner", "totalw1w2", "totalw3bilateralcenter", "totalAll", "ratio"},
         new Class[] {String.class, Double.class, Double.class, Double.class, Double.class}, 0);
-    for (Institution institution : totalPartners.keySet()) {
-      Double w1w2budget = totalPartners.get(institution).get(0);
-      Double w3bilateralcenterbudget = totalPartners.get(institution).get(1);
+    for (Institution institution : allPartnersBudgets.keySet()) {
+      Double w1w2budget = allPartnersBudgets.get(institution).get(0);
+      Double w3bilateralcenterbudget = allPartnersBudgets.get(institution).get(1);
       String partner = institution.getAcronym();
 
       if (partner == null || partner.isEmpty()) {
@@ -716,6 +768,37 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     HashMap<Institution, List<Double>> sortedMap = new LinkedHashMap<Institution, List<Double>>();
     for (Iterator<HashMap.Entry<Institution, List<Double>>> it = list.iterator(); it.hasNext();) {
       HashMap.Entry<Institution, List<Double>> entry = it.next();
+      sortedMap.put(entry.getKey(), entry.getValue());
+    }
+    return sortedMap;
+  }
+
+  /**
+   * method that sort a map list alphabetical
+   * 
+   * @param unsortMap - map to sort
+   * @return
+   */
+  private HashMap<Project, List<Double>> sortProjectByComparator(HashMap<Project, List<Double>> unsortMap) {
+
+    // Convert Map to List
+    List<HashMap.Entry<Project, List<Double>>> list =
+      new LinkedList<HashMap.Entry<Project, List<Double>>>(unsortMap.entrySet());
+
+    // Sort list with comparator, to compare the Map values
+    Collections.sort(list, new Comparator<HashMap.Entry<Project, List<Double>>>() {
+
+      @Override
+      public int compare(HashMap.Entry<Project, List<Double>> o1, HashMap.Entry<Project, List<Double>> o2) {
+
+        return (o1.getKey().getId().compareTo(o2.getKey().getId()));
+      }
+    });
+
+    // Convert sorted map back to a Map
+    HashMap<Project, List<Double>> sortedMap = new LinkedHashMap<Project, List<Double>>();
+    for (Iterator<HashMap.Entry<Project, List<Double>>> it = list.iterator(); it.hasNext();) {
+      HashMap.Entry<Project, List<Double>> entry = it.next();
       sortedMap.put(entry.getKey(), entry.getValue());
     }
     return sortedMap;
