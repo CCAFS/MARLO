@@ -201,8 +201,8 @@ public class CrpSiteIntegrationAction extends BaseAction {
       // Building the Email message:
       StringBuilder message = new StringBuilder();
       message.append(this.getText("email.dear", new String[] {user.getFirstName()}));
-      //message.append(this.getText("email.newUser.part1"));
-      message.append(this.getText("email.newUser.part1"),  new String[] {config.getBaseUrl(), user.getEmail(), password, this.getText("global.clusterOfActivities")});
+      // message.append(this.getText("email.newUser.part1"));
+
 
       String password = this.getText("email.outlookPassword");
       if (!user.isCgiarUser()) {
@@ -211,8 +211,12 @@ public class CrpSiteIntegrationAction extends BaseAction {
         // Applying the password to the user.
         user.setPassword(password);
       }
-//      message
-//        .append(this.getText("email.newUser.part3", new String[] {config.getBaseUrl(), user.getEmail(), password}));
+
+      message.append(this.getText("email.newUser.part1",
+        new String[] {config.getBaseUrl(), user.getEmail(), password, this.getText("global.clusterOfActivities")}));
+
+      // message
+      // .append(this.getText("email.newUser.part3", new String[] {config.getBaseUrl(), user.getEmail(), password}));
       message.append(this.getText("email.support"));
       message.append(this.getText("email.bye"));
 
