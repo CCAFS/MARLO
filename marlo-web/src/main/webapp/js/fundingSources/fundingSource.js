@@ -245,46 +245,63 @@ function date(start,end) {
     }
   });
 
-  function getYears() {
-    var endYear = (new Date(to.val())).getFullYear();
-    var years = [];
-    var startYear = (new Date(from.val())).getFullYear() || 2015;
+  // Activate tab default
+  if(!$('.budgetByYears .nav-tabs li.active').exists()) {
+    $('.budgetByYears .nav-tabs li').last().addClass('active');
+    $('.budgetByYears .tab-content .tab-pane').last().addClass('active');
+  }
 
+  function getYears() {
+    var startYear = (from.val().split('-')[0]) || 0;
+    var endYear = (to.val().split('-')[0]) || 0
+    var years = [];
+
+    // Clear tabs & content
     $('.budgetByYears .nav-tabs').empty();
-    $('.budgetByYears .tab-content').empty();
+    $('.budgetByYears .tab-content .tab-pane').removeClass('active');
 
     var index = 0;
     while(startYear <= endYear) {
-      var state = '';
-      if(currentCycleYear == startYear) {
-        state = 'active';
-      }
 
-      var tab = '<li class="' + state + '">';
+      // Build Tab
+      var tab = '<li>';
       tab += '<a href="#fundingYear-' + startYear + '" data-toggle="tab">' + startYear + '</a>';
       tab += '</li>';
+      // Append Tab
       $('.budgetByYears .nav-tabs').append(tab);
 
-      var content = '<div class="tab-pane col-md-4 ' + state + '" id="fundingYear-' + startYear + '">';
-      content += '<label for="">Budget for ' + startYear + ':</label>';
-      content += '<input type="hidden" name="fundingSource.budgets[' + index + '].year" value="' + startYear + '">';
-      content +=
-          '<input type="text" name="fundingSource.budgets[' + index
-              + '].budget" class="currencyInput form-control input-sm col-md-4" />';
-      content += '</div>';
-      $('.budgetByYears .tab-content').append(content);
+      if(!$('#fundingYear-' + startYear).exists()) {
+        // Build Content
+        var content = '<div class="tab-pane col-md-4" id="fundingYear-' + startYear + '">';
+        content += '<label for="">Budget for ' + startYear + ':</label>';
+        content += '<input type="hidden" name="fundingSource.budgets[' + index + '].year" value="' + startYear + '">';
+        content +=
+            '<input type="text" name="fundingSource.budgets[' + index
+                + '].budget" class="currencyInput form-control input-sm col-md-4" />';
+        content += '</div>';
+
+        $content = $(content);
+        // Append Content
+        $('.budgetByYears .tab-content').append($content);
+
+        // Set currency format
+        console.log($content.find('input.currencyInput'));
+        $content.find('input.currencyInput').currencyInput();
+      }
 
       index++;
       years.push(startYear++);
     }
 
+    console.log(years);
+
     if(years.indexOf(parseInt(currentCycleYear)) == -1) {
       $('.budgetByYears .nav-tabs li').last().addClass('active');
       $('.budgetByYears .tab-content .tab-pane').last().addClass('active');
+    } else {
+      $('a[href="#fundingYear-' + currentCycleYear + '"]').parent().addClass('active');
+      $('#fundingYear-' + currentCycleYear).addClass('active');
     }
-
-    // Set currency format
-    $('.currencyInput').currencyInput();
 
   }
 
@@ -349,9 +366,6 @@ function ajaxService(url,data) {
 
 function changeDonorByFundingType(budgetType,$select) {
   var donorId = $select.find("option:selected").val();
-  console.log(donorId);
-  console.log(budgetType);
-  console.log($select);
   if(donorId == "-1" && budgetType == "1") {
     $select.val($(".cgiarConsortium").text()).trigger("change");
   }
