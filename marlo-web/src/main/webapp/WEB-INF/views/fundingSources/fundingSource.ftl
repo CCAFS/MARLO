@@ -191,7 +191,7 @@
           [#assign counter = 0 /]
           [#list fundingSource.projectBudgetsList as projectBudget]
             [#if projectBudget.year == year]
-             <tr>
+             <tr class="projectBudgetItem">
               <td>
                 <a href="[@s.url action="${crpSession}/budgetByPartners" namespace="/projects"] [@s.param name="projectID" value="${(projectBudget.project.id)!}"/] [/@s.url]">
                   P${(projectBudget.project.id)!}              

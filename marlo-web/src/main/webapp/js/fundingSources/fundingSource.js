@@ -206,7 +206,10 @@ function date(start,end) {
       numberOfMonths: 1,
       changeYear: true,
       onChangeMonthYear: function(year,month,inst) {
-        var selectedDate = new Date(inst.selectedYear, inst.selectedMonth, 1)
+        var selectedDate = new Date(inst.selectedYear, inst.selectedMonth, 1);
+        if (budgetsConflicts(from.val().split('-')[0], inst.selectedYear - 1)){
+          return
+        }
         $(this).datepicker('setDate', selectedDate);
         if(selectedDate != "") {
           $(end).datepicker("option", "minDate", selectedDate);
@@ -229,7 +232,10 @@ function date(start,end) {
       numberOfMonths: 1,
       changeYear: true,
       onChangeMonthYear: function(year,month,inst) {
-        var selectedDate = new Date(inst.selectedYear, inst.selectedMonth + 1, 0)
+        var selectedDate = new Date(inst.selectedYear, inst.selectedMonth + 1, 0);
+        if (budgetsConflicts(inst.selectedYear + 1, to.val().split('-')[0])){
+          return
+        }
         $(this).datepicker('setDate', selectedDate);
         if(selectedDate != "") {
           $(start).datepicker("option", "maxDate", selectedDate);
@@ -251,9 +257,32 @@ function date(start,end) {
     $('.budgetByYears .tab-content .tab-pane').last().addClass('active');
   }
 
+  function budgetsConflicts(lowEnd,highEnd) {
+    var yearConflicts = [];
+    // Getting conflicts
+    for(var i = parseInt(lowEnd); i <= parseInt(highEnd); i++) {
+      var projectsBudgets = $('#fundingYear-' + i).find('tr.projectBudgetItem').length;
+      if(projectsBudgets > 0) {
+        var message = "Year " + i + " has " + projectsBudgets + " project budgets assigned currently, date cannot be changed.";
+        yearConflicts.push(message);
+        var notyOptions = jQuery.extend({}, notyDefaultOptions);
+        notyOptions.text = message;
+        // notyOptions.type = 'alert';
+        noty(notyOptions);
+      }
+    }
+    
+
+    
+    if(yearConflicts.length > 0) {
+      return true;
+    }
+    return false;
+  }
+
   function getYears() {
-    var startYear = (from.val().split('-')[0]) || 0;
-    var endYear = (to.val().split('-')[0]) || 0
+    var startYear = (from.val().split('-')[0]) || currentCycleYear;
+    var endYear = (to.val().split('-')[0]) || startYear;
     var years = [];
 
     // Clear tabs & content
@@ -280,12 +309,11 @@ function date(start,end) {
                 + '].budget" class="currencyInput form-control input-sm col-md-4" />';
         content += '</div>';
 
-        $content = $(content);
+        var $content = $(content);
         // Append Content
         $('.budgetByYears .tab-content').append($content);
 
         // Set currency format
-        console.log($content.find('input.currencyInput'));
         $content.find('input.currencyInput').currencyInput();
       }
 
@@ -293,8 +321,7 @@ function date(start,end) {
       years.push(startYear++);
     }
 
-    console.log(years);
-
+    // Set active tab & content
     if(years.indexOf(parseInt(currentCycleYear)) == -1) {
       $('.budgetByYears .nav-tabs li').last().addClass('active');
       $('.budgetByYears .tab-content .tab-pane').last().addClass('active');
