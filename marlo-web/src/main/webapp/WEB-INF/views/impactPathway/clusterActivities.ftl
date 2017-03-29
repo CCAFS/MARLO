@@ -23,7 +23,7 @@
 <div class="container helpText viewMore-block">
   <div style="display:none;" class="helpMessage infoText">
     <img class="col-md-2" src="${baseUrl}/images/global/icon-help.jpg" />
-    <p class="col-md-10"> [@s.text name="cluster.help" /] </p>
+    <p class="col-md-10">[@s.text name="cluster.help"][@s.param][@s.text name="global.sClusterOfActivities" /][/@s.param] [/@s.text] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
 </div>
@@ -53,7 +53,7 @@
         
         [@s.form action=actionName enctype="multipart/form-data" ]  
 
-        <h4 class="sectionTitle"> [@s.text name="clusterOfActivities.title"] [@s.param]${(selectedProgram.acronym)!}[/@s.param] [/@s.text]</h4>
+        <h4 class="sectionTitle"> [@s.text name="clusterOfActivities.title"] [@s.param]${(selectedProgram.acronym)!}[/@s.param][@s.param][@s.text name="global.clusterOfActivities" /][/@s.param] [/@s.text]</h4>
           [#-- Cluster of Activities List --]
           <div class="clusterList " listname="clusterofActivities">
             [#if clusterofActivities?has_content]
@@ -114,7 +114,7 @@
       <div class="form-group">
       <div class="leftHead">
         <span class="index">${index+1}</span>
-        <span class="elementId">${(selectedProgram.acronym)!} - [@s.text name="cluster.index.title"/]</span>
+        <span class="elementId">${(selectedProgram.acronym)!} - [@s.text name="global.sClusterOfActivities"/]</span>
       </div>
       [#-- Remove Button --]
       [#if editable]
@@ -122,14 +122,14 @@
       [/#if]
       [#-- Cluster Activity identifier --]
       <div class=" form-group cluster-identifier ">
-        [@customForm.input name="${clusterCustomName}.identifier" i18nkey="cluster.identifier" required=true placeholder="e.g. CoA 1.1"   className="clusterIdentifier" editable=editable /]
+        [@customForm.input name="${clusterCustomName}.identifier" i18nkey="cluster.identifier" required=true placeholder="e.g. Cluster 1.1"   className="clusterIdentifier" editable=editable /]
       </div>
       [#-- Cluster Activity Name --]
       <div class=" form-group cluster-title">
         [@customForm.textArea name="${clusterCustomName}.description" i18nkey="cluster.title" required=true className="outcome-statement limitWords-20" editable=editable /]
       </div>
       [#-- Cluster Activity Leaders --]
-      <span class="subtitle cold-md-12"><label>[@s.text name="cluster.leaders.title" /]<span class="red">*</span></label></span>
+      <span class="subtitle cold-md-12"><label>[@s.text name="cluster.leaders.title"][@s.param][@s.text name="global.sClusterOfActivities" /][/@s.param] [/@s.text]<span class="red">*</span></label></span>
       <div class="items-list form-group col-md-12 simpleBox" listname="${clusterCustomName}.leaders">
         <ul class="leaders">
         [#if cluster.leaders?has_content]

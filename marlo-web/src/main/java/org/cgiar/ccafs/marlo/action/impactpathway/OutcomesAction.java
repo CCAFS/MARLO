@@ -407,8 +407,12 @@ public class OutcomesAction extends BaseAction {
         this.setBasePermission(this.getText(Permission.IMPACT_PATHWAY_BASE_PERMISSION, params));
         if (!selectedProgram.getSubmissions().stream().filter(c -> (c.isUnSubmit() == null || !c.isUnSubmit()))
           .collect(Collectors.toList()).isEmpty()) {
-          this.setCanEdit(false);
-          this.setEditable(false);
+          if (!(this.canAccessSuperAdmin() || this.canAcessCrpAdmin())) {
+            this.setCanEdit(false);
+            this.setEditable(false);
+          }
+
+
           this.setSubmission(selectedProgram.getSubmissions().stream().collect(Collectors.toList()).get(0));
         }
 

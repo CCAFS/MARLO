@@ -229,7 +229,7 @@ public class CrpAdminManagmentAction extends BaseAction {
         user.setPassword(password);
       }
       message
-        .append(this.getText("email.newUser.part1", new String[] {config.getBaseUrl(), user.getEmail(), password}));
+        .append(this.getText("email.newUser.part1", new String[] {config.getBaseUrl(), user.getEmail(), password, this.getText("global.clusterOfActivities")});
       message.append(this.getText("email.support"));
       message.append(this.getText("email.bye"));
 
