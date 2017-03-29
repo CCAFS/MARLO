@@ -217,7 +217,11 @@
       [#-- Add person Button --]
       [#if editable]
       <div class="text-center">
-        <div class="searchUser button-green"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addFlagshipManager" /]</div>
+        <div class="searchUser button-green"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> 
+        [@s.text name="form.buttons.addFlagshipManager" ]
+          [@s.param ]mkyong[/@s.param]
+        [/@s.text]
+        </div>
       </div>
       [/#if]
       [#-- Hidden Parameters --]

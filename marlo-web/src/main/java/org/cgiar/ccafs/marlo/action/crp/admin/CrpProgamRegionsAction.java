@@ -342,7 +342,7 @@ public class CrpProgamRegionsAction extends BaseAction {
       // Building the Email message:
       StringBuilder message = new StringBuilder();
       message.append(this.getText("email.dear", new String[] {user.getFirstName()}));
-      message.append(this.getText("email.newUser.part1"));
+      message.append(this.getText("email.newUser.part1", new String[] {config.getBaseUrl(), user.getEmail(), password, this.getText("global.clusterOfActivities")});
       message.append(this.getText("email.newUser.part2"));
 
       String password = this.getText("email.outlookPassword");

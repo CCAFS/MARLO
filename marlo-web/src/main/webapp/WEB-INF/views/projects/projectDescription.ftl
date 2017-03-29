@@ -172,7 +172,7 @@
             [#if !project.administrative && !phaseOne]
             <div class="panel tertiary">
               <div class="panel-head ${customForm.changedField('project.clusterActivities')}"> 
-                <label for="">[@customForm.text name="projectDescription.clusterActivities" readText=!editable /]:[@customForm.req required=editable  && action.hasPermission("activities") /]</label>
+                <label for="">[@s.text name="projectDescription.clusterActivities"][@s.param][@s.text name="global.clusterOfActivities" /][/@s.param] [/@s.text]:[@customForm.req required=editable  && action.hasPermission("activities") /]</label>
               </div>
               <div id="projectsList" class="panel-body" listname="project.clusterActivities"> 
                 <ul class="list">
