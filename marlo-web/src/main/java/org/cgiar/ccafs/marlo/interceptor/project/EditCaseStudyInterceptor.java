@@ -131,10 +131,6 @@ public class EditCaseStudyInterceptor extends AbstractInterceptor implements Ser
 
         }
 
-        // Temporal validation to grant access to the a4nh flagship leaders.
-        if (baseAction.getCurrentUser().getId() == 1148 || baseAction.getCurrentUser().getId() == 1149) {
-          canEdit = true;
-        }
       }
 
       // TODO Validate is the project is new

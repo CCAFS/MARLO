@@ -397,9 +397,12 @@ public class FundingSourceAction extends BaseAction {
         }
       }
       institutions = new ArrayList<>();
-      for (CrpPpaPartner crpPpaPartner : crpPpaPartnerManager.findAll().stream()
+
+      List<CrpPpaPartner> ppaPartners = crpPpaPartnerManager.findAll().stream()
         .filter(c -> c.getCrp().getId().longValue() == loggedCrp.getId().longValue() && c.isActive())
-        .collect(Collectors.toList())) {
+        .collect(Collectors.toList());
+
+      for (CrpPpaPartner crpPpaPartner : ppaPartners) {
         institutions.add(crpPpaPartner.getInstitution());
       }
 
@@ -517,7 +520,6 @@ public class FundingSourceAction extends BaseAction {
       if (fundingSource.getBudgets() != null) {
         for (FundingSourceBudget fundingSourceBudget : fundingSource.getBudgets()) {
           if (fundingSourceBudget.getId() == null) {
-
             fundingSourceBudget.setActive(true);
             fundingSourceBudget.setCreatedBy(this.getCurrentUser());
             fundingSourceBudget.setModifiedBy(this.getCurrentUser());

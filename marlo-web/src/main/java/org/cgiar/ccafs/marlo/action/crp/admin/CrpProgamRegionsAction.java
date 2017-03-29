@@ -339,12 +339,8 @@ public class CrpProgamRegionsAction extends BaseAction {
     if (!user.isActive()) {
 
       user.setActive(true);
-      // Building the Email message:
-      StringBuilder message = new StringBuilder();
-      message.append(this.getText("email.dear", new String[] {user.getFirstName()}));
-      message.append(this.getText("email.newUser.part1"));
-      message.append(this.getText("email.newUser.part2"));
 
+      // Setting the password
       String password = this.getText("email.outlookPassword");
       if (!user.isCgiarUser()) {
         // Generating a random password.
@@ -352,6 +348,14 @@ public class CrpProgamRegionsAction extends BaseAction {
         // Applying the password to the user.
         user.setPassword(password);
       }
+
+      // Building the Email message:
+      StringBuilder message = new StringBuilder();
+      message.append(this.getText("email.dear", new String[] {user.getFirstName()}));
+      message.append(this.getText("email.newUser.part1",
+        new String[] {config.getBaseUrl(), user.getEmail(), password, this.getText("global.clusterOfActivities")}));
+      message.append(this.getText("email.newUser.part2"));
+
       message
         .append(this.getText("email.newUser.part3", new String[] {config.getBaseUrl(), user.getEmail(), password}));
       message.append(this.getText("email.support"));
