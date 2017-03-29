@@ -69,7 +69,7 @@ public class FundingSourceBudgetMySQLDAO implements FundingSourceBudgetDAO {
   @Override
   public FundingSourceBudget getByFundingSourceAndYear(long fundingSourceID, int year) {
     String query = "from " + FundingSourceBudget.class.getName() + " where funding_source_id= " + fundingSourceID
-      + "and year= " + year + " and is_active=1";
+      + " and year= " + year + " and is_active=1";
     List<FundingSourceBudget> list = dao.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
@@ -84,8 +84,6 @@ public class FundingSourceBudgetMySQLDAO implements FundingSourceBudgetDAO {
     } else {
       dao.update(fundingSourceBudget);
     }
-
-
     return fundingSourceBudget.getId();
   }
 
