@@ -303,18 +303,22 @@ function date(start,end) {
         // Build Content
         var content = '<div class="tab-pane col-md-4" id="fundingYear-' + startYear + '">';
         content += '<label for="">Budget for ' + startYear + ':</label>';
-        content += '<input type="hidden" name="fundingSource.budgets[' + index + '].year" value="' + startYear + '">';
+        content += '<input type="hidden" name="fundingSource.budgets[-1].year" value="' + startYear + '">';
         content +=
-            '<input type="text" name="fundingSource.budgets[' + index
-                + '].budget" class="currencyInput form-control input-sm col-md-4" />';
+            '<input type="text" name="fundingSource.budgets[-1].budget" class="currencyInput form-control input-sm col-md-4" />';
         content += '</div>';
 
         var $content = $(content);
+        // Set indexes
+        $content.setNameIndexes(1, index);
         // Append Content
         $('.budgetByYears .tab-content').append($content);
 
         // Set currency format
         $content.find('input.currencyInput').currencyInput();
+      }else{
+        // Set indexes
+        $('#fundingYear-' + startYear).setNameIndexes(1, index);
       }
 
       index++;
