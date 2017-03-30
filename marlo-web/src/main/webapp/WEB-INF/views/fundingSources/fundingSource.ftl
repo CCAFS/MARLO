@@ -44,6 +44,7 @@
       </div>
       [#-- start date, end date and finance code --]
       <div class="form-group">
+        <div class="row col-md-12 dateErrorBox"></div>
         <div class="row">
            <div class="col-md-4">[@customForm.input name="fundingSource.startDate" i18nkey="projectCofunded.startDate" required=true  editable=editable && action.canEditFundingSourceBudget() /] </div>
            <div class="col-md-4">[@customForm.input name="fundingSource.endDate" i18nkey="projectCofunded.endDate" required=true  editable=editable && action.canEditFundingSourceBudget() /] </div>
@@ -191,7 +192,7 @@
           [#assign counter = 0 /]
           [#list fundingSource.projectBudgetsList as projectBudget]
             [#if projectBudget.year == year]
-             <tr>
+             <tr class="projectBudgetItem">
               <td>
                 <a href="[@s.url action="${crpSession}/budgetByPartners" namespace="/projects"] [@s.param name="projectID" value="${(projectBudget.project.id)!}"/] [/@s.url]">
                   P${(projectBudget.project.id)!}              

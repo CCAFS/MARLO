@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.manager.FundingSourceInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.AgreementStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.BudgetType;
@@ -38,7 +39,9 @@ import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -114,13 +117,18 @@ public class FundingSourceAction extends BaseAction {
 
   private FundingSourceValidator validator;
 
+
+  // TODO delete when fix the budget permissions
+  private RoleManager userRoleManager;
+
   @Inject
   public FundingSourceAction(APConfig config, CrpManager crpManager, FundingSourceManager fundingSourceManager,
     InstitutionManager institutionManager, LiaisonInstitutionManager liaisonInstitutionManager,
     AuditLogManager auditLogManager, FundingSourceBudgetManager fundingSourceBudgetManager,
     BudgetTypeManager budgetTypeManager, FundingSourceValidator validator, CrpPpaPartnerManager crpPpaPartnerManager,
     FileDBManager fileDBManager, UserManager userManager,
-    FundingSourceInstitutionManager fundingSourceInstitutionManager) {
+    FundingSourceInstitutionManager fundingSourceInstitutionManager,
+    /* TODO delete when fix the budget permissions */ RoleManager userRoleManager) {
     super(config);
     this.crpManager = crpManager;
     this.fundingSourceManager = fundingSourceManager;
@@ -134,6 +142,8 @@ public class FundingSourceAction extends BaseAction {
     this.fileDBManager = fileDBManager;
     this.crpPpaPartnerManager = crpPpaPartnerManager;
     this.fundingSourceBudgetManager = fundingSourceBudgetManager;
+    // TODO delete when fix the budget permissions
+    this.userRoleManager = userRoleManager;
   }
 
 
@@ -161,6 +171,23 @@ public class FundingSourceAction extends BaseAction {
   }
 
   public boolean canEditFundingSourceBudget() {
+
+    // TODO fix user_permissions view to allow funding_sources:budget permissions
+    if (loggedCrp.getAcronym().equals("a4nh")) {
+      User user = this.getCurrentUser();
+
+      List<UserRole> userRoles = new ArrayList<>(user.getUserRoles());
+      for (UserRole userRole : userRoles) {
+        Role role = userRoleManager.getRoleById(userRole.getRole().getId());
+        if (role.getId() == 20) {
+          return true;
+        }
+      }
+
+
+    }
+    System.out.println("");
+
     return this.hasPermissionNoBase(this.generatePermission(Permission.PROJECT_FUNDING_SOURCE_BUDGET_PERMISSION,
       loggedCrp.getAcronym(), fundingSource.getId().toString()));
 

@@ -22,15 +22,12 @@ import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
-import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
-import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 
@@ -110,32 +107,32 @@ public class FundingSourceValidator extends BaseValidator {
     }
 
 
-    double totalYear = 0;
-    FundingSource fundingSourceDB = fundingSourceManager.getFundingSourceById(fundingSource.getId());
-
-    for (ProjectBudget projectBudget : fundingSourceDB.getProjectBudgets().stream()
-      .filter(c -> c.isActive() && c.getYear() == action.getCurrentCycleYear()).collect(Collectors.toList())) {
-      totalYear = totalYear + projectBudget.getAmount().doubleValue();
-    }
-
-    if (fundingSource.getBudgets() != null) {
-      int i = 0;
-      for (FundingSourceBudget budget : fundingSource.getBudgets()) {
-        if (budget != null) {
-          if (budget.getYear() != null) {
-            if (budget.getYear().intValue() == action.getCurrentCycleYear()) {
-              double total = budget.getBudget().doubleValue() - totalYear;
-              if (total < 0) {
-                action.addFieldError("fundingSource.budgets[" + i + "].budget", "Invalid Budget Value");
-              }
-            }
-          }
-
-        }
-
-        i++;
-      }
-    }
+    // double totalYear = 0;
+    // FundingSource fundingSourceDB = fundingSourceManager.getFundingSourceById(fundingSource.getId());
+    //
+    // for (ProjectBudget projectBudget : fundingSourceDB.getProjectBudgets().stream()
+    // .filter(c -> c.isActive() && c.getYear() == action.getCurrentCycleYear()).collect(Collectors.toList())) {
+    // totalYear = totalYear + projectBudget.getAmount().doubleValue();
+    // }
+    //
+    // if (fundingSource.getBudgets() != null) {
+    // int i = 0;
+    // for (FundingSourceBudget budget : fundingSource.getBudgets()) {
+    // if (budget != null) {
+    // if (budget.getYear() != null) {
+    // if (budget.getYear().intValue() == action.getCurrentCycleYear()) {
+    // double total = budget.getBudget().doubleValue() - totalYear;
+    // if (total < 0) {
+    // action.addFieldError("fundingSource.budgets[" + i + "].budget", "Invalid Budget Value");
+    // }
+    // }
+    // }
+    //
+    // }
+    //
+    // i++;
+    // }
+    // }
     if (!action.getFieldErrors().isEmpty()) {
       hasErros = true;
       action.addActionError(action.getText("saving.fields.required"));

@@ -5,7 +5,8 @@ var notyDefaultOptions = {
     layout: 'bottomRight',
     type: 'error',
     theme: 'relax',
-    timeout: 5000,
+    timeout: 6000,
+    progressBar: true,
     animation: {
         open: 'animated bounceInRight',
         close: 'animated bounceOutRight'
