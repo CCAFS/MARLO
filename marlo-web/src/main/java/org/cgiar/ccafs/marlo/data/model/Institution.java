@@ -166,6 +166,27 @@ public class Institution implements java.io.Serializable, IAuditLog {
     return this.city;
   }
 
+  public String getComposedLocation() {
+    try {
+      if (this.headquarter == null) {
+        // Verify if there exist a city to show
+        if (this.city != null && this.city != "") {
+          return this.city + ", " + this.locElement.getName();
+        }
+        return this.locElement.getName();
+      } else {
+        // Verify if there exist a city to show
+        if (this.city != null && this.city != "") {
+          return this.city + ", " + this.locElement.getName();
+        }
+        return this.locElement.getName();
+      }
+    } catch (Exception e) {
+      return this.name;
+    }
+
+  }
+
   public String getComposedName() {
     try {
       if (this.getLocElement() == null) {
