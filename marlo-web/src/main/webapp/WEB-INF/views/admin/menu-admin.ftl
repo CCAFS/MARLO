@@ -4,8 +4,8 @@
   { 'slug': 'regionalMapping',  'name': 'CRPAdmin.menu.hrefRegionalMapping',   'action': 'regionalMapping',  'active': action.hasProgramnsRegions() },
   { 'slug': 'siteIntegration',  'name': 'CRPAdmin.menu.hrefSiteIntegration',   'action': 'siteIntegration',  'active': true },
   { 'slug': 'ppaPartners',      'name': 'CRPAdmin.menu.hrefPPAPartners',       'action': 'ppaPartners',      'active': true },
-  
-  { 'slug': 'locations',        'name': 'CRPAdmin.menu.hrefLocations',          'action': 'locations',        'active': true }
+  { 'slug': 'locations',        'name': 'CRPAdmin.menu.hrefLocations',          'action': 'locations',        'active': true },
+  { 'slug': 'targetUnits',        'name': 'CRPAdmin.menu.hrefTargetUnits',          'action': 'targetUnits',        'active': false }
 ]/]
 
 <nav id="secondaryMenu">
