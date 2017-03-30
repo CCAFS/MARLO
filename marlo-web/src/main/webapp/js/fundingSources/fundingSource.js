@@ -88,6 +88,13 @@ function init() {
 
   // Principal investigator auto-complete
   addContactAutoComplete();
+  
+  
+  // Disabled Auto save AJAX if click Save
+  $('[name=save]').on('click', function(e) {
+    // Cancel Auto Save
+    autoSaveActive = false;
+  });
 }
 
 function addContactAutoComplete() {
