@@ -548,15 +548,16 @@
   [#local metadataIndex = (deliverable.getMetadataIndex(encodedName))!-1 /]
   [#local ID = (deliverable.getID(metadataID))!'' /]
   [#local metadataValue = (deliverable.getMetadataValue(metadataID))!'' /]
-  [#local customName = 'deliverable' /]
-  <input type="hidden" name="${customName}.metadataElements[${metadataIndex}].id" value="${ID}" />
-  <input type="hidden" name="${customName}.metadataElements[${metadataIndex}].metadataElement.id" value="${metadataID}" />
+  [#local customName = 'deliverable.metadataElements[${metadataIndex}]' /]
+  <input type="hidden" name="${customName}.id" value="${ID}" />
+  <input type="hidden" name="${customName}.hide" value="false" />
+  <input type="hidden" name="${customName}.metadataElement.id" value="${metadataID}" />
   [#if type == "input"]
-    [@customForm.input name="${customName}.metadataElements[${metadataIndex}].elementValue" required=require value="${metadataValue}" className="${title}Metadata"  type="text" i18nkey="metadata.${title}" help="metadata.${title}.help" editable=editable/]
+    [@customForm.input name="${customName}.elementValue" required=require value="${metadataValue}" className="${title}Metadata"  type="text" i18nkey="metadata.${title}" help="metadata.${title}.help" editable=editable/]
   [#elseif type == "textArea"]
-    [@customForm.textArea name="${customName}.metadataElements[${metadataIndex}].elementValue" required=require value="${metadataValue}" className="${title}Metadata" i18nkey="metadata.${title}" help="metadata.${title}.help" editable=editable/]
+    [@customForm.textArea name="${customName}.elementValue" required=require value="${metadataValue}" className="${title}Metadata" i18nkey="metadata.${title}" help="metadata.${title}.help" editable=editable/]
   [#elseif type == "select"]
-    [@customForm.select name="${customName}.metadataElements[${metadataIndex}].elementValue" required=require value="${metadataValue}" className="${title}Metadata" i18nkey="metadata.${title}" listName=list  editable=editable /]
+    [@customForm.select name="${customName}.elementValue" required=require value="${metadataValue}" className="${title}Metadata" i18nkey="metadata.${title}" listName=list  editable=editable /]
   [/#if]
 [/#macro]
 
