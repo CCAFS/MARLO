@@ -209,6 +209,7 @@ function date(start,end) {
       onChangeMonthYear: function(year,month,inst) {
         var selectedDate = new Date(inst.selectedYear, inst.selectedMonth, 1);
         if (budgetsConflicts(from.val().split('-')[0], inst.selectedYear - 1)){
+          $(this).datepicker("hide");
           return
         }
         $(this).datepicker('setDate', selectedDate);
@@ -236,6 +237,7 @@ function date(start,end) {
       onChangeMonthYear: function(year,month,inst) {
         var selectedDate = new Date(inst.selectedYear, inst.selectedMonth + 1, 0);
         if (budgetsConflicts(inst.selectedYear + 1, to.val().split('-')[0])){
+          $(this).datepicker("hide");
           return
         }
         $(this).datepicker('setDate', selectedDate);
