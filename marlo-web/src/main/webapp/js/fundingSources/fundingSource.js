@@ -274,23 +274,23 @@ function date(start,end) {
     for(var i = parseInt(lowEnd); i <= parseInt(highEnd); i++) {
       var projectsBudgets = $('#fundingYear-' + i).find('tr.projectBudgetItem').length;
       if(projectsBudgets > 0) {
-        var message = "Year " + i + " has " + projectsBudgets + " project budgets assigned currently, date cannot be changed.";
-        yearConflicts.push(message);
-        var notyOptions = jQuery.extend({}, notyDefaultOptions);
-        notyOptions.text = message;
-        notyOptions.animation = {
-          open: 'animated bounceInLeft', // Animate.css class names
-          close: 'animated bounceOutLeft', // Animate.css class names
-          easing: 'swing', // unavailable - no need
-          speed: 500 // unavailable - no need
-        };
-        $('.dateErrorBox').noty(notyOptions);
+        yearConflicts.push(i);
       }
     }
     
-
-    
     if(yearConflicts.length > 0) {
+      // Noty Message
+      var message = "Date cannot be changed as this funding source has at least one budget allocation in <b>" + yearConflicts.join(', ') +"</b>";
+      var notyOptions = jQuery.extend({}, notyDefaultOptions);
+      notyOptions.text = message;
+      notyOptions.animation = {
+        open: 'animated bounceInLeft', // Animate.css class names
+        close: 'animated bounceOutLeft', // Animate.css class names
+        easing: 'swing', // unavailable - no need
+        speed: 500 // unavailable - no need
+      };
+      $('.dateErrorBox').noty(notyOptions);
+      
       return true;
     }
     return false;
