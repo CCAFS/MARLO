@@ -303,8 +303,8 @@ function date(start,end) {
 
     // Clear tabs & content
     $('.budgetByYears .nav-tabs').empty();
-    $('.budgetByYears .tab-content .tab-pane').removeClass('active');
-
+    $('.budgetByYears .tab-content .tab-pane').removeClass('active going');
+    
     var index = 0;
     while(startYear <= endYear) {
 
@@ -317,7 +317,7 @@ function date(start,end) {
 
       if(!$('#fundingYear-' + startYear).exists()) {
         // Build Content
-        var content = '<div class="tab-pane col-md-4" id="fundingYear-' + startYear + '">';
+        var content = '<div class="tab-pane col-md-4 going" id="fundingYear-' + startYear + '">';
         content += '<label for="">Budget for ' + startYear + ':</label>';
         content += '<input type="hidden" name="fundingSource.budgets[-1].year" value="' + startYear + '">';
         content +=
@@ -335,12 +335,19 @@ function date(start,end) {
       }else{
         // Set indexes
         $('#fundingYear-' + startYear).setNameIndexes(1, index);
+        $('#fundingYear-' + startYear).addClass('going')
       }
 
       index++;
       years.push(startYear++);
     }
-
+    
+    // Clear unused content names
+    $('.budgetByYears .tab-content .tab-pane').not('.going').each(function(i,content){
+      $(content).setNameIndexes(1, index+i);
+    });
+    
+    
     // Set active tab & content
     if(years.indexOf(parseInt(currentCycleYear)) == -1) {
       $('.budgetByYears .nav-tabs li').last().addClass('active');
