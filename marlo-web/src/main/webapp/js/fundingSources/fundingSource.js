@@ -202,6 +202,7 @@ function date(start,end) {
   var from = $(start).datepicker({
       dateFormat: dateFormat,
       minDate: MIN_DATE,
+      maxDate: $(end).val() || MAX_DATE,
       changeMonth: true,
       numberOfMonths: 1,
       changeYear: true,
@@ -227,6 +228,7 @@ function date(start,end) {
 
   var to = $(end).datepicker({
       dateFormat: dateFormat,
+      minDate: $(start).val() || MIN_DATE,
       maxDate: MAX_DATE,
       changeMonth: true,
       numberOfMonths: 1,
@@ -267,8 +269,13 @@ function date(start,end) {
         yearConflicts.push(message);
         var notyOptions = jQuery.extend({}, notyDefaultOptions);
         notyOptions.text = message;
-        // notyOptions.type = 'alert';
-        noty(notyOptions);
+        notyOptions.animation = {
+          open: 'animated bounceInLeft', // Animate.css class names
+          close: 'animated bounceOutLeft', // Animate.css class names
+          easing: 'swing', // unavailable - no need
+          speed: 500 // unavailable - no need
+        };
+        $('.dateErrorBox').noty(notyOptions);
       }
     }
     

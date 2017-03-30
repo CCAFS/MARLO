@@ -44,6 +44,7 @@
       </div>
       [#-- start date, end date and finance code --]
       <div class="form-group">
+        <div class="row dateErrorBox"></div>
         <div class="row">
            <div class="col-md-4">[@customForm.input name="fundingSource.startDate" i18nkey="projectCofunded.startDate" required=true  editable=editable && action.canEditFundingSourceBudget() /] </div>
            <div class="col-md-4">[@customForm.input name="fundingSource.endDate" i18nkey="projectCofunded.endDate" required=true  editable=editable && action.canEditFundingSourceBudget() /] </div>
