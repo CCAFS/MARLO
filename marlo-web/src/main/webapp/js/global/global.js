@@ -508,9 +508,10 @@ function formatRepo(repo) {
   } else {
     markup += "<strong>" + repo.name + "</strong>";
   }
+  markup += " (" + repo.location + ") ";
   // Partner type
   markup += "<br>";
-  markup += "<small> <i>" + repo.type + "</i> </small> ";
+  markup += "<small> <i>" + repo.type + " </i></small> ";
   markup += "</div>";
   return markup;
 }
