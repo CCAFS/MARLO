@@ -155,20 +155,22 @@
       [#-- Target Year --]
       <div class="col-md-4">[@customForm.input name="${outcomeCustomName}.year" value="${(outcome.year)!2022}" type="text" i18nkey="outcome.targetYear"  placeholder="outcome.inputTargetYear.placeholder" className="targetYear outcomeYear" required=true editable=editable /]</div>
       [#-- Target Unit --]
+      [#if targetUnitList?has_content]
       <div class="col-md-4">
         [@customForm.select name="${outcomeCustomName}.srfTargetUnit.id" i18nkey="outcome.selectTargetUnit"  placeholder="outcome.selectTargetUnit.placeholder" className="targetUnit" listName="targetUnitList" editable=editable  /]
         [#-- If you dont find the target unit in the list, please add a new one clicking here --]
         [#--  --if editable]<div class="addOtherTargetUnit text-center"><a href="#">([@s.text name = "outcomes.addNewTargetUnit" /])</a></div>[/#if --]
       </div>
+      [/#if]
       [#-- Target Value --]
-      [#local showTargetValue = (outcome.srfTargetUnit??) && (outcome.srfTargetUnit.id??) && (outcome.srfTargetUnit.id != -1) /]
+      [#local showTargetValue = (targetUnitList?has_content) && (outcome.srfTargetUnit??) && (outcome.srfTargetUnit.id??) && (outcome.srfTargetUnit.id != -1) /]
       <div class="col-md-4 targetValue-block" style="display:${showTargetValue?string('block', 'none')}">
         [@customForm.input name="${outcomeCustomName}.value" type="text" i18nkey="outcome.targetValue" placeholder="outcome.inputTargetValue.placeholder" className="targetValue" required=true editable=editable /]
       </div>
       
 
     </div>
-    [#if editable]<div class="col-md-12 note">[@s.text name = "outcomes.addNewTargetUnit" /]</div> <br /> <br />[/#if]
+    [#if editable && targetUnitList?has_content]<div class="col-md-12 note">[@s.text name = "outcomes.addNewTargetUnit" /]</div> <br /> <br />[/#if]
     
     
     [#-- Outcome Sub-IDOs List --]

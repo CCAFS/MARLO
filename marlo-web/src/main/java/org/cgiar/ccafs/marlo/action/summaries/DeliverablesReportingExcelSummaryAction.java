@@ -950,26 +950,9 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
             flagships += "\n " + programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
           }
         }
-
-        List<CrpParameter> hasRegionsList = new ArrayList<>();
-        Boolean hasRegions = false;
-        for (CrpParameter hasRegionsParam : deliverable.getProject().getCrp().getCrpParameters().stream()
-          .filter(cp -> cp.isActive() && cp.getKey().equals(APConstants.CRP_HAS_REGIONS))
-          .collect(Collectors.toList())) {
-          hasRegionsList.add(hasRegionsParam);
-        }
-
-        if (!hasRegionsList.isEmpty()) {
-          if (hasRegionsList.size() > 1) {
-            LOG.warn("There is for more than 1 key of type: " + APConstants.CRP_HAS_REGIONS);
-          }
-          hasRegions = Boolean.valueOf(hasRegionsList.get(0).getValue());
-        }
-
-
         // If has regions, add the regions to regionsArrayList
         // Get Regions related to the project sorted by acronym
-        if (hasRegions != false) {
+        if (this.hasProgramnsRegions()) {
           for (ProjectFocus projectFocuses : deliverable.getProject().getProjectFocuses().stream()
             .sorted((c1, c2) -> c1.getCrpProgram().getAcronym().compareTo(c2.getCrpProgram().getAcronym()))
             .filter(
@@ -980,6 +963,12 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
             } else {
               regions += ", " + programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
             }
+          }
+          if (deliverable.getProject().getNoRegional() != null && deliverable.getProject().getNoRegional()) {
+            if (regions != null && !regions.isEmpty()) {
+              LOG.warn("Project is global and has regions selected");
+            }
+            regions = "Global";
           }
         } else {
           regions = null;
@@ -1580,20 +1569,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
       new Class[] {String.class, String.class, String.class, Boolean.class});
     // Verify if the crp has regions avalaible
     List<CrpParameter> hasRegionsList = new ArrayList<>();
-    Boolean hasRegions = false;
-    for (CrpParameter hasRegionsParam : this.loggedCrp.getCrpParameters().stream()
-      .filter(cp -> cp.isActive() && cp.getKey().equals(APConstants.CRP_HAS_REGIONS)).collect(Collectors.toList())) {
-      hasRegionsList.add(hasRegionsParam);
-    }
 
-    if (!hasRegionsList.isEmpty()) {
-      if (hasRegionsList.size() > 1) {
-        LOG.warn("There is for more than 1 key of type: " + APConstants.CRP_HAS_REGIONS);
-      }
-      hasRegions = Boolean.valueOf(hasRegionsList.get(0).getValue());
-    }
-
-    model.addRow(new Object[] {center, date, year, hasRegions});
+    model.addRow(new Object[] {center, date, year, this.hasProgramnsRegions()});
     return model;
   }
 
