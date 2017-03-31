@@ -81,6 +81,7 @@ function removeBilateralFund() {
     updateActiveYearCurrency('2', $partner);
     updateActiveYearCurrency('3', $partner);
     updateActiveYearCurrency('4', $partner);
+    updateActiveYearCurrency('5', $partner);
   });
 }
 
