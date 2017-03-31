@@ -30,7 +30,6 @@ import org.cgiar.ccafs.marlo.data.model.CaseStudyIndicator;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
 import org.cgiar.ccafs.marlo.data.model.ChannelEnum;
 import org.cgiar.ccafs.marlo.data.model.Crp;
-import org.cgiar.ccafs.marlo.data.model.CrpParameter;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
@@ -320,26 +319,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           flagships.add(programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()));
         }
 
-        List<CrpParameter> hasRegionsList = new ArrayList<>();
-        Boolean hasRegions = false;
-        for (CrpParameter hasRegionsParam : project.getCrp().getCrpParameters().stream()
-          .filter(cp -> cp.isActive() && cp.getKey().equals(APConstants.CRP_HAS_REGIONS))
-          .collect(Collectors.toList())) {
-          hasRegionsList.add(hasRegionsParam);
-        }
-
-        if (!hasRegionsList.isEmpty()) {
-          if (hasRegionsList.size() > 1) {
-            LOG.warn("There is for more than 1 key of type: " + APConstants.CRP_HAS_REGIONS);
-          }
-          hasRegions = Boolean.valueOf(hasRegionsList.get(0).getValue());
-        }
-
-
         List<CrpProgram> regions = new ArrayList<>();
         // If has regions, add the regions to regionsArrayList
         // Get Regions related to the project sorted by acronym
-        if (hasRegions != false) {
+        if (this.hasProgramnsRegions() != false) {
           for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
             .sorted((c1, c2) -> c1.getCrpProgram().getAcronym().compareTo(c2.getCrpProgram().getAcronym()))
             .filter(
@@ -360,7 +343,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
         // Subreport Description
         args.add(projectLeader);
-        args.add(hasRegions);
+        args.add(this.hasProgramnsRegions());
         this.fillSubreport((SubReport) hm.get("description"), "description", args);
         // Description Flagships
         args.clear();
@@ -2267,14 +2250,17 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           }
         }
       }
-      if (regions != null) {
-        if (!regions.isEmpty()) {
+      if (project.getNoRegional() != null && project.getNoRegional()) {
+        title += "Global" + "-";
+      } else {
+        if (regions != null && !regions.isEmpty()) {
           for (CrpProgram crpProgram : regions) {
             title += crpProgram.getAcronym() + "-";
           }
         }
       }
     }
+
     title += "P" + Long.toString(projectID);
 
     // Get datetime
@@ -2990,11 +2976,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     if (project.getNoRegional() != null && project.getNoRegional()) {
       global = "Global";
       model.addRow(new Object[] {global});
-    }
-
-
-    for (CrpProgram crpProgram : regions) {
-      model.addRow(new Object[] {crpProgram.getComposedName()});
+    } else {
+      for (CrpProgram crpProgram : regions) {
+        model.addRow(new Object[] {crpProgram.getComposedName()});
+      }
     }
     return model;
   }

@@ -21,7 +21,6 @@ import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Crp;
-import org.cgiar.ccafs.marlo.data.model.CrpParameter;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
@@ -139,27 +138,13 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
         keys = Arrays.asList(parameters.split("~/"));
       }
     }
-    // Verify if the crp has regions avalaible
-    List<CrpParameter> hasRegionsList = new ArrayList<>();
-    Boolean regionalAvailable = false;
-    for (CrpParameter hasRegionsParam : this.loggedCrp.getCrpParameters().stream()
-      .filter(cp -> cp.isActive() && cp.getKey().equals(APConstants.CRP_HAS_REGIONS)).collect(Collectors.toList())) {
-      hasRegionsList.add(hasRegionsParam);
-    }
-
-    if (!hasRegionsList.isEmpty()) {
-      if (hasRegionsList.size() > 1) {
-        LOG.warn("There is for more than 1 key of type: " + APConstants.CRP_HAS_REGIONS);
-      }
-      regionalAvailable = Boolean.valueOf(hasRegionsList.get(0).getValue());
-    }
 
 
     // Set Main_Query
     CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
     String masterQueryName = "main";
     TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
-    TypedTableModel model = this.getMasterTableModel(center, current_date, regionalAvailable);
+    TypedTableModel model = this.getMasterTableModel(center, current_date);
     sdf.addTable(masterQueryName, model);
     masterReport.setDataFactory(cdf);
 
@@ -573,7 +558,7 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
     return loggedCrp;
   }
 
-  private TypedTableModel getMasterTableModel(String center, String date, Boolean regionalAvailable) {
+  private TypedTableModel getMasterTableModel(String center, String date) {
     // Initialization of Model
     TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "keys", "regionalAvailable"},
       new Class[] {String.class, String.class, String.class, Boolean.class});
@@ -590,7 +575,7 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
       }
     }
 
-    model.addRow(new Object[] {center, date, keysString, regionalAvailable});
+    model.addRow(new Object[] {center, date, keysString, this.hasProgramnsRegions()});
     return model;
   }
 
@@ -716,22 +701,28 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
           }
 
           // If has regions, add the regions to regionsArrayList
-          // Get Regions related to the project sorted by acronym
-          int countRegions = 0;
-          for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-            .sorted((c1, c2) -> c1.getCrpProgram().getAcronym().compareTo(c2.getCrpProgram().getAcronym()))
-            .filter(
-              c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
-            .collect(Collectors.toList())) {
-            if (countRegions == 0) {
-              regions += "<font size=2 face='Segoe UI' color='#000000'>"
-                + programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
-              countRegions++;
-            } else {
-              regions += ", " + programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
-              countRegions++;
+          if (project.getNoRegional() != null && project.getNoRegional()) {
+            regions = "<font size=2 face='Segoe UI' color='#000000'>Global";
+          } else {
+            // Get Regions related to the project sorted by acronym
+            int countRegions = 0;
+            for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
+              .sorted((c1, c2) -> c1.getCrpProgram().getAcronym().compareTo(c2.getCrpProgram().getAcronym()))
+              .filter(
+                c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+              .collect(Collectors.toList())) {
+              if (countRegions == 0) {
+                regions += "<font size=2 face='Segoe UI' color='#000000'>"
+                  + programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
+                countRegions++;
+              } else {
+                regions += ", " + programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
+                countRegions++;
+              }
             }
           }
+
+
           if (regions.isEmpty()) {
             regions = "<font size=2 face='Segoe UI' color='#000000'></font>";
           } else {

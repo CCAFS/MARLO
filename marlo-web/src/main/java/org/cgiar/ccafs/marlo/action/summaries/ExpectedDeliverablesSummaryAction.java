@@ -19,7 +19,6 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
-import org.cgiar.ccafs.marlo.data.model.CrpParameter;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.ByteArrayInputStream;
@@ -29,11 +28,8 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
@@ -100,28 +96,10 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
     }
     String current_date = timezone.format(format) + "(GMT" + zone + ")";
 
-
     masterReport.getParameterValues().put("crp_id", idParam);
     masterReport.getParameterValues().put("year", year);
     masterReport.getParameterValues().put("date", current_date);
-
-    // Verify if the crp has regions avalaible
-    List<CrpParameter> hasRegionsList = new ArrayList<>();
-    Boolean hasRegions = false;
-    for (CrpParameter hasRegionsParam : this.loggedCrp.getCrpParameters().stream()
-      .filter(cp -> cp.isActive() && cp.getKey().equals(APConstants.CRP_HAS_REGIONS)).collect(Collectors.toList())) {
-      hasRegionsList.add(hasRegionsParam);
-    }
-
-    if (!hasRegionsList.isEmpty()) {
-      if (hasRegionsList.size() > 1) {
-        LOG.warn("There is for more than 1 key of type: " + APConstants.CRP_HAS_REGIONS);
-      }
-      hasRegions = Boolean.valueOf(hasRegionsList.get(0).getValue());
-    }
-
-    masterReport.getParameterValues().put("regionalAvalaible", hasRegions);
-
+    masterReport.getParameterValues().put("regionalAvalaible", this.hasProgramnsRegions());
 
     ExcelReportUtil.createXLSX(masterReport, os);
     bytesXLSX = os.toByteArray();
