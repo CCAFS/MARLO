@@ -381,9 +381,9 @@ function initMap() {
     $(".locations").removeClass("selected");
   });
 
-  google.maps.event.addListener(map, 'rightclick', function(e) {
-    openInfoWindowForm(e);
-  });
+// google.maps.event.addListener(map, 'rightclick', function(e) {
+// openInfoWindowForm(e);
+// });
 
   if(markers.length > 0) {
     map.setCenter(markers[markers.length - 1].getPosition());
