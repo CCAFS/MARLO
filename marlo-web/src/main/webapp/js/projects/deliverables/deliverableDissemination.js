@@ -314,9 +314,11 @@ function setMetadata(data) {
       dateFormat: 'yyyy-mm-dd'
     }).datepicker('setDate', data.publicationDate);
   }
+
   if($(".languageMetadata").val() == "") {
     $(".languageMetadata").val(data.languaje);
   }
+
   if($(".titleMetadata").val() == "") {
     $(".titleMetadata").val(data.title);
   }
@@ -375,7 +377,7 @@ function addAuthor() {
     $item.find(".lastName").html($(".lName").val() + ", ");
     $item.find(".firstName").html($(".fName").val());
     if($(".oId").val() == "") {
-      $item.find(".orcidId").html("<b>orcid id:</b> not filled</small>");
+      $item.find(".orcidId").html("");
       $item.find(".orcidIdInput").val("");
     } else {
       $item.find(".orcidId").html($(".oId").val());
@@ -411,7 +413,7 @@ function removeAuthor() {
 
 function updateAuthor() {
   $(".authorsList").find('.author').each(function(i,e) {
-    // Set activity indexes
+    // Set indexes
     $(e).setNameIndexes(1, i);
   });
 }
@@ -425,7 +427,9 @@ function checkNextAuthorItems(block) {
   }
 }
 
-/* Load Metadata and fill fields */
+/**
+ * Load Metadata and fill fields
+ */
 function loadAndFillMetadata() {
   var channel = $(".disseminationChannel").val();
   var url = $.trim($(".deliverableDisseminationUrl").val());

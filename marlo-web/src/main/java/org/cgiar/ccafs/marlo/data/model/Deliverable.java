@@ -472,26 +472,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   }
 
 
-  public long getID(int metadataID) {
-
-    if (metadataElements != null) {
-      for (DeliverableMetadataElement dmetadata : metadataElements) {
-        if (dmetadata != null) {
-          if (dmetadata.getMetadataElement() != null && dmetadata.getMetadataElement().getId() != null) {
-            if (dmetadata.getMetadataElement().getId() == metadataID) {
-              return dmetadata.getId().longValue();
-            }
-          }
-        }
-
-
-      }
-
-    }
-
-    return -1;
-  }
-
   public Boolean getIsPublication() {
     return isPublication;
   }
@@ -520,6 +500,21 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
+  }
+
+  public long getMElementID(int metadataID) {
+    if (metadataElements != null) {
+      for (DeliverableMetadataElement dmetadata : metadataElements) {
+        if (dmetadata != null) {
+          if (dmetadata.getMetadataElement() != null && dmetadata.getMetadataElement().getId() != null) {
+            if (dmetadata.getMetadataElement().getId() == metadataID) {
+              return dmetadata.getId().longValue();
+            }
+          }
+        }
+      }
+    }
+    return -1;
   }
 
   public List<MetadataElement> getMetadata() {
