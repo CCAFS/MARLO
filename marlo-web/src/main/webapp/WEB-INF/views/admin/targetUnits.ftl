@@ -37,20 +37,19 @@
         <div class="borderBox ">
           [#-- Targets units list --]
           <div class="items-list">
+            [#if targetUnitList?has_content]
             <ul>
             [#list targetUnitList as targetUnit]
               [@targetUnitMacro element=targetUnit name="targetUnitList" index=targetUnit_index /]
             [/#list]
             </ul>
-            [#if !targetUnitList?has_content]<p class="text-center">There is not target units</p>[/#if]
+            [#else]
+            <p class="text-center">There is not target units</p>
+            [/#if]
             <div class="clearfix"></div>
           </div>
           <hr />
-          [#-- Add target unit --]
-          <div class="row ">
-            <div class="col-md-9">[@customForm.input name="" type="text" showTitle=false placeholder="Target Unit Name" className="name-input" required=true editable=true /]</div>
-            <div class="col-md-3 text-right"><div class="addTargetUnit button-blue"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addTarget" /]</div></div>
-          </div>
+          [#-- Request target unit --]
         </div>
         
         [#-- Section Buttons--]
