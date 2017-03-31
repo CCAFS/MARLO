@@ -364,6 +364,12 @@ function initMap() {
       mapTypeId: 'roadmap',
       styles: style
   });
+  var centerControlDiv = document.createElement('div');
+  var centerControl = new CenterControl(centerControlDiv, map);
+
+  centerControlDiv.index = 1;
+  map.controls[google.maps.ControlPosition.TOP_CENTER].push(centerControlDiv);
+
   infoWindow = new google.maps.InfoWindow();
 
   google.maps.event.addListener(infoWindow, 'closeclick', function() {
@@ -375,15 +381,51 @@ function initMap() {
     $(".locations").removeClass("selected");
   });
 
-  google.maps.event.addListener(map, 'rightclick', function(e) {
-    openInfoWindowForm(e);
-  });
+// google.maps.event.addListener(map, 'rightclick', function(e) {
+// openInfoWindowForm(e);
+// });
 
   if(markers.length > 0) {
     map.setCenter(markers[markers.length - 1].getPosition());
   }
 
   mappingCountries();
+
+}
+
+function CenterControl(controlDiv,map) {
+
+  // Set CSS for the control border.
+  var controlUI = document.createElement('div');
+  controlUI.style.backgroundColor = '#668fda';
+  controlUI.style.border = '2px solid #668fda';
+  controlUI.style.borderRadius = '3px';
+  controlUI.style.boxShadow = '0 2px 6px rgba(0,0,0,.3)';
+  controlUI.style.cursor = 'pointer';
+  controlUI.style.marginTop = '10px';
+  controlUI.style.marginBottom = '22px';
+  controlUI.style.textAlign = 'center';
+  controlUI.title = 'Click to add location';
+  controlDiv.appendChild(controlUI);
+
+  // Set CSS for the control interior.
+  var controlText = document.createElement('div');
+  controlText.style.color = 'white';
+  controlText.style.fontFamily = 'Roboto,Arial,sans-serif';
+  controlText.style.fontSize = '12px';
+  controlText.style.lineHeight = '25px';
+  controlText.style.paddingLeft = '5px';
+  controlText.style.paddingRight = '5px';
+  controlText.innerHTML = '<span class="glyphicon glyphicon-plus"></span> <b>Add a new Location</b>';
+  controlUI.appendChild(controlText);
+
+  // Setup the click event listeners: simply set the map to Chicago.
+  controlUI.addEventListener('click', function() {
+    var latLng = new google.maps.LatLng(map.getCenter().lat(), map.getCenter().lng());
+    console.log(latLng);
+    console.log(map.getCenter());
+    openInfoWindowForm(latLng);
+  });
 
 }
 
@@ -506,7 +548,7 @@ function openInfoWindowForm(e) {
     content
   ].join(''));
   infoWindow.open(map);
-  infoWindow.setPosition(e.latLng);
+  infoWindow.setPosition(e);
   // Init select2
   $("select").select2();
   if($("select").hasClass("select2-hidden-accessible")) {
@@ -520,8 +562,8 @@ function openInfoWindowForm(e) {
     $("select").next().next().remove();
   }
   // Set latLng
-  $("#inputFormWrapper").find("input.latitude").val(e.latLng.lat());
-  $("#inputFormWrapper").find("input.longitude").val(e.latLng.lng());
+  $("#inputFormWrapper").find("input.latitude").val(e.lat());
+  $("#inputFormWrapper").find("input.longitude").val(e.lng());
 
   // Events
   formWindowEvents();
@@ -772,6 +814,8 @@ function openInfoWindow(marker) {
     $(contentItem).find(".latMap").text(marker.getPosition().lat());
     $(contentItem).find(".lngMap").text(marker.getPosition().lng());
   }
+  $(contentItem).find(".latMap").parents(".latitudeWrapper").show();
+  $(contentItem).find(".lngMap").parents(".longitudeWrapper").show();
   var locationLevel = $(contentItem).parent().find("#location-" + marker.id).parents(".locationLevel");
   $(contentItem).find(".infoLocName").text($(locationLevel).find(".locLevelName").text());
   var content = contentItem.html();
@@ -816,8 +860,10 @@ function openInfoWindowCountries(country) {
   // Check if the location is editable
   contentItem = $("#notEditableInfoWrapper");
   $(contentItem).find(".nameMap").text(country.row.Name.value);
-  $(contentItem).find(".latMap").text(country.latLng.lat().toFixed(4));
-  $(contentItem).find(".lngMap").text(country.latLng.lng().toFixed(4));
+  $(contentItem).find(".latMap").parents(".latitudeWrapper").hide();
+  $(contentItem).find(".lngMap").parents(".longitudeWrapper").hide();
+// $(contentItem).find(".latMap").text(country.latLng.lat().toFixed(4));
+// $(contentItem).find(".lngMap").text(country.latLng.lng().toFixed(4));
 
   var locationLevel =
       $(contentItem).parent().find("input.locElementCountry[value='" + country.row.ISO_2DIGIT.value + "']").parents(
