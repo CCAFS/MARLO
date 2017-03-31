@@ -416,7 +416,7 @@ function CenterControl(controlDiv,map) {
   controlText.style.lineHeight = '25px';
   controlText.style.paddingLeft = '5px';
   controlText.style.paddingRight = '5px';
-  controlText.innerHTML = '<span class="glyphicon glyphicon-plus"></span> <b>Add a new Location</b>';
+  controlText.innerHTML = '<span class="glyphicon glyphicon-plus"></span> <b>Add new Location</b>';
   controlUI.appendChild(controlText);
 
   // Setup the click event listeners: simply set the map to Chicago.
