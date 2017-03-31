@@ -74,59 +74,27 @@
                     <div class="overallYearBudget fieldset clearfix">
                       <h5 class="title">Remaining ${year} total budget amount</h5>
                       <div class="row">
-                        [#-- W1/W2 --]
-                        [#if !project.bilateralProject && hasW1w2Budgets ]
-                        <div class="col-md-3">
-                          <p class="subTitle"><strong>W1/W2</strong> <small> <span class="context-total totalByYear-${type.w1w2}">${(action.getRemaining(1,year))!}%</span> </small></p>
-                        </div>
-                        [/#if]
-                        [#-- W3 --]
-                        [#if hasW3Budgets ]
-                        <div class="col-md-3">
-                          <p class="subTitle"><strong>W3</strong> <small> <span class="context-total totalByYear-${type.w3}">${(action.getRemaining(2,year))!}%</span> </small></p>
-                        </div>
-                        [/#if]
-                        [#-- Bilateral  --]
-                        [#if hasBilateralBudgets ]
-                        <div class="col-md-3">
-                          <p class="subTitle"><strong>Bilateral</strong> <small> <span class="context-total totalByYear-${type.bilateral}">${(action.getRemaining(3,year))!}%</span> </small></p>
-                        </div>
-                        [/#if]
-                        [#-- Center Funds --]
-                        [#if !project.bilateralProject && hasCenterBudgets ]
-                        <div class="col-md-3">
-                          <p class="subTitle"><strong>Center Funds</strong> <small> <span class="context-total totalByYear-${type.centerFunds}">${(action.getRemaining(4,year))!}%</span> </small></p>
-                        </div>
-                        [/#if]
+                        [#list budgetTypesList as budgetType]
+                          [#-- Budget Type--]
+                          [#if action.hasBudgets(budgetType.id, year) ]
+                            <div class="col-md-3">
+                              <p class="subTitle"><strong>${budgetType.name}</strong> <small> <span class="context-total totalByYear-${budgetType.id}">${(action.getRemaining(budgetType.id,year))!}%</span> </small></p>
+                            </div>
+                          [/#if]
+                        [/#list]
                       </div>
                       
                       [#if  action.hasSpecificities('crp_budget_gender')]
                       <h5 class="title">Remaining ${year} gender amount</h5>
                       <div class="row">
-                        [#-- W1/W2 --]
-                        [#if !project.bilateralProject && hasW1w2Budgets]
-                        <div class="col-md-3">
-                          <p class="subTitle"><strong>W1/W2</strong>  <small><span class="context-gender totalByYear-${type.w1w2}">${(action.getRemainingGender(1,year))!}%</span></small></p>
-                        </div>
-                        [/#if]
-                        [#-- W3 --]
-                        [#if hasW3Budgets ]
-                        <div class="col-md-3">
-                          <p class="subTitle"><strong>W3</strong> <small> <span class="context-gender totalByYear-${type.w3}">${(action.getRemainingGender(2,year))!}%</span></small></p>
-                        </div>
-                        [/#if]
-                        [#-- Bilateral  --]
-                        [#if hasBilateralBudgets ]
-                        <div class="col-md-3">
-                          <p class="subTitle"><strong>Bilateral</strong> <small> <span class="context-gender totalByYear-${type.bilateral}">${(action.getRemainingGender(3,year))!}%</span></small></p>
-                          </div>
-                        [/#if]
-                        [#-- Center Funds --]
-                        [#if !project.bilateralProject && hasCenterBudgets]
-                        <div class="col-md-3">
-                          <p class="subTitle"><strong>Center Funds</strong> <small> <span class="context-gender totalByYear-${type.centerFunds}">${(action.getRemainingGender(4,year))!}%</span></small></p>
-                        </div>
-                        [/#if]
+                        [#list budgetTypesList as budgetType]
+                          [#-- Budget Type--]
+                          [#if action.hasBudgets(budgetType.id, year) ]
+                            <div class="col-md-3">
+                              <p class="subTitle"><strong>${budgetType.name}</strong>  <small><span class="context-gender totalByYear-${budgetType.id}">${(action.getRemainingGender(budgetType.id,year))!}%</span></small></p>
+                            </div>
+                          [/#if]
+                        [/#list]
                       </div>
                       [/#if]
                     
@@ -158,7 +126,6 @@
     </div>  
 </section>
 
-
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
 [#macro projectCoAMacro element name index=-1 selectedYear=0 isTemplate=false] 
@@ -178,146 +145,60 @@
         <thead>
           <tr>
             <th class="amountType"> </th>
-            [#-- W1/W2 --]
-            [#if !project.bilateralProject && action.hasBudgets(1,selectedYear)]
-            <th class="text-center">W1/W2</th>
-            [/#if]
-            [#-- W3 --]
-            [#if action.hasBudgets(2,selectedYear)]
-            <th class="text-center">W3</td>
-            [/#if]
-            [#-- Bilateral  --]
-            [#if action.hasBudgets(3,selectedYear)]
-            <th class="text-center">Bilateral</th>
-            [/#if]
-            [#-- Center Funds --]
-            [#if !project.bilateralProject && action.hasBudgets(4,selectedYear)]
-            <th class="text-center">Center Funds</th>
-            [/#if]
+            [#list budgetTypesList as budgetType]
+              [#-- Budget Type--]
+              [#if action.hasBudgets(budgetType.id, selectedYear)]
+                <th class="text-center">${budgetType.name}</th>
+              [/#if]
+            [/#list]
           </tr>
         </thead>
         <tbody>
           [#-- Percentage of Amount --]
           <tr>
             <td class="amountType"> % of total</td>
-            [#-- W1W2 --]
-            [#if !project.bilateralProject && action.hasBudgets(1,selectedYear)]
-              <td class="budgetColumn">
-                [#assign budgetCounterW1=action.getIndexBudget(element.id,selectedYear,1)/]
-                [#assign budgetW1=action.getBudget(element.id,selectedYear,1)/]
-                <input type="hidden" name="project.budgetsCluserActvities[${budgetCounterW1}].id" value="${(budgetW1.id)!}"/>
-                <input type="hidden" name="project.budgetsCluserActvities[${budgetCounterW1}].crpClusterOfActivity.id" value="${(element.id)!}"/>
-                <input type="hidden" name="project.budgetsCluserActvities[${budgetCounterW1}].budgetType.id" value="1"/>
-                <input type="hidden" name="project.budgetsCluserActvities[${budgetCounterW1}].year" value="${(selectedYear)!}"/>
-                [#if editable && isYearEditable(selectedYear)]
-                  [@customForm.input name="project.budgetsCluserActvities[${budgetCounterW1}].amount" i18nkey="budget.amount" showTitle=false className="percentageInput context-total  type-${type.w1w2}" required=true  /]
-                [#else]
-                  <div class="input"><p><span class="percentageInput totalByPartner-${type.w1w2}">${((budgetW1.amount)!0)}%</span></p></div>
-                  <input type="hidden" name="project.budgetsCluserActvities[${budgetCounterW1}].amount" value="${(budgetW1.amount)!0}"/>
-                [/#if]
-            </td>
-            [/#if]
-            [#-- W3 --]
-            [#if action.hasBudgets(2,selectedYear)]
-            <td class="budgetColumn">
-                [#assign budgetCounterW3=action.getIndexBudget(element.id,selectedYear,2)/]
-                [#assign budgetW3=action.getBudget(element.id,selectedYear,2)/]
-                <input type="hidden" name="project.budgetsCluserActvities[${budgetCounterW3}].id" value="${(budgetW3.id)!}"/>
-                <input type="hidden" name="project.budgetsCluserActvities[${budgetCounterW3}].crpClusterOfActivity.id" value="${(element.id)!}"/>
-                <input type="hidden" name="project.budgetsCluserActvities[${budgetCounterW3}].budgetType.id" value="2"/>
-                <input type="hidden" name="project.budgetsCluserActvities[${budgetCounterW3}].year" value="${(selectedYear)!}"/>
-                [#if editable && isYearEditable(selectedYear)]
-                  [@customForm.input name="project.budgetsCluserActvities[${budgetCounterW3}].amount" i18nkey="budget.amount" showTitle=false className="percentageInput context-total type-${type.w3}" required=true   /]
-                [#else]
-                  <div class="input"><p><span class="percentageInput totalByPartner-${type.w3}">${((budgetW3.amount)!0)}%</span></p></div>
-                  <input type="hidden" name="project.budgetsCluserActvities[${budgetCounterW3}].amount" value="${(budgetW3.amount)!0}"/>
-                [/#if]
-            </td>
-            [/#if]
-            [#-- Bilateral  --]
-            [#if action.hasBudgets(3,selectedYear)]
-            <td class="budgetColumn">
-                [#assign budgetCounterBilateral=action.getIndexBudget(element.id,selectedYear,3)/]
-                [#assign budgetBilateral=action.getBudget(element.id,selectedYear,3)/]
-                <input type="hidden" name="project.budgetsCluserActvities[${budgetCounterBilateral}].id" value="${(budgetBilateral.id)!}"/>
-                <input type="hidden" name="project.budgetsCluserActvities[${budgetCounterBilateral}].crpClusterOfActivity.id" value="${(element.id)!}"/>
-                <input type="hidden" name="project.budgetsCluserActvities[${budgetCounterBilateral}].budgetType.id" value="3"/>
-                <input type="hidden" name="project.budgetsCluserActvities[${budgetCounterBilateral}].year" value="${(selectedYear)!}"/>
-                [#if editable && isYearEditable(selectedYear)]
-                  [@customForm.input name="project.budgetsCluserActvities[${budgetCounterBilateral}].amount" i18nkey="budget.amount" showTitle=false className="percentageInput context-total type-${type.bilateral}" required=true   /]
-                [#else]
-                  <div class="input"><p><span class="percentageInput totalByPartner-${type.bilateral}">${((budgetBilateral.amount)!0)}%</span></p></div>
-                  <input type="hidden" name="project.budgetsCluserActvities[${budgetCounterBilateral}].amount" value="${(budgetBilateral.amount)!0}"/>
-                [/#if]
-            </td>
-            [/#if]
-            [#-- Center Funds --]
-            [#if !project.bilateralProject && action.hasBudgets(4,selectedYear)]
-            <td class="budgetColumn">
-                [#assign budgetCounterCenter=action.getIndexBudget(element.id,selectedYear,4)/]
-                [#assign budgetCenter=action.getBudget(element.id,selectedYear,4)/]
-                <input type="hidden" name="project.budgetsCluserActvities[${budgetCounterCenter}].id" value="${(budgetCenter.id)!}"/>
-                <input type="hidden" name="project.budgetsCluserActvities[${budgetCounterCenter}].crpClusterOfActivity.id" value="${(element.id)!}"/>
-                <input type="hidden" name="project.budgetsCluserActvities[${budgetCounterCenter}].budgetType.id" value="4"/>
-                <input type="hidden" name="project.budgetsCluserActvities[${budgetCounterCenter}].year" value="${(selectedYear)!}"/>
-                [#if editable && isYearEditable(selectedYear)]
-                  [@customForm.input name="project.budgetsCluserActvities[${budgetCounterCenter}].amount" i18nkey="budget.amount" showTitle=false className="percentageInput context-total type-${type.centerFunds}" required=true /]
-                [#else]
-                  <div class="input"><p><span class="percentageInput totalByPartner-${type.centerFunds}">${((budgetCenter.amount)!0)}%</span></p></div>
-                  <input type="hidden" name="project.budgetsCluserActvities[${budgetCounterCenter}].amount" value="${(budgetCenter.amount)!0}"/>
-                [/#if]
-            </td>
-            [/#if]
+            [#list budgetTypesList as budgetType]
+              [#-- Budget Type--]
+              [#if action.hasBudgets(budgetType.id, selectedYear)]
+                <td class="budgetColumn">
+                  [#assign budgetIndex= action.getIndexBudget(element.id,selectedYear, budgetType.id) /]
+                  [#assign budgetObject= action.getBudget(element.id,selectedYear, budgetType.id) /]
+                  [#assign customName = "project.budgetsCluserActvities[${budgetIndex}]" /]
+                  <input type="hidden" name="${customName}.id" value="${(budgetObject.id)!}"/>
+                  <input type="hidden" name="${customName}.crpClusterOfActivity.id" value="${(element.id)!}"/>
+                  <input type="hidden" name="${customName}.budgetType.id" value="1"/>
+                  <input type="hidden" name="${customName}.year" value="${(selectedYear)!}"/>
+                  [#if editable && isYearEditable(selectedYear)]
+                    [@customForm.input name="${customName}.amount" i18nkey="budget.amount" showTitle=false className="percentageInput context-total  type-${budgetType.id}" required=true  /]
+                  [#else]
+                    <div class="input"><p><span class="percentageInput totalByPartner-${budgetType.id}">${((budgetObject.amount)!0)}%</span></p></div>
+                    <input type="hidden" name="${customName}.amount" value="${(budgetObject.amount)!0}"/>
+                  [/#if]
+                </td>
+              [/#if]
+            [/#list]
           </tr>
           
           [#-- Percentage of Gender Amount --]
           [#if  action.hasSpecificities('crp_budget_gender')]
           <tr>
             <td class="amountType"> % of gender</td>
-            [#-- W1/W2 --]
-            [#if !project.bilateralProject && action.hasBudgets(1,selectedYear)]
-            <td class="budgetColumn">
-              [#if editable && isYearEditable(selectedYear)]
-                [@customForm.input name="project.budgetsCluserActvities[${budgetCounterW1}].genderPercentage" i18nkey="budget.amount" showTitle=false className="percentageInput context-gender type-${type.w1w2}" required=true  /]
-              [#else]
-                <div class="input"><p><span class="percentageInput totalByPartner-${type.w1w2}">${((budgetW1.genderPercentage)!0)}%</span></p></div>
-                <input type="hidden" name="project.budgetsCluserActvities[${budgetCounterW1}].genderPercentage" value="${(budgetW1.genderPercentage)!0}"/>
+            [#list budgetTypesList as budgetType]
+              [#-- Budget Type--]
+              [#if action.hasBudgets(budgetType.id, selectedYear)]
+              <td class="budgetColumn">
+                [#assign budgetIndex= action.getIndexBudget(element.id,selectedYear, budgetType.id) /]
+                [#assign budgetObject= action.getBudget(element.id,selectedYear, budgetType.id) /]
+                [#assign customName = "project.budgetsCluserActvities[${budgetIndex}]" /]
+                [#if editable && isYearEditable(selectedYear)]
+                  [@customForm.input name="${customName}.genderPercentage" i18nkey="budget.amount" showTitle=false className="percentageInput context-gender type-${budgetType.id}" required=true  /]
+                [#else]
+                  <div class="input"><p><span class="percentageInput totalByPartner-${budgetType.id}">${((budgetObject.genderPercentage)!0)}%</span></p></div>
+                  <input type="hidden" name="${customName}.genderPercentage" value="${(budgetObject.genderPercentage)!0}"/>
+                [/#if]
+              </td>
               [/#if]
-            </td>
-            [/#if]
-            [#-- W3 --]
-            [#if action.hasBudgets(2,selectedYear)]
-            <td class="budgetColumn">
-              [#if editable && isYearEditable(selectedYear)]
-                [@customForm.input name="project.budgetsCluserActvities[${budgetCounterW3}].genderPercentage" i18nkey="budget.amount" showTitle=false className="percentageInput context-gender type-${type.w3}" required=true   /]
-              [#else]
-                <div class="input"><p><span class="percentageInput totalByPartner-${type.w3}">${((budgetW3.genderPercentage)!0)}%</span></p></div>
-                <input type="hidden" name="project.budgetsCluserActvities[${budgetCounterW3}].genderPercentage" value="${(budgetW3.genderPercentage)!0}"/>
-              [/#if]
-            </td>
-            [/#if]
-            [#-- Bilateral  --]
-            [#if action.hasBudgets(3,selectedYear)]
-            <td class="budgetColumn">
-              [#if editable && isYearEditable(selectedYear)]
-                [@customForm.input name="project.budgetsCluserActvities[${budgetCounterBilateral}].genderPercentage" i18nkey="budget.amount" showTitle=false className="percentageInput context-gender type-${type.bilateral}" required=true   /]
-              [#else]
-                <div class="input"><p><span class="percentageInput totalByPartner-${type.bilateral}">${((budgetBilateral.genderPercentage)!0)}%</span></p></div>
-                <input type="hidden" name="project.budgetsCluserActvities[${budgetCounterBilateral}].genderPercentage" value="${(budgetBilateral.genderPercentage)!0}"/>
-              [/#if]
-            </td>
-            [/#if]
-            [#-- Center Funds --]
-            [#if !project.bilateralProject && action.hasBudgets(4,selectedYear)]
-            <td class="budgetColumn">
-              [#if editable && isYearEditable(selectedYear)]
-                [@customForm.input name="project.budgetsCluserActvities[${budgetCounterCenter}].genderPercentage" i18nkey="budget.amount" showTitle=false className="percentageInput context-gender type-${type.centerFunds}" required=true /]
-              [#else]
-                <div class="input"><p><span class="percentageInput totalByPartner-${type.centerFunds}">${((budgetCenter.genderPercentage)!0)}%</span></p></div>
-                <input type="hidden" name="project.budgetsCluserActvities[${budgetCounterCenter}].genderPercentage" value="${(budgetCenter.genderPercentage)!0}"/>
-              [/#if]
-            </td>
-            [/#if]
+            [/#list]
           </tr>
           [/#if]
         </tbody>
