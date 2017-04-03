@@ -172,24 +172,28 @@ public class FundingSourceAction extends BaseAction {
 
   public boolean canEditFundingSourceBudget() {
 
-    // TODO fix user_permissions view to allow funding_sources:budget permissions
-    if (loggedCrp.getAcronym().equals("a4nh")) {
-      User user = this.getCurrentUser();
+    try {
+      // TODO fix user_permissions view to allow funding_sources:budget permissions
+      if (loggedCrp.getAcronym().equals("a4nh")) {
+        User user = this.getCurrentUser();
 
-      List<UserRole> userRoles = new ArrayList<>(user.getUserRoles());
-      for (UserRole userRole : userRoles) {
-        Role role = userRoleManager.getRoleById(userRole.getRole().getId());
-        if (role.getId() == 20) {
-          return true;
+        List<UserRole> userRoles = new ArrayList<>(user.getUserRoles());
+        for (UserRole userRole : userRoles) {
+          Role role = userRoleManager.getRoleById(userRole.getRole().getId());
+          if (role.getId() == 20) {
+            return true;
+          }
         }
+
+
       }
+      System.out.println("");
 
-
+      return this.hasPermissionNoBase(this.generatePermission(Permission.PROJECT_FUNDING_SOURCE_BUDGET_PERMISSION,
+        loggedCrp.getAcronym(), fundingSource.getId().toString()));
+    } catch (Exception e) {
+      return true;
     }
-    System.out.println("");
-
-    return this.hasPermissionNoBase(this.generatePermission(Permission.PROJECT_FUNDING_SOURCE_BUDGET_PERMISSION,
-      loggedCrp.getAcronym(), fundingSource.getId().toString()));
 
 
   }
