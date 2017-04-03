@@ -39,9 +39,7 @@ import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
-import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.User;
-import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -173,25 +171,13 @@ public class FundingSourceAction extends BaseAction {
   public boolean canEditFundingSourceBudget() {
 
     try {
-      // TODO fix user_permissions view to allow funding_sources:budget permissions
-      if (loggedCrp.getAcronym().equals("a4nh")) {
-        User user = this.getCurrentUser();
-
-        List<UserRole> userRoles = new ArrayList<>(user.getUserRoles());
-        for (UserRole userRole : userRoles) {
-          Role role = userRoleManager.getRoleById(userRole.getRole().getId());
-          if (role.getId() == 20) {
-            return true;
-          }
-        }
-
-
-      }
-      System.out.println("");
-
       return this.hasPermissionNoBase(this.generatePermission(Permission.PROJECT_FUNDING_SOURCE_BUDGET_PERMISSION,
         loggedCrp.getAcronym(), fundingSource.getId().toString()));
-    } catch (Exception e) {
+    } catch (
+
+    Exception e)
+
+    {
       return true;
     }
 
