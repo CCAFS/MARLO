@@ -39,9 +39,7 @@ import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
-import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.User;
-import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -172,24 +170,16 @@ public class FundingSourceAction extends BaseAction {
 
   public boolean canEditFundingSourceBudget() {
 
-    // TODO fix user_permissions view to allow funding_sources:budget permissions
-    if (loggedCrp.getAcronym().equals("a4nh")) {
-      User user = this.getCurrentUser();
+    try {
+      return this.hasPermissionNoBase(this.generatePermission(Permission.PROJECT_FUNDING_SOURCE_BUDGET_PERMISSION,
+        loggedCrp.getAcronym(), fundingSource.getId().toString()));
+    } catch (
 
-      List<UserRole> userRoles = new ArrayList<>(user.getUserRoles());
-      for (UserRole userRole : userRoles) {
-        Role role = userRoleManager.getRoleById(userRole.getRole().getId());
-        if (role.getId() == 20) {
-          return true;
-        }
-      }
+    Exception e)
 
-
+    {
+      return true;
     }
-    System.out.println("");
-
-    return this.hasPermissionNoBase(this.generatePermission(Permission.PROJECT_FUNDING_SOURCE_BUDGET_PERMISSION,
-      loggedCrp.getAcronym(), fundingSource.getId().toString()));
 
 
   }
@@ -398,8 +388,8 @@ public class FundingSourceAction extends BaseAction {
 
       } else {
         this.setDraft(false);
-        fundingSource.setBudgets(new ArrayList<>(fundingSourceManager.getFundingSourceById(fundingSource.getId())
-          .getFundingSourceBudgets().stream().filter(pb -> pb.isActive()).collect(Collectors.toList())));
+        fundingSource.setBudgets(
+          fundingSource.getFundingSourceBudgets().stream().filter(pb -> pb.isActive()).collect(Collectors.toList()));
 
         fundingSource.setInstitutions(new ArrayList<>(fundingSource.getFundingSourceInstitutions().stream()
           .filter(pb -> pb.isActive()).collect(Collectors.toList())));

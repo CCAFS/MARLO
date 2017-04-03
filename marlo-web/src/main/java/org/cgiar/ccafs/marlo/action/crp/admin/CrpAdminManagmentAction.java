@@ -389,6 +389,7 @@ public class CrpAdminManagmentAction extends BaseAction {
     String managementRole =
       this.getText("programManagement.role") + " (" + this.getText("programManagement.role.acronym") + ")";
     String managementRoleAcronym = this.getText("programManagement.role.acronym");
+    String managementLiaison = this.getText("global.managementLiaison");
 
     userAssigned = userManager.getUser(userAssigned.getId());
     StringBuilder message = new StringBuilder();
@@ -396,7 +397,7 @@ public class CrpAdminManagmentAction extends BaseAction {
     message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
     message
       .append(this.getText("email.programManagement.assigned", new String[] {managementRole, loggedCrp.getName()}));
-    message.append(this.getText("email.programManagement.responsibilities"));
+    message.append(this.getText("email.programManagement.responsibilities", new String[] {managementLiaison}));
     message.append(this.getText("email.support"));
     message.append(this.getText("email.bye"));
 
