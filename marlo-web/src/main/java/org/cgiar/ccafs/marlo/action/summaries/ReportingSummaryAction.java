@@ -1941,9 +1941,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   private TypedTableModel getDescTableModel(ProjectPartner projectLeader, Boolean hasRegions) {
     TypedTableModel model = new TypedTableModel(
       new String[] {"title", "start_date", "end_date", "ml", "ml_contact", "type", "status", "org_leader", "leader",
-        "summary", "cycle", "analysis", "cross-cutting", "hasRegions"},
+        "summary", "cycle", "analysis", "cross-cutting", "hasRegions", "ml_text", "ml_contact_text"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, String.class, Boolean.class});
+        String.class, String.class, String.class, String.class, String.class, String.class, Boolean.class, String.class,
+        String.class});
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
 
 
@@ -2043,8 +2044,13 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       cross_cutting = null;
     }
 
+    String ml_text = null, ml_contact_text = null;
+
+    ml_text = this.getText("project.liaisonInstitution");
+    ml_contact_text = this.getText("project.liaisonUser");
+
     model.addRow(new Object[] {title, start_date, end_date, ml, ml_contact, type, status, org_leader, leader, summary,
-      cycle, analysis, cross_cutting, hasRegions});
+      cycle, analysis, cross_cutting, hasRegions, ml_text, ml_contact_text});
     return model;
   }
 
