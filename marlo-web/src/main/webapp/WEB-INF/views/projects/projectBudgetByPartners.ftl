@@ -56,13 +56,6 @@
             [#else]
               [#assign selectedYear = currentCycleYear /]
             [/#if]
-            [#assign type = { 
-              'w1w2':             1,
-              'w3':               2,
-              'bilateral':        3,
-              'centerFunds':      4,
-              'w1w2cofinancing':  5
-            } /]
 
             [#-- Year Tabs --]
             <ul class="nav nav-tabs budget-tabs" role="tablist">
@@ -86,10 +79,14 @@
                     <div class="overallYearBudget fieldset clearfix">
                       <h5 class="title">Overall ${year} budget</h5>
                       <div class="row">
+                      <table class="text-center">
+                        <tr>
                         [#list budgetTypesList as budgetType]
                           [#-- Budget Type--]
-                          <div class="col-md-3"><h5 class="subTitle"> ${budgetType.name} <br /> <small>US$ <span class="totalByYear-${budgetType.id}">${action.getTotalYear(year,budgetType.id)?number?string(",##0.00")}</span></small></h5></div>
+                          <td class=""><h5 class="subTitle"> ${budgetType.name} <br /> <small>US$ <span class="totalByYear-${budgetType.id}">${action.getTotalYear(year,budgetType.id)?number?string(",##0.00")}</span></small></h5></td>
                         [/#list]
+                        </tr>
+                      </table>
                       </div>
                     </div>
                     

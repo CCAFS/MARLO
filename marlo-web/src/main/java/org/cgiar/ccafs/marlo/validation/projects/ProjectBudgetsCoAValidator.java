@@ -154,8 +154,8 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
           if (this.hasBudgets(new Long(1), action.getCurrentCycleYear(), project.getId())) {
             this.validateBudgets(action,
               project.getBudgetsCluserActvities().stream()
-                .filter(c -> c.isActive() && c.getBudgetType().getId().longValue() == 1
-                  && c.getYear() == action.getCurrentCycleYear())
+                .filter(c -> c.isActive() && (c.getBudgetType().getId().longValue() == 1)
+                  && (c.getYear() == action.getCurrentCycleYear()))
                 .collect(Collectors.toList()),
               new Long(1), this.calculateGender(new Long(1), action.getCurrentCycleYear(), project.getId()));
           }
@@ -183,6 +183,7 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
                 .collect(Collectors.toList()),
               new Long(4), this.calculateGender(new Long(4), action.getCurrentCycleYear(), project.getId()));
           }
+
         } else {
           this.addMessage(action.getText("project.budgets"));
         }

@@ -61,15 +61,11 @@
             <div class="tab-content budget-content">
               [#list startYear .. endYear as year]
                 <div role="tabpanel" class="tab-pane [#if year == selectedYear]active[/#if]" id="year-${year}">
-                  [#assign hasW1w2Budgets = action.hasBudgets(1,year) /]
-                  [#assign hasW3Budgets = action.hasBudgets(2,year) /]
-                  [#assign hasBilateralBudgets = action.hasBudgets(3,year) /]
-                  [#assign hasCenterBudgets = action.hasBudgets(4,year) /]
                   
                   [#-- Budgest cannot be editable message --]
                   [#if !isYearEditable(year)]<div class="note">Percentages for ${year} cannot be editable.</div>[/#if]
                   
-                  [#if hasW1w2Budgets || hasW3Budgets || hasBilateralBudgets || hasCenterBudgets]
+                  [#if action.hasBudgets(1,year) || action.hasBudgets(2,year) || action.hasBudgets(3,year) || action.hasBudgets(4,year) || action.hasBudgets(5,year)]
                   
                     <div class="overallYearBudget fieldset clearfix">
                       <h5 class="title">Remaining ${year} total budget amount</h5>
@@ -78,7 +74,7 @@
                           [#-- Budget Type--]
                           [#if action.hasBudgets(budgetType.id, year) ]
                             <div class="col-md-3">
-                              <p class="subTitle"><strong>${budgetType.name}</strong> <small> <span class="context-total totalByYear-${budgetType.id}">${(action.getRemaining(budgetType.id,year))!}%</span> </small></p>
+                              <p class="subTitle"><strong>${budgetType.name}</strong> <br /> <small> <span class="context-total totalByYear-${budgetType.id}">${(action.getRemaining(budgetType.id,year))!}%</span> </small></p>
                             </div>
                           [/#if]
                         [/#list]
@@ -91,7 +87,7 @@
                           [#-- Budget Type--]
                           [#if action.hasBudgets(budgetType.id, year) ]
                             <div class="col-md-3">
-                              <p class="subTitle"><strong>${budgetType.name}</strong>  <small><span class="context-gender totalByYear-${budgetType.id}">${(action.getRemainingGender(budgetType.id,year))!}%</span></small></p>
+                              <p class="subTitle"><strong>${budgetType.name}</strong> <br /> <small><span class="context-gender totalByYear-${budgetType.id}">${(action.getRemainingGender(budgetType.id,year))!}%</span></small></p>
                             </div>
                           [/#if]
                         [/#list]
@@ -166,7 +162,7 @@
                   [#assign customName = "project.budgetsCluserActvities[${budgetIndex}]" /]
                   <input type="hidden" name="${customName}.id" value="${(budgetObject.id)!}"/>
                   <input type="hidden" name="${customName}.crpClusterOfActivity.id" value="${(element.id)!}"/>
-                  <input type="hidden" name="${customName}.budgetType.id" value="1"/>
+                  <input type="hidden" name="${customName}.budgetType.id" value="${budgetType.id}"/>
                   <input type="hidden" name="${customName}.year" value="${(selectedYear)!}"/>
                   [#if editable && isYearEditable(selectedYear)]
                     [@customForm.input name="${customName}.amount" i18nkey="budget.amount" showTitle=false className="percentageInput context-total  type-${budgetType.id}" required=true  /]
