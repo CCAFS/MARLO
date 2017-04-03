@@ -97,7 +97,7 @@ function changeDetected(e) {
       if(timeoutAutoSave) {
         clearTimeout(timeoutAutoSave);
       }
-      // Start a timer that will search when finished
+      // Start a timer that will execute autosave function
       timeoutAutoSave = setTimeout(function() {
         autoSave();
       }, 7 * 1000);
