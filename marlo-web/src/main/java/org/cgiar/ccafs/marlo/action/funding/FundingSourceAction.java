@@ -398,8 +398,8 @@ public class FundingSourceAction extends BaseAction {
 
       } else {
         this.setDraft(false);
-        fundingSource.setBudgets(new ArrayList<>(fundingSourceManager.getFundingSourceById(fundingSource.getId())
-          .getFundingSourceBudgets().stream().filter(pb -> pb.isActive()).collect(Collectors.toList())));
+        fundingSource.setBudgets(
+          fundingSource.getFundingSourceBudgets().stream().filter(pb -> pb.isActive()).collect(Collectors.toList()));
 
         fundingSource.setInstitutions(new ArrayList<>(fundingSource.getFundingSourceInstitutions().stream()
           .filter(pb -> pb.isActive()).collect(Collectors.toList())));
