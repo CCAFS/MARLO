@@ -50,6 +50,9 @@
             <div class="clearfix"></div>
           </div>
           <hr />
+          <div class="note center">
+            If you don’t find the target unit in the list, please <a href=""> click here </a> to request it.
+          </div>
           [#-- Request target unit --]
         </div>
         
@@ -81,6 +84,6 @@
     <input type="hidden" class="acronym" name="${customName}.acronym" value="${(element.acronym)!}" />
     <input type="hidden" class="name" name="${customName}.name" value="${(element.name)!}" />
     [#-- Remove Button --]
-    <span class=" pull-right" > <input type="checkbox" name="${customName}.isActive" id="" /></span>
+    <span class=" pull-right" > <input type="checkbox" name="${customName}.isActive" id="" [#if element.isActive]checked[/#if]/></span>
   </li>
 [/#macro]
