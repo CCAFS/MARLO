@@ -31,6 +31,8 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.utils.FileManager;
+import org.cgiar.ccafs.marlo.utils.HistoryComparator;
+import org.cgiar.ccafs.marlo.utils.HistoryDifference;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectOutcomesPandRValidator;
 
 import java.io.BufferedReader;
@@ -41,7 +43,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
@@ -93,7 +97,7 @@ public class ProjectOutcomesPandRAction extends BaseAction {
 
   private String transaction;
 
-
+  private HistoryComparator historyComparator;
   private AuditLogManager auditLogManager;
 
 
@@ -101,7 +105,8 @@ public class ProjectOutcomesPandRAction extends BaseAction {
   public ProjectOutcomesPandRAction(APConfig config, ProjectManager projectManager,
     InstitutionManager institutionManager, CrpProgramManager crpProgrammManager, AuditLogManager auditLogManager,
     CrpManager crpManager, FileDBManager fileDBManager, ProjectOutcomePandrManager projectOutcomePandrManager,
-    IpElementManager ipElementManager, ProjectOutcomesPandRValidator projectOutcomesPandRValidator) {
+    HistoryComparator historyComparator, IpElementManager ipElementManager,
+    ProjectOutcomesPandRValidator projectOutcomesPandRValidator) {
     super(config);
     this.projectManager = projectManager;
     this.institutionManager = institutionManager;
@@ -109,6 +114,7 @@ public class ProjectOutcomesPandRAction extends BaseAction {
     this.projectOutcomePandrManager = projectOutcomePandrManager;
     this.ipElementManager = ipElementManager;
     this.fileDBManager = fileDBManager;
+    this.historyComparator = historyComparator;
     this.crpManager = crpManager;
     this.projectOutcomesPandRValidator = projectOutcomesPandRValidator;
     this.auditLogManager = auditLogManager;
@@ -316,6 +322,27 @@ public class ProjectOutcomesPandRAction extends BaseAction {
 
       if (history != null) {
         project = history;
+        List<HistoryDifference> differences = new ArrayList<>();
+        Map<String, String> specialList = new HashMap<>();
+        int i = 0;
+        project.setOutcomesPandr(
+          project.getProjectOutcomesPandr().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        for (ProjectOutcomePandr projectOutcomePandr : project.getOutcomesPandr()) {
+          int[] index = new int[1];
+          index[0] = i;
+          differences.addAll(historyComparator.getDifferencesList(projectOutcomePandr, transaction, specialList,
+            "project.outcomesPandr[" + i + "]", "project", 1));
+          i++;
+        }
+        if (this.isLessonsActive()) {
+          this.loadLessons(loggedCrp, project);
+        }
+        if (project.getProjectComponentLesson() != null) {
+          differences.addAll(historyComparator.getDifferencesList(project.getProjectComponentLesson(), transaction,
+            specialList, "project.projectComponentLesson", "project", 1));
+        }
+        this.setDifferences(differences);
+
       } else {
         this.transaction = null;
 
