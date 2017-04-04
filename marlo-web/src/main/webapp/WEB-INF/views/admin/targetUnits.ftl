@@ -41,7 +41,7 @@
             [#if targetUnitsList?has_content]
             <ul>
             [#list targetUnitsList as targetUnit]
-              [@targetUnitMacro element=targetUnit name="targetUnitList" index=targetUnit_index /]
+              [@targetUnitMacro element=targetUnit name="targetUnits" index=targetUnit_index /]
             [/#list]
             </ul>
             [#else]
@@ -77,13 +77,13 @@
 [#include "/WEB-INF/global/pages/footer.ftl" /]
 
 [#macro targetUnitMacro element name index isTemplate=false]
-  <li id="targetUnit-${isTemplate?string('template',index)}" class="li-item targetUnitAdmin" style="display:${isTemplate?string('none','block')}">
+  <li id="targetUnit-${isTemplate?string('template',index)}" class="li-item targetUnitAdmin" style="float:left; width:48%; margin-right:5px; display:${isTemplate?string('none','block')}">
     [#local customName = "${name}[${index}]"/]
     <span class="glyphicon glyphicon-scale"></span>  <span class="composedName"> ${(element.name)!}</span>
     <input type="hidden" class="id" name="${customName}.id" value="${(element.id)!}" />
     <input type="hidden" class="acronym" name="${customName}.acronym" value="${(element.acronym)!}" />
     <input type="hidden" class="name" name="${customName}.name" value="${(element.name)!}" />
     [#-- Remove Button --]
-    <span class=" pull-right" > <input type="checkbox" name="${customName}.isActive" id="" [#if element.isActive]checked[/#if]/></span>
+    <span class=" pull-right" > <input type="checkbox" value="true" name="${customName}.isActive" id="" [#if element.name??]checked[/#if]/></span>
   </li>
 [/#macro]
