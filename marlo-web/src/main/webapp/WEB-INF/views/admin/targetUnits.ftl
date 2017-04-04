@@ -33,7 +33,8 @@
       </div>
       <div class="col-md-9">
         [@s.form action=actionName enctype="multipart/form-data" ]
-        <h4 class="sectionTitle">Target Units</h4>
+        <h4 class="sectionTitle">Custom Target Units</h4>
+        <label for="">List of target units:</label>
         <div class="borderBox ">
           [#-- Targets units list --]
           <div class="items-list">
@@ -73,13 +74,13 @@
 [#include "/WEB-INF/global/pages/footer.ftl" /]
 
 [#macro targetUnitMacro element name index isTemplate=false]
-  <li id="targetUnit-${isTemplate?string('template',index)}" class="li-item targetUnit" style="display:${isTemplate?string('none','block')}">
+  <li id="targetUnit-${isTemplate?string('template',index)}" class="li-item targetUnitAdmin" style="display:${isTemplate?string('none','block')}">
     [#local customName = "${name}[${index}]"/]
     <span class="glyphicon glyphicon-scale"></span>  <span class="composedName"> ${(element.name)!}</span>
     <input type="hidden" class="id" name="${customName}.id" value="${(element.id)!}" />
     <input type="hidden" class="acronym" name="${customName}.acronym" value="${(element.acronym)!}" />
     <input type="hidden" class="name" name="${customName}.name" value="${(element.name)!}" />
     [#-- Remove Button --]
-    <span class="glyphicon glyphicon-remove pull-right remove-targetUnit" aria-hidden="true"></span>
+    <span class=" pull-right" > <input type="checkbox" name="${customName}.isActive" id="" /></span>
   </li>
 [/#macro]
