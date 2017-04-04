@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrpTargetUnit;
 import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -76,22 +77,57 @@ public class CrpTargetUnitsAction extends BaseAction {
     targetUnitsList =
       new ArrayList<>(targetUnitManager.findAll().stream().filter(tu -> tu.isActive()).collect(Collectors.toList()));
 
-    loggedCrp.setTargetUnits(new ArrayList<>(
-      loggedCrp.getCrpTargetUnits().stream().filter(ctu -> ctu.isActive()).collect(Collectors.toList())));
+    for (SrfTargetUnit targetUnit : targetUnitsList) {
+
+      CrpTargetUnit crpTargetUnit =
+        crpTargetUnitManager.getByTargetUnitIdAndCrpId(loggedCrp.getId(), targetUnit.getId());
+
+      if (crpTargetUnit != null) {
+        boolean check = crpTargetUnit.isActive();
+        targetUnit.setCheckCrp(check);
+
+      } else {
+        targetUnit.setCheckCrp(false);
+      }
+
+    }
 
     this.setBasePermission(this.getText(Permission.CRP_ADMIN_BASE_PERMISSION, params));
 
     if (this.isHttpPost()) {
-
-      if (loggedCrp.getTargetUnits() != null) {
-        loggedCrp.getTargetUnits().clear();
-      }
 
       if (targetUnitsList != null) {
         targetUnitsList.clear();
       }
 
     }
+  }
+
+  @Override
+  public String save() {
+
+    if (this.hasPermission("*")) {
+
+      for (SrfTargetUnit targetUnit : targetUnitsList) {
+
+        CrpTargetUnit crpTargetUnit =
+          crpTargetUnitManager.getByTargetUnitIdAndCrpId(loggedCrp.getId(), targetUnit.getId());
+
+        if (crpTargetUnit != null) {
+          boolean check = crpTargetUnit.isActive();
+          targetUnit.setCheckCrp(check);
+
+        } else {
+          targetUnit.setCheckCrp(false);
+        }
+
+      }
+
+      return SUCCESS;
+    } else {
+      return NOT_AUTHORIZED;
+    }
+
   }
 
   public void setLoggedCrp(Crp loggedCrp) {

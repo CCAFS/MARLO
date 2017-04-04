@@ -84,6 +84,6 @@
     <input type="hidden" class="acronym" name="${customName}.acronym" value="${(element.acronym)!}" />
     <input type="hidden" class="name" name="${customName}.name" value="${(element.name)!}" />
     [#-- Remove Button --]
-    <span class=" pull-right" > <input type="checkbox" value="true" name="${customName}.isActive" id="" [#if element.name??]checked[/#if]/></span>
+    <span class=" pull-right" > <input type="checkbox" value="true" name="${customName}.checkCrp" id="" [#if element.checkCrp??]checked[/#if]/></span>
   </li>
 [/#macro]
