@@ -24,9 +24,23 @@ function init() {
   $('.currencyInput').currencyInput();
   date("form #fundingSource\\.startDate", "form #fundingSource\\.endDate");
 
+  
+  // Agreement status & Donor
   $('form select').select2({
     width: "100%"
   });
+  
+  // Funding Window / Budget type
+  $(".type").select2({
+      templateResult: function(state) {
+        var name = state.text;
+        var desc = $('li.budgetTypeDescription-' + state.id).text();
+        var $state = $("<span><b>" + name + "</b><br><small class='selectDesc'>" + desc + "</small></span>");
+        return $state;
+      }
+  });
+  
+  
   // $(".donor").select2(searchInstitutionsOptions(true));
   // $(".donor").parent().find("span.select2-selection__placeholder").text(placeholderText);
 

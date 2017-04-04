@@ -83,7 +83,7 @@
                         <tr>
                         [#list budgetTypesList as budgetType]
                           [#-- Budget Type--]
-                          <td class=""><h5 class="subTitle"> ${budgetType.name} <br /> <small>US$ <span class="totalByYear-${budgetType.id}">${action.getTotalYear(year,budgetType.id)?number?string(",##0.00")}</span></small></h5></td>
+                          <td class=""><h5 class="subTitle"> ${budgetType.name} <img title="${budgetType.description}" src="${baseUrl}/images/global/icon-help2.png" alt="" /> <br /> <small>US$ <span class="totalByYear-${budgetType.id}">${action.getTotalYear(year,budgetType.id)?number?string(",##0.00")}</span></small></h5></td>
                         [/#list]
                         </tr>
                       </table>
