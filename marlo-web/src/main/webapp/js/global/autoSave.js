@@ -105,7 +105,7 @@ function changeDetected(e) {
       if(isChanged()) {
         autoSave();
       }
-    }, 3 * 1000);
+    }, 6 * 1000);
   }
 }
 
