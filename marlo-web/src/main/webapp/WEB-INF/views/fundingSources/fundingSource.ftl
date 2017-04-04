@@ -110,9 +110,8 @@
       
       [#-- Division --]
       [#assign hasDivisionField = (crpSession == "pim") /]
-      [#if hasDivisionField]
-        [#assign canSeeDivision = ifpriDivision /]
-        <div class="form-group row divisionBlock division-89"  style="display:${canSeeDivision?string('block','none')}">
+      [#if hasDivisionField] 
+        <div class="form-group row divisionBlock division-89"  style="display:${ifpriDivision?string('block','none')}">
           <div class="col-md-6">
             [@customForm.input name="fundingSource.division" i18nkey="projectCofunded.division" className="" required=true editable=editable /]
           </div>
