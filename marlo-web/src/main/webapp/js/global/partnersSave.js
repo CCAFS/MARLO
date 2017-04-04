@@ -1,6 +1,10 @@
 $(document).ready(init);
 var slideIndex = 1;
 function init() {
+  /* Init Select2 plugin */
+  $('form select').select2({
+    width: '100%'
+  });
 
   $(".yes-button-label").on("click", function() {
     $(".no-button-label").removeClass("radio-checked");

@@ -110,6 +110,7 @@ $(document).ready(function() {
   }
 
   $('#projectFlagshipsBlock input').on('change', function() {
+    console.log(flagshipsIds());
     $.ajax({
         url: baseURL + '/clusterList.do',
         method: 'POST',
