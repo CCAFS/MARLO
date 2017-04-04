@@ -4,13 +4,14 @@
   <table class="projectsList" id="projects">
     <thead>
       <tr class="header">
-        <th colspan="6">Funding Source information</th>
+        <th colspan="7">Funding Source information</th>
         <th colspan="1">Actions</th> 
       </tr>
       <tr class="subHeader">
         <th id="ids">[@s.text name="projectsList.projectids" /]</th>
         <th id="projectTitles" >[@s.text name="projectsList.fundingTitle" /]</th>
         <th id="projectBudgetType" >[@s.text name="projectsList.projectBudgetType" /]</th>
+        <th id="code" >Finance Code</th>
         <th id="projectStatus">[@s.text name="projectsList.projectStatus" /]</th>
         <th id="leader" >[@s.text name="projectsList.institutions" /]</th>
         <th id="projectDonor" >[@s.text name="projectsList.projectDonor" /]</th>
@@ -36,9 +37,13 @@
               </a>
             [/#if]
           </td>
-          [#-- Project Budget --]
+          [#-- Project Budget Type --]
           <td class=""> 
             ${(project.budgetType.name)!'Not defined'}
+          </td>
+          [#-- Finance Code --]
+          <td>
+            [#if project.financeCode?has_content]${project.financeCode}[#else] <p class="text-muted">Not defined</p>  [/#if]
           </td>
           [#-- Project Status --]
           <td>
