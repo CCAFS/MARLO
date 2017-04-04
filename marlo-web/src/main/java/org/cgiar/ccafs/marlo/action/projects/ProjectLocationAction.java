@@ -74,9 +74,6 @@ public class ProjectLocationAction extends BaseAction {
 
   private ProjectLocationValidator locationValidator;
 
-  // private List<CountryLocationLevel> locationsData;
-
-
   private LocElementManager locElementManager;
 
   private LocElementTypeManager locElementTypeManager;
@@ -429,7 +426,13 @@ public class ProjectLocationAction extends BaseAction {
           if (locationData.getLocElements() != null && !locationData.getLocElements().isEmpty()) {
             for (LocElement locElement : locationData.getLocElements()) {
               if (locElement.getId() != null && locElement.getId() != -1) {
+
                 LocElement element = locElementManager.getLocElementById(locElement.getId());
+
+                if (!element.getName().equals(locElement.getName())) {
+                  element.setName(locElement.getName());
+                  locElementManager.saveLocElement(element);
+                }
 
                 ProjectLocation existProjectLocation =
                   projectLocationManager.getProjectLocationByProjectAndLocElement(project.getId(), locElement.getId());
@@ -524,7 +527,14 @@ public class ProjectLocationAction extends BaseAction {
           if (locationData.getLocElements() != null) {
             for (LocElement locElement : locationData.getLocElements()) {
               if (locElement.getId() != null && locElement.getId() != -1) {
+
                 LocElement element = locElementManager.getLocElementById(locElement.getId());
+
+                if (!element.getName().equals(locElement.getName())) {
+                  element.setName(locElement.getName());
+                  locElementManager.saveLocElement(element);
+                }
+
                 if (element.getLocGeoposition() != null && element.getLocElementType().getCrp() == null) {
                   if ((element.getLocGeoposition().getLatitude() != locElement.getLocGeoposition().getLatitude())
                     || (element.getLocGeoposition().getLongitude() != locElement.getLocGeoposition().getLongitude())) {
