@@ -38,9 +38,9 @@
         <div class="borderBox ">
           [#-- Targets units list --]
           <div class="items-list">
-            [#if targetUnitList?has_content]
+            [#if targetUnitsList?has_content]
             <ul>
-            [#list targetUnitList as targetUnit]
+            [#list targetUnitsList as targetUnit]
               [@targetUnitMacro element=targetUnit name="targetUnitList" index=targetUnit_index /]
             [/#list]
             </ul>
@@ -84,6 +84,6 @@
     <input type="hidden" class="acronym" name="${customName}.acronym" value="${(element.acronym)!}" />
     <input type="hidden" class="name" name="${customName}.name" value="${(element.name)!}" />
     [#-- Remove Button --]
-    <span class=" pull-right" > <input type="checkbox" name="${customName}.isActive" id="" [#if element.isActive]checked[/#if]/></span>
+    
   </li>
 [/#macro]

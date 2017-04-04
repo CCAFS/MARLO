@@ -61,7 +61,7 @@
 		</action>
 		
 		<action name="{crp}/targetUnits"
-      class="org.cgiar.ccafs.marlo.action.crp.admin.CrpLocationsAction">
+      class="org.cgiar.ccafs.marlo.action.crp.admin.CrpTargetUnitsAction">
       <!-- interceptor-ref name="autoLogin" / -->
       <interceptor-ref name="crpAdminStack" />
       <result name="input">/WEB-INF/views/admin/targetUnits.ftl</result>
