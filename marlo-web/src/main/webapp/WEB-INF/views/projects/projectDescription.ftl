@@ -50,6 +50,8 @@
           
           <h3 class="headTitle">[@s.text name="projectDescription.title" /]</h3>  
           <div id="projectDescription" class="borderBox">
+            
+            
             [#-- Project Title --]
             <div class="form-group">
               [@customForm.textArea name="project.title" required=true className="project-title" editable=editable && action.hasPermission("title") /]
@@ -62,7 +64,8 @@
               </div>
               [#--  Project Owner Contact Person --]
               <div class="col-md-6"> 
-                
+                [#-- Loading --]
+                <div class="loading liaisonUsersBlock" style="display:none"></div>
                 [@customForm.select name="project.liaisonUser.id" className="liaisonUserSelect" i18nkey="project.liaisonUser"  listName="allOwners" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable && action.hasPermission("managementLiaison")/]
                 <span id="liaisonUserSelected" style="display:none">${(project.liaisonUser.id)!-1}</span>
               </div> 
@@ -174,7 +177,9 @@
               <div class="panel-head ${customForm.changedField('project.clusterActivities')}"> 
                 <label for="">[@s.text name="projectDescription.clusterActivities"][@s.param][@s.text name="global.clusterOfActivities" /][/@s.param] [/@s.text]:[@customForm.req required=editable  && action.hasPermission("activities") /]</label>
               </div>
-              <div id="projectsList" class="panel-body" listname="project.clusterActivities"> 
+              <div id="projectsList" class="panel-body" listname="project.clusterActivities">
+                [#-- Loading --]
+                <div class="loading clustersBlock" style="display:none"></div>
                 <ul class="list">
                 [#if project.clusterActivities?has_content]
                   [#list project.clusterActivities as element]

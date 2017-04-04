@@ -24,14 +24,15 @@ import org.cgiar.ccafs.marlo.data.manager.IpElementManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.CaseStudy;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyIndicator;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
 import org.cgiar.ccafs.marlo.data.model.ChannelEnum;
 import org.cgiar.ccafs.marlo.data.model.Crp;
-import org.cgiar.ccafs.marlo.data.model.CrpParameter;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.CrpTargetUnit;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile;
@@ -75,6 +76,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerOverall;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
 import org.cgiar.ccafs.marlo.data.model.Submission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.FileManager;
@@ -91,6 +93,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -163,14 +166,18 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   private LocElementManager locElementManager;
   private CrpManager crpManager;
   private IpElementManager ipElementManager;
+  private HashMap<Long, String> targetUnitList;
+  private SrfTargetUnitManager srfTargetUnitManager;
+
 
   // Project from DB
   private Project project;
 
+
   @Inject
   public ReportingSummaryAction(APConfig config, CrpManager crpManager, ProjectManager projectManager,
     CrpProgramManager programManager, InstitutionManager institutionManager, ProjectBudgetManager projectBudgetManager,
-    LocElementManager locElementManager, IpElementManager ipElementManager) {
+    LocElementManager locElementManager, IpElementManager ipElementManager, SrfTargetUnitManager srfTargetUnitManager) {
     super(config);
     this.crpManager = crpManager;
     this.projectManager = projectManager;
@@ -179,6 +186,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     this.projectBudgetManager = projectBudgetManager;
     this.locElementManager = locElementManager;
     this.ipElementManager = ipElementManager;
+    this.srfTargetUnitManager = srfTargetUnitManager;
   }
 
 
@@ -234,7 +242,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return String.valueOf(acumulative);
   }
 
-
   public boolean containsOutput(long outputID, long outcomeID) {
 
     if (project.getMogs() != null) {
@@ -252,11 +259,12 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return false;
   }
 
+
   @Override
   public String execute() throws Exception {
 
     // Calculate time to generate report
-    long startTime = System.currentTimeMillis();
+    // long startTime = System.currentTimeMillis();
     // System.out.println("Inicia conteo en: " + (startTime - System.currentTimeMillis()));
 
 
@@ -320,26 +328,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           flagships.add(programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()));
         }
 
-        List<CrpParameter> hasRegionsList = new ArrayList<>();
-        Boolean hasRegions = false;
-        for (CrpParameter hasRegionsParam : project.getCrp().getCrpParameters().stream()
-          .filter(cp -> cp.isActive() && cp.getKey().equals(APConstants.CRP_HAS_REGIONS))
-          .collect(Collectors.toList())) {
-          hasRegionsList.add(hasRegionsParam);
-        }
-
-        if (!hasRegionsList.isEmpty()) {
-          if (hasRegionsList.size() > 1) {
-            LOG.warn("There is for more than 1 key of type: " + APConstants.CRP_HAS_REGIONS);
-          }
-          hasRegions = Boolean.valueOf(hasRegionsList.get(0).getValue());
-        }
-
-
         List<CrpProgram> regions = new ArrayList<>();
         // If has regions, add the regions to regionsArrayList
         // Get Regions related to the project sorted by acronym
-        if (hasRegions != false) {
+        if (this.hasProgramnsRegions() != false) {
           for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
             .sorted((c1, c2) -> c1.getCrpProgram().getAcronym().compareTo(c2.getCrpProgram().getAcronym()))
             .filter(
@@ -360,7 +352,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
         // Subreport Description
         args.add(projectLeader);
-        args.add(hasRegions);
+        args.add(this.hasProgramnsRegions());
         this.fillSubreport((SubReport) hm.get("description"), "description", args);
         // Description Flagships
         args.clear();
@@ -456,19 +448,20 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       bytesPDF = os.toByteArray();
       os.close();
     } catch (Exception e) {
-      long stopTime = System.currentTimeMillis();
-      long elapsedTime = stopTime - startTime;
+      // long stopTime = System.currentTimeMillis();
+      // long elapsedTime = stopTime - startTime;
       // System.out.println("Tiempo de ejecución: Error time " + elapsedTime);
       LOG.error("Generating PDF" + e.getMessage());
       throw e;
     }
     // Calculate time of generation
-    long stopTime = System.currentTimeMillis();
-    long elapsedTime = stopTime - startTime;
+    // long stopTime = System.currentTimeMillis();
+    // long elapsedTime = stopTime - startTime;
     // System.out.println("Tiempo de ejecución: " + elapsedTime);
     return SUCCESS;
 
   }
+
 
   private void fillSubreport(SubReport subReport, String query, List<Object> args) {
     CompoundDataFactory cdf = CompoundDataFactory.normalize(subReport.getDataFactory());
@@ -638,7 +631,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
-
   private TypedTableModel getActivitiesTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"activity_id", "title", "description", "start_date", "end_date", "institution", "activity_leader",
@@ -682,7 +674,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
     return model;
   }
-
 
   /**
    * Get all subreports and store then in a hash map.
@@ -894,6 +885,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
+
   private TypedTableModel getBudgetSummaryTableModel() {
     TypedTableModel model = new TypedTableModel(new String[] {"year", "w1w2", "w3", "bilateral", "centerfunds"},
       new Class[] {Integer.class, String.class, String.class, String.class, String.class}, 0);
@@ -914,6 +906,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
     return model;
   }
+
 
   public byte[] getBytesPDF() {
     return bytesPDF;
@@ -1010,7 +1003,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
     return model;
   }
-
 
   public String getCaseStudyUrl(String project) {
     return config.getDownloadURL() + "/" + this.getCaseStudyUrlPath(project).replace('\\', '/');
@@ -1168,6 +1160,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   public String getCycle() {
     return cycle;
   }
+
 
   private String getDeliverableDataSharingFilePath() {
     String upload = config.getDownloadURL();
@@ -1945,13 +1938,13 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
-
   private TypedTableModel getDescTableModel(ProjectPartner projectLeader, Boolean hasRegions) {
     TypedTableModel model = new TypedTableModel(
       new String[] {"title", "start_date", "end_date", "ml", "ml_contact", "type", "status", "org_leader", "leader",
-        "summary", "cycle", "analysis", "cross-cutting", "hasRegions"},
+        "summary", "cycle", "analysis", "cross-cutting", "hasRegions", "ml_text", "ml_contact_text"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, String.class, Boolean.class});
+        String.class, String.class, String.class, String.class, String.class, String.class, Boolean.class, String.class,
+        String.class});
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
 
 
@@ -2051,11 +2044,15 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       cross_cutting = null;
     }
 
+    String ml_text = null, ml_contact_text = null;
+
+    ml_text = this.getText("project.liaisonInstitution");
+    ml_contact_text = this.getText("project.liaisonUser");
+
     model.addRow(new Object[] {title, start_date, end_date, ml, ml_contact, type, status, org_leader, leader, summary,
-      cycle, analysis, cross_cutting, hasRegions});
+      cycle, analysis, cross_cutting, hasRegions, ml_text, ml_contact_text});
     return model;
   }
-
 
   private File getFile(String fileName) {
 
@@ -2064,6 +2061,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     File file = new File(classLoader.getResource(fileName).getFile());
     return file;
   }
+
 
   @Override
   public String getFileName() {
@@ -2077,6 +2075,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return fileName.toString();
 
   }
+
 
   public IpIndicator getFinalIndicator(IpIndicator ipIndicator) {
     IpIndicator newIpIndicator = ipIndicator;
@@ -2140,7 +2139,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     }
     return inputStream;
   }
-
 
   private TypedTableModel getLeveragesTableModel() {
     // Decimal format
@@ -2244,9 +2242,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     // Initialization of Model
     TypedTableModel model = new TypedTableModel(
       new String[] {"title", "center", "current_date", "project_submission", "cycle", "isNew", "isAdministrative",
-        "type", "isGlobal", "isPhaseOne", "budget_gender"},
+        "type", "isGlobal", "isPhaseOne", "budget_gender", "hasTargetUnit"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, Boolean.class, Boolean.class,
-        String.class, Boolean.class, Boolean.class, Boolean.class});
+        String.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class});
 
     // Filling title
     String title = "";
@@ -2267,14 +2265,17 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           }
         }
       }
-      if (regions != null) {
-        if (!regions.isEmpty()) {
+      if (project.getNoRegional() != null && project.getNoRegional()) {
+        title += "Global" + "-";
+      } else {
+        if (regions != null && !regions.isEmpty()) {
           for (CrpProgram crpProgram : regions) {
             title += crpProgram.getAcronym() + "-";
           }
         }
       }
     }
+
     title += "P" + Long.toString(projectID);
 
     // Get datetime
@@ -2344,10 +2345,16 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       hasGender = false;
     }
 
+    Boolean hasTargetUnit = false;
+    if (targetUnitList.size() > 0) {
+      hasTargetUnit = true;
+    }
+
     model.addRow(new Object[] {title, centerAcry, current_date, submission, cycle, isNew, isAdministrative, type,
-      project.isLocationGlobal(), this.isPhaseOne(), hasGender});
+      project.isLocationGlobal(), this.isPhaseOne(), hasGender, hasTargetUnit});
     return model;
   }
+
 
   public List<IpElement> getMidOutcomeOutputs(long midOutcomeID) {
     List<IpProjectContribution> ipProjectContributions =
@@ -2616,7 +2623,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
-
   private TypedTableModel getPartnerLeaderTableModel(ProjectPartner projectLeader) {
     TypedTableModel model =
       new TypedTableModel(new String[] {"org_leader", "pp_id"}, new Class[] {String.class, Long.class}, 0);
@@ -2719,6 +2725,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
     return model;
   }
+
 
   private TypedTableModel getProjectHighlightReportingTableModel() {
     TypedTableModel model = new TypedTableModel(
@@ -2885,7 +2892,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return projectID;
   }
 
-
   private TypedTableModel getProjectOtherOutcomesTableModel() {
     TypedTableModel model =
       new TypedTableModel(new String[] {"out_statement", "year"}, new Class[] {String.class, Integer.class}, 0);
@@ -2973,16 +2979,15 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
   }
 
+
   public String getProjectOutcomeUrl() {
     return config.getDownloadURL() + "/" + this.getProjectOutcomeUrlPath().replace('\\', '/');
   }
-
 
   public String getProjectOutcomeUrlPath() {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project.getId() + File.separator
       + "projectOutcome" + File.separator;
   }
-
 
   private TypedTableModel getRLTableModel(List<CrpProgram> regions) {
     TypedTableModel model = new TypedTableModel(new String[] {"RL"}, new Class[] {String.class}, 0);
@@ -2990,14 +2995,19 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     if (project.getNoRegional() != null && project.getNoRegional()) {
       global = "Global";
       model.addRow(new Object[] {global});
-    }
-
-
-    for (CrpProgram crpProgram : regions) {
-      model.addRow(new Object[] {crpProgram.getComposedName()});
+    } else {
+      for (CrpProgram crpProgram : regions) {
+        model.addRow(new Object[] {crpProgram.getComposedName()});
+      }
     }
     return model;
   }
+
+
+  public HashMap<Long, String> getTargetUnitList() {
+    return targetUnitList;
+  }
+
 
   /**
    * Get total amount per institution year and type
@@ -3059,7 +3069,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     }
   }
 
-
   /**
    * Get the total budget per year and type
    * 
@@ -3078,6 +3087,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     }
     return total;
   }
+
 
   public int getYear() {
     return year;
@@ -3140,6 +3150,26 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     } catch (Exception e) {
       cycle = this.getCurrentCycle();
     }
+    // Fill target unit list
+    targetUnitList = new HashMap<>();
+    if (srfTargetUnitManager.findAll() != null) {
+
+      List<SrfTargetUnit> targetUnits = new ArrayList<>();
+
+      List<CrpTargetUnit> crpTargetUnits = new ArrayList<>(
+        loggedCrp.getCrpTargetUnits().stream().filter(tu -> tu.isActive()).collect(Collectors.toList()));
+
+      for (CrpTargetUnit crpTargetUnit : crpTargetUnits) {
+        targetUnits.add(crpTargetUnit.getSrfTargetUnit());
+      }
+
+      Collections.sort(targetUnits,
+        (tu1, tu2) -> tu1.getName().toLowerCase().trim().compareTo(tu2.getName().toLowerCase().trim()));
+
+      for (SrfTargetUnit srfTargetUnit : targetUnits) {
+        targetUnitList.put(srfTargetUnit.getId(), srfTargetUnit.getName());
+      }
+    }
   }
 
   private DeliverablePartnership responsiblePartner(Deliverable deliverable) {
@@ -3159,7 +3189,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     this.bytesPDF = bytesPDF;
   }
 
-
   public void setCycle(String cycle) {
     this.cycle = cycle;
   }
@@ -3172,6 +3201,11 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
+  }
+
+
+  public void setTargetUnitList(HashMap<Long, String> targetUnitList) {
+    this.targetUnitList = targetUnitList;
   }
 
   public void setYear(int year) {

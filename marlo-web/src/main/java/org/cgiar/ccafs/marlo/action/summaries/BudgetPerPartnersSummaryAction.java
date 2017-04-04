@@ -22,7 +22,6 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
-import org.cgiar.ccafs.marlo.data.model.CrpParameter;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
@@ -320,39 +319,33 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
             }
           }
 
-          List<CrpParameter> hasRegionsList = new ArrayList<>();
-          Boolean hasRegions = false;
-          for (CrpParameter hasRegionsParam : project.getCrp().getCrpParameters().stream()
-            .filter(cp -> cp.isActive() && cp.getKey().equals(APConstants.CRP_HAS_REGIONS))
-            .collect(Collectors.toList())) {
-            hasRegionsList.add(hasRegionsParam);
-          }
-
-          if (!hasRegionsList.isEmpty()) {
-            if (hasRegionsList.size() > 1) {
-              LOG.warn("There is for more than 1 key of type: " + APConstants.CRP_HAS_REGIONS);
+          if (this.hasProgramnsRegions()) {
+            List<CrpProgram> regionsList = new ArrayList<>();
+            // If has regions, add the regions to regionsArrayList
+            // Get Regions related to the project sorted by acronym
+            if (this.hasProgramnsRegions() != false) {
+              for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
+                .sorted((c1, c2) -> c1.getCrpProgram().getAcronym().compareTo(c2.getCrpProgram().getAcronym()))
+                .filter(c -> c.isActive()
+                  && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+                .collect(Collectors.toList())) {
+                regionsList.add(programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()));
+              }
             }
-            hasRegions = Boolean.valueOf(hasRegionsList.get(0).getValue());
-          }
 
-          List<CrpProgram> regionsList = new ArrayList<>();
-          // If has regions, add the regions to regionsArrayList
-          // Get Regions related to the project sorted by acronym
-          if (hasRegions != false) {
-            for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-              .sorted((c1, c2) -> c1.getCrpProgram().getAcronym().compareTo(c2.getCrpProgram().getAcronym()))
-              .filter(
-                c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
-              .collect(Collectors.toList())) {
-              regionsList.add(programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()));
-            }
-          }
-
-          for (CrpProgram crpProgram : regionsList) {
-            if (regions.isEmpty()) {
-              regions = crpProgram.getAcronym();
+            if (project.getNoRegional() != null && project.getNoRegional()) {
+              regions = "Global";
+              if (regionsList.size() > 0) {
+                LOG.warn("Project is global and has regions selected");
+              }
             } else {
-              regions += ", " + crpProgram.getAcronym();
+              for (CrpProgram crpProgram : regionsList) {
+                if (regions.isEmpty()) {
+                  regions = crpProgram.getAcronym();
+                } else {
+                  regions += ", " + crpProgram.getAcronym();
+                }
+              }
             }
           }
 
@@ -360,10 +353,10 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
             regions = null;
           }
           if (coas.isEmpty()) {
-            regions = null;
+            coas = null;
           }
           if (flagships.isEmpty()) {
-            regions = null;
+            flagships = null;
           }
 
           budgetW1W2 = Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 1, projectId));
@@ -551,22 +544,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
       zone = "+0";
     }
     String date = timezone.format(format) + "(GMT" + zone + ")";
-    // Verify if the crp has regions avalaible
-    List<CrpParameter> hasRegionsList = new ArrayList<>();
-    Boolean hasRegions = false;
-    for (CrpParameter hasRegionsParam : this.loggedCrp.getCrpParameters().stream()
-      .filter(cp -> cp.isActive() && cp.getKey().equals(APConstants.CRP_HAS_REGIONS)).collect(Collectors.toList())) {
-      hasRegionsList.add(hasRegionsParam);
-    }
-
-    if (!hasRegionsList.isEmpty()) {
-      if (hasRegionsList.size() > 1) {
-        LOG.warn("There is for more than 1 key of type: " + APConstants.CRP_HAS_REGIONS);
-      }
-      hasRegions = Boolean.valueOf(hasRegionsList.get(0).getValue());
-    }
-
-    model.addRow(new Object[] {center, date, this.getYear(), loggedCrp.getId(), hasRegions});
+    model.addRow(new Object[] {center, date, this.getYear(), loggedCrp.getId(), this.hasProgramnsRegions()});
     return model;
   }
 

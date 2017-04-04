@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
@@ -34,11 +35,22 @@ public class DateTypeAdapter extends TypeAdapter<Date> {
   private final DateFormat enUsFormat =
     DateFormat.getDateTimeInstance(DateFormat.DEFAULT, DateFormat.DEFAULT, Locale.US);
   private final DateFormat localFormat = DateFormat.getDateTimeInstance(DateFormat.DEFAULT, DateFormat.DEFAULT);
+  private final String pattern = "MMM-dd-yyyy";
+
+  private final SimpleDateFormat foDateFormat = new SimpleDateFormat(pattern, Locale.US);
 
   private synchronized Date deserializeToDate(String json) {
     try {
       return localFormat.parse(json);
     } catch (ParseException ignored) {
+    }
+    try {
+      String dateAux = json.replaceAll(", ", " ").replaceAll(" ", "-");
+      Date date = foDateFormat.parse(dateAux);
+
+      return date;
+    } catch (Exception ignored) {
+      ignored.printStackTrace();
     }
     try {
       return enUsFormat.parse(json);

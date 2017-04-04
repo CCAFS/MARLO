@@ -465,7 +465,7 @@ var searchInstitutionsOptions = function(includePPA) {
           delay: 350,
           data: function(params) {
             return {
-                q: params.term, // search term
+                q: params.term || '', // search term
                 withPPA: includePPA ? 1 : 0,
                 onlyPPA: projectPreSetting
             };
@@ -479,7 +479,7 @@ var searchInstitutionsOptions = function(includePPA) {
       escapeMarkup: function(markup) {
         return markup;
       }, // let our custom formatter work
-      minimumInputLength: 2,
+      minimumInputLength: 0,
       templateResult: formatRepo,
       templateSelection: formatRepoSelection,
       placeholder: placeholderText,
@@ -508,9 +508,10 @@ function formatRepo(repo) {
   } else {
     markup += "<strong>" + repo.name + "</strong>";
   }
+  markup += " <span class='grayColor'>(" + repo.location + ")</span> ";
   // Partner type
   markup += "<br>";
-  markup += "<small> <i>" + repo.type + "</i> </small> ";
+  markup += "<small> <i>" + repo.type + " </i></small> ";
   markup += "</div>";
   return markup;
 }

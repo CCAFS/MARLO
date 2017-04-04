@@ -96,10 +96,12 @@ public class FundingSourceBudget implements java.io.Serializable, IAuditLog {
 
   @Override
   public String getLogDeatil() {
-    // TODO Auto-generated method stub
-    return null;
+    StringBuilder sb = new StringBuilder();
+    sb.append("Id : ").append(this.getId());
+    return sb.toString();
   }
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }

@@ -18,14 +18,16 @@ package org.cgiar.ccafs.marlo.action.summaries;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
+import org.cgiar.ccafs.marlo.data.model.CrpTargetUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
+import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.ByteArrayInputStream;
@@ -36,8 +38,11 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -72,9 +77,10 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
   private Crp loggedCrp;
   private int year;
   private String cycle;
+  private HashMap<Long, String> targetUnitList;
   // Managers
   private CrpManager crpManager;
-  private CrpProgramManager programManager;
+  private SrfTargetUnitManager srfTargetUnitManager;
 
   // XLSX bytes
   private byte[] bytesXLSX;
@@ -83,10 +89,11 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
   InputStream inputStream;
 
   @Inject
-  public OutcomesContributionsSummaryAction(APConfig config, CrpManager crpManager, CrpProgramManager programManager) {
+  public OutcomesContributionsSummaryAction(APConfig config, CrpManager crpManager,
+    SrfTargetUnitManager srfTargetUnitManager) {
     super(config);
     this.crpManager = crpManager;
-    this.programManager = programManager;
+    this.srfTargetUnitManager = srfTargetUnitManager;
   }
 
   @Override
@@ -283,9 +290,14 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
 
   private TypedTableModel getMasterTableModel(String center, String date) {
     // Initialization of Model
-    TypedTableModel model =
-      new TypedTableModel(new String[] {"center", "date"}, new Class[] {String.class, String.class});
-    model.addRow(new Object[] {center, date});
+    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "hasTargetUnit"},
+      new Class[] {String.class, String.class, Boolean.class});
+
+    Boolean hasTargetUnit = false;
+    if (targetUnitList.size() > 0) {
+      hasTargetUnit = true;
+    }
+    model.addRow(new Object[] {center, date, hasTargetUnit});
     return model;
   }
 
@@ -417,6 +429,26 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
       cycle = (StringUtils.trim(((String[]) parameters.get(APConstants.CYCLE))[0]));
     } catch (Exception e) {
       cycle = this.getCurrentCycle();
+    }
+    // Fill target unit list
+    targetUnitList = new HashMap<>();
+    if (srfTargetUnitManager.findAll() != null) {
+
+      List<SrfTargetUnit> targetUnits = new ArrayList<>();
+
+      List<CrpTargetUnit> crpTargetUnits = new ArrayList<>(
+        loggedCrp.getCrpTargetUnits().stream().filter(tu -> tu.isActive()).collect(Collectors.toList()));
+
+      for (CrpTargetUnit crpTargetUnit : crpTargetUnits) {
+        targetUnits.add(crpTargetUnit.getSrfTargetUnit());
+      }
+
+      Collections.sort(targetUnits,
+        (tu1, tu2) -> tu1.getName().toLowerCase().trim().compareTo(tu2.getName().toLowerCase().trim()));
+
+      for (SrfTargetUnit srfTargetUnit : targetUnits) {
+        targetUnitList.put(srfTargetUnit.getId(), srfTargetUnit.getName());
+      }
     }
   }
 
