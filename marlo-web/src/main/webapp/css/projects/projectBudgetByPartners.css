@@ -41,7 +41,7 @@ ul.nav.nav-tabs.budget-tabs>li>a:hover {
 }
 
 .projectPartner .blockContent{
-    padding: 10px 30px 12px 30px;
+    padding: 10px 20px 12px 20px;
 }
 
 
@@ -131,8 +131,10 @@ span.contact.name {
     font-size: 1em;
 }
 
-.projectW3bilateralFund p {
-    padding-right: 21px !important;
+.projectW3bilateralFund p span.title {
+    /* padding-right: 18px !important; */
+    padding-bottom: 0px;
+    font-size: 0.9em;
 }
 
 .budgetByYears {
@@ -148,4 +150,8 @@ span.contact.name {
 .linkIcon {
     cursor: pointer;
     float: right;
+}
+
+.projectW3bilateralFund-list {
+    padding: 4px 10px;
 }
