@@ -72,7 +72,7 @@
         [/@s.form]
     </div>
     [#else]
-      <p class="text-center borderBox">There is not flagships added</p>
+      <p class="text-center borderBox">[@s.text name="impactPathway.noFlagshipsAdded" /]</p>
     [/#if]
   </div>
 </div>
