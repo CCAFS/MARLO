@@ -1,5 +1,6 @@
 [#ftl]
 [#assign title = "Summaries Section" /]
+[#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["select2","font-awesome","jsUri"] /]
 [#assign customJS = ["${baseUrl}/js/global/utils.js", "${baseUrl}/js/summaries/boardSummaries.js"] /]
 [#assign customCSS = ["${baseUrl}/css/summaries/summaries.css"] /]
