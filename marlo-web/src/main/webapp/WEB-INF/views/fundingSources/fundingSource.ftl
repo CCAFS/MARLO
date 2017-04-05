@@ -75,6 +75,7 @@
           <div class="col-md-6">[@customForm.select name="fundingSource.budgetType.id"   i18nkey="projectCofunded.type"  className="type" listName="budgetTypes" header=false required=true editable=editable&&action.canEditType() /]</div>
         </div>
       </div>
+      
       [#-- CGIAR lead center --]
       [#assign ifpriDivision = false /]
       <div class="form-group row">
@@ -94,7 +95,7 @@
                   <div class="clearfix"></div>
                   
                   [#-- Check IFPRI Division --]
-                  [#if institutionLead.institution.id == 89 ] [#assign ifpriDivision = true /] [/#if]
+                  [#if institutionLead.institution.id == action.getIFPRIId() ] [#assign ifpriDivision = true /] [/#if]
                 </li>
               [/#list]
               [#else]
@@ -109,11 +110,10 @@
       </div>
       
       [#-- Division --]
-      [#assign hasDivisionField = (crpSession == "pim") /]
-      [#if hasDivisionField] 
-        <div class="form-group row divisionBlock division-89"  style="display:${ifpriDivision?string('block','none')}">
+      [#if action.hasSpecificities('crp_division_fs')]
+        <div class="form-group row divisionBlock division-${action.getIFPRIId()}"  style="display:${ifpriDivision?string('block','none')}">
           <div class="col-md-6">
-            [@customForm.input name="fundingSource.division" i18nkey="projectCofunded.division" className="" required=true editable=editable /]
+            [@customForm.input name="fundingSource.division" i18nkey="projectCofunded.division" className="" editable=editable /]
           </div>
         </div>
       [/#if]
