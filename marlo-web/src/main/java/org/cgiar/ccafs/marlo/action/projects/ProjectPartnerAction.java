@@ -333,25 +333,23 @@ public class ProjectPartnerAction extends BaseAction {
   }
 
   public List<Integer> getEndYears() {
-
+    Project projectDB = projectManager.getProjectById(projectID);
     Calendar calendarStart = Calendar.getInstance();
-    calendarStart.setTime(project.getStartDate());
+    calendarStart.setTime(projectDB.getStartDate());
     int endYear = 0;
     List<Integer> years = new ArrayList<>();
     if (this.isReportingActive()) {
       endYear = this.getCurrentCycleYear();
 
     } else {
-      endYear = this.getCurrentCycleYear() - 1;
+      endYear = this.getCurrentCycleYear();
     }
 
 
     int year = calendarStart.get(Calendar.YEAR);
     while (year <= endYear) {
-      year++;
-      // Adding the year to the list.
       years.add(year);
-      // Adding a year (365 days) to the start date.
+      year++;
 
     }
     return years;
@@ -1018,8 +1016,25 @@ public class ProjectPartnerAction extends BaseAction {
             projectPartner.setModificationJustification("");
             projectPartner.setActiveSince(new Date());
             projectPartner.setProject(project);
-
+            if (projectPartner.getYearEndDate() != null && projectPartner.getYearEndDate().intValue() == -1) {
+              projectPartner.setYearEndDate(null);
+            }
             projectPartnerManager.saveProjectPartner(projectPartner);
+          } else {
+            ProjectPartner dbPartner;
+            dbPartner = projectPartnerManager.getProjectPartnerById(projectPartner.getId());
+            projectPartner.setProject(project);
+            projectPartner.setModifiedBy(this.getCurrentUser());
+            projectPartner.setModificationJustification("");
+            projectPartner.setCreatedBy(dbPartner.getCreatedBy());
+            projectPartner.setActiveSince(dbPartner.getActiveSince());
+            projectPartner.setActive(true);
+            if (projectPartner.getYearEndDate() != null && projectPartner.getYearEndDate().intValue() == -1) {
+              projectPartner.setYearEndDate(null);
+            }
+            projectPartnerManager.saveProjectPartner(projectPartner);
+
+
           }
 
 
