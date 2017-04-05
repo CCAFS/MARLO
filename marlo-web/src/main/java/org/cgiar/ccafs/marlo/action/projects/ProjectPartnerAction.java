@@ -237,6 +237,20 @@ public class ProjectPartnerAction extends BaseAction {
     return SUCCESS;
   }
 
+  public boolean canEdit(long projectPartnerID) {
+    for (ProjectPartner projectPartner : project.getPartners()) {
+      if (projectPartner.getId().longValue() == projectPartnerID) {
+        if (projectPartner.getYearEndDate() == null) {
+          return true;
+        }
+        if (projectPartner.getYearEndDate() < this.getCurrentCycleYear()) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
   public void checkCrpUserByRole(User user) {
     user = userManager.getUser(user.getId());
     List<UserRole> crpUserRoles =
@@ -250,6 +264,7 @@ public class ProjectPartnerAction extends BaseAction {
     }
   }
 
+
   /**
    * This method clears the cache and re-load the user permissions in the next iteration.
    */
@@ -258,7 +273,6 @@ public class ProjectPartnerAction extends BaseAction {
     ((APCustomRealm) securityContext.getRealm())
       .clearCachedAuthorizationInfo(securityContext.getSubject().getPrincipals());
   }
-
 
   public List<Activity> getActivitiesLedByUser(long userID) {
 
@@ -278,14 +292,15 @@ public class ProjectPartnerAction extends BaseAction {
     return allInstitutions;
   }
 
+
   public List<Institution> getAllPPAInstitutions() {
     return allPPAInstitutions;
   }
 
-
   public List<User> getAllUsers() {
     return allUsers;
   }
+
 
   private Path getAutoSaveFilePath() {
     String composedClassName = project.getClass().getSimpleName();
@@ -316,7 +331,6 @@ public class ProjectPartnerAction extends BaseAction {
 
     return deliverablesLeads;
   }
-
 
   public List<Integer> getEndYears() {
 
