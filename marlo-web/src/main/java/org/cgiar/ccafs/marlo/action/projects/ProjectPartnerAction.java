@@ -71,6 +71,7 @@ import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -209,6 +210,7 @@ public class ProjectPartnerAction extends BaseAction {
       crpUser.setModificationJustification("");
       crpUserManager.saveCrpUser(crpUser);
     }
+
   }
 
   @Override
@@ -248,7 +250,6 @@ public class ProjectPartnerAction extends BaseAction {
     }
   }
 
-
   /**
    * This method clears the cache and re-load the user permissions in the next iteration.
    */
@@ -257,6 +258,7 @@ public class ProjectPartnerAction extends BaseAction {
     ((APCustomRealm) securityContext.getRealm())
       .clearCachedAuthorizationInfo(securityContext.getSubject().getPrincipals());
   }
+
 
   public List<Activity> getActivitiesLedByUser(long userID) {
 
@@ -276,15 +278,14 @@ public class ProjectPartnerAction extends BaseAction {
     return allInstitutions;
   }
 
-
   public List<Institution> getAllPPAInstitutions() {
     return allPPAInstitutions;
   }
 
+
   public List<User> getAllUsers() {
     return allUsers;
   }
-
 
   private Path getAutoSaveFilePath() {
     String composedClassName = project.getClass().getSimpleName();
@@ -314,6 +315,32 @@ public class ProjectPartnerAction extends BaseAction {
     }
 
     return deliverablesLeads;
+  }
+
+
+  public List<Integer> getEndYears() {
+
+    Calendar calendarStart = Calendar.getInstance();
+    calendarStart.setTime(project.getStartDate());
+    int endYear = 0;
+    List<Integer> years = new ArrayList<>();
+    if (this.isReportingActive()) {
+      endYear = this.getCurrentCycleYear();
+
+    } else {
+      endYear = this.getCurrentCycleYear() - 1;
+    }
+
+
+    int year = calendarStart.get(Calendar.YEAR);
+    while (year <= endYear) {
+      year++;
+      // Adding the year to the list.
+      years.add(year);
+      // Adding a year (365 days) to the start date.
+
+    }
+    return years;
   }
 
 
@@ -686,7 +713,7 @@ public class ProjectPartnerAction extends BaseAction {
               .addAll(historyComparator.getDifferencesList(projectPartnerContribution, transaction, specialList,
                 "project.partners[" + i + "].partnerContributors[" + k + "]", "project.partnerContributors", 2));
             k++;
-          } ;
+          };
 
           List<ProjectPartnerOverall> overalls =
             projectPartner.getProjectPartnerOveralls().stream().filter(c -> c.isActive()).collect(Collectors.toList());
