@@ -256,7 +256,7 @@
     
       <div class="form-group">
         ${(action.getEndYears())!}
-        [@customForm.select name="${name}.yearEndDate" className="" required=true header=false i18nkey="projectPartners.partner.endYear" listName="endYears" /]
+        [@customForm.select name="${name}.yearEndDate" className="" required=true header=false i18nkey="projectPartners.partner.endYear" listName="endYears" editable=editable /]
       </div>      
       
       [#-- Indicate which PPA Partners for second level partners --]
