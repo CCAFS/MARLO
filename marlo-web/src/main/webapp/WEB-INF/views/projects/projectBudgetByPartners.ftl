@@ -96,8 +96,8 @@
                       </div>
                     </div>
                     
-                    [#if projectPPAPartners?has_content]
-                      [#list projectPPAPartners as projectPartner]
+                    [#if action.getPPAPartnersYear(year)?has_content]
+                      [#list action.getPPAPartnersYear(year) as projectPartner]
                         [@projectPartnerMacro element=projectPartner name="project.partners[${projectPartner_index}]" index=projectPartner_index selectedYear=year/]
                       [/#list]
                     [#else]

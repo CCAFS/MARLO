@@ -341,10 +341,38 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   }
 
 
+  public List<ProjectPartner> getPPAPartnersYear(int year) {
+    Project projectBD = projectManager.getProjectById(projectID);
+    project.setStartDate(projectBD.getStartDate());
+    project.setEndDate(projectBD.getEndDate());
+    project.setPartners(new ArrayList<>());
+
+    project.getPartners().addAll(projectBD.getProjectPartners().stream()
+      .filter(c -> c.isActive() && c.getYearEndDate() == null).collect(Collectors.toList()));
+    project.getPartners()
+      .addAll(projectBD.getProjectPartners().stream()
+        .filter(c -> c.isActive() && c.getYearEndDate() != null && c.getYearEndDate() <= this.getCurrentCycleYear())
+        .collect(Collectors.toList()));
+
+    for (ProjectPartner projectPartner : project.getPartners()) {
+      projectPartner.setPartnerPersons(
+        projectPartner.getProjectPartnerPersons().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+    }
+
+
+    this.projectPPAPartners = new ArrayList<ProjectPartner>();
+    for (ProjectPartner pp : project.getPartners()) {
+      if (this.isPPA(pp.getInstitution())) {
+        this.projectPPAPartners.add(pp);
+      }
+    }
+    return projectPPAPartners;
+  }
+
+
   public Project getProject() {
     return project;
   }
-
 
   public long getProjectID() {
     return projectID;
@@ -354,10 +382,10 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return projectPPAPartners;
   }
 
+
   public Map<String, String> getStatus() {
     return status;
   }
-
 
   public String getTotalAmount(long institutionId, int year, long budgetType) {
     return projectBudgetManager.amountByBudgetType(institutionId, year, budgetType, projectID);
@@ -379,6 +407,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
     return totalGender;
   }
+
 
   public double getTotalGenderPer(long institutionId, int year, long budgetType) {
 
@@ -569,25 +598,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
       this.loadCofundedInfoList();
 
 
-      Project projectBD = projectManager.getProjectById(projectID);
-      project.setStartDate(projectBD.getStartDate());
-      project.setEndDate(projectBD.getEndDate());
-
-      project
-        .setPartners(projectBD.getProjectPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-
-      for (ProjectPartner projectPartner : project.getPartners()) {
-        projectPartner.setPartnerPersons(
-          projectPartner.getProjectPartnerPersons().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-      }
-
-
-      this.projectPPAPartners = new ArrayList<ProjectPartner>();
-      for (ProjectPartner pp : project.getPartners()) {
-        if (this.isPPA(pp.getInstitution())) {
-          this.projectPPAPartners.add(pp);
-        }
-      }
     }
 
 
@@ -605,20 +615,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_BUDGET_BASE_PERMISSION, params));
 
-
-    ProjectPartner leader = project.getLeader();
-    if (leader != null) {
-      if (project.isBilateralProject()) {
-        project.getPartners().clear();
-        project.getPartners().add(leader);
-      } else {
-        // First we remove the element from the array.
-        project.getPartners().remove(leader);
-        // then we add it to the first position.
-        project.getPartners().add(0, leader);
-      }
-
-    }
 
     if (this.isHttpPost()) {
       if (project.getPartners() != null) {
