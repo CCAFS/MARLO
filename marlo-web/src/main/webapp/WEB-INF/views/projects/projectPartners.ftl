@@ -241,6 +241,7 @@
       [/#if]
       --]
       
+       
       [#-- Institution / Organization --]
       <div class="form-group partnerName">
         <p class="fieldErrorInstitutions"></p>
@@ -252,7 +253,11 @@
         [/#if]
         <br />
       </div>
-      
+    
+      <div class="form-group">
+        ${(action.getEndYears())!}
+        [@customForm.select name="${name}.yearEndDate" className="" required=true header=false i18nkey="projectPartners.partner.endYear" listName="endYears" /]
+      </div>      
       
       [#-- Indicate which PPA Partners for second level partners --]
       [#if (editable || ((!editable && element.partnerContributors?has_content)!false))]
