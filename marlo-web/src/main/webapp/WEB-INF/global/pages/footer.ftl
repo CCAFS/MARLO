@@ -35,7 +35,7 @@
       var justificationLimitWords = 100;
       var errorMessages = [];
       var hashScroll = true;
-      var forceChange = ${draft?string};
+      var forceChange = false;
       
       var GOOGLE_API_KEY="${config.googleApiKey}";
       var PUSHER_KEY = "${config.pushApiKey}";
@@ -137,10 +137,14 @@
     <script type="text/javascript" src="${baseUrl}/js/global/utils.js" ></script>
     <script type="text/javascript" src="${baseUrl}/js/global/global.js" ></script>
     [#if logged]
+      [#-- Pusher app --]
       <script type="text/javascript" src="${baseUrl}/js/global/pusher-app.js" ></script>
     [/#if]
     [#-- import the custom JS and CSS --]
     [#if customJS??][#list customJS as js]<script src="${js}"></script>[/#list][/#if]
+    
+    [#-- Changes on Save --]
+    <script type="text/javascript" src="${baseUrl}/js/global/changes.js" ></script>
     
     [/#compress]
     
