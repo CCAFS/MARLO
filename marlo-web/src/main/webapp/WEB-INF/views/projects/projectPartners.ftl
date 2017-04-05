@@ -194,7 +194,7 @@
     [#-- Loading --]
     <div class="loading" style="display:none"></div>
     [#-- Remove link for all partners --]
-    [#if editable ] [#--&& (isTemplate) --]
+    [#if isTemplate || (editable && projectPartner?? && action.canBeDeleted(projectPartner.id, projectPartner.class.name)) ]
       <div class="removeLink"><div id="removePartner" class="removePartner removeElement removeLink" title="[@s.text name="projectPartners.removePartner" /]"></div></div>
     [/#if]
     
