@@ -49,6 +49,7 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
 
   private Set<CrpTargetUnit> crpTargetUnits = new HashSet<CrpTargetUnit>(0);
 
+
   private boolean active;
 
   private User createdBy;
@@ -57,10 +58,9 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
 
   private User modifiedBy;
 
-
   private String modificationJustification;
 
-  private boolean checkCrp;
+  private Boolean checkCrp;
 
 
   public SrfTargetUnit() {
@@ -71,6 +71,7 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
 
   }
 
+
   public SrfTargetUnit(String name, Set<CrpMilestone> crpMilestones, Set<SrfSloIndicatorTarget> srfSloIndicatorTargets,
     Set<CrpProgramOutcome> crpProgramOutcomes) {
     this.name = name;
@@ -79,7 +80,6 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
     this.srfSloIndicatorTargets = srfSloIndicatorTargets;
     this.crpProgramOutcomes = crpProgramOutcomes;
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -110,10 +110,15 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
   public Date getActiveSince() {
     return activeSince;
   }
+
+
+  public Boolean getCheckCrp() {
+    return checkCrp;
+  }
+
 
   public User getCreatedBy() {
     return createdBy;
@@ -131,11 +136,11 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
     return crpTargetUnits;
   }
 
-
   @Override
   public Long getId() {
     return this.id;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -176,20 +181,16 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
     return active;
   }
 
-  public boolean isCheckCrp() {
-    return checkCrp;
-  }
-
-
   public void setActive(boolean active) {
     this.active = active;
   }
+
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
 
-  public void setCheckCrp(boolean checkCrp) {
+  public void setCheckCrp(Boolean checkCrp) {
     this.checkCrp = checkCrp;
   }
 

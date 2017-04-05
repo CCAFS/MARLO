@@ -38,10 +38,10 @@
         <div class="borderBox ">
           [#-- Targets units list --]
           <div class="items-list">
-            [#if targetUnitsList?has_content]
+            [#if loggedCrp.targetUnits?has_content]
             <ul>
-            [#list targetUnitsList as targetUnit]
-              [@targetUnitMacro element=targetUnit name="targetUnits" index=targetUnit_index /]
+            [#list loggedCrp.targetUnits as targetUnit]
+              [@targetUnitMacro element=targetUnit name="loggedCrp.targetUnits" index=targetUnit_index /]
             [/#list]
             </ul>
             [#else]
@@ -72,18 +72,17 @@
 
 
 [#-- Unit Target Template --]
-[@targetUnitMacro element={} name="targetUnitList" index=-1 isTemplate=true /]
+[@targetUnitMacro element={} name="loggedCrp.targetUnits" index=-1 isTemplate=true /]
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]
 
 [#macro targetUnitMacro element name index isTemplate=false]
   <li id="targetUnit-${isTemplate?string('template',index)}" class="li-item targetUnitAdmin" style="float:left; width:48%; margin-right:5px; display:${isTemplate?string('none','block')}">
     [#local customName = "${name}[${index}]"/]
-    <span class="glyphicon glyphicon-scale"></span>  <span class="composedName"> ${(element.name)!}</span>
-    <input type="hidden" class="id" name="${customName}.id" value="${(element.id)!}" />
-    <input type="hidden" class="acronym" name="${customName}.acronym" value="${(element.acronym)!}" />
-    <input type="hidden" class="name" name="${customName}.name" value="${(element.name)!}" />
+    <span class="glyphicon glyphicon-scale"></span>  <span class="composedName"> ${(element.targetUnit.name)!}</span>
+    <input type="hidden" class="id" name="${customName}.targetUnit.id" value="${(element.targetUnit.id)!}" />
+    <input type="hidden" class="name" name="${customName}.targetUnit.name" value="${(element.targetUnit.name)!}" />
     [#-- Remove Button --]
-    <span class=" pull-right" > <input type="checkbox" value="true" name="${customName}.checkCrp" id="" [#if element.checkCrp??]checked[/#if]/></span>
+    <span class=" pull-right" > <input type="checkbox" value="true" name="${customName}.check" id="" [#if element.check?? && element.check]checked[/#if]/></span>
   </li>
 [/#macro]

@@ -23,10 +23,12 @@ import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpTargetUnit;
 import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
+import org.cgiar.ccafs.marlo.data.model.TargetUnitSelect;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -73,24 +75,31 @@ public class CrpTargetUnitsAction extends BaseAction {
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
     String params[] = {loggedCrp.getAcronym()};
 
-
     targetUnitsList =
       new ArrayList<>(targetUnitManager.findAll().stream().filter(tu -> tu.isActive()).collect(Collectors.toList()));
 
+    loggedCrp.setTargetUnits(new ArrayList<>());
+
     for (SrfTargetUnit targetUnit : targetUnitsList) {
+
+      TargetUnitSelect select = new TargetUnitSelect();
+      select.setTargetUnit(targetUnit);
 
       CrpTargetUnit crpTargetUnit =
         crpTargetUnitManager.getByTargetUnitIdAndCrpId(loggedCrp.getId(), targetUnit.getId());
 
       if (crpTargetUnit != null) {
         boolean check = crpTargetUnit.isActive();
-        targetUnit.setCheckCrp(check);
+        select.setCheck(check);
 
       } else {
-        targetUnit.setCheckCrp(false);
+        select.setCheck(false);
       }
 
+      loggedCrp.getTargetUnits().add(select);
+
     }
+
 
     this.setBasePermission(this.getText(Permission.CRP_ADMIN_BASE_PERMISSION, params));
 
@@ -108,17 +117,34 @@ public class CrpTargetUnitsAction extends BaseAction {
 
     if (this.hasPermission("*")) {
 
-      for (SrfTargetUnit targetUnit : targetUnitsList) {
+      for (TargetUnitSelect targetUnit : loggedCrp.getTargetUnits()) {
 
         CrpTargetUnit crpTargetUnit =
-          crpTargetUnitManager.getByTargetUnitIdAndCrpId(loggedCrp.getId(), targetUnit.getId());
+          crpTargetUnitManager.getByTargetUnitIdAndCrpId(loggedCrp.getId(), targetUnit.getTargetUnit().getId());
 
         if (crpTargetUnit != null) {
-          boolean check = crpTargetUnit.isActive();
-          targetUnit.setCheckCrp(check);
+
+          crpTargetUnit.setActive(targetUnit.getCheck());
+          crpTargetUnitManager.saveCrpTargetUnit(crpTargetUnit);
 
         } else {
-          targetUnit.setCheckCrp(false);
+
+          if (targetUnit.getCheck() != null && targetUnit.getCheck()) {
+
+            CrpTargetUnit crpTargetUnitNew = new CrpTargetUnit();
+
+            crpTargetUnitNew.setActive(true);
+            crpTargetUnitNew.setActiveSince(new Date());
+            crpTargetUnitNew.setCreatedBy(this.getCurrentUser());
+            crpTargetUnitNew.setModifiedBy(this.getCurrentUser());
+            crpTargetUnitNew.setModificationJustification("");
+            crpTargetUnitNew.setCrp(loggedCrp);
+            crpTargetUnitNew.setSrfTargetUnit(targetUnit.getTargetUnit());
+
+            crpTargetUnitManager.saveCrpTargetUnit(crpTargetUnitNew);
+
+          }
+
         }
 
       }
