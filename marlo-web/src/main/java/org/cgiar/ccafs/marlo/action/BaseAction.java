@@ -419,11 +419,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
 
       if (clazz == ProjectPartner.class) {
+
         ProjectPartner projectPartner = projectPartnerManager.getProjectPartnerById(id);
         if (projectPartner.getInstitution().getProjectBudgets().stream()
           .filter(
             c -> c.isActive() && c.getProject().getId().longValue() == projectPartner.getProject().getId().longValue())
           .collect(Collectors.toList()).size() > 0) {
+          return false;
+        }
+        if (projectPartner.getYearEndDate() != null && projectPartner.getYearEndDate() < this.getCurrentCycleYear()) {
           return false;
         }
         for (ProjectPartnerPerson projectPartnerPerson : projectPartner.getProjectPartnerPersons()) {

@@ -343,27 +343,27 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
   public List<ProjectPartner> getPPAPartnersYear(int year) {
     Project projectBD = projectManager.getProjectById(projectID);
-    project.setStartDate(projectBD.getStartDate());
-    project.setEndDate(projectBD.getEndDate());
-    project.setPartners(new ArrayList<>());
 
-    project.getPartners().addAll(projectBD.getProjectPartners().stream()
+
+    projectBD.setPartners(new ArrayList<>());
+
+    projectBD.getPartners().addAll(projectBD.getProjectPartners().stream()
       .filter(c -> c.isActive() && c.getYearEndDate() == null).collect(Collectors.toList()));
-    project.getPartners()
+    projectBD.getPartners()
       .addAll(projectBD.getProjectPartners().stream()
-        .filter(c -> c.isActive() && c.getYearEndDate() != null && c.getYearEndDate() <= this.getCurrentCycleYear())
+        .filter(c -> c.isActive() && c.getYearEndDate() != null && c.getYearEndDate() >= year)
         .collect(Collectors.toList()));
 
-    for (ProjectPartner projectPartner : project.getPartners()) {
+    for (ProjectPartner projectPartner : projectBD.getPartners()) {
       projectPartner.setPartnerPersons(
         projectPartner.getProjectPartnerPersons().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
     }
 
 
-    this.projectPPAPartners = new ArrayList<ProjectPartner>();
-    for (ProjectPartner pp : project.getPartners()) {
+    List<ProjectPartner> projectPPAPartners = new ArrayList<ProjectPartner>();
+    for (ProjectPartner pp : projectBD.getPartners()) {
       if (this.isPPA(pp.getInstitution())) {
-        this.projectPPAPartners.add(pp);
+        projectPPAPartners.add(pp);
       }
     }
     return projectPPAPartners;

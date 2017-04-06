@@ -45,10 +45,12 @@
           <h3 class="headTitle">[@s.text name="projectBudgetByPartners.title" /]</h3>
           
           [#if project.startDate?? && project.endDate??]
-          
+    
+     
+        
             [#assign startYear = (project.startDate?string.yyyy)?number /]
             [#assign endYear = (project.endDate?string.yyyy)?number /]
-            
+          
             [#if currentCycleYear gt endYear]
               [#assign selectedYear = endYear /]
             [#elseif currentCycleYear lt startYear]

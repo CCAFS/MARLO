@@ -190,11 +190,12 @@
   [#local isCoordinator = (element.coordinator)!false/]
   [#local isPPA = (action.isPPA(element.institution))!false /]
   
-  <div id="projectPartner-${isTemplate?string('template',(projectPartner.id)!)}" class="projectPartner expandableBlock borderBox ${(isLeader?string('leader',''))!} ${(isCoordinator?string('coordinator',''))!}" style="display:${isTemplate?string('none','block')}">
+  <div id="projectPartner-${isTemplate?string('template',(element.id)!)}" class="projectPartner expandableBlock borderBox ${(isLeader?string('leader',''))!} ${(isCoordinator?string('coordinator',''))!}" style="display:${isTemplate?string('none','block')}">
     [#-- Loading --]
     <div class="loading" style="display:none"></div>
     [#-- Remove link for all partners --]
-    [#if isTemplate || (editable && projectPartner?? && action.canBeDeleted(projectPartner.id, projectPartner.class.name)) ]
+ 
+    [#if isTemplate || (editable && element?? && action.canBeDeleted(element.id, element.class.name)) ]
       <div class="removeLink"><div id="removePartner" class="removePartner removeElement removeLink" title="[@s.text name="projectPartners.removePartner" /]"></div></div>
     [/#if]
     
@@ -255,8 +256,8 @@
       </div>
     
       <div class="form-group">
-        ${(action.getEndYears())!}
-        [@customForm.select name="${name}.yearEndDate" className="" required=true header=false i18nkey="projectPartners.partner.endYear" listName="endYears" editable=editable /]
+ 
+        [@customForm.select name="${name}.yearEndDate" className="" required=true header=true i18nkey="projectPartners.partner.endYear" listName="endYears" editable=editable /]
       </div>      
       
       [#-- Indicate which PPA Partners for second level partners --]

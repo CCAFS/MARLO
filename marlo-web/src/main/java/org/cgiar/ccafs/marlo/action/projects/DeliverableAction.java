@@ -908,7 +908,7 @@ public class DeliverableAction extends BaseAction {
       }
       for (ProjectPartner partner : projectPartnerManager
         .findAll().stream().filter(pp -> pp.isActive() && pp.getProject().getId() == projectID
-          && pp.getYearEndDate() != null && pp.getYearEndDate() <= this.getCurrentCycleYear())
+          && pp.getYearEndDate() != null && pp.getYearEndDate() >= this.getCurrentCycleYear())
         .collect(Collectors.toList())) {
 
         for (ProjectPartnerPerson partnerPerson : partner.getProjectPartnerPersons().stream()
