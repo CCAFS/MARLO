@@ -41,6 +41,10 @@
       
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
            
+          <p class="bg-primary" style="padding: 18px;">
+            <span class="glyphicon glyphicon-flash"></span> We are re-vamping this section in order to make it more user-friendly. 
+            Please apologies if something is not properly working. It would be great if you can inform us about any issue.
+          </p>
           
           <div class="row">
           <h3 class="headTitle col-md-7">[@s.text name="projectLocations.title" /]</h3>  
