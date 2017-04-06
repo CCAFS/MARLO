@@ -239,15 +239,16 @@ public class ProjectPartnerAction extends BaseAction {
 
   public boolean canEditPartner(long projectPartnerID) {
 
-    if (projectPartnerID == 172) {
-      System.out.println("ho");
-    }
-    if (projectPartnerID == 173) {
-      System.out.println("ho");
-    }
+
     for (ProjectPartner projectPartner : project.getPartners()) {
+      if (projectPartner.getId() == null) {
+        return true;
+      }
       if (projectPartner.getId().longValue() == projectPartnerID) {
         if (projectPartner.getYearEndDate() == null) {
+          return true;
+        }
+        if (projectPartner.getYearEndDate().intValue() == -1) {
           return true;
         }
         if (projectPartner.getYearEndDate().intValue() < this.getCurrentCycleYear()) {
