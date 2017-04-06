@@ -81,7 +81,8 @@
             <div id="projectPartnersBlock" class="simpleBox" listname="project.partners">
               [#if project.partners?has_content]
                 [#list project.partners as projectPartner]
-                  [@projectPartnerMacro element=projectPartner name="project.partners[${projectPartner_index}]" index=projectPartner_index /]
+                 [#-- Can edit project partner --]
+                  [@projectPartnerMacro element=projectPartner name="project.partners[${projectPartner_index}]" editable=action.canEditPartner(projectPartner.id) index=projectPartner_index /]
                 [/#list]
               [#else]
                 [#if !editable]
@@ -193,11 +194,8 @@
   <div id="projectPartner-${isTemplate?string('template',(element.id)!)}" class="projectPartner expandableBlock borderBox ${(isLeader?string('leader',''))!} ${(isCoordinator?string('coordinator',''))!}" style="display:${isTemplate?string('none','block')}">
     [#-- Loading --]
     <div class="loading" style="display:none"></div>
-    
-    [#-- Can edit project partner --]
-    [#if element.id?? ]
-      [#assign editable = action.canEdit(element.id) /]
-    [/#if]
+      
+   
     
     [#-- Remove link for all partners --]
     [#if isTemplate || !(element.id??) || (editable && (element.id??) && action.canBeDeleted(element.id, element.class.name)) ]
@@ -261,8 +259,11 @@
       </div>
     
       <div class="form-group">
- 
+       [#if editable ]
         [@customForm.select name="${name}.yearEndDate" className="" required=true header=true i18nkey="projectPartners.partner.endYear" listName="endYears" editable=editable /]
+       [#else]
+           End Year:     ${element.yearEndDate}
+        [/#if]
       </div>      
       
       [#-- Indicate which PPA Partners for second level partners --]

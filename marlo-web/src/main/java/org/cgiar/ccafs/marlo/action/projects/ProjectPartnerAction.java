@@ -237,13 +237,20 @@ public class ProjectPartnerAction extends BaseAction {
     return SUCCESS;
   }
 
-  public boolean canEdit(long projectPartnerID) {
+  public boolean canEditPartner(long projectPartnerID) {
+
+    if (projectPartnerID == 172) {
+      System.out.println("ho");
+    }
+    if (projectPartnerID == 173) {
+      System.out.println("ho");
+    }
     for (ProjectPartner projectPartner : project.getPartners()) {
       if (projectPartner.getId().longValue() == projectPartnerID) {
         if (projectPartner.getYearEndDate() == null) {
           return true;
         }
-        if (projectPartner.getYearEndDate() < this.getCurrentCycleYear()) {
+        if (projectPartner.getYearEndDate().intValue() < this.getCurrentCycleYear()) {
           return false;
         }
       }
