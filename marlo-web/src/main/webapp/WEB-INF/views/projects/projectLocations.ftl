@@ -244,22 +244,6 @@
           [/#list]
         [/#if]
       </div>
-      [#if !editable]
-      <select style="display:${(element.list?? && element.list)?string('block','none')}" [#if (element.allCountries?has_content)?string == "true"]disabled[/#if]  class="form-control selectLocation col-md-12" placeholder="select an option...">
-        <option selected="selected" value="-1" >Select a location</option>
-        [#if element.allElements?has_content ]
-        [#list element.allElements as locElements]
-            <option value="${locElements.id}-${(locElements.isoAlpha2)!}" >${locElements.name}</option>
-        [/#list]
-        [/#if]
-      </select>
-        <div class=" coordinates-inputs" style="display:${(element.list?? && !element.list)?string('block','none')}">
-          <div class="nameWrapper"><input placeholder="name (Required)" class="name form-control" type="text" /></div>
-          <div class="latitudeWrapper"><input placeholder="Latitude" class="latitude form-control" type="text" /></div>
-          <div class="longitudeWrapper"><input placeholder="Longitude" class="longitude form-control " type="text" /></div>
-          <div class="buttonBlock addLocation text-right"><div class="button-blue"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addLocation"/]</div></div>
-        </div>
-      [/#if]
     </div>
     <input class="locationLevelId" type="hidden" name="${locationLevelName}[${index}].id" value="${(element.id)!}"/>
     <input class="locationLevelName" type="hidden" name="${locationLevelName}[${index}].name" value="${(element.name)!}"/>
