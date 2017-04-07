@@ -156,13 +156,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   protected APConfig config;
 
+
   @Inject
   private CrpClusterKeyOutputManager crpClusterKeyOutputManager;
   private Long crpID;
-
   // Managers
   @Inject
   private CrpManager crpManager;
+
   @Inject
   private CrpPpaPartnerManager crpPpaPartnerManager;
   @Inject
@@ -171,76 +172,76 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private CrpProgramLeaderManager crpProgramLeaderManager;
   @Inject
   private CrpProgramManager crpProgramManager;
-
   // Variables
   private String crpSession;
+
   private Crp currentCrp;
   protected boolean dataSaved;
   protected boolean delete;
   @Inject
   private DeliverableManager deliverableManager;
   private boolean draft;
-
-
   @Inject
   private UserManager userManager;
 
+
   @Inject
   private FileDBManager fileDBManager;
+
   private boolean fullEditable; // If user is able to edit all the form.
   @Inject
   private FundingSourceManager fundingSourceManager;
-
-
   private HashMap<String, String> invalidFields;
+
 
   // User actions
   private boolean isEditable; // If user is able to edit the form.
+
   // Justification of the changes
   private String justification;
   private boolean lessonsActive;
-
   @Inject
   private LiaisonUserManager liaisonUserManager;
 
   protected boolean next;
+
   private Map<String, Object> parameters;
   private boolean planningActive;
-
   private int planningYear;
 
   @Inject
   private ProjectComponentLessonManager projectComponentLessonManager;
+
   @Inject
   private ProjectManager projectManager;
   @Inject
   private ProjectOutcomeManager projectOutcomeManager;
-
   private boolean reportingActive;
+
   private int reportingYear;
   private HttpServletRequest request;
   // button actions
   protected boolean save;
   private boolean saveable; // If user is able to see the save, cancel, delete buttons
-
-
   @Inject
   private SectionStatusManager sectionStatusManager;
+
 
   // Config Variables
   @Inject
   protected BaseSecurityContext securityContext;
 
   private Map<String, Object> session;
-  private Submission submission;
 
+  private Submission submission;
   protected boolean submit;
+
   private String url;
   @Inject
   private UserRoleManager userRoleManager;
-
   @Inject
   private IpProgramManager ipProgramManager;
+
   @Inject
   private IpLiaisonInstitutionManager ipLiaisonInstitutionManager;
 
@@ -252,11 +253,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.justification = "";
   }
 
-
   /* Override this method depending of the save action. */
   public String add() {
     return SUCCESS;
   }
+
 
   /**
    * This function add a flag (--warn--) to the message in order to give
@@ -268,10 +269,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.addActionMessage("--warn--" + message);
   }
 
-
   public boolean canAccessSuperAdmin() {
     return this.securityContext.hasAllPermissions(Permission.FULL_PRIVILEGES);
   }
+
 
   public boolean canAcessCrp() {
     return this.canAcessPublications() || this.canAcessSynthesisMog();
@@ -282,7 +283,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return securityContext.hasPermission(permission);
   }
 
-
   public boolean canAcessFunding() {
 
     boolean permission =
@@ -291,6 +291,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return permission;
 
   }
+
 
   public boolean canAcessImpactPathway() {
     String permission = this.generatePermission(Permission.IMPACT_PATHWAY_VISIBLE_PRIVILEGES, this.getCrpSession());
@@ -480,7 +481,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, this.getCrpSession()));
   }
 
-
   public boolean canProjectSubmited(long projectID) {
     String params[] = {crpManager.getCrpById(this.getCrpID()).getAcronym(), projectID + ""};
     return this.hasPermission(this.generatePermission(Permission.PROJECT_SUBMISSION_PERMISSION, params));
@@ -511,6 +511,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       .clearCachedAuthorizationInfo(securityContext.getSubject().getPrincipals());
   }
 
+
   public String crpActivitesModule() {
     return APConstants.CRP_ACTIVITES_MODULE;
   }
@@ -538,11 +539,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return INPUT;
   }
 
-
   public String generatePermission(String permission, String... params) {
     return this.getText(permission, params);
 
   }
+
 
   public String getActionName() {
     return ServletActionContext.getActionMapping().getName();
@@ -641,7 +642,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.currentCrp;
   }
 
-
   public String getCurrentCycle() {
     try {
       if (this.isReportingActive()) {
@@ -685,6 +685,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return u;
   }
 
+
   /**
    * This method gets the specific section status from the sectionStatuses array for a Deliverable.
    * 
@@ -708,7 +709,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public List<HistoryDifference> getDifferences() {
     return differences;
   }
-
 
   public FileDB getFileDB(FileDB preview, File file, String fileFileName, String path) {
 
@@ -750,6 +750,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return null;
     }
 
+  }
+
+
+  public long getIFPRIId() {
+    return APConstants.IFPRI_ID;
   }
 
   public boolean getImpactSectionStatus(String section, long crpProgramID) {

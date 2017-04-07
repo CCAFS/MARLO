@@ -509,7 +509,7 @@ public class FundingSourceAction extends BaseAction {
       fundingSourceDB.setContactPersonName(fundingSource.getContactPersonName());
       fundingSourceDB.setBudgets(fundingSource.getBudgets());
       fundingSourceDB.setBudgetType(fundingSource.getBudgetType());
-
+      fundingSourceDB.setDivision(fundingSource.getDivision());
       fundingSourceDB.setDescription(fundingSource.getDescription());
 
 
