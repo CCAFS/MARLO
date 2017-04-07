@@ -2,7 +2,7 @@
 [#assign title = "Target units" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = [] /]
-[#assign customJS = [ "${baseUrl}/js/superadmin/marloBoard.js" ] /]
+[#assign customJS = [ "${baseUrl}/js/superadmin/marloBoard.js","${baseUrl}/js/admin/targetUnits.js" ] /]
 [#assign customCSS = [ "${baseUrl}/css/superadmin/superadmin.css" ] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "targetUnits" /]
@@ -51,7 +51,7 @@
           </div>
           <hr />
           <div class="note center">
-            If you don’t find the target unit in the list, please <a href=""> click here </a> to request it.
+            If you don’t find the target unit in the list, please <a class="requestPopUp" href=""> click here </a> to request it.
           </div>
           [#-- Request target unit --]
         </div>
@@ -70,6 +70,25 @@
   </div>
 </section>
 
+[#-- POPUP TO REQUEST A NEW TARGET --]
+<div id="popUp"  style="display:none;" >
+  <span class="glyphicon glyphicon-remove-circle close-dialog"></span>
+  <h4 style="text-align:center;">Request a new Target Unit</h4>
+  <hr />
+  <div class="col-md-12">
+    <div class="col-md-12 note center form-group">
+      This request will be send to MARLOSupport@cgiar.org
+    </div>
+  </div>
+    <div class="col-md-12 form-group">
+      [@customForm.input name="newTargetUnit" i18nkey="Write the new target unit" className="newTargetUnit" required=true editable=true /]
+    </div>
+    <div class="row form-group">
+      <div class="col-md-5 form-group text-center pull-right">
+        [@s.submit type="button" name="sendRequest"] <span class="glyphicon glyphicon-send"></span>  [@s.text name="Send" /][/@s.submit]
+      </div>
+    </div>
+</div>
 
 [#-- Unit Target Template --]
 [@targetUnitMacro element={} name="loggedCrp.targetUnits" index=-1 isTemplate=true /]
