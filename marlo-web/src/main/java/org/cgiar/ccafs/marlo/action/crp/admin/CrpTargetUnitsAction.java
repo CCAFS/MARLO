@@ -106,7 +106,12 @@ public class CrpTargetUnitsAction extends BaseAction {
     if (this.isHttpPost()) {
 
       if (targetUnitsList != null) {
+
         targetUnitsList.clear();
+      }
+
+      if (loggedCrp.getTargetUnits() != null) {
+        loggedCrp.getTargetUnits().clear();
       }
 
     }
@@ -124,7 +129,12 @@ public class CrpTargetUnitsAction extends BaseAction {
 
         if (crpTargetUnit != null) {
 
-          crpTargetUnit.setActive(targetUnit.getCheck());
+          if (targetUnit.getCheck() != null) {
+            crpTargetUnit.setActive(targetUnit.getCheck());
+          } else {
+            crpTargetUnit.setActive(false);
+          }
+
           crpTargetUnitManager.saveCrpTargetUnit(crpTargetUnit);
 
         } else {
