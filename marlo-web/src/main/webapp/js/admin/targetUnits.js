@@ -42,12 +42,11 @@ function openDialog() {
 }
 
 function requestService() {
-  $(".allProjects").empty();
   $.ajax({
-      url: baseURL + "/projectList.do?",
+      url: baseURL + "/targetUnitRequest.do?",
       type: 'GET',
       data: {
-        cycle: $("input[name='cycle']:checked").val()
+        targetUnitName: $(".newTargetUnit").val()
       },
       success: function(m) {
         console.log(m);
