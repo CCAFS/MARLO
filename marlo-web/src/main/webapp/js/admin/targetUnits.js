@@ -23,6 +23,7 @@ function attachEvents() {
 }
 
 function openDialog() {
+  $(".newTargetUnit").val("");
   $("#popUp").dialog({
       resizable: false,
       width: 400,
@@ -50,6 +51,7 @@ function requestService() {
       },
       success: function(m) {
         console.log(m);
+        $("#popUp").dialog("close");
       },
       error: function(e) {
         console.log(e);
