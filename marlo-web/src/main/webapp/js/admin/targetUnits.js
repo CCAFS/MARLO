@@ -43,7 +43,7 @@ function openDialog() {
 
 function requestService() {
   $.ajax({
-      url: baseURL + "/targetUnitRequest.do?",
+      url: baseURL + "/targetUnitRequest.do",
       type: 'GET',
       data: {
         targetUnitName: $(".newTargetUnit").val()
