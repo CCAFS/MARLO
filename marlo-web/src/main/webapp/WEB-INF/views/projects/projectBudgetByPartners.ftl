@@ -45,10 +45,12 @@
           <h3 class="headTitle">[@s.text name="projectBudgetByPartners.title" /]</h3>
           
           [#if project.startDate?? && project.endDate??]
-          
+    
+     
+        
             [#assign startYear = (project.startDate?string.yyyy)?number /]
             [#assign endYear = (project.endDate?string.yyyy)?number /]
-            
+          
             [#if currentCycleYear gt endYear]
               [#assign selectedYear = endYear /]
             [#elseif currentCycleYear lt startYear]
@@ -96,8 +98,8 @@
                       </div>
                     </div>
                     
-                    [#if projectPPAPartners?has_content]
-                      [#list projectPPAPartners as projectPartner]
+                    [#if action.getPPAPartnersYear(year)?has_content]
+                      [#list action.getPPAPartnersYear(year) as projectPartner]
                         [@projectPartnerMacro element=projectPartner name="project.partners[${projectPartner_index}]" index=projectPartner_index selectedYear=year/]
                       [/#list]
                     [#else]

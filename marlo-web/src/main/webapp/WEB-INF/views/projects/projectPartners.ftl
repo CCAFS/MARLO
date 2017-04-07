@@ -81,7 +81,8 @@
             <div id="projectPartnersBlock" class="simpleBox" listname="project.partners">
               [#if project.partners?has_content]
                 [#list project.partners as projectPartner]
-                  [@projectPartnerMacro element=projectPartner name="project.partners[${projectPartner_index}]" index=projectPartner_index /]
+                 [#-- Can edit project partner --]
+                  [@projectPartnerMacro element=projectPartner name="project.partners[${projectPartner_index}]" editable=action.canEditPartner((projectPartner.id)!-1) index=projectPartner_index /]
                 [/#list]
               [#else]
                 [#if !editable]
@@ -185,16 +186,19 @@
 [#----------------------------------------------------     MACROS     ----------------------------------------------------]
 [#------------------------------------------------------            ------------------------------------------------------]
 
-[#macro projectPartnerMacro element name index=-1 isTemplate=false]
+[#macro projectPartnerMacro element name index=-1  editable=editable isTemplate=false]
   [#local isLeader = (element.leader)!false/]
   [#local isCoordinator = (element.coordinator)!false/]
   [#local isPPA = (action.isPPA(element.institution))!false /]
   
-  <div id="projectPartner-${isTemplate?string('template',(projectPartner.id)!)}" class="projectPartner expandableBlock borderBox ${(isLeader?string('leader',''))!} ${(isCoordinator?string('coordinator',''))!}" style="display:${isTemplate?string('none','block')}">
+  <div id="projectPartner-${isTemplate?string('template',(element.id)!)}" class="projectPartner expandableBlock borderBox ${(isLeader?string('leader',''))!} ${(isCoordinator?string('coordinator',''))!}" style="display:${isTemplate?string('none','block')}">
     [#-- Loading --]
     <div class="loading" style="display:none"></div>
+      
+   
+    
     [#-- Remove link for all partners --]
-    [#if editable ] [#--&& (isTemplate) --]
+    [#if isTemplate || !(element.id??) || (editable && (element.id??) && action.canBeDeleted(element.id, element.class.name)) ]
       <div class="removeLink"><div id="removePartner" class="removePartner removeElement removeLink" title="[@s.text name="projectPartners.removePartner" /]"></div></div>
     [/#if]
     
@@ -241,6 +245,7 @@
       [/#if]
       --]
       
+       
       [#-- Institution / Organization --]
       <div class="form-group partnerName">
         <p class="fieldErrorInstitutions"></p>
@@ -252,7 +257,14 @@
         [/#if]
         <br />
       </div>
-      
+    
+      <div class="form-group">
+       [#if editable ]
+        [@customForm.select name="${name}.yearEndDate" className="" required=true header=true i18nkey="projectPartners.partner.endYear" listName="endYears" editable=editable /]
+       [#else]
+           End Year:     ${element.yearEndDate}
+        [/#if]
+      </div>      
       
       [#-- Indicate which PPA Partners for second level partners --]
       [#if (editable || ((!editable && element.partnerContributors?has_content)!false))]
@@ -289,7 +301,7 @@
         <div class="fullPartBlock" listname="${name}.partnerPersons">
         [#if element.partnerPersons?has_content]
           [#list element.partnerPersons as partnerPerson]
-            [@contactPersonMacro element=partnerPerson name="${name}.partnerPersons[${partnerPerson_index}]" index=partnerPerson_index partnerIndex=index /]
+            [@contactPersonMacro element=partnerPerson name="${name}.partnerPersons[${partnerPerson_index}]" index=partnerPerson_index editable=editable partnerIndex=index /]
           [/#list]
         [#else]
            [@contactPersonMacro element={} name="${name}.partnerPersons[0]" index=0 partnerIndex=index /]
@@ -305,7 +317,7 @@
   </div>
 [/#macro]
 
-[#macro contactPersonMacro element name index=-1 partnerIndex=-1 isTemplate=false]
+[#macro contactPersonMacro element name index=-1 partnerIndex=-1 editable=editable isTemplate=false]
   <div id="contactPerson-${isTemplate?string('template',(element.id)!)}" class="contactPerson simpleBox ${(element.contactType)!}" style="display:${isTemplate?string('none','block')}">
     [#-- Remove link for all partners --]
     [#if editable]

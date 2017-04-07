@@ -38,6 +38,8 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
   private boolean active;
   @Expose
   private Date activeSince;
+  @Expose
+  private Integer yearEndDate;
 
   @Expose
   private String modificationJustification;
@@ -51,7 +53,10 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
   private Set<ProjectPartnerOverall> projectPartnerOveralls = new HashSet<ProjectPartnerOverall>(0);
 
   private Set<ProjectPartnerPerson> projectPartnerPersons = new HashSet<ProjectPartnerPerson>(0);
+
+
   private List<ProjectPartnerPerson> partnerPersons;
+
   private List<ProjectPartnerContribution> partnerContributors;
 
   public ProjectPartner() {
@@ -67,7 +72,6 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
   }
-
 
   public ProjectPartner(Institution institution, Project project, User usersByCreatedBy, User usersByModifiedBy,
     boolean isActive, Date activeSince, String modificationJustification,
@@ -86,7 +90,6 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     this.projectPartnerOveralls = projectPartnerOveralls;
     this.projectPartnerPersons = projectPartnerPersonses;
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -114,6 +117,7 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
   public Date getActiveSince() {
     return this.activeSince;
   }
+
 
   public String getComposedName() {
     try {
@@ -149,6 +153,7 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
 
   }
 
+
   public User getCreatedBy() {
     return this.createdBy;
   }
@@ -182,7 +187,6 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     return this.modifiedBy;
   }
 
-
   public List<ProjectPartnerContribution> getPartnerContributors() {
     return partnerContributors;
   }
@@ -190,6 +194,7 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
   public List<ProjectPartnerPerson> getPartnerPersons() {
     return partnerPersons;
   }
+
 
   public String getPersonComposedName(int partnerPersonID) {
     if (partnerPersonID <= 0) {
@@ -237,6 +242,10 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     return this.projectPartnerPersons;
   }
 
+  public Integer getYearEndDate() {
+    return yearEndDate;
+  }
+
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -249,7 +258,6 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
   public boolean isActive() {
     return active;
   }
-
 
   /**
    * This methods validate if the current project partner has a contact person working as coordinator.
@@ -268,6 +276,7 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
       return false;
     }
   }
+
 
   /**
    * This methods validate if the current project partner has a contact person working as leader.
@@ -295,7 +304,6 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
   }
 
-
   public void setCreatedBy(User usersByCreatedBy) {
     this.createdBy = usersByCreatedBy;
   }
@@ -310,6 +318,7 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     this.institution = institution;
   }
 
+
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
@@ -318,10 +327,10 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     this.modifiedBy = usersByModifiedBy;
   }
 
-
   public void setPartnerContributors(List<ProjectPartnerContribution> partnerContributors) {
     this.partnerContributors = partnerContributors;
   }
+
 
   public void setPartnerPersons(List<ProjectPartnerPerson> partnerPersons) {
     this.partnerPersons = partnerPersons;
@@ -347,6 +356,10 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
 
   public void setProjectPartnerPersons(Set<ProjectPartnerPerson> projectPartnerPersonses) {
     this.projectPartnerPersons = projectPartnerPersonses;
+  }
+
+  public void setYearEndDate(Integer yearEndDate) {
+    this.yearEndDate = yearEndDate;
   }
 
   @Override

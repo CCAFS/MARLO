@@ -483,7 +483,19 @@ public class ProjectActivitiesAction extends BaseAction {
 
       partnerPersons = new ArrayList<>();
       for (ProjectPartner partner : projectPartnerManager.findAll().stream()
-        .filter(pp -> pp.isActive() && pp.getProject().getId() == projectID).collect(Collectors.toList())) {
+        .filter(pp -> pp.isActive() && pp.getProject().getId() == projectID && pp.getYearEndDate() == null)
+        .collect(Collectors.toList())) {
+
+        for (ProjectPartnerPerson partnerPerson : partner.getProjectPartnerPersons().stream()
+          .filter(ppa -> ppa.isActive()).collect(Collectors.toList())) {
+
+          partnerPersons.add(partnerPerson);
+        }
+      }
+      for (ProjectPartner partner : projectPartnerManager
+        .findAll().stream().filter(pp -> pp.isActive() && pp.getProject().getId() == projectID
+          && pp.getYearEndDate() != null && pp.getYearEndDate() >= this.getCurrentCycleYear())
+        .collect(Collectors.toList())) {
 
         for (ProjectPartnerPerson partnerPerson : partner.getProjectPartnerPersons().stream()
           .filter(ppa -> ppa.isActive()).collect(Collectors.toList())) {

@@ -30,6 +30,10 @@
         <property name="activeSince" type="timestamp">
             <column name="active_since" length="19" not-null="true" />
         </property>
+        
+         <property name="yearEndDate" type="java.lang.Integer">
+            <column name="year_end_date"  />
+        </property>
         <property name="modificationJustification" type="string">
             <column name="modification_justification" length="65535" not-null="true" />
         </property>

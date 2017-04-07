@@ -31,6 +31,7 @@ import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectComponentLessonManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
@@ -57,6 +58,8 @@ import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
@@ -162,6 +165,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private CrpManager crpManager;
   @Inject
   private CrpPpaPartnerManager crpPpaPartnerManager;
+  @Inject
+  private ProjectPartnerManager projectPartnerManager;
   @Inject
   private CrpProgramLeaderManager crpProgramLeaderManager;
   @Inject
@@ -412,6 +417,32 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           return false;
         }
       }
+
+      if (clazz == ProjectPartner.class) {
+
+        ProjectPartner projectPartner = projectPartnerManager.getProjectPartnerById(id);
+        if (projectPartner.getInstitution().getProjectBudgets().stream()
+          .filter(
+            c -> c.isActive() && c.getProject().getId().longValue() == projectPartner.getProject().getId().longValue())
+          .collect(Collectors.toList()).size() > 0) {
+          return false;
+        }
+        if (projectPartner.getYearEndDate() != null && projectPartner.getYearEndDate() < this.getCurrentCycleYear()) {
+          return false;
+        }
+        for (ProjectPartnerPerson projectPartnerPerson : projectPartner.getProjectPartnerPersons()) {
+          if (projectPartnerPerson.getDeliverablePartnerships().stream().filter(c -> c.isActive())
+            .collect(Collectors.toList()).size() > 0) {
+            return false;
+          }
+          if (projectPartnerPerson.getActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList())
+            .size() > 0) {
+            return false;
+          }
+        }
+
+      }
+
       return true;
     } catch (Exception e) {
       return false;

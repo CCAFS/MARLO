@@ -71,6 +71,7 @@ import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -209,6 +210,7 @@ public class ProjectPartnerAction extends BaseAction {
       crpUser.setModificationJustification("");
       crpUserManager.saveCrpUser(crpUser);
     }
+
   }
 
   @Override
@@ -233,6 +235,28 @@ public class ProjectPartnerAction extends BaseAction {
     messages = this.getActionMessages();
 
     return SUCCESS;
+  }
+
+  public boolean canEditPartner(long projectPartnerID) {
+
+
+    for (ProjectPartner projectPartner : project.getPartners()) {
+      if (projectPartner.getId() == null) {
+        return true;
+      }
+      if (projectPartner.getId().longValue() == projectPartnerID) {
+        if (projectPartner.getYearEndDate() == null) {
+          return true;
+        }
+        if (projectPartner.getYearEndDate().intValue() == -1) {
+          return true;
+        }
+        if (projectPartner.getYearEndDate().intValue() < this.getCurrentCycleYear()) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
   public void checkCrpUserByRole(User user) {
@@ -314,6 +338,29 @@ public class ProjectPartnerAction extends BaseAction {
     }
 
     return deliverablesLeads;
+  }
+
+  public List<Integer> getEndYears() {
+    Project projectDB = projectManager.getProjectById(projectID);
+    Calendar calendarStart = Calendar.getInstance();
+    calendarStart.setTime(projectDB.getStartDate());
+    int endYear = 0;
+    List<Integer> years = new ArrayList<>();
+    if (this.isReportingActive()) {
+      endYear = this.getCurrentCycleYear();
+
+    } else {
+      endYear = this.getCurrentCycleYear();
+    }
+
+
+    int year = calendarStart.get(Calendar.YEAR);
+    while (year <= endYear) {
+      years.add(year);
+      year++;
+
+    }
+    return years;
   }
 
 
@@ -977,8 +1024,25 @@ public class ProjectPartnerAction extends BaseAction {
             projectPartner.setModificationJustification("");
             projectPartner.setActiveSince(new Date());
             projectPartner.setProject(project);
-
+            if (projectPartner.getYearEndDate() != null && projectPartner.getYearEndDate().intValue() == -1) {
+              projectPartner.setYearEndDate(null);
+            }
             projectPartnerManager.saveProjectPartner(projectPartner);
+          } else {
+            ProjectPartner dbPartner;
+            dbPartner = projectPartnerManager.getProjectPartnerById(projectPartner.getId());
+            projectPartner.setProject(project);
+            projectPartner.setModifiedBy(this.getCurrentUser());
+            projectPartner.setModificationJustification("");
+            projectPartner.setCreatedBy(dbPartner.getCreatedBy());
+            projectPartner.setActiveSince(dbPartner.getActiveSince());
+            projectPartner.setActive(true);
+            if (projectPartner.getYearEndDate() != null && projectPartner.getYearEndDate().intValue() == -1) {
+              projectPartner.setYearEndDate(null);
+            }
+            projectPartnerManager.saveProjectPartner(projectPartner);
+
+
           }
 
 
