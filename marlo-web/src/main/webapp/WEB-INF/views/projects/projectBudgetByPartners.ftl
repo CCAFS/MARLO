@@ -116,7 +116,22 @@
     </div>  
 </section>
 
+[#-- Budget tab index --]
 <span id="budgetIndex" style="display:none">${budgetIndex+1}</span>
+
+[#-- Budget types JSON --]
+<span id="budgetTypeJson" style="display:none">
+[
+[#list budgetTypesList as budgetType]
+ {
+   "id": ${budgetType.id},
+   "name": "${budgetType.name}",
+   "description" : "${budgetType.description}"
+ }[#if budgetType_has_next],[/#if]
+[/#list]
+]
+</span>
+
 
 [#-- Bilateral Co-Funded Project Popup --]
 [#include "/WEB-INF/global/macros/fundingSourcesPopup.ftl"]

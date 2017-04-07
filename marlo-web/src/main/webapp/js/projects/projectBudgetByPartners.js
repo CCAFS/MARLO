@@ -1,8 +1,10 @@
-var countFundingSources;
+var countFundingSources, budgetTypeJson;
 
 $(document).ready(init);
 
 function init() {
+
+  budgetTypeJson = JSON.parse($('#budgetTypeJson').text());
 
   $('a[data-toggle="tab"]').ready(showHelpText(), setViewMore());
 
@@ -24,12 +26,11 @@ function init() {
 
 function attachEvents() {
   /**
-   * General:
+   * General
    */
   // Collapsible partners content
   $('.blockTitle').on('click', function() {
     if($(this).hasClass('closed')) {
-      // $('.blockContent').slideUp();
       $(this).parent().find('.blockTitle').removeClass('opened').addClass('closed');
       $(this).removeClass('closed').addClass('opened');
     } else {
@@ -39,12 +40,10 @@ function attachEvents() {
   });
 
   /**
-   * W3 Bilateral Funds
+   * Funding sources
    */
-  // Change W3/Bilateral Funds budget type
-  $('.w3bilateralFund select').on('change', changeBilateralFund);
 
-  // Remove a W3/Bilateral Fund
+  // Remove a Funding source
   $('.removeW3bilateralFund').on('click', removeBilateralFund);
 
   // Calculate currency and percentage
@@ -58,30 +57,15 @@ function attachEvents() {
  * Events Functions
  */
 
-function changeBilateralFund() {
-  var value = $(this).val();
-  var $inputs = $(this).parents('.w3bilateralFund').find('input.currencyInput, input.percentageInput');
-  var $partner = $(this).parents('.projectPartner');
-  $inputs.removeClass('type-2 type-3 type-none');
-  if(value != "-1") {
-    $inputs.addClass('type-' + value);
-  }
-  // Update overalls; Type-2: w3, type-3: bilateral
-  updateActiveYearCurrency('3', $partner);
-  updateActiveYearCurrency('2', $partner);
-}
-
 function removeBilateralFund() {
   var $parent = $(this).parent();
   var $partner = $(this).parents('.projectPartner');
   $parent.slideUp('slow', function() {
     $parent.remove();
-    // Update overalls; Type-2: w3, type-3: bilateral
-    updateActiveYearCurrency('1', $partner);
-    updateActiveYearCurrency('2', $partner);
-    updateActiveYearCurrency('3', $partner);
-    updateActiveYearCurrency('4', $partner);
-    updateActiveYearCurrency('5', $partner);
+    // Update overalls
+    $.each(budgetTypeJson, function(i,e) {
+      updateActiveYearCurrency(e.id, $partner);
+    });
   });
 }
 
