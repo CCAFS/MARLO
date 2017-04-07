@@ -76,7 +76,7 @@
       </div>
     </div>
     [#else]
-      <p class="text-center borderBox inf">There is not flagships added</p>
+      <p class="text-center borderBox inf">[@s.text name="impactPathway.noFlagshipsAdded" /]</p>
     [/#if]
   </div>
 </section>

@@ -1,0 +1,1 @@
+UPDATE `crp_indicator_types` SET `name`='Policies in various stages of development' WHERE (`id`='4');

@@ -75,10 +75,12 @@ $(document).ready(function() {
   // Click on submit button
   $('.submitButton, .projectSubmitButton').on('click', submitButtonEvent);
 
-// Click on submit button
+  // Click on submit button
   $('.projectUnSubmitButton').on('click', unSubmitButtonEvent);
 
-  /* Validate justification for old projects */
+  /**
+   * Validate justification for old projects
+   */
   var $justification = $('#justification');
   var $parent = $justification.parent().parent();
   var errorClass = 'fieldError';

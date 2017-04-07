@@ -2986,7 +2986,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
   public String getProjectOutcomeUrlPath() {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project.getId() + File.separator
-      + "projectOutcome" + File.separator;
+      + "project_outcome" + File.separator;
   }
 
   private TypedTableModel getRLTableModel(List<CrpProgram> regions) {
