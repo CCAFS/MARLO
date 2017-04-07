@@ -109,6 +109,10 @@ public class CrpTargetUnitsAction extends BaseAction {
         targetUnitsList.clear();
       }
 
+      if (loggedCrp.getTargetUnits() != null) {
+        loggedCrp.getTargetUnits().clear();
+      }
+
     }
   }
 
