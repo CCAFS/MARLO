@@ -74,33 +74,34 @@ public class FundingSourceAction extends BaseAction {
 
   private BudgetTypeManager budgetTypeManager;
   private Map<String, String> budgetTypes;
+  private List<BudgetType> budgetTypesList;
+
   private CrpManager crpManager;
+
+
   private CrpPpaPartnerManager crpPpaPartnerManager;
+
   private File file;
-
   private String fileContentType;
-
   private FileDBManager fileDBManager;
-
 
   private String fileFileName;
 
   private Integer fileID;
-  private FundingSource fundingSource;
-  private FundingSourceBudgetManager fundingSourceBudgetManager;
 
+
+  private FundingSource fundingSource;
+
+  private FundingSourceBudgetManager fundingSourceBudgetManager;
   private long fundingSourceID;
   private FundingSourceInstitutionManager fundingSourceInstitutionManager;
 
   private FundingSourceManager fundingSourceManager;
   private InstitutionManager institutionManager;
+
   private List<Institution> institutions;
   private List<Institution> institutionsDonors;
-
-
   private LiaisonInstitutionManager liaisonInstitutionManager;
-
-
   private List<LiaisonInstitution> liaisonInstitutions;
 
 
@@ -108,11 +109,12 @@ public class FundingSourceAction extends BaseAction {
 
 
   private Map<String, String> status;
+
+
   private String transaction;
 
 
   private UserManager userManager;
-
   private FundingSourceValidator validator;
 
 
@@ -197,6 +199,7 @@ public class FundingSourceAction extends BaseAction {
     return fundingSource.getProjectBudgets().stream().filter(c -> c.isActive()).collect(Collectors.toList()).isEmpty();
   }
 
+
   private Path getAutoSaveFilePath() {
     String composedClassName = fundingSource.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -233,15 +236,18 @@ public class FundingSourceAction extends BaseAction {
     return budgetTypes;
   }
 
+  public List<BudgetType> getBudgetTypesList() {
+    return budgetTypesList;
+  }
 
   public File getFile() {
     return file;
   }
 
+
   public String getFileContentType() {
     return fileContentType;
   }
-
 
   public String getFileFileName() {
     return fileFileName;
@@ -252,10 +258,10 @@ public class FundingSourceAction extends BaseAction {
     return fileID;
   }
 
+
   public FundingSource getFundingSource() {
     return fundingSource;
   }
-
 
   public String getFundingSourceFileURL() {
     return config.getDownloadURL() + "/" + this.getFundingSourceUrlPath().replace('\\', '/');
@@ -270,6 +276,7 @@ public class FundingSourceAction extends BaseAction {
   public String getFundingSourceUrlPath() {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + "fundingSourceFiles" + File.separator;
   }
+
 
   public int getIndexBugets(int year) {
     int i = 0;
@@ -324,6 +331,8 @@ public class FundingSourceAction extends BaseAction {
     fundingSourceID =
       Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.FUNDING_SOURCE_REQUEST_ID)));
 
+    // Budget Types list
+    budgetTypesList = budgetTypeManager.findAll();
 
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
 
@@ -614,6 +623,10 @@ public class FundingSourceAction extends BaseAction {
 
   public void setBudgetTypes(Map<String, String> budgetTypes) {
     this.budgetTypes = budgetTypes;
+  }
+
+  public void setBudgetTypesList(List<BudgetType> budgetTypesList) {
+    this.budgetTypesList = budgetTypesList;
   }
 
   public void setFile(File file) {

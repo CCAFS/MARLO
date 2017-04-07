@@ -44,7 +44,7 @@
       </div>
       [#-- start date, end date and finance code --]
       <div class="form-group">
-        <div class="row col-md-12 dateErrorBox"></div>
+        <div class="dateErrorBox"></div>
         <div class="row">
            <div class="col-md-4">[@customForm.input name="fundingSource.startDate" i18nkey="projectCofunded.startDate" required=true  editable=editable && action.canEditFundingSourceBudget() /] </div>
            <div class="col-md-4">[@customForm.input name="fundingSource.endDate" i18nkey="projectCofunded.endDate" required=true  editable=editable && action.canEditFundingSourceBudget() /] </div>
@@ -72,7 +72,7 @@
       <div class="form-group">
         <div class="row">
           <div class="col-md-6">[@customForm.select name="fundingSource.status" i18nkey="projectCofunded.agreementStatus"  listName="status" keyFieldName=""  displayFieldName="" header=false editable=editable /] </div>
-          <div class="col-md-6">[@customForm.select name="fundingSource.budgetType.id"   i18nkey="projectCofunded.type"  className="type" listName="budgetTypes" header=false required=true editable=editable&&action.canEditType() /]</div>
+          <div class="col-md-6">[@customForm.select name="fundingSource.budgetType.id" i18nkey="projectCofunded.type" className="type" listName="budgetTypes" header=false required=true editable=editable && action.canEditType() /]</div>
         </div>
       </div>
       
@@ -213,7 +213,11 @@
                   P${(projectBudget.project.id)!}              
                 </a>
               </td>
-              <td class="col-md-5">${(projectBudget.project.title)!}</td>
+              <td class="col-md-5">
+                <a href="[@s.url action="${crpSession}/budgetByPartners" namespace="/projects"] [@s.param name="projectID" value="${(projectBudget.project.id)!}"/] [/@s.url]">
+                  ${(projectBudget.project.title)!}
+                </a>
+              </td>
               <td> ${(projectBudget.institution.acronym)!(projectBudget.institution.name)} </td>
               <td>${projectBudget.budgetType.name}</td>
               <td>US$ <span>${((projectBudget.amount)!0)?number?string(",##0.00")}</td>
@@ -248,6 +252,13 @@
     <span class="name"></span>
     <div class="clearfix"></div>
   </li>
+</ul>
+
+[#-- Budget Types Description --]
+<ul style="display:none">
+  [#list budgetTypesList as budgetType]
+    <li class="budgetTypeDescription-${budgetType.id}">${(budgetType.description)!}</li>
+  [/#list]
 </ul>
 
 <span class="hidden cgiarConsortium">${action.getCGIARInsitution()}</span>
