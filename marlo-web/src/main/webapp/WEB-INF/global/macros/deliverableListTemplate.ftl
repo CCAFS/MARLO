@@ -124,7 +124,7 @@
 [/#macro]
 
 [#macro deliverablePartner dp={} dp_name="" dp_index="" isResponsable=false template=false editable=true]
-  <div id="deliverablePartner-${template?string('template', dp_index)}" class="${isResponsable?string('responsiblePartner','deliverablePartner')} ${isResponsable?string('simpleBox','borderBox')} row" style="display:${template?string('none','')}">
+  <div id="deliverablePartner-${template?string('template', dp_index)}" class="${isResponsable?string('responsiblePartner','deliverablePartner')} ${isResponsable?string('','borderBox')} row" style="display:${template?string('none','')}">
     [#if editable && !isResponsable]
       <div class="removeElement removeLink" title="[@s.text name="project.deliverable.removePartnerContribution" /]"></div> 
     [/#if]
@@ -140,17 +140,16 @@
     [/#if]
     [#if template]
       [#-- Partner Name --]
-      <div class="fullPartBlock partnerName chosen col-md-12"> 
-        [@customForm.select name="" value="-1"  i18nkey="${isResponsable?string('project.deliverable.indicateResponsablePartner','Partner')}" listName="partnerPersons" keyFieldName="id"  displayFieldName="composedName"   className="${isResponsable?string('responsible','partner')}  id" editable=editable required=isResponsable /]
+      <div class="fullPartBlock partnerName chosen"> 
+        [@customForm.select name="" value="-1"  i18nkey="" showTitle=false listName="partnerPersons" keyFieldName="id"  displayFieldName="composedName"   className="${isResponsable?string('responsible','partner')}  id" editable=editable required=isResponsable /]
       </div>
     [#else]
       [#-- Partner Name --]
-      <div class="fullPartBlock partnerName chosen col-md-12"> 
+      <div class="form-group partnerName chosen"> 
       [#if editable]
-        [@customForm.select name="${customName}.id" value="${(dp.projectPartnerPerson.id)!-1}"  label="" i18nkey="${isResponsable?string('project.deliverable.indicateResponsablePartner','project.deliverable.partner')}" listName="partnerPersons" keyFieldName="id"  displayFieldName="composedName"     className="${isResponsable?string('responsible','partner')} id " editable=editable required=isResponsable/]
+        [@customForm.select name="${customName}.id" value="${(dp.projectPartnerPerson.id)!-1}"  label="" i18nkey="" showTitle=false listName="partnerPersons" keyFieldName="id"  displayFieldName="composedName"     className="${isResponsable?string('responsible','partner')} id " editable=editable required=isResponsable/]
       [#else]
-      <label class="form-group" for="">[@customForm.text name="${isResponsable?string('project.deliverable.indicateResponsablePartner','project.deliverable.partner')}" readText=!editable/] :</label>
-      <div class="personRead-content"><span class="glyphicon glyphicon-user" ></span> <span>${((dp.projectPartnerPerson.composedName)!'Contact Person')?html}</span></div>
+        <div class="personRead-content"><span class="glyphicon glyphicon-user" ></span> <span>${((dp.projectPartnerPerson.composedName)!'Contact Person')?html}</span></div>
       [/#if]
       </div>
     [/#if] 

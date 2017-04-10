@@ -79,6 +79,7 @@ public class Crp implements java.io.Serializable, IAuditLog {
   private Set<Deliverable> deliverables = new HashSet<Deliverable>(0);
 
   private List<Deliverable> deliverablesList;
+  private Set<GenderType> genderTypes = new HashSet<GenderType>(0);
 
 
   @Expose
@@ -123,7 +124,6 @@ public class Crp implements java.io.Serializable, IAuditLog {
   private List<CrpParameter> parameters;
 
   private List<TargetUnitSelect> targetUnits;
-
   public Crp() {
   }
 
@@ -222,6 +222,10 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return fundingSources;
   }
 
+  public Set<GenderType> getGenderTypes() {
+    return genderTypes;
+  }
+
   @Override
   public Long getId() {
     return this.id;
@@ -285,6 +289,7 @@ public class Crp implements java.io.Serializable, IAuditLog {
   public Set<Project> getProjects() {
     return projects;
   }
+
 
   public Set<Role> getRoles() {
     return this.roles;
@@ -384,6 +389,11 @@ public class Crp implements java.io.Serializable, IAuditLog {
 
   public void setFundingSources(Set<FundingSource> fundingSources) {
     this.fundingSources = fundingSources;
+  }
+
+
+  public void setGenderTypes(Set<GenderType> genderTypes) {
+    this.genderTypes = genderTypes;
   }
 
 

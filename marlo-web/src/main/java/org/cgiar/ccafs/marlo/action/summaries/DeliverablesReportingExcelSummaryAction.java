@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectHighligthManager;
 import org.cgiar.ccafs.marlo.data.model.ChannelEnum;
 import org.cgiar.ccafs.marlo.data.model.Crp;
@@ -30,7 +31,6 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel;
-import org.cgiar.ccafs.marlo.data.model.DeliverableGenderTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableLeader;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
@@ -89,7 +89,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
   private CrpManager crpManager;
   private CrpProgramManager programManager;
   private DeliverableManager deliverableManager;
-
+  private GenderTypeManager genderTypeManager;
   private Crp loggedCrp;
   // XLSX bytes
   private byte[] bytesXLSX;
@@ -101,9 +101,10 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
   @Inject
   public DeliverablesReportingExcelSummaryAction(APConfig config, CrpManager crpManager,
     ProjectHighligthManager projectHighLightManager, CrpProgramManager programManager,
-    DeliverableManager deliverableManager) {
+    GenderTypeManager genderTypeManager, DeliverableManager deliverableManager) {
     super(config);
     this.crpManager = crpManager;
+    this.genderTypeManager = genderTypeManager;
     this.programManager = programManager;
     this.deliverableManager = deliverableManager;
   }
@@ -284,14 +285,14 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
           && ((d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
             && (d.getYear() >= this.year
               || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() >= this.year)))
-            || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-              && (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))
-            || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
-              && (d.getYear() == this.year
-                || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))))
-          && (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-            || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-            || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
+          || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+            && (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))
+          || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+            && (d.getYear() == this.year
+              || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))))
+        && (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+          || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+          || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
         .collect(Collectors.toList()));
 
       deliverables.sort((p1, p2) -> p1.isRequieriedReporting(year).compareTo(p2.isRequieriedReporting(year)));
@@ -430,7 +431,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
               for (DeliverableGenderLevel dgl : deliverable.getDeliverableGenderLevels().stream()
                 .filter(dgl -> dgl.isActive()).collect(Collectors.toList())) {
                 if (dgl.getGenderLevel() != 0.0) {
-                  cross_cutting += "● " + DeliverableGenderTypeEnum.getValue(dgl.getGenderLevel()).getValue() + "\n";
+                  cross_cutting +=
+                    "● " + genderTypeManager.getGenderTypeById(dgl.getGenderLevel()).getDescription() + "\n";
                 }
               }
             }
@@ -1107,7 +1109,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
               for (DeliverableGenderLevel dgl : deliverable.getDeliverableGenderLevels().stream()
                 .filter(dgl -> dgl.isActive()).collect(Collectors.toList())) {
                 if (dgl.getGenderLevel() != 0.0) {
-                  cross_cutting += "● " + DeliverableGenderTypeEnum.getValue(dgl.getGenderLevel()).getValue() + "\n";
+                  cross_cutting +=
+                    "● " + genderTypeManager.getGenderTypeById(dgl.getGenderLevel()).getDescription() + "\n";
                 }
               }
             }
