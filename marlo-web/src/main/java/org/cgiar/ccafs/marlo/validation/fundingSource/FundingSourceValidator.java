@@ -98,6 +98,12 @@ public class FundingSourceValidator extends BaseValidator {
       action.getInvalidFields().put("input-fundingSource.contactPersonName", InvalidFieldsMessages.EMPTYFIELD);
     }
 
+    if (action.hasSpecificities(APConstants.CRP_DIVISION_FS)) {
+      if (!this.isValidString(fundingSource.getDivision())) {
+        this.addMessage(action.getText("fundingSource.division"));
+        action.getInvalidFields().put("input-fundingSource.division", InvalidFieldsMessages.EMPTYFIELD);
+      }
+    }
 
     if (action.hasSpecificities(APConstants.CRP_EMAIL_FUNDING_SOURCE)) {
       if (!this.isValidString(fundingSource.getContactPersonEmail())) {

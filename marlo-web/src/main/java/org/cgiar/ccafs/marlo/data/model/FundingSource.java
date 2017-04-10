@@ -65,14 +65,17 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
 
   @Expose
+  private String division;
+
+  @Expose
   private String financeCode;
+
 
   private Set<FundingSourceBudget> fundingSourceBudgets = new HashSet<FundingSourceBudget>(0);
 
   private Set<FundingSource> fundingSources = new HashSet<FundingSource>(0);
 
   private Set<FundingSourceInstitution> fundingSourceInstitutions = new HashSet<FundingSourceInstitution>(0);
-
 
   @Expose
   private Long id;
@@ -84,7 +87,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   @Expose
   private String modificationJustification;
 
-
   @Expose
   private User modifiedBy;
 
@@ -94,8 +96,10 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   private List<ProjectBudget> projectBudgetsList;
 
+
   @Expose
   private Date startDate;
+
 
   @Expose
   private Integer status;
@@ -170,7 +174,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return budgetType;
   }
 
-
   public String getComposedName() {
     try {
       return "<b> (F" + this.id + ") " + this.getBudgetType().getName() + "</b> - " + this.title;
@@ -197,10 +200,15 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return crp;
   }
 
-
   public String getDescription() {
     return description;
   }
+
+
+  public String getDivision() {
+    return division;
+  }
+
 
   public Date getEndDate() {
     return endDate;
@@ -209,7 +217,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   public FileDB getFile() {
     return file;
   }
-
 
   public String getFinanceCode() {
     return financeCode;
@@ -236,6 +243,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return id;
   }
 
+
   public Institution getInstitution() {
     return institution;
   }
@@ -251,11 +259,11 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
-
   @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
+
 
   @Override
   public User getModifiedBy() {
@@ -269,7 +277,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   public List<ProjectBudget> getProjectBudgetsList() {
     return projectBudgetsList;
   }
-
 
   public double getRemaining(int year) {
     double used = 0;
@@ -348,10 +355,10 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     this.active = active;
   }
 
+
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
-
 
   public void setBudgets(List<FundingSourceBudget> budgets) {
     this.budgets = budgets;
@@ -377,12 +384,17 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     this.createdBy = createdBy;
   }
 
+
   public void setCrp(Crp crp) {
     this.crp = crp;
   }
 
   public void setDescription(String description) {
     this.description = description;
+  }
+
+  public void setDivision(String division) {
+    this.division = division;
   }
 
   public void setEndDate(Date endDate) {
