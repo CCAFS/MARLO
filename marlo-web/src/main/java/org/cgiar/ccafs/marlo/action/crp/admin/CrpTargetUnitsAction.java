@@ -21,6 +21,9 @@ import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpTargetUnit;
 import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
 import org.cgiar.ccafs.marlo.data.model.TargetUnitSelect;
@@ -60,6 +63,72 @@ public class CrpTargetUnitsAction extends BaseAction {
     this.crpManager = crpManager;
     this.crpTargetUnitManager = crpTargetUnitManager;
 
+  }
+
+  public boolean canBeDeletedCrptargetUnit(long id, String className) {
+    Class clazz;
+    try {
+      clazz = Class.forName(className);
+
+
+      if (clazz == SrfTargetUnit.class) {
+        SrfTargetUnit targetUnit = targetUnitManager.getSrfTargetUnitById(id);
+
+
+        CrpTargetUnit crpTargetUnit =
+          crpTargetUnitManager.getByTargetUnitIdAndCrpId(loggedCrp.getId(), targetUnit.getId());
+
+        if (crpTargetUnit != null) {
+
+          List<CrpProgram> programs =
+            new ArrayList<>(loggedCrp.getCrpPrograms().stream().filter(p -> p.isActive()).collect(Collectors.toList()));
+
+          for (CrpProgram crpProgram : programs) {
+
+            List<CrpProgramOutcome> outcomes = new ArrayList<>(
+              crpProgram.getCrpProgramOutcomes().stream().filter(o -> o.isActive()).collect(Collectors.toList()));
+
+            for (CrpProgramOutcome crpProgramOutcome : outcomes) {
+
+              SrfTargetUnit targetUnitOutcome = crpProgramOutcome.getSrfTargetUnit();
+
+              if (targetUnitOutcome.equals(targetUnit)) {
+                return false;
+              }
+
+              List<CrpMilestone> milestones = new ArrayList<>(
+                crpProgramOutcome.getCrpMilestones().stream().filter(m -> m.isActive()).collect(Collectors.toList()));
+
+              for (CrpMilestone crpMilestone : milestones) {
+                SrfTargetUnit targetUnitMilestone = crpMilestone.getSrfTargetUnit();
+
+                if (targetUnitMilestone.equals(targetUnit)) {
+                  return false;
+                }
+              }
+
+            }
+
+          }
+
+          // if (targetUnit.getCrpProgramOutcomes().stream().filter(o -> o.isActive()).collect(Collectors.toList())
+          // .size() > 0) {
+          // return false;
+          // }
+          //
+          // if (targetUnit.getCrpMilestones().stream().filter(u -> u.isActive()).collect(Collectors.toList())
+          // .size() > 0) {
+          // return false;
+          // }
+        }
+
+
+      }
+
+      return true;
+    } catch (Exception e) {
+      return false;
+    }
   }
 
   public Crp getLoggedCrp() {
