@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.config.PentahoListener;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpElementManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
@@ -39,7 +40,6 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel;
-import org.cgiar.ccafs.marlo.data.model.DeliverableGenderTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
@@ -166,6 +166,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   private LocElementManager locElementManager;
   private CrpManager crpManager;
   private IpElementManager ipElementManager;
+  private GenderTypeManager genderTypeManager;
+
   private HashMap<Long, String> targetUnitList;
   private SrfTargetUnitManager srfTargetUnitManager;
 
@@ -177,7 +179,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   @Inject
   public ReportingSummaryAction(APConfig config, CrpManager crpManager, ProjectManager projectManager,
     CrpProgramManager programManager, InstitutionManager institutionManager, ProjectBudgetManager projectBudgetManager,
-    LocElementManager locElementManager, IpElementManager ipElementManager, SrfTargetUnitManager srfTargetUnitManager) {
+    GenderTypeManager genderTypeManager, LocElementManager locElementManager, IpElementManager ipElementManager,
+    SrfTargetUnitManager srfTargetUnitManager) {
     super(config);
     this.crpManager = crpManager;
     this.projectManager = projectManager;
@@ -187,6 +190,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     this.locElementManager = locElementManager;
     this.ipElementManager = ipElementManager;
     this.srfTargetUnitManager = srfTargetUnitManager;
+    this.genderTypeManager = genderTypeManager;
   }
 
 
@@ -1201,14 +1205,14 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           && ((d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
             && (d.getYear() >= this.year
               || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() >= this.year)))
-            || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-              && (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))
-            || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
-              && (d.getYear() == this.year
-                || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))))
-          && (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-            || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-            || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
+          || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+            && (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))
+          || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+            && (d.getYear() == this.year
+              || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))))
+        && (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+          || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+          || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
         .collect(Collectors.toList()));
 
       deliverables.sort((p1, p2) -> p1.isRequieriedReporting(year).compareTo(p2.isRequieriedReporting(year)));
@@ -1335,7 +1339,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
                 .filter(dgl -> dgl.isActive()).collect(Collectors.toList())) {
                 if (dgl.getGenderLevel() != 0.0) {
                   cross_cutting += "&nbsp;&nbsp;&nbsp;&nbsp;● "
-                    + DeliverableGenderTypeEnum.getValue(dgl.getGenderLevel()).getValue() + "<br>";
+                    + genderTypeManager.getGenderTypeById(dgl.getGenderLevel()).getDescription() + "<br>";
                 }
               }
             }
@@ -1896,7 +1900,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
                 .filter(dgl -> dgl.isActive()).collect(Collectors.toList())) {
                 if (dgl.getGenderLevel() != 0.0) {
                   cross_cutting += "&nbsp;&nbsp;&nbsp;&nbsp;● "
-                    + DeliverableGenderTypeEnum.getValue(dgl.getGenderLevel()).getValue() + "<br>";
+                    + genderTypeManager.getGenderTypeById(dgl.getGenderLevel()).getDescription() + "<br>";
                 }
               }
             }
@@ -2421,9 +2425,11 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   }
 
   private TypedTableModel getOtherContributionsDetailTableModel() {
-    TypedTableModel model = new TypedTableModel(
-      new String[] {"region", "indicator", "contribution_description", "target_contribution", "otherContributionyear"},
-      new Class[] {String.class, String.class, String.class, Integer.class, Integer.class}, 0);
+    TypedTableModel model =
+      new TypedTableModel(
+        new String[] {"region", "indicator", "contribution_description", "target_contribution",
+          "otherContributionyear"},
+        new Class[] {String.class, String.class, String.class, Integer.class, Integer.class}, 0);
 
 
     for (OtherContribution otherContribution : project.getOtherContributions().stream().filter(oc -> oc.isActive())

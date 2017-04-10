@@ -398,6 +398,8 @@ public class PublicationAction extends BaseAction {
          */
         deliverable.setGenderLevels(
           deliverable.getDeliverableGenderLevels().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+
         DeliverableQualityCheck deliverableQualityCheck =
           deliverableQualityCheckManager.getDeliverableQualityCheckByDeliverable(deliverable.getId());
         deliverable.setQualityCheck(deliverableQualityCheck);
@@ -471,7 +473,14 @@ public class PublicationAction extends BaseAction {
       }
     }
 
+    for (DeliverableGenderLevel deliverableGenderLevel : deliverable.getGenderLevels()) {
+      try {
+        deliverableGenderLevel.setNameGenderLevel(
+          genderTypeManager.getGenderTypeById(deliverableGenderLevel.getGenderLevel()).getDescription());
+      } catch (Exception e) {
 
+      }
+    }
     deliverableSubTypes = new ArrayList<>(deliverableTypeManager.findAll().stream()
       .filter(dt -> dt.getDeliverableType() != null && dt.getDeliverableType().getId().intValue() == 49)
       .collect(Collectors.toList()));

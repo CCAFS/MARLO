@@ -750,7 +750,7 @@ public class DeliverableAction extends BaseAction {
           deliverable.getDeliverableFundingSources().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
         deliverable.setGenderLevels(
           deliverable.getDeliverableGenderLevels().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-
+       
 
         if (this.isReportingActive()) {
 
@@ -813,7 +813,14 @@ public class DeliverableAction extends BaseAction {
 
         this.setDraft(false);
       }
+      for (DeliverableGenderLevel deliverableGenderLevel : deliverable.getGenderLevels()) {
+        try {
+          deliverableGenderLevel.setNameGenderLevel(
+            genderTypeManager.getGenderTypeById(deliverableGenderLevel.getGenderLevel()).getDescription());
+        } catch (Exception e) {
 
+        }
+      }
       if (metadataElementManager.findAll() != null) {
         deliverable.setMetadata(new ArrayList<>(metadataElementManager.findAll()));
       }

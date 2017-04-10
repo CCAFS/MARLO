@@ -37,8 +37,12 @@ public class DeliverableGenderLevel implements java.io.Serializable, IAuditLog {
   @Expose
   private String modificationJustification;
 
+  private String nameGenderLevel;
+
+
   public DeliverableGenderLevel() {
   }
+
 
   public DeliverableGenderLevel(Deliverable deliverable, User usersByCreatedBy, User usersByModifiedBy,
     long genderLevel, boolean isActive, Date activeSince, String modificationJustification) {
@@ -50,7 +54,6 @@ public class DeliverableGenderLevel implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -78,15 +81,14 @@ public class DeliverableGenderLevel implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
+
   public User getCreatedBy() {
     return createdBy;
   }
 
-
   public Deliverable getDeliverable() {
     return deliverable;
   }
-
 
   public long getGenderLevel() {
     return genderLevel;
@@ -123,11 +125,7 @@ public class DeliverableGenderLevel implements java.io.Serializable, IAuditLog {
 
 
   public String getNameGenderLevel() {
-    try {
-      return DeliverableGenderTypeEnum.getValue(genderLevel).getValue();
-    } catch (Exception e) {
-      return null;
-    }
+    return nameGenderLevel;
   }
 
 
@@ -180,8 +178,13 @@ public class DeliverableGenderLevel implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
+
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
+  }
+
+  public void setNameGenderLevel(String nameGenderLevel) {
+    this.nameGenderLevel = nameGenderLevel;
   }
 
 
