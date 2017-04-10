@@ -750,7 +750,7 @@ public class DeliverableAction extends BaseAction {
           deliverable.getDeliverableFundingSources().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
         deliverable.setGenderLevels(
           deliverable.getDeliverableGenderLevels().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-       
+
 
         if (this.isReportingActive()) {
 
@@ -1136,7 +1136,7 @@ public class DeliverableAction extends BaseAction {
       } else {
         deliverablePrew.setCrossCuttingYouth(true);
       }
-
+      deliverablePrew.setDivision(deliverable.getDivision());
       if (this.isPlanningActive()) {
         if (deliverable.getCrpClusterKeyOutput() != null) {
           CrpClusterKeyOutput keyOutput =

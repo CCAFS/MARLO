@@ -29,6 +29,9 @@
 				<comment>Other type defined by the user.</comment>
 			</column>
 		</property>
+		 <property name="division" type="string">
+      <column name="division" length="1000" />
+    </property>
 		<property name="year" type="int">
 			<column name="year" not-null="true" />
 		</property>

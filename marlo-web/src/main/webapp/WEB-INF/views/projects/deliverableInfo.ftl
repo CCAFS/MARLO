@@ -222,7 +222,7 @@
         [#if (deliverable.responsiblePartner.projectPartnerPerson.institution.id == 89)!false ][#assign ifpriDivision = true /] [/#if]
         <div class="form-group row divisionBlock division-IFPRI"  style="display:${ifpriDivision?string('block','none')}">
           <div class="col-md-6">
-            [@customForm.input name="fundingSource.division" i18nkey="projectCofunded.division" className="" editable=editable /]
+            [@customForm.input name="deliverable.division" i18nkey="projectCofunded.division" className="" editable=editable /]
           </div>
         </div>
       [/#if]
