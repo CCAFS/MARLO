@@ -54,7 +54,16 @@ function init() {
   $(".removeElement").on("click", removePartnerEvent);
   // Update value of responsible person
   $(".responsible").on("change", function() {
+
     var option = $(this).find("option:selected");
+
+    // Show IFPRI Division
+    if((option.text()).indexOf("IFPRI") > -1) {
+      $('.division-IFPRI').show();
+    } else {
+      $('.division-IFPRI').hide();
+    }
+
     // validate if exists this person in contact person list
     var validation = $(this).parents(".fullBlock").parent().find(".personList").find("select");
     if(option.val() != "-1") {
