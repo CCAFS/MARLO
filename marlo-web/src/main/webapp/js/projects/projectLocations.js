@@ -746,6 +746,7 @@ function addCountryIntoLocLevel(locationId,$locationSelect,locationName) {
     var locId = e.split("-")[0];
     var locIso = e.split("-")[1];
     var locName = e.split("-")[2];
+    console.log(e);
     // Check if the item doesn't exists into the list
     if(locationContent.find("input.locElementId[value='" + locId + "']").exists()) {
       notify(locName + " already exists into the " + locationContent.parent().parent().find(".locationLevelName").val()
@@ -763,12 +764,16 @@ function addCountryIntoLocLevel(locationId,$locationSelect,locationName) {
           dataType: "json",
           data: data
       }).done(function(m) {
+        console.log(m);
         if(m.geopositions.length != 0) {
           latitude = m.geopositions[0].latitude;
           longitude = m.geopositions[0].longitude;
           $item.find('.geoLatitude').val(latitude);
           $item.find('.geoLongitude').val(longitude);
           addMarker(map, (countID), parseFloat(latitude), parseFloat(longitude), locName, "true", 2);
+          var latLng = new google.maps.LatLng(latitude, longitude);
+          console.log(latLng);
+          map.setCenter(latLng);
         }
       });
       $item.attr("id", "location-" + (countID));

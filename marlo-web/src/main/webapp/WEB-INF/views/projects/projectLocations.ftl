@@ -85,7 +85,23 @@
                 <div  class="col-md-12 map">
                   <div id="map" class="col-md-12"></div>
                 </div>
-                
+                [#-- REGIONS IN WHICH THE PROJECT IS WORKING  --]
+                <div class="col-md-12">
+                <label for="">Regions in which the project is working:</label>
+                <div id="selectsContent" class="col-md-12 simpleBox " listname="project.locationsData">
+                  [#-- Content collapsible--]
+                  <div class="selectWrapper row">
+                    [#if project.regions?has_content]
+                      [#list project.locationsData as locationLevels]
+                        [@locationLevel element=locationLevels name="${locationLevelName}" index=locationLevels_index list=locationLevels.list?? && locationLevels.list /]
+                      [/#list]
+                    [#else]
+                    <p class="text-center borderBox inf">There is not locations added, please use the map to add new locations.</p>
+                    [/#if]
+                  </div>
+                </div>
+                </div>
+                [#-- LOCATION LIST --]
                 <div class="col-md-12">
                 <label for="">Locations list</label>
                 <div id="selectsContent" class="col-md-12 simpleBox " listname="project.locationsData">
