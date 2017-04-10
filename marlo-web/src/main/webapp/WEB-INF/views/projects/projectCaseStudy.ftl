@@ -39,12 +39,11 @@
       </div>
       [#-- Project Section Content --]
       <div class="col-md-9">
-
+        [#-- Section Messages --]
+        [#include "/WEB-INF/views/projects/messages-caseStudy.ftl" /]
+        
         [@s.form action=actionName cssClass="pure-form" enctype="multipart/form-data" ]  
-         
-          [#include "/WEB-INF/views/projects/dataInfo-projects.ftl" /] 
-          
-            
+
           [#-- Back --]
           <small class="pull-right">
             <a href="[@s.url action='${crpSession}/caseStudies'][@s.param name="projectID" value=project.id /][/@s.url]">
@@ -53,7 +52,6 @@
           </small>
            
           <h3 class="headTitle">[@s.text name="projectCaseStudies.caseStudyInformation" /]</h3>
-   
           
           [#-- Outcome case studies list --]
           <div id="caseStudiesBlock" class="">
