@@ -32,7 +32,12 @@
         [#include "/WEB-INF/views/admin/menu-admin.ftl" /]
       </div>
       <div class="col-md-9">
-        [@s.form action=actionName enctype="multipart/form-data" ]
+        [@s.form action=actionName enctype="multipart/form-data" ]       
+        <p class="bg-primary" style="padding: 18px;">
+            <span class="glyphicon glyphicon-flash"></span> This section is currently being tested by the technical team.</br>
+            The idea here is that the CRP-Admins can be able to choose the target units that will be used in the CRP 
+            Impact Pathway indicators (Outcomes and Milestones). If you do not find the target from the list, you may request it to the MARLO Support Team
+          </p>
         <h4 class="sectionTitle">Custom Target Units</h4>
         <label for="">List of target units:</label>
         <div class="borderBox ">
@@ -102,6 +107,8 @@
     <input type="hidden" class="id" name="${customName}.targetUnit.id" value="${(element.targetUnit.id)!}" />
     <input type="hidden" class="name" name="${customName}.targetUnit.name" value="${(element.targetUnit.name)!}" />
     [#-- Remove Button --]
-    <span class=" pull-right" > <input type="checkbox" value="true" name="${customName}.check" id="" [#if element.check?? && element.check]checked[/#if]/></span>
+    
+      <span class=" pull-right" > <input [#if element?? && element.targetUnit?? && action.canBeDeleted((element.targetUnit.id)!, (element.targetUnit.class.name)!)!][#else]disabled[/#if] type="checkbox" value="true" name="${customName}.check" id="" [#if element.check?? && element.check]checked[/#if]/></span>
+    
   </li>
 [/#macro]

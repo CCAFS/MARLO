@@ -23,6 +23,7 @@ function attachEvents() {
 }
 
 function openDialog() {
+  $(".newTargetUnit").val("");
   $("#popUp").dialog({
       resizable: false,
       width: 400,
@@ -42,15 +43,15 @@ function openDialog() {
 }
 
 function requestService() {
-  $(".allProjects").empty();
   $.ajax({
-      url: baseURL + "/projectList.do?",
+      url: baseURL + "/targetUnitRequest.do",
       type: 'GET',
       data: {
-        cycle: $("input[name='cycle']:checked").val()
+        targetUnitName: $(".newTargetUnit").val()
       },
       success: function(m) {
         console.log(m);
+        $("#popUp").dialog("close");
       },
       error: function(e) {
         console.log(e);

@@ -181,6 +181,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   @Inject
   private DeliverableManager deliverableManager;
   private boolean draft;
+    @Inject
+  private SrfTargetUnitManager targetUnitManager;
   @Inject
   private UserManager userManager;
 
@@ -442,6 +444,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           }
         }
 
+      }
+      
+      if (clazz == SrfTargetUnit.class) {
+        SrfTargetUnit targetUnit = targetUnitManager.getSrfTargetUnitById(id);
+
+        if (targetUnit.getCrpProgramOutcomes().stream().filter(o -> o.isActive()).collect(Collectors.toList())
+          .size() > 0) {
+          return false;
+        }
+
+        if (targetUnit.getCrpMilestones().stream().filter(u -> u.isActive()).collect(Collectors.toList()).size() > 0) {
+          return false;
+        }
       }
 
       return true;
