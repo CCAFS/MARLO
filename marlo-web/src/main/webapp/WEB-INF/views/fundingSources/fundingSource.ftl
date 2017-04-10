@@ -75,7 +75,9 @@
           <div class="col-md-6">[@customForm.select name="fundingSource.budgetType.id" i18nkey="projectCofunded.type" className="type" listName="budgetTypes" header=false required=true editable=editable && action.canEditType() /]</div>
         </div>
       </div>
+      
       [#-- CGIAR lead center --]
+      [#assign ifpriDivision = false /]
       <div class="form-group row">
         <div class="panel tertiary col-md-12">
          <div class="panel-head"><label for=""> [@customForm.text name="fundingSource.leadPartner" readText=!editable /]:[@customForm.req required=editable /]</label></div>
@@ -91,6 +93,9 @@
                   <input class="fId" type="hidden" name="fundingSource.institutions[${institutionLead_index}].institution.id" value="${institutionLead.institution.id}" />
                   <span class="name">${(institutionLead.institution.composedName)!}</span>
                   <div class="clearfix"></div>
+                  
+                  [#-- Check IFPRI Division --]
+                  [#if institutionLead.institution.id == action.getIFPRIId() ] [#assign ifpriDivision = true /] [/#if]
                 </li>
               [/#list]
               [#else]
@@ -103,14 +108,24 @@
           </div>
         </div>
       </div>
+      
+      [#-- Division --]
+      [#if action.hasSpecificities('crp_division_fs')]
+        <div class="form-group row divisionBlock division-${action.getIFPRIId()}"  style="display:${ifpriDivision?string('block','none')}">
+          <div class="col-md-6">
+            [@customForm.input name="fundingSource.division" i18nkey="projectCofunded.division" className="" editable=editable /]
+          </div>
+        </div>
+      [/#if]
+      
       [#-- Contact person name and email --]
       [#assign canSeePIEmail = action.hasSpecificities('crp_email_funding_source')]
       <div class="form-group row">
           <div class="col-md-6">[@customForm.input name="fundingSource.contactPersonName" i18nkey="projectCofunded.contactName" className="contactName" required=true editable=editable /]</div>
           <div class="col-md-6" style="display:${canSeePIEmail?string('block','none')}">[@customForm.input name="fundingSource.contactPersonEmail" i18nkey="projectCofunded.contactEmail" className="contactEmail" required=true editable=editable /]</div>
       </div>
-      [#-- Donor --]
       
+      [#-- Donor --]
       <div class="form-group">
         <div class="row">
           <div class="col-md-12">
