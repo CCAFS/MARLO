@@ -13,8 +13,8 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-[#assign startYear = ((fundingSource.startDate?string.yyyy)?number)!2014 /]
-[#assign endYear = ((fundingSource.endDate?string.yyyy)?number)!2017 /]
+[#assign startYear = ((fundingSource.startDate?string.yyyy)?number)!currentCycleYear /]
+[#assign endYear = ((fundingSource.endDate?string.yyyy)?number)!startYear /]
     
 <section class="container">
   <article class="fullBlock col-md-12" id="mainInformation">
