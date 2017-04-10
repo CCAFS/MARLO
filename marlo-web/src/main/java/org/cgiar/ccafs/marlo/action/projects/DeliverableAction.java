@@ -38,6 +38,7 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableUserManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
+import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.MetadataElementManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
@@ -55,7 +56,6 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFile;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel;
-import org.cgiar.ccafs.marlo.data.model.DeliverableGenderTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
@@ -65,6 +65,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.GenderType;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -181,6 +182,8 @@ public class DeliverableAction extends BaseAction {
 
   private CrpProgramManager crpProgramManager;
 
+  private GenderTypeManager genderTypeManager;
+
   private IpProgramManager ipProgramManager;
 
 
@@ -235,7 +238,7 @@ public class DeliverableAction extends BaseAction {
     DeliverableQualityCheckManager deliverableQualityCheckManager, DeliverableCrpManager deliverableCrpManager,
     DeliverableQualityAnswerManager deliverableQualityAnswerManager, CrpProgramManager crpProgramManager,
     DeliverableDataSharingFileManager deliverableDataSharingFileManager, FileDBManager fileDBManager,
-    DeliverableUserManager deliverableUserManager,
+    DeliverableUserManager deliverableUserManager, GenderTypeManager genderTypeManager,
     DeliverablePublicationMetadataManager deliverablePublicationMetadataManager,
     MetadataElementManager metadataElementManager, DeliverableDisseminationManager deliverableDisseminationManager,
     CrpPandrManager crpPandrManager, IpProgramManager ipProgramManager) {
@@ -255,6 +258,7 @@ public class DeliverableAction extends BaseAction {
     this.auditLogManager = auditLogManager;
     this.deliverableValidator = deliverableValidator;
     this.projectPartnerManager = projectPartnerManager;
+    this.genderTypeManager = genderTypeManager;
     this.deliverableFundingSourceManager = deliverableFundingSourceManager;
     this.fundingSourceManager = fundingSourceManager;
     this.deliverableGenderLevelManager = deliverableGenderLevelManager;
@@ -850,9 +854,17 @@ public class DeliverableAction extends BaseAction {
       }
 
       genderLevels = new HashMap<>();
-      List<DeliverableGenderTypeEnum> listGenders = Arrays.asList(DeliverableGenderTypeEnum.values());
-      for (DeliverableGenderTypeEnum projectStatusEnum : listGenders) {
-        genderLevels.put(projectStatusEnum.getId() + "", projectStatusEnum.getValue());
+      List<GenderType> genderTypes = null;
+      if (this.hasSpecificities(APConstants.CRP_CUSTOM_GENDER)) {
+        genderTypes = genderTypeManager.findAll().stream()
+          .filter(c -> c.getCrp() != null && c.getCrp().getId().longValue() == loggedCrp.getId().longValue())
+          .collect(Collectors.toList());
+      } else {
+        genderTypes = genderTypeManager.findAll().stream().filter(c -> c.getCrp() == null).collect(Collectors.toList());
+      }
+
+      for (GenderType projectStatusEnum : genderTypes) {
+        genderLevels.put(projectStatusEnum.getId() + "", projectStatusEnum.getDescription());
       }
       crps = new HashMap<>();
       for (CrpPandr crp : crpPandrManager.findAll().stream().filter(c -> c.getId() != 3 && c.isActive())
