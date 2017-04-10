@@ -77,6 +77,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.utils.HistoryComparator;
 import org.cgiar.ccafs.marlo.validation.projects.DeliverableValidator;
 
 import java.io.BufferedReader;
@@ -153,6 +154,7 @@ public class DeliverableAction extends BaseAction {
   private long deliverableID;
 
   private DeliverableManager deliverableManager;
+  private HistoryComparator historyComparator;
 
   private DeliverableMetadataElementManager deliverableMetadataElementManager;
 
@@ -235,7 +237,7 @@ public class DeliverableAction extends BaseAction {
     DeliverableQualityCheckManager deliverableQualityCheckManager, DeliverableCrpManager deliverableCrpManager,
     DeliverableQualityAnswerManager deliverableQualityAnswerManager, CrpProgramManager crpProgramManager,
     DeliverableDataSharingFileManager deliverableDataSharingFileManager, FileDBManager fileDBManager,
-    DeliverableUserManager deliverableUserManager,
+    DeliverableUserManager deliverableUserManager, HistoryComparator historyComparator,
     DeliverablePublicationMetadataManager deliverablePublicationMetadataManager,
     MetadataElementManager metadataElementManager, DeliverableDisseminationManager deliverableDisseminationManager,
     CrpPandrManager crpPandrManager, IpProgramManager ipProgramManager) {
@@ -243,6 +245,7 @@ public class DeliverableAction extends BaseAction {
     this.deliverableManager = deliverableManager;
     this.deliverableTypeManager = deliverableTypeManager;
     this.crpManager = crpManager;
+    this.historyComparator = historyComparator;
     this.deliverableUserManager = deliverableUserManager;
     this.crpProgramManager = crpProgramManager;
     this.projectManager = projectManager;
@@ -634,6 +637,11 @@ public class DeliverableAction extends BaseAction {
 
       if (history != null) {
         deliverable = history;
+
+        Map<String, String> specialList = new HashMap<>();
+
+
+        this.setDifferences(historyComparator.getDifferences(transaction, specialList, "deliverable"));
       } else {
         this.transaction = null;
 
