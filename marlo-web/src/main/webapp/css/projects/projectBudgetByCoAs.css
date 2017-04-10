@@ -58,7 +58,7 @@ ul.nav.nav-tabs.budget-tabs>li>a:hover {
 
 .budgetColumn {
     padding: 5px 22px !important;
-    width: 20%;
+    /* width: 20%; */
 }
 
 .budgetColumn p{

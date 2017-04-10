@@ -1,0 +1,1 @@
+insert into budget_types (id, name) values (5,'W1/W2 Co-Financing');
