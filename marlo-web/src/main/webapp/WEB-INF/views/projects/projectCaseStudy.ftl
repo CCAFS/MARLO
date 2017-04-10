@@ -134,8 +134,8 @@
       
       [#-- Primary 2019 outcome indicator that this case study is contributing to: --]
       [#if phaseOne]
-      <div class="form-group"> 
-        <div class="fullBlock caseStudyIndicators">
+      <div class="form-group" > 
+        <div class="fullBlock caseStudyIndicators" class="${customForm.changedField('caseStudy.indicators')}">
           <label for="${customName}.caseStudyIndicators">[@customForm.text name="caseStudy.caseStudyIndicators" readText=!editable /]:[@customForm.req required=editable /]</label>
           <div class="checkboxGroup">
           [#if editable]
