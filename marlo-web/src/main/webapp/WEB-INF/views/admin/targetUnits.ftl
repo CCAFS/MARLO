@@ -108,7 +108,7 @@
     <input type="hidden" class="name" name="${customName}.targetUnit.name" value="${(element.targetUnit.name)!}" />
     [#-- Remove Button --]
     
-      <span class=" pull-right" > <input [#if element?? && element.targetUnit?? && action.canBeDeleted((element.targetUnit.id)!, (element.targetUnit.class.name)!)!][#else]disabled[/#if] type="checkbox" value="true" name="${customName}.check" id="" [#if element.check?? && element.check]checked[/#if]/></span>
+      <span class=" pull-right" > <input [#if element?? && element.targetUnit?? && action.canBeDeletedCrptargetUnit((element.targetUnit.id)!, (element.targetUnit.class.name)!)!][#else]disabled[/#if] type="checkbox" value="true" name="${customName}.check" id="" [#if element.check?? && element.check]checked[/#if]/></span>
     
   </li>
 [/#macro]
