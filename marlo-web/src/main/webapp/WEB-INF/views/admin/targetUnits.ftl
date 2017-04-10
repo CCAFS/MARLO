@@ -82,7 +82,7 @@
   <hr />
   <div class="col-md-12">
     <div class="col-md-12 note center form-group">
-      This request will be send to MARLOSupport@cgiar.org
+      This request will be sent to MARLOSupport@cgiar.org
     </div>
   </div>
     <div class="col-md-12 form-group">
@@ -107,8 +107,7 @@
     <input type="hidden" class="id" name="${customName}.targetUnit.id" value="${(element.targetUnit.id)!}" />
     <input type="hidden" class="name" name="${customName}.targetUnit.name" value="${(element.targetUnit.name)!}" />
     [#-- Remove Button --]
-    
-      <span class=" pull-right" > <input [#if element?? && element.targetUnit?? && action.canBeDeleted((element.targetUnit.id)!, (element.targetUnit.class.name)!)!][#else]disabled[/#if] type="checkbox" value="true" name="${customName}.check" id="" [#if element.check?? && element.check]checked[/#if]/></span>
+      <span class=" pull-right" > <input [#if element?? && element.targetUnit?? && action.canBeDeleted((element.targetUnit.id)!, (element.targetUnit.class.name)!)!][#else]style="opacity:0.5; cursor: not-allowed;" onclick="return false;" onkeydown="e = e || window.event; if(e.keyCode !== 9) return false;"[/#if] type="checkbox" value="true" name="${customName}.check" id="" [#if element.check?? && element.check]checked[/#if] /></span>
     
   </li>
 [/#macro]
