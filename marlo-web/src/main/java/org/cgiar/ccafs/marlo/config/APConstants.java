@@ -57,6 +57,7 @@ public final class APConstants {
   public static final String CRP_CL_ROLE = "crp_cl_rol";
   public static final String CRP_FPL_ROLE = "crp_fpl_rol";
   public static final String CRP_FPM_ROLE = "crp_fpm_rol";
+  public static final String CRP_CUSTOM_GENDER = "crp_custom_gender";
   public static final String CRP_RPM_ROLE = "crp_rpm_rol";
   public static final String CRP_PL_ROLE = "crp_pl_rol";
   public static final String CRP_PC_ROLE = "crp_pc_rol";
