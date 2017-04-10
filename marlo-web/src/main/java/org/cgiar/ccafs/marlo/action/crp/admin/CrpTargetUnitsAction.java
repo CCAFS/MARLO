@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -78,6 +79,8 @@ public class CrpTargetUnitsAction extends BaseAction {
 
     targetUnitsList =
       new ArrayList<>(targetUnitManager.findAll().stream().filter(tu -> tu.isActive()).collect(Collectors.toList()));
+
+    Collections.sort(targetUnitsList, (tu1, tu2) -> tu1.getName().compareTo(tu2.getName()));
 
     loggedCrp.setTargetUnits(new ArrayList<>());
 
