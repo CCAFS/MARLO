@@ -31,7 +31,7 @@ function init() {
   });
   
   // Funding Window / Budget type
-  $(".type").select2({
+  $("select.type").select2({
       templateResult: function(state) {
         var name = state.text;
         var desc = $('li.budgetTypeDescription-' + state.id).text();
