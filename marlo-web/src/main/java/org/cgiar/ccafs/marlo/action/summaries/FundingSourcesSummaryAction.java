@@ -84,12 +84,13 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
   private Crp loggedCrp;
   private int year;
   private String cycle;
+  private Boolean showPIEmail;
+  private Boolean showIfpriDivision;
   // Managers
   private CrpManager crpManager;
   private CrpProgramManager programManager;
   private ProjectManager projectManager;
   private DeliverableFundingSourceManager deliverableFundingSourceManager;
-  private Boolean showPIEmail;
   // XLSX bytes
   private byte[] bytesXLSX;
 
@@ -433,10 +434,23 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
         .filter(fsi -> fsi.isActive()).collect(Collectors.toList())) {
         if (leadPartner.isEmpty()) {
           leadPartner = fsIns.getInstitution().getComposedName();
+          // Check IFPRI Division
+          if (this.showIfpriDivision) {
+            if (fsIns.getInstitution().getAcronym().equals("IFPRI") && fundingSource.getDivision() != null
+              && !fundingSource.getDivision().trim().isEmpty()) {
+              leadPartner += " (" + fundingSource.getDivision() + ")";
+            }
+          }
         } else {
           leadPartner += ", \n" + fsIns.getInstitution().getComposedName();
+          // Check IFPRI Division
+          if (this.showIfpriDivision) {
+            if (fsIns.getInstitution().getAcronym().equals("IFPRI") && fundingSource.getDivision() != null
+              && !fundingSource.getDivision().trim().isEmpty()) {
+              leadPartner += " (" + fundingSource.getDivision() + ")";
+            }
+          }
         }
-
       }
       String fsWindow = fundingSource.getBudgetType().getName();
 
@@ -608,6 +622,14 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
       LOG.warn("Failed to get " + APConstants.CRP_EMAIL_FUNDING_SOURCE
         + " parameter. Parameter will be set false. Exception: " + e.getMessage());
       this.showPIEmail = false;
+    }
+    // Get IfpriDivision crp_parameter
+    try {
+      this.showIfpriDivision = this.hasSpecificities(this.getText(APConstants.CRP_DIVISION_FS));
+    } catch (Exception e) {
+      LOG.warn("Failed to get " + APConstants.CRP_DIVISION_FS + " parameter. Parameter will be set false. Exception: "
+        + e.getMessage());
+      this.showIfpriDivision = false;
     }
   }
 
