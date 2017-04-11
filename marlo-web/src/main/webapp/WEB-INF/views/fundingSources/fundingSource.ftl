@@ -85,18 +85,21 @@
             <ul class="list">
             [#if fundingSource.institutions?has_content]
               [#list fundingSource.institutions as institutionLead]
-                <li id="" class="leadPartners clearfix col-md-6">
-                [#if editable ]
-                  <div class="removeLeadPartner removeIcon" title="Remove Lead partner"></div>
+                [#-- Show if is a headquarter institution --]
+                [#if !(institutionLead.headquarter??)]
+                  <li id="" class="leadPartners clearfix col-md-6">
+                  [#if editable ]
+                    <div class="removeLeadPartner removeIcon" title="Remove Lead partner"></div>
+                  [/#if]
+                    <input class="id" type="hidden" name="fundingSource.institutions[${institutionLead_index}].id" value="${institutionLead.id}" />
+                    <input class="fId" type="hidden" name="fundingSource.institutions[${institutionLead_index}].institution.id" value="${institutionLead.institution.id}" />
+                    <span class="name">${(institutionLead.institution.composedName)!}</span>
+                    <div class="clearfix"></div>
+                    
+                    [#-- Check IFPRI Division --]
+                    [#if institutionLead.institution.id == action.getIFPRIId() ] [#assign ifpriDivision = true /] [/#if]
+                  </li>
                 [/#if]
-                  <input class="id" type="hidden" name="fundingSource.institutions[${institutionLead_index}].id" value="${institutionLead.id}" />
-                  <input class="fId" type="hidden" name="fundingSource.institutions[${institutionLead_index}].institution.id" value="${institutionLead.institution.id}" />
-                  <span class="name">${(institutionLead.institution.composedName)!}</span>
-                  <div class="clearfix"></div>
-                  
-                  [#-- Check IFPRI Division --]
-                  [#if institutionLead.institution.id == action.getIFPRIId() ] [#assign ifpriDivision = true /] [/#if]
-                </li>
               [/#list]
               [#else]
               <p class="emptyText"> [@s.text name="No lead partner added yet." /]</p> 
@@ -113,7 +116,7 @@
       [#if action.hasSpecificities('crp_division_fs')]
         <div class="form-group row divisionBlock division-${action.getIFPRIId()}"  style="display:${ifpriDivision?string('block','none')}">
           <div class="col-md-6">
-            [@customForm.input name="deliverable.division" i18nkey="projectCofunded.division" className="" editable=editable /]
+            [@customForm.input name="fundingSource.division" i18nkey="projectCofunded.division" className="" editable=editable /]
           </div>
         </div>
       [/#if]
