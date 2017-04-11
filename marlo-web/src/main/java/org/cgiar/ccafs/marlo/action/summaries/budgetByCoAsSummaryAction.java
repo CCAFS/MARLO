@@ -22,7 +22,6 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
-import org.cgiar.ccafs.marlo.data.model.CrpParameter;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
@@ -135,29 +134,13 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
     }
     String current_date = timezone.format(format) + "(GMT" + zone + ")";
 
-    // Verify if the crp has regions avalaible
-    List<CrpParameter> hasRegionsList = new ArrayList<>();
-    Boolean regionalAvailable = false;
-    for (CrpParameter hasRegionsParam : this.loggedCrp.getCrpParameters().stream()
-      .filter(cp -> cp.isActive() && cp.getKey().equals(APConstants.CRP_HAS_REGIONS)).collect(Collectors.toList())) {
-      hasRegionsList.add(hasRegionsParam);
-    }
-
-    if (!hasRegionsList.isEmpty()) {
-      if (hasRegionsList.size() > 1) {
-        LOG.warn("There is for more than 1 key of type: " + APConstants.CRP_HAS_REGIONS);
-      }
-      regionalAvailable = Boolean.valueOf(hasRegionsList.get(0).getValue());
-    }
-
     // Set Main_Query
     CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
     String masterQueryName = "main";
     TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
-    TypedTableModel model = this.getMasterTableModel(center, current_date, regionalAvailable);
+    TypedTableModel model = this.getMasterTableModel(center, current_date);
     sdf.addTable(masterQueryName, model);
     masterReport.setDataFactory(cdf);
-
 
     // Get details band
     ItemBand masteritemBand = masterReport.getItemBand();
@@ -322,7 +305,7 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
     return loggedCrp;
   }
 
-  private TypedTableModel getMasterTableModel(String center, String date, Boolean regionalAvailable) {
+  private TypedTableModel getMasterTableModel(String center, String date) {
     // Initialization of Model
     TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "regionalAvailable", "budget_gender"},
       new Class[] {String.class, String.class, Boolean.class, Boolean.class});
@@ -334,7 +317,7 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
     } catch (Exception e) {
       hasGender = false;
     }
-    model.addRow(new Object[] {center, date, regionalAvailable, hasGender});
+    model.addRow(new Object[] {center, date, this.hasProgramnsRegions(), hasGender});
     return model;
   }
 
@@ -418,45 +401,35 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
           }
         }
 
-        List<CrpParameter> hasRegionsList = new ArrayList<>();
-        Boolean hasRegions = false;
-        for (CrpParameter hasRegionsParam : project.getCrp().getCrpParameters().stream()
-          .filter(cp -> cp.isActive() && cp.getKey().equals(APConstants.CRP_HAS_REGIONS))
-          .collect(Collectors.toList())) {
-          hasRegionsList.add(hasRegionsParam);
-        }
-
-        if (!hasRegionsList.isEmpty()) {
-          if (hasRegionsList.size() > 1) {
-            LOG.warn("There is for more than 1 key of type: " + APConstants.CRP_HAS_REGIONS);
+        if (this.hasProgramnsRegions()) {
+          List<CrpProgram> regionsList = new ArrayList<>();
+          // If has regions, add the regions to regionsArrayList
+          // Get Regions related to the project sorted by acronym
+          if (this.hasProgramnsRegions() != false) {
+            for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
+              .sorted((c1, c2) -> c1.getCrpProgram().getAcronym().compareTo(c2.getCrpProgram().getAcronym()))
+              .filter(
+                c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+              .collect(Collectors.toList())) {
+              regionsList.add(programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()));
+            }
           }
-          hasRegions = Boolean.valueOf(hasRegionsList.get(0).getValue());
-        }
-
-        List<CrpProgram> regionsList = new ArrayList<>();
-        // If has regions, add the regions to regionsArrayList
-        // Get Regions related to the project sorted by acronym
-        if (hasRegions != false) {
-          for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-            .sorted((c1, c2) -> c1.getCrpProgram().getAcronym().compareTo(c2.getCrpProgram().getAcronym()))
-            .filter(
-              c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
-            .collect(Collectors.toList())) {
-            regionsList.add(programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()));
-          }
-        }
-
-        for (CrpProgram crpProgram : regionsList) {
-          if (regions.isEmpty()) {
-            regions = crpProgram.getAcronym();
+          if (project.getNoRegional() != null && project.getNoRegional()) {
+            regions = "Global";
+            if (regionsList.size() > 0) {
+              LOG.warn("Project is global and has regions selected");
+            }
           } else {
-            regions += ", " + crpProgram.getAcronym();
+            for (CrpProgram crpProgram : regionsList) {
+              if (regions.isEmpty()) {
+                regions = crpProgram.getAcronym();
+              } else {
+                regions += ", " + crpProgram.getAcronym();
+              }
+            }
           }
         }
-
         coa = coAs.get(0).getCrpClusterOfActivity().getComposedName();
-
-
         if (total_w1w2 != 0.0) {
           w1w2_per_total = 1.0;
         }
@@ -533,25 +506,11 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
             }
           }
 
-          List<CrpParameter> hasRegionsList = new ArrayList<>();
-          Boolean hasRegions = false;
-          for (CrpParameter hasRegionsParam : project.getCrp().getCrpParameters().stream()
-            .filter(cp -> cp.isActive() && cp.getKey().equals(APConstants.CRP_HAS_REGIONS))
-            .collect(Collectors.toList())) {
-            hasRegionsList.add(hasRegionsParam);
-          }
-
-          if (!hasRegionsList.isEmpty()) {
-            if (hasRegionsList.size() > 1) {
-              LOG.warn("There is for more than 1 key of type: " + APConstants.CRP_HAS_REGIONS);
-            }
-            hasRegions = Boolean.valueOf(hasRegionsList.get(0).getValue());
-          }
 
           List<CrpProgram> regionsList = new ArrayList<>();
           // If has regions, add the regions to regionsArrayList
           // Get Regions related to the project sorted by acronym
-          if (hasRegions != false) {
+          if (this.hasProgramnsRegions() != false) {
             for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
               .sorted((c1, c2) -> c1.getCrpProgram().getAcronym().compareTo(c2.getCrpProgram().getAcronym()))
               .filter(
@@ -560,12 +519,18 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
               regionsList.add(programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()));
             }
           }
-
-          for (CrpProgram crpProgram : regionsList) {
-            if (regions.isEmpty()) {
-              regions = crpProgram.getAcronym();
-            } else {
-              regions += ", " + crpProgram.getAcronym();
+          if (project.getNoRegional() != null && project.getNoRegional()) {
+            regions = "Global";
+            if (regionsList.size() > 0) {
+              LOG.warn("Project is global and has regions selected");
+            }
+          } else {
+            for (CrpProgram crpProgram : regionsList) {
+              if (regions.isEmpty()) {
+                regions = crpProgram.getAcronym();
+              } else {
+                regions += ", " + crpProgram.getAcronym();
+              }
             }
           }
 

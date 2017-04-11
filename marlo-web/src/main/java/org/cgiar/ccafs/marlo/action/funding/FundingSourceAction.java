@@ -39,9 +39,7 @@ import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
-import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.User;
-import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -76,33 +74,34 @@ public class FundingSourceAction extends BaseAction {
 
   private BudgetTypeManager budgetTypeManager;
   private Map<String, String> budgetTypes;
+  private List<BudgetType> budgetTypesList;
+
   private CrpManager crpManager;
+
+
   private CrpPpaPartnerManager crpPpaPartnerManager;
+
   private File file;
-
   private String fileContentType;
-
   private FileDBManager fileDBManager;
-
 
   private String fileFileName;
 
   private Integer fileID;
-  private FundingSource fundingSource;
-  private FundingSourceBudgetManager fundingSourceBudgetManager;
 
+
+  private FundingSource fundingSource;
+
+  private FundingSourceBudgetManager fundingSourceBudgetManager;
   private long fundingSourceID;
   private FundingSourceInstitutionManager fundingSourceInstitutionManager;
 
   private FundingSourceManager fundingSourceManager;
   private InstitutionManager institutionManager;
+
   private List<Institution> institutions;
   private List<Institution> institutionsDonors;
-
-
   private LiaisonInstitutionManager liaisonInstitutionManager;
-
-
   private List<LiaisonInstitution> liaisonInstitutions;
 
 
@@ -110,11 +109,12 @@ public class FundingSourceAction extends BaseAction {
 
 
   private Map<String, String> status;
+
+
   private String transaction;
 
 
   private UserManager userManager;
-
   private FundingSourceValidator validator;
 
 
@@ -172,24 +172,16 @@ public class FundingSourceAction extends BaseAction {
 
   public boolean canEditFundingSourceBudget() {
 
-    // TODO fix user_permissions view to allow funding_sources:budget permissions
-    if (loggedCrp.getAcronym().equals("a4nh")) {
-      User user = this.getCurrentUser();
+    try {
+      return this.hasPermissionNoBase(this.generatePermission(Permission.PROJECT_FUNDING_SOURCE_BUDGET_PERMISSION,
+        loggedCrp.getAcronym(), fundingSource.getId().toString()));
+    } catch (
 
-      List<UserRole> userRoles = new ArrayList<>(user.getUserRoles());
-      for (UserRole userRole : userRoles) {
-        Role role = userRoleManager.getRoleById(userRole.getRole().getId());
-        if (role.getId() == 20) {
-          return true;
-        }
-      }
+    Exception e)
 
-
+    {
+      return true;
     }
-    System.out.println("");
-
-    return this.hasPermissionNoBase(this.generatePermission(Permission.PROJECT_FUNDING_SOURCE_BUDGET_PERMISSION,
-      loggedCrp.getAcronym(), fundingSource.getId().toString()));
 
 
   }
@@ -206,6 +198,7 @@ public class FundingSourceAction extends BaseAction {
   public boolean canEditType() {
     return fundingSource.getProjectBudgets().stream().filter(c -> c.isActive()).collect(Collectors.toList()).isEmpty();
   }
+
 
   private Path getAutoSaveFilePath() {
     String composedClassName = fundingSource.getClass().getSimpleName();
@@ -243,15 +236,18 @@ public class FundingSourceAction extends BaseAction {
     return budgetTypes;
   }
 
+  public List<BudgetType> getBudgetTypesList() {
+    return budgetTypesList;
+  }
 
   public File getFile() {
     return file;
   }
 
+
   public String getFileContentType() {
     return fileContentType;
   }
-
 
   public String getFileFileName() {
     return fileFileName;
@@ -262,10 +258,10 @@ public class FundingSourceAction extends BaseAction {
     return fileID;
   }
 
+
   public FundingSource getFundingSource() {
     return fundingSource;
   }
-
 
   public String getFundingSourceFileURL() {
     return config.getDownloadURL() + "/" + this.getFundingSourceUrlPath().replace('\\', '/');
@@ -280,6 +276,7 @@ public class FundingSourceAction extends BaseAction {
   public String getFundingSourceUrlPath() {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + "fundingSourceFiles" + File.separator;
   }
+
 
   public int getIndexBugets(int year) {
     int i = 0;
@@ -334,6 +331,8 @@ public class FundingSourceAction extends BaseAction {
     fundingSourceID =
       Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.FUNDING_SOURCE_REQUEST_ID)));
 
+    // Budget Types list
+    budgetTypesList = budgetTypeManager.findAll();
 
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
 
@@ -398,8 +397,8 @@ public class FundingSourceAction extends BaseAction {
 
       } else {
         this.setDraft(false);
-        fundingSource.setBudgets(new ArrayList<>(fundingSourceManager.getFundingSourceById(fundingSource.getId())
-          .getFundingSourceBudgets().stream().filter(pb -> pb.isActive()).collect(Collectors.toList())));
+        fundingSource.setBudgets(
+          fundingSource.getFundingSourceBudgets().stream().filter(pb -> pb.isActive()).collect(Collectors.toList()));
 
         fundingSource.setInstitutions(new ArrayList<>(fundingSource.getFundingSourceInstitutions().stream()
           .filter(pb -> pb.isActive()).collect(Collectors.toList())));
@@ -624,6 +623,10 @@ public class FundingSourceAction extends BaseAction {
 
   public void setBudgetTypes(Map<String, String> budgetTypes) {
     this.budgetTypes = budgetTypes;
+  }
+
+  public void setBudgetTypesList(List<BudgetType> budgetTypesList) {
+    this.budgetTypesList = budgetTypesList;
   }
 
   public void setFile(File file) {

@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Insert a partner" /]
-[#assign globalLibs = ["jquery", "noty","select2"] /]
+[#assign pageLibs = ["jquery", "noty","select2"] /]
 [#assign customJS = ["${baseUrl}/js/global/partnersSave.js"] /]
 [#assign customCSS = ["${baseUrl}/css/global/partnersSave.css"] /]
 [#import "/WEB-INF/global/macros/forms.ftl" as customForm /]
@@ -14,7 +14,7 @@
     <article>
     [#-- title --]
     <div class="title col-xs-12">
-      <h3 class=" text-center form-group">[@s.text name="Request a new institution or branch" /]</h3>
+      <h3 class=" text-center form-group">[@s.text name="Request creation of new institution" /]</h3>
     </div>  
     
     [#if !messageSent]
@@ -32,7 +32,7 @@
       <hr  />
       <div class="col-md-12">
         <div class="col-xs-12 form-group">
-          [@customForm.yesNoInput name="isBranch" label="Is this institution a branch?"  inverse=false value="" cssClass="text-left " value="false" /]
+          [@customForm.yesNoInput name="isBranch" label="Is this institution a national/regional office or branch of an institution?"  inverse=false value="" cssClass="text-left " value="false" /]
         </div>
         <div class="selectHeadquater panel tertiary col-xs-12"  style="display:none">
             <div class="panel-body">

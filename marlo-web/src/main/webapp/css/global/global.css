@@ -6414,6 +6414,14 @@ span#lastUpdateMessage {
   margin: 0;
 }
 
+.selectDesc {
+  margin-top:2px; 
+  font-size:80%; 
+  line-height:13px; 
+  display:block; 
+  font-style:italic;
+}
+
 
 /* Tighten up space between multiple callouts */
 .bs-callout + .bs-callout {

@@ -292,7 +292,7 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
   private TypedTableModel getFundingSourcesProjectsTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"fs_title", "fs_id", "finance_code", "lead_partner", "fs_window", "project_id", "total_budget",
-        "flagships", "coas", "deliverables"},
+        "flagships", "coas", "donor"},
       new Class[] {String.class, Long.class, String.class, String.class, String.class, String.class, Double.class,
         String.class, String.class, String.class},
       0);
@@ -303,10 +303,14 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
       String fs_title = fundingSource.getTitle();
       Long fs_id = fundingSource.getId();
       String finance_code = fundingSource.getFinanceCode();
+      String donor = null;
 
 
       String fs_window = fundingSource.getBudgetType().getName();
-
+      // TODO: get donor funding sources
+      if (fundingSource.getInstitution() != null) {
+        donor = fundingSource.getInstitution().getComposedName();
+      }
 
       for (ProjectBudget projectBudget : fundingSource.getProjectBudgets().stream()
         .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getProject() != null && pb.getProject().isActive()
@@ -318,7 +322,6 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
         Double total_budget = 0.0;
         String flagships = null;
         String coas = null;
-        String deliverables = "";
 
         project_id = projectBudget.getProject().getId().toString();
         if (project_id != null && !project_id.isEmpty()) {
@@ -334,28 +337,12 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
               flagships +=
                 "\n " + programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
             }
-            // get deliverable funding sources
+
             Long projectID = Long.parseLong(project_id);
 
-            for (DeliverableFundingSource deliverableFundingSource : this.deliverableFundingSourceManager.findAll()
-              .stream()
-              .filter(df -> df.getFundingSource().getId().longValue() == fundingSource.getId().longValue()
-                && df.isActive() && df.getDeliverable() != null && df.getDeliverable().isActive()
-                && df.getDeliverable().getProject() != null
-                && df.getDeliverable().getProject().getId().longValue() == projectID.longValue())
-              .sorted((df1, df2) -> Long.compare(df1.getDeliverable().getId(), df2.getDeliverable().getId()))
-              .collect(Collectors.toList())) {
-              if (deliverables.length() == 0) {
-                deliverables = "D" + deliverableFundingSource.getDeliverable().getId();
-              } else {
-                deliverables += ", D" + deliverableFundingSource.getDeliverable().getId();
-              }
-            }
 
           }
-          if (deliverables.isEmpty()) {
-            deliverables = null;
-          }
+
           // get CoAs related to the project sorted by acronym
           if (projectBudget.getProject().getProjectClusterActivities() != null) {
             for (ProjectClusterActivity projectClusterActivity : projectBudget.getProject()
@@ -377,7 +364,7 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
         total_budget = projectBudget.getAmount();
 
         model.addRow(new Object[] {fs_title, fs_id, finance_code, lead_partner, fs_window, project_id, total_budget,
-          flagships, coas, deliverables});
+          flagships, coas, donor});
       }
 
     }
@@ -568,9 +555,9 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
 
   private TypedTableModel getMasterTableModel(String center, String date) {
     // Initialization of Model
-    TypedTableModel model =
-      new TypedTableModel(new String[] {"center", "date"}, new Class[] {String.class, String.class});
-    model.addRow(new Object[] {center, date});
+    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "managingPPAField", "year"},
+      new Class[] {String.class, String.class, String.class, Integer.class});
+    model.addRow(new Object[] {center, date, "Managing / PPA Partner", this.year});
     return model;
   }
 

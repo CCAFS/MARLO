@@ -32,16 +32,6 @@ function init() {
     // Activate the chosen to the existing partners
     addSelect2();
 
-    // Applying word counters to form fields
-    // applyWordCounter($("form textarea.resp"), lWordsResp);
-    // applyWordCounter($("#lessons textarea"), lWordsResp);
-    // Validate on save and next action
-    if(!isReportingCycle()) {
-      /*
-       * validateEvent([ "#justification" ]);
-       */
-    }
-
   }
 // This function enables launch the pop up window
   popups();

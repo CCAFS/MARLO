@@ -36,9 +36,6 @@ $(document).ready(function() {
   applyWordCounter($("textarea.project-title"), lWordsElemetTitle);
   applyWordCounter($("textarea.project-description"), lWordsElemetDesc);
 
-  /*
-   * validateEvent([ "#justification" ]);
-   */
 
   /**
    * Liaison institution selection
@@ -46,6 +43,11 @@ $(document).ready(function() {
 
   $('.liaisonInstitutionSelect').on('change', function() {
     var liasonInstitutionID = $(this).val();
+
+    if(liasonInstitutionID == -1) {
+      return
+    }
+
     var crpProgramId = liaisonInstitutionsPrograms[liasonInstitutionID];
     if(crpProgramId != -1) {
       $('input[value="' + crpProgramId + '"]').prop("checked", true);
@@ -60,6 +62,7 @@ $(document).ready(function() {
           liasonInstitutionID: liasonInstitutionID
         },
         beforeSend: function() {
+          $('.loading.liaisonUsersBlock').fadeIn();
           $('.liaisonUserSelect').empty();
           $('.liaisonUserSelect').addOption(-1, 'Select an option');
         },
@@ -79,6 +82,9 @@ $(document).ready(function() {
           }
           $('.liaisonUserSelect').trigger('change.select2');
 
+        },
+        complete: function(){
+          $('.loading.liaisonUsersBlock').fadeOut();
         }
     });
   });
@@ -110,20 +116,25 @@ $(document).ready(function() {
   }
 
   $('#projectFlagshipsBlock input').on('change', function() {
+    console.log(flagshipsIds());
     $.ajax({
-        url: baseURL + '/clusterList.do',
-        method: 'POST',
+        url: baseURL + '/clusterByFPsAction.do',
         data: {
-          flagshipsId: flagshipsIds()
+          flagshipID: flagshipsIds()
         },
         beforeSend: function() {
+          $('.loading.clustersBlock').fadeIn();
           $coreSelect.empty();
           $coreSelect.addOption(-1, 'Select an option');
         },
         success: function(data) {
-          $.each(data.clusterOfActivities, function(i,e) {
+          console.log(data.clusters);
+          $.each(data.clusters, function(i,e) {
             $coreSelect.addOption(e.id, e.description);
           });
+        },
+        complete: function(){
+          $('.loading.clustersBlock').fadeOut();
         }
     });
   });
