@@ -216,7 +216,7 @@
     </div>
     [#-- Other contact person that will contribute --]
     [#assign displayOtherPerson = (!deliverable.otherPartners?has_content && !editable)?string('none','block') /]
-    <p style="display:${displayOtherPerson}"><b>[@customForm.text name="Other contact person(s) that will contribute to this deliverable:" readText=!editable/]</b></p>
+    <p style="display:${displayOtherPerson}"><b>[@customForm.text name="projectDeliverable.otherContactContributing" readText=!editable/]</b></p>
     <div class="simpleBox personList listname="deliverable.otherPartners" style="display:${displayOtherPerson}">
     [#if deliverable.otherPartners?has_content]
         [#list deliverable.otherPartners as dp]

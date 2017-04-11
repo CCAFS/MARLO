@@ -41,6 +41,8 @@ import org.cgiar.ccafs.marlo.data.model.ProjectOtherContribution;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.utils.HistoryComparator;
+import org.cgiar.ccafs.marlo.utils.HistoryDifference;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectOtherContributionsValidator;
 
 import java.io.BufferedReader;
@@ -50,7 +52,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
@@ -87,6 +91,7 @@ public class ProjectOtherContributionsAction extends BaseAction {
   private List<CrpPandr> crps;
   private List<IpProgram> regions;
   private List<IpIndicator> otherIndicators;
+  private HistoryComparator historyComparator;
 
 
   private long projectID;
@@ -110,7 +115,7 @@ public class ProjectOtherContributionsAction extends BaseAction {
     CrpManager crpManager, ProjectCrpContributionManager projectCrpContributionManager, CrpPandrManager crpPandrManager,
     ProjectOtherContributionsValidator projectOtherContributionsValidator, IpIndicatorManager ipIndicatorManager,
     OtherContributionManager otherContributionManager, ProjectOtherContributionManager projectOtherContributionManager,
-    IpProgramManager ipProgramManager) {
+    IpProgramManager ipProgramManager, HistoryComparator historyComparator) {
     super(config);
     this.projectManager = projectManager;
     this.institutionManager = institutionManager;
@@ -124,6 +129,7 @@ public class ProjectOtherContributionsAction extends BaseAction {
     this.projectOtherContributionManager = projectOtherContributionManager;
     this.otherContributionManager = otherContributionManager;
     this.auditLogManager = auditLogManager;
+    this.historyComparator = historyComparator;
 
   }
 
@@ -342,6 +348,37 @@ public class ProjectOtherContributionsAction extends BaseAction {
 
       if (history != null) {
         project = history;
+        List<HistoryDifference> differences = new ArrayList<>();
+        Map<String, String> specialList = new HashMap<>();
+        int i = 0;
+        project.setCrpContributions(
+          project.getProjectCrpContributions().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+        project.setProjectOtherContributionsList(
+          project.getProjectOtherContributions().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+        project.setOtherContributionsList(
+          project.getOtherContributions().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        for (ProjectOtherContribution projectOtherContribution : project.getProjectOtherContributionsList()) {
+          differences.addAll(historyComparator.getDifferencesList(projectOtherContribution, transaction, specialList,
+            "project.projectOtherContributionsList[" + i + "]", "project", 1));
+          i++;
+        }
+        i = 0;
+        for (OtherContribution projectOtherContribution : project.getOtherContributionsList()) {
+          differences.addAll(historyComparator.getDifferencesList(projectOtherContribution, transaction, specialList,
+            "project.otherContributionsList[" + i + "]", "project", 1));
+          i++;
+        }
+
+        i = 0;
+        for (ProjectCrpContribution projectOtherContribution : project.getCrpContributions()) {
+          differences.addAll(historyComparator.getDifferencesList(projectOtherContribution, transaction, specialList,
+            "project.crpContributions[" + i + "]", "project", 1));
+          i++;
+        }
+
+        this.setDifferences(differences);
       } else {
         this.transaction = null;
 

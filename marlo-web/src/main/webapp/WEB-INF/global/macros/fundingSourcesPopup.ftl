@@ -45,9 +45,6 @@
           [#-- Warning Info --]
           <p class="warning-info" style="display:none"></p> 
           
-          [#-- Participating Center, CRP Lead Center --]
-        
-          
           [#-- Title --]
           <div class="form-group">
             <div class="row">
@@ -86,6 +83,14 @@
               <div class="col-md-6">[@customForm.select name="budgetType"   i18nkey="projectCofunded.type" className="type" listName="budgetTypes" header=false required=true /]</div>
             </div>
           </div>
+          
+          [#-- Budget Types Description --]
+          <ul style="display:none">
+            [#list budgetTypesList as budgetType]
+              <li class="budgetTypeDescription-${budgetType.id}">${(budgetType.description)!}</li>
+            [/#list]
+          </ul>
+          
           <div class="form-group">
             <div class="row">
               <div class="col-md-12">
