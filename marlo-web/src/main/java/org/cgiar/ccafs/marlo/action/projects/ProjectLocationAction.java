@@ -32,6 +32,7 @@ import org.cgiar.ccafs.marlo.data.model.LocGeoposition;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocationElementType;
+import org.cgiar.ccafs.marlo.data.model.ScopeData;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -75,6 +76,9 @@ public class ProjectLocationAction extends BaseAction {
 
   private List<LocElementType> scopeRegions;
 
+
+  private List<ScopeData> scopeData;
+
   private ProjectLocationValidator locationValidator;
 
   private LocElementManager locElementManager;
@@ -85,17 +89,17 @@ public class ProjectLocationAction extends BaseAction {
 
   private Crp loggedCrp;
 
-
   private Project project;
 
   private long projectID;
 
-  private ProjectLocationElementTypeManager projectLocationElementTypeManager;
 
+  private ProjectLocationElementTypeManager projectLocationElementTypeManager;
 
   private ProjectLocationManager projectLocationManager;
 
   private ProjectManager projectManager;
+
 
   private String transaction;
 
@@ -284,14 +288,18 @@ public class ProjectLocationAction extends BaseAction {
     return locationLevels;
   }
 
+  public List<ScopeData> getScopeData() {
+    return scopeData;
+  }
+
   public List<LocElementType> getScopeRegions() {
     return scopeRegions;
   }
 
-
   public String getTransaction() {
     return transaction;
   }
+
 
   public void listScopeRegions() {
 
@@ -798,7 +806,6 @@ public class ProjectLocationAction extends BaseAction {
     projectLocationManager.saveProjectLocation(projectLocation);
   }
 
-
   public void setLocationsLevels(List<LocationLevel> locationsLevels) {
     this.locationsLevels = locationsLevels;
   }
@@ -808,12 +815,17 @@ public class ProjectLocationAction extends BaseAction {
     this.loggedCrp = loggedCrp;
   }
 
+
   public void setProject(Project project) {
     this.project = project;
   }
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
+  }
+
+  public void setScopeData(List<ScopeData> scopeData) {
+    this.scopeData = scopeData;
   }
 
   public void setScopeRegions(List<LocElementType> scopeRegions) {
