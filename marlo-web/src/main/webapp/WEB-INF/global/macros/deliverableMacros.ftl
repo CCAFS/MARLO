@@ -549,9 +549,9 @@
   [#local metadataIndex = (deliverable.getMetadataIndex(encodedName))!-1 /]
   [#local metadataValue = (deliverable.getMetadataValue(metadataID))!'' /]
   
-  [#local mElementHide = false /]
-  
   [#local customName = 'deliverable.metadataElements[${metadataIndex}]' /]
+  [#local mElement = (customName?eval)!{} /]
+  [#local mElementHide = (mElement.hide)!false /]
   <input type="hidden" name="${customName}.id" value="${mElementID}" />
   <input type="hidden" name="${customName}.hide" value="${mElementHide?string}" />
   <input type="hidden" name="${customName}.metadataElement.id" value="${metadataID}" />
