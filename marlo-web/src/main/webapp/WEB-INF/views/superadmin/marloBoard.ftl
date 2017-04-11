@@ -75,6 +75,15 @@
     <input type="hidden" class="id" name="${customName}.id" value="${(element.id)!}" />
     <input type="hidden" class="acronym" name="${customName}.acronym" value="${(element.acronym)!}" />
     <input type="hidden" class="name" name="${customName}.name" value="${(element.name)!}" />
+    [#-- CRPs that allow this target --]
+    <br />
+    <span class="crps" style="color: #9c9c9c; margin-left: 16px; font-size: 0.75em;" title="CRPs ">
+      [#if element.crpTargetUnits?has_content]
+        [#list element.crpTargetUnits as crpTargetUnit]${crpTargetUnit.crp.name}[#if crpTargetUnit_has_next], [/#if][/#list] 
+      [#else]
+        <i>No CRPs</i>
+      [/#if]
+    </span>
     [#-- Remove Button --]
     <span class="glyphicon glyphicon-remove pull-right remove-targetUnit" aria-hidden="true"></span>
   </li>
