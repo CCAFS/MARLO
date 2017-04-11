@@ -31,6 +31,8 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.utils.HistoryComparator;
+import org.cgiar.ccafs.marlo.utils.HistoryDifference;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectOutputsValidator;
 
 import java.io.BufferedReader;
@@ -40,8 +42,10 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -68,6 +72,7 @@ public class ProjectOutputsAction extends BaseAction {
   private IpProjectContributionOverviewManager ipProjectContributionOverviewManager;
   private IpElementManager ipElementManager;
   private ProjectOutputsValidator projectOutputsValidator;
+  private HistoryComparator historyComparator;
 
   private List<Integer> allYears;
 
@@ -89,13 +94,14 @@ public class ProjectOutputsAction extends BaseAction {
   public ProjectOutputsAction(APConfig config, ProjectManager projectManager, InstitutionManager institutionManager,
     CrpProgramManager crpProgrammManager, AuditLogManager auditLogManager, CrpManager crpManager,
     IpProjectContributionOverviewManager ipProjectContributionOverviewManager, IpElementManager ipElementManager,
-    ProjectOutputsValidator projectOutputsValidator) {
+    ProjectOutputsValidator projectOutputsValidator, HistoryComparator historyComparator) {
     super(config);
     this.projectManager = projectManager;
     this.institutionManager = institutionManager;
     this.crpProgrammManager = crpProgrammManager;
     this.ipProjectContributionOverviewManager = ipProjectContributionOverviewManager;
     this.ipElementManager = ipElementManager;
+    this.historyComparator = historyComparator;
     this.projectOutputsValidator = projectOutputsValidator;
     this.crpManager = crpManager;
     this.auditLogManager = auditLogManager;
@@ -259,6 +265,22 @@ public class ProjectOutputsAction extends BaseAction {
 
       if (history != null) {
         project = history;
+
+        List<HistoryDifference> differences = new ArrayList<>();
+        Map<String, String> specialList = new HashMap<>();
+        int i = 0;
+        project.setOverviews(
+          project.getIpProjectContributionOverviews().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        for (IpProjectContributionOverview projectOutcomePandr : project.getOverviews()) {
+          int[] index = new int[1];
+          index[0] = i;
+          differences.addAll(historyComparator.getDifferencesList(projectOutcomePandr, transaction, specialList,
+            "project.overviews[" + i + "]", "project", 1));
+          i++;
+        }
+
+        this.setDifferences(differences);
+
       } else {
         this.transaction = null;
 
