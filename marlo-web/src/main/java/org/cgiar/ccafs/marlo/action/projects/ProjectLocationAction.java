@@ -70,7 +70,10 @@ public class ProjectLocationAction extends BaseAction {
 
   private CrpManager crpManager;
 
+
   private List<LocationLevel> locationsLevels;
+
+  private List<LocElementType> scopeRegions;
 
   private ProjectLocationValidator locationValidator;
 
@@ -78,17 +81,17 @@ public class ProjectLocationAction extends BaseAction {
 
   private LocElementTypeManager locElementTypeManager;
 
-
   private LocGeopositionManager locGeopositionManager;
 
   private Crp loggedCrp;
 
-  private Project project;
 
+  private Project project;
 
   private long projectID;
 
   private ProjectLocationElementTypeManager projectLocationElementTypeManager;
+
 
   private ProjectLocationManager projectLocationManager;
 
@@ -161,7 +164,6 @@ public class ProjectLocationAction extends BaseAction {
   public long getProjectID() {
     return projectID;
   }
-
 
   public List<CountryLocationLevel> getProjectLocationsData() {
 
@@ -282,8 +284,73 @@ public class ProjectLocationAction extends BaseAction {
     return locationLevels;
   }
 
+  public List<LocElementType> getScopeRegions() {
+    return scopeRegions;
+  }
+
+
   public String getTransaction() {
     return transaction;
+  }
+
+  public void listScopeRegions() {
+
+    List<LocElementType> scopeRegionsPrew = locElementTypeManager.findAll().stream()
+      .filter(et -> et.isActive() && et.isScope() && et.getCrp().getId() == loggedCrp.getId())
+      .collect(Collectors.toList());
+
+    scopeRegions = new ArrayList<>();
+
+    if (project.getLocationsData() != null) {
+      for (CountryLocationLevel locationData : project.getLocationsData()) {
+        if (locationData.getLocElements() != null) {
+          for (LocElement locElement : locationData.getLocElements()) {
+            if (locElement.getId() != null && locElement.getId() != -1) {
+
+              LocElement elementReview = locElementManager.getLocElementById(locElement.getId());
+
+              while (true) {
+                long elementReviewType = elementReview.getLocElementType().getId();
+
+                if (elementReviewType == 2) {
+
+                  for (LocElementType locElementType : scopeRegionsPrew) {
+
+                    List<LocElement> scopeElements = new ArrayList<>(locElementType.getLocElements().stream()
+                      .filter(lc -> lc.isActive()).collect(Collectors.toList()));
+
+                    for (LocElement scopeElement : scopeElements) {
+                      LocElement scopeParentElement = scopeElement.getLocElement();
+                      if (scopeParentElement.equals(elementReview)) {
+                        if (scopeRegions.isEmpty()) {
+                          scopeRegions.add(locElementType);
+                        } else {
+                          if (!scopeRegions.contains(locElementType)) {
+                            scopeRegions.add(locElementType);
+                          }
+                        }
+                      }
+                    }
+
+
+                  }
+
+                  break;
+
+                } else {
+                  if (elementReview.getLocElement() != null) {
+                    elementReview = locElementManager.getLocElementById(elementReview.getLocElement().getId());
+                  } else {
+                    break;
+                  }
+                }
+              }
+
+            }
+          }
+        }
+      }
+    }
   }
 
   /**
@@ -400,6 +467,7 @@ public class ProjectLocationAction extends BaseAction {
       }
     }
 
+    this.listScopeRegions();
 
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_LOCATION_BASE_PERMISSION, params));
@@ -746,6 +814,10 @@ public class ProjectLocationAction extends BaseAction {
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
+  }
+
+  public void setScopeRegions(List<LocElementType> scopeRegions) {
+    this.scopeRegions = scopeRegions;
   }
 
   public void setTransaction(String transaction) {
