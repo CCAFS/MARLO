@@ -52,18 +52,22 @@ function init() {
 
   $(".addPartner").on("click", addPartnerEvent);
   $(".removeElement").on("click", removePartnerEvent);
-  // Update value of responsible person
-  $(".responsible").on("change", function() {
 
+  // On change any partner person
+  $('.projectPartnerPerson select').on("change", function() {
     var option = $(this).find("option:selected");
-
+    var $division = $(this).parents('.projectPartnerPerson').find('.division-IFPRI');
     // Show IFPRI Division
     if((option.text()).indexOf("IFPRI") > -1) {
-      $('.division-IFPRI').show();
+      $division.show();
     } else {
-      $('.division-IFPRI').hide();
+      $division.hide();
     }
+  });
 
+  // Update value of responsible person
+  $(".responsible").on("change", function() {
+    var option = $(this).find("option:selected");
     // validate if exists this person in contact person list
     var validation = $(this).parents(".fullBlock").parent().find(".personList").find("select");
     if(option.val() != "-1") {
@@ -84,8 +88,8 @@ function init() {
     } else {
       $(this).parents(".responsiblePartner").find(".id").val(-1);
     }
-
   });
+
   // Update value of partner
   $(".partner").on("change", function() {
     var option = $(this).find("option:selected");
@@ -429,6 +433,7 @@ function updatePartners() {
     $(item).find('span.index').html(i + 1);
     $(item).find('.id').attr('name', customName + '.projectPartnerPerson.id');
     $(item).find('.type').attr('name', customName + '.projectPartnerPerson.type');
+    $(item).find('.divisionField').attr('name', customName + '.division');
     $(item).find('.element').attr('name', customName + '.id');
   });
 }

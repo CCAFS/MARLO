@@ -215,17 +215,6 @@
     <label for="">[@customForm.text name="project.deliverable.indicateResponsablePartner" readText=!editable/]:[@customForm.req required=editable /]</label>
     <div class="form-group responsibleWrapper simpleBox">
       [@deliverableList.deliverablePartner dp=deliverable.responsiblePartner dp_name="deliverable.responsiblePartner.projectPartnerPerson" dp_index=0 isResponsable=true  editable=editable /]
-      
-      [#-- Division --]
-      [#if action.hasSpecificities('crp_division_fs')]
-        [#assign ifpriDivision = false /]
-        [#if (deliverable.responsiblePartner.projectPartnerPerson.institution.acronym == "IFPRI")!false ][#assign ifpriDivision = true /] [/#if]
-        <div class="form-group row divisionBlock division-IFPRI"  style="display:${ifpriDivision?string('block','none')}">
-          <div class="col-md-6">
-            [@customForm.input name="deliverable.division" i18nkey="projectCofunded.division" className="" editable=editable /]
-          </div>
-        </div>
-      [/#if]
     </div>
     
     <br />

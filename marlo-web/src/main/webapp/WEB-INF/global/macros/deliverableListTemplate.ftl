@@ -124,7 +124,7 @@
 [/#macro]
 
 [#macro deliverablePartner dp={} dp_name="" dp_index="" isResponsable=false template=false editable=true]
-  <div id="deliverablePartner-${template?string('template', dp_index)}" class="${isResponsable?string('responsiblePartner','deliverablePartner')} ${isResponsable?string('','borderBox')} row" style="display:${template?string('none','')}">
+  <div id="deliverablePartner-${template?string('template', dp_index)}" class="${isResponsable?string('responsiblePartner','deliverablePartner')} ${isResponsable?string('','borderBox')} projectPartnerPerson row" style="display:${template?string('none','')}">
     [#if editable && !isResponsable]
       <div class="removeElement removeLink" title="[@s.text name="project.deliverable.removePartnerContribution" /]"></div> 
     [/#if]
@@ -152,7 +152,20 @@
         <div class="personRead-content"><span class="glyphicon glyphicon-user" ></span> <span>${((dp.projectPartnerPerson.composedName)!'Contact Person')?html}</span></div>
       [/#if]
       </div>
-    [/#if] 
+    [/#if]
+    
+    
+    [#-- Division --]
+    [#if action.hasSpecificities('crp_division_fs')]
+      [#local ifpriDivision = false /]
+      [#if (dp.projectPartnerPerson.institution.acronym == "IFPRI")!false ][#local ifpriDivision = true /][/#if]
+      <div class="form-group row divisionBlock division-IFPRI"  style="display:${ifpriDivision?string('block','none')}">
+        <div class="col-md-6">
+          [@customForm.input name="${customName}.division" i18nkey="projectCofunded.division" className="divisionField" editable=editable /]
+        </div>
+      </div>
+    [/#if]
+    
   </div> 
   <div class="clearfix"></div>
 [/#macro] 
