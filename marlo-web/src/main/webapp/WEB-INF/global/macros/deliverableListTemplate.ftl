@@ -133,7 +133,7 @@
       <span class="index">${dp_index+1}</span>
     </div> 
     [/#if]
-    [#assign customName]${dp_name}[#if !isResponsable][${dp_index}].projectPartnerPerson[/#if][/#assign]
+    [#assign customName]${dp_name}[#if !isResponsable][${dp_index}][/#if][/#assign]
     <input class="type" type="hidden" name="${customName}.type" value="${isResponsable?string('Resp','Other')}">
     [#if !isResponsable]
     <input class="element" type="hidden" name="${dp_name}[${dp_index}].id" value="${(dp.id)!-1}">
@@ -147,7 +147,7 @@
       [#-- Partner Name --]
       <div class="form-group partnerName chosen"> 
       [#if editable]
-        [@customForm.select name="${customName}.id" value="${(dp.projectPartnerPerson.id)!-1}"  label="" i18nkey="" showTitle=false listName="partnerPersons" keyFieldName="id"  displayFieldName="composedName"     className="${isResponsable?string('responsible','partner')} id " editable=editable required=isResponsable/]
+        [@customForm.select name="${customName}.projectPartnerPerson.id" value="${(dp.projectPartnerPerson.id)!-1}"  label="" i18nkey="" showTitle=false listName="partnerPersons" keyFieldName="id"  displayFieldName="composedName"     className="${isResponsable?string('responsible','partner')} id " editable=editable required=isResponsable/]
       [#else]
         <div class="personRead-content"><span class="glyphicon glyphicon-user" ></span> <span>${((dp.projectPartnerPerson.composedName)!'Contact Person')?html}</span></div>
       [/#if]
