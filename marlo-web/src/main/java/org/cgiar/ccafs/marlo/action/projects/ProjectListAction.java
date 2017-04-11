@@ -381,7 +381,6 @@ public class ProjectListAction extends BaseAction {
         mProjects.addAll(myProjects);
         for (Project project : mProjects) {
 
-          int index = allProjects.indexOf(project);
 
           if (!allProjects.contains(project)) {
             myProjects.remove(project);
