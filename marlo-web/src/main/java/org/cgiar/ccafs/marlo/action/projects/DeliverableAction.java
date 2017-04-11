@@ -557,7 +557,7 @@ public class DeliverableAction extends BaseAction {
             partnership.setModifiedBy(this.getCurrentUser());
             partnership.setModificationJustification("");
             partnership.setActiveSince(new Date());
-
+            partnership.setDivision(deliverablePartnership.getDivision());
             deliverablePartnershipManager.saveDeliverablePartnership(partnership);
 
           }
@@ -587,7 +587,7 @@ public class DeliverableAction extends BaseAction {
               partnershipNew.setModifiedBy(this.getCurrentUser());
               partnershipNew.setModificationJustification("");
               partnershipNew.setActiveSince(new Date());
-
+              partnershipNew.setDivision(deliverablePartnership.getDivision());
               deliverablePartnershipManager.saveDeliverablePartnership(partnershipNew);
             }
 
@@ -1144,7 +1144,7 @@ public class DeliverableAction extends BaseAction {
       } else {
         deliverablePrew.setCrossCuttingYouth(true);
       }
-      deliverablePrew.setDivision(deliverable.getDivision());
+
       if (this.isPlanningActive()) {
         if (deliverable.getCrpClusterKeyOutput() != null) {
           CrpClusterKeyOutput keyOutput =
@@ -1207,9 +1207,10 @@ public class DeliverableAction extends BaseAction {
         && deliverablePrew.getDeliverablePartnerships().size() > 0) {
 
         try {
-          partnershipResponsible = deliverablePrew.getDeliverablePartnerships().stream()
-            .filter(
-              dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
+          partnershipResponsible =
+            deliverablePrew.getDeliverablePartnerships().stream()
+              .filter(dp -> dp.isActive()
+                && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
             .collect(Collectors.toList()).get(0);
         } catch (Exception e) {
           partnershipResponsible = null;
@@ -1244,7 +1245,7 @@ public class DeliverableAction extends BaseAction {
           partnership.setModifiedBy(this.getCurrentUser());
           partnership.setModificationJustification("");
           partnership.setActiveSince(new Date());
-
+          partnership.setDivision(deliverable.getResponsiblePartner().getDivision());
           deliverablePartnershipManager.saveDeliverablePartnership(partnership);
         }
       } else if (partnershipResponsible == null && partnerPerson != null) {
@@ -1258,7 +1259,7 @@ public class DeliverableAction extends BaseAction {
         partnership.setModifiedBy(this.getCurrentUser());
         partnership.setModificationJustification("");
         partnership.setActiveSince(new Date());
-
+        partnership.setDivision(deliverable.getResponsiblePartner().getDivision());
         deliverablePartnershipManager.saveDeliverablePartnership(partnership);
       }
 

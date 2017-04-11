@@ -49,9 +49,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
 
   @Expose
-  private String division;
-
-  @Expose
   private String typeOther;
   @Expose
   private int year;
@@ -446,11 +443,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   public List<DeliverableDissemination> getDisseminations() {
     return disseminations;
-  }
-
-
-  public String getDivision() {
-    return division;
   }
 
 
@@ -912,9 +904,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.disseminations = disseminations;
   }
 
-  public void setDivision(String division) {
-    this.division = division;
-  }
 
   public void setFiles(List<DeliverableFile> files) {
     this.files = files;

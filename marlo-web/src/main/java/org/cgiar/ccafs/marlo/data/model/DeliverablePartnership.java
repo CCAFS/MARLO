@@ -40,6 +40,8 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
 
   @Expose
   private User createdBy;
+  @Expose
+  private String division;
 
 
   @Expose
@@ -121,6 +123,11 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
   }
 
 
+  public String getDivision() {
+    return division;
+  }
+
+
   @Override
   public Long getId() {
     return id;
@@ -135,6 +142,7 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
   }
 
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -145,10 +153,10 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
     return modifiedBy;
   }
 
+
   public String getPartnerType() {
     return partnerType;
   }
-
 
   public ProjectPartnerPerson getProjectPartnerPerson() {
     return projectPartnerPerson;
@@ -174,10 +182,10 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
     this.active = active;
   }
 
+
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
-
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
@@ -186,6 +194,11 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
 
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
+  }
+
+
+  public void setDivision(String division) {
+    this.division = division;
   }
 
 
