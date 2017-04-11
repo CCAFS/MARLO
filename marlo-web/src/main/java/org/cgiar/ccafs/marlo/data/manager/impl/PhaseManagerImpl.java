@@ -60,9 +60,9 @@ public class PhaseManagerImpl implements PhaseManager {
   }
 
   @Override
-  public Phase findCycle(String cylce, int year) {
+  public Phase findCycle(String cylce, int year, long crpId) {
 
-    return phaseDAO.findCycle(cylce, year);
+    return phaseDAO.findCycle(cylce, year, crpId);
   }
 
   @Override

@@ -67,8 +67,9 @@ public class PhaseMySQLDAO implements PhaseDAO {
   }
 
   @Override
-  public Phase findCycle(String cylce, int year) {
-    String query = "from " + Phase.class.getName() + " where description='" + cylce + "' and year=" + year;
+  public Phase findCycle(String cylce, int year, long crpId) {
+    String query =
+      "from " + Phase.class.getName() + " where description='" + cylce + "' and year=" + year + " and crp_id=" + crpId;
     List<Phase> list = dao.findAll(query);
     if (list.size() > 0) {
       return list.get(0);

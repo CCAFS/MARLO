@@ -52,7 +52,7 @@ public interface PhaseManager {
    */
   public List<Phase> findAll();
 
-  public Phase findCycle(String cylce, int year);
+  public Phase findCycle(String cylce, int year, long crpId);
 
 
   /**
