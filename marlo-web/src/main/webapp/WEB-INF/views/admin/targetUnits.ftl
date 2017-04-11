@@ -44,13 +44,13 @@
           [#-- Targets units list --]
           <div class="items-list">
             [#if loggedCrp.targetUnits?has_content]
-            <ul>
-            [#list loggedCrp.targetUnits as targetUnit]
-              [@targetUnitMacro element=targetUnit name="loggedCrp.targetUnits" index=targetUnit_index /]
-            [/#list]
-            </ul>
+              <ul>
+              [#list loggedCrp.targetUnits as targetUnit]
+                [@targetUnitMacro element=targetUnit name="loggedCrp.targetUnits" index=targetUnit_index /]
+              [/#list]
+              </ul>
             [#else]
-            <p class="text-center">There is not target units</p>
+              <p class="text-center">There is not target units</p>
             [/#if]
             <div class="clearfix"></div>
           </div>
@@ -103,10 +103,21 @@
 [#macro targetUnitMacro element name index isTemplate=false]
   <li id="targetUnit-${isTemplate?string('template',index)}" class="li-item targetUnitAdmin" style="float:left; width:48%; margin-right:5px; display:${isTemplate?string('none','block')}">
     [#local customName = "${name}[${index}]"/]
-    <span class="glyphicon glyphicon-scale"></span>  <span class="composedName"> ${(element.targetUnit.name)!}</span>
     <input type="hidden" class="id" name="${customName}.targetUnit.id" value="${(element.targetUnit.id)!}" />
     <input type="hidden" class="name" name="${customName}.targetUnit.name" value="${(element.targetUnit.name)!}" />
-    [#-- Remove Button --]
-      <span class=" pull-right" > <input [#if element?? && element.targetUnit?? && action.canBeDeletedCrptargetUnit((element.targetUnit.id)!, (element.targetUnit.class.name)!)!][#else]style="opacity:0.5; cursor: not-allowed;" onclick="return false;" onkeydown="e = e || window.event; if(e.keyCode !== 9) return false;"[/#if] type="checkbox" value="true" name="${customName}.check" id="" [#if element.check?? && element.check]checked[/#if] /></span>  
+    [#-- Check Input --]
+    <span class=" pull-right" > <input [#if element?? && element.targetUnit?? && action.canBeDeletedCrptargetUnit((element.targetUnit.id)!, (element.targetUnit.class.name)!)!][#else]style="opacity:0.5; cursor: not-allowed;" onclick="return false;" onkeydown="e = e || window.event; if(e.keyCode !== 9) return false;"[/#if] type="checkbox" value="true" name="${customName}.check" id="" [#if element.check?? && element.check]checked[/#if] /></span>  
+    [#-- Icon --]
+    <span class="glyphicon glyphicon-scale"></span>  
+    [#-- Name --]
+    <span class="composedName"> ${(element.targetUnit.name)!}</span> <br />
+    [#-- CRPs that allow this target --]
+    <span class="crps" style="color: #9c9c9c; margin-left: 16px; font-size: 0.75em;" title="CRPs ">
+      [#if element.targetUnit.crpTargetUnits?has_content]
+        [#list element.targetUnit.crpTargetUnits as crpTargetUnit]${crpTargetUnit.crp.name}[#if crpTargetUnit_has_next], [/#if][/#list] 
+      [#else]
+        <i>No CRPs</i>
+      [/#if]
+    </span>
   </li>
 [/#macro]
