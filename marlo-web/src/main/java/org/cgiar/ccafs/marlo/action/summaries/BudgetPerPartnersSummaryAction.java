@@ -85,10 +85,12 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
   private static final long serialVersionUID = 1L;
 
   private static Logger LOG = LoggerFactory.getLogger(BudgetPerPartnersSummaryAction.class);
-  // Variables
+  // Parameters
   private Crp loggedCrp;
   private int year;
   private String cycle;
+  private long startTime;
+
   // Store total projects
   Integer totalProjects = 0;
   // Store parters budgets HashMap<Institution, List<w1w2,w3bilateralcenter>>
@@ -129,41 +131,51 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
 
     ResourceManager manager = new ResourceManager();
     manager.registerDefaults();
+    try {
+      Resource reportResource =
+        manager.createDirectly(this.getClass().getResource("/pentaho/budgetperpartner.prpt"), MasterReport.class);
 
-    Resource reportResource =
-      manager.createDirectly(this.getClass().getResource("/pentaho/budgetperpartner.prpt"), MasterReport.class);
+      MasterReport masterReport = (MasterReport) reportResource.getResource();
 
-    MasterReport masterReport = (MasterReport) reportResource.getResource();
+      // Set Main_Query
+      CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
+      String masterQueryName = "main";
+      TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
+      TypedTableModel model = this.getMasterTableModel();
+      sdf.addTable(masterQueryName, model);
+      masterReport.setDataFactory(cdf);
 
-    // Set Main_Query
-    CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
-    String masterQueryName = "main";
-    TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
-    TypedTableModel model = this.getMasterTableModel();
-    sdf.addTable(masterQueryName, model);
-    masterReport.setDataFactory(cdf);
+      // Get details band
+      ItemBand masteritemBand = masterReport.getItemBand();
+      // Create new empty sub-report hash map
+      HashMap<String, Element> hm = new HashMap<String, Element>();
+      // method to get all the sub-reports in the prpt and store in the HashMap
+      this.getAllSubreports(hm, masteritemBand);
+      // Uncomment to see which Sub-reports are detecting the method getAllSubreports
+      // System.out.println("Pentaho SubReports: " + hm);
 
-    // Get details band
-    ItemBand masteritemBand = masterReport.getItemBand();
-    // Create new empty sub-report hash map
-    HashMap<String, Element> hm = new HashMap<String, Element>();
-    // method to get all the sub-reports in the prpt and store in the HashMap
-    this.getAllSubreports(hm, masteritemBand);
-    // Uncomment to see which Sub-reports are detecting the method getAllSubreports
-    // System.out.println("Pentaho SubReports: " + hm);
+      this.fillSubreport((SubReport) hm.get("budgetperpartner_details"), "budgetperpartner_details");
+      // Sort projectList by ProjectId
+      allProjectsBudgets = this.sortProjectByComparator(allProjectsBudgets);
+      this.fillSubreport((SubReport) hm.get("summaryByProject"), "summaryByProject");
+      // Sort partnersList by institution acronym or name
+      allPartnersBudgets = this.sortByComparator(allPartnersBudgets);
+      this.fillSubreport((SubReport) hm.get("summaryByPPA"), "summaryByPPA");
+      this.fillSubreport((SubReport) hm.get("partners_budgets"), "partners_budgets");
 
-    this.fillSubreport((SubReport) hm.get("budgetperpartner_details"), "budgetperpartner_details");
-    // Sort projectList by ProjectId
-    allProjectsBudgets = this.sortProjectByComparator(allProjectsBudgets);
-    this.fillSubreport((SubReport) hm.get("summaryByProject"), "summaryByProject");
-    // Sort partnersList by institution acronym or name
-    allPartnersBudgets = this.sortByComparator(allPartnersBudgets);
-    this.fillSubreport((SubReport) hm.get("summaryByPPA"), "summaryByPPA");
-    this.fillSubreport((SubReport) hm.get("partners_budgets"), "partners_budgets");
-
-    ExcelReportUtil.createXLSX(masterReport, os);
-    bytesXLSX = os.toByteArray();
-    os.close();
+      ExcelReportUtil.createXLSX(masterReport, os);
+      bytesXLSX = os.toByteArray();
+      os.close();
+    } catch (Exception e) {
+      LOG.error("Error generating BudgetByPartners " + e.getMessage());
+      throw e;
+    }
+    // Calculate time of generation
+    long stopTime = System.currentTimeMillis();
+    stopTime = stopTime - startTime;
+    LOG.info(
+      "Downloaded successfully: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
+        + ". CRP: " + this.loggedCrp.getAcronym() + ". Cycle: " + cycle + ". Time to generate: " + stopTime + "ms.");
     return SUCCESS;
   }
 
@@ -458,16 +470,12 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     return cycle;
   }
 
+  @SuppressWarnings("unused")
   private File getFile(String fileName) {
-
-
     // Get file from resources folder
     ClassLoader classLoader = this.getClass().getClassLoader();
     File file = new File(classLoader.getResource(fileName).getFile());
-
-
     return file;
-
   }
 
   @Override
@@ -679,10 +687,12 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
 
   @Override
   public void prepare() {
+    // Get loggerCrp
     try {
       loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
       loggedCrp = crpManager.getCrpById(loggedCrp.getId());
     } catch (Exception e) {
+      LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
     }
     // Get parameters from URL
     // Get year
@@ -690,6 +700,8 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
       Map<String, Object> parameters = this.getParameters();
       year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
     } catch (Exception e) {
+      LOG.warn("Failed to get " + APConstants.YEAR_REQUEST
+        + " parameter. Parameter will be set as CurrentCycleYear. Exception: " + e.getMessage());
       year = this.getCurrentCycleYear();
     }
     // Get cycle
@@ -697,8 +709,15 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
       Map<String, Object> parameters = this.getParameters();
       cycle = (StringUtils.trim(((String[]) parameters.get(APConstants.CYCLE))[0]));
     } catch (Exception e) {
+      LOG.warn("Failed to get " + APConstants.CYCLE + " parameter. Parameter will be set as CurrentCycle. Exception: "
+        + e.getMessage());
       cycle = this.getCurrentCycle();
     }
+    // Calculate time to generate report
+    startTime = System.currentTimeMillis();
+    LOG.info(
+      "Start report download: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
+        + ". CRP: " + this.loggedCrp.getAcronym() + ". Cycle: " + cycle);
   }
 
   public void setCycle(String cycle) {
