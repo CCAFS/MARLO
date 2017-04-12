@@ -433,7 +433,7 @@ function updatePartners() {
     $(item).find('span.index').html(i + 1);
     $(item).find('.id').attr('name', customName + '.projectPartnerPerson.id');
     $(item).find('.type').attr('name', customName + '.projectPartnerPerson.type');
-    $(item).find('.divisionField').attr('name', customName + '.division');
+    $(item).find('.divisionField').attr('name', customName + '.division.id');
     $(item).find('.element').attr('name', customName + '.id');
   });
 }
