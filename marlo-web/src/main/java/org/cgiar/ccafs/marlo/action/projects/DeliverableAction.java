@@ -80,6 +80,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.utils.HistoryComparator;
 import org.cgiar.ccafs.marlo.validation.projects.DeliverableValidator;
 
 import java.io.BufferedReader;
@@ -158,6 +159,9 @@ public class DeliverableAction extends BaseAction {
 
   private long deliverableID;
   private DeliverableManager deliverableManager;
+
+  private HistoryComparator historyComparator;
+
   private DeliverableMetadataElementManager deliverableMetadataElementManager;
 
   private DeliverablePartnershipManager deliverablePartnershipManager;
@@ -246,13 +250,14 @@ public class DeliverableAction extends BaseAction {
     DeliverableQualityAnswerManager deliverableQualityAnswerManager, CrpProgramManager crpProgramManager,
     DeliverableDataSharingFileManager deliverableDataSharingFileManager, FileDBManager fileDBManager,
     DeliverableUserManager deliverableUserManager, GenderTypeManager genderTypeManager,
-    DeliverablePublicationMetadataManager deliverablePublicationMetadataManager,
+    HistoryComparator historyComparator, DeliverablePublicationMetadataManager deliverablePublicationMetadataManager,
     MetadataElementManager metadataElementManager, DeliverableDisseminationManager deliverableDisseminationManager,
     CrpPandrManager crpPandrManager, IpProgramManager ipProgramManager, PartnerDivisionManager partnerDivisionManager) {
     super(config);
     this.deliverableManager = deliverableManager;
     this.deliverableTypeManager = deliverableTypeManager;
     this.crpManager = crpManager;
+    this.historyComparator = historyComparator;
     this.deliverableUserManager = deliverableUserManager;
     this.crpProgramManager = crpProgramManager;
     this.projectManager = projectManager;
@@ -566,7 +571,7 @@ public class DeliverableAction extends BaseAction {
             partnership.setModifiedBy(this.getCurrentUser());
             partnership.setModificationJustification("");
             partnership.setActiveSince(new Date());
-
+            partnership.setDivision(deliverablePartnership.getDivision());
             deliverablePartnershipManager.saveDeliverablePartnership(partnership);
 
           }
@@ -596,11 +601,24 @@ public class DeliverableAction extends BaseAction {
               partnershipNew.setModifiedBy(this.getCurrentUser());
               partnershipNew.setModificationJustification("");
               partnershipNew.setActiveSince(new Date());
-
+              partnershipNew.setDivision(deliverablePartnership.getDivision());
               deliverablePartnershipManager.saveDeliverablePartnership(partnershipNew);
             }
 
 
+          } else {
+            DeliverablePartnership partnershipNew = new DeliverablePartnership();
+            partnershipNew.setId(deliverablePartnership.getId());
+            partnershipNew.setProjectPartnerPerson(deliverablePartnership.getProjectPartnerPerson());
+            partnershipNew.setPartnerType(DeliverablePartnershipTypeEnum.OTHER.getValue());
+            partnershipNew.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
+            partnershipNew.setActive(true);
+            partnershipNew.setCreatedBy(this.getCurrentUser());
+            partnershipNew.setModifiedBy(this.getCurrentUser());
+            partnershipNew.setModificationJustification("");
+            partnershipNew.setActiveSince(new Date());
+            partnershipNew.setDivision(deliverablePartnership.getDivision());
+            deliverablePartnershipManager.saveDeliverablePartnership(partnershipNew);
           }
         }
       }
@@ -653,6 +671,11 @@ public class DeliverableAction extends BaseAction {
 
       if (history != null) {
         deliverable = history;
+
+        Map<String, String> specialList = new HashMap<>();
+
+
+        this.setDifferences(historyComparator.getDifferences(transaction, specialList, "deliverable"));
       } else {
         this.transaction = null;
 
@@ -1152,12 +1175,12 @@ public class DeliverableAction extends BaseAction {
         deliverablePrew.setCrossCuttingYouth(true);
       }
 
+
       if (deliverable.getPartnerDivision() != null) {
         PartnerDivision division =
           partnerDivisionManager.getPartnerDivisionById(deliverable.getPartnerDivision().getId());
         deliverablePrew.setPartnerDivision(division);
       }
-
 
       if (this.isPlanningActive()) {
         if (deliverable.getCrpClusterKeyOutput() != null) {
@@ -1259,7 +1282,7 @@ public class DeliverableAction extends BaseAction {
           partnership.setModifiedBy(this.getCurrentUser());
           partnership.setModificationJustification("");
           partnership.setActiveSince(new Date());
-
+          partnership.setDivision(deliverable.getResponsiblePartner().getDivision());
           deliverablePartnershipManager.saveDeliverablePartnership(partnership);
         }
       } else if (partnershipResponsible == null && partnerPerson != null) {
@@ -1273,7 +1296,7 @@ public class DeliverableAction extends BaseAction {
         partnership.setModifiedBy(this.getCurrentUser());
         partnership.setModificationJustification("");
         partnership.setActiveSince(new Date());
-
+        partnership.setDivision(deliverable.getResponsiblePartner().getDivision());
         deliverablePartnershipManager.saveDeliverablePartnership(partnership);
       }
 
