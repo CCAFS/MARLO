@@ -305,41 +305,25 @@ function openAccessRestriction() {
 }
 
 function setMetadata(data) {
-  // $("a[href='#deliverable-mainInformation']").addClass("hideInfo");
-  if($(".citationMetadata").val() == "") {
-    $(".citationMetadata").val(data.citation).autoGrow();
-  }
-  if($("#deliverableMetadataDate").val() == "") {
-    $("#deliverableMetadataDate").datepicker({
-      dateFormat: 'yyyy-mm-dd'
-    }).datepicker('setDate', data.publicationDate);
-  }
 
-  if($(".languageMetadata").val() == "") {
-    $(".languageMetadata").val(data.languaje);
-  }
+  $.each(data, function(key,value) {
+    var $input = $("." + key + "Metadata");
+    var $parent = $input.parents('.metadataElement');
+    var $hide = $parent.find('.hide');
+    if(value) {
+      $input.val(value);
+      $parent.find('textarea').autoGrow();
+      $input.attr('readOnly', true);
+      $hide.val("true");
+    } else {
+      $input.attr('readOnly', false);
+      $hide.val("false");
+    }
+  });
 
-  if($(".titleMetadata").val() == "") {
-    $(".titleMetadata").val(data.title);
-  }
-
-  if($(".descriptionMetadata").val() == "") {
-    $(".descriptionMetadata").val(data.description).autoGrow();
-  }
-
-  if($(".HandleMetadata").val() == "") {
-    $(".HandleMetadata").val(data.handle);
-  }
-  if($(".DOIMetadata").val() == "") {
-    $(".DOIMetadata").val(data.doi);
-  }
-  if($(".countryMetadata").val() == "") {
-    $(".countryMetadata").val(data.country);
-  }
-
-  if($(".keywordsMetadata ").val() == "") {
-    $(".keywordsMetadata ").val(data.keywords);
-  }
+  $(".dateMetadata").datepicker({
+    dateFormat: 'yyyy-mm-dd'
+  }).datepicker('setDate', data.date);
 
 }
 
@@ -491,8 +475,8 @@ function getIlriMetadata(channel,url,uri) {
               title: result.title,
               description: result.notes,
               citation: result.ILRI_actycitation,
-              publicationDate: ilriDate(result.ILRI_actydatavailable),
-              languaje: '',
+              date: ilriDate(result.ILRI_actydatavailable),
+              language: '',
               keywords: function() {
                 var output = [];
                 $.each(result.tags, function(i,element) {
@@ -578,8 +562,8 @@ function getIfpriMetadata(channel,url,uri) {
               title: validateKeyObject(m.metadata.title),
               description: validateKeyObject(m.metadata.descri),
               citation: validateKeyObject(m.metadata.full),
-              publicationDate: validateKeyObject(m.metadata.date) + "-01-01",
-              languaje: validateKeyObject(m.metadata.langua),
+              date: validateKeyObject(m.metadata.date) + "-01-01",
+              language: validateKeyObject(m.metadata.langua),
               keywords: validateKeyObject(m.metadata.loc),
               handle: '',
               country: validateKeyObject(m.metadata.contri),
@@ -668,18 +652,17 @@ function getCGSpaceMetadata(channel,url,uri) {
               fields.push(key.charAt(0).toUpperCase() + key.slice(1));
             });
 
-            var sendDataJson = {};
-            sendDataJson.title = m.metadata['title'];
-            sendDataJson.citation = m.metadata['identifier.citation'];
-            var date = m.metadata['date.available'].split("T");
-            sendDataJson.publicationDate = date[0];
-            sendDataJson.languaje = m.metadata['language.iso'];
-            sendDataJson.description = m.metadata['description.abstract'];
-            sendDataJson.handle = m.metadata['identifier.uri'];
-            sendDataJson.doi = m.metadata['identifier.doi'];
-            sendDataJson.country = m.metadata['coverage.country'];
-            sendDataJson.keywords = m.metadata['subject'];
-            setMetadata(sendDataJson);
+            // Setting Metadata
+            setMetadata({
+                title: m.metadata['title'],
+                citation: m.metadata['identifier.citation'],
+                date: m.metadata['date.available'].split("T")[0],
+                language: m.metadata['language.iso'],
+                description: m.metadata['description.abstract'],
+                keywords: m.metadata['subject'],
+                handle: m.metadata['identifier.uri'],
+                doi: m.metadata['identifier.doi']
+            });
 
             // Getting authors
             var authors = [];
@@ -749,8 +732,8 @@ function getDataverseMetadata(channel,url,uri) {
           setMetadata({
               title: m.data.title,
               citation: '',
-              publicationDate: m.data.timestamps.publicationdate,
-              languaje: '',
+              date: m.data.timestamps.publicationdate,
+              language: '',
               description: function() {
                 var output = "";
                 $.each(m.data.metadata_blocks.citation.dsDescription, function(i,element) {

@@ -232,10 +232,10 @@
 </div>
 <div class="form-group row">
   <div class="col-md-6">
-    [@deliverableMacros.metadataField title="Handle" encodedName="marlo.handle" type="input" require=false/]
+    [@deliverableMacros.metadataField title="handle" encodedName="marlo.handle" type="input" require=false/]
   </div>
   <div class="col-md-6">
-    [@deliverableMacros.metadataField title="DOI" encodedName="marlo.doi" type="input" require=false/]
+    [@deliverableMacros.metadataField title="doi" encodedName="marlo.doi" type="input" require=false/]
   </div>
 </div>
  
@@ -244,9 +244,10 @@
 [#-- Creator/Authors --]
 <div class="form-group">
   <label for="">[@s.text name="metadata.creator" /]:  </label>
+  [#-- Some Instructions  --]
   [#if editable]<div class="note">[@s.text name = "project.deliverable.dissemination.authorsInfo" /]</div>[/#if]
+  [#-- Authors List --]
   <div class="authorsList simpleBox row" >
- 
     [#if deliverable.users?has_content]
       [#list deliverable.users as author]
         [@deliverableMacros.authorMacro element=author index=author_index name="deliverable.users"  /]
@@ -255,6 +256,7 @@
       <p class="emptyText text-center "> [@s.text name="project.deliverable.dissemination.notCreators" /]</p>
     [/#if]
   </div>
+  [#-- Add an author --]
   [#if editable]
   <div class="form-group row">
     <div class="col-md-3"><input class="form-control input-sm lName" placeholder="Last Name" type="text" /> </div>
@@ -552,16 +554,18 @@
   [#local customName = 'deliverable.metadataElements[${metadataIndex}]' /]
   [#local mElement = (customName?eval)!{} /]
   [#local mElementHide = (mElement.hide)!false /]
-  <input type="hidden" name="${customName}.id" value="${mElementID}" />
-  <input type="hidden" name="${customName}.hide" value="${mElementHide?string}" />
-  <input type="hidden" name="${customName}.metadataElement.id" value="${metadataID}" />
-  [#if type == "input"]
-    [@customForm.input name="${customName}.elementValue" required=require value="${metadataValue}" className="${title}Metadata"  type="text" i18nkey="metadata.${title}" help="metadata.${title}.help" readOnly=mElementHide editable=editable/]
-  [#elseif type == "textArea"]
-    [@customForm.textArea name="${customName}.elementValue" required=require value="${metadataValue}" className="${title}Metadata" i18nkey="metadata.${title}" help="metadata.${title}.help" readOnly=mElementHide editable=editable/]
-  [#elseif type == "select"]
-    [@customForm.select name="${customName}.elementValue" required=require value="${metadataValue}" className="${title}Metadata" i18nkey="metadata.${title}" listName=list disabled=mElementHide editable=editable /]
-  [/#if]
+  <div class="metadataElement">
+    <input type="hidden" name="${customName}.id" value="${mElementID}" />
+    <input type="hidden" class="hide" name="${customName}.hide" value="${mElementHide?string}" />
+    <input type="hidden" name="${customName}.metadataElement.id" value="${metadataID}" />
+    [#if type == "input"]
+      [@customForm.input name="${customName}.elementValue" required=require value="${metadataValue}" className="${title}Metadata"  type="text" i18nkey="metadata.${title}" help="metadata.${title}.help" readOnly=mElementHide editable=editable/]
+    [#elseif type == "textArea"]
+      [@customForm.textArea name="${customName}.elementValue" required=require value="${metadataValue}" className="${title}Metadata" i18nkey="metadata.${title}" help="metadata.${title}.help" readOnly=mElementHide editable=editable/]
+    [#elseif type == "select"]
+      [@customForm.select name="${customName}.elementValue" required=require value="${metadataValue}" className="${title}Metadata" i18nkey="metadata.${title}" listName=list disabled=mElementHide editable=editable /]
+    [/#if]
+  </div>
 [/#macro]
 
 
