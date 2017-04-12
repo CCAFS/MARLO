@@ -9,6 +9,10 @@
 			<column name="id" />
 			<generator class="identity" />
 		</id>
+	<many-to-one name="partnerDivision" class="org.cgiar.ccafs.marlo.data.model.PartnerDivision"
+		fetch="select">
+		<column name="division_id" />
+	</many-to-one>
 		<many-to-one name="project"
 			class="org.cgiar.ccafs.marlo.data.model.Project" fetch="select">
 			<column name="project_id"  />
@@ -29,9 +33,6 @@
 				<comment>Other type defined by the user.</comment>
 			</column>
 		</property>
-		 <property name="division" type="string">
-      <column name="division" length="1000" />
-    </property>
 		<property name="year" type="int">
 			<column name="year" not-null="true" />
 		</property>
