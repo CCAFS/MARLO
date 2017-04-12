@@ -4221,6 +4221,17 @@ margin: 0;}
   background-color: #749E66;
 }
 
+.uncheckButton{
+  background-color: #F44336;
+  color: #fff;
+  padding: 5px 12px;
+  border-radius: 2px;
+  cursor: pointer;
+}
+.uncheckButton:hover{
+  background-color: #e03d31;
+}
+
 #metadata-output{
   color: #777;
   padding: 7px 4px;

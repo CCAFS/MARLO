@@ -168,16 +168,12 @@
     [#if editable]
       [#-- CGSpace examples & instructions --]
       [@channelExampleMacro name="cgspace" url="https://cgspace.cgiar.org/handle/10568/79435" /]
-       
       [#-- Dataverse examples & instructions --]
       [@channelExampleMacro name="dataverse" url="https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/0ZEXKC" /]
-  
       [#-- IFPRI examples & instructions --]
       [@channelExampleMacro name="ifpri" url="http://ebrary.ifpri.org/cdm/singleitem/collection/p15738coll5/id/5388/rec/1" /]
-      
       [#-- ILRI examples & instructions --]
       [@channelExampleMacro name="ilri" url="http://data.ilri.org/portal/dataset/ccafsnyando" /]
-    
     [/#if]
   </div>
 </div>
@@ -190,7 +186,17 @@
     </div>
     <div class="col-md-2">
       <br />
-      [#if editable]<div id="fillMetadata" class="checkButton" style="display:[#if (channelsArray?seq_contains(deliverable.dissemination.disseminationChannel))!false ]block[#else]none[/#if];">[@s.text name="project.deliverable.dissemination.sync" /]</div>[/#if]
+      [#if editable]
+        [#local showSync = (channelsArray?seq_contains(deliverable.dissemination.disseminationChannel))!false ]
+        [#local isSynced = (deliverable.dissemination.synced)!false ]
+        <div id="fillMetadata" style="display:${showSync?string('block','none')};">
+          <input type="hidden" name="deliverable.dissemination.synced" value="${isSynced?string}" />
+          [#-- Sync Button --]
+          <div class="checkButton" style="display:${isSynced?string('none','block')};">[@s.text name="project.deliverable.dissemination.sync" /]</div>
+          [#-- Unsync Button --]
+          <div class="uncheckButton" style="display:${isSynced?string('block','none')};">[@s.text name="project.deliverable.dissemination.unsync" /]</div>
+        </div>
+      [/#if]
     </div>
   </div>
 </div>
@@ -199,9 +205,9 @@
 
 [#macro channelExampleMacro name="" url="" ]
   <div class="exampleUrl-block channel-${name}" style="display:[#if (deliverable.dissemination.disseminationChannel==name)!false]block[#else]none[/#if];">
-      <label for="">[@s.text name="project.deliverable.dissemination.exampleUrl" /]:</label>
-      <p><small>${url}</small></p>
-    </div>
+    <label for="">[@s.text name="project.deliverable.dissemination.exampleUrl" /]:</label>
+    <p><small>${url}</small></p>
+  </div>
 [/#macro]
 
 [#macro deliverableMetadataMacro ]
@@ -554,16 +560,16 @@
   [#local customName = 'deliverable.metadataElements[${metadataIndex}]' /]
   [#local mElement = (customName?eval)!{} /]
   [#local mElementHide = (mElement.hide)!false /]
-  <div class="metadataElement">
+  <div class="metadataElement metadataElement-${title?lower_case}">
     <input type="hidden" name="${customName}.id" value="${mElementID}" />
     <input type="hidden" class="hide" name="${customName}.hide" value="${mElementHide?string}" />
     <input type="hidden" name="${customName}.metadataElement.id" value="${metadataID}" />
     [#if type == "input"]
-      [@customForm.input name="${customName}.elementValue" required=require value="${metadataValue}" className="${title}Metadata"  type="text" i18nkey="metadata.${title}" help="metadata.${title}.help" readOnly=mElementHide editable=editable/]
+      [@customForm.input name="${customName}.elementValue" required=require value="${metadataValue}" className="metadataValue"  type="text" i18nkey="metadata.${title}" help="metadata.${title}.help" readOnly=mElementHide editable=editable/]
     [#elseif type == "textArea"]
-      [@customForm.textArea name="${customName}.elementValue" required=require value="${metadataValue}" className="${title}Metadata" i18nkey="metadata.${title}" help="metadata.${title}.help" readOnly=mElementHide editable=editable/]
+      [@customForm.textArea name="${customName}.elementValue" required=require value="${metadataValue}" className="metadataValue" i18nkey="metadata.${title}" help="metadata.${title}.help" readOnly=mElementHide editable=editable/]
     [#elseif type == "select"]
-      [@customForm.select name="${customName}.elementValue" required=require value="${metadataValue}" className="${title}Metadata" i18nkey="metadata.${title}" listName=list disabled=mElementHide editable=editable /]
+      [@customForm.select name="${customName}.elementValue" required=require value="${metadataValue}" className="metadataValue" i18nkey="metadata.${title}" listName=list disabled=mElementHide editable=editable /]
     [/#if]
   </div>
 [/#macro]

@@ -114,7 +114,9 @@ function init() {
   // Change dissemination channel
   $(".disseminationChannel").on('change', changeDisseminationChannel);
 
-  $("#fillMetadata").on("click", loadAndFillMetadata);
+  $("#fillMetadata .checkButton").on("click", syncMetadata);
+
+  $("#fillMetadata .uncheckButton").on("click", unsyncMetadata);
 
   $("input[name='deliverable.dissemination.type']").on("change", openAccessRestriction);
 
@@ -304,29 +306,6 @@ function openAccessRestriction() {
   }
 }
 
-function setMetadata(data) {
-
-  $.each(data, function(key,value) {
-    var $input = $("." + key + "Metadata");
-    var $parent = $input.parents('.metadataElement');
-    var $hide = $parent.find('.hide');
-    if(value) {
-      $input.val(value);
-      $parent.find('textarea').autoGrow();
-      $input.attr('readOnly', true);
-      $hide.val("true");
-    } else {
-      $input.attr('readOnly', false);
-      $hide.val("false");
-    }
-  });
-
-  $(".dateMetadata").datepicker({
-    dateFormat: 'yyyy-mm-dd'
-  }).datepicker('setDate', data.date);
-
-}
-
 function changeDisseminationChannel() {
 
   var channel = $(".disseminationChannel").val();
@@ -337,7 +316,9 @@ function changeDisseminationChannel() {
   var channelsList = [
       "cgspace", "dataverse", "ifpri", "ilri"
   ];
+
   if(channel != "-1") {
+    $('#disseminationUrl').slideDown("slow");
     if(channelsList.indexOf(channel) != -1) {
       $("#fillMetadata").slideDown("slow");
       $(".exampleUrl-block.channel-" + channel).slideDown("slow");
@@ -411,10 +392,39 @@ function checkNextAuthorItems(block) {
   }
 }
 
+function setMetadata(data) {
+
+  $.each(data, function(key,value) {
+    var $parent = $('.metadataElement-' + key);
+    var $input = $parent.find(".metadataValue");
+    var $hide = $parent.find('.hide');
+    if(value) {
+      $input.val(value);
+      $parent.find('textarea').autoGrow();
+      $input.attr('readOnly', true);
+      $input.datepicker("destroy");
+      $hide.val("true");
+    } else {
+      $input.attr('readOnly', false);
+      $hide.val("false");
+    }
+  });
+
+  // Show Sync Button
+  $('#fillMetadata .checkButton').hide();
+  // Hide UnSync Button
+  $('#fillMetadata .uncheckButton').show();
+  // Set hidden input
+  $('#fillMetadata input:hidden').val(true);
+  // Update component
+  $(document).trigger('updateComponent');
+
+}
+
 /**
  * Load Metadata and fill fields
  */
-function loadAndFillMetadata() {
+function syncMetadata() {
   var channel = $(".disseminationChannel").val();
   var url = $.trim($(".deliverableDisseminationUrl").val());
   // jsUri Library (https://github.com/derek-watson/jsUri)
@@ -439,6 +449,30 @@ function loadAndFillMetadata() {
     getIlriMetadata(channel, url, uri);
   }
 
+}
+
+/**
+ * Unhide all metadata fields
+ */
+function unsyncMetadata() {
+  $('.metadataElement').each(function(i,e) {
+
+    var $parent = $(e);
+    var $input = $parent.find('.metadataValue');
+    var $hide = $parent.find('.hide');
+    $input.attr('readOnly', false);
+    $hide.val("false");
+
+  });
+
+  // Show Sync Button
+  $('#fillMetadata .checkButton').show();
+  // Hide UnSync Button
+  $('#fillMetadata .uncheckButton').hide();
+  // Set hidden input
+  $('#fillMetadata input:hidden').val(false);
+  // Update component
+  $(document).trigger('updateComponent');
 }
 
 function getIlriMetadata(channel,url,uri) {
