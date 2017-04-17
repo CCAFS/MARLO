@@ -195,8 +195,20 @@
       </div>
   [#else]
     <input class="id" type="hidden" name="deliverable.genderLevels[0].id" value="${(deliverable.genderLevels[0].id)!}" />
-    [@customForm.select name="deliverable.genderLevels[0].genderLevel" label="" showTitle=false i18nkey="deliverable.genderLevels" listName="genderLevels" keyFieldName="id" displayFieldName="description"  required=true  className="genderLevelsSelect" editable=editable/]
+    [@customForm.select name="deliverable.genderLevels[0].genderLevel" label="" i18nkey="deliverable.genderLevels" listName="genderLevels" keyFieldName="id" displayFieldName="description"  required=true  className="genderLevelsSelect" editable=editable/]
   [/#if]
+  </div>
+  
+  [#-- Gender Types List --]
+  <div style="display:none">
+    [#if genderLevels?has_content]
+      [#list genderLevels as element]
+        <span id="genderLevel-${(element.id)!}">
+          <span class="description">${(element.description)!}</span><br />
+          <i><span class="completeDescription">${(element.completeDescription)!}</span></i>
+        </span>
+      [/#list]
+    [/#if]
   </div>
   
   [#-- Gender level list template --]
