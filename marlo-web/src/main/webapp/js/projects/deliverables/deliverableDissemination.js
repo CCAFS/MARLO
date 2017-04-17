@@ -22,32 +22,31 @@ function init() {
         $(this).datepicker('setDate', selectedDate);
       }
   });
-  /* Init Select2 plugin */
 
-  // Is this deliverable Open Access
-  $(".accessible .button-label").on("click", function() {
+  // YES/NO Event for deliverables
+  $(".button-label").on("click", function() {
     var valueSelected = $(this).hasClass('yes-button-label');
     var $input = $(this).parent().find('input');
     $input.val(valueSelected);
     $(this).parent().find("label").removeClass("radio-checked");
     $(this).addClass("radio-checked");
 
+    checkFAIRCompliant();
+  });
+
+  // Is this deliverable Open Access
+  $(".accessible .button-label").on("click", function() {
+    var valueSelected = $(this).hasClass('yes-button-label');
     if(!valueSelected) {
       $(".openAccessOptions").show("slow");
     } else {
       $(".openAccessOptions").hide("slow");
     }
-    checkFAIRCompliant();
   });
 
   // Is this deliverable already disseminated
   $(".findable .button-label").on("click", function() {
     var valueSelected = $(this).hasClass('yes-button-label');
-    var $input = $(this).parent().find('input');
-    $input.val(valueSelected);
-    $(this).parent().find("label").removeClass("radio-checked");
-    $(this).addClass("radio-checked");
-
     if(!valueSelected) {
       $(".findableOptions").hide("slow");
       $(".dataSharing").show("slow");
@@ -55,42 +54,27 @@ function init() {
       $(".findableOptions").show("slow");
       $(".dataSharing").hide("slow");
     }
-    checkFAIRCompliant();
+
   });
 
   // Does the publication acknowledge
   $(".acknowledge .button-label").on("click", function() {
-    var valueSelected = $(this).hasClass('yes-button-label');
-    var $input = $(this).parent().find('input');
-    $input.val(valueSelected);
-    $(this).parent().find("label").removeClass("radio-checked");
-    $(this).addClass("radio-checked");
+    // Do Something
   });
 
   // Have you adopted a license
   $(".license .button-label").on("click", function() {
     var valueSelected = $(this).hasClass('yes-button-label');
-    var $input = $(this).parent().find('input');
-    $input.val(valueSelected);
-    $(this).parent().find("label").removeClass("radio-checked");
-    $(this).addClass("radio-checked");
-
     if(!valueSelected) {
       $(".licenseOptions-block").hide("slow");
     } else {
       $(".licenseOptions-block").show("slow");
     }
-    checkFAIRCompliant();
   });
 
   // Does this license allow modifications?
   $(".licenceModifications .button-label").on("click", function() {
-    var valueSelected = $(this).hasClass('yes-button-label');
-    var $input = $(this).parent().find('input');
-    $input.val(valueSelected);
-    $(this).parent().find("label").removeClass("radio-checked");
-    $(this).addClass("radio-checked");
-    checkFAIRCompliant();
+    // Do Something
   });
 
   $("#deliverableMetadataDate").datepicker({
@@ -339,7 +323,7 @@ function addAuthor() {
     $(".oId").removeClass("fieldError");
     var $list = $('.authorsList');
     var $item = $('#author-template').clone(true).removeAttr("id");
-    $item.find(".lastName").html($(".lName").val() + ", ");
+    $item.find(".lastName").html($(".lName").val());
     $item.find(".firstName").html($(".fName").val());
     if($(".oId").val() == "") {
       $item.find(".orcidId").html("");
@@ -356,13 +340,9 @@ function addAuthor() {
     updateAuthor();
     checkNextAuthorItems($list);
 
-    $(".lName").val("");
-    $(".fName").val("");
-    $(".oId").val("");
+    $(".lName, .fName, .oId").val("");
   } else {
-    $(".lName").addClass("fieldError");
-    $(".fName").addClass("fieldError");
-    $(".oId").addClass("fieldError");
+    $(".lName, .fName, .oId").addClass("fieldError");
   }
 }
 
@@ -410,12 +390,14 @@ function setMetadata(data) {
     }
   });
 
-  // Show Sync Button
-  $('#fillMetadata .checkButton').hide();
+  // Show Sync Button & dissemination channel
+  $('#fillMetadata .checkButton, .disseminationChannelBlock').hide('slow');
   // Hide UnSync Button
   $('#fillMetadata .uncheckButton').show();
   // Set hidden input
   $('#fillMetadata input:hidden').val(true);
+  // Dissemination URL
+  $('.deliverableDisseminationUrl').attr('readOnly', true);
   // Update component
   $(document).trigger('updateComponent');
 
@@ -465,12 +447,14 @@ function unsyncMetadata() {
 
   });
 
-  // Show Sync Button
-  $('#fillMetadata .checkButton').show();
+  // Show Sync Button & dissemination channel
+  $('#fillMetadata .checkButton, .disseminationChannelBlock').show('slow');
   // Hide UnSync Button
   $('#fillMetadata .uncheckButton').hide();
   // Set hidden input
   $('#fillMetadata input:hidden').val(false);
+  // Dissemination URL
+  $('.deliverableDisseminationUrl').attr('readOnly', false);
   // Update component
   $(document).trigger('updateComponent');
 }
@@ -822,10 +806,10 @@ function authorsByService(authors) {
     var validation = validateAuthors(authors[i].lastName, authors[i].firstName);
     if(validation == false) {
       var $item = $('#author-template').clone(true).removeAttr("id");
-      $($item).find(".lastName").text(authors[i].lastName + ", ");
+      $($item).find(".lastName").text(authors[i].lastName);
       $($item).find(".firstName").text(authors[i].firstName);
       $($item).find(".orcidId").text(authors[i].orcidId);
-      $($item).find(".lastNameInput").val(authors[i].lastName + ", ");
+      $($item).find(".lastNameInput").val(authors[i].lastName);
       $($item).find(".firstNameInput").val(authors[i].firstName);
       $($item).find(".orcidIdInput").val(authors[i].orcidId);
       $list.append($item);

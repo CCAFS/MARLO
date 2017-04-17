@@ -151,9 +151,10 @@
 [/#macro]
 
 [#macro findableOptions ]
-[#-- Note --]
-<div class="note">[@s.text name="project.deliverable.dissemination.channelInfo" /]</div>
-<div class="form-group row">
+[#local isSynced = (deliverable.dissemination.synced)!false ]
+<div class="form-group row disseminationChannelBlock" style="display:${isSynced?string('none','block')};">
+  [#-- Note --]
+  <div class="note">[@s.text name="project.deliverable.dissemination.channelInfo" /]</div>
   <div class="col-md-4">
     [#if editable]
       [@customForm.select name="deliverable.dissemination.disseminationChannel" value="'${(deliverable.dissemination.disseminationChannel)!}'"  stringKey=true label=""  i18nkey="project.deliverable.dissemination.selectChannelLabel" listName="channels" className="disseminationChannel"   multiple=false required=true   editable=editable/]
@@ -182,13 +183,12 @@
 <div id="disseminationUrl" style="display:[#if (channelsArray?seq_contains(deliverable.dissemination.disseminationChannel))!false ]block[#else]none[/#if];">
   <div class="form-group row"> 
     <div class="col-md-10">
-      [@customForm.input name="deliverable.dissemination.disseminationUrl" type="text" i18nkey="project.deliverable.dissemination.disseminationUrl"  placeholder="" className="deliverableDisseminationUrl" required=true editable=editable /]
+      [@customForm.input name="deliverable.dissemination.disseminationUrl" type="text" i18nkey="project.deliverable.dissemination.disseminationUrl"  placeholder="" className="deliverableDisseminationUrl" required=true readOnly=isSynced editable=editable /]
     </div>
     <div class="col-md-2">
       <br />
       [#if editable]
         [#local showSync = (channelsArray?seq_contains(deliverable.dissemination.disseminationChannel))!false ]
-        [#local isSynced = (deliverable.dissemination.synced)!false ]
         <div id="fillMetadata" style="display:${showSync?string('block','none')};">
           <input type="hidden" name="deliverable.dissemination.synced" value="${isSynced?string}" />
           [#-- Sync Button --]
@@ -584,7 +584,7 @@
       </div>
     [/#if]
     <div class="row">
-      <div class="col-md-12"><span class="lastName">${(element.lastName)!} </span> <span class="firstName">${(element.firstName)!} </span></div>
+      <div class="col-md-12"><span class="lastName">${(element.lastName)!}</span>, <span class="firstName">${(element.firstName)!} </span></div>
     </div>
     <span><small class="orcidId">[#if element.elementId?has_content][#else]<b>orcid id:</b>[/#if] ${(element.elementId)!'not filled'}</small></span>
     <input type="hidden" name="${customName}.id" class="id" value="${(element.id)!}" />
