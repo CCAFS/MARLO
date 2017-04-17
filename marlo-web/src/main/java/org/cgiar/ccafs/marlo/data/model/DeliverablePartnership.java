@@ -41,11 +41,6 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
   @Expose
   private User createdBy;
 
-
-  @Expose
-  private String division;
-
-
   @Expose
   private ProjectPartnerPerson projectPartnerPerson;
 
@@ -126,11 +121,6 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
   }
 
 
-  public String getDivision() {
-    return division;
-  }
-
-
   @Override
   public Long getId() {
     return id;
@@ -204,9 +194,6 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
     this.deliverable = deliverable;
   }
 
-  public void setDivision(String division) {
-    this.division = division;
-  }
 
   public void setId(Long id) {
     this.id = id;

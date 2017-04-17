@@ -571,7 +571,12 @@ public class DeliverableAction extends BaseAction {
             partnership.setModifiedBy(this.getCurrentUser());
             partnership.setModificationJustification("");
             partnership.setActiveSince(new Date());
-            partnership.setDivision(deliverablePartnership.getDivision());
+
+            if (deliverablePartnership.getPartnerDivision() != null) {
+              PartnerDivision division = partnerDivisionManager.getPartnerDivisionById(deliverablePartnership.getId());
+              partnership.setPartnerDivision(division);
+            }
+
             deliverablePartnershipManager.saveDeliverablePartnership(partnership);
 
           }
@@ -601,7 +606,12 @@ public class DeliverableAction extends BaseAction {
               partnershipNew.setModifiedBy(this.getCurrentUser());
               partnershipNew.setModificationJustification("");
               partnershipNew.setActiveSince(new Date());
-              partnershipNew.setDivision(deliverablePartnership.getDivision());
+
+              if (deliverablePartnership.getPartnerDivision() != null) {
+                PartnerDivision division =
+                  partnerDivisionManager.getPartnerDivisionById(deliverablePartnership.getId());
+                partnershipNew.setPartnerDivision(division);
+              }
               deliverablePartnershipManager.saveDeliverablePartnership(partnershipNew);
             }
 
@@ -617,7 +627,10 @@ public class DeliverableAction extends BaseAction {
             partnershipNew.setModifiedBy(this.getCurrentUser());
             partnershipNew.setModificationJustification("");
             partnershipNew.setActiveSince(new Date());
-            partnershipNew.setDivision(deliverablePartnership.getDivision());
+            if (deliverablePartnership.getPartnerDivision() != null) {
+              PartnerDivision division = partnerDivisionManager.getPartnerDivisionById(deliverablePartnership.getId());
+              partnershipNew.setPartnerDivision(division);
+            }
             deliverablePartnershipManager.saveDeliverablePartnership(partnershipNew);
           }
         }
@@ -1276,7 +1289,7 @@ public class DeliverableAction extends BaseAction {
           partnership.setModifiedBy(this.getCurrentUser());
           partnership.setModificationJustification("");
           partnership.setActiveSince(new Date());
-          partnership.setDivision(deliverable.getResponsiblePartner().getDivision());
+
 
           if (deliverable.getResponsiblePartner().getPartnerDivision() != null) {
             PartnerDivision division = partnerDivisionManager
@@ -1297,7 +1310,7 @@ public class DeliverableAction extends BaseAction {
         partnership.setModifiedBy(this.getCurrentUser());
         partnership.setModificationJustification("");
         partnership.setActiveSince(new Date());
-        partnership.setDivision(deliverable.getResponsiblePartner().getDivision());
+
 
         if (deliverable.getResponsiblePartner().getPartnerDivision() != null) {
           PartnerDivision division = partnerDivisionManager
