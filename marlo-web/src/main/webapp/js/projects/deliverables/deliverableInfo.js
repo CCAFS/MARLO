@@ -17,6 +17,10 @@ function init() {
       templateSelection: formatState
   });
 
+  $(".genderLevelsSelect").select2({
+    templateResult: formatStateGenderType
+  });
+
   $('.helpMessage3').on("click", openDialog);
 
   // select name
@@ -508,3 +512,11 @@ function formatState(state) {
   return $state;
 
 };
+
+function formatStateGenderType(state) {
+  if(state.id == -1) {
+    return;
+  }
+  var $state = $("#genderLevel-" + state.id).clone(true);
+  return $state;
+}
