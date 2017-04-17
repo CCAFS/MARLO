@@ -8,6 +8,10 @@
   <appender name="FILE-PRODUCTION"
     class="ch.qos.logback.core.rolling.RollingFileAppender">
     <file>${log.folder}/marlo.log</file>
+    <!-- deny all events with a level below INFO, that is TRACE and DEBUG -->
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">    
+ -      <level>INFO</level>   
+ -    </filter>
     <encoder>
       <pattern>%d{yyyy-MM-dd_HH:mm:ss.SSS} - [%thread]%logger{0} [%-5level]
         : %msg%n</pattern>
