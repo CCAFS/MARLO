@@ -617,21 +617,16 @@ public class DeliverableAction extends BaseAction {
 
 
           } else {
-            DeliverablePartnership partnershipNew = new DeliverablePartnership();
-            partnershipNew.setId(deliverablePartnership.getId());
-            partnershipNew.setProjectPartnerPerson(deliverablePartnership.getProjectPartnerPerson());
-            partnershipNew.setPartnerType(DeliverablePartnershipTypeEnum.OTHER.getValue());
-            partnershipNew.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
-            partnershipNew.setActive(true);
-            partnershipNew.setCreatedBy(this.getCurrentUser());
-            partnershipNew.setModifiedBy(this.getCurrentUser());
-            partnershipNew.setModificationJustification("");
-            partnershipNew.setActiveSince(new Date());
+            DeliverablePartnership partnershipDB =
+              deliverablePartnershipManager.getDeliverablePartnershipById(deliverablePartnership.getId());
+
             if (deliverablePartnership.getPartnerDivision() != null) {
-              PartnerDivision division = partnerDivisionManager.getPartnerDivisionById(deliverablePartnership.getId());
-              partnershipNew.setPartnerDivision(division);
+              PartnerDivision division =
+                partnerDivisionManager.getPartnerDivisionById(deliverablePartnership.getPartnerDivision().getId());
+              partnershipDB.setPartnerDivision(division);
+              deliverablePartnershipManager.saveDeliverablePartnership(partnershipDB);
             }
-            deliverablePartnershipManager.saveDeliverablePartnership(partnershipNew);
+
           }
         }
       }
@@ -1275,7 +1270,7 @@ public class DeliverableAction extends BaseAction {
         Long partnerId1 = partnershipResponsible.getProjectPartnerPerson().getId();
         Long partnerId2 = partnerPerson.getId();
 
-        if (partnerId1 != partnerId2) {
+        if (partnerId1.longValue() != partnerId2.longValue()) {
 
 
           deliverablePartnershipManager.deleteDeliverablePartnership(partnershipResponsible.getId());
@@ -1298,6 +1293,17 @@ public class DeliverableAction extends BaseAction {
           }
 
           deliverablePartnershipManager.saveDeliverablePartnership(partnership);
+        } else {
+          DeliverablePartnership partnershipDB =
+            deliverablePartnershipManager.getDeliverablePartnershipById(deliverable.getResponsiblePartner().getId());
+
+          if (deliverable.getResponsiblePartner().getPartnerDivision() != null) {
+            PartnerDivision division = partnerDivisionManager
+              .getPartnerDivisionById(deliverable.getResponsiblePartner().getPartnerDivision().getId());
+            partnershipDB.setPartnerDivision(division);
+            deliverablePartnershipManager.saveDeliverablePartnership(partnershipDB);
+
+          }
         }
       } else if (partnershipResponsible == null && partnerPerson != null) {
 
