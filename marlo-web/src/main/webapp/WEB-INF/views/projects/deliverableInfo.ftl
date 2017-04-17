@@ -171,27 +171,44 @@
   
   [#-- If gender dimension, select with ones --]
   <div id="gender-levels" class="panel tertiary" style="display:${((deliverable.crossCuttingGender)!false)?string('block','none')}">
-   <div class="panel-head"><label for=""> [@customForm.text name="deliverable.genderLevels" readText=!editable /]:[@customForm.req required=editable /]</label></div>
-    <div id="genderLevelsList" class="panel-body" listname="deliverable.genderLevels"> 
-      <ul class="list">
-      [#if deliverable.genderLevels?has_content]
-        [#list deliverable.genderLevels as element]
-          <li class="genderLevel clearfix">
-            [#if editable]<div class="removeGenderLevel removeIcon" title="Remove Gender Level"></div>[/#if] 
-            <input class="id" type="hidden" name="deliverable.genderLevels[${element_index}].id" value="${(element.id)!}" />
-            <input class="fId" type="hidden" name="deliverable.genderLevels[${element_index}].genderLevel" value="${(element.genderLevel)!}" />
-            <span title="${(element.nameGenderLevel)!'undefined'}" class="name">[@utils.wordCutter string=(element.nameGenderLevel)!"undefined" maxPos=100 substr=" "/]</span>
-            <div class="clearfix"></div>
-          </li>
-        [/#list]
-      [#else]
-        <p class="emptyText"> [@s.text name="deliverable.genderLevels.empty" /]</p> 
-      [/#if]  
-      </ul>
-      [#if editable ]
-        [@customForm.select name="" label="" showTitle=false i18nkey="" listName="genderLevels"   required=true  className="genderLevelsSelect" editable=editable/]
-      [/#if] 
-    </div>
+  [#if !action.hasSpecificities('crp_one_gender')]
+     <div class="panel-head"><label for=""> [@customForm.text name="deliverable.genderLevels" readText=!editable /]:[@customForm.req required=editable /]</label></div>
+      <div id="genderLevelsList" class="panel-body" listname="deliverable.genderLevels"> 
+        <ul class="list">
+        [#if deliverable.genderLevels?has_content]
+          [#list deliverable.genderLevels as element]
+            <li class="genderLevel clearfix">
+              [#if editable]<div class="removeGenderLevel removeIcon" title="Remove Gender Level"></div>[/#if] 
+              <input class="id" type="hidden" name="deliverable.genderLevels[${element_index}].id" value="${(element.id)!}" />
+              <input class="fId" type="hidden" name="deliverable.genderLevels[${element_index}].genderLevel" value="${(element.genderLevel)!}" />
+              <span title="${(element.nameGenderLevel)!'undefined'}" class="name">[@utils.wordCutter string=(element.nameGenderLevel)!"undefined" maxPos=100 substr=" "/]</span>
+              <div class="clearfix"></div>
+            </li>
+          [/#list]
+        [#else]
+          <p class="emptyText"> [@s.text name="deliverable.genderLevels.empty" /]</p> 
+        [/#if]  
+        </ul>
+        [#if editable ]
+          [@customForm.select name="" label="" showTitle=false i18nkey="" listName="genderLevels" keyFieldName="id" displayFieldName="description"  required=true  className="genderLevelsSelect add" editable=editable/]
+        [/#if] 
+      </div>
+  [#else]
+    <input class="id" type="hidden" name="deliverable.genderLevels[0].id" value="${(deliverable.genderLevels[0].id)!}" />
+    [@customForm.select name="deliverable.genderLevels[0].genderLevel" label="" i18nkey="deliverable.genderLevels" listName="genderLevels" keyFieldName="id" displayFieldName="description"  required=true  className="genderLevelsSelect" editable=editable/]
+  [/#if]
+  </div>
+  
+  [#-- Gender Types List --]
+  <div style="display:none">
+    [#if genderLevels?has_content]
+      [#list genderLevels as element]
+        <span id="genderLevel-${(element.id)!}">
+          <span class="description">${(element.description)!}</span><br />
+          <i><span class="completeDescription">${(element.completeDescription)!}</span></i>
+        </span>
+      [/#list]
+    [/#if]
   </div>
   
   [#-- Gender level list template --]
@@ -214,18 +231,7 @@
     [#-- Partner who is responsible --]
     <label for="">[@customForm.text name="project.deliverable.indicateResponsablePartner" readText=!editable/]:[@customForm.req required=editable /]</label>
     <div class="form-group responsibleWrapper simpleBox">
-      [@deliverableList.deliverablePartner dp=deliverable.responsiblePartner dp_name="deliverable.responsiblePartner.projectPartnerPerson" dp_index=0 isResponsable=true  editable=editable /]
-      
-      [#-- Division --]
-      [#if action.hasSpecificities('crp_division_fs')]
-        [#assign ifpriDivision = false /]
-        [#if (deliverable.responsiblePartner.projectPartnerPerson.institution.acronym == "IFPRI")!false ][#assign ifpriDivision = true /] [/#if]
-        <div class="form-group row divisionBlock division-IFPRI"  style="display:${ifpriDivision?string('block','none')}">
-          <div class="col-md-6">
-            [@customForm.input name="deliverable.division" i18nkey="projectCofunded.division" className="" editable=editable /]
-          </div>
-        </div>
-      [/#if]
+      [@deliverableList.deliverablePartner dp=deliverable.responsiblePartner dp_name="deliverable.responsiblePartner" dp_index=0 isResponsable=true  editable=editable /]
     </div>
     
     <br />

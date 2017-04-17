@@ -86,6 +86,7 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
   private String cycle;
   private long startTime;
   private Boolean showPIEmail;
+   private Boolean showIfpriDivision;
   // Managers
   private CrpManager crpManager;
   private CrpProgramManager programManager;

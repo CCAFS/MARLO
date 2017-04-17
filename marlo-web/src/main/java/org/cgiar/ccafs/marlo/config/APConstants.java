@@ -61,6 +61,7 @@ public final class APConstants {
   public static final String CRP_RPM_ROLE = "crp_rpm_rol";
   public static final String CRP_DIVISION_FS = "crp_division_fs";
   public static final long IFPRI_ID = 89;
+  public static final String CRP_ONE_GENDER = "crp_one_gender";
 
   public static final String CRP_PL_ROLE = "crp_pl_rol";
   public static final String CRP_PC_ROLE = "crp_pc_rol";

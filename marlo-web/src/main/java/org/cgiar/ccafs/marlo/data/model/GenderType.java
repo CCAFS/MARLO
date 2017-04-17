@@ -20,6 +20,9 @@ public class GenderType implements java.io.Serializable, IAuditLog {
   private Crp crp;
   @Expose
   private String description;
+  @Expose
+  private String completeDescription;
+
 
   public GenderType() {
   }
@@ -30,8 +33,14 @@ public class GenderType implements java.io.Serializable, IAuditLog {
     this.description = description;
   }
 
+
   public GenderType(String description) {
     this.description = description;
+  }
+
+
+  public String getCompleteDescription() {
+    return completeDescription;
   }
 
   public Crp getCrp() {
@@ -72,11 +81,15 @@ public class GenderType implements java.io.Serializable, IAuditLog {
     return u;
   }
 
-
   @Override
   public boolean isActive() {
 
     return true;
+  }
+
+
+  public void setCompleteDescription(String completeDescription) {
+    this.completeDescription = completeDescription;
   }
 
 
