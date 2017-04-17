@@ -89,7 +89,7 @@ public class PublicationAction extends BaseAction {
   private Map<String, String> channels;
   private DeliverableCrpManager deliverableCrpManager;
   private Map<String, String> crps;
-  private Map<String, String> genderLevels;
+  private List<GenderType> genderLevels;
   private GenderTypeManager genderTypeManager;
   private CrpPandrManager crpPandrManager;
   private IpProgramManager ipProgramManager;
@@ -241,7 +241,7 @@ public class PublicationAction extends BaseAction {
   }
 
 
-  public Map<String, String> getGenderLevels() {
+  public List<GenderType> getGenderLevels() {
     return genderLevels;
   }
 
@@ -550,7 +550,7 @@ public class PublicationAction extends BaseAction {
       channels.put(channel.getId(), channel.getDesc());
     }
 
-    genderLevels = new HashMap<>();
+    genderLevels = new ArrayList<>();
     List<GenderType> genderTypes = null;
     if (this.hasSpecificities(APConstants.CRP_CUSTOM_GENDER)) {
       genderTypes = genderTypeManager.findAll().stream()
@@ -561,7 +561,7 @@ public class PublicationAction extends BaseAction {
     }
 
     for (GenderType projectStatusEnum : genderTypes) {
-      genderLevels.put(projectStatusEnum.getId() + "", projectStatusEnum.getDescription());
+      genderLevels.add(projectStatusEnum);
     }
     crps = new HashMap<>();
     for (CrpPandr crp : crpPandrManager.findAll().stream().filter(c -> c.getId() != 3 && c.isActive())
@@ -1059,7 +1059,7 @@ public class PublicationAction extends BaseAction {
     this.deliverableTypeManager = deliverableTypeManager;
   }
 
-  public void setGenderLevels(Map<String, String> genderLevels) {
+  public void setGenderLevels(List<GenderType> genderLevels) {
     this.genderLevels = genderLevels;
   }
 
