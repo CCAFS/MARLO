@@ -198,7 +198,7 @@ public class DeliverableAction extends BaseAction {
   private List<FundingSource> fundingSources;
 
 
-  private Map<String, String> genderLevels;
+  private List<GenderType> genderLevels;
 
   private List<CrpClusterKeyOutput> keyOutputs;
 
@@ -389,7 +389,7 @@ public class DeliverableAction extends BaseAction {
     return fundingSources;
   }
 
-  public Map<String, String> getGenderLevels() {
+  public List<GenderType> getGenderLevels() {
     return genderLevels;
   }
 
@@ -911,7 +911,7 @@ public class DeliverableAction extends BaseAction {
         }
       }
 
-      genderLevels = new HashMap<>();
+      genderLevels = new ArrayList<>();
       List<GenderType> genderTypes = null;
       if (this.hasSpecificities(APConstants.CRP_CUSTOM_GENDER)) {
         genderTypes = genderTypeManager.findAll().stream()
@@ -922,7 +922,7 @@ public class DeliverableAction extends BaseAction {
       }
 
       for (GenderType projectStatusEnum : genderTypes) {
-        genderLevels.put(projectStatusEnum.getId() + "", projectStatusEnum.getDescription());
+        genderLevels.add(projectStatusEnum);
       }
       crps = new HashMap<>();
       for (CrpPandr crp : crpPandrManager.findAll().stream().filter(c -> c.getId() != 3 && c.isActive())
@@ -1255,7 +1255,7 @@ public class DeliverableAction extends BaseAction {
             deliverablePrew.getDeliverablePartnerships().stream()
               .filter(dp -> dp.isActive()
                 && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
-              .collect(Collectors.toList()).get(0);
+            .collect(Collectors.toList()).get(0);
         } catch (Exception e) {
           partnershipResponsible = null;
         }
@@ -1831,7 +1831,7 @@ public class DeliverableAction extends BaseAction {
     this.fundingSources = fundingSources;
   }
 
-  public void setGenderLevels(Map<String, String> genderLevels) {
+  public void setGenderLevels(List<GenderType> genderLevels) {
     this.genderLevels = genderLevels;
   }
 
