@@ -1176,12 +1176,6 @@ public class DeliverableAction extends BaseAction {
       }
 
 
-      if (deliverable.getPartnerDivision() != null) {
-        PartnerDivision division =
-          partnerDivisionManager.getPartnerDivisionById(deliverable.getPartnerDivision().getId());
-        deliverablePrew.setPartnerDivision(division);
-      }
-
       if (this.isPlanningActive()) {
         if (deliverable.getCrpClusterKeyOutput() != null) {
           CrpClusterKeyOutput keyOutput =
@@ -1283,6 +1277,13 @@ public class DeliverableAction extends BaseAction {
           partnership.setModificationJustification("");
           partnership.setActiveSince(new Date());
           partnership.setDivision(deliverable.getResponsiblePartner().getDivision());
+
+          if (deliverable.getResponsiblePartner().getPartnerDivision() != null) {
+            PartnerDivision division = partnerDivisionManager
+              .getPartnerDivisionById(deliverable.getResponsiblePartner().getPartnerDivision().getId());
+            partnership.setPartnerDivision(division);
+          }
+
           deliverablePartnershipManager.saveDeliverablePartnership(partnership);
         }
       } else if (partnershipResponsible == null && partnerPerson != null) {
@@ -1297,6 +1298,13 @@ public class DeliverableAction extends BaseAction {
         partnership.setModificationJustification("");
         partnership.setActiveSince(new Date());
         partnership.setDivision(deliverable.getResponsiblePartner().getDivision());
+
+        if (deliverable.getResponsiblePartner().getPartnerDivision() != null) {
+          PartnerDivision division = partnerDivisionManager
+            .getPartnerDivisionById(deliverable.getResponsiblePartner().getPartnerDivision().getId());
+          partnership.setPartnerDivision(division);
+        }
+
         deliverablePartnershipManager.saveDeliverablePartnership(partnership);
       }
 

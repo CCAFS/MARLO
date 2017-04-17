@@ -95,10 +95,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   private Date createDate;
 
 
-  @Expose
-  private PartnerDivision partnerDivision;
-
-
   private Set<DeliverableGenderLevel> deliverableGenderLevels = new HashSet<DeliverableGenderLevel>(0);
 
   private List<DeliverableGenderLevel> genderLevels;
@@ -633,10 +629,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return otherPartners;
   }
 
-  public PartnerDivision getPartnerDivision() {
-    return partnerDivision;
-  }
-
   public List<DeliverableProgram> getPrograms() {
     return programs;
   }
@@ -974,11 +966,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   public void setOtherPartners(List<DeliverablePartnership> otherPartners) {
     this.otherPartners = otherPartners;
   }
-
-  public void setPartnerDivision(PartnerDivision partnerDivision) {
-    this.partnerDivision = partnerDivision;
-  }
-
 
   public void setPrograms(List<DeliverableProgram> programs) {
     this.programs = programs;

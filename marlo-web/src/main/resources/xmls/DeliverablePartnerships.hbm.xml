@@ -32,8 +32,8 @@
         <property name="modificationJustification" type="string">
             <column name="modification_justification" length="65535" not-null="true" />
         </property>
-         <property name="division" type="string">
-      <column name="division" length="1000" />
-    </property>
+        <many-to-one name="partnerDivision" class="org.cgiar.ccafs.marlo.data.model.PartnerDivision" fetch="select">
+            <column name="division_id" not-null="true" />
+        </many-to-one>
     </class>
 </hibernate-mapping>

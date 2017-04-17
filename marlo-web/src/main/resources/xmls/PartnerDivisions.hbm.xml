@@ -29,11 +29,11 @@
         <property name="modificationJustification" type="string">
             <column name="modification_justification" length="65535" />
         </property>
-        <set name="deliverables" table="deliverables" inverse="true" lazy="true" fetch="select">
+        <set name="deliverablePartnerships" table="deliverable_partnerships" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="division_id" />
             </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.Deliverable" />
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverablePartnership" />
         </set>
     </class>
 </hibernate-mapping>

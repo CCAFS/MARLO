@@ -40,6 +40,8 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
 
   @Expose
   private User createdBy;
+
+
   @Expose
   private String division;
 
@@ -54,8 +56,6 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
 
   @Expose
   private String partnerType;
-
-
   @Expose
   private boolean active;
 
@@ -66,6 +66,10 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
 
   @Expose
   private String modificationJustification;
+
+
+  @Expose
+  private PartnerDivision partnerDivision;
 
 
   public DeliverablePartnership() {
@@ -107,7 +111,6 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
   public Date getActiveSince() {
     return activeSince;
   }
@@ -133,7 +136,6 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
     return id;
   }
 
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -154,9 +156,15 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
   }
 
 
+  public PartnerDivision getPartnerDivision() {
+    return partnerDivision;
+  }
+
+
   public String getPartnerType() {
     return partnerType;
   }
+
 
   public ProjectPartnerPerson getProjectPartnerPerson() {
     return projectPartnerPerson;
@@ -170,7 +178,6 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
     result = prime * result + ((id == null) ? 0 : id.hashCode());
     return result;
   }
-
 
   @Override
   public boolean isActive() {
@@ -187,6 +194,7 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
   }
 
+
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
@@ -196,23 +204,26 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
     this.deliverable = deliverable;
   }
 
-
   public void setDivision(String division) {
     this.division = division;
   }
-
 
   public void setId(Long id) {
     this.id = id;
   }
 
+
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
 
-
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
+  }
+
+
+  public void setPartnerDivision(PartnerDivision partnerDivision) {
+    this.partnerDivision = partnerDivision;
   }
 
 

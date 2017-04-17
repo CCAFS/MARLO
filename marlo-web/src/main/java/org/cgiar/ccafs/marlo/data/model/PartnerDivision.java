@@ -18,8 +18,10 @@ public class PartnerDivision implements java.io.Serializable, IAuditLog {
 
   private static final long serialVersionUID = -1853814625671155813L;
 
+
   @Expose
   private Long id;
+
 
   @Expose
   private User modifiedBy;
@@ -42,9 +44,7 @@ public class PartnerDivision implements java.io.Serializable, IAuditLog {
   @Expose
   private String modificationJustification;
 
-
-  private Set<Deliverable> deliverables = new HashSet<Deliverable>(0);
-
+  private Set<DeliverablePartnership> deliverablePartnerships = new HashSet<DeliverablePartnership>(0);
 
   public PartnerDivision() {
   }
@@ -56,7 +56,7 @@ public class PartnerDivision implements java.io.Serializable, IAuditLog {
 
 
   public PartnerDivision(User modifiedBy, User createdBy, String acronym, String name, boolean active, Date activeSince,
-    String modificationJustification, Set<Deliverable> deliverables) {
+    String modificationJustification, Set<DeliverablePartnership> deliverablePartnerships) {
     this.modifiedBy = modifiedBy;
     this.createdBy = createdBy;
     this.acronym = acronym;
@@ -64,7 +64,7 @@ public class PartnerDivision implements java.io.Serializable, IAuditLog {
     this.active = active;
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
-    this.deliverables = deliverables;
+    this.deliverablePartnerships = deliverablePartnerships;
   }
 
 
@@ -83,8 +83,8 @@ public class PartnerDivision implements java.io.Serializable, IAuditLog {
   }
 
 
-  public Set<Deliverable> getDeliverables() {
-    return deliverables;
+  public Set<DeliverablePartnership> getDeliverablePartnerships() {
+    return deliverablePartnerships;
   }
 
 
@@ -93,13 +93,13 @@ public class PartnerDivision implements java.io.Serializable, IAuditLog {
     return id;
   }
 
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
+
 
   @Override
   public String getModificationJustification() {
@@ -136,8 +136,8 @@ public class PartnerDivision implements java.io.Serializable, IAuditLog {
     this.createdBy = createdBy;
   }
 
-  public void setDeliverables(Set<Deliverable> deliverables) {
-    this.deliverables = deliverables;
+  public void setDeliverablePartnerships(Set<DeliverablePartnership> deliverablePartnerships) {
+    this.deliverablePartnerships = deliverablePartnerships;
   }
 
   public void setId(Long id) {
