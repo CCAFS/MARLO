@@ -14,5 +14,8 @@
         <property name="description" type="string">
             <column name="description" length="65535" not-null="true" />
         </property>
+        <property name="completeDescription" type="string">
+            <column name="complete_description" length="65535" not-null="true" />
+        </property>
     </class>
 </hibernate-mapping>
