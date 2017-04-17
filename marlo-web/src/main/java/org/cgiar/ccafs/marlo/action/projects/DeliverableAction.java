@@ -1353,6 +1353,14 @@ public class DeliverableAction extends BaseAction {
             deliverableGenderLevelManager.saveDeliverableGenderLevel(deliverableFundingSource);
 
 
+          } else {
+            DeliverableGenderLevel deliverableGenderLevelDB =
+              deliverableGenderLevelManager.getDeliverableGenderLevelById(deliverableFundingSource.getId());
+            deliverableGenderLevelDB.setModifiedBy(this.getCurrentUser());
+            deliverableGenderLevelDB.setGenderLevel(deliverableFundingSource.getGenderLevel());
+            deliverableGenderLevelManager.saveDeliverableGenderLevel(deliverableGenderLevelDB);
+
+
           }
         }
       }
