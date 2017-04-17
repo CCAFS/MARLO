@@ -99,9 +99,21 @@ public class FundingSourceValidator extends BaseValidator {
     }
 
     if (action.hasSpecificities(APConstants.CRP_DIVISION_FS)) {
-      if (!this.isValidString(fundingSource.getDivision())) {
+      if (fundingSource.getPartnerDivision() == null) {
         this.addMessage(action.getText("fundingSource.division"));
         action.getInvalidFields().put("input-fundingSource.division", InvalidFieldsMessages.EMPTYFIELD);
+      }
+      if (fundingSource.getPartnerDivision() != null) {
+        if (fundingSource.getPartnerDivision().getId() == null) {
+          this.addMessage(action.getText("fundingSource.division"));
+          action.getInvalidFields().put("input-fundingSource.division", InvalidFieldsMessages.EMPTYFIELD);
+        } else {
+          if (fundingSource.getPartnerDivision().getId().longValue() == -1) {
+            this.addMessage(action.getText("fundingSource.division"));
+            action.getInvalidFields().put("input-fundingSource.division", InvalidFieldsMessages.EMPTYFIELD);
+          }
+        }
+
       }
     }
 
