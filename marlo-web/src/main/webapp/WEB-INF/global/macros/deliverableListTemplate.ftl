@@ -135,9 +135,9 @@
     [/#if]
     [#assign customName]${dp_name}[#if !isResponsable][${dp_index}][/#if][/#assign]
     <input class="type" type="hidden" name="${customName}.type" value="${isResponsable?string('Resp','Other')}">
-    [#if !isResponsable]
-    <input class="element" type="hidden" name="${dp_name}[${dp_index}].id" value="${(dp.id)!-1}">
-    [/#if]
+  
+    <input class="element" type="hidden" name="${customName}.id" value="${(dp.id)!}">
+  
     [#if template]
       [#-- Partner Name --]
       <div class="fullPartBlock partnerName chosen"> 
