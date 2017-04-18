@@ -521,6 +521,24 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return metadata;
   }
 
+  public DeliverableMetadataElement getMetadata(int metadataID) {
+    String value = "";
+    if (metadataElements != null) {
+      for (DeliverableMetadataElement dmetadata : metadataElements) {
+        if (dmetadata != null) {
+          if (dmetadata.getMetadataElement() != null && dmetadata.getMetadataElement().getId() != null) {
+            if (dmetadata.getMetadataElement().getId() == metadataID) {
+              return dmetadata;
+            }
+          }
+        }
+
+
+      }
+    }
+    return null;
+  }
+
   public List<DeliverableMetadataElement> getMetadataElements() {
     return metadataElements;
   }
@@ -567,6 +585,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     }
     return value;
   }
+
 
   // End
 

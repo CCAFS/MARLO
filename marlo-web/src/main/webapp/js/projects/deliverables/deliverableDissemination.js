@@ -50,6 +50,7 @@ function init() {
     if(!valueSelected) {
       $(".findableOptions").hide("slow");
       $(".dataSharing").show("slow");
+      unsyncMetadata();
     } else {
       $(".findableOptions").show("slow");
       $(".dataSharing").hide("slow");
@@ -90,6 +91,7 @@ function init() {
       }
   });
 
+  // Add Author
   $(".addAuthor").on("click", addAuthor);
 
   // Remove a author
@@ -98,8 +100,10 @@ function init() {
   // Change dissemination channel
   $(".disseminationChannel").on('change', changeDisseminationChannel);
 
-  $("#fillMetadata .checkButton").on("click", syncMetadata);
+  // Harvest metadata from URL
+  $("#fillMetadata .checkButton, #fillMetadata .updateButton").on("click", syncMetadata);
 
+  // Unsync metadata
   $("#fillMetadata .uncheckButton").on("click", unsyncMetadata);
 
   $("input[name='deliverable.dissemination.type']").on("change", openAccessRestriction);
@@ -113,7 +117,7 @@ function init() {
   $(".handleMetadata").on("change keyup", checkHandleUrl);
   $(".doiMetadata").on("change keyup", checkDoiUrl);
 
-  // Ohter license type
+  // Other license type
   $("input[name='deliverable.license']").on("change", function() {
     if($(this).val() == "OTHER") {
       $(".licence-modifications").show("slow");
@@ -147,7 +151,7 @@ function init() {
     }
   });
 
-  // remove flagship
+  // Remove flagship
   $(".removeFlagship ").on("click", removeFlagship);
 
   if(editable) {
@@ -161,6 +165,7 @@ function init() {
           text = "Last Name";
         } else {
           $(this).parents(".author").find(".lastNameInput").val(text);
+          $(this).parents(".author").find(".id").val("");
         }
         $(this).html(text);
       }
@@ -175,6 +180,7 @@ function init() {
           text = "First Name";
         } else {
           $(this).parents(".author").find(".firstNameInput").val(text);
+          $(this).parents(".author").find(".id").val("");
         }
         $(this).html(text);
       }
@@ -189,6 +195,7 @@ function init() {
           text = "orcid Id";
         } else {
           $(this).parents(".author").find(".orcidIdInput").val(text);
+          $(this).parents(".author").find(".id").val("");
         }
         $(this).html(text);
       }
@@ -317,29 +324,36 @@ function changeDisseminationChannel() {
 }
 
 function addAuthor() {
-  if($(".lName").val() != "" && $(".fName").val() != "") {
-    $(".lName").removeClass("fieldError");
-    $(".fName").removeClass("fieldError");
-    $(".oId").removeClass("fieldError");
+
+  var firstName = $(".fName").val();
+  var lastName = $(".lName").val();
+  var orcid = $(".oId").val();
+
+  // Check if inputs are filled out
+  if(firstName && lastName) {
+    $(".lName, .fName, .oId").removeClass("fieldError");
+
     var $list = $('.authorsList');
     var $item = $('#author-template').clone(true).removeAttr("id");
-    $item.find(".lastName").html($(".lName").val());
-    $item.find(".firstName").html($(".fName").val());
-    if($(".oId").val() == "") {
-      $item.find(".orcidId").html("");
-      $item.find(".orcidIdInput").val("");
-    } else {
-      $item.find(".orcidId").html($(".oId").val());
-      $item.find(".orcidIdInput").val($(".oId").val());
-    }
 
-    $item.find(".lastNameInput").val($(".lName").val());
-    $item.find(".firstNameInput").val($(".fName").val());
+    // Last Name
+    $item.find(".lastName").html(lastName);
+    $item.find(".lastNameInput").val(lastName);
+
+    // First name
+    $item.find(".firstName").html(firstName);
+    $item.find(".firstNameInput").val(firstName);
+
+    // ORCID
+    $item.find(".orcidId").html(orcid);
+    $item.find(".orcidIdInput").val(orcid);
+
     $list.append($item);
     $item.show('slow');
     updateAuthor();
     checkNextAuthorItems($list);
 
+    // Clean add inputs
     $(".lName, .fName, .oId").val("");
   } else {
     $(".lName, .fName, .oId").addClass("fieldError");
@@ -382,7 +396,7 @@ function setMetadata(data) {
       $input.val(value);
       $parent.find('textarea').autoGrow();
       $input.attr('readOnly', true);
-      $input.datepicker("destroy");
+      // $input.datepicker("destroy");
       $hide.val("true");
     } else {
       $input.attr('readOnly', false);
@@ -390,17 +404,34 @@ function setMetadata(data) {
     }
   });
 
-  // Show Sync Button & dissemination channel
+  syncDeliverable();
+
+}
+
+function syncDeliverable() {
+  // Hide Sync Button & dissemination channel
   $('#fillMetadata .checkButton, .disseminationChannelBlock').hide('slow');
-  // Hide UnSync Button
-  $('#fillMetadata .uncheckButton').show();
-  // Set hidden input
+  // Show UnSync & Update Button
+  $('#fillMetadata .unSyncBlock').show();
+  // Set hidden inputs
   $('#fillMetadata input:hidden').val(true);
   // Dissemination URL
   $('.deliverableDisseminationUrl').attr('readOnly', true);
   // Update component
   $(document).trigger('updateComponent');
+}
 
+function unSyncDeliverable() {
+  // Show Sync Button & dissemination channel
+  $('#fillMetadata .checkButton, .disseminationChannelBlock').show('slow');
+  // Hide UnSync & Update Button
+  $('#fillMetadata .unSyncBlock').hide();
+  // Set hidden inputs
+  $('#fillMetadata input:hidden').val(false);
+  // Dissemination URL
+  $('.deliverableDisseminationUrl').attr('readOnly', false);
+  // Update component
+  $(document).trigger('updateComponent');
 }
 
 /**
@@ -438,25 +469,15 @@ function syncMetadata() {
  */
 function unsyncMetadata() {
   $('.metadataElement').each(function(i,e) {
-
     var $parent = $(e);
     var $input = $parent.find('.metadataValue');
     var $hide = $parent.find('.hide');
     $input.attr('readOnly', false);
     $hide.val("false");
-
   });
 
-  // Show Sync Button & dissemination channel
-  $('#fillMetadata .checkButton, .disseminationChannelBlock').show('slow');
-  // Hide UnSync Button
-  $('#fillMetadata .uncheckButton').hide();
-  // Set hidden input
-  $('#fillMetadata input:hidden').val(false);
-  // Dissemination URL
-  $('.deliverableDisseminationUrl').attr('readOnly', false);
-  // Update component
-  $(document).trigger('updateComponent');
+  unSyncDeliverable();
+
 }
 
 function getIlriMetadata(channel,url,uri) {
@@ -676,6 +697,7 @@ function getCGSpaceMetadata(channel,url,uri) {
                 citation: m.metadata['identifier.citation'],
                 date: m.metadata['date.available'].split("T")[0],
                 language: m.metadata['language.iso'],
+                country: m.metadata['coverage.country'],
                 description: m.metadata['description.abstract'],
                 keywords: m.metadata['subject'],
                 handle: m.metadata['identifier.uri'],
@@ -741,7 +763,6 @@ function getDataverseMetadata(channel,url,uri) {
         $('#metadata-output').html("Searching ... " + data.persistentId);
       },
       success: function(m) {
-        console.log("success");
         if(m.status == "OK") {
 
           console.log(m.data);
@@ -750,7 +771,7 @@ function getDataverseMetadata(channel,url,uri) {
           setMetadata({
               title: m.data.title,
               citation: '',
-              date: m.data.timestamps.publicationdate,
+              date: m.data.timestamps.publicationdate.split(' ')[0],
               language: '',
               description: function() {
                 var output = "";

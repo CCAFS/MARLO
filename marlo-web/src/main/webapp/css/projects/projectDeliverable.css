@@ -470,3 +470,8 @@ div#deliverable-mainInformation {
     font-style: italic;
     cursor: pointer;
 }
+
+.author {
+    height: 64px;
+    padding: 8px;
+}

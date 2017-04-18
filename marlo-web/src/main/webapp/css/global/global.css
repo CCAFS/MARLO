@@ -4232,6 +4232,17 @@ margin: 0;}
   background-color: #e03d31;
 }
 
+.updateButton{
+  background-color: #668fda;
+  color: #fff;
+  padding: 5px 12px;
+  border-radius: 2px;
+  cursor: pointer;
+}
+.updateButton:hover{
+  background-color: #5b80c3;
+}
+
 #metadata-output{
   color: #777;
   padding: 7px 4px;

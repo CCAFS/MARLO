@@ -1188,10 +1188,9 @@ public class DeliverableAction extends BaseAction {
         && deliverablePrew.getDeliverablePartnerships().size() > 0) {
 
         try {
-          partnershipResponsible =
-            deliverablePrew.getDeliverablePartnerships().stream()
-              .filter(dp -> dp.isActive()
-                && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
+          partnershipResponsible = deliverablePrew.getDeliverablePartnerships().stream()
+            .filter(
+              dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
             .collect(Collectors.toList()).get(0);
         } catch (Exception e) {
           partnershipResponsible = null;
@@ -1443,7 +1442,6 @@ public class DeliverableAction extends BaseAction {
     if (deliverable.getDissemination() != null) {
 
       DeliverableDissemination dissemination = new DeliverableDissemination();
-      dissemination.setSynced(deliverable.getDissemination().getSynced());
       if (deliverable.getDissemination().getId() != null && deliverable.getDissemination().getId() != -1) {
         dissemination =
           deliverableDisseminationManager.getDeliverableDisseminationById(deliverable.getDissemination().getId());
@@ -1453,6 +1451,7 @@ public class DeliverableAction extends BaseAction {
 
       }
 
+      dissemination.setSynced(deliverable.getDissemination().getSynced());
 
       if (deliverable.getDissemination().getIsOpenAccess() != null) {
         dissemination.setIsOpenAccess(deliverable.getDissemination().getIsOpenAccess());

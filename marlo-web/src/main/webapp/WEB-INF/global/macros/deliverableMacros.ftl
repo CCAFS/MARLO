@@ -193,10 +193,12 @@
           <input type="hidden" name="deliverable.dissemination.synced" value="${isSynced?string}" />
           [#-- Sync Button --]
           <div class="checkButton" style="display:${isSynced?string('none','block')};">[@s.text name="project.deliverable.dissemination.sync" /]</div>
-          [#-- Unsync Button --]
-          <div class="uncheckButton" style="display:${isSynced?string('block','none')};">[@s.text name="project.deliverable.dissemination.unsync" /]</div>
-          [#-- Update Button --]
-          <div class="updateButton" style="display:${isSynced?string('block','none')};">[@s.text name="project.deliverable.dissemination.update" /]</div>
+          <div class="unSyncBlock row" style="display:${isSynced?string('block','none')};">
+            [#-- Update Button --]
+            <div class="updateButton col-md-6">[@s.text name="project.deliverable.dissemination.update" /]</div>
+            [#-- Unsync Button --]
+            <div class="uncheckButton col-md-6">[@s.text name="project.deliverable.dissemination.unsync" /]</div>
+          </div>
         </div>
       [/#if]
     </div>
@@ -266,13 +268,17 @@
   </div>
   [#-- Add an author --]
   [#if editable]
-  <div class="form-group row">
-    <div class="col-md-3"><input class="form-control input-sm lName" placeholder="Last Name" type="text" /> </div>
-    <div class="col-md-3"><input class="form-control input-sm fName" placeholder="First Name" type="text" /> </div>
-    <div class="col-md-3"><input class="form-control input-sm oId" placeholder="Orcid Id" type="text" /> </div>
-    <div class="col-md-3">
+  <div class="dottedBox">
+  <label for="">Add an Author:</label>
+  <div class="form-group">
+    <div class="pull-left" style="width:25%"><input class="form-control input-sm lName"  placeholder="Last Name" type="text" /> </div>
+    <div class="pull-left" style="width:25%"><input class="form-control input-sm fName"  placeholder="First Name" type="text" /> </div>
+    <div class="pull-left" style="width:36%"><input class="form-control input-sm oId"    placeholder="ORCID (e.g. orcid.org/0000-0002-6066...)" type="text" title="ORCID is a nonprofit helping create a world in which all who participate in research, scholarship and innovation are uniquely identified and connected to their contributions and affiliations, across disciplines, borders, and time."/> </div>
+    <div class="pull-right" style="width:14%">
       <div id="" class="addAuthor text-right"><div class="button-blue "><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="project.deliverable.dissemination.addAuthor" /]</div></div>
     </div>
+  </div>
+  <div class="clearfix"></div>
   </div>
   [/#if] 
 </div>
@@ -560,7 +566,7 @@
   [#local metadataValue = (deliverable.getMetadataValue(metadataID))!'' /]
   
   [#local customName = 'deliverable.metadataElements[${metadataIndex}]' /]
-  [#local mElement = (customName?eval)!{} /]
+  [#local mElement = (deliverable.getMetadata(metadataID))!{} /]
   [#local mElementHide = (mElement.hide)!false /]
   <div class="metadataElement metadataElement-${title?lower_case}">
     <input type="hidden" name="${customName}.id" value="${mElementID}" />
@@ -580,18 +586,17 @@
 [#macro authorMacro element index name  isTemplate=false]
   [#assign customName = "${name}[${index}]" /]
   <div id="author-${isTemplate?string('template',(element.id)!)}" class="author  simpleBox col-md-4"  style="display:${isTemplate?string('none','block')}">
-    [#if editable] [#--&& (isTemplate) --]
-      <div class="removeLink">
-        <div class="removeAuthor removeIcon" title="Remove author/creator"></div>
-      </div>
+    [#if editable]
+      <div class="removeLink"><div class="removeAuthor removeIcon" title="Remove author/creator"></div></div>
     [/#if]
-    <div class="row">
-      <div class="col-md-12"><span class="lastName">${(element.lastName)!}</span>, <span class="firstName">${(element.firstName)!} </span></div>
-    </div>
-    <span><small class="orcidId">[#if element.elementId?has_content][#else]<b>orcid id:</b>[/#if] ${(element.elementId)!'not filled'}</small></span>
+    [#-- Last name & First name --]
+    <span class="lastName">${(element.lastName?replace(',',''))!}</span>, <span class="firstName">${(element.firstName?replace(',',''))!} </span><br />
+    [#-- ORCID --]
+    <span><small class="orcidId">[#if (element.elementId?has_content)!false]<strong>${(element.elementId?replace('https://|http://','','r'))!}</strong>[#else]<i>No ORCID</i>[/#if]</small></span>
+    [#-- Hidden inputs --]
     <input type="hidden" name="${customName}.id" class="id" value="${(element.id)!}" />
-    <input type="hidden" name="${customName}.lastName"  class="lastNameInput" value="${(element.lastName)!}" />
-    <input type="hidden" name="${customName}.firstName"  class="firstNameInput" value="${(element.firstName)!}" />
+    <input type="hidden" name="${customName}.lastName"  class="lastNameInput" value="${(element.lastName?replace(',',''))!}" />
+    <input type="hidden" name="${customName}.firstName"  class="firstNameInput" value="${(element.firstName?replace(',',''))!}" />
     <input type="hidden"name="${customName}.elementId"   class="orcidIdInput" value="${(element.elementId)!}" />
     <div class="clearfix"></div>
   </div>
