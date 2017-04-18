@@ -194,8 +194,15 @@
         [/#if] 
       </div>
   [#else]
-    <input class="id" type="hidden" name="deliverable.genderLevels[0].id" value="${(deliverable.genderLevels[0].id)!}" />
-    [@customForm.select name="deliverable.genderLevels[0].genderLevel" label="" i18nkey="deliverable.genderLevels" listName="genderLevels" keyFieldName="id" displayFieldName="description"  required=true  className="genderLevelsSelect" editable=editable/]
+    [#if editable]
+      <input class="id" type="hidden" name="deliverable.genderLevels[0].id" value="${(deliverable.genderLevels[0].id)!}" />
+      [@customForm.select name="deliverable.genderLevels[0].genderLevel" label="" i18nkey="deliverable.genderLevels" listName="genderLevels" keyFieldName="id" displayFieldName="description"  required=true  className="genderLevelsSelect" editable=editable/]
+    [#else]
+      <label for="">[@customForm.text name="deliverable.genderLevels" readText=!editable /]:</label>
+      <div class="input"> 
+        <span>${(deliverable.genderLevels[0].nameGenderLevel)!'Prefilled if available'}</span> - <i><span>${(deliverable.genderLevels[0].descriptionGenderLevel)!}</span></i>
+      </div>
+    [/#if]
   [/#if]
   </div>
   
