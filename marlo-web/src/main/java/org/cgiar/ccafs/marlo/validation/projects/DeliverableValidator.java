@@ -18,11 +18,14 @@ package org.cgiar.ccafs.marlo.validation.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
+import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
 import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -49,6 +52,12 @@ public class DeliverableValidator extends BaseValidator {
   private CrpManager crpManager;
   @Inject
   private ProjectManager projectManager;
+
+  @Inject
+  private InstitutionManager institutionManager;
+
+  @Inject
+  private ProjectPartnerPersonManager projectPartnerPersonManager;
 
   @Inject
   public DeliverableValidator() {
@@ -176,6 +185,74 @@ public class DeliverableValidator extends BaseValidator {
           action.getInvalidFields().put("input-deliverable.responsiblePartner.projectPartnerPerson.id",
             InvalidFieldsMessages.EMPTYFIELD);
 
+        }
+
+
+        if (deliverable.getResponsiblePartner() != null) {
+          if (projectPartnerPersonManager
+            .getProjectPartnerPersonById(deliverable.getResponsiblePartner().getProjectPartnerPerson().getId())
+            .getInstitution().getAcronym().equalsIgnoreCase("IFPRI")) {
+            if (action.hasSpecificities(APConstants.CRP_DIVISION_FS)) {
+              if (deliverable.getResponsiblePartner().getPartnerDivision() == null) {
+                this.addMessage(action.getText("deliverable.division"));
+                action.getInvalidFields().put("input-deliverable.responsiblePartner.partnerDivision.id",
+                  InvalidFieldsMessages.EMPTYFIELD);
+              }
+              if (deliverable.getResponsiblePartner().getPartnerDivision() != null) {
+                if (deliverable.getResponsiblePartner().getPartnerDivision().getId() == null) {
+                  this.addMessage(action.getText("deliverable.division"));
+                  action.getInvalidFields().put("input-deliverable.responsiblePartner.partnerDivision.id",
+                    InvalidFieldsMessages.EMPTYFIELD);
+                } else {
+                  if (deliverable.getResponsiblePartner().getPartnerDivision().getId().longValue() == -1) {
+                    this.addMessage(action.getText("deliverable.division"));
+                    action.getInvalidFields().put("input-deliverable.responsiblePartner.partnerDivision.id",
+                      InvalidFieldsMessages.EMPTYFIELD);
+                  }
+                }
+
+              }
+
+            }
+
+          }
+        }
+
+        if (deliverable.getOtherPartners() != null) {
+          int i = 0;
+          for (DeliverablePartnership deliverablePartnership : deliverable.getOtherPartners()) {
+            if (deliverablePartnership != null && deliverablePartnership.getProjectPartnerPerson() != null) {
+              if (projectPartnerPersonManager
+                .getProjectPartnerPersonById(deliverablePartnership.getProjectPartnerPerson().getId()).getInstitution()
+                .getAcronym().equalsIgnoreCase("IFPRI")) {
+                if (action.hasSpecificities(APConstants.CRP_DIVISION_FS)) {
+                  if (deliverablePartnership.getPartnerDivision() == null) {
+                    this.addMessage(action.getText("deliverable.division"));
+                    action.getInvalidFields().put("input-deliverable.otherPartners[" + i + "].partnerDivision.id",
+                      InvalidFieldsMessages.EMPTYFIELD);
+                  }
+                  if (deliverablePartnership.getPartnerDivision() != null) {
+                    if (deliverablePartnership.getPartnerDivision().getId() == null) {
+                      this.addMessage(action.getText("deliverable.division"));
+                      action.getInvalidFields().put("input-deliverable.otherPartners[" + i + "].partnerDivision.id",
+                        InvalidFieldsMessages.EMPTYFIELD);
+                    } else {
+                      if (deliverablePartnership.getPartnerDivision().getId().longValue() == -1) {
+                        this.addMessage(action.getText("deliverable.division"));
+                        action.getInvalidFields().put("input-deliverable.otherPartners[" + i + "].partnerDivision.id",
+                          InvalidFieldsMessages.EMPTYFIELD);
+                      }
+                    }
+
+                  }
+
+                }
+
+              }
+            }
+
+            i++;
+          }
         }
         if (!action.isReportingActive()) {
           if (deliverable.getFundingSources() == null || deliverable.getFundingSources().isEmpty()) {

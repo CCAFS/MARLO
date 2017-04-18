@@ -690,6 +690,13 @@ public class PublicationAction extends BaseAction {
       }
     }
 
+    if (!deliverablePrew.getCrossCuttingGender().booleanValue()) {
+      Deliverable deliverableDB = deliverableManager.getDeliverableById(deliverableID);
+      for (DeliverableGenderLevel genderLevel : deliverableDB.getDeliverableGenderLevels().stream()
+        .filter(c -> c.isActive()).collect(Collectors.toList())) {
+        deliverableGenderLevelManager.deleteDeliverableGenderLevel(genderLevel.getId());
+      }
+    }
 
     this.saveDissemination();
     this.saveMetadata();
