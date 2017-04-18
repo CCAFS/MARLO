@@ -195,6 +195,8 @@
           <div class="checkButton" style="display:${isSynced?string('none','block')};">[@s.text name="project.deliverable.dissemination.sync" /]</div>
           [#-- Unsync Button --]
           <div class="uncheckButton" style="display:${isSynced?string('block','none')};">[@s.text name="project.deliverable.dissemination.unsync" /]</div>
+          [#-- Update Button --]
+          <div class="updateButton" style="display:${isSynced?string('block','none')};">[@s.text name="project.deliverable.dissemination.update" /]</div>
         </div>
       [/#if]
     </div>
