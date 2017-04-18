@@ -387,6 +387,7 @@ function checkNextAuthorItems(block) {
 }
 
 function setMetadata(data) {
+  console.log(data);
 
   $.each(data, function(key,value) {
     var $parent = $('.metadataElement-' + key);
@@ -529,8 +530,11 @@ function getIlriMetadata(channel,url,uri) {
           });
 
           function ilriDate(date) {
-            var arrayDate = (date).split('/');
-            return arrayDate[2] + "-" + arrayDate[1] + "-" + arrayDate[0];
+            if(date) {
+              var arrayDate = (date).split('/');
+              return arrayDate[2] + "-" + arrayDate[1] + "-" + arrayDate[0];
+            }
+            return "";
           }
 
           // Getting authors
