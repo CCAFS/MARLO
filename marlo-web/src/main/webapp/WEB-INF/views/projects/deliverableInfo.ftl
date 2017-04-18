@@ -252,7 +252,7 @@
           [@deliverableList.deliverablePartner dp=dp dp_name="deliverable.otherPartners" dp_index=dp_index editable=editable /]
         [/#list]
       [#else]
-        <p class="emptyText center"> [@s.text name="project.deliverable.partnership.emptyText" /] </p>
+        <p class="simpleBox emptyText center"> [@s.text name="project.deliverable.partnership.emptyText" /] </p>
       [/#if]
     </div>
     [#if editable && canEdit]
