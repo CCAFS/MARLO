@@ -418,6 +418,8 @@ function syncDeliverable() {
   $('#fillMetadata input:hidden').val(true);
   // Dissemination URL
   $('.deliverableDisseminationUrl').attr('readOnly', true);
+  // Check Fair
+  checkFAIRCompliant();
   // Update component
   $(document).trigger('updateComponent');
 }
@@ -431,6 +433,8 @@ function unSyncDeliverable() {
   $('#fillMetadata input:hidden').val(false);
   // Dissemination URL
   $('.deliverableDisseminationUrl').attr('readOnly', false);
+  // Check Fair
+  checkFAIRCompliant();
   // Update component
   $(document).trigger('updateComponent');
 }
