@@ -31,7 +31,7 @@
 
 .tab-content {
     border: 1px solid #ddd;
-    padding: 10px 15px;
+    padding: 10px 14px;
     border-top: none;
 }
 
@@ -461,7 +461,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fceabb', end
 }
 
 div#deliverable-mainInformation {
-    padding: 5px 10px;
+    /* padding: 5px 10px; */
 }
 
 .fairDiagram {

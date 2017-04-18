@@ -444,8 +444,26 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
         .filter(fsi -> fsi.isActive()).collect(Collectors.toList())) {
         if (leadPartner.isEmpty()) {
           leadPartner = fsIns.getInstitution().getComposedName();
+
+          // Check IFPRI Division
+          if (this.showIfpriDivision) {
+            if (fsIns.getInstitution().getAcronym().equals("IFPRI")
+              && fundingSource.getPartnerDivision().getName() != null
+              && !fundingSource.getPartnerDivision().getName().trim().isEmpty()) {
+              leadPartner += " (" + fundingSource.getPartnerDivision().getName() + ")";
+            }
+          }
         } else {
           leadPartner += ", \n" + fsIns.getInstitution().getComposedName();
+
+          // Check IFPRI Division
+          if (this.showIfpriDivision) {
+            if (fsIns.getInstitution().getAcronym().equals("IFPRI")
+              && fundingSource.getPartnerDivision().getName() != null
+              && !fundingSource.getPartnerDivision().getName().trim().isEmpty()) {
+              leadPartner += " (" + fundingSource.getPartnerDivision().getName() + ")";
+            }
+          }
         }
 
       }

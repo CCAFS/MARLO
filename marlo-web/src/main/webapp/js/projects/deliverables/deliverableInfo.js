@@ -152,6 +152,9 @@ function init() {
   $('input#gender').on('change', function() {
     if($(this).is(':checked')) {
       $('#gender-levels').slideDown();
+      $(".genderLevelsSelect").select2({
+        templateResult: formatStateGenderType
+      });
     } else {
       $('#gender-levels').slideUp();
     }

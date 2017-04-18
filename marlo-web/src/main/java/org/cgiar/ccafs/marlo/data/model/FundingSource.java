@@ -65,7 +65,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
 
   @Expose
-  private String division;
+  private PartnerDivision partnerDivision;
 
   @Expose
   private String financeCode;
@@ -205,11 +205,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   }
 
 
-  public String getDivision() {
-    return division;
-  }
-
-
   public Date getEndDate() {
     return endDate;
   }
@@ -270,6 +265,10 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return modifiedBy;
   }
 
+  public PartnerDivision getPartnerDivision() {
+    return partnerDivision;
+  }
+
   public Set<ProjectBudget> getProjectBudgets() {
     return projectBudgets;
   }
@@ -277,6 +276,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   public List<ProjectBudget> getProjectBudgetsList() {
     return projectBudgetsList;
   }
+
 
   public double getRemaining(int year) {
     double used = 0;
@@ -355,10 +355,10 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     this.active = active;
   }
 
-
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
+
 
   public void setBudgets(List<FundingSourceBudget> budgets) {
     this.budgets = budgets;
@@ -384,18 +384,15 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     this.createdBy = createdBy;
   }
 
-
   public void setCrp(Crp crp) {
     this.crp = crp;
   }
+
 
   public void setDescription(String description) {
     this.description = description;
   }
 
-  public void setDivision(String division) {
-    this.division = division;
-  }
 
   public void setEndDate(Date endDate) {
     this.endDate = endDate;
@@ -433,13 +430,17 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     this.institutions = institutions;
   }
 
-
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
 
+
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
+  }
+
+  public void setPartnerDivision(PartnerDivision partnerDivision) {
+    this.partnerDivision = partnerDivision;
   }
 
   public void setProjectBudgets(Set<ProjectBudget> projectBudgets) {

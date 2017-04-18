@@ -78,15 +78,28 @@ public class PartnerDivision implements java.io.Serializable, IAuditLog {
   }
 
 
+  public String getComposedName() {
+
+    if (this.getAcronym() != null) {
+      if (this.getAcronym().length() != 0) {
+        try {
+          return this.getAcronym() + " - " + this.getName();
+        } catch (Exception e) {
+          return this.getName();
+        }
+      }
+    }
+    return this.getName();
+  }
+
+
   public User getCreatedBy() {
     return createdBy;
   }
 
-
   public Set<DeliverablePartnership> getDeliverablePartnerships() {
     return deliverablePartnerships;
   }
-
 
   @Override
   public Long getId() {

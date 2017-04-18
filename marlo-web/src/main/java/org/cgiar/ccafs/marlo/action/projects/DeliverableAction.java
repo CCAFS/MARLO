@@ -39,6 +39,7 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableUserManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.MetadataElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PartnerDivisionManager;
@@ -165,6 +166,7 @@ public class DeliverableAction extends BaseAction {
   private DeliverableMetadataElementManager deliverableMetadataElementManager;
 
   private DeliverablePartnershipManager deliverablePartnershipManager;
+  private InstitutionManager institutionManager;
 
   private DeliverableQualityAnswerManager deliverableQualityAnswerManager;
 
@@ -251,8 +253,9 @@ public class DeliverableAction extends BaseAction {
     DeliverableDataSharingFileManager deliverableDataSharingFileManager, FileDBManager fileDBManager,
     DeliverableUserManager deliverableUserManager, GenderTypeManager genderTypeManager,
     HistoryComparator historyComparator, DeliverablePublicationMetadataManager deliverablePublicationMetadataManager,
-    MetadataElementManager metadataElementManager, DeliverableDisseminationManager deliverableDisseminationManager,
-    CrpPandrManager crpPandrManager, IpProgramManager ipProgramManager, PartnerDivisionManager partnerDivisionManager) {
+    InstitutionManager institutionManager, MetadataElementManager metadataElementManager,
+    DeliverableDisseminationManager deliverableDisseminationManager, CrpPandrManager crpPandrManager,
+    IpProgramManager ipProgramManager, PartnerDivisionManager partnerDivisionManager) {
     super(config);
     this.deliverableManager = deliverableManager;
     this.deliverableTypeManager = deliverableTypeManager;
@@ -261,6 +264,7 @@ public class DeliverableAction extends BaseAction {
     this.deliverableUserManager = deliverableUserManager;
     this.crpProgramManager = crpProgramManager;
     this.projectManager = projectManager;
+    this.institutionManager = institutionManager;
     this.deliverableCrpManager = deliverableCrpManager;
     this.deliverablePublicationMetadataManager = deliverablePublicationMetadataManager;
     this.projectPartnerPersonManager = projectPartnerPersonManager;
@@ -519,6 +523,13 @@ public class DeliverableAction extends BaseAction {
       List<DeliverablePartnership> list = deliverable.getDeliverablePartnerships().stream()
         .filter(dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
         .collect(Collectors.toList());
+
+      for (DeliverablePartnership deliverablePartnership : list) {
+        deliverablePartnership.getProjectPartnerPerson()
+          .setInstitution(institutionManager.getInstitutionById(
+            deliverablePartnershipManager.getDeliverablePartnershipById(deliverablePartnership.getId())
+              .getProjectPartnerPerson().getInstitution().getId()));
+      }
       return list;
     } catch (Exception e) {
       return null;
@@ -573,7 +584,8 @@ public class DeliverableAction extends BaseAction {
             partnership.setActiveSince(new Date());
 
             if (deliverablePartnership.getPartnerDivision() != null) {
-              PartnerDivision division = partnerDivisionManager.getPartnerDivisionById(deliverablePartnership.getId());
+              PartnerDivision division =
+                partnerDivisionManager.getPartnerDivisionById(deliverablePartnership.getPartnerDivision().getId());
               partnership.setPartnerDivision(division);
             }
 
@@ -609,7 +621,7 @@ public class DeliverableAction extends BaseAction {
 
               if (deliverablePartnership.getPartnerDivision() != null) {
                 PartnerDivision division =
-                  partnerDivisionManager.getPartnerDivisionById(deliverablePartnership.getId());
+                  partnerDivisionManager.getPartnerDivisionById(deliverablePartnership.getPartnerDivision().getId());
                 partnershipNew.setPartnerDivision(division);
               }
               deliverablePartnershipManager.saveDeliverablePartnership(partnershipNew);
@@ -863,6 +875,8 @@ public class DeliverableAction extends BaseAction {
         try {
           deliverableGenderLevel.setNameGenderLevel(
             genderTypeManager.getGenderTypeById(deliverableGenderLevel.getGenderLevel()).getDescription());
+          deliverableGenderLevel.setDescriptionGenderLevel(
+            genderTypeManager.getGenderTypeById(deliverableGenderLevel.getGenderLevel()).getCompleteDescription());
         } catch (Exception e) {
 
         }
@@ -1105,10 +1119,13 @@ public class DeliverableAction extends BaseAction {
       ProjectPartnerPerson partnerPerson = projectPartnerPersonManager
         .getProjectPartnerPersonById(deliverable.getResponsiblePartner().getProjectPartnerPerson().getId());
 
+      PartnerDivision partnerDivision =
+        partnerDivisionManager.getPartnerDivisionById(deliverable.getResponsiblePartner().getPartnerDivision().getId());
       DeliverablePartnership partnership = new DeliverablePartnership();
-
+      partnership.setId(deliverable.getResponsiblePartner().getId());
       partnership.setDeliverable(deliverable);
       partnership.setProjectPartnerPerson(partnerPerson);
+      partnership.setPartnerDivision(partnerDivision);
       partnership.setPartnerType(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue());
       partnership.setActive(true);
 

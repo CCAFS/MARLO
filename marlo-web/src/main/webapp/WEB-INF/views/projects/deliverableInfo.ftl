@@ -194,8 +194,15 @@
         [/#if] 
       </div>
   [#else]
-    <input class="id" type="hidden" name="deliverable.genderLevels[0].id" value="${(deliverable.genderLevels[0].id)!}" />
-    [@customForm.select name="deliverable.genderLevels[0].genderLevel" label="" i18nkey="deliverable.genderLevels" listName="genderLevels" keyFieldName="id" displayFieldName="description"  required=true  className="genderLevelsSelect" editable=editable/]
+    [#if editable]
+      <input class="id" type="hidden" name="deliverable.genderLevels[0].id" value="${(deliverable.genderLevels[0].id)!}" />
+      [@customForm.select name="deliverable.genderLevels[0].genderLevel" label="" i18nkey="deliverable.genderLevels" listName="genderLevels" keyFieldName="id" displayFieldName="description"  required=true  className="genderLevelsSelect" editable=editable/]
+    [#else]
+      <label for="">[@customForm.text name="deliverable.genderLevels" readText=!editable /]:</label>
+      <div class="input"> 
+        <span>${(deliverable.genderLevels[0].nameGenderLevel)!'Prefilled if available'}</span> - <i><span>${(deliverable.genderLevels[0].descriptionGenderLevel)!}</span></i>
+      </div>
+    [/#if]
   [/#if]
   </div>
   
@@ -239,13 +246,13 @@
     [#-- Other contact person that will contribute --]
     [#assign displayOtherPerson = (!deliverable.otherPartners?has_content && !editable)?string('none','block') /]
     <label for="" style="display:${displayOtherPerson}">[@customForm.text name="projectDeliverable.otherContactContributing" readText=!editable/]</label>
-    <div class="simpleBox personList listname="deliverable.otherPartners" style="display:${displayOtherPerson}">
+    <div class="personList listname="deliverable.otherPartners" style="display:${displayOtherPerson}">
       [#if deliverable.otherPartners?has_content]
         [#list deliverable.otherPartners as dp]
           [@deliverableList.deliverablePartner dp=dp dp_name="deliverable.otherPartners" dp_index=dp_index editable=editable /]
         [/#list]
       [#else]
-        <p class="emptyText center"> [@s.text name="project.deliverable.partnership.emptyText" /] </p>
+        <p class="simpleBox emptyText center"> [@s.text name="project.deliverable.partnership.emptyText" /] </p>
       [/#if]
     </div>
     [#if editable && canEdit]

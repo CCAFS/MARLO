@@ -135,9 +135,9 @@
     [/#if]
     [#assign customName]${dp_name}[#if !isResponsable][${dp_index}][/#if][/#assign]
     <input class="type" type="hidden" name="${customName}.type" value="${isResponsable?string('Resp','Other')}">
-    [#if !isResponsable]
-    <input class="element" type="hidden" name="${dp_name}[${dp_index}].id" value="${(dp.id)!-1}">
-    [/#if]
+  
+    <input class="element" type="hidden" name="${customName}.id" value="${(dp.id)!}">
+  
     [#if template]
       [#-- Partner Name --]
       <div class="fullPartBlock partnerName chosen"> 
@@ -160,8 +160,8 @@
       [#local ifpriDivision = false /]
       [#if (dp.projectPartnerPerson.institution.acronym == "IFPRI")!false ][#local ifpriDivision = true /][/#if]
       <div class="form-group row divisionBlock division-IFPRI"  style="display:${ifpriDivision?string('block','none')}">
-        <div class="col-md-6">
-          [@customForm.select name="${customName}.partnerDivision.id" i18nkey="projectCofunded.division" className="divisionField" listName="divisions" keyFieldName="id" displayFieldName="name" required=true editable=editable /]
+        <div class="col-md-7">
+          [@customForm.select name="${customName}.partnerDivision.id" i18nkey="projectCofunded.division" className="divisionField" listName="divisions" keyFieldName="id" displayFieldName="composedName" required=true editable=editable /]
         </div>
       </div>
     [/#if]
