@@ -78,7 +78,7 @@
       </result>
     </action>
     
-    <action name="marloInstitutions" class="org.cgiar.ccafs.marlo.action.BaseAction">
+    <action name="marloInstitutions" class="org.cgiar.ccafs.marlo.action.superadmin.PartnerRequestAction">
       <interceptor-ref name="superAdminStack" />   
       <result name="input">/WEB-INF/views/superadmin/marloInstitutions.ftl</result>
       <result name="success" type="redirectAction">
@@ -86,6 +86,6 @@
         <param name="edit">true</param>
       </result>
     </action>
-
+    
   </package>
 </struts>
