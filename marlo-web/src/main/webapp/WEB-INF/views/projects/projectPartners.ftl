@@ -257,14 +257,14 @@
         [/#if]
         <br />
       </div>
-    
+      [#--
       <div class="form-group">
        [#if editable ]
         [@customForm.select name="${name}.yearEndDate" className="" required=true header=true i18nkey="projectPartners.partner.endYear" listName="endYears" editable=editable /]
        [#else]
            End Year:     ${element.yearEndDate}
         [/#if]
-      </div>      
+      </div>      --]
       
       [#-- Indicate which PPA Partners for second level partners --]
       [#if (editable || ((!editable && element.partnerContributors?has_content)!false))]
