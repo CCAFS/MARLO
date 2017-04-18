@@ -17,5 +17,8 @@
         <property name="elementValue" type="string">
             <column name="element_value" length="16777215" />
         </property>
+        <property name="hide" type="java.lang.Boolean">
+            <column name="hide" />
+        </property>
     </class>
 </hibernate-mapping>
