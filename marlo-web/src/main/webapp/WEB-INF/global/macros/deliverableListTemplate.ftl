@@ -160,8 +160,8 @@
       [#local ifpriDivision = false /]
       [#if (dp.projectPartnerPerson.institution.acronym == "IFPRI")!false ][#local ifpriDivision = true /][/#if]
       <div class="form-group row divisionBlock division-IFPRI"  style="display:${ifpriDivision?string('block','none')}">
-        <div class="col-md-6">
-          [@customForm.select name="${customName}.partnerDivision.id" i18nkey="projectCofunded.division" className="divisionField" listName="divisions" keyFieldName="id" displayFieldName="name" required=true editable=editable /]
+        <div class="col-md-7">
+          [@customForm.select name="${customName}.partnerDivision.id" i18nkey="projectCofunded.division" className="divisionField" listName="divisions" keyFieldName="id" displayFieldName="composedName" required=true editable=editable /]
         </div>
       </div>
     [/#if]

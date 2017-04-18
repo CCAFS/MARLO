@@ -115,8 +115,8 @@
       [#-- Division --]
       [#if action.hasSpecificities('crp_division_fs')]
         <div class="form-group row divisionBlock division-${action.getIFPRIId()}"  style="display:${ifpriDivision?string('block','none')}">
-          <div class="col-md-6">
-            [@customForm.select name="fundingSource.partnerDivision.id" i18nkey="projectCofunded.division" listName="divisions" keyFieldName="id" displayFieldName="name" required=true editable=editable /]
+          <div class="col-md-7">
+            [@customForm.select name="fundingSource.partnerDivision.id" i18nkey="projectCofunded.division" listName="divisions" keyFieldName="id" displayFieldName="composedName" required=true editable=editable /]
           </div>
         </div>
       [/#if]
