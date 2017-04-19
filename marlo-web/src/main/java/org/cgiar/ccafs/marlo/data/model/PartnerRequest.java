@@ -102,6 +102,11 @@ public class PartnerRequest implements java.io.Serializable {
   }
 
 
+  public String getCountryInfo() {
+    return this.city + " - " + this.locElement.getName();
+  }
+
+
   public User getCreatedBy() {
     return createdBy;
   }
@@ -136,6 +141,9 @@ public class PartnerRequest implements java.io.Serializable {
     return modifiedBy;
   }
 
+  public String getPartnerInfo() {
+    return this.acronym + " - " + this.partnerName;
+  }
 
   public String getPartnerName() {
     return partnerName;
@@ -189,6 +197,7 @@ public class PartnerRequest implements java.io.Serializable {
     this.locElement = locElement;
   }
 
+
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
@@ -196,7 +205,6 @@ public class PartnerRequest implements java.io.Serializable {
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
   }
-
 
   public void setPartnerName(String partnerName) {
     this.partnerName = partnerName;

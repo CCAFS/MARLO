@@ -31,11 +31,8 @@
         [@s.form action=actionName enctype="multipart/form-data" ]
         
           [#-- Requested Institutions--]
-          <h4 class="sectionTitle">[@s.text name="Partner Request" /]</h4>
-          [#assign partners = [
-            {"id":1,"partnerName":"test1", "institutionType":{"name":"CGIAR center"}, "institution":{"name":"yes"},"locElement":{"name":"colombia"},"createdBy":{"composedName":"Carlos Rios"}},
-            {"id":2,"partnerName":"test2", "institutionType":{"name":"CGIAR center"}, "institution":{"name":""},"locElement":{"name":"colombia"},"createdBy":{"composedName":"Carlos Rios"}}
-          ]/]
+          <h4 class="sectionTitle">[@s.text name="Partner Request" /]</h4>  
+                 
           [@partnersList partners=partners  canEdit=editable namespace="/marloInstitutions" defaultAction="${(crpSession)!}/marloInstitutions"/]
           
         [/@s.form]
@@ -68,7 +65,7 @@
         <tr>
           [#-- partner name --]
           <td class="deliverableId">
-              ${partner.partnerName}
+              ${partner.partnerInfo}
           </td>
           [#-- partner type --]
           <td class="left">
@@ -76,15 +73,15 @@
           </td>
           [#-- is HQ? --]
           <td class="text-center">
-            [#if partner.institution.name?has_content]
-              <span class="icon-20 icon-check" title="Complete"></span>
+            [#if partner.institution?has_content]
+              <span class="icon-20 icon-check" title="${partner.institution.name}"></span>
             [#else]
               <span class="icon-20 icon-uncheck" title=""></span> 
             [/#if]
           </td>
           [#-- Country --]
           <td class="text-center">
-            ${partner.locElement.name}
+            ${partner.countryInfo}
           </td>
           [#-- Requested by --]
           <td class="text-center">
@@ -92,10 +89,10 @@
           </td>
           [#-- Action --]
           <td class="">
-            <a href="[@s.url namespace="" action="${(crpSession)!}/addPartner"][@s.param name='requestID']${partner.id?c}[/@s.param][/@s.url]">
+            <a href="[@s.url namespace="" action="superadmin/addPartner"][@s.param name='requestID']${partner.id?c}[/@s.param][/@s.url]">
               <span class="text-center col-md-6 glyphicon glyphicon-ok" style="cursor:pointer;"> Accept</span>
             </a>
-            <a href="[@s.url namespace="" action="${(crpSession)!}/removePartner"][@s.param name='requestID']${partner.id?c}[/@s.param][/@s.url]">
+            <a href="[@s.url namespace="superadmin" action="superadmin/removePartner"][@s.param name='requestID']${partner.id?c}[/@s.param][/@s.url]">
               <span class="text-center col-md-6 glyphicon glyphicon-remove" style="cursor:pointer;"> Reject</span>
             </a>
           </td>

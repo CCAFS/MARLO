@@ -18,8 +18,11 @@ package org.cgiar.ccafs.marlo.action.superadmin;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PartnerRequestManager;
 import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.InstitutionType;
+import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -41,17 +44,21 @@ public class PartnerRequestAction extends BaseAction {
   private PartnerRequestManager partnerRequestManager;
   private InstitutionManager institutionManager;
   private InstitutionTypeManager institutionTypeManager;
+  private LocElementManager locElementManager;
+
 
   private List<PartnerRequest> partners;
   private long requestID;
 
   @Inject
   public PartnerRequestAction(APConfig config, PartnerRequestManager partnerRequestManager,
-    InstitutionManager institutionManager, InstitutionTypeManager institutionTypeManager) {
+    InstitutionManager institutionManager, InstitutionTypeManager institutionTypeManager,
+    LocElementManager locElementManager) {
     super(config);
     this.partnerRequestManager = partnerRequestManager;
     this.institutionManager = institutionManager;
     this.institutionTypeManager = institutionTypeManager;
+    this.locElementManager = locElementManager;
 
   }
 
@@ -60,17 +67,25 @@ public class PartnerRequestAction extends BaseAction {
     PartnerRequest partnerRequest = partnerRequestManager.getPartnerRequestById(requestID);
 
     Institution institution = new Institution();
+
     institution.setName(partnerRequest.getPartnerName());
     institution.setWebsiteLink(partnerRequest.getWebPage());
-    institution.setInstitutionType(partnerRequest.getInstitutionType());
+
+    InstitutionType institutionType =
+      institutionTypeManager.getInstitutionTypeById(partnerRequest.getInstitutionType().getId());
+    institution.setInstitutionType(institutionType);
+
     institution.setAcronym(partnerRequest.getAcronym());
     institution.setCity(partnerRequest.getCity());
-    institution.setLocElement(partnerRequest.getLocElement());
+
+    LocElement locElement = locElementManager.getLocElementById(partnerRequest.getLocElement().getId());
+    institution.setLocElement(locElement);
+
     institution.setAdded(new Date());
 
-
     if (partnerRequest.getInstitution() != null) {
-      institution.setHeadquarter(partnerRequest.getInstitution());
+      Institution institutionHq = institutionManager.getInstitutionById(partnerRequest.getInstitution().getId());
+      institution.setHeadquarter(institutionHq);
     }
 
     institutionManager.saveInstitution(institution);
@@ -78,6 +93,7 @@ public class PartnerRequestAction extends BaseAction {
     partnerRequest.setAcepted(new Boolean(true));
     partnerRequest.setActive(false);
     partnerRequestManager.savePartnerRequest(partnerRequest);
+
 
     return SUCCESS;
 

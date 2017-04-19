@@ -105,8 +105,10 @@
 			<interceptor-ref name="superAdminStack" />
 			<result name="input">/WEB-INF/views/superadmin/marloInstitutions.ftl
 			</result>
-			<result name="success">/WEB-INF/views/superadmin/marloInstitutions.ftl
-			</result>
+			<result name="success" type="redirectAction">
+        <param name="actionName">marloInstitutions</param>
+        <param name="edit">true</param>
+      </result>
 		</action>
 		
 		<action name="removePartner" method="removePartner"
@@ -114,7 +116,9 @@
       <interceptor-ref name="superAdminStack" />
       <result name="input">/WEB-INF/views/superadmin/marloInstitutions.ftl
       </result>
-      <result name="success">/WEB-INF/views/superadmin/marloInstitutions.ftl
+      <result name="success" type="redirectAction">
+        <param name="actionName">marloInstitutions</param>
+        <param name="edit">true</param>
       </result>
     </action>
 

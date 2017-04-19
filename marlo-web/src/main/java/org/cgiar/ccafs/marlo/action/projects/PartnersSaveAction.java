@@ -193,7 +193,10 @@ public class PartnersSaveAction extends BaseAction {
     partnerRequest.setCity(city);
     partnerRequest.setLocElement(locationManager.getLocElementById(Long.parseLong(countryId)));
     partnerRequest.setInstitutionType(institutionManager.getInstitutionTypeById(partnerTypeId));
-    partnerRequest.setWebPage(website);
+
+    if (this.partnerWebPage != null && !this.partnerWebPage.isEmpty()) {
+      partnerRequest.setWebPage(partnerWebPage);
+    }
 
     if (headQuater != -1) {
       partnerRequest.setInstitution(institutionsManager.getInstitutionById(headQuater));
