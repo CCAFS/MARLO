@@ -86,7 +86,7 @@ public class ImpactRelationAction extends BaseAction {
 
   }
 
-  public void addRelations(CrpProgram crpProgram) {
+  public void addRelations(CrpProgram crpProgram, CrpProgramOutcome outcome) {
 
     HashMap<String, Object> dataProgram = new HashMap<>();
     dataProgram.put("id", crpProgram.getId());
@@ -98,55 +98,61 @@ public class ImpactRelationAction extends BaseAction {
     int i = 1;
     for (CrpProgramOutcome crpProgramOutcome : crpProgram.getCrpProgramOutcomes().stream().filter(c -> c.isActive())
       .collect(Collectors.toList())) {
-      HashMap<String, Object> datacrpProgramOutcome = new HashMap<>();
-      datacrpProgramOutcome.put("id", "O" + crpProgramOutcome.getId());
-      datacrpProgramOutcome.put("label", "Outcome #" + i);
-      datacrpProgramOutcome.put("description", crpProgramOutcome.getDescription());
-      datacrpProgramOutcome.put("color", crpProgramOutcome.getCrpProgram().getColor());
 
-      datacrpProgramOutcome.put("type", "O");
-      relations.add(datacrpProgramOutcome);
+      if (outcome == null
+        || (outcome != null && outcome.getId().longValue() == crpProgramOutcome.getId().longValue())) {
 
-      for (CrpOutcomeSubIdo crpOutcomeSubIdo : crpProgramOutcome.getCrpOutcomeSubIdos().stream()
-        .filter(c -> c.isActive()).collect(Collectors.toList())) {
+        HashMap<String, Object> datacrpProgramOutcome = new HashMap<>();
+        datacrpProgramOutcome.put("id", "O" + crpProgramOutcome.getId());
+        datacrpProgramOutcome.put("label", "Outcome #" + i);
+        datacrpProgramOutcome.put("description", crpProgramOutcome.getDescription());
+        datacrpProgramOutcome.put("color", crpProgramOutcome.getCrpProgram().getColor());
 
+        datacrpProgramOutcome.put("type", "O");
+        relations.add(datacrpProgramOutcome);
 
-        if (crpOutcomeSubIdo.getSrfSubIdo() != null && crpOutcomeSubIdo.getSrfSubIdo().isActive()) {
-          HashMap<String, Object> dataDetaiSubIDO = new HashMap<>();
-          dataDetaiSubIDO.put("id", "SD" + crpOutcomeSubIdo.getSrfSubIdo().getId());
-          dataDetaiSubIDO.put("label", "SubIDO #" + crpOutcomeSubIdo.getSrfSubIdo().getId());
-          dataDetaiSubIDO.put("description", crpOutcomeSubIdo.getSrfSubIdo().getDescription());
-
-          dataDetaiSubIDO.put("type", "SD");
-
-          relations.add(dataDetaiSubIDO);
+        for (CrpOutcomeSubIdo crpOutcomeSubIdo : crpProgramOutcome.getCrpOutcomeSubIdos().stream()
+          .filter(c -> c.isActive()).collect(Collectors.toList())) {
 
 
-          HashMap<String, Object> dataDetaiSIDO = new HashMap<>();
-          dataDetaiSIDO.put("id", "IDO" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
-          dataDetaiSIDO.put("label", "IDO #" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
-          dataDetaiSIDO.put("description", crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getDescription());
+          if (crpOutcomeSubIdo.getSrfSubIdo() != null && crpOutcomeSubIdo.getSrfSubIdo().isActive()) {
+            HashMap<String, Object> dataDetaiSubIDO = new HashMap<>();
+            dataDetaiSubIDO.put("id", "SD" + crpOutcomeSubIdo.getSrfSubIdo().getId());
+            dataDetaiSubIDO.put("label", "SubIDO #" + crpOutcomeSubIdo.getSrfSubIdo().getId());
+            dataDetaiSubIDO.put("description", crpOutcomeSubIdo.getSrfSubIdo().getDescription());
 
-          dataDetaiSIDO.put("type", "IDO");
+            dataDetaiSubIDO.put("type", "SD");
 
-          relations.add(dataDetaiSubIDO);
-
-
-          for (SrfSloIdo srfSloIdo : crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getSrfSloIdos()) {
-
-            HashMap<String, Object> dataDetaiSlo = new HashMap<>();
-            dataDetaiSlo.put("id", "SLO" + srfSloIdo.getSrfSlo().getId());
-            dataDetaiSlo.put("label", "SLO #" + srfSloIdo.getSrfSlo().getId());
-            dataDetaiSlo.put("description", srfSloIdo.getSrfSlo().getDescription());
-
-            dataDetaiSlo.put("type", "SLO");
-
-            relations.add(dataDetaiSlo);
+            relations.add(dataDetaiSubIDO);
 
 
+            HashMap<String, Object> dataDetaiSIDO = new HashMap<>();
+            dataDetaiSIDO.put("id", "IDO" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
+            dataDetaiSIDO.put("label", "IDO #" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
+            dataDetaiSIDO.put("description", crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getDescription());
+
+            dataDetaiSIDO.put("type", "IDO");
+
+            relations.add(dataDetaiSubIDO);
+
+
+            for (SrfSloIdo srfSloIdo : crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getSrfSloIdos()) {
+
+              HashMap<String, Object> dataDetaiSlo = new HashMap<>();
+              dataDetaiSlo.put("id", "SLO" + srfSloIdo.getSrfSlo().getId());
+              dataDetaiSlo.put("label", "SLO #" + srfSloIdo.getSrfSlo().getId());
+              dataDetaiSlo.put("description", srfSloIdo.getSrfSlo().getDescription());
+
+              dataDetaiSlo.put("type", "SLO");
+
+              relations.add(dataDetaiSlo);
+
+
+            }
           }
         }
       }
+
       i++;
     }
     int i1 = 1;
@@ -190,17 +196,20 @@ public class ImpactRelationAction extends BaseAction {
     switch (type) {
       case "F":
         CrpProgram crpProgram = crpProgramManager.getCrpProgramById(id);
-        this.addRelations(crpProgram);
+        this.addRelations(crpProgram, null);
 
         break;
+      /**
+       * TODO :Refactor
+       */
       case "O":
         CrpProgramOutcome crpProgramOutcome = crpProgramOutcomeManager.getCrpProgramOutcomeById(id);
-        this.addRelations(crpProgramOutcome.getCrpProgram());
+        this.addRelations(crpProgramOutcome.getCrpProgram(), crpProgramOutcome);
 
         break;
       case "SD":
         CrpOutcomeSubIdo crpOutcomeSubIdo = crpOutcomeSubIdoManager.getCrpOutcomeSubIdoById(id);
-        this.addRelations(crpOutcomeSubIdo.getCrpProgramOutcome().getCrpProgram());
+        this.addRelations(crpOutcomeSubIdo.getCrpProgramOutcome().getCrpProgram(), null);
 
         break;
 
@@ -213,7 +222,7 @@ public class ImpactRelationAction extends BaseAction {
         }
 
         for (CrpProgram myProgram : crpPrograms) {
-          this.addRelations(myProgram);
+          this.addRelations(myProgram, null);
         }
 
 
@@ -230,18 +239,26 @@ public class ImpactRelationAction extends BaseAction {
 
         }
         for (CrpProgram myProgram : crpPrograms) {
-          this.addRelations(myProgram);
+          this.addRelations(myProgram, null);
         }
 
         break;
+
+      /**
+       * TODO :Refactor
+       */
       case "CoA":
         CrpClusterOfActivity crpClusterOfActivity = crpClusterOfActivityManager.getCrpClusterOfActivityById(id);
-        this.addRelations(crpClusterOfActivity.getCrpProgram());
+        this.addRelations(crpClusterOfActivity.getCrpProgram(), null);
 
         break;
+      /**
+       * TODO :Refactor
+       */
+
       case "KO":
         CrpClusterKeyOutput crpClusterKeyOutput = crpClusterKeyOutputManager.getCrpClusterKeyOutputById(id);
-        this.addRelations(crpClusterKeyOutput.getCrpClusterOfActivity().getCrpProgram());
+        this.addRelations(crpClusterKeyOutput.getCrpClusterOfActivity().getCrpProgram(), null);
 
         break;
       default:
