@@ -1,5 +1,7 @@
 package org.cgiar.ccafs.marlo.data.model;
 
+import java.util.Date;
+
 import com.google.gson.annotations.Expose;
 
 // Generated Apr 18, 2017 3:48:50 PM by Hibernate Tools 3.4.0.CR1
@@ -10,8 +12,10 @@ import com.google.gson.annotations.Expose;
  */
 public class PartnerRequest implements java.io.Serializable {
 
+
   @Expose
   private Long id;
+
 
   @Expose
   private LocElement locElement;
@@ -49,10 +53,11 @@ public class PartnerRequest implements java.io.Serializable {
   @Expose
   private String modificationJustification;
 
+  @Expose
+  private Date activeSince;
 
   public PartnerRequest() {
   }
-
 
   public PartnerRequest(boolean active) {
     this.active = active;
@@ -84,6 +89,11 @@ public class PartnerRequest implements java.io.Serializable {
 
   public String getAcronym() {
     return acronym;
+  }
+
+
+  public Date getActiveSince() {
+    return activeSince;
   }
 
 
@@ -126,6 +136,7 @@ public class PartnerRequest implements java.io.Serializable {
     return modifiedBy;
   }
 
+
   public String getPartnerName() {
     return partnerName;
   }
@@ -148,6 +159,10 @@ public class PartnerRequest implements java.io.Serializable {
 
   public void setActive(boolean active) {
     this.active = active;
+  }
+
+  public void setActiveSince(Date activeSince) {
+    this.activeSince = activeSince;
   }
 
   public void setCity(String city) {

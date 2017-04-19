@@ -41,6 +41,9 @@
         <property name="active" type="boolean">
             <column name="is_active" not-null="true" />
         </property>
+        <property name="activeSince" type="timestamp">
+            <column name="active_since" length="19" not-null="true" />
+        </property>
         <property name="modificationJustification" type="string">
             <column name="modification_justification" length="65535" />
         </property>

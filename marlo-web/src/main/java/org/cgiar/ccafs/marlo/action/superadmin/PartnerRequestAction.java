@@ -93,8 +93,13 @@ public class PartnerRequestAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    partners = new ArrayList<>(
-      partnerRequestManager.findAll().stream().filter(pr -> pr.isActive()).collect(Collectors.toList()));
+
+    if (partnerRequestManager.findAll() != null) {
+      partners = new ArrayList<>(
+        partnerRequestManager.findAll().stream().filter(pr -> pr.isActive()).collect(Collectors.toList()));
+    } else {
+      partners = new ArrayList<>();
+    }
   }
 
   public String removePartner() {
