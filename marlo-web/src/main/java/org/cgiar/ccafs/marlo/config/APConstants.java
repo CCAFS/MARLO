@@ -85,6 +85,9 @@ public final class APConstants {
   public static final String CRP_PROGRAM_ID = "crpProgramID";
   public static final String LIASON_INSTITUTION_ID = "liasonInstitutionID";
   public static final String CRP_ID = "crpID";
+
+  public static final String TYPE = "type";
+
   public static final String FLAGSHIP_ID = "flagshipID";
 
   public static final String TRANSACTION_ID = "transactionId";
