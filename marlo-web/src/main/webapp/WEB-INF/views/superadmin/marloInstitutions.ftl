@@ -32,10 +32,11 @@
         
           [#-- Requested Institutions--]
           <h4 class="sectionTitle">[@s.text name="Partner Request" /]</h4>
+          [#assign partners = [
+            {"id":1,"partnerName":"test1", "institutionType":{"name":"CGIAR center"}, "institution":{"name":"yes"},"locElement":{"name":"colombia"},"createdBy":{"composedName":"Carlos Rios"}},
+            {"id":2,"partnerName":"test2", "institutionType":{"name":"CGIAR center"}, "institution":{"name":""},"locElement":{"name":"colombia"},"createdBy":{"composedName":"Carlos Rios"}}
+          ]/]
           [@partnersList partners=partners  canEdit=editable namespace="/marloInstitutions" defaultAction="${(crpSession)!}/marloInstitutions"/]
-          
-          
-         
           
         [/@s.form]
       </div>
@@ -55,6 +56,7 @@
         <th id="partnerName">[@s.text name="Partner Name" /]</th>
         <th id="partnerType" >[@s.text name="Type" /]</th>
         <th id="isHqPartner">[@s.text name="Is HQ?" /]</th>
+        <th id="partnerCountry">[@s.text name="Country" /]</th>
         <th id="requestedBy" >[@s.text name="Requested By" /]</th>
         <th id="action">[@s.text name="Action" /]</th>
       </tr>
@@ -64,36 +66,38 @@
       [#list partners as partner]
         
         <tr>
-        [#-- partner name --]
-        <td class="deliverableId">
-            ${partner.locElement.name}
-        </td>
+          [#-- partner name --]
+          <td class="deliverableId">
+              ${partner.partnerName}
+          </td>
           [#-- partner type --]
           <td class="left">
             ${partner.institutionType.name}
           </td>
           [#-- is HQ? --]
-          <td >
-            [#if institution.name?has_content]
+          <td class="text-center">
+            [#if partner.institution.name?has_content]
               <span class="icon-20 icon-check" title="Complete"></span>
             [#else]
               <span class="icon-20 icon-uncheck" title=""></span> 
             [/#if]
           </td>
+          [#-- Country --]
+          <td class="text-center">
+            ${partner.locElement.name}
+          </td>
           [#-- Requested by --]
           <td class="text-center">
-          ${(partner.requestedBy)!'none'}
+          ${(partner.createdBy.composedName)!'none'}
           </td>
           [#-- Action --]
-          <td class="fair"> 
-          [#if deliverable.requeriedFair()]
-            <span class="[#attempt][#if action.isF(deliverable.id)??][#if action.isF(deliverable.id)] achieved [#else] notAchieved [/#if][/#if][#recover][/#attempt]">F</span>
-            <span class="[#attempt][#if action.isA(deliverable.id)??][#if action.isA(deliverable.id)] achieved [#else] notAchieved [/#if][/#if][#recover][/#attempt]">A</span>
-            <span class="[#attempt][#if action.isI(deliverable.id)??][#if action.isI(deliverable.id)] achieved [#else] notAchieved [/#if][/#if][#recover][/#attempt]">I</span>
-            <span class="[#attempt][#if action.isR(deliverable.id)??][#if action.isR(deliverable.id)] achieved [#else] notAchieved [/#if][/#if][#recover][/#attempt]">R</span>
-          [#else]
-            <p class="message">Not applicable</p>
-          [/#if]
+          <td class="">
+            <a href="[@s.url namespace="" action="${(crpSession)!}/addPartner"][@s.param name='requestID']${partner.id?c}[/@s.param][/@s.url]">
+              <span class="text-center col-md-6 glyphicon glyphicon-ok" style="cursor:pointer;"> Accept</span>
+            </a>
+            <a href="[@s.url namespace="" action="${(crpSession)!}/removePartner"][@s.param name='requestID']${partner.id?c}[/@s.param][/@s.url]">
+              <span class="text-center col-md-6 glyphicon glyphicon-remove" style="cursor:pointer;"> Reject</span>
+            </a>
           </td>
         </tr>  
       [/#list]
