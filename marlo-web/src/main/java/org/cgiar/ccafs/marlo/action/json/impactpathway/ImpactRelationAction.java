@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSloIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
+import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
@@ -153,39 +154,73 @@ public class ImpactRelationAction extends BaseAction {
         }
       }
 
+
+      if (outcome != null) {
+        for (CrpClusterKeyOutputOutcome crpClusterKeyOutput : crpProgramOutcome.getCrpClusterKeyOutputOutcomes()
+          .stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
+          HashMap<String, Object> dataDetailKeyOutput = new HashMap<>();
+          dataDetailKeyOutput.put("id", "KO" + crpClusterKeyOutput.getCrpClusterKeyOutput().getId());
+
+          dataDetailKeyOutput.put("label",
+            "KeyOutput " + crpClusterKeyOutput.getCrpClusterKeyOutput().getComposedName());
+          dataDetailKeyOutput.put("description", crpClusterKeyOutput.getCrpClusterKeyOutput().getKeyOutput());
+          dataDetailKeyOutput.put("color", crpClusterKeyOutput.getCrpProgramOutcome().getCrpProgram().getColor());
+          dataDetailKeyOutput.put("type", "KO");
+
+
+          relations.add(dataDetailKeyOutput);
+
+
+          HashMap<String, Object> dataDetailOutcome = new HashMap<>();
+          dataDetailOutcome.put("id",
+            "C" + crpClusterKeyOutput.getCrpClusterKeyOutput().getCrpClusterOfActivity().getId());
+          dataDetailOutcome.put("label",
+            "CoA #" + crpClusterKeyOutput.getCrpClusterKeyOutput().getCrpClusterOfActivity().getComposedName());
+          dataDetailOutcome.put("description",
+            crpClusterKeyOutput.getCrpClusterKeyOutput().getCrpClusterOfActivity().getComposedName());
+          dataDetailOutcome.put("color", "#c0c0c0");
+          dataDetailOutcome.put("type", "CoA");
+          relations.add(dataDetailOutcome);
+        }
+
+      }
       i++;
     }
-    int i1 = 1;
-    int j = 1;
-    for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
-      .filter(c -> c.isActive()).collect(Collectors.toList())) {
-
-      HashMap<String, Object> dataDetailOutcome = new HashMap<>();
-      dataDetailOutcome.put("id", "C" + crpClusterOfActivity.getId());
-      dataDetailOutcome.put("label", "CoA #" + i1);
-      dataDetailOutcome.put("description", crpClusterOfActivity.getComposedName());
-      dataDetailOutcome.put("color", "#c0c0c0");
-      dataDetailOutcome.put("type", "CoA");
 
 
-      relations.add(dataDetailOutcome);
+    if (outcome == null) {
+      int i1 = 1;
+      int j = 1;
+      for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
+        .filter(c -> c.isActive()).collect(Collectors.toList())) {
 
-      for (CrpClusterKeyOutput keyOutput : crpClusterOfActivity.getCrpClusterKeyOutputs().stream()
-        .filter(ko -> ko.isActive()).collect(Collectors.toList())) {
-        HashMap<String, Object> dataDetailKeyOutput = new HashMap<>();
-        dataDetailKeyOutput.put("id", "KO" + keyOutput.getId());
+        HashMap<String, Object> dataDetailOutcome = new HashMap<>();
+        dataDetailOutcome.put("id", "C" + crpClusterOfActivity.getId());
+        dataDetailOutcome.put("label", "CoA #" + i1);
+        dataDetailOutcome.put("description", crpClusterOfActivity.getComposedName());
+        dataDetailOutcome.put("color", "#c0c0c0");
+        dataDetailOutcome.put("type", "CoA");
 
-        dataDetailKeyOutput.put("label", "KeyOutput #" + j);
-        dataDetailKeyOutput.put("description", keyOutput.getKeyOutput());
-        dataDetailKeyOutput.put("color", crpClusterOfActivity.getCrpProgram().getColor());
-        dataDetailKeyOutput.put("type", "KO");
-        j++;
 
-        relations.add(dataDetailKeyOutput);
+        relations.add(dataDetailOutcome);
+
+        for (CrpClusterKeyOutput keyOutput : crpClusterOfActivity.getCrpClusterKeyOutputs().stream()
+          .filter(ko -> ko.isActive()).collect(Collectors.toList())) {
+          HashMap<String, Object> dataDetailKeyOutput = new HashMap<>();
+          dataDetailKeyOutput.put("id", "KO" + keyOutput.getId());
+
+          dataDetailKeyOutput.put("label", "KeyOutput #" + j);
+          dataDetailKeyOutput.put("description", keyOutput.getKeyOutput());
+          dataDetailKeyOutput.put("color", crpClusterOfActivity.getCrpProgram().getColor());
+          dataDetailKeyOutput.put("type", "KO");
+          j++;
+
+          relations.add(dataDetailKeyOutput);
+        }
+
+
+        i1++;
       }
-
-
-      i1++;
     }
   }
 
