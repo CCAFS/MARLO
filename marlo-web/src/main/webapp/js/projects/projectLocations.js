@@ -383,6 +383,14 @@ function initMap() {
     $(".locations").removeClass("selected");
   });
 
+  map.addListener('center_changed', function() {
+    // 3 seconds after the center of the map has changed, pan back to the
+    // marker.
+    if(infoWindow.type.data === "form") {
+      infoWindow.setPosition(map.getCenter());
+    }
+  });
+
 // google.maps.event.addListener(map, 'rightclick', function(e) {
 // openInfoWindowForm(e);
 // });
@@ -551,6 +559,10 @@ function openInfoWindowForm(e) {
   ].join(''));
   infoWindow.open(map);
   infoWindow.setPosition(e);
+  /** Type* */
+  infoWindow.type = {
+    "data": "form"
+  };
   // Init select2
   $("select").select2();
   if($("select").hasClass("select2-hidden-accessible")) {
@@ -832,6 +844,11 @@ function openInfoWindow(marker) {
   ].join(''));
   infoWindow.open(map, marker);
 
+  /** Type* */
+  infoWindow.type = {
+    "data": "info"
+  };
+
   // Edit location name from map
   $("#changeLocation").on('click', function editLocationName() {
     console.log(this);
@@ -885,6 +902,11 @@ function openInfoWindowCountries(country) {
 
   infoWindow.setPosition(country.latLng);
   infoWindow.open(map);
+
+  /** Type* */
+  infoWindow.type = {
+    "data": "info"
+  };
 
   $("#okInfo").on("click", function() {
     infoWindow.close();
