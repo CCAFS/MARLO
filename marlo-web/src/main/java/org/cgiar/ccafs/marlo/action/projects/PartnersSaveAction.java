@@ -184,6 +184,22 @@ public class PartnersSaveAction extends BaseAction {
     PartnerRequest partnerRequest = new PartnerRequest();
     partnerRequest.setActive(true);
     partnerRequest.setActiveSince(new Date());
+    partnerRequest.setCreatedBy(this.getCurrentUser());
+    partnerRequest.setModifiedBy(this.getCurrentUser());
+    partnerRequest.setModificationJustification("");
+
+    partnerRequest.setPartnerName(institutionName);
+    partnerRequest.setAcronym(institutionAcronym);
+    partnerRequest.setCity(city);
+    partnerRequest.setLocElement(locationManager.getLocElementById(Long.parseLong(countryId)));
+    partnerRequest.setInstitutionType(institutionManager.getInstitutionTypeById(partnerTypeId));
+    partnerRequest.setWebPage(website);
+
+    if (headQuater != -1) {
+      partnerRequest.setInstitution(institutionsManager.getInstitutionById(headQuater));
+    }
+
+    partnerRequestManager.savePartnerRequest(partnerRequest);
 
 
     // message subject
