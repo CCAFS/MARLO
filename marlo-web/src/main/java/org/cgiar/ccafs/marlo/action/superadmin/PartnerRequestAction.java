@@ -19,12 +19,16 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.PartnerRequestManager;
+import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.google.inject.Inject;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -34,14 +38,14 @@ public class PartnerRequestAction extends BaseAction {
 
   private static final long serialVersionUID = -4592281983603538935L;
 
-
   private PartnerRequestManager partnerRequestManager;
-
   private InstitutionManager institutionManager;
-
   private InstitutionTypeManager institutionTypeManager;
-  private List<PartnerRequest> partners;
 
+  private List<PartnerRequest> partners;
+  private long requestID;
+
+  @Inject
   public PartnerRequestAction(APConfig config, PartnerRequestManager partnerRequestManager,
     InstitutionManager institutionManager, InstitutionTypeManager institutionTypeManager) {
     super(config);
@@ -51,8 +55,40 @@ public class PartnerRequestAction extends BaseAction {
 
   }
 
+  public String addPartner() {
+
+    PartnerRequest partnerRequest = partnerRequestManager.getPartnerRequestById(requestID);
+
+    Institution institution = new Institution();
+    institution.setName(partnerRequest.getPartnerName());
+    institution.setWebsiteLink(partnerRequest.getWebPage());
+    institution.setInstitutionType(partnerRequest.getInstitutionType());
+    institution.setAcronym(partnerRequest.getAcronym());
+    institution.setCity(partnerRequest.getCity());
+    institution.setLocElement(partnerRequest.getLocElement());
+    institution.setAdded(new Date());
+
+
+    if (partnerRequest.getInstitution() != null) {
+      institution.setHeadquarter(partnerRequest.getInstitution());
+    }
+
+    institutionManager.saveInstitution(institution);
+
+    partnerRequest.setAcepted(new Boolean(true));
+    partnerRequest.setActive(false);
+    partnerRequestManager.savePartnerRequest(partnerRequest);
+
+    return SUCCESS;
+
+  }
+
   public List<PartnerRequest> getPartners() {
     return partners;
+  }
+
+  public long getRequestID() {
+    return requestID;
   }
 
   @Override
@@ -61,8 +97,23 @@ public class PartnerRequestAction extends BaseAction {
       partnerRequestManager.findAll().stream().filter(pr -> pr.isActive()).collect(Collectors.toList()));
   }
 
+  public String removePartner() {
+
+    PartnerRequest partnerRequest = partnerRequestManager.getPartnerRequestById(requestID);
+    partnerRequest.setAcepted(new Boolean(false));
+    partnerRequestManager.savePartnerRequest(partnerRequest);
+    partnerRequestManager.deletePartnerRequest(partnerRequest.getId());
+
+    return SUCCESS;
+
+  }
+
   public void setPartners(List<PartnerRequest> partners) {
     this.partners = partners;
+  }
+
+  public void setRequestID(long requestID) {
+    this.requestID = requestID;
   }
 
 }
