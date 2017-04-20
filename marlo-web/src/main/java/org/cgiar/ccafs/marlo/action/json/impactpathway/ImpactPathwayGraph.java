@@ -75,7 +75,7 @@ public class ImpactPathwayGraph extends BaseAction {
     List<HashMap<String, Object>> dataEdges = new ArrayList<HashMap<String, Object>>();
     HashMap<String, Object> data = new HashMap<>();
     HashMap<String, Object> dataProgram = new HashMap<>();
-    dataProgram.put("id", crpProgram.getAcronym());
+    dataProgram.put("id", "F" + crpProgram.getId());
     dataProgram.put("label", crpProgram.getAcronym());
     dataProgram.put("description", crpProgram.getName());
     dataProgram.put("color", crpProgram.getColor());

@@ -348,7 +348,7 @@ public class ImpactRelationAction extends BaseAction {
     Set<CrpProgram> crpPrograms = new HashSet<>();
     switch (type) {
       case "F":
-        CrpProgram crpProgram = crpProgramManager.getCrpProgramById(Long.parseLong(id));
+        CrpProgram crpProgram = crpProgramManager.getCrpProgramById(Long.parseLong(id.replace("F", "")));
         this.addRelations(crpProgram, null);
 
         break;

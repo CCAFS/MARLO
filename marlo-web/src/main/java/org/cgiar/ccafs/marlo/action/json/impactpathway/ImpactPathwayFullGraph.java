@@ -84,7 +84,7 @@ public class ImpactPathwayFullGraph extends BaseAction {
       HashMap<String, Object> dataIdos = new HashMap<>();
       HashMap<String, Object> dataSlos = new HashMap<>();
 
-      dataProgram.put("id", crpProgram.getAcronym());
+      dataProgram.put("id", "F" + crpProgram.getId());
       dataProgram.put("label", crpProgram.getAcronym());
       dataProgram.put("description", crpProgram.getName());
       dataProgram.put("color", crpProgram.getColor());
