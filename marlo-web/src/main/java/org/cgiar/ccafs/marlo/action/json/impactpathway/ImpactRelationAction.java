@@ -224,6 +224,124 @@ public class ImpactRelationAction extends BaseAction {
     }
   }
 
+
+  public void addRelationsCluster(CrpProgram crpProgram, CrpClusterOfActivity cluster,
+    CrpClusterKeyOutput crpClusterKeyOutput) {
+
+    HashMap<String, Object> dataProgram = new HashMap<>();
+    dataProgram.put("id", crpProgram.getId());
+    dataProgram.put("label", crpProgram.getAcronym());
+    dataProgram.put("description", crpProgram.getName());
+    dataProgram.put("color", crpProgram.getColor());
+    dataProgram.put("type", "F");
+    relations.add(dataProgram);
+    int i = 1;
+
+
+    int i1 = 1;
+    int j = 1;
+    for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
+      .filter(c -> c.isActive()).collect(Collectors.toList())) {
+
+      if (cluster == null
+        || (cluster != null && crpClusterOfActivity.getId().longValue() == cluster.getId().longValue())) {
+
+
+        HashMap<String, Object> dataDetailOutcome = new HashMap<>();
+        dataDetailOutcome.put("id", "C" + crpClusterOfActivity.getId());
+        dataDetailOutcome.put("label", "CoA #" + i1);
+        dataDetailOutcome.put("description", crpClusterOfActivity.getComposedName());
+        dataDetailOutcome.put("color", "#c0c0c0");
+        dataDetailOutcome.put("type", "CoA");
+
+
+        relations.add(dataDetailOutcome);
+
+        for (CrpClusterKeyOutput keyOutput : crpClusterOfActivity.getCrpClusterKeyOutputs().stream()
+          .filter(ko -> ko.isActive()).collect(Collectors.toList())) {
+
+
+          if (crpClusterKeyOutput == null || (crpClusterKeyOutput != null
+            && crpClusterKeyOutput.getId().longValue() == keyOutput.getId().longValue())) {
+
+
+            HashMap<String, Object> dataDetailKeyOutput = new HashMap<>();
+            dataDetailKeyOutput.put("id", "KO" + keyOutput.getId());
+
+            dataDetailKeyOutput.put("label", "KeyOutput #" + j);
+            dataDetailKeyOutput.put("description", keyOutput.getKeyOutput());
+            dataDetailKeyOutput.put("color", crpClusterOfActivity.getCrpProgram().getColor());
+            dataDetailKeyOutput.put("type", "KO");
+            j++;
+
+            relations.add(dataDetailKeyOutput);
+            for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome : keyOutput.getCrpClusterKeyOutputOutcomes()
+              .stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
+              CrpProgramOutcome crpProgramOutcome = crpClusterKeyOutputOutcome.getCrpProgramOutcome();
+
+
+              HashMap<String, Object> datacrpProgramOutcome = new HashMap<>();
+              datacrpProgramOutcome.put("id", "O" + crpProgramOutcome.getId());
+              datacrpProgramOutcome.put("label", "Outcome #" + i);
+              datacrpProgramOutcome.put("description", crpProgramOutcome.getDescription());
+              datacrpProgramOutcome.put("color", crpProgramOutcome.getCrpProgram().getColor());
+
+              datacrpProgramOutcome.put("type", "O");
+              relations.add(datacrpProgramOutcome);
+
+              for (CrpOutcomeSubIdo crpOutcomeSubIdo : crpProgramOutcome.getCrpOutcomeSubIdos().stream()
+                .filter(c -> c.isActive()).collect(Collectors.toList())) {
+
+
+                if (crpOutcomeSubIdo.getSrfSubIdo() != null && crpOutcomeSubIdo.getSrfSubIdo().isActive()) {
+                  HashMap<String, Object> dataDetaiSubIDO = new HashMap<>();
+                  dataDetaiSubIDO.put("id", "SD" + crpOutcomeSubIdo.getSrfSubIdo().getId());
+                  dataDetaiSubIDO.put("label", "SubIDO #" + crpOutcomeSubIdo.getSrfSubIdo().getId());
+                  dataDetaiSubIDO.put("description", crpOutcomeSubIdo.getSrfSubIdo().getDescription());
+
+                  dataDetaiSubIDO.put("type", "SD");
+
+                  relations.add(dataDetaiSubIDO);
+
+
+                  HashMap<String, Object> dataDetaiSIDO = new HashMap<>();
+                  dataDetaiSIDO.put("id", "IDO" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
+                  dataDetaiSIDO.put("label", "IDO #" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
+                  dataDetaiSIDO.put("description", crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getDescription());
+
+                  dataDetaiSIDO.put("type", "IDO");
+
+                  relations.add(dataDetaiSubIDO);
+
+
+                  for (SrfSloIdo srfSloIdo : crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getSrfSloIdos()) {
+
+                    HashMap<String, Object> dataDetaiSlo = new HashMap<>();
+                    dataDetaiSlo.put("id", "SLO" + srfSloIdo.getSrfSlo().getId());
+                    dataDetaiSlo.put("label", "SLO #" + srfSloIdo.getSrfSlo().getId());
+                    dataDetaiSlo.put("description", srfSloIdo.getSrfSlo().getDescription());
+
+                    dataDetaiSlo.put("type", "SLO");
+
+                    relations.add(dataDetaiSlo);
+
+
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        i1++;
+
+
+      }
+    }
+
+
+  }
+
   @Override
   public String execute() throws Exception {
 
@@ -284,7 +402,7 @@ public class ImpactRelationAction extends BaseAction {
        */
       case "CoA":
         CrpClusterOfActivity crpClusterOfActivity = crpClusterOfActivityManager.getCrpClusterOfActivityById(id);
-        this.addRelations(crpClusterOfActivity.getCrpProgram(), null);
+        this.addRelationsCluster(crpClusterOfActivity.getCrpProgram(), crpClusterOfActivity, null);
 
         break;
       /**
@@ -293,7 +411,8 @@ public class ImpactRelationAction extends BaseAction {
 
       case "KO":
         CrpClusterKeyOutput crpClusterKeyOutput = crpClusterKeyOutputManager.getCrpClusterKeyOutputById(id);
-        this.addRelations(crpClusterKeyOutput.getCrpClusterOfActivity().getCrpProgram(), null);
+        this.addRelationsCluster(crpClusterKeyOutput.getCrpClusterOfActivity().getCrpProgram(),
+          crpClusterKeyOutput.getCrpClusterOfActivity(), crpClusterKeyOutput);
 
         break;
       default:
