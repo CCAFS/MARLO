@@ -145,11 +145,4 @@ public class BoardAction extends BaseAction {
     this.targetUnitList = targetUnitList;
   }
 
-  @Override
-  public void validate() {
-    if (save) {
-
-    }
-  }
-
 }

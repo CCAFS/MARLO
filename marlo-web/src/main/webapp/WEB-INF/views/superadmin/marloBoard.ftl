@@ -64,11 +64,11 @@
 
 
 [#-- Unit Target Template --]
-[@targetUnitMacro element={} name="targetUnitList" index=-1 isTemplate=true /]
+[@targetUnitMacro element={} name="targetUnitList" index=-1 isTemplate=true canDelete=true /]
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]
 
-[#macro targetUnitMacro element name index isTemplate=false]
+[#macro targetUnitMacro element name index isTemplate=false canDelete=false]
   <li id="targetUnit-${isTemplate?string('template',index)}" class="li-item targetUnit" style="display:${isTemplate?string('none','block')}">
     [#local customName = "${name}[${index}]"/]
     <span class="glyphicon glyphicon-scale"></span>  <span class="composedName"> ${(element.name)!}</span>
@@ -90,10 +90,10 @@
       [/#if]
     </span>
     [#-- Remove Button --]
-    [#if action.canBeDeleted(element.id, element.class.name)!false]
+    [#if canDelete || (element?? && action.canBeDeleted((element.id)!, (element.class.name)!)!)]
       <span class="glyphicon glyphicon-remove pull-right remove-targetUnit" aria-hidden="true"></span>
     [#else]
-      <span class="glyphicon glyphicon-remove pull-right remove-targetUnit" style="color:#ccc" aria-hidden="true" title="Can not be deleted"></span>
+      <span class="glyphicon glyphicon-remove pull-right " style="color:#ccc" aria-hidden="true" title="Can not be deleted"></span>
     [/#if]   
   </li>
 [/#macro]
