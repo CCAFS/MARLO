@@ -252,22 +252,22 @@ function loadScript() {
           }
         }
         // ADD country into countries list
-        $.ajax({
-            'url': 'https://maps.googleapis.com/maps/api/geocode/json',
-            'data': {
-                key: GOOGLE_API_KEY,
-                latlng: (latitude + "," + longitude)
-            },
-            success: function(data) {
-              if(data.status == 'OK') {
-                countryName = getResultByType(data.results[0], 'country').long_name;
-                // ADD country into countries list
-                // countries.push(countryName);
-              } else {
-                console.log(data.status);
-              }
-            }
-        });
+// $.ajax({
+// 'url': 'https://maps.googleapis.com/maps/api/geocode/json',
+// 'data': {
+// key: GOOGLE_API_KEY,
+// latlng: (latitude + "," + longitude)
+// },
+// success: function(data) {
+// if(data.status == 'OK') {
+// countryName = getResultByType(data.results[0], 'country').long_name;
+// // ADD country into countries list
+// // countries.push(countryName);
+// } else {
+// console.log(data.status);
+// }
+// }
+// });
       });
 
     });
@@ -379,15 +379,21 @@ function initMap() {
   });
 
   google.maps.event.addListener(map, 'click', function(event) {
-    infoWindow.close();
+    // infoWindow.close();
     $(".locations").removeClass("selected");
   });
 
   map.addListener('center_changed', function() {
     // 3 seconds after the center of the map has changed, pan back to the
     // marker.
-    if(infoWindow.type.data === "form") {
-      infoWindow.setPosition(map.getCenter());
+    if(typeof (infoWindow.type) != "undefined") {
+      if(infoWindow.type.data === "form") {
+        infoWindow.setPosition(map.getCenter());
+        var latitude = infoWindow.getPosition().lat()
+        var longitude = infoWindow.getPosition().lng()
+        $("#inputFormWrapper").find(".latitude").val(latitude);
+        $("#inputFormWrapper").find(".longitude").val(longitude);
+      }
     }
   });
 
@@ -711,8 +717,10 @@ function addLocByCoordinates(locationId,$locationSelect,locationName) {
           ".optionSelect-content");
   var $item = $('#location-template').clone(true).removeAttr("id");
   countID++;
-  var latitude = infoWindow.getPosition().lat()
-  var longitude = infoWindow.getPosition().lng();
+  var latitude = $("#inputFormWrapper").find(".latitude").val();
+  var longitude = $("#inputFormWrapper").find(".longitude").val();
+  console.log(latitude);
+  console.log(longitude);
   var name = $("#inputFormWrapper").find("input.name").val();
   // Ajax for country name
   $.ajax({
