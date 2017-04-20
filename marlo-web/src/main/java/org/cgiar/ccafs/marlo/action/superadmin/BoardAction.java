@@ -16,7 +16,9 @@
 package org.cgiar.ccafs.marlo.action.superadmin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.data.manager.CrpTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
+import org.cgiar.ccafs.marlo.data.model.CrpTargetUnit;
 import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -41,15 +43,18 @@ public class BoardAction extends BaseAction {
 
 
   private SrfTargetUnitManager srfTargetUnitManager;
+  private CrpTargetUnitManager crpTargetUnitManager;
 
 
   private List<SrfTargetUnit> targetUnitList;
 
 
   @Inject
-  public BoardAction(APConfig config, SrfTargetUnitManager srfTargetUnitManager) {
+  public BoardAction(APConfig config, SrfTargetUnitManager srfTargetUnitManager,
+    CrpTargetUnitManager crpTargetUnitManager) {
     super(config);
     this.srfTargetUnitManager = srfTargetUnitManager;
+    this.crpTargetUnitManager = crpTargetUnitManager;
 
   }
 
@@ -93,6 +98,17 @@ public class BoardAction extends BaseAction {
       if (targetsPreview != null) {
         for (SrfTargetUnit srfTargetUnit : targetsPreview) {
           if (!targetUnitList.contains(srfTargetUnit)) {
+
+            if (srfTargetUnit.getCrpTargetUnits() != null) {
+              List<CrpTargetUnit> crpTargetUnits = new ArrayList<>(
+                srfTargetUnit.getCrpTargetUnits().stream().filter(tu -> tu.isActive()).collect(Collectors.toList()));
+
+              if (!crpTargetUnits.isEmpty()) {
+                for (CrpTargetUnit crpTargetUnit : crpTargetUnits) {
+                  crpTargetUnitManager.deleteCrpTargetUnit(crpTargetUnit.getId());
+                }
+              }
+            }
 
             srfTargetUnitManager.deleteSrfTargetUnit(srfTargetUnit.getId());
 

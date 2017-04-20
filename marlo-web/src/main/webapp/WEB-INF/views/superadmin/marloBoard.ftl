@@ -81,12 +81,10 @@
       [#if element.crpTargetUnits?has_content]
         [#list element.crpTargetUnits as crpTargetUnit]
           [#if crpTargetUnit.active]
-          [ ${crpTargetUnit.crp.name} ]  
+          [${crpTargetUnit.crp.name}]   
           [/#if]
         [/#list] 
-        
-      [#else]
-        <i>No CRPs</i>
+
       [/#if]
     </span>
     [#-- Remove Button --]
