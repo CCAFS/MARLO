@@ -114,7 +114,11 @@
     [#-- CRPs that allow this target --]
     <span class="crps" style="color: #9c9c9c; margin-left: 16px; font-size: 0.75em;" title="CRPs ">
       [#if element.targetUnit.crpTargetUnits?has_content]
-        [#list element.targetUnit.crpTargetUnits as crpTargetUnit]${crpTargetUnit.crp.name}[#if crpTargetUnit_has_next], [/#if][/#list] 
+        [#list element.targetUnit.crpTargetUnits as crpTargetUnit]
+          [#if crpTargetUnit.active]
+          [ ${crpTargetUnit.crp.name} ]
+          [/#if]
+        [/#list] 
       [#else]
         <i>No CRPs</i>
       [/#if]
