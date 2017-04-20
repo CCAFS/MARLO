@@ -84,7 +84,7 @@
 }
 
 .map {
-    height: 400px;
+    height: 500px;
     margin-bottom: 30px;
     margin-top: 15px;
 }
@@ -249,4 +249,17 @@ span.allCountriesQuestion {
 
 li.select2-search.select2-search--inline{
 	width:100%;
-}]
+}
+
+.cancelButton{
+    padding: 4px 25px 4px 28px;
+    margin: 5px 0;
+    text-decoration: none;
+    cursor: pointer;
+    background-color: #2BA6CB;
+    color: #fff;
+    border: 0;
+    border-bottom: 3px solid #1E94B8;
+    border-radius: 2px;
+    text-decoration: none;
+}

@@ -9,23 +9,7 @@ var layer;
 
 function init() {
   loadScript();
-
-  $('.latitude, .longitude').numericInput();
-
   countID = $("form .locElement").length;
-
-  // validate latitude and longitude
-  $('.latitude, .longitude').on("keyup", function(e) {
-    var $parent = $(this).parent().parent();
-    var lat = $parent.find('.latitude').val();
-    var lng = $parent.find('.longitude').val();
-
-    if(isCoordinateValid(lat, lng)) {
-      $parent.find('.latitude, .longitude').removeClass('fieldError');
-    } else {
-      $parent.find('.latitude, .longitude').addClass('fieldError');
-    }
-  });
 
   /* Declaring Events */
   attachEvents();
@@ -495,8 +479,8 @@ function addMarker(map,idMarker,latitude,longitude,sites,isList,locType) {
     $item.find("span.lPos").html(" (" + latitude.toFixed(4) + ", " + longitude.toFixed(4) + ")");
     $item.find(".locations").addClass("selected");
     // update Infowindow
-    $(".editableLoc").find(".latMap").attr("placeholder", latitude);
-    $(".editableLoc").find(".lngMap").attr("placeholder", longitude);
+    $(".editableLoc").find(".latMap").attr("value", latitude);
+    $(".editableLoc").find(".lngMap").attr("value", longitude);
   });
 
   marker.addListener('dragend', function() {
@@ -591,6 +575,31 @@ function openInfoWindowForm(e) {
 }
 
 function formWindowEvents() {
+
+  // $("#inputFormWrapper").find('.latitude, .longitude').numericInput();
+  $("#inputFormWrapper").find('.latitude, .longitude').on("keyup", function(e) {
+    var $parent = $(this).parent().parent();
+    var lat = $parent.find('.latitude').val();
+    var lng = $parent.find('.longitude').val();
+    if(isCoordinateValid(lat, lng)) {
+      $parent.find('.latitude, .longitude').removeClass('fieldError');
+      var position = new google.maps.LatLng(lat, lng);
+      map.setCenter(position);
+      infoWindow.setPosition(position);
+    } else {
+      $parent.find('.latitude, .longitude').addClass('fieldError');
+    }
+  });
+
+  /* prevent enter key to inputs */
+
+  $('input').on("keypress", function(event) {
+
+    if(event.keyCode === 10 || event.keyCode === 13) {
+      event.preventDefault();
+    }
+  });
+
 // Events
   $("#locLevelSelect").on(
       "change",
@@ -636,6 +645,7 @@ function formWindowEvents() {
 
   // Add location button
   $("#addLocationButton").on("click", function(e) {
+
     var $locationLevelSelect = $("#locLevelSelect");
     var locationId = $locationLevelSelect.val().split("-")[0];
     var locationIsList = $locationLevelSelect.val().split("-")[1];
@@ -653,13 +663,30 @@ function formWindowEvents() {
         }
       }
     } else {
-      // Checking if the location level exist in the bottom wrapper
-      if($(".selectWrapper").find("input.locationLevelId[value='" + locationId + "']").exists()) {
-        addLocByCoordinates(locationId, $locationSelect, locationName)
+      if($("#inputFormWrapper").find(".name").val().trim() == "") {
+        $("#inputFormWrapper").find(".name").addClass("fieldError");
+        console.log("no name");
       } else {
-        addLocLevel(locationName, locationId, locationIsList, $locationSelect, locationIsList);
+        $("#inputFormWrapper").find(".name").removeClass("fieldError");
+        if($("#inputFormWrapper").find(".fieldError").exists()) {
+
+        } else {
+          // Checking if the location level exist in the bottom wrapper
+          if($(".selectWrapper").find("input.locationLevelId[value='" + locationId + "']").exists()) {
+            addLocByCoordinates(locationId, $locationSelect, locationName)
+          } else {
+            addLocLevel(locationName, locationId, locationIsList, $locationSelect, locationIsList);
+          }
+        }
       }
+
     }
+
+  });
+
+  // Cancel button
+  $("#cancelButton").on("click", function(e) {
+    infoWindow.close();
   });
 }
 
@@ -832,9 +859,9 @@ function openInfoWindow(marker) {
   if(editable && marker.list == "false") {
     contentItem = $("#informationWrapper");
     console.log((contentItem).find(".nameMap"));
-    $(contentItem).find(".nameMap").attr("placeholder", marker.name);
-    $(contentItem).find(".latMap").attr("placeholder", marker.getPosition().lat());
-    $(contentItem).find(".lngMap").attr("placeholder", marker.getPosition().lng());
+    $(contentItem).find(".nameMap").attr("value", marker.name);
+    $(contentItem).find(".latMap").attr("value", marker.getPosition().lat());
+    $(contentItem).find(".lngMap").attr("value", marker.getPosition().lng());
   } else {
     contentItem = $("#notEditableInfoWrapper");
     $(contentItem).find(".nameMap").text(marker.name);
@@ -862,7 +889,7 @@ function openInfoWindow(marker) {
     console.log(this);
     var parent = $(this).parent().parent();
     console.log(parent);
-    var newName = parent.find(".nameMap").val();
+    var newName = parent.find(".nameMap").val().trim();
     var location = parent.parents(".projectLocationsWrapper").find("#location-" + marker.id);
     console.log(location);
 
@@ -874,16 +901,31 @@ function openInfoWindow(marker) {
       // Update component event
       $(document).trigger('updateComponent');
     }
-
     // Close infowindow
     infoWindow.close();
     $("#location-" + marker.id).find(".locations").removeClass("selected");
 
   });
+  /** Events latitude and longitude * */
+  $($("#inputFormWrapper").find(".latMap , .lngMap")).on("keyup", function(e) {
+    var $parent = $(this).parent().parent();
+    var lat = $parent.find('.latMap').val();
+    var lng = $parent.find('.lngMap').val();
+    if(isCoordinateValid(lat, lng)) {
+      $parent.find('.latMap, .lngMap').removeClass('fieldError');
+      var position = new google.maps.LatLng(lat, lng);
+      map.panTo(position);
+      marker.setPosition(position);
+      $(document).trigger('updateComponent');
+    } else {
+      $parent.find('.latMap, .lngMap').addClass('fieldError');
+    }
+  });
 
   $("#okInfo").on("click", function() {
     infoWindow.close();
   });
+
 }
 
 // Open info window for countries
@@ -984,7 +1026,7 @@ function mappingCountries() {
           {
             polygonOptions: {
                 fillColor: "#2E2EFE",
-                fillOpacity: 0.35
+                fillOpacity: 0.15
             }
           }
         ]

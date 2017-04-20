@@ -180,8 +180,11 @@
     <div class="longitudeWrapper"><label for="">Longitude:</label><input placeholder="Longitude" class="longitude form-control " type="text"  value=""/></div>
   </div>
   [#-- Button --]
+  <div style="margin-left:10px; float:right;">
+    <span id="cancelButton" class=" cancelButton pull-right" style="display:block; margin-top:10px; border-radius:8px;">[@s.text name="Cancel" /]</span>
+  </div>
   <div>
-    <span id="addLocationButton" class=" addButton pull-right" style="display:none; margin-top:10px; border-radius:8px;">[@s.text name="Map out" /]</span>
+    <span id="addLocationButton" class=" addButton pull-right" style="display:none; margin-top:10px; border-radius:8px;">[@s.text name="Drop pin" /]</span>
   </div>
 </div>
 
@@ -197,9 +200,9 @@
     <span class="infoLocName">{test}</span>
     </div>    
     <div id="inputFormWrapper" style="width: 450px;">
-      <div class="nameWrapper"><label for="">Change name:</label><input placeholder="name" class="nameMap form-control" type="text" /></div>
-      <div class="latitudeWrapper"><label for="">Latitude:</label><input  placeholder="Latitude" class="latMap form-control" type="text" readOnly=true /></div>
-      <div class="longitudeWrapper"><label for="">Longitude:</label><input placeholder="Longitude" class="lngMap form-control " type="text" readOnly=true /></div>
+      <div class="nameWrapper"><label for="">Change name:</label><input placeholder="name" class="nameMap form-control" type="text" value=""/></div>
+      <div class="latitudeWrapper"><label for="">Latitude:</label><input  placeholder="Latitude" class="latMap form-control" type="text" value="" /></div>
+      <div class="longitudeWrapper"><label for="">Longitude:</label><input placeholder="Longitude" class="lngMap form-control " type="text" value="" /></div>
     </div>
   </div>
   [#-- Button --]
