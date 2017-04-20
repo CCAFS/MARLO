@@ -44,6 +44,8 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.utils.HistoryComparator;
+import org.cgiar.ccafs.marlo.utils.HistoryDifference;
 import org.cgiar.ccafs.marlo.validation.impactpathway.OutcomeValidator;
 
 import java.io.BufferedReader;
@@ -60,6 +62,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
@@ -84,6 +87,7 @@ public class OutcomesAction extends BaseAction {
 
 
   private CrpAssumptionManager crpAssumptionManager;
+  private HistoryComparator historyComparator;
 
 
   private CrpManager crpManager;
@@ -112,13 +116,14 @@ public class OutcomesAction extends BaseAction {
     CrpProgramOutcomeManager crpProgramOutcomeManager, CrpMilestoneManager crpMilestoneManager,
     CrpProgramManager crpProgramManager, OutcomeValidator validator, CrpOutcomeSubIdoManager crpOutcomeSubIdoManager,
     CrpAssumptionManager crpAssumptionManager, CrpManager crpManager, UserManager userManager,
-    AuditLogManager auditLogManager, SrfSubIdoManager srfSubIdoManager) {
+    HistoryComparator historyComparator, AuditLogManager auditLogManager, SrfSubIdoManager srfSubIdoManager) {
     super(config);
     this.srfTargetUnitManager = srfTargetUnitManager;
     this.srfIdoManager = srfIdoManager;
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
     this.crpMilestoneManager = crpMilestoneManager;
     this.crpProgramManager = crpProgramManager;
+    this.historyComparator = historyComparator;
     this.validator = validator;
     this.crpOutcomeSubIdoManager = crpOutcomeSubIdoManager;
     this.crpManager = crpManager;
@@ -310,6 +315,35 @@ public class OutcomesAction extends BaseAction {
         programs = new ArrayList<>();
         this.loadInfo();
         programs.add(history);
+
+        List<HistoryDifference> differences = new ArrayList<>();
+        Map<String, String> specialList = new HashMap<>();
+        int i = 0;
+        int j = 0;
+        Collections.sort(outcomes, (lc1, lc2) -> lc1.getId().compareTo(lc2.getId()));
+        for (CrpProgramOutcome crpProgramOutcome : outcomes) {
+          int[] index = new int[1];
+          index[0] = i;
+          differences.addAll(historyComparator.getDifferencesList(crpProgramOutcome, transaction, specialList,
+            "outcomes[" + i + "]", "outcomes", 1));
+          for (CrpMilestone crpMilestone : crpProgramOutcome.getMilestones()) {
+            differences.addAll(historyComparator.getDifferencesList(crpMilestone, transaction, specialList,
+              "outcomes[" + i + "].milestones[" + j + "]", "outcomes", 1));
+            j++;
+          }
+          j = 0;
+          for (CrpOutcomeSubIdo crpOutcomeSubIdo : crpProgramOutcome.getSubIdos()) {
+            differences.addAll(historyComparator.getDifferencesList(crpOutcomeSubIdo, transaction, specialList,
+              "outcomes[" + i + "].subIdos[" + j + "]", "outcomes", 1));
+            j++;
+          }
+          i++;
+        }
+
+        i = 0;
+
+
+        this.setDifferences(differences);
       } else {
         programs = new ArrayList<>();
         this.transaction = null;
