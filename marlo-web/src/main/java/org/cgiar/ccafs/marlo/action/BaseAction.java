@@ -451,6 +451,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       if (clazz == SrfTargetUnit.class) {
         SrfTargetUnit targetUnit = targetUnitManager.getSrfTargetUnitById(id);
 
+        if (targetUnit == null) {
+          return true;
+        }
+
         if (targetUnit.getCrpProgramOutcomes().stream().filter(o -> o.isActive()).collect(Collectors.toList())
           .size() > 0) {
           return false;

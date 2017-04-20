@@ -64,11 +64,11 @@
 
 
 [#-- Unit Target Template --]
-[@targetUnitMacro element={} name="targetUnitList" index=-1 isTemplate=true /]
+[@targetUnitMacro element={} name="targetUnitList" index=-1 isTemplate=true canDelete=true /]
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]
 
-[#macro targetUnitMacro element name index isTemplate=false]
+[#macro targetUnitMacro element name index isTemplate=false canDelete=false]
   <li id="targetUnit-${isTemplate?string('template',index)}" class="li-item targetUnit" style="display:${isTemplate?string('none','block')}">
     [#local customName = "${name}[${index}]"/]
     <span class="glyphicon glyphicon-scale"></span>  <span class="composedName"> ${(element.name)!}</span>
@@ -79,12 +79,21 @@
     <br />
     <span class="crps" style="color: #9c9c9c; margin-left: 16px; font-size: 0.75em;" title="CRPs ">
       [#if element.crpTargetUnits?has_content]
-        [#list element.crpTargetUnits as crpTargetUnit]${crpTargetUnit.crp.name}[#if crpTargetUnit_has_next], [/#if][/#list] 
+        [#list element.crpTargetUnits as crpTargetUnit]
+          [#if crpTargetUnit.active]
+          [ ${crpTargetUnit.crp.name} ]  
+          [/#if]
+        [/#list] 
+        
       [#else]
         <i>No CRPs</i>
       [/#if]
     </span>
     [#-- Remove Button --]
-    <span class="glyphicon glyphicon-remove pull-right remove-targetUnit" aria-hidden="true"></span>
+    [#if canDelete || (element?? && action.canBeDeleted((element.id)!, (element.class.name)!)!)]
+      <span class="glyphicon glyphicon-remove pull-right remove-targetUnit" aria-hidden="true"></span>
+    [#else]
+      <span class="glyphicon glyphicon-remove pull-right " style="color:#ccc" aria-hidden="true" title="Can not be deleted"></span>
+    [/#if]   
   </li>
 [/#macro]
