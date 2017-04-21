@@ -614,7 +614,7 @@ function formWindowEvents() {
             // If is a country change button text
             if(option.val().split("-")[2] === "Country") {
               $("#addLocationButton").text("Add country(ies)");
-            }else{
+            } else {
               $("#addLocationButton").text("Drop pin");
             }
             // LocElements options using ajax
@@ -937,6 +937,15 @@ function openInfoWindow(marker) {
 
   $("#okInfo").on("click", function() {
     infoWindow.close();
+  });
+
+  /* prevent enter key to inputs */
+
+  $('input').on("keypress", function(event) {
+
+    if(event.keyCode === 10 || event.keyCode === 13) {
+      event.preventDefault();
+    }
   });
 
 }
