@@ -96,7 +96,7 @@ public class ImpactPathwayGraph extends BaseAction {
       dataDetailOutcome.put("description", crpProgramOutcome.getDescription());
       dataDetailOutcome.put("color", "FFF");
       dataDetailOutcome.put("type", "O");
-      dataDetailOutcome.put("parent", crpProgram.getAcronym());
+      dataDetailOutcome.put("parent", "F" + crpProgram.getId());
 
 
       dataOutcome.put("data", dataDetailOutcome);
@@ -216,7 +216,7 @@ public class ImpactPathwayGraph extends BaseAction {
       dataDetailOutcome.put("description", crpClusterOfActivity.getComposedName());
       dataDetailOutcome.put("color", "#c0c0c0");
       dataDetailOutcome.put("type", "CoA");
-      dataDetailOutcome.put("parent", crpProgram.getAcronym());
+      dataDetailOutcome.put("parent", "F" + crpProgram.getId());
       dataOutcome.put("data", dataDetailOutcome);
       dataNodes.add(dataOutcome);
 
