@@ -908,6 +908,7 @@ function openInfoWindow(marker) {
   });
   /** Events latitude and longitude * */
   $($("#inputFormWrapper").find(".latMap , .lngMap")).on("keyup", function(e) {
+    var $item = $("#location-" + marker.id);
     var $parent = $(this).parent().parent();
     var lat = $parent.find('.latMap').val();
     var lng = $parent.find('.lngMap').val();
@@ -916,6 +917,10 @@ function openInfoWindow(marker) {
       var position = new google.maps.LatLng(lat, lng);
       map.panTo(position);
       marker.setPosition(position);
+      // Set values into hidden inputs
+      $item.find("input.geoLatitude").val(lat);
+      $item.find("input.geoLongitude").val(lng);
+      $item.find("span.lPos").html(" (" + lat + ", " + lng + ")");
       $(document).trigger('updateComponent');
     } else {
       $parent.find('.latMap, .lngMap').addClass('fieldError');
