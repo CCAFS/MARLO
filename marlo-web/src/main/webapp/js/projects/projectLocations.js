@@ -611,6 +611,12 @@ function formWindowEvents() {
         } else {
           $("#addLocationButton").show("slow");
           if(option.val().split("-")[1] == "true") {
+            // If is a country change button text
+            if(option.val().split("-")[2] === "Country") {
+              $("#addLocationButton").text("Add country(ies)");
+            }else{
+              $("#addLocationButton").text("Drop pin");
+            }
             // LocElements options using ajax
             var select = $("#countriesCmvs");
             var url = baseURL + "/searchCountryListPL.do";
@@ -636,6 +642,8 @@ function formWindowEvents() {
                 });
             $("#inputFormWrapper").slideUp();
             $(".selectLocations").slideDown();
+            console.log(option.val());
+
           } else {
             $(".selectLocations").slideUp();
             $("#inputFormWrapper").slideDown();
