@@ -328,14 +328,24 @@ public class OutcomesAction extends BaseAction {
             "outcomes[" + i + "]", "outcomes", 1));
           for (CrpMilestone crpMilestone : crpProgramOutcome.getMilestones()) {
             differences.addAll(historyComparator.getDifferencesList(crpMilestone, transaction, specialList,
-              "outcomes[" + i + "].milestones[" + j + "]", "outcomes", 1));
+              "outcomes[" + i + "].milestones[" + j + "]", "outcomes", 2));
+
+
             j++;
           }
           j = 0;
           for (CrpOutcomeSubIdo crpOutcomeSubIdo : crpProgramOutcome.getSubIdos()) {
             differences.addAll(historyComparator.getDifferencesList(crpOutcomeSubIdo, transaction, specialList,
-              "outcomes[" + i + "].subIdos[" + j + "]", "outcomes", 1));
+              "outcomes[" + i + "].subIdos[" + j + "]", "outcomes", 2));
             j++;
+            int k = 0;
+
+
+            for (CrpAssumption crpAssumption : crpOutcomeSubIdo.getAssumptions()) {
+              differences.addAll(historyComparator.getDifferencesList(crpAssumption, transaction, specialList,
+                "outcomes[" + i + "].subIdos[" + j + "].assumptions[" + k + "]", "outcomes", 3));
+              k++;
+            }
           }
           i++;
         }
