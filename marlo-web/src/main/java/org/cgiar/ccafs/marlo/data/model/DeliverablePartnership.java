@@ -41,7 +41,6 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
   @Expose
   private User createdBy;
 
-
   @Expose
   private ProjectPartnerPerson projectPartnerPerson;
 
@@ -52,8 +51,6 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
 
   @Expose
   private String partnerType;
-
-
   @Expose
   private boolean active;
 
@@ -64,6 +61,10 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
 
   @Expose
   private String modificationJustification;
+
+
+  @Expose
+  private PartnerDivision partnerDivision;
 
 
   public DeliverablePartnership() {
@@ -105,7 +106,6 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
   public Date getActiveSince() {
     return activeSince;
   }
@@ -126,7 +126,6 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
     return id;
   }
 
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -135,6 +134,7 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
   }
 
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -144,6 +144,12 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
   public User getModifiedBy() {
     return modifiedBy;
   }
+
+
+  public PartnerDivision getPartnerDivision() {
+    return partnerDivision;
+  }
+
 
   public String getPartnerType() {
     return partnerType;
@@ -163,7 +169,6 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
     return result;
   }
 
-
   @Override
   public boolean isActive() {
     return active;
@@ -173,6 +178,7 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
   public void setActive(boolean active) {
     this.active = active;
   }
+
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
@@ -193,13 +199,18 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
     this.id = id;
   }
 
+
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
 
-
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
+  }
+
+
+  public void setPartnerDivision(PartnerDivision partnerDivision) {
+    this.partnerDivision = partnerDivision;
   }
 
 

@@ -37,8 +37,13 @@ public class DeliverableGenderLevel implements java.io.Serializable, IAuditLog {
   @Expose
   private String modificationJustification;
 
+  private String nameGenderLevel;
+  private String descriptionGenderLevel;
+
+
   public DeliverableGenderLevel() {
   }
+
 
   public DeliverableGenderLevel(Deliverable deliverable, User usersByCreatedBy, User usersByModifiedBy,
     long genderLevel, boolean isActive, Date activeSince, String modificationJustification) {
@@ -74,6 +79,7 @@ public class DeliverableGenderLevel implements java.io.Serializable, IAuditLog {
     return true;
   }
 
+
   public Date getActiveSince() {
     return activeSince;
   }
@@ -82,16 +88,18 @@ public class DeliverableGenderLevel implements java.io.Serializable, IAuditLog {
     return createdBy;
   }
 
-
   public Deliverable getDeliverable() {
     return deliverable;
   }
 
 
+  public String getDescriptionGenderLevel() {
+    return descriptionGenderLevel;
+  }
+
   public long getGenderLevel() {
     return genderLevel;
   }
-
 
   @Override
   public Long getId() {
@@ -123,11 +131,7 @@ public class DeliverableGenderLevel implements java.io.Serializable, IAuditLog {
 
 
   public String getNameGenderLevel() {
-    try {
-      return DeliverableGenderTypeEnum.getValue(genderLevel).getValue();
-    } catch (Exception e) {
-      return null;
-    }
+    return nameGenderLevel;
   }
 
 
@@ -166,6 +170,11 @@ public class DeliverableGenderLevel implements java.io.Serializable, IAuditLog {
   }
 
 
+  public void setDescriptionGenderLevel(String descriptionGenderLevel) {
+    this.descriptionGenderLevel = descriptionGenderLevel;
+  }
+
+
   public void setGenderLevel(long genderLevel) {
     this.genderLevel = genderLevel;
   }
@@ -180,8 +189,13 @@ public class DeliverableGenderLevel implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
+
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
+  }
+
+  public void setNameGenderLevel(String nameGenderLevel) {
+    this.nameGenderLevel = nameGenderLevel;
   }
 
 

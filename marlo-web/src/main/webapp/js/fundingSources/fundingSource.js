@@ -31,7 +31,7 @@ function init() {
   });
   
   // Funding Window / Budget type
-  $(".type").select2({
+  $("select.type").select2({
       templateResult: function(state) {
         var name = state.text;
         var desc = $('li.budgetTypeDescription-' + state.id).text();
@@ -188,29 +188,33 @@ function removeLeadPartner() {
   var $item = $(this).parents('.leadPartners');
   var value = $item.find(".fId").val();
   var name = $item.find(".name").attr("title");
-  console.log(name + "-" + value);
+
   var $select = $(".institution");
-  $item.hide(1000, function() {
+  $item.hide(300, function() {
     $item.remove();
     checkLeadPartnerItems($list);
     updateLeadPartner($list);
   });
-// Add funding source option again
+  // Add funding source option again
   $select.addOption(value, name);
   $select.trigger("change.select2");
 }
 
 function updateLeadPartner($list) {
+  // Hide All divisions block
+  $('.divisionBlock').hide();
+
   $($list).find('.leadPartners').each(function(i,e) {
+    // Show division block
+    var institutionID = $(e).find('.fId').val();
+    $('.division-'+institutionID).show();
     // Set funding sources indexes
     $(e).setNameIndexes(1, i);
   });
 }
 
 function checkLeadPartnerItems(block) {
-  console.log(block);
   var items = $(block).find('.leadPartners').length;
-  console.log(items);
   if(items == 0) {
     $(block).parent().find('p.emptyText').fadeIn();
   } else {

@@ -55,6 +55,10 @@
 		<property name="contactPersonEmail" type="string">
 			<column name="contact_person_email" length="65535" />
 		</property>
+		
+		  <many-to-one name="partnerDivision" class="org.cgiar.ccafs.marlo.data.model.PartnerDivision" fetch="select">
+            <column name="division_id" />
+        </many-to-one>
 	
 		<property name="status" type="java.lang.Integer">
 			<column name="status" />

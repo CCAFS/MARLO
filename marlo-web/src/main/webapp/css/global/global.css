@@ -1073,7 +1073,7 @@ select#partnerSave_activityPartner_partner_type_id {
 .panel {
     border: 1px solid rgba(0,0,0,0.2);
     border-radius: 0;
-    margin-bottom: 0;
+    /* margin-bottom: 0; */
 }
 
 .panel.primary{}
@@ -4094,7 +4094,10 @@ padding-top: 35px;
 
 .deliverablePartner {
   font-size: 0.95em;
-  padding: 13px 30px 2px 30px !important;
+  padding: 13px 50px 2px 30px !important;
+}
+.responsiblePartner {
+  padding: 3px 14px 0px 13px !important;
 }
 
 .deliverablePartner span.index{

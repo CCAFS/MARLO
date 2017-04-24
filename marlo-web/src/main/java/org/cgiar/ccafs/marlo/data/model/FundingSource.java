@@ -65,14 +65,17 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
 
   @Expose
+  private PartnerDivision partnerDivision;
+
+  @Expose
   private String financeCode;
+
 
   private Set<FundingSourceBudget> fundingSourceBudgets = new HashSet<FundingSourceBudget>(0);
 
   private Set<FundingSource> fundingSources = new HashSet<FundingSource>(0);
 
   private Set<FundingSourceInstitution> fundingSourceInstitutions = new HashSet<FundingSourceInstitution>(0);
-
 
   @Expose
   private Long id;
@@ -84,7 +87,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   @Expose
   private String modificationJustification;
 
-
   @Expose
   private User modifiedBy;
 
@@ -94,8 +96,10 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   private List<ProjectBudget> projectBudgetsList;
 
+
   @Expose
   private Date startDate;
+
 
   @Expose
   private Integer status;
@@ -170,7 +174,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return budgetType;
   }
 
-
   public String getComposedName() {
     try {
       return "<b> (F" + this.id + ") " + this.getBudgetType().getName() + "</b> - " + this.title;
@@ -197,10 +200,10 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return crp;
   }
 
-
   public String getDescription() {
     return description;
   }
+
 
   public Date getEndDate() {
     return endDate;
@@ -209,7 +212,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   public FileDB getFile() {
     return file;
   }
-
 
   public String getFinanceCode() {
     return financeCode;
@@ -236,6 +238,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return id;
   }
 
+
   public Institution getInstitution() {
     return institution;
   }
@@ -251,15 +254,19 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
-
   @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
 
+
   @Override
   public User getModifiedBy() {
     return modifiedBy;
+  }
+
+  public PartnerDivision getPartnerDivision() {
+    return partnerDivision;
   }
 
   public Set<ProjectBudget> getProjectBudgets() {
@@ -381,9 +388,11 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     this.crp = crp;
   }
 
+
   public void setDescription(String description) {
     this.description = description;
   }
+
 
   public void setEndDate(Date endDate) {
     this.endDate = endDate;
@@ -421,13 +430,17 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     this.institutions = institutions;
   }
 
-
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
 
+
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
+  }
+
+  public void setPartnerDivision(PartnerDivision partnerDivision) {
+    this.partnerDivision = partnerDivision;
   }
 
   public void setProjectBudgets(Set<ProjectBudget> projectBudgets) {
