@@ -43,6 +43,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.utils.HistoryComparator;
 import org.cgiar.ccafs.marlo.validation.fundingSource.FundingSourceValidator;
 
 import java.io.BufferedReader;
@@ -103,6 +104,7 @@ public class FundingSourceAction extends BaseAction {
   private List<Institution> institutionsDonors;
   private LiaisonInstitutionManager liaisonInstitutionManager;
   private List<LiaisonInstitution> liaisonInstitutions;
+  private HistoryComparator historyComparator;
 
 
   private Crp loggedCrp;
@@ -126,7 +128,7 @@ public class FundingSourceAction extends BaseAction {
     InstitutionManager institutionManager, LiaisonInstitutionManager liaisonInstitutionManager,
     AuditLogManager auditLogManager, FundingSourceBudgetManager fundingSourceBudgetManager,
     BudgetTypeManager budgetTypeManager, FundingSourceValidator validator, CrpPpaPartnerManager crpPpaPartnerManager,
-    FileDBManager fileDBManager, UserManager userManager,
+    HistoryComparator historyComparator, FileDBManager fileDBManager, UserManager userManager,
     FundingSourceInstitutionManager fundingSourceInstitutionManager,
     /* TODO delete when fix the budget permissions */ RoleManager userRoleManager) {
     super(config);
@@ -139,6 +141,7 @@ public class FundingSourceAction extends BaseAction {
     this.userManager = userManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.auditLogManager = auditLogManager;
+    this.historyComparator = historyComparator;
     this.fileDBManager = fileDBManager;
     this.crpPpaPartnerManager = crpPpaPartnerManager;
     this.fundingSourceBudgetManager = fundingSourceBudgetManager;
@@ -341,6 +344,12 @@ public class FundingSourceAction extends BaseAction {
 
       if (history != null) {
         fundingSource = history;
+
+
+        Map<String, String> specialList = new HashMap<>();
+
+        this.setDifferences(historyComparator.getDifferences(transaction, specialList, "fundingSource"));
+
       } else {
         this.transaction = null;
 

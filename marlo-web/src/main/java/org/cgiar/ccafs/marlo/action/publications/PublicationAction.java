@@ -56,6 +56,7 @@ import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.utils.HistoryComparator;
 import org.cgiar.ccafs.marlo.validation.publications.PublicationValidator;
 
 import java.io.BufferedReader;
@@ -121,6 +122,7 @@ public class PublicationAction extends BaseAction {
   private AuditLogManager auditLogManager;
   private DeliverableQualityCheckManager deliverableQualityCheckManager;
   private MetadataElementManager metadataElementManager;
+  private HistoryComparator historyComparator;
 
   private UserManager userManager;
   private InstitutionManager institutionManager;
@@ -138,10 +140,12 @@ public class PublicationAction extends BaseAction {
     CrpPandrManager crpPandrManager, DeliverableCrpManager deliverableCrpManager,
     CrpPpaPartnerManager crpPpaPartnerManager, DeliverableProgramManager deliverableProgramManager,
     DeliverableLeaderManager deliverableLeaderManager, PublicationValidator publicationValidator,
-    DeliverableMetadataElementManager deliverableMetadataElementManager, IpProgramManager ipProgramManager) {
+    HistoryComparator historyComparator, DeliverableMetadataElementManager deliverableMetadataElementManager,
+    IpProgramManager ipProgramManager) {
 
     super(config);
     this.deliverableDisseminationManager = deliverableDisseminationManager;
+    this.historyComparator = historyComparator;
     this.crpManager = crpManager;
     this.publicationValidator = publicationValidator;
     this.crpPandrManager = crpPandrManager;
@@ -299,6 +303,9 @@ public class PublicationAction extends BaseAction {
       if (history != null) {
         deliverable = history;
         deliverable.setModifiedBy(userManager.getUser(deliverable.getModifiedBy().getId()));
+        Map<String, String> specialList = new HashMap<>();
+
+        this.setDifferences(historyComparator.getDifferences(transaction, specialList, "deliverable"));
       } else {
         this.transaction = null;
 
