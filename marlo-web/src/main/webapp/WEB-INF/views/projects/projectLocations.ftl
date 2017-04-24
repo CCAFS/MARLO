@@ -51,7 +51,7 @@
               <div class="col-md-5 isGlobal">
               <br />
               [#if editable]
-              <label class="col-md-10" for=""><span id="globalText">[@s.text name="projectLocations.isGlobal" /]</span><span id="globalHelp">(If the project is global, check the next button)</span></label>
+              <label class="col-md-10" for=""><span id="globalText">[@s.text name="projectLocations.isGlobal" /]</span></label>
               <div class=" col-md-2">
               <input id="" class="" type="checkbox" name="project.locationGlobal" value=[#if project.locationGlobal]"true" checked[#else]"false"[/#if]/>
               <label for=""></label>
@@ -86,6 +86,24 @@
                   <div id="map" class="col-md-12"></div>
                 </div>
                 
+                [#-- REGIONS IN WHICH THE PROJECT IS WORKING  --]
+                    [#if scopeRegions?has_content]
+                <div class="col-md-12">
+                <label for="">Regions in which the project is working:</label>
+                <div id="selectsContent" class="col-md-12 simpleBox " listname="project.locationsData">
+                  [#-- Content collapsible--]
+                  <div class="selectWrapper row">
+                      [#list scopeRegions as region]
+                      <span class="col-md-3">
+                        <p class="checked"><b>${region.name}</b></p>
+                      </span>
+                      [/#list]
+                  </div>
+                </div>
+                </div>
+                    [/#if]
+                
+                [#-- LOCATION LIST --]
                 <div class="col-md-12">
                 <label for="">Locations list</label>
                 <div id="selectsContent" class="col-md-12 simpleBox " listname="project.locationsData">
@@ -158,12 +176,15 @@
   [#-- Form 2 --]
   <div id="inputFormWrapper" style="display:none; width: 450px;">
     <div class="nameWrapper"><label for="">Location name:</label><input placeholder="name (Required)" class="name form-control" type="text" /></div>
-    <div class="latitudeWrapper"><label for="">Latitude:</label><input placeholder="Latitude" class="latitude form-control" type="text" readOnly=true /></div>
-    <div class="longitudeWrapper"><label for="">Longitude:</label><input placeholder="Longitude" class="longitude form-control " type="text" readOnly=true /></div>
+    <div class="latitudeWrapper"><label for="">Latitude:</label><input placeholder="Latitude" class="latitude form-control" type="text" value="" /></div>
+    <div class="longitudeWrapper"><label for="">Longitude:</label><input placeholder="Longitude" class="longitude form-control " type="text"  value=""/></div>
   </div>
   [#-- Button --]
+  <div style="margin-left:10px; float:right;">
+    <span id="cancelButton" class=" cancelButton pull-right" style="display:block; margin-top:10px; border-radius:8px;">[@s.text name="Cancel" /]</span>
+  </div>
   <div>
-    <span id="addLocationButton" class=" addButton pull-right" style="display:none; margin-top:10px; border-radius:8px;">[@s.text name="Map out" /]</span>
+    <span id="addLocationButton" class=" addButton pull-right" style="display:none; margin-top:10px; border-radius:8px;">[@s.text name="Drop pin" /]</span>
   </div>
 </div>
 
@@ -179,9 +200,9 @@
     <span class="infoLocName">{test}</span>
     </div>    
     <div id="inputFormWrapper" style="width: 450px;">
-      <div class="nameWrapper"><label for="">Change name:</label><input placeholder="name" class="nameMap form-control" type="text" /></div>
-      <div class="latitudeWrapper"><label for="">Latitude:</label><input  placeholder="Latitude" class="latMap form-control" type="text" readOnly=true /></div>
-      <div class="longitudeWrapper"><label for="">Longitude:</label><input placeholder="Longitude" class="lngMap form-control " type="text" readOnly=true /></div>
+      <div class="nameWrapper"><label for="">Change name:</label><input placeholder="name" class="nameMap form-control" type="text" value=""/></div>
+      <div class="latitudeWrapper"><label for="">Latitude:</label><input  placeholder="Latitude" class="latMap form-control" type="text" value="" /></div>
+      <div class="longitudeWrapper"><label for="">Longitude:</label><input placeholder="Longitude" class="lngMap form-control " type="text" value="" /></div>
     </div>
   </div>
   [#-- Button --]
