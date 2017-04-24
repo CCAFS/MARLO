@@ -46,6 +46,8 @@ import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.utils.HistoryComparator;
+import org.cgiar.ccafs.marlo.utils.HistoryDifference;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 import org.cgiar.ccafs.marlo.validation.impactpathway.ClusterActivitiesValidator;
 
@@ -56,7 +58,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
@@ -93,6 +97,8 @@ public class ClusterActivitiesAction extends BaseAction {
   private Role roleCl;
   private RoleManager roleManager;
   private CrpProgram selectedProgram;
+  private HistoryComparator historyComparator;
+
   // Util
   private SendMailS sendMail;
 
@@ -109,7 +115,7 @@ public class ClusterActivitiesAction extends BaseAction {
     CrpManager crpManager, UserManager userManager, CrpProgramManager crpProgramManager,
     CrpClusterOfActivityManager crpClusterOfActivityManager, ClusterActivitiesValidator validator,
     CrpClusterActivityLeaderManager crpClusterActivityLeaderManager, AuditLogManager auditLogManager,
-    SendMailS sendMail, CrpClusterKeyOutputManager crpClusterKeyOutputManager,
+    SendMailS sendMail, CrpClusterKeyOutputManager crpClusterKeyOutputManager, HistoryComparator historyComparator,
     CrpProgramOutcomeManager crpProgramOutcomeManager,
     CrpClusterKeyOutputOutcomeManager crpClusterKeyOutputOutcomeManager, CrpUserManager crpUserManager) {
     super(config);
@@ -117,6 +123,7 @@ public class ClusterActivitiesAction extends BaseAction {
     this.userRoleManager = userRoleManager;
     this.crpManager = crpManager;
     this.userManager = userManager;
+    this.historyComparator = historyComparator;
     this.crpProgramManager = crpProgramManager;
     this.crpClusterOfActivityManager = crpClusterOfActivityManager;
     this.crpClusterActivityLeaderManager = crpClusterActivityLeaderManager;
@@ -374,20 +381,58 @@ public class ClusterActivitiesAction extends BaseAction {
         this.setCanEdit(false);
         programs = new ArrayList<>();
         programs.add(history);
+
+        List<HistoryDifference> differences = new ArrayList<>();
+        Map<String, String> specialList = new HashMap<>();
+        int i = 0;
         for (CrpClusterOfActivity crpClusterOfActivity : clusterofActivities) {
+
+
+          differences.addAll(historyComparator.getDifferencesList(crpClusterOfActivity, transaction, specialList,
+            "clusterofActivities[" + i + "]", "clusterofActivities", 1));
 
           crpClusterOfActivity.setLeaders(crpClusterOfActivity.getCrpClusterActivityLeaders().stream()
             .filter(c -> c.isActive()).collect(Collectors.toList()));
 
+          int j = 0;
+          for (CrpClusterActivityLeader clusterActivityLeader : crpClusterOfActivity.getLeaders()) {
+
+            differences.addAll(historyComparator.getDifferencesList(clusterActivityLeader, transaction, specialList,
+              "clusterofActivities[" + i + "].leaders[" + j + "]", "clusterofActivities", 2));
+
+            j++;
+          }
           crpClusterOfActivity.setKeyOutputs(crpClusterOfActivity.getCrpClusterKeyOutputs().stream()
             .filter(c -> c.isActive()).collect(Collectors.toList()));
 
+          j = 0;
 
+
+          int k = 0;
           for (CrpClusterKeyOutput crpClusterKeyOutput : crpClusterOfActivity.getKeyOutputs()) {
+
+            differences.addAll(historyComparator.getDifferencesList(crpClusterKeyOutput, transaction, specialList,
+              "clusterofActivities[" + i + "].keyOutputs[" + j + "]", "clusterofActivities", 2));
+
+
             crpClusterKeyOutput.setKeyOutputOutcomes(crpClusterKeyOutput.getCrpClusterKeyOutputOutcomes().stream()
               .filter(c -> c.isActive()).collect(Collectors.toList()));
+            for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome : crpClusterKeyOutput.getKeyOutputOutcomes()) {
+              differences.addAll(historyComparator.getDifferencesList(crpClusterKeyOutputOutcome, transaction,
+                specialList, "clusterofActivities[" + i + "].keyOutputs[" + j + "].keyOutputOutcomes[" + k + "]",
+                "clusterofActivities", 3));
+              k++;
+            }
+            j++;
+
           }
+
+          i++;
         }
+        i = 0;
+
+
+        this.setDifferences(differences);
       } else {
         programs = new ArrayList<>();
         this.transaction = "-1";

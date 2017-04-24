@@ -57,6 +57,7 @@ import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.utils.HistoryComparator;
 import org.cgiar.ccafs.marlo.validation.publications.PublicationValidator;
 
 import java.io.BufferedReader;
@@ -90,7 +91,7 @@ public class PublicationAction extends BaseAction {
   private DeliverableCrpManager deliverableCrpManager;
   private Map<String, String> crps;
   private List<GenderType> genderLevels;
-  private GenderTypeManager genderTypeManager;
+
   private CrpPandrManager crpPandrManager;
   private IpProgramManager ipProgramManager;
   private Map<String, String> programs;
@@ -121,34 +122,38 @@ public class PublicationAction extends BaseAction {
   private AuditLogManager auditLogManager;
   private DeliverableQualityCheckManager deliverableQualityCheckManager;
   private MetadataElementManager metadataElementManager;
+  private HistoryComparator historyComparator;
 
   private UserManager userManager;
   private InstitutionManager institutionManager;
   private List<DeliverableType> deliverableSubTypes;
+  private GenderTypeManager genderTypeManager;
 
   private DeliverableTypeManager deliverableTypeManager;
 
   @Inject
   public PublicationAction(APConfig config, CrpManager crpManager, DeliverableManager deliverableManager,
-    DeliverableQualityCheckManager deliverableQualityCheckManager, AuditLogManager auditLogManager,
-    DeliverableTypeManager deliverableTypeManager, MetadataElementManager metadataElementManager,
-    UserManager userManager, DeliverableDisseminationManager deliverableDisseminationManager,
-    InstitutionManager institutionManager, DeliverablePublicationMetadataManager deliverablePublicationMetadataManager,
+    GenderTypeManager genderTypeManager, DeliverableQualityCheckManager deliverableQualityCheckManager,
+    AuditLogManager auditLogManager, DeliverableTypeManager deliverableTypeManager,
+    MetadataElementManager metadataElementManager, UserManager userManager,
+    DeliverableDisseminationManager deliverableDisseminationManager, InstitutionManager institutionManager,
+    DeliverablePublicationMetadataManager deliverablePublicationMetadataManager,
     DeliverableGenderLevelManager deliverableGenderLevelManager, DeliverableUserManager deliverableUserManager,
     CrpPandrManager crpPandrManager, DeliverableCrpManager deliverableCrpManager,
     CrpPpaPartnerManager crpPpaPartnerManager, DeliverableProgramManager deliverableProgramManager,
     DeliverableLeaderManager deliverableLeaderManager, PublicationValidator publicationValidator,
-    DeliverableMetadataElementManager deliverableMetadataElementManager, IpProgramManager ipProgramManager,
-    GenderTypeManager genderTypeManager) {
+    HistoryComparator historyComparator, DeliverableMetadataElementManager deliverableMetadataElementManager,
+    IpProgramManager ipProgramManager) {
 
     super(config);
     this.deliverableDisseminationManager = deliverableDisseminationManager;
+    this.historyComparator = historyComparator;
     this.crpManager = crpManager;
     this.publicationValidator = publicationValidator;
     this.crpPandrManager = crpPandrManager;
     this.deliverableCrpManager = deliverableCrpManager;
-    this.genderTypeManager = genderTypeManager;
     this.deliverableManager = deliverableManager;
+    this.genderTypeManager = genderTypeManager;
     this.auditLogManager = auditLogManager;
     this.deliverableGenderLevelManager = deliverableGenderLevelManager;
     this.deliverableQualityCheckManager = deliverableQualityCheckManager;
@@ -279,6 +284,7 @@ public class PublicationAction extends BaseAction {
     return transaction;
   }
 
+
   @Override
   public void prepare() throws Exception {
 
@@ -301,6 +307,9 @@ public class PublicationAction extends BaseAction {
       if (history != null) {
         deliverable = history;
         deliverable.setModifiedBy(userManager.getUser(deliverable.getModifiedBy().getId()));
+        Map<String, String> specialList = new HashMap<>();
+
+        this.setDifferences(historyComparator.getDifferences(transaction, specialList, "deliverable"));
       } else {
         this.transaction = null;
 
@@ -398,8 +407,6 @@ public class PublicationAction extends BaseAction {
          */
         deliverable.setGenderLevels(
           deliverable.getDeliverableGenderLevels().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-
-
         DeliverableQualityCheck deliverableQualityCheck =
           deliverableQualityCheckManager.getDeliverableQualityCheckByDeliverable(deliverable.getId());
         deliverable.setQualityCheck(deliverableQualityCheck);
@@ -473,14 +480,7 @@ public class PublicationAction extends BaseAction {
       }
     }
 
-    for (DeliverableGenderLevel deliverableGenderLevel : deliverable.getGenderLevels()) {
-      try {
-        deliverableGenderLevel.setNameGenderLevel(
-          genderTypeManager.getGenderTypeById(deliverableGenderLevel.getGenderLevel()).getDescription());
-      } catch (Exception e) {
 
-      }
-    }
     deliverableSubTypes = new ArrayList<>(deliverableTypeManager.findAll().stream()
       .filter(dt -> dt.getDeliverableType() != null && dt.getDeliverableType().getId().intValue() == 49)
       .collect(Collectors.toList()));
@@ -588,6 +588,7 @@ public class PublicationAction extends BaseAction {
     }
 
   }
+
 
   @Override
   public String save() {
@@ -788,6 +789,7 @@ public class PublicationAction extends BaseAction {
     }
   }
 
+
   public void saveDissemination() {
     if (deliverable.getDissemination() != null) {
 
@@ -905,7 +907,6 @@ public class PublicationAction extends BaseAction {
 
 
   }
-
 
   public void saveLeaders() {
     if (deliverable.getLeaders() == null) {
@@ -1049,6 +1050,7 @@ public class PublicationAction extends BaseAction {
     }
   }
 
+
   public void setChannels(Map<String, String> channels) {
     this.channels = channels;
   }
@@ -1069,14 +1071,15 @@ public class PublicationAction extends BaseAction {
     this.deliverableSubTypes = deliverableSubTypes;
   }
 
-
   public void setDeliverableTypeManager(DeliverableTypeManager deliverableTypeManager) {
     this.deliverableTypeManager = deliverableTypeManager;
   }
 
+
   public void setGenderLevels(List<GenderType> genderLevels) {
     this.genderLevels = genderLevels;
   }
+
 
   public void setInstitutions(Map<String, String> institutions) {
     this.institutions = institutions;

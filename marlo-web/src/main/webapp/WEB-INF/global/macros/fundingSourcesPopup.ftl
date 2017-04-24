@@ -94,7 +94,7 @@
           <div class="form-group">
             <div class="row">
               <div class="col-md-12">
-                [@customForm.select name="institution" i18nkey="projectCofunded.donor" value="${action.getCGIARInsitution()}"  listName="institutions " keyFieldName="id"  displayFieldName="composedName" required=true /]
+                [@customForm.select name="institution" i18nkey="projectCofunded.donor" value="${action.getCGIARInsitution()}"  listName="institutions " keyFieldName="id"  displayFieldName="composedNameLoc" required=true /]
               </div>
             </div>
           </div>

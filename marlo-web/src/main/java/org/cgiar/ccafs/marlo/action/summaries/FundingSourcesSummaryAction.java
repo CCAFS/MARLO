@@ -86,6 +86,7 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
   private String cycle;
   private Boolean showPIEmail;
   private Boolean showIfpriDivision;
+  private long startTime;
   // Managers
   private CrpManager crpManager;
   private CrpProgramManager programManager;
@@ -114,10 +115,11 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
 
     ResourceManager manager = new ResourceManager();
     manager.registerDefaults();
+    try {
+      Resource reportResource =
+        manager.createDirectly(this.getClass().getResource("/pentaho/FundingSourcesSummary.prpt"), MasterReport.class);
 
-    Resource reportResource =
-      manager.createDirectly(this.getClass().getResource("/pentaho/FundingSourcesSummary.prpt"), MasterReport.class);
-
+ 
     MasterReport masterReport = (MasterReport) reportResource.getResource();
     String center = loggedCrp.getName();
 
@@ -152,10 +154,19 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
     this.fillSubreport((SubReport) hm.get("funding_sources"), "funding_sources");
     this.fillSubreport((SubReport) hm.get("funding_sources_projects"), "funding_sources_projects");
 
-
-    ExcelReportUtil.createXLSX(masterReport, os);
-    bytesXLSX = os.toByteArray();
-    os.close();
+      ExcelReportUtil.createXLSX(masterReport, os);
+      bytesXLSX = os.toByteArray();
+      os.close();
+    } catch (Exception e) {
+      LOG.error("Error generating FundingSources " + e.getMessage());
+      throw e;
+    }
+    // Calculate time of generation
+    long stopTime = System.currentTimeMillis();
+    stopTime = stopTime - startTime;
+    LOG.info(
+      "Downloaded successfully: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
+        + ". CRP: " + this.loggedCrp.getAcronym() + ". Cycle: " + cycle + ". Time to generate: " + stopTime + "ms.");
     return SUCCESS;
 
   }
@@ -591,13 +602,13 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
 
   @Override
   public void prepare() {
+    // Get loggerCrp
     try {
       loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
       loggedCrp = crpManager.getCrpById(loggedCrp.getId());
     } catch (Exception e) {
       LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
     }
-
     // Get parameters from URL
     // Get year
     try {
@@ -633,6 +644,12 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
         + e.getMessage());
       this.showIfpriDivision = false;
     }
+
+    // Calculate time to generate report
+    startTime = System.currentTimeMillis();
+    LOG.info(
+      "Start report download: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
+        + ". CRP: " + this.loggedCrp.getAcronym() + ". Cycle: " + cycle);
   }
 
   public void setCycle(String cycle) {
