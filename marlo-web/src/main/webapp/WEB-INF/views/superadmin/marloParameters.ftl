@@ -102,7 +102,7 @@
         [@customForm.input name="${customName}.key" placeholder="Key" showTitle=false /]
       [#else]
         <input type="hidden" name="${customName}.key" value="${(element.key)!}" />
-        <strong>${(element.key)!}</strong>
+        <strong>${(element.key)!}</strong> Description ${(element.description)!} Type ${(element.type)!}  
       [/#if]
     </td>
     <td>
