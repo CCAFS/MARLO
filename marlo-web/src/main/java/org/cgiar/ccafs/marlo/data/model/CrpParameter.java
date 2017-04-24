@@ -41,13 +41,21 @@ public class CrpParameter implements java.io.Serializable, IAuditLog {
   @Expose
   private String key;
   @Expose
+  private String description;
+  @Expose
+  private Integer type;
+
+  @Expose
   private String value;
+
 
   @Expose
   private boolean active;
 
+
   @Expose
   private User createdBy;
+
 
   @Expose
   private Date activeSince;
@@ -101,6 +109,10 @@ public class CrpParameter implements java.io.Serializable, IAuditLog {
     return this.crp;
   }
 
+  public String getDescription() {
+    return description;
+  }
+
   @Override
   public Long getId() {
     return this.id;
@@ -125,6 +137,10 @@ public class CrpParameter implements java.io.Serializable, IAuditLog {
   @Override
   public User getModifiedBy() {
     return modifiedBy;
+  }
+
+  public Integer getType() {
+    return type;
   }
 
   public String getValue() {
@@ -160,6 +176,10 @@ public class CrpParameter implements java.io.Serializable, IAuditLog {
     this.crp = crp;
   }
 
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
   public void setId(Long id) {
     this.id = id;
   }
@@ -174,6 +194,10 @@ public class CrpParameter implements java.io.Serializable, IAuditLog {
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
+  }
+
+  public void setType(Integer type) {
+    this.type = type;
   }
 
   public void setValue(String value) {
