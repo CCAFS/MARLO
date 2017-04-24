@@ -6,7 +6,6 @@
 [#assign customCSS = ["${baseUrl}/css/projects/projectBudgetByPartners.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "budgetByPartners" /]
-[#assign editable = !(reportingActive) /]
 
 [#assign breadCrumb = [
   {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
