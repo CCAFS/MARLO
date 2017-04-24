@@ -54,10 +54,7 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
           'text-outline-color': '#888',
           'z-index': '5',
           'padding': 2
-      }).selector('.eating').css({
-          'border-width': 2,
-          'background-color': '#163799'
-      }).selector('.eater').css({
+      }).selector('.eating').css({}).selector('.eater').css({
           'border-width': 9,
           'color': 'white'
       }).selector('edge').css({
@@ -148,13 +145,6 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
 // tap a node
   cy.on('tap', function(event) {
 
-    cy.$('node').css('background-opacity', '0.4');
-    cy.$('node').css('text-opacity', '0.4');
-    cy.$('edge').css('line-opacity', '0.9');
-    cy.$('edge').css('line-color', '#999999');
-    cy.$('edge').css('source-arrow-color', '#999999');
-    cy.$('edge').css('target-arrow-color', '#999999');
-    cy.$('edge').css('z-index', '1');
     $(".panel-body ul").empty();
 
     SLO = [];
@@ -169,199 +159,74 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
     if(event.cyTarget == cy) {
 
       cy.$('node').removeClass('eating');
-      cy.$('node').css('background-opacity', '1');
-      cy.$('node').css('text-opacity', '1');
 
     } else if(event.cyTarget.isEdge()) {
 
       cy.$('node').removeClass('eating');
-      cy.$('node').css('background-opacity', '1');
-      cy.$('node').css('text-opacity', '1');
-      cy.$('edge').css('line-color', '#eee');
-      cy.$('edge').css('source-arrow-color', '#eee');
-      cy.$('edge').css('target-arrow-color', '#eee');
 
     } else if(event.cyTarget.isNode()) {
 
       cy.$('node').removeClass('eating');
       var $this = event.cyTarget;
-
-      // IF NODE HAS CHILDRENS
-      if($this.isParent()) {
-        var childrens = $this.children();
-        childrens.forEach(function(ele) {
-          nodeSelected(ele);
-          ele.predecessors().forEach(function(ele1) {
-            nodeSelected(ele1);
-          });
-        });
-      }
-      // IF NODE HAS PARENT
-      if($this.isChild()) {
-        var parent = $this.parent();
-        nodeSelected(parent);
-      }
-
-      var successors = $this.successors();
-      var predecessors = $this.predecessors();
-
-      predecessors.forEach(function(ele) {
-        nodeSelected(ele);
-      });
-      nodeSelected($this);
-      successors.forEach(function(ele) {
-        nodeSelected(ele);
-      });
-
+      // change Styles
       if(inPopUp === true) {
-        // add info in Relations panel
-        SLO.forEach(function(ele) {
-          $(".panel-body ul").append("<label>SLO:</label><li>" + ele + "</li>");
+        $.ajax({
+            'url': baseURL + '/impactPathway/relationsimpactPathway.do',
+            'data': {
+                id: $this._private.data.id,
+                type: $this._private.data.type
+            },
+            beforeSend: function() {
+              $("#loader").show();
+            },
+            success: function(data) {
+
+              $.each(data.relations, function(i,e) {
+
+                if(e.type == "SLO") {
+                  $(".panel-body ul").append("<label>" + e.label + ":</label><li>" + e.description + "</li>");
+                }
+                if(e.type == "IDO") {
+                  $(".panel-body ul").append("<label>" + e.label + ":</label><li>" + e.description + "</li>");
+                  console.log(e);
+                }
+                if(e.type == "SD") {
+                  $(".panel-body ul").append("<label>" + e.label + ":</label><li>" + e.description + "</li>");
+                }
+                if(e.type == "F") {
+                  $(".panel-body ul").append("<label>" + e.label + ":</label><li>" + e.description + "</li>");
+                }
+                if(e.type == "O") {
+                  $(".panel-body ul").append("<label>" + e.label + ":</label><li>" + e.description + "</li>");
+                }
+                if(e.type == "CoA") {
+                  $(".panel-body ul").append("<label>" + e.label + ":</label><li>" + e.description + "</li>");
+                }
+                if(e.type == "KO") {
+                  $(".panel-body ul").append("<label>" + e.label + ":</label><li>" + e.description + "</li>");
+                }
+                selectNode(e.id);
+
+              });
+
+            },
+            complete: function() {
+              $("#loader").fadeOut(500);
+            }
         });
-        IDO.forEach(function(ele) {
-          $(".panel-body ul").append("<label>IDO:</label><li>" + ele + "</li>");
-        });
-        subIDO.forEach(function(ele) {
-          $(".panel-body ul").append("<label>subIDO:</label><li>" + ele + "</li>");
-        });
-        crps.forEach(function(ele) {
-          $(".panel-body ul").append("<label>CRP:</label><li>" + ele + "</li>");
-        });
-        flagships.forEach(function(ele) {
-          $(".panel-body ul").append("<label>" + ele[1] + ":</label><li>" + ele[0] + "</li>");
-        });
-        outcomes.forEach(function(ele) {
-          $(".panel-body ul").append("<label>" + ele[1] + ":</label><li>" + ele[0] + "</li>");
-        });
-        clusters.forEach(function(ele) {
-          $(".panel-body ul").append("<label>" + ele[1] + ":</label><li>" + ele[0] + "</li>");
-        });
-        keyOutputs.forEach(function(ele) {
-          console.log(ele);
-          $(".panel-body ul").append("<label>" + ele[1] + ":</label><li>" + ele[0] + "</li>");
-        });
-        $("#loader").hide();
       }
     }
   });
-  function nodeSelected(ele) {
-    if(inPopUp === true) {
-      $("#loader").show();
-    }
-    var stop;
-    if(ele.isChild()) {
-      var parent = ele.parent();
-      nodeSelected(parent);
-    }
 
-    // change Styles
-    ele.addClass('eating');
-    ele.css('background-opacity', '1');
-    ele.css('text-opacity', '1');
-    ele.css('z-index', '99');
-    ele.css('line-color', '#eee');
-    ele.css('source-arrow-color', '#eee');
-    ele.css('target-arrow-color', '#eee');
-
-    // Validate if the node exists in any array
-
-    // In flagships array
-    SLO.forEach(function(array) {
-      if(ele.data('description') === array[0]) {
-        console.log("asd");
-        stop = 1;
-      }
-    });
-
-    // In flagships array
-    IDO.forEach(function(array) {
-      if(ele.data('description') === array[0]) {
-        console.log("asd");
-        stop = 1;
-      }
-    });
-
-    // In subIDO array
-    subIDO.forEach(function(array) {
-      if(ele.data('description') === array[0]) {
-        console.log("asd");
-        stop = 1;
-      }
-    });
-
-    // In flagships array
-    flagships.forEach(function(array) {
-      if(ele.data('description') === array[0]) {
-        console.log("asd");
-        stop = 1;
-      }
-    });
-
-    // In Outcomes array
-    outcomes.forEach(function(array) {
-      if(ele.data('description') === array[0]) {
-        console.log("asd");
-        stop = 1;
-      }
-    });
-
-    // In clusters array
-    clusters.forEach(function(array) {
-      if(ele.data('description') === array[0]) {
-        console.log("asd");
-        stop = 1;
-      }
-    });
-
-    // In key outputs array
-    keyOutputs.forEach(function(array) {
-      if(ele.data('description') === array[0]) {
-        console.log("asd");
-        stop = 1;
-      }
-    });
-
-    // Break nodeSelected function
-    if(stop == 1) {
-      return;
-    }
-
-    // arrays information
-    if(ele.data('description') != 'undefined' && ele.data('description') != null) {
-      var data = [];
-      if(ele.data('type') === 'C') {
-        crps.push(ele.data('description'));
-      } else if(ele.data('type') === 'F') {
-        data.push(ele.data('description'));
-        data.push(ele.data('label'));
-        flagships.push(data);
-      } else if(ele.data('type') === 'O') {
-        data.push(ele.data('description'));
-        data.push(ele.data('label'));
-        outcomes.push(data);
-      } else if(ele.data('type') === 'CoA') {
-        data.push(ele.data('description'));
-        data.push(ele.data('label'));
-        clusters.push(data);
-      } else if(ele.data('type') === 'KO') {
-        data.push(ele.data('description'));
-        data.push(ele.data('label'));
-        keyOutputs.push(data);
-      } else if(ele.data('type') === 'SLO') {
-        data.push(ele.data('description'));
-        data.push(ele.data('label'));
-        SLO.push(data);
-      } else if(ele.data('type') === 'IDO') {
-        data.push(ele.data('description'));
-        data.push(ele.data('label'));
-        IDO.push(data);
-      } else if(ele.data('type') === 'SD') {
-        data.push(ele.data('description'));
-        data.push(ele.data('label'));
-        subIDO.push(data);
-      }
-    }
-
+  function selectNode(id) {
+    var node = cy.$('#' + id);
+    node.addClass('eating');
+// node.css('background-opacity', '1');
+// node.css('text-opacity', '1');
+// node.css('z-index', '99');
+// node.css('line-color', '#eee');
+// node.css('source-arrow-color', '#eee');
+// node.css('target-arrow-color', '#eee');
   }
 
   // Download
@@ -498,7 +363,6 @@ $("#overlay .btn").on("click", function() {
 });
 
 $("#changeGraph .btn").on("click", function() {
-  console.log("holi");
   if($(this).hasClass("currentGraph")) {
     var url = baseURL + "/impactPathway/impactPathwayFullGraph.do";
     var dataFull = {

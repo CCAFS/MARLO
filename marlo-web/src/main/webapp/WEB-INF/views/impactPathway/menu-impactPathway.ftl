@@ -73,7 +73,7 @@
 [#include "/WEB-INF/global/macros/discardChangesPopup.ftl"]
 
 [#-- Mini-graph --]
-<div id="graphicWrapper" style="display:none;">
+<div id="graphicWrapper" style="">
 <p class="text-center"><b>Impact Pathway Graph</b></p>
   <div id="mini-graphic">
     <div id="overlay" >
