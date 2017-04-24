@@ -28,7 +28,6 @@ import org.cgiar.ccafs.marlo.data.manager.FundingSourceInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
-import org.cgiar.ccafs.marlo.data.manager.PartnerDivisionManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.AgreementStatusEnum;
@@ -40,11 +39,11 @@ import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
-import org.cgiar.ccafs.marlo.data.model.PartnerDivision;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.utils.HistoryComparator;
 import org.cgiar.ccafs.marlo.validation.fundingSource.FundingSourceValidator;
 
 import java.io.BufferedReader;
@@ -105,9 +104,8 @@ public class FundingSourceAction extends BaseAction {
   private List<Institution> institutionsDonors;
   private LiaisonInstitutionManager liaisonInstitutionManager;
   private List<LiaisonInstitution> liaisonInstitutions;
-  private PartnerDivisionManager partnerDivisionManager;
+  private HistoryComparator historyComparator;
 
-  private List<PartnerDivision> divisions;
 
   private Crp loggedCrp;
 
@@ -130,7 +128,7 @@ public class FundingSourceAction extends BaseAction {
     InstitutionManager institutionManager, LiaisonInstitutionManager liaisonInstitutionManager,
     AuditLogManager auditLogManager, FundingSourceBudgetManager fundingSourceBudgetManager,
     BudgetTypeManager budgetTypeManager, FundingSourceValidator validator, CrpPpaPartnerManager crpPpaPartnerManager,
-    FileDBManager fileDBManager, UserManager userManager, PartnerDivisionManager partnerDivisionManager,
+    HistoryComparator historyComparator, FileDBManager fileDBManager, UserManager userManager,
     FundingSourceInstitutionManager fundingSourceInstitutionManager,
     /* TODO delete when fix the budget permissions */ RoleManager userRoleManager) {
     super(config);
@@ -138,12 +136,12 @@ public class FundingSourceAction extends BaseAction {
     this.fundingSourceManager = fundingSourceManager;
     this.budgetTypeManager = budgetTypeManager;
     this.institutionManager = institutionManager;
-    this.partnerDivisionManager = partnerDivisionManager;
     this.validator = validator;
     this.fundingSourceInstitutionManager = fundingSourceInstitutionManager;
     this.userManager = userManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.auditLogManager = auditLogManager;
+    this.historyComparator = historyComparator;
     this.fileDBManager = fileDBManager;
     this.crpPpaPartnerManager = crpPpaPartnerManager;
     this.fundingSourceBudgetManager = fundingSourceBudgetManager;
@@ -245,19 +243,14 @@ public class FundingSourceAction extends BaseAction {
     return budgetTypesList;
   }
 
-  public List<PartnerDivision> getDivisions() {
-    return divisions;
-  }
-
-
   public File getFile() {
     return file;
   }
 
+
   public String getFileContentType() {
     return fileContentType;
   }
-
 
   public String getFileFileName() {
     return fileFileName;
@@ -268,10 +261,10 @@ public class FundingSourceAction extends BaseAction {
     return fileID;
   }
 
+
   public FundingSource getFundingSource() {
     return fundingSource;
   }
-
 
   public String getFundingSourceFileURL() {
     return config.getDownloadURL() + "/" + this.getFundingSourceUrlPath().replace('\\', '/');
@@ -286,6 +279,7 @@ public class FundingSourceAction extends BaseAction {
   public String getFundingSourceUrlPath() {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + "fundingSourceFiles" + File.separator;
   }
+
 
   public int getIndexBugets(int year) {
     int i = 0;
@@ -332,7 +326,6 @@ public class FundingSourceAction extends BaseAction {
     return transaction;
   }
 
-
   @Override
   public void prepare() throws Exception {
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
@@ -351,6 +344,12 @@ public class FundingSourceAction extends BaseAction {
 
       if (history != null) {
         fundingSource = history;
+
+
+        Map<String, String> specialList = new HashMap<>();
+
+        this.setDifferences(historyComparator.getDifferences(transaction, specialList, "fundingSource"));
+
       } else {
         this.transaction = null;
 
@@ -417,8 +416,6 @@ public class FundingSourceAction extends BaseAction {
           fundingSource.getProjectBudgets().stream().filter(pb -> pb.isActive()).collect(Collectors.toList()));
 
       }
-      divisions = new ArrayList<>(
-        partnerDivisionManager.findAll().stream().filter(pd -> pd.isActive()).collect(Collectors.toList()));
 
       status = new HashMap<>();
       List<AgreementStatusEnum> list = Arrays.asList(AgreementStatusEnum.values());
@@ -503,7 +500,6 @@ public class FundingSourceAction extends BaseAction {
     }
   }
 
-
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -532,6 +528,7 @@ public class FundingSourceAction extends BaseAction {
       fundingSourceDB.setBudgets(fundingSource.getBudgets());
       fundingSourceDB.setBudgetType(fundingSource.getBudgetType());
       fundingSourceDB.setPartnerDivision(fundingSource.getPartnerDivision());
+
       fundingSourceDB.setDescription(fundingSource.getDescription());
 
 
@@ -634,17 +631,12 @@ public class FundingSourceAction extends BaseAction {
     }
   }
 
-
   public void setBudgetTypes(Map<String, String> budgetTypes) {
     this.budgetTypes = budgetTypes;
   }
 
   public void setBudgetTypesList(List<BudgetType> budgetTypesList) {
     this.budgetTypesList = budgetTypesList;
-  }
-
-  public void setDivisions(List<PartnerDivision> divisions) {
-    this.divisions = divisions;
   }
 
   public void setFile(File file) {
