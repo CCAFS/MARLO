@@ -363,6 +363,8 @@ function addAuthor(author) {
   $item.find(".orcidId").html(author.orcidId);
   $item.find(".orcidIdInput").val(author.orcidId);
 
+  console.log('Adding:' + author.firstName + ' ' + author.lastName);
+
   $list.append($item);
   $item.show('slow');
   updateAuthor();
@@ -417,12 +419,13 @@ function setMetadata(data) {
 
   // Set Authors
   if(data.authors.length > 0) {
+
+    // Clear Authors
+    $('.authorsList').empty();
+
+    // Add Authors
     $.each(data.authors, function(i,author) {
-      var isNew = validateAuthors(author.lastName, author.firstName);
-      if(isNew) {
-        // Add a new author
-        addAuthor(author);
-      }
+      addAuthor(author);
     });
 
     // Hide authors
