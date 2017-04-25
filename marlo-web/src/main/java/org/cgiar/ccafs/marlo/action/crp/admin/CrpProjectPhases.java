@@ -19,6 +19,7 @@ package org.cgiar.ccafs.marlo.action.crp.admin;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPhaseManager;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
@@ -43,7 +44,7 @@ public class CrpProjectPhases extends BaseAction {
 
 
   private PhaseManager phaseManager;
-
+  private ProjectPhaseManager projectPhaseManager;
 
   private List<Project> allProjects;
 
@@ -51,10 +52,12 @@ public class CrpProjectPhases extends BaseAction {
   private List<Project> phasesProjects;
 
   @Inject
-  public CrpProjectPhases(APConfig config, ProjectManager projectManager, PhaseManager phaseManager) {
+  public CrpProjectPhases(APConfig config, ProjectManager projectManager, PhaseManager phaseManager,
+    ProjectPhaseManager projectPhaseManager) {
     super(config);
     this.projectManager = projectManager;
     this.phaseManager = phaseManager;
+    this.projectPhaseManager = projectPhaseManager;
 
 
   }
@@ -84,6 +87,48 @@ public class CrpProjectPhases extends BaseAction {
 
     Collections.sort(phasesProjects, (tu1, tu2) -> tu1.getId().compareTo(tu2.getId()));
 
+    if (this.isHttpPost()) {
+      if (allProjects != null) {
+        allProjects.clear();
+      }
+
+      if (phasesProjects != null) {
+        phasesProjects.clear();
+      }
+
+    }
+  }
+
+
+  @Override
+  public String save() {
+    Phase phase = phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), this.getCrpID());
+
+    if (phasesProjects == null) {
+      phasesProjects = new ArrayList<>();
+    }
+    List<Project> previousProjects = new ArrayList<>();
+    for (ProjectPhase projectPhase : phase.getProjectPhases()) {
+      previousProjects.add(projectPhase.getProject());
+      if (!phasesProjects.contains(projectPhase.getProject())) {
+        projectPhaseManager.deleteProjectPhase(projectPhase.getId());
+      }
+
+    }
+
+    for (Project project : phasesProjects) {
+      if (!previousProjects.contains(project)) {
+        ProjectPhase projectPhase = new ProjectPhase();
+        projectPhase.setPhase(phase);
+        projectPhase.setProject(project);
+        projectPhaseManager.saveProjectPhase(projectPhase);
+      }
+
+    }
+
+    this.addActionMessage("message:" + this.getText("saving.saved"));
+
+    return SUCCESS;
   }
 
   public void setAllProjects(List<Project> allProjects) {
