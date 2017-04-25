@@ -1812,6 +1812,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           return null;
         }
 
+        // If the deliverable is synced
+        if ((deliverableBD.getDissemination().getSynced() != null)
+          && (deliverableBD.getDissemination().getSynced().booleanValue())) {
+          return true;
+        }
+
         switch (channel) {
           case "cgspace":
             if (!this.validURL(link)) {
@@ -1836,6 +1842,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             return null;
 
         }
+
+
         return true;
       }
       if (deliverableBD.getDissemination().getAlreadyDisseminated() == null) {

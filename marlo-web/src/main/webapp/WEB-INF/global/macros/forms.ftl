@@ -26,7 +26,7 @@
   </div>
 [/#macro]
 
-[#macro textArea name editable value="-NULL" i18nkey="" disabled=false required=false errorfield="" help="" showTitle=true display=true className="-NULL" paramText="" editable=true placeholder=""]
+[#macro textArea name editable value="-NULL" i18nkey="" disabled=false required=false errorfield="" help="" showTitle=true display=true className="-NULL" paramText="" readOnly=false editable=true placeholder=""]
   <div class="textArea ${changedField(name)}" [#if !display]style="display: none;"[/#if]> 
     [#assign customName]${(i18nkey?has_content)?string(i18nkey,name)}[/#assign]  
     [#assign customLabel][#if !editable]${customName}.readText[#else]${customName}[/#if][/#assign]
@@ -37,7 +37,7 @@
     [/#if]
     [#if errorfield==""][@s.fielderror cssClass="fieldError" fieldName="${name}"/][#else][@s.fielderror cssClass="fieldError" fieldName="${errorfield}"/][/#if]
     [#if editable]
-      <textarea rows="4" name="${name}" id="${name}" [#if disabled]disabled="disabled"[/#if]  class="[#if className != "-NULL"]${className}[/#if] form-control input-sm ${required?string('required','optional')}" placeholder="[@s.text name=placeholder /]" />${customValue}</textarea>
+      <textarea rows="4" name="${name}" id="${name}" [#if readOnly] readonly="readonly"[/#if] [#if disabled]disabled="disabled"[/#if]  class="[#if className != "-NULL"]${className}[/#if] form-control input-sm ${required?string('required','optional')}" placeholder="[@s.text name=placeholder /]" />${customValue}</textarea>
     [#else]
       <input type="hidden" name="${name}" id="${name}" value="${customValue}" class="[#if className != "-NULL"] ${className}[/#if]  ${required?string('required','optional')}" />
       [#assign requiredText][#if required && editable]<span class="fieldError">[@s.text name="form.values.required" /]</span>[/#if][/#assign] 

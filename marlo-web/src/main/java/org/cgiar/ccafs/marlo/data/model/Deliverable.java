@@ -468,6 +468,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return id;
   }
 
+
   public long getID(int metadataID) {
 
     if (metadataElements != null) {
@@ -520,8 +521,41 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+  public long getMElementID(int metadataID) {
+    if (metadataElements != null) {
+      for (DeliverableMetadataElement dmetadata : metadataElements) {
+        if (dmetadata != null) {
+          if (dmetadata.getMetadataElement() != null && dmetadata.getMetadataElement().getId() != null) {
+            if (dmetadata.getMetadataElement().getId() == metadataID) {
+              return dmetadata.getId().longValue();
+            }
+          }
+        }
+      }
+    }
+    return -1;
+  }
+
   public List<MetadataElement> getMetadata() {
     return metadata;
+  }
+
+  public DeliverableMetadataElement getMetadata(int metadataID) {
+    String value = "";
+    if (metadataElements != null) {
+      for (DeliverableMetadataElement dmetadata : metadataElements) {
+        if (dmetadata != null) {
+          if (dmetadata.getMetadataElement() != null && dmetadata.getMetadataElement().getId() != null) {
+            if (dmetadata.getMetadataElement().getId() == metadataID) {
+              return dmetadata;
+            }
+          }
+        }
+
+
+      }
+    }
+    return null;
   }
 
   public List<DeliverableMetadataElement> getMetadataElements() {
@@ -570,6 +604,10 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     }
     return value;
   }
+
+
+  // End
+
 
   public String getMetadataValue(String metadataName) {
     if (metadataElements != null) {
