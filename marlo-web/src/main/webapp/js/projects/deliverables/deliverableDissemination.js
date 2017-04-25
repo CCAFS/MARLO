@@ -159,7 +159,7 @@ function init() {
       var spantext = $(this).text();
       $(this).empty().html('<input type="text" value="' + spantext + '">').find('input').focus();
     }).keypress(function(e) {
-      if(e.keyCode == 13) {
+      if((e.keyCode == 13) || (e.keyCode == 27)) {
         var text = $('input', this).val();
         if(text == "") {
           text = "Last Name";
@@ -174,7 +174,7 @@ function init() {
       var spantext = $(this).text();
       $(this).empty().html('<input type="text" value="' + spantext + '">').find('input').focus();
     }).keypress(function(e) {
-      if(e.keyCode == 13) {
+      if((e.keyCode == 13) || (e.keyCode == 27)) {
         var text = $('input', this).val();
         if(text == "") {
           text = "First Name";
@@ -189,10 +189,10 @@ function init() {
       var spantext = $(this).text();
       $(this).empty().html('<input type="text" value="' + spantext + '">').find('input').focus();
     }).keypress(function(e) {
-      if(e.keyCode == 13) {
+      if((e.keyCode == 13) || (e.keyCode == 27)) {
         var text = $('input', this).val();
         if(text == "") {
-          text = "orcid Id";
+          text = "";
         } else {
           $(this).parents(".author").find(".orcidIdInput").val(text);
           $(this).parents(".author").find(".id").val("");
@@ -348,6 +348,7 @@ function addAuthorElement() {
 }
 
 function addAuthor(author) {
+
   var $list = $('.authorsList');
   var $item = $('#author-template').clone(true).removeAttr("id");
 
@@ -360,10 +361,11 @@ function addAuthor(author) {
   $item.find(".firstNameInput").val(author.firstName);
 
   // ORCID
-  $item.find(".orcidId").html(author.orcidId);
-  $item.find(".orcidIdInput").val(author.orcidId);
-
-  console.log('Adding:' + author.firstName + ' ' + author.lastName);
+  if(author.orcidId) {
+    author.orcidId = (author.orcidId).replace(/^https?\:\/\//i, "");
+    $item.find(".orcidId strong").html(author.orcidId);
+    $item.find(".orcidIdInput").val(author.orcidId);
+  }
 
   $list.append($item);
   $item.show('slow');
@@ -419,15 +421,12 @@ function setMetadata(data) {
 
   // Set Authors
   if(data.authors.length > 0) {
-
     // Clear Authors
     $('.authorsList').empty();
-
     // Add Authors from data source
     $.each(data.authors, function(i,author) {
       addAuthor(author);
     });
-
     // Hide authors
     $('.author').addClass('hideAuthor');
     $('.authorVisibles').hide();
@@ -671,7 +670,7 @@ function getIfpriMetadata(channel,url,uri) {
               title: validateKeyObject(m.metadata.title),
               description: validateKeyObject(m.metadata.descri),
               citation: validateKeyObject(m.metadata.full),
-              date: validateKeyObject(m.metadata.date) + "-01-01",
+              date: validateKeyObject(m.metadata.dmcreated),
               language: validateKeyObject(m.metadata.langua),
               keywords: validateKeyObject(m.metadata.loc),
               handle: '',

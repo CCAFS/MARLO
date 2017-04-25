@@ -599,15 +599,16 @@
 
 
 [#macro authorMacro element index name  isTemplate=false]
-  [#assign customName = "${name}[${index}]" /]
+  [#local customName = "${name}[${index}]" /]
+  [#local displayVisible = "display:${isMetadataHide('marlo.authors')?string('none','block')};" /]
   <div id="author-${isTemplate?string('template',(element.id)!)}" class="author simpleBox col-md-4 ${isMetadataHide("marlo.authors")?string('hideAuthor','')}"  style="display:${isTemplate?string('none','block')}">
     [#if editable]
-      <div class="removeLink authorVisibles" style="display:${isMetadataHide("marlo.authors")?string('none','block')}"><div class="removeAuthor removeIcon" title="Remove author/creator"></div></div>
+      <div class="removeLink authorVisibles" style="${displayVisible}"><div class="removeAuthor removeIcon" title="Remove author/creator"></div></div>
     [/#if]
     [#-- Last name & First name --]
     <span class="lastName">${(element.lastName?replace(',',''))!}</span>, <span class="firstName">${(element.firstName?replace(',',''))!} </span><br />
     [#-- ORCID --]
-    <span><small class="orcidId">[#if (element.elementId?has_content)!false]<strong>${(element.elementId?replace('https://|http://','','r'))!}</strong>[#else]<i>No ORCID</i>[/#if]</small></span>
+    <span><small class="orcidId"><strong>[#if (element.elementId?has_content)!false]${(element.elementId?replace('https://|http://','','r'))!}[#else]<i class="authorVisibles" style="${displayVisible}">No ORCID</i>[/#if]</strong></small></span>
     [#-- Hidden inputs --]
     <input type="hidden" name="${customName}.id" class="id" value="${(element.id)!}" />
     <input type="hidden" name="${customName}.lastName"  class="lastNameInput" value="${(element.lastName?replace(',',''))!}" />
