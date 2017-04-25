@@ -23,15 +23,18 @@ import org.cgiar.ccafs.marlo.data.manager.ActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
+import org.cgiar.ccafs.marlo.data.manager.PartnerRequestManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.ActivityPartner;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
+import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -58,6 +61,7 @@ public class PartnersSaveAction extends BaseAction {
   private InstitutionManager institutionsManager;
   private ActivityManager activityManager;
   private ProjectManager projectManager;
+  private PartnerRequestManager partnerRequestManager;
 
   // Model
   private List<LocElement> countriesList;
@@ -77,13 +81,14 @@ public class PartnersSaveAction extends BaseAction {
   @Inject
   public PartnersSaveAction(APConfig config, LocElementManager locationManager,
     InstitutionTypeManager institutionManager, InstitutionManager institutionsManager, ActivityManager activityManager,
-    ProjectManager projectManager) {
+    ProjectManager projectManager, PartnerRequestManager partnerRequestManager) {
     super(config);
     this.locationManager = locationManager;
     this.institutionManager = institutionManager;
     this.activityManager = activityManager;
     this.projectManager = projectManager;
     this.institutionsManager = institutionsManager;
+    this.partnerRequestManager = partnerRequestManager;
   }
 
   public int getActivityID() {
@@ -173,6 +178,32 @@ public class PartnersSaveAction extends BaseAction {
         institutionTypeName = pt.getName();
       }
     }
+
+
+    // Add Partner Request information.
+    PartnerRequest partnerRequest = new PartnerRequest();
+    partnerRequest.setActive(true);
+    partnerRequest.setActiveSince(new Date());
+    partnerRequest.setCreatedBy(this.getCurrentUser());
+    partnerRequest.setModifiedBy(this.getCurrentUser());
+    partnerRequest.setModificationJustification("");
+
+    partnerRequest.setPartnerName(institutionName);
+    partnerRequest.setAcronym(institutionAcronym);
+    partnerRequest.setCity(city);
+    partnerRequest.setLocElement(locationManager.getLocElementById(Long.parseLong(countryId)));
+    partnerRequest.setInstitutionType(institutionManager.getInstitutionTypeById(partnerTypeId));
+
+    if (this.partnerWebPage != null && !this.partnerWebPage.isEmpty()) {
+      partnerRequest.setWebPage(partnerWebPage);
+    }
+
+    if (headQuater != -1) {
+      partnerRequest.setInstitution(institutionsManager.getInstitutionById(headQuater));
+    }
+
+    partnerRequestManager.savePartnerRequest(partnerRequest);
+
 
     // message subject
     subject = "[MARLO-" + this.getCrpSession().toUpperCase() + "] Partner verification - " + institutionName;

@@ -1,9 +1,9 @@
 [#ftl]
 [#assign title = "MARLO Admin" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
-[#assign pageLibs = [] /]
-[#assign customJS = [ "${baseUrl}/js/superadmin/marloParameters.js" ] /]
-[#assign customCSS = [ "${baseUrl}/css/superadmin/superadmin.css" ] /]
+[#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
+[#assign customJS = [ "${baseUrl}/js/superadmin/marloInstitutions.js" ] /]
+[#assign customCSS = [ "${baseUrl}/css/superadmin/superadmin.css","${baseUrl}/css/global/customDataTable.css" ] /]
 [#assign currentSection = "superadmin" /]
 [#assign currentStage = "institutions" /]
 
@@ -19,7 +19,7 @@
   [#include "/WEB-INF/global/pages/breadcrumb.ftl" /]
 </div>
 [#include "/WEB-INF/global/pages/generalMessages.ftl" /]
-
+[#import "/WEB-INF/global/macros/utils.ftl" as utilities/]
 
 <section class="marlo-content">
   <div class="container"> 
@@ -31,13 +31,9 @@
         [@s.form action=actionName enctype="multipart/form-data" ]
         
           [#-- Requested Institutions--]
-          <h4 class="sectionTitle">[@s.text name="marloInstitutions.title" /]</h4>
-          <div class="borderBox">
-          
-          
-          </div>
-          
-         
+          <h4 class="sectionTitle">[@s.text name="marloRequestInstitution.title" /]</h4>  
+                 
+          [@partnersList partners=partners  canEdit=editable namespace="/marloInstitutions" defaultAction="${(crpSession)!}/marloInstitutions"/]
           
         [/@s.form]
       </div>
@@ -45,65 +41,65 @@
   </div>
 </section>
 
-[#-- Parameter template --]
-<table>
-	<tbody>
-    [@parameterMacro element={} name="crps[-1].parameters" index=-1 isTemplate=true /]
-	</tbody>
-</table>
+
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]
 
-[#-- MACROS --]
-[#macro crpParametersMacro element name index isTemplate=false]
-  <div id="crpParameters-${isTemplate?string('template',index)}" class="crpParameters borderBox" style="display:${isTemplate?string('none','block')}">
-    [#local customName = "${name}[${index}]"]
-    [#-- CRP Title --]
-    <div class="blockTitle closed">
-      <strong>${(element.acronym?upper_case)!}</strong> - ${(element.name)!} <small>(Parameters: ${(element.parameters?size)!0})</small>
-    </div>
-    
-    <div class="blockContent" style="display:none">
-      <hr /> 
-      [#if element.parameters??]
-        <table class="table table-striped table-condensed ">
-          <tbody>
-          [#list element.parameters as parameter]
-            [@parameterMacro element=parameter name="${customName}.parameters" index=parameter_index /]
-          [/#list]
-          </tbody>
-        </table>
+
+[#macro partnersList partners={} canEdit=false  namespace="/" defaultAction=""]
+  <table class="partnerList" id="partners">
+    <thead>
+      <tr class="subHeader">
+        <th id="partnerName">[@s.text name="Partner Name" /]</th>
+        <th id="partnerType" >[@s.text name="Type" /]</th>
+        <th id="isHqPartner">[@s.text name="Is HQ?" /]</th>
+        <th id="partnerCountry">[@s.text name="Country" /]</th>
+        <th id="requestedBy" >[@s.text name="Requested By" /]</th>
+        <th id="action">[@s.text name="Action" /]</th>
+      </tr>
+    </thead>
+    <tbody>
+    [#if partners?has_content]
+      [#list partners as partner]
+        
+        <tr>
+          [#-- partner name --]
+          <td class="deliverableId">
+              ${partner.partnerInfo}
+          </td>
+          [#-- partner type --]
+          <td class="left">
+            ${partner.institutionType.name}
+          </td>
+          [#-- is HQ? --]
+          <td class="text-center">
+            [#if partner.institution?has_content]
+              <span class="icon-20 icon-check" title="${partner.institution.name}"></span>
+            [#else]
+              <span class="icon-20 icon-uncheck" title=""></span> 
+            [/#if]
+          </td>
+          [#-- Country --]
+          <td class="text-center">
+            ${partner.countryInfo}
+          </td>
+          [#-- Requested by --]
+          <td class="text-center">
+          ${(partner.createdBy.composedName)!'none'}
+          </td>
+          [#-- Action --]
+          <td class="">
+            <a href="[@s.url namespace="" action="superadmin/addPartner"][@s.param name='requestID']${partner.id?c}[/@s.param][/@s.url]">
+              <span class="text-center col-md-6 glyphicon glyphicon-ok" style="cursor:pointer;"> Accept</span>
+            </a>
+            <a href="[@s.url namespace="superadmin" action="superadmin/removePartner"][@s.param name='requestID']${partner.id?c}[/@s.param][/@s.url]">
+              <span class="text-center col-md-6 glyphicon glyphicon-remove" style="cursor:pointer;"> Reject</span>
+            </a>
+          </td>
+        </tr>  
+      [/#list]
       [/#if]
-      [#-- Add parameter --]
-      <div class="buttonBlock text-right">
-        <div class="addParameter button-blue">
-          <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addParameter"/]
-        </div>
-      </div>
-      
-    </div>
-  </div>
+    </tbody>
+  </table>
 [/#macro]
 
-[#macro parameterMacro element name index isTemplate=false]
-  [#local customName = "${name}[${index}]"]
-  <tr id="parameter-${isTemplate?string('template',index)}" class="parameter" style="display:${isTemplate?string('none','table-row')}">
-    <td>
-      <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
-      [#if isTemplate]
-        [@customForm.input name="${customName}.key" placeholder="Key" showTitle=false /]
-      [#else]
-        <input type="hidden" name="${customName}.key" value="${(element.key)!}" />
-        <strong>${(element.key)!}</strong>
-      [/#if]
-    </td>
-    <td>
-      [@customForm.input name="${customName}.value" placeholder="Value" showTitle=false /]
-    </td>
-    <td>
-      <div style="position:relative">
-        <div class="removeParameter removeIcon" title="Remove"></div>
-      </div>
-    </td>
-  </tr>
-[/#macro]
