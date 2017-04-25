@@ -254,8 +254,14 @@
 [#-- Creator/Authors --]
 <div class="form-group">
   <label for="">[@s.text name="metadata.creator" /]:  </label>
+  [#-- Hidden input --]
+  [@deliverableMacros.metadataField title="authors" encodedName="marlo.authors" type="hidden" require=false/]
   [#-- Some Instructions  --]
-  [#if editable]<div class="note">[@s.text name = "project.deliverable.dissemination.authorsInfo" /]</div>[/#if]
+  [#if editable]
+    <div class="note authorVisibles" style="display:${isMetadataHide("marlo.authors")?string('none','block')}">
+    [@s.text name = "project.deliverable.dissemination.authorsInfo" /]
+    </div>
+  [/#if]
   [#-- Authors List --]
   <div class="authorsList simpleBox row" >
     [#if deliverable.users?has_content]
@@ -268,7 +274,7 @@
   </div>
   [#-- Add an author --]
   [#if editable]
-  <div class="dottedBox">
+  <div class="dottedBox authorVisibles" style="display:${isMetadataHide("marlo.authors")?string('none','block')}">
   <label for="">Add an Author:</label>
   <div class="form-group">
     <div class="pull-left" style="width:25%"><input class="form-control input-sm lName"  placeholder="Last Name" type="text" /> </div>
@@ -564,10 +570,10 @@
   [#local mElementID = (deliverable.getMElementID(metadataID))!'' /]
   [#local metadataIndex = (deliverable.getMetadataIndex(encodedName))!-1 /]
   [#local metadataValue = (deliverable.getMetadataValue(metadataID))!'' /]
+  [#local mElementHide = isMetadataHide(encodedName) /]
   
   [#local customName = 'deliverable.metadataElements[${metadataIndex}]' /]
-  [#local mElement = (deliverable.getMetadata(metadataID))!{} /]
-  [#local mElementHide = (mElement.hide)!false /]
+
   <div class="metadataElement metadataElement-${title?lower_case}">
     <input type="hidden" name="${customName}.id" value="${mElementID}" />
     <input type="hidden" class="hide" name="${customName}.hide" value="${mElementHide?string}" />
@@ -578,16 +584,24 @@
       [@customForm.textArea name="${customName}.elementValue" required=require value="${metadataValue}" className="metadataValue" i18nkey="metadata.${title}" help="metadata.${title}.help" readOnly=mElementHide editable=editable/]
     [#elseif type == "select"]
       [@customForm.select name="${customName}.elementValue" required=require value="${metadataValue}" className="metadataValue" i18nkey="metadata.${title}" listName=list disabled=mElementHide editable=editable /]
+    [#elseif type == "hidden"]
+      <input type="hidden" name="${customName}.elementValue" value="${metadataValue}" class="metadataValue"/>
     [/#if]
   </div>
 [/#macro]
 
+[#function isMetadataHide encodedName]
+  [#local metadataID = (deliverable.getMetadataID(encodedName))!-1 /]
+  [#local mElement = (deliverable.getMetadata(metadataID))!{} /]
+  [#return (mElement.hide)!false]
+[/#function]
+
 
 [#macro authorMacro element index name  isTemplate=false]
   [#assign customName = "${name}[${index}]" /]
-  <div id="author-${isTemplate?string('template',(element.id)!)}" class="author  simpleBox col-md-4"  style="display:${isTemplate?string('none','block')}">
+  <div id="author-${isTemplate?string('template',(element.id)!)}" class="author simpleBox col-md-4 ${isMetadataHide("marlo.authors")?string('hideAuthor','')}"  style="display:${isTemplate?string('none','block')}">
     [#if editable]
-      <div class="removeLink"><div class="removeAuthor removeIcon" title="Remove author/creator"></div></div>
+      <div class="removeLink authorVisibles" style="display:${isMetadataHide("marlo.authors")?string('none','block')}"><div class="removeAuthor removeIcon" title="Remove author/creator"></div></div>
     [/#if]
     [#-- Last name & First name --]
     <span class="lastName">${(element.lastName?replace(',',''))!}</span>, <span class="firstName">${(element.firstName?replace(',',''))!} </span><br />

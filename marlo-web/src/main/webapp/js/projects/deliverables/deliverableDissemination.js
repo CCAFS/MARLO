@@ -50,7 +50,7 @@ function init() {
     if(!valueSelected) {
       $(".findableOptions").hide("slow");
       $(".dataSharing").show("slow");
-      unsyncMetadata();
+      unSyncDeliverable();
     } else {
       $(".findableOptions").show("slow");
       $(".dataSharing").hide("slow");
@@ -92,7 +92,7 @@ function init() {
   });
 
   // Add Author
-  $(".addAuthor").on("click", addAuthor);
+  $(".addAuthor").on("click", addAuthorElement);
 
   // Remove a author
   $('.removeAuthor').on('click', removeAuthor);
@@ -104,7 +104,7 @@ function init() {
   $("#fillMetadata .checkButton, #fillMetadata .updateButton").on("click", syncMetadata);
 
   // Unsync metadata
-  $("#fillMetadata .uncheckButton").on("click", unsyncMetadata);
+  $("#fillMetadata .uncheckButton").on("click", unSyncDeliverable);
 
   $("input[name='deliverable.dissemination.type']").on("change", openAccessRestriction);
 
@@ -323,41 +323,51 @@ function changeDisseminationChannel() {
   checkFAIRCompliant();
 }
 
-function addAuthor() {
+function addAuthorElement() {
 
   var firstName = $(".fName").val();
   var lastName = $(".lName").val();
-  var orcid = $(".oId").val();
+  var orcidId = $(".oId").val();
 
   // Check if inputs are filled out
   if(firstName && lastName) {
     $(".lName, .fName, .oId").removeClass("fieldError");
 
-    var $list = $('.authorsList');
-    var $item = $('#author-template').clone(true).removeAttr("id");
-
-    // Last Name
-    $item.find(".lastName").html(lastName);
-    $item.find(".lastNameInput").val(lastName);
-
-    // First name
-    $item.find(".firstName").html(firstName);
-    $item.find(".firstNameInput").val(firstName);
-
-    // ORCID
-    $item.find(".orcidId").html(orcid);
-    $item.find(".orcidIdInput").val(orcid);
-
-    $list.append($item);
-    $item.show('slow');
-    updateAuthor();
-    checkNextAuthorItems($list);
+    // Add a new author
+    addAuthor({
+        lastName: lastName,
+        firstName: firstName,
+        orcidId: orcidId
+    });
 
     // Clean add inputs
     $(".lName, .fName, .oId").val("");
   } else {
     $(".lName, .fName, .oId").addClass("fieldError");
   }
+}
+
+function addAuthor(author) {
+  var $list = $('.authorsList');
+  var $item = $('#author-template').clone(true).removeAttr("id");
+
+  // Last Name
+  $item.find(".lastName").html(author.lastName);
+  $item.find(".lastNameInput").val(author.lastName);
+
+  // First name
+  $item.find(".firstName").html(author.firstName);
+  $item.find(".firstNameInput").val(author.firstName);
+
+  // ORCID
+  $item.find(".orcidId").html(author.orcidId);
+  $item.find(".orcidIdInput").val(author.orcidId);
+
+  $list.append($item);
+  $item.show('slow');
+  updateAuthor();
+  checkNextAuthorItems($list);
+
 }
 
 function removeAuthor() {
@@ -389,6 +399,7 @@ function checkNextAuthorItems(block) {
 function setMetadata(data) {
   console.log(data);
 
+  // Text area & Inputs fields
   $.each(data, function(key,value) {
     var $parent = $('.metadataElement-' + key);
     var $input = $parent.find(".metadataValue");
@@ -397,7 +408,6 @@ function setMetadata(data) {
       $input.val(value);
       $parent.find('textarea').autoGrow();
       $input.attr('readOnly', true);
-      // $input.datepicker("destroy");
       $hide.val("true");
     } else {
       $input.attr('readOnly', false);
@@ -405,11 +415,33 @@ function setMetadata(data) {
     }
   });
 
+  // Set Authors
+  if(data.authors.length > 0) {
+    $.each(data.authors, function(i,author) {
+      var isNew = validateAuthors(author.lastName, author.firstName);
+      if(isNew) {
+        // Add a new author
+        addAuthor(author);
+      }
+    });
+
+    // Hide authors
+    $('.author').addClass('hideAuthor');
+    $('.authorVisibles').hide();
+    $('.metadataElement-authors .hide').val("true");
+  } else {
+    // Show authors
+    $('.author').removeClass('hideAuthor');
+    $('.authorVisibles').show();
+    $('.metadataElement-authors .hide').val("false");
+  }
+
   syncDeliverable();
 
 }
 
 function syncDeliverable() {
+
   // Hide Sync Button & dissemination channel
   $('#fillMetadata .checkButton, .disseminationChannelBlock').hide('slow');
   // Show UnSync & Update Button
@@ -425,6 +457,20 @@ function syncDeliverable() {
 }
 
 function unSyncDeliverable() {
+  // Show metadata
+  $('.metadataElement').each(function(i,e) {
+    var $parent = $(e);
+    var $input = $parent.find('.metadataValue');
+    var $hide = $parent.find('.hide');
+    $input.attr('readOnly', false);
+    $hide.val("false");
+  });
+
+  // Show authors
+  $('.author').removeClass('hideAuthor');
+  $('.authorVisibles').show();
+  $('.metadataElement-authors .hide').val("false");
+
   // Show Sync Button & dissemination channel
   $('#fillMetadata .checkButton, .disseminationChannelBlock').show('slow');
   // Hide UnSync & Update Button
@@ -469,22 +515,6 @@ function syncMetadata() {
 
 }
 
-/**
- * Unhide all metadata fields
- */
-function unsyncMetadata() {
-  $('.metadataElement').each(function(i,e) {
-    var $parent = $(e);
-    var $input = $parent.find('.metadataValue');
-    var $hide = $parent.find('.hide');
-    $input.attr('readOnly', false);
-    $hide.val("false");
-  });
-
-  unSyncDeliverable();
-
-}
-
 function getIlriMetadata(channel,url,uri) {
   var pathArray = uri.path().split('/');
 
@@ -514,25 +544,6 @@ function getIlriMetadata(channel,url,uri) {
         } else {
           var result = m.metadata.result;
 
-          // Setting Metadata
-          setMetadata({
-              title: result.title,
-              description: result.notes,
-              citation: result.ILRI_actycitation,
-              date: ilriDate(result.ILRI_actydatavailable),
-              language: '',
-              keywords: function() {
-                var output = [];
-                $.each(result.tags, function(i,element) {
-                  output.push(element.display_name);
-                })
-                return output.join(', ');
-              },
-              handle: '',
-              country: result.ILRI_actycountries.join(', '),
-              doi: ''
-          });
-
           function ilriDate(date) {
             if(date) {
               var arrayDate = (date).split('/');
@@ -553,8 +564,29 @@ function getIlriMetadata(channel,url,uri) {
                 orcidId: ''
             });
           });
+
+          // Setting Metadata
+          setMetadata({
+              title: result.title,
+              description: result.notes,
+              citation: result.ILRI_actycitation,
+              date: ilriDate(result.ILRI_actydatavailable),
+              language: '',
+              keywords: function() {
+                var output = [];
+                $.each(result.tags, function(i,element) {
+                  output.push(element.display_name);
+                })
+                return output.join(', ');
+              },
+              handle: '',
+              country: result.ILRI_actycountries.join(', '),
+              doi: '',
+              authors: authors
+          });
+
           // Set Authors
-          authorsByService(authors);
+          // authorsByService(authors);
 
           $('#metadata-output').empty().append("Found metadata for " + data.metadataID);
         }
@@ -604,19 +636,6 @@ function getIfpriMetadata(channel,url,uri) {
           $('#metadata-output').html("Metadata empty");
         } else {
 
-          // Setting Metadata
-          setMetadata({
-              title: validateKeyObject(m.metadata.title),
-              description: validateKeyObject(m.metadata.descri),
-              citation: validateKeyObject(m.metadata.full),
-              date: validateKeyObject(m.metadata.date) + "-01-01",
-              language: validateKeyObject(m.metadata.langua),
-              keywords: validateKeyObject(m.metadata.loc),
-              handle: '',
-              country: validateKeyObject(m.metadata.contri),
-              doi: validateKeyObject(m.metadata.doi)
-          });
-
           function validateKeyObject(Obj) {
             if(typeof Obj === 'object') {
               if(jQuery.isEmptyObject(Obj)) {
@@ -644,8 +663,22 @@ function getIfpriMetadata(channel,url,uri) {
             });
           });
 
+          // Setting Metadata
+          setMetadata({
+              title: validateKeyObject(m.metadata.title),
+              description: validateKeyObject(m.metadata.descri),
+              citation: validateKeyObject(m.metadata.full),
+              date: validateKeyObject(m.metadata.date) + "-01-01",
+              language: validateKeyObject(m.metadata.langua),
+              keywords: validateKeyObject(m.metadata.loc),
+              handle: '',
+              country: validateKeyObject(m.metadata.contri),
+              doi: validateKeyObject(m.metadata.doi),
+              authors: authors
+          });
+
           // Set Authors
-          authorsByService(authors);
+          // authorsByService(authors);
 
           $('#metadata-output').empty().append("Found metadata for " + data.metadataID);
         }
@@ -699,6 +732,15 @@ function getCGSpaceMetadata(channel,url,uri) {
               fields.push(key.charAt(0).toUpperCase() + key.slice(1));
             });
 
+            // Getting authors
+            var authors = [];
+            $.each(m.metadata['contributor.author'], function(i,element) {
+              authors.push({
+                  lastName: (element).split(',')[0],
+                  firstName: (element).split(',')[1]
+              });
+            });
+
             // Setting Metadata
             setMetadata({
                 title: m.metadata['title'],
@@ -709,20 +751,12 @@ function getCGSpaceMetadata(channel,url,uri) {
                 description: m.metadata['description.abstract'],
                 keywords: m.metadata['subject'],
                 handle: m.metadata['identifier.uri'],
-                doi: m.metadata['identifier.doi']
-            });
-
-            // Getting authors
-            var authors = [];
-            $.each(m.metadata['contributor.author'], function(i,element) {
-              authors.push({
-                  lastName: (element).split(',')[0],
-                  firstName: (element).split(',')[1]
-              });
+                doi: m.metadata['identifier.doi'],
+                authors: authors
             });
 
             // Set Authors
-            authorsByService(authors);
+            // authorsByService(authors);
 
             // Open Acces Validation
             var $input = $(".accessible ").parent().find('input');
@@ -775,6 +809,16 @@ function getDataverseMetadata(channel,url,uri) {
 
           console.log(m.data);
 
+          // Getting authors
+          var authors = [];
+          $.each(m.data.metadata_blocks.citation.author, function(i,element) {
+            authors.push({
+                lastName: (element.authorName).split(',')[0],
+                firstName: (element.authorName).split(',')[1],
+                orcidId: element.authorIdentifier
+            });
+          });
+
           // Setting Metadata
           setMetadata({
               title: m.data.title,
@@ -796,21 +840,12 @@ function getDataverseMetadata(channel,url,uri) {
                 return output.join(', ');
               },
               handle: '',
-              doi: data.persistentId
-          });
-
-          // Getting authors
-          var authors = [];
-          $.each(m.data.metadata_blocks.citation.author, function(i,element) {
-            authors.push({
-                lastName: (element.authorName).split(',')[0],
-                firstName: (element.authorName).split(',')[1],
-                orcidId: element.authorIdentifier
-            });
+              doi: data.persistentId,
+              authors: authors
           });
 
           // Set Authors
-          authorsByService(authors);
+          // authorsByService(authors);
 
           $('#metadata-output').empty().append("Found metadata for " + data.persistentId);
 
@@ -827,26 +862,6 @@ function getDataverseMetadata(channel,url,uri) {
       }
   });
 
-}
-
-function authorsByService(authors) {
-  var $list = $('.authorsList');
-  for(var i = 0; i < authors.length; i++) {
-    var validation = validateAuthors(authors[i].lastName, authors[i].firstName);
-    if(validation == false) {
-      var $item = $('#author-template').clone(true).removeAttr("id");
-      $($item).find(".lastName").text(authors[i].lastName);
-      $($item).find(".firstName").text(authors[i].firstName);
-      $($item).find(".orcidId").text(authors[i].orcidId);
-      $($item).find(".lastNameInput").val(authors[i].lastName);
-      $($item).find(".firstNameInput").val(authors[i].firstName);
-      $($item).find(".orcidIdInput").val(authors[i].orcidId);
-      $list.append($item);
-      $item.show('slow');
-      updateAuthor();
-      checkNextAuthorItems($list);
-    }
-  }
 }
 
 function validateAuthors(lastName,firstName) {

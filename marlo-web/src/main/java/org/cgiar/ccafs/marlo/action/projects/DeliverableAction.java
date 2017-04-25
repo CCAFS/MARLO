@@ -1733,14 +1733,10 @@ public class DeliverableAction extends BaseAction {
 
   public void saveMetadata() {
     if (deliverable.getMetadataElements() != null) {
-
       for (DeliverableMetadataElement deliverableMetadataElement : deliverable.getMetadataElements()) {
-
         if (deliverableMetadataElement != null && deliverableMetadataElement.getMetadataElement() != null) {
-
           deliverableMetadataElement.setDeliverable(deliverable);
           deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElement);
-
         }
       }
     }
