@@ -423,7 +423,7 @@ function setMetadata(data) {
     // Clear Authors
     $('.authorsList').empty();
 
-    // Add Authors
+    // Add Authors from data source
     $.each(data.authors, function(i,author) {
       addAuthor(author);
     });

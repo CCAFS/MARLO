@@ -181,28 +181,29 @@
 
 [#assign channelsArray = ["cgspace","dataverse","other","ifpri","ilri"] /] 
 <div id="disseminationUrl" style="display:[#if (channelsArray?seq_contains(deliverable.dissemination.disseminationChannel))!false ]block[#else]none[/#if];">
-  <div class="form-group row"> 
-    <div class="col-md-10">
+  <div class="form-group" > 
+    <div class="url-field">
       [@customForm.input name="deliverable.dissemination.disseminationUrl" type="text" i18nkey="project.deliverable.dissemination.disseminationUrl"  placeholder="" className="deliverableDisseminationUrl" required=true readOnly=isSynced editable=editable /]
     </div>
-    <div class="col-md-2">
-      <br />
+    <div class="buttons-field">
+      
       [#if editable]
         [#local showSync = (channelsArray?seq_contains(deliverable.dissemination.disseminationChannel))!false ]
         <div id="fillMetadata" style="display:${showSync?string('block','none')};">
           <input type="hidden" name="deliverable.dissemination.synced" value="${isSynced?string}" />
           [#-- Sync Button --]
           <div class="checkButton" style="display:${isSynced?string('none','block')};">[@s.text name="project.deliverable.dissemination.sync" /]</div>
-          <div class="unSyncBlock row" style="display:${isSynced?string('block','none')};">
+          <div class="unSyncBlock" style="display:${isSynced?string('block','none')};">
             [#-- Update Button --]
-            <div class="updateButton col-md-6">[@s.text name="project.deliverable.dissemination.update" /]</div>
+            <div class="updateButton">[@s.text name="project.deliverable.dissemination.update" /]</div>
             [#-- Unsync Button --]
-            <div class="uncheckButton col-md-6">[@s.text name="project.deliverable.dissemination.unsync" /]</div>
+            <div class="uncheckButton">[@s.text name="project.deliverable.dissemination.unsync" /]</div>
           </div>
         </div>
       [/#if]
     </div>
   </div>
+  <div class="clearfix"></div>
 </div>
 <div id="metadata-output"></div>
 [/#macro]

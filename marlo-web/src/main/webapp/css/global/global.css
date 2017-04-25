@@ -4213,10 +4213,21 @@ margin: 0;}
   text-align: center;
 }
 
+#disseminationUrl .url-field{
+  width: 75%;
+  float:left;
+}
+
+#disseminationUrl .buttons-field{
+  width: 24%;
+  float:right;
+  margin-top: 25px;
+}
+
 .checkButton{
   background-color: #7FB06F;
   color: #fff;
-  padding: 5px 12px;
+  padding: 4px 12px;
   border-radius: 2px;
   cursor: pointer;
 }
@@ -4227,9 +4238,11 @@ margin: 0;}
 .uncheckButton{
   background-color: #F44336;
   color: #fff;
-  padding: 5px 12px;
+  padding: 4px 12px;
   border-radius: 2px;
   cursor: pointer;
+  width: 49%;
+  float: right;
 }
 .uncheckButton:hover{
   background-color: #e03d31;
@@ -4238,9 +4251,12 @@ margin: 0;}
 .updateButton{
   background-color: #668fda;
   color: #fff;
-  padding: 5px 12px;
+  padding: 4px 12px;
   border-radius: 2px;
   cursor: pointer;
+  margin-right: 1%;
+  width: 49%;
+  float: left;
 }
 .updateButton:hover{
   background-color: #5b80c3;
