@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.manager.FundingSourceInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.PartnerDivisionManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.AgreementStatusEnum;
@@ -39,6 +40,7 @@ import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.PartnerDivision;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -106,17 +108,20 @@ public class FundingSourceAction extends BaseAction {
   private List<LiaisonInstitution> liaisonInstitutions;
   private HistoryComparator historyComparator;
 
+  private PartnerDivisionManager partnerDivisionManager;
+  private List<PartnerDivision> divisions;
 
   private Crp loggedCrp;
 
 
   private Map<String, String> status;
 
-
   private String transaction;
 
 
   private UserManager userManager;
+
+
   private FundingSourceValidator validator;
 
 
@@ -129,11 +134,12 @@ public class FundingSourceAction extends BaseAction {
     AuditLogManager auditLogManager, FundingSourceBudgetManager fundingSourceBudgetManager,
     BudgetTypeManager budgetTypeManager, FundingSourceValidator validator, CrpPpaPartnerManager crpPpaPartnerManager,
     HistoryComparator historyComparator, FileDBManager fileDBManager, UserManager userManager,
-    FundingSourceInstitutionManager fundingSourceInstitutionManager,
+    PartnerDivisionManager partnerDivisionManager, FundingSourceInstitutionManager fundingSourceInstitutionManager,
     /* TODO delete when fix the budget permissions */ RoleManager userRoleManager) {
     super(config);
     this.crpManager = crpManager;
     this.fundingSourceManager = fundingSourceManager;
+    this.partnerDivisionManager = partnerDivisionManager;
     this.budgetTypeManager = budgetTypeManager;
     this.institutionManager = institutionManager;
     this.validator = validator;
@@ -235,6 +241,7 @@ public class FundingSourceAction extends BaseAction {
 
   }
 
+
   public Map<String, String> getBudgetTypes() {
     return budgetTypes;
   }
@@ -243,19 +250,22 @@ public class FundingSourceAction extends BaseAction {
     return budgetTypesList;
   }
 
+  public List<PartnerDivision> getDivisions() {
+    return divisions;
+  }
+
   public File getFile() {
     return file;
   }
-
 
   public String getFileContentType() {
     return fileContentType;
   }
 
+
   public String getFileFileName() {
     return fileFileName;
   }
-
 
   public Integer getFileID() {
     return fileID;
@@ -266,10 +276,10 @@ public class FundingSourceAction extends BaseAction {
     return fundingSource;
   }
 
+
   public String getFundingSourceFileURL() {
     return config.getDownloadURL() + "/" + this.getFundingSourceUrlPath().replace('\\', '/');
   }
-
 
   public long getFundingSourceID() {
     return fundingSourceID;
@@ -301,6 +311,7 @@ public class FundingSourceAction extends BaseAction {
     return -1;
 
   }
+
 
   public List<Institution> getInstitutions() {
     return institutions;
@@ -483,6 +494,8 @@ public class FundingSourceAction extends BaseAction {
       }
 
     }
+    divisions = new ArrayList<>(
+      partnerDivisionManager.findAll().stream().filter(pd -> pd.isActive()).collect(Collectors.toList()));
     String params[] = {loggedCrp.getAcronym(), fundingSource.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_FUNDING_SOURCE_BASE_PERMISSION, params));
 
@@ -637,6 +650,10 @@ public class FundingSourceAction extends BaseAction {
 
   public void setBudgetTypesList(List<BudgetType> budgetTypesList) {
     this.budgetTypesList = budgetTypesList;
+  }
+
+  public void setDivisions(List<PartnerDivision> divisions) {
+    this.divisions = divisions;
   }
 
   public void setFile(File file) {
