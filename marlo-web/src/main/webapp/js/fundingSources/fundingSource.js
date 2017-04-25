@@ -40,30 +40,33 @@ function init() {
       }
   });
   
-  
   // $(".donor").select2(searchInstitutionsOptions(true));
   // $(".donor").parent().find("span.select2-selection__placeholder").text(placeholderText);
 
   $(".removeLeadPartner").on("click", removeLeadPartner);
 
-  // When select center as Funding Window----------
+  // When select center as Funding Window
   var lastDonor = -1;
-  $(".type").on("change", function() {
+  $("select.type").on("change", function() {
+    
     var option = $(this).find("option:selected");
     var url = baseURL + "/institutionsByBudgetType.do";
     var data = {
       budgetTypeID: option.val()
     };
+    // Change Donor list
     ajaxService(url, data);
-    /*
-     * var institutionSelect = $(".donor"); var institutionSelected = $(".institution").find("option:selected").val();
-     * console.log(institutionSelected); // If the option selected is center if(option.val() == 4) {
-     * if(institutionSelect.val() != "-1") { lastDonor = institutionSelect.val(); } institutionSelect.attr("disabled",
-     * "disabled"); institutionSelect.val(institutionSelected); institutionSelect.trigger('change.select2');
-     * $(".note").hide("slow"); } else { $(".note").show("slow"); if(institutionSelect.attr("disabled") == "disabled") {
-     * institutionSelect.removeAttr("disabled"); institutionSelect.val(lastDonor);
-     * institutionSelect.trigger('change.select2'); } }
-     */
+    
+    // Change Agreement Status when is (W1W2 Type => 1)
+    var $agreementStatus = $('select.agreementStatus');
+    var $options = $agreementStatus.find("option[value='3'], option[value='4']");
+
+    if(option.val() == 1){
+      $options.prop('disabled', true);
+    }else{
+      $options.prop('disabled', false);
+    }
+    $agreementStatus.trigger('change.select2');
   });
 
   // Set file upload (blueimp-tmpl)
@@ -425,12 +428,13 @@ function ajaxService(url,data) {
           $select.addOption(e.id, e.name);
         });
         changeDonorByFundingType(data.budgetTypeID, $select)
-        $select.trigger("change.select2");
+        
       },
       error: function(e) {
         console.log(e);
       },
       complete: function() {
+        $select.trigger("change.select2");
         console.log(data);
       }
   });
