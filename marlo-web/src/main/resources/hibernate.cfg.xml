@@ -147,6 +147,8 @@
 		<mapping resource="xmls/DeliverablePrograms.hbm.xml" />
     <mapping resource="xmls/Phases.hbm.xml" />
     <mapping resource="xmls/ProjectPhases.hbm.xml" />		
+	  <mapping resource="xmls/GenderTypes.hbm.xml" />
+	  <mapping resource="xmls/PartnerDivisions.hbm.xml" />	  
 	</session-factory>
 </hibernate-configuration>
 

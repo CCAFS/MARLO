@@ -90,7 +90,7 @@
           <div class="form-group">
             <div class="row"> 
               [#-- Types --]
-              <div class="col-md-6 highlightsTypes" class="${customForm.changedField('highlight.types')}">
+              <div class="col-md-6 highlightsTypes ${customForm.changedField('highlight.types')}">
                 <label for="highlight.types">[@s.text name="highlight.types" /]<span class="red">*</span></label>
                 <div class="checkboxGroup">
                 [#if editable]
@@ -162,7 +162,7 @@
           </div>
           
           [#-- Countries --]
-          <div class="form-group countriesBlock chosen" style="display:${((highlight.global)!false)?string('none','block')}" class="${customForm.changedField('highlight.countries')}">
+          <div class="form-group countriesBlock chosen ${customForm.changedField('highlight.countries')}" style="display:${((highlight.global)!false)?string('none','block')}" >
             [#if editable]
               [@customForm.select name="highlight.countriesIds" label="" i18nkey="highlight.countries" listName="countries" keyFieldName="id"  displayFieldName="name" value="highlight.countriesIds" multiple=true disabled="${(highlight.global?string(1, 0))!0}"/]              
             [#else]

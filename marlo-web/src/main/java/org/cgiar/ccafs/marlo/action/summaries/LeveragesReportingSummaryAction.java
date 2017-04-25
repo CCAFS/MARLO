@@ -61,21 +61,18 @@ public class LeveragesReportingSummaryAction extends BaseAction implements Summa
 
   private static final long serialVersionUID = 1L;
   private static Logger LOG = LoggerFactory.getLogger(LeveragesReportingSummaryAction.class);
-
-  private CrpManager crpManager;
-  private Crp loggedCrp;
+  // Managers
   private ProjectLeverageManager projectLeverageManager;
+  private CrpManager crpManager;
+  // Parameters
+  private Crp loggedCrp;
+  private int year;
+  private String cycle;
+  private long startTime;
   // XLSX bytes
   private byte[] bytesXLSX;
   // Streams
   InputStream inputStream;
-
-
-  private String cycle;
-
-
-  private int year;
-
 
   @Inject
   public LeveragesReportingSummaryAction(APConfig config, CrpManager crpManager,
@@ -85,54 +82,55 @@ public class LeveragesReportingSummaryAction extends BaseAction implements Summa
     this.projectLeverageManager = projectLeverageManager;
   }
 
-
   @Override
   public String execute() throws Exception {
-
     ClassicEngineBoot.getInstance().start();
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-
     ResourceManager manager = new ResourceManager();
     manager.registerDefaults();
+    try {
+      Resource reportResource = manager
+        .createDirectly(this.getClass().getResource("/pentaho/LeveragesReportingExcel.prpt"), MasterReport.class);
+      MasterReport masterReport = (MasterReport) reportResource.getResource();
+      String center = loggedCrp.getName();
+      // Get datetime
+      ZonedDateTime timezone = ZonedDateTime.now();
+      DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
+      String zone = timezone.getOffset() + "";
+      if (zone.equals("Z")) {
+        zone = "+0";
+      }
+      String date = timezone.format(format) + "(GMT" + zone + ")";
+      // Set Main_Query
+      CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
+      String masterQueryName = "main";
+      TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
+      TypedTableModel model = this.getMasterTableModel(center, date, String.valueOf(year));
+      sdf.addTable(masterQueryName, model);
+      masterReport.setDataFactory(cdf);
+      // Get details band
+      ItemBand masteritemBand = masterReport.getItemBand();
+      // Create new empty subreport hash map
+      HashMap<String, Element> hm = new HashMap<String, Element>();
+      // method to get all the subreports in the prpt and store in the HashMap
+      this.getAllSubreports(hm, masteritemBand);
+      // Uncomment to see which Subreports are detecting the method getAllSubreports
+      // System.out.println("Pentaho SubReports: " + hm);
 
-    Resource reportResource =
-      manager.createDirectly(this.getClass().getResource("/pentaho/LeveragesReportingExcel.prpt"), MasterReport.class);
-
-    MasterReport masterReport = (MasterReport) reportResource.getResource();
-    String center = loggedCrp.getName();
-
-
-    // Get datetime
-    ZonedDateTime timezone = ZonedDateTime.now();
-    DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
-    String zone = timezone.getOffset() + "";
-    if (zone.equals("Z")) {
-      zone = "+0";
+      this.fillSubreport((SubReport) hm.get("leverages"), "leverages");
+      ExcelReportUtil.createXLSX(masterReport, os);
+      bytesXLSX = os.toByteArray();
+      os.close();
+    } catch (Exception e) {
+      LOG.error("Error generating LeveragesReporting " + e.getMessage());
+      throw e;
     }
-    String date = timezone.format(format) + "(GMT" + zone + ")";
-
-    // Set Main_Query
-    CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
-    String masterQueryName = "main";
-    TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
-    TypedTableModel model = this.getMasterTableModel(center, date, String.valueOf(year));
-    sdf.addTable(masterQueryName, model);
-    masterReport.setDataFactory(cdf);
-
-    // Get details band
-    ItemBand masteritemBand = masterReport.getItemBand();
-    // Create new empty subreport hash map
-    HashMap<String, Element> hm = new HashMap<String, Element>();
-    // method to get all the subreports in the prpt and store in the HashMap
-    this.getAllSubreports(hm, masteritemBand);
-    // Uncomment to see which Subreports are detecting the method getAllSubreports
-    // System.out.println("Pentaho SubReports: " + hm);
-
-    this.fillSubreport((SubReport) hm.get("leverages"), "leverages");
-    ExcelReportUtil.createXLSX(masterReport, os);
-    bytesXLSX = os.toByteArray();
-    os.close();
-
+    // Calculate time of generation
+    long stopTime = System.currentTimeMillis();
+    stopTime = stopTime - startTime;
+    LOG.info(
+      "Downloaded successfully: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
+        + ". CRP: " + this.loggedCrp.getAcronym() + ". Cycle: " + cycle + ". Time to generate: " + stopTime + "ms.");
     return SUCCESS;
   }
 
@@ -220,7 +218,7 @@ public class LeveragesReportingSummaryAction extends BaseAction implements Summa
     return cycle;
   }
 
-
+  @SuppressWarnings("unused")
   private File getFile(String fileName) {
     // Get file from resources folder
     ClassLoader classLoader = this.getClass().getClassLoader();
@@ -235,13 +233,10 @@ public class LeveragesReportingSummaryAction extends BaseAction implements Summa
     fileName.append(this.year + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
-
     return fileName.toString();
-
   }
 
   private void getFooterSubreports(HashMap<String, Element> hm, ReportFooter reportFooter) {
-
     int elementCount = reportFooter.getElementCount();
     for (int i = 0; i < elementCount; i++) {
       Element e = reportFooter.getElement(i);
@@ -249,7 +244,6 @@ public class LeveragesReportingSummaryAction extends BaseAction implements Summa
         hm.put(e.getName(), e);
         if (((SubReport) e).getElementCount() != 0) {
           this.getAllSubreports(hm, ((SubReport) e).getItemBand());
-
         }
       }
       if (e instanceof Band) {
@@ -258,12 +252,12 @@ public class LeveragesReportingSummaryAction extends BaseAction implements Summa
     }
   }
 
-  public String getHighlightsImagesUrl(String project_id) {
-    return config.getDownloadURL() + "/" + this.getHighlightsImagesUrlPath(project_id).replace('\\', '/');
+  public String getHighlightsImagesUrl(String projectId) {
+    return config.getDownloadURL() + "/" + this.getHighlightsImagesUrlPath(projectId).replace('\\', '/');
   }
 
-  public String getHighlightsImagesUrlPath(String project_id) {
-    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project_id + File.separator
+  public String getHighlightsImagesUrlPath(String projectId) {
+    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + projectId + File.separator
       + "hightlightsImage" + File.separator;
   }
 
@@ -279,43 +273,35 @@ public class LeveragesReportingSummaryAction extends BaseAction implements Summa
     TypedTableModel model = new TypedTableModel(
       new String[] {"id", "title", "partner_name", "leverage_year", "flagship", "budget", "project_ID"},
       new Class[] {Long.class, String.class, String.class, Integer.class, String.class, Double.class, Long.class}, 0);
-
-
     for (ProjectLeverage projectLeverage : this.projectLeverageManager.findAll().stream()
       .filter(l -> l.isActive() && l.getYear() != null && l.getYear() == this.year && l.getProject() != null
         && l.getProject().getCrp() != null && l.getProject().getCrp().getId().equals(this.loggedCrp.getId())
         && l.getProject().isActive() && l.getProject().getReporting())
       .collect(Collectors.toList())) {
-      String title = null, partner_name = null, flagship = null;
-      Long project_ID = null;
-      Integer leverage_year = null;
+      String title = null, partnerName = null, flagship = null;
+      Long projectID = null;
+      Integer leverageYear = null;
       Double budget = null;
-
       if (projectLeverage.getTitle() != null && !projectLeverage.getTitle().isEmpty()) {
         title = projectLeverage.getTitle();
       }
-
       if (projectLeverage.getInstitution() != null && !projectLeverage.getInstitution().getComposedName().isEmpty()) {
-        partner_name = projectLeverage.getInstitution().getComposedName();
+        partnerName = projectLeverage.getInstitution().getComposedName();
       }
-
       if (projectLeverage.getYear() != null) {
-        leverage_year = projectLeverage.getYear();
+        leverageYear = projectLeverage.getYear();
       }
-
       if (projectLeverage.getCrpProgram() != null && !projectLeverage.getCrpProgram().getComposedName().isEmpty()) {
         flagship = projectLeverage.getCrpProgram().getComposedName();
       }
-
       if (projectLeverage.getBudget() != null) {
         budget = projectLeverage.getBudget();
       }
       if (projectLeverage.getProject() != null) {
-        project_ID = projectLeverage.getProject().getId();
+        projectID = projectLeverage.getProject().getId();
       }
-
       model.addRow(
-        new Object[] {projectLeverage.getId(), title, partner_name, leverage_year, flagship, budget, project_ID});
+        new Object[] {projectLeverage.getId(), title, partnerName, leverageYear, flagship, budget, projectID});
     }
     return model;
   }
@@ -323,7 +309,6 @@ public class LeveragesReportingSummaryAction extends BaseAction implements Summa
   public Crp getLoggedCrp() {
     return loggedCrp;
   }
-
 
   private TypedTableModel getMasterTableModel(String center, String date, String year) {
     // Initialization of Model
@@ -333,25 +318,27 @@ public class LeveragesReportingSummaryAction extends BaseAction implements Summa
     return model;
   }
 
-
   public int getYear() {
     return year;
   }
 
   @Override
   public void prepare() throws Exception {
+    // Get loggerCrp
     try {
       loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
       loggedCrp = crpManager.getCrpById(loggedCrp.getId());
     } catch (Exception e) {
+      LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
     }
-
     // Get parameters from URL
     // Get year
     try {
       Map<String, Object> parameters = this.getParameters();
       year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
     } catch (Exception e) {
+      LOG.warn("Failed to get " + APConstants.YEAR_REQUEST
+        + " parameter. Parameter will be set as CurrentCycleYear. Exception: " + e.getMessage());
       year = this.getCurrentCycleYear();
     }
     // Get cycle
@@ -359,8 +346,15 @@ public class LeveragesReportingSummaryAction extends BaseAction implements Summa
       Map<String, Object> parameters = this.getParameters();
       cycle = (StringUtils.trim(((String[]) parameters.get(APConstants.CYCLE))[0]));
     } catch (Exception e) {
+      LOG.warn("Failed to get " + APConstants.CYCLE + " parameter. Parameter will be set as CurrentCycle. Exception: "
+        + e.getMessage());
       cycle = this.getCurrentCycle();
     }
+    // Calculate time to generate report
+    startTime = System.currentTimeMillis();
+    LOG.info(
+      "Start report download: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
+        + ". CRP: " + this.loggedCrp.getAcronym() + ". Cycle: " + cycle);
   }
 
 

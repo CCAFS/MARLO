@@ -105,3 +105,15 @@ li.targetUnit {
     position: relative;
     display: block;
 }
+
+table#marloUsersTable {
+    font-size: 0.9em;
+}
+
+table#marloUsersTable i { 
+    color: #a9a9a9;
+}
+
+table#marloUsersTable tr {
+  cursor:pointer;
+}

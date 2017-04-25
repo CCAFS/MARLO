@@ -224,8 +224,13 @@ public class ManageUsersAction extends BaseAction {
       Map<String, Object> userMap = new HashMap<>();
       userMap.put("id", user.getId());
       userMap.put("composedName", user.getComposedName());
+      userMap.put("username", user.getUsername());
+      userMap.put("roles", user.getUserRoles().toString());
       userMap.put("name", user.getComposedCompleteName());
       userMap.put("email", user.getEmail());
+      userMap.put("isActive", user.isActive());
+      userMap.put("autoSaveActive", user.isAutoSave());
+      userMap.put("lastLogin", user.getLastLogin());
       this.users.add(userMap);
     }
 

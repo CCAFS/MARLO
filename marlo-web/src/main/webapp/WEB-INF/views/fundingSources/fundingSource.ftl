@@ -75,7 +75,9 @@
           <div class="col-md-6">[@customForm.select name="fundingSource.budgetType.id" i18nkey="projectCofunded.type" className="type" listName="budgetTypes" header=false required=true editable=editable && action.canEditType() /]</div>
         </div>
       </div>
+      
       [#-- CGIAR lead center --]
+      [#assign ifpriDivision = false /]
       <div class="form-group row">
         <div class="panel tertiary col-md-12">
          <div class="panel-head"><label for=""> [@customForm.text name="fundingSource.leadPartner" readText=!editable /]:[@customForm.req required=editable /]</label></div>
@@ -83,15 +85,21 @@
             <ul class="list">
             [#if fundingSource.institutions?has_content]
               [#list fundingSource.institutions as institutionLead]
-                <li id="" class="leadPartners clearfix col-md-6">
-                [#if editable ]
-                  <div class="removeLeadPartner removeIcon" title="Remove Lead partner"></div>
+                [#-- Show if is a headquarter institution --]
+                [#if !(institutionLead.headquarter??)]
+                  <li id="" class="leadPartners clearfix col-md-6">
+                  [#if editable ]
+                    <div class="removeLeadPartner removeIcon" title="Remove Lead partner"></div>
+                  [/#if]
+                    <input class="id" type="hidden" name="fundingSource.institutions[${institutionLead_index}].id" value="${institutionLead.id}" />
+                    <input class="fId" type="hidden" name="fundingSource.institutions[${institutionLead_index}].institution.id" value="${institutionLead.institution.id}" />
+                    <span class="name">${(institutionLead.institution.composedName)!}</span>
+                    <div class="clearfix"></div>
+                    
+                    [#-- Check IFPRI Division --]
+                    [#if institutionLead.institution.id == action.getIFPRIId() ] [#assign ifpriDivision = true /] [/#if]
+                  </li>
                 [/#if]
-                  <input class="id" type="hidden" name="fundingSource.institutions[${institutionLead_index}].id" value="${institutionLead.id}" />
-                  <input class="fId" type="hidden" name="fundingSource.institutions[${institutionLead_index}].institution.id" value="${institutionLead.institution.id}" />
-                  <span class="name">${(institutionLead.institution.composedName)!}</span>
-                  <div class="clearfix"></div>
-                </li>
               [/#list]
               [#else]
               <p class="emptyText"> [@s.text name="No lead partner added yet." /]</p> 
@@ -103,14 +111,24 @@
           </div>
         </div>
       </div>
+      
+      [#-- Division --]
+      [#if action.hasSpecificities('crp_division_fs')]
+        <div class="form-group row divisionBlock division-${action.getIFPRIId()}"  style="display:${ifpriDivision?string('block','none')}">
+          <div class="col-md-7">
+            [@customForm.select name="fundingSource.partnerDivision.id" i18nkey="projectCofunded.division" listName="divisions" keyFieldName="id" displayFieldName="composedName" required=true editable=editable /]
+          </div>
+        </div>
+      [/#if]
+      
       [#-- Contact person name and email --]
       [#assign canSeePIEmail = action.hasSpecificities('crp_email_funding_source')]
       <div class="form-group row">
           <div class="col-md-6">[@customForm.input name="fundingSource.contactPersonName" i18nkey="projectCofunded.contactName" className="contactName" required=true editable=editable /]</div>
           <div class="col-md-6" style="display:${canSeePIEmail?string('block','none')}">[@customForm.input name="fundingSource.contactPersonEmail" i18nkey="projectCofunded.contactEmail" className="contactEmail" required=true editable=editable /]</div>
       </div>
-      [#-- Donor --]
       
+      [#-- Donor --]
       <div class="form-group">
         <div class="row">
           <div class="col-md-12">

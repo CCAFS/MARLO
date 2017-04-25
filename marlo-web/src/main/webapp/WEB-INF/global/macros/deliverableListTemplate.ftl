@@ -124,7 +124,7 @@
 [/#macro]
 
 [#macro deliverablePartner dp={} dp_name="" dp_index="" isResponsable=false template=false editable=true]
-  <div id="deliverablePartner-${template?string('template', dp_index)}" class="${isResponsable?string('responsiblePartner','deliverablePartner')} ${isResponsable?string('simpleBox','borderBox')} row" style="display:${template?string('none','')}">
+  <div id="deliverablePartner-${template?string('template', dp_index)}" class="${isResponsable?string('responsiblePartner','deliverablePartner')} ${isResponsable?string('','borderBox')} projectPartnerPerson row" style="display:${template?string('none','')}">
     [#if editable && !isResponsable]
       <div class="removeElement removeLink" title="[@s.text name="project.deliverable.removePartnerContribution" /]"></div> 
     [/#if]
@@ -133,27 +133,39 @@
       <span class="index">${dp_index+1}</span>
     </div> 
     [/#if]
-    [#assign customName]${dp_name}[#if !isResponsable][${dp_index}].projectPartnerPerson[/#if][/#assign]
+    [#assign customName]${dp_name}[#if !isResponsable][${dp_index}][/#if][/#assign]
     <input class="type" type="hidden" name="${customName}.type" value="${isResponsable?string('Resp','Other')}">
-    [#if !isResponsable]
-    <input class="element" type="hidden" name="${dp_name}[${dp_index}].id" value="${(dp.id)!-1}">
-    [/#if]
+  
+    <input class="element" type="hidden" name="${customName}.id" value="${(dp.id)!}">
+  
     [#if template]
       [#-- Partner Name --]
-      <div class="fullPartBlock partnerName chosen col-md-12"> 
-        [@customForm.select name="" value="-1"  i18nkey="${isResponsable?string('project.deliverable.indicateResponsablePartner','Partner')}" listName="partnerPersons" keyFieldName="id"  displayFieldName="composedName"   className="${isResponsable?string('responsible','partner')}  id" editable=editable required=isResponsable /]
+      <div class="fullPartBlock partnerName chosen"> 
+        [@customForm.select name="" value="-1"  i18nkey="" showTitle=false listName="partnerPersons" keyFieldName="id"  displayFieldName="composedName"   className="${isResponsable?string('responsible','partner')}  id" editable=editable required=isResponsable /]
       </div>
     [#else]
       [#-- Partner Name --]
-      <div class="fullPartBlock partnerName chosen col-md-12"> 
+      <div class="form-group partnerName chosen"> 
       [#if editable]
-        [@customForm.select name="${customName}.id" value="${(dp.projectPartnerPerson.id)!-1}"  label="" i18nkey="${isResponsable?string('project.deliverable.indicateResponsablePartner','project.deliverable.partner')}" listName="partnerPersons" keyFieldName="id"  displayFieldName="composedName"     className="${isResponsable?string('responsible','partner')} id " editable=editable required=isResponsable/]
+        [@customForm.select name="${customName}.projectPartnerPerson.id" value="${(dp.projectPartnerPerson.id)!-1}"  label="" i18nkey="" showTitle=false listName="partnerPersons" keyFieldName="id"  displayFieldName="composedName"     className="${isResponsable?string('responsible','partner')} id " editable=editable required=isResponsable/]
       [#else]
-      <label class="form-group" for="">[@customForm.text name="${isResponsable?string('project.deliverable.indicateResponsablePartner','project.deliverable.partner')}" readText=!editable/] :</label>
-      <div class="personRead-content"><span class="glyphicon glyphicon-user" ></span> <span>${((dp.projectPartnerPerson.composedName)!'Contact Person')?html}</span></div>
+        <div class="personRead-content"><span class="glyphicon glyphicon-user" ></span> <span>${((dp.projectPartnerPerson.composedName)!'Contact Person')?html}</span></div>
       [/#if]
       </div>
-    [/#if] 
+    [/#if]
+    
+    
+    [#-- Division --]
+    [#if action.hasSpecificities('crp_division_fs')]
+      [#local ifpriDivision = false /]
+      [#if (dp.projectPartnerPerson.institution.acronym == "IFPRI")!false ][#local ifpriDivision = true /][/#if]
+      <div class="form-group row divisionBlock division-IFPRI"  style="display:${ifpriDivision?string('block','none')}">
+        <div class="col-md-7">
+          [@customForm.select name="${customName}.partnerDivision.id" i18nkey="projectCofunded.division" className="divisionField" listName="divisions" keyFieldName="id" displayFieldName="composedName" required=true editable=editable /]
+        </div>
+      </div>
+    [/#if]
+    
   </div> 
   <div class="clearfix"></div>
 [/#macro] 

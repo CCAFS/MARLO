@@ -38,6 +38,8 @@ import org.pentaho.reporting.engine.classic.core.MasterReport;
 import org.pentaho.reporting.engine.classic.core.modules.output.table.xls.ExcelReportUtil;
 import org.pentaho.reporting.libraries.resourceloader.Resource;
 import org.pentaho.reporting.libraries.resourceloader.ResourceManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Andrés Felipe Valencia Rivera. CCAFS
@@ -49,12 +51,14 @@ public class InstitutionsSummaryAction extends BaseAction implements Summary {
    * 
    */
   private static final long serialVersionUID = 1L;
+  private static Logger LOG = LoggerFactory.getLogger(InstitutionsSummaryAction.class);
 
-  // Variables
+  // Parameters
   private Crp loggedCrp;
   private int year;
   private String cycle;
-
+  private long startTime;
+  // Managers
   private CrpManager crpManager;
   // XLSX bytes
   private byte[] bytesXLSX;
@@ -67,73 +71,65 @@ public class InstitutionsSummaryAction extends BaseAction implements Summary {
     this.crpManager = crpManager;
   }
 
-
   @Override
   public String execute() throws Exception {
     ClassicEngineBoot.getInstance().start();
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-
     ResourceManager manager = new ResourceManager();
     manager.registerDefaults();
-
-    Resource reportResource =
-      manager.createDirectly(this.getClass().getResource("/pentaho/institutions.prpt"), MasterReport.class);
-
-    MasterReport masterReport = (MasterReport) reportResource.getResource();
-
-    Number idParam = loggedCrp.getId();
-
-    // Get datetime
-    ZonedDateTime timezone = ZonedDateTime.now();
-    DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
-    String zone = timezone.getOffset() + "";
-    if (zone.equals("Z")) {
-      zone = "+0";
+    try {
+      Resource reportResource =
+        manager.createDirectly(this.getClass().getResource("/pentaho/institutions.prpt"), MasterReport.class);
+      MasterReport masterReport = (MasterReport) reportResource.getResource();
+      Number idParam = loggedCrp.getId();
+      // Get datetime
+      ZonedDateTime timezone = ZonedDateTime.now();
+      DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
+      String zone = timezone.getOffset() + "";
+      if (zone.equals("Z")) {
+        zone = "+0";
+      }
+      String currentDate = timezone.format(format) + "(GMT" + zone + ")";
+      masterReport.getParameterValues().put("crp_id", idParam);
+      masterReport.getParameterValues().put("date", currentDate);
+      masterReport.getParameterValues().put("cycle", cycle);
+      ExcelReportUtil.createXLSX(masterReport, os);
+      bytesXLSX = os.toByteArray();
+      os.close();
+    } catch (Exception e) {
+      LOG.error("Error generating Institutions " + e.getMessage());
+      throw e;
     }
-    String current_date = timezone.format(format) + "(GMT" + zone + ")";
-
-    masterReport.getParameterValues().put("crp_id", idParam);
-    masterReport.getParameterValues().put("date", current_date);
-    masterReport.getParameterValues().put("cycle", cycle);
-
-
-    ExcelReportUtil.createXLSX(masterReport, os);
-    bytesXLSX = os.toByteArray();
-    os.close();
+    // Calculate time of generation
+    long stopTime = System.currentTimeMillis();
+    stopTime = stopTime - startTime;
+    LOG.info(
+      "Downloaded successfully: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
+        + ". CRP: " + this.loggedCrp.getAcronym() + ". Cycle: " + cycle + ". Time to generate: " + stopTime + "ms.");
     return SUCCESS;
-
   }
-
 
   @Override
   public int getContentLength() {
     return bytesXLSX.length;
   }
 
-
   @Override
   public String getContentType() {
     return "application/xlsx";
   }
 
-
   public String getCycle() {
     return cycle;
   }
 
-
+  @SuppressWarnings("unused")
   private File getFile(String fileName) {
-
-
     // Get file from resources folder
     ClassLoader classLoader = this.getClass().getClassLoader();
     File file = new File(classLoader.getResource(fileName).getFile());
-
-
     return file;
-
   }
-
 
   @Override
   public String getFileName() {
@@ -163,10 +159,12 @@ public class InstitutionsSummaryAction extends BaseAction implements Summary {
 
   @Override
   public void prepare() {
+    // Get loggerCrp
     try {
       loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
       loggedCrp = crpManager.getCrpById(loggedCrp.getId());
     } catch (Exception e) {
+      LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
     }
     // Get parameters from URL
     // Get year
@@ -174,6 +172,8 @@ public class InstitutionsSummaryAction extends BaseAction implements Summary {
       Map<String, Object> parameters = this.getParameters();
       year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
     } catch (Exception e) {
+      LOG.warn("Failed to get " + APConstants.YEAR_REQUEST
+        + " parameter. Parameter will be set as CurrentCycleYear. Exception: " + e.getMessage());
       year = this.getCurrentCycleYear();
     }
     // Get cycle
@@ -181,23 +181,27 @@ public class InstitutionsSummaryAction extends BaseAction implements Summary {
       Map<String, Object> parameters = this.getParameters();
       cycle = (StringUtils.trim(((String[]) parameters.get(APConstants.CYCLE))[0]));
     } catch (Exception e) {
+      LOG.warn("Failed to get " + APConstants.CYCLE + " parameter. Parameter will be set as CurrentCycle. Exception: "
+        + e.getMessage());
       cycle = this.getCurrentCycle();
     }
+    // Calculate time to generate report
+    startTime = System.currentTimeMillis();
+    LOG.info(
+      "Start report download: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
+        + ". CRP: " + this.loggedCrp.getAcronym() + ". Cycle: " + cycle);
   }
 
   public void setCycle(String cycle) {
     this.cycle = cycle;
   }
 
-
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
 
-
   public void setYear(int year) {
     this.year = year;
   }
-
 
 }

@@ -66,20 +66,19 @@ import org.slf4j.LoggerFactory;
  */
 public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Summary {
 
-
   private static final long serialVersionUID = 1L;
-
   private static Logger LOG = LoggerFactory.getLogger(ProjectHighlightsPDFSummaryAction.class);
+  // Managers
   private CrpManager crpManager;
   private ProjectHighligthManager projectHighLightManager;
-
+  // Parameters
   private Crp loggedCrp;
+  private long startTime;
+  private int year;
   // XLSX bytes
   private byte[] bytesPDF;
   // Streams
   InputStream inputStream;
-
-  private int year;
 
   @Inject
   public ProjectHighlightsPDFSummaryAction(APConfig config, CrpManager crpManager,
@@ -91,52 +90,52 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
 
   @Override
   public String execute() throws Exception {
-
     ClassicEngineBoot.getInstance().start();
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-
     ResourceManager manager = new ResourceManager();
     manager.registerDefaults();
-
-    Resource reportResource =
-      manager.createDirectly(this.getClass().getResource("/pentaho/projectHighlightsPDF.prpt"), MasterReport.class);
-
-    MasterReport masterReport = (MasterReport) reportResource.getResource();
-    String center = loggedCrp.getName();
-
-
-    // Get datetime
-    ZonedDateTime timezone = ZonedDateTime.now();
-    DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
-    String zone = timezone.getOffset() + "";
-    if (zone.equals("Z")) {
-      zone = "+0";
+    try {
+      Resource reportResource =
+        manager.createDirectly(this.getClass().getResource("/pentaho/projectHighlightsPDF.prpt"), MasterReport.class);
+      MasterReport masterReport = (MasterReport) reportResource.getResource();
+      String center = loggedCrp.getName();
+      // Get datetime
+      ZonedDateTime timezone = ZonedDateTime.now();
+      DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
+      String zone = timezone.getOffset() + "";
+      if (zone.equals("Z")) {
+        zone = "+0";
+      }
+      String date = timezone.format(format) + "(GMT" + zone + ")";
+      // Set Main_Query
+      CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
+      String masterQueryName = "main";
+      TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
+      TypedTableModel model = this.getMasterTableModel(center, date, String.valueOf(year));
+      sdf.addTable(masterQueryName, model);
+      masterReport.setDataFactory(cdf);
+      // Get details band
+      ItemBand masteritemBand = masterReport.getItemBand();
+      // Create new empty subreport hash map
+      HashMap<String, Element> hm = new HashMap<String, Element>();
+      // method to get all the subreports in the prpt and store in the HashMap
+      this.getAllSubreports(hm, masteritemBand);
+      // Uncomment to see which Subreports are detecting the method getAllSubreports
+      // System.out.println("Pentaho SubReports: " + hm);
+      this.fillSubreport((SubReport) hm.get("project_highlight"), "project_highlight");
+      PdfReportUtil.createPDF(masterReport, os);
+      bytesPDF = os.toByteArray();
+      os.close();
+    } catch (Exception e) {
+      LOG.error("Error generating ProjectHighlightsPDF " + e.getMessage());
+      throw e;
     }
-    String date = timezone.format(format) + "(GMT" + zone + ")";
-
-    // Set Main_Query
-    CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
-    String masterQueryName = "main";
-    TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
-    TypedTableModel model = this.getMasterTableModel(center, date, String.valueOf(year));
-    sdf.addTable(masterQueryName, model);
-    masterReport.setDataFactory(cdf);
-
-    // Get details band
-    ItemBand masteritemBand = masterReport.getItemBand();
-    // Create new empty subreport hash map
-    HashMap<String, Element> hm = new HashMap<String, Element>();
-    // method to get all the subreports in the prpt and store in the HashMap
-    this.getAllSubreports(hm, masteritemBand);
-    // Uncomment to see which Subreports are detecting the method getAllSubreports
-    // System.out.println("Pentaho SubReports: " + hm);
-
-    this.fillSubreport((SubReport) hm.get("project_highlight"), "project_highlight");
-
-    PdfReportUtil.createPDF(masterReport, os);
-    bytesPDF = os.toByteArray();
-    os.close();
-
+    // Calculate time of generation
+    long stopTime = System.currentTimeMillis();
+    stopTime = stopTime - startTime;
+    LOG.info(
+      "Downloaded successfully: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
+        + ". CRP: " + this.loggedCrp.getAcronym() + ". Time to generate: " + stopTime + "ms.");
     return SUCCESS;
   }
 
@@ -215,19 +214,17 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
     return bytesPDF.length;
   }
 
-
   @Override
   public String getContentType() {
     return "application/pdf";
   }
 
-
+  @SuppressWarnings("unused")
   private File getFile(String fileName) {
     // Get file from resources folder
     ClassLoader classLoader = this.getClass().getClassLoader();
     File file = new File(classLoader.getResource(fileName).getFile());
     return file;
-
   }
 
   @Override
@@ -237,9 +234,7 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
     fileName.append(this.year + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".pdf");
-
     return fileName.toString();
-
   }
 
   private void getFooterSubreports(HashMap<String, Element> hm, ReportFooter reportFooter) {
@@ -251,7 +246,6 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
         hm.put(e.getName(), e);
         if (((SubReport) e).getElementCount() != 0) {
           this.getAllSubreports(hm, ((SubReport) e).getItemBand());
-
         }
       }
       if (e instanceof Band) {
@@ -260,11 +254,8 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
     }
   }
 
-
-  public String getHighlightsImagesUrl(String project_id) {
-    // "https://marlo.cgiar.org/data" +
-    // config.getDownloadURL() +
-    return config.getDownloadURL() + "/" + this.getHighlightsImagesUrlPath(project_id).replace('\\', '/');
+  public String getHighlightsImagesUrl(String projectId) {
+    return config.getDownloadURL() + "/" + this.getHighlightsImagesUrlPath(projectId).replace('\\', '/');
   }
 
   public String getHighlightsImagesUrlPath(long projectID) {
@@ -272,8 +263,8 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
       + "hightlightsImage" + File.separator;
   }
 
-  public String getHighlightsImagesUrlPath(String project_id) {
-    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project_id + File.separator
+  public String getHighlightsImagesUrlPath(String projectId) {
+    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + projectId + File.separator
       + "hightlightsImage" + File.separator;
   }
 
@@ -302,8 +293,6 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
   }
 
   private TypedTableModel getProjectHighligthsTableModel() {
-
-
     TypedTableModel model = new TypedTableModel(
       new String[] {"id", "title", "author", "subject", "publisher", "year_reported", "highlights_types",
         "highlights_is_global", "start_date", "end_date", "keywords", "countries", "image", "highlight_desc",
@@ -312,22 +301,19 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, Integer.class, Integer.class, String.class},
       0);
-
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
-
     for (ProjectHighlight projectHighlight : projectHighLightManager.findAll().stream()
       .sorted((h1, h2) -> Long.compare(h1.getId(), h2.getId()))
       .filter(ph -> ph.isActive() && ph.getProject() != null && ph.getYear() == year
         && ph.getProject().getCrp().getId().longValue() == loggedCrp.getId().longValue() && ph.getProject().isActive()
         && ph.getProject().getReporting())
       .collect(Collectors.toList())) {
-      String title = null, author = null, subject = null, publisher = null, highlights_types = "",
-        highlights_is_global = null, start_date = null, end_date = null, keywords = null, countries = "", image = "",
-        highlight_desc = null, introduction = null, results = null, partners = null, links = null, project_id = null;
-      Long year_reported = null;
+      String title = null, author = null, subject = null, publisher = null, highlightsTypes = "",
+        highlightsIsGlobal = null, startDate = null, endDate = null, keywords = null, countries = "", image = "",
+        highlightDesc = null, introduction = null, results = null, partners = null, links = null, projectId = null;
+      Long yearReported = null;
       int width = 244;
       int heigth = 163;
-
       if (projectHighlight.getTitle() != null && !projectHighlight.getTitle().isEmpty()) {
         title = projectHighlight.getTitle();
       }
@@ -341,36 +327,32 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
         publisher = projectHighlight.getPublisher();
       }
       if (projectHighlight.getYear() != null) {
-        year_reported = projectHighlight.getYear();
+        yearReported = projectHighlight.getYear();
       }
-
       for (ProjectHighlightType projectHighlightType : projectHighlight.getProjectHighligthsTypes().stream()
         .filter(pht -> pht.isActive()).collect(Collectors.toList())) {
         if (ProjectHighligthsTypeEnum.getEnum(projectHighlightType.getIdType() + "") != null) {
-          highlights_types +=
+          highlightsTypes +=
             "<br>● " + ProjectHighligthsTypeEnum.getEnum(projectHighlightType.getIdType() + "").getDescription();
         }
       }
-      if (highlights_types.isEmpty()) {
-        highlights_types = null;
+      if (highlightsTypes.isEmpty()) {
+        highlightsTypes = null;
       }
       if (projectHighlight.isGlobal() == true) {
-        highlights_is_global = "Yes";
+        highlightsIsGlobal = "Yes";
       } else {
-        highlights_is_global = "No";
+        highlightsIsGlobal = "No";
       }
-
       if (projectHighlight.getStartDate() != null) {
-        start_date = formatter.format(projectHighlight.getStartDate());
+        startDate = formatter.format(projectHighlight.getStartDate());
       }
-
       if (projectHighlight.getEndDate() != null) {
-        end_date = formatter.format(projectHighlight.getEndDate());
+        endDate = formatter.format(projectHighlight.getEndDate());
       }
       if (projectHighlight.getKeywords() != null && !projectHighlight.getKeywords().isEmpty()) {
         keywords = projectHighlight.getKeywords();
       }
-
       int countriesFlag = 0;
       for (ProjectHighlightCountry projectHighlightCountry : projectHighlight.getProjectHighligthCountries().stream()
         .filter(phc -> phc.isActive()).collect(Collectors.toList())) {
@@ -385,12 +367,9 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
           }
         }
       }
-
       if (countries.isEmpty()) {
         countries = null;
       }
-
-
       if (projectHighlight.getFile() != null) {
         double pageWidth = 612 * 0.4;
         double pageHeigth = 792 * 0.4;
@@ -398,20 +377,17 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
         double imageHeigth = 163;
         image =
           this.getHightlightImagePath(projectHighlight.getProject().getId()) + projectHighlight.getFile().getFileName();
-
         Image imageFile = null;
-
         LOG.info("image.getURL.replace " + image);
         File url;
         try {
           url = new File(image);
         } catch (Exception e) {
-          e.printStackTrace();
+          LOG.warn("Failed to get image File. Url was set to null. Exception: " + e.getMessage());
           url = null;
           image = "";
         }
         if (url != null && url.exists()) {
-
           try {
             imageFile = Image.getInstance(FileManager.readURL(url));
             // System.out.println("W: " + imageFile.getWidth() + " \nH: " + imageFile.getHeight());
@@ -427,27 +403,22 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
             heigth = (int) imageHeigth;
             // If successful, process the message
           } catch (BadElementException e) {
-            // System.out.println("Unable to retrieve Image!!");
+            LOG.warn("BadElementException getting image: " + e.getMessage());
             image = "";
-            e.printStackTrace();
           } catch (MalformedURLException e) {
-            // System.out.println("Unable to retrieve Image!!");
+            LOG.warn("MalformedURLException getting image: " + e.getMessage());
             image = "";
-            e.printStackTrace();
           } catch (IOException e) {
-            // System.out.println("Unable to retrieve Image!!");
+            LOG.warn("IOException getting image: " + e.getMessage());
             image = "";
-            e.printStackTrace();
           }
         } else {
           image = "";
         }
       }
-
       if (projectHighlight.getDescription() != null && !projectHighlight.getDescription().isEmpty()) {
-        highlight_desc = projectHighlight.getDescription();
+        highlightDesc = projectHighlight.getDescription();
       }
-
       if (projectHighlight.getObjectives() != null && !projectHighlight.getObjectives().isEmpty()) {
         introduction = projectHighlight.getObjectives();
       }
@@ -461,34 +432,38 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
         links = projectHighlight.getLinks();
       }
       if (projectHighlight.getProject() != null) {
-        project_id = projectHighlight.getProject().getId().toString();
+        projectId = projectHighlight.getProject().getId().toString();
       }
-
-      model.addRow(new Object[] {projectHighlight.getId(), title, author, subject, publisher, year_reported,
-        highlights_types, highlights_is_global, start_date, end_date, keywords, countries, image, highlight_desc,
-        introduction, results, partners, links, width, heigth, project_id});
+      model.addRow(new Object[] {projectHighlight.getId(), title, author, subject, publisher, yearReported,
+        highlightsTypes, highlightsIsGlobal, startDate, endDate, keywords, countries, image, highlightDesc,
+        introduction, results, partners, links, width, heigth, projectId});
     }
-
     return model;
-
   }
 
   @Override
   public void prepare() throws Exception {
+    // Get loggerCrp
     try {
       loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
       loggedCrp = crpManager.getCrpById(loggedCrp.getId());
     } catch (Exception e) {
+      LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
     }
-
     // Get parameters from URL
     // Get year
     try {
       Map<String, Object> parameters = this.getParameters();
       year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
     } catch (Exception e) {
+      LOG.warn("Failed to get " + APConstants.YEAR_REQUEST
+        + " parameter. Parameter will be set as CurrentCycleYear. Exception: " + e.getMessage());
       year = this.getCurrentCycleYear();
     }
+    // Calculate time to generate report
+    startTime = System.currentTimeMillis();
+    LOG.info("Start report download: " + this.getFileName() + ". User: "
+      + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.loggedCrp.getAcronym());
   }
 
   public void setBytesPDF(byte[] bytesPDF) {
@@ -502,6 +477,5 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
-
 
 }
