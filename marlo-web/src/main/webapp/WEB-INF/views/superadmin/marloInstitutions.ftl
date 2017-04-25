@@ -31,7 +31,7 @@
         [@s.form action=actionName enctype="multipart/form-data" ]
         
           [#-- Requested Institutions--]
-          <h4 class="sectionTitle">[@s.text name="Partner Request" /]</h4>  
+          <h4 class="sectionTitle">[@s.text name="marloRequestInstitution.title" /]</h4>  
                  
           [@partnersList partners=partners  canEdit=editable namespace="/marloInstitutions" defaultAction="${(crpSession)!}/marloInstitutions"/]
           
