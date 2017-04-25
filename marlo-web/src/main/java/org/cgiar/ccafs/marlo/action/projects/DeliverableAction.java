@@ -1141,9 +1141,12 @@ public class DeliverableAction extends BaseAction {
     try {
       ProjectPartnerPerson partnerPerson = projectPartnerPersonManager
         .getProjectPartnerPersonById(deliverable.getResponsiblePartner().getProjectPartnerPerson().getId());
+      PartnerDivision partnerDivision = null;
+      if (deliverable.getResponsiblePartner().getPartnerDivision() != null) {
+        partnerDivision = partnerDivisionManager
+          .getPartnerDivisionById(deliverable.getResponsiblePartner().getPartnerDivision().getId());
+      }
 
-      PartnerDivision partnerDivision =
-        partnerDivisionManager.getPartnerDivisionById(deliverable.getResponsiblePartner().getPartnerDivision().getId());
       DeliverablePartnership partnership = new DeliverablePartnership();
       partnership.setId(deliverable.getResponsiblePartner().getId());
       partnership.setDeliverable(deliverable);
@@ -1622,6 +1625,7 @@ public class DeliverableAction extends BaseAction {
 
       }
 
+      dissemination.setSynced(deliverable.getDissemination().getSynced());
 
       if (deliverable.getDissemination().getIsOpenAccess() != null) {
         dissemination.setIsOpenAccess(deliverable.getDissemination().getIsOpenAccess());
@@ -1744,14 +1748,10 @@ public class DeliverableAction extends BaseAction {
 
   public void saveMetadata() {
     if (deliverable.getMetadataElements() != null) {
-
       for (DeliverableMetadataElement deliverableMetadataElement : deliverable.getMetadataElements()) {
-
         if (deliverableMetadataElement != null && deliverableMetadataElement.getMetadataElement() != null) {
-
           deliverableMetadataElement.setDeliverable(deliverable);
           deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElement);
-
         }
       }
     }

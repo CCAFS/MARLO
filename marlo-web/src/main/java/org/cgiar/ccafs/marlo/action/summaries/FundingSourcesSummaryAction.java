@@ -447,7 +447,9 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
           leadPartner = fsIns.getInstitution().getComposedName();
           // Check IFPRI Division
           if (this.showIfpriDivision) {
-            if (fsIns.getInstitution().getAcronym().equals("IFPRI")
+
+
+            if (fsIns.getInstitution().getAcronym().equals("IFPRI") && fundingSource.getPartnerDivision() != null
               && fundingSource.getPartnerDivision().getName() != null
               && !fundingSource.getPartnerDivision().getName().trim().isEmpty()) {
               leadPartner += " (" + fundingSource.getPartnerDivision().getName() + ")";
