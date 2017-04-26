@@ -38,7 +38,14 @@
           [#list loggedCrp.customLevels as elementType]
             [#-- <p><span class="glyphicon glyphicon-ok-circle"></span> ${elementType.name}</p> --]
             [#assign customID = "locType-${elementType.locElementType.id}"]
-            <p><label for="${customID}"><input type="checkbox" name="loggedCrp.customLevels[${elementType_index}].check" value="${elementType.check?string}" [#if elementType.check]checked[/#if] id="${customID}" /> ${elementType.locElementType.name}</label></p>
+            
+             <span class=" pull-right" > 
+   
+            <p><label for="${customID}">
+            
+            
+            
+            <input [#if action.canBeDeleted(elementType.locElementType.id,elementType.class.name)][#else]style="opacity:0.5; cursor: not-allowed;" onclick="return false;" onkeydown="e = e || window.event; if(e.keyCode !== 9) return false;"[/#if]  type="checkbox" name="loggedCrp.customLevels[${elementType_index}].check" value="${elementType.check?string}" [#if elementType.check]checked[/#if] id="${customID}" /> ${elementType.locElementType.name}</label></p>
          <input type="hidden" name="loggedCrp.customLevels[${elementType_index}].locElementType.id" value="${elementType.locElementType.id}" />
          
           [/#list]

@@ -18,6 +18,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpLocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramLeaderManager;
@@ -45,6 +46,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
+import org.cgiar.ccafs.marlo.data.model.CustomLevelSelect;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
@@ -54,6 +56,7 @@ import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
+import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.LocElementType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
@@ -186,6 +189,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   @Inject
   private LocElementTypeManager locElementTypeManager;
 
+  @Inject
+  private CrpLocElementTypeManager crpLocElementTypeManager;
 
   @Inject
   private UserManager userManager;
@@ -446,6 +451,21 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         if (locElementType.getCrpLocElementTypes().stream().filter(o -> o.isActive()).collect(Collectors.toList())
           .size() > 0) {
           return false;
+        }
+
+
+      }
+
+      if (clazz == CustomLevelSelect.class) {
+        LocElementType locElementType = locElementTypeManager.getLocElementTypeById(id);
+
+        for (LocElement locElements : locElementType.getLocElements().stream().filter(c -> c.isActive())
+          .collect(Collectors.toList())) {
+          if (!locElements.getProjectLocations().stream().filter(c -> c.isActive()).collect(Collectors.toList())
+            .isEmpty()) {
+            return false;
+          }
+
         }
 
 
