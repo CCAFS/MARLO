@@ -16,14 +16,12 @@
 package org.cgiar.ccafs.marlo.action.superadmin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.data.manager.CrpTargetUnitManager;
-import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
-import org.cgiar.ccafs.marlo.data.model.CrpTargetUnit;
-import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
+import org.cgiar.ccafs.marlo.data.manager.CrpLocElementTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
+import org.cgiar.ccafs.marlo.data.model.LocElementType;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,25 +40,25 @@ public class CustomLocationsAdminAction extends BaseAction {
   private static final long serialVersionUID = -8068503147148935293L;
 
 
-  private SrfTargetUnitManager srfTargetUnitManager;
-  private CrpTargetUnitManager crpTargetUnitManager;
+  private LocElementTypeManager locElementTypeManager;
+  private CrpLocElementTypeManager crpLocElementTypeManager;
 
 
-  private List<SrfTargetUnit> targetUnitList;
+  private List<LocElementType> locElementTypeList;
 
 
   @Inject
-  public CustomLocationsAdminAction(APConfig config, SrfTargetUnitManager srfTargetUnitManager,
-    CrpTargetUnitManager crpTargetUnitManager) {
+  public CustomLocationsAdminAction(APConfig config, LocElementTypeManager locElementTypeManager,
+    CrpLocElementTypeManager crpLocElementTypeManager) {
     super(config);
-    this.srfTargetUnitManager = srfTargetUnitManager;
-    this.crpTargetUnitManager = crpTargetUnitManager;
+    this.locElementTypeManager = locElementTypeManager;
+    this.crpLocElementTypeManager = crpLocElementTypeManager;
 
   }
 
 
-  public List<SrfTargetUnit> getTargetUnitList() {
-    return targetUnitList;
+  public List<LocElementType> getLocElementTypeList() {
+    return locElementTypeList;
   }
 
 
@@ -68,16 +66,14 @@ public class CustomLocationsAdminAction extends BaseAction {
   public void prepare() throws Exception {
 
 
-    targetUnitList = new ArrayList<>();
-    if (srfTargetUnitManager.findAll() != null) {
-      List<SrfTargetUnit> targetUnits =
-        srfTargetUnitManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-      for (SrfTargetUnit srfTargetUnit : targetUnits) {
-        targetUnitList.add(srfTargetUnit);
-      }
+    locElementTypeList = new ArrayList<>();
+    if (locElementTypeManager.findAll() != null) {
+      List<LocElementType> locElementTypes = locElementTypeManager.findAll().stream()
+        .filter(c -> c.isActive() && c.getCrp() == null).collect(Collectors.toList());
+      locElementTypeList.addAll(locElementTypes);
     }
     if (this.isHttpPost()) {
-      targetUnitList.clear();
+      locElementTypeList.clear();
     }
 
   }
@@ -87,61 +83,49 @@ public class CustomLocationsAdminAction extends BaseAction {
   public String save() {
     if (this.canAccessSuperAdmin()) {
 
-      List<SrfTargetUnit> targetsPreview =
-        srfTargetUnitManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-      // Removing crp flagship program type
-      if (targetsPreview != null) {
-        for (SrfTargetUnit srfTargetUnit : targetsPreview) {
-          if (!targetUnitList.contains(srfTargetUnit)) {
+      List<LocElementType> locElementsPreview = locElementTypeManager.findAll().stream()
+        .filter(c -> c.isActive() && c.getCrp() == null).collect(Collectors.toList());
 
-            if (srfTargetUnit.getCrpTargetUnits() != null) {
-              List<CrpTargetUnit> crpTargetUnits = new ArrayList<>(
-                srfTargetUnit.getCrpTargetUnits().stream().filter(tu -> tu.isActive()).collect(Collectors.toList()));
-
-              if (!crpTargetUnits.isEmpty()) {
-                for (CrpTargetUnit crpTargetUnit : crpTargetUnits) {
-                  crpTargetUnitManager.deleteCrpTargetUnit(crpTargetUnit.getId());
-                }
-              }
-            }
-
-            srfTargetUnitManager.deleteSrfTargetUnit(srfTargetUnit.getId());
+      if (locElementsPreview != null) {
+        for (LocElementType locElementType : locElementsPreview) {
+          if (!locElementTypeList.contains(locElementType)) {
+            locElementTypeManager.deleteLocElementType(locElementType.getId());
 
           }
         }
       }
 
-      for (SrfTargetUnit srfTargetUnit : targetUnitList) {
-        if (srfTargetUnit.getId() == null) {
+      for (LocElementType locElementType : locElementTypeList) {
+        if (locElementType != null) {
+          if (locElementType.getId() == null) {
 
-          srfTargetUnit.setActive(true);
-          srfTargetUnit.setCreatedBy(this.getCurrentUser());
-          srfTargetUnit.setModifiedBy(this.getCurrentUser());
-          srfTargetUnit.setModificationJustification("");
-          srfTargetUnit.setActiveSince(new Date());
+            locElementType.setActive(true);
+            locElementType.setCreatedBy(this.getCurrentUser());
+            locElementType.setModifiedBy(this.getCurrentUser());
+            locElementType.setModificationJustification("");
+            locElementType.setActiveSince(new Date());
+            locElementType.setCrp(null);
 
-          srfTargetUnitManager.saveSrfTargetUnit(srfTargetUnit);
-        } else {
-          SrfTargetUnit srfTargetUnitDB = srfTargetUnitManager.getSrfTargetUnitById(srfTargetUnit.getId());
+            locElementType.setScope(false);
 
-          srfTargetUnit.setActive(true);
-          srfTargetUnit.setCreatedBy(srfTargetUnitDB.getCreatedBy());
-          srfTargetUnit.setModifiedBy(this.getCurrentUser());
-          srfTargetUnit.setModificationJustification("");
-          srfTargetUnit.setActiveSince(srfTargetUnitDB.getActiveSince());
+            locElementTypeManager.saveLocElementType(locElementType);
+          } else {
+            LocElementType locElementTypeDB = locElementTypeManager.getLocElementTypeById(locElementType.getId());
 
-          srfTargetUnitManager.saveSrfTargetUnit(srfTargetUnit);
+            locElementType.setActive(true);
+            locElementType.setCreatedBy(locElementTypeDB.getCreatedBy());
+            locElementType.setModifiedBy(this.getCurrentUser());
+            locElementType.setModificationJustification("");
+            locElementType.setActiveSince(locElementTypeDB.getActiveSince());
+            locElementType.setScope(locElementTypeDB.isScope());
+            locElementTypeManager.saveLocElementType(locElementType);
+          }
         }
       }
-      Collection<String> messages = this.getActionMessages();
-      if (!messages.isEmpty()) {
-        String validationMessage = messages.iterator().next();
-        this.setActionMessages(null);
-        this.addActionWarning(this.getText("saving.saved") + validationMessage);
-      } else {
-        this.addActionMessage(this.getText("saving.saved"));
-      }
-      messages = this.getActionMessages();
+
+
+      this.addActionMessage(this.getText("saving.saved"));
+
       return SUCCESS;
     } else {
       return NOT_AUTHORIZED;
@@ -149,8 +133,9 @@ public class CustomLocationsAdminAction extends BaseAction {
   }
 
 
-  public void setTargetUnitList(List<SrfTargetUnit> targetUnitList) {
-    this.targetUnitList = targetUnitList;
+  public void setLocElementTypeList(List<LocElementType> locElementTypeList) {
+    this.locElementTypeList = locElementTypeList;
   }
+
 
 }
