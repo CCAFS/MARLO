@@ -14,6 +14,7 @@
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
+[#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
@@ -38,8 +39,8 @@
             <div class="clearfix"></div>
             <div id="allProjectList" class="dragProjectList">
             [#list allProjects as project]
-              <div id="project-${project.id}" class="borderBox  project" >
-                ${project.composedName}
+              <div id="project-${project.id}" class="borderBox  project" title="${(project.composedName)!}">
+                [@utils.wordCutter string=(project.composedName) maxPos=70 substr=" "/]
                 <input type="hidden" name="" value="${project.id}"/>
               </div>
             [/#list]
@@ -50,8 +51,8 @@
             <div class="clearfix"></div>
             <div id="phasesProjectList" class="dragProjectList">
             [#list phasesProjects as project]
-              <div id="project-${project.id}" class="borderBox  project" >
-                ${project.composedName}
+              <div id="project-${project.id}" class="borderBox  project" title="${(project.composedName)!}">
+                [@utils.wordCutter string=(project.composedName) maxPos=70 substr=" "/]
                 <input type="hidden" name="phasesProjects[${project_index}].id" value="${project.id}"/>
               </div>
             [/#list]
