@@ -36,11 +36,14 @@
         [#-- Default locations --]
         <div class="defaultLocations simpleBox">
           [#list loggedCrp.customLevels as elementType]
-            [#-- <p><span class="glyphicon glyphicon-ok-circle"></span> ${elementType.name}</p> --]
-            [#assign customID = "locType-${elementType.locElementType.id}"]
-            <p><label for="${customID}"><input type="checkbox" name="loggedCrp.customLevels[${elementType_index}].check" value="${elementType.check?string}" [#if elementType.check]checked[/#if] id="${customID}" /> ${elementType.locElementType.name}</label></p>
-         <input type="hidden" name="loggedCrp.customLevels[${elementType_index}].locElementType.id" value="${elementType.locElementType.id}" />
-         
+            [#assign customLocName = "loggedCrp.customLevels[${elementType_index}]"]
+            <p>
+              <label for="${customLocName}">
+                <input type="hidden" name="${customLocName}.locElementType.id" value="${elementType.locElementType.id}" />
+                <input type="checkbox" name="${customLocName}.check" class="elementTypeCheck" value="${elementType.check?string}" [#if elementType.check]checked[/#if] id="${customLocName}" /> 
+                ${elementType.locElementType.name}
+              </label>
+            </p>
           [/#list]
           <div class="clearfix"></div>
         </div>
