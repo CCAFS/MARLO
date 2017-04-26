@@ -2,7 +2,9 @@ $(document).ready(init);
 
 function init() {
 
-  changeDonorByFundingType($(".type").find("option:selected").val(), $(".donor"))
+  
+  
+  
   // Popup
   popups();
 
@@ -29,6 +31,10 @@ function init() {
   $('form select').select2({
     width: "100%"
   });
+  
+  changeDonorByFundingType($(".type").val(), $(".donor"))
+  
+  checkAgreementStatus($(".type").val());
   
   // Funding Window / Budget type
   $("select.type").select2({
@@ -57,16 +63,9 @@ function init() {
     // Change Donor list
     ajaxService(url, data);
     
-    // Change Agreement Status when is (W1W2 Type => 1)
-    var $agreementStatus = $('select.agreementStatus');
-    var $options = $agreementStatus.find("option[value='3'], option[value='4']");
-
-    if(option.val() == 1){
-      $options.prop('disabled', true);
-    }else{
-      $options.prop('disabled', false);
-    }
-    $agreementStatus.trigger('change.select2');
+    // Check Agreement status
+    checkAgreementStatus(option.val());
+     
   });
 
   // Set file upload (blueimp-tmpl)
@@ -112,6 +111,29 @@ function init() {
     // Cancel Auto Save
     autoSaveActive = false;
   });
+}
+
+/**
+ * Check Agreement status
+ * 
+ * @param {number} typeID - Funding budget type
+ */
+function checkAgreementStatus(typeID){
+  var W1W2 = 1;
+  var ON_GOING = 2;
+  // Change Agreement Status when is (W1W2 Type => 1)
+  var $agreementStatus = $('select.agreementStatus');
+  // 3 => Concept Note/Pipeline
+  // 4 => Informally Confirmed
+  var $options = $agreementStatus.find("option[value='3'], option[value='4']");
+  if(typeID == W1W2){
+    $agreementStatus.val(ON_GOING); // On-going
+    $options.prop('disabled', true).attr('disabled', true);
+  }else{
+    $options.prop('disabled', false).attr('disabled', false);
+  }
+  $agreementStatus.select2("destroy");
+  $agreementStatus.select2();
 }
 
 function addContactAutoComplete() {

@@ -1,0 +1,1 @@
+UPDATE `budget_types` SET `description`='Funds that come from Centers’ reserves (not linked to funding received from a donor)' WHERE (`id`='4');
