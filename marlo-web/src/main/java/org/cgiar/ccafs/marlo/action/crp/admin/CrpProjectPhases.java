@@ -115,14 +115,18 @@ public class CrpProjectPhases extends BaseAction {
       }
 
     }
+    Collections.sort(previousProjects, (tu1, tu2) -> tu1.getId().compareTo(tu2.getId()));
 
     for (Project project : phasesProjects) {
-      if (!previousProjects.contains(project)) {
-        ProjectPhase projectPhase = new ProjectPhase();
-        projectPhase.setPhase(phase);
-        projectPhase.setProject(project);
-        projectPhaseManager.saveProjectPhase(projectPhase);
+      if (project != null) {
+        if (!previousProjects.contains(project)) {
+          ProjectPhase projectPhase = new ProjectPhase();
+          projectPhase.setPhase(phase);
+          projectPhase.setProject(projectManager.getProjectById(project.getId()));
+          projectPhaseManager.saveProjectPhase(projectPhase);
+        }
       }
+
 
     }
 
