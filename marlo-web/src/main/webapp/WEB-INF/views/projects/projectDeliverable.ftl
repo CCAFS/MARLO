@@ -71,8 +71,8 @@
                 <div class="fairCompliant mini reusable [#attempt][#if action.isR(deliverable.id)??][#if action.isR(deliverable.id)] achieved [#else] not-achieved [/#if][/#if][#recover][/#attempt]"><div class="sign">R</div></div> 
               </div>
             </div>
-          </div>
-             
+          </div> 
+          
            <input id="indexTab" name="indexTab" type="hidden" value="${(indexTab)!0}">
           <div class="deliverableTabs">
             [#--  Deliverable Menu  --] 

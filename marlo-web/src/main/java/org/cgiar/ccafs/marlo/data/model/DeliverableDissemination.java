@@ -16,59 +16,44 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
 
   private static final long serialVersionUID = 3873609958921714313L;
 
-
   @Expose
   private Long id;
-
-
   @Expose
   private Deliverable deliverable;
-
-
   @Expose
   private Boolean isOpenAccess;
-
-
   @Expose
   private Boolean intellectualProperty;
-
-
   @Expose
   private Boolean limitedExclusivity;
-
-
   @Expose
   private Boolean restrictedUseAgreement;
-
-
   @Expose
   private Date restrictedAccessUntil;
-
   @Expose
   private Boolean effectiveDateRestriction;
-
   @Expose
   private Boolean notDisseminated;
-
   @Expose
   private Date restrictedEmbargoed;
-
   @Expose
   private Boolean alreadyDisseminated;
-
   @Expose
   private String disseminationChannel;
-
   @Expose
   private String disseminationUrl;
-
   @Expose
   private String disseminationChannelName;
+  @Expose
+  private Boolean synced;
+
 
   private String type;
 
+
   public DeliverableDissemination() {
   }
+
 
   public DeliverableDissemination(Deliverable deliverable) {
     this.deliverable = deliverable;
@@ -118,7 +103,6 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
     return alreadyDisseminated;
   }
 
-
   public Deliverable getDeliverable() {
     return deliverable;
   }
@@ -127,10 +111,10 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
     return disseminationChannel;
   }
 
+
   public String getDisseminationChannelName() {
     return disseminationChannelName;
   }
-
 
   public String getDisseminationUrl() {
     return disseminationUrl;
@@ -140,11 +124,11 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
     return effectiveDateRestriction;
   }
 
+
   @Override
   public Long getId() {
     return id;
   }
-
 
   public Boolean getIntellectualProperty() {
     return intellectualProperty;
@@ -158,7 +142,6 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
   public Boolean getLimitedExclusivity() {
     return limitedExclusivity;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -201,6 +184,12 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
   public Boolean getRestrictedUseAgreement() {
     return restrictedUseAgreement;
   }
+
+
+  public Boolean getSynced() {
+    return synced;
+  }
+
 
   public String getType() {
     return type;
@@ -274,6 +263,10 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
 
   public void setRestrictedUseAgreement(Boolean restrictedUseAgreement) {
     this.restrictedUseAgreement = restrictedUseAgreement;
+  }
+
+  public void setSynced(Boolean synced) {
+    this.synced = synced;
   }
 
 

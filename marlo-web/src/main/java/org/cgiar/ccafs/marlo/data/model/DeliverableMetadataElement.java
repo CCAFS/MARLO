@@ -31,19 +31,19 @@ public class DeliverableMetadataElement implements Serializable, IAuditLog {
 
   @Expose
   private Integer id;
-
   @Expose
   private MetadataElement metadataElement;
-
   @Expose
   private Deliverable deliverable;
-
   @Expose
   private String elementValue;
+  @Expose
+  private Boolean hide;
 
 
   public DeliverableMetadataElement() {
   }
+
 
   public DeliverableMetadataElement(MetadataElement metadataElement, Deliverable deliverable) {
     this.metadataElement = metadataElement;
@@ -56,12 +56,6 @@ public class DeliverableMetadataElement implements Serializable, IAuditLog {
     this.elementValue = elementValue;
   }
 
-  @Override
-  public boolean isActive() {
-
-    return true;
-  }
-
   public Deliverable getDeliverable() {
     return deliverable;
   }
@@ -70,6 +64,9 @@ public class DeliverableMetadataElement implements Serializable, IAuditLog {
     return elementValue;
   }
 
+  public Boolean getHide() {
+    return hide;
+  }
 
   @Override
   public Integer getId() {
@@ -82,6 +79,7 @@ public class DeliverableMetadataElement implements Serializable, IAuditLog {
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
+
 
   public MetadataElement getMetadataElement() {
     return metadataElement;
@@ -100,12 +98,22 @@ public class DeliverableMetadataElement implements Serializable, IAuditLog {
     return u;
   }
 
+  @Override
+  public boolean isActive() {
+
+    return true;
+  }
+
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
   }
 
   public void setElementValue(String elementValue) {
     this.elementValue = elementValue;
+  }
+
+  public void setHide(Boolean hide) {
+    this.hide = hide;
   }
 
 

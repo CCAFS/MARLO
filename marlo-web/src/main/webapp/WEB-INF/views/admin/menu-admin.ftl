@@ -6,6 +6,9 @@
   { 'slug': 'ppaPartners',      'name': 'CRPAdmin.menu.hrefPPAPartners',       'action': 'ppaPartners',      'active': true },  
   { 'slug': 'locations',        'name': 'CRPAdmin.menu.hrefLocations',          'action': 'locations',        'active': true },
   { 'slug': 'projectPhases',    'name': 'CRPAdmin.menu.hrefProjectPhases',          'action': 'projectPhases',        'active': true }
+  { 'slug': 'ppaPartners',      'name': 'CRPAdmin.menu.hrefPPAPartners',       'action': 'ppaPartners',      'active': true },
+  { 'slug': 'locations',        'name': 'CRPAdmin.menu.hrefLocations',          'action': 'locations',        'active': true },
+  { 'slug': 'targetUnits',        'name': 'CRPAdmin.menu.hrefTargetUnits',          'action': 'targetUnits',        'active': true }
 ]/]
 
 <nav id="secondaryMenu">

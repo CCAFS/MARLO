@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -64,6 +64,17 @@ public class CrpTargetUnitMySQLDAO implements CrpTargetUnitDAO {
     }
     return null;
 
+  }
+
+  @Override
+  public CrpTargetUnit getByTargetUnitIdAndCrpId(long crpId, long targetUnitId) {
+    String query =
+      "from " + CrpTargetUnit.class.getName() + " where crp_id=" + crpId + " and target_unit_id=" + targetUnitId;
+    List<CrpTargetUnit> list = dao.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
   }
 
   @Override

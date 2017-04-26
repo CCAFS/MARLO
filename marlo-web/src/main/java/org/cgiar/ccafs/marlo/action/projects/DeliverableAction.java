@@ -1289,10 +1289,9 @@ public class DeliverableAction extends BaseAction {
         && deliverablePrew.getDeliverablePartnerships().size() > 0) {
 
         try {
-          partnershipResponsible =
-            deliverablePrew.getDeliverablePartnerships().stream()
-              .filter(dp -> dp.isActive()
-                && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
+          partnershipResponsible = deliverablePrew.getDeliverablePartnerships().stream()
+            .filter(
+              dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
             .collect(Collectors.toList()).get(0);
         } catch (Exception e) {
           partnershipResponsible = null;
@@ -1614,6 +1613,7 @@ public class DeliverableAction extends BaseAction {
 
       }
 
+      dissemination.setSynced(deliverable.getDissemination().getSynced());
 
       if (deliverable.getDissemination().getIsOpenAccess() != null) {
         dissemination.setIsOpenAccess(deliverable.getDissemination().getIsOpenAccess());
@@ -1736,14 +1736,10 @@ public class DeliverableAction extends BaseAction {
 
   public void saveMetadata() {
     if (deliverable.getMetadataElements() != null) {
-
       for (DeliverableMetadataElement deliverableMetadataElement : deliverable.getMetadataElements()) {
-
         if (deliverableMetadataElement != null && deliverableMetadataElement.getMetadataElement() != null) {
-
           deliverableMetadataElement.setDeliverable(deliverable);
           deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElement);
-
         }
       }
     }

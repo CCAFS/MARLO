@@ -802,7 +802,7 @@ public class PublicationAction extends BaseAction {
         dissemination.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
 
       }
-
+      dissemination.setSynced(deliverable.getDissemination().getSynced());
 
       if (deliverable.getDissemination().getIsOpenAccess() != null) {
         dissemination.setIsOpenAccess(deliverable.getDissemination().getIsOpenAccess());
