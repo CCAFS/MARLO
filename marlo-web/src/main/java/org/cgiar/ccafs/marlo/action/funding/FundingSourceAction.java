@@ -540,7 +540,14 @@ public class FundingSourceAction extends BaseAction {
       fundingSourceDB.setContactPersonName(fundingSource.getContactPersonName());
       fundingSourceDB.setBudgets(fundingSource.getBudgets());
       fundingSourceDB.setBudgetType(fundingSource.getBudgetType());
-      fundingSourceDB.setPartnerDivision(fundingSource.getPartnerDivision());
+
+      if (fundingSource.getPartnerDivision() == null || fundingSource.getPartnerDivision().getId() == null
+        || fundingSource.getPartnerDivision().getId().longValue() == -1) {
+        fundingSourceDB.setPartnerDivision(null);
+      } else {
+        fundingSourceDB.setPartnerDivision(fundingSource.getPartnerDivision());
+      }
+
 
       fundingSourceDB.setDescription(fundingSource.getDescription());
 
