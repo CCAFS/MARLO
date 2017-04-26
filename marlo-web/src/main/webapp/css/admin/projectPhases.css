@@ -1,0 +1,16 @@
+.tableTitles{
+    color: #1da5ce;
+    text-align: center;
+    font-size: 1.3em;
+    line-height: 0.9em;
+    margin-bottom: 4px;
+}
+
+.dragProjectList{
+	border: 1px solid whitesmoke;
+    padding: 6px;
+}
+
+.project{
+	cursor:move;
+}
