@@ -20,17 +20,16 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectHighligthManager;
 import org.cgiar.ccafs.marlo.data.model.ChannelEnum;
 import org.cgiar.ccafs.marlo.data.model.Crp;
-import org.cgiar.ccafs.marlo.data.model.CrpParameter;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel;
-import org.cgiar.ccafs.marlo.data.model.DeliverableGenderTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableLeader;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
@@ -89,21 +88,24 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
   private CrpManager crpManager;
   private CrpProgramManager programManager;
   private DeliverableManager deliverableManager;
+  private GenderTypeManager genderTypeManager;
 
-  private Crp loggedCrp;
   // XLSX bytes
   private byte[] bytesXLSX;
   // Streams
   InputStream inputStream;
 
   private int year;
+  private long startTime;
+  private Crp loggedCrp;
 
   @Inject
   public DeliverablesReportingExcelSummaryAction(APConfig config, CrpManager crpManager,
     ProjectHighligthManager projectHighLightManager, CrpProgramManager programManager,
-    DeliverableManager deliverableManager) {
+    GenderTypeManager genderTypeManager, DeliverableManager deliverableManager) {
     super(config);
     this.crpManager = crpManager;
+    this.genderTypeManager = genderTypeManager;
     this.programManager = programManager;
     this.deliverableManager = deliverableManager;
   }
@@ -116,47 +118,53 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
 
     ResourceManager manager = new ResourceManager();
     manager.registerDefaults();
+    try {
+      Resource reportResource =
+        manager.createDirectly(this.getClass().getResource("/pentaho/deliverablesReporting.prpt"), MasterReport.class);
 
-    Resource reportResource =
-      manager.createDirectly(this.getClass().getResource("/pentaho/deliverablesReporting.prpt"), MasterReport.class);
+      MasterReport masterReport = (MasterReport) reportResource.getResource();
+      String center = loggedCrp.getName();
 
-    MasterReport masterReport = (MasterReport) reportResource.getResource();
-    String center = loggedCrp.getName();
+      ZonedDateTime timezone = ZonedDateTime.now();
+      DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
+      String zone = timezone.getOffset() + "";
+      if (zone.equals("Z")) {
+        zone = "+0";
+      }
+      String date = timezone.format(format) + "(GMT" + zone + ")";
+      // Set Main_Query
+      CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
+      String masterQueryName = "main";
+      TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
+      TypedTableModel model = this.getMasterTableModel(center, date, String.valueOf(year));
+      sdf.addTable(masterQueryName, model);
+      masterReport.setDataFactory(cdf);
 
+      // Get details band
+      ItemBand masteritemBand = masterReport.getItemBand();
+      // Create new empty subreport hash map
+      HashMap<String, Element> hm = new HashMap<String, Element>();
+      // method to get all the subreports in the prpt and store in the HashMap
+      this.getAllSubreports(hm, masteritemBand);
+      // Uncomment to see which Subreports are detecting the method getAllSubreports
+      // System.out.println("Pentaho SubReports: " + hm);
 
-    // Get datetime
-    ZonedDateTime timezone = ZonedDateTime.now();
-    DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
-    String zone = timezone.getOffset() + "";
-    if (zone.equals("Z")) {
-      zone = "+0";
+      this.fillSubreport((SubReport) hm.get("deliverables_reporting_data"), "deliverables_reporting_data");
+      this.fillSubreport((SubReport) hm.get("deliverables_reporting_publications"),
+        "deliverables_reporting_publications");
+      ExcelReportUtil.createXLSX(masterReport, os);
+      bytesXLSX = os.toByteArray();
+      os.close();
+    } catch (Exception e) {
+      LOG.error("Error generating DeliverablesReportingExcel " + e.getMessage());
+      throw e;
     }
-    String date = timezone.format(format) + "(GMT" + zone + ")";
-
-    // Set Main_Query
-    CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
-    String masterQueryName = "main";
-    TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
-    TypedTableModel model = this.getMasterTableModel(center, date, String.valueOf(year));
-    sdf.addTable(masterQueryName, model);
-    masterReport.setDataFactory(cdf);
-
-    // Get details band
-    ItemBand masteritemBand = masterReport.getItemBand();
-    // Create new empty subreport hash map
-    HashMap<String, Element> hm = new HashMap<String, Element>();
-    // method to get all the subreports in the prpt and store in the HashMap
-    this.getAllSubreports(hm, masteritemBand);
-    // Uncomment to see which Subreports are detecting the method getAllSubreports
-    // System.out.println("Pentaho SubReports: " + hm);
-
-    this.fillSubreport((SubReport) hm.get("deliverables_reporting_data"), "deliverables_reporting_data");
-    this.fillSubreport((SubReport) hm.get("deliverables_reporting_publications"),
-      "deliverables_reporting_publications");
-    ExcelReportUtil.createXLSX(masterReport, os);
-    bytesXLSX = os.toByteArray();
-    os.close();
-
+    // Calculate time of generation
+    long stopTime = System.currentTimeMillis();
+    stopTime = stopTime - startTime;
+    LOG.info(
+      "Downloaded successfully: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
+        + ". CRP: " + this.loggedCrp.getAcronym() + ". Time to generate: " + stopTime + "ms.");
     return SUCCESS;
   }
 
@@ -284,14 +292,14 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
           && ((d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
             && (d.getYear() >= this.year
               || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() >= this.year)))
-            || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-              && (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))
-            || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
-              && (d.getYear() == this.year
-                || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))))
-          && (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-            || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-            || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
+          || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+            && (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))
+          || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+            && (d.getYear() == this.year
+              || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))))
+        && (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+          || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+          || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
         .collect(Collectors.toList()));
 
       deliverables.sort((p1, p2) -> p1.isRequieriedReporting(year).compareTo(p2.isRequieriedReporting(year)));
@@ -305,32 +313,31 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
         i++;
         // System.out.println(deliverable.getId());
         // System.out.println("#" + i);
-        String deliv_type = null;
-        String deliv_sub_type = null;
-        String deliv_status = deliverable.getStatusName();
-        Integer deliv_year = null;
-        String key_output = "";
+        String delivType = null;
+        String delivSubType = null;
+        String delivStatus = deliverable.getStatusName();
+        Integer delivYear = null;
+        String keyOutput = "";
         String leader = null;
-        String others_responsibles = null;
-        String funding_sources = "";
+        String othersResponsibles = null;
+        String fundingSources = "";
         Boolean showFAIR = false;
-        Boolean show_publication = false;
+        Boolean showPublication = false;
         Boolean showCompilance = false;
-        String project_ID = null;
-        String project_title = null;
+        String projectID = null;
+        String projectTitle = null;
         String flagships = null, regions = null;
-        String others_reponsibles = null;
 
         if (deliverable.getProject() != null) {
-          project_ID = deliverable.getProject().getId().toString();
+          projectID = deliverable.getProject().getId().toString();
           if (deliverable.getProject().getTitle() != null && !deliverable.getProject().getTitle().trim().isEmpty()) {
-            project_title = deliverable.getProject().getTitle();
+            projectTitle = deliverable.getProject().getTitle();
           }
         }
 
 
         if (deliverable.getDeliverableType() != null) {
-          deliv_sub_type = deliverable.getDeliverableType().getName();
+          delivSubType = deliverable.getDeliverableType().getName();
           if (deliverable.getDeliverableType().getId() == 51 || deliverable.getDeliverableType().getId() == 56
             || deliverable.getDeliverableType().getId() == 57 || deliverable.getDeliverableType().getId() == 76
             || deliverable.getDeliverableType().getId() == 54 || deliverable.getDeliverableType().getId() == 81
@@ -348,28 +355,28 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
           }
 
           if (deliverable.getDeliverableType().getDeliverableType() != null) {
-            deliv_type = deliverable.getDeliverableType().getDeliverableType().getName();
+            delivType = deliverable.getDeliverableType().getDeliverableType().getName();
             // FAIR and deliverable publication
             if (deliverable.getDeliverableType().getDeliverableType().getId() == 49) {
               showFAIR = true;
-              show_publication = true;
+              showPublication = true;
             }
           }
         }
-        if (deliv_status.equals("")) {
-          deliv_status = null;
+        if (delivStatus.equals("")) {
+          delivStatus = null;
         }
         if (deliverable.getYear() != 0) {
-          deliv_year = deliverable.getYear();
+          delivYear = deliverable.getYear();
         }
         if (deliverable.getCrpClusterKeyOutput() != null) {
-          key_output += "● ";
+          keyOutput += "● ";
 
           if (deliverable.getCrpClusterKeyOutput().getCrpClusterOfActivity().getCrpProgram() != null) {
-            key_output +=
+            keyOutput +=
               deliverable.getCrpClusterKeyOutput().getCrpClusterOfActivity().getCrpProgram().getAcronym() + " - ";
           }
-          key_output += deliverable.getCrpClusterKeyOutput().getKeyOutput();
+          keyOutput += deliverable.getCrpClusterKeyOutput().getKeyOutput();
         }
 
 
@@ -391,32 +398,32 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
         // Get funding sources if exist
         for (DeliverableFundingSource dfs : deliverable.getDeliverableFundingSources().stream()
           .filter(d -> d.isActive()).collect(Collectors.toList())) {
-          funding_sources += "● " + dfs.getFundingSource().getTitle() + "\n";
+          fundingSources += "● " + dfs.getFundingSource().getTitle() + "\n";
         }
-        if (funding_sources.isEmpty()) {
-          funding_sources = null;
+        if (fundingSources.isEmpty()) {
+          fundingSources = null;
         }
 
         // Get cross_cutting dimension
-        String cross_cutting = "";
+        String crossCutting = "";
         if (deliverable.getCrossCuttingNa() != null) {
           if (deliverable.getCrossCuttingNa() == true) {
-            cross_cutting += "● N/A \n";
+            crossCutting += "● N/A \n";
           }
         }
         if (deliverable.getCrossCuttingGender() != null) {
           if (deliverable.getCrossCuttingGender() == true) {
-            cross_cutting += "● Gender \n";
+            crossCutting += "● Gender \n";
           }
         }
         if (deliverable.getCrossCuttingYouth() != null) {
           if (deliverable.getCrossCuttingYouth() == true) {
-            cross_cutting += "● Youth \n";
+            crossCutting += "● Youth \n";
           }
         }
         if (deliverable.getCrossCuttingCapacity() != null) {
           if (deliverable.getCrossCuttingCapacity() == true) {
-            cross_cutting += "● Capacity Development \n";
+            crossCutting += "● Capacity Development \n";
           }
         }
 
@@ -424,61 +431,61 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
           if (deliverable.getCrossCuttingGender() == true) {
             if (deliverable.getDeliverableGenderLevels() == null
               || deliverable.getDeliverableGenderLevels().isEmpty()) {
-              cross_cutting += "\nGender level(s):\n<Not Defined>";
+              crossCutting += "\nGender level(s):\n<Not Defined>";
             } else {
-              cross_cutting += "\nGender level(s): \n";
+              crossCutting += "\nGender level(s): \n";
               for (DeliverableGenderLevel dgl : deliverable.getDeliverableGenderLevels().stream()
                 .filter(dgl -> dgl.isActive()).collect(Collectors.toList())) {
                 if (dgl.getGenderLevel() != 0.0) {
-                  cross_cutting += "● " + DeliverableGenderTypeEnum.getValue(dgl.getGenderLevel()).getValue() + "\n";
+                  crossCutting +=
+                    "● " + genderTypeManager.getGenderTypeById(dgl.getGenderLevel()).getDescription() + "\n";
                 }
               }
             }
           }
         }
-        if (cross_cutting.isEmpty()) {
-          cross_cutting = null;
+        if (crossCutting.isEmpty()) {
+          crossCutting = null;
         }
 
-        if (key_output.isEmpty()) {
-          key_output = null;
+        if (keyOutput.isEmpty()) {
+          keyOutput = null;
         }
 
         // Reporting
-        Integer deliv_new_year = null;
+        Integer delivNewYear = null;
         String newExceptedFlag = "na";
-        String deliv_new_year_justification = null;
+        String delivNewYearJustification = null;
 
         if (deliverable.getStatus() != null) {
           // Extended
           if (deliverable.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-            deliv_new_year = deliverable.getNewExpectedYear();
-            deliv_new_year_justification = deliverable.getStatusDescription();
+            delivNewYear = deliverable.getNewExpectedYear();
+            delivNewYearJustification = deliverable.getStatusDescription();
             newExceptedFlag = "nd";
           }
           // Complete
           if (deliverable.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
-            deliv_new_year = deliverable.getNewExpectedYear();
-            deliv_new_year_justification = "<Not applicable>";
+            delivNewYear = deliverable.getNewExpectedYear();
+            delivNewYearJustification = "<Not applicable>";
             newExceptedFlag = "nd";
           }
           // Canceled
           if (deliverable.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
-            deliv_new_year_justification = deliverable.getStatusDescription();
+            delivNewYearJustification = deliverable.getStatusDescription();
           }
         }
 
 
-        String deliv_dissemination_channel = null;
-        String deliv_dissemination_url = null;
-        String deliv_open_access = null;
-        String deliv_license = null;
-        String deliv_license_modifications = null;
+        String delivDisseminationChannel = null;
+        String delivDisseminationUrl = null;
+        String delivOpenAccess = null;
+        String delivLicense = null;
+        String delivLicenseModifications = null;
         Boolean isDisseminated = false;
         String disseminated = "No";
-        String restricted_access = null;
-        Boolean isRestricted = false;
-        Boolean show_deliv_license_modifications = false;
+        String restrictedAccess = null;
+        Boolean showDelivLicenseModifications = false;
 
         if (deliverable.getDeliverableDisseminations().stream().collect(Collectors.toList()).size() > 0
           && deliverable.getDeliverableDisseminations().stream().collect(Collectors.toList()).get(0) != null) {
@@ -495,66 +502,65 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
             if (deliverableDissemination.getDisseminationChannel() != null
               && !deliverableDissemination.getDisseminationChannel().isEmpty()) {
               if (ChannelEnum.getValue(deliverableDissemination.getDisseminationChannel()) != null) {
-                deliv_dissemination_channel =
+                delivDisseminationChannel =
                   ChannelEnum.getValue(deliverableDissemination.getDisseminationChannel()).getDesc();
               }
               // deliv_dissemination_channel = deliverableDissemination.getDisseminationChannel();
             }
           } else {
-            deliv_dissemination_channel = "<Not applicable>";
+            delivDisseminationChannel = "<Not applicable>";
           }
 
           if (isDisseminated) {
             if (deliverableDissemination.getDisseminationUrl() != null
               && !deliverableDissemination.getDisseminationUrl().isEmpty()) {
-              deliv_dissemination_url = deliverableDissemination.getDisseminationUrl().replace(" ", "%20");
+              delivDisseminationUrl = deliverableDissemination.getDisseminationUrl().replace(" ", "%20");
             }
           } else {
-            deliv_dissemination_url = "<Not applicable>";
+            delivDisseminationUrl = "<Not applicable>";
           }
 
           if (deliverableDissemination.getIsOpenAccess() != null) {
             if (deliverableDissemination.getIsOpenAccess() == true) {
-              deliv_open_access = "Yes";
-              restricted_access = "<Not applicable>";
+              delivOpenAccess = "Yes";
+              restrictedAccess = "<Not applicable>";
             } else {
               // get the open access
-              deliv_open_access = "No";
-              isRestricted = true;
+              delivOpenAccess = "No";
               if (deliverableDissemination.getIntellectualProperty() != null
                 && deliverableDissemination.getIntellectualProperty() == true) {
-                restricted_access = "Intellectual Property Rights (confidential information)";
+                restrictedAccess = "Intellectual Property Rights (confidential information)";
               }
 
               if (deliverableDissemination.getLimitedExclusivity() != null
                 && deliverableDissemination.getLimitedExclusivity() == true) {
-                restricted_access = "Limited Exclusivity Agreements";
+                restrictedAccess = "Limited Exclusivity Agreements";
               }
 
               if (deliverableDissemination.getNotDisseminated() != null
                 && deliverableDissemination.getNotDisseminated() == true) {
-                restricted_access = "Not Disseminated";
+                restrictedAccess = "Not Disseminated";
               }
 
               if (deliverableDissemination.getRestrictedUseAgreement() != null
                 && deliverableDissemination.getRestrictedUseAgreement() == true) {
-                restricted_access = "Restricted Use Agreement - Restricted access (if so, what are these periods?)";
+                restrictedAccess = "Restricted Use Agreement - Restricted access (if so, what are these periods?)";
                 if (deliverableDissemination.getRestrictedAccessUntil() != null) {
-                  restricted_access +=
+                  restrictedAccess +=
                     "\nRestricted access until: " + deliverableDissemination.getRestrictedAccessUntil();
                 } else {
-                  restricted_access += "\nRestricted access until: <Not Defined>";
+                  restrictedAccess += "\nRestricted access until: <Not Defined>";
                 }
               }
 
               if (deliverableDissemination.getEffectiveDateRestriction() != null
                 && deliverableDissemination.getEffectiveDateRestriction() == true) {
-                restricted_access = "Effective Date Restriction - embargoed periods (if so, what are these periods?)";
+                restrictedAccess = "Effective Date Restriction - embargoed periods (if so, what are these periods?)";
                 if (deliverableDissemination.getRestrictedEmbargoed() != null) {
-                  restricted_access +=
+                  restrictedAccess +=
                     "\nRestricted embargoed date: " + deliverableDissemination.getRestrictedEmbargoed();
                 } else {
-                  restricted_access += "\nRestricted embargoed date: <Not Defined>";
+                  restrictedAccess += "\nRestricted embargoed date: <Not Defined>";
                 }
               }
             }
@@ -562,28 +568,28 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
 
           if (deliverable.getAdoptedLicense() != null) {
             if (deliverable.getAdoptedLicense() == true) {
-              deliv_license = deliverable.getLicense();
-              if (deliv_license.equals("OTHER")) {
-                deliv_license = deliverable.getOtherLicense();
-                show_deliv_license_modifications = true;
+              delivLicense = deliverable.getLicense();
+              if (delivLicense.equals("OTHER")) {
+                delivLicense = deliverable.getOtherLicense();
+                showDelivLicenseModifications = true;
                 if (deliverable.getAllowModifications() != null && deliverable.getAllowModifications() == true) {
-                  deliv_license_modifications = "Yes";
+                  delivLicenseModifications = "Yes";
                 } else {
-                  deliv_license_modifications = "No";
+                  delivLicenseModifications = "No";
                 }
               } else {
-                if (!show_deliv_license_modifications) {
-                  deliv_license_modifications = "<Not applicable>";
+                if (!showDelivLicenseModifications) {
+                  delivLicenseModifications = "<Not applicable>";
                 }
               }
             } else {
-              deliv_license = "No";
+              delivLicense = "No";
             }
           }
         }
 
-        if (deliv_license != null && deliv_license.isEmpty()) {
-          deliv_license = null;
+        if (delivLicense != null && delivLicense.isEmpty()) {
+          delivLicense = null;
         }
 
         String titleMetadata = null;
@@ -663,47 +669,48 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
           }
         }
 
-        String creator_authors = "";
+        String creatorAuthors = "";
         for (DeliverableUser deliverableUser : deliverable.getDeliverableUsers().stream().filter(du -> du.isActive())
           .collect(Collectors.toList())) {
-          creator_authors += "\n● ";
+          creatorAuthors += "\n● ";
           if (!deliverableUser.getLastName().isEmpty()) {
-            creator_authors += deliverableUser.getLastName() + " - ";
+            creatorAuthors += deliverableUser.getLastName() + " - ";
           }
           if (!deliverableUser.getFirstName().isEmpty()) {
-            creator_authors += deliverableUser.getFirstName();
+            creatorAuthors += deliverableUser.getFirstName();
           }
           if (!deliverableUser.getElementId().isEmpty()) {
-            creator_authors += "<" + deliverableUser.getElementId() + ">";
+            creatorAuthors += "<" + deliverableUser.getElementId() + ">";
           }
         }
 
-        if (creator_authors.isEmpty()) {
-          creator_authors = null;
+        if (creatorAuthors.isEmpty()) {
+          creatorAuthors = null;
         }
 
-        String data_sharing = "";
-        if (isDisseminated && (deliv_dissemination_channel != null && !deliv_dissemination_channel.equals("Other"))) {
+        String dataSharing = "";
+        if (isDisseminated && (delivDisseminationChannel != null && !delivDisseminationChannel.equals("Other"))) {
 
 
           for (DeliverableDataSharingFile deliverableDataSharingFile : deliverable.getDeliverableDataSharingFiles()
             .stream().filter(ds -> ds.isActive()).collect(Collectors.toList())) {
             if (deliverableDataSharingFile.getExternalFile() != null
               && !deliverableDataSharingFile.getExternalFile().isEmpty()) {
-              data_sharing += deliverableDataSharingFile.getExternalFile().replace(" ", "%20") + "\n";
+              dataSharing += deliverableDataSharingFile.getExternalFile().replace(" ", "%20") + "\n";
             }
 
             if (deliverableDataSharingFile.getFile() != null && deliverableDataSharingFile.getFile().isActive()) {
-              data_sharing += (this.getDeliverableDataSharingFilePath(project_ID)
-                + deliverableDataSharingFile.getFile().getFileName()).replace(" ", "%20") + "\n";
+              dataSharing +=
+                (this.getDeliverableDataSharingFilePath(projectID) + deliverableDataSharingFile.getFile().getFileName())
+                  .replace(" ", "%20") + "\n";
 
             }
           }
-          if (data_sharing.isEmpty()) {
-            data_sharing = null;
+          if (dataSharing.isEmpty()) {
+            dataSharing = null;
           }
         } else {
-          data_sharing = "<Not applicable>";
+          dataSharing = "<Not applicable>";
         }
 
 
@@ -827,6 +834,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
               }
             }
           } catch (Exception e) {
+            LOG.warn("Error getting isI(Deliverable). Exception: " + e.getMessage());
             I += "X";
           }
 
@@ -852,13 +860,13 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
         String issue = null;
         String pages = null;
         String journal = null;
-        String journal_indicators = "";
+        String journalIndicator = "";
         String acknowledge = null;
-        String fl_contrib = "";
+        String flContrib = "";
         // Publication metadata
         // Verify if the deliverable is of type Articles and Books
 
-        if (show_publication) {
+        if (showPublication) {
           if (deliverable.getDeliverablePublicationMetadatas().stream().filter(dpm -> dpm.isActive())
             .collect(Collectors.toList()).size() > 0
             && deliverable.getDeliverablePublicationMetadatas().stream().filter(dpm -> dpm.isActive())
@@ -885,19 +893,19 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
 
             if (deliverablePublicationMetadata.getIsiPublication() != null
               && deliverablePublicationMetadata.getIsiPublication() == true) {
-              journal_indicators += "● This journal article is an ISI publication \n";
+              journalIndicator += "● This journal article is an ISI publication \n";
             }
             if (deliverablePublicationMetadata.getNasr() != null && deliverablePublicationMetadata.getNasr() == true) {
-              journal_indicators +=
+              journalIndicator +=
                 "● This article have a co-author from a developing country National Agricultural Research System (NARS)\n";
             }
             if (deliverablePublicationMetadata.getCoAuthor() != null
               && deliverablePublicationMetadata.getCoAuthor() == true) {
-              journal_indicators +=
+              journalIndicator +=
                 "● This article have a co-author based in an Earth System Science-related academic department";
             }
-            if (journal_indicators.trim().isEmpty()) {
-              journal_indicators = null;
+            if (journalIndicator.trim().isEmpty()) {
+              journalIndicator = null;
             }
 
             if (deliverablePublicationMetadata.getPublicationAcknowledge() != null
@@ -910,11 +918,11 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
             for (DeliverableCrp deliverableCrp : deliverable.getDeliverableCrps().stream().filter(dc -> dc.isActive())
               .collect(Collectors.toList())) {
               if (deliverableCrp.getCrpPandr() != null && deliverableCrp.getIpProgram() != null) {
-                fl_contrib += "● " + deliverableCrp.getCrpPandr().getAcronym().toUpperCase() + " - "
+                flContrib += "● " + deliverableCrp.getCrpPandr().getAcronym().toUpperCase() + " - "
                   + deliverableCrp.getIpProgram().getAcronym().toUpperCase() + "\n";
               } else {
                 if (deliverableCrp.getCrpPandr() != null) {
-                  fl_contrib += "● " + deliverableCrp.getCrpPandr().getName().toUpperCase() + "\n";
+                  flContrib += "● " + deliverableCrp.getCrpPandr().getName().toUpperCase() + "\n";
                 }
               }
             }
@@ -924,17 +932,17 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
           issue = "<Not applicable>";
           pages = "<Not applicable>";
           journal = "<Not applicable>";
-          journal_indicators = "<Not applicable>";
+          journalIndicator = "<Not applicable>";
           acknowledge = "<Not applicable>";
-          fl_contrib = "<Not applicable>";
+          flContrib = "<Not applicable>";
         }
 
-        if (fl_contrib.trim().isEmpty()) {
-          fl_contrib = null;
+        if (flContrib.trim().isEmpty()) {
+          flContrib = null;
         }
-        if (journal_indicators != null) {
-          if (journal_indicators.trim().isEmpty()) {
-            journal_indicators = null;
+        if (journalIndicator != null) {
+          if (journalIndicator.trim().isEmpty()) {
+            journalIndicator = null;
           }
         }
 
@@ -975,15 +983,14 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
         }
 
 
-        model.addRow(
-          new Object[] {deliverable.getId(), deliverable.getTitle().trim().isEmpty() ? null : deliverable.getTitle(),
-            deliv_type, deliv_sub_type, deliv_status, deliv_year, key_output, leader, funding_sources, cross_cutting,
-            deliv_new_year, deliv_new_year_justification, deliv_dissemination_channel, deliv_dissemination_url,
-            deliv_open_access, deliv_license, titleMetadata, descriptionMetadata, dateMetadata, languageMetadata,
-            countryMetadata, keywordsMetadata, citationMetadata, HandleMetadata, DOIMetadata, creator_authors,
-            data_sharing, qualityAssurance, dataDictionary, tools, F, A, I, R, disseminated, restricted_access,
-            deliv_license_modifications, volume, issue, pages, journal, journal_indicators, acknowledge, fl_contrib,
-            project_ID, project_title, flagships, regions, others_responsibles, newExceptedFlag});
+        model.addRow(new Object[] {deliverable.getId(),
+          deliverable.getTitle().trim().isEmpty() ? null : deliverable.getTitle(), delivType, delivSubType, delivStatus,
+          delivYear, keyOutput, leader, fundingSources, crossCutting, delivNewYear, delivNewYearJustification,
+          delivDisseminationChannel, delivDisseminationUrl, delivOpenAccess, delivLicense, titleMetadata,
+          descriptionMetadata, dateMetadata, languageMetadata, countryMetadata, keywordsMetadata, citationMetadata,
+          HandleMetadata, DOIMetadata, creatorAuthors, dataSharing, qualityAssurance, dataDictionary, tools, F, A, I, R,
+          disseminated, restrictedAccess, delivLicenseModifications, volume, issue, pages, journal, journalIndicator,
+          acknowledge, flContrib, projectID, projectTitle, flagships, regions, othersResponsibles, newExceptedFlag});
       }
     }
     return model;
@@ -1013,25 +1020,24 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
         .collect(Collectors.toList())) {
         // System.out.println(deliverable.getId());
         // System.out.println("#" + i);
-        Long publication_id = null;
-        Integer deliv_year = null;
-        String title = null, publication_sub_type = null, leader = null, cross_cutting = "",
-          deliv_dissemination_channel = null, deliv_dissemination_url = null, deliv_open_access = null,
-          deliv_license = null, titleMetadata = null, descriptionMetadata = null, dateMetadata = null,
-          languageMetadata = null, countryMetadata = null, keywordsMetadata = null, citationMetadata = null,
-          HandleMetadata = null, DOIMetadata = null, creator_authors = "", F = null, A = null, I = null, R = null,
-          restricted_access = null, deliv_license_modifications = null, volume = null, issue = null, pages = null,
-          journal = null, journal_indicators = "", acknowledge = null, fl_contrib = "", flagships = null,
-          regions = null, added_by = null;
-        publication_id = deliverable.getId();
+        Long publicationId = null;
+        Integer delivYear = null;
+        String title = null, publicationSubType = null, leader = null, crossCutting = "",
+          delivDisseminationChannel = null, delivDisseminationUrl = null, delivOpenAccess = null, delivLicense = null,
+          titleMetadata = null, descriptionMetadata = null, dateMetadata = null, languageMetadata = null,
+          countryMetadata = null, keywordsMetadata = null, citationMetadata = null, HandleMetadata = null,
+          DOIMetadata = null, creatorAuthors = "", F = null, A = null, I = null, R = null, restrictedAccess = null,
+          delivLicenseModifications = null, volume = null, issue = null, pages = null, journal = null,
+          journalIndicators = "", acknowledge = null, flContrib = "", flagships = null, regions = null, addedBy = null;
+        publicationId = deliverable.getId();
         title = deliverable.getTitle();
 
-        String deliv_status = deliverable.getStatusName();
+        String delivStatus = deliverable.getStatusName();
         Boolean showFAIR = false;
-        Boolean show_publication = false;
+        Boolean showPublication = false;
 
         if (deliverable.getDeliverableType() != null) {
-          publication_sub_type = deliverable.getDeliverableType().getName();
+          publicationSubType = deliverable.getDeliverableType().getName();
           if (deliverable.getDeliverableType().getId() == 51 || deliverable.getDeliverableType().getId() == 56
             || deliverable.getDeliverableType().getId() == 57 || deliverable.getDeliverableType().getId() == 76
             || deliverable.getDeliverableType().getId() == 54 || deliverable.getDeliverableType().getId() == 81
@@ -1050,15 +1056,15 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
             // FAIR and deliverable publication
             if (deliverable.getDeliverableType().getDeliverableType().getId() == 49) {
               showFAIR = true;
-              show_publication = true;
+              showPublication = true;
             }
           }
         }
-        if (deliv_status.equals("")) {
-          deliv_status = null;
+        if (delivStatus.equals("")) {
+          delivStatus = null;
         }
         if (deliverable.getYear() != 0) {
-          deliv_year = deliverable.getYear();
+          delivYear = deliverable.getYear();
         }
 
 
@@ -1078,22 +1084,22 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
         // Get cross_cutting dimension
         if (deliverable.getCrossCuttingNa() != null) {
           if (deliverable.getCrossCuttingNa() == true) {
-            cross_cutting += "● N/A \n";
+            crossCutting += "● N/A \n";
           }
         }
         if (deliverable.getCrossCuttingGender() != null) {
           if (deliverable.getCrossCuttingGender() == true) {
-            cross_cutting += "● Gender \n";
+            crossCutting += "● Gender \n";
           }
         }
         if (deliverable.getCrossCuttingYouth() != null) {
           if (deliverable.getCrossCuttingYouth() == true) {
-            cross_cutting += "● Youth \n";
+            crossCutting += "● Youth \n";
           }
         }
         if (deliverable.getCrossCuttingCapacity() != null) {
           if (deliverable.getCrossCuttingCapacity() == true) {
-            cross_cutting += "● Capacity Development \n";
+            crossCutting += "● Capacity Development \n";
           }
         }
 
@@ -1101,24 +1107,25 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
           if (deliverable.getCrossCuttingGender() == true) {
             if (deliverable.getDeliverableGenderLevels() == null
               || deliverable.getDeliverableGenderLevels().isEmpty()) {
-              cross_cutting += "\nGender level(s):\n<Not Defined>";
+              crossCutting += "\nGender level(s):\n<Not Defined>";
             } else {
-              cross_cutting += "\nGender level(s): \n";
+              crossCutting += "\nGender level(s): \n";
               for (DeliverableGenderLevel dgl : deliverable.getDeliverableGenderLevels().stream()
                 .filter(dgl -> dgl.isActive()).collect(Collectors.toList())) {
                 if (dgl.getGenderLevel() != 0.0) {
-                  cross_cutting += "● " + DeliverableGenderTypeEnum.getValue(dgl.getGenderLevel()).getValue() + "\n";
+                  crossCutting +=
+                    "● " + genderTypeManager.getGenderTypeById(dgl.getGenderLevel()).getDescription() + "\n";
                 }
               }
             }
           }
         }
-        if (cross_cutting.isEmpty()) {
-          cross_cutting = null;
+        if (crossCutting.isEmpty()) {
+          crossCutting = null;
         }
 
         Boolean isDisseminated = false;
-        Boolean show_deliv_license_modifications = false;
+        Boolean showDelivLicenseModifications = false;
 
         if (deliverable.getDeliverableDisseminations().stream().collect(Collectors.toList()).size() > 0
           && deliverable.getDeliverableDisseminations().stream().collect(Collectors.toList()).get(0) != null) {
@@ -1134,65 +1141,65 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
             if (deliverableDissemination.getDisseminationChannel() != null
               && !deliverableDissemination.getDisseminationChannel().isEmpty()) {
               if (ChannelEnum.getValue(deliverableDissemination.getDisseminationChannel()) != null) {
-                deliv_dissemination_channel =
+                delivDisseminationChannel =
                   ChannelEnum.getValue(deliverableDissemination.getDisseminationChannel()).getDesc();
               }
               // deliv_dissemination_channel = deliverableDissemination.getDisseminationChannel();
             }
           } else {
-            deliv_dissemination_channel = "<Not applicable>";
+            delivDisseminationChannel = "<Not applicable>";
           }
 
           if (isDisseminated) {
             if (deliverableDissemination.getDisseminationUrl() != null
               && !deliverableDissemination.getDisseminationUrl().isEmpty()) {
-              deliv_dissemination_url = deliverableDissemination.getDisseminationUrl().replace(" ", "%20");
+              delivDisseminationUrl = deliverableDissemination.getDisseminationUrl().replace(" ", "%20");
             }
           } else {
-            deliv_dissemination_url = "<Not applicable>";
+            delivDisseminationUrl = "<Not applicable>";
           }
 
           if (deliverableDissemination.getIsOpenAccess() != null) {
             if (deliverableDissemination.getIsOpenAccess() == true) {
-              deliv_open_access = "Yes";
-              restricted_access = "<Not applicable>";
+              delivOpenAccess = "Yes";
+              restrictedAccess = "<Not applicable>";
             } else {
               // get the open access
-              deliv_open_access = "No";
+              delivOpenAccess = "No";
               if (deliverableDissemination.getIntellectualProperty() != null
                 && deliverableDissemination.getIntellectualProperty() == true) {
-                restricted_access = "Intellectual Property Rights (confidential information)";
+                restrictedAccess = "Intellectual Property Rights (confidential information)";
               }
 
               if (deliverableDissemination.getLimitedExclusivity() != null
                 && deliverableDissemination.getLimitedExclusivity() == true) {
-                restricted_access = "Limited Exclusivity Agreements";
+                restrictedAccess = "Limited Exclusivity Agreements";
               }
 
               if (deliverableDissemination.getNotDisseminated() != null
                 && deliverableDissemination.getNotDisseminated() == true) {
-                restricted_access = "Not Disseminated";
+                restrictedAccess = "Not Disseminated";
               }
 
               if (deliverableDissemination.getRestrictedUseAgreement() != null
                 && deliverableDissemination.getRestrictedUseAgreement() == true) {
-                restricted_access = "Restricted Use Agreement - Restricted access (if so, what are these periods?)";
+                restrictedAccess = "Restricted Use Agreement - Restricted access (if so, what are these periods?)";
                 if (deliverableDissemination.getRestrictedAccessUntil() != null) {
-                  restricted_access +=
+                  restrictedAccess +=
                     "\nRestricted access until: " + deliverableDissemination.getRestrictedAccessUntil();
                 } else {
-                  restricted_access += "\nRestricted access until: <Not Defined>";
+                  restrictedAccess += "\nRestricted access until: <Not Defined>";
                 }
               }
 
               if (deliverableDissemination.getEffectiveDateRestriction() != null
                 && deliverableDissemination.getEffectiveDateRestriction() == true) {
-                restricted_access = "Effective Date Restriction - embargoed periods (if so, what are these periods?)";
+                restrictedAccess = "Effective Date Restriction - embargoed periods (if so, what are these periods?)";
                 if (deliverableDissemination.getRestrictedEmbargoed() != null) {
-                  restricted_access +=
+                  restrictedAccess +=
                     "\nRestricted embargoed date: " + deliverableDissemination.getRestrictedEmbargoed();
                 } else {
-                  restricted_access += "\nRestricted embargoed date: <Not Defined>";
+                  restrictedAccess += "\nRestricted embargoed date: <Not Defined>";
                 }
               }
             }
@@ -1201,31 +1208,31 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
           if (deliverable.getAdoptedLicense() != null) {
             if (deliverable.getAdoptedLicense() == true) {
               if (deliverable.getLicense() != null && !deliverable.getLicense().isEmpty()) {
-                deliv_license = deliverable.getLicense();
+                delivLicense = deliverable.getLicense();
               } else {
-                deliv_license = "No";
+                delivLicense = "No";
               }
-              if (deliv_license.equals("OTHER")) {
-                deliv_license = deliverable.getOtherLicense();
-                show_deliv_license_modifications = true;
+              if (delivLicense.equals("OTHER")) {
+                delivLicense = deliverable.getOtherLicense();
+                showDelivLicenseModifications = true;
                 if (deliverable.getAllowModifications() != null && deliverable.getAllowModifications() == true) {
-                  deliv_license_modifications = "Yes";
+                  delivLicenseModifications = "Yes";
                 } else {
-                  deliv_license_modifications = "No";
+                  delivLicenseModifications = "No";
                 }
               } else {
-                if (!show_deliv_license_modifications) {
-                  deliv_license_modifications = "<Not applicable>";
+                if (!showDelivLicenseModifications) {
+                  delivLicenseModifications = "<Not applicable>";
                 }
               }
             } else {
-              deliv_license = "No";
+              delivLicense = "No";
             }
           }
         }
 
-        if (deliv_license != null && deliv_license.isEmpty()) {
-          deliv_license = null;
+        if (delivLicense != null && delivLicense.isEmpty()) {
+          delivLicense = null;
         }
 
         for (DeliverableMetadataElement deliverableMetadataElement : deliverable.getDeliverableMetadataElements()
@@ -1297,20 +1304,20 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
 
         for (DeliverableUser deliverableUser : deliverable.getDeliverableUsers().stream().filter(du -> du.isActive())
           .collect(Collectors.toList())) {
-          creator_authors += "\n● ";
+          creatorAuthors += "\n● ";
           if (!deliverableUser.getLastName().isEmpty()) {
-            creator_authors += deliverableUser.getLastName() + " - ";
+            creatorAuthors += deliverableUser.getLastName() + " - ";
           }
           if (!deliverableUser.getFirstName().isEmpty()) {
-            creator_authors += deliverableUser.getFirstName();
+            creatorAuthors += deliverableUser.getFirstName();
           }
           if (!deliverableUser.getElementId().isEmpty()) {
-            creator_authors += "<" + deliverableUser.getElementId() + ">";
+            creatorAuthors += "<" + deliverableUser.getElementId() + ">";
           }
         }
 
-        if (creator_authors.isEmpty()) {
-          creator_authors = null;
+        if (creatorAuthors.isEmpty()) {
+          creatorAuthors = null;
         }
 
 
@@ -1350,6 +1357,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
               }
             }
           } catch (Exception e) {
+            LOG.warn("Error getting isI(Deliverable). Exception: " + e.getMessage());
             I = "X";
           }
 
@@ -1374,7 +1382,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
         // Publication metadata
         // Verify if the deliverable is of type Articles and Books
 
-        if (show_publication) {
+        if (showPublication) {
           if (deliverable.getDeliverablePublicationMetadatas().stream().filter(dpm -> dpm.isActive())
             .collect(Collectors.toList()).size() > 0
             && deliverable.getDeliverablePublicationMetadatas().stream().filter(dpm -> dpm.isActive())
@@ -1401,19 +1409,19 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
 
             if (deliverablePublicationMetadata.getIsiPublication() != null
               && deliverablePublicationMetadata.getIsiPublication() == true) {
-              journal_indicators += "● This journal article is an ISI publication \n";
+              journalIndicators += "● This journal article is an ISI publication \n";
             }
             if (deliverablePublicationMetadata.getNasr() != null && deliverablePublicationMetadata.getNasr() == true) {
-              journal_indicators +=
+              journalIndicators +=
                 "● This article have a co-author from a developing country National Agricultural Research System (NARS)\n";
             }
             if (deliverablePublicationMetadata.getCoAuthor() != null
               && deliverablePublicationMetadata.getCoAuthor() == true) {
-              journal_indicators +=
+              journalIndicators +=
                 "● This article have a co-author based in an Earth System Science-related academic department";
             }
-            if (journal_indicators.trim().isEmpty()) {
-              journal_indicators = null;
+            if (journalIndicators.trim().isEmpty()) {
+              journalIndicators = null;
             }
 
             if (deliverablePublicationMetadata.getPublicationAcknowledge() != null
@@ -1426,11 +1434,11 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
             for (DeliverableCrp deliverableCrp : deliverable.getDeliverableCrps().stream().filter(dc -> dc.isActive())
               .collect(Collectors.toList())) {
               if (deliverableCrp.getCrpPandr() != null && deliverableCrp.getIpProgram() != null) {
-                fl_contrib += "● " + deliverableCrp.getCrpPandr().getAcronym().toUpperCase() + " - "
+                flContrib += "● " + deliverableCrp.getCrpPandr().getAcronym().toUpperCase() + " - "
                   + deliverableCrp.getIpProgram().getAcronym().toUpperCase() + "\n";
               } else {
                 if (deliverableCrp.getCrpPandr() != null) {
-                  fl_contrib += "● " + deliverableCrp.getCrpPandr().getName().toUpperCase() + "\n";
+                  flContrib += "● " + deliverableCrp.getCrpPandr().getName().toUpperCase() + "\n";
                 }
               }
             }
@@ -1440,17 +1448,17 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
           issue = "<Not applicable>";
           pages = "<Not applicable>";
           journal = "<Not applicable>";
-          journal_indicators = "<Not applicable>";
+          journalIndicators = "<Not applicable>";
           acknowledge = "<Not applicable>";
-          fl_contrib = "<Not applicable>";
+          flContrib = "<Not applicable>";
         }
 
-        if (fl_contrib.trim().isEmpty()) {
-          fl_contrib = null;
+        if (flContrib.trim().isEmpty()) {
+          flContrib = null;
         }
-        if (journal_indicators != null) {
-          if (journal_indicators.trim().isEmpty()) {
-            journal_indicators = null;
+        if (journalIndicators != null) {
+          if (journalIndicators.trim().isEmpty()) {
+            journalIndicators = null;
           }
         }
 
@@ -1481,14 +1489,14 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
         }
 
         if (deliverable.getCreatedBy() != null) {
-          added_by = deliverable.getCreatedBy().getComposedName();
+          addedBy = deliverable.getCreatedBy().getComposedName();
         }
 
-        model.addRow(new Object[] {publication_id, title, publication_sub_type, deliv_year, leader, cross_cutting,
-          deliv_dissemination_channel, deliv_dissemination_url, deliv_open_access, deliv_license, titleMetadata,
+        model.addRow(new Object[] {publicationId, title, publicationSubType, delivYear, leader, crossCutting,
+          delivDisseminationChannel, delivDisseminationUrl, delivOpenAccess, delivLicense, titleMetadata,
           descriptionMetadata, dateMetadata, languageMetadata, countryMetadata, keywordsMetadata, citationMetadata,
-          HandleMetadata, DOIMetadata, creator_authors, F, A, I, R, restricted_access, deliv_license_modifications,
-          volume, issue, pages, journal, journal_indicators, acknowledge, fl_contrib, flagships, regions, added_by});
+          HandleMetadata, DOIMetadata, creatorAuthors, F, A, I, R, restrictedAccess, delivLicenseModifications, volume,
+          issue, pages, journal, journalIndicators, acknowledge, flContrib, flagships, regions, addedBy});
       }
     }
     return model;
@@ -1503,6 +1511,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
       + "deliverable" + File.separator + fileType + File.separator;
   }
 
+  @SuppressWarnings("unused")
   private File getFile(String fileName) {
     // Get file from resources folder
     ClassLoader classLoader = this.getClass().getClassLoader();
@@ -1540,13 +1549,13 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
     }
   }
 
-  public String getHighlightsImagesUrl(String project_id) {
-    return config.getDownloadURL() + "/" + this.getHighlightsImagesUrlPath(project_id).replace('\\', '/');
+  public String getHighlightsImagesUrl(String projectId) {
+    return config.getDownloadURL() + "/" + this.getHighlightsImagesUrlPath(projectId).replace('\\', '/');
   }
 
 
-  public String getHighlightsImagesUrlPath(String project_id) {
-    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project_id + File.separator
+  public String getHighlightsImagesUrlPath(String projectId) {
+    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + projectId + File.separator
       + "hightlightsImage" + File.separator;
   }
 
@@ -1567,29 +1576,33 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
     // Initialization of Model
     TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "year", "regionalAvalaible"},
       new Class[] {String.class, String.class, String.class, Boolean.class});
-    // Verify if the crp has regions avalaible
-    List<CrpParameter> hasRegionsList = new ArrayList<>();
-
     model.addRow(new Object[] {center, date, year, this.hasProgramnsRegions()});
     return model;
   }
 
   @Override
   public void prepare() throws Exception {
+    // Get loggerCrp
     try {
       loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
       loggedCrp = crpManager.getCrpById(loggedCrp.getId());
     } catch (Exception e) {
+      LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
     }
-
     // Get parameters from URL
     // Get year
     try {
       Map<String, Object> parameters = this.getParameters();
       year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
     } catch (Exception e) {
+      LOG.warn("Failed to get " + APConstants.YEAR_REQUEST
+        + " parameter. Parameter will be set as CurrentCycleYear. Exception: " + e.getMessage());
       year = this.getCurrentCycleYear();
     }
+    // Calculate time to generate report
+    startTime = System.currentTimeMillis();
+    LOG.info("Start report download: " + this.getFileName() + ". User: "
+      + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.loggedCrp.getAcronym());
   }
 
   private DeliverablePartnership responsiblePartner(Deliverable deliverable) {
@@ -1600,6 +1613,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
         .collect(Collectors.toList()).get(0);
       return partnership;
     } catch (Exception e) {
+      LOG.warn("Error getting DeliverablePartnership. Exception: " + e.getMessage());
       return null;
     }
 

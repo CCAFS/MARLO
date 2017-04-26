@@ -293,6 +293,18 @@ $(document).ready(
             dropdownParent: $('#dialog-searchProjects')
         });
 
+        // Funding Window / Budget type
+        $(".type").select2({
+            templateResult: function(state) {
+              var name = state.text;
+              var desc = $('li.budgetTypeDescription-' + state.id).text();
+              var $state = $("<span><b>" + name + "</b><br><small class='selectDesc'>" + desc + "</small></span>");
+              return $state;
+            },
+            width: "100%",
+            dropdownParent: $('#dialog-searchProjects')
+        });
+
       }
 
       addProject = function(fundingSource) {

@@ -11,6 +11,9 @@
         <property name="name" type="string">
             <column name="name" not-null="true" />
         </property>
+         <property name="description" type="string">
+            <column name="description" />
+        </property>
         <set name="projectBudgets" table="project_budgets" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="budget_type" not-null="true" />

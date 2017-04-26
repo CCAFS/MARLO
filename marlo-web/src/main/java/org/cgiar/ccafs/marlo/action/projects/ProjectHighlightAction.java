@@ -36,6 +36,7 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.utils.FileManager;
+import org.cgiar.ccafs.marlo.utils.HistoryComparator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectHighLightValidator;
 
 import java.io.BufferedReader;
@@ -80,6 +81,7 @@ public class ProjectHighlightAction extends BaseAction {
 
   private ProjectHighLightValidator highLightValidator;
   private String transaction;
+  private HistoryComparator historyComparator;
 
 
   private AuditLogManager auditLogManager;
@@ -128,7 +130,8 @@ public class ProjectHighlightAction extends BaseAction {
     ProjectHighligthManager highLightManager, LocElementManager locElementManager, CrpManager crpManager,
     AuditLogManager auditLogManager, FileDBManager fileDBManager,
     ProjectHighligthCountryManager projectHighligthCountryManager,
-    ProjectHighligthTypeManager projectHighligthTypeManager, ProjectHighLightValidator highLightValidator) {
+    ProjectHighligthTypeManager projectHighligthTypeManager, ProjectHighLightValidator highLightValidator,
+    HistoryComparator historyComparator) {
     super(config);
     this.projectManager = projectManager;
     this.projectHighLightManager = highLightManager;
@@ -139,7 +142,7 @@ public class ProjectHighlightAction extends BaseAction {
     this.highLightValidator = highLightValidator;
     this.projectHighligthCountryManager = projectHighligthCountryManager;
     this.projectHighligthTypeManager = projectHighligthTypeManager;
-
+    this.historyComparator = historyComparator;
 
   }
 
@@ -296,6 +299,11 @@ public class ProjectHighlightAction extends BaseAction {
 
       if (history != null) {
         highlight = history;
+        Map<String, String> specialList = new HashMap<>();
+        specialList.put(APConstants.PROJECT_PROJECT_HIGHLIGTH_TYPE_RELATION, "typesids");
+        specialList.put(APConstants.PROJECT_PROJECT_HIGHLIGTH_COUNTRY_RELATION, "countriesIds");
+        this.setDifferences(historyComparator.getDifferences(transaction, specialList, "highlight"));
+
       } else {
         this.transaction = null;
 

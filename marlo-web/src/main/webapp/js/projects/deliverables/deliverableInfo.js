@@ -3,28 +3,6 @@ var $statuses, $statusDescription;
 $(document).ready(init);
 
 function init() {
-// // Validate type option
-// var typeOption = $(".typeSelect").find("option:selected");
-// var subTypeOption = $(".subTypeSelect").find("option:selected");
-//
-// // Articles and Books
-// if(typeOption.val() == "49") {
-// $(".publicationMetadataBlock").show("slow");
-// } else {
-// $(".publicationMetadataBlock").hide("slow");
-// }
-// // Data
-// if(subTypeOption.val() == "51" || subTypeOption.val() == "74") {
-// $(".dataLicense").show("slow");
-// } else {
-// $(".dataLicense").hide("slow");
-// }
-// // Computer software
-// if(subTypeOption.val() == "52") {
-// $(".computerLicense").show("slow");
-// } else {
-// $(".computerLicense").hide("slow");
-// }
 
   $statuses = $('select.status');
   $statusDescription = $('#statusDescription');
@@ -37,6 +15,10 @@ function init() {
   $(".fundingSource").select2({
       templateResult: formatState,
       templateSelection: formatState
+  });
+
+  $(".genderLevelsSelect").select2({
+    templateResult: formatStateGenderType
   });
 
   $('.helpMessage3').on("click", openDialog);
@@ -52,6 +34,19 @@ function init() {
 
   $(".addPartner").on("click", addPartnerEvent);
   $(".removeElement").on("click", removePartnerEvent);
+
+  // On change any partner person
+  $('.projectPartnerPerson select.id').on("change", function() {
+    var option = $(this).find("option:selected");
+    var $division = $(this).parents('.projectPartnerPerson').find('.division-IFPRI');
+    // Show IFPRI Division
+    if((option.text()).indexOf("IFPRI") > -1) {
+      $division.show();
+    } else {
+      $division.hide();
+    }
+  });
+
   // Update value of responsible person
   $(".responsible").on("change", function() {
     var option = $(this).find("option:selected");
@@ -75,8 +70,8 @@ function init() {
     } else {
       $(this).parents(".responsiblePartner").find(".id").val(-1);
     }
-
   });
+
   // Update value of partner
   $(".partner").on("change", function() {
     var option = $(this).find("option:selected");
@@ -131,7 +126,7 @@ function init() {
 
   /** Gender Levels * */
 
-  $(".genderLevelsSelect").on("change", function() {
+  $(".genderLevelsSelect.add").on("change", function() {
     var option = $(this).find("option:selected");
     if(option.val() != "-1") {
       addGenderLevel(option);
@@ -157,6 +152,9 @@ function init() {
   $('input#gender').on('change', function() {
     if($(this).is(':checked')) {
       $('#gender-levels').slideDown();
+      $(".genderLevelsSelect").select2({
+        templateResult: formatStateGenderType
+      });
     } else {
       $('#gender-levels').slideUp();
     }
@@ -420,6 +418,7 @@ function updatePartners() {
     $(item).find('span.index').html(i + 1);
     $(item).find('.id').attr('name', customName + '.projectPartnerPerson.id');
     $(item).find('.type').attr('name', customName + '.projectPartnerPerson.type');
+    $(item).find('.divisionField').attr('name', customName + '.partnerDivision.id');
     $(item).find('.element').attr('name', customName + '.id');
   });
 }
@@ -516,3 +515,11 @@ function formatState(state) {
   return $state;
 
 };
+
+function formatStateGenderType(state) {
+  if(state.id == -1) {
+    return;
+  }
+  var $state = $("#genderLevel-" + state.id).clone(true);
+  return $state;
+}

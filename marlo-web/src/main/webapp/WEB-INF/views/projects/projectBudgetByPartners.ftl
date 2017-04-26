@@ -6,7 +6,6 @@
 [#assign customCSS = ["${baseUrl}/css/projects/projectBudgetByPartners.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "budgetByPartners" /]
-[#assign editable = !(reportingActive) /]
 
 [#assign breadCrumb = [
   {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
@@ -56,13 +55,7 @@
             [#else]
               [#assign selectedYear = currentCycleYear /]
             [/#if]
-            [#assign type = { 
-              'w1w2':         1,
-              'w3':           2,
-              'bilateral':    3,
-              'centerFunds':  4
-            } /]
-            
+
             [#-- Year Tabs --]
             <ul class="nav nav-tabs budget-tabs" role="tablist">
               [#list startYear .. endYear as year]
@@ -85,14 +78,14 @@
                     <div class="overallYearBudget fieldset clearfix">
                       <h5 class="title">Overall ${year} budget</h5>
                       <div class="row">
-                        [#-- W1/W2 --]
-                        <div class="col-md-3"><h5 class="subTitle">W1/W2 <small>US$ <span class="totalByYear-${type.w1w2}">${action.getTotalYear(year,1)?number?string(",##0.00")}</span></small></h5></div>
-                        [#-- W3 --]
-                        <div class="col-md-3"><h5 class="subTitle">W3 <small>US$ <span class="totalByYear-${type.w3}">${action.getTotalYear(year,2)?number?string(",##0.00")}</span></small></h5></div>
-                        [#-- Bilateral  --]
-                        <div class="col-md-3"><h5 class="subTitle">Bilateral <small>US$ <span class="totalByYear-${type.bilateral}">${action.getTotalYear(year,3)?number?string(",##0.00")}</span></small></h5></div>
-                        [#-- Center Funds --]
-                        <div class="col-md-3"><h5 class="subTitle">Center Funds <small>US$ <span class="totalByYear-${type.centerFunds}">${action.getTotalYear(year,4)?number?string(",##0.00")}</span></small></h5></div>
+                      <table class="text-center">
+                        <tr>
+                        [#list budgetTypesList as budgetType]
+                          [#-- Budget Type--]
+                          <td class=""><h5 class="subTitle"> ${budgetType.name} <img title="${budgetType.description}" src="${baseUrl}/images/global/icon-help2.png" alt="" /> <br /> <small>US$ <span class="totalByYear-${budgetType.id}">${action.getTotalYear(year,budgetType.id)?number?string(",##0.00")}</span></small></h5></td>
+                        [/#list]
+                        </tr>
+                      </table>
                       </div>
                     </div>
                     
@@ -122,7 +115,22 @@
     </div>  
 </section>
 
+[#-- Budget tab index --]
 <span id="budgetIndex" style="display:none">${budgetIndex+1}</span>
+
+[#-- Budget types JSON --]
+<span id="budgetTypeJson" style="display:none">
+[
+[#list budgetTypesList as budgetType]
+ {
+   "id": ${budgetType.id},
+   "name": "${budgetType.name}",
+   "description" : "${budgetType.description}"
+ }[#if budgetType_has_next],[/#if]
+[/#list]
+]
+</span>
+
 
 [#-- Bilateral Co-Funded Project Popup --]
 [#include "/WEB-INF/global/macros/fundingSourcesPopup.ftl"]
@@ -160,70 +168,36 @@
         <thead>
           <tr>
             <th class="amountType"> </th>
-            [#-- W1/W2 --]
-            <th class="text-center">W1/W2</th>
-            [#-- W3 --]
-            <th class="text-center">W3</td>
-            [#-- Bilateral  --]
-            <th class="text-center">Bilateral</th>
-            [#-- Center Funds --]
-            <th class="text-center">Center Funds</th>
+            [#list budgetTypesList as budgetType]
+              [#-- Budget Type--]
+              <th class="text-center">${budgetType.name}</th>
+            [/#list]
           </tr>
         </thead>
         <tbody>
           [#-- Budget Amount --]
           <tr>
             <td class="amountType"> Budget:</td>
-            [#-- W1/W2 --]
-            <td class="budgetColumn">
-              <div class="input"><p>US$ <span class="currencyInput totalByPartner-${type.w1w2}">${((action.getTotalAmount(element.institution.id, selectedYear, type.w1w2))!0)?number?string(",##0.00")}</span></p></div>
-            </td>
-            [#-- W3 --]
-            <td class="budgetColumn">
-              <div class="input"><p>US$ <span class="currencyInput totalByPartner-${type.w3}">${((action.getTotalAmount(element.institution.id, selectedYear, type.w3))!0)?number?string(",##0.00")}</span></p></div>
-            </td>
-            [#-- Bilateral  --]
-            <td class="budgetColumn">
-              <div class="input"><p>US$ <span class="currencyInput totalByPartner-${type.bilateral}">${((action.getTotalAmount(element.institution.id, selectedYear, type.bilateral))!0)?number?string(",##0.00")}</span></p></div>
-            </td>
-            [#-- Center Funds --]
-            <td class="budgetColumn">
-              <div class="input"><p>US$ <span class="currencyInput totalByPartner-${type.centerFunds}">${((action.getTotalAmount(element.institution.id, selectedYear, type.centerFunds))!0)?number?string(",##0.00")}</span></p></div>
-            </td>
-            
+            [#list budgetTypesList as budgetType]
+              [#-- Budget Type--]
+              <td class="budgetColumn">
+                <div class="input"><p>US$ <span class="currencyInput totalByPartner-${budgetType.id}">${((action.getTotalAmount(element.institution.id, selectedYear, budgetType.id))!0)?number?string(",##0.00")}</span></p></div>
+              </td>
+            [/#list]
           </tr>
           [#-- Gender Budget Percentage --]
           [#if project.projectEditLeader && action.hasSpecificities('crp_budget_gender')]
           <tr>
-            <td class="amountType"> Gender %:</td> 
-            [#-- W1/W2 --]
-            <td class="budgetColumn">
-              <div class="input"><p><span class="percentageLabel type-${type.w1w2}">${((action.getTotalGenderPer(element.institution.id, selectedYear, type.w1w2))!0)}%</span></p></div>
-              <div class="row percentageAmount type-${type.w1w2} text-center">
-                <small>US$ <span>${((action.getTotalGender(element.institution.id, selectedYear, type.w1w2))!0)?number?string(",##0.00")}</span></small>
-              </div>
-            </td>
-            [#-- W3 --]
-            <td class="budgetColumn">
-              <div class="input"><p><span class="percentageLabel type-${type.w3}">${((action.getTotalGenderPer(element.institution.id, selectedYear, type.w3))!0)}%</span></p></div>
-              <div class="row percentageAmount type-${type.w3} text-center">
-                <small>US$ <span>${((action.getTotalGender(element.institution.id, selectedYear, type.w3))!0)?number?string(",##0.00")}</span></small>
-              </div>
-            </td>
-            [#-- Bilateral  --]
-            <td class="budgetColumn">
-              <div class="input"><p><span class="percentageLabel type-${type.bilateral}">${((action.getTotalGenderPer(element.institution.id, selectedYear, type.bilateral))!0)}%</span></p></div>
-              <div class="row percentageAmount type-${type.bilateral} text-center">
-                <small>US$ <span>${((action.getTotalGender(element.institution.id, selectedYear, type.bilateral))!0)?number?string(",##0.00")}</span></small>
-              </div>
-            </td>
-            [#-- Center Funds --]
-            <td class="budgetColumn">
-              <div class="input"><p><span class="percentageLabel type-${type.centerFunds}">${((action.getTotalGenderPer(element.institution.id, selectedYear, type.centerFunds))!0)}%</span></p></div>
-              <div class="row percentageAmount type-${type.centerFunds} text-center">
-                <small>US$ <span>${((action.getTotalGender(element.institution.id, selectedYear, type.centerFunds))!0)?number?string(",##0.00")}</span></small>
-              </div>
-            </td>
+            <td class="amountType"> Gender %:</td>
+            [#list budgetTypesList as budgetType]
+              [#-- Budget Type--]
+              <td class="budgetColumn">
+                <div class="input"><p><span class="percentageLabel type-${budgetType.id}">${((action.getTotalGenderPer(element.institution.id, selectedYear, budgetType.id))!0)}%</span></p></div>
+                <div class="row percentageAmount type-${budgetType.id} text-center">
+                  <small>US$ <span>${((action.getTotalGender(element.institution.id, selectedYear, budgetType.id))!0)?number?string(",##0.00")}</span></small>
+                </div>
+              </td>
+            [/#list]
           </tr>
           [/#if]
         </tbody>

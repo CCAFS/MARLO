@@ -53,6 +53,8 @@ import org.pentaho.reporting.engine.classic.core.modules.output.table.xls.ExcelR
 import org.pentaho.reporting.engine.classic.core.util.TypedTableModel;
 import org.pentaho.reporting.libraries.resourceloader.Resource;
 import org.pentaho.reporting.libraries.resourceloader.ResourceManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -61,17 +63,18 @@ public class ProjectHighlightsExcelSummaryAction extends BaseAction implements S
 
 
   private static final long serialVersionUID = 1L;
-
+  private static Logger LOG = LoggerFactory.getLogger(ProjectHighlightsExcelSummaryAction.class);
+  // Managers
   private CrpManager crpManager;
   private ProjectHighligthManager projectHighLightManager;
-
-  private Crp loggedCrp;
   // XLSX bytes
   private byte[] bytesXLSX;
   // Streams
   InputStream inputStream;
-
+  // Parameters
   private int year;
+  private long startTime;
+  private Crp loggedCrp;
 
   @Inject
   public ProjectHighlightsExcelSummaryAction(APConfig config, CrpManager crpManager,
@@ -83,51 +86,52 @@ public class ProjectHighlightsExcelSummaryAction extends BaseAction implements S
 
   @Override
   public String execute() throws Exception {
-
     ClassicEngineBoot.getInstance().start();
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-
     ResourceManager manager = new ResourceManager();
     manager.registerDefaults();
-
-    Resource reportResource =
-      manager.createDirectly(this.getClass().getResource("/pentaho/projectHighlightsExcel.prpt"), MasterReport.class);
-
-    MasterReport masterReport = (MasterReport) reportResource.getResource();
-    String center = loggedCrp.getName();
-
-
-    // Get datetime
-    ZonedDateTime timezone = ZonedDateTime.now();
-    DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
-    String zone = timezone.getOffset() + "";
-    if (zone.equals("Z")) {
-      zone = "+0";
+    try {
+      Resource reportResource =
+        manager.createDirectly(this.getClass().getResource("/pentaho/projectHighlightsExcel.prpt"), MasterReport.class);
+      MasterReport masterReport = (MasterReport) reportResource.getResource();
+      String center = loggedCrp.getName();
+      // Get datetime
+      ZonedDateTime timezone = ZonedDateTime.now();
+      DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
+      String zone = timezone.getOffset() + "";
+      if (zone.equals("Z")) {
+        zone = "+0";
+      }
+      String date = timezone.format(format) + "(GMT" + zone + ")";
+      // Set Main_Query
+      CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
+      String masterQueryName = "main";
+      TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
+      TypedTableModel model = this.getMasterTableModel(center, date, String.valueOf(year));
+      sdf.addTable(masterQueryName, model);
+      masterReport.setDataFactory(cdf);
+      // Get details band
+      ItemBand masteritemBand = masterReport.getItemBand();
+      // Create new empty subreport hash map
+      HashMap<String, Element> hm = new HashMap<String, Element>();
+      // method to get all the subreports in the prpt and store in the HashMap
+      this.getAllSubreports(hm, masteritemBand);
+      // Uncomment to see which Subreports are detecting the method getAllSubreports
+      // System.out.println("Pentaho SubReports: " + hm);
+      this.fillSubreport((SubReport) hm.get("project_highlight"), "project_highlight");
+      ExcelReportUtil.createXLSX(masterReport, os);
+      bytesXLSX = os.toByteArray();
+      os.close();
+    } catch (Exception e) {
+      LOG.error("Error generating ProjectHighlightsExcel " + e.getMessage());
+      throw e;
     }
-    String date = timezone.format(format) + "(GMT" + zone + ")";
-
-    // Set Main_Query
-    CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
-    String masterQueryName = "main";
-    TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
-    TypedTableModel model = this.getMasterTableModel(center, date, String.valueOf(year));
-    sdf.addTable(masterQueryName, model);
-    masterReport.setDataFactory(cdf);
-
-    // Get details band
-    ItemBand masteritemBand = masterReport.getItemBand();
-    // Create new empty subreport hash map
-    HashMap<String, Element> hm = new HashMap<String, Element>();
-    // method to get all the subreports in the prpt and store in the HashMap
-    this.getAllSubreports(hm, masteritemBand);
-    // Uncomment to see which Subreports are detecting the method getAllSubreports
-    // System.out.println("Pentaho SubReports: " + hm);
-
-    this.fillSubreport((SubReport) hm.get("project_highlight"), "project_highlight");
-    ExcelReportUtil.createXLSX(masterReport, os);
-    bytesXLSX = os.toByteArray();
-    os.close();
-
+    // Calculate time of generation
+    long stopTime = System.currentTimeMillis();
+    stopTime = stopTime - startTime;
+    LOG.info(
+      "Downloaded successfully: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
+        + ". CRP: " + this.loggedCrp.getAcronym() + ". Time to generate: " + stopTime + "ms.");
     return SUCCESS;
   }
 
@@ -197,7 +201,6 @@ public class ProjectHighlightsExcelSummaryAction extends BaseAction implements S
     }
   }
 
-
   public byte[] getBytesXLSX() {
     return bytesXLSX;
   }
@@ -207,18 +210,17 @@ public class ProjectHighlightsExcelSummaryAction extends BaseAction implements S
     return bytesXLSX.length;
   }
 
-
   @Override
   public String getContentType() {
     return "application/xlsx";
   }
 
+  @SuppressWarnings("unused")
   private File getFile(String fileName) {
     // Get file from resources folder
     ClassLoader classLoader = this.getClass().getClassLoader();
     File file = new File(classLoader.getResource(fileName).getFile());
     return file;
-
   }
 
   @Override
@@ -228,13 +230,10 @@ public class ProjectHighlightsExcelSummaryAction extends BaseAction implements S
     fileName.append(this.year + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
-
     return fileName.toString();
-
   }
 
   private void getFooterSubreports(HashMap<String, Element> hm, ReportFooter reportFooter) {
-
     int elementCount = reportFooter.getElementCount();
     for (int i = 0; i < elementCount; i++) {
       Element e = reportFooter.getElement(i);
@@ -242,7 +241,6 @@ public class ProjectHighlightsExcelSummaryAction extends BaseAction implements S
         hm.put(e.getName(), e);
         if (((SubReport) e).getElementCount() != 0) {
           this.getAllSubreports(hm, ((SubReport) e).getItemBand());
-
         }
       }
       if (e instanceof Band) {
@@ -251,12 +249,12 @@ public class ProjectHighlightsExcelSummaryAction extends BaseAction implements S
     }
   }
 
-  public String getHighlightsImagesUrl(String project_id) {
-    return config.getDownloadURL() + "/" + this.getHighlightsImagesUrlPath(project_id).replace('\\', '/');
+  public String getHighlightsImagesUrl(String projectId) {
+    return config.getDownloadURL() + "/" + this.getHighlightsImagesUrlPath(projectId).replace('\\', '/');
   }
 
-  public String getHighlightsImagesUrlPath(String project_id) {
-    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project_id + File.separator
+  public String getHighlightsImagesUrlPath(String projectId) {
+    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + projectId + File.separator
       + "hightlightsImage" + File.separator;
   }
 
@@ -291,21 +289,18 @@ public class ProjectHighlightsExcelSummaryAction extends BaseAction implements S
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class},
       0);
-
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
-
     for (ProjectHighlight projectHighlight : projectHighLightManager.findAll().stream()
       .sorted((h1, h2) -> Long.compare(h1.getId(), h2.getId()))
       .filter(ph -> ph.isActive() && ph.getProject() != null && ph.getYear() == year
         && ph.getProject().getCrp().getId().longValue() == loggedCrp.getId().longValue() && ph.getProject().isActive()
         && ph.getProject().getReporting())
       .collect(Collectors.toList())) {
-      String title = null, author = null, subject = null, publisher = null, highlights_types = "",
-        highlights_is_global = null, start_date = null, end_date = null, keywords = null, countries = "",
-        highlight_desc = null, introduction = null, results = null, partners = null, links = null, project_id = null,
+      String title = null, author = null, subject = null, publisher = null, highlightsTypes = "",
+        highlightsIsGlobal = null, startDate = null, endDate = null, keywords = null, countries = "",
+        highlightDesc = null, introduction = null, results = null, partners = null, links = null, projectId = null,
         image = null, imageurl = null;
-      Long year_reported = null;
-
+      Long yearReported = null;
       if (projectHighlight.getTitle() != null && !projectHighlight.getTitle().isEmpty()) {
         title = projectHighlight.getTitle();
       }
@@ -319,36 +314,32 @@ public class ProjectHighlightsExcelSummaryAction extends BaseAction implements S
         publisher = projectHighlight.getPublisher();
       }
       if (projectHighlight.getYear() != null) {
-        year_reported = projectHighlight.getYear();
+        yearReported = projectHighlight.getYear();
       }
-
       for (ProjectHighlightType projectHighlightType : projectHighlight.getProjectHighligthsTypes().stream()
         .filter(pht -> pht.isActive()).collect(Collectors.toList())) {
         if (ProjectHighligthsTypeEnum.getEnum(projectHighlightType.getIdType() + "") != null) {
-          highlights_types +=
+          highlightsTypes +=
             "\n● " + ProjectHighligthsTypeEnum.getEnum(projectHighlightType.getIdType() + "").getDescription();
         }
       }
-      if (highlights_types.isEmpty()) {
-        highlights_types = null;
+      if (highlightsTypes.isEmpty()) {
+        highlightsTypes = null;
       }
       if (projectHighlight.isGlobal() == true) {
-        highlights_is_global = "Yes";
+        highlightsIsGlobal = "Yes";
       } else {
-        highlights_is_global = "No";
+        highlightsIsGlobal = "No";
       }
-
       if (projectHighlight.getStartDate() != null) {
-        start_date = formatter.format(projectHighlight.getStartDate());
+        startDate = formatter.format(projectHighlight.getStartDate());
       }
-
       if (projectHighlight.getEndDate() != null) {
-        end_date = formatter.format(projectHighlight.getEndDate());
+        endDate = formatter.format(projectHighlight.getEndDate());
       }
       if (projectHighlight.getKeywords() != null && !projectHighlight.getKeywords().isEmpty()) {
         keywords = projectHighlight.getKeywords();
       }
-
       int countriesFlag = 0;
       for (ProjectHighlightCountry projectHighlightCountry : projectHighlight.getProjectHighligthCountries().stream()
         .filter(phc -> phc.isActive()).collect(Collectors.toList())) {
@@ -363,14 +354,12 @@ public class ProjectHighlightsExcelSummaryAction extends BaseAction implements S
           }
         }
       }
-
       if (countries.isEmpty()) {
         countries = null;
       }
       if (projectHighlight.getDescription() != null && !projectHighlight.getDescription().isEmpty()) {
-        highlight_desc = projectHighlight.getDescription();
+        highlightDesc = projectHighlight.getDescription();
       }
-
       if (projectHighlight.getObjectives() != null && !projectHighlight.getObjectives().isEmpty()) {
         introduction = projectHighlight.getObjectives();
       }
@@ -384,7 +373,7 @@ public class ProjectHighlightsExcelSummaryAction extends BaseAction implements S
         links = projectHighlight.getLinks();
       }
       if (projectHighlight.getProject() != null) {
-        project_id = projectHighlight.getProject().getId().toString();
+        projectId = projectHighlight.getProject().getId().toString();
       }
       if (projectHighlight.getFile() != null) {
         image = projectHighlight.getFile().getFileName();
@@ -394,7 +383,7 @@ public class ProjectHighlightsExcelSummaryAction extends BaseAction implements S
         try {
           url = new File(imageurl);
         } catch (Exception e) {
-          e.printStackTrace();
+          LOG.warn("Failed to get image File. Url was set to null. Exception: " + e.getMessage());
           url = null;
           imageurl = null;
           image = null;
@@ -406,35 +395,37 @@ public class ProjectHighlightsExcelSummaryAction extends BaseAction implements S
           image = null;
         }
       }
-
-      model.addRow(new Object[] {projectHighlight.getId(), title, author, subject, publisher, year_reported,
-        highlights_types, highlights_is_global, start_date, end_date, keywords, countries, highlight_desc, introduction,
-        results, partners, links, project_id, image, imageurl});
+      model.addRow(new Object[] {projectHighlight.getId(), title, author, subject, publisher, yearReported,
+        highlightsTypes, highlightsIsGlobal, startDate, endDate, keywords, countries, highlightDesc, introduction,
+        results, partners, links, projectId, image, imageurl});
     }
-
     return model;
-
   }
-
 
   @Override
   public void prepare() throws Exception {
+    // Get loggerCrp
     try {
       loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
       loggedCrp = crpManager.getCrpById(loggedCrp.getId());
     } catch (Exception e) {
+      LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
     }
-
     // Get parameters from URL
     // Get year
     try {
       Map<String, Object> parameters = this.getParameters();
       year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
     } catch (Exception e) {
+      LOG.warn("Failed to get " + APConstants.YEAR_REQUEST
+        + " parameter. Parameter will be set as CurrentCycleYear. Exception: " + e.getMessage());
       year = this.getCurrentCycleYear();
     }
+    // Calculate time to generate report
+    startTime = System.currentTimeMillis();
+    LOG.info("Start report download: " + this.getFileName() + ". User: "
+      + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.loggedCrp.getAcronym());
   }
-
 
   public void setBytesXLSX(byte[] bytesXLSX) {
     this.bytesXLSX = bytesXLSX;
@@ -447,6 +438,5 @@ public class ProjectHighlightsExcelSummaryAction extends BaseAction implements S
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
-
 
 }
