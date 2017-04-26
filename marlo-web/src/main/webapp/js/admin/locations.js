@@ -52,7 +52,7 @@ function attachEvents() {
   
   // Default locations levels
   $('.elementTypeCheck').on('change', function(){
-    $(this).parents('label').find('input:checkbox').val($(this).is(":checked"));
+    $(this).parents('.defaultLocation').find('input:checkbox').val($(this).is(":checked"));
   });
 
 }

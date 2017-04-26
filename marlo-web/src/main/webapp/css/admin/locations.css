@@ -66,3 +66,10 @@ span.coordinates {
 .defaultLocations label {
 font-weight: normal;
 }
+
+.defaultLocation {
+    float: left;
+    width: 49%;
+    margin-left: 1%;
+    height: 51px;
+}
