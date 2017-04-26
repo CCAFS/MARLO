@@ -32,7 +32,7 @@
       </div>
       <div class="col-md-9">
         [@s.form action=actionName enctype="multipart/form-data" ]
-        <h4 class="sectionTitle">[@s.text name="Project for " /] ${currentCycle} [@s.text name="cycle" /]</h4>
+        <h4 class="sectionTitle">[@s.text name="Project for " /] ${currentCycle} (${currentCycleYear}) [@s.text name="cycle" /]</h4>
         <div class=" simpleBox row " listname="">
           <div class="col-md-6">
             <label class="text-center col-md-12 tableTitles" for="">All projects</label>
