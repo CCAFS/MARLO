@@ -142,6 +142,7 @@ public class PartnersSaveAction extends BaseAction {
       .collect(Collectors.toList());
 
     institutions.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
+    countriesList.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
   }
 
 
