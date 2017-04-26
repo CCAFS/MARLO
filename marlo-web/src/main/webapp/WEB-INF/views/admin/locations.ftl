@@ -37,7 +37,8 @@
         <div class="defaultLocations simpleBox">
           [#list defaultLocationTypes as elementType]
             [#-- <p><span class="glyphicon glyphicon-ok-circle"></span> ${elementType.name}</p> --]
-            <p><span class="glyphicon glyphicon-ok-circle"></span> ${elementType.name}</p>
+            [#assign customID = "locType-${elementType.id}"]
+            <p><label for="${customID}"><input type="checkbox" name="defaultLocationsSelected" value="true" id="${customID}" /> ${elementType.name}</label></p>
           [/#list]
           <div class="clearfix"></div>
         </div>

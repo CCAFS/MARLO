@@ -62,3 +62,7 @@ span.coordinates {
   float: left;
   width: 33%;
 }
+
+.defaultLocations label {
+font-weight: normal;
+}
