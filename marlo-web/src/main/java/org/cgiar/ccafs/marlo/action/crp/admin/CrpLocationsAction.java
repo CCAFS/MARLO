@@ -440,6 +440,15 @@ public class CrpLocationsAction extends BaseAction {
 
       loggedCrp.getLocationCustomElementTypes().clear();
 
+
+      if (defaultLocationTypes != null) {
+
+        defaultLocationTypes.clear();
+      }
+
+      if (loggedCrp.getCustomLevels() != null) {
+        loggedCrp.getCustomLevels().clear();
+      }
     }
   }
 
