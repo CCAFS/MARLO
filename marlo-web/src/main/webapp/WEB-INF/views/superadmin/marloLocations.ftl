@@ -82,5 +82,14 @@
     <input type="hidden" class="name" name="${customName}.name" value="${(element.name)!}" />
     [#-- Name --]
     <span class="glyphicon glyphicon-map-marker"></span>  <span class="composedName"> ${(element.name)!}</span>
+    <span class="crps" style="color: #9c9c9c; margin-left: 16px; font-size: 0.75em;" title="CRPs ">
+      [#if element?? && element.crpLocElementTypes?has_content]
+        [#list element.crpLocElementTypes as crpLocElementType]
+          [#if crpLocElementType.active]
+          [${crpLocElementType.crp.name}] 
+          [/#if]
+        [/#list] 
+      [/#if]
+    </span>
   </li>
 [/#macro]

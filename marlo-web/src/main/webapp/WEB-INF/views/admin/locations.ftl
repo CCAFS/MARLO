@@ -43,6 +43,16 @@
                 <input type="checkbox" [#if action.canBeDeleted(elementType.locElementType.id,elementType.class.name)][#else]style="opacity:0.5; cursor: not-allowed;" onclick="return false;" onkeydown="e = e || window.event; if(e.keyCode !== 9) return false;"[/#if]  name="${customLocName}.check" class="elementTypeCheck" value="${elementType.check?string}" [#if elementType.check]checked[/#if] id="${customLocName}" /> 
                 ${elementType.locElementType.name}
               </label>
+              [#-- CRPs that allow this target --]
+    <span class="crps" style="color: #9c9c9c; margin-left: 16px; font-size: 0.75em;" title="CRPs ">
+      [#if elementType.locElementType?? && elementType.locElementType.crpLocElementTypes?has_content]
+        [#list elementType.locElementType.crpLocElementTypes as crpLocElementType]
+          [#if crpLocElementType.active]
+          [${crpLocElementType.crp.name}] 
+          [/#if]
+        [/#list] 
+      [/#if]
+    </span>
             </p>
           [/#list]
           <div class="clearfix"></div>
