@@ -71,7 +71,7 @@
       [#-- Agreement status and total budget --]
       <div class="form-group">
         <div class="row">
-          <div class="col-md-6">[@customForm.select name="fundingSource.status" i18nkey="projectCofunded.agreementStatus"  listName="status" keyFieldName=""  displayFieldName="" header=false editable=editable /] </div>
+          <div class="col-md-6">[@customForm.select name="fundingSource.status" i18nkey="projectCofunded.agreementStatus" className="agreementStatus"  listName="status" keyFieldName=""  displayFieldName="" header=false editable=editable /] </div>
           <div class="col-md-6">[@customForm.select name="fundingSource.budgetType.id" i18nkey="projectCofunded.type" className="type" listName="budgetTypes" header=false required=true editable=editable && action.canEditType() /]</div>
         </div>
       </div>
@@ -106,7 +106,7 @@
             [/#if]
             </ul>
             [#if editable ]
-              [@customForm.select name="fundingSource.leader.id" label=""  showTitle=false  i18nkey="" listName="divisions" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className="institution" editable=editable /]
+              [@customForm.select name="fundingSource.leader.id" label=""  showTitle=false  i18nkey="" listName="institutions" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className="institution" editable=editable /]
             [/#if] 
           </div>
         </div>
