@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -56,6 +56,8 @@ public interface CrpLocElementTypeDAO {
    * @return a list from CrpLocElementType null if no exist records
    */
   public List<CrpLocElementType> findAll();
+
+  public CrpLocElementType getByLocElementTypeAndCrpId(long crpId, long locElementTypeID);
 
 
   /**

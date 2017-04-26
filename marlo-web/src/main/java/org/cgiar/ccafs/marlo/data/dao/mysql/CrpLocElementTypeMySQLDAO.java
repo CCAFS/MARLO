@@ -67,6 +67,17 @@ public class CrpLocElementTypeMySQLDAO implements CrpLocElementTypeDAO {
   }
 
   @Override
+  public CrpLocElementType getByLocElementTypeAndCrpId(long crpId, long locElementTypeID) {
+    String query = "from " + CrpLocElementType.class.getName() + " where crp_id=" + crpId + " and loc_element_type_id="
+      + locElementTypeID;
+    List<CrpLocElementType> list = dao.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+  }
+
+  @Override
   public long save(CrpLocElementType crpLocElementType) {
     if (crpLocElementType.getId() == null) {
       dao.save(crpLocElementType);

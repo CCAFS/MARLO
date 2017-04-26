@@ -130,9 +130,12 @@ public class Crp implements java.io.Serializable, IAuditLog {
 
 
   private List<TargetUnitSelect> targetUnits;
+  private List<CustomLevelSelect> customLevels;
+
 
   public Crp() {
   }
+
 
   public Crp(String name) {
     this.name = name;
@@ -176,11 +179,9 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
-
   public User getCreatedBy() {
     return createdBy;
   }
-
 
   public List<CrpPpaPartner> getCrpInstitutionsPartners() {
     return crpInstitutionsPartners;
@@ -196,6 +197,7 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return this.crpParameters;
   }
 
+
   public Set<CrpPpaPartner> getCrpPpaPartners() {
     return crpPpaPartners;
   }
@@ -209,6 +211,7 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return crpsSitesIntegrations;
   }
 
+
   public Set<CrpSubIdosContribution> getCrpSubIdosContributions() {
     return crpSubIdosContributions;
   }
@@ -219,6 +222,10 @@ public class Crp implements java.io.Serializable, IAuditLog {
 
   public Set<CrpUser> getCrpUsers() {
     return this.crpUsers;
+  }
+
+  public List<CustomLevelSelect> getCustomLevels() {
+    return customLevels;
   }
 
   public Set<Deliverable> getDeliverables() {
@@ -254,7 +261,6 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return locationCustomElementTypes;
   }
 
-
   public List<LocElementType> getLocationElementTypes() {
     return locationElementTypes;
   }
@@ -276,6 +282,7 @@ public class Crp implements java.io.Serializable, IAuditLog {
     sb.append("Id : ").append(this.getId()).append("Name : ").append(this.getName());
     return sb.toString();
   }
+
 
   @Override
   public String getModificationJustification() {
@@ -307,15 +314,14 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return this.roles;
   }
 
-
   public List<CrpsSiteIntegration> getSiteIntegrations() {
     return siteIntegrations;
   }
 
+
   public List<TargetUnitSelect> getTargetUnits() {
     return targetUnits;
   }
-
 
   @Override
   public int hashCode() {
@@ -325,15 +331,16 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return result;
   }
 
+
   @Override
   public boolean isActive() {
     return active;
   }
 
-
   public boolean isHasRegions() {
     return hasRegions;
   }
+
 
   public boolean isMarlo() {
     return marlo;
@@ -347,10 +354,10 @@ public class Crp implements java.io.Serializable, IAuditLog {
     this.active = active;
   }
 
-
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
+
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
@@ -380,7 +387,6 @@ public class Crp implements java.io.Serializable, IAuditLog {
     this.crpsSitesIntegrations = crpsSitesIntegrations;
   }
 
-
   public void setCrpSubIdosContributions(Set<CrpSubIdosContribution> crpSubIdosContributions) {
     this.crpSubIdosContributions = crpSubIdosContributions;
   }
@@ -393,6 +399,11 @@ public class Crp implements java.io.Serializable, IAuditLog {
 
   public void setCrpUsers(Set<CrpUser> crpUsers) {
     this.crpUsers = crpUsers;
+  }
+
+
+  public void setCustomLevels(List<CustomLevelSelect> customLevels) {
+    this.customLevels = customLevels;
   }
 
 

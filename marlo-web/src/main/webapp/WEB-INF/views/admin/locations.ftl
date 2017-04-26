@@ -35,10 +35,12 @@
         <h4 class="sectionTitle">[@s.text name="crpLocations.title" /]</h4>
         [#-- Default locations --]
         <div class="defaultLocations simpleBox">
-          [#list defaultLocationTypes as elementType]
+          [#list loggedCrp.customLevels as elementType]
             [#-- <p><span class="glyphicon glyphicon-ok-circle"></span> ${elementType.name}</p> --]
-            [#assign customID = "locType-${elementType.id}"]
-            <p><label for="${customID}"><input type="checkbox" name="defaultLocationsSelected" value="true" id="${customID}" /> ${elementType.name}</label></p>
+            [#assign customID = "locType-${elementType.locElementType.id}"]
+            <p><label for="${customID}"><input type="checkbox" name="loggedCrp.customLevels[${elementType_index}].check" value="${elementType.check?string}" [#if elementType.check]checked[/#if] id="${customID}" /> ${elementType.locElementType.name}</label></p>
+         <input type="hidden" name="loggedCrp.customLevels[${elementType_index}].locElementType.id" value="${elementType.locElementType.id}" />
+         
           [/#list]
           <div class="clearfix"></div>
         </div>
