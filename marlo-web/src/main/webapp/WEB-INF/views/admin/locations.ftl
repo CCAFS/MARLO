@@ -33,8 +33,10 @@
         [@s.form action=actionName enctype="multipart/form-data"]
         
         <h4 class="sectionTitle">[@s.text name="crpLocations.title" /]</h4>
+        [#-- Default locations --]
         <div class="defaultLocations simpleBox">
           [#list defaultLocationTypes as elementType]
+            [#-- <p><span class="glyphicon glyphicon-ok-circle"></span> ${elementType.name}</p> --]
             <p><span class="glyphicon glyphicon-ok-circle"></span> ${elementType.name}</p>
           [/#list]
           <div class="clearfix"></div>

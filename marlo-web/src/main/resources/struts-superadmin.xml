@@ -15,7 +15,7 @@
     
      <action name="customLocations" class="org.cgiar.ccafs.marlo.action.superadmin.CustomLocationsAdminAction">
       <interceptor-ref name="superAdminStack" />   
-      <result name="input">/WEB-INF/views/superadmin/customLocations.ftl</result>
+      <result name="input">/WEB-INF/views/superadmin/marloLocations.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">customLocations</param>
         <param name="edit">true</param>

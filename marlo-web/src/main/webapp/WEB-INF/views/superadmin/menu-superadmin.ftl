@@ -9,7 +9,7 @@
 [#assign standards= [
   { 'slug': 'marloBoard',   'name': 'menu.superadmin.board', 'action': 'marloBoard',   'active': true },
   { 'slug': 'users.types',            'name': 'Partner Types', 'action': 'marloUsers',   'active': false },
-  { 'slug': 'permissions',    'name': 'Locations', 'action': 'marloPermissions',   'active': false }
+  { 'slug': 'customLocations',    'name': 'menu.superadmin.customLocations', 'action': 'customLocations',   'active': true }
 ]/]
 
 [#assign toolItems= [
