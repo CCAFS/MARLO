@@ -14,7 +14,7 @@ function attachEvents() {
 
   $('.dragProjectList').bind('sortstart', function(event,ui) {
     var div = ui.helper[0];
-    $('.portlet-placeholder').append('<span class="tableTitles" style="line-height:60px;">Drop here</span>');
+    $('.portlet-placeholder').append('<span style="line-height:50px;">Drop here</span>');
   });
 
   $('.project').draggable({
