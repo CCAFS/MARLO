@@ -8,7 +8,13 @@ function init() {
 
 function attachEvents() {
   $(".dragProjectList").sortable({
-    revert: true
+      revert: true,
+      placeholder: "portlet-placeholder ui-corner-all"
+  });
+
+  $('.dragProjectList').bind('sortstart', function(event,ui) {
+    var div = ui.helper[0];
+    $('.portlet-placeholder').append('<span class="tableTitles" style="line-height:60px;">Drop here</span>');
   });
 
   $('.project').draggable({
@@ -21,31 +27,37 @@ function attachEvents() {
         } else {
           $(div).find("input").attr("name", "")
         }
-        console.log($(div).parent());
         updateLists();
-        // calculateHeight();
+        calculateHeight();
       }
   });
-  // calculateHeight();
+
+  calculateHeight();
 }
 
 function calculateHeight() {
   var enabledList = $("#phasesProjectList");
   var disabledList = $("#allProjectList");
-  if(enabledList.outerHeight() > disabledList.outerHeight()) {
-    console.log("holi");
-    console.log(disabledList.outerHeight());
-    disabledList.outerHeight(enabledList.outerHeight());
+  var totalHeight;
+  var divsHeight = 64;
+  var projecstEnabled = $("#phasesProjectList").find(".project").length;
+  var projectsDisabled = $("#allProjectList").find(".project").length;
+  console.log(projecstEnabled + "-" + projectsDisabled);
+  if(projecstEnabled > projectsDisabled) {
+    height = divsHeight * projecstEnabled;
+    console.log("1");
   } else {
-    enabledList.outerHeight(disabledList.outerHeight());
-    console.log("holi2");
+    height = divsHeight * projectsDisabled;
+    console.log("2");
   }
+  console.log(height);
+  enabledList.outerHeight(height)
+  disabledList.outerHeight(height)
 }
 
 function updateLists() {
   $('#phasesProjectList').find(".project").each(function(i,e) {
     // Set indexes
-    console.log(i);
     $(e).setNameIndexes(1, i);
   });
 }
