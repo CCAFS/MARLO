@@ -42,12 +42,12 @@ public class ProjectLocationCountryListAction extends BaseAction {
 
   private List<Map<String, Object>> locElements;
 
+  private LocElementTypeManager locElementTypeManager;
+
+
   private String message;
 
-
   private long parentId;
-
-  private LocElementTypeManager locElementTypeManager;
 
   @Inject
   public ProjectLocationCountryListAction(APConfig config, LocElementTypeManager locElementTypeManager) {
@@ -68,6 +68,10 @@ public class ProjectLocationCountryListAction extends BaseAction {
         locElement.put("id", element.getId());
         locElement.put("name", element.getName());
         locElement.put("isoAlpha2", element.getIsoAlpha2());
+        if(element.getLocGeoposition()!=null && element.getLocGeoposition()!=null){
+          locElement.put("lat", element.getLocGeoposition().getLatitude());
+          locElement.put("lng", element.getLocGeoposition().getLongitude());
+        }
         locElements.add(locElement);
       }
     }

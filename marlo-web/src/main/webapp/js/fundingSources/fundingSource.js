@@ -2,7 +2,9 @@ $(document).ready(init);
 
 function init() {
 
-  changeDonorByFundingType($(".type").find("option:selected").val(), $(".donor"))
+  
+  
+  
   // Popup
   popups();
 
@@ -30,6 +32,10 @@ function init() {
     width: "100%"
   });
   
+  changeDonorByFundingType($(".type").val(), $(".donor"))
+  
+  checkAgreementStatus($(".type").val());
+  
   // Funding Window / Budget type
   $("select.type").select2({
       templateResult: function(state) {
@@ -40,30 +46,26 @@ function init() {
       }
   });
   
-  
   // $(".donor").select2(searchInstitutionsOptions(true));
   // $(".donor").parent().find("span.select2-selection__placeholder").text(placeholderText);
 
   $(".removeLeadPartner").on("click", removeLeadPartner);
 
-  // When select center as Funding Window----------
+  // When select center as Funding Window
   var lastDonor = -1;
-  $(".type").on("change", function() {
+  $("select.type").on("change", function() {
+    
     var option = $(this).find("option:selected");
     var url = baseURL + "/institutionsByBudgetType.do";
     var data = {
       budgetTypeID: option.val()
     };
+    // Change Donor list
     ajaxService(url, data);
-    /*
-     * var institutionSelect = $(".donor"); var institutionSelected = $(".institution").find("option:selected").val();
-     * console.log(institutionSelected); // If the option selected is center if(option.val() == 4) {
-     * if(institutionSelect.val() != "-1") { lastDonor = institutionSelect.val(); } institutionSelect.attr("disabled",
-     * "disabled"); institutionSelect.val(institutionSelected); institutionSelect.trigger('change.select2');
-     * $(".note").hide("slow"); } else { $(".note").show("slow"); if(institutionSelect.attr("disabled") == "disabled") {
-     * institutionSelect.removeAttr("disabled"); institutionSelect.val(lastDonor);
-     * institutionSelect.trigger('change.select2'); } }
-     */
+    
+    // Check Agreement status
+    checkAgreementStatus(option.val());
+     
   });
 
   // Set file upload (blueimp-tmpl)
@@ -109,6 +111,32 @@ function init() {
     // Cancel Auto Save
     autoSaveActive = false;
   });
+}
+
+/**
+ * Check Agreement status
+ * 
+ * @param {number} typeID - Funding budget type
+ */
+function checkAgreementStatus(typeID){
+  var W1W2 = 1;
+  var ON_GOING = 2;
+  // Change Agreement Status when is (W1W2 Type => 1)
+  var $agreementStatus = $('select.agreementStatus');
+  // 3 => Concept Note/Pipeline
+  // 4 => Informally Confirmed
+  var $options = $agreementStatus.find("option[value='3'], option[value='4']");
+  if(typeID == W1W2){
+    $agreementStatus.val(ON_GOING); // On-going
+    $options.remove();
+  }else{
+    if($options.length==0){
+      $agreementStatus.addOption("3", "Concept Note/Pipeline");
+      $agreementStatus.addOption("4", "Informally Confirmed");
+    }
+  }
+  $agreementStatus.select2("destroy");
+  $agreementStatus.select2();
 }
 
 function addContactAutoComplete() {
@@ -425,12 +453,13 @@ function ajaxService(url,data) {
           $select.addOption(e.id, e.name);
         });
         changeDonorByFundingType(data.budgetTypeID, $select)
-        $select.trigger("change.select2");
+        
       },
       error: function(e) {
         console.log(e);
       },
       complete: function() {
+        $select.trigger("change.select2");
         console.log(data);
       }
   });
