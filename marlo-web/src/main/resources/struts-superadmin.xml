@@ -114,7 +114,7 @@
 		<action name="removePartner" method="removePartner"
       class="org.cgiar.ccafs.marlo.action.superadmin.PartnerRequestAction">
       <interceptor-ref name="superAdminStack" />
-      <result name="input">/WEB-INF/views/superadmin/marloInstitutions.ftl
+      <result name="input">/WEB-INF/views/superadmin/marloInstitutions.ftl</result>
     </action>
     
      <action name="customLocations" class="org.cgiar.ccafs.marlo.action.superadmin.CustomLocationsAdminAction">
