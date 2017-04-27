@@ -80,12 +80,13 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
    */
   private static final long serialVersionUID = 1L;
 
-  // Parameters
+  // Variables
   private Crp loggedCrp;
   private int year;
   private String cycle;
-  private long startTime;
   private Boolean showPIEmail;
+  private Boolean showIfpriDivision;
+  private long startTime;
   // Managers
   private CrpManager crpManager;
   private CrpProgramManager programManager;
@@ -118,6 +119,7 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
       Resource reportResource =
         manager.createDirectly(this.getClass().getResource("/pentaho/FundingSourcesSummary.prpt"), MasterReport.class);
 
+
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       String center = loggedCrp.getName();
 
@@ -129,13 +131,13 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
       if (zone.equals("Z")) {
         zone = "+0";
       }
-      String currentDate = timezone.format(format) + "(GMT" + zone + ")";
+      String current_date = timezone.format(format) + "(GMT" + zone + ")";
 
       // Set Main_Query
       CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
       String masterQueryName = "main";
       TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
-      TypedTableModel model = this.getMasterTableModel(center, currentDate);
+      TypedTableModel model = this.getMasterTableModel(center, current_date);
       sdf.addTable(masterQueryName, model);
       masterReport.setDataFactory(cdf);
 
@@ -152,7 +154,6 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
       this.fillSubreport((SubReport) hm.get("funding_sources"), "funding_sources");
       this.fillSubreport((SubReport) hm.get("funding_sources_projects"), "funding_sources_projects");
 
-
       ExcelReportUtil.createXLSX(masterReport, os);
       bytesXLSX = os.toByteArray();
       os.close();
@@ -167,6 +168,7 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
       "Downloaded successfully: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
         + ". CRP: " + this.loggedCrp.getAcronym() + ". Cycle: " + cycle + ". Time to generate: " + stopTime + "ms.");
     return SUCCESS;
+
   }
 
 
@@ -443,10 +445,27 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
         .filter(fsi -> fsi.isActive()).collect(Collectors.toList())) {
         if (leadPartner.isEmpty()) {
           leadPartner = fsIns.getInstitution().getComposedName();
+          // Check IFPRI Division
+          if (this.showIfpriDivision) {
+
+
+            if (fsIns.getInstitution().getAcronym().equals("IFPRI") && fundingSource.getPartnerDivision() != null
+              && fundingSource.getPartnerDivision().getName() != null
+              && !fundingSource.getPartnerDivision().getName().trim().isEmpty()) {
+              leadPartner += " (" + fundingSource.getPartnerDivision().getName() + ")";
+            }
+          }
         } else {
           leadPartner += ", \n" + fsIns.getInstitution().getComposedName();
+          // Check IFPRI Division
+          if (this.showIfpriDivision) {
+            if (fsIns.getInstitution().getAcronym().equals("IFPRI")
+              && fundingSource.getPartnerDivision().getName() != null
+              && !fundingSource.getPartnerDivision().getName().trim().isEmpty()) {
+              leadPartner += " (" + fundingSource.getPartnerDivision().getName() + ")";
+            }
+          }
         }
-
       }
       String fsWindow = fundingSource.getBudgetType().getName();
 
@@ -618,6 +637,14 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
       LOG.warn("Failed to get " + APConstants.CRP_EMAIL_FUNDING_SOURCE
         + " parameter. Parameter will be set false. Exception: " + e.getMessage());
       this.showPIEmail = false;
+    }
+    // Get IfpriDivision crp_parameter
+    try {
+      this.showIfpriDivision = this.hasSpecificities(this.getText(APConstants.CRP_DIVISION_FS));
+    } catch (Exception e) {
+      LOG.warn("Failed to get " + APConstants.CRP_DIVISION_FS + " parameter. Parameter will be set false. Exception: "
+        + e.getMessage());
+      this.showIfpriDivision = false;
     }
 
     // Calculate time to generate report

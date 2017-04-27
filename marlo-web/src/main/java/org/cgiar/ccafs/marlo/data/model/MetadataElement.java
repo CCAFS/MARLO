@@ -34,20 +34,16 @@ public class MetadataElement implements Serializable, IAuditLog {
   private Integer id;
   @Expose
   private String schema;
-
   @Expose
   private String element;
   @Expose
   private String qualifier;
-
   @Expose
   private String econdedName;
   @Expose
   private String status;
-
   @Expose
   private String vocabulary;
-
   @Expose
   private String definitation;
 
