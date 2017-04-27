@@ -29,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectClusterActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectScopeManager;
+import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
@@ -40,7 +41,9 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectScope;
+import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -78,6 +81,8 @@ public class ProjectDescriptionAction extends BaseAction {
 
   // Managers
   private ProjectManager projectManager;
+  private SectionStatusManager sectionStatusManager;
+
   private ProjectFocusManager projectFocusManager;
   private FileDBManager fileDBManager;
   private CrpManager crpManager;
@@ -135,8 +140,9 @@ public class ProjectDescriptionAction extends BaseAction {
   public ProjectDescriptionAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
     CrpProgramManager programManager, LiaisonUserManager liaisonUserManager,
     LiaisonInstitutionManager liaisonInstitutionManager, UserManager userManager,
-    ProjectFocusManager projectFocusManager, FileDBManager fileDBManager, AuditLogManager auditLogManager,
-    ProjectDescriptionValidator validator, ProjectClusterActivityManager projectClusterActivityManager,
+    SectionStatusManager sectionStatusManager, ProjectFocusManager projectFocusManager, FileDBManager fileDBManager,
+    AuditLogManager auditLogManager, ProjectDescriptionValidator validator,
+    ProjectClusterActivityManager projectClusterActivityManager,
     CrpClusterOfActivityManager crpClusterOfActivityManager, LocElementTypeManager locationManager,
     ProjectScopeManager projectLocationManager, HistoryComparator historyComparator) {
     super(config);
@@ -148,6 +154,7 @@ public class ProjectDescriptionAction extends BaseAction {
     this.projectManager = projectManager;
     this.projectFocusManager = projectFocusManager;
     this.validator = validator;
+    this.sectionStatusManager = sectionStatusManager;
     this.crpClusterOfActivityManager = crpClusterOfActivityManager;
     this.auditLogManager = auditLogManager;
     this.projectClusterActivityManager = projectClusterActivityManager;
@@ -798,6 +805,18 @@ public class ProjectDescriptionAction extends BaseAction {
               projectClusterActivityManager.saveProjectClusterActivity(projectClusterActivity);
             }
 
+          }
+        }
+
+
+        Project projectCluster = projectManager.getProjectById(projectID);
+        List<ProjectClusterActivity> currentClusters =
+          projectCluster.getProjectClusterActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+        if (currentClusters.isEmpty() || currentClusters.size() == 1) {
+          SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID,
+            this.getCurrentCycle(), this.getCurrentCycleYear(), ProjectSectionStatusEnum.BUDGETBYCOA.getStatus());
+          if (sectionStatus != null) {
+            sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
           }
         }
 
