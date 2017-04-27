@@ -1,6 +1,7 @@
 module.exports = function(grunt) {
 
   grunt.loadNpmTasks('grunt-wiredep');
+  grunt.loadNpmTasks('grunt-jsdoc');
   
   grunt.initConfig({
     wiredep: {
@@ -30,7 +31,26 @@ module.exports = function(grunt) {
           console.log('name-of-bower-package-without-main: ' +pkg);
         },
       }
-    }
+    },
+    jsdoc : {
+      dist : {
+          src: ['src/main/webapp/js/global/*.js', 
+                'src/main/webapp/js/admin/*.js',
+                'src/main/webapp/js/fundingSources/*.js',
+                'src/main/webapp/js/home/*.js',
+                'src/main/webapp/js/impactPathway/*.js',
+                'src/main/webapp/js/projects/*.js',
+                'src/main/webapp/js/publications/*.js',
+                'src/main/webapp/js/summaries/*.js',
+                'src/main/webapp/js/superadmin/*.js',
+                'src/main/webapp/js/synthesis/*.js',
+                'src/main/webapp/js/user/*.js',
+               ],
+          options: {
+              destination: 'src/main/webapp/jsdoc'
+          }
+      }
+  }
   });
   
   grunt.registerTask('default', ['wiredep']);
