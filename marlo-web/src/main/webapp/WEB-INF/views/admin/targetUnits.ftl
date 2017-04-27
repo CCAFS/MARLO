@@ -33,11 +33,7 @@
       </div>
       <div class="col-md-9">
         [@s.form action=actionName enctype="multipart/form-data" ]       
-        <p class="bg-primary" style="padding: 18px;">
-            <span class="glyphicon glyphicon-flash"></span> This section is currently being tested by the technical team.</br>
-            The idea here is that the CRP-Admins can be able to choose the target units that will be used in the CRP 
-            Impact Pathway indicators (Outcomes and Milestones). If you do not find the target from the list, you may request it to the MARLO Support Team
-          </p>
+        
         <h4 class="sectionTitle">Custom Target Units</h4>
         <label for="">List of target units:</label>
         <div class="borderBox ">
