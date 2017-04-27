@@ -5549,7 +5549,7 @@ table.evaluationRank thead th{
 .radio-label {
     overflow: hidden;
     cursor: pointer;
-    margin: 0 10px !important;
+    /* margin: 0 10px !important; */
 }
 
 .radio-label .onoffswitch-radio:checked + label{ 

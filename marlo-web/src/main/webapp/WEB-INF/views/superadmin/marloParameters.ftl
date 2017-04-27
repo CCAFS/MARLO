@@ -99,14 +99,41 @@
     <td>
       <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
       [#if isTemplate]
+        [@customForm.input name="${customName}.description" placeholder="Description" showTitle=false /]
         [@customForm.input name="${customName}.key" placeholder="Key" showTitle=false /]
+        <input type="hidden" name="${customName}.type" value="4" />
       [#else]
+        <input type="hidden" name="${customName}.description" value="${(element.description)!}" />
         <input type="hidden" name="${customName}.key" value="${(element.key)!}" />
-        <strong>${(element.key)!}</strong> Description ${(element.description)!} Type ${(element.type)!}  
+        <input type="hidden" name="${customName}.type" value="${(element.type)!}" />
+        <strong>${(element.description)!} </strong> <br /> <small><i>(${(element.key)!})</i></small>
       [/#if]
     </td>
     <td>
-      [@customForm.input name="${customName}.value" placeholder="Value" showTitle=false /]
+      [#--  Types {1 => Role} {2 => Yes/No} {3 => 1/0} {4 => Text} --]
+      [#if (element.type == 1)!false]
+        [@customForm.input name="${customName}.value" placeholder="Value" showTitle=false /]
+      [#elseif (element.type == 2)!false]
+        <div class="radioFlat radio-inline">
+          <input id="yes-${index}" type="radio" name="${customName}.value" value="true" [#if (element.value == "true")!false]checked[/#if] />
+          <label for="yes-${index}" class="radio-label radio-label-yes"> Yes</label>
+        </div>
+        <div class="radioFlat radio-inline">
+          <input id="no-${index}" type="radio" name="${customName}.value" value="false"  [#if (element.value == "false")!false]checked[/#if]/>
+          <label for="no-${index}" class="radio-label radio-label-no"> No</label>
+        </div>
+      [#elseif (element.type == 3)!false]
+        <div class="radioFlat radio-inline">
+          <input id="yes-${index}" type="radio" name="${customName}.value" value="1"  [#if (element.value == "1")!false]checked[/#if]/>
+          <label for="yes-${index}" class="radio-label radio-label-yes"> Yes</label>
+        </div>
+        <div class="radioFlat radio-inline">
+          <input id="no-${index}" type="radio" name="${customName}.value" value="0"  [#if (element.value == "0")!false]checked[/#if]/>
+          <label for="no-${index}" class="radio-label radio-label-no"> No</label>
+        </div>
+      [#else]
+        [@customForm.input name="${customName}.value" placeholder="Value" showTitle=false /]
+      [/#if]
     </td>
     <td>
       <div style="position:relative">
