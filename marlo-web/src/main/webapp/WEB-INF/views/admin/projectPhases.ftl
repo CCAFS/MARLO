@@ -32,12 +32,12 @@
       </div>
       <div class="col-md-9">
         [@s.form action=actionName enctype="multipart/form-data" ]
-        <h4 class="sectionTitle">[@s.text name="Project for " /] ${currentCycle} (${currentCycleYear}) [@s.text name="cycle" /]</h4>
+        <h4 class="sectionTitle">[@s.text name="Projects for " /] ${currentCycle} (${currentCycleYear}) [@s.text name="cycle" /]</h4>
         <div class="note form-group">To enable or disable projects in the current cycle. You can drag the project from one column and place it in another column.</div>
         
         <div class=" simpleBox row " listname="">
           <div class="col-md-6">
-            <label class="text-center col-md-12 tableTitles" for="">All projects</label>
+            <label class="text-center col-md-12 tableTitles" for="">Projects disabled for this cycle</label>
             <div class="clearfix"></div>
             <div id="allProjectList" class="dragProjectList">
             [#list allProjects as project]
@@ -49,7 +49,7 @@
             </div>
           </div>
           <div class="col-md-6">
-            <label class="text-center col-md-12 tableTitles" for=""> Cycle projects</label>
+            <label class="text-center col-md-12 tableTitles" for="">Projects enabled for this cycle</label>
             <div class="clearfix"></div>
             <div id="phasesProjectList" class="dragProjectList">
             [#list phasesProjects as project]

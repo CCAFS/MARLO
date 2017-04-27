@@ -23,9 +23,23 @@ function attachEvents() {
         }
         console.log($(div).parent());
         updateLists();
+        // calculateHeight();
       }
   });
+  // calculateHeight();
+}
 
+function calculateHeight() {
+  var enabledList = $("#phasesProjectList");
+  var disabledList = $("#allProjectList");
+  if(enabledList.outerHeight() > disabledList.outerHeight()) {
+    console.log("holi");
+    console.log(disabledList.outerHeight());
+    disabledList.outerHeight(enabledList.outerHeight());
+  } else {
+    enabledList.outerHeight(disabledList.outerHeight());
+    console.log("holi2");
+  }
 }
 
 function updateLists() {
