@@ -17,11 +17,14 @@ package org.cgiar.ccafs.marlo.action.crp.admin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpLocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.LocGeopositionManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrpLocElementType;
+import org.cgiar.ccafs.marlo.data.model.CustomLevelSelect;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.LocElementType;
 import org.cgiar.ccafs.marlo.data.model.LocGeoposition;
@@ -50,6 +53,8 @@ public class CrpLocationsAction extends BaseAction {
   private LocElementTypeManager locElementTypeManager;
   private LocGeopositionManager locGeopositionManager;
   private LocElementManager locElementManger;
+  private CrpLocElementTypeManager crpLocElementTypeManager;
+
   // Variables
   private Crp loggedCrp;
   private List<LocElement> countriesList;
@@ -60,12 +65,13 @@ public class CrpLocationsAction extends BaseAction {
   @Inject
   public CrpLocationsAction(APConfig config, CrpManager crpManager, LocElementManager locElementManager,
     LocElementTypeManager locElementTypeManager, LocGeopositionManager locGeopositionManager,
-    LocElementManager locElementManger) {
+    CrpLocElementTypeManager crpLocElementTypeManager, LocElementManager locElementManger) {
     super(config);
     this.crpManager = crpManager;
     this.locElementManager = locElementManager;
     this.locElementTypeManager = locElementTypeManager;
     this.locGeopositionManager = locGeopositionManager;
+    this.crpLocElementTypeManager = crpLocElementTypeManager;
     this.locElementManger = locElementManger;
   }
 
@@ -350,6 +356,7 @@ public class CrpLocationsAction extends BaseAction {
     }
   }
 
+
   @Override
   public void prepare() throws Exception {
     super.prepare();
@@ -360,6 +367,28 @@ public class CrpLocationsAction extends BaseAction {
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
     String params[] = {loggedCrp.getAcronym()};
+    Collections.sort(defaultLocationTypes, (tu1, tu2) -> tu1.getName().compareTo(tu2.getName()));
+
+    loggedCrp.setCustomLevels(new ArrayList<>());
+    for (LocElementType locElementType : defaultLocationTypes) {
+
+      CustomLevelSelect select = new CustomLevelSelect();
+      select.setLocElementType(locElementType);
+
+      CrpLocElementType crpLocElementType =
+        crpLocElementTypeManager.getByLocElementTypeAndCrpId(loggedCrp.getId(), locElementType.getId());
+
+      if (crpLocElementType != null) {
+        boolean check = crpLocElementType.isActive();
+        select.setCheck(check);
+
+      } else {
+        select.setCheck(false);
+      }
+
+      loggedCrp.getCustomLevels().add(select);
+
+    }
 
     // Countries list
     List<LocElement> locs =
@@ -411,6 +440,15 @@ public class CrpLocationsAction extends BaseAction {
 
       loggedCrp.getLocationCustomElementTypes().clear();
 
+
+      if (defaultLocationTypes != null) {
+
+        defaultLocationTypes.clear();
+      }
+
+      if (loggedCrp.getCustomLevels() != null) {
+        loggedCrp.getCustomLevels().clear();
+      }
     }
   }
 
@@ -423,6 +461,7 @@ public class CrpLocationsAction extends BaseAction {
 
       this.locationCustomPreviousData();
       this.locationCustomNewData();
+      this.saveCustomLocations();
 
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {
@@ -445,6 +484,41 @@ public class CrpLocationsAction extends BaseAction {
       return SUCCESS;
     } else {
       return NOT_AUTHORIZED;
+    }
+  }
+
+  public void saveCustomLocations() {
+    if (loggedCrp.getCustomLevels() == null) {
+      loggedCrp.setCustomLevels(new ArrayList<>());
+    }
+    for (CustomLevelSelect customLevelSelect : loggedCrp.getCustomLevels()) {
+
+      CrpLocElementType crpLocElementType = crpLocElementTypeManager.getByLocElementTypeAndCrpId(loggedCrp.getId(),
+        customLevelSelect.getLocElementType().getId());
+
+      if (crpLocElementType != null) {
+        if (customLevelSelect.getCheck() == null) {
+          customLevelSelect.setCheck(false);
+        }
+        if (!customLevelSelect.getCheck()) {
+          crpLocElementTypeManager.deleteCrpLocElementType(crpLocElementType.getId());
+        }
+
+
+      } else {
+
+        if (customLevelSelect.getCheck() != null && customLevelSelect.getCheck()) {
+
+          CrpLocElementType locElementType = new CrpLocElementType();
+          locElementType.setCrp(loggedCrp);
+          locElementType.setLocElementType(
+            locElementTypeManager.getLocElementTypeById(customLevelSelect.getLocElementType().getId()));
+          crpLocElementTypeManager.saveCrpLocElementType(locElementType);
+
+        }
+
+      }
+
     }
   }
 

@@ -18,6 +18,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpLocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramLeaderManager;
@@ -28,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.IpLiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
+import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectComponentLessonManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
@@ -54,6 +56,8 @@ import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
+import org.cgiar.ccafs.marlo.data.model.LocElement;
+import org.cgiar.ccafs.marlo.data.model.LocElementType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
@@ -185,6 +189,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private boolean draft;
 
   private SrfTargetUnitManager targetUnitManager;
+  @Inject
+  private LocElementTypeManager locElementTypeManager;
+  
+   @Inject
+  private CrpLocElementTypeManager crpLocElementTypeManager;
   @Inject
   private UserManager userManager;
 
@@ -464,6 +473,31 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
       }
 
+
+      if (clazz == LocElementType.class) {
+        LocElementType locElementType = locElementTypeManager.getLocElementTypeById(id);
+        if (locElementType.getCrpLocElementTypes().stream().filter(o -> o.isActive()).collect(Collectors.toList())
+          .size() > 0) {
+          return false;
+        }
+
+
+      }
+
+      if (clazz == CustomLevelSelect.class) {
+        LocElementType locElementType = locElementTypeManager.getLocElementTypeById(id);
+
+        for (LocElement locElements : locElementType.getLocElements().stream().filter(c -> c.isActive())
+          .collect(Collectors.toList())) {
+          if (!locElements.getProjectLocations().stream().filter(c -> c.isActive()).collect(Collectors.toList())
+            .isEmpty()) {
+            return false;
+          }
+
+        }
+
+
+      }
       return true;
     } catch (Exception e) {
       return false;

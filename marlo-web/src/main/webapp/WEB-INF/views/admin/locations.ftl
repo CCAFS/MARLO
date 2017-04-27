@@ -33,10 +33,26 @@
         [@s.form action=actionName enctype="multipart/form-data"]
         
         <h4 class="sectionTitle">[@s.text name="crpLocations.title" /]</h4>
-        <div class="defaultLocations simpleBox">
-          [#list defaultLocationTypes as elementType]
-            <p><span class="glyphicon glyphicon-ok-circle"></span> ${elementType.name}</p>
+        [#-- Default locations --]
+        <div class="defaultLocations items-list simpleBox">
+          <ul>
+          [#list loggedCrp.customLevels as elementType]
+            [#assign customLocName = "loggedCrp.customLevels[${elementType_index}]"]
+            <li class="li-item defaultLocation">
+              <input type="hidden" name="${customLocName}.locElementType.id" value="${elementType.locElementType.id}" />
+              <input type="checkbox" [#if action.canBeDeleted(elementType.locElementType.id,elementType.class.name)][#else]style="opacity:0.5; cursor: not-allowed;" onclick="return false;" onkeydown="e = e || window.event; if(e.keyCode !== 9) return false;"[/#if]  name="${customLocName}.check" value="${elementType.check?string}" [#if elementType.check]checked[/#if] id="${customLocName}"  class="elementTypeCheck pull-right" />  
+              <label for="${customLocName}"><span class="glyphicon glyphicon-map-marker"></span> <span>${elementType.locElementType.name}</span></label>
+              [#-- CRPs that allow this location --]
+              <div class="crps" style="color: #9c9c9c; margin-left: 0px; font-size: 0.75em;" title="CRPs ">
+                [#if elementType.locElementType?? && elementType.locElementType.crpLocElementTypes?has_content]
+                  [#list elementType.locElementType.crpLocElementTypes as crpLocElementType]
+                    [#if crpLocElementType.active][${crpLocElementType.crp.name}] [/#if]
+                  [/#list] 
+                [/#if]
+              </div>
+            </li>
           [/#list]
+          </ul>
           <div class="clearfix"></div>
         </div>
         

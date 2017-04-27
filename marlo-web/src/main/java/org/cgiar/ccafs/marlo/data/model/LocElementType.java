@@ -63,9 +63,11 @@ public class LocElementType implements java.io.Serializable, IAuditLog {
   private Set<LocElement> locElements = new HashSet<LocElement>(0);
 
   private Set<LocElementType> locElementTypes = new HashSet<LocElementType>(0);
+  private Set<CrpLocElementType> crpLocElementTypes = new HashSet<CrpLocElementType>(0);
 
 
   private Set<ProjectLocationElementType> projectLocationElementTypes = new HashSet<ProjectLocationElementType>(0);
+
 
   private List<LocElement> locationElements;
 
@@ -97,12 +99,11 @@ public class LocElementType implements java.io.Serializable, IAuditLog {
       if (other.id != null) {
         return false;
       }
-    } else if (!id.equals(other.id)) {
+    } else if (!id.equals(other.getId())) {
       return false;
     }
     return true;
   }
-
 
   public Date getActiveSince() {
     return activeSince;
@@ -112,8 +113,13 @@ public class LocElementType implements java.io.Serializable, IAuditLog {
     return createdBy;
   }
 
+
   public Crp getCrp() {
     return crp;
+  }
+
+  public Set<CrpLocElementType> getCrpLocElementTypes() {
+    return crpLocElementTypes;
   }
 
   public Boolean getHasCoordinates() {
@@ -137,10 +143,10 @@ public class LocElementType implements java.io.Serializable, IAuditLog {
     return this.locElementType;
   }
 
-
   public Set<LocElementType> getLocElementTypes() {
     return this.locElementTypes;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -149,6 +155,7 @@ public class LocElementType implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -189,6 +196,10 @@ public class LocElementType implements java.io.Serializable, IAuditLog {
 
   public void setCrp(Crp crp) {
     this.crp = crp;
+  }
+
+  public void setCrpLocElementTypes(Set<CrpLocElementType> crpLocElementTypes) {
+    this.crpLocElementTypes = crpLocElementTypes;
   }
 
   public void setHasCoordinates(Boolean hasCoordinates) {
