@@ -62,14 +62,17 @@ public class FundingSourceValidator extends BaseValidator {
   public boolean hasIFPRI(FundingSource fundingSource) {
 
 
-    for (FundingSourceInstitution fundingSourceInstitution : fundingSource.getInstitutions().stream()
-      .filter(c -> c.isActive()).collect(Collectors.toList())) {
-      fundingSourceInstitution
-        .setInstitution(institutionManager.getInstitutionById(fundingSourceInstitution.getInstitution().getId()));
-      if (fundingSourceInstitution.getInstitution().getAcronym().equals("IFPRI")) {
-        return true;
+    if (fundingSource.getInstitutions() != null) {
+      for (FundingSourceInstitution fundingSourceInstitution : fundingSource.getInstitutions().stream()
+        .filter(c -> c.isActive()).collect(Collectors.toList())) {
+        fundingSourceInstitution
+          .setInstitution(institutionManager.getInstitutionById(fundingSourceInstitution.getInstitution().getId()));
+        if (fundingSourceInstitution.getInstitution().getAcronym().equals("IFPRI")) {
+          return true;
+        }
       }
     }
+
 
     return false;
   }
