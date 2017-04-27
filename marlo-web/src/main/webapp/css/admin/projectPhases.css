@@ -1,5 +1,5 @@
 .tableTitles{
-    color: #1da5ce;
+    color: #999;
     text-align: center;
     font-size: 1.3em;
     line-height: 0.9em;
@@ -8,9 +8,18 @@
 
 .dragProjectList{
 	border: 1px solid whitesmoke;
-    padding: 6px;
+  padding: 10px;
+  margin-top:10px;
 }
 
 .project{
 	cursor:move;
+}
+
+#allProjectList{
+	border-top: 2px solid #c52020;
+}
+
+#phasesProjectList{
+  border-top: 2px solid #158aef;
 }
