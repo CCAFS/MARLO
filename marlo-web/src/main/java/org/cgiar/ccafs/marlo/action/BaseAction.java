@@ -47,6 +47,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
+import org.cgiar.ccafs.marlo.data.model.CustomLevelSelect;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
@@ -191,8 +192,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private SrfTargetUnitManager targetUnitManager;
   @Inject
   private LocElementTypeManager locElementTypeManager;
-  
-   @Inject
+
+  @Inject
   private CrpLocElementTypeManager crpLocElementTypeManager;
   @Inject
   private UserManager userManager;
