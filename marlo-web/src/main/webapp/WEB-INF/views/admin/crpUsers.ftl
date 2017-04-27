@@ -32,9 +32,22 @@
       <div class="col-md-9">
         [@s.form action=actionName enctype="multipart/form-data" ]  
         
+        [#--Users tables --]
         <h4 class="sectionTitle">[@s.text name="crpUsers.title" /]</h4>
-        <div class="borderBox"> 
-          
+        <div class="borderBox">
+          <table id="marloUsersTable" class="display table table-striped table-hover" width="100%">
+            <thead>
+              <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Username</th>
+                  <th>Email</th>
+                  <th>Active</th>
+                  <th>AutoSave</th>
+                  <th>Last Login</th>
+              </tr>
+            </thead> 
+          </table>
         </div>
         
         [/@s.form]
