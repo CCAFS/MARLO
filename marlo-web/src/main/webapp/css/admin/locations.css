@@ -73,3 +73,7 @@ span.coordinates {
     margin-left: 1%;
     height: 51px;
 }
+
+.defaultLocation {
+    background: #fff !important;
+}
