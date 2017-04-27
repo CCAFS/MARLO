@@ -50,18 +50,21 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
           'label': 'data(label)',
           'background-color': '#2388ae',
           'color': 'white',
+          'background-opacity': 0.2,
+          'text-opacity': 0.2,
           'text-outline-width': 1,
           'text-outline-color': '#888',
           'z-index': '5',
           'padding': 2
-      }).selector('.eating').css({}).selector('.eater').css({
-          'border-width': 9,
-          'color': 'white'
+      }).selector('.eating').css({
+          'background-opacity': 1,
+          'text-opacity': 1,
       }).selector('edge').css({
-          'width': 1,
+          'width': 0.2,
           'source-arrow-shape': 'triangle',
           'line-color': '#999999',
           'source-arrow-color': '#999999',
+          'arrow-resize': 15,
           'curve-style': 'bezier',
           'z-index': '1'
       }).selector('.center-center').css({
@@ -134,6 +137,7 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
       }
     }
   });
+  cy.$('node').addClass('eating');
 
   if(inPopUp === true) {
     /*
@@ -158,11 +162,11 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
 
     if(event.cyTarget == cy) {
 
-      cy.$('node').removeClass('eating');
+      cy.$('node').addClass('eating');
 
     } else if(event.cyTarget.isEdge()) {
 
-      cy.$('node').removeClass('eating');
+      cy.$('node').addClass('eating');
 
     } else if(event.cyTarget.isNode()) {
 
