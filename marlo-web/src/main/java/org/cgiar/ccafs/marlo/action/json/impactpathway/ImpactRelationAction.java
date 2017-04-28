@@ -155,6 +155,8 @@ public class ImpactRelationAction extends BaseAction {
 
 
         if (outcome != null) {
+
+          Set<CrpClusterOfActivity> activities = new HashSet<>();
           for (CrpClusterKeyOutputOutcome crpClusterKeyOutput : crpProgramOutcome.getCrpClusterKeyOutputOutcomes()
             .stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
             HashMap<String, Object> dataDetailKeyOutput = new HashMap<>();
@@ -168,15 +170,15 @@ public class ImpactRelationAction extends BaseAction {
 
 
             relations.add(dataDetailKeyOutput);
+            activities.add(crpClusterKeyOutput.getCrpClusterKeyOutput().getCrpClusterOfActivity());
 
 
+          }
+          for (CrpClusterOfActivity crpClusterOfActivity : activities) {
             HashMap<String, Object> dataDetailOutcome = new HashMap<>();
-            dataDetailOutcome.put("id",
-              "C" + crpClusterKeyOutput.getCrpClusterKeyOutput().getCrpClusterOfActivity().getId());
-            dataDetailOutcome.put("label",
-              "CoA #" + crpClusterKeyOutput.getCrpClusterKeyOutput().getCrpClusterOfActivity().getComposedName());
-            dataDetailOutcome.put("description",
-              crpClusterKeyOutput.getCrpClusterKeyOutput().getCrpClusterOfActivity().getComposedName());
+            dataDetailOutcome.put("id", "C" + crpClusterOfActivity.getId());
+            dataDetailOutcome.put("label", "CoA #" + crpClusterOfActivity.getComposedName());
+            dataDetailOutcome.put("description", crpClusterOfActivity.getComposedName());
             dataDetailOutcome.put("color", "#c0c0c0");
             dataDetailOutcome.put("type", "CoA");
             relations.add(dataDetailOutcome);
