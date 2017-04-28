@@ -40,7 +40,11 @@
             [#assign customLocName = "loggedCrp.customLevels[${elementType_index}]"]
             <li class="li-item defaultLocation">
               <input type="hidden" name="${customLocName}.locElementType.id" value="${elementType.locElementType.id}" />
-              <input type="checkbox" [#if action.canBeDeleted(elementType.locElementType.id,elementType.class.name)][#else]style="opacity:0.5; cursor: not-allowed;" onclick="return false;" onkeydown="e = e || window.event; if(e.keyCode !== 9) return false;"[/#if]  name="${customLocName}.check" value="${elementType.check?string}" [#if elementType.check]checked[/#if] id="${customLocName}"  class="elementTypeCheck pull-right" />  
+              [#if action.canBeSelected(elementType.locElementType.id)]
+                <input type="checkbox" [#if action.canBeDeleted(elementType.locElementType.id,elementType.class.name)][#else]style="opacity:0.5; cursor: not-allowed;" onclick="return false;" onkeydown="e = e || window.event; if(e.keyCode !== 9) return false;"[/#if]  name="${customLocName}.check" value="${elementType.check?string}" [#if elementType.check]checked[/#if] id="${customLocName}"  class="elementTypeCheck pull-right" />  
+              [#else]
+                <input type="hidden" name="${customLocName}.check" value="${elementType.check?string}"/>
+              [/#if]
               <label for="${customLocName}"><span class="glyphicon glyphicon-map-marker"></span> <span>${elementType.locElementType.name}</span></label>
               [#-- CRPs that allow this location --]
               <div class="crps" style="color: #9c9c9c; margin-left: 0px; font-size: 0.75em;" title="CRPs ">
