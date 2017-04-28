@@ -108,7 +108,7 @@
   </div>
   
   [#-- Change to full or current graph --]
-  <div id="changeGraph">
+  <div id="changeGraph" style="display:none;">
   <span class="btn btn-primary btn-md currentGraph">Show full graph</span>
   </div>
   
