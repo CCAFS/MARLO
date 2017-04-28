@@ -1134,9 +1134,22 @@ public class DeliverableAction extends BaseAction {
         partnerDivision = partnerDivisionManager
           .getPartnerDivisionById(deliverable.getResponsiblePartner().getPartnerDivision().getId());
       }
-
       DeliverablePartnership partnership = new DeliverablePartnership();
-      partnership.setId(deliverable.getResponsiblePartner().getId());
+
+
+      Deliverable deliverableDB = deliverableManager.getDeliverableById(deliverableID);
+      try {
+        DeliverablePartnership partnershipDB = deliverableDB.getDeliverablePartnerships().stream()
+          .filter(
+            dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
+          .collect(Collectors.toList()).get(0);
+        if (partnershipDB != null) {
+          partnership.setId(partnershipDB.getId());
+        }
+      } catch (Exception e) {
+        partnership.setId(null);
+      }
+
       partnership.setDeliverable(deliverable);
       partnership.setProjectPartnerPerson(partnerPerson);
       partnership.setPartnerDivision(partnerDivision);
