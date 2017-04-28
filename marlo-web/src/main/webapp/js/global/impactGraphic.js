@@ -225,12 +225,8 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
   function selectNode(id) {
     var node = cy.$('#' + id);
     node.addClass('eating');
-// node.css('background-opacity', '1');
-// node.css('text-opacity', '1');
-// node.css('z-index', '99');
-// node.css('line-color', '#eee');
-// node.css('source-arrow-color', '#eee');
-// node.css('target-arrow-color', '#eee');
+// node.connectedEdges();
+// console.log(node.connectedEdges());
   }
 
   // Download
