@@ -75,6 +75,23 @@ public class CrpLocationsAction extends BaseAction {
     this.locElementManger = locElementManger;
   }
 
+  public boolean canBeSelected(Long id) {
+    boolean returnValue = true;
+    switch (id.intValue()) {
+      case 1:
+        returnValue = false;
+        break;
+
+      case 2:
+        returnValue = false;
+        break;
+
+    }
+
+    return returnValue;
+
+  }
+
   public List<LocElement> getCountriesList() {
     return countriesList;
   }
