@@ -7,30 +7,35 @@ function init() {
 }
 
 function attachEvents() {
-  $(".dragProjectList").sortable({
-      revert: true,
-      placeholder: "portlet-placeholder ui-corner-all"
-  });
 
-  $('.dragProjectList').bind('sortstart', function(event,ui) {
-    var div = ui.helper[0];
-    $('.portlet-placeholder').append('<span style="line-height:50px;">Drop here</span>');
-  });
+  if(editable) {
+    $(".dragProjectList").sortable({
+        revert: true,
+        placeholder: "portlet-placeholder ui-corner-all"
+    });
 
-  $('.project').draggable({
-      connectToSortable: ".dragProjectList",
-      revert: 'invalid',
-      stop: function(event,ui) {
-        var div = ui.helper[0];
-        if($(div).parent().attr("id") === "phasesProjectList") {
-          $(div).find("input").attr("name", "phasesProjects[].id")
-        } else {
-          $(div).find("input").attr("name", "")
+    $('.dragProjectList').bind('sortstart', function(event,ui) {
+      var div = ui.helper[0];
+      $('.portlet-placeholder').append('<span style="line-height:50px;">Drop here</span>');
+    });
+
+    $('.project').draggable({
+        connectToSortable: ".dragProjectList",
+        revert: 'invalid',
+        stop: function(event,ui) {
+          var div = ui.helper[0];
+          if($(div).parent().attr("id") === "phasesProjectList") {
+            $(div).find("input").attr("name", "phasesProjects[].id")
+          } else {
+            $(div).find("input").attr("name", "")
+          }
+          updateLists();
+          calculateHeight();
         }
-        updateLists();
-        calculateHeight();
-      }
-  });
+    });
+  } else {
+    $(".project").css("cursor", "default");
+  }
 
   calculateHeight();
 }
