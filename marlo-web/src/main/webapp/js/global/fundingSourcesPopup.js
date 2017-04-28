@@ -50,7 +50,12 @@ $(document).ready(
           budgetTypeID: option.val()
         };
         ajaxService(url, data);
+
+        // Check Agreement status
+        checkAgreementStatus(option.val());
       });
+
+      checkAgreementStatus($(".type").val());
 
       // Event for manage the accordion function
       $('#create-user').on('click', function() {
@@ -412,6 +417,32 @@ $(document).ready(
       });
 
     });// End document ready event
+
+/**
+ * Check Agreement status
+ * 
+ * @param {number} typeID - Funding budget type
+ */
+function checkAgreementStatus(typeID) {
+  var W1W2 = 1;
+  var ON_GOING = 2;
+  // Change Agreement Status when is (W1W2 Type => 1)
+  var $agreementStatus = $('select#status');
+  // 3 => Concept Note/Pipeline
+  // 4 => Informally Confirmed
+  var $options = $agreementStatus.find("option[value='3'], option[value='4']");
+  if(typeID == W1W2) {
+    console.log("holi1");
+    $agreementStatus.val(ON_GOING); // On-going
+    $options.remove();
+  } else {
+    console.log("holi2");
+    if($options.length == 0) {
+      $agreementStatus.addOption("3", "Concept Note/Pipeline");
+      $agreementStatus.addOption("4", "Informally Confirmed");
+    }
+  }
+}
 
 function date(start,end) {
   var dateFormat = "yy-mm-dd";
