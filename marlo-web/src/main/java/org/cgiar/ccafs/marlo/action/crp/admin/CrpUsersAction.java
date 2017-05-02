@@ -129,7 +129,7 @@ public class CrpUsersAction extends BaseAction {
       return relations.toString();
     }
 
-    return null;
+    return "";
   }
 
 
