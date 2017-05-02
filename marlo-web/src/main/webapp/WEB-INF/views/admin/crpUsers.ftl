@@ -44,7 +44,7 @@
             [#list rolesCrp as role]
               [#assign usersList = (action.getUsersByRole(role.id))![] /]
               [#if usersList?has_content]
-                <li role="" class="[#if role?is_first]active[/#if]"><a href="#role-${role.id}" aria-controls="home" role="tab" data-toggle="tab">${role.acronym}</a></li>
+                <li role="" class="[#if role?is_first]active[/#if]"><a href="#role-${role.id}" aria-controls="home" role="tab" data-toggle="tab" title="${role.description} (${usersList?size})">${role.acronym}</a></li>
               [/#if]
             [/#list]
           </ul>
@@ -76,7 +76,7 @@
                         <td>${(user.username)!'<i>No Username</i>'}</td>
                         <td>${(action.getRelations(user.id, role.id))!}</td>
                         <td>${(user.email)!}</td>
-                        <td><div class="text-center"><img src="${baseUrl}/images/global/checked-${user.active?string}.png" alt="${user.active?string}" /></div></td>
+                        <td><div class="text-center" alt="${user.active?string}"><img src="${baseUrl}/images/global/checked-${user.active?string}.png" /></div></td>
                         <td>${(user.lastLogin)!'<i>Never Entered</i>'}</td>
                       </tr>
                       [/#list]
