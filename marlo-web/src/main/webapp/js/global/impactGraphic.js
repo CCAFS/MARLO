@@ -179,7 +179,7 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
             'data': {
                 id: $this._private.data.id,
                 type: $this._private.data.type,
-                flagship: $("input[name='crpProgramID']").val()
+                flagshipID: $("input[name='crpProgramID']").val()
             },
             beforeSend: function() {
               $("#loader").show();
