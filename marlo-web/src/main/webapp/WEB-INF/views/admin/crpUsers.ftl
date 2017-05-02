@@ -44,7 +44,7 @@
             [#list rolesCrp as role]
               [#assign usersList = (action.getUsersByRole(role.id))![] /]
               [#if usersList?has_content]
-                <li role="" class="[#if role?is_first]active[/#if]"><a href="#role-${role.id}" aria-controls="home" role="tab" data-toggle="tab">${role.acronym}</a></li>
+                <li role="" class="[#if role?is_first]active[/#if]"><a href="#role-${role.id}" aria-controls="home" role="tab" data-toggle="tab" title="${role.description} (${usersList?size})">${role.acronym}</a></li>
               [/#if]
             [/#list]
           </ul>
@@ -61,7 +61,10 @@
                       <tr>
                           <th>ID</th>
                           <th>Name</th>
-                          <th>Username</th>
+                          [#--  <th>Username</th> --]
+                          [#if (action.hasRelations(role.acronym))??]
+                          <th>${action.hasRelations(role.acronym)}</th>
+                          [/#if]
                           <th>Email</th>
                           <th>Active</th>
                           <th>Last Login</th>
@@ -72,9 +75,12 @@
                       <tr>
                         <td>${user.id}</td>
                         <td>${(user.composedCompleteName)!}</td>
-                        <td>${(user.username)!'<i>No Username</i>'}</td>
+                        [#-- <td>${(user.username)!'<i>No Username</i>'}</td> --]
+                        [#if (action.hasRelations(role.acronym))??]
+                        <td>${(action.getRelations(user.id, role.id))!}</td>
+                        [/#if]
                         <td>${(user.email)!}</td>
-                        <td><div class="text-center"><img src="${baseUrl}/images/global/checked-${user.active?string}.png" alt="${user.active?string}" /></div></td>
+                        <td><div class="text-center" alt="${user.active?string}"><img src="${baseUrl}/images/global/checked-${user.active?string}.png" /></div></td>
                         <td>${(user.lastLogin)!'<i>Never Entered</i>'}</td>
                       </tr>
                       [/#list]
@@ -84,7 +90,7 @@
               [/#if]
             [/#list]
           </div>
-        </div>
+        </div> 
         
         [@s.form action=actionName enctype="multipart/form-data" ]  
         [/@s.form]
