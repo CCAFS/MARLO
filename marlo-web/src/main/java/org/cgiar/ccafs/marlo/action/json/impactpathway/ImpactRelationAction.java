@@ -112,11 +112,15 @@ public class ImpactRelationAction extends BaseAction {
         datacrpProgramOutcome.put("type", "O");
         relations.add(datacrpProgramOutcome);
 
+        Set<SrfSubIdo> subIdos = new HashSet<>();
+
         for (CrpOutcomeSubIdo crpOutcomeSubIdo : crpProgramOutcome.getCrpOutcomeSubIdos().stream()
           .filter(c -> c.isActive()).collect(Collectors.toList())) {
 
 
-          if (crpOutcomeSubIdo.getSrfSubIdo() != null && crpOutcomeSubIdo.getSrfSubIdo().isActive()) {
+          if (crpOutcomeSubIdo.getSrfSubIdo() != null && crpOutcomeSubIdo.getSrfSubIdo().isActive()
+            && !subIdos.contains(crpOutcomeSubIdo.getSrfSubIdo())) {
+            subIdos.add(crpOutcomeSubIdo.getSrfSubIdo());
             HashMap<String, Object> dataDetaiSubIDO = new HashMap<>();
             dataDetaiSubIDO.put("id", "SD" + crpOutcomeSubIdo.getSrfSubIdo().getId());
             dataDetaiSubIDO.put("label", "SubIDO #" + crpOutcomeSubIdo.getSrfSubIdo().getId());
