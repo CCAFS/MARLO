@@ -145,40 +145,41 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
      * '10%'); $(".cy-panzoom").css('top', '17%'); $(".cy-panzoom").css('z-index', '99');
      */
   }
-
+  if(inPopUp === true) {
 // tap a node
-  cy.on('tap', function(event) {
+    cy.on('tap', function(event) {
 
-    $(".panel-body ul").empty();
+      $(".panel-body ul").empty();
 
-    SLO = [];
-    IDO = [];
-    subIDO = [];
-    crps = [];
-    flagships = [];
-    outcomes = [];
-    clusters = [];
-    keyOutputs = [];
+      SLO = [];
+      IDO = [];
+      subIDO = [];
+      crps = [];
+      flagships = [];
+      outcomes = [];
+      clusters = [];
+      keyOutputs = [];
 
-    if(event.cyTarget == cy) {
+      if(event.cyTarget == cy) {
 
-      cy.$('node').addClass('eating');
+        cy.$('node').addClass('eating');
 
-    } else if(event.cyTarget.isEdge()) {
+      } else if(event.cyTarget.isEdge()) {
 
-      cy.$('node').addClass('eating');
+        cy.$('node').addClass('eating');
 
-    } else if(event.cyTarget.isNode()) {
+      } else if(event.cyTarget.isNode()) {
 
-      cy.$('node').removeClass('eating');
-      var $this = event.cyTarget;
-      // change Styles
-      if(inPopUp === true) {
+        cy.$('node').removeClass('eating');
+        var $this = event.cyTarget;
+        // change Styles
+
         $.ajax({
             'url': baseURL + '/impactPathway/relationsimpactPathway.do',
             'data': {
                 id: $this._private.data.id,
-                type: $this._private.data.type
+                type: $this._private.data.type,
+                flagship: $("input[name='crpProgramID']").val()
             },
             beforeSend: function() {
               $("#loader").show();
@@ -218,9 +219,11 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
               $("#loader").fadeOut(500);
             }
         });
+
       }
-    }
-  });
+    });
+
+  }
 
   function selectNode(id) {
     var node = cy.$('#' + id);
