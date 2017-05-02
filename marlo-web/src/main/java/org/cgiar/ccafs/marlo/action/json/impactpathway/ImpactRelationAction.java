@@ -59,6 +59,8 @@ public class ImpactRelationAction extends BaseAction {
   private static final Logger LOG = LoggerFactory.getLogger(ImpactRelationAction.class);
 
   private String id;
+  private String flagshipId;
+
   private String type;
   private List<HashMap<String, Object>> relations = new ArrayList<HashMap<String, Object>>();
 
@@ -362,9 +364,7 @@ public class ImpactRelationAction extends BaseAction {
         this.addRelations(crpProgram, null);
 
         break;
-      /**
-       * TODO :Refactor
-       */
+
       case "O":
         CrpProgramOutcome crpProgramOutcome =
           crpProgramOutcomeManager.getCrpProgramOutcomeById(Long.parseLong(id.replace("O", "")));
@@ -387,7 +387,14 @@ public class ImpactRelationAction extends BaseAction {
         }
 
         for (CrpProgram myProgram : crpPrograms) {
-          this.addRelations(myProgram, null);
+          if (flagshipId == null) {
+            this.addRelations(myProgram, null);
+          } else {
+            if (Long.parseLong(flagshipId) == myProgram.getId().longValue()) {
+              this.addRelations(myProgram, null);
+            }
+          }
+
         }
 
 
@@ -404,23 +411,24 @@ public class ImpactRelationAction extends BaseAction {
 
         }
         for (CrpProgram myProgram : crpPrograms) {
-          this.addRelations(myProgram, null);
+          if (flagshipId == null) {
+            this.addRelations(myProgram, null);
+          } else {
+            if (Long.parseLong(flagshipId) == myProgram.getId().longValue()) {
+              this.addRelations(myProgram, null);
+            }
+          }
+
         }
 
         break;
 
-      /**
-       * TODO :Refactor
-       */
       case "CoA":
         CrpClusterOfActivity crpClusterOfActivity =
           crpClusterOfActivityManager.getCrpClusterOfActivityById(Long.parseLong(id.replace("C", "")));
         this.addRelationsCluster(crpClusterOfActivity.getCrpProgram(), crpClusterOfActivity, null);
 
         break;
-      /**
-       * TODO :Refactor
-       */
 
       case "KO":
         CrpClusterKeyOutput crpClusterKeyOutput =
@@ -462,9 +470,21 @@ public class ImpactRelationAction extends BaseAction {
     try {
       type = (StringUtils.trim(((String[]) parameters.get(APConstants.TYPE))[0]));
     } catch (Exception e) {
-      LOG.error("There was an exception trying to parse the   id = {} ",
+      LOG.error("There was an exception trying to parse the   type = {} ",
         StringUtils.trim(((String[]) parameters.get(APConstants.TYPE))[0]));
 
+    }
+
+
+    try {
+      flagshipId = (StringUtils.trim(((String[]) parameters.get(APConstants.FLAGSHIP_ID))[0]));
+      if (flagshipId.isEmpty()) {
+        flagshipId = null;
+      }
+    } catch (Exception e) {
+      LOG.error("There was an exception trying to parse the   FLAGSHIP_ID = {} ",
+        StringUtils.trim(((String[]) parameters.get(APConstants.FLAGSHIP_ID))[0]));
+      flagshipId = null;
     }
   }
 
