@@ -202,6 +202,51 @@ public class CrpUsersAction extends BaseAction {
     return usersRoles;
   }
 
+
+  public String hasRelations(String acronym) {
+    String ret = null;
+    switch (acronym.toUpperCase()) {
+      case "ADMIN":
+      case "G":
+      case "FM":
+      case "PMU":
+      case "SUPERADMIN":
+      case "DM":
+        ret = null;
+        break;
+      case "PL":
+      case "PC":
+        ret = "Projects";
+        break;
+
+      case "ML":
+        ret = "Institutions";
+        break;
+
+      case "CP":
+        ret = "Centers";
+        break;
+      case "FPM":
+      case "FPL":
+        ret = "Flagships";
+        break;
+
+      case "RPM":
+      case "RPL":
+        ret = "Regions";
+        break;
+
+      case "CL":
+        ret = "Cluster of Activities";
+        break;
+      case "SL":
+        ret = "Site Integrations";
+        break;
+    }
+    return ret;
+
+  }
+
   @Override
   public void prepare() throws Exception {
 
