@@ -235,7 +235,7 @@ public class ImpactRelationAction extends BaseAction {
     CrpClusterKeyOutput crpClusterKeyOutput) {
 
     HashMap<String, Object> dataProgram = new HashMap<>();
-    dataProgram.put("id", crpProgram.getId());
+    dataProgram.put("id", "F" + crpProgram.getId());
     dataProgram.put("label", crpProgram.getAcronym());
     dataProgram.put("description", crpProgram.getName());
     dataProgram.put("color", crpProgram.getColor());
