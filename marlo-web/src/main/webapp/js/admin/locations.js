@@ -49,6 +49,11 @@ function attachEvents() {
   $('.no-button-label').on('click', function() {
     yesnoEventLocations(false, $(this));
   });
+  
+  // Default locations levels
+  $('.elementTypeCheck').on('change', function(){
+    $(this).parents('.defaultLocation').find('input:checkbox').val($(this).is(":checked"));
+  });
 
 }
 
