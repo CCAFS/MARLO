@@ -138,7 +138,7 @@ public class ImpactRelationAction extends BaseAction {
 
             dataDetaiSIDO.put("type", "IDO");
 
-            relations.add(dataDetaiSubIDO);
+            relations.add(dataDetaiSIDO);
 
 
             for (SrfSloIdo srfSloIdo : crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getSrfSloIdos()) {
