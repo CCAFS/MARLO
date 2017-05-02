@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
@@ -51,25 +52,52 @@ public class CrpUsersAction extends BaseAction {
   private PhaseManager phaseManager;
   private RoleManager roleManager;
 
+  private UserRoleManager userRoleManager;
+
   private ProjectPhaseManager projectPhaseManager;
 
   private List<User> users;
+  private List<Role> rolesCrp;
 
 
   @Inject
   public CrpUsersAction(APConfig config, UserManager userManager, ProjectManager projectManager,
-    PhaseManager phaseManager, ProjectPhaseManager projectPhaseManager, RoleManager roleManager) {
+    PhaseManager phaseManager, ProjectPhaseManager projectPhaseManager, RoleManager roleManager,
+    UserRoleManager userRoleManager) {
     super(config);
     this.projectManager = projectManager;
     this.phaseManager = phaseManager;
     this.projectPhaseManager = projectPhaseManager;
     this.userManager = userManager;
     this.roleManager = roleManager;
+    this.userRoleManager = userRoleManager;
+  }
+
+
+  public List<Role> getRolesCrp() {
+    return rolesCrp;
   }
 
 
   public List<User> getUsers() {
     return users;
+  }
+
+
+  public List<User> getUsersByRole(long roleID) {
+    Set<User> usersRolesSet = new HashSet();
+    List<User> usersRoles = new ArrayList<>();
+
+    List<UserRole> userRolesBD = userRoleManager.getUserRolesByRoleId(roleID);
+
+    for (UserRole userRole : userRolesBD) {
+      if (this.users.contains(userRole.getUser())) {
+        usersRolesSet.add(userRole.getUser());
+      }
+    }
+
+    usersRoles.addAll(usersRolesSet);
+    return usersRoles;
   }
 
 
@@ -82,10 +110,11 @@ public class CrpUsersAction extends BaseAction {
       phasesProjects.add(projectManager.getProjectById(projectPhase.getProject().getId()));
     }
     users = new ArrayList<User>();
-    List<Role> roles = roleManager.findAll().stream()
+
+    this.rolesCrp = roleManager.findAll().stream()
       .filter(c -> c.getCrp().getId().longValue() == this.getCrpID().longValue()).collect(Collectors.toList());
 
-    for (Role role : roles) {
+    for (Role role : rolesCrp) {
       if (role.getAcronym().equals("PL") || role.getAcronym().equals("PC")) {
 
         for (UserRole userRole : role.getUserRoles()) {
@@ -109,6 +138,11 @@ public class CrpUsersAction extends BaseAction {
     userSet.addAll(users);
     users.clear();
     users.addAll(userSet);
+  }
+
+
+  public void setRolesCrp(List<Role> rolesCrp) {
+    this.rolesCrp = rolesCrp;
   }
 
 
