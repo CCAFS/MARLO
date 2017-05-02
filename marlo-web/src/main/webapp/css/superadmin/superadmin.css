@@ -117,3 +117,9 @@ table#marloUsersTable i {
 table#marloUsersTable tr {
   cursor:pointer;
 }
+
+.locElementType {
+    width: 49%;
+    margin-left: 1%;
+    float: left;
+}
