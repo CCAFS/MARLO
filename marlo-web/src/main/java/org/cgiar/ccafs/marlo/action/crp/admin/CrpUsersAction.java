@@ -23,6 +23,10 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectPhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
+import org.cgiar.ccafs.marlo.data.model.CrpClusterActivityLeader;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
+import org.cgiar.ccafs.marlo.data.model.CrpSitesLeader;
+import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
@@ -74,6 +78,61 @@ public class CrpUsersAction extends BaseAction {
   }
 
 
+  public String getRelations(long userID, long roleID) {
+
+    User user = userManager.getUser(userID);
+    Role role = roleManager.getRoleById(roleID);
+    List<Object> relations = new ArrayList<>();
+    switch (role.getAcronym()) {
+      case "FPL":
+      case "FPM":
+      case "RPL":
+      case "RPM":
+        for (CrpProgramLeader crpProgramsLeader : user.getCrpProgramLeaders().stream().filter(c -> c.isActive())
+          .collect(Collectors.toList())) {
+          relations.add(crpProgramsLeader.getCrpProgram().getAcronym());
+        }
+        break;
+
+      case "ML":
+      case "CP":
+        for (LiaisonUser liaisonUser : user.getLiasonsUsers().stream().filter(c -> c.isActive())
+          .collect(Collectors.toList())) {
+          relations.add(liaisonUser.getLiaisonInstitution().getAcronym());
+        }
+        break;
+      case "PL":
+      case "PC":
+        for (ProjectPartnerPerson projectPartnerPerson : user.getProjectPartnerPersons().stream()
+          .filter(c -> c.isActive()).collect(Collectors.toList())) {
+          relations.add(projectPartnerPerson.getProjectPartner().getProject()
+            .getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER));
+        }
+        break;
+
+      case "CL":
+        for (CrpClusterActivityLeader crpClusterActivityLeader : user.getCrpClusterActivityLeaders().stream()
+          .filter(c -> c.isActive()).collect(Collectors.toList())) {
+          relations.add(crpClusterActivityLeader.getCrpClusterOfActivity().getIdentifier());
+        }
+        break;
+
+      case "SL":
+        for (CrpSitesLeader crpSitesLeader : user.getCrpSitesLeaders().stream().filter(c -> c.isActive())
+          .collect(Collectors.toList())) {
+          relations.add(crpSitesLeader.getCrpsSiteIntegration().getLocElement().getName());
+        }
+        break;
+
+    }
+    if (relations.isEmpty()) {
+      return relations.toString();
+    }
+
+    return null;
+  }
+
+
   public List<Role> getRolesCrp() {
     return rolesCrp;
   }
@@ -99,7 +158,6 @@ public class CrpUsersAction extends BaseAction {
     usersRoles.addAll(usersRolesSet);
     return usersRoles;
   }
-
 
   @Override
   public void prepare() throws Exception {
