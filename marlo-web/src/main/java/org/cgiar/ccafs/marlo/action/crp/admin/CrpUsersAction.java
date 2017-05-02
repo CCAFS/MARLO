@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpSitesLeader;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
@@ -48,10 +49,10 @@ public class CrpUsersAction extends BaseAction {
 
   private static final long serialVersionUID = 4072844056573550689L;
 
-
+  private Phase phase;
   private UserManager userManager;
   private ProjectManager projectManager;
-
+  private List<Project> phasesProjects;
 
   private PhaseManager phaseManager;
   private RoleManager roleManager;
@@ -60,7 +61,7 @@ public class CrpUsersAction extends BaseAction {
 
   private ProjectPhaseManager projectPhaseManager;
 
-  private List<User> users;
+  private List<UserRole> users;
   private List<Role> rolesCrp;
 
 
@@ -85,10 +86,41 @@ public class CrpUsersAction extends BaseAction {
     List<Object> relations = new ArrayList<>();
     switch (role.getAcronym()) {
       case "FPL":
+
+
+        for (CrpProgramLeader crpProgramsLeader : user.getCrpProgramLeaders().stream()
+          .filter(c -> c.isActive()
+            && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && !c.isManager())
+          .collect(Collectors.toList())) {
+          relations.add(crpProgramsLeader.getCrpProgram().getAcronym());
+        }
+        break;
+
       case "FPM":
+
+
+        for (CrpProgramLeader crpProgramsLeader : user.getCrpProgramLeaders().stream()
+          .filter(c -> c.isActive()
+            && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isManager())
+          .collect(Collectors.toList())) {
+          relations.add(crpProgramsLeader.getCrpProgram().getAcronym());
+        }
+        break;
+
+
       case "RPL":
+        for (CrpProgramLeader crpProgramsLeader : user.getCrpProgramLeaders().stream()
+          .filter(c -> c.isActive()
+            && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue() && !c.isManager())
+          .collect(Collectors.toList())) {
+          relations.add(crpProgramsLeader.getCrpProgram().getAcronym());
+        }
+        break;
+
       case "RPM":
-        for (CrpProgramLeader crpProgramsLeader : user.getCrpProgramLeaders().stream().filter(c -> c.isActive())
+        for (CrpProgramLeader crpProgramsLeader : user.getCrpProgramLeaders().stream()
+          .filter(c -> c.isActive()
+            && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue() && c.isManager())
           .collect(Collectors.toList())) {
           relations.add(crpProgramsLeader.getCrpProgram().getAcronym());
         }
@@ -96,20 +128,31 @@ public class CrpUsersAction extends BaseAction {
 
       case "ML":
       case "CP":
-        for (LiaisonUser liaisonUser : user.getLiasonsUsers().stream().filter(c -> c.isActive())
-          .collect(Collectors.toList())) {
+        for (LiaisonUser liaisonUser : user.getLiasonsUsers().stream()
+          .filter(c -> c.isActive() && c.getLiaisonInstitution().isActive()).collect(Collectors.toList())) {
           relations.add(liaisonUser.getLiaisonInstitution().getAcronym());
         }
         break;
       case "PL":
-      case "PC":
+
         for (ProjectPartnerPerson projectPartnerPerson : user.getProjectPartnerPersons().stream()
-          .filter(c -> c.isActive()).collect(Collectors.toList())) {
+          .filter(c -> c.isActive() && c.getProjectPartner().isActive() && c.getContactType().equalsIgnoreCase("PL")
+            && phasesProjects.contains(c.getProjectPartners().getProject()))
+          .collect(Collectors.toList())) {
           relations.add(projectPartnerPerson.getProjectPartner().getProject()
             .getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER));
         }
         break;
+      case "PC":
 
+        for (ProjectPartnerPerson projectPartnerPerson : user.getProjectPartnerPersons().stream()
+          .filter(c -> c.isActive() && c.getProjectPartner().isActive() && c.getContactType().equalsIgnoreCase("PC")
+            && phasesProjects.contains(c.getProjectPartners().getProject()))
+          .collect(Collectors.toList())) {
+          relations.add(projectPartnerPerson.getProjectPartner().getProject()
+            .getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER));
+        }
+        break;
       case "CL":
         for (CrpClusterActivityLeader crpClusterActivityLeader : user.getCrpClusterActivityLeaders().stream()
           .filter(c -> c.isActive()).collect(Collectors.toList())) {
@@ -125,7 +168,7 @@ public class CrpUsersAction extends BaseAction {
         break;
 
     }
-    if (relations.isEmpty()) {
+    if (!relations.isEmpty()) {
       return relations.toString();
     }
 
@@ -138,7 +181,7 @@ public class CrpUsersAction extends BaseAction {
   }
 
 
-  public List<User> getUsers() {
+  public List<UserRole> getUsers() {
     return users;
   }
 
@@ -150,7 +193,7 @@ public class CrpUsersAction extends BaseAction {
     List<UserRole> userRolesBD = userRoleManager.getUserRolesByRoleId(roleID);
 
     for (UserRole userRole : userRolesBD) {
-      if (this.users.contains(userRole.getUser())) {
+      if (this.users.contains(userRole)) {
         usersRolesSet.add(userRole.getUser());
       }
     }
@@ -162,12 +205,12 @@ public class CrpUsersAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
 
-    Phase phase = phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), this.getCrpID());
-    List<Project> phasesProjects = new ArrayList<Project>();
+    phase = phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), this.getCrpID());
+    phasesProjects = new ArrayList<Project>();
     for (ProjectPhase projectPhase : phase.getProjectPhases()) {
       phasesProjects.add(projectManager.getProjectById(projectPhase.getProject().getId()));
     }
-    users = new ArrayList<User>();
+    users = new ArrayList<UserRole>();
 
     this.rolesCrp = roleManager.findAll().stream()
       .filter(c -> c.getCrp().getId().longValue() == this.getCrpID().longValue()).collect(Collectors.toList());
@@ -177,21 +220,25 @@ public class CrpUsersAction extends BaseAction {
 
         for (UserRole userRole : role.getUserRoles()) {
           User user = userRole.getUser();
+
+
           for (ProjectPartnerPerson projectPartnerPerson : user.getProjectPartnerPersons().stream()
-            .filter(c -> c.getContactType().equals(role.getAcronym()) && c.isActive()).collect(Collectors.toList())) {
+            .filter(
+              c -> c.getContactType().equals(role.getAcronym()) && c.getProjectPartner().isActive() && c.isActive())
+            .collect(Collectors.toList())) {
             if (phasesProjects.contains(projectPartnerPerson.getProjectPartner().getProject())) {
-              users.add(userManager.getUser(user.getId()));
+              users.add(userRole);
             }
           }
         }
       } else {
         for (UserRole userRole : role.getUserRoles()) {
-          users.add(userManager.getUser(userRole.getUser().getId()));
+          users.add(userRole);
         }
       }
 
     }
-    Set<User> userSet = new HashSet<>();
+    Set<UserRole> userSet = new HashSet<>();
 
     userSet.addAll(users);
     users.clear();
@@ -204,7 +251,7 @@ public class CrpUsersAction extends BaseAction {
   }
 
 
-  public void setUsers(List<User> users) {
+  public void setUsers(List<UserRole> users) {
     this.users = users;
   }
 
