@@ -61,8 +61,10 @@
                       <tr>
                           <th>ID</th>
                           <th>Name</th>
-                          <th>Username</th>
-                          <th></th>
+                          [#--  <th>Username</th> --]
+                          [#if (action.hasRelations(role.acronym))??]
+                          <th>${action.hasRelations(role.acronym)}</th>
+                          [/#if]
                           <th>Email</th>
                           <th>Active</th>
                           <th>Last Login</th>
@@ -73,8 +75,10 @@
                       <tr>
                         <td>${user.id}</td>
                         <td>${(user.composedCompleteName)!}</td>
-                        <td>${(user.username)!'<i>No Username</i>'}</td>
+                        [#-- <td>${(user.username)!'<i>No Username</i>'}</td> --]
+                        [#if (action.hasRelations(role.acronym))??]
                         <td>${(action.getRelations(user.id, role.id))!}</td>
+                        [/#if]
                         <td>${(user.email)!}</td>
                         <td><div class="text-center" alt="${user.active?string}"><img src="${baseUrl}/images/global/checked-${user.active?string}.png" /></div></td>
                         <td>${(user.lastLogin)!'<i>Never Entered</i>'}</td>
