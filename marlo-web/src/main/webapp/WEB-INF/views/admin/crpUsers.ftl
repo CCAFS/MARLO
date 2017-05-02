@@ -62,6 +62,7 @@
                           <th>ID</th>
                           <th>Name</th>
                           <th>Username</th>
+                          <th></th>
                           <th>Email</th>
                           <th>Active</th>
                           <th>Last Login</th>
@@ -73,6 +74,7 @@
                         <td>${user.id}</td>
                         <td>${(user.composedCompleteName)!}</td>
                         <td>${(user.username)!'<i>No Username</i>'}</td>
+                        <td>${(action.getRelations(user.id, role.id))!}</td>
                         <td>${(user.email)!}</td>
                         <td><div class="text-center"><img src="${baseUrl}/images/global/checked-${user.active?string}.png" alt="${user.active?string}" /></div></td>
                         <td>${(user.lastLogin)!'<i>Never Entered</i>'}</td>
