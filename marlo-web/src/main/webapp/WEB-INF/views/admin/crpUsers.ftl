@@ -42,40 +42,46 @@
           <!-- Nav tabs -->
           <ul class="nav nav-tabs" role="tablist">
             [#list rolesCrp as role]
-              <li role="" class="[#if role?is_first]active[/#if]"><a href="#role-${role.id}" aria-controls="home" role="tab" data-toggle="tab">${role.acronym}</a></li>
+              [#assign usersList = (action.getUsersByRole(role.id))![] /]
+              [#if usersList?has_content]
+                <li role="" class="[#if role?is_first]active[/#if]"><a href="#role-${role.id}" aria-controls="home" role="tab" data-toggle="tab">${role.acronym}</a></li>
+              [/#if]
             [/#list]
           </ul>
         
           <!-- Tab panes -->
           <div class="tab-content">
             [#list rolesCrp as role]
-              <div role="tabpanel" class="tab-pane [#if role?is_first]active[/#if]" id="role-${role.id}">
-                <h4>${role.description}</h4>
-                <table class="display table table-striped table-hover usersTable" width="100%">
-                  <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Username</th>
-                        <th>Email</th>
-                        <th>Active</th>
-                        <th>Last Login</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    [#list action.getUsersByRole(role.id) as user]
-                    <tr>
-                      <td>${user.id}</td>
-                      <td>${(user.composedCompleteName)!}</td>
-                      <td>${(user.username)!}</td>
-                      <td>${(user.email)!}</td>
-                      <td><div class="text-center"><img src="${baseUrl}/images/global/checked-${user.active?string}.png" alt="${user.active?string}" /></div></td>
-                      <td>${(user.lastLogin)!}</td>
-                    </tr>
-                    [/#list]
-                  </tbody>
-                </table>
-              </div>
+              [#assign usersList = (action.getUsersByRole(role.id))![] /]
+              [#if usersList?has_content]
+                <div role="tabpanel" class="tab-pane [#if role?is_first]active[/#if]" id="role-${role.id}">
+                  <h4 class="sectionSubTitle ">${role.description}'s</h4>
+                  <table class="display table table-striped table-hover usersTable" width="100%">
+                    <thead>
+                      <tr>
+                          <th>ID</th>
+                          <th>Name</th>
+                          <th>Username</th>
+                          <th>Email</th>
+                          <th>Active</th>
+                          <th>Last Login</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      [#list usersList as user]
+                      <tr>
+                        <td>${user.id}</td>
+                        <td>${(user.composedCompleteName)!}</td>
+                        <td>${(user.username)!'<i>No Username</i>'}</td>
+                        <td>${(user.email)!}</td>
+                        <td><div class="text-center"><img src="${baseUrl}/images/global/checked-${user.active?string}.png" alt="${user.active?string}" /></div></td>
+                        <td>${(user.lastLogin)!'<i>Never Entered</i>'}</td>
+                      </tr>
+                      [/#list]
+                    </tbody>
+                  </table>
+                </div>
+              [/#if]
             [/#list]
           </div>
         </div>

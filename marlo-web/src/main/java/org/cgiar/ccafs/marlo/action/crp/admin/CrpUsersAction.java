@@ -85,16 +85,18 @@ public class CrpUsersAction extends BaseAction {
 
 
   public List<User> getUsersByRole(long roleID) {
+    Set<User> usersRolesSet = new HashSet();
     List<User> usersRoles = new ArrayList<>();
 
     List<UserRole> userRolesBD = userRoleManager.getUserRolesByRoleId(roleID);
 
     for (UserRole userRole : userRolesBD) {
       if (this.users.contains(userRole.getUser())) {
-        usersRoles.add(userRole.getUser());
+        usersRolesSet.add(userRole.getUser());
       }
     }
 
+    usersRoles.addAll(usersRolesSet);
     return usersRoles;
   }
 

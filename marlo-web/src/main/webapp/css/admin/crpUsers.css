@@ -37,3 +37,18 @@ ul.nav.nav-tabs>li.active {
 ul.nav.nav-tabs>li>a:hover {
     border-color: #eee #eee #fff;
 }
+
+.usersTable {
+    font-size: 0.95em;
+}
+
+a.dt-button {
+    padding: 0px 10px;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    margin-right: 3px;
+}
+
+td i {
+    color: #ccc;
+}
