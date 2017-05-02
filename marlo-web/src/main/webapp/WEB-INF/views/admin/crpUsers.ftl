@@ -84,7 +84,7 @@
               [/#if]
             [/#list]
           </div>
-        </div>
+        </div> 
         
         [@s.form action=actionName enctype="multipart/form-data" ]  
         [/@s.form]
