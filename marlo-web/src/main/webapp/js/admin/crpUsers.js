@@ -6,9 +6,6 @@ function init() {
   $('.usersTable').DataTable({
       dom: 'Bfrtip',
       buttons: [
-          'copy', 'csv'
-      ],
-      buttons: [
           {
               extend: 'copy',
               title: 'Data export'
@@ -29,5 +26,5 @@ function attachEvents() {
 
 function getDateString() {
   var today = new Date();
-  return today.toISOString();
+  return today.toISOString().split('T')[0];
 }
