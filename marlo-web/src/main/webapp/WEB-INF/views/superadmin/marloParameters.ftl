@@ -124,7 +124,7 @@
         <input type="hidden" name="${customName}.description" value="${(element.description)!}" />
         <input type="hidden" name="${customName}.key" value="${(element.key)!}" />
         <input type="hidden" name="${customName}.type" value="${(element.type)!}" />
-        <strong>${(element.description)!} </strong> <br /> <small><i>(${(element.key)!})</i></small>
+        <strong>${(element.key)!} </strong> <br /> <small><i>(${(element.description)!})</i></small>
       [/#if]
     </td>
     <td>
@@ -152,11 +152,6 @@
       [#else]
         [@customForm.input name="${customName}.value" placeholder="Value" showTitle=false /]
       [/#if]
-    </td>
-    <td>
-      <div style="position:relative">
-        <div class="removeParameter removeIcon" title="Remove"></div>
-      </div>
     </td>
   </tr>
 [/#macro]
