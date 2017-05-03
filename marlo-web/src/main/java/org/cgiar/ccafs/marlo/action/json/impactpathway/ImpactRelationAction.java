@@ -40,6 +40,8 @@ import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -517,6 +519,13 @@ public class ImpactRelationAction extends BaseAction {
         break;
     }
 
+    Collections.sort(relations, new Comparator<HashMap<String, Object>>() {
+
+      @Override
+      public int compare(HashMap<String, Object> one, HashMap<String, Object> two) {
+        return one.get("id").toString().compareTo(two.get("id").toString());
+      }
+    });
     return SUCCESS;
 
 
