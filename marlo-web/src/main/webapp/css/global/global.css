@@ -229,8 +229,8 @@ div.disabled {/* Required for IE 5, 6, 7 */
 }
 
 .fieldset {
-  padding: 0px 13px;
-  margin: 13px 0px;
+  padding: 0px 10px;
+  margin: 6px 0px;
   border: 1px dotted #5f96c5;
   border-radius: 10px 0px;
 }
