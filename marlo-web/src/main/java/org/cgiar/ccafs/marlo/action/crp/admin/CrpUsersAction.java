@@ -257,8 +257,9 @@ public class CrpUsersAction extends BaseAction {
     }
     users = new ArrayList<UserRole>();
 
-    this.rolesCrp = roleManager.findAll().stream()
-      .filter(c -> c.getCrp().getId().longValue() == this.getCrpID().longValue() && c.getId().longValue() != 17)
+    this.rolesCrp = roleManager
+      .findAll().stream().filter(c -> !c.getUserRoles().isEmpty()
+        && c.getCrp().getId().longValue() == this.getCrpID().longValue() && c.getId().longValue() != 17)
       .collect(Collectors.toList());
     rolesCrp.sort((p1, p2) -> p1.getOrder().compareTo(p2.getOrder()));
     for (Role role : rolesCrp) {
