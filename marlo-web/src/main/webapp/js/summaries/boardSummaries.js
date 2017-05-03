@@ -124,7 +124,8 @@ function ajaxService() {
       url: baseURL + "/projectList.do?",
       type: 'GET',
       data: {
-        cycle: $("input[name='cycle']:checked").val()
+          cycle: $("input[name='cycle']:checked").val(),
+          year: $("select#reportYears").find("option:selected").val()
       },
       success: function(m) {
         console.log(m);

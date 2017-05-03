@@ -10,7 +10,7 @@ select pp.id,GROUP_CONCAT(
       u.last_name,
       ': ',
       ppp.responsibilities
-    ) SEPARATOR "\r\n"
+    ) SEPARATOR "\r\n\r\n"
   )'responsabilities'
 from 
   project_partners pp

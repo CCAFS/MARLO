@@ -20,17 +20,19 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
-import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.ByteArrayInputStream;
@@ -91,6 +93,8 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
   private String cycle;
   private long startTime;
 
+  private PhaseManager phaseManager;
+
   // Store total projects
   Integer totalProjects = 0;
   // Store parters budgets HashMap<Institution, List<w1w2,w3bilateralcenter>>
@@ -114,13 +118,14 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
 
   @Inject
   public BudgetPerPartnersSummaryAction(APConfig config, CrpManager crpManager,
-    ProjectBudgetManager projectBudgetManager, CrpProgramManager programManager,
-    InstitutionManager institutionManager) {
+    ProjectBudgetManager projectBudgetManager, CrpProgramManager programManager, InstitutionManager institutionManager,
+    PhaseManager phaseManager) {
     super(config);
     this.crpManager = crpManager;
     this.projectBudgetManager = projectBudgetManager;
     this.programManager = programManager;
     this.institutionManager = institutionManager;
+    this.phaseManager = phaseManager;
   }
 
 
@@ -273,10 +278,12 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
         Double.class, Double.class, Double.class},
       0);
 
-    for (Project project : this.loggedCrp.getProjects().stream()
-      .filter(p -> p.isActive() && p.getStatus() != null
-        && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
-      .collect(Collectors.toList())) {
+    List<Project> projects = new ArrayList<>();
+    Phase phase = phaseManager.findCycle(APConstants.PLANNING, year, loggedCrp.getId().longValue());
+    for (ProjectPhase projectPhase : phase.getProjectPhases()) {
+      projects.add((projectPhase.getProject()));
+    }
+    for (Project project : projects) {
       // Get PPA institutions with budgets
       List<Institution> institutionsList = new ArrayList<>();
 

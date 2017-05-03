@@ -1,0 +1,54 @@
+/*Tabs*/
+
+.tab-content {
+    border: 1px solid #d1d1d1;
+    padding: 10px 2em;
+    border-radius: 0px 4px 4px 4px;
+}
+
+ul.nav.nav-tabs {
+    border: 0;
+}
+
+ul.nav.nav-tabs li a{
+    background-color: #f5f5f5;
+    line-height: 1em;
+    padding: 10px 10px;
+    height: 34px;
+}
+
+ul.nav.nav-tabs>li.active>a, 
+ul.nav.nav-tabs>li.active>a:focus, 
+ul.nav.nav-tabs>li.active>a:hover {
+    background-color: #fff;
+    line-height: 1em;
+}
+
+ul.nav.nav-tabs>li {
+    /* border-bottom: 1px solid #dddddd; */
+    margin-bottom: -1px;
+}
+
+ul.nav.nav-tabs>li.active {
+    border-bottom: 1px solid #fff;
+    z-index: 10;
+}
+
+ul.nav.nav-tabs>li>a:hover {
+    border-color: #eee #eee #fff;
+}
+
+.usersTable {
+    font-size: 0.95em;
+}
+
+a.dt-button {
+    padding: 0px 10px;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    margin-right: 3px;
+}
+
+td i {
+    color: #ccc;
+}

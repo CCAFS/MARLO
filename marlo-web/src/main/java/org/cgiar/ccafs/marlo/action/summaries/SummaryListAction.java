@@ -19,13 +19,15 @@ package org.cgiar.ccafs.marlo.action.summaries;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
-import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 
@@ -42,11 +44,13 @@ public class SummaryListAction extends BaseAction {
 
 
   private CrpManager crpManager;
+  private PhaseManager phaseManager;
 
   @Inject
-  public SummaryListAction(APConfig config, CrpManager crpManager) {
+  public SummaryListAction(APConfig config, PhaseManager phaseManager, CrpManager crpManager) {
     super(config);
     this.crpManager = crpManager;
+    this.phaseManager = phaseManager;
   }
 
   public List<Project> getAllProjects() {
@@ -58,17 +62,11 @@ public class SummaryListAction extends BaseAction {
   public void prepare() throws Exception {
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
-
-
-    if (!this.isReportingActive()) {
-      allProjects = loggedCrp.getProjects().stream()
-        .filter(p -> p.isActive() && p.getStatus() != null
-          && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
-        .collect(Collectors.toList());
-    } else {
-      allProjects = loggedCrp.getProjects().stream()
-        .filter(p -> p.isActive() && p.getReporting() != null && p.getReporting().booleanValue())
-        .collect(Collectors.toList());
+    allProjects = new ArrayList<Project>();
+    Phase phase =
+      phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), loggedCrp.getId().longValue());
+    for (ProjectPhase projectPhase : phase.getProjectPhases()) {
+      allProjects.add((projectPhase.getProject()));
     }
 
 
