@@ -111,6 +111,8 @@ public class ImpactRelationAction extends BaseAction {
     dataProgram.put("description", crpProgram.getName());
     dataProgram.put("color", crpProgram.getColor());
     dataProgram.put("type", "F");
+    dataProgram.put("order", new Integer(4));
+
     relations.add(dataProgram);
     int i = 1;
     for (CrpProgramOutcome crpProgramOutcome : crpProgram.getCrpProgramOutcomes().stream().filter(c -> c.isActive())
@@ -126,6 +128,7 @@ public class ImpactRelationAction extends BaseAction {
         datacrpProgramOutcome.put("color", crpProgramOutcome.getCrpProgram().getColor());
 
         datacrpProgramOutcome.put("type", "O");
+        datacrpProgramOutcome.put("order", new Integer(5));
         relations.add(datacrpProgramOutcome);
 
         Set<SrfSubIdo> subIdos = new HashSet<>();
@@ -143,18 +146,25 @@ public class ImpactRelationAction extends BaseAction {
             dataDetaiSubIDO.put("description", crpOutcomeSubIdo.getSrfSubIdo().getDescription());
 
             dataDetaiSubIDO.put("type", "SD");
+            dataDetaiSubIDO.put("order", new Integer(3));
 
-            relations.add(dataDetaiSubIDO);
+            if (relations.stream().filter(c -> c.get("id").equals(dataDetaiSubIDO.get("id")))
+              .collect(Collectors.toList()).isEmpty()) {
+              relations.add(dataDetaiSubIDO);
+            }
 
 
             HashMap<String, Object> dataDetaiSIDO = new HashMap<>();
             dataDetaiSIDO.put("id", "IDO" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
             dataDetaiSIDO.put("label", "IDO #" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
             dataDetaiSIDO.put("description", crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getDescription());
-
+            dataDetaiSIDO.put("order", new Integer(2));
             dataDetaiSIDO.put("type", "IDO");
 
-            relations.add(dataDetaiSIDO);
+            if (relations.stream().filter(c -> c.get("id").equals(dataDetaiSIDO.get("id"))).collect(Collectors.toList())
+              .isEmpty()) {
+              relations.add(dataDetaiSIDO);
+            }
 
 
             for (SrfSloIdo srfSloIdo : crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getSrfSloIdos()) {
@@ -163,7 +173,7 @@ public class ImpactRelationAction extends BaseAction {
               dataDetaiSlo.put("id", "SLO" + srfSloIdo.getSrfSlo().getId());
               dataDetaiSlo.put("label", "SLO #" + srfSloIdo.getSrfSlo().getId());
               dataDetaiSlo.put("description", srfSloIdo.getSrfSlo().getDescription());
-
+              dataDetaiSlo.put("order", new Integer(1));
               dataDetaiSlo.put("type", "SLO");
 
 
@@ -190,7 +200,7 @@ public class ImpactRelationAction extends BaseAction {
             dataDetailKeyOutput.put("description", crpClusterKeyOutput.getCrpClusterKeyOutput().getKeyOutput());
             dataDetailKeyOutput.put("color", crpClusterKeyOutput.getCrpProgramOutcome().getCrpProgram().getColor());
             dataDetailKeyOutput.put("type", "KO");
-
+            dataDetailKeyOutput.put("order", new Integer(7));
 
             relations.add(dataDetailKeyOutput);
             activities.add(crpClusterKeyOutput.getCrpClusterKeyOutput().getCrpClusterOfActivity());
@@ -204,6 +214,8 @@ public class ImpactRelationAction extends BaseAction {
             dataDetailOutcome.put("description", crpClusterOfActivity.getComposedName());
             dataDetailOutcome.put("color", "#c0c0c0");
             dataDetailOutcome.put("type", "CoA");
+            dataDetailOutcome.put("order", new Integer(6));
+
             relations.add(dataDetailOutcome);
           }
 
@@ -225,6 +237,7 @@ public class ImpactRelationAction extends BaseAction {
         dataDetailOutcome.put("description", crpClusterOfActivity.getComposedName());
         dataDetailOutcome.put("color", "#c0c0c0");
         dataDetailOutcome.put("type", "CoA");
+        dataDetailOutcome.put("order", new Integer(6));
 
 
         relations.add(dataDetailOutcome);
@@ -238,6 +251,8 @@ public class ImpactRelationAction extends BaseAction {
           dataDetailKeyOutput.put("description", keyOutput.getKeyOutput());
           dataDetailKeyOutput.put("color", crpClusterOfActivity.getCrpProgram().getColor());
           dataDetailKeyOutput.put("type", "KO");
+          dataDetailKeyOutput.put("order", new Integer(7));
+
           j++;
 
           relations.add(dataDetailKeyOutput);
@@ -259,6 +274,7 @@ public class ImpactRelationAction extends BaseAction {
     dataProgram.put("description", crpProgram.getName());
     dataProgram.put("color", crpProgram.getColor());
     dataProgram.put("type", "F");
+    dataProgram.put("order", new Integer(4));
     relations.add(dataProgram);
     int i = 1;
 
@@ -279,6 +295,7 @@ public class ImpactRelationAction extends BaseAction {
         dataDetailOutcome.put("color", "#c0c0c0");
         dataDetailOutcome.put("type", "CoA");
 
+        dataDetailOutcome.put("order", new Integer(6));
 
         relations.add(dataDetailOutcome);
 
@@ -297,6 +314,8 @@ public class ImpactRelationAction extends BaseAction {
             dataDetailKeyOutput.put("description", keyOutput.getKeyOutput());
             dataDetailKeyOutput.put("color", crpClusterOfActivity.getCrpProgram().getColor());
             dataDetailKeyOutput.put("type", "KO");
+            dataDetailKeyOutput.put("order", new Integer(7));
+
             j++;
 
             relations.add(dataDetailKeyOutput);
@@ -310,6 +329,7 @@ public class ImpactRelationAction extends BaseAction {
               datacrpProgramOutcome.put("label", "Outcome #" + i);
               datacrpProgramOutcome.put("description", crpProgramOutcome.getDescription());
               datacrpProgramOutcome.put("color", crpProgramOutcome.getCrpProgram().getColor());
+              datacrpProgramOutcome.put("order", new Integer(5));
 
               datacrpProgramOutcome.put("type", "O");
 
@@ -332,10 +352,13 @@ public class ImpactRelationAction extends BaseAction {
                   dataDetaiSubIDO.put("id", "SD" + crpOutcomeSubIdo.getSrfSubIdo().getId());
                   dataDetaiSubIDO.put("label", "SubIDO #" + crpOutcomeSubIdo.getSrfSubIdo().getId());
                   dataDetaiSubIDO.put("description", crpOutcomeSubIdo.getSrfSubIdo().getDescription());
+                  dataDetaiSubIDO.put("order", new Integer(3));
 
                   dataDetaiSubIDO.put("type", "SD");
-
-                  relations.add(dataDetaiSubIDO);
+                  if (relations.stream().filter(c -> c.get("id").equals(dataDetaiSubIDO.get("id")))
+                    .collect(Collectors.toList()).isEmpty()) {
+                    relations.add(dataDetaiSubIDO);
+                  }
 
 
                   HashMap<String, Object> dataDetaiSIDO = new HashMap<>();
@@ -344,8 +367,12 @@ public class ImpactRelationAction extends BaseAction {
                   dataDetaiSIDO.put("description", crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getDescription());
 
                   dataDetaiSIDO.put("type", "IDO");
+                  dataDetaiSIDO.put("order", new Integer(2));
 
-                  relations.add(dataDetaiSIDO);
+                  if (relations.stream().filter(c -> c.get("id").equals(dataDetaiSIDO.get("id")))
+                    .collect(Collectors.toList()).isEmpty()) {
+                    relations.add(dataDetaiSIDO);
+                  }
 
 
                   for (SrfSloIdo srfSloIdo : crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getSrfSloIdos()) {
@@ -354,15 +381,20 @@ public class ImpactRelationAction extends BaseAction {
                     dataDetaiSlo.put("id", "SLO" + srfSloIdo.getSrfSlo().getId());
                     dataDetaiSlo.put("label", "SLO #" + srfSloIdo.getSrfSlo().getId());
                     dataDetaiSlo.put("description", srfSloIdo.getSrfSlo().getDescription());
+                    dataDetaiSlo.put("order", new Integer(1));
 
                     dataDetaiSlo.put("type", "SLO");
 
-                    relations.add(dataDetaiSlo);
+                    if (relations.stream().filter(c -> c.get("id").equals(dataDetaiSlo.get("id")))
+                      .collect(Collectors.toList()).isEmpty()) {
+                      relations.add(dataDetaiSlo);
+                    }
 
 
                   }
                 }
               }
+              i++;
             }
           }
         }
@@ -531,7 +563,7 @@ public class ImpactRelationAction extends BaseAction {
 
       @Override
       public int compare(HashMap<String, Object> one, HashMap<String, Object> two) {
-        return one.get("id").toString().compareTo(two.get("id").toString());
+        return one.get("order").toString().compareTo(two.get("order").toString());
       }
     });
     return SUCCESS;
