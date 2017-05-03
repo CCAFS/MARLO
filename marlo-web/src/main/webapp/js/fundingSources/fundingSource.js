@@ -1,8 +1,6 @@
 $(document).ready(init);
 
 function init() {
-
-  
   
   
   // Popup
