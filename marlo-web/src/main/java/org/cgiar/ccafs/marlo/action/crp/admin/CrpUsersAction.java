@@ -127,9 +127,17 @@ public class CrpUsersAction extends BaseAction {
         break;
 
       case "ML":
-      case "CP":
+
         for (LiaisonUser liaisonUser : user.getLiasonsUsers().stream()
           .filter(c -> c.isActive() && c.getLiaisonInstitution().isActive()).collect(Collectors.toList())) {
+          relations.add(liaisonUser.getLiaisonInstitution().getAcronym());
+        }
+        break;
+      case "CP":
+
+        for (LiaisonUser liaisonUser : user.getLiasonsUsers().stream().filter(c -> c.isActive()
+          && c.getLiaisonInstitution().isActive() && c.getLiaisonInstitution().getCrpProgram() == null)
+          .collect(Collectors.toList())) {
           relations.add(liaisonUser.getLiaisonInstitution().getAcronym());
         }
         break;
@@ -155,7 +163,7 @@ public class CrpUsersAction extends BaseAction {
         break;
       case "CL":
         for (CrpClusterActivityLeader crpClusterActivityLeader : user.getCrpClusterActivityLeaders().stream()
-          .filter(c -> c.isActive()).collect(Collectors.toList())) {
+          .filter(c -> c.isActive() && c.getCrpClusterOfActivity().isActive()).collect(Collectors.toList())) {
           relations.add(crpClusterActivityLeader.getCrpClusterOfActivity().getIdentifier());
         }
         break;
@@ -163,7 +171,7 @@ public class CrpUsersAction extends BaseAction {
       case "SL":
         for (CrpSitesLeader crpSitesLeader : user.getCrpSitesLeaders().stream().filter(c -> c.isActive())
           .collect(Collectors.toList())) {
-          relations.add(crpSitesLeader.getCrpsSiteIntegration().getLocElement().getName());
+          relations.add(crpSitesLeader.getCrpsSiteIntegration().getLocElement().getIsoAlpha2());
         }
         break;
 
@@ -194,7 +202,17 @@ public class CrpUsersAction extends BaseAction {
 
     for (UserRole userRole : userRolesBD) {
       if (this.users.contains(userRole)) {
-        usersRolesSet.add(userRole.getUser());
+
+        if (this.hasRelations(userRole.getRole().getAcronym()) != null) {
+          if (!this.getRelations(userRole.getUser().getId().longValue(), userRole.getRole().getId().longValue())
+            .isEmpty()) {
+            usersRolesSet.add(userRole.getUser());
+          }
+        } else {
+          usersRolesSet.add(userRole.getUser());
+        }
+
+
       }
     }
 
