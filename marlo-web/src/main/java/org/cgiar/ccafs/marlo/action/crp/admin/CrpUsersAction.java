@@ -203,19 +203,23 @@ public class CrpUsersAction extends BaseAction {
     List<UserRole> userRolesBD = userRoleManager.getUserRolesByRoleId(roleID);
 
     for (UserRole userRole : userRolesBD) {
-      if (this.users.contains(userRole)) {
 
-        if (this.hasRelations(userRole.getRole().getAcronym()) != null) {
-          if (!this.getRelations(userRole.getUser().getId().longValue(), userRole.getRole().getId().longValue())
-            .isEmpty()) {
+      if (userRole.getUser().isActive()) {
+        if (this.users.contains(userRole)) {
+
+          if (this.hasRelations(userRole.getRole().getAcronym()) != null) {
+            if (!this.getRelations(userRole.getUser().getId().longValue(), userRole.getRole().getId().longValue())
+              .isEmpty()) {
+              usersRolesSet.add(userRole.getUser());
+            }
+          } else {
             usersRolesSet.add(userRole.getUser());
           }
-        } else {
-          usersRolesSet.add(userRole.getUser());
+
+
         }
-
-
       }
+
     }
 
     usersRoles.addAll(usersRolesSet);
