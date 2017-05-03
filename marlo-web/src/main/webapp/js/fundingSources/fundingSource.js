@@ -109,6 +109,24 @@ function init() {
     // Cancel Auto Save
     autoSaveActive = false;
   });
+  
+  $(".button-label").on("click", function() {
+    var valueSelected = $(this).hasClass('yes-button-label');
+    var $input = $(this).parent().find('input');
+    $input.val(valueSelected);
+    $(this).parent().find("label").removeClass("radio-checked");
+    $(this).addClass("radio-checked");
+  });
+  
+// Is this deliverable Open Access
+  $(".isRegional .button-label").on("click", function() {
+    var valueSelected = $(this).hasClass('yes-button-label');
+    if(!valueSelected) {
+      $(".regionsBox").hide("slow");
+    } else {
+      $(".regionsBox").show("slow");
+    }
+  });
 }
 
 /**

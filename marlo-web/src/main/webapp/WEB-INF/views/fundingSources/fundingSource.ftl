@@ -131,11 +131,11 @@
       [#-- GLOBAL DIMENSION --]
       <div class="form-group row">
         <div class="col-md-6">[@customForm.yesNoInput  label="Does this Funding Source have a global dimension?" name=""  editable=editable inverse=false  cssClass="" /] </div>
-        <div class="col-md-6">[@customForm.yesNoInput  label="Does this Funding Source have a regional dimension?" name=""  editable=editable inverse=false  cssClass="" /] </div>
+        <div class="col-md-6">[@customForm.yesNoInput  label="Does this Funding Source have a regional dimension?" name=""  editable=editable inverse=false  cssClass="isRegional" /] </div>
       </div>
       
       [#-- REGIONAL DIMENSION --]
-      <div class="form-group row">
+      <div class="regionsBox form-group row" style="display:none;">
         <div class="col-md-12">
           [@customForm.select name="" label=""  i18nkey="Select the regions" listName="countriesList" keyFieldName="isoApha2"  displayFieldName="name" multiple=true required=true  className="form-control input-sm" disabled=!editable/]              
         </div>
