@@ -66,7 +66,6 @@
                           <th>${action.hasRelations(role.acronym)}</th>
                           [/#if]
                           <th>Email</th>
-                          <th>Active</th>
                           <th>Last Login</th>
                       </tr>
                     </thead>
@@ -80,7 +79,6 @@
                         <td>${(action.getRelations(user.id, role.id))!}</td>
                         [/#if]
                         <td>${(user.email)!}</td>
-                        <td><div class="text-center" alt="${user.active?string}"><img src="${baseUrl}/images/global/checked-${user.active?string}.png" /></div></td>
                         <td>${(user.lastLogin)!'<i>Never Entered</i>'}</td>
                       </tr>
                       [/#list]
