@@ -41,8 +41,7 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
 
   @Expose
   private String contactType;
-  @Expose
-  private String responsibilities;
+
   @Expose
   private boolean active;
   @Expose
@@ -54,6 +53,20 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
 
   public ProjectPartnerPerson() {
   }
+
+  public ProjectPartnerPerson(ProjectPartner projectPartner, User usersByModifiedBy, User usersByCreatedBy,
+    User usersByUserId, String contactType, boolean isActive, Date activeSince, String modificationJustification) {
+    this.projectPartner = projectPartner;
+    this.modifiedBy = usersByModifiedBy;
+    this.createdBy = usersByCreatedBy;
+    this.user = usersByUserId;
+    this.contactType = contactType;
+
+    this.active = isActive;
+    this.activeSince = activeSince;
+    this.modificationJustification = modificationJustification;
+  }
+
 
   public ProjectPartnerPerson(ProjectPartner projectPartner, User usersByModifiedBy, User usersByCreatedBy,
     User usersByUserId, String contactType, boolean isActive, Date activeSince, String modificationJustification,
@@ -68,21 +81,6 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
     this.deliverablePartnerships = deliverablePartnerships;
     this.institution = institution;
-  }
-
-
-  public ProjectPartnerPerson(ProjectPartner projectPartner, User usersByModifiedBy, User usersByCreatedBy,
-    User usersByUserId, String contactType, String responsibilities, boolean isActive, Date activeSince,
-    String modificationJustification) {
-    this.projectPartner = projectPartner;
-    this.modifiedBy = usersByModifiedBy;
-    this.createdBy = usersByCreatedBy;
-    this.user = usersByUserId;
-    this.contactType = contactType;
-    this.responsibilities = responsibilities;
-    this.active = isActive;
-    this.activeSince = activeSince;
-    this.modificationJustification = modificationJustification;
   }
 
 
@@ -176,9 +174,6 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
     return this.projectPartner;
   }
 
-  public String getResponsibilities() {
-    return this.responsibilities;
-  }
 
   public User getUser() {
     return this.user;
@@ -248,10 +243,6 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
 
   public void setProjectPartners(ProjectPartner projectPartner) {
     this.projectPartner = projectPartner;
-  }
-
-  public void setResponsibilities(String responsibilities) {
-    this.responsibilities = responsibilities;
   }
 
 

@@ -173,7 +173,12 @@ public class ProjectPartnersValidator extends BaseValidator {
         for (ProjectPartner partner : project.getPartners()) {
           j = 0;
           // Validating that the partner has a least one contact person
+          if (project.isProjectEditLeader()) {
+            if (action.hasSpecificities(APConstants.CRP_PARTNER_CONTRIBUTIONS)) {
+              this.validatePersonResponsibilities(action, c, partner);
 
+            }
+          }
           if (project.isProjectEditLeader()) {
             Institution inst = institutionManager.getInstitutionById(partner.getInstitution().getId());
             if (inst.getCrpPpaPartners().stream()
@@ -203,12 +208,7 @@ public class ProjectPartnersValidator extends BaseValidator {
             for (ProjectPartnerPerson person : partner.getPartnerPersons()) {
               this.validatePersonType(action, c, j, person);
               this.validateUser(action, c, j, person);
-              if (project.isProjectEditLeader()) {
-                if (action.hasSpecificities(APConstants.CRP_PARTNER_CONTRIBUTIONS)) {
-                  this.validatePersonResponsibilities(action, c, j, person);
 
-                }
-              }
 
               j++;
             }
@@ -237,24 +237,11 @@ public class ProjectPartnersValidator extends BaseValidator {
     }
   }
 
-  private void validatePersonResponsibilities(BaseAction action, int partnerCounter, int personCounter,
-    ProjectPartnerPerson person) {
-    if (!projectValidator.isValidPersonResponsibilities(person.getResponsibilities())) {
-      if (person.getUser() != null && (person.getUser() != null || person.getUser().getId() != -1)) {
+  private void validatePersonResponsibilities(BaseAction action, int partnerCounter, ProjectPartner partner) {
+    if (!projectValidator.isValidPersonResponsibilities(partner.getResponsibilities())) {
 
-
-        person.setUser(userManager.getUser(person.getUser().getId()));
-        if (person.getUser() != null) {
-          this.addMessage(action.getText("projectPartners.responsibilities.for",
-            new String[] {person.getUser().getFirstName() + " " + person.getUser().getLastName()}));
-        }
-
-
-      }
-      this.addMissingField(
-        "project.projectPartners[" + partnerCounter + "].partnerPersons[" + personCounter + "].responsibilities");
-      action.getInvalidFields().put(
-        "input-project.partners[" + partnerCounter + "].partnerPersons[" + personCounter + "].responsibilities",
+      this.addMissingField("project.projectPartners[" + partnerCounter + "].responsibilities");
+      action.getInvalidFields().put("input-project.partners[" + partnerCounter + "].responsibilities",
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
