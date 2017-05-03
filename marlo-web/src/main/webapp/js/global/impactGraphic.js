@@ -60,13 +60,18 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
           'background-opacity': 1,
           'text-opacity': 1,
       }).selector('edge').css({
-          'width': 0.2,
+          'width': 1,
           'source-arrow-shape': 'triangle',
-          'line-color': '#999999',
-          'source-arrow-color': '#999999',
+          'line-color': '#aaa',
+          'source-arrow-color': '#aaa',
           'arrow-resize': 15,
           'curve-style': 'bezier',
           'z-index': '1'
+      }).selector('.edgeStyle').css({
+          'line-color': '#000000',
+          'source-arrow-color': '#000000',
+          'curve-style': 'bezier',
+          'z-index': '99'
       }).selector('.center-center').css({
           'text-valign': 'center',
           'text-halign': 'center'
@@ -151,29 +156,24 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
 
       $(".panel-body ul").empty();
 
-      SLO = [];
-      IDO = [];
-      subIDO = [];
-      crps = [];
-      flagships = [];
-      outcomes = [];
-      clusters = [];
-      keyOutputs = [];
-
       if(event.cyTarget == cy) {
 
         cy.$('node').addClass('eating');
+        cy.$('edge').removeClass('edgeStyle');
 
       } else if(event.cyTarget.isEdge()) {
 
         cy.$('node').addClass('eating');
+        cy.$('edge').removeClass('edgeStyle');
 
       } else if(event.cyTarget.isNode()) {
 
         cy.$('node').removeClass('eating');
+        cy.$('edge').removeClass('edgeStyle');
         var $this = event.cyTarget;
+        $this.predecessors().addClass("edgeStyle");
+        $this.successors().addClass("edgeStyle");
         // change Styles
-
         $.ajax({
             'url': baseURL + '/impactPathway/relationsimpactPathway.do',
             'data': {
@@ -185,7 +185,6 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
               $("#loader").show();
             },
             success: function(data) {
-
               $.each(data.relations, function(i,e) {
 
                 if(e.type == "SLO") {
@@ -193,7 +192,6 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
                 }
                 if(e.type == "IDO") {
                   $(".panel-body ul").append("<label>" + e.label + ":</label><li>" + e.description + "</li>");
-                  console.log(e);
                 }
                 if(e.type == "SD") {
                   $(".panel-body ul").append("<label>" + e.label + ":</label><li>" + e.description + "</li>");
@@ -210,7 +208,7 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
                 if(e.type == "KO") {
                   $(".panel-body ul").append("<label>" + e.label + ":</label><li>" + e.description + "</li>");
                 }
-                selectNode(e.id);
+                selectNode(e, data.relations[i + 1]);
 
               });
 
@@ -225,11 +223,10 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
 
   }
 
-  function selectNode(id) {
-    var node = cy.$('#' + id);
+  function selectNode(e,lastItem) {
+    var node = cy.$('#' + e.id);
     node.addClass('eating');
-// node.connectedEdges();
-// console.log(node.connectedEdges());
+// node.predecessors().addClass("edgeStyle");
   }
 
   // Download
@@ -362,7 +359,7 @@ $("#overlay .btn").on("click", function() {
         ajaxService(url, data, "impactGraphic", true, true, 'breadthfirst', false);
       }
   });
-
+  $(".panel-body ul").empty();
 });
 
 $("#changeGraph .btn").on("click", function() {
