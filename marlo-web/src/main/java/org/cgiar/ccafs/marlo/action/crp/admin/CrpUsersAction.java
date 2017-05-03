@@ -163,7 +163,9 @@ public class CrpUsersAction extends BaseAction {
         break;
       case "CL":
         for (CrpClusterActivityLeader crpClusterActivityLeader : user.getCrpClusterActivityLeaders().stream()
-          .filter(c -> c.isActive() && c.getCrpClusterOfActivity().isActive()).collect(Collectors.toList())) {
+          .filter(c -> c.isActive() && c.getCrpClusterOfActivity().isActive()
+            && c.getCrpClusterOfActivity().getCrpProgram().isActive())
+          .collect(Collectors.toList())) {
           relations.add(crpClusterActivityLeader.getCrpClusterOfActivity().getIdentifier());
         }
         break;
