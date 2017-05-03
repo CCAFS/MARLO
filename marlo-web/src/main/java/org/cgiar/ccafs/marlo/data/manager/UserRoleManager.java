@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -62,6 +62,15 @@ public interface UserRoleManager {
    */
   public UserRole getUserRoleById(long userRoleID);
 
+
+  /**
+   * This method gets a list of userRoles belongs of the role
+   * 
+   * @param userId - the role id
+   * @return List of UserRoles or null if the user is invalid or not have roles.
+   */
+  public List<UserRole> getUserRolesByRoleId(Long roleID);
+
   /**
    * This method gets a list of userRoles belongs of the user
    * 
@@ -69,6 +78,7 @@ public interface UserRoleManager {
    * @return List of UserRoles or null if the user is invalid or not have roles.
    */
   public List<UserRole> getUserRolesByUserId(Long userId);
+
 
   /**
    * This method saves the information of the given userRole
