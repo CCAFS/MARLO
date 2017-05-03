@@ -23,7 +23,9 @@ import org.cgiar.ccafs.marlo.data.manager.CrpClusterOfActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpOutcomeSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.SrfIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSloIdoManager;
+import org.cgiar.ccafs.marlo.data.manager.SrfSloManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
@@ -31,6 +33,8 @@ import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
+import org.cgiar.ccafs.marlo.data.model.SrfIdo;
+import org.cgiar.ccafs.marlo.data.model.SrfSlo;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIdo;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -71,20 +75,28 @@ public class ImpactRelationAction extends BaseAction {
   private CrpClusterKeyOutputManager crpClusterKeyOutputManager;
   private CrpOutcomeSubIdoManager crpOutcomeSubIdoManager;
   private SrfSubIdoManager srfSubIdoManager;
+  private SrfIdoManager srfIdoManager;
+
   private SrfSloIdoManager srfSloIdoManager;
+
+  private SrfSloManager srfSloManager;
+
 
   @Inject
   public ImpactRelationAction(APConfig config, CrpProgramManager crpProgramManager,
     CrpProgramOutcomeManager crpProgramOutcomeManager, CrpOutcomeSubIdoManager crpOutcomeSubIdoManager,
-    SrfSloIdoManager srfSloIdoManager, SrfSubIdoManager srfSubIdoManager,
-    CrpClusterKeyOutputManager crpClusterKeyOutputManager, CrpClusterOfActivityManager crpClusterOfActivityManager) {
+    SrfSloIdoManager srfSloIdoManager, SrfSubIdoManager srfSubIdoManager, SrfIdoManager srfIdoManager,
+    CrpClusterKeyOutputManager crpClusterKeyOutputManager, CrpClusterOfActivityManager crpClusterOfActivityManager,
+    SrfSloManager srfSloManager) {
     super(config);
     this.crpProgramManager = crpProgramManager;
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
     this.crpOutcomeSubIdoManager = crpOutcomeSubIdoManager;
     this.srfSubIdoManager = srfSubIdoManager;
     this.srfSloIdoManager = srfSloIdoManager;
+    this.srfSloManager = srfSloManager;
     this.crpClusterOfActivityManager = crpClusterOfActivityManager;
+    this.srfIdoManager = srfIdoManager;
     this.crpClusterKeyOutputManager = crpClusterKeyOutputManager;
 
   }
@@ -358,6 +370,8 @@ public class ImpactRelationAction extends BaseAction {
   public String execute() throws Exception {
 
     Set<CrpProgram> crpPrograms = new HashSet<>();
+    Set<CrpOutcomeSubIdo> outcomesSubIdos = new HashSet<>();
+
     switch (type) {
       case "F":
         CrpProgram crpProgram = crpProgramManager.getCrpProgramById(Long.parseLong(id.replace("F", "")));
@@ -372,26 +386,67 @@ public class ImpactRelationAction extends BaseAction {
 
         break;
       case "SD":
-        CrpOutcomeSubIdo crpOutcomeSubIdo =
-          crpOutcomeSubIdoManager.getCrpOutcomeSubIdoById(Long.parseLong(id.replace("SD", "")));
-        this.addRelations(crpOutcomeSubIdo.getCrpProgramOutcome().getCrpProgram(), null);
 
-        break;
-
-      case "IDO":
-
-        SrfSubIdo srfSubIdo = srfSubIdoManager.getSrfSubIdoById(Long.parseLong(id.replace("IDO", "")));
+        SrfSubIdo srfSubIdo = srfSubIdoManager.getSrfSubIdoById(Long.parseLong(id.replace("SD", "")));
         for (CrpOutcomeSubIdo outcomeSubIdo : srfSubIdo.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive())
           .collect(Collectors.toList())) {
+          outcomesSubIdos.add(outcomeSubIdo);
           crpPrograms.add(outcomeSubIdo.getCrpProgramOutcome().getCrpProgram());
         }
 
         for (CrpProgram myProgram : crpPrograms) {
           if (flagshipId == null) {
-            this.addRelations(myProgram, null);
+            CrpOutcomeSubIdo subIdoOutcome = outcomesSubIdos.stream()
+              .filter(c -> c.isActive()
+                && c.getCrpProgramOutcome().getCrpProgram().getId().longValue() == myProgram.getId().longValue())
+              .collect(Collectors.toList()).get(0);
+            this.addRelations(myProgram, subIdoOutcome.getCrpProgramOutcome());
           } else {
             if (Long.parseLong(flagshipId) == myProgram.getId().longValue()) {
-              this.addRelations(myProgram, null);
+              CrpOutcomeSubIdo subIdoOutcome = outcomesSubIdos.stream()
+                .filter(c -> c.isActive()
+                  && c.getCrpProgramOutcome().getCrpProgram().getId().longValue() == myProgram.getId().longValue())
+                .collect(Collectors.toList()).get(0);
+              this.addRelations(myProgram, subIdoOutcome.getCrpProgramOutcome());
+            }
+          }
+
+        }
+        break;
+
+      case "IDO":
+
+        SrfIdo srfIdo = srfIdoManager.getSrfIdoById(Long.parseLong(id.replace("IDO", "")));
+        for (SrfSubIdo srfSubIdoElement : srfIdo.getSrfSubIdos().stream().filter(c -> c.isActive())
+          .collect(Collectors.toList())) {
+          for (CrpOutcomeSubIdo outcomeSubIdo : srfSubIdoElement.getCrpOutcomeSubIdos().stream()
+            .filter(c -> c.isActive()).collect(Collectors.toList())) {
+            outcomesSubIdos.add(outcomeSubIdo);
+            crpPrograms.add(outcomeSubIdo.getCrpProgramOutcome().getCrpProgram());
+          }
+
+
+        }
+
+        for (CrpProgram myProgram : crpPrograms) {
+          if (flagshipId == null) {
+            List<CrpOutcomeSubIdo> subIdoOutcomes = outcomesSubIdos.stream()
+              .filter(c -> c.isActive()
+                && c.getCrpProgramOutcome().getCrpProgram().getId().longValue() == myProgram.getId().longValue())
+              .collect(Collectors.toList());
+            for (CrpOutcomeSubIdo crpOutcomeSubIdo : subIdoOutcomes) {
+              this.addRelations(myProgram, crpOutcomeSubIdo.getCrpProgramOutcome());
+            }
+
+          } else {
+            if (Long.parseLong(flagshipId) == myProgram.getId().longValue()) {
+              List<CrpOutcomeSubIdo> subIdoOutcomes = outcomesSubIdos.stream()
+                .filter(c -> c.isActive()
+                  && c.getCrpProgramOutcome().getCrpProgram().getId().longValue() == myProgram.getId().longValue())
+                .collect(Collectors.toList());
+              for (CrpOutcomeSubIdo crpOutcomeSubIdo : subIdoOutcomes) {
+                this.addRelations(myProgram, crpOutcomeSubIdo.getCrpProgramOutcome());
+              }
             }
           }
 
@@ -400,22 +455,43 @@ public class ImpactRelationAction extends BaseAction {
 
         break;
       case "SLO":
-        SrfSloIdo srfSloIdo = srfSloIdoManager.getSrfSloIdoById(Long.parseLong(id.replace("SLO", "")));
-        for (SrfSubIdo srIdo : srfSloIdo.getSrfIdo().getSrfSubIdos().stream().filter(c -> c.isActive())
+        SrfSlo srfSlo = srfSloManager.getSrfSloById(Long.parseLong(id.replace("SLO", "")));
+
+        for (SrfSloIdo srfSloIdo : srfSlo.getSrfSloIdos().stream().filter(c -> c.isActive())
           .collect(Collectors.toList())) {
-          for (CrpOutcomeSubIdo outcomeSubIdo : srIdo.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive())
+
+          for (SrfSubIdo srIdo : srfSloIdo.getSrfIdo().getSrfSubIdos().stream().filter(c -> c.isActive())
             .collect(Collectors.toList())) {
-            crpPrograms.add(outcomeSubIdo.getCrpProgramOutcome().getCrpProgram());
+            for (CrpOutcomeSubIdo outcomeSubIdo : srIdo.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive())
+              .collect(Collectors.toList())) {
+              outcomesSubIdos.add(outcomeSubIdo);
+              crpPrograms.add(outcomeSubIdo.getCrpProgramOutcome().getCrpProgram());
+            }
+
+
           }
-
-
         }
+
+
         for (CrpProgram myProgram : crpPrograms) {
           if (flagshipId == null) {
-            this.addRelations(myProgram, null);
+            List<CrpOutcomeSubIdo> subIdoOutcomes = outcomesSubIdos.stream()
+              .filter(c -> c.isActive()
+                && c.getCrpProgramOutcome().getCrpProgram().getId().longValue() == myProgram.getId().longValue())
+              .collect(Collectors.toList());
+            for (CrpOutcomeSubIdo crpOutcomeSubIdo : subIdoOutcomes) {
+              this.addRelations(myProgram, crpOutcomeSubIdo.getCrpProgramOutcome());
+            }
+
           } else {
             if (Long.parseLong(flagshipId) == myProgram.getId().longValue()) {
-              this.addRelations(myProgram, null);
+              List<CrpOutcomeSubIdo> subIdoOutcomes = outcomesSubIdos.stream()
+                .filter(c -> c.isActive()
+                  && c.getCrpProgramOutcome().getCrpProgram().getId().longValue() == myProgram.getId().longValue())
+                .collect(Collectors.toList());
+              for (CrpOutcomeSubIdo crpOutcomeSubIdo : subIdoOutcomes) {
+                this.addRelations(myProgram, crpOutcomeSubIdo.getCrpProgramOutcome());
+              }
             }
           }
 
