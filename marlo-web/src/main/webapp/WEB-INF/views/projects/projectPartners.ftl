@@ -242,17 +242,33 @@
       --]
       
       [#-- Institution / Organization --]
+      [#if ((editable && isTemplate) || (editable && !element.institution??) || (editable && element.institution.id?number == -1))]
       <div class="form-group partnerName">
         <p class="fieldErrorInstitutions"></p>
-        [#if ((editable && isTemplate) || (editable && !element.institution??) || (editable && element.institution.id?number == -1))]
           [#-- list=allInstitutions --]
           [@customForm.select name="${name}.institution.id" value="${(element.institution.id)!}" className="institutionsList" required=true header=false i18nkey="projectPartners.partner.name" listName="" keyFieldName="id"  displayFieldName="composedName"  /]
-        [#else]
-          <input type="hidden" name="${name}.institution.id" class="institutionsList" value="${(element.institution.id)!}"/>
-        [/#if]
         <br />
       </div>
+      [#else]
+        <input type="hidden" name="${name}.institution.id" class="institutionsList" value="${(element.institution.id)!}"/>
+      [/#if]
       
+      [#-- Responsibilities --]
+      [#if project.projectEditLeader]
+      <div class="form-group partnerResponsabilities chosen"> 
+        [@customForm.textArea name="${name}.responsibilities" className="resp limitWords-100" i18nkey="projectPartners.responsabilities" required=true editable=editable /]
+        <div class="clearfix"></div>
+      </div>
+      [/#if]
+      
+      [#--Select country office  (if applicable)  --]
+      <div class="countryOffices panel tertiary">
+        <h5 class="sectionSubTitle">[@s.text name="projectPartners.countryOffices" /]</h5>
+        <div class="countriesBlock form-group" title="Select Countries clicking here">
+          [#-- Countries List --]
+          [@customForm.select name="${name}.selectedCountries" label="" showTitle=false  i18nkey="projectPartners.countryOffices" listName="countriesList" keyFieldName="isoAlpha2"  displayFieldName="name" value="${name}.selectedCountries" multiple=true required=true  className="countriesSelect form-control input-sm" disabled=!editable/]              
+        </div>
+      </div>
       
       [#-- Indicate which PPA Partners for second level partners --]
       [#if (editable || ((!editable && element.partnerContributors?has_content)!false))]
@@ -331,8 +347,18 @@
     [/#if]
     <div class="form-group">
     	<div class="row">
+          [#-- Contact type --]
+          <div class="col-md-4 partnerPerson-type ${customForm.changedField('${name}.contactType')}">
+            [#if canEditContactType]
+              [@customForm.select name="${name}.contactType" className="partnerPersonType" disabled=!canEdit i18nkey="projectPartners.personType" stringKey=true header=false listName="partnerPersonTypes" value="'${(element.contactType)!'CP'}'" required=true /]
+            [#else]
+              <label class="readOnly">[@s.text name="projectPartners.personType" /]:</label>
+              <div class="select"><p>[@s.text name="projectPartners.types.${(element.contactType)!'none'}"/]</p></div>
+              <input type="hidden" name="${name}.contactType" class="partnerPersonType" value="${(element.contactType)!}" />
+            [/#if]
+          </div>
     	    [#-- Contact Email --]
-          <div class="col-md-12 partnerPerson-email userField">
+          <div class="col-md-8 partnerPerson-email userField">
             [#attempt]
               [#assign canEditEmail=!((action.getActivitiesLedByUser((element.id)!-1)!false)?has_content) && canEditContactType/]
             [#recover]
@@ -348,39 +374,6 @@
           </div>
     	</div>
     </div> 
-    <div class="form-group">
-      <div class="row">
-        [#-- Contact type --]
-        <div class="col-md-6 partnerPerson-type ${customForm.changedField('${name}.contactType')}">
-          [#if canEditContactType]
-            [@customForm.select name="${name}.contactType" className="partnerPersonType" disabled=!canEdit i18nkey="projectPartners.personType" stringKey=true header=false listName="partnerPersonTypes" value="'${(element.contactType)!'CP'}'" required=true /]
-          [#else]
-            <label class="readOnly">[@s.text name="projectPartners.personType" /]:</label>
-            <div class="select"><p>[@s.text name="projectPartners.types.${(element.contactType)!'none'}"/]</p></div>
-            <input type="hidden" name="${name}.contactType" class="partnerPersonType" value="${(element.contactType)!}" />
-          [/#if]
-        </div>
-        
-        [#-- Contact Branch --]
-        <div class="col-md-6 partnerPerson-branch ${customForm.changedField('${name}.institution.id')}">
-          [#if canEditContactType]
-            [@customForm.select name="${name}.institution.id" className="partnerPersonBranch" disabled=!canEdit i18nkey="projectPartners.personBranch" header=false listName="project.partners[${partnerIndex}].institution.institutuionsBranches" keyFieldName="id"  displayFieldName="branchName" required=true /]
-          [#else]
-            <label class="readOnly">[@s.text name="projectPartners.personBranch" /]:</label>
-            <div class="select"><p>${(element.institution.branchName)!}</p></div>
-            <input type="hidden" name="${name}.institution.id" class="partnerPersonBranch" value="${(element.institution.id)!}" />
-          [/#if]
-        </div>
-      </div>
-    </div>
-    
-    [#-- Responsibilities --]
-    [#if project.projectEditLeader]
-    <div class="form-group partnerResponsabilities chosen"> 
-      [@customForm.textArea name="${name}.responsibilities" className="resp limitWords-100" i18nkey="projectPartners.responsabilities" required=true editable=editable /]
-      <div class="clearfix"></div>
-    </div>
-    [/#if]
     
     [#if !isTemplate]
       [#-- Activities leading and Deliverables with responsibilities --]

@@ -512,6 +512,12 @@ function addPartnerEvent(e) {
       placeholder: "Select the branches where the project is working on...",
       width: '100%'
   });
+  $newElement.find('select.countriesSelect').find('').select2({
+      placeholder: "Select a country",
+      templateResult: formatStateCountries,
+      templateSelection: formatStateCountries,
+      width: '100%'
+  });
 
   // Update indexes
   setProjectPartnersIndexes();
@@ -666,6 +672,12 @@ function addSelect2() {
   // Branch
   $("form select.branchesSelect ").select2({
       placeholder: "Select the branches where the project is working on...",
+      width: '100%'
+  });
+  $('form select.countriesSelect').find('').select2({
+      placeholder: "Select a country",
+      templateResult: formatStateCountries,
+      templateSelection: formatStateCountries,
       width: '100%'
   });
 
@@ -875,5 +887,14 @@ function formatState(state) {
           + text + "</small> </span>");
   return $state;
 
+};
+
+function formatStateCountries(state) {
+  if(!state.id) {
+    return state.text;
+  }
+  var $state =
+      $('<span> <i class="flag-sm flag-sm-' + state.element.value.toUpperCase() + '"></i>  ' + state.text + '</span>');
+  return $state;
 };
 
