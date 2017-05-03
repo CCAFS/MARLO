@@ -127,6 +127,26 @@
           <div class="col-md-6">[@customForm.input name="fundingSource.contactPersonName" i18nkey="projectCofunded.contactName" className="contactName" required=true editable=editable /]</div>
           <div class="col-md-6" style="display:${canSeePIEmail?string('block','none')}">[@customForm.input name="fundingSource.contactPersonEmail" i18nkey="projectCofunded.contactEmail" className="contactEmail" required=true editable=editable /]</div>
       </div>
+      <br />
+      [#-- GLOBAL DIMENSION --]
+      <div class="form-group row">
+        <div class="col-md-6">[@customForm.yesNoInput  label="Does this Funding Source have a global dimension?" name=""  editable=editable inverse=false  cssClass="" /] </div>
+        <div class="col-md-6">[@customForm.yesNoInput  label="Does this Funding Source have a regional dimension?" name=""  editable=editable inverse=false  cssClass="" /] </div>
+      </div>
+      
+      [#-- REGIONAL DIMENSION --]
+      <div class="form-group row">
+        <div class="col-md-12">
+          [@customForm.select name="" label=""  i18nkey="Select the regions" listName="countriesList" keyFieldName="isoApha2"  displayFieldName="name" multiple=true required=true  className="form-control input-sm" disabled=!editable/]              
+        </div>
+      </div>
+      
+      [#-- SELECT COUNTRIES --]
+      <div class="form-group row">
+        <div class="col-md-12">
+          [@customForm.select name="" label=""  i18nkey="If the Funding Source focuses on specific countries, please list these countries:" listName="countriesList" keyFieldName="isoApha2"  displayFieldName="name" multiple=true required=true  className="form-control input-sm" disabled=!editable/]              
+        </div>
+      </div>
       
       [#-- Donor --]
       <div class="form-group">
