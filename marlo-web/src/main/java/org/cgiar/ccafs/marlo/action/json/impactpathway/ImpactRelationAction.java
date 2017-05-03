@@ -166,7 +166,11 @@ public class ImpactRelationAction extends BaseAction {
 
               dataDetaiSlo.put("type", "SLO");
 
-              relations.add(dataDetaiSlo);
+
+              if (relations.stream().filter(c -> c.get("id").equals(dataDetaiSlo.get("id")))
+                .collect(Collectors.toList()).isEmpty()) {
+                relations.add(dataDetaiSlo);
+              }
 
 
             }
@@ -308,7 +312,12 @@ public class ImpactRelationAction extends BaseAction {
               datacrpProgramOutcome.put("color", crpProgramOutcome.getCrpProgram().getColor());
 
               datacrpProgramOutcome.put("type", "O");
-              relations.add(datacrpProgramOutcome);
+
+              if (relations.stream().filter(c -> c.get("id").equals(datacrpProgramOutcome.get("id")))
+                .collect(Collectors.toList()).isEmpty()) {
+                relations.add(datacrpProgramOutcome);
+              }
+
 
               Set<SrfSubIdo> subIdos = new HashSet<>();
 
