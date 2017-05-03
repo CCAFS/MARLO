@@ -175,15 +175,14 @@ public class ImpactRelationAction extends BaseAction {
 
 
         if (outcome != null) {
-
+          int k = 1;
           Set<CrpClusterOfActivity> activities = new HashSet<>();
           for (CrpClusterKeyOutputOutcome crpClusterKeyOutput : crpProgramOutcome.getCrpClusterKeyOutputOutcomes()
             .stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
             HashMap<String, Object> dataDetailKeyOutput = new HashMap<>();
             dataDetailKeyOutput.put("id", "KO" + crpClusterKeyOutput.getCrpClusterKeyOutput().getId());
 
-            dataDetailKeyOutput.put("label",
-              "KeyOutput " + crpClusterKeyOutput.getCrpClusterKeyOutput().getComposedName());
+            dataDetailKeyOutput.put("label", "KeyOutput #" + k);
             dataDetailKeyOutput.put("description", crpClusterKeyOutput.getCrpClusterKeyOutput().getKeyOutput());
             dataDetailKeyOutput.put("color", crpClusterKeyOutput.getCrpProgramOutcome().getCrpProgram().getColor());
             dataDetailKeyOutput.put("type", "KO");
@@ -191,7 +190,7 @@ public class ImpactRelationAction extends BaseAction {
 
             relations.add(dataDetailKeyOutput);
             activities.add(crpClusterKeyOutput.getCrpClusterKeyOutput().getCrpClusterOfActivity());
-
+            k++;
 
           }
           for (CrpClusterOfActivity crpClusterOfActivity : activities) {
