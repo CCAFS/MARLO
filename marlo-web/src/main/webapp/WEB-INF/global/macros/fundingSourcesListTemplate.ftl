@@ -10,7 +10,7 @@
       <tr class="subHeader">
         <th id="ids">[@s.text name="projectsList.projectids" /]</th>
         <th id="projectTitles" >[@s.text name="projectsList.fundingTitle" /]</th>
-        <th id="projectBudgetType" >[@s.text name="projectsList.projectBudgetType" /]</th>
+        <th id="projectBudgetType" style="width:9%">[@s.text name="projectsList.projectBudgetType" /]</th>
         <th id="code" >Finance Code</th>
         <th id="projectStatus">[@s.text name="projectsList.projectStatus" /]</th>
         <th id="leader" >[@s.text name="projectsList.institutions" /]</th>
@@ -39,7 +39,7 @@
           </td>
           [#-- Project Budget Type --]
           <td class=""> 
-            ${(project.budgetType.name)!'Not defined'}
+            ${(project.budgetType.name)!'Not defined'} ${(project.w1w2?string('<br /> <span class="programTag">Co-Financing</span> ',''))!}
           </td>
           [#-- Finance Code --]
           <td>

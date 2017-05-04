@@ -95,6 +95,7 @@ $(document).ready(
             budget: $parent.find(".budget").text(),
             type: $parent.find(".budgetTypeName").text(),
             typeId: $parent.find(".budgetTypeId").text(),
+            w1w2: $parent.find(".budgetTypeName .coFinancing:visible"),
             institutionSelected: institutionSelected,
             selectedYear: selectedYear
         });
@@ -210,6 +211,7 @@ $(document).ready(
                       budget: data.ammount,
                       type: data.type,
                       typeId: data.typeID,
+                      w1w2: data.w1w2,
                       institutionSelected: institutionSelected,
                       selectedYear: selectedYear
                   });
@@ -366,7 +368,13 @@ $(document).ready(
                     $item.find('.noBudgetMessage').attr('title', 'Insufficient funds for ' + selectedYear);
                     // $item.find('.listButton.select').hide();
                   }
-                  $item.find('.name').html('<strong>' + source.type + '</strong> - ' + source.name);
+                  if(source.w1w2) {
+                    $item.find('.name').html(
+                        '<strong>' + source.type + ' <small class="text-primary"> (Co-Financing)</small> </strong> - '
+                            + source.name);
+                  } else {
+                    $item.find('.name').html('<strong>' + source.type + '</strong> - ' + source.name);
+                  }
                   $item.find(".currentBudget").html(
                       "<br> <strong> Current Budget</strong> - $" + setCurrencyFormat(source.amount));
                   $item.find('.contactId').html(source.id);

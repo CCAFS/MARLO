@@ -114,6 +114,10 @@ public class FundingSourceListAction extends BaseAction {
         source.put("type", fundingSource.getBudgetType().getName());
         source.put("typeId", fundingSource.getBudgetType().getId());
 
+        if (fundingSource.getW1w2() != null) {
+          source.put("w1w2", fundingSource.getW1w2().booleanValue());
+        }
+
         if (fundingSource.getBudgetType().getId().intValue() == 1) {
 
           String permission =

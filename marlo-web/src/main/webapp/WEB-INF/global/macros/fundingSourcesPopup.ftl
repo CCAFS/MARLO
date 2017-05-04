@@ -144,7 +144,7 @@
     </form>
     
     
-    [#-- User Template --]
+    [#-- Funding Source item search Template --]
     <ul style="display:none"> 
       <li id="userTemplate">
         <div class="row">

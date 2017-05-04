@@ -102,6 +102,7 @@ function validateFundingSource() {
 // Add funding source function
 function addFundingSource(fs) {
   dialog.dialog("close");
+
   var $item = $('#projectW3bilateralFund-template').clone(true).removeAttr('id');
   var $list = $elementSelected.parents(".projectPartner").find(".projectW3bilateralFund-list");
 
