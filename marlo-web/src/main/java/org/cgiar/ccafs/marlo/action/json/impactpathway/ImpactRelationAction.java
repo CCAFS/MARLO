@@ -113,7 +113,10 @@ public class ImpactRelationAction extends BaseAction {
     dataProgram.put("type", "F");
     dataProgram.put("order", new Integer(4));
 
-    relations.add(dataProgram);
+    if (relations.stream().filter(c -> c.get("id").equals(dataProgram.get("id"))).collect(Collectors.toList())
+      .isEmpty()) {
+      relations.add(dataProgram);
+    }
     int i = 1;
     for (CrpProgramOutcome crpProgramOutcome : crpProgram.getCrpProgramOutcomes().stream().filter(c -> c.isActive())
       .collect(Collectors.toList())) {
@@ -157,7 +160,11 @@ public class ImpactRelationAction extends BaseAction {
 
             HashMap<String, Object> dataDetaiSIDO = new HashMap<>();
             dataDetaiSIDO.put("id", "IDO" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
-            dataDetaiSIDO.put("label", "IDO #" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
+            if (crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().isIsCrossCutting()) {
+              dataDetaiSIDO.put("label", "Cross cutting-IDO #" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
+            } else {
+              dataDetaiSIDO.put("label", "IDO #" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
+            }
             dataDetaiSIDO.put("description", crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getDescription());
             dataDetaiSIDO.put("order", new Integer(2));
             dataDetaiSIDO.put("type", "IDO");
@@ -197,12 +204,15 @@ public class ImpactRelationAction extends BaseAction {
             HashMap<String, Object> dataDetailKeyOutput = new HashMap<>();
             dataDetailKeyOutput.put("id", "KO" + crpClusterKeyOutput.getCrpClusterKeyOutput().getId());
 
-            dataDetailKeyOutput.put("label", "KeyOutput #" + k);
+            dataDetailKeyOutput.put("label",
+              "KeyOutput #" + this.getIndex(crpClusterKeyOutput.getCrpProgramOutcome().getCrpProgram(),
+                crpClusterKeyOutput.getCrpClusterKeyOutput()));
             dataDetailKeyOutput.put("description", crpClusterKeyOutput.getCrpClusterKeyOutput().getKeyOutput());
             dataDetailKeyOutput.put("color", crpClusterKeyOutput.getCrpProgramOutcome().getCrpProgram().getColor());
             dataDetailKeyOutput.put("type", "KO");
             dataDetailKeyOutput.put("order", new Integer(7));
-
+            dataDetailKeyOutput.put("order2", this.getIndex(crpClusterKeyOutput.getCrpProgramOutcome().getCrpProgram(),
+              crpClusterKeyOutput.getCrpClusterKeyOutput()));
             relations.add(dataDetailKeyOutput);
             activities.add(crpClusterKeyOutput.getCrpClusterKeyOutput().getCrpClusterOfActivity());
             k++;
@@ -248,12 +258,13 @@ public class ImpactRelationAction extends BaseAction {
           HashMap<String, Object> dataDetailKeyOutput = new HashMap<>();
           dataDetailKeyOutput.put("id", "KO" + keyOutput.getId());
 
-          dataDetailKeyOutput.put("label", "KeyOutput #" + j);
+          dataDetailKeyOutput.put("label",
+            "KeyOutput #" + this.getIndex(crpClusterOfActivity.getCrpProgram(), keyOutput));
           dataDetailKeyOutput.put("description", keyOutput.getKeyOutput());
           dataDetailKeyOutput.put("color", crpClusterOfActivity.getCrpProgram().getColor());
           dataDetailKeyOutput.put("type", "KO");
           dataDetailKeyOutput.put("order", new Integer(7));
-
+          dataDetailKeyOutput.put("order2", this.getIndex(crpClusterOfActivity.getCrpProgram(), keyOutput));
           j++;
 
           relations.add(dataDetailKeyOutput);
@@ -275,7 +286,13 @@ public class ImpactRelationAction extends BaseAction {
     dataProgram.put("color", crpProgram.getColor());
     dataProgram.put("type", "F");
     dataProgram.put("order", new Integer(4));
-    relations.add(dataProgram);
+
+    if (relations.stream().filter(c -> c.get("id").equals(dataProgram.get("id"))).collect(Collectors.toList())
+      .isEmpty()) {
+      relations.add(dataProgram);
+    }
+
+
     int i = 1;
 
 
@@ -310,12 +327,13 @@ public class ImpactRelationAction extends BaseAction {
             HashMap<String, Object> dataDetailKeyOutput = new HashMap<>();
             dataDetailKeyOutput.put("id", "KO" + keyOutput.getId());
 
-            dataDetailKeyOutput.put("label", "KeyOutput #" + j);
+            dataDetailKeyOutput.put("label",
+              "KeyOutput #" + this.getIndex(crpClusterOfActivity.getCrpProgram(), keyOutput));
             dataDetailKeyOutput.put("description", keyOutput.getKeyOutput());
             dataDetailKeyOutput.put("color", crpClusterOfActivity.getCrpProgram().getColor());
             dataDetailKeyOutput.put("type", "KO");
             dataDetailKeyOutput.put("order", new Integer(7));
-
+            dataDetailKeyOutput.put("order2", this.getIndex(crpClusterOfActivity.getCrpProgram(), keyOutput));
             j++;
 
             relations.add(dataDetailKeyOutput);
@@ -364,7 +382,12 @@ public class ImpactRelationAction extends BaseAction {
 
                   HashMap<String, Object> dataDetaiSIDO = new HashMap<>();
                   dataDetaiSIDO.put("id", "IDO" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
-                  dataDetaiSIDO.put("label", "IDO #" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
+                  if (crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().isIsCrossCutting()) {
+                    dataDetaiSIDO.put("label",
+                      "Cross cutting-IDO #" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
+                  } else {
+                    dataDetaiSIDO.put("label", "IDO #" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
+                  }
                   dataDetaiSIDO.put("description", crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getDescription());
 
                   dataDetaiSIDO.put("type", "IDO");
@@ -565,19 +588,45 @@ public class ImpactRelationAction extends BaseAction {
 
       @Override
       public int compare(HashMap<String, Object> one, HashMap<String, Object> two) {
-        return one.get("order").toString().compareTo(two.get("order").toString());
+        int compareTO = (one.get("order").toString().compareTo(two.get("order").toString()));
+
+        if (compareTO == 0) {
+          if (one.containsKey("order2") && two.containsKey("order2")) {
+            return new Integer(one.get("order2").toString()).compareTo(new Integer(two.get("order2").toString()));
+          } else {
+            return one.get("label").toString().compareTo(two.get("label").toString());
+          }
+
+        } else {
+          return compareTO;
+        }
       }
     });
+
     return SUCCESS;
 
 
   }
 
-  public int getIndex(CrpProgram crpProgram, CrpProgramOutcome programOutcome) {
-    return crpProgram.getCrpProgramOutcomes().stream().filter(c -> c.isActive()).collect(Collectors.toList())
-      .indexOf(programOutcome);
+  public int getIndex(CrpProgram crpProgram, CrpClusterKeyOutput crpClusterKeyOutput) {
+
+
+    List<CrpClusterKeyOutput> crpClusterKeyOutputs = new ArrayList<>();
+    for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
+      .filter(c -> c.isActive()).collect(Collectors.toList())) {
+      crpClusterKeyOutputs.addAll(
+        crpClusterOfActivity.getCrpClusterKeyOutputs().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+    }
+    int index = crpClusterKeyOutputs.indexOf(crpClusterKeyOutput) + 1;
+    // .indexOf(programOutcome) + 1;
+    return index;
   }
 
+  public int getIndex(CrpProgram crpProgram, CrpProgramOutcome programOutcome) {
+    int index = crpProgram.getCrpProgramOutcomes().stream().filter(c -> c.isActive()).collect(Collectors.toList())
+      .indexOf(programOutcome) + 1;
+    return index;
+  }
 
   public List<HashMap<String, Object>> getRelations() {
     return relations;

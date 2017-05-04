@@ -88,26 +88,26 @@ public class CrpClusterKeyOutput implements java.io.Serializable, IAuditLog {
     if (obj == null) {
       return false;
     }
-    if (this.getClass() != obj.getClass()) {
-      return false;
-    }
+
     CrpClusterKeyOutput other = (CrpClusterKeyOutput) obj;
     if (id == null) {
       if (other.id != null) {
         return false;
       }
-    } else if (!id.equals(other.id)) {
+    } else if (!id.equals(other.getId())) {
       return false;
     }
     return true;
   }
+
   public Date getActiveSince() {
     return this.activeSince;
   }
+
   public String getComposedName() {
-    if(this.keyOutput.isEmpty()){
+    if (this.keyOutput.isEmpty()) {
       return "Key output title not defined";
-    }else{
+    } else {
       return this.keyOutput;
     }
 
@@ -154,6 +154,7 @@ public class CrpClusterKeyOutput implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+  @Override
   public String getModificationJustification() {
     return this.modificationJustification;
   }
