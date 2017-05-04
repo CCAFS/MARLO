@@ -123,7 +123,8 @@ public class ImpactRelationAction extends BaseAction {
 
         HashMap<String, Object> datacrpProgramOutcome = new HashMap<>();
         datacrpProgramOutcome.put("id", "O" + crpProgramOutcome.getId());
-        datacrpProgramOutcome.put("label", "Outcome #" + i);
+        datacrpProgramOutcome.put("label",
+          "Outcome #" + this.getIndex(crpProgramOutcome.getCrpProgram(), crpProgramOutcome));
         datacrpProgramOutcome.put("description", crpProgramOutcome.getDescription());
         datacrpProgramOutcome.put("color", crpProgramOutcome.getCrpProgram().getColor());
 
@@ -264,7 +265,6 @@ public class ImpactRelationAction extends BaseAction {
     }
   }
 
-
   public void addRelationsCluster(CrpProgram crpProgram, CrpClusterOfActivity cluster,
     CrpClusterKeyOutput crpClusterKeyOutput) {
 
@@ -326,7 +326,8 @@ public class ImpactRelationAction extends BaseAction {
 
               HashMap<String, Object> datacrpProgramOutcome = new HashMap<>();
               datacrpProgramOutcome.put("id", "O" + crpProgramOutcome.getId());
-              datacrpProgramOutcome.put("label", "Outcome #" + i);
+              datacrpProgramOutcome.put("label",
+                "Outcome #" + this.getIndex(crpProgramOutcome.getCrpProgram(), crpProgramOutcome));
               datacrpProgramOutcome.put("description", crpProgramOutcome.getDescription());
               datacrpProgramOutcome.put("color", crpProgramOutcome.getCrpProgram().getColor());
               datacrpProgramOutcome.put("order", new Integer(5));
@@ -407,6 +408,7 @@ public class ImpactRelationAction extends BaseAction {
 
 
   }
+
 
   @Override
   public String execute() throws Exception {
@@ -569,6 +571,11 @@ public class ImpactRelationAction extends BaseAction {
     return SUCCESS;
 
 
+  }
+
+  public int getIndex(CrpProgram crpProgram, CrpProgramOutcome programOutcome) {
+    return crpProgram.getCrpProgramOutcomes().stream().filter(c -> c.isActive()).collect(Collectors.toList())
+      .indexOf(programOutcome);
   }
 
 
