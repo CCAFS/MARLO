@@ -60,14 +60,15 @@
           
            
           [#-- Upload bilateral contract --]
+          [#-- 
           <div class="form-group fileUploadContainer">
             <label>[@customForm.text name="fundingSource.uploadContract" readText=!editable /]:</label>
-            [#-- Input File --]
+            [#-- Input File  
             <div class="fileUpload"> <input class="upload" type="file" name="file" data-url="${baseUrl}/uploadFundingSource.do"></div>
-            [#-- Uploaded File --]
+            [#-- Uploaded File  
             <p class="fileUploaded textMessage checked" style="display:none"><span class="contentResult">{{contentResult}}</span> <span class="removeIcon"> </span> </p>
           </div>
-          
+          --]
           
           <div class="form-group">
             <div class="row">
@@ -80,7 +81,14 @@
           <div class="form-group">
             <div class="row">
               <div class="col-md-6">[@customForm.select name="status" i18nkey="projectCofunded.agreementStatus"  listName="status" header=false required=true /] </div>
-              <div class="col-md-6">[@customForm.select name="budgetType"   i18nkey="projectCofunded.type" className="type" listName="budgetTypes" header=false required=true /]</div>
+              <div class="col-md-6">
+                [@customForm.select name="budgetType"   i18nkey="projectCofunded.type" className="type" listName="budgetTypes" header=false required=true /]
+                [#-- W1W2 Tag --]
+                [#assign isW1W2 = (fundingSource.budgetType.id == 1)!false /]
+                <div class="w1w2-tag" style="display:${isW1W2?string('block','none')};">
+                  <div class="checkbox dottedBox"><label for=""><input type="checkbox" name="" id="" /> <small> [@customForm.text name="fundingSource.w1w2Tag" readText=!editable /]</small></label></div>
+                </div>
+              </div>
             </div>
           </div>
           

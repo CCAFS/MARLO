@@ -34,7 +34,8 @@ function init() {
   
   changeDonorByFundingType($(".type").val(), $(".donor"))
   
-  checkAgreementStatus($(".type").val());
+  // Check Funding type
+  onChangeFundingType($(".type").val());
   
   // Funding Window / Budget type
   $("select.type").select2({
@@ -63,8 +64,8 @@ function init() {
     // Change Donor list
     ajaxService(url, data);
     
-    // Check Agreement status
-    checkAgreementStatus(option.val());
+    // Event on change
+    onChangeFundingType(option.val());
      
   });
 
@@ -118,9 +119,10 @@ function init() {
  * 
  * @param {number} typeID - Funding budget type
  */
-function checkAgreementStatus(typeID){
+function onChangeFundingType(typeID){
   var W1W2 = 1;
   var ON_GOING = 2;
+  
   // Change Agreement Status when is (W1W2 Type => 1)
   var $agreementStatus = $('select.agreementStatus');
   // 3 => Concept Note/Pipeline
@@ -137,6 +139,14 @@ function checkAgreementStatus(typeID){
   }
   $agreementStatus.select2("destroy");
   $agreementStatus.select2();
+  
+  
+  // Check W1/W2 - Tag
+  if(typeID == W1W2){
+    $('.w1w2-tag').show();
+  }else{
+    $('.w1w2-tag').hide(); 
+  }
 }
 
 function addContactAutoComplete() {
@@ -446,6 +456,9 @@ function ajaxService(url,data) {
       url: url,
       type: 'GET',
       data: data,
+      beforeSend: function() {
+        $('.loading').show();
+      },
       success: function(m) {
         $select.empty();
         $select.addOption("-1", "Select an option...");
@@ -459,6 +472,7 @@ function ajaxService(url,data) {
         console.log(e);
       },
       complete: function() {
+        $('.loading').hide();
         $select.trigger("change.select2");
         console.log(data);
       }

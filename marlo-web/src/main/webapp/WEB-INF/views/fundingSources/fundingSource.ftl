@@ -28,7 +28,9 @@
   
   <h4 class="headTitle">General information</h4> 
     <div class="borderBox informationWrapper">
-      [#-- Participating Center, CRP Lead Center --]
+      [#-- Loading --]
+      <div class="loading" style="display:none"></div>
+    
       
       [#-- Project title --]
       <div class="form-group">
@@ -72,7 +74,17 @@
       <div class="form-group">
         <div class="row">
           <div class="col-md-6">[@customForm.select name="fundingSource.status" i18nkey="projectCofunded.agreementStatus" className="agreementStatus"  listName="status" keyFieldName=""  displayFieldName="" header=false editable=editable /] </div>
-          <div class="col-md-6">[@customForm.select name="fundingSource.budgetType.id" i18nkey="projectCofunded.type" className="type" listName="budgetTypes" header=false required=true editable=editable && action.canEditType() /]</div>
+          <div class="col-md-6">
+            [@customForm.select name="fundingSource.budgetType.id" i18nkey="projectCofunded.type" className="type" listName="budgetTypes" header=false required=true editable=editable && action.canEditType() /]
+            [#-- W1W2 Tag --]
+            [#assign isW1W2 = (fundingSource.budgetType.id == 1)!false /]
+            [#assign w1w2TagValue = (fundingSource.w1w2)!false /]
+            <div class="w1w2-tag" style="display:${isW1W2?string('block','none')};">
+              <div class="checkbox dottedBox">
+                <label for="w1w2-tag-input"><input type="checkbox" name="fundingSource.w1w2" value="${w1w2TagValue?string}" id="w1w2-tag-input" [#if w1w2TagValue]checked[/#if]/> <small>[@customForm.text name="fundingSource.w1w2Tag" readText=!editable /]</small></label>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       
