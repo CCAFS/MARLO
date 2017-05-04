@@ -138,7 +138,7 @@ $(document).ready(
         project.endDate = $dialogContent.find("#endDate").val().trim();
         project.financeCode = $dialogContent.find("#financeCode").val().trim();
         project.status = $dialogContent.find("#status").val().trim();
-        project.w1w2 = $dialogContent.find("#w1w2").val().trim();
+        project.w1w2 = $dialogContent.find("#w1w2-tag-input:checked").length > 0;
         project.budgetType = $dialogContent.find("#budgetType").val().trim();
         project.fileName = $dialogContent.find('input[name="file"]').val();
         project.liaisonInstitution = institutionSelected;
