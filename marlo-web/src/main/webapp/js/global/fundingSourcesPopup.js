@@ -52,10 +52,10 @@ $(document).ready(
         ajaxService(url, data);
 
         // Check Agreement status
-        checkAgreementStatus(option.val());
+        onChangeFundingType(option.val());
       });
 
-      checkAgreementStatus($(".type").val());
+      onChangeFundingType($(".type").val());
 
       // Event for manage the accordion function
       $('#create-user').on('click', function() {
@@ -138,6 +138,7 @@ $(document).ready(
         project.endDate = $dialogContent.find("#endDate").val().trim();
         project.financeCode = $dialogContent.find("#financeCode").val().trim();
         project.status = $dialogContent.find("#status").val().trim();
+        project.w1w2 = $dialogContent.find("#w1w2").val().trim();
         project.budgetType = $dialogContent.find("#budgetType").val().trim();
         project.fileName = $dialogContent.find('input[name="file"]').val();
         project.liaisonInstitution = institutionSelected;
@@ -423,7 +424,7 @@ $(document).ready(
  * 
  * @param {number} typeID - Funding budget type
  */
-function checkAgreementStatus(typeID) {
+function onChangeFundingType(typeID) {
   var W1W2 = 1;
   var ON_GOING = 2;
   // Change Agreement Status when is (W1W2 Type => 1)
@@ -441,6 +442,13 @@ function checkAgreementStatus(typeID) {
       $agreementStatus.addOption("3", "Concept Note/Pipeline");
       $agreementStatus.addOption("4", "Informally Confirmed");
     }
+  }
+
+  // Check W1/W2 - Tag
+  if(typeID == W1W2) {
+    $('.w1w2-tag').show();
+  } else {
+    $('.w1w2-tag').hide();
   }
 }
 

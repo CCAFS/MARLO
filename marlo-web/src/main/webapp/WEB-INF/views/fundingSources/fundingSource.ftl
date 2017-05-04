@@ -81,7 +81,14 @@
             [#assign w1w2TagValue = (fundingSource.w1w2)!false /]
             <div class="w1w2-tag" style="display:${isW1W2?string('block','none')};">
               <div class="checkbox dottedBox">
-                <label for="w1w2-tag-input"><input type="checkbox" name="fundingSource.w1w2" value="${w1w2TagValue?string}" id="w1w2-tag-input" [#if w1w2TagValue]checked[/#if]/> <small>[@customForm.text name="fundingSource.w1w2Tag" readText=!editable /]</small></label>
+                <label for="w1w2-tag-input">
+                  [#if editable]
+                  <input type="checkbox" name="fundingSource.w1w2" value="${w1w2TagValue?string}" id="w1w2-tag-input" [#if w1w2TagValue]checked[/#if]/>
+                  [#else]
+                     <img src="${baseUrl}/images/global/checked- ${w1w2TagValue?string}.png" /> 
+                   
+                  [/#if]
+                  <small>[@customForm.text name="fundingSource.w1w2Tag" readText=!editable /]</small></label>
               </div>
             </div>
           </div>
