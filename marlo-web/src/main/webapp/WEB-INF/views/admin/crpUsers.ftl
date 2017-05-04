@@ -22,7 +22,7 @@
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
     <img class="col-md-2" src="${baseUrl}/images/global/icon-help.jpg" />
-    <p class="col-md-10"> [@s.text name="siteIntegration.help" /] </p>
+    <p class="col-md-10"> [@s.text name="crpUsers.help" /] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
 </div>
@@ -55,7 +55,7 @@
               [#assign usersList = (action.getUsersByRole(role.id))![] /]
               [#if usersList?has_content]
                 <div role="tabpanel" class="tab-pane [#if role?is_first]active[/#if]" id="role-${role.id}">
-                  <h4 class="sectionSubTitle ">${role.description}'s</h4>
+                  <h4 class="sectionSubTitle ">${role.description}</h4>
                   <table class="display table table-striped table-hover usersTable" width="100%">
                     <thead>
                       <tr>
@@ -66,8 +66,7 @@
                           <th>${action.hasRelations(role.acronym)}</th>
                           [/#if]
                           <th>Email</th>
-                          <th>Active</th>
-                          <th>Last Login</th>
+                          <th>Last Login (${timeZone})</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -80,8 +79,7 @@
                         <td>${(action.getRelations(user.id, role.id))!}</td>
                         [/#if]
                         <td>${(user.email)!}</td>
-                        <td><div class="text-center" alt="${user.active?string}"><img src="${baseUrl}/images/global/checked-${user.active?string}.png" /></div></td>
-                        <td>${(user.lastLogin)!'<i>Never Entered</i>'}</td>
+                        <td>${(user.lastLogin)!'<i> <span class="hide">aaas</span> Never Entered </i>'}</td>
                       </tr>
                       [/#list]
                     </tbody>

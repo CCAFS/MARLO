@@ -77,17 +77,19 @@
                     [#-- Budgest cannot be editable message --]
                     [#if !isYearEditable(year) && editable]<div class="note">Budgets for ${year} cannot be editable.</div>[/#if]
                   
-                    <div class="overallYearBudget fieldset clearfix">
-                      <h5 class="title">Overall ${year} budget</h5>
-                      <div class="row">
-                      <table class="text-center">
-                        <tr>
-                        [#list budgetTypesList as budgetType]
-                          [#-- Budget Type--]
-                          <td class=""><h5 class="subTitle"> ${budgetType.name} <img title="${budgetType.description}" src="${baseUrl}/images/global/icon-help2.png" alt="" /> <br /> <small>US$ <span class="totalByYear-${budgetType.id}">${action.getTotalYear(year,budgetType.id)?number?string(",##0.00")}</span></small></h5></td>
-                        [/#list]
-                        </tr>
-                      </table>
+                    <div class="overallYearBudget clearfix">
+                      [#-- Total year --]
+                      <h4 class="title text-right">Overall ${year} budget <small>US$ <span class="totalYear year-${year}">0.00</span></small></h4>
+                      <div class="row fieldset">
+                        [#-- Total year budget type --]
+                        <table class="text-center">
+                          <tr>
+                          [#list budgetTypesList as budgetType]
+                            [#-- Budget Type--]
+                            <td class=""><h5 class="subTitle"> ${budgetType.name} <img title="${budgetType.description}" src="${baseUrl}/images/global/icon-help2.png" alt="" /> <br /> <small>US$ <span class="totalByYear year-${year} totalByYear-${budgetType.id}">${action.getTotalYear(year,budgetType.id)?number?string(",##0.00")}</span></small></h5></td>
+                          [/#list]
+                          </tr>
+                        </table>
                       </div>
                     </div>
                     
