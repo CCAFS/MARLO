@@ -230,7 +230,7 @@ public class CrpUsersAction extends BaseAction {
   public String hasRelations(String acronym) {
     String ret = null;
     switch (acronym.toUpperCase()) {
-      case "ADMIN":
+      case "CRP-ADMIN":
       case "G":
       case "FM":
       case "PMU":
