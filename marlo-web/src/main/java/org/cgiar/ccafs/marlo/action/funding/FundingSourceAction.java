@@ -506,6 +506,7 @@ public class FundingSourceAction extends BaseAction {
           fundingSourceInstitution
             .setInstitution(institutionManager.getInstitutionById(fundingSourceInstitution.getId()));
         }
+        fundingSource.setW1w2(null);
         fundingSource.getInstitutions().clear();
       }
 
@@ -548,7 +549,11 @@ public class FundingSourceAction extends BaseAction {
         fundingSourceDB.setPartnerDivision(fundingSource.getPartnerDivision());
       }
 
-
+      if (fundingSource.getW1w2() == null) {
+        fundingSourceDB.setW1w2(false);
+      } else {
+        fundingSourceDB.setW1w2(true);
+      }
       fundingSourceDB.setDescription(fundingSource.getDescription());
 
 

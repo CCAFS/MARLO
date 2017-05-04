@@ -66,6 +66,8 @@ public class FundingSourceAddAction extends BaseAction {
   private static String CONTACT_NAME = "contactName";
   private static String CONTACT_EMAIL = "contactEmail";
   private static String DONOR = "institution";
+  private static String W1W2 = "w1w2";
+
   private static String CENTER_TYPE = "cofundedMode";
   private static String TYPE = "budgetType";
   private static String BUDGETS = "budgets";
@@ -129,6 +131,14 @@ public class FundingSourceAddAction extends BaseAction {
     fundingSource.setFinanceCode(StringUtils.trim(((String[]) parameters.get(FINANCE_CODE))[0]));
     fundingSource.setContactPersonEmail(StringUtils.trim(((String[]) parameters.get(CONTACT_EMAIL))[0]));
     fundingSource.setContactPersonName(StringUtils.trim(((String[]) parameters.get(CONTACT_NAME))[0]));
+
+
+    try {
+      fundingSource.setW1w2(Boolean.parseBoolean(StringUtils.trim(((String[]) parameters.get(W1W2))[0])));
+    } catch (Exception e2) {
+      fundingSource.setW1w2(null);
+    }
+
 
     fundingSource.setStatus(Integer.parseInt(StringUtils.trim(((String[]) parameters.get(STATUS))[0])));
     try {
