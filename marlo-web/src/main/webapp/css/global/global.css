@@ -3607,7 +3607,7 @@ span.partnerTag {
   b;
   background-position: 3px 1px;
   background-repeat: no-repeat;
-  padding: 2px 10px 0px 14px !important;
+  padding: 2px 9px 0px 13px !important;
   display: initial;
 }
 
@@ -3618,7 +3618,7 @@ span.partnerTag {
 
 .contactPerson {
   font-size: 0.96em;
-  padding: 7px 22px 3px 21px !important;
+  padding: 7px 24px 3px 24px !important;
 }
 
 .contactPerson .removeElement{
@@ -3645,6 +3645,7 @@ span.partnerTag {
   margin-right: 5px;
   border-radius: 4px;
   cursor: pointer;
+  font-size: 0.95em;
 }
 
 .contactPerson .tag:hover {
