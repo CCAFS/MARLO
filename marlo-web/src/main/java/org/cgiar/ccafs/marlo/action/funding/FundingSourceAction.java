@@ -154,6 +154,7 @@ public class FundingSourceAction extends BaseAction {
     BudgetTypeManager budgetTypeManager, FundingSourceValidator validator, CrpPpaPartnerManager crpPpaPartnerManager,
     HistoryComparator historyComparator, FileDBManager fileDBManager, UserManager userManager,
     PartnerDivisionManager partnerDivisionManager, FundingSourceInstitutionManager fundingSourceInstitutionManager,
+    LocElementManager locElementManager, FundingSourceLocationsManager fundingSourceLocationsManager,
     /* TODO delete when fix the budget permissions */ RoleManager userRoleManager) {
     super(config);
     this.crpManager = crpManager;
@@ -170,6 +171,8 @@ public class FundingSourceAction extends BaseAction {
     this.fileDBManager = fileDBManager;
     this.crpPpaPartnerManager = crpPpaPartnerManager;
     this.fundingSourceBudgetManager = fundingSourceBudgetManager;
+    this.locElementManager = locElementManager;
+    this.fundingSourceLocationsManager = fundingSourceLocationsManager;
     // TODO delete when fix the budget permissions
     this.userRoleManager = userRoleManager;
   }
@@ -378,12 +381,14 @@ public class FundingSourceAction extends BaseAction {
 
     // Regions List
     regionLists = new ArrayList<>(locElementManager.findAll().stream()
-      .filter(le -> le.isActive() && le.getLocElementType().getId() == 1).collect(Collectors.toList()));
+      .filter(le -> le.isActive() && le.getLocElementType() != null && le.getLocElementType().getId() == 1)
+      .collect(Collectors.toList()));
     Collections.sort(regionLists, (r1, r2) -> r1.getName().compareTo(r2.getName()));
 
     // Country List
     countryLists = new ArrayList<>(locElementManager.findAll().stream()
-      .filter(le -> le.isActive() && le.getLocElementType().getId() == 2).collect(Collectors.toList()));
+      .filter(le -> le.isActive() && le.getLocElementType() != null && le.getLocElementType().getId() == 2)
+      .collect(Collectors.toList()));
     Collections.sort(countryLists, (c1, c2) -> c1.getName().compareTo(c2.getName()));
 
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
