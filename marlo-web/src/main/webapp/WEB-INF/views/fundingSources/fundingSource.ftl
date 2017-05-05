@@ -137,14 +137,14 @@
       [#-- REGIONAL DIMENSION --]
       <div class="regionsBox form-group row" style="display:none;">
         <div class="col-md-12">
-          [@customForm.select name="" label=""  i18nkey="Select the regions" listName="countriesList" keyFieldName="isoApha2"  displayFieldName="name" multiple=true required=true  className="form-control input-sm" disabled=!editable/]              
+          [@customForm.select name="fundingSource.fundingCountry" label=""  i18nkey="Select the regions" listName="regionLists" keyFieldName="id"  displayFieldName="name" multiple=true required=true  className="form-control input-sm" disabled=!editable/]              
         </div>
       </div>
       
       [#-- SELECT COUNTRIES --]
       <div class="form-group row">
         <div class="col-md-12">
-          [@customForm.select name="" label=""  i18nkey="If the Funding Source focuses on specific countries, please list these countries:" listName="countriesList" keyFieldName="isoApha2"  displayFieldName="name" multiple=true required=true  className="form-control input-sm" disabled=!editable/]              
+          [@customForm.select name="" label=""  i18nkey="If the Funding Source focuses on specific countries, please list these countries:" listName="countryLists" keyFieldName="isoAlpha2"  displayFieldName="name" multiple=true required=true  className="form-control input-sm" disabled=!editable/]              
         </div>
       </div>
       
