@@ -432,11 +432,9 @@ function checkAgreementStatus(typeID) {
   // 4 => Informally Confirmed
   var $options = $agreementStatus.find("option[value='3'], option[value='4']");
   if(typeID == W1W2) {
-    console.log("holi1");
     $agreementStatus.val(ON_GOING); // On-going
     $options.remove();
   } else {
-    console.log("holi2");
     if($options.length == 0) {
       $agreementStatus.addOption("3", "Concept Note/Pipeline");
       $agreementStatus.addOption("4", "Informally Confirmed");
