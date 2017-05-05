@@ -114,15 +114,12 @@ public class Institution implements java.io.Serializable, IAuditLog {
     if (obj == null) {
       return false;
     }
-    if (this.getClass() != obj.getClass()) {
-      return false;
-    }
     Institution other = (Institution) obj;
     if (id == null) {
       if (other.id != null) {
         return false;
       }
-    } else if (!id.equals(other.id)) {
+    } else if (!id.equals(other.getId())) {
       return false;
     }
     return true;

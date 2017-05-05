@@ -762,21 +762,21 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       if (this.isPPA(pp.getInstitution())) {
         DecimalFormat myFormatter = new DecimalFormat("###,###.00");
         String w1w2Budget =
-          myFormatter.format(Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 1)));
+          myFormatter.format(Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 1, 3)));
         String w3Budget =
-          myFormatter.format(Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 2)));
+          myFormatter.format(Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 2, 1)));
         String bilateralBudget =
-          myFormatter.format(Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 3)));
+          myFormatter.format(Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 3, 1)));
         String centerBudget =
-          myFormatter.format(Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 4)));
-        String w1w2Gender = myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 1));
-        String w3Gender = myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 2));
-        String bilateralGender = myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 3));
-        String centerGender = myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 4));
-        String w1w2GAmount = myFormatter.format(this.getTotalGender(pp.getInstitution().getId(), year, 1));
-        String w3GAmount = myFormatter.format(this.getTotalGender(pp.getInstitution().getId(), year, 2));
-        String bilateralGAmount = myFormatter.format(this.getTotalGender(pp.getInstitution().getId(), year, 3));
-        String centerGAmount = myFormatter.format(this.getTotalGender(pp.getInstitution().getId(), year, 4));
+          myFormatter.format(Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 4, 1)));
+        String w1w2Gender = myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 1, 3));
+        String w3Gender = myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 2, 1));
+        String bilateralGender = myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 3, 1));
+        String centerGender = myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 4, 1));
+        String w1w2GAmount = myFormatter.format(this.getTotalGender(pp.getInstitution().getId(), year, 1, 3));
+        String w3GAmount = myFormatter.format(this.getTotalGender(pp.getInstitution().getId(), year, 2, 1));
+        String bilateralGAmount = myFormatter.format(this.getTotalGender(pp.getInstitution().getId(), year, 3, 1));
+        String centerGAmount = myFormatter.format(this.getTotalGender(pp.getInstitution().getId(), year, 4, 1));
         model.addRow(new Object[] {year, pp.getInstitution().getComposedName(), w1w2Budget, w3Budget, bilateralBudget,
           centerBudget, pp.getInstitution().getId(), projectID, w1w2Gender, w3Gender, bilateralGender, centerGender,
           w1w2GAmount, w3GAmount, bilateralGAmount, centerGAmount});
@@ -1043,14 +1043,14 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           && ((d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
             && (d.getYear() >= this.year
               || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() >= this.year)))
-          || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-            && (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))
-          || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
-            && (d.getYear() == this.year
-              || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))))
-        && (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-          || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-          || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
+            || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+              && (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))
+            || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+              && (d.getYear() == this.year
+                || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))))
+          && (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+            || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+            || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
         .collect(Collectors.toList()));
       deliverables.sort((p1, p2) -> p1.isRequieriedReporting(year).compareTo(p2.isRequieriedReporting(year)));
       HashSet<Deliverable> deliverablesHL = new HashSet<>();
@@ -2130,11 +2130,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   }
 
   private TypedTableModel getOtherContributionsDetailTableModel() {
-    TypedTableModel model =
-      new TypedTableModel(
-        new String[] {"region", "indicator", "contribution_description", "target_contribution",
-          "otherContributionyear"},
-        new Class[] {String.class, String.class, String.class, Integer.class, Integer.class}, 0);
+    TypedTableModel model = new TypedTableModel(
+      new String[] {"region", "indicator", "contribution_description", "target_contribution", "otherContributionyear"},
+      new Class[] {String.class, String.class, String.class, Integer.class, Integer.class}, 0);
     for (OtherContribution otherContribution : project.getOtherContributions().stream().filter(oc -> oc.isActive())
       .collect(Collectors.toList())) {
       String region = null, indicator = null, contributionDescription = null;
@@ -2654,8 +2652,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
    * @param budgetType
    * @return String with the total amount.
    */
-  public String getTotalAmount(long institutionId, int year, long budgetType) {
-    return projectBudgetManager.amountByBudgetType(institutionId, year, budgetType, projectID);
+  public String getTotalAmount(long institutionId, int year, long budgetType, Integer coFinancing) {
+    return projectBudgetManager.amountByBudgetType(institutionId, year, budgetType, projectID, coFinancing);
   }
 
   /**
@@ -2666,8 +2664,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
    * @param budgetType
    * @return
    */
-  public double getTotalGender(long institutionId, int year, long budgetType) {
-    List<ProjectBudget> budgets = projectBudgetManager.getByParameters(institutionId, year, budgetType, projectID);
+  public double getTotalGender(long institutionId, int year, long budgetType, Integer coFinancing) {
+    List<ProjectBudget> budgets =
+      projectBudgetManager.getByParameters(institutionId, year, budgetType, projectID, coFinancing);
     double totalGender = 0;
     if (budgets != null) {
       for (ProjectBudget projectBudget : budgets) {
@@ -2687,10 +2686,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
    * @param budgetType
    * @return
    */
-  public double getTotalGenderPer(long institutionId, int year, long budgetType) {
-    String totalAmount = this.getTotalAmount(institutionId, year, budgetType);
+  public double getTotalGenderPer(long institutionId, int year, long budgetType, Integer coFinancing) {
+    String totalAmount = this.getTotalAmount(institutionId, year, budgetType, coFinancing);
     double dTotalAmount = Double.parseDouble(totalAmount);
-    double totalGender = this.getTotalGender(institutionId, year, budgetType);
+    double totalGender = this.getTotalGender(institutionId, year, budgetType, coFinancing);
     if (dTotalAmount != 0) {
       return (totalGender * 100) / dTotalAmount;
     } else {

@@ -183,7 +183,7 @@
             [#list budgetTypesList as budgetType]
               [#-- Budget Type--]
               <td class="budgetColumn">
-                <div class="input"><p>US$ <span class="currencyInput totalByPartner-${budgetType.id}">${((action.getTotalAmount(element.institution.id, selectedYear, budgetType.id))!0)?number?string(",##0.00")}</span></p></div>
+                <div class="input"><p>US$ <span class="currencyInput totalByPartner-${budgetType.id}">${((action.getTotalAmount(element.institution.id, selectedYear, budgetType.id,1))!0)?number?string(",##0.00")}</span></p></div>
               </td>
             [/#list]
           </tr>
@@ -194,9 +194,9 @@
             [#list budgetTypesList as budgetType]
               [#-- Budget Type--]
               <td class="budgetColumn">
-                <div class="input"><p><span class="percentageLabel type-${budgetType.id}">${((action.getTotalGenderPer(element.institution.id, selectedYear, budgetType.id))!0)}%</span></p></div>
+                <div class="input"><p><span class="percentageLabel type-${budgetType.id}">${((action.getTotalGenderPer(element.institution.id, selectedYear, budgetType.id,1))!0)}%</span></p></div>
                 <div class="row percentageAmount type-${budgetType.id} text-center">
-                  <small>US$ <span>${((action.getTotalGender(element.institution.id, selectedYear, budgetType.id))!0)?number?string(",##0.00")}</span></small>
+                  <small>US$ <span>${((action.getTotalGender(element.institution.id, selectedYear, budgetType.id,1))!0)?number?string(",##0.00")}</span></small>
                 </div>
               </td>
             [/#list]
