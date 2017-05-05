@@ -179,6 +179,38 @@ public class DeliverableValidator extends BaseValidator {
             action.getInvalidFields().put("input-deliverable.responsiblePartner.projectPartnerPerson.id",
               InvalidFieldsMessages.EMPTYFIELD);
 
+          } else {
+            if (deliverable.getResponsiblePartner() != null) {
+
+
+              if (projectPartnerPersonManager
+                .getProjectPartnerPersonById(deliverable.getResponsiblePartner().getProjectPartnerPerson().getId())
+                .getInstitution().getAcronym().equalsIgnoreCase("IFPRI")) {
+                if (action.hasSpecificities(APConstants.CRP_DIVISION_FS)) {
+                  if (deliverable.getResponsiblePartner().getPartnerDivision() == null) {
+                    this.addMessage(action.getText("deliverable.division"));
+                    action.getInvalidFields().put("input-deliverable.responsiblePartner.partnerDivision.id",
+                      InvalidFieldsMessages.EMPTYFIELD);
+                  }
+                  if (deliverable.getResponsiblePartner().getPartnerDivision() != null) {
+                    if (deliverable.getResponsiblePartner().getPartnerDivision().getId() == null) {
+                      this.addMessage(action.getText("deliverable.division"));
+                      action.getInvalidFields().put("input-deliverable.responsiblePartner.partnerDivision.id",
+                        InvalidFieldsMessages.EMPTYFIELD);
+                    } else {
+                      if (deliverable.getResponsiblePartner().getPartnerDivision().getId().longValue() == -1) {
+                        this.addMessage(action.getText("deliverable.division"));
+                        action.getInvalidFields().put("input-deliverable.responsiblePartner.partnerDivision.id",
+                          InvalidFieldsMessages.EMPTYFIELD);
+                      }
+                    }
+
+                  }
+
+                }
+
+              }
+            }
           }
         } else {
           this.addMessage(action.getText("project.deliverable.generalInformation.partnerResponsible"));
@@ -187,36 +219,6 @@ public class DeliverableValidator extends BaseValidator {
 
         }
 
-
-        if (deliverable.getResponsiblePartner() != null) {
-          if (projectPartnerPersonManager
-            .getProjectPartnerPersonById(deliverable.getResponsiblePartner().getProjectPartnerPerson().getId())
-            .getInstitution().getAcronym().equalsIgnoreCase("IFPRI")) {
-            if (action.hasSpecificities(APConstants.CRP_DIVISION_FS)) {
-              if (deliverable.getResponsiblePartner().getPartnerDivision() == null) {
-                this.addMessage(action.getText("deliverable.division"));
-                action.getInvalidFields().put("input-deliverable.responsiblePartner.partnerDivision.id",
-                  InvalidFieldsMessages.EMPTYFIELD);
-              }
-              if (deliverable.getResponsiblePartner().getPartnerDivision() != null) {
-                if (deliverable.getResponsiblePartner().getPartnerDivision().getId() == null) {
-                  this.addMessage(action.getText("deliverable.division"));
-                  action.getInvalidFields().put("input-deliverable.responsiblePartner.partnerDivision.id",
-                    InvalidFieldsMessages.EMPTYFIELD);
-                } else {
-                  if (deliverable.getResponsiblePartner().getPartnerDivision().getId().longValue() == -1) {
-                    this.addMessage(action.getText("deliverable.division"));
-                    action.getInvalidFields().put("input-deliverable.responsiblePartner.partnerDivision.id",
-                      InvalidFieldsMessages.EMPTYFIELD);
-                  }
-                }
-
-              }
-
-            }
-
-          }
-        }
 
         if (deliverable.getOtherPartners() != null) {
           int i = 0;
