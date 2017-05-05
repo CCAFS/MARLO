@@ -30,6 +30,18 @@ function init() {
     width: "100%"
   });
   
+  /* Select2 multiple for country and region select */
+  $('.countriesSelect').select2({
+      placeholder: "Select a country(ies)...",
+      templateResult: formatState,
+      templateSelection: formatState,
+      width: '100%'
+  });
+  $('.regionSelect').select2({
+    placeholder: "Select a region(s)...",
+    width: '100%'
+});
+  
   changeDonorByFundingType($(".type").val(), $(".donor"))
   
   checkAgreementStatus($(".type").val());
@@ -487,3 +499,12 @@ function changeDonorByFundingType(budgetType,$select) {
     $select.val($(".cgiarConsortium").text()).trigger("change");
   }
 }
+
+function formatState(state) {
+  if(!state.id) {
+    return state.text;
+  }
+  var $state =
+      $('<span> <i class="flag-sm flag-sm-' + state.element.value.toUpperCase() + '"></i>  ' + state.text + '</span>');
+  return $state;
+};
