@@ -34,7 +34,7 @@ CREATE TABLE `project_partner_locations` (
 PRIMARY KEY (`id`),
 FOREIGN KEY (`project_partner_id`) REFERENCES `project_partners` (`id`),
 FOREIGN KEY (`institution_loc_id`) REFERENCES `institutions_locations` (`id`)
-)
+)ENGINE=InnoDB
 ;
 
 
