@@ -86,6 +86,9 @@
         [/#if]
       [/#if]
       
+      [#-- User tag --]
+      [#assign userTag][#if !config.production]([#if config.debug]Develop[#else]Testing[/#if])[/#if][/#assign]
+      
       [#-- Tawk.to Widget --]
       var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
       Tawk_LoadStart = new Date();
@@ -95,7 +98,7 @@
       
       Tawk_API.onLoad = function() {
         Tawk_API.setAttributes({
-            'fullName': '${(currentUser.composedCompleteName)!"No Name"}',
+            'fullName': '${(userTag)!} ${(currentUser.composedCompleteName)!"No Name"}',
             'userName' : '${(currentUser.username)!"No User name"}',
             'userId': '${(currentUser.id)!"No ID"}',
             'composedId': '${(currentUser.composedID)!"No Composed ID"}',
