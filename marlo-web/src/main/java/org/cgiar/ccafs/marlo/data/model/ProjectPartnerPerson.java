@@ -29,9 +29,6 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
   @Expose
   private User modifiedBy;
 
-  @Expose
-  private Institution institution;
-
 
   @Expose
   private User createdBy;
@@ -70,7 +67,7 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
 
   public ProjectPartnerPerson(ProjectPartner projectPartner, User usersByModifiedBy, User usersByCreatedBy,
     User usersByUserId, String contactType, boolean isActive, Date activeSince, String modificationJustification,
-    Set<DeliverablePartnership> deliverablePartnerships, Institution institution) {
+    Set<DeliverablePartnership> deliverablePartnerships) {
     this.projectPartner = projectPartner;
     this.modifiedBy = usersByModifiedBy;
     this.createdBy = usersByCreatedBy;
@@ -80,7 +77,7 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
     this.deliverablePartnerships = deliverablePartnerships;
-    this.institution = institution;
+
   }
 
 
@@ -116,11 +113,8 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
 
   public String getComposedName() {
 
-    if (this.getInstitution().getAcronym() != null) {
-      return this.getInstitution().getAcronym() + " - " + this.user.getComposedName();
-    } else {
-      return this.getInstitution().getName() + " - " + this.user.getComposedName();
-    }
+    return this.user.getComposedName();
+
 
   }
 
@@ -142,9 +136,6 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
     return this.id;
   }
 
-  public Institution getInstitution() {
-    return institution;
-  }
 
   @Override
   public String getLogDeatil() {
@@ -221,11 +212,6 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
 
   public void setId(Long id) {
     this.id = id;
-  }
-
-
-  public void setInstitution(Institution institution) {
-    this.institution = institution;
   }
 
 

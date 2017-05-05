@@ -60,5 +60,11 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson" />
         </set>
+        <set name="projectPartnerLocations" table="project_partner_locations" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="project_partner_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation" />
+        </set>
     </class>
 </hibernate-mapping>

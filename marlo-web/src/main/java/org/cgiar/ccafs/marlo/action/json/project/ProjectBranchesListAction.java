@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
@@ -56,22 +57,19 @@ public class ProjectBranchesListAction extends BaseAction {
     Institution institution = institutionManager.getInstitutionById(institutionID);
     Map<String, Object> branch;
     branches = new ArrayList<>();
-
-    branch = new HashMap<String, Object>();
-    branch.put("id", institution.getId());
-    branch.put("name", institution.getBranchName());
-    branch.put("iso", institution.getLocElement().getIsoAlpha2());
-
-    branches.add(branch);
-
-    for (Institution institutionBranch : institution.getBranches().stream().filter(b -> b.isActive())
-      .collect(Collectors.toList())) {
+    for (InstitutionLocation institutionLocation : institution.getInstitutionsLocations().stream()
+      .filter(c -> c.isActive()).collect(Collectors.toList())) {
       branch = new HashMap<String, Object>();
-      branch.put("id", institutionBranch.getId());
-      branch.put("name", institutionBranch.getBranchName());
-      branch.put("iso", institutionBranch.getLocElement().getIsoAlpha2());
+      branch.put("id", institution.getId());
+      if (institutionLocation.isHeadquater()) {
+        branch.put("name", "HQ: " + institutionLocation.getLocElement().getName());
+      } else {
+        branch.put("name", institutionLocation.getLocElement().getName());
+      }
+      branch.put("iso", institutionLocation.getLocElement().getIsoAlpha2());
       branches.add(branch);
     }
+
 
     return SUCCESS;
   }

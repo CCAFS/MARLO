@@ -879,8 +879,7 @@ public class ProjectPartnerAction extends BaseAction {
       }
 
     } else {
-      allInstitutions =
-        institutionManager.findAll().stream().filter(c -> c.getHeadquarter() == null).collect(Collectors.toList());
+      allInstitutions = institutionManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
 
     }
     allInstitutions.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));

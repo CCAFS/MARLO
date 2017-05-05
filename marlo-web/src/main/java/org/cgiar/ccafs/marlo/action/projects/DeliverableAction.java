@@ -524,12 +524,7 @@ public class DeliverableAction extends BaseAction {
         .filter(dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
         .collect(Collectors.toList());
 
-      for (DeliverablePartnership deliverablePartnership : list) {
-        deliverablePartnership.getProjectPartnerPerson()
-          .setInstitution(institutionManager.getInstitutionById(
-            deliverablePartnershipManager.getDeliverablePartnershipById(deliverablePartnership.getId())
-              .getProjectPartnerPerson().getInstitution().getId()));
-      }
+
       return list;
     } catch (Exception e) {
       return null;

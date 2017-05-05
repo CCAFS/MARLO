@@ -54,17 +54,43 @@ INNER JOIN institutions_locations loc on inst.headquarter=loc.institution_id and
 where inst.headquarter is not null   and loc.is_headquater=1 and ppp.is_active=1;
 
 
+UPDATE 
+project_partners pp INNER JOIN institutions ins on ins.id=pp.institution_id
+set pp.institution_id=ins.headquarter
+where ins.headquarter is not null;
 
-ALTER TABLE `institutions` DROP FOREIGN KEY `institutions_ibfk_2`;
+UPDATE 
+funding_sources pp INNER JOIN institutions ins on ins.id=pp.donor
+set pp.donor=ins.headquarter
+where ins.headquarter is not null;
 
-ALTER TABLE `institutions` DROP FOREIGN KEY `institutions_ibfk_4`;
+UPDATE 
+project_leverage pp INNER JOIN institutions ins on ins.id=pp.institution
+set pp.institution=ins.headquarter
+where ins.headquarter is not null;
 
-ALTER TABLE `institutions`
-DROP COLUMN `country_id`,
-DROP COLUMN `headquarter`;
+UPDATE 
+ip_liaison_institutions pp INNER JOIN institutions ins on ins.id=pp.institution_id
+set pp.institution_id=ins.headquarter
+where ins.headquarter is not null;
+
 
 ALTER TABLE `project_partner_persons` DROP FOREIGN KEY `project_partner_persons_ibfk_5`;
 
 ALTER TABLE `project_partner_persons`
 DROP COLUMN `institution_id`;
+
+delete from institutions where headquarter is not null;
+
+
+ALTER TABLE `institutions` DROP FOREIGN KEY `institutions_ibfk_2`;
+
+ALTER TABLE `institutions` DROP FOREIGN KEY `institutions_ibfk_4`;
+
+
+
+ALTER TABLE `institutions`
+DROP COLUMN `country_id`,
+DROP COLUMN `headquarter`;
+
 
