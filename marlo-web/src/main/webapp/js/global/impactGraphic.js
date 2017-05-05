@@ -168,11 +168,20 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
 
       } else if(event.cyTarget.isNode()) {
 
+        // TEST COLOR
+        rgb = [
+            141, 27, 84
+        ];
+        inv_rgb = invertColor(rgb);
+        console.log(inv_rgb);
+
         cy.$('node').removeClass('eating');
         cy.$('edge').removeClass('edgeStyle');
         var $this = event.cyTarget;
         $this.predecessors().addClass("edgeStyle");
         $this.successors().addClass("edgeStyle");
+
+        console.log($this._private.data);
         // change Styles
         $.ajax({
             'url': baseURL + '/impactPathway/relationsimpactPathway.do',
@@ -518,4 +527,12 @@ function ajaxService(url,data,contentGraph,panningEnable,inPopUp,nameLayout,tool
 function showHelpText() {
   $('.helpMessage').show();
   $('.helpMessage').addClass('animated flipInX');
+}
+
+function invertColor(rgb) {
+  var inv_rgb = [];
+  for(var i = 0; i < rgb.length; i++) {
+    inv_rgb.push(255 - rgb[i]);
+  }
+  return inv_rgb;
 }
