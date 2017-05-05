@@ -25,9 +25,11 @@ import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceInstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.FundingSourceLocationsManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PartnerDivisionManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
@@ -38,8 +40,10 @@ import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
+import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.PartnerDivision;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -56,6 +60,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -70,60 +75,74 @@ import org.apache.commons.lang3.StringUtils;
 
 public class FundingSourceAction extends BaseAction {
 
+
   private static final long serialVersionUID = -3919022306156272887L;
 
 
   private AuditLogManager auditLogManager;
 
+
   private BudgetTypeManager budgetTypeManager;
+
+
   private Map<String, String> budgetTypes;
+
   private List<BudgetType> budgetTypesList;
+
 
   private CrpManager crpManager;
 
-
   private CrpPpaPartnerManager crpPpaPartnerManager;
-
   private File file;
   private String fileContentType;
+
   private FileDBManager fileDBManager;
+
 
   private String fileFileName;
 
   private Integer fileID;
-
-
   private FundingSource fundingSource;
-
   private FundingSourceBudgetManager fundingSourceBudgetManager;
+
   private long fundingSourceID;
+
   private FundingSourceInstitutionManager fundingSourceInstitutionManager;
 
-  private FundingSourceManager fundingSourceManager;
-  private InstitutionManager institutionManager;
 
+  private FundingSourceManager fundingSourceManager;
+
+  private InstitutionManager institutionManager;
   private List<Institution> institutions;
   private List<Institution> institutionsDonors;
+
   private LiaisonInstitutionManager liaisonInstitutionManager;
   private List<LiaisonInstitution> liaisonInstitutions;
-  private HistoryComparator historyComparator;
 
+  private HistoryComparator historyComparator;
   private PartnerDivisionManager partnerDivisionManager;
   private List<PartnerDivision> divisions;
-
   private Crp loggedCrp;
-
-
   private Map<String, String> status;
 
   private String transaction;
-
-
   private UserManager userManager;
-
 
   private FundingSourceValidator validator;
 
+
+  /*
+   * Funding Source Locations
+   */
+  private FundingSourceLocationsManager fundingSourceLocationsManager;
+
+  private LocElementManager locElementManager;
+
+
+  private List<LocElement> regionLists;
+
+
+  private List<LocElement> countryLists;
 
   // TODO delete when fix the budget permissions
   private RoleManager userRoleManager;
@@ -154,7 +173,6 @@ public class FundingSourceAction extends BaseAction {
     // TODO delete when fix the budget permissions
     this.userRoleManager = userRoleManager;
   }
-
 
   @Override
   public String cancel() {
@@ -250,9 +268,15 @@ public class FundingSourceAction extends BaseAction {
     return budgetTypesList;
   }
 
+
+  public List<LocElement> getCountryLists() {
+    return countryLists;
+  }
+
   public List<PartnerDivision> getDivisions() {
     return divisions;
   }
+
 
   public File getFile() {
     return file;
@@ -262,7 +286,6 @@ public class FundingSourceAction extends BaseAction {
     return fileContentType;
   }
 
-
   public String getFileFileName() {
     return fileFileName;
   }
@@ -270,7 +293,6 @@ public class FundingSourceAction extends BaseAction {
   public Integer getFileID() {
     return fileID;
   }
-
 
   public FundingSource getFundingSource() {
     return fundingSource;
@@ -312,21 +334,27 @@ public class FundingSourceAction extends BaseAction {
 
   }
 
-
   public List<Institution> getInstitutions() {
     return institutions;
   }
+
 
   public List<Institution> getInstitutionsDonors() {
     return institutionsDonors;
   }
 
+
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
   }
 
+
   public Crp getLoggedCrp() {
     return loggedCrp;
+  }
+
+  public List<LocElement> getRegionLists() {
+    return regionLists;
   }
 
   public Map<String, String> getStatus() {
@@ -347,6 +375,16 @@ public class FundingSourceAction extends BaseAction {
 
     // Budget Types list
     budgetTypesList = budgetTypeManager.findAll();
+
+    // Regions List
+    regionLists = new ArrayList<>(locElementManager.findAll().stream()
+      .filter(le -> le.isActive() && le.getLocElementType().getId() == 1).collect(Collectors.toList()));
+    Collections.sort(regionLists, (r1, r2) -> r1.getName().compareTo(r2.getName()));
+
+    // Country List
+    countryLists = new ArrayList<>(locElementManager.findAll().stream()
+      .filter(le -> le.isActive() && le.getLocElementType().getId() == 2).collect(Collectors.toList()));
+    Collections.sort(countryLists, (c1, c2) -> c1.getName().compareTo(c2.getName()));
 
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
 
@@ -406,6 +444,7 @@ public class FundingSourceAction extends BaseAction {
           }
         }
 
+
         if (fundingSource.getInstitutions() != null) {
           for (FundingSourceInstitution fundingSourceInstitution : fundingSource.getInstitutions()) {
             if (fundingSourceInstitution != null) {
@@ -426,6 +465,23 @@ public class FundingSourceAction extends BaseAction {
         fundingSource.setProjectBudgetsList(
           fundingSource.getProjectBudgets().stream().filter(pb -> pb.isActive()).collect(Collectors.toList()));
 
+        /*
+         * Funding source Locations
+         */
+        if (fundingSource.getFundingSourceLocations() != null) {
+
+          List<FundingSourceLocation> countries = new ArrayList<>(fundingSource.getFundingSourceLocations().stream()
+            .filter(fl -> fl.isActive() && fl.getLocElement().getLocElementType().getId() == 2)
+            .collect(Collectors.toList()));
+
+          fundingSource.setFundingCountry(new ArrayList<>());
+
+          for (FundingSourceLocation fundingSourceLocation : countries) {
+
+          }
+        }
+
+
       }
 
       status = new HashMap<>();
@@ -433,6 +489,7 @@ public class FundingSourceAction extends BaseAction {
       for (AgreementStatusEnum agreementStatusEnum : list) {
         status.put(agreementStatusEnum.getStatusId(), agreementStatusEnum.getStatus());
       }
+
 
       if (fundingSource.getInstitutions() != null) {
         for (FundingSourceInstitution fundingSourceInstitution : fundingSource.getInstitutions()) {
@@ -659,6 +716,10 @@ public class FundingSourceAction extends BaseAction {
     this.budgetTypesList = budgetTypesList;
   }
 
+  public void setCountryLists(List<LocElement> countryLists) {
+    this.countryLists = countryLists;
+  }
+
   public void setDivisions(List<PartnerDivision> divisions) {
     this.divisions = divisions;
   }
@@ -666,7 +727,6 @@ public class FundingSourceAction extends BaseAction {
   public void setFile(File file) {
     this.file = file;
   }
-
 
   public void setFileContentType(String fileContentType) {
     this.fileContentType = fileContentType;
@@ -676,6 +736,7 @@ public class FundingSourceAction extends BaseAction {
   public void setFileFileName(String fileFileName) {
     this.fileFileName = fileFileName;
   }
+
 
   public void setFileID(Integer fileID) {
     this.fileID = fileID;
@@ -693,10 +754,10 @@ public class FundingSourceAction extends BaseAction {
     this.institutions = institutions;
   }
 
-
   public void setInstitutionsDonors(List<Institution> institutionsDonors) {
     this.institutionsDonors = institutionsDonors;
   }
+
 
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
@@ -704,6 +765,10 @@ public class FundingSourceAction extends BaseAction {
 
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
+  }
+
+  public void setRegionLists(List<LocElement> regionLists) {
+    this.regionLists = regionLists;
   }
 
   public void setStatus(Map<String, String> status) {
@@ -720,5 +785,6 @@ public class FundingSourceAction extends BaseAction {
       validator.validate(this, fundingSource, true);
     }
   }
+
 
 }
