@@ -92,57 +92,57 @@ public class FundingSourceAction extends BaseAction {
 
   private CrpManager crpManager;
 
+
   private CrpPpaPartnerManager crpPpaPartnerManager;
+
+
   private File file;
+
   private String fileContentType;
+
 
   private FileDBManager fileDBManager;
 
-
   private String fileFileName;
-
   private Integer fileID;
   private FundingSource fundingSource;
+
   private FundingSourceBudgetManager fundingSourceBudgetManager;
+
 
   private long fundingSourceID;
 
   private FundingSourceInstitutionManager fundingSourceInstitutionManager;
-
-
   private FundingSourceManager fundingSourceManager;
-
   private InstitutionManager institutionManager;
+
   private List<Institution> institutions;
+
   private List<Institution> institutionsDonors;
 
-  private LiaisonInstitutionManager liaisonInstitutionManager;
-  private List<LiaisonInstitution> liaisonInstitutions;
 
+  private LiaisonInstitutionManager liaisonInstitutionManager;
+
+  private List<LiaisonInstitution> liaisonInstitutions;
   private HistoryComparator historyComparator;
   private PartnerDivisionManager partnerDivisionManager;
+
   private List<PartnerDivision> divisions;
   private Crp loggedCrp;
-  private Map<String, String> status;
 
+  private Map<String, String> status;
   private String transaction;
   private UserManager userManager;
-
   private FundingSourceValidator validator;
-
-
   /*
    * Funding Source Locations
    */
   private FundingSourceLocationsManager fundingSourceLocationsManager;
-
   private LocElementManager locElementManager;
-
-
   private List<LocElement> regionLists;
-
-
   private List<LocElement> countryLists;
+  private boolean region;
+
 
   // TODO delete when fix the budget permissions
   private RoleManager userRoleManager;
@@ -216,7 +216,6 @@ public class FundingSourceAction extends BaseAction {
 
   }
 
-
   public boolean canEditInstitution() {
     User user = userManager.getUser(this.getCurrentUser().getId());
     return user.getUserRoles().stream().filter(c -> c.getRole().getAcronym().equals("CP")).collect(Collectors.toList())
@@ -228,7 +227,6 @@ public class FundingSourceAction extends BaseAction {
   public boolean canEditType() {
     return fundingSource.getProjectBudgets().stream().filter(c -> c.isActive()).collect(Collectors.toList()).isEmpty();
   }
-
 
   private Path getAutoSaveFilePath() {
     String composedClassName = fundingSource.getClass().getSimpleName();
@@ -289,6 +287,7 @@ public class FundingSourceAction extends BaseAction {
     return fileContentType;
   }
 
+
   public String getFileFileName() {
     return fileFileName;
   }
@@ -297,10 +296,10 @@ public class FundingSourceAction extends BaseAction {
     return fileID;
   }
 
+
   public FundingSource getFundingSource() {
     return fundingSource;
   }
-
 
   public String getFundingSourceFileURL() {
     return config.getDownloadURL() + "/" + this.getFundingSourceUrlPath().replace('\\', '/');
@@ -310,11 +309,9 @@ public class FundingSourceAction extends BaseAction {
     return fundingSourceID;
   }
 
-
   public String getFundingSourceUrlPath() {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + "fundingSourceFiles" + File.separator;
   }
-
 
   public int getIndexBugets(int year) {
     int i = 0;
@@ -337,10 +334,10 @@ public class FundingSourceAction extends BaseAction {
 
   }
 
+
   public List<Institution> getInstitutions() {
     return institutions;
   }
-
 
   public List<Institution> getInstitutionsDonors() {
     return institutionsDonors;
@@ -360,12 +357,19 @@ public class FundingSourceAction extends BaseAction {
     return regionLists;
   }
 
+
   public Map<String, String> getStatus() {
     return status;
   }
 
+
   public String getTransaction() {
     return transaction;
+  }
+
+
+  public boolean isRegion() {
+    return region;
   }
 
   @Override
@@ -378,6 +382,8 @@ public class FundingSourceAction extends BaseAction {
 
     // Budget Types list
     budgetTypesList = budgetTypeManager.findAll();
+
+    region = false;
 
     // Regions List
     regionLists = new ArrayList<>(locElementManager.findAll().stream()
@@ -491,9 +497,14 @@ public class FundingSourceAction extends BaseAction {
             .filter(fl -> fl.isActive() && fl.getLocElement().getLocElementType().getId() == 1)
             .collect(Collectors.toList()));
 
+          if (regions.size() > 0) {
+            region = true;
+          }
+
           for (FundingSourceLocation fundingSourceLocation : regions) {
             fundingSource.getFundingRegions().add(fundingSourceLocation.getLocElement().getId());
           }
+
 
         }
 
@@ -692,10 +703,13 @@ public class FundingSourceAction extends BaseAction {
         }
       }
 
+      this.saveLocations(fundingSourceDB);
+
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.FUNDING_SOURCES_BUDGETS_RELATION);
       relationsName.add(APConstants.FUNDING_SOURCES_INSTITUTIONS_RELATION);
+      relationsName.add(APConstants.FUNDING_SOURCES_LOCATIONS_RELATION);
       fundingSourceDB = fundingSourceManager.getFundingSourceById(fundingSourceID);
       fundingSourceDB.setActiveSince(new Date());
       fundingSourceManager.saveFundingSource(fundingSourceDB, this.getActionName(), relationsName);
@@ -831,19 +845,19 @@ public class FundingSourceAction extends BaseAction {
     this.file = file;
   }
 
-
   public void setFileContentType(String fileContentType) {
     this.fileContentType = fileContentType;
   }
-
 
   public void setFileFileName(String fileFileName) {
     this.fileFileName = fileFileName;
   }
 
+
   public void setFileID(Integer fileID) {
     this.fileID = fileID;
   }
+
 
   public void setFundingSource(FundingSource fundingSource) {
     this.fundingSource = fundingSource;
@@ -853,14 +867,15 @@ public class FundingSourceAction extends BaseAction {
     this.fundingSourceID = fundingSourceID;
   }
 
+
   public void setInstitutions(List<Institution> institutions) {
     this.institutions = institutions;
   }
 
-
   public void setInstitutionsDonors(List<Institution> institutionsDonors) {
     this.institutionsDonors = institutionsDonors;
   }
+
 
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
@@ -868,6 +883,10 @@ public class FundingSourceAction extends BaseAction {
 
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
+  }
+
+  public void setRegion(boolean region) {
+    this.region = region;
   }
 
   public void setRegionLists(List<LocElement> regionLists) {
