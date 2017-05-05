@@ -130,8 +130,8 @@
       <br />
       [#-- GLOBAL DIMENSION --]
       <div class="form-group row">
-        <div class="col-md-6">[@customForm.yesNoInput  label="Does this Funding Source have a global dimension?" name=""  editable=editable inverse=false  cssClass="" /] </div>
-        <div class="col-md-6">[@customForm.yesNoInput  label="Does this Funding Source have a regional dimension?" name=""  editable=editable inverse=false  cssClass="isRegional" /] </div>
+        <div class="col-md-6">[@customForm.yesNoInput  label="Does this Funding Source have a global dimension?" name="fundingSource.global"  editable=editable inverse=false  cssClass="" /] </div>
+        <div class="col-md-6">[@customForm.yesNoInput  label="Does this Funding Source have a regional dimension?" name="region"  editable=editable inverse=false  cssClass="isRegional" /] </div>
       </div>
       
       [#-- REGIONAL DIMENSION --]
