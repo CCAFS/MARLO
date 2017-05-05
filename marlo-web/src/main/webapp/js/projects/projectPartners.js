@@ -103,14 +103,11 @@ function attachEvents() {
           partner.startLoader();
         },
         success: function(data) {
-          $(partner.persons).each(function(i,partnerPerson) {
-            var contact = new PartnerPersonObject($(partnerPerson));
-            $(contact.branchSelect).empty();
-            $.each(data.branches, function(index,branch) {
-              $(contact.branchSelect).append(setOption(branch.id, branch.name));
-            });
-            $(contact.branchSelect).trigger("change.select2");
+          $(partner.countriesSelect).empty();
+          $.each(data.branches, function(index,branch) {
+            $(partner.countriesSelect).append(setOption(branch.iso, branch.name));
           });
+          $(partner.countriesSelect).trigger("change.select2");
         },
         complete: function() {
           partner.stopLoader();
@@ -512,8 +509,9 @@ function addPartnerEvent(e) {
       placeholder: "Select the branches where the project is working on...",
       width: '100%'
   });
-  $newElement.find('select.countriesSelect').find('').select2({
-      placeholder: "Select a country",
+
+  $newElement.find('select.countriesSelect').select2({
+      placeholder: "Select a country office",
       templateResult: formatStateCountries,
       templateSelection: formatStateCountries,
       width: '100%'
@@ -535,20 +533,6 @@ function addContactEvent(e) {
   $newElement.find("select").select2({
       templateResult: formatState,
       width: '100%'
-  });
-
-  $.ajax({
-      url: baseURL + "/institutionBranchList.do",
-      data: {
-        institutionID: partner.institutionId
-      },
-      success: function(data) {
-        $(contact.branchSelect).empty();
-        $.each(data.branches, function(index,branch) {
-          $(contact.branchSelect).append(setOption(branch.id, branch.name));
-        });
-        $(contact.branchSelect).trigger("change.select2");
-      }
   });
 
   // Update indexes
@@ -674,8 +658,8 @@ function addSelect2() {
       placeholder: "Select the branches where the project is working on...",
       width: '100%'
   });
-  $('form select.countriesSelect').find('').select2({
-      placeholder: "Select a country",
+  $('form select.countriesSelect').select2({
+      placeholder: "Select a country office",
       templateResult: formatStateCountries,
       templateSelection: formatStateCountries,
       width: '100%'
@@ -698,6 +682,7 @@ function PartnerObject(partner) {
           || $(partner).find('.partnerTitle').text();
   this.ppaPartnersList = $(partner).find('.ppaPartnersList');
   this.persons = $(partner).find('.contactsPerson .contactPerson');
+  this.countriesSelect = $(partner).find('.countriesSelect');
   this.setIndex = function(name,index) {
     var elementName = name + "[" + index + "].";
 
@@ -828,7 +813,6 @@ function PartnerPersonObject(partnerPerson) {
   this.type = $(partnerPerson).find('.partnerPersonType').val();
   this.contactInfo = $(partnerPerson).find('.userName').val();
   this.canEditEmail = ($(partnerPerson).find('input.canEditEmail').val() === "true");
-  this.branchSelect = $(partnerPerson).find('.partnerPersonBranch');
   this.setPartnerType = function(type) {
     this.type = type;
     $(partnerPerson).find('.partnerPersonType').val(type).trigger('change.select2');

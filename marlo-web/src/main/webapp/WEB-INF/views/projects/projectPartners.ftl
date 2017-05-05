@@ -247,7 +247,6 @@
         <p class="fieldErrorInstitutions"></p>
           [#-- list=allInstitutions --]
           [@customForm.select name="${name}.institution.id" value="${(element.institution.id)!}" className="institutionsList" required=true header=false i18nkey="projectPartners.partner.name" listName="" keyFieldName="id"  displayFieldName="composedName"  /]
-        <br />
       </div>
       [#else]
         <input type="hidden" name="${name}.institution.id" class="institutionsList" value="${(element.institution.id)!}"/>

@@ -60,6 +60,7 @@ public class ProjectBranchesListAction extends BaseAction {
     branch = new HashMap<String, Object>();
     branch.put("id", institution.getId());
     branch.put("name", institution.getBranchName());
+    branch.put("iso", institution.getLocElement().getIsoAlpha2());
 
     branches.add(branch);
 
@@ -68,6 +69,7 @@ public class ProjectBranchesListAction extends BaseAction {
       branch = new HashMap<String, Object>();
       branch.put("id", institutionBranch.getId());
       branch.put("name", institutionBranch.getBranchName());
+      branch.put("iso", institutionBranch.getLocElement().getIsoAlpha2());
       branches.add(branch);
     }
 

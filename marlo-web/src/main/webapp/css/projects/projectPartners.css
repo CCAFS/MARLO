@@ -1,3 +1,10 @@
 .ppaPartnersList{
   position:relative;
 }
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+  margin-top: 4px;
+  padding: 2px 10px;
+}
+
+i.flag-sm {vertical-align: sub;}
