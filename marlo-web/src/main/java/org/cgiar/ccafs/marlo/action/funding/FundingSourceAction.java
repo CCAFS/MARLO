@@ -477,7 +477,7 @@ public class FundingSourceAction extends BaseAction {
           fundingSource.setFundingCountry(new ArrayList<>());
 
           for (FundingSourceLocation fundingSourceLocation : countries) {
-
+            fundingSource.getFundingCountry().add(fundingSourceLocation.getLocElement().getIsoAlpha2());
           }
         }
 
