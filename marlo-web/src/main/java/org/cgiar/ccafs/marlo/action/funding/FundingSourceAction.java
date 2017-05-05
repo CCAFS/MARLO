@@ -484,6 +484,17 @@ public class FundingSourceAction extends BaseAction {
           for (FundingSourceLocation fundingSourceLocation : countries) {
             fundingSource.getFundingCountry().add(fundingSourceLocation.getLocElement().getIsoAlpha2());
           }
+
+          fundingSource.setFundingRegions(new ArrayList<>());
+
+          List<FundingSourceLocation> regions = new ArrayList<>(fundingSource.getFundingSourceLocations().stream()
+            .filter(fl -> fl.isActive() && fl.getLocElement().getLocElementType().getId() == 1)
+            .collect(Collectors.toList()));
+
+          for (FundingSourceLocation fundingSourceLocation : regions) {
+            fundingSource.getFundingRegions().add(fundingSourceLocation.getLocElement().getId());
+          }
+
         }
 
 
@@ -713,6 +724,93 @@ public class FundingSourceAction extends BaseAction {
     }
   }
 
+  /**
+   * Funding Source Locations
+   * 
+   * @param fundingSourceDB
+   */
+  public void saveLocations(FundingSource fundingSourceDB) {
+
+    if (fundingSource.getFundingRegions() != null) {
+
+      List<FundingSourceLocation> regions = new ArrayList<>(fundingSourceDB.getFundingSourceLocations().stream()
+        .filter(fl -> fl.isActive() && fl.getLocElement().getLocElementType().getId() == 1)
+        .collect(Collectors.toList()));
+
+      if (regions != null && regions.size() > 0) {
+        for (FundingSourceLocation fundingSourceLocation : regions) {
+          Long regionId = fundingSourceLocation.getLocElement().getId();
+          if (!fundingSource.getFundingRegions().contains(regionId)) {
+            fundingSourceLocationsManager.deleteFundingSourceLocations(fundingSourceLocation.getId());
+          }
+        }
+      }
+
+      for (Long regionID : fundingSource.getFundingRegions()) {
+
+        LocElement locElement = locElementManager.getLocElementById(regionID);
+
+        if (fundingSourceDB.getFundingSourceLocations().stream()
+          .filter(c -> c.isActive() && c.getLocElement().getId().equals(locElement.getId()))
+          .collect(Collectors.toList()).isEmpty()) {
+
+          FundingSourceLocation fundingSourceLocation = new FundingSourceLocation();
+          fundingSourceLocation.setActive(true);
+          fundingSourceLocation.setActiveSince(new Date());
+          fundingSourceLocation.setCreatedBy(this.getCurrentUser());
+          fundingSourceLocation.setModifiedBy(this.getCurrentUser());
+          fundingSourceLocation.setModificationJustification("");
+          fundingSourceLocation.setFundingSource(fundingSourceDB);
+          fundingSourceLocation.setLocElement(locElement);
+
+          fundingSourceLocationsManager.saveFundingSourceLocations(fundingSourceLocation);
+        }
+      }
+
+
+    }
+
+    if (fundingSource.getFundingCountry() != null) {
+
+      List<FundingSourceLocation> countries = new ArrayList<>(fundingSourceDB.getFundingSourceLocations().stream()
+        .filter(fl -> fl.isActive() && fl.getLocElement().getLocElementType().getId() == 2)
+        .collect(Collectors.toList()));
+
+      if (countries != null && countries.size() > 0) {
+        for (FundingSourceLocation fundingSourceLocation : countries) {
+          String isoCode2 = fundingSourceLocation.getLocElement().getIsoAlpha2();
+          if (!fundingSource.getFundingCountry().contains(isoCode2)) {
+            fundingSourceLocationsManager.deleteFundingSourceLocations(fundingSourceLocation.getId());
+          }
+        }
+      }
+
+      for (String isoCode2 : fundingSource.getFundingCountry()) {
+
+        LocElement locElement = locElementManager.getLocElementByISOCode(isoCode2);
+
+        if (fundingSourceDB.getFundingSourceLocations().stream()
+          .filter(c -> c.isActive() && c.getLocElement().getId().equals(locElement.getId()))
+          .collect(Collectors.toList()).isEmpty()) {
+
+          FundingSourceLocation fundingSourceLocation = new FundingSourceLocation();
+          fundingSourceLocation.setActive(true);
+          fundingSourceLocation.setActiveSince(new Date());
+          fundingSourceLocation.setCreatedBy(this.getCurrentUser());
+          fundingSourceLocation.setModifiedBy(this.getCurrentUser());
+          fundingSourceLocation.setModificationJustification("");
+          fundingSourceLocation.setFundingSource(fundingSourceDB);
+          fundingSourceLocation.setLocElement(locElement);
+
+          fundingSourceLocationsManager.saveFundingSourceLocations(fundingSourceLocation);
+        }
+      }
+
+
+    }
+
+  }
+
   public void setBudgetTypes(Map<String, String> budgetTypes) {
     this.budgetTypes = budgetTypes;
   }
@@ -733,6 +831,7 @@ public class FundingSourceAction extends BaseAction {
     this.file = file;
   }
 
+
   public void setFileContentType(String fileContentType) {
     this.fileContentType = fileContentType;
   }
@@ -741,7 +840,6 @@ public class FundingSourceAction extends BaseAction {
   public void setFileFileName(String fileFileName) {
     this.fileFileName = fileFileName;
   }
-
 
   public void setFileID(Integer fileID) {
     this.fileID = fileID;
@@ -759,10 +857,10 @@ public class FundingSourceAction extends BaseAction {
     this.institutions = institutions;
   }
 
+
   public void setInstitutionsDonors(List<Institution> institutionsDonors) {
     this.institutionsDonors = institutionsDonors;
   }
-
 
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
@@ -790,6 +888,5 @@ public class FundingSourceAction extends BaseAction {
       validator.validate(this, fundingSource, true);
     }
   }
-
 
 }
