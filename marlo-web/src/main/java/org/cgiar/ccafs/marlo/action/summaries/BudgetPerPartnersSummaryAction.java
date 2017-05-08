@@ -24,7 +24,6 @@ import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
-import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
@@ -288,21 +287,12 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     for (Project project : projects) {
       // Get PPA institutions with budgets
       List<Institution> institutionsList = new ArrayList<>();
-      HashMap<Institution, List<FundingSource>> institutionsList2 = new HashMap<>();
 
       for (ProjectBudget projectBudget : project.getProjectBudgets().stream().filter(pb -> pb.isActive()
         && pb.getYear() == this.getYear() && pb.getInstitution() != null && pb.getInstitution().isActive())
         .collect(Collectors.toList())) {
         if (this.isPPA(projectBudget.getInstitution())) {
           institutionsList.add(projectBudget.getInstitution());
-          List<FundingSource> listValue = null;
-          if (institutionsList2.containsKey(projectBudget.getInstitution())) {
-            listValue = institutionsList2.get(projectBudget.getInstitution());
-          } else {
-            listValue = new ArrayList<>();
-          }
-          listValue.add(projectBudget.getFundingSource());
-          institutionsList2.put(projectBudget.getInstitution(), listValue);
         }
       }
       // remove duplicates
@@ -310,7 +300,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
       if (institutions.size() > 0) {
         totalProjects++;
       }
-      for (Institution institution : institutionsList2.keySet()) {
+      for (Institution institution : institutions) {
         for (ProjectPartner pp : project.getProjectPartners().stream()
           .filter(pp -> pp.isActive() && pp.getInstitution().getId().equals(institution.getId()))
           .collect(Collectors.toList())) {
@@ -390,11 +380,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
             flagships = null;
           }
 
-          List<FundingSource> fundingSources = institutionsList2.get(institution);;
 
-          if (!fundingSources.stream().filter(c -> c.getW1w2()).collect(Collectors.toList()).isEmpty()) {
-
-          }
           budgetW1W2Co = Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 1, projectId, 2));
           budgetW1W2 = Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 1, projectId, 3));
           budgetW3 = Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 2, projectId, 1));
