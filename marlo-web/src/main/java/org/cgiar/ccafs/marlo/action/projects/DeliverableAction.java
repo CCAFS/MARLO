@@ -210,6 +210,10 @@ public class DeliverableAction extends BaseAction {
 
   private List<ProjectPartnerPerson> partnerPersons;
 
+
+  private List<ProjectPartner> partners;
+
+
   private Project project;
 
   private long projectID;
@@ -218,24 +222,24 @@ public class DeliverableAction extends BaseAction {
 
   private List<ProjectOutcome> projectOutcome;
 
-
   private ProjectPartnerManager projectPartnerManager;
 
-
   private ProjectPartnerPersonManager projectPartnerPersonManager;
+
 
   private List<ProjectFocus> projectPrograms;
 
 
   private Map<String, String> status;
 
-
   private String transaction;
 
 
   private int indexTab;
 
+
   private PartnerDivisionManager partnerDivisionManager;
+
 
   private List<PartnerDivision> divisions;
 
@@ -318,7 +322,6 @@ public class DeliverableAction extends BaseAction {
     return answers;
   }
 
-
   private Path getAutoSaveFilePath() {
     String composedClassName = deliverable.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -326,7 +329,6 @@ public class DeliverableAction extends BaseAction {
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
-
 
   public Map<String, String> getChannels() {
     return channels;
@@ -337,9 +339,11 @@ public class DeliverableAction extends BaseAction {
     return crps;
   }
 
+
   public Deliverable getDeliverable() {
     return deliverable;
   }
+
 
   public long getDeliverableID() {
     return deliverableID;
@@ -383,19 +387,19 @@ public class DeliverableAction extends BaseAction {
       + "deliverable" + File.separator + fileType + File.separator;
   }
 
-
   public List<PartnerDivision> getDivisions() {
     return divisions;
   }
-
 
   public List<FundingSource> getFundingSources() {
     return fundingSources;
   }
 
+
   public List<GenderType> getGenderLevels() {
     return genderLevels;
   }
+
 
   public int getIndexTab() {
     return indexTab;
@@ -409,10 +413,14 @@ public class DeliverableAction extends BaseAction {
     return loggedCrp;
   }
 
-
   public List<ProjectPartnerPerson> getPartnerPersons() {
     return partnerPersons;
   }
+
+  public List<ProjectPartner> getPartners() {
+    return partners;
+  }
+
 
   public Map<String, String> getPrograms() {
     return programs;
@@ -517,7 +525,6 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
-
   public List<DeliverablePartnership> otherPartners() {
     try {
       List<DeliverablePartnership> list = deliverable.getDeliverablePartnerships().stream()
@@ -532,6 +539,7 @@ public class DeliverableAction extends BaseAction {
 
 
   }
+
 
   public List<DeliverablePartnership> otherPartnersAutoSave() {
     try {
@@ -557,7 +565,6 @@ public class DeliverableAction extends BaseAction {
     }
 
   }
-
 
   public void parnershipNewData() {
     if (deliverable.getOtherPartners() != null) {
@@ -663,6 +670,7 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+
   public void partnershipPreviousData(Deliverable deliverablePrew) {
     if (deliverablePrew.getDeliverablePartnerships() != null
       && deliverablePrew.getDeliverablePartnerships().size() > 0) {
@@ -681,7 +689,6 @@ public class DeliverableAction extends BaseAction {
       }
     }
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -992,6 +999,15 @@ public class DeliverableAction extends BaseAction {
 
         }
       }
+
+      // Getting partners list
+      partners = new ArrayList<>();
+      for (ProjectPartner partner : projectPartnerManager.findAll().stream()
+        .filter(pp -> pp.isActive() && (pp.getProject().getId() == projectID)).collect(Collectors.toList())) {
+        // TODO: Filter by Managin/PPA Partner
+        partners.add(partner);
+      }
+
       partnerPersons = new ArrayList<>();
       for (ProjectPartner partner : projectPartnerManager.findAll().stream()
         .filter(pp -> pp.isActive() && pp.getProject().getId() == projectID).collect(Collectors.toList())) {
@@ -1002,6 +1018,7 @@ public class DeliverableAction extends BaseAction {
           partnerPersons.add(partnerPerson);
         }
       }
+
       this.fundingSources = new ArrayList<>();
       List<FundingSource> fundingSources =
         fundingSourceManager.findAll().stream().filter(fs -> fs.isActive()).collect(Collectors.toList());
@@ -1107,6 +1124,7 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+
   private DeliverablePartnership responsiblePartner() {
     try {
       DeliverablePartnership partnership = deliverable.getDeliverablePartnerships().stream()
@@ -1118,7 +1136,6 @@ public class DeliverableAction extends BaseAction {
       return null;
     }
   }
-
 
   private DeliverablePartnership responsiblePartnerAutoSave() {
     try {
@@ -1157,6 +1174,7 @@ public class DeliverableAction extends BaseAction {
     }
 
   }
+
 
   @Override
   public String save() {
@@ -1297,10 +1315,9 @@ public class DeliverableAction extends BaseAction {
         && deliverablePrew.getDeliverablePartnerships().size() > 0) {
 
         try {
-          partnershipResponsible =
-            deliverablePrew.getDeliverablePartnerships().stream()
-              .filter(dp -> dp.isActive()
-                && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
+          partnershipResponsible = deliverablePrew.getDeliverablePartnerships().stream()
+            .filter(
+              dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
             .collect(Collectors.toList()).get(0);
         } catch (Exception e) {
           partnershipResponsible = null;
@@ -1745,7 +1762,6 @@ public class DeliverableAction extends BaseAction {
 
   }
 
-
   public void saveMetadata() {
     if (deliverable.getMetadataElements() != null) {
       for (DeliverableMetadataElement deliverableMetadataElement : deliverable.getMetadataElements()) {
@@ -1758,6 +1774,7 @@ public class DeliverableAction extends BaseAction {
 
   }
 
+
   public void savePublicationMetadata() {
     if (deliverable.getPublication() != null) {
       deliverable.getPublication().setDeliverable(deliverable);
@@ -1768,7 +1785,6 @@ public class DeliverableAction extends BaseAction {
 
     }
   }
-
 
   public void saveQualityCheck() {
     DeliverableQualityCheck qualityCheck;
@@ -1889,6 +1905,7 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+
   public void setAnswers(List<DeliverableQualityAnswer> answers) {
     this.answers = answers;
   }
@@ -1943,6 +1960,10 @@ public class DeliverableAction extends BaseAction {
 
   public void setPartnerPersons(List<ProjectPartnerPerson> partnerPersons) {
     this.partnerPersons = partnerPersons;
+  }
+
+  public void setPartners(List<ProjectPartner> partners) {
+    this.partners = partners;
   }
 
   public void setPrograms(Map<String, String> programs) {

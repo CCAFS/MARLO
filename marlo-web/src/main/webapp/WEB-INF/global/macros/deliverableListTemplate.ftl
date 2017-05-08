@@ -147,7 +147,11 @@
       [#-- Partner Name --]
       <div class="form-group partnerName chosen"> 
       [#if editable]
-        [@customForm.select name="${customName}.projectPartnerPerson.id" value="${(dp.projectPartnerPerson.id)!-1}"  label="" i18nkey="" showTitle=false listName="partnerPersons" keyFieldName="id"  displayFieldName="composedName"     className="${isResponsable?string('responsible','partner')} id " editable=editable required=isResponsable/]
+        [@customForm.select name="${customName}.projectPartnerPerson.projectPartner.id" value="${(dp.projectPartnerPerson.projectPartner.id)!-1}"  label="" i18nkey="" showTitle=false listName="partners" keyFieldName="id"  displayFieldName="composedName"     className="${isResponsable?string('responsible','partner')} id " editable=editable required=isResponsable/]
+      
+        [#list partnerPersons as person]
+          <input type="radio" name="${customName}.projectPartnerPerson.id" [#if (dp.projectPartnerPerson.id == person.id)!false]checked[/#if]/><label for="">${person.composedName}</label><br />
+        [/#list]
       [#else]
         <div class="personRead-content"><span class="glyphicon glyphicon-user" ></span> <span>${((dp.projectPartnerPerson.composedName)!'Contact Person')?html}</span></div>
       [/#if]
