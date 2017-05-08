@@ -103,7 +103,7 @@ public class ImpactRelationAction extends BaseAction {
 
   }
 
-  public void addRelations(CrpProgram crpProgram, CrpProgramOutcome outcome) {
+  public void addRelations(CrpProgram crpProgram, CrpProgramOutcome outcome, SrfSlo srfSlo) {
 
     HashMap<String, Object> dataProgram = new HashMap<>();
     dataProgram.put("id", "F" + crpProgram.getId());
@@ -187,7 +187,14 @@ public class ImpactRelationAction extends BaseAction {
 
               if (relations.stream().filter(c -> c.get("id").equals(dataDetaiSlo.get("id")))
                 .collect(Collectors.toList()).isEmpty()) {
-                relations.add(dataDetaiSlo);
+                if (srfSlo == null) {
+                  relations.add(dataDetaiSlo);
+                } else {
+                  if (srfSlo.getId().equals(srfSloIdo.getSrfSlo().getId())) {
+                    relations.add(dataDetaiSlo);
+                  }
+                }
+
               }
 
 
@@ -442,14 +449,14 @@ public class ImpactRelationAction extends BaseAction {
     switch (type) {
       case "F":
         CrpProgram crpProgram = crpProgramManager.getCrpProgramById(Long.parseLong(id.replace("F", "")));
-        this.addRelations(crpProgram, null);
+        this.addRelations(crpProgram, null, null);
 
         break;
 
       case "O":
         CrpProgramOutcome crpProgramOutcome =
-        crpProgramOutcomeManager.getCrpProgramOutcomeById(Long.parseLong(id.replace("O", "")));
-        this.addRelations(crpProgramOutcome.getCrpProgram(), crpProgramOutcome);
+          crpProgramOutcomeManager.getCrpProgramOutcomeById(Long.parseLong(id.replace("O", "")));
+        this.addRelations(crpProgramOutcome.getCrpProgram(), crpProgramOutcome, null);
 
         break;
       case "SD":
@@ -467,14 +474,14 @@ public class ImpactRelationAction extends BaseAction {
               .filter(c -> c.isActive()
                 && c.getCrpProgramOutcome().getCrpProgram().getId().longValue() == myProgram.getId().longValue())
               .collect(Collectors.toList()).get(0);
-            this.addRelations(myProgram, subIdoOutcome.getCrpProgramOutcome());
+            this.addRelations(myProgram, subIdoOutcome.getCrpProgramOutcome(), null);
           } else {
             if (Long.parseLong(flagshipId) == myProgram.getId().longValue()) {
               CrpOutcomeSubIdo subIdoOutcome = outcomesSubIdos.stream()
                 .filter(c -> c.isActive()
                   && c.getCrpProgramOutcome().getCrpProgram().getId().longValue() == myProgram.getId().longValue())
                 .collect(Collectors.toList()).get(0);
-              this.addRelations(myProgram, subIdoOutcome.getCrpProgramOutcome());
+              this.addRelations(myProgram, subIdoOutcome.getCrpProgramOutcome(), null);
             }
           }
 
@@ -502,7 +509,7 @@ public class ImpactRelationAction extends BaseAction {
                 && c.getCrpProgramOutcome().getCrpProgram().getId().longValue() == myProgram.getId().longValue())
               .collect(Collectors.toList());
             for (CrpOutcomeSubIdo crpOutcomeSubIdo : subIdoOutcomes) {
-              this.addRelations(myProgram, crpOutcomeSubIdo.getCrpProgramOutcome());
+              this.addRelations(myProgram, crpOutcomeSubIdo.getCrpProgramOutcome(), null);
             }
 
           } else {
@@ -512,7 +519,7 @@ public class ImpactRelationAction extends BaseAction {
                   && c.getCrpProgramOutcome().getCrpProgram().getId().longValue() == myProgram.getId().longValue())
                 .collect(Collectors.toList());
               for (CrpOutcomeSubIdo crpOutcomeSubIdo : subIdoOutcomes) {
-                this.addRelations(myProgram, crpOutcomeSubIdo.getCrpProgramOutcome());
+                this.addRelations(myProgram, crpOutcomeSubIdo.getCrpProgramOutcome(), null);
               }
             }
           }
@@ -547,7 +554,7 @@ public class ImpactRelationAction extends BaseAction {
                 && c.getCrpProgramOutcome().getCrpProgram().getId().longValue() == myProgram.getId().longValue())
               .collect(Collectors.toList());
             for (CrpOutcomeSubIdo crpOutcomeSubIdo : subIdoOutcomes) {
-              this.addRelations(myProgram, crpOutcomeSubIdo.getCrpProgramOutcome());
+              this.addRelations(myProgram, crpOutcomeSubIdo.getCrpProgramOutcome(), srfSlo);
             }
 
           } else {
@@ -557,7 +564,7 @@ public class ImpactRelationAction extends BaseAction {
                   && c.getCrpProgramOutcome().getCrpProgram().getId().longValue() == myProgram.getId().longValue())
                 .collect(Collectors.toList());
               for (CrpOutcomeSubIdo crpOutcomeSubIdo : subIdoOutcomes) {
-                this.addRelations(myProgram, crpOutcomeSubIdo.getCrpProgramOutcome());
+                this.addRelations(myProgram, crpOutcomeSubIdo.getCrpProgramOutcome(), srfSlo);
               }
             }
           }
@@ -568,14 +575,14 @@ public class ImpactRelationAction extends BaseAction {
 
       case "CoA":
         CrpClusterOfActivity crpClusterOfActivity =
-        crpClusterOfActivityManager.getCrpClusterOfActivityById(Long.parseLong(id.replace("C", "")));
+          crpClusterOfActivityManager.getCrpClusterOfActivityById(Long.parseLong(id.replace("C", "")));
         this.addRelationsCluster(crpClusterOfActivity.getCrpProgram(), crpClusterOfActivity, null);
 
         break;
 
       case "KO":
         CrpClusterKeyOutput crpClusterKeyOutput =
-        crpClusterKeyOutputManager.getCrpClusterKeyOutputById(Long.parseLong(id.replace("KO", "")));
+          crpClusterKeyOutputManager.getCrpClusterKeyOutputById(Long.parseLong(id.replace("KO", "")));
         this.addRelationsCluster(crpClusterKeyOutput.getCrpClusterOfActivity().getCrpProgram(),
           crpClusterKeyOutput.getCrpClusterOfActivity(), crpClusterKeyOutput);
 
