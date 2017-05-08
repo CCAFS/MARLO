@@ -122,10 +122,9 @@ public class ImpactPathwayGraph extends BaseAction {
           HashMap<String, Object> dataDetaiSIDO = new HashMap<>();
           dataDetaiSIDO.put("id", "IDO" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
           if (crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().isIsCrossCutting()) {
-            dataDetaiSIDO.put("label", "CC-IDO #" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
-          } else {
-            dataDetaiSIDO.put("label", "IDO #" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
+            dataDetaiSIDO.put("color", "#676b6d");
           }
+          dataDetaiSIDO.put("label", "IDO #" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
           dataDetaiSIDO.put("description", crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getDescription());
 
           dataDetaiSIDO.put("type", "IDO");

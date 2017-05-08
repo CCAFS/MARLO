@@ -48,7 +48,7 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
           'border-width': 0.7,
           'border-opacity': 0.7,
           'label': 'data(label)',
-          'background-color': '#2388ae',
+          'background-color': '#0578a3',
           'color': 'white',
           'background-opacity': 0.2,
           'text-opacity': 0.2,

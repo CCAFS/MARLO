@@ -55,10 +55,10 @@ public class ImpactPathwayFullGraph extends BaseAction {
   long crpID;
   @Inject
   private CrpManager crpManager;
-  private HashMap<String, Object> elements;
-
   @Inject
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
+
+  private HashMap<String, Object> elements;
 
   @Inject
   public ImpactPathwayFullGraph(APConfig config) {
@@ -133,10 +133,9 @@ public class ImpactPathwayFullGraph extends BaseAction {
             dataDetaiSIDO.put("id", "IDO" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
 
             if (crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().isIsCrossCutting()) {
-              dataDetaiSIDO.put("label", "CC-IDO #" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
-            } else {
-              dataDetaiSIDO.put("label", "IDO #" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
+              dataDetaiSIDO.put("color", "#676b6d");
             }
+            dataDetaiSIDO.put("label", "IDO #" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
 
             dataDetaiSIDO.put("description", crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getDescription());
 
