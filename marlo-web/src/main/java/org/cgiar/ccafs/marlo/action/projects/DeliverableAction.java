@@ -448,6 +448,19 @@ public class DeliverableAction extends BaseAction {
     return projectPrograms;
   }
 
+  public List<ProjectPartner> getSelectedPartners() {
+
+    List<ProjectPartner> deliverablePartnerPersons = new ArrayList<>();
+
+    for (DeliverablePartnership deliverablePartnership : deliverableManager.getDeliverableById(deliverableID)
+      .getDeliverablePartnerships().stream().filter(c -> c.isActive() && c.getPartnerType().equals("Other"))
+      .collect(Collectors.toList())) {
+      deliverablePartnerPersons.add(deliverablePartnership.getProjectPartnerPerson().getProjectPartner());
+    }
+    return deliverablePartnerPersons;
+
+  }
+
   public List<ProjectPartnerPerson> getSelectedPersons(long partnerID) {
 
     List<ProjectPartnerPerson> deliverablePartnerPersons = new ArrayList<>();
