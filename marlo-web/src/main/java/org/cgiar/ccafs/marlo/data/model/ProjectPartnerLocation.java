@@ -55,16 +55,15 @@ public class ProjectPartnerLocation implements java.io.Serializable, IAuditLog {
     return createdBy;
   }
 
-
   @Override
   public Long getId() {
     return id;
   }
 
+
   public InstitutionLocation getInstitutionLocation() {
     return institutionLocation;
   }
-
 
   @Override
   public String getLogDeatil() {

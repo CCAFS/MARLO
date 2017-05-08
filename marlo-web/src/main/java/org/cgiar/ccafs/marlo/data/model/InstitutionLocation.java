@@ -30,6 +30,13 @@ public class InstitutionLocation implements java.io.Serializable, IAuditLog {
     this.headquater = isHeadquater;
   }
 
+  public String getComposedName() {
+
+    if (this.isHeadquater()) {
+      return "HQ: " + this.getLocElement().getName();
+    }
+    return this.getLocElement().getName();
+  }
 
   @Override
   public Long getId() {
@@ -39,7 +46,6 @@ public class InstitutionLocation implements java.io.Serializable, IAuditLog {
   public Institution getInstitution() {
     return institution;
   }
-
 
   public LocElement getLocElement() {
     return locElement;
@@ -53,6 +59,7 @@ public class InstitutionLocation implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+
   @Override
   public String getModificationJustification() {
 
@@ -65,7 +72,6 @@ public class InstitutionLocation implements java.io.Serializable, IAuditLog {
     u.setId(new Long(3));
     return u;
   }
-
 
   @Override
   public boolean isActive() {
@@ -96,6 +102,13 @@ public class InstitutionLocation implements java.io.Serializable, IAuditLog {
 
   public void setLocElement(LocElement locElement) {
     this.locElement = locElement;
+  }
+
+
+  @Override
+  public String toString() {
+
+    return this.getLocElement().getIsoAlpha2();
   }
 
 

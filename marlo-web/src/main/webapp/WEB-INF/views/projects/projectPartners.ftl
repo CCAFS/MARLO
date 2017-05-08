@@ -265,7 +265,7 @@
         <h5 class="sectionSubTitle">[@s.text name="projectPartners.countryOffices" /]</h5>
         <div class="countriesBlock form-group" title="Select Countries clicking here">
           [#-- Countries List --]
-          [@customForm.select name="${name}.selectedCountries" label="" showTitle=false  i18nkey="projectPartners.countryOffices" listName="countriesList" keyFieldName="isoAlpha2"  displayFieldName="name" value="${name}.selectedCountries" multiple=true required=true  className="countriesSelect form-control input-sm" disabled=!editable/]              
+          [@customForm.select name="${name}.selectedLocations" label="" showTitle=false  i18nkey="projectPartners.countryOffices" listName="${name}.institution.locations" keyFieldName="locElement.isoAlpha2"  displayFieldName="composedName" value="${name}.selectedLocations" multiple=true required=true  className="countriesSelect form-control input-sm" disabled=!editable/]              
         </div>
       </div>
       

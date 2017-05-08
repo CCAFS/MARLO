@@ -22,12 +22,14 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
+import org.cgiar.ccafs.marlo.data.manager.InstitutionLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectComponentLessonManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerContributionManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerOverallManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
@@ -42,12 +44,14 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerContribution;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerOverall;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.Role;
@@ -130,6 +134,9 @@ public class ProjectPartnerAction extends BaseAction {
   private RoleManager roleManager;
   private ProjectManager projectManager;
   private CrpPpaPartnerManager crpPpaPartnerManager;
+  private ProjectPartnerLocationManager projectPartnerLocationManager;
+  private InstitutionLocationManager institutionLocationManager;
+
   private CrpManager crpManager;
 
   private CrpUserManager crpUserManager;
@@ -168,18 +175,21 @@ public class ProjectPartnerAction extends BaseAction {
     ProjectPartnerPersonManager projectPartnerPersonManager, AuditLogManager auditLogManager,
     ProjectComponentLesson projectComponentLesson, ProjectPartnersValidator projectPartnersValidator,
     HistoryComparator historyComparator, ProjectComponentLessonManager projectComponentLessonManager,
-    CrpUserManager crpUserManager) {
+    CrpUserManager crpUserManager, ProjectPartnerLocationManager projectPartnerLocationManager,
+    InstitutionLocationManager institutionLocationManager) {
     super(config);
     this.projectPartnersValidator = projectPartnersValidator;
     this.auditLogManager = auditLogManager;
     this.projectPartnerManager = projectPartnerManager;
     this.institutionManager = institutionManager;
     this.institutionTypeManager = institutionTypeManager;
+    this.projectPartnerLocationManager = projectPartnerLocationManager;
     this.locationManager = locationManager;
     this.historyComparator = historyComparator;
     this.projectManager = projectManager;
     this.userManager = userManager;
     this.crpManager = crpManager;
+    this.institutionLocationManager = institutionLocationManager;
     this.crpPpaPartnerManager = crpPpaPartnerManager;
     this.projectPartnerOverallManager = projectPartnerOverallManager;
     this.sendMail = sendMail;
@@ -833,6 +843,16 @@ public class ProjectPartnerAction extends BaseAction {
 
         }
         for (ProjectPartner projectPartner : project.getPartners()) {
+          projectPartner.setSelectedLocations(new ArrayList<>());
+          for (ProjectPartnerLocation projectPartnerLocation : projectPartner.getProjectPartnerLocations().stream()
+            .filter(c -> c.isActive()).collect(Collectors.toList())) {
+            projectPartner.getSelectedLocations()
+              .add(projectPartnerLocation.getInstitutionLocation().getLocElement().getIsoAlpha2());
+          }
+
+
+          projectPartner.getInstitution().setLocations(projectPartner.getInstitution().getInstitutionsLocations()
+            .stream().filter(c -> c.isActive()).collect(Collectors.toList()));
           projectPartner.setPartnerPersons(
             projectPartner.getProjectPartnerPersons().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
         }
@@ -928,7 +948,6 @@ public class ProjectPartnerAction extends BaseAction {
     }
 
   }
-
 
   @Override
   public String save() {
@@ -1092,7 +1111,7 @@ public class ProjectPartnerAction extends BaseAction {
 
             }
           }
-
+          this.saveLocations(projectPartner);
 
         }
       }
@@ -1174,6 +1193,42 @@ public class ProjectPartnerAction extends BaseAction {
       }
     }
     return NOT_AUTHORIZED;
+
+  }
+
+  public void saveLocations(ProjectPartner partner) {
+
+    if (partner.getSelectedLocations() == null) {
+      partner.setSelectedLocations(new ArrayList<>());
+    }
+    ProjectPartner projectPartnerBD = projectPartnerManager.getProjectPartnerById(partner.getId());
+    List<ProjectPartnerLocation> locationsPrev =
+      projectPartnerBD.getProjectPartnerLocations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+    for (ProjectPartnerLocation projectPartnerLocation : locationsPrev) {
+      if (!partner.getSelectedLocations()
+        .contains(projectPartnerLocation.getInstitutionLocation().getLocElement().getIsoAlpha2())) {
+        projectPartnerLocationManager.deleteProjectPartnerLocation(projectPartnerLocation.getId());
+      }
+    }
+    for (String iso : partner.getSelectedLocations()) {
+      if (locationsPrev.stream()
+        .filter(c -> c.isActive() && c.getInstitutionLocation().getLocElement().getIsoAlpha2().equals(iso))
+        .collect(Collectors.toList()).isEmpty()) {
+        LocElement locElement = locationManager.getLocElementByISOCode(iso);
+        InstitutionLocation institutionLocation =
+          institutionLocationManager.findByLocation(locElement.getId(), partner.getInstitution().getId());
+        ProjectPartnerLocation partnerLocation = new ProjectPartnerLocation();
+        partnerLocation.setInstitutionLocation(institutionLocation);
+        partnerLocation.setActive(true);
+        partnerLocation.setActiveSince(new Date());
+        partnerLocation.setCreatedBy(this.getCurrentUser());
+        partnerLocation.setModificationJustification("");
+        partnerLocation.setModifiedBy(this.getCurrentUser());
+        partnerLocation.setProjectPartner(partner);
+        projectPartnerLocationManager.saveProjectPartnerLocation(partnerLocation);
+      }
+    }
+
 
   }
 

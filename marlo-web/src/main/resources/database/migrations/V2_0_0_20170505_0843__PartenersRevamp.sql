@@ -51,7 +51,7 @@ insert into project_partner_locations(project_partner_id,institution_loc_id,is_a
 select project_partner_id,loc.id,1,now(),3,3,'' from project_partner_persons ppp
 INNER JOIN institutions inst on ppp.institution_id=inst.id
 INNER JOIN institutions_locations loc on inst.headquarter=loc.institution_id and loc.loc_element_id=inst.country_id
-where inst.headquarter is not null   and loc.is_headquater=1 and ppp.is_active=1;
+where inst.headquarter is not null   and loc.is_headquater=0 and ppp.is_active=1;
 
 
 UPDATE 

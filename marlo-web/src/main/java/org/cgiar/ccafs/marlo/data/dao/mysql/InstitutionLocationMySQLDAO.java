@@ -67,6 +67,18 @@ public class InstitutionLocationMySQLDAO implements InstitutionLocationDAO {
   }
 
   @Override
+  public InstitutionLocation findByLocation(long locationID, long institutionID) {
+    String query = "from " + InstitutionLocation.class.getName() + "  where institution_id=" + institutionID
+      + " and loc_element_id= " + locationID;
+    List<InstitutionLocation> list = dao.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+
+  }
+
+  @Override
   public long save(InstitutionLocation institutionLocation) {
     if (institutionLocation.getId() == null) {
       dao.save(institutionLocation);

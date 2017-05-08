@@ -74,6 +74,7 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
   private Set<ProjectPartnerPerson> projectPartnerPersons = new HashSet<>(0);
   private Set<InstitutionLocation> institutionsLocations = new HashSet<InstitutionLocation>(0);
+  private List<InstitutionLocation> locations;
 
 
   public Institution() {
@@ -85,6 +86,7 @@ public class Institution implements java.io.Serializable, IAuditLog {
     this.name = name;
     this.added = added;
   }
+
 
   public Institution(InstitutionType institutionType, String name, String acronym, String city, String websiteLink,
     Long programId, Long countryId, Date added, Set<CrpPpaPartner> crpPpaPartners,
@@ -101,6 +103,7 @@ public class Institution implements java.io.Serializable, IAuditLog {
     this.projectPartnerPersons = projectPartnerPersons;
     this.fundingSources = fundingSources;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -162,28 +165,6 @@ public class Institution implements java.io.Serializable, IAuditLog {
     return this.city;
   }
 
-  /*
-   * public String getComposedLocation() {
-   * try {
-   * if (this.headquarter == null) {
-   * // Verify if there exist a city to show
-   * if (this.city != null && this.city != "") {
-   * return this.city + ", " + this.locElement.getName();
-   * }
-   * return this.locElement.getName();
-   * } else {
-   * // Verify if there exist a city to show
-   * if (this.city != null && this.city != "") {
-   * return this.city + ", " + this.locElement.getName();
-   * }
-   * return this.locElement.getName();
-   * }
-   * } catch (Exception e) {
-   * return this.name;
-   * }
-   * }
-   */
-
   public String getComposedName() {
     if (this.getAcronym() != null) {
       if (this.getAcronym().length() != 0) {
@@ -214,6 +195,28 @@ public class Institution implements java.io.Serializable, IAuditLog {
     return this.getName();
   }
 
+  /*
+   * public String getComposedLocation() {
+   * try {
+   * if (this.headquarter == null) {
+   * // Verify if there exist a city to show
+   * if (this.city != null && this.city != "") {
+   * return this.city + ", " + this.locElement.getName();
+   * }
+   * return this.locElement.getName();
+   * } else {
+   * // Verify if there exist a city to show
+   * if (this.city != null && this.city != "") {
+   * return this.city + ", " + this.locElement.getName();
+   * }
+   * return this.locElement.getName();
+   * }
+   * } catch (Exception e) {
+   * return this.name;
+   * }
+   * }
+   */
+
   public Set<CrpPpaPartner> getCrpPpaPartners() {
     return crpPpaPartners;
   }
@@ -221,7 +224,6 @@ public class Institution implements java.io.Serializable, IAuditLog {
   public Set<FundingSource> getFundingSources() {
     return fundingSources;
   }
-
 
   @Override
   public Long getId() {
@@ -249,6 +251,10 @@ public class Institution implements java.io.Serializable, IAuditLog {
     return liaisonInstitutions;
   }
 
+  public List<InstitutionLocation> getLocations() {
+    return locations;
+  }
+
 
   @Override
   public String getLogDeatil() {
@@ -274,6 +280,7 @@ public class Institution implements java.io.Serializable, IAuditLog {
     u.setId(new Long(3));
     return null;
   }
+
 
   public String getName() {
     return this.name;
@@ -344,10 +351,10 @@ public class Institution implements java.io.Serializable, IAuditLog {
     this.fundingSources = fundingSources;
   }
 
-
   public void setId(Long id) {
     this.id = id;
   }
+
 
   public void setInstitutionsLocations(Set<InstitutionLocation> institutionsLocations) {
     this.institutionsLocations = institutionsLocations;
@@ -359,6 +366,10 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
   public void setLiaisonInstitutions(Set<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
+  }
+
+  public void setLocations(List<InstitutionLocation> locations) {
+    this.locations = locations;
   }
 
 

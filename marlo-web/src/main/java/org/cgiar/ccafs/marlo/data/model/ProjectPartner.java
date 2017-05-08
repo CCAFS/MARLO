@@ -57,9 +57,12 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
 
   private Set<ProjectPartnerLocation> projectPartnerLocations = new HashSet<ProjectPartnerLocation>(0);
 
-  private List<ProjectPartnerPerson> partnerPersons;
-  private List<ProjectPartnerContribution> partnerContributors;
+  private List<String> selectedLocations;
 
+
+  private List<ProjectPartnerPerson> partnerPersons;
+
+  private List<ProjectPartnerContribution> partnerContributors;
 
   public ProjectPartner() {
   }
@@ -74,6 +77,7 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
   }
+
 
   public ProjectPartner(Institution institution, Project project, User usersByCreatedBy, User usersByModifiedBy,
     boolean isActive, Date activeSince, String modificationJustification,
@@ -141,11 +145,9 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
 
   }
 
-
   public User getCreatedBy() {
     return this.createdBy;
   }
-
 
   @Override
   public Long getId() {
@@ -157,6 +159,7 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     return this.institution;
   }
 
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -166,6 +169,7 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
 
     return sb.toString();
   }
+
 
   @Override
   public String getModificationJustification() {
@@ -215,7 +219,6 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     return project;
   }
 
-
   public Set<ProjectPartnerContribution> getProjectPartnerContributions() {
     return this.projectPartnerContributions;
   }
@@ -223,6 +226,7 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
   public Set<ProjectPartnerContribution> getProjectPartnerContributors() {
     return this.projectPartnerContributors;
   }
+
 
   public Set<ProjectPartnerLocation> getProjectPartnerLocations() {
     return projectPartnerLocations;
@@ -238,6 +242,10 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
 
   public String getResponsibilities() {
     return responsibilities;
+  }
+
+  public List<String> getSelectedLocations() {
+    return selectedLocations;
   }
 
   @Override
@@ -289,10 +297,10 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     }
   }
 
-
   public void setActive(boolean active) {
     this.active = active;
   }
+
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
@@ -305,7 +313,6 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
   public void setId(Long id) {
     this.id = id;
   }
-
 
   public void setInstitution(Institution institution) {
     this.institution = institution;
@@ -321,6 +328,7 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     this.modifiedBy = usersByModifiedBy;
   }
 
+
   public void setPartnerContributors(List<ProjectPartnerContribution> partnerContributors) {
     this.partnerContributors = partnerContributors;
   }
@@ -329,10 +337,10 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     this.partnerPersons = partnerPersons;
   }
 
-
   public void setProject(Project project) {
     this.project = project;
   }
+
 
   public void
     setProjectPartnerContributions(Set<ProjectPartnerContribution> projectPartnerContributionsesForProjectPartnerId) {
@@ -358,6 +366,10 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
 
   public void setResponsibilities(String responsibilities) {
     this.responsibilities = responsibilities;
+  }
+
+  public void setSelectedLocations(List<String> selectedLocations) {
+    this.selectedLocations = selectedLocations;
   }
 
   @Override
