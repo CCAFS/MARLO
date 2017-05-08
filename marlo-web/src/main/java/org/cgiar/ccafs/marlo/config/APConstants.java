@@ -67,6 +67,8 @@ public final class APConstants {
   public static final String CRP_PC_ROLE = "crp_pc_rol";
   public static final String CRP_RPL_ROLE = "crp_rpl_rol";
   public static final String CRP_SL_ROLE = "crp_sl_rol";
+
+  public static final String CRP_FS_W1W2_COFINANCING = "crp_fs_w1w2_cofinancing";
   public static final String CRP_PLANNING_YEAR = "crp_planning_year";
   public static final String CRP_PLANNING_ACTIVE = "crp_planning_active";
   public static final String CRP_REPORTING_YEAR = "crp_reporting_year";
@@ -90,6 +92,7 @@ public final class APConstants {
   public static final String CRP_PROGRAM_ID = "crpProgramID";
   public static final String LIASON_INSTITUTION_ID = "liasonInstitutionID";
   public static final String CRP_ID = "crpID";
+
   public static final String FLAGSHIP_ID = "flagshipID";
 
   public static final String TRANSACTION_ID = "transactionId";
