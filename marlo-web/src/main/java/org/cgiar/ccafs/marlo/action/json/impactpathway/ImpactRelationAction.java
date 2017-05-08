@@ -57,31 +57,31 @@ import org.slf4j.LoggerFactory;
 public class ImpactRelationAction extends BaseAction {
 
 
+  // Logger
+  private static final Logger LOG = LoggerFactory.getLogger(ImpactRelationAction.class);
   /**
    * 
    */
   private static final long serialVersionUID = 5419809118664506772L;
-  // Logger
-  private static final Logger LOG = LoggerFactory.getLogger(ImpactRelationAction.class);
 
-  private String id;
+  private CrpClusterKeyOutputManager crpClusterKeyOutputManager;
+  private CrpClusterOfActivityManager crpClusterOfActivityManager;
+
+  private CrpOutcomeSubIdoManager crpOutcomeSubIdoManager;
+  private CrpProgramManager crpProgramManager;
+
+
+  private CrpProgramOutcomeManager crpProgramOutcomeManager;
   private String flagshipId;
+  private String id;
+  private List<HashMap<String, Object>> relations = new ArrayList<HashMap<String, Object>>();
+  private SrfIdoManager srfIdoManager;
+  private SrfSloIdoManager srfSloIdoManager;
+  private SrfSloManager srfSloManager;
+
+  private SrfSubIdoManager srfSubIdoManager;
 
   private String type;
-  private List<HashMap<String, Object>> relations = new ArrayList<HashMap<String, Object>>();
-
-
-  private CrpProgramManager crpProgramManager;
-  private CrpProgramOutcomeManager crpProgramOutcomeManager;
-  private CrpClusterOfActivityManager crpClusterOfActivityManager;
-  private CrpClusterKeyOutputManager crpClusterKeyOutputManager;
-  private CrpOutcomeSubIdoManager crpOutcomeSubIdoManager;
-  private SrfSubIdoManager srfSubIdoManager;
-  private SrfIdoManager srfIdoManager;
-
-  private SrfSloIdoManager srfSloIdoManager;
-
-  private SrfSloManager srfSloManager;
 
 
   @Inject
@@ -146,7 +146,7 @@ public class ImpactRelationAction extends BaseAction {
             subIdos.add(crpOutcomeSubIdo.getSrfSubIdo());
             HashMap<String, Object> dataDetaiSubIDO = new HashMap<>();
             dataDetaiSubIDO.put("id", "SD" + crpOutcomeSubIdo.getSrfSubIdo().getId());
-            dataDetaiSubIDO.put("label", "SubIDO #" + crpOutcomeSubIdo.getSrfSubIdo().getId());
+            dataDetaiSubIDO.put("label", "Sub-IDO #" + crpOutcomeSubIdo.getSrfSubIdo().getId());
             dataDetaiSubIDO.put("description", crpOutcomeSubIdo.getSrfSubIdo().getDescription());
 
             dataDetaiSubIDO.put("type", "SD");
@@ -161,7 +161,7 @@ public class ImpactRelationAction extends BaseAction {
             HashMap<String, Object> dataDetaiSIDO = new HashMap<>();
             dataDetaiSIDO.put("id", "IDO" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
             if (crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().isIsCrossCutting()) {
-              dataDetaiSIDO.put("label", "Cross cutting-IDO #" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
+              dataDetaiSIDO.put("label", "Cross-Cutting IDO #" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
             } else {
               dataDetaiSIDO.put("label", "IDO #" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
             }
@@ -222,7 +222,7 @@ public class ImpactRelationAction extends BaseAction {
             HashMap<String, Object> dataDetailOutcome = new HashMap<>();
             dataDetailOutcome.put("id", "C" + crpClusterOfActivity.getId());
             dataDetailOutcome.put("label", crpClusterOfActivity.getIdentifier());
-            dataDetailOutcome.put("description", crpClusterOfActivity.getComposedName());
+            dataDetailOutcome.put("description", crpClusterOfActivity.getDescription());
             dataDetailOutcome.put("color", "#c0c0c0");
             dataDetailOutcome.put("type", "CoA");
             dataDetailOutcome.put("order", new Integer(6));
@@ -245,7 +245,7 @@ public class ImpactRelationAction extends BaseAction {
         HashMap<String, Object> dataDetailOutcome = new HashMap<>();
         dataDetailOutcome.put("id", "C" + crpClusterOfActivity.getId());
         dataDetailOutcome.put("label", crpClusterOfActivity.getIdentifier());
-        dataDetailOutcome.put("description", crpClusterOfActivity.getComposedName());
+        dataDetailOutcome.put("description", crpClusterOfActivity.getDescription());
         dataDetailOutcome.put("color", "#c0c0c0");
         dataDetailOutcome.put("type", "CoA");
         dataDetailOutcome.put("order", new Integer(6));
@@ -308,7 +308,7 @@ public class ImpactRelationAction extends BaseAction {
         HashMap<String, Object> dataDetailOutcome = new HashMap<>();
         dataDetailOutcome.put("id", "C" + crpClusterOfActivity.getId());
         dataDetailOutcome.put("label", crpClusterOfActivity.getIdentifier());
-        dataDetailOutcome.put("description", crpClusterOfActivity.getComposedName());
+        dataDetailOutcome.put("description", crpClusterOfActivity.getDescription());
         dataDetailOutcome.put("color", "#c0c0c0");
         dataDetailOutcome.put("type", "CoA");
 
@@ -369,7 +369,7 @@ public class ImpactRelationAction extends BaseAction {
                   subIdos.add(crpOutcomeSubIdo.getSrfSubIdo());
                   HashMap<String, Object> dataDetaiSubIDO = new HashMap<>();
                   dataDetaiSubIDO.put("id", "SD" + crpOutcomeSubIdo.getSrfSubIdo().getId());
-                  dataDetaiSubIDO.put("label", "SubIDO #" + crpOutcomeSubIdo.getSrfSubIdo().getId());
+                  dataDetaiSubIDO.put("label", "Sub-IDO #" + crpOutcomeSubIdo.getSrfSubIdo().getId());
                   dataDetaiSubIDO.put("description", crpOutcomeSubIdo.getSrfSubIdo().getDescription());
                   dataDetaiSubIDO.put("order", new Integer(3));
 
@@ -384,7 +384,7 @@ public class ImpactRelationAction extends BaseAction {
                   dataDetaiSIDO.put("id", "IDO" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
                   if (crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().isIsCrossCutting()) {
                     dataDetaiSIDO.put("label",
-                      "Cross cutting-IDO #" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
+                      "Cross-Cutting IDO #" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
                   } else {
                     dataDetaiSIDO.put("label", "IDO #" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
                   }
@@ -448,7 +448,7 @@ public class ImpactRelationAction extends BaseAction {
 
       case "O":
         CrpProgramOutcome crpProgramOutcome =
-          crpProgramOutcomeManager.getCrpProgramOutcomeById(Long.parseLong(id.replace("O", "")));
+        crpProgramOutcomeManager.getCrpProgramOutcomeById(Long.parseLong(id.replace("O", "")));
         this.addRelations(crpProgramOutcome.getCrpProgram(), crpProgramOutcome);
 
         break;
@@ -568,14 +568,14 @@ public class ImpactRelationAction extends BaseAction {
 
       case "CoA":
         CrpClusterOfActivity crpClusterOfActivity =
-          crpClusterOfActivityManager.getCrpClusterOfActivityById(Long.parseLong(id.replace("C", "")));
+        crpClusterOfActivityManager.getCrpClusterOfActivityById(Long.parseLong(id.replace("C", "")));
         this.addRelationsCluster(crpClusterOfActivity.getCrpProgram(), crpClusterOfActivity, null);
 
         break;
 
       case "KO":
         CrpClusterKeyOutput crpClusterKeyOutput =
-          crpClusterKeyOutputManager.getCrpClusterKeyOutputById(Long.parseLong(id.replace("KO", "")));
+        crpClusterKeyOutputManager.getCrpClusterKeyOutputById(Long.parseLong(id.replace("KO", "")));
         this.addRelationsCluster(crpClusterKeyOutput.getCrpClusterOfActivity().getCrpProgram(),
           crpClusterKeyOutput.getCrpClusterOfActivity(), crpClusterKeyOutput);
 

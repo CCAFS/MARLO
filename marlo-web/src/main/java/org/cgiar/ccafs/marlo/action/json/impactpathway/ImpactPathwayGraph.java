@@ -111,7 +111,7 @@ public class ImpactPathwayGraph extends BaseAction {
         if (crpOutcomeSubIdo.getSrfSubIdo() != null && crpOutcomeSubIdo.getSrfSubIdo().isActive()) {
           HashMap<String, Object> dataDetaiSubIDO = new HashMap<>();
           dataDetaiSubIDO.put("id", "SD" + crpOutcomeSubIdo.getSrfSubIdo().getId());
-          dataDetaiSubIDO.put("label", "SubIDO #" + crpOutcomeSubIdo.getSrfSubIdo().getId());
+          dataDetaiSubIDO.put("label", "Sub-IDO #" + crpOutcomeSubIdo.getSrfSubIdo().getId());
           dataDetaiSubIDO.put("description", crpOutcomeSubIdo.getSrfSubIdo().getDescription());
 
           dataDetaiSubIDO.put("type", "SD");
@@ -215,7 +215,7 @@ public class ImpactPathwayGraph extends BaseAction {
       HashMap<String, Object> dataOutcome = new HashMap<>();
       HashMap<String, Object> dataDetailOutcome = new HashMap<>();
       dataDetailOutcome.put("id", "C" + crpClusterOfActivity.getId());
-      dataDetailOutcome.put("label", "CoA #" + i1);
+      dataDetailOutcome.put("label", crpClusterOfActivity.getIdentifier());
       dataDetailOutcome.put("description", crpClusterOfActivity.getComposedName());
       dataDetailOutcome.put("color", "#c0c0c0");
       dataDetailOutcome.put("type", "CoA");
