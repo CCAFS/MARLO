@@ -68,6 +68,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.GenderType;
+import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.PartnerDivision;
@@ -525,6 +526,27 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+  public boolean isPPA(Institution institution) {
+    if (institution == null) {
+      return false;
+    }
+
+    if (institution.getId() != null) {
+      institution = institutionManager.getInstitutionById(institution.getId());
+      if (institution != null) {
+        if (institution.getCrpPpaPartners().stream()
+          .filter(c -> c.getCrp().getId().longValue() == loggedCrp.getId().longValue() && c.isActive())
+          .collect(Collectors.toList()).size() > 0) {
+          return true;
+        }
+      }
+
+    }
+
+    return false;
+  }
+
+
   public List<DeliverablePartnership> otherPartners() {
     try {
       List<DeliverablePartnership> list = deliverable.getDeliverablePartnerships().stream()
@@ -539,7 +561,6 @@ public class DeliverableAction extends BaseAction {
 
 
   }
-
 
   public List<DeliverablePartnership> otherPartnersAutoSave() {
     try {
@@ -565,6 +586,7 @@ public class DeliverableAction extends BaseAction {
     }
 
   }
+
 
   public void parnershipNewData() {
     if (deliverable.getOtherPartners() != null) {
@@ -669,7 +691,6 @@ public class DeliverableAction extends BaseAction {
       }
     }
   }
-
 
   public void partnershipPreviousData(Deliverable deliverablePrew) {
     if (deliverablePrew.getDeliverablePartnerships() != null
@@ -1004,8 +1025,11 @@ public class DeliverableAction extends BaseAction {
       partners = new ArrayList<>();
       for (ProjectPartner partner : projectPartnerManager.findAll().stream()
         .filter(pp -> pp.isActive() && (pp.getProject().getId() == projectID)).collect(Collectors.toList())) {
-        // TODO: Filter by Managin/PPA Partner
-        partners.add(partner);
+
+        if (this.isPPA(partner.getInstitution())) {
+          partners.add(partner);
+        }
+
       }
 
       partnerPersons = new ArrayList<>();
@@ -1123,7 +1147,6 @@ public class DeliverableAction extends BaseAction {
       indexTab = 0;
     }
   }
-
 
   private DeliverablePartnership responsiblePartner() {
     try {
@@ -1315,9 +1338,10 @@ public class DeliverableAction extends BaseAction {
         && deliverablePrew.getDeliverablePartnerships().size() > 0) {
 
         try {
-          partnershipResponsible = deliverablePrew.getDeliverablePartnerships().stream()
-            .filter(
-              dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
+          partnershipResponsible =
+            deliverablePrew.getDeliverablePartnerships().stream()
+              .filter(dp -> dp.isActive()
+                && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
             .collect(Collectors.toList()).get(0);
         } catch (Exception e) {
           partnershipResponsible = null;
