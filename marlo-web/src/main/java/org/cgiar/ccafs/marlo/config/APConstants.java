@@ -103,6 +103,7 @@ public final class APConstants {
   public static final String DELIVERABLE_TYPE_ID = "deliverableTypeId";
   public static final String DELIVERABLE_ID = "deliverableId";
   public static final String CRP_ADMIN_ROLE = "crp_admin_rol";
+  public static final String PARTNER_ID = "partnerId";
 
   // Metadata request
   public static final String METADATA_REQUEST_ID = "metadataID";
