@@ -143,7 +143,7 @@
             [#if fundingSource.fundingRegions?has_content]
               [#list fundingSource.fundingRegions as region]
                 [#-- Show if is a headquarter institution --]
-                  <li id="" class="region clearfix col-md-2">
+                  <li id="" class="region clearfix col-md-3">
                   [#if editable ]
                     <div class="removeRegion removeIcon" title="Remove region"></div>
                   [/#if]
