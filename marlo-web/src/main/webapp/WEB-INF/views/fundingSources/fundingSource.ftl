@@ -135,7 +135,7 @@
       </div>
       
       [#-- REGIONAL SELECT --]
-      <div class="regionsBox form-group row" style="display:none">
+      <div class="regionsBox form-group row" style="display:${region?string('block','none')}">
         <div class="panel tertiary col-md-12">
          <div class="panel-head"><label for=""> [@customForm.text name="Select the regions" readText=!editable /]:[@customForm.req required=editable /]</label></div>
           <div id="regionList" class="panel-body" listname="fundingSource.fundingRegions"> 
