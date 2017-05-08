@@ -177,8 +177,8 @@
                   [#if editable ]
                     <div class="removeCountry removeIcon" title="Remove country"></div>
                   [/#if]
-                    <input class="id" type="hidden" name="fundingSource.fundingCountry[${country_index}].id" value="${country.id}" />
-                    <input class="cId" type="hidden" name="fundingSource.fundingCountry[${country_index}].locElement.id" value="${country.locElement.id}" />
+                    <input class="id" type="hidden" name="fundingSource.fundingCountry[${country_index}].id" value="${(country.id)!-1}" />
+                    <input class="cId" type="hidden" name="fundingSource.fundingCountry[${country_index}].locElement.isoAlpha2" value="${(country.locElement.isoAlpha2)!}" />
                     <span class="name">${(country.locElement.name)!}</span>
                     <div class="clearfix"></div>
                   </li>
@@ -339,7 +339,7 @@
   <li id="countryTemplate" class="country clearfix col-md-2">
       <div class="removeCountry removeIcon" title="Remove country"></div>
       <input class="id" type="hidden" name="fundingSource.fundingCountry[-1].id" value="" />
-      <input class="cId" type="hidden" name="fundingSource.fundingCountry[-1].locElement.id" value="" />
+      <input class="cId" type="hidden" name="fundingSource.fundingCountry[-1].locElement.isoAlpha2" value="" />
       <span class="name"></span>
       <div class="clearfix"></div>
     </li>

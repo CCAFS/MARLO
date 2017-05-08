@@ -66,9 +66,6 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
     if (obj == null) {
       return false;
     }
-    if (this.getClass() != obj.getClass()) {
-      return false;
-    }
     FundingSourceLocation other = (FundingSourceLocation) obj;
     if (id == null) {
       if (other.id != null) {

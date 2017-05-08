@@ -465,6 +465,25 @@ public class FundingSourceAction extends BaseAction {
           }
         }
 
+        if (fundingSource.getFundingRegions() != null) {
+          region = true;
+          for (FundingSourceLocation fundingSourceLocation : fundingSource.getFundingRegions()) {
+            if (fundingSourceLocation != null) {
+              fundingSourceLocation
+                .setLocElement(locElementManager.getLocElementById(fundingSourceLocation.getLocElement().getId()));
+            }
+          }
+        }
+
+        if (fundingSource.getFundingCountry() != null) {
+          for (FundingSourceLocation fundingSourceLocation : fundingSource.getFundingCountry()) {
+            if (fundingSourceLocation != null) {
+              fundingSourceLocation.setLocElement(
+                locElementManager.getLocElementByISOCode(fundingSourceLocation.getLocElement().getIsoAlpha2()));
+            }
+          }
+        }
+
       } else {
         this.setDraft(false);
         fundingSource.setBudgets(
@@ -582,6 +601,14 @@ public class FundingSourceAction extends BaseAction {
             .setInstitution(institutionManager.getInstitutionById(fundingSourceInstitution.getId()));
         }
         fundingSource.getInstitutions().clear();
+      }
+
+      if (fundingSource.getFundingRegions() != null) {
+        fundingSource.getFundingRegions().clear();
+      }
+
+      if (fundingSource.getFundingCountry() != null) {
+        fundingSource.getFundingCountry().clear();
       }
 
 
@@ -745,8 +772,7 @@ public class FundingSourceAction extends BaseAction {
 
       if (regions != null && regions.size() > 0) {
         for (FundingSourceLocation fundingSourceLocation : regions) {
-          Long regionId = fundingSourceLocation.getLocElement().getId();
-          if (!fundingSource.getFundingRegions().contains(regionId)) {
+          if (!fundingSource.getFundingRegions().contains(fundingSourceLocation)) {
             fundingSourceLocationsManager.deleteFundingSourceLocations(fundingSourceLocation.getId());
           }
         }
@@ -784,8 +810,7 @@ public class FundingSourceAction extends BaseAction {
 
       if (countries != null && countries.size() > 0) {
         for (FundingSourceLocation fundingSourceLocation : countries) {
-          String isoCode2 = fundingSourceLocation.getLocElement().getIsoAlpha2();
-          if (!fundingSource.getFundingCountry().contains(isoCode2)) {
+          if (!fundingSource.getFundingCountry().contains(fundingSourceLocation)) {
             fundingSourceLocationsManager.deleteFundingSourceLocations(fundingSourceLocation.getId());
           }
         }
@@ -804,7 +829,8 @@ public class FundingSourceAction extends BaseAction {
           fundingSourceLocationSave.setModificationJustification("");
           fundingSourceLocationSave.setFundingSource(fundingSourceDB);
 
-          LocElement locElement = locElementManager.getLocElementById(fundingSourceLocation.getLocElement().getId());
+          LocElement locElement =
+            locElementManager.getLocElementByISOCode(fundingSourceLocation.getLocElement().getIsoAlpha2());
 
           fundingSourceLocationSave.setLocElement(locElement);
 
