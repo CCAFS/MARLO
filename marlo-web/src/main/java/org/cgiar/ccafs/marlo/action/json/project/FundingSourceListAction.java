@@ -114,7 +114,7 @@ public class FundingSourceListAction extends BaseAction {
         source.put("type", fundingSource.getBudgetType().getName());
         source.put("typeId", fundingSource.getBudgetType().getId());
 
-        if (fundingSource.getW1w2() != null) {
+        if (fundingSource.getW1w2() != null && this.hasSpecificities(APConstants.CRP_FS_W1W2_COFINANCING)) {
           source.put("w1w2", fundingSource.getW1w2().booleanValue());
         }
 

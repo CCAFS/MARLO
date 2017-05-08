@@ -271,7 +271,9 @@
       <div class="col-md-4">
         <div class="row col-md-6"> <strong>Type:</strong> </div>
         <div class="row col-md-8">
-          <span class="budgetTypeName">${(element.fundingSource.budgetType.name)!}  ${(element.fundingSource.w1w2?string('<small class="text-primary">(Co-Financing)</small>',''))!}</span> 
+          <span class="budgetTypeName">${(element.fundingSource.budgetType.name)!} 
+            [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')] ${(element.fundingSource.w1w2?string('<small class="text-primary">(Co-Financing)</small>',''))!} [/#if]
+          </span> 
           <input type="hidden" class="budgetTypeId" name="${customName}.budgetType.id" value="${(element.fundingSource.budgetType.id)!}" />
         </div>
       </div>

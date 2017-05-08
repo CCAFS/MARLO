@@ -39,7 +39,8 @@
           </td>
           [#-- Project Budget Type --]
           <td class=""> 
-            ${(project.budgetType.name)!'Not defined'} ${(project.w1w2?string('<br /> <span class="programTag">Co-Financing</span> ',''))!}
+            ${(project.budgetType.name)!'Not defined'} 
+            [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')] ${(project.w1w2?string('<br /> <span class="programTag">Co-Financing</span> ',''))!}[/#if]
           </td>
           [#-- Finance Code --]
           <td>
