@@ -220,8 +220,14 @@ public class ImpactRelationAction extends BaseAction {
             dataDetailKeyOutput.put("order", new Integer(7));
             dataDetailKeyOutput.put("order2", this.getIndex(crpClusterKeyOutput.getCrpProgramOutcome().getCrpProgram(),
               crpClusterKeyOutput.getCrpClusterKeyOutput()));
-            relations.add(dataDetailKeyOutput);
-            activities.add(crpClusterKeyOutput.getCrpClusterKeyOutput().getCrpClusterOfActivity());
+
+            if (relations.stream().filter(c -> c.get("id").equals(dataDetailKeyOutput.get("id")))
+              .collect(Collectors.toList()).isEmpty()) {
+              relations.add(dataDetailKeyOutput);
+              activities.add(crpClusterKeyOutput.getCrpClusterKeyOutput().getCrpClusterOfActivity());
+            }
+
+
             k++;
 
           }
@@ -233,8 +239,11 @@ public class ImpactRelationAction extends BaseAction {
             dataDetailOutcome.put("color", "#c0c0c0");
             dataDetailOutcome.put("type", "CoA");
             dataDetailOutcome.put("order", new Integer(6));
+            if (relations.stream().filter(c -> c.get("id").equals(dataDetailOutcome.get("id")))
+              .collect(Collectors.toList()).isEmpty()) {
+              relations.add(dataDetailOutcome);
+            }
 
-            relations.add(dataDetailOutcome);
           }
 
         }
@@ -601,6 +610,11 @@ public class ImpactRelationAction extends BaseAction {
           if (one.containsKey("order2") && two.containsKey("order2")) {
             return new Integer(one.get("order2").toString()).compareTo(new Integer(two.get("order2").toString()));
           } else {
+
+            if (Integer.parseInt(one.get("order").toString()) == 3 || Integer.parseInt(one.get("order").toString()) == 1
+              || Integer.parseInt(one.get("order").toString()) == 2) {
+              return 0;
+            }
             return one.get("label").toString().compareTo(two.get("label").toString());
           }
 
