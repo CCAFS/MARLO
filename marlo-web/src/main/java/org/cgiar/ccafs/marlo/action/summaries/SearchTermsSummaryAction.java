@@ -765,7 +765,7 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
         for (ProjectBudget pb : project.getProjectBudgets().stream()
           .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getBudgetType() != null
             && pb.getBudgetType().getId() == type && pb.getFundingSource() != null
-            && pb.getFundingSource().getW1w2().booleanValue() == true)
+            && pb.getFundingSource().getW1w2() != null && pb.getFundingSource().getW1w2().booleanValue() == true)
           .collect(Collectors.toList())) {
           FundingSource fsActual = pb.getFundingSource();
           Boolean w1w2 = pb.getFundingSource().getW1w2();
@@ -776,7 +776,7 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
         for (ProjectBudget pb : project.getProjectBudgets().stream()
           .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getBudgetType() != null
             && pb.getBudgetType().getId() == type && pb.getFundingSource() != null
-            && pb.getFundingSource().getW1w2().booleanValue() == false)
+            && pb.getFundingSource().getW1w2() != null && pb.getFundingSource().getW1w2().booleanValue() == false)
           .collect(Collectors.toList())) {
           ProjectBudget pbActual = pb;
           FundingSource fsActual = pbActual.getFundingSource();
