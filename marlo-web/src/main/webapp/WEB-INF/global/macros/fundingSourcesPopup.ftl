@@ -86,11 +86,13 @@
               </div>
             </div>
             [#-- W1W2 Tag --]
+            [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')]
             <div class="w1w2-tag">
               <div class="checkbox dottedBox">
                 <label for="w1w2-tag-input"><input type="checkbox" name="w1w2" value="true" id="w1w2-tag-input"/> <small>[@customForm.text name="fundingSource.w1w2Tag" readText=!editable /]</small></label>
               </div>
             </div>
+            [/#if]
           </div>
           
           [#-- Budget Types Description --]

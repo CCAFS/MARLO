@@ -77,19 +77,21 @@
           <div class="col-md-6">
             [@customForm.select name="fundingSource.budgetType.id" i18nkey="projectCofunded.type" className="type" listName="budgetTypes" header=false required=true editable=editable && action.canEditType() /]
             [#-- W1W2 Tag --]
-            [#assign isW1W2 = (fundingSource.budgetType.id == 1)!false /]
-            [#assign w1w2TagValue = (fundingSource.w1w2)!false /]
-            <div class="w1w2-tag" style="display:${isW1W2?string('block','none')};">
-              <div class="checkbox dottedBox">
-                <label for="w1w2-tag-input">
-                  [#if editable]
-                  <input type="checkbox" name="fundingSource.w1w2" value="true" id="w1w2-tag-input" [#if w1w2TagValue]checked[/#if]/>
-                  [#else]
-                     <img src="${baseUrl}/images/global/checked-${w1w2TagValue?string}.png" /> 
-                  [/#if]
-                  <small>[@customForm.text name="fundingSource.w1w2Tag" readText=!editable /]</small></label>
+            [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')]
+              [#assign isW1W2 = (fundingSource.budgetType.id == 1)!false /]
+              [#assign w1w2TagValue = (fundingSource.w1w2)!false /]
+              <div class="w1w2-tag" style="display:${isW1W2?string('block','none')};">
+                <div class="checkbox dottedBox">
+                  <label for="w1w2-tag-input">
+                    [#if editable]
+                    <input type="checkbox" name="fundingSource.w1w2" value="true" id="w1w2-tag-input" [#if w1w2TagValue]checked[/#if]/>
+                    [#else]
+                       <img src="${baseUrl}/images/global/checked-${w1w2TagValue?string}.png" /> 
+                    [/#if]
+                    <small>[@customForm.text name="fundingSource.w1w2Tag" readText=!editable /]</small></label>
+                </div>
               </div>
-            </div>
+            [/#if]
           </div>
         </div>
       </div>
