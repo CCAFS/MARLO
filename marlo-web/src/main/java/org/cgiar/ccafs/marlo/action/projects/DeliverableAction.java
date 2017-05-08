@@ -423,6 +423,11 @@ public class DeliverableAction extends BaseAction {
   }
 
 
+  public List<ProjectPartnerPerson> getPersons(long partnerID) {
+    ProjectPartner projectPartner = projectPartnerManager.getProjectPartnerById(partnerID);
+    return projectPartner.getProjectPartnerPersons().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+  }
+
   public Map<String, String> getPrograms() {
     return programs;
   }
@@ -526,6 +531,7 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+
   public boolean isPPA(Institution institution) {
     if (institution == null) {
       return false;
@@ -546,7 +552,6 @@ public class DeliverableAction extends BaseAction {
     return false;
   }
 
-
   public List<DeliverablePartnership> otherPartners() {
     try {
       List<DeliverablePartnership> list = deliverable.getDeliverablePartnerships().stream()
@@ -561,6 +566,7 @@ public class DeliverableAction extends BaseAction {
 
 
   }
+
 
   public List<DeliverablePartnership> otherPartnersAutoSave() {
     try {
@@ -586,7 +592,6 @@ public class DeliverableAction extends BaseAction {
     }
 
   }
-
 
   public void parnershipNewData() {
     if (deliverable.getOtherPartners() != null) {
