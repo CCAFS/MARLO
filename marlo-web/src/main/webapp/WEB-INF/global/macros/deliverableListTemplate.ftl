@@ -134,6 +134,7 @@
     </div> 
     [/#if]
     [#assign customName]${dp_name}[#if !isResponsable][${dp_index}][/#if][/#assign]
+    [#assign personInputType][#if isResponsable]radio[#else]checkbox[/#if][/#assign]
     <input class="type" type="hidden" name="${customName}.type" value="${isResponsable?string('Resp','Other')}">
   
     <input class="element" type="hidden" name="${customName}.id" value="${(dp.id)!}">
@@ -147,11 +148,15 @@
       [#-- Partner Name --]
       <div class="form-group partnerName chosen"> 
       [#if editable]
-        [@customForm.select name="${customName}.projectPartnerPerson.projectPartner.id" value="${(dp.projectPartnerPerson.projectPartner.id)!-1}"  label="" i18nkey="" showTitle=false listName="partners" keyFieldName="id"  displayFieldName="composedName"     className="${isResponsable?string('responsible','partner')} id " editable=editable required=isResponsable/]
-      
-        [#list partnerPersons as person]
-          <input type="radio" name="${customName}.projectPartnerPerson.id" [#if (dp.projectPartnerPerson.id == person.id)!false]checked[/#if]/><label for="">${person.composedName}</label><br />
-        [/#list]
+        [@customForm.select name="" value="${(dp.projectPartnerPerson.projectPartner.id)!-1}"  label="" i18nkey="" showTitle=false listName="partners" keyFieldName="id"  displayFieldName="composedName"     className="${isResponsable?string('responsible','partner')} id " editable=editable required=isResponsable/]
+        <div class="partnerPersons">
+          [#list partnerPersons as person]
+          <div class="${personInputType} inputsFlat">
+            <input id="${customName}-${person.id}" type="${personInputType}" name="${customName}.projectPartnerPerson.id" value="${person.id}" [#if (dp.projectPartnerPerson.id == person.id)!false]checked[/#if]/>
+            <label class="${personInputType}-label" for="${customName}-${person.id}">${person.composedName?html}</label>
+          </div>
+          [/#list]
+        </div>
       [#else]
         <div class="personRead-content"><span class="glyphicon glyphicon-user" ></span> <span>${((dp.projectPartnerPerson.composedName)!'Contact Person')?html}</span></div>
       [/#if]
