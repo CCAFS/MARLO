@@ -151,8 +151,9 @@
         [@customForm.select name="" value="${(dp.projectPartnerPerson.projectPartner.id)!-1}"  label="" i18nkey="" showTitle=false listName="partners" keyFieldName="id"  displayFieldName="composedName"     className="${isResponsable?string('responsible','partner')} id " editable=editable required=isResponsable/]
         <div class="partnerPersons">
           [#list partnerPersons as person]
-          <div class="${personInputType}">
-            <label for="${person.projectPartner.id}-${person.id}"><input id="${person.projectPartner.id}-${person.id}" type="${personInputType}" name="${customName}.projectPartnerPerson.id" value="${person.id}" [#if (dp.projectPartnerPerson.id == person.id)!false]checked[/#if]/>${person.composedName}</label><br />
+          <div class="${personInputType} inputsFlat">
+            <input id="${customName}-${person.id}" type="${personInputType}" name="${customName}.projectPartnerPerson.id" value="${person.id}" [#if (dp.projectPartnerPerson.id == person.id)!false]checked[/#if]/>
+            <label class="${personInputType}-label" for="${customName}-${person.id}">${person.composedName?html}</label>
           </div>
           [/#list]
         </div>
