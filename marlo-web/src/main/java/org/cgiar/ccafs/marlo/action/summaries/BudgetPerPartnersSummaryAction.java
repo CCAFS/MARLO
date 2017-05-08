@@ -91,6 +91,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
   private Crp loggedCrp;
   private int year;
   private String cycle;
+  private Boolean hasW1W2Co;
   private long startTime;
 
   private PhaseManager phaseManager;
@@ -380,21 +381,35 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
             flagships = null;
           }
 
+          if (hasW1W2Co) {
+            budgetW1W2 = Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 1, projectId, 3));
+            budgetW1W2Co = Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 1, projectId, 2));
 
-          budgetW1W2Co = Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 1, projectId, 2));
-          budgetW1W2 = Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 1, projectId, 3));
+            genderPeW1W2 = this.getTotalGenderPer(pp.getInstitution().getId(), year, 1, projectId, 3) / 100;
+            genderPeW1W2Co = this.getTotalGenderPer(pp.getInstitution().getId(), year, 1, projectId, 2) / 100;
+
+            genderW1W2 = this.getTotalGender(pp.getInstitution().getId(), year, 1, projectId, 3);
+            genderW1W2Co = this.getTotalGender(pp.getInstitution().getId(), year, 1, projectId, 2);
+          } else {
+            budgetW1W2 = Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 1, projectId, 1));
+            genderPeW1W2 = this.getTotalGenderPer(pp.getInstitution().getId(), year, 1, projectId, 1) / 100;
+            genderW1W2 = this.getTotalGender(pp.getInstitution().getId(), year, 1, projectId, 1);
+            budgetW1W2Co = 0.0;
+            genderPeW1W2Co = 0.0;
+            genderW1W2Co = 0.0;
+          }
+
+
           budgetW3 = Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 2, projectId, 1));
           budgetBilateral = Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 3, projectId, 1));
           budgetCenter = Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 4, projectId, 1));
 
-          genderPeW1W2Co = this.getTotalGenderPer(pp.getInstitution().getId(), year, 1, projectId, 2) / 100;
-          genderPeW1W2 = this.getTotalGenderPer(pp.getInstitution().getId(), year, 1, projectId, 3) / 100;
+
           genderPeW3 = this.getTotalGenderPer(pp.getInstitution().getId(), year, 2, projectId, 1) / 100;
           genderPeBilateral = this.getTotalGenderPer(pp.getInstitution().getId(), year, 3, projectId, 1) / 100;
           genderPeCenter = this.getTotalGenderPer(pp.getInstitution().getId(), year, 4, projectId, 1) / 100;
 
-          genderW1W2Co = this.getTotalGender(pp.getInstitution().getId(), year, 1, projectId, 2);
-          genderW1W2 = this.getTotalGender(pp.getInstitution().getId(), year, 1, projectId, 3);
+
           genderW3 = this.getTotalGender(pp.getInstitution().getId(), year, 2, projectId, 1);
           genderBilateral = this.getTotalGender(pp.getInstitution().getId(), year, 3, projectId, 1);
           genderCenter = this.getTotalGender(pp.getInstitution().getId(), year, 4, projectId, 1);
@@ -727,6 +742,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
         + e.getMessage());
       cycle = this.getCurrentCycle();
     }
+    hasW1W2Co = this.hasSpecificities(APConstants.CRP_FS_W1W2_COFINANCING);
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
     LOG.info(

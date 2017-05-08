@@ -704,48 +704,34 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
             leader = "<font size=2 face='Segoe UI' color='#000000'></font>";
           }
           // Set budgets
-
+          // coFinancing 1: cofinancing+no cofinancing, 2: cofinancing 3: no cofinancing
           if (hasW1W2Co) {
-            // coFinancing 1: cofinancing+no cofinancing, 2: cofinancing 3: no cofinancing
             w1w2 = this.getTotalYear(year, 1, project, 3);
             w1w2Co = this.getTotalYear(year, 1, project, 2);
-            w3 = this.getTotalYear(year, 2, project, 1);
-            bilateral = this.getTotalYear(year, 3, project, 1);
-            center = this.getTotalYear(year, 4, project, 1);
-            if (w1w2 == 0.0) {
-              w1w2 = null;
-            }
-            if (w1w2Co == 0.0) {
-              w1w2Co = null;
-            }
-            if (w3 == 0.0) {
-              w3 = null;
-            }
-            if (bilateral == 0.0) {
-              bilateral = null;
-            }
-            if (center == 0.0) {
-              center = null;
-            }
           } else {
             w1w2 = this.getTotalYear(year, 1, project, 1);
-            w3 = this.getTotalYear(year, 2, project, 1);
-            bilateral = this.getTotalYear(year, 3, project, 1);
-            center = this.getTotalYear(year, 4, project, 1);
             if (w1w2 == 0.0) {
               w1w2 = null;
             }
-            if (w3 == 0.0) {
-              w3 = null;
-            }
-            if (bilateral == 0.0) {
-              bilateral = null;
-            }
-            if (center == 0.0) {
-              center = null;
-            }
           }
-
+          w3 = this.getTotalYear(year, 2, project, 1);
+          bilateral = this.getTotalYear(year, 3, project, 1);
+          center = this.getTotalYear(year, 4, project, 1);
+          if (w1w2 != null && w1w2 == 0.0) {
+            w1w2 = null;
+          }
+          if (w1w2Co != null && w1w2Co == 0.0) {
+            w1w2Co = null;
+          }
+          if (w3 == 0.0) {
+            w3 = null;
+          }
+          if (bilateral == 0.0) {
+            bilateral = null;
+          }
+          if (center == 0.0) {
+            center = null;
+          }
 
           String projectId = "<font size=2 face='Segoe UI' color='#0000ff'>P" + project.getId().toString() + "</font>";
           String projectUrl = project.getId().toString();
