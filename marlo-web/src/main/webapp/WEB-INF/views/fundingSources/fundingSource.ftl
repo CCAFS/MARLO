@@ -212,12 +212,12 @@
             [#if projectBudget.year == year]
              <tr class="projectBudgetItem">
               <td>
-                <a href="[@s.url action="${crpSession}/budgetByPartners" namespace="/projects"] [@s.param name="projectID" value="${(projectBudget.project.id)!}"/] [/@s.url]">
+                <a href="[@s.url action="${crpSession}/budgetByPartners" namespace="/projects"] [@s.param name="projectID" value="${(projectBudget.project.id)!}"/] [@s.param name='edit']true[/@s.param][/@s.url]">
                   P${(projectBudget.project.id)!}              
                 </a>
               </td>
               <td class="col-md-5">
-                <a href="[@s.url action="${crpSession}/budgetByPartners" namespace="/projects"] [@s.param name="projectID" value="${(projectBudget.project.id)!}"/] [/@s.url]">
+                <a href="[@s.url action="${crpSession}/budgetByPartners" namespace="/projects"] [@s.param name="projectID" value="${(projectBudget.project.id)!}"/] [@s.param name='edit']true[/@s.param][/@s.url]">
                   ${(projectBudget.project.title)!}
                 </a>
               </td>
