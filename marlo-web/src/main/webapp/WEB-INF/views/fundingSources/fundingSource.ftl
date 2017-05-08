@@ -179,7 +179,7 @@
                   [/#if]
                     <input class="id" type="hidden" name="fundingSource.fundingCountry[${country_index}].id" value="${(country.id)!-1}" />
                     <input class="cId" type="hidden" name="fundingSource.fundingCountry[${country_index}].locElement.isoAlpha2" value="${(country.locElement.isoAlpha2)!}" />
-                    <span class="name">${(country.locElement.name)!}</span>
+                    <span class="name"><span> <i class="flag-sm flag-sm-${(country.locElement.isoAlpha2)!}"></i> ${(country.locElement.name)!} </span></span>
                     <div class="clearfix"></div>
                   </li>
               [/#list]
