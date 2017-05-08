@@ -221,7 +221,7 @@ public class ImpactRelationAction extends BaseAction {
           for (CrpClusterOfActivity crpClusterOfActivity : activities) {
             HashMap<String, Object> dataDetailOutcome = new HashMap<>();
             dataDetailOutcome.put("id", "C" + crpClusterOfActivity.getId());
-            dataDetailOutcome.put("label", "CoA #" + crpClusterOfActivity.getComposedName());
+            dataDetailOutcome.put("label", crpClusterOfActivity.getIdentifier());
             dataDetailOutcome.put("description", crpClusterOfActivity.getComposedName());
             dataDetailOutcome.put("color", "#c0c0c0");
             dataDetailOutcome.put("type", "CoA");
@@ -244,7 +244,7 @@ public class ImpactRelationAction extends BaseAction {
 
         HashMap<String, Object> dataDetailOutcome = new HashMap<>();
         dataDetailOutcome.put("id", "C" + crpClusterOfActivity.getId());
-        dataDetailOutcome.put("label", "CoA #" + i1);
+        dataDetailOutcome.put("label", crpClusterOfActivity.getIdentifier());
         dataDetailOutcome.put("description", crpClusterOfActivity.getComposedName());
         dataDetailOutcome.put("color", "#c0c0c0");
         dataDetailOutcome.put("type", "CoA");
@@ -307,7 +307,7 @@ public class ImpactRelationAction extends BaseAction {
 
         HashMap<String, Object> dataDetailOutcome = new HashMap<>();
         dataDetailOutcome.put("id", "C" + crpClusterOfActivity.getId());
-        dataDetailOutcome.put("label", "CoA #" + i1);
+        dataDetailOutcome.put("label", crpClusterOfActivity.getIdentifier());
         dataDetailOutcome.put("description", crpClusterOfActivity.getComposedName());
         dataDetailOutcome.put("color", "#c0c0c0");
         dataDetailOutcome.put("type", "CoA");
