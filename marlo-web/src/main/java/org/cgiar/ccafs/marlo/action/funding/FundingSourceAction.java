@@ -769,7 +769,7 @@ public class FundingSourceAction extends BaseAction {
 
           fundingSourceLocationSave.setLocElement(locElement);
 
-          fundingSourceLocationsManager.saveFundingSourceLocations(fundingSourceLocation);
+          fundingSourceLocationsManager.saveFundingSourceLocations(fundingSourceLocationSave);
         }
       }
 
@@ -808,7 +808,7 @@ public class FundingSourceAction extends BaseAction {
 
           fundingSourceLocationSave.setLocElement(locElement);
 
-          fundingSourceLocationsManager.saveFundingSourceLocations(fundingSourceLocation);
+          fundingSourceLocationsManager.saveFundingSourceLocations(fundingSourceLocationSave);
         }
       }
 
