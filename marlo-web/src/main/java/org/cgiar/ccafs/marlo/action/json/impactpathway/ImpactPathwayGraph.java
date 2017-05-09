@@ -32,6 +32,8 @@ import org.cgiar.ccafs.marlo.data.model.SrfSloIdo;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -134,6 +136,9 @@ public class ImpactPathwayGraph extends BaseAction {
 
           dataIdos.put("data", dataDetaiSIDO);
 
+
+          crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getSrfSloIdos().stream().filter(c -> c.isActive())
+            .collect(Collectors.toList()).sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
           // crpOutcomeSubIdo = crpOutcomeSubIdoManager.getCrpOutcomeSubIdoById(crpOutcomeSubIdo.getId());
           for (SrfSloIdo srfSloIdo : crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getSrfSloIdos()) {
             dataSlos = new HashMap<>();
@@ -256,8 +261,35 @@ public class ImpactPathwayGraph extends BaseAction {
     dataEdges.clear();
 
     dataEdges.addAll(foo);
+    Collections.sort(dataNodes, new Comparator<HashMap<String, Object>>() {
+
+      @Override
+      public int compare(HashMap<String, Object> one, HashMap<String, Object> two) {
+
+        HashMap<String, Object> oneObject = (HashMap<String, Object>) one.get("data");
+        HashMap<String, Object> twoObject = (HashMap<String, Object>) one.get("data");
+
+        int compareTO = (oneObject.get("id").toString().compareTo(twoObject.get("id").toString()));
+        return compareTO;
+      }
+    });
+
+    Collections.sort(dataEdges, new Comparator<HashMap<String, Object>>() {
+
+      @Override
+      public int compare(HashMap<String, Object> one, HashMap<String, Object> two) {
+
+        HashMap<String, Object> oneObject = (HashMap<String, Object>) one.get("data");
+        HashMap<String, Object> twoObject = (HashMap<String, Object>) one.get("data");
+
+        int compareTO = (oneObject.get("source").toString().compareTo(twoObject.get("source").toString()));
+        return compareTO;
+      }
+    });
     elements.put("nodes", dataNodes);
     elements.put("edges", dataEdges);
+
+
     return SUCCESS;
   }
 
