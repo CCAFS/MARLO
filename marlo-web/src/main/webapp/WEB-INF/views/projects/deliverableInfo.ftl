@@ -86,7 +86,7 @@
         <input type="hidden" name="deliverable.newExpectedYear" value="${(deliverable.newExpectedYear)!}"/>
         <div class="select">
           <label for="">Expected year:</label>
-        	<p>${(deliverable.newExpectedYear)!}</p>
+          <p>${(deliverable.newExpectedYear)!}</p>
         </div>
       [/#if]
     </div> 
@@ -249,16 +249,14 @@
     <label for="" style="display:${displayOtherPerson}">[@customForm.text name="projectDeliverable.otherContactContributing" readText=!editable/]</label>
     <div class="partnersList listname="deliverable.otherPartners" style="display:${displayOtherPerson}">
       [#if action.getSelectedPartners()?has_content]
-        [#list action.getSelectedPartners() as projectPartner]
-          [@deliverableList.deliverablePartnerOther dp=projectPartner dp_name="deliverable.otherPartners" dp_index=projectPartner_index editable=editable /]
-        [/#list]
+        [@deliverableList.deliverablePartnerOther dp=action.getSelectedPartners() dp_name="deliverable.otherPartners" editable=editable /]
       [#else]
         <p class="simpleBox emptyText center"> [@s.text name="project.deliverable.partnership.emptyText" /] </p>
       [/#if]
     </div>
     [#if editable && canEdit]
       <div id="addPartnerBlock" class="addPerson text-right">
-        <div class="button-blue  addPartner"><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="form.buttons.addPerson" /]</div>
+        <div class="button-blue  addPartner"><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="form.buttons.addPartner" /]</div>
       </div>
     [/#if]
   </div>

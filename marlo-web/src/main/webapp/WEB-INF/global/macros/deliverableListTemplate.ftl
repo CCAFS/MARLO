@@ -127,10 +127,8 @@
   <div id="deliverablePartner-${template?string('template', dp_index)}" class="responsiblePartner projectPartnerPerson row" style="display:${template?string('none','')}">
     [#-- Remove --]
     [#if editable && !isResponsable]<div class="removeElement removeLink" title="[@s.text name="project.deliverable.removePartnerContribution" /]"></div> [/#if]
-    
     [#-- Hidden inputs --]
     <input class="element" type="hidden" name="${dp_name}.id" value="${(dp.id)!}">
-    
     [#if template]
       [#-- Partner Name --]
       <div class="fullPartBlock partnerName chosen"> 
@@ -161,7 +159,6 @@
             </div>
           </div>
         [/#if]
-        
       [/#if]
       </div>
     [/#if]
@@ -170,38 +167,43 @@
 [/#macro]
 
 
-[#macro deliverablePartnerOther dp={} dp_name="" dp_index="" isResponsable=false template=false editable=true]
-  <div id="deliverablePartner-${template?string('template', dp_index)}" class="deliverablePartner borderBox projectPartnerPerson row" style="display:${template?string('none','')}">
-    [#-- Remove --]
-    [#if editable && !isResponsable]<div class="removeElement removeLink" title="[@s.text name="project.deliverable.removePartnerContribution" /]"></div> [/#if]
-    [#-- Index --]
-    <div class="leftHead"><span class="index">${dp_index+1}</span></div>
-
-    [#if template]
-      [#-- Partner Name --]
-      <div class="fullPartBlock partnerName chosen"> 
-        [@customForm.select name="" value="-1"  i18nkey="" showTitle=false listName="partners" keyFieldName="id"  displayFieldName="composedName"   className="partner id" editable=editable required=isResponsable /]
-        <div class="partnerPersons">
+[#macro deliverablePartnerOther dp=[] dp_name="" dp_index="" isResponsable=false template=false editable=true]
+  [#assign personsIndex =  0 /]
+  [#list dp as projectPartner]
+    <div id="deliverablePartner-${template?string('template', projectPartner_index)}" class="deliverablePartner borderBox projectPartnerPerson row" style="display:${template?string('none','')}">
+      [#-- Remove --]
+      [#if editable && !isResponsable]<div class="removeElement removeLink" title="[@s.text name="project.deliverable.removePartnerContribution" /]"></div> [/#if]
+      [#-- Index --]
+      <div class="leftHead"><span class="index">${dp_index+1}</span></div>
+  
+      [#if template]
+        [#-- Partner Name --]
+        <div class="fullPartBlock partnerName chosen"> 
+          [@customForm.select name="" value="-1"  i18nkey="" showTitle=false listName="partners" keyFieldName="id"  displayFieldName="composedName"   className="partner id" editable=editable required=isResponsable /]
+          <div class="partnerPersons">
+          </div>
         </div>
-      </div>
-    [#else]
-      [#-- Partner Name --]
-      <div class="form-group partnerName chosen"> 
-      [#if editable]
-        [@customForm.select name="" value="${(dp.id)!-1}"  label="" i18nkey="" showTitle=false listName="partners" keyFieldName="id"  displayFieldName="composedName" className="partner id " editable=editable required=isResponsable/]
-        <div class="partnerPersons">
-          [#if (dp.id??)!false]
-            [#assign selectedPersons =  action.getSelectedPersons(dp.id) /]
-            [#list action.getPersons(dp.id) as person]
-              [@deliverablePerson element=person name="${dp_name}" index=person_index checked=(selectedPersons?seq_contains("${person.id}")) isResponsable=false /]
-            [/#list]
-          [/#if]
+      [#else]
+        [#-- Partner Name --]
+        <div class="form-group partnerName chosen"> 
+        [#if editable]
+          [@customForm.select name="" value="${(projectPartner.id)!-1}"  label="" i18nkey="" showTitle=false listName="partners" keyFieldName="id"  displayFieldName="composedName" className="partner id " editable=editable required=isResponsable/]
+          <div class="partnerPersons">
+            [#if (projectPartner.id??)!false]
+              [#assign selectedPersons =  action.getSelectedPersons(projectPartner.id) /]
+              [#list action.getPersons(projectPartner.id) as person]
+                [@deliverablePerson element=person name="${dp_name}" index=personsIndex checked=(selectedPersons?seq_contains("${person.id}")) isResponsable=false /]
+                [#assign personsIndex =  personsIndex + 1 /]
+              [/#list]
+            [/#if]
+            <div class="clearfix"></div>
+          </div>
+        [/#if]
         </div>
       [/#if]
-      </div>
-    [/#if]
-  </div> 
-  <div class="clearfix"></div>
+    </div> 
+    <div class="clearfix"></div>
+  [/#list]
 [/#macro]
 
 
@@ -212,10 +214,9 @@
   <div id="deliverablePerson-${isTemplate?string('template', index)}" class="${type} deliverablePerson ${isResponsable?string('resp','other')} inputsFlat" style="display:${isTemplate?string('none','')}">
     
     [#if !isResponsable]<input class="element" type="hidden" name="${customName}.id" value="${(action.getDeliverablePartnership((element.id)!-1))!}">[/#if]
-    <input id="${index}-${(element.id)!}" type="${type}" name="${customName}.projectPartnerPerson.id" value="${(element.id)!}" [#if checked]checked[/#if]/>
-    <label for="${index}-${(element.id)!}" class="${type}-label [#if isResponsable]radio-label-yes[/#if]" >${(element.composedName?html)!}</label>
-    
-    
+    <input id="${type}-${index}-${(element.id)!}" type="${type}" name="${customName}.projectPartnerPerson.id" value="${(element.id)!}" [#if checked]checked[/#if]/>
+    <label for="${type}-${index}-${(element.id)!}" class="${type}-label [#if isResponsable]radio-label-yes[/#if]" >${(element.composedCompleteName)!}</label>
+
     [#-- Division --]
     [#if action.hasSpecificities('crp_division_fs') && !isResponsable]
       [#local ifpriDivision = false /]

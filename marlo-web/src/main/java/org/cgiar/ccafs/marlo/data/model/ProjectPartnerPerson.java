@@ -111,11 +111,12 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
     return activities;
   }
 
+  public String getComposedCompleteName() {
+    return this.user.getComposedCompleteName();
+  }
+
   public String getComposedName() {
-
     return this.user.getComposedName();
-
-
   }
 
   public String getContactType() {

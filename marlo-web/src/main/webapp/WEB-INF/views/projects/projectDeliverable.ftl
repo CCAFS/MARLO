@@ -169,7 +169,7 @@
 <div id="removeDeliverableFiles" style="display:none" title="Modal title"></div> 
 
 [#-- Deliverable Partner Template --]
-[@deliverableList.deliverablePartnerOther dp={} dp_name="" template=true dp_index=0 editable=editable /]
+[@deliverableList.deliverablePartnerOther dp=[{}] dp_name="" template=true dp_index=0 editable=editable /]
 
 [#-- Deliverable person template --]
 [@deliverableList.deliverablePerson element={} name="deliverable.otherPartners" index=-1 checked=false isTemplate=true/]

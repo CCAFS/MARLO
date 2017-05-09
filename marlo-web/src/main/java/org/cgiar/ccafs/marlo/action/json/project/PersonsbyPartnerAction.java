@@ -66,7 +66,7 @@ public class PersonsbyPartnerAction extends BaseAction {
       .filter(c -> c.isActive()).collect(Collectors.toList())) {
       person = new HashMap<String, Object>();
       person.put("id", partnerPerson.getId());
-      person.put("user", partnerPerson.getComposedName());
+      person.put("user", partnerPerson.getComposedCompleteName());
       persons.add(person);
     }
     return SUCCESS;

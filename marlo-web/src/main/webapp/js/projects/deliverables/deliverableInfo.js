@@ -12,6 +12,9 @@ function init() {
     width: '100%'
   });
 
+  // Update Parters selected lists
+  updateProjectPartnersSelects();
+
   $(".fundingSource").select2({
       templateResult: formatState,
       templateSelection: formatState
@@ -92,47 +95,6 @@ function init() {
         }
     });
 
-  });
-
-  // Update value of responsible person
-  $(".responsible").on("change", function() {
-    var option = $(this).find("option:selected");
-    // validate if exists this person in contact person list
-    var validation = $(this).parents(".fullBlock").parent().find(".partnersList").find("select");
-    if(option.val() != "-1") {
-      if(validation.exists()) {
-        validation.each(function(i,e) {
-          if($(e).val() == option.val()) {
-            // Remove from contact person list
-            $(e).parents(".deliverablePartner").hide("slow", function() {
-              $(this).remove();
-              updatePartners();
-            })
-            // Show message
-            var text = option.html() + ' was removed from contact persons list';
-            notify(text);
-          }
-        });
-      }
-    } else {
-      $(this).parents(".responsiblePartner").find(".id").val(-1);
-    }
-  });
-
-  // Update value of partner
-  $(".partner").on("change", function() {
-    var option = $(this).find("option:selected");
-    // validate if exists this person in contact person list
-    var validation = $(this).parents(".partnerWrapper").find(".responsibleWrapper").find("select");
-    if(validation.exists()) {
-      if(validation.val() == option.val()) {
-        option.parent().val(-1);
-        option.parent().trigger("change.select2");
-        // Show message
-        var text = option.html() + ' is the responsible person of this deliverable';
-        notify(text);
-      }
-    }
   });
 
   // CHANGE STATUS
@@ -460,39 +422,46 @@ function removePartnerEvent() {
 function updatePartners() {
   $(".partnersList").find('.deliverablePerson.checkbox').each(function(i,item) {
     var personID = $(item).find('input[type="checkbox"]').val();
-    var customID = i + "-" + personID;
+    var customID = "checkbox-" + i + "-" + personID;
     $(item).setNameIndexes(1, i);
 
     $(item).find('input[type="checkbox"]').attr('id', customID);
     $(item).find('label.checkbox-label').attr('for', customID);
   });
 
-  // Update selects
-  var selectedValues = []
-  $("select.partner.id, select.responsible.id").each(function(i,select) {
-    console.log($(select).text());
-    console.log($(select).val());
-    selectedValues.push($(this).val());
-  });
-  console.log(selectedValues);
-  $("select.partner.id, select.responsible.id").each(function(i,select) {
-    $(select).find('option').attr('disabled', false);
-    $.each(selectedValues, function(i,value) {
-      $(select).find('option[value="' + value + '"]').attr('disabled', true);
-    });
-  });
-  $("select.partner.id, select.responsible.id").trigger("select2.change");
+  updateProjectPartnersSelects();
 }
 
 function updatePartnersResp() {
   $(".responsibleWrapper ").find('.deliverablePerson.radio').each(function(i,item) {
     var personID = $(item).find('input[type="radio"]').val();
-    var customID = i + "-" + personID;
+    var customID = "radio-" + i + "-" + personID;
 
     $(item).find('input[type="radio"].radio-label').attr('id', customID);
     $(item).find('label').attr('for', customID);
   });
 
+  updateProjectPartnersSelects();
+
+}
+
+function updateProjectPartnersSelects() {
+  // Update selects
+  var selectedValues = []
+  $("select.partner.id").each(function(i,select) {
+    selectedValues.push($(select).find("option:selected").val());
+  });
+
+  $("select.partner.id").each(function(i,select) {
+    console.log("-- Select #" + i);
+    $(select).find('option').attr('disabled', false).prop('disabled', false);
+    $.each(selectedValues, function(i,optionValue) {
+      if(optionValue != -1) {
+        $(select).find('option[value="' + optionValue + '"]').attr('disabled', true).prop('disabled', true);
+      }
+    });
+    $(select).trigger("select2.change");
+  });
 }
 
 function subTypes() {
