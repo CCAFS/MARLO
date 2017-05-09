@@ -173,14 +173,18 @@
             <ul class="list">
             [#if fundingSource.fundingRegions?has_content]
               [#list fundingSource.fundingRegions as region]
-                [#-- Show if is a headquarter institution --]
                   <li id="" class="region clearfix col-md-3">
                   [#if editable ]
                     <div class="removeRegion removeIcon" title="Remove region"></div>
                   [/#if]
                     <input class="id" type="hidden" name="fundingSource.fundingRegions[${region_index}].id" value="${region.id}" />
-                    <input class="rId" type="hidden" name="fundingSource.fundingRegions[${region_index}].locElement.id" value="${region.locElement.id}" />
+                    [#if region.locElementType?? && region.locElementType.scope]
+                    <input class="rId" type="hidden" name="fundingSource.fundingRegions[${region_index}].locElementType.id" value="${(region.locElementType.id)!}" />
+                    <span class="name">${(region.locElementType.name)!}</span>
+                    [#else]
+                    <input class="rId" type="hidden" name="fundingSource.fundingRegions[${region_index}].locElement.id" value="${(region.locElement.id)!}" />
                     <span class="name">${(region.locElement.name)!}</span>
+                    [/#if]
                     <div class="clearfix"></div>
                   </li>
               [/#list]
@@ -192,7 +196,7 @@
               <select name="" id="regionSelect" class="regionsSelect">
                 <option value="-1">Select an option...</option>
                 [#if scopeRegionLists?has_content]
-                  <optgroup label="Crp regions">
+                  <optgroup label="${(loggedCrp.acronym?upper_case)!} regions">
                   [#list scopeRegionLists as region]
                   <option value="${(region.id)!}">${(region.name)!}</option>
                   [/#list]
@@ -219,7 +223,6 @@
             <ul class="list">
             [#if fundingSource.fundingCountry?has_content]
               [#list fundingSource.fundingCountry as country]
-                [#-- Show if is a headquarter institution --]
                   <li id="" class="country clearfix col-md-2">
                   [#if editable ]
                     <div class="removeCountry removeIcon" title="Remove country"></div>
