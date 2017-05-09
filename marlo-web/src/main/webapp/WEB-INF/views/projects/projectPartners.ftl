@@ -459,9 +459,9 @@
     [#if editable]<div class="removeLocElement removeIcon" title="Remove Location"></div>[/#if] 
     
     [#-- Location Name --]
-    <span class="flag-icon"><i class="flag-sm flag-sm-${(element.isoAlpha2?upper_case)!}"></i></span> <span class="name">${(element.name)!'{name}'}</span><br />
+    <span class="flag-icon"><i class="flag-sm flag-sm-${(element.locElement.isoAlpha2?upper_case)!}"></i></span> <span class="name">${(element.composedName)!'{name}'}</span><br />
     
     [#-- Hidden inputs --]
-    <input type="hidden" class="locElementCountry" name="${locElementName}.isoAlpha2" value="${(element.isoAlpha2)!}" /> 
+    <input type="hidden" class="locElementCountry" name="${locElementName}.locElement.isoAlpha2" value="${(element.locElement.isoAlpha2)!}" /> 
   </li>
 [/#macro]
