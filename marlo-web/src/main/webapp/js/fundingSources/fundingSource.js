@@ -35,14 +35,15 @@ function init() {
   $(".removeCountry").on("click", removeCountry);
   
 // REGION item
-  $(".regionsSelect").on("change", function() {
+  $("#regionSelect").on("change", function() {
     var option = $(this).find("option:selected");
     if(option.val() != "-1") {
       addRegion(option);
+      // Remove option from select
+      console.log(option);
+      option.remove();
+      $(this).trigger("change.select2");
     }
-    // Remove option from select
-    option.remove();
-    $(this).trigger("change.select2");
   });
   $(".removeRegion").on("click", removeRegion);
 
@@ -385,7 +386,7 @@ if(option.val() == "-1") {
  canAdd = false;
 }
 
-var $list = $(option).parents(".select").parents("#regionList").find(".list");
+var $list = $(option).parents("#regionList").find(".list");
 var $item = $("#regionTemplate").clone(true).removeAttr("id");
 var v = $(option).text().length > 20 ? $(option).text().substr(0, 20) + ' ... ' : $(option).text();
 

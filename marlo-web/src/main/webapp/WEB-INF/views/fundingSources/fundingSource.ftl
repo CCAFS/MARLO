@@ -127,17 +127,48 @@
           <div class="col-md-6">[@customForm.input name="fundingSource.contactPersonName" i18nkey="projectCofunded.contactName" className="contactName" required=true editable=editable /]</div>
           <div class="col-md-6" style="display:${canSeePIEmail?string('block','none')}">[@customForm.input name="fundingSource.contactPersonEmail" i18nkey="projectCofunded.contactEmail" className="contactEmail" required=true editable=editable /]</div>
       </div>
-      <br />
-      [#-- GLOBAL DIMENSION --]
-      <div class="form-group row">
+
+      [#-- Donor --]
+      <div class="form-group">
+        <div class="row">
+          <div class="col-md-12">
+            [@customForm.select name="fundingSource.institution.id" i18nkey="projectCofunded.donor" className="donor"  listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" required=true editable=editable /]
+          </div>
+        </div>
+        
+        [#-- Request partner adition --]
+        [#if editable]
+        <p id="addPartnerText" class="helpMessage">
+          [@s.text name="projectPartners.addPartnerMessage.first" /]
+          <a class="popup" href="[@s.url action='${crpSession}/partnerSave' namespace="/projects"][@s.param name='fundingSourceID']${fundingSource.id?c}[/@s.param][/@s.url]">
+            [@s.text name="projectPartners.addPartnerMessage.second" /]
+          </a>
+        </p> 
+        [/#if]
+      </div>
+      
+    </div>
+    
+    <h4 class="headTitle">Location information</h4> 
+    <div class="borderBox informationWrapper">
+    [#-- GLOBAL DIMENSION --]
+      <div class="form-group row ">
         <div class="col-md-6">[@customForm.yesNoInput  label="Does this Funding Source have a global dimension?" name="fundingSource.global"  editable=editable inverse=false  cssClass="" /] </div>
+      </div>
+      <br />
+      <div class="form-group row">
         <div class="col-md-6">[@customForm.yesNoInput  label="Does this Funding Source have a regional dimension?" name="region"  editable=editable inverse=false  cssClass="isRegional" /] </div>
       </div>
       
       [#-- REGIONAL SELECT --]
       <div class="regionsBox form-group row" style="display:${region?string('block','none')}">
         <div class="panel tertiary col-md-12">
-         <div class="panel-head"><label for=""> [@customForm.text name="Select the regions" readText=!editable /]:[@customForm.req required=editable /]</label></div>
+         <div class="panel-head">
+           <label for=""> [@customForm.text name="Select the regions" readText=!editable /]:[@customForm.req required=editable /]</label>
+           <br />
+           <small>(Standart regions are defined by United Nations)</small>
+         </div>
+         
           <div id="regionList" class="panel-body" listname="fundingSource.fundingRegions"> 
             <ul class="list">
             [#if fundingSource.fundingRegions?has_content]
@@ -158,7 +189,23 @@
             [/#if]
             </ul>
             [#if editable ]
-              [@customForm.select name="" label=""  showTitle=false  i18nkey="" listName="regionLists" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className="regionsSelect" editable=editable /]
+              <select name="" id="regionSelect" class="regionsSelect">
+                <option value="-1">Select an option...</option>
+                [#if scopeRegionLists?has_content]
+                  <optgroup label="Crp regions">
+                  [#list scopeRegionLists as region]
+                  <option value="${(region.id)!}">${(region.name)!}</option>
+                  [/#list]
+                  </optgroup>
+                [/#if]
+                [#if regionLists?has_content]
+                <optgroup label="UN standart (M49)">
+                  [#list regionLists as region]
+                  <option value="${(region.id)!}">${(region.name)!}</option>
+                  [/#list]
+                  </optgroup>
+                [/#if]
+              </select>
             [/#if] 
           </div>
         </div>
@@ -167,7 +214,7 @@
       [#-- SELECT COUNTRIES --]
       <div class="form-group row">
         <div class="panel tertiary col-md-12">
-         <div class="panel-head"><label for=""> [@customForm.text name="If the Funding Source focuses on specific countries, please list these countries" readText=!editable /]:[@customForm.req required=editable /]</label></div>
+         <div class="panel-head"><label for=""> [@customForm.text name="If the Funding Source focuses on specific countries, please list these countries" readText=!editable /]:</label></div>
           <div id="countryList" class="panel-body" listname="fundingSource.fundingCountry"> 
             <ul class="list">
             [#if fundingSource.fundingCountry?has_content]
@@ -193,26 +240,6 @@
           </div>
         </div>
       </div>
-      
-      [#-- Donor --]
-      <div class="form-group">
-        <div class="row">
-          <div class="col-md-12">
-            [@customForm.select name="fundingSource.institution.id" i18nkey="projectCofunded.donor" className="donor"  listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" required=true editable=editable /]
-          </div>
-        </div>
-        
-        [#-- Request partner adition --]
-        [#if editable]
-        <p id="addPartnerText" class="helpMessage">
-          [@s.text name="projectPartners.addPartnerMessage.first" /]
-          <a class="popup" href="[@s.url action='${crpSession}/partnerSave' namespace="/projects"][@s.param name='fundingSourceID']${fundingSource.id?c}[/@s.param][/@s.url]">
-            [@s.text name="projectPartners.addPartnerMessage.second" /]
-          </a>
-        </p> 
-        [/#if]
-      </div>
-      
     </div>
     
     
