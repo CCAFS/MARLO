@@ -261,13 +261,27 @@
       [/#if]
       
       [#--Select country office  (if applicable)  --]
-      <div class="countryOffices panel tertiary">
-        <h5 class="sectionSubTitle">[@s.text name="projectPartners.countryOffices" /]</h5>
-        <div class="countriesBlock form-group" title="Select Countries clicking here">
-          [#-- Countries List --]
-          [@customForm.select name="${name}.selectedLocations" label="" showTitle=false  i18nkey="projectPartners.countryOffices" listName="${name}.institution.locations" keyFieldName="locElement.isoAlpha2"  displayFieldName="composedName" value="${name}.selectedLocations" multiple=true required=true  className="countriesSelect form-control input-sm" disabled=!editable/]              
-        </div>
+      <h5 class="sectionSubTitle">[@s.text name="projectPartners.countryOffices" /]</h5>
+      <div class="items-list simpleBox">
+        <ul class="">
+          [#if (element.selectedLocations?has_content)!false]
+            [#list element.selectedLocations as locElement]
+              [@locElementMacro element=(locElement)!{} name="${name}.selectedLocations" index=locElement_index /]
+            [/#list]
+          [#else] 
+            <p class="message text-center">No country office added</p>
+          [/#if]
+        </ul>
+        <div class="clearfix"></div> 
+        [#-- Add Location Element --]
+        [#if editable]
+          <hr />
+          <div class="form-group">
+            [@customForm.select name="" i18nkey="location.select.country" listName="${name}.institution.locations" header=true keyFieldName="locElement.isoAlpha2" displayFieldName="locElement.name" value="id" className="countriesList"/]
+          </div>
+        [/#if]
       </div>
+     
       
       [#-- Indicate which PPA Partners for second level partners --]
       [#if (editable || ((!editable && element.partnerContributors?has_content)!false))]
@@ -407,5 +421,20 @@
   </div>
 [/#macro]
 
+[#macro locElementMacro element name index isTemplate=false ]
+  <li id="locElement-${isTemplate?string('template', index)}" class="locElement userItem" style="display:${isTemplate?string('none','block')}">
+    [#assign locElementName = "${name}[${index}]" ]
+    [#-- Remove Button --]
+    [#if editable]<div class="removeLocElement removeIcon" title="Remove Location"></div>[/#if] 
+    
+    [#-- Location Name --]
+    <span class="flag-icon"><i class="flag-sm flag-sm-${(element.isoAlpha2?upper_case)!}"></i></span> <span class="name">${(element.name)!'{name}'}</span><br />
+    
+    [#-- Hidden inputs --]
+    <input type="hidden" class="locElementId" name="${locElementName}.id" value="${(element.id)!}"/>
+    <input type="hidden" class="locElementName" name="${locElementName}.name" value="${(element.name)!}" />
+    <input type="hidden" class="locElementCountry" name="${locElementName}.locElement.isoAlpha2" value="${(element.isoAlpha2)!}" />
+  </li>
+[/#macro]
 
 
