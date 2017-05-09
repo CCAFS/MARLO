@@ -280,7 +280,7 @@
         [#if editable]
           <hr />
           <div class="form-group">
-            [@customForm.select name="" i18nkey="location.select.country" listName="${name}.institution.locations" header=true keyFieldName="locElement.isoAlpha2" displayFieldName="locElement.name" value="id" className=" countriesList"/]
+            [@customForm.select name="" showTitle=false i18nkey="location.select.country" listName="${name}.institution.locations" header=true keyFieldName="locElement.isoAlpha2" displayFieldName="locElement.name" value="id" placeholder="Select a country..." className="countriesList"/]
           </div>
         [/#if]
       </div>
@@ -437,5 +437,3 @@
     <input type="hidden" class="locElementCountry" name="${locElementName}.isoAlpha2" value="${(element.isoAlpha2)!}" /> 
   </li>
 [/#macro]
-
-

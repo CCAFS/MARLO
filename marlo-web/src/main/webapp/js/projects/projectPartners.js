@@ -104,8 +104,9 @@ function attachEvents() {
         },
         success: function(data) {
           $(partner.countriesSelect).empty();
+          $(partner.countriesSelect).addOption(-1, "Select a country...");
           $.each(data.branches, function(index,branch) {
-            $(partner.countriesSelect).append(setOption(branch.iso, branch.name));
+            $(partner.countriesSelect).addOption(branch.iso, branch.name);
           });
           $(partner.countriesSelect).trigger("change.select2");
         },
@@ -682,7 +683,7 @@ function PartnerObject(partner) {
           || $(partner).find('.partnerTitle').text();
   this.ppaPartnersList = $(partner).find('.ppaPartnersList');
   this.persons = $(partner).find('.contactsPerson .contactPerson');
-  this.countriesSelect = $(partner).find('.countriesSelect');
+  this.countriesSelect = $(partner).find('.countriesList');
   this.setIndex = function(name,index) {
     var elementName = name + "[" + index + "].";
 
@@ -902,8 +903,17 @@ function addLocElementCountry() {
     return
   }
   
-  var $item = $('#locElement-template').clone(true).removeAttr('id');
   var $list = $(this).parents('.projectPartner').find(".items-list ul");
+
+  var selectedCountries = $list.find('.locElement').map(function(){
+    return $(this).find('input.locElementCountry').val();
+  }).get();
+
+  if (!$.inArray( contryISO, selectedCountries )){
+    return
+  }
+  
+  var $item = $('#locElement-template').clone(true).removeAttr('id');
   
   // Fill item values
   $item.find('span.name').text(countryName);
@@ -928,7 +938,7 @@ function addLocElementCountry() {
   
   // Reset select
   $(this).val('-1');
-  $(this).trigger('select2:change');
+  $(this).trigger('select2.change');
 }
 
 function removeLocElement() {
