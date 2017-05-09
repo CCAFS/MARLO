@@ -125,6 +125,29 @@ function attachEvents() {
   $(".countriesList").on('change', addLocElementCountry);
   $('.removeLocElement').on('click', removeLocElement);
 
+  // Request country office
+  $('#requestModal').on('show.bs.modal', function (event) {
+    var partner = new PartnerObject($(event.relatedTarget).parents('.projectPartner'));
+
+    var $modal = $(this)
+    $modal.find('input.institution_id').val(partner.institutionId);
+    $modal.find('select.countriesRequest').val(null).trigger('select2:change');
+    $modal.find('select.countriesRequest').trigger('change');
+    $modal.find('.modal-title').html('Add Countries office <br /><small>('+ partner.institutionName + ')</small>');
+  });
+  $('#requestModal button').on('click', function(){
+    $.ajax({
+      url: baseURL + '/requestCountryOffice.do',
+      data: $('#requestModal form').serializeObject(),
+      beforeSend: function() {},
+      success: function(data) {},
+      complete: function() {
+        $('#requestModal').modal('hide');
+      }
+    });
+  });
+  
+  
   /**
    * CCAFS Partners list events
    */
@@ -659,7 +682,7 @@ function addSelect2() {
       placeholder: "Select the branches where the project is working on...",
       width: '100%'
   });
-  $('form select.countriesList').select2({
+  $('form select.countriesList, select.countriesRequest').select2({
       placeholder: "Select a country office",
       templateResult: formatStateCountries,
       templateSelection: formatStateCountries,

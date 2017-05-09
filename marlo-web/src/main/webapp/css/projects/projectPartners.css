@@ -21,3 +21,8 @@ i.flag-sm {
 
 .locElement span{ 
 }
+
+.countries-list .note {
+  padding: 0;
+  margin-top: 5px;
+}

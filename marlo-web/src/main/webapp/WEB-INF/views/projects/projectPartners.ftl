@@ -181,6 +181,30 @@
 [#-- Search users Interface --]
 [#import "/WEB-INF/global/macros/usersPopup.ftl" as usersForm/]
 [@usersForm.searchUsers/]
+
+[#-- Request partners --]
+<div class="modal fade" id="requestModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="exampleModalLabel">New message</h4>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <input type="hidden" name="project" value="${(project.id)!}"/>
+            <input type="hidden" class="institution_id" name="institution" value="" />
+            [@customForm.select name="countries" i18nkey="location.select.country" listName="countries" header=true keyFieldName="isoAlpha2" displayFieldName="name" value="id" multiple=true placeholder="Select a country..." className="countriesRequest"/]
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer"> 
+        <button type="button" class="btn btn-primary"> <span class="glyphicon glyphicon-send"></span> Request</button>
+      </div>
+    </div>
+  </div>
+</div>
   
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
@@ -281,6 +305,10 @@
           <hr />
           <div class="form-group">
             [@customForm.select name="" showTitle=false i18nkey="location.select.country" listName="${name}.institution.locations" header=true keyFieldName="locElement.isoAlpha2" displayFieldName="composedName" value="id" placeholder="Select a country..." className="countriesList"/]
+            <div class="note">
+              If you don't find the country office you are looking for, request to have it added by
+              <a href="#" class="" data-toggle="modal" data-target="#requestModal">clicking here</a>
+            </div>
           </div>
         [/#if]
       </div>
