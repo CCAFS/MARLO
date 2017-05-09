@@ -449,14 +449,16 @@ public class DeliverableAction extends BaseAction {
   }
 
   public List<ProjectPartner> getSelectedPartners() {
-
+    Set<ProjectPartner> deliverablePartnerPersonsSet = new HashSet();
     List<ProjectPartner> deliverablePartnerPersons = new ArrayList<>();
 
     for (DeliverablePartnership deliverablePartnership : deliverableManager.getDeliverableById(deliverableID)
       .getDeliverablePartnerships().stream().filter(c -> c.isActive() && c.getPartnerType().equals("Other"))
       .collect(Collectors.toList())) {
-      deliverablePartnerPersons.add(deliverablePartnership.getProjectPartnerPerson().getProjectPartner());
+      deliverablePartnerPersonsSet.add(deliverablePartnership.getProjectPartnerPerson().getProjectPartner());
     }
+
+    deliverablePartnerPersons.addAll(deliverablePartnerPersonsSet);
     return deliverablePartnerPersons;
 
   }
@@ -624,7 +626,10 @@ public class DeliverableAction extends BaseAction {
   public void parnershipNewData() {
     if (deliverable.getOtherPartners() != null) {
       for (DeliverablePartnership deliverablePartnership : deliverable.getOtherPartners()) {
-        if (deliverablePartnership.getId() == null || deliverablePartnership.getId() == -1) {
+        // TODO: Christian please check this condition
+        if (deliverablePartnership.getId() == null && (deliverablePartnership.getProjectPartnerPerson() != null)
+          && (deliverablePartnership.getProjectPartnerPerson().getId() != null)) {
+
 
           ProjectPartnerPerson partnerPerson = projectPartnerPersonManager
             .getProjectPartnerPersonById(deliverablePartnership.getProjectPartnerPerson().getId());
@@ -1065,6 +1070,7 @@ public class DeliverableAction extends BaseAction {
 
       }
 
+
       partnerPersons = new ArrayList<>();
       for (ProjectPartner partner : projectPartnerManager.findAll().stream()
         .filter(pp -> pp.isActive() && pp.getProject().getId() == projectID).collect(Collectors.toList())) {
@@ -1371,10 +1377,9 @@ public class DeliverableAction extends BaseAction {
         && deliverablePrew.getDeliverablePartnerships().size() > 0) {
 
         try {
-          partnershipResponsible =
-            deliverablePrew.getDeliverablePartnerships().stream()
-              .filter(dp -> dp.isActive()
-                && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
+          partnershipResponsible = deliverablePrew.getDeliverablePartnerships().stream()
+            .filter(
+              dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
             .collect(Collectors.toList()).get(0);
         } catch (Exception e) {
           partnershipResponsible = null;

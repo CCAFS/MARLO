@@ -247,10 +247,10 @@
     [#-- Other contact person that will contribute --]
     [#assign displayOtherPerson = (!deliverable.otherPartners?has_content && !editable)?string('none','block') /]
     <label for="" style="display:${displayOtherPerson}">[@customForm.text name="projectDeliverable.otherContactContributing" readText=!editable/]</label>
-    <div class="personList listname="deliverable.otherPartners" style="display:${displayOtherPerson}">
-      [#if deliverable.otherPartners?has_content]
-        [#list deliverable.otherPartners as dp]
-          [@deliverableList.deliverablePartner dp=dp dp_name="deliverable.otherPartners" dp_index=dp_index editable=editable /]
+    <div class="partnersList listname="deliverable.otherPartners" style="display:${displayOtherPerson}">
+      [#if action.getSelectedPartners()?has_content]
+        [#list action.getSelectedPartners() as projectPartner]
+          [@deliverableList.deliverablePartnerOther dp=projectPartner dp_name="deliverable.otherPartners" dp_index=projectPartner_index editable=editable /]
         [/#list]
       [#else]
         <p class="simpleBox emptyText center"> [@s.text name="project.deliverable.partnership.emptyText" /] </p>
