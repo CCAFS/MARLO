@@ -86,16 +86,19 @@
         [/#if]
       [/#if]
       
+      [#-- User tag --]
+      [#assign userTag][#if !config.production]([#if config.debug]Develop[#else]Testing[/#if])[/#if][/#assign]
+      
       [#-- Tawk.to Widget --]
       var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
       Tawk_LoadStart = new Date();
       Tawk_API.visitor = {
-        'name': '${(currentUser.composedCompleteName)!}',
+        'name': '${(userTag)!} ${(currentUser.composedCompleteName)!}',
       };
       
       Tawk_API.onLoad = function() {
         Tawk_API.setAttributes({
-            'fullName': '${(currentUser.composedCompleteName)!"No Name"}',
+            'fullName': '${(userTag)!} ${(currentUser.composedCompleteName)!"No Name"}',
             'userName' : '${(currentUser.username)!"No User name"}',
             'userId': '${(currentUser.id)!"No ID"}',
             'composedId': '${(currentUser.composedID)!"No Composed ID"}',
@@ -104,7 +107,7 @@
         }, function(error) {
            
         });
-        Tawk_API.addTags(['MARLO', '${config.production?string('Production','Development')}', '${(crpSession)!}'], function(error){});
+        [#--  Tawk_API.addTags(['MARLO', '${config.production?string('Production','Development')}', '${(crpSession)!}'], function(error){});--]
       };
       (function() {
         var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];

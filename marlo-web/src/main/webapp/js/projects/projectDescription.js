@@ -88,7 +88,9 @@ $(document).ready(function() {
         }
     });
   });
-  $('.liaisonInstitutionSelect').trigger('change');
+  if(editable){
+    $('.liaisonInstitutionSelect').trigger('change');
+  }
 
   /**
    * Upload files functions

@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "MARLO Funding Sources" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-${fundingSource.id}" /]
-[#assign pageLibs = ["select2", "blueimp-file-upload", "datatables.net", "datatables.net-bs"] /]
+[#assign pageLibs = ["select2", "blueimp-file-upload", "datatables.net", "datatables.net-bs","flat-flags"] /]
 [#assign customJS = ["${baseUrl}/js/global/fieldsValidation.js","${baseUrl}/js/fundingSources/fundingSource.js", "${baseUrl}/js/global/autoSave.js" ] /]
 [#assign customCSS = ["${baseUrl}/css/fundingSources/fundingSource.css"] /]
 [#assign currentSection = "fundingSources" /]
@@ -126,6 +126,72 @@
       <div class="form-group row">
           <div class="col-md-6">[@customForm.input name="fundingSource.contactPersonName" i18nkey="projectCofunded.contactName" className="contactName" required=true editable=editable /]</div>
           <div class="col-md-6" style="display:${canSeePIEmail?string('block','none')}">[@customForm.input name="fundingSource.contactPersonEmail" i18nkey="projectCofunded.contactEmail" className="contactEmail" required=true editable=editable /]</div>
+      </div>
+      <br />
+      [#-- GLOBAL DIMENSION --]
+      <div class="form-group row">
+        <div class="col-md-6">[@customForm.yesNoInput  label="Does this Funding Source have a global dimension?" name="fundingSource.global"  editable=editable inverse=false  cssClass="" /] </div>
+        <div class="col-md-6">[@customForm.yesNoInput  label="Does this Funding Source have a regional dimension?" name="region"  editable=editable inverse=false  cssClass="isRegional" /] </div>
+      </div>
+      
+      [#-- REGIONAL SELECT --]
+      <div class="regionsBox form-group row" style="display:${region?string('block','none')}">
+        <div class="panel tertiary col-md-12">
+         <div class="panel-head"><label for=""> [@customForm.text name="Select the regions" readText=!editable /]:[@customForm.req required=editable /]</label></div>
+          <div id="regionList" class="panel-body" listname="fundingSource.fundingRegions"> 
+            <ul class="list">
+            [#if fundingSource.fundingRegions?has_content]
+              [#list fundingSource.fundingRegions as region]
+                [#-- Show if is a headquarter institution --]
+                  <li id="" class="region clearfix col-md-3">
+                  [#if editable ]
+                    <div class="removeRegion removeIcon" title="Remove region"></div>
+                  [/#if]
+                    <input class="id" type="hidden" name="fundingSource.fundingRegions[${region_index}].id" value="${region.id}" />
+                    <input class="rId" type="hidden" name="fundingSource.fundingRegions[${region_index}].locElement.id" value="${region.locElement.id}" />
+                    <span class="name">${(region.locElement.name)!}</span>
+                    <div class="clearfix"></div>
+                  </li>
+              [/#list]
+              [#else]
+              <p class="emptyText"> [@s.text name="No regions added yet." /]</p> 
+            [/#if]
+            </ul>
+            [#if editable ]
+              [@customForm.select name="" label=""  showTitle=false  i18nkey="" listName="regionLists" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className="regionsSelect" editable=editable /]
+            [/#if] 
+          </div>
+        </div>
+      </div>
+      
+      [#-- SELECT COUNTRIES --]
+      <div class="form-group row">
+        <div class="panel tertiary col-md-12">
+         <div class="panel-head"><label for=""> [@customForm.text name="If the Funding Source focuses on specific countries, please list these countries" readText=!editable /]:[@customForm.req required=editable /]</label></div>
+          <div id="countryList" class="panel-body" listname="fundingSource.fundingCountry"> 
+            <ul class="list">
+            [#if fundingSource.fundingCountry?has_content]
+              [#list fundingSource.fundingCountry as country]
+                [#-- Show if is a headquarter institution --]
+                  <li id="" class="country clearfix col-md-2">
+                  [#if editable ]
+                    <div class="removeCountry removeIcon" title="Remove country"></div>
+                  [/#if]
+                    <input class="id" type="hidden" name="fundingSource.fundingCountry[${country_index}].id" value="${(country.id)!-1}" />
+                    <input class="cId" type="hidden" name="fundingSource.fundingCountry[${country_index}].locElement.isoAlpha2" value="${(country.locElement.isoAlpha2)!}" />
+                    <span class="name"><span> <i class="flag-sm flag-sm-${(country.locElement.isoAlpha2)!}"></i> ${(country.locElement.name)!} </span></span>
+                    <div class="clearfix"></div>
+                  </li>
+              [/#list]
+              [#else]
+              <p class="emptyText"> [@s.text name="No countries added yet." /]</p> 
+            [/#if]
+            </ul>
+            [#if editable ]
+              [@customForm.select name="" label=""  showTitle=false  i18nkey="" listName="countryLists" keyFieldName="isoAlpha2"  displayFieldName="name"  multiple=false required=true  className="countriesSelect" editable=editable /]
+            [/#if] 
+          </div>
+        </div>
       </div>
       
       [#-- Donor --]
@@ -255,6 +321,28 @@
     <span class="name"></span>
     <div class="clearfix"></div>
   </li>
+</ul>
+
+[#-- Region element template --]
+<ul style="display:none">
+  <li id="regionTemplate" class="region clearfix col-md-3">
+      <div class="removeRegion removeIcon" title="Remove region"></div>
+      <input class="id" type="hidden" name="fundingSource.fundingRegions[-1].id" value="" />
+      <input class="rId" type="hidden" name="fundingSource.fundingRegions[-1].locElement.id" value="" />
+      <span class="name"></span>
+      <div class="clearfix"></div>
+    </li>
+</ul>
+
+[#-- Country element template --]
+<ul style="display:none">
+  <li id="countryTemplate" class="country clearfix col-md-2">
+      <div class="removeCountry removeIcon" title="Remove country"></div>
+      <input class="id" type="hidden" name="fundingSource.fundingCountry[-1].id" value="" />
+      <input class="cId" type="hidden" name="fundingSource.fundingCountry[-1].locElement.isoAlpha2" value="" />
+      <span class="name"></span>
+      <div class="clearfix"></div>
+    </li>
 </ul>
 
 [#-- Budget Types Description --]

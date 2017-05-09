@@ -151,6 +151,7 @@
 	  <mapping resource="xmls/PartnerDivisions.hbm.xml" />	  
 		<mapping resource="xmls/PartnerRequests.hbm.xml" />		
 	  <mapping resource="xmls/CrpLocElementTypes.hbm.xml" />   
+	  <mapping resource="xmls/FundingSourceLocations.hbm.xml" /> 
 	</session-factory>
 </hibernate-configuration>
 
