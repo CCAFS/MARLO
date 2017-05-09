@@ -909,7 +909,10 @@ function addLocElementCountry() {
     return $(this).find('input.locElementCountry').val();
   }).get();
 
-  if (!$.inArray( contryISO, selectedCountries )){
+  if (selectedCountries.indexOf(contryISO) != -1){
+    var notyOptions = jQuery.extend({}, notyDefaultOptions);
+    notyOptions.text = 'Countries office cannot be repeated';
+    noty(notyOptions);
     return
   }
   
@@ -938,7 +941,7 @@ function addLocElementCountry() {
   
   // Reset select
   $(this).val('-1');
-  $(this).trigger('select2.change');
+  $(this).trigger('select2:change');
 }
 
 function removeLocElement() {
