@@ -119,10 +119,10 @@ function attachEvents() {
   });
   // Partners filters
   $(".filters-link span").on("click", filterInstitutions);
-  // Select multiple branches
-  $('.branchesSelect').on("select2:select", function(e) {
 
-  });
+  // Location Elements events
+  $(".countriesList").on('change', addLocElementCountry);
+  $('.removeLocElement').on('click', removeLocElement);
 
   /**
    * CCAFS Partners list events
@@ -510,7 +510,7 @@ function addPartnerEvent(e) {
       width: '100%'
   });
 
-  $newElement.find('select.countriesSelect').select2({
+  $newElement.find('select.countriesList').select2({
       placeholder: "Select a country office",
       templateResult: formatStateCountries,
       templateSelection: formatStateCountries,
@@ -658,7 +658,7 @@ function addSelect2() {
       placeholder: "Select the branches where the project is working on...",
       width: '100%'
   });
-  $('form select.countriesSelect').select2({
+  $('form select.countriesList').select2({
       placeholder: "Select a country office",
       templateResult: formatStateCountries,
       templateSelection: formatStateCountries,
@@ -700,6 +700,11 @@ function PartnerObject(partner) {
     $(partner).find('.contactPerson').each(function(i,partnerPerson) {
       var contact = new PartnerPersonObject($(partnerPerson));
       contact.setIndex(elementName, index, i);
+    });
+    
+ // Update index for locations
+    $(partner).find('.locElement').each(function(i,element) {
+      $(element).setNameIndexes(2, i);
     });
   };
   this.updateBlockContent = function() {
@@ -877,8 +882,60 @@ function formatStateCountries(state) {
   if(!state.id) {
     return state.text;
   }
-  var $state =
-      $('<span> <i class="flag-sm flag-sm-' + state.element.value.toUpperCase() + '"></i>  ' + state.text + '</span>');
+  var flag = '<i class="flag-sm flag-sm-' + state.element.value.toUpperCase() + '"></i> ';
+  var $state;
+  if (state.id != -1){
+    $state = $('<span>'+ flag + state.text + '</span>');
+  }else{
+    $state = $('<span>' + state.text + '</span>');
+  }
   return $state;
 };
+
+// Locations (Country Offices)
+
+function addLocElementCountry() {
+  var countrySelected = $(this).find("option:selected");
+  var contryISO = countrySelected.val();
+  var countryName = countrySelected.text();
+  if(contryISO == "-1"){
+    return
+  }
+  
+  var $item = $('#locElement-template').clone(true).removeAttr('id');
+  var $list = $(this).parents('.projectPartner').find(".items-list ul");
+  
+  // Fill item values
+  $item.find('span.name').text(countryName);
+  $item.find('span.coordinates').text("");
+  $item.find('input.locElementName').val(countryName);
+  $item.find('input.locElementCountry').val(contryISO);
+  
+  // Add Flag
+  var $flag = $item.find('.flag-icon');
+  var flag = '<i class="flag-sm flag-sm-' + contryISO.toUpperCase() + '"></i>';
+  $flag.html(flag);
+  // Remove coordinates span
+  $item.find('.coordinates').remove();
+  // Adding item to the list
+  $list.append($item);
+  // Update Locations Indexes
+  setProjectPartnersIndexes();
+  // Show item
+  $item.show('slow');
+  // Remove message
+  $list.parent().find('p.message').hide();
+  
+  // Reset select
+  $(this).val('-1');
+  $(this).trigger('select2:change');
+}
+
+function removeLocElement() {
+  var $parent = $(this).parent();
+  $parent.hide('slow', function() {
+    $parent.remove();
+    setProjectPartnersIndexes();
+  });
+}
 

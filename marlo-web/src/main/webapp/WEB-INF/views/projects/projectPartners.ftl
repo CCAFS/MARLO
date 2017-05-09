@@ -124,6 +124,9 @@
 [#-- Contact person TEMPLATE from partnersTemplate.ftl --]
 [@contactPersonMacro element={} name="project.partners[-1].partnerPersons[-1]" isTemplate=true /]
 
+[#-- Country Element Template --]
+  [@locElementMacro element={} name="project.partners[-1].selectedLocations" index=-1 isTemplate=true /]
+
 [#-- PPA list Template --]
 <ul style="display:none">
   <li id="ppaListTemplate" class="clearfix">
@@ -262,11 +265,11 @@
       
       [#--Select country office  (if applicable)  --]
       <h5 class="sectionSubTitle">[@s.text name="projectPartners.countryOffices" /]</h5>
-      <div class="items-list simpleBox">
+      <div class="countries-list items-list simpleBox">
         <ul class="">
           [#if (element.selectedLocations?has_content)!false]
             [#list element.selectedLocations as locElement]
-              [@locElementMacro element=(locElement)!{} name="${name}.selectedLocations" index=locElement_index /]
+              [@locElementMacro element=locElement name="${name}.selectedLocations" index=locElement_index /]
             [/#list]
           [#else] 
             <p class="message text-center">No country office added</p>
@@ -277,7 +280,7 @@
         [#if editable]
           <hr />
           <div class="form-group">
-            [@customForm.select name="" i18nkey="location.select.country" listName="${name}.institution.locations" header=true keyFieldName="locElement.isoAlpha2" displayFieldName="locElement.name" value="id" className="countriesList"/]
+            [@customForm.select name="" i18nkey="location.select.country" listName="${name}.institution.locations" header=true keyFieldName="locElement.isoAlpha2" displayFieldName="locElement.name" value="id" className=" countriesList"/]
           </div>
         [/#if]
       </div>
@@ -431,9 +434,7 @@
     <span class="flag-icon"><i class="flag-sm flag-sm-${(element.isoAlpha2?upper_case)!}"></i></span> <span class="name">${(element.name)!'{name}'}</span><br />
     
     [#-- Hidden inputs --]
-    <input type="hidden" class="locElementId" name="${locElementName}.id" value="${(element.id)!}"/>
-    <input type="hidden" class="locElementName" name="${locElementName}.name" value="${(element.name)!}" />
-    <input type="hidden" class="locElementCountry" name="${locElementName}.locElement.isoAlpha2" value="${(element.isoAlpha2)!}" />
+    <input type="hidden" class="locElementCountry" name="${locElementName}.isoAlpha2" value="${(element.isoAlpha2)!}" /> 
   </li>
 [/#macro]
 
