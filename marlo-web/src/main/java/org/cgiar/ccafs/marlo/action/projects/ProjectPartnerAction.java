@@ -771,11 +771,25 @@ public class ProjectPartnerAction extends BaseAction {
 
                 }
                 pp.setInstitution(inst);
+                pp.getInstitution().setLocations(pp.getInstitution().getInstitutionsLocations().stream()
+                  .filter(c -> c.isActive()).collect(Collectors.toList()));
               }
             }
 
 
           }
+
+          if (pp.getSelectedLocations() != null) {
+
+            List<LocElement> locElements = new ArrayList<>();
+            for (LocElement locElement : pp.getSelectedLocations()) {
+              LocElement locElementDB = locationManager.getLocElementByISOCode(locElement.getIsoAlpha2());
+              locElements.add(locElementDB);
+            }
+            pp.getSelectedLocations().clear();
+            pp.getSelectedLocations().addAll(locElements);
+          }
+
 
           if (pp.getPartnerPersons() != null) {
             for (ProjectPartnerPerson projectPartnerPerson : pp.getPartnerPersons()) {
@@ -1204,8 +1218,10 @@ public class ProjectPartnerAction extends BaseAction {
     List<ProjectPartnerLocation> locationsPrev =
       projectPartnerBD.getProjectPartnerLocations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
     for (ProjectPartnerLocation projectPartnerLocation : locationsPrev) {
-      if (!partner.getSelectedLocations()
-        .contains(projectPartnerLocation.getInstitutionLocation().getLocElement().getIsoAlpha2())) {
+      if (partner.getSelectedLocations().stream()
+        .filter(
+          c -> c.getIsoAlpha2().equals(projectPartnerLocation.getInstitutionLocation().getLocElement().getIsoAlpha2()))
+        .collect(Collectors.toList()).isEmpty()) {
         projectPartnerLocationManager.deleteProjectPartnerLocation(projectPartnerLocation.getId());
       }
     }
