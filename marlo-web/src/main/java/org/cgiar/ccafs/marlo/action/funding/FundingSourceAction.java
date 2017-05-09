@@ -81,22 +81,22 @@ public class FundingSourceAction extends BaseAction {
 
   private AuditLogManager auditLogManager;
 
-
   private BudgetTypeManager budgetTypeManager;
 
 
   private Map<String, String> budgetTypes;
+
 
   private List<BudgetType> budgetTypesList;
 
 
   private CrpManager crpManager;
 
-
   private CrpPpaPartnerManager crpPpaPartnerManager;
 
 
   private File file;
+
 
   private String fileContentType;
 
@@ -104,34 +104,37 @@ public class FundingSourceAction extends BaseAction {
   private FileDBManager fileDBManager;
 
   private String fileFileName;
+
+
   private Integer fileID;
+
   private FundingSource fundingSource;
-
   private FundingSourceBudgetManager fundingSourceBudgetManager;
-
-
   private long fundingSourceID;
 
   private FundingSourceInstitutionManager fundingSourceInstitutionManager;
+
+
   private FundingSourceManager fundingSourceManager;
+
   private InstitutionManager institutionManager;
-
   private List<Institution> institutions;
-
   private List<Institution> institutionsDonors;
-
 
   private LiaisonInstitutionManager liaisonInstitutionManager;
 
   private List<LiaisonInstitution> liaisonInstitutions;
-  private HistoryComparator historyComparator;
-  private PartnerDivisionManager partnerDivisionManager;
 
+
+  private HistoryComparator historyComparator;
+
+  private PartnerDivisionManager partnerDivisionManager;
   private List<PartnerDivision> divisions;
   private Crp loggedCrp;
 
   private Map<String, String> status;
   private String transaction;
+
   private UserManager userManager;
   private FundingSourceValidator validator;
   /*
@@ -140,9 +143,9 @@ public class FundingSourceAction extends BaseAction {
   private FundingSourceLocationsManager fundingSourceLocationsManager;
   private LocElementManager locElementManager;
   private List<LocElement> regionLists;
+  private List<LocElement> scopeRegionLists;
   private List<LocElement> countryLists;
   private boolean region;
-
 
   // TODO delete when fix the budget permissions
   private RoleManager userRoleManager;
@@ -176,6 +179,7 @@ public class FundingSourceAction extends BaseAction {
     // TODO delete when fix the budget permissions
     this.userRoleManager = userRoleManager;
   }
+
 
   @Override
   public String cancel() {
@@ -260,7 +264,6 @@ public class FundingSourceAction extends BaseAction {
 
   }
 
-
   public Map<String, String> getBudgetTypes() {
     return budgetTypes;
   }
@@ -305,6 +308,7 @@ public class FundingSourceAction extends BaseAction {
     return config.getDownloadURL() + "/" + this.getFundingSourceUrlPath().replace('\\', '/');
   }
 
+
   public long getFundingSourceID() {
     return fundingSourceID;
   }
@@ -334,7 +338,6 @@ public class FundingSourceAction extends BaseAction {
 
   }
 
-
   public List<Institution> getInstitutions() {
     return institutions;
   }
@@ -348,15 +351,19 @@ public class FundingSourceAction extends BaseAction {
     return liaisonInstitutions;
   }
 
-
   public Crp getLoggedCrp() {
     return loggedCrp;
   }
+
 
   public List<LocElement> getRegionLists() {
     return regionLists;
   }
 
+
+  public List<LocElement> getScopeRegionLists() {
+    return scopeRegionLists;
+  }
 
   public Map<String, String> getStatus() {
     return status;
@@ -371,6 +378,7 @@ public class FundingSourceAction extends BaseAction {
   public boolean isRegion() {
     return region;
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -390,6 +398,12 @@ public class FundingSourceAction extends BaseAction {
       .filter(le -> le.isActive() && le.getLocElementType() != null && le.getLocElementType().getId() == 1)
       .collect(Collectors.toList()));
     Collections.sort(regionLists, (r1, r2) -> r1.getName().compareTo(r2.getName()));
+
+    // Region Scope List
+    scopeRegionLists = new ArrayList<>(locElementManager.findAll()
+      .stream().filter(le -> le.isActive() && le.getLocElementType() != null
+        && le.getLocElementType().getCrp().equals(loggedCrp) && le.getLocElementType().isScope())
+      .collect(Collectors.toList()));
 
     // Country List
     countryLists = new ArrayList<>(locElementManager.findAll().stream()
@@ -871,7 +885,6 @@ public class FundingSourceAction extends BaseAction {
     this.fileFileName = fileFileName;
   }
 
-
   public void setFileID(Integer fileID) {
     this.fileID = fileID;
   }
@@ -881,23 +894,24 @@ public class FundingSourceAction extends BaseAction {
     this.fundingSource = fundingSource;
   }
 
+
   public void setFundingSourceID(long fundingSourceID) {
     this.fundingSourceID = fundingSourceID;
   }
-
 
   public void setInstitutions(List<Institution> institutions) {
     this.institutions = institutions;
   }
 
+
   public void setInstitutionsDonors(List<Institution> institutionsDonors) {
     this.institutionsDonors = institutionsDonors;
   }
 
-
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
   }
+
 
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
@@ -909,6 +923,10 @@ public class FundingSourceAction extends BaseAction {
 
   public void setRegionLists(List<LocElement> regionLists) {
     this.regionLists = regionLists;
+  }
+
+  public void setScopeRegionLists(List<LocElement> scopeRegionLists) {
+    this.scopeRegionLists = scopeRegionLists;
   }
 
   public void setStatus(Map<String, String> status) {
