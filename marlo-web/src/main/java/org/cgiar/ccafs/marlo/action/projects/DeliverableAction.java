@@ -638,106 +638,111 @@ public class DeliverableAction extends BaseAction {
   public void parnershipNewData() {
     if (deliverable.getOtherPartners() != null) {
       for (DeliverablePartnership deliverablePartnership : deliverable.getOtherPartners()) {
+        if (deliverablePartnership.getProjectPartnerPerson() != null) {
+          if (deliverablePartnership.getId() == null && (deliverablePartnership.getProjectPartnerPerson() != null)
+            && (deliverablePartnership.getProjectPartnerPerson().getId() != null)) {
 
-        if (deliverablePartnership.getId() == null && (deliverablePartnership.getProjectPartnerPerson() != null)
-          && (deliverablePartnership.getProjectPartnerPerson().getId() != null)) {
-
-
-          ProjectPartnerPerson partnerPerson = projectPartnerPersonManager
-            .getProjectPartnerPersonById(deliverablePartnership.getProjectPartnerPerson().getId());
-
-          if (partnerPerson != null) {
-            DeliverablePartnership partnership = new DeliverablePartnership();
-            partnership.setProjectPartnerPerson(partnerPerson);
-            partnership.setPartnerType(DeliverablePartnershipTypeEnum.OTHER.getValue());
-            partnership.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
-            partnership.setActive(true);
-            partnership.setCreatedBy(this.getCurrentUser());
-            partnership.setModifiedBy(this.getCurrentUser());
-            partnership.setModificationJustification("");
-            partnership.setActiveSince(new Date());
-
-            if (deliverablePartnership.getPartnerDivision() != null
-              && deliverablePartnership.getPartnerDivision().getId().longValue() != -1) {
-              try {
-                PartnerDivision division =
-                  partnerDivisionManager.getPartnerDivisionById(deliverablePartnership.getPartnerDivision().getId());
-                partnership.setPartnerDivision(division);
-              } catch (Exception e) {
-                partnership.setPartnerDivision(null);
-              }
-            } else {
-              partnership.setPartnerDivision(null);
-            }
-
-            deliverablePartnershipManager.saveDeliverablePartnership(partnership);
-
-          }
-
-
-        } else {
-
-          long partnerShipPrewId = deliverablePartnershipManager
-            .getDeliverablePartnershipById(deliverablePartnership.getId()).getProjectPartnerPerson().getId();
-
-          long partnerShipId = deliverablePartnership.getProjectPartnerPerson().getId();
-          if (partnerShipPrewId != partnerShipId) {
 
             ProjectPartnerPerson partnerPerson = projectPartnerPersonManager
               .getProjectPartnerPersonById(deliverablePartnership.getProjectPartnerPerson().getId());
 
-            deliverablePartnershipManager.deleteDeliverablePartnership(deliverablePartnership.getId());
-
             if (partnerPerson != null) {
-
-              DeliverablePartnership partnershipNew = new DeliverablePartnership();
-              partnershipNew.setProjectPartnerPerson(partnerPerson);
-              partnershipNew.setPartnerType(DeliverablePartnershipTypeEnum.OTHER.getValue());
-              partnershipNew.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
-              partnershipNew.setActive(true);
-              partnershipNew.setCreatedBy(this.getCurrentUser());
-              partnershipNew.setModifiedBy(this.getCurrentUser());
-              partnershipNew.setModificationJustification("");
-              partnershipNew.setActiveSince(new Date());
+              DeliverablePartnership partnership = new DeliverablePartnership();
+              partnership.setProjectPartnerPerson(partnerPerson);
+              partnership.setPartnerType(DeliverablePartnershipTypeEnum.OTHER.getValue());
+              partnership.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
+              partnership.setActive(true);
+              partnership.setCreatedBy(this.getCurrentUser());
+              partnership.setModifiedBy(this.getCurrentUser());
+              partnership.setModificationJustification("");
+              partnership.setActiveSince(new Date());
 
               if (deliverablePartnership.getPartnerDivision() != null
                 && deliverablePartnership.getPartnerDivision().getId().longValue() != -1) {
                 try {
                   PartnerDivision division =
                     partnerDivisionManager.getPartnerDivisionById(deliverablePartnership.getPartnerDivision().getId());
-                  partnershipNew.setPartnerDivision(division);
+                  partnership.setPartnerDivision(division);
                 } catch (Exception e) {
-                  partnershipNew.setPartnerDivision(null);
+                  partnership.setPartnerDivision(null);
                 }
               } else {
-                partnershipNew.setPartnerDivision(null);
+                partnership.setPartnerDivision(null);
               }
-              deliverablePartnershipManager.saveDeliverablePartnership(partnershipNew);
+
+              deliverablePartnershipManager.saveDeliverablePartnership(partnership);
+
             }
 
 
           } else {
-            DeliverablePartnership partnershipDB =
-              deliverablePartnershipManager.getDeliverablePartnershipById(deliverablePartnership.getId());
 
-            if (deliverablePartnership.getPartnerDivision() != null
-              && deliverablePartnership.getPartnerDivision().getId().longValue() != -1) {
-              try {
-                PartnerDivision division =
-                  partnerDivisionManager.getPartnerDivisionById(deliverablePartnership.getPartnerDivision().getId());
-                partnershipDB.setPartnerDivision(division);
-              } catch (Exception e) {
+            long partnerShipPrewId = 0;
+
+            partnerShipPrewId = deliverablePartnershipManager
+              .getDeliverablePartnershipById(deliverablePartnership.getId()).getProjectPartnerPerson().getId();
+
+
+            long partnerShipId = deliverablePartnership.getProjectPartnerPerson().getId();
+            if (partnerShipPrewId != partnerShipId) {
+
+              ProjectPartnerPerson partnerPerson = projectPartnerPersonManager
+                .getProjectPartnerPersonById(deliverablePartnership.getProjectPartnerPerson().getId());
+
+              deliverablePartnershipManager.deleteDeliverablePartnership(deliverablePartnership.getId());
+
+              if (partnerPerson != null) {
+
+                DeliverablePartnership partnershipNew = new DeliverablePartnership();
+                partnershipNew.setProjectPartnerPerson(partnerPerson);
+                partnershipNew.setPartnerType(DeliverablePartnershipTypeEnum.OTHER.getValue());
+                partnershipNew.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
+                partnershipNew.setActive(true);
+                partnershipNew.setCreatedBy(this.getCurrentUser());
+                partnershipNew.setModifiedBy(this.getCurrentUser());
+                partnershipNew.setModificationJustification("");
+                partnershipNew.setActiveSince(new Date());
+
+                if (deliverablePartnership.getPartnerDivision() != null
+                  && deliverablePartnership.getPartnerDivision().getId().longValue() != -1) {
+                  try {
+                    PartnerDivision division = partnerDivisionManager
+                      .getPartnerDivisionById(deliverablePartnership.getPartnerDivision().getId());
+                    partnershipNew.setPartnerDivision(division);
+                  } catch (Exception e) {
+                    partnershipNew.setPartnerDivision(null);
+                  }
+                } else {
+                  partnershipNew.setPartnerDivision(null);
+                }
+                deliverablePartnershipManager.saveDeliverablePartnership(partnershipNew);
+              }
+
+
+            } else {
+              DeliverablePartnership partnershipDB =
+                deliverablePartnershipManager.getDeliverablePartnershipById(deliverablePartnership.getId());
+
+              if (deliverablePartnership.getPartnerDivision() != null
+                && deliverablePartnership.getPartnerDivision().getId().longValue() != -1) {
+                try {
+                  PartnerDivision division =
+                    partnerDivisionManager.getPartnerDivisionById(deliverablePartnership.getPartnerDivision().getId());
+                  partnershipDB.setPartnerDivision(division);
+                } catch (Exception e) {
+                  partnershipDB.setPartnerDivision(null);
+                }
+
+              } else {
                 partnershipDB.setPartnerDivision(null);
               }
 
-            } else {
-              partnershipDB.setPartnerDivision(null);
+              deliverablePartnershipManager.saveDeliverablePartnership(partnershipDB);
+
             }
-
-            deliverablePartnershipManager.saveDeliverablePartnership(partnershipDB);
-
           }
         }
+
       }
     }
   }
@@ -749,6 +754,14 @@ public class DeliverableAction extends BaseAction {
         .filter(dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
         .collect(Collectors.toList());
 
+      if (deliverable.getOtherPartners() == null) {
+        deliverable.setOtherPartners(new ArrayList<>());
+      }
+      for (DeliverablePartnership deliverablePartnership : deliverable.getOtherPartners()) {
+        if (deliverablePartnership.getProjectPartnerPerson() == null) {
+          deliverablePartnership.setId(null);
+        }
+      }
 
       for (DeliverablePartnership deliverablePartnership : partnerShipsPrew) {
         if (deliverable.getOtherPartners() != null) {
