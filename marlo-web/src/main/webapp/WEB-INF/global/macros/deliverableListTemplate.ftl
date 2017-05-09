@@ -186,7 +186,7 @@
       [#else]
         [#-- Partner Name --]
         <div class="form-group partnerName chosen"> 
-        [#if editable]
+        [#if editable] 
           [@customForm.select name="" value="${(projectPartner.id)!-1}"  label="" i18nkey="" showTitle=false listName="partners" keyFieldName="id"  displayFieldName="composedName" className="partner id " editable=editable required=isResponsable/]
           <div class="partnerPersons">
             [#if (projectPartner.id??)!false]

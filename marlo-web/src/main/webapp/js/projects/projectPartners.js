@@ -133,7 +133,7 @@ function attachEvents() {
     $modal.find('input.institution_id').val(partner.institutionId);
     $modal.find('select.countriesRequest').val(null).trigger('select2:change');
     $modal.find('select.countriesRequest').trigger('change');
-    $modal.find('.modal-title').html('Add Countries office <br /><small>('+ partner.institutionName + ')</small>');
+    $modal.find('.modal-title').html('Request Country office(s) <br /><small>('+ partner.institutionName + ')</small>');
   });
   $('#requestModal button').on('click', function(){
     $.ajax({
