@@ -1211,9 +1211,10 @@ public class ProjectPartnerAction extends BaseAction {
     }
     for (LocElement iso : partner.getSelectedLocations()) {
       if (locationsPrev.stream()
-        .filter(c -> c.isActive() && c.getInstitutionLocation().getLocElement().getIsoAlpha2().equals(iso))
+        .filter(
+          c -> c.isActive() && c.getInstitutionLocation().getLocElement().getIsoAlpha2().equals(iso.getIsoAlpha2()))
         .collect(Collectors.toList()).isEmpty()) {
-        LocElement locElement = locationManager.getLocElementById(iso.getId());
+        LocElement locElement = locationManager.getLocElementByISOCode(iso.getIsoAlpha2());
         InstitutionLocation institutionLocation =
           institutionLocationManager.findByLocation(locElement.getId(), partner.getInstitution().getId());
         ProjectPartnerLocation partnerLocation = new ProjectPartnerLocation();
