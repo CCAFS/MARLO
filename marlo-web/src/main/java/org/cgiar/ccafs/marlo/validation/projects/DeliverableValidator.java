@@ -223,7 +223,8 @@ public class DeliverableValidator extends BaseValidator {
         if (deliverable.getOtherPartners() != null) {
           int i = 0;
           for (DeliverablePartnership deliverablePartnership : deliverable.getOtherPartners()) {
-            if (deliverablePartnership != null && deliverablePartnership.getProjectPartnerPerson() != null) {
+            if (deliverablePartnership != null && deliverablePartnership.getProjectPartnerPerson() != null
+              && deliverablePartnership.getProjectPartnerPerson().getId() != null) {
               if (projectPartnerPersonManager
                 .getProjectPartnerPersonById(deliverablePartnership.getProjectPartnerPerson().getId())
                 .getProjectPartner().getInstitution().getAcronym().equalsIgnoreCase("IFPRI")) {
@@ -349,6 +350,7 @@ public class DeliverableValidator extends BaseValidator {
 
 
     if (!action.getFieldErrors().isEmpty()) {
+      System.out.println(action.getFieldErrors());
       action.addActionError(action.getText("saving.fields.required"));
     } else if (validationMessage.length() > 0) {
       action

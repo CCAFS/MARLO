@@ -211,9 +211,10 @@
   
   <div id="deliverablePerson-${isTemplate?string('template', index)}" class="${type} deliverablePerson ${isResponsable?string('resp','other')} inputsFlat" style="display:${isTemplate?string('none','')}">
     
-    [#if !isResponsable]<input class="element" type="hidden" name="${customName}.id" value="">[/#if]
+    [#if !isResponsable]<input class="element" type="hidden" name="${customName}.id" value="${(action.getDeliverablePartnership((element.id)!-1))!}">[/#if]
     <input id="${index}-${(element.id)!}" type="${type}" name="${customName}.projectPartnerPerson.id" value="${(element.id)!}" [#if checked]checked[/#if]/>
     <label for="${index}-${(element.id)!}" class="${type}-label [#if isResponsable]radio-label-yes[/#if]" >${(element.composedName?html)!}</label>
+    
     
     [#-- Division --]
     [#if action.hasSpecificities('crp_division_fs') && !isResponsable]

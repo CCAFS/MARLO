@@ -350,6 +350,18 @@ public class DeliverableAction extends BaseAction {
     return deliverableID;
   }
 
+  public Long getDeliverablePartnership(long projectPeronID) {
+
+    for (DeliverablePartnership deliverablePartnership : deliverableManager.getDeliverableById(deliverableID)
+      .getDeliverablePartnerships().stream().filter(c -> c.isActive()
+        && c.getProjectPartnerPerson().getId().longValue() == projectPeronID && c.getPartnerType().equals("Other"))
+      .collect(Collectors.toList())) {
+      return deliverablePartnership.getId().longValue();
+    }
+
+    return null;
+  }
+
   public List<Map<String, Object>> getDeliverablesSubTypes(long deliverableTypeID) {
     List<Map<String, Object>> subTypes = new ArrayList<>();
     Map<String, Object> keyOutput;
@@ -392,6 +404,7 @@ public class DeliverableAction extends BaseAction {
     return divisions;
   }
 
+
   public List<FundingSource> getFundingSources() {
     return fundingSources;
   }
@@ -400,7 +413,6 @@ public class DeliverableAction extends BaseAction {
   public List<GenderType> getGenderLevels() {
     return genderLevels;
   }
-
 
   public int getIndexTab() {
     return indexTab;
@@ -418,10 +430,10 @@ public class DeliverableAction extends BaseAction {
     return partnerPersons;
   }
 
+
   public List<ProjectPartner> getPartners() {
     return partners;
   }
-
 
   public List<ProjectPartnerPerson> getPersons(long partnerID) {
     ProjectPartner projectPartner = projectPartnerManager.getProjectPartnerById(partnerID);
@@ -525,6 +537,7 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+
   public Boolean isDeliverabletNew(long deliverableID) {
 
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
@@ -561,7 +574,6 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
-
   public boolean isPPA(Institution institution) {
     if (institution == null) {
       return false;
@@ -582,6 +594,7 @@ public class DeliverableAction extends BaseAction {
     return false;
   }
 
+
   public List<DeliverablePartnership> otherPartners() {
     try {
       List<DeliverablePartnership> list = deliverable.getDeliverablePartnerships().stream()
@@ -596,7 +609,6 @@ public class DeliverableAction extends BaseAction {
 
 
   }
-
 
   public List<DeliverablePartnership> otherPartnersAutoSave() {
     try {
@@ -626,7 +638,7 @@ public class DeliverableAction extends BaseAction {
   public void parnershipNewData() {
     if (deliverable.getOtherPartners() != null) {
       for (DeliverablePartnership deliverablePartnership : deliverable.getOtherPartners()) {
-        // TODO: Christian please check this condition
+
         if (deliverablePartnership.getId() == null && (deliverablePartnership.getProjectPartnerPerson() != null)
           && (deliverablePartnership.getProjectPartnerPerson().getId() != null)) {
 
@@ -1199,6 +1211,7 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+
   private DeliverablePartnership responsiblePartnerAutoSave() {
     try {
       ProjectPartnerPerson partnerPerson = projectPartnerPersonManager
@@ -1377,9 +1390,10 @@ public class DeliverableAction extends BaseAction {
         && deliverablePrew.getDeliverablePartnerships().size() > 0) {
 
         try {
-          partnershipResponsible = deliverablePrew.getDeliverablePartnerships().stream()
-            .filter(
-              dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
+          partnershipResponsible =
+            deliverablePrew.getDeliverablePartnerships().stream()
+              .filter(dp -> dp.isActive()
+                && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
             .collect(Collectors.toList()).get(0);
         } catch (Exception e) {
           partnershipResponsible = null;
