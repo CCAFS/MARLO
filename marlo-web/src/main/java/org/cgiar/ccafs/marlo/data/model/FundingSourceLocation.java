@@ -13,6 +13,7 @@ import com.google.gson.annotations.Expose;
  */
 public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
 
+
   private static final long serialVersionUID = 2576251519811292346L;
 
 
@@ -22,6 +23,11 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
 
   @Expose
   private LocElement locElement;
+
+
+  @Expose
+  private LocElementType locElementType;
+
 
   @Expose
   private User modifiedBy;
@@ -57,7 +63,6 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
-
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
@@ -76,7 +81,6 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
     }
     return true;
   }
-
 
   public Date getActiveSince() {
     return activeSince;
@@ -104,6 +108,11 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
   }
 
 
+  public LocElementType getLocElementType() {
+    return locElementType;
+  }
+
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -116,6 +125,7 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
   public String getModificationJustification() {
     return modificationJustification;
   }
+
 
   @Override
   public User getModifiedBy() {
@@ -143,10 +153,10 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
   }
 
-
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
+
 
   public void setFundingSource(FundingSource fundingSource) {
     this.fundingSource = fundingSource;
@@ -158,6 +168,10 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
 
   public void setLocElement(LocElement locElement) {
     this.locElement = locElement;
+  }
+
+  public void setLocElementType(LocElementType locElementType) {
+    this.locElementType = locElementType;
   }
 
   public void setModificationJustification(String modificationJustification) {

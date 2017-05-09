@@ -30,6 +30,7 @@ import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
+import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.PartnerDivisionManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
@@ -44,6 +45,7 @@ import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
+import org.cgiar.ccafs.marlo.data.model.LocElementType;
 import org.cgiar.ccafs.marlo.data.model.PartnerDivision;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -86,22 +88,22 @@ public class FundingSourceAction extends BaseAction {
 
   private Map<String, String> budgetTypes;
 
-
   private List<BudgetType> budgetTypesList;
 
 
   private CrpManager crpManager;
+
 
   private CrpPpaPartnerManager crpPpaPartnerManager;
 
 
   private File file;
 
-
   private String fileContentType;
 
 
   private FileDBManager fileDBManager;
+
 
   private String fileFileName;
 
@@ -109,44 +111,47 @@ public class FundingSourceAction extends BaseAction {
   private Integer fileID;
 
   private FundingSource fundingSource;
+
+
   private FundingSourceBudgetManager fundingSourceBudgetManager;
+
   private long fundingSourceID;
-
   private FundingSourceInstitutionManager fundingSourceInstitutionManager;
-
-
   private FundingSourceManager fundingSourceManager;
 
   private InstitutionManager institutionManager;
+
+
   private List<Institution> institutions;
+
   private List<Institution> institutionsDonors;
-
   private LiaisonInstitutionManager liaisonInstitutionManager;
-
   private List<LiaisonInstitution> liaisonInstitutions;
-
 
   private HistoryComparator historyComparator;
 
   private PartnerDivisionManager partnerDivisionManager;
-  private List<PartnerDivision> divisions;
-  private Crp loggedCrp;
 
+
+  private List<PartnerDivision> divisions;
+
+  private Crp loggedCrp;
   private Map<String, String> status;
   private String transaction;
 
   private UserManager userManager;
   private FundingSourceValidator validator;
+
   /*
    * Funding Source Locations
    */
   private FundingSourceLocationsManager fundingSourceLocationsManager;
   private LocElementManager locElementManager;
+  private LocElementTypeManager locElementTypeManager;
   private List<LocElement> regionLists;
-  private List<LocElement> scopeRegionLists;
+  private List<LocElementType> scopeRegionLists;
   private List<LocElement> countryLists;
   private boolean region;
-
   // TODO delete when fix the budget permissions
   private RoleManager userRoleManager;
 
@@ -158,6 +163,7 @@ public class FundingSourceAction extends BaseAction {
     HistoryComparator historyComparator, FileDBManager fileDBManager, UserManager userManager,
     PartnerDivisionManager partnerDivisionManager, FundingSourceInstitutionManager fundingSourceInstitutionManager,
     LocElementManager locElementManager, FundingSourceLocationsManager fundingSourceLocationsManager,
+    LocElementTypeManager locElementTypeManager,
     /* TODO delete when fix the budget permissions */ RoleManager userRoleManager) {
     super(config);
     this.crpManager = crpManager;
@@ -176,10 +182,10 @@ public class FundingSourceAction extends BaseAction {
     this.fundingSourceBudgetManager = fundingSourceBudgetManager;
     this.locElementManager = locElementManager;
     this.fundingSourceLocationsManager = fundingSourceLocationsManager;
+    this.locElementTypeManager = locElementTypeManager;
     // TODO delete when fix the budget permissions
     this.userRoleManager = userRoleManager;
   }
-
 
   @Override
   public String cancel() {
@@ -219,6 +225,7 @@ public class FundingSourceAction extends BaseAction {
 
 
   }
+
 
   public boolean canEditInstitution() {
     User user = userManager.getUser(this.getCurrentUser().getId());
@@ -272,7 +279,6 @@ public class FundingSourceAction extends BaseAction {
     return budgetTypesList;
   }
 
-
   public List<LocElement> getCountryLists() {
     return countryLists;
   }
@@ -317,6 +323,7 @@ public class FundingSourceAction extends BaseAction {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + "fundingSourceFiles" + File.separator;
   }
 
+
   public int getIndexBugets(int year) {
     int i = 0;
     if (fundingSource.getBudgets() != null) {
@@ -346,7 +353,6 @@ public class FundingSourceAction extends BaseAction {
     return institutionsDonors;
   }
 
-
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
   }
@@ -360,10 +366,10 @@ public class FundingSourceAction extends BaseAction {
     return regionLists;
   }
 
-
-  public List<LocElement> getScopeRegionLists() {
+  public List<LocElementType> getScopeRegionLists() {
     return scopeRegionLists;
   }
+
 
   public Map<String, String> getStatus() {
     return status;
@@ -400,9 +406,8 @@ public class FundingSourceAction extends BaseAction {
     Collections.sort(regionLists, (r1, r2) -> r1.getName().compareTo(r2.getName()));
 
     // Region Scope List
-    scopeRegionLists = new ArrayList<>(locElementManager.findAll().stream()
-      .filter(le -> le.isActive() && le.getLocElementType() != null && le.getLocElementType().getCrp() != null
-        && le.getLocElementType().getCrp().equals(loggedCrp) && le.getLocElementType().isScope())
+    scopeRegionLists = new ArrayList<>(locElementTypeManager.findAll().stream()
+      .filter(le -> le.isActive() && le.getCrp() != null && le.getCrp().equals(loggedCrp) && le.isScope())
       .collect(Collectors.toList()));
 
     // Country List
@@ -628,6 +633,7 @@ public class FundingSourceAction extends BaseAction {
 
     }
   }
+
 
   @Override
   public String save() {
@@ -889,7 +895,6 @@ public class FundingSourceAction extends BaseAction {
     this.fileID = fileID;
   }
 
-
   public void setFundingSource(FundingSource fundingSource) {
     this.fundingSource = fundingSource;
   }
@@ -899,23 +904,24 @@ public class FundingSourceAction extends BaseAction {
     this.fundingSourceID = fundingSourceID;
   }
 
+
   public void setInstitutions(List<Institution> institutions) {
     this.institutions = institutions;
   }
-
 
   public void setInstitutionsDonors(List<Institution> institutionsDonors) {
     this.institutionsDonors = institutionsDonors;
   }
 
+
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
   }
 
-
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
+
 
   public void setRegion(boolean region) {
     this.region = region;
@@ -925,9 +931,10 @@ public class FundingSourceAction extends BaseAction {
     this.regionLists = regionLists;
   }
 
-  public void setScopeRegionLists(List<LocElement> scopeRegionLists) {
+  public void setScopeRegionLists(List<LocElementType> scopeRegionLists) {
     this.scopeRegionLists = scopeRegionLists;
   }
+
 
   public void setStatus(Map<String, String> status) {
     this.status = status;
