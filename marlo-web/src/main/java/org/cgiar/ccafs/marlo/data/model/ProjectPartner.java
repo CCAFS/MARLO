@@ -57,7 +57,7 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
 
   private Set<ProjectPartnerLocation> projectPartnerLocations = new HashSet<ProjectPartnerLocation>(0);
 
-  private List<String> selectedLocations;
+  private List<LocElement> selectedLocations;
 
 
   private List<ProjectPartnerPerson> partnerPersons;
@@ -244,7 +244,7 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     return responsibilities;
   }
 
-  public List<String> getSelectedLocations() {
+  public List<LocElement> getSelectedLocations() {
     return selectedLocations;
   }
 
@@ -368,7 +368,7 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     this.responsibilities = responsibilities;
   }
 
-  public void setSelectedLocations(List<String> selectedLocations) {
+  public void setSelectedLocations(List<LocElement> selectedLocations) {
     this.selectedLocations = selectedLocations;
   }
 

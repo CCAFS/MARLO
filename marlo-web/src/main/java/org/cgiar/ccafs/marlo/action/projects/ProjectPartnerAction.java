@@ -846,8 +846,7 @@ public class ProjectPartnerAction extends BaseAction {
           projectPartner.setSelectedLocations(new ArrayList<>());
           for (ProjectPartnerLocation projectPartnerLocation : projectPartner.getProjectPartnerLocations().stream()
             .filter(c -> c.isActive()).collect(Collectors.toList())) {
-            projectPartner.getSelectedLocations()
-              .add(projectPartnerLocation.getInstitutionLocation().getLocElement().getIsoAlpha2());
+            projectPartner.getSelectedLocations().add(projectPartnerLocation.getInstitutionLocation().getLocElement());
           }
 
 
@@ -1210,11 +1209,11 @@ public class ProjectPartnerAction extends BaseAction {
         projectPartnerLocationManager.deleteProjectPartnerLocation(projectPartnerLocation.getId());
       }
     }
-    for (String iso : partner.getSelectedLocations()) {
+    for (LocElement iso : partner.getSelectedLocations()) {
       if (locationsPrev.stream()
         .filter(c -> c.isActive() && c.getInstitutionLocation().getLocElement().getIsoAlpha2().equals(iso))
         .collect(Collectors.toList()).isEmpty()) {
-        LocElement locElement = locationManager.getLocElementByISOCode(iso);
+        LocElement locElement = locationManager.getLocElementById(iso.getId());
         InstitutionLocation institutionLocation =
           institutionLocationManager.findByLocation(locElement.getId(), partner.getInstitution().getId());
         ProjectPartnerLocation partnerLocation = new ProjectPartnerLocation();
