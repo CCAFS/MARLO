@@ -280,7 +280,7 @@
         [#if editable]
           <hr />
           <div class="form-group">
-            [@customForm.select name="" showTitle=false i18nkey="location.select.country" listName="${name}.institution.locations" header=true keyFieldName="locElement.isoAlpha2" displayFieldName="locElement.name" value="id" placeholder="Select a country..." className="countriesList"/]
+            [@customForm.select name="" showTitle=false i18nkey="location.select.country" listName="${name}.institution.locations" header=true keyFieldName="locElement.isoAlpha2" displayFieldName="composedName" value="id" placeholder="Select a country..." className="countriesList"/]
           </div>
         [/#if]
       </div>
