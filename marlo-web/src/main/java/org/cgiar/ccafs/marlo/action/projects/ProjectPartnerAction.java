@@ -781,10 +781,13 @@ public class ProjectPartnerAction extends BaseAction {
 
           if (pp.getSelectedLocations() != null) {
 
-            List<LocElement> locElements = new ArrayList<>();
-            for (LocElement locElement : pp.getSelectedLocations()) {
-              LocElement locElementDB = locationManager.getLocElementByISOCode(locElement.getIsoAlpha2());
-              locElements.add(locElementDB);
+            List<InstitutionLocation> locElements = new ArrayList<>();
+            for (InstitutionLocation locElement : pp.getSelectedLocations()) {
+              LocElement locElementDB =
+                locationManager.getLocElementByISOCode(locElement.getLocElement().getIsoAlpha2());
+              InstitutionLocation institutionLocation = institutionLocationManager.findByLocation(locElementDB.getId(),
+                pp.getInstitution().getId().longValue());
+              locElements.add(institutionLocation);
             }
             pp.getSelectedLocations().clear();
             pp.getSelectedLocations().addAll(locElements);
@@ -860,7 +863,7 @@ public class ProjectPartnerAction extends BaseAction {
           projectPartner.setSelectedLocations(new ArrayList<>());
           for (ProjectPartnerLocation projectPartnerLocation : projectPartner.getProjectPartnerLocations().stream()
             .filter(c -> c.isActive()).collect(Collectors.toList())) {
-            projectPartner.getSelectedLocations().add(projectPartnerLocation.getInstitutionLocation().getLocElement());
+            projectPartner.getSelectedLocations().add(projectPartnerLocation.getInstitutionLocation());
           }
 
 
@@ -1219,18 +1222,18 @@ public class ProjectPartnerAction extends BaseAction {
       projectPartnerBD.getProjectPartnerLocations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
     for (ProjectPartnerLocation projectPartnerLocation : locationsPrev) {
       if (partner.getSelectedLocations().stream()
-        .filter(
-          c -> c.getIsoAlpha2().equals(projectPartnerLocation.getInstitutionLocation().getLocElement().getIsoAlpha2()))
+        .filter(c -> c.getLocElement().getIsoAlpha2()
+          .equals(projectPartnerLocation.getInstitutionLocation().getLocElement().getIsoAlpha2()))
         .collect(Collectors.toList()).isEmpty()) {
         projectPartnerLocationManager.deleteProjectPartnerLocation(projectPartnerLocation.getId());
       }
     }
-    for (LocElement iso : partner.getSelectedLocations()) {
+    for (InstitutionLocation iso : partner.getSelectedLocations()) {
       if (locationsPrev.stream()
-        .filter(
-          c -> c.isActive() && c.getInstitutionLocation().getLocElement().getIsoAlpha2().equals(iso.getIsoAlpha2()))
+        .filter(c -> c.isActive()
+          && c.getInstitutionLocation().getLocElement().getIsoAlpha2().equals(iso.getLocElement().getIsoAlpha2()))
         .collect(Collectors.toList()).isEmpty()) {
-        LocElement locElement = locationManager.getLocElementByISOCode(iso.getIsoAlpha2());
+        LocElement locElement = locationManager.getLocElementByISOCode(iso.getLocElement().getIsoAlpha2());
         InstitutionLocation institutionLocation =
           institutionLocationManager.findByLocation(locElement.getId(), partner.getInstitution().getId());
         ProjectPartnerLocation partnerLocation = new ProjectPartnerLocation();
