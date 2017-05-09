@@ -400,8 +400,8 @@ public class FundingSourceAction extends BaseAction {
     Collections.sort(regionLists, (r1, r2) -> r1.getName().compareTo(r2.getName()));
 
     // Region Scope List
-    scopeRegionLists = new ArrayList<>(locElementManager.findAll()
-      .stream().filter(le -> le.isActive() && le.getLocElementType() != null
+    scopeRegionLists = new ArrayList<>(locElementManager.findAll().stream()
+      .filter(le -> le.isActive() && le.getLocElementType() != null && le.getLocElementType().getCrp() != null
         && le.getLocElementType().getCrp().equals(loggedCrp) && le.getLocElementType().isScope())
       .collect(Collectors.toList()));
 
