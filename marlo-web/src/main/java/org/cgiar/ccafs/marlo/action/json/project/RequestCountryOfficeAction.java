@@ -73,9 +73,9 @@ public class RequestCountryOfficeAction extends BaseAction {
     for (String string : countries) {
 
       if (countriesName == null) {
-        countriesName = locElementManager.getLocElementById(Long.parseLong(string)).getName();
+        countriesName = locElementManager.getLocElementByISOCode((string)).getName();
       } else {
-        countriesName = countriesName + ", " + locElementManager.getLocElementById(Long.parseLong(string)).getName();
+        countriesName = countriesName + ", " + locElementManager.getLocElementByISOCode((string)).getName();
       }
 
     }
