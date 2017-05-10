@@ -175,8 +175,8 @@ public class ProjectPartnersValidator extends BaseValidator {
           // Validating that the partner has a least one contact person
           if (project.isProjectEditLeader()) {
             if (action.hasSpecificities(APConstants.CRP_PARTNER_CONTRIBUTIONS)) {
-              this.validatePersonResponsibilities(action, c, partner);
 
+              this.validatePersonResponsibilities(action, c, partner);
             }
           }
           if (project.isProjectEditLeader()) {
@@ -196,24 +196,35 @@ public class ProjectPartnersValidator extends BaseValidator {
 
             }
           }
+          Institution inst = institutionManager.getInstitutionById(partner.getInstitution().getId());
 
 
           if (partner.getPartnerPersons() == null || partner.getPartnerPersons().isEmpty()) {
-            action.addActionMessage(action.getText("planning.projectPartners.contactPersons.empty",
-              new String[] {partner.getInstitution().getName()}));
-            this.addMissingField("project.partner[" + c + "].contactPersons.empty");
+            if (!inst.getCrpPpaPartners().stream()
+              .filter(insti -> insti.isActive() && insti.getCrp().getId().longValue() == action.getCrpID().longValue())
+              .collect(Collectors.toList()).isEmpty()) {
+              action.addActionMessage(action.getText("planning.projectPartners.contactPersons.empty",
+                new String[] {partner.getInstitution().getName()}));
+              this.addMissingField("project.partner[" + c + "].contactPersons.empty");
+            }
+
           } else {
             j = 0;
             // iterating all the contact persons.
             for (ProjectPartnerPerson person : partner.getPartnerPersons()) {
-              this.validatePersonType(action, c, j, person);
-              this.validateUser(action, c, j, person);
+              if (!inst.getCrpPpaPartners().stream()
+                .filter(
+                  insti -> insti.isActive() && insti.getCrp().getId().longValue() == action.getCrpID().longValue())
+                .collect(Collectors.toList()).isEmpty()) {
+                this.validatePersonType(action, c, j, person);
+
+                this.validateUser(action, c, j, person);
+              }
 
 
-              j++;
+              c++;
             }
           }
-          c++;
         }
       }
     } catch (Exception e) {

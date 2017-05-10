@@ -1062,21 +1062,24 @@ public class ProjectPartnerAction extends BaseAction {
                 this.notifyNewUserCreated(partnerPerson.getUser());
               }
 
+              if (partnerPerson.getUser() != null
+                && (partnerPerson.getUser().getId() != null && partnerPerson.getUser().getId().longValue() != -1)) {
+                projectPartnerPersonManager.saveProjectPartnerPerson(partnerPerson);
+                User userDB = userManager.getUser(partnerPerson.getUser().getId());
+                if (userDB.getCrpUsers().stream().filter(c -> c.getCrp().getId().equals(loggedCrp.getId()))
+                  .collect(Collectors.toList()).isEmpty()) {
+                  CrpUser crpUser = new CrpUser();
+                  crpUser.setUser(userDB);
+                  crpUser.setActiveSince(new Date());
+                  crpUser.setCreatedBy(this.getCurrentUser());
+                  crpUser.setCrp(loggedCrp);
+                  crpUser.setModificationJustification("");
+                  crpUser.setModifiedBy(this.getCurrentUser());
+                  crpUserManager.saveCrpUser(crpUser);
 
-              projectPartnerPersonManager.saveProjectPartnerPerson(partnerPerson);
-              User userDB = userManager.getUser(partnerPerson.getUser().getId());
-              if (userDB.getCrpUsers().stream().filter(c -> c.getCrp().getId().equals(loggedCrp.getId()))
-                .collect(Collectors.toList()).isEmpty()) {
-                CrpUser crpUser = new CrpUser();
-                crpUser.setUser(userDB);
-                crpUser.setActiveSince(new Date());
-                crpUser.setCreatedBy(this.getCurrentUser());
-                crpUser.setCrp(loggedCrp);
-                crpUser.setModificationJustification("");
-                crpUser.setModifiedBy(this.getCurrentUser());
-                crpUserManager.saveCrpUser(crpUser);
-
+                }
               }
+
 
             }
           }
