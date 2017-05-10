@@ -437,8 +437,8 @@ function updatePartnersResp() {
     var personID = $(item).find('input[type="radio"]').val();
     var customID = "radio-" + i + "-" + personID;
 
-    $(item).find('input[type="radio"].radio-label').attr('id', customID);
-    $(item).find('label').attr('for', customID);
+    $(item).find('input[type="radio"]').attr('id', customID);
+    $(item).find('label.radio-label').attr('for', customID);
   });
 
   updateProjectPartnersSelects();
