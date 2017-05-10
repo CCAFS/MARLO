@@ -81,11 +81,15 @@ public class RequestCountryOfficeAction extends BaseAction {
     }
     String institutionName = institutionManager.getInstitutionById(institutionID).getName();
 
-    subject = "[MARLO-" + this.getCrpSession().toUpperCase() + "] Partner verification - " + institutionName;
+    subject = "[MARLO-" + this.getCrpSession().toUpperCase() + "] Add Office - " + institutionName;
     // Message content
     message.append(this.getCurrentUser().getFirstName() + " " + this.getCurrentUser().getLastName() + " ");
     message.append("(" + this.getCurrentUser().getEmail() + ") ");
     message.append("is requesting to add the following offices for the institution: ");
+
+    message.append("</br></br>");
+    message.append("Project : P");
+    message.append(projectID);
     message.append("</br></br>");
     message.append("Partner Name: ");
     message.append(institutionName);
