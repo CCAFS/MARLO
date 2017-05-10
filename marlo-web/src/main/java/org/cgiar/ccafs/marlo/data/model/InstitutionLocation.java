@@ -20,14 +20,22 @@ public class InstitutionLocation implements java.io.Serializable, IAuditLog {
   private LocElement locElement;
   @Expose
   private boolean headquater;
+  @Expose
+  private String city;
+
 
   public InstitutionLocation() {
   }
+
 
   public InstitutionLocation(Institution institution, LocElement locElement, boolean isHeadquater) {
     this.institution = institution;
     this.locElement = locElement;
     this.headquater = isHeadquater;
+  }
+
+  public String getCity() {
+    return city;
   }
 
   public String getComposedName() {
@@ -51,7 +59,6 @@ public class InstitutionLocation implements java.io.Serializable, IAuditLog {
     return locElement;
   }
 
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -66,6 +73,7 @@ public class InstitutionLocation implements java.io.Serializable, IAuditLog {
     return "";
   }
 
+
   @Override
   public User getModifiedBy() {
     User u = new User();
@@ -79,9 +87,13 @@ public class InstitutionLocation implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
   public boolean isHeadquater() {
     return headquater;
+  }
+
+
+  public void setCity(String city) {
+    this.city = city;
   }
 
 

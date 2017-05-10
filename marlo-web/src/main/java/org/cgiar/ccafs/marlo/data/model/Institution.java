@@ -45,8 +45,6 @@ public class Institution implements java.io.Serializable, IAuditLog {
   @Expose
   private String acronym;
 
-  @Expose
-  private String city;
 
   @Expose
   private String websiteLink;
@@ -88,13 +86,13 @@ public class Institution implements java.io.Serializable, IAuditLog {
   }
 
 
-  public Institution(InstitutionType institutionType, String name, String acronym, String city, String websiteLink,
-    Long programId, Long countryId, Date added, Set<CrpPpaPartner> crpPpaPartners,
-    Set<ProjectPartnerPerson> projectPartnerPersons, Set<FundingSource> fundingSources) {
+  public Institution(InstitutionType institutionType, String name, String acronym, String websiteLink, Long programId,
+    Long countryId, Date added, Set<CrpPpaPartner> crpPpaPartners, Set<ProjectPartnerPerson> projectPartnerPersons,
+    Set<FundingSource> fundingSources) {
     this.institutionType = institutionType;
     this.name = name;
     this.acronym = acronym;
-    this.city = city;
+
     this.websiteLink = websiteLink;
     this.programId = programId;
     this.added = added;
@@ -161,9 +159,6 @@ public class Institution implements java.io.Serializable, IAuditLog {
    * }
    */
 
-  public String getCity() {
-    return this.city;
-  }
 
   public String getComposedName() {
     if (this.getAcronym() != null) {
@@ -339,9 +334,6 @@ public class Institution implements java.io.Serializable, IAuditLog {
     this.branches = branches;
   }
 
-  public void setCity(String city) {
-    this.city = city;
-  }
 
   public void setCrpPpaPartners(Set<CrpPpaPartner> crpPpaPartners) {
     this.crpPpaPartners = crpPpaPartners;

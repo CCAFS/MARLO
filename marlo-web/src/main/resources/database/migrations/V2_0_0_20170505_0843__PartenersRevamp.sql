@@ -3,6 +3,8 @@ CREATE TABLE `institutions_locations` (
 `institution_id`  bigint(20) NOT NULL ,
 `loc_element_id`  bigint(20) NOT NULL ,
 `is_headquater`  tinyint(1) NOT NULL ,
+`city`  text CHARACTER SET utf8 COLLATE utf8_general_ci NULL ,
+
 PRIMARY KEY (`id`),
 FOREIGN KEY (`institution_id`) REFERENCES `institutions` (`id`),
 FOREIGN KEY (`loc_element_id`) REFERENCES `loc_elements` (`id`)
@@ -13,11 +15,11 @@ UPDATE `institutions` SET `country_id`='47' WHERE (`id`='1668');
 
 
 
-INSERT into institutions_locations(institution_id,loc_element_id,is_headquater)
-select distinct  id,country_id,1 from institutions where headquarter is null and country_id is not  null ;
+INSERT into institutions_locations(institution_id,loc_element_id,is_headquater,city)
+select distinct  id,country_id,1,city from institutions where headquarter is null and country_id is not  null ;
 
-INSERT into institutions_locations(institution_id,loc_element_id,is_headquater)
-select distinct headquarter,country_id,0 from institutions where headquarter is not  null and country_id is not  null ;
+INSERT into institutions_locations(institution_id,loc_element_id,is_headquater,city)
+select distinct headquarter,country_id,0,city from institutions where headquarter is not  null and country_id is not  null ;
 
 
 
@@ -91,6 +93,7 @@ ALTER TABLE `institutions` DROP FOREIGN KEY `institutions_ibfk_4`;
 
 ALTER TABLE `institutions`
 DROP COLUMN `country_id`,
+DROP COLUMN `city`,
 DROP COLUMN `headquarter`;
 
 

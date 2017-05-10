@@ -21,9 +21,7 @@
 		<property name="acronym" type="string">
 			<column name="acronym" length="45" />
 		</property>
-		<property name="city" type="string">
-			<column name="city" />
-		</property>
+	
 		<property name="websiteLink" type="string">
 			<column name="website_link" />
 		</property>

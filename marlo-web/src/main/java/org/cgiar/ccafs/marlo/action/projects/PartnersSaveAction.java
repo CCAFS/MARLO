@@ -153,7 +153,7 @@ public class PartnersSaveAction extends BaseAction {
     institutionAcronym = activityPartner.getPartner().getAcronym();
     partnerTypeId = activityPartner.getPartner().getInstitutionType().getId();
     // countryId = String.valueOf(activityPartner.getPartner().getLocElement().getId());
-    city = activityPartner.getPartner().getCity();
+    // city = activityPartner.getPartner().getCity();
     website = activityPartner.getPartner().getWebsiteLink();
     headQuaterName = "";
     /*
@@ -197,7 +197,7 @@ public class PartnersSaveAction extends BaseAction {
       message.append(" </br>");
     }
     message.append("City: ");
-    message.append(city);
+    // message.append(city);
     message.append(" </br>");
     /*
      * message.append("Country: ");
@@ -283,11 +283,6 @@ public class PartnersSaveAction extends BaseAction {
         anyError = true;
       }
 
-
-      if (activityPartner.getPartner().getCity().isEmpty()) {
-        this.addFieldError("activityPartner.partner.city", this.getText("validation.field.required"));
-        anyError = true;
-      }
 
       if (activityPartner.getPartner().getInstitutionType().getId() == -1) {
         this.addFieldError("activityPartner.institutionType.id", this.getText("validation.field.required"));

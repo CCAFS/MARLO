@@ -85,7 +85,7 @@ public class InstitutionMySQLDAO implements InstitutionDAO {
     query.append(" WHERE ");
     query.append("name like '%" + searchValue + "%' ");
     query.append("OR acronym like '%" + searchValue + "%' ");
-    query.append("OR city like '%" + searchValue + "%' ");
+
     query.append("OR website_link like '%" + searchValue + "%' ");
 
 
@@ -97,14 +97,12 @@ public class InstitutionMySQLDAO implements InstitutionDAO {
     query.append("WHEN acronym like '" + searchValue + "%' THEN 3 ");
     query.append("WHEN acronym like '% %" + searchValue + "% %' THEN 4 ");
     query.append("WHEN acronym like '%" + searchValue + "' THEN 5 ");
-    query.append("WHEN city like '" + searchValue + "%' THEN 6 ");
-    query.append("WHEN city like '% %" + searchValue + "% %' THEN 7 ");
-    query.append("WHEN city like '%" + searchValue + "' THEN 8 ");
-    query.append("WHEN website_link like '%" + searchValue + "' THEN 9 ");
-    query.append("WHEN website_link like '%" + searchValue + "' THEN 10 ");
-    query.append("WHEN website_link like '%" + searchValue + "' THEN 11 ");
+
+    query.append("WHEN website_link like '%" + searchValue + "' THEN 6 ");
+    query.append("WHEN website_link like '%" + searchValue + "' THEN 7 ");
+    query.append("WHEN website_link like '%" + searchValue + "' THEN 8 ");
     query.append("ELSE 12 ");
-    query.append("END, name, acronym, city,website_link ");
+    query.append("END, name, acronym,website_link ");
 
 
     List<Institution> institutions = dao.findAll(query.toString());
