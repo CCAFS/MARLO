@@ -669,7 +669,10 @@ public class CrpAdminManagmentAction extends BaseAction {
               userRole.setUser(userManager.getUser(userRole.getUser().getId()));
               this.notifyNewUserCreated(userRole.getUser());
               // Notifiy user been asigned Program Leader to Flagship
-              this.notifyRoleFlagshipAssigned(userRole.getUser(), userRole.getRole(), crpProgram);
+              /**
+               * TODO UNCOMENT THIS LINE
+               */
+              // this.notifyRoleFlagshipAssigned(userRole.getUser(), userRole.getRole(), crpProgram);
             }
 
             this.addCrpUser(user);
@@ -712,6 +715,7 @@ public class CrpAdminManagmentAction extends BaseAction {
                   userRoleManager.deleteUserRole(userRole.getId());
                   userRole.setUser(userManager.getUser(userRole.getUser().getId()));
                   // Notifiy user been unasigned Program Leader to Flagship
+
                   this.notifyRoleFlagshipUnassigned(userRole.getUser(), userRole.getRole(), crpProgram);
                 }
               }
@@ -758,7 +762,10 @@ public class CrpAdminManagmentAction extends BaseAction {
               userRole.setUser(userManager.getUser(userRole.getUser().getId()));
               this.notifyNewUserCreated(userRole.getUser());
               // Notifiy user been asigned Program Leader to Flagship
-              this.notifyRoleFlagshipAssigned(userRole.getUser(), userRole.getRole(), crpProgram);
+              /**
+               * TODO UNCOMENT THIS LINE
+               */
+              // this.notifyRoleFlagshipAssigned(userRole.getUser(), userRole.getRole(), crpProgram);
             }
 
             this.addCrpUser(user);
