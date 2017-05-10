@@ -1259,9 +1259,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
             leader =
               responsibleppp.getUser().getComposedName() + "<br>&lt;" + responsibleppp.getUser().getEmail() + "&gt;";
-            if (responsibleppp.getInstitution() != null) {
-              institution = responsibleppp.getInstitution().getComposedName();
-            }
+
           }
         }
 
@@ -1819,9 +1817,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
             leader =
               responsibleppp.getUser().getComposedName() + "<br>&lt;" + responsibleppp.getUser().getEmail() + "&gt;";
-            if (responsibleppp.getInstitution() != null) {
-              institution = responsibleppp.getInstitution().getComposedName();
-            }
+
           }
         }
 
@@ -1960,9 +1956,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     String status = ProjectStatusEnum.getValue(project.getStatus().intValue()).getStatus();
     if (projectLeader.getInstitution() != null) {
       orgLeader = projectLeader.getInstitution().getComposedName();
-      if (projectLeader.getInstitution().getLocElement() != null) {
-        orgLeader += " - " + projectLeader.getInstitution().getLocElement().getName();
-      }
+
     }
     String leader = null;
     if (project.getLeaderPerson() != null) {

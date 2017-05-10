@@ -13,23 +13,15 @@
 			class="org.cgiar.ccafs.marlo.data.model.InstitutionType" fetch="select">
 			<column name="institution_type_id" not-null="true" />
 		</many-to-one>
-		<many-to-one name="locElement"
-			class="org.cgiar.ccafs.marlo.data.model.LocElement" fetch="select">
-			<column name="country_id" />
-		</many-to-one>
-		<many-to-one name="headquarter"
-			class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
-			<column name="headquarter" />
-		</many-to-one>
+	
+		
 		<property name="name" type="string">
 			<column name="name" length="65535" not-null="true" />
 		</property>
 		<property name="acronym" type="string">
 			<column name="acronym" length="45" />
 		</property>
-		<property name="city" type="string">
-			<column name="city" />
-		</property>
+	
 		<property name="websiteLink" type="string">
 			<column name="website_link" />
 		</property>
@@ -90,5 +82,11 @@
       </key>
       <one-to-many class="org.cgiar.ccafs.marlo.data.model.FundingSource" />
     </set>
+     <set name="institutionsLocations" table="institutions_locations" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="institution_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.InstitutionLocation" />
+        </set>
 	</class>
 </hibernate-mapping>

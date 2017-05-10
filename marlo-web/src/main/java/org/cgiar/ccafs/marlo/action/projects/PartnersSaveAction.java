@@ -138,8 +138,7 @@ public class PartnersSaveAction extends BaseAction {
     this.countriesList = locationManager.findAll().stream()
       .filter(c -> c.isActive() && c.getLocElementType().getId().longValue() == 2).collect(Collectors.toList());
     this.institutionTypesList = institutionManager.findAll();
-    institutions = institutionsManager.findAll().stream().filter(c -> c.getHeadquarter() == null && c.isActive())
-      .collect(Collectors.toList());
+    institutions = institutionsManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
 
     institutions.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
   }
@@ -158,19 +157,20 @@ public class PartnersSaveAction extends BaseAction {
     institutionName = activityPartner.getPartner().getName();
     institutionAcronym = activityPartner.getPartner().getAcronym();
     partnerTypeId = activityPartner.getPartner().getInstitutionType().getId();
-    countryId = String.valueOf(activityPartner.getPartner().getLocElement().getId());
-    city = activityPartner.getPartner().getCity();
+    // countryId = String.valueOf(activityPartner.getPartner().getLocElement().getId());
+    // city = activityPartner.getPartner().getCity();
     website = activityPartner.getPartner().getWebsiteLink();
     headQuaterName = "";
-    try {
-      headQuater = activityPartner.getPartner().getHeadquarter().getId();
-      headQuaterName = institutionsManager.getInstitutionById(headQuater).getComposedName();
-    } catch (Exception e) {
-      headQuater = -1;
-    }
-    // Get the country name
-    countryName = locationManager.getLocElementById(Long.parseLong(countryId)).getName();
-
+    /*
+     * try {
+     * headQuater = activityPartner.getPartner().getHeadquarter().getId();
+     * headQuaterName = institutionsManager.getInstitutionById(headQuater).getComposedName();
+     * } catch (Exception e) {
+     * headQuater = -1;
+     * }
+     * // Get the country name
+     * countryName = locationManager.getLocElementById(Long.parseLong(countryId)).getName();
+     */
     // Get the partner type name
     institutionTypeName = "";
     for (InstitutionType pt : institutionTypesList) {
@@ -190,8 +190,8 @@ public class PartnersSaveAction extends BaseAction {
 
     partnerRequest.setPartnerName(institutionName);
     partnerRequest.setAcronym(institutionAcronym);
-    partnerRequest.setCity(city);
-    partnerRequest.setLocElement(locationManager.getLocElementById(Long.parseLong(countryId)));
+    // partnerRequest.setCity(city);
+    // partnerRequest.setLocElement(locationManager.getLocElementById(Long.parseLong(countryId)));
     partnerRequest.setInstitutionType(institutionManager.getInstitutionTypeById(partnerTypeId));
 
     if (this.partnerWebPage != null && !this.partnerWebPage.isEmpty()) {
@@ -228,12 +228,13 @@ public class PartnersSaveAction extends BaseAction {
       message.append(" </br>");
     }
     message.append("City: ");
-    message.append(city);
+    // message.append(city);
     message.append(" </br>");
-    message.append("Country: ");
-    message.append(countryName);
-    message.append(" </br>");
-    // Is there a web page?
+    /*
+     * message.append("Country: ");
+     * message.append(countryName);
+     * message.append(" </br>");
+     */ // Is there a web page?
     if (this.partnerWebPage != null && !this.partnerWebPage.isEmpty()) {
       message.append("Web Page: ");
       message.append(partnerWebPage);
@@ -314,21 +315,16 @@ public class PartnersSaveAction extends BaseAction {
       }
 
 
-      if (activityPartner.getPartner().getCity().isEmpty()) {
-        this.addFieldError("activityPartner.partner.city", this.getText("validation.field.required"));
-        anyError = true;
-      }
-
       if (activityPartner.getPartner().getInstitutionType().getId() == -1) {
         this.addFieldError("activityPartner.institutionType.id", this.getText("validation.field.required"));
         anyError = true;
       }
-
-      if (activityPartner.getPartner().getLocElement().getId() == -1) {
-        this.addFieldError("activityPartner.locElement.id", this.getText("validation.field.required"));
-        anyError = true;
-      }
-
+      /*
+       * if (activityPartner.getPartner().getLocElement().getId() == -1) {
+       * this.addFieldError("activityPartner.locElement.id", this.getText("validation.field.required"));
+       * anyError = true;
+       * }
+       */
 
       if (anyError) {
         this.addActionError(this.getText("saving.fields.required"));

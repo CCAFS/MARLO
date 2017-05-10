@@ -173,7 +173,12 @@ public class ProjectPartnersValidator extends BaseValidator {
         for (ProjectPartner partner : project.getPartners()) {
           j = 0;
           // Validating that the partner has a least one contact person
+          if (project.isProjectEditLeader()) {
+            if (action.hasSpecificities(APConstants.CRP_PARTNER_CONTRIBUTIONS)) {
 
+              this.validatePersonResponsibilities(action, c, partner);
+            }
+          }
           if (project.isProjectEditLeader()) {
             Institution inst = institutionManager.getInstitutionById(partner.getInstitution().getId());
             if (inst.getCrpPpaPartners().stream()
@@ -217,24 +222,9 @@ public class ProjectPartnersValidator extends BaseValidator {
               }
 
 
-              if (project.isProjectEditLeader()) {
-                if (!inst.getCrpPpaPartners().stream()
-                  .filter(
-                    insti -> insti.isActive() && insti.getCrp().getId().longValue() == action.getCrpID().longValue())
-                  .collect(Collectors.toList()).isEmpty()) {
-
-                  if (action.hasSpecificities(APConstants.CRP_PARTNER_CONTRIBUTIONS)) {
-
-                    this.validatePersonResponsibilities(action, c, j, person);
-
-                  }
-                }
-              }
-
-              j++;
+              c++;
             }
           }
-          c++;
         }
       }
     } catch (Exception e) {
@@ -258,27 +248,12 @@ public class ProjectPartnersValidator extends BaseValidator {
     }
   }
 
-  private void validatePersonResponsibilities(BaseAction action, int partnerCounter, int personCounter,
-    ProjectPartnerPerson person) {
-    if (person.getUser() != null && (person.getUser().getId() != null && person.getUser().getId().longValue() != -1)) {
-      if (!projectValidator.isValidPersonResponsibilities(person.getResponsibilities())) {
-        if (person.getUser() != null && (person.getUser() != null || person.getUser().getId() != -1)) {
+  private void validatePersonResponsibilities(BaseAction action, int partnerCounter, ProjectPartner partner) {
+    if (!projectValidator.isValidPersonResponsibilities(partner.getResponsibilities())) {
 
-
-          person.setUser(userManager.getUser(person.getUser().getId()));
-          if (person.getUser() != null) {
-            this.addMessage(action.getText("projectPartners.responsibilities.for",
-              new String[] {person.getUser().getFirstName() + " " + person.getUser().getLastName()}));
-          }
-
-
-        }
-        this.addMissingField(
-          "project.projectPartners[" + partnerCounter + "].partnerPersons[" + personCounter + "].responsibilities");
-        action.getInvalidFields().put(
-          "input-project.partners[" + partnerCounter + "].partnerPersons[" + personCounter + "].responsibilities",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
+      this.addMissingField("project.projectPartners[" + partnerCounter + "].responsibilities");
+      action.getInvalidFields().put("input-project.partners[" + partnerCounter + "].responsibilities",
+        InvalidFieldsMessages.EMPTYFIELD);
     }
 
   }
@@ -315,6 +290,7 @@ public class ProjectPartnersValidator extends BaseValidator {
         if (person.getUser().getId() == null || person.getUser().getId() == -1) {
           action.addFieldError("partner-" + partnerCounter + "-person-" + personCounter,
             action.getText("validation.required", new String[] {action.getText("projectPartners.contactPersonEmail")}));
+         
         }
       }
     } catch (Exception e) {

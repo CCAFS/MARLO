@@ -41,23 +41,15 @@ public class Institution implements java.io.Serializable, IAuditLog {
   @Expose
   private String name;
 
-  @Expose
-  private LocElement locElement;
-
 
   @Expose
   private String acronym;
 
-  @Expose
-  private String city;
 
   @Expose
   private String websiteLink;
   @Expose
   private Long programId;
-
-  @Expose
-  private Institution headquarter;
 
 
   @Expose
@@ -79,9 +71,13 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
 
   private Set<ProjectPartnerPerson> projectPartnerPersons = new HashSet<>(0);
+  private Set<InstitutionLocation> institutionsLocations = new HashSet<InstitutionLocation>(0);
+  private List<InstitutionLocation> locations;
+
 
   public Institution() {
   }
+
 
   public Institution(InstitutionType institutionType, String name, Date added) {
     this.institutionType = institutionType;
@@ -89,22 +85,23 @@ public class Institution implements java.io.Serializable, IAuditLog {
     this.added = added;
   }
 
-  public Institution(InstitutionType institutionType, String name, String acronym, String city, String websiteLink,
-    Long programId, Long countryId, Date added, Set<CrpPpaPartner> crpPpaPartners, LocElement locElement,
-    Institution headquarter, Set<ProjectPartnerPerson> projectPartnerPersons, Set<FundingSource> fundingSources) {
+
+  public Institution(InstitutionType institutionType, String name, String acronym, String websiteLink, Long programId,
+    Long countryId, Date added, Set<CrpPpaPartner> crpPpaPartners, Set<ProjectPartnerPerson> projectPartnerPersons,
+    Set<FundingSource> fundingSources) {
     this.institutionType = institutionType;
     this.name = name;
     this.acronym = acronym;
-    this.city = city;
+
     this.websiteLink = websiteLink;
     this.programId = programId;
     this.added = added;
     this.crpPpaPartners = crpPpaPartners;
-    this.locElement = locElement;
-    this.headquarter = headquarter;
+
     this.projectPartnerPersons = projectPartnerPersons;
     this.fundingSources = fundingSources;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -139,167 +136,103 @@ public class Institution implements java.io.Serializable, IAuditLog {
   public Set<Institution> getBranches() {
     return branches;
   }
+  /*
+   * public String getBranchName() {
+   * try {
+   * String composedAcronym = this.acronym != null ? this.acronym : "";
+   * if (this.headquarter == null) {
+   * // Verify if there exist a city to show
+   * if (this.city != null && this.city != "") {
+   * return "HQ: " + composedAcronym + " - " + this.city + ", " + this.locElement.getName();
+   * }
+   * return "HQ: " + composedAcronym + " - " + this.locElement.getName();
+   * } else {
+   * // Verify if there exist a city to show
+   * if (this.city != null && this.city != "") {
+   * return composedAcronym + " - " + this.city + ", " + this.locElement.getName();
+   * }
+   * return composedAcronym + " - " + this.locElement.getName();
+   * }
+   * } catch (Exception e) {
+   * return this.name;
+   * }
+   * }
+   */
 
-  public String getBranchName() {
-    try {
-      String composedAcronym = this.acronym != null ? this.acronym : "";
-      if (this.headquarter == null) {
-        // Verify if there exist a city to show
-        if (this.city != null && this.city != "") {
-          return "HQ: " + composedAcronym + " - " + this.city + ", " + this.locElement.getName();
-        }
-        return "HQ: " + composedAcronym + " - " + this.locElement.getName();
-      } else {
-        // Verify if there exist a city to show
-        if (this.city != null && this.city != "") {
-          return composedAcronym + " - " + this.city + ", " + this.locElement.getName();
-        }
-        return composedAcronym + " - " + this.locElement.getName();
-      }
-    } catch (Exception e) {
-      return this.name;
-    }
-
-  }
-
-  public String getCity() {
-    return this.city;
-  }
-
-  public String getComposedLocation() {
-    try {
-      if (this.headquarter == null) {
-        // Verify if there exist a city to show
-        if (this.city != null && this.city != "") {
-          return this.city + ", " + this.locElement.getName();
-        }
-        return this.locElement.getName();
-      } else {
-        // Verify if there exist a city to show
-        if (this.city != null && this.city != "") {
-          return this.city + ", " + this.locElement.getName();
-        }
-        return this.locElement.getName();
-      }
-    } catch (Exception e) {
-      return this.name;
-    }
-
-  }
 
   public String getComposedName() {
-    try {
-      if (this.getLocElement() == null) {
-        if (this.getAcronym() != null) {
-          if (this.getAcronym().length() != 0) {
-            try {
-              return this.getAcronym() + " - " + this.getName();// + " - " + this.getLocElement().getName();
-            } catch (Exception e) {
-              return this.getName();
-            }
-          }
-        } else {
-          return this.getName();
-        }
-      }
-
-      if (this.getLocElement().getName() == null) {
-        this.getLocElement().setName("");
-      }
-      if (this.getAcronym() != null) {
-        if (this.getAcronym().length() != 0) {
-          try {
-            return this.getAcronym() + " - " + this.getName();// + " - " + this.getLocElement().getName();
-          } catch (Exception e) {
-            return this.getAcronym() + " - " + this.getName();
-          }
-
-        }
-      } else {
+    if (this.getAcronym() != null) {
+      if (this.getAcronym().length() != 0) {
         try {
-          return this.getName() + "-" + this.getLocElement().getName();
+          return this.getAcronym() + " - " + this.getName();
         } catch (Exception e) {
           return this.getName();
         }
+
       }
-      return this.getName();
-    } catch (Exception e) {
-      return this.getName();
     }
+    return this.getName();
 
 
   }
 
   public String getComposedNameLoc() {
-    try {
-      if (this.getLocElement() != null) {
-        if (this.getLocElement().getName() == null) {
-          this.getLocElement().setName("");
-        }
-      }
-      if (this.getCity() == null) {
-        this.setCity("");
-      }
-      if (this.getAcronym() != null && !this.getAcronym().isEmpty()) {
-        if ((this.getLocElement() == null || this.getLocElement().getName().isEmpty()) && this.getCity().isEmpty()) {
-          return this.getAcronym() + " - " + this.getName();
-        } else {
-          if (this.getLocElement() != null && !this.getLocElement().getName().isEmpty() && !this.getCity().isEmpty()) {
-            return this.getAcronym() + " - " + this.getName() + " - " + this.city + ", " + this.locElement.getName();
-          } else if (this.getLocElement() != null && !this.getLocElement().getName().isEmpty()
-            && this.getCity().isEmpty()) {
-            return this.getAcronym() + " - " + this.getName() + " - " + this.locElement.getName();
-          } else {
-            return this.getAcronym() + " - " + this.getName() + " - " + this.city;
-          }
-        }
-      } else {
+    if (this.getAcronym() != null) {
+      if (this.getAcronym().length() != 0) {
         try {
-          if ((this.getLocElement() == null || this.getLocElement().getName().isEmpty()) && this.getCity().isEmpty()) {
-            return this.getName();
-          } else {
-            if (this.getLocElement() != null && !this.getLocElement().getName().isEmpty()
-              && !this.getCity().isEmpty()) {
-              return this.getName() + " - " + this.city + ", " + this.locElement.getName();
-            } else if (this.getLocElement() != null && !this.getLocElement().getName().isEmpty()
-              && this.getCity().isEmpty()) {
-              return this.getName() + " - " + this.locElement.getName();
-            } else {
-              return this.getName() + " - " + this.city;
-            }
-          }
+          return this.getAcronym() + " - " + this.getName();
         } catch (Exception e) {
           return this.getName();
         }
+
       }
-    } catch (Exception e) {
-      return this.getName();
     }
+    return this.getName();
   }
+
+  /*
+   * public String getComposedLocation() {
+   * try {
+   * if (this.headquarter == null) {
+   * // Verify if there exist a city to show
+   * if (this.city != null && this.city != "") {
+   * return this.city + ", " + this.locElement.getName();
+   * }
+   * return this.locElement.getName();
+   * } else {
+   * // Verify if there exist a city to show
+   * if (this.city != null && this.city != "") {
+   * return this.city + ", " + this.locElement.getName();
+   * }
+   * return this.locElement.getName();
+   * }
+   * } catch (Exception e) {
+   * return this.name;
+   * }
+   * }
+   */
 
   public Set<CrpPpaPartner> getCrpPpaPartners() {
     return crpPpaPartners;
   }
 
-
   public Set<FundingSource> getFundingSources() {
     return fundingSources;
   }
-
-  public Institution getHeadquarter() {
-    return headquarter;
-  }
-
 
   @Override
   public Long getId() {
     return this.id;
   }
 
+  public Set<InstitutionLocation> getInstitutionsLocations() {
+    return institutionsLocations;
+  }
+
+
   public InstitutionType getInstitutionType() {
     return institutionType;
   }
-
 
   public List<Institution> getInstitutuionsBranches() {
     List<Institution> list = new ArrayList<Institution>();
@@ -313,8 +246,8 @@ public class Institution implements java.io.Serializable, IAuditLog {
     return liaisonInstitutions;
   }
 
-  public LocElement getLocElement() {
-    return locElement;
+  public List<InstitutionLocation> getLocations() {
+    return locations;
   }
 
 
@@ -335,12 +268,14 @@ public class Institution implements java.io.Serializable, IAuditLog {
     return "";
   }
 
+
   @Override
   public User getModifiedBy() {
     User u = new User();
     u.setId(new Long(3));
     return null;
   }
+
 
   public String getName() {
     return this.name;
@@ -399,9 +334,6 @@ public class Institution implements java.io.Serializable, IAuditLog {
     this.branches = branches;
   }
 
-  public void setCity(String city) {
-    this.city = city;
-  }
 
   public void setCrpPpaPartners(Set<CrpPpaPartner> crpPpaPartners) {
     this.crpPpaPartners = crpPpaPartners;
@@ -411,12 +343,13 @@ public class Institution implements java.io.Serializable, IAuditLog {
     this.fundingSources = fundingSources;
   }
 
-  public void setHeadquarter(Institution headquarter) {
-    this.headquarter = headquarter;
-  }
-
   public void setId(Long id) {
     this.id = id;
+  }
+
+
+  public void setInstitutionsLocations(Set<InstitutionLocation> institutionsLocations) {
+    this.institutionsLocations = institutionsLocations;
   }
 
   public void setInstitutionType(InstitutionType institutionType) {
@@ -427,9 +360,10 @@ public class Institution implements java.io.Serializable, IAuditLog {
     this.liaisonInstitutions = liaisonInstitutions;
   }
 
-  public void setLocElement(LocElement locElement) {
-    this.locElement = locElement;
+  public void setLocations(List<InstitutionLocation> locations) {
+    this.locations = locations;
   }
+
 
   public void setName(String name) {
     this.name = name;

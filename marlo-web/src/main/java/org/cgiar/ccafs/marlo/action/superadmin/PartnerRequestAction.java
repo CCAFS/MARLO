@@ -76,17 +76,13 @@ public class PartnerRequestAction extends BaseAction {
     institution.setInstitutionType(institutionType);
 
     institution.setAcronym(partnerRequest.getAcronym());
-    institution.setCity(partnerRequest.getCity());
+    // institution.setCity(partnerRequest.getCity());
 
     LocElement locElement = locElementManager.getLocElementById(partnerRequest.getLocElement().getId());
-    institution.setLocElement(locElement);
+    // institution.setLocElement(locElement);
 
     institution.setAdded(new Date());
 
-    if (partnerRequest.getInstitution() != null) {
-      Institution institutionHq = institutionManager.getInstitutionById(partnerRequest.getInstitution().getId());
-      institution.setHeadquarter(institutionHq);
-    }
 
     institutionManager.saveInstitution(institution);
 

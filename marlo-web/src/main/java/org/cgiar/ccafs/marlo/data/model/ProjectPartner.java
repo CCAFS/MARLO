@@ -40,6 +40,8 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
   private Date activeSince;
   @Expose
   private Integer yearEndDate;
+  @Expose
+  private String responsibilities;
 
   @Expose
   private String modificationJustification;
@@ -52,7 +54,14 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
 
   private Set<ProjectPartnerOverall> projectPartnerOveralls = new HashSet<ProjectPartnerOverall>(0);
 
+
   private Set<ProjectPartnerPerson> projectPartnerPersons = new HashSet<ProjectPartnerPerson>(0);
+
+
+
+  private Set<ProjectPartnerLocation> projectPartnerLocations = new HashSet<ProjectPartnerLocation>(0);
+
+  private List<InstitutionLocation> selectedLocations;
 
 
   private List<ProjectPartnerPerson> partnerPersons;
@@ -121,13 +130,7 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
 
   public String getComposedName() {
     try {
-      if (this.getInstitution().getLocElement() == null) {
-        return this.getInstitution().getAcronym() + " - " + this.getInstitution().getName();
-      }
 
-      if (this.getInstitution().getLocElement().getName() == null) {
-        this.getInstitution().getLocElement().setName("");
-      }
       if (this.getInstitution().getAcronym() != null) {
         if (this.getInstitution().getAcronym().length() != 0) {
           try {
@@ -137,12 +140,6 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
             return this.getInstitution().getAcronym() + " - " + this.getInstitution().getName();
           }
 
-        }
-      } else {
-        try {
-          return this.getInstitution().getName() + "-" + this.getInstitution().getLocElement().getName();
-        } catch (Exception e) {
-          return this.getInstitution().getName();
         }
       }
       return this.getInstitution().getName();
@@ -162,6 +159,7 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
   public Long getId() {
     return this.id;
   }
+
 
   public Institution getInstitution() {
     return this.institution;
@@ -234,6 +232,11 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     return this.projectPartnerContributors;
   }
 
+
+  public Set<ProjectPartnerLocation> getProjectPartnerLocations() {
+    return projectPartnerLocations;
+  }
+
   public Set<ProjectPartnerOverall> getProjectPartnerOveralls() {
     return this.projectPartnerOveralls;
   }
@@ -244,6 +247,14 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
 
   public Integer getYearEndDate() {
     return yearEndDate;
+  }
+
+  public String getResponsibilities() {
+    return responsibilities;
+  }
+
+  public List<InstitutionLocation> getSelectedLocations() {
+    return selectedLocations;
   }
 
   @Override
@@ -340,6 +351,7 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     this.project = project;
   }
 
+
   public void
     setProjectPartnerContributions(Set<ProjectPartnerContribution> projectPartnerContributionsesForProjectPartnerId) {
     this.projectPartnerContributions = projectPartnerContributionsesForProjectPartnerId;
@@ -360,6 +372,14 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
 
   public void setYearEndDate(Integer yearEndDate) {
     this.yearEndDate = yearEndDate;
+  }
+
+  public void setResponsibilities(String responsibilities) {
+    this.responsibilities = responsibilities;
+  }
+
+  public void setSelectedLocations(List<InstitutionLocation> selectedLocations) {
+    this.selectedLocations = selectedLocations;
   }
 
   @Override
