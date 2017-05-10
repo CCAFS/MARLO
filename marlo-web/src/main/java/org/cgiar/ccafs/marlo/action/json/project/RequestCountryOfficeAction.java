@@ -19,6 +19,7 @@ package org.cgiar.ccafs.marlo.action.json.project;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 
@@ -44,15 +45,20 @@ public class RequestCountryOfficeAction extends BaseAction {
 
   private Long projectID;
   private Long institutionID;
-  private String countries;
+  private String[] countries;
 
   private InstitutionManager institutionManager;
+
+  private LocElementManager locElementManager;
+
   private boolean messageSent;
 
   @Inject
-  public RequestCountryOfficeAction(APConfig config, InstitutionManager institutionManager) {
+  public RequestCountryOfficeAction(APConfig config, InstitutionManager institutionManager,
+    LocElementManager locElementManager) {
     super(config);
     this.institutionManager = institutionManager;
+    this.locElementManager = locElementManager;
   }
 
 
@@ -62,23 +68,35 @@ public class RequestCountryOfficeAction extends BaseAction {
     String subject;
     StringBuilder message = new StringBuilder();
 
-    String locElements[] = countries.split(",");
+    String countriesName = null;
 
-    for (String string : locElements) {
+    for (String string : countries) {
+
+      if (countriesName == null) {
+        countriesName = locElementManager.getLocElementByISOCode((string)).getName();
+      } else {
+        countriesName = countriesName + ", " + locElementManager.getLocElementByISOCode((string)).getName();
+      }
 
     }
     String institutionName = institutionManager.getInstitutionById(institutionID).getName();
 
-    subject = "[MARLO-" + this.getCrpSession().toUpperCase() + "] Partner verification - " + institutionName;
+    subject = "[MARLO-" + this.getCrpSession().toUpperCase() + "] Add Office - " + institutionName;
     // Message content
     message.append(this.getCurrentUser().getFirstName() + " " + this.getCurrentUser().getLastName() + " ");
     message.append("(" + this.getCurrentUser().getEmail() + ") ");
     message.append("is requesting to add the following offices for the institution: ");
+
+    message.append("</br></br>");
+    message.append("Project : P");
+    message.append(projectID);
     message.append("</br></br>");
     message.append("Partner Name: ");
     message.append(institutionName);
 
-
+    message.append("</br></br>");
+    message.append("Countries : ");
+    message.append(countriesName);
     message.append(".</br>");
     message.append("</br>");
     try {
@@ -103,7 +121,7 @@ public class RequestCountryOfficeAction extends BaseAction {
     projectID = Long.parseLong((StringUtils.trim(((String[]) parameters.get(APConstants.PROJECT_REQUEST_ID))[0])));
     institutionID =
       Long.parseLong((StringUtils.trim(((String[]) parameters.get(APConstants.INSTITUTION_REQUEST_ID))[0])));
-    countries = StringUtils.trim(((String[]) parameters.get(APConstants.COUNTRIES_REQUEST_ID))[0]);
+    countries = ((String[]) parameters.get(APConstants.COUNTRIES_REQUEST_ID));
 
   }
 
