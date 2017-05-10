@@ -42,7 +42,7 @@ public class ThreadSendMail extends Thread {
     while (!sent) {
       try {
         Transport.send(sendeMail);
-        LOG.info("Message sent: \n" + subject);
+        LOG.info("Message sent TRIED#: " + i + " \n" + subject);
         sent = true;
 
       } catch (MessagingException e) {
