@@ -193,9 +193,9 @@
       <div class="modal-body">
         <form>
           <div class="form-group">
-            <input type="hidden" name="project" value="${(project.id)!}"/>
-            <input type="hidden" class="institution_id" name="institution" value="" />
-            [@customForm.select name="countries" i18nkey="location.select.country" listName="countries" header=true keyFieldName="isoAlpha2" displayFieldName="name" value="id" multiple=true placeholder="Select a country..." className="countriesRequest"/]
+            <input type="hidden" name="projectID" value="${(project.id)!}"/>
+            <input type="hidden" class="institution_id" name="institutionID" value="" />
+            [@customForm.select name="countriesID" i18nkey="location.select.country" listName="countries" header=true keyFieldName="isoAlpha2" displayFieldName="name" value="id" multiple=true placeholder="Select a country..." className="countriesRequest"/]
           </div>
         </form>
       </div>
