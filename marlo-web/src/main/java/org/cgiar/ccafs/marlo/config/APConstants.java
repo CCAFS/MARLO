@@ -141,6 +141,8 @@ public final class APConstants {
   public static final String OUTCOME_REQUEST_ID = "outcomeID";
   public static final String AUTOSAVE_REQUEST = "autoSave";
   public static final String COUNTRY_REQUEST_ID = "countryID";
+  public static final String COUNTRIES_REQUEST_ID = "countriesID";
+
   public static final String INSTITUTION_TYPE_REQUEST_ID = "institutionTypeID";
   public static final String BUDGET_TYPE_REQUEST_ID = "budgetTypeID";
   public static final String INSTITUTION_REQUEST_ID = "institutionID";
