@@ -88,7 +88,11 @@
           [#else]
             [#if crpSession??]<img id="crp-image" src="${baseUrl}/images/global/crps/${crpSession}.png" alt="${crpSession}" />[/#if]
           [/#if]
-          
+          <div style="position:absolute; right:1%; bottom:10%; cursor:pointer;">
+            <a href="https://marlo-news.blogspot.com" target="__blank" style="position: relative; padding: 5px; border-radius: 6px;  font-size: 0.9em; border-bottom: 1px solid #444444;">
+               <b>Check our blog </b> <span class="fa fa-external-link-square"></span>
+            </a>
+          </div>
         </div>
       </header>
     [/#if]
