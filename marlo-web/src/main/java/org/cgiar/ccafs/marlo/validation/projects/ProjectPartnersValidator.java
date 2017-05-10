@@ -290,6 +290,7 @@ public class ProjectPartnersValidator extends BaseValidator {
         if (person.getUser().getId() == null || person.getUser().getId() == -1) {
           action.addFieldError("partner-" + partnerCounter + "-person-" + personCounter,
             action.getText("validation.required", new String[] {action.getText("projectPartners.contactPersonEmail")}));
+         
         }
       }
     } catch (Exception e) {
