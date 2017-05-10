@@ -79,7 +79,7 @@
                         <td>${(action.getRelations(user.id, role.id))!}</td>
                         [/#if]
                         <td>${(user.email)!}</td>
-                        <td>${(user.lastLogin)!'<i> <span class="hide">aaas</span> Never Entered </i>'}</td>
+                        <td>${(user.lastLogin)!'<i> <span class="hide">aaa</span> Never logged in </i>'}</td>
                       </tr>
                       [/#list]
                     </tbody>

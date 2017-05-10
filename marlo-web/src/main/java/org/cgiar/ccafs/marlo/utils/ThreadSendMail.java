@@ -37,13 +37,34 @@ public class ThreadSendMail extends Thread {
 
   @Override
   public void run() {
+    boolean sent = false;
+    int i = 0;
+    while (!sent) {
+      try {
+        Transport.send(sendeMail);
+        LOG.info("Message sent TRIED#: " + i + " \n" + subject);
+        sent = true;
 
-    try {
-      Transport.send(sendeMail);
-      LOG.info("Message sent: \n" + subject);
-    } catch (MessagingException e) {
-      LOG.info("Message  DON'T sent: \n" + subject);
-      e.printStackTrace();
+      } catch (MessagingException e) {
+        LOG.info("Message  DON'T sent: \n" + subject);
+
+        i++;
+        if (i == 10) {
+          break;
+
+        }
+        try {
+          Thread.sleep(1 * // minutes to sleep
+            60 * // seconds to a minute
+            1000);
+        } catch (InterruptedException e1) {
+
+          e1.printStackTrace();
+        }
+        e.printStackTrace();
+      }
+
     }
+
   }
 }
