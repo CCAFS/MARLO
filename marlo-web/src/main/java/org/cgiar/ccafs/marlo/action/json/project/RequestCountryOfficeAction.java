@@ -19,6 +19,7 @@ package org.cgiar.ccafs.marlo.action.json.project;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 
@@ -47,12 +48,17 @@ public class RequestCountryOfficeAction extends BaseAction {
   private String countries;
 
   private InstitutionManager institutionManager;
+
+  private LocElementManager locElementManager;
+
   private boolean messageSent;
 
   @Inject
-  public RequestCountryOfficeAction(APConfig config, InstitutionManager institutionManager) {
+  public RequestCountryOfficeAction(APConfig config, InstitutionManager institutionManager,
+    LocElementManager locElementManager) {
     super(config);
     this.institutionManager = institutionManager;
+    this.locElementManager = locElementManager;
   }
 
 
@@ -66,6 +72,12 @@ public class RequestCountryOfficeAction extends BaseAction {
 
     for (String string : locElements) {
 
+      if (countries == null) {
+        countries = locElementManager.getLocElementById(Long.parseLong(string)).getName();
+      } else {
+        countries = countries + ", " + locElementManager.getLocElementById(Long.parseLong(string)).getName();
+      }
+
     }
     String institutionName = institutionManager.getInstitutionById(institutionID).getName();
 
@@ -78,7 +90,9 @@ public class RequestCountryOfficeAction extends BaseAction {
     message.append("Partner Name: ");
     message.append(institutionName);
 
-
+    message.append("</br></br>");
+    message.append("Countries : ");
+    message.append(countries);
     message.append(".</br>");
     message.append("</br>");
     try {
