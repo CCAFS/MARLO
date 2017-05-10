@@ -166,7 +166,7 @@
          <div class="panel-head">
            <label for=""> [@customForm.text name="Select the regions" readText=!editable /]:[@customForm.req required=editable /]</label>
            <br />
-           <small>(Standart regions are defined by United Nations)</small>
+           <small style="color: #337ab7;">(Standart regions are defined by United Nations)</small>
          </div>
          
           <div id="regionList" class="panel-body" listname="fundingSource.fundingRegions"> 
