@@ -159,6 +159,19 @@
             </div>
           </div>
         [/#if]
+      [#else]
+        <div class="form-group partnerName chosen">
+          <strong class="text-muted">${(dp.projectPartnerPerson.projectPartner.composedName)!}</strong>
+          <div class="partnerPersons">
+          [#if (dp.projectPartnerPerson.projectPartner.id??)!false]
+            [#list action.getPersons(dp.projectPartnerPerson.projectPartner.id) as person]
+              [#if dp.projectPartnerPerson.id == person.id]
+              <p class="checked">${person.composedCompleteName}</p>
+              [/#if]
+            [/#list]
+          [/#if]
+          </div>
+        </div>
       [/#if]
       </div>
     [/#if]
@@ -197,6 +210,20 @@
               [/#list]
             [/#if]
             <div class="clearfix"></div>
+          </div>
+        [#else]
+          <div class="form-group partnerName chosen">
+            <strong class="text-muted">${(projectPartner.composedName)!}</strong>
+            <div class="partnerPersons">
+            [#if (projectPartner.id??)!false]
+              [#assign selectedPersons =  action.getSelectedPersons(projectPartner.id) /]
+              [#list action.getPersons(projectPartner.id) as person]
+                [#if selectedPersons?seq_contains("${person.id}")]
+                  <p class="checked">${person.composedCompleteName}</p>
+                [/#if]
+              [/#list]
+            [/#if]
+            </div>
           </div>
         [/#if]
         </div>
