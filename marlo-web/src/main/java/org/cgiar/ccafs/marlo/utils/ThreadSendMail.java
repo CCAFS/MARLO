@@ -47,6 +47,14 @@ public class ThreadSendMail extends Thread {
       } catch (MessagingException e) {
         LOG.info("Message  DON'T sent: \n" + subject);
         i++;
+        try {
+          Thread.sleep(1 * // minutes to sleep
+            60 * // seconds to a minute
+            1000);
+        } catch (InterruptedException e1) {
+
+          e1.printStackTrace();
+        }
         e.printStackTrace();
       }
 
