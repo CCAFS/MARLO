@@ -14,7 +14,6 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.utils;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.Properties;
 
@@ -135,7 +134,7 @@ public class SendMailS {
           LOG.info("   - CC: " + ccEmail);
         }
       }
-      msg.setFrom(new InternetAddress(config.getEmailHost(), "MARLO Platform"));
+      msg.setFrom(config.getEmailNotification());
       if (bbcEmail != null) {
         msg.setRecipients(Message.RecipientType.BCC, InternetAddress.parse(bbcEmail, false));
         LOG.info("   - BBC: " + bbcEmail);
@@ -175,7 +174,7 @@ public class SendMailS {
     } catch (MessagingException e) {
       e.printStackTrace();
       LOG.error("There was an error sending a message", e.getMessage());
-    } catch (UnsupportedEncodingException e) {
+    } catch (Exception e) {
       LOG.error("There was an error setting up the FROM Email when trying to send a message", e.getMessage());
     }
   }
