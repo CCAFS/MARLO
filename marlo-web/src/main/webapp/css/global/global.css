@@ -393,7 +393,7 @@ p.username-message {
 p.checked, label.checked {
   background: url(../../images/global/icon-check.png) no-repeat 0 40%;
   padding: 3px 0  3px 23px;
-  margin-bottom: 5px;
+  margin-bottom: 0px;
   text-align: justify;
 }
 

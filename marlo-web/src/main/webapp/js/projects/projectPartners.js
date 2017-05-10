@@ -138,7 +138,7 @@ function attachEvents() {
   $('#requestModal button').on('click', function(){
     $.ajax({
       url: baseURL + '/requestCountryOffice.do',
-      data: $('#requestModal form').serializeObject(),
+      data: $('#requestModal form').serialize(),
       beforeSend: function() {},
       success: function(data) {},
       complete: function() {
