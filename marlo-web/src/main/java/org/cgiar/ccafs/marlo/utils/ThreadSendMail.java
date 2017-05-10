@@ -39,14 +39,20 @@ public class ThreadSendMail extends Thread {
   public void run() {
     boolean sent = false;
     int i = 0;
-    while (!sent || i < 10) {
+    while (!sent) {
       try {
         Transport.send(sendeMail);
         LOG.info("Message sent: \n" + subject);
         sent = true;
+
       } catch (MessagingException e) {
         LOG.info("Message  DON'T sent: \n" + subject);
+
         i++;
+        if (i == 10) {
+          break;
+
+        }
         try {
           Thread.sleep(1 * // minutes to sleep
             60 * // seconds to a minute
