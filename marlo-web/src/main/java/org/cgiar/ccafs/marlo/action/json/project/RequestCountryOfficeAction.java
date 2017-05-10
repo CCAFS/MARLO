@@ -45,7 +45,7 @@ public class RequestCountryOfficeAction extends BaseAction {
 
   private Long projectID;
   private Long institutionID;
-  private String countries;
+  private String[] countries;
 
   private InstitutionManager institutionManager;
 
@@ -68,14 +68,14 @@ public class RequestCountryOfficeAction extends BaseAction {
     String subject;
     StringBuilder message = new StringBuilder();
 
-    String locElements[] = countries.split(",");
+    String countriesName = null;
 
-    for (String string : locElements) {
+    for (String string : countries) {
 
-      if (countries == null) {
-        countries = locElementManager.getLocElementById(Long.parseLong(string)).getName();
+      if (countriesName == null) {
+        countriesName = locElementManager.getLocElementById(Long.parseLong(string)).getName();
       } else {
-        countries = countries + ", " + locElementManager.getLocElementById(Long.parseLong(string)).getName();
+        countriesName = countriesName + ", " + locElementManager.getLocElementById(Long.parseLong(string)).getName();
       }
 
     }
@@ -92,7 +92,7 @@ public class RequestCountryOfficeAction extends BaseAction {
 
     message.append("</br></br>");
     message.append("Countries : ");
-    message.append(countries);
+    message.append(countriesName);
     message.append(".</br>");
     message.append("</br>");
     try {
@@ -117,7 +117,7 @@ public class RequestCountryOfficeAction extends BaseAction {
     projectID = Long.parseLong((StringUtils.trim(((String[]) parameters.get(APConstants.PROJECT_REQUEST_ID))[0])));
     institutionID =
       Long.parseLong((StringUtils.trim(((String[]) parameters.get(APConstants.INSTITUTION_REQUEST_ID))[0])));
-    countries = StringUtils.trim(((String[]) parameters.get(APConstants.COUNTRIES_REQUEST_ID))[0]);
+    countries = ((String[]) parameters.get(APConstants.COUNTRIES_REQUEST_ID));
 
   }
 
