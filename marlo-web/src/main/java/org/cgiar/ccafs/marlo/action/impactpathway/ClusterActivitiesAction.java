@@ -52,7 +52,11 @@ import org.cgiar.ccafs.marlo.utils.SendMailS;
 import org.cgiar.ccafs.marlo.validation.impactpathway.ClusterActivitiesValidator;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -79,6 +83,25 @@ public class ClusterActivitiesAction extends BaseAction {
    * 
    */
   private static final long serialVersionUID = -2049759808815382048L;
+
+  /**
+   * Helper method to read a stream into memory.
+   * 
+   * @param stream
+   * @return
+   * @throws IOException
+   */
+  public static byte[] readFully(InputStream stream) throws IOException {
+    byte[] buffer = new byte[8192];
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+    int bytesRead;
+    while ((bytesRead = stream.read(buffer)) != -1) {
+      baos.write(buffer, 0, bytesRead);
+    }
+    return baos.toByteArray();
+  }
+
   private AuditLogManager auditLogManager;
   private long clRol;
   private List<CrpClusterOfActivity> clusterofActivities;
@@ -97,17 +120,18 @@ public class ClusterActivitiesAction extends BaseAction {
   private Role roleCl;
   private RoleManager roleManager;
   private CrpProgram selectedProgram;
+
   private HistoryComparator historyComparator;
 
   // Util
   private SendMailS sendMail;
 
+
   private String transaction;
 
-
   private UserManager userManager;
-
   private UserRoleManager userRoleManager;
+
   private ClusterActivitiesValidator validator;
 
   @Inject
@@ -155,6 +179,7 @@ public class ClusterActivitiesAction extends BaseAction {
     }
   }
 
+
   @Override
   public String cancel() {
 
@@ -177,7 +202,6 @@ public class ClusterActivitiesAction extends BaseAction {
 
     return SUCCESS;
   }
-
 
   public void checkCrpUserByRole(User user) {
     user = userManager.getUser(user.getId());
@@ -208,6 +232,7 @@ public class ClusterActivitiesAction extends BaseAction {
     return clusterofActivities;
   }
 
+
   public long getCrpProgramID() {
     return crpProgramID;
   }
@@ -217,10 +242,10 @@ public class ClusterActivitiesAction extends BaseAction {
     return loggedCrp;
   }
 
-
   public List<CrpProgramOutcome> getOutcomes() {
     return outcomes;
   }
+
 
   public List<CrpProgram> getPrograms() {
     return programs;
@@ -236,10 +261,10 @@ public class ClusterActivitiesAction extends BaseAction {
     return selectedProgram;
   }
 
-
   public String getTransaction() {
     return transaction;
   }
+
 
   /**
    * This method will validate if the user is deactivated. If so, it will send an email indicating the credentials to
@@ -280,11 +305,48 @@ public class ClusterActivitiesAction extends BaseAction {
 
       // BBC
       String bbcEmails = this.config.getEmailNotification();
-      sendMail.send(toEmail, null, bbcEmails,
-        this.getText("email.newUser.subject", new String[] {user.getComposedName()}), message.toString(), null, null,
-        null, true);
+
+
+      String contentType = "application/pdf";
+      String fileName = "MARLO_UserManual_V1.1.pdf";
+      byte[] buffer = null;
+      InputStream inputStream = null;
+
+      try {
+        inputStream = this.getClass().getResourceAsStream("/manual/MARLO_UserManual_20170111_AV_HT_AW.pdf");
+        buffer = readFully(inputStream);
+      } catch (FileNotFoundException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      } finally {
+        if (inputStream != null) {
+          try {
+            inputStream.close();
+          } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+          }
+        }
+      }
+
+
+      if (buffer != null && fileName != null && contentType != null) {
+        sendMail.send(toEmail, null, bbcEmails,
+          this.getText("email.newUser.subject", new String[] {user.getComposedName()}), message.toString(), buffer,
+          contentType, fileName, true);
+      } else {
+        sendMail.send(toEmail, null, bbcEmails,
+          this.getText("email.newUser.subject", new String[] {user.getComposedName()}), message.toString(), null, null,
+          null, true);
+      }
+
+
     }
   }
+
 
   /**
    * @param userAssigned is the user been assigned

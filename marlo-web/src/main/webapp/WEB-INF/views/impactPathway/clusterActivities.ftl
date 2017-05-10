@@ -238,7 +238,7 @@
 
 [#macro outcomeByCluster element index name  isTemplate=false]
   [#local customName = "${name}[${index}]" /]
-  <div id="outcomeByCluster-${isTemplate?string('template',(element.id)!)}" class="outcomeByClusterItem  borderBox"  style="display:${isTemplate?string('none','block')}">
+  <div id="outcomeByCluster-${isTemplate?string('template',(element.id)!)}" class="outcomeByClusterItem  borderBox ${customForm.changedField('${customName}.id')}"  style="display:${isTemplate?string('none','block')}">
     [#if editable] [#--&& (isTemplate) --]
       <div class="removeLink">
         <div id="removeActivity" class="removeOutcome removeElement removeLink" title="[@s.text name='cluster.removeOutcome' /]"></div>

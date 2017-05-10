@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectLocationElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrpLocElementType;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.LocElementType;
 import org.cgiar.ccafs.marlo.data.model.LocGeoposition;
@@ -45,6 +46,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -316,9 +318,14 @@ public class ProjectLocationAction extends BaseAction {
       .add(new LocationLevel(loggedCrp.getAcronym().toUpperCase() + " Custom Locations", countryLocationLevels));
 
     countryLocationLevels = new ArrayList<>();
-    List<LocElementType> elementTypes = locElementTypeManager.findAll().stream()
-      .filter(let -> let.isActive() && let.getCrp() == null && let.getId() != 1).collect(Collectors.toList());
+    List<LocElementType> elementTypes = new ArrayList<>();
+    Crp crpBD = crpManager.getCrpById(this.getCrpID());
+    for (CrpLocElementType locElementType : crpBD.getCrpLocElementTypes().stream().filter(c -> c.isActive())
+      .collect(Collectors.toList())) {
+      elementTypes.add(locElementType.getLocElementType());
+    }
 
+    Collections.sort(elementTypes, (tu1, tu2) -> tu1.getName().compareTo(tu2.getName()));
     for (LocElementType locElementType : elementTypes) {
       CountryLocationLevel countryLocationLevel = new CountryLocationLevel();
       countryLocationLevel.setId(locElementType.getId());
@@ -690,34 +697,36 @@ public class ProjectLocationAction extends BaseAction {
     geoposition.setLatitude(locElement.getLocGeoposition().getLatitude());
     geoposition.setLongitude(locElement.getLocGeoposition().getLongitude());
 
-    LocGeoposition geoParent =
-      locGeopositionManager.getLocGeopositionById(locGeopositionManager.saveLocGeoposition(geoposition));
+    locGeopositionManager.saveLocGeoposition(geoposition);
 
-    LocElement element = new LocElement();
-    element.setActive(true);
-    element.setActiveSince(new Date());
-    element.setCreatedBy(this.getCurrentUser());
-    element.setModifiedBy(this.getCurrentUser());
-    element.setModificationJustification("");
-    element.setCrp(loggedCrp);
-    element.setLocElement(parentElement);
-    element.setLocElementType(typeLement);
-    element.setName(locElement.getName());
-    element.setLocGeoposition(geoParent);
-    element.setIsSiteIntegration(false);
+    if (geoposition.getId() != null) {
+      LocElement element = new LocElement();
+      element.setActive(true);
+      element.setActiveSince(new Date());
+      element.setCreatedBy(this.getCurrentUser());
+      element.setModifiedBy(this.getCurrentUser());
+      element.setModificationJustification("");
+      element.setCrp(loggedCrp);
+      element.setLocElement(parentElement);
+      element.setLocElementType(typeLement);
+      element.setName(locElement.getName());
+      element.setLocGeoposition(geoposition);
+      element.setIsSiteIntegration(false);
 
-    LocElement newLocElement = locElementManager.getLocElementById(locElementManager.saveLocElement(element));
+      LocElement newLocElement = locElementManager.getLocElementById(locElementManager.saveLocElement(element));
 
-    ProjectLocation projectLocation = new ProjectLocation();
-    projectLocation.setProject(project);
-    projectLocation.setLocElement(newLocElement);
-    projectLocation.setActive(true);
-    projectLocation.setActiveSince(new Date());
-    projectLocation.setCreatedBy(this.getCurrentUser());
-    projectLocation.setModificationJustification("");
-    projectLocation.setModifiedBy(this.getCurrentUser());
+      ProjectLocation projectLocation = new ProjectLocation();
+      projectLocation.setProject(project);
+      projectLocation.setLocElement(newLocElement);
+      projectLocation.setActive(true);
+      projectLocation.setActiveSince(new Date());
+      projectLocation.setCreatedBy(this.getCurrentUser());
+      projectLocation.setModificationJustification("");
+      projectLocation.setModifiedBy(this.getCurrentUser());
 
-    projectLocationManager.saveProjectLocation(projectLocation);
+      projectLocationManager.saveProjectLocation(projectLocation);
+    }
+
   }
 
 

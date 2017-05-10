@@ -76,8 +76,8 @@ public class ImpactSubmissionAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
-    if (this.hasPermissionNoBase(
-      this.generatePermission(Permission.IMPACT_PATHWAY_SUBMISSION_PERMISSION, crpProgram.getCrp().getAcronym()))) {
+    if (this.hasPermissionNoBase(this.generatePermission(Permission.IMPACT_PATHWAY_SUBMISSION_PERMISSION,
+      crpProgram.getCrp().getAcronym(), crpProgram.getId().toString()))) {
       if (this.isCompleteImpact(progamID)) {
         List<Submission> submissions = submissionManager.findAll();
         if (submissions != null) {
@@ -147,12 +147,12 @@ public class ImpactSubmissionAction extends BaseAction {
   private void sendNotficationEmail() {
     // Building the email message
     StringBuilder message = new StringBuilder();
-    String[] values = new String[3];
+    String[] values = new String[4];
     values[0] = this.getCurrentUser().getComposedCompleteName();
     values[1] = "<b>" + crpProgram.getCrp().getAcronym().toUpperCase() + " impact pathway</b> for <b>"
       + crpProgram.getAcronym().toUpperCase() + " - " + crpProgram.getName() + "</b>";
     values[2] = crpProgram.getAcronym().toUpperCase();
-
+    values[3] = this.getText("global.managementLiaison");
     String subject = null;
 
     message.append(this.getText("impact.submit.email.message", values));

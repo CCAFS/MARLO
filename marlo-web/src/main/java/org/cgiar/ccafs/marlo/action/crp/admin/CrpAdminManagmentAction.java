@@ -538,6 +538,8 @@ public class CrpAdminManagmentAction extends BaseAction {
     fplRole = roleManager.getRoleById(Long.parseLong((String) this.getSession().get(APConstants.CRP_FPL_ROLE)));
     fpmRole = roleManager.getRoleById(Long.parseLong((String) this.getSession().get(APConstants.CRP_FPM_ROLE)));
     // Get the Flagship list of this CRP
+
+
     flagshipsPrograms = loggedCrp.getCrpPrograms().stream()
       .filter(c -> c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive())
       .collect(Collectors.toList());
@@ -667,6 +669,9 @@ public class CrpAdminManagmentAction extends BaseAction {
               userRole.setUser(userManager.getUser(userRole.getUser().getId()));
               this.notifyNewUserCreated(userRole.getUser());
               // Notifiy user been asigned Program Leader to Flagship
+              /**
+               * TODO UNCOMENT THIS LINE
+               */
               this.notifyRoleFlagshipAssigned(userRole.getUser(), userRole.getRole(), crpProgram);
             }
 
@@ -710,6 +715,7 @@ public class CrpAdminManagmentAction extends BaseAction {
                   userRoleManager.deleteUserRole(userRole.getId());
                   userRole.setUser(userManager.getUser(userRole.getUser().getId()));
                   // Notifiy user been unasigned Program Leader to Flagship
+
                   this.notifyRoleFlagshipUnassigned(userRole.getUser(), userRole.getRole(), crpProgram);
                 }
               }

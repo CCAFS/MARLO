@@ -128,9 +128,12 @@ function checkAgreementStatus(typeID){
   var $options = $agreementStatus.find("option[value='3'], option[value='4']");
   if(typeID == W1W2){
     $agreementStatus.val(ON_GOING); // On-going
-    $options.prop('disabled', true).attr('disabled', true);
+    $options.remove();
   }else{
-    $options.prop('disabled', false).attr('disabled', false);
+    if($options.length==0){
+      $agreementStatus.addOption("3", "Concept Note/Pipeline");
+      $agreementStatus.addOption("4", "Informally Confirmed");
+    }
   }
   $agreementStatus.select2("destroy");
   $agreementStatus.select2();

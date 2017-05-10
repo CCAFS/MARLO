@@ -20,10 +20,12 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
@@ -31,6 +33,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsCluserActvity;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
+import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.ByteArrayInputStream;
@@ -87,6 +90,7 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
   // Managers
   private CrpManager crpManager;
 
+  private PhaseManager phaseManager;
 
   private CrpProgramManager programManager;
   private ProjectBudgetManager projectBudgetManager;
@@ -103,10 +107,11 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
 
   @Inject
   public budgetByCoAsSummaryAction(APConfig config, CrpManager crpManager, CrpProgramManager programManager,
-    ProjectBudgetManager projectBudgetManager, InstitutionManager institutionManager) {
+    ProjectBudgetManager projectBudgetManager, InstitutionManager institutionManager, PhaseManager phaseManager) {
     super(config);
     this.crpManager = crpManager;
     this.programManager = programManager;
+    this.phaseManager = phaseManager;
     this.projectBudgetManager = projectBudgetManager;
     this.institutionManager = institutionManager;
   }
@@ -351,8 +356,12 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
       bilateralPerTotal = 0.0, centerPerTotal = 0.0, w1w2PerGender = 0.0, w3PerGender = 0.0, bilateralPerGender = 0.0,
       centerPerGender = 0.0;
 
-    for (Project project : loggedCrp.getProjects().stream().filter(p -> p.isActive() && p.getStatus().intValue() == 2)
-      .collect(Collectors.toList())) {
+    List<Project> projects = new ArrayList<>();
+    Phase phase = phaseManager.findCycle(APConstants.PLANNING, year, loggedCrp.getId().longValue());
+    for (ProjectPhase projectPhase : phase.getProjectPhases()) {
+      projects.add((projectPhase.getProject()));
+    }
+    for (Project project : projects) {
 
       totalW1w2Gender = 0.0;
       totalW3Gender = 0.0;
