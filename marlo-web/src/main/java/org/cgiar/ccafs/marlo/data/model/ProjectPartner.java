@@ -58,7 +58,6 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
   private Set<ProjectPartnerPerson> projectPartnerPersons = new HashSet<ProjectPartnerPerson>(0);
 
 
-
   private Set<ProjectPartnerLocation> projectPartnerLocations = new HashSet<ProjectPartnerLocation>(0);
 
   private List<InstitutionLocation> selectedLocations;
@@ -237,6 +236,7 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     return projectPartnerLocations;
   }
 
+
   public Set<ProjectPartnerOverall> getProjectPartnerOveralls() {
     return this.projectPartnerOveralls;
   }
@@ -245,16 +245,16 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     return this.projectPartnerPersons;
   }
 
-  public Integer getYearEndDate() {
-    return yearEndDate;
-  }
-
   public String getResponsibilities() {
     return responsibilities;
   }
 
   public List<InstitutionLocation> getSelectedLocations() {
     return selectedLocations;
+  }
+
+  public Integer getYearEndDate() {
+    return yearEndDate;
   }
 
   @Override
@@ -288,7 +288,6 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     }
   }
 
-
   /**
    * This methods validate if the current project partner has a contact person working as leader.
    * 
@@ -307,6 +306,7 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     }
   }
 
+
   public void setActive(boolean active) {
     this.active = active;
   }
@@ -318,7 +318,6 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
   public void setCreatedBy(User usersByCreatedBy) {
     this.createdBy = usersByCreatedBy;
   }
-
 
   public void setId(Long id) {
     this.id = id;
@@ -334,6 +333,7 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
+
   public void setModifiedBy(User usersByModifiedBy) {
     this.modifiedBy = usersByModifiedBy;
   }
@@ -342,24 +342,28 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     this.partnerContributors = partnerContributors;
   }
 
-
   public void setPartnerPersons(List<ProjectPartnerPerson> partnerPersons) {
     this.partnerPersons = partnerPersons;
   }
 
+
   public void setProject(Project project) {
     this.project = project;
   }
-
 
   public void
     setProjectPartnerContributions(Set<ProjectPartnerContribution> projectPartnerContributionsesForProjectPartnerId) {
     this.projectPartnerContributions = projectPartnerContributionsesForProjectPartnerId;
   }
 
+
   public void setProjectPartnerContributors(
     Set<ProjectPartnerContribution> projectPartnerContributionsesForProjectPartnerContributorId) {
     this.projectPartnerContributors = projectPartnerContributionsesForProjectPartnerContributorId;
+  }
+
+  public void setProjectPartnerLocations(Set<ProjectPartnerLocation> projectPartnerLocations) {
+    this.projectPartnerLocations = projectPartnerLocations;
   }
 
   public void setProjectPartnerOveralls(Set<ProjectPartnerOverall> projectPartnerOveralls) {
@@ -370,16 +374,16 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     this.projectPartnerPersons = projectPartnerPersonses;
   }
 
-  public void setYearEndDate(Integer yearEndDate) {
-    this.yearEndDate = yearEndDate;
-  }
-
   public void setResponsibilities(String responsibilities) {
     this.responsibilities = responsibilities;
   }
 
   public void setSelectedLocations(List<InstitutionLocation> selectedLocations) {
     this.selectedLocations = selectedLocations;
+  }
+
+  public void setYearEndDate(Integer yearEndDate) {
+    this.yearEndDate = yearEndDate;
   }
 
   @Override
