@@ -488,8 +488,20 @@ public class FundingSourceAction extends BaseAction {
           region = true;
           for (FundingSourceLocation fundingSourceLocation : fundingSource.getFundingRegions()) {
             if (fundingSourceLocation != null) {
-              fundingSourceLocation
-                .setLocElement(locElementManager.getLocElementById(fundingSourceLocation.getLocElement().getId()));
+            	
+            	System.out.println("");
+            	
+            	
+            	if(fundingSourceLocation.getLocElementType() == null){
+            		fundingSourceLocation
+                    .setLocElement(locElementManager.getLocElementById(fundingSourceLocation.getLocElement().getId()));
+            		
+            		
+            	}else{
+            		fundingSourceLocation
+                    .setLocElementType(locElementTypeManager.getLocElementTypeById(fundingSourceLocation.getLocElementType().getId()));
+            	}
+              
             }
           }
         }
@@ -787,7 +799,7 @@ public class FundingSourceAction extends BaseAction {
     if (fundingSource.getFundingRegions() != null) {
 
       List<FundingSourceLocation> regions = new ArrayList<>(fundingSourceDB.getFundingSourceLocations().stream()
-        .filter(fl -> fl.isActive() && fl.getLocElement().getLocElementType().getId() == 1)
+        .filter(fl -> fl.isActive() && fl.getLocElement().getLocElementType().getId() == 1 && fl.getLocElementType() != null)
         .collect(Collectors.toList()));
 
       if (regions != null && regions.size() > 0) {
@@ -807,16 +819,24 @@ public class FundingSourceAction extends BaseAction {
           fundingSourceLocationSave.setActive(true);
           fundingSourceLocationSave.setActiveSince(new Date());
           fundingSourceLocationSave.setCreatedBy(this.getCurrentUser());
-          fundingSourceLocationSave.setModifiedBy(this.getCurrentUser());
-          fundingSourceLocationSave.setModificationJustification("");
-          fundingSourceLocationSave.setFundingSource(fundingSourceDB);
+					fundingSourceLocationSave.setModifiedBy(this.getCurrentUser());
+					fundingSourceLocationSave.setModificationJustification("");
+					fundingSourceLocationSave.setFundingSource(fundingSourceDB);
 
-          LocElement locElement = locElementManager.getLocElementById(fundingSourceLocation.getLocElement().getId());
+					if (fundingSourceLocation.getLocElementType() == null) {
+						LocElement locElement = locElementManager
+								.getLocElementById(fundingSourceLocation.getLocElement().getId());
 
-          fundingSourceLocationSave.setLocElement(locElement);
+						fundingSourceLocationSave.setLocElement(locElement);
+					} else {
+						LocElementType elementType = locElementTypeManager
+								.getLocElementTypeById(fundingSourceLocation.getLocElementType().getId());
 
-          fundingSourceLocationsManager.saveFundingSourceLocations(fundingSourceLocationSave);
-        }
+						fundingSourceLocationSave.setLocElementType(elementType);
+					}
+
+					fundingSourceLocationsManager.saveFundingSourceLocations(fundingSourceLocationSave);
+				}
       }
 
 
@@ -825,7 +845,7 @@ public class FundingSourceAction extends BaseAction {
     if (fundingSource.getFundingCountry() != null) {
 
       List<FundingSourceLocation> countries = new ArrayList<>(fundingSourceDB.getFundingSourceLocations().stream()
-        .filter(fl -> fl.isActive() && fl.getLocElement().getLocElementType().getId() == 2)
+        .filter(fl -> fl.isActive() && fl.getLocElement().getLocElementType().getId() == 2&& fl.getLocElementType() == null)
         .collect(Collectors.toList()));
 
       if (countries != null && countries.size() > 0) {
