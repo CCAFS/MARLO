@@ -697,34 +697,36 @@ public class ProjectLocationAction extends BaseAction {
     geoposition.setLatitude(locElement.getLocGeoposition().getLatitude());
     geoposition.setLongitude(locElement.getLocGeoposition().getLongitude());
 
-    LocGeoposition geoParent =
-      locGeopositionManager.getLocGeopositionById(locGeopositionManager.saveLocGeoposition(geoposition));
+    locGeopositionManager.saveLocGeoposition(geoposition);
 
-    LocElement element = new LocElement();
-    element.setActive(true);
-    element.setActiveSince(new Date());
-    element.setCreatedBy(this.getCurrentUser());
-    element.setModifiedBy(this.getCurrentUser());
-    element.setModificationJustification("");
-    element.setCrp(loggedCrp);
-    element.setLocElement(parentElement);
-    element.setLocElementType(typeLement);
-    element.setName(locElement.getName());
-    element.setLocGeoposition(geoParent);
-    element.setIsSiteIntegration(false);
+    if (geoposition.getId() != null) {
+      LocElement element = new LocElement();
+      element.setActive(true);
+      element.setActiveSince(new Date());
+      element.setCreatedBy(this.getCurrentUser());
+      element.setModifiedBy(this.getCurrentUser());
+      element.setModificationJustification("");
+      element.setCrp(loggedCrp);
+      element.setLocElement(parentElement);
+      element.setLocElementType(typeLement);
+      element.setName(locElement.getName());
+      element.setLocGeoposition(geoposition);
+      element.setIsSiteIntegration(false);
 
-    LocElement newLocElement = locElementManager.getLocElementById(locElementManager.saveLocElement(element));
+      LocElement newLocElement = locElementManager.getLocElementById(locElementManager.saveLocElement(element));
 
-    ProjectLocation projectLocation = new ProjectLocation();
-    projectLocation.setProject(project);
-    projectLocation.setLocElement(newLocElement);
-    projectLocation.setActive(true);
-    projectLocation.setActiveSince(new Date());
-    projectLocation.setCreatedBy(this.getCurrentUser());
-    projectLocation.setModificationJustification("");
-    projectLocation.setModifiedBy(this.getCurrentUser());
+      ProjectLocation projectLocation = new ProjectLocation();
+      projectLocation.setProject(project);
+      projectLocation.setLocElement(newLocElement);
+      projectLocation.setActive(true);
+      projectLocation.setActiveSince(new Date());
+      projectLocation.setCreatedBy(this.getCurrentUser());
+      projectLocation.setModificationJustification("");
+      projectLocation.setModifiedBy(this.getCurrentUser());
 
-    projectLocationManager.saveProjectLocation(projectLocation);
+      projectLocationManager.saveProjectLocation(projectLocation);
+    }
+
   }
 
 
