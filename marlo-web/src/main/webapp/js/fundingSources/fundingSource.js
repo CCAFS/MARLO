@@ -46,7 +46,7 @@ function init() {
   $(".removeCountry").on("click", removeCountry);
   
 // REGION item
-  $("#regionSelect").select2('destroy'); 
+// $("#regionSelect").select2('destroy');
   $("#regionSelect").on("change", function() {
     var option = $(this).find("option:selected");
     if(option.val() != "-1") {
@@ -54,6 +54,7 @@ function init() {
       // Remove option from select
       // option.remove();
        option.prop('disabled', true);
+       $('select').select2();
       // $(this).trigger("change");
     }
   });
@@ -434,6 +435,7 @@ $item.hide(300, function() {
 var option= $select.find("option[value='"+value+"']");
 console.log(option);
 option.prop('disabled', false);
+$('select').select2();
 // Add region option again
 // $select.addOption(value, name);
 // $select.trigger("change.select2");
