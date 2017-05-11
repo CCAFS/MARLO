@@ -49,7 +49,6 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
   @Expose
   private String modificationJustification;
 
-  @Expose
   private boolean scope;
 
   public FundingSourceLocation() {
