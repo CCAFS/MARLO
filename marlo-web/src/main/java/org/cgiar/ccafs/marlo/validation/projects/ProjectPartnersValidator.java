@@ -263,7 +263,7 @@ public class ProjectPartnersValidator extends BaseValidator {
       if (partner.getSelectedLocations().isEmpty()) {
         this.addMissingField("project.projectPartners[" + c + "].selectedLocations");
         action.getInvalidFields().put("list-project.partners[" + c + "].selectedLocations",
-          InvalidFieldsMessages.EMPTYLIST);
+          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Offices"}));
       }
     }
 
