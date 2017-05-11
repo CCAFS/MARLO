@@ -41,13 +41,17 @@
       
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
            
+          <p class="bg-primary" style="padding: 18px;">
+            <span class="glyphicon glyphicon-flash"></span> We are re-vamping this section in order to make it more user-friendly. 
+            Please apologies if something is not properly working. It would be great if you can inform us about any issue.
+          </p>
           
           <div class="row">
           <h3 class="headTitle col-md-7">[@s.text name="projectLocations.title" /]</h3>  
               <div class="col-md-5 isGlobal">
               <br />
               [#if editable]
-              <label class="col-md-10" for=""><span id="globalText">[@s.text name="projectLocations.isGlobal" /]</span><span id="globalHelp">(If the project is global, check the next button)</span></label>
+              <label class="col-md-10" for=""><span id="globalText">[@s.text name="projectLocations.isGlobal" /]</span></label>
               <div class=" col-md-2">
               <input id="" class="" type="checkbox" name="project.locationGlobal" value=[#if project.locationGlobal]"true" checked[#else]"false"[/#if]/>
               <label for=""></label>
@@ -76,12 +80,30 @@
                 <span><span><img style="width: 3%;" src="${baseUrl}/images/global/left-click.jpg" alt="" /></span>Left click to get detailed information of a specific location.</span>
                 <br />
                 <br />
-                <span><span><img style="width: 3%;" src="${baseUrl}/images/global/right-click.jpg" alt="" /></span>Right click in the map to add a new location.</span>
+                [#-- <span><span><img style="width: 3%;" src="${baseUrl}/images/global/right-click.jpg" alt="" /></span>Right click in the map to add a new location.</span> --]
                 </div>
                 <div  class="col-md-12 map">
                   <div id="map" class="col-md-12"></div>
                 </div>
                 
+                [#-- REGIONS IN WHICH THE PROJECT IS WORKING  --]
+                    [#if scopeRegions?has_content]
+                <div class="col-md-12">
+                <label for="">Regions in which the project is working:</label>
+                <div id="selectsContent" class="col-md-12 simpleBox " listname="project.locationsData">
+                  [#-- Content collapsible--]
+                  <div class="selectWrapper row">
+                      [#list scopeRegions as region]
+                      <span class="col-md-3">
+                        <p class="checked"><b>${region.name}</b></p>
+                      </span>
+                      [/#list]
+                  </div>
+                </div>
+                </div>
+                    [/#if]
+                
+                [#-- LOCATION LIST --]
                 <div class="col-md-12">
                 <label for="">Locations list</label>
                 <div id="selectsContent" class="col-md-12 simpleBox " listname="project.locationsData">
@@ -154,12 +176,15 @@
   [#-- Form 2 --]
   <div id="inputFormWrapper" style="display:none; width: 450px;">
     <div class="nameWrapper"><label for="">Location name:</label><input placeholder="name (Required)" class="name form-control" type="text" /></div>
-    <div class="latitudeWrapper"><label for="">Latitude:</label><input placeholder="Latitude" class="latitude form-control" type="text" readOnly=true /></div>
-    <div class="longitudeWrapper"><label for="">Longitude:</label><input placeholder="Longitude" class="longitude form-control " type="text" readOnly=true /></div>
+    <div class="latitudeWrapper"><label for="">Latitude:</label><input placeholder="Latitude" class="latitude form-control" type="text" value="" /></div>
+    <div class="longitudeWrapper"><label for="">Longitude:</label><input placeholder="Longitude" class="longitude form-control " type="text"  value=""/></div>
   </div>
   [#-- Button --]
+  <div style="margin-left:10px; float:right;">
+    <span id="cancelButton" class=" cancelButton pull-right" style="display:block; margin-top:10px; border-radius:8px;">[@s.text name="Cancel" /]</span>
+  </div>
   <div>
-    <span id="addLocationButton" class=" addButton pull-right" style="display:none; margin-top:10px; border-radius:8px;">[@s.text name="Map out" /]</span>
+    <span id="addLocationButton" class=" addButton pull-right" style="display:none; margin-top:10px; border-radius:8px;">[@s.text name="Drop pin" /]</span>
   </div>
 </div>
 
@@ -175,9 +200,9 @@
     <span class="infoLocName">{test}</span>
     </div>    
     <div id="inputFormWrapper" style="width: 450px;">
-      <div class="nameWrapper"><label for="">Change name:</label><input placeholder="name" class="nameMap form-control" type="text" /></div>
-      <div class="latitudeWrapper"><label for="">Latitude:</label><input  placeholder="Latitude" class="latMap form-control" type="text" readOnly=true /></div>
-      <div class="longitudeWrapper"><label for="">Longitude:</label><input placeholder="Longitude" class="lngMap form-control " type="text" readOnly=true /></div>
+      <div class="nameWrapper"><label for="">Change name:</label><input placeholder="name" class="nameMap form-control" type="text" value=""/></div>
+      <div class="latitudeWrapper"><label for="">Latitude:</label><input  placeholder="Latitude" class="latMap form-control" type="text" value="" /></div>
+      <div class="longitudeWrapper"><label for="">Longitude:</label><input placeholder="Longitude" class="lngMap form-control " type="text" value="" /></div>
     </div>
   </div>
   [#-- Button --]
@@ -230,7 +255,8 @@
    [#if editable]<span class="listButton remove removeLocationLevel pull-right" style="padding: 0 5px 3px 5px;">[@s.text name="form.buttons.remove" /] location level</span>[/#if]
     </h5>
     <div class=" locationLevel-optionContent " listname="${customName}.locElements">
-      <span class="allCountriesQuestion" style="display:[#if element?has_content && list && element.name?contains("Climate Smart Village Sites")]inline-block[#else]none[/#if]">
+    [#-- style="display:[#if element?has_content && list && element.name?contains("Climate Smart Village Sites")]inline-block[#else]none[/#if]" --]
+      <span class="allCountriesQuestion" style="display:none">
         <span class="question">[@s.text name="projectLocations.selectAllCmvs" /]</span>
         [@customForm.yesNoInput name="${customName}.allCountries"  editable=editable inverse=false  cssClass="allCountries text-center" /]
         <hr />
@@ -243,22 +269,6 @@
           [/#list]
         [/#if]
       </div>
-      [#if !editable]
-      <select style="display:${(element.list?? && element.list)?string('block','none')}" [#if (element.allCountries?has_content)?string == "true"]disabled[/#if]  class="form-control selectLocation col-md-12" placeholder="select an option...">
-        <option selected="selected" value="-1" >Select a location</option>
-        [#if element.allElements?has_content ]
-        [#list element.allElements as locElements]
-            <option value="${locElements.id}-${(locElements.isoAlpha2)!}" >${locElements.name}</option>
-        [/#list]
-        [/#if]
-      </select>
-        <div class=" coordinates-inputs" style="display:${(element.list?? && !element.list)?string('block','none')}">
-          <div class="nameWrapper"><input placeholder="name (Required)" class="name form-control" type="text" /></div>
-          <div class="latitudeWrapper"><input placeholder="Latitude" class="latitude form-control" type="text" /></div>
-          <div class="longitudeWrapper"><input placeholder="Longitude" class="longitude form-control " type="text" /></div>
-          <div class="buttonBlock addLocation text-right"><div class="button-blue"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addLocation"/]</div></div>
-        </div>
-      [/#if]
     </div>
     <input class="locationLevelId" type="hidden" name="${locationLevelName}[${index}].id" value="${(element.id)!}"/>
     <input class="locationLevelName" type="hidden" name="${locationLevelName}[${index}].name" value="${(element.name)!}"/>
