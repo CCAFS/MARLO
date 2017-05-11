@@ -64,54 +64,69 @@ public class RequestCountryOfficeAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
-    sucess = new HashMap<String, Object>();
-    String subject;
-    StringBuilder message = new StringBuilder();
-
-    String countriesName = null;
-
-    for (String string : countries) {
-
-      if (countriesName == null) {
-        countriesName = locElementManager.getLocElementByISOCode((string)).getName();
-      } else {
-        countriesName = countriesName + ", " + locElementManager.getLocElementByISOCode((string)).getName();
-      }
-
-    }
-    String institutionName = institutionManager.getInstitutionById(institutionID).getName();
-
-    subject = "[MARLO-" + this.getCrpSession().toUpperCase() + "] Add Office - " + institutionName;
-    // Message content
-    message.append(this.getCurrentUser().getFirstName() + " " + this.getCurrentUser().getLastName() + " ");
-    message.append("(" + this.getCurrentUser().getEmail() + ") ");
-    message.append("is requesting to add the following offices for the institution: ");
-
-    message.append("</br></br>");
-    message.append("Project : P");
-    message.append(projectID);
-    message.append("</br></br>");
-    message.append("Partner Name: ");
-    message.append(institutionName);
-
-    message.append("</br></br>");
-    message.append("Countries : ");
-    message.append(countriesName);
-    message.append(".</br>");
-    message.append("</br>");
     try {
-      SendMailS sendMail = new SendMailS(this.config);
-      sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject, message.toString(),
-        null, null, null, true);
-    } catch (Exception e) {
+      sucess = new HashMap<String, Object>();
+      String subject;
+      StringBuilder message = new StringBuilder();
 
+      String countriesName = null;
+
+      for (String string : countries) {
+
+        if (countriesName == null) {
+          countriesName = locElementManager.getLocElementByISOCode((string)).getName();
+        } else {
+          countriesName = countriesName + ", " + locElementManager.getLocElementByISOCode((string)).getName();
+        }
+
+      }
+      String institutionName = institutionManager.getInstitutionById(institutionID).getName();
+
+      subject = "[MARLO-" + this.getCrpSession().toUpperCase() + "] Add Office - " + institutionName;
+      // Message content
+      message.append(this.getCurrentUser().getFirstName() + " " + this.getCurrentUser().getLastName() + " ");
+      message.append("(" + this.getCurrentUser().getEmail() + ") ");
+      message.append("is requesting to add the following offices for the institution: ");
+
+      message.append("</br></br>");
+      message.append("Project : P");
+      message.append(projectID);
+      message.append("</br></br>");
+      message.append("Partner Name: ");
+      message.append(institutionName);
+
+      message.append("</br></br>");
+      message.append("Countries : ");
+      message.append(countriesName);
+      message.append(".</br>");
+      message.append("</br>");
+      try {
+        SendMailS sendMail = new SendMailS(this.config);
+        sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject, message.toString(),
+          null, null, null, true);
+      } catch (Exception e) {
+        messageSent = false;
+      }
+      messageSent = true;
+    } catch (Exception e) {
+      messageSent = false;
     }
-    messageSent = true;
+
+    if (messageSent) {
+      sucess.put("result", "1");
+    } else {
+      sucess.put("result", "0");
+    }
 
     LOG.info("The user {} send a message requesting add partners to the project {}", this.getCurrentUser().getEmail(),
       projectID);
     return SUCCESS;
 
+  }
+
+
+  public Map<String, Object> getSucess() {
+    return sucess;
   }
 
 
@@ -123,6 +138,11 @@ public class RequestCountryOfficeAction extends BaseAction {
       Long.parseLong((StringUtils.trim(((String[]) parameters.get(APConstants.INSTITUTION_REQUEST_ID))[0])));
     countries = ((String[]) parameters.get(APConstants.COUNTRIES_REQUEST_ID));
 
+  }
+
+
+  public void setSucess(Map<String, Object> sucess) {
+    this.sucess = sucess;
   }
 
 
