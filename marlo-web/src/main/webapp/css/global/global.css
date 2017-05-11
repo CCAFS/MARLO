@@ -6496,3 +6496,18 @@ img.removeInput {
 .blue {
     color: #337ab7;
 }
+
+.newsButton{
+	position:absolute; 
+	right:1%; 
+	bottom:10%; 
+	cursor:pointer;
+}
+
+.newsButton a{
+	position: relative; 
+	padding: 5px; 
+	border-radius: 6px;  
+	font-size: 0.9em; 
+	border-bottom: 1px solid #444444;
+}
