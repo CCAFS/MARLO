@@ -127,22 +127,57 @@ function attachEvents() {
 
   // Request country office
   $('#requestModal').on('show.bs.modal', function (event) {
+    $.noty.closeAll(); 
     var partner = new PartnerObject($(event.relatedTarget).parents('.projectPartner'));
 
-    var $modal = $(this)
+    var $modal = $(this);
+    // Hide Form & button
+    $modal.find('form, .requestButton').show();
     $modal.find('input.institution_id').val(partner.institutionId);
     $modal.find('select.countriesRequest').val(null).trigger('select2:change');
     $modal.find('select.countriesRequest').trigger('change');
     $modal.find('.modal-title').html('Request Country office(s) <br /><small>('+ partner.institutionName + ')</small>');
   });
   $('#requestModal button').on('click', function(){
+    var $modal = $(this).parents('.modal');
+    if ($modal.find('select.countriesRequest').val() == null ){
+      return
+    }
+    
     $.ajax({
       url: baseURL + '/requestCountryOffice.do',
       data: $('#requestModal form').serialize(),
-      beforeSend: function() {},
-      success: function(data) {},
+      beforeSend: function(data) {
+        $modal.find('.loading').fadeIn();
+      },
+      success: function(data) {
+        console.log(data);
+        if(data.sucess.result == "1"){
+          // Hide Form & button
+          $modal.find('form, .requestButton').hide();
+          // Noty Message
+          var message = "Your request was successfully sent to our MARLO Support team";
+          var notyOptions = jQuery.extend({}, notyDefaultOptions);
+          notyOptions.text = message;
+          notyOptions.type = 'success';
+          notyOptions.timeout = 5000;
+          notyOptions.animation = {
+            open: 'animated fadeIn', // Animate.css class names
+            close: 'animated fadeOut', // Animate.css class names
+            easing: 'swing', // unavailable - no need
+            speed: 400 // unavailable - no need
+          };
+          notyOptions.callback = {
+              onClose : function(){
+                $modal.modal('hide'); 
+              }
+          };
+          $modal.find('.messageBlock').noty(notyOptions); 
+          
+        }
+      },
       complete: function() {
-        $('#requestModal').modal('hide');
+        $modal.find('.loading').fadeOut();
       }
     });
   });

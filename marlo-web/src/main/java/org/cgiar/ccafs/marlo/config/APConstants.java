@@ -1,4 +1,3 @@
-
 /*****************************************************************
  * This file is part of Managing Agricultural Research for Learning &
  * Outcomes Platform (MARLO).
@@ -27,7 +26,7 @@ public final class APConstants {
 
   // end year
   public static Integer END_YEAR = 2022;
-
+  public static final String TYPE = "type";
   public static final String CUSTOM_LAGUAGE = "en";
   public static final String PATH_CUSTOM_FILES = "custom/";
   public static final String CUSTOM_FILE = "global";
@@ -38,7 +37,6 @@ public final class APConstants {
   public static final String SESSION_CRP = "current_crp";
   public static final String USER_TOKEN = "user_token";
   public static final int GLOBAL_PROGRAM = 11;
-  public static final String TYPE = "type";
 
   public static final int DELIVERABLE_QUALITY_ANSWER_YES_BUT_NO = 1;
   public static final int DELIVERABLE_QUALITY_ANSWER_YES = 2;
@@ -64,6 +62,7 @@ public final class APConstants {
   public static final String CRP_DIVISION_FS = "crp_division_fs";
   public static final long IFPRI_ID = 89;
   public static final String CRP_ONE_GENDER = "crp_one_gender";
+  public static final String CRP_PARTNERS_OFFICE = "crp_partners_office";
 
   public static final String CRP_PL_ROLE = "crp_pl_rol";
   public static final String CRP_PC_ROLE = "crp_pc_rol";
@@ -211,10 +210,10 @@ public final class APConstants {
 
   public static final String FUNDING_SOURCES_INSTITUTIONS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.FundingSource.fundingInstitutions)";
-  public static final String FUNDING_SOURCES_LOCATIONS_RELATION =
-    "java.util.Set(org.cgiar.ccafs.marlo.data.model.FundingSource.fundingSourceLocations)";
   public static final String PROJECT_FOCUSES_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectFocuses)";
+  public static final String FUNDING_SOURCES_LOCATIONS_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.FundingSource.fundingSourceLocations)";
 
   public static final String PROJECT_BUDGETS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectBudgets)";

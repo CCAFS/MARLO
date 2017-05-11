@@ -118,6 +118,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @author Andrés Felipe Valencia Rivera. CCAFS
+ * @author Christian Garcia - CIAT/CCAFS
  */
 public class ReportingSummaryAction extends BaseAction implements Summary {
 
@@ -231,6 +232,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return String.valueOf(acumulative);
   }
 
+
   public boolean containsOutput(long outputID, long outcomeID) {
 
     if (project.getMogs() != null) {
@@ -257,10 +259,32 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     // System.out.println("Inicia conteo en: " + (startTime - System.currentTimeMillis()));
 
 
+
+    // Fill target unit list
+    targetUnitList = new HashMap<>();
+    if (srfTargetUnitManager.findAll() != null) {
+      List<SrfTargetUnit> targetUnits = new ArrayList<>();
+      List<CrpTargetUnit> crpTargetUnits = new ArrayList<>(
+        loggedCrp.getCrpTargetUnits().stream().filter(tu -> tu.isActive()).collect(Collectors.toList()));
+      for (CrpTargetUnit crpTargetUnit : crpTargetUnits) {
+        targetUnits.add(crpTargetUnit.getSrfTargetUnit());
+      }
+      Collections.sort(targetUnits,
+        (tu1, tu2) -> tu1.getName().toLowerCase().trim().compareTo(tu2.getName().toLowerCase().trim()));
+      for (SrfTargetUnit srfTargetUnit : targetUnits) {
+        targetUnitList.put(srfTargetUnit.getId(), srfTargetUnit.getName());
+      }
+    }
+    // Calculate time to generate report
+    startTime = System.currentTimeMillis();
+    LOG.info(
+      "Start report download: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
+        + ". CRP: " + this.loggedCrp.getAcronym() + ". Cycle: " + cycle);
+
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     ResourceManager manager = // new ResourceManager();
       (ResourceManager) ServletActionContext.getServletContext().getAttribute(PentahoListener.KEY_NAME);
-    // manager.registerDefaults();
+    manager.registerDefaults();
     try {
 
       String masterQueryName = "Main_Query";
@@ -2855,6 +2879,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
+
   public long getProjectID() {
     return projectID;
   }
@@ -3134,31 +3159,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         + e.getMessage());
       cycle = this.getCurrentCycle();
     }
-    // Fill target unit list
-    targetUnitList = new HashMap<>();
-    if (srfTargetUnitManager.findAll() != null) {
-
-      List<SrfTargetUnit> targetUnits = new ArrayList<>();
-
-      List<CrpTargetUnit> crpTargetUnits = new ArrayList<>(
-        loggedCrp.getCrpTargetUnits().stream().filter(tu -> tu.isActive()).collect(Collectors.toList()));
-
-      for (CrpTargetUnit crpTargetUnit : crpTargetUnits) {
-        targetUnits.add(crpTargetUnit.getSrfTargetUnit());
-      }
-
-      Collections.sort(targetUnits,
-        (tu1, tu2) -> tu1.getName().toLowerCase().trim().compareTo(tu2.getName().toLowerCase().trim()));
-
-      for (SrfTargetUnit srfTargetUnit : targetUnits) {
-        targetUnitList.put(srfTargetUnit.getId(), srfTargetUnit.getName());
-      }
-    }
-    // Calculate time to generate report
-    startTime = System.currentTimeMillis();
-    LOG.info(
-      "Start report download: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
-        + ". CRP: " + this.loggedCrp.getAcronym() + ". Cycle: " + cycle);
+    
   }
 
   private DeliverablePartnership responsiblePartner(Deliverable deliverable) {
@@ -3187,6 +3188,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     this.loggedCrp = loggedCrp;
   }
 
+
+  public void setProject(Project project) {
+    this.project = project;
+  }
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;

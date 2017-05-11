@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
@@ -32,6 +33,7 @@ import org.cgiar.ccafs.marlo.validation.model.ProjectValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
@@ -158,7 +160,11 @@ public class ProjectPartnersValidator extends BaseValidator {
     this.validateInstitutionsEmpty(action, project);
     this.validateProjectLeader(action, project);
     this.validateContactPersons(action, project);
+    if (action.hasSpecificities(APConstants.CRP_PARTNERS_OFFICE)) {
+      this.validateOffices(action, project);
+    }
   }
+
 
   /**
    * This method validates all the required fields within contact person.
@@ -248,6 +254,21 @@ public class ProjectPartnersValidator extends BaseValidator {
     }
   }
 
+  private void validateOffices(BaseAction action, Project project) {
+    int c = 0;
+    for (ProjectPartner partner : project.getPartners()) {
+      if (partner.getSelectedLocations() == null) {
+        partner.setSelectedLocations(new ArrayList<InstitutionLocation>());
+      }
+      if (partner.getSelectedLocations().isEmpty()) {
+        this.addMissingField("project.projectPartners[" + c + "].selectedLocations");
+        action.getInvalidFields().put("list-project.partners[" + c + "].selectedLocations",
+          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Offices"}));
+      }
+    }
+
+  }
+
   private void validatePersonResponsibilities(BaseAction action, int partnerCounter, ProjectPartner partner) {
     if (!projectValidator.isValidPersonResponsibilities(partner.getResponsibilities())) {
 
@@ -290,7 +311,7 @@ public class ProjectPartnersValidator extends BaseValidator {
         if (person.getUser().getId() == null || person.getUser().getId() == -1) {
           action.addFieldError("partner-" + partnerCounter + "-person-" + personCounter,
             action.getText("validation.required", new String[] {action.getText("projectPartners.contactPersonEmail")}));
-         
+
         }
       }
     } catch (Exception e) {

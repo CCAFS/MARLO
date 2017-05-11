@@ -166,7 +166,10 @@
           [#if (dp.projectPartnerPerson.projectPartner.id??)!false]
             [#list action.getPersons(dp.projectPartnerPerson.projectPartner.id) as person]
               [#if dp.projectPartnerPerson.id == person.id]
-              <p class="checked">${person.composedCompleteName}</p>
+                <p class="checked">${person.composedCompleteName}</p>
+                [#if (dp.partnerDivision??) && (dp.partnerDivision.id??) &&(dp.partnerDivision.id != -1)]
+                 <p><strong>[@s.text name="projectCofunded.division" /]:</strong> ${(dp.partnerDivision.name)!}</p>
+                [/#if]
               [/#if]
             [/#list]
           [/#if]
@@ -219,7 +222,11 @@
               [#assign selectedPersons =  action.getSelectedPersons(projectPartner.id) /]
               [#list action.getPersons(projectPartner.id) as person]
                 [#if selectedPersons?seq_contains("${person.id}")]
+                  [#local deliverablePartnerShip =(action.getDeliverablePartnership((person.id)!-1))!{} /]
                   <p class="checked">${person.composedCompleteName}</p>
+                  [#if (deliverablePartnerShip.partnerDivision??) && (deliverablePartnerShip.partnerDivision.id??) &&(deliverablePartnerShip.partnerDivision.id != -1)]
+                   <p><strong>[@s.text name="projectCofunded.division" /]:</strong> ${(deliverablePartnerShip.partnerDivision.name)!}</p>
+                  [/#if]
                 [/#if]
               [/#list]
             [/#if]
@@ -237,20 +244,20 @@
 [#macro deliverablePerson element name index checked isResponsable=false isTemplate=false]
   [#local customName]${name}[#if !isResponsable][${index}][/#if][/#local] 
   [#local type][#if isResponsable]radio[#else]checkbox[/#if][/#local]
+  [#local deliverablePartnerShip =(action.getDeliverablePartnership((element.id)!-1))!{} /]
   
   <div id="deliverablePerson-${isTemplate?string('template', index)}" class="${type} deliverablePerson ${isResponsable?string('resp','other')} inputsFlat" style="display:${isTemplate?string('none','')}">
-    
-    [#if !isResponsable]<input class="element" type="hidden" name="${customName}.id" value="${(action.getDeliverablePartnership((element.id)!-1))!}">[/#if]
+    [#if !isResponsable]<input class="element" type="hidden" name="${customName}.id" value="${(deliverablePartnerShip.id)!}">[/#if]
     <input id="${type}-${index}-${(element.id)!}" type="${type}" name="${customName}.projectPartnerPerson.id" value="${(element.id)!}" [#if checked]checked[/#if]/>
     <label for="${type}-${index}-${(element.id)!}" class="${type}-label [#if isResponsable]radio-label-yes[/#if]" >${(element.composedCompleteName)!}</label>
 
     [#-- Division --]
     [#if action.hasSpecificities('crp_division_fs') && !isResponsable]
       [#local ifpriDivision = false /]
-      [#if (element.institution.acronym == "IFPRI")!false ][#local ifpriDivision = true /][/#if]
+      [#if (element.projectPartner.institution.acronym == "IFPRI")!false ][#local ifpriDivision = true /][/#if]
       <div class="form-group row divisionBlock division-IFPRI"  style="display:${ifpriDivision?string('block','none')}">
         <div class="col-md-7">
-          [@customForm.select name="${customName}.partnerDivision.id" i18nkey="projectCofunded.division" className="divisionField" listName="divisions" keyFieldName="id" displayFieldName="composedName" required=true editable=editable /]
+          [@customForm.select name="${customName}.partnerDivision.id" value="${(deliverablePartnerShip.partnerDivision.id)!-1}" i18nkey="projectCofunded.division" className="divisionField" listName="divisions" keyFieldName="id" displayFieldName="composedName" required=true editable=editable /]
         </div>
       </div>
     [/#if]
