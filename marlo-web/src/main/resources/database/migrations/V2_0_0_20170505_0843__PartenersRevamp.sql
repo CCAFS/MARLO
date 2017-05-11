@@ -1,3 +1,6 @@
+
+update institutions set headquarter =null where id=333;
+
 CREATE TABLE `institutions_locations` (
 `id`  bigint(20) NOT NULL AUTO_INCREMENT ,
 `institution_id`  bigint(20) NOT NULL ,
