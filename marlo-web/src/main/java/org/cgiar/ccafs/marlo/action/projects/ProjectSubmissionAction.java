@@ -50,6 +50,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  * @author Andrés Valencia - CIAT/CCAFS
+ * @author Christian Garcia - CIAT/CCAFS
  */
 public class ProjectSubmissionAction extends BaseAction {
 
@@ -277,8 +278,11 @@ public class ProjectSubmissionAction extends BaseAction {
       reportingSummaryAction.setSession(this.getSession());
       reportingSummaryAction.setYear(this.getCurrentCycleYear());
       //
+      reportingSummaryAction.setLoggedCrp(loggedCrp);
       reportingSummaryAction.setCycle(this.getCurrentCycle());
       reportingSummaryAction.setProjectID(projectID);
+      reportingSummaryAction.setProject(projectManager.getProjectById(projectID));
+      reportingSummaryAction.setCrpSession(loggedCrp.getAcronym());
       reportingSummaryAction.execute();
       // Getting the file data.
       //

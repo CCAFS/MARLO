@@ -130,6 +130,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @author Andrés Felipe Valencia Rivera. CCAFS
+ * @author Christian Garcia - CIAT/CCAFS
  */
 public class ReportingSummaryAction extends BaseAction implements Summary {
 
@@ -154,21 +155,25 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   private HashMap<Long, String> targetUnitList;
   private SrfTargetUnitManager srfTargetUnitManager;
   private Project project;
+
   // Front-end
   private long projectID;
+
+
   private int year;
+
+
   private String cycle;
   private GenderTypeManager genderTypeManager;
-
   // Managers
   private ProjectManager projectManager;
   private CrpProgramManager programManager;
+
   private InstitutionManager institutionManager;
   private ProjectBudgetManager projectBudgetManager;
   private LocElementManager locElementManager;
   private CrpManager crpManager;
   private IpElementManager ipElementManager;
-
 
   @Inject
   public ReportingSummaryAction(APConfig config, CrpManager crpManager, ProjectManager projectManager,
@@ -186,7 +191,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     this.genderTypeManager = genderTypeManager;
     this.srfTargetUnitManager = srfTargetUnitManager;
   }
-
 
   public String calculateAcumulativeTarget(int yearCalculate, IpProjectIndicator id) {
     int acumulative = 0;
@@ -239,6 +243,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return String.valueOf(acumulative);
   }
 
+
   public boolean containsOutput(long outputID, long outcomeID) {
     if (project.getMogs() != null) {
       for (IpElement output : project.getMogs()) {
@@ -251,12 +256,35 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return false;
   }
 
+
   @Override
   public String execute() throws Exception {
+
+    // Fill target unit list
+    targetUnitList = new HashMap<>();
+    if (srfTargetUnitManager.findAll() != null) {
+      List<SrfTargetUnit> targetUnits = new ArrayList<>();
+      List<CrpTargetUnit> crpTargetUnits = new ArrayList<>(
+        loggedCrp.getCrpTargetUnits().stream().filter(tu -> tu.isActive()).collect(Collectors.toList()));
+      for (CrpTargetUnit crpTargetUnit : crpTargetUnits) {
+        targetUnits.add(crpTargetUnit.getSrfTargetUnit());
+      }
+      Collections.sort(targetUnits,
+        (tu1, tu2) -> tu1.getName().toLowerCase().trim().compareTo(tu2.getName().toLowerCase().trim()));
+      for (SrfTargetUnit srfTargetUnit : targetUnits) {
+        targetUnitList.put(srfTargetUnit.getId(), srfTargetUnit.getName());
+      }
+    }
+    // Calculate time to generate report
+    startTime = System.currentTimeMillis();
+    LOG.info(
+      "Start report download: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
+        + ". CRP: " + this.loggedCrp.getAcronym() + ". Cycle: " + cycle);
+
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     ResourceManager manager = // new ResourceManager();
       (ResourceManager) ServletActionContext.getServletContext().getAttribute(PentahoListener.KEY_NAME);
-    // manager.registerDefaults();
+    manager.registerDefaults();
     try {
       String masterQueryName = "Main_Query";
       Resource reportResource;
@@ -1824,7 +1852,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return fileName.toString();
   }
 
-
   public IpIndicator getFinalIndicator(IpIndicator ipIndicator) {
     IpIndicator newIpIndicator = ipIndicator;
     if (newIpIndicator.getIpIndicator() != null) {
@@ -1841,6 +1868,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     }
     return model;
   }
+
 
   private void getFooterSubreports(HashMap<String, Element> hm, ReportFooter reportFooter) {
 
@@ -2392,6 +2420,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
+  public Project getProject() {
+    return project;
+  }
 
   private TypedTableModel getProjectHighlightReportingTableModel() {
     TypedTableModel model = new TypedTableModel(
@@ -2533,6 +2564,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     }
     return model;
   }
+
 
   public long getProjectID() {
     return projectID;
@@ -2744,6 +2776,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
   @Override
   public void prepare() {
+    /*
+     * READ ME
+     * If you add a parameter you must add it in the ProjectSubmissionAction class
+     */
     // Get loggerCrp
     try {
       loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
@@ -2784,26 +2820,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         + e.getMessage());
       cycle = this.getCurrentCycle();
     }
-    // Fill target unit list
-    targetUnitList = new HashMap<>();
-    if (srfTargetUnitManager.findAll() != null) {
-      List<SrfTargetUnit> targetUnits = new ArrayList<>();
-      List<CrpTargetUnit> crpTargetUnits = new ArrayList<>(
-        loggedCrp.getCrpTargetUnits().stream().filter(tu -> tu.isActive()).collect(Collectors.toList()));
-      for (CrpTargetUnit crpTargetUnit : crpTargetUnits) {
-        targetUnits.add(crpTargetUnit.getSrfTargetUnit());
-      }
-      Collections.sort(targetUnits,
-        (tu1, tu2) -> tu1.getName().toLowerCase().trim().compareTo(tu2.getName().toLowerCase().trim()));
-      for (SrfTargetUnit srfTargetUnit : targetUnits) {
-        targetUnitList.put(srfTargetUnit.getId(), srfTargetUnit.getName());
-      }
-    }
-    // Calculate time to generate report
-    startTime = System.currentTimeMillis();
-    LOG.info(
-      "Start report download: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
-        + ". CRP: " + this.loggedCrp.getAcronym() + ". Cycle: " + cycle);
+
   }
 
   private DeliverablePartnership responsiblePartner(Deliverable deliverable) {
@@ -2828,6 +2845,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
+  }
+
+  public void setProject(Project project) {
+    this.project = project;
   }
 
   public void setProjectID(long projectID) {
