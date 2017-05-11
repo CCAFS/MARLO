@@ -179,7 +179,7 @@
                   [/#if]
                     <input class="id" type="hidden" name="fundingSource.fundingRegions[${region_index}].id" value="${region.id}" />
                     <input class="rId" type="hidden" name="fundingSource.fundingRegions[${region_index}].locElement.id" value="${(region.locElement.id)!}" />
-                    <input class="regionScope" type="hidden" name="fundingSource.fundingRegions[${region_index}].scope" value="${(region.locElementType.scope?c)!}" />
+                    <input class="regionScope" type="hidden" name="fundingSource.fundingRegions[${region_index}].scope" value="${(region.scope?c)!}" />
                     <span class="name">${(region.locElement.name)!}</span>
                     <div class="clearfix"></div>
                   </li>
