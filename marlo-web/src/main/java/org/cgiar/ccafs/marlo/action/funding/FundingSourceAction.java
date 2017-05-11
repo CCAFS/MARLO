@@ -528,27 +528,35 @@ public class FundingSourceAction extends BaseAction {
          */
         if (fundingSource.getFundingSourceLocations() != null) {
 
-          List<FundingSourceLocation> countries = new ArrayList<>(fundingSource.getFundingSourceLocations().stream()
-            .filter(fl -> fl.isActive() && fl.getLocElement().getLocElementType().getId() == 2)
-            .collect(Collectors.toList()));
+          List<FundingSourceLocation> countries =
+            new ArrayList<>(fundingSource.getFundingSourceLocations().stream().filter(fl -> fl.isActive()
+              && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 2)
+              .collect(Collectors.toList()));
 
           fundingSource.setFundingCountry(new ArrayList<>(countries));
 
-          List<FundingSourceLocation> regions = new ArrayList<>(fundingSource.getFundingSourceLocations().stream()
-            .filter(fl -> fl.isActive() && fl.getLocElement().getLocElementType().getId() == 1)
-            .collect(Collectors.toList()));
-
+          List<FundingSourceLocation> regions =
+            new ArrayList<>(fundingSource.getFundingSourceLocations().stream().filter(fl -> fl.isActive()
+              && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 1)
+              .collect(Collectors.toList()));
 
           List<FundingSourceLocation> regionsWScope = new ArrayList<>();
           if (regions.size() > 0) {
             region = true;
             for (FundingSourceLocation fundingSourceLocation : regions) {
-              if (fundingSourceLocation.getLocElementType() == null) {
-                fundingSourceLocation.setScope(false);
-              } else {
-                fundingSourceLocation.setScope(true);
-              }
+              fundingSourceLocation.setScope(false);
+              regionsWScope.add(fundingSourceLocation);
+            }
+          }
 
+          regions = new ArrayList<>(fundingSource.getFundingSourceLocations().stream()
+            .filter(fl -> fl.isActive() && fl.getLocElementType() != null && fl.getLocElement() == null)
+            .collect(Collectors.toList()));
+
+          if (regions.size() > 0) {
+            region = true;
+            for (FundingSourceLocation fundingSourceLocation : regions) {
+              fundingSourceLocation.setScope(true);
               regionsWScope.add(fundingSourceLocation);
             }
           }
