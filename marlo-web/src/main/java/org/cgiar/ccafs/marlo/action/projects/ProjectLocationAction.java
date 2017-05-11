@@ -33,6 +33,7 @@ import org.cgiar.ccafs.marlo.data.model.LocGeoposition;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocationElementType;
+import org.cgiar.ccafs.marlo.data.model.ScopeData;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -72,17 +73,19 @@ public class ProjectLocationAction extends BaseAction {
 
   private CrpManager crpManager;
 
+
   private List<LocationLevel> locationsLevels;
 
+  private List<LocElementType> scopeRegions;
+
+
+  private List<ScopeData> scopeData;
+
   private ProjectLocationValidator locationValidator;
-
-  // private List<CountryLocationLevel> locationsData;
-
 
   private LocElementManager locElementManager;
 
   private LocElementTypeManager locElementTypeManager;
-
 
   private LocGeopositionManager locGeopositionManager;
 
@@ -90,14 +93,15 @@ public class ProjectLocationAction extends BaseAction {
 
   private Project project;
 
-
   private long projectID;
+
 
   private ProjectLocationElementTypeManager projectLocationElementTypeManager;
 
   private ProjectLocationManager projectLocationManager;
 
   private ProjectManager projectManager;
+
 
   private String transaction;
 
@@ -166,7 +170,6 @@ public class ProjectLocationAction extends BaseAction {
   public long getProjectID() {
     return projectID;
   }
-
 
   public List<CountryLocationLevel> getProjectLocationsData() {
 
@@ -287,8 +290,77 @@ public class ProjectLocationAction extends BaseAction {
     return locationLevels;
   }
 
+  public List<ScopeData> getScopeData() {
+    return scopeData;
+  }
+
+  public List<LocElementType> getScopeRegions() {
+    return scopeRegions;
+  }
+
   public String getTransaction() {
     return transaction;
+  }
+
+
+  public void listScopeRegions() {
+
+    List<LocElementType> scopeRegionsPrew = locElementTypeManager.findAll().stream()
+      .filter(et -> et.isActive() && et.isScope() && et.getCrp().getId() == loggedCrp.getId())
+      .collect(Collectors.toList());
+
+    scopeRegions = new ArrayList<>();
+
+    if (project.getLocationsData() != null) {
+      for (CountryLocationLevel locationData : project.getLocationsData()) {
+        if (locationData.getLocElements() != null) {
+          for (LocElement locElement : locationData.getLocElements()) {
+            if (locElement.getId() != null && locElement.getId() != -1) {
+
+              LocElement elementReview = locElementManager.getLocElementById(locElement.getId());
+
+              while (true) {
+                long elementReviewType = elementReview.getLocElementType().getId();
+
+                if (elementReviewType == 2) {
+
+                  for (LocElementType locElementType : scopeRegionsPrew) {
+
+                    List<LocElement> scopeElements = new ArrayList<>(locElementType.getLocElements().stream()
+                      .filter(lc -> lc.isActive()).collect(Collectors.toList()));
+
+                    for (LocElement scopeElement : scopeElements) {
+                      LocElement scopeParentElement = scopeElement.getLocElement();
+                      if (scopeParentElement.equals(elementReview)) {
+                        if (scopeRegions.isEmpty()) {
+                          scopeRegions.add(locElementType);
+                        } else {
+                          if (!scopeRegions.contains(locElementType)) {
+                            scopeRegions.add(locElementType);
+                          }
+                        }
+                      }
+                    }
+
+
+                  }
+
+                  break;
+
+                } else {
+                  if (elementReview.getLocElement() != null) {
+                    elementReview = locElementManager.getLocElementById(elementReview.getLocElement().getId());
+                  } else {
+                    break;
+                  }
+                }
+              }
+
+            }
+          }
+        }
+      }
+    }
   }
 
   /**
@@ -410,6 +482,7 @@ public class ProjectLocationAction extends BaseAction {
       }
     }
 
+    this.listScopeRegions();
 
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_LOCATION_BASE_PERMISSION, params));
@@ -436,7 +509,13 @@ public class ProjectLocationAction extends BaseAction {
           if (locationData.getLocElements() != null && !locationData.getLocElements().isEmpty()) {
             for (LocElement locElement : locationData.getLocElements()) {
               if (locElement.getId() != null && locElement.getId() != -1) {
+
                 LocElement element = locElementManager.getLocElementById(locElement.getId());
+
+                if (!element.getName().equals(locElement.getName())) {
+                  element.setName(locElement.getName());
+                  locElementManager.saveLocElement(element);
+                }
 
                 ProjectLocation existProjectLocation =
                   projectLocationManager.getProjectLocationByProjectAndLocElement(project.getId(), locElement.getId());
@@ -531,7 +610,14 @@ public class ProjectLocationAction extends BaseAction {
           if (locationData.getLocElements() != null) {
             for (LocElement locElement : locationData.getLocElements()) {
               if (locElement.getId() != null && locElement.getId() != -1) {
+
                 LocElement element = locElementManager.getLocElementById(locElement.getId());
+
+                if (!element.getName().equals(locElement.getName())) {
+                  element.setName(locElement.getName());
+                  locElementManager.saveLocElement(element);
+                }
+
                 if (element.getLocGeoposition() != null && element.getLocElementType().getCrp() == null) {
                   if ((element.getLocGeoposition().getLatitude() != locElement.getLocGeoposition().getLatitude())
                     || (element.getLocGeoposition().getLongitude() != locElement.getLocGeoposition().getLongitude())) {
@@ -729,7 +815,6 @@ public class ProjectLocationAction extends BaseAction {
 
   }
 
-
   public void setLocationsLevels(List<LocationLevel> locationsLevels) {
     this.locationsLevels = locationsLevels;
   }
@@ -739,12 +824,21 @@ public class ProjectLocationAction extends BaseAction {
     this.loggedCrp = loggedCrp;
   }
 
+
   public void setProject(Project project) {
     this.project = project;
   }
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
+  }
+
+  public void setScopeData(List<ScopeData> scopeData) {
+    this.scopeData = scopeData;
+  }
+
+  public void setScopeRegions(List<LocElementType> scopeRegions) {
+    this.scopeRegions = scopeRegions;
   }
 
   public void setTransaction(String transaction) {
