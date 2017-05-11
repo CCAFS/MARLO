@@ -9,6 +9,15 @@ table{
   width: 100%;
 }
 
+ins {
+    background-color: #c6ffc6;
+    text-decoration: none;
+}
+
+del {
+    background-color: #ffc6c6;
+}
+
 label {
   margin-bottom: 2px;
   font-weight: 600;
@@ -220,8 +229,8 @@ div.disabled {/* Required for IE 5, 6, 7 */
 }
 
 .fieldset {
-  padding: 0px 13px;
-  margin: 13px 0px;
+  padding: 0px 10px;
+  margin: 6px 0px;
   border: 1px dotted #5f96c5;
   border-radius: 10px 0px;
 }
@@ -316,15 +325,15 @@ table.default a{
     text-decoration: none;
 }
 
-.changedField > label,
-.changedField > span, 
-.changedField > p{
+.changedField label,
+.changedField span, 
+.changedField p{
   color: #0288D1 !important;
 }
 
 .changedField {
   border-radius: 4px;
-  background-color: #eaffea !important;
+  /*background-color: #eaffea !important;*/
 }
 
 .changedField.simpleBox,
@@ -1064,7 +1073,7 @@ select#partnerSave_activityPartner_partner_type_id {
 .panel {
     border: 1px solid rgba(0,0,0,0.2);
     border-radius: 0;
-    margin-bottom: 0;
+    /* margin-bottom: 0; */
 }
 
 .panel.primary{}
@@ -4085,7 +4094,10 @@ padding-top: 35px;
 
 .deliverablePartner {
   font-size: 0.95em;
-  padding: 13px 30px 2px 30px !important;
+  padding: 13px 50px 2px 30px !important;
+}
+.responsiblePartner {
+  padding: 3px 14px 0px 13px !important;
 }
 
 .deliverablePartner span.index{
@@ -4201,15 +4213,53 @@ margin: 0;}
   text-align: center;
 }
 
+#disseminationUrl .url-field{
+  width: 75%;
+  float:left;
+}
+
+#disseminationUrl .buttons-field{
+  width: 24%;
+  float:right;
+  margin-top: 25px;
+}
+
 .checkButton{
   background-color: #7FB06F;
   color: #fff;
-  padding: 5px 12px;
+  padding: 4px 12px;
   border-radius: 2px;
   cursor: pointer;
 }
 .checkButton:hover{
   background-color: #749E66;
+}
+
+.uncheckButton{
+  background-color: #F44336;
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 2px;
+  cursor: pointer;
+  width: 49%;
+  float: right;
+}
+.uncheckButton:hover{
+  background-color: #e03d31;
+}
+
+.updateButton{
+  background-color: #668fda;
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 2px;
+  cursor: pointer;
+  margin-right: 1%;
+  width: 49%;
+  float: left;
+}
+.updateButton:hover{
+  background-color: #5b80c3;
 }
 
 #metadata-output{
@@ -6403,6 +6453,14 @@ span#lastUpdateMessage {
 #fundingID-quote  p{
   line-height: 29px;
   margin: 0;
+}
+
+.selectDesc {
+  margin-top:2px; 
+  font-size:80%; 
+  line-height:13px; 
+  display:block; 
+  font-style:italic;
 }
 
 

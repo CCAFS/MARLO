@@ -25,9 +25,12 @@ public class BudgetType implements java.io.Serializable, IAuditLog {
 
   @Expose
   private String name;
+  @Expose
+  private String description;
 
 
   private Set<ProjectBudget> projectBudgets = new HashSet<ProjectBudget>(0);
+
 
   private Set<FundingSource> fundingSources = new HashSet<FundingSource>(0);
 
@@ -51,6 +54,10 @@ public class BudgetType implements java.io.Serializable, IAuditLog {
       return false;
     }
     return true;
+  }
+
+  public String getDescription() {
+    return description;
   }
 
   public Set<FundingSource> getFundingSources() {
@@ -105,6 +112,10 @@ public class BudgetType implements java.io.Serializable, IAuditLog {
   public boolean isActive() {
 
     return true;
+  }
+
+  public void setDescription(String decription) {
+    this.description = decription;
   }
 
   public void setFundingSources(Set<FundingSource> fundingSources) {

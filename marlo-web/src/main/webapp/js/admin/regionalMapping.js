@@ -161,10 +161,17 @@ function updateProgramIndexes(list) {
     $(item).find('.countriesSelect').attr('name', programName + 'selectedCountries');
 
     // Program Leaders
-    $(item).find('.usersBlock li').each(function(i,leader) {
+    $(item).find('.usersBlock.leaders li').each(function(i,leader) {
       var leaderName = programName + 'leaders[' + i + '].';
       updateUserItemIndex(leader, leaderName);
     });
+
+    // Program Managers
+    $(item).find('.usersBlock.managers li').each(function(i,leader) {
+      var leaderName = programName + 'managers[' + i + '].';
+      updateUserItemIndex(leader, leaderName);
+    });
+
   });
 }
 

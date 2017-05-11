@@ -35,6 +35,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
@@ -99,15 +100,21 @@ public class FundingSourceListAction extends BaseAction {
 
     }
 
+    if (fundingSources != null) {
+      fundingSources = fundingSources.stream().filter(c -> c.getTitle() != null).collect(Collectors.toList());
+      fundingSources.sort((p1, p2) -> p1.getTitle().compareTo(p2.getTitle()));
+    }
+
+
     for (FundingSource fundingSource : fundingSources) {
-      if (fundingSource.isActive() && fundingSource.getCenterType() != null) {
+      if (fundingSource.isActive()) {
         source = new HashMap<>();
         source.put("id", fundingSource.getId());
         source.put("name", fundingSource.getTitle());
         source.put("type", fundingSource.getBudgetType().getName());
         source.put("typeId", fundingSource.getBudgetType().getId());
 
-        if (fundingSource.getCenterType().intValue() == 2) {
+        if (fundingSource.getBudgetType().getId().intValue() == 1) {
 
           String permission =
             this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, loggedCrp.getAcronym());
@@ -115,9 +122,9 @@ public class FundingSourceListAction extends BaseAction {
           boolean hasPermission = this.hasPermissionNoBase(permission);
           source.put("canSelect", hasPermission);
         } else {
-          if (fundingSource.getCenterType().intValue() == 1) {
-            source.put("canSelect", true);
-          }
+
+          source.put("canSelect", true);
+
         }
 
 

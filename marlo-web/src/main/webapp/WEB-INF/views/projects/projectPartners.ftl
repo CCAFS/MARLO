@@ -20,7 +20,7 @@
 <div class="container helpText viewMore-block">
   <div style="display:none" class="helpMessage infoText">
     <img class="col-md-2" src="${baseUrl}/images/global/icon-help.jpg" />
-    <p class="col-md-10">[#if project.projectEditLeader] [#if reportingActive] [@s.text name="projectPartners.help3" /] [#else] [@s.text name="projectPartners.help2" /] [/#if]  [#else] [@s.text name="projectPartners.help1" /] [/#if]</p>
+    <p class="col-md-10">[#if project.projectEditLeader] [#if reportingActive] [@s.text name="projectPartners.help3" /] [#else] [@s.text name="projectPartners.help2" ] [@s.param][@s.text name="global.managementLiaison" /][/@s.param] [/@s.text] [/#if]  [#else] [@s.text name="projectPartners.help1" /] [/#if]</p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
 </div>
@@ -306,7 +306,7 @@
 [/#macro]
 
 [#macro contactPersonMacro element name index=-1 partnerIndex=-1 isTemplate=false]
-  <div id="contactPerson-${isTemplate?string('template',(element.id)!)}" class="contactPerson simpleBox ${(element.contactType)!} ${customForm.changedField('${name}.id')}" style="display:${isTemplate?string('none','block')}">
+  <div id="contactPerson-${isTemplate?string('template',(element.id)!)}" class="contactPerson simpleBox ${(element.contactType)!}" style="display:${isTemplate?string('none','block')}">
     [#-- Remove link for all partners --]
     [#if editable]
       <div class="removePerson removeElement" title="[@s.text name="projectPartners.removePerson" /]"></div>
@@ -325,8 +325,10 @@
     [#else]
       [#local canEditContactType = editable || isTemplate /]
     [/#if]
-     
-     
+    
+    [#if customForm.changedField('${name}.id') != '']
+      <span class="label label-info pull-right">Added/Updated</span> 
+    [/#if]
     <div class="form-group">
     	<div class="row">
     	    [#-- Contact Email --]
@@ -339,7 +341,8 @@
             <input type="hidden" class="canEditEmail" value="${canEditEmail?string}" />
             [#-- Contact Person information is going to come from the users table, not from project_partner table (refer to the table project_partners in the database) --] 
             [#assign partnerClass = "${name}.user.id"?string?replace("\\W+", "", "r") /]
-            [@customForm.input name="partner-${partnerIndex}-person-${index}" value="${(element.user.composedName?html)!}" className='userName ${partnerClass}' type="text" disabled=!canEdit i18nkey="projectPartners.contactPersonEmail" required=true readOnly=true editable=editable && canEditEmail /]
+            [#assign changeFieldEmail = customForm.changedField('${name}.user.id') /]
+            [@customForm.input name="partner-${partnerIndex}-person-${index}" value="${(element.user.composedName?html)!}" className='userName ${partnerClass} ${changeFieldEmail}' type="text" disabled=!canEdit i18nkey="projectPartners.contactPersonEmail" required=true readOnly=true editable=editable && canEditEmail /]
             <input class="userId" type="hidden" name="${name}.user.id" value="${(element.user.id)!}" />   
             [#if editable && canEditEmail]<div class="searchUser button-blue button-float">[@s.text name="form.buttons.searchUser" /]</div>[/#if]
           </div>
@@ -348,7 +351,7 @@
     <div class="form-group">
       <div class="row">
         [#-- Contact type --]
-        <div class="col-md-6 partnerPerson-type  ">
+        <div class="col-md-6 partnerPerson-type ${customForm.changedField('${name}.contactType')}">
           [#if canEditContactType]
             [@customForm.select name="${name}.contactType" className="partnerPersonType" disabled=!canEdit i18nkey="projectPartners.personType" stringKey=true header=false listName="partnerPersonTypes" value="'${(element.contactType)!'CP'}'" required=true /]
           [#else]
@@ -359,7 +362,7 @@
         </div>
         
         [#-- Contact Branch --]
-        <div class="col-md-6 partnerPerson-branch  ">
+        <div class="col-md-6 partnerPerson-branch ${customForm.changedField('${name}.institution.id')}">
           [#if canEditContactType]
             [@customForm.select name="${name}.institution.id" className="partnerPersonBranch" disabled=!canEdit i18nkey="projectPartners.personBranch" header=false listName="project.partners[${partnerIndex}].institution.institutuionsBranches" keyFieldName="id"  displayFieldName="branchName" required=true /]
           [#else]
@@ -373,7 +376,7 @@
     
     [#-- Responsibilities --]
     [#if project.projectEditLeader]
-    <div class="partnerResponsabilities chosen"> 
+    <div class="form-group partnerResponsabilities chosen"> 
       [@customForm.textArea name="${name}.responsibilities" className="resp limitWords-100" i18nkey="projectPartners.responsabilities" required=true editable=editable /]
       <div class="clearfix"></div>
     </div>

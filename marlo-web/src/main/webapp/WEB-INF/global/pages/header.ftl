@@ -72,15 +72,14 @@
             <div id="title" >MARLO</div>    
             <div id="subTitle" class="visible-md-block visible-lg-block">Managing Agricultural Research for Learning & Outcomes</div>
             <div class="clearfix"></div>
-            [#if !config.production] <h4 class="testEnvironment">
-              <span class="label label-danger text-left">Testing Environment</span> 
+            [#if !config.production] <h4 class="testEnvironment"><span class="label label-danger text-left">Testing Environment</span> </h4>[/#if]
+            <h4 class="">
               [#-- Planning / Reporting tag --]
               [#if reportingActive??]
                 <span class="label label-${(reportingActive)?string('default','primary')} text-left">${(reportingActive)?string('Reporting','Planning')} ${(currentCycleYear)!}</span> 
               [/#if]
-              </h4>
-            [/#if]
-            [#if crpClosed] <h4 class=""><span class="label label-default text-left">Closed</span></h4> [/#if]
+              [#if crpClosed] <span class="label label-default text-left">Closed</span> [/#if]
+            </h4>
             </a>
           </div>
           
@@ -89,7 +88,11 @@
           [#else]
             [#if crpSession??]<img id="crp-image" src="${baseUrl}/images/global/crps/${crpSession}.png" alt="${crpSession}" />[/#if]
           [/#if]
-          
+          <div style="position:absolute; right:1%; bottom:10%; cursor:pointer;">
+            <a href="https://marlo-news.blogspot.com" target="__blank" style="position: relative; padding: 5px; border-radius: 6px;  font-size: 0.9em; border-bottom: 1px solid #444444;">
+               <b>Check our blog </b> <span class="fa fa-external-link-square"></span>
+            </a>
+          </div>
         </div>
       </header>
     [/#if]

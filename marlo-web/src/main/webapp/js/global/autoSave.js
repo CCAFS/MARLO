@@ -25,7 +25,7 @@ function autoSave() {
       method: 'POST',
       url: baseURL + '/autosaveWriter.do',
       data: {
-        autoSave: JSON.stringify($('form').serializeObject())
+        autoSave: JSON.stringify($('form:first').serializeObject())
       },
       beforeSend: function(xhr,opts) {
         if(autoSaveActive) {
@@ -39,7 +39,7 @@ function autoSave() {
         if(data.status.status) {
 
           successNotification('Draft saved...');
-          // $draftTag.text('(Draft Version)').addClass('animated flipInX');
+          $draftTag.text('Confirm changes').addClass('animated flipInX');
           // $cancelButton.css('display', 'inline-block');
           $editedBy.find('.datetime').text(data.status.activeSince);
           $editedBy.find('.modifiedBy').text(data.status.modifiedBy);
@@ -48,6 +48,9 @@ function autoSave() {
 
           // Validate section
           validateThisSection();
+
+          // Re-Generating hash from form information
+          setFormHash();
 
           // Send push for saving
           pushSave();
@@ -69,6 +72,7 @@ function successNotification(msj) {
   notyOptions.text = msj;
   notyOptions.type = 'info';
   notyOptions.layout = 'topCenter';
+  notyOptions.timeout = 2000;
   notyOptions.animation = {
       open: 'animated fadeInDown',
       close: 'animated fadeOutUp'
@@ -89,19 +93,19 @@ function errorNotification(msj) {
 }
 
 function changeDetected(e) {
-  if(isChanged()) {
-    // Hide concurrence message
-    $('#concurrenceMessage').fadeOut();
+  // Hide concurrence message
+  $('#concurrenceMessage').fadeOut();
 
-    if(autoSaveActive) {
-      if(timeoutAutoSave) {
-        clearTimeout(timeoutAutoSave);
-      }
-      // Start a timer that will search when finished
-      timeoutAutoSave = setTimeout(function() {
-        autoSave();
-      }, 7 * 1000);
+  if(autoSaveActive) {
+    if(timeoutAutoSave) {
+      clearTimeout(timeoutAutoSave);
     }
+    // Start a timer that will execute autosave function
+    timeoutAutoSave = setTimeout(function() {
+      if(isChanged()) {
+        autoSave();
+      }
+    }, 6 * 1000);
   }
 }
 

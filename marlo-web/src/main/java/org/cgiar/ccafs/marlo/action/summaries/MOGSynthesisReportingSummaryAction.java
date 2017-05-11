@@ -59,17 +59,16 @@ public class MOGSynthesisReportingSummaryAction extends BaseAction implements Su
   private static final long serialVersionUID = 1L;
   private static Logger LOG = LoggerFactory.getLogger(MOGSynthesisReportingSummaryAction.class);
 
+  // Managers
   private CrpManager crpManager;
   private Crp loggedCrp;
+  private long startTime;
+  private String cycle;
+  private int year;
   // XLSX bytes
   private byte[] bytesXLSX;
   // Streams
   InputStream inputStream;
-
-
-  private String cycle;
-  private int year;
-
 
   @Inject
   public MOGSynthesisReportingSummaryAction(APConfig config, CrpManager crpManager) {
@@ -77,61 +76,56 @@ public class MOGSynthesisReportingSummaryAction extends BaseAction implements Su
     this.crpManager = crpManager;
   }
 
-
   @Override
   public String execute() throws Exception {
-
     ClassicEngineBoot.getInstance().start();
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-
     ResourceManager manager = new ResourceManager();
     manager.registerDefaults();
-
-    Resource reportResource =
-      manager.createDirectly(this.getClass().getResource("/pentaho/MOGSynthesis.prpt"), MasterReport.class);
-
-    MasterReport masterReport = (MasterReport) reportResource.getResource();
-    String center = loggedCrp.getName();
-
-    // Get datetime
-    ZonedDateTime timezone = ZonedDateTime.now();
-    DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
-    String zone = timezone.getOffset() + "";
-    if (zone.equals("Z")) {
-      zone = "+0";
+    try {
+      Resource reportResource =
+        manager.createDirectly(this.getClass().getResource("/pentaho/MOGSynthesis.prpt"), MasterReport.class);
+      MasterReport masterReport = (MasterReport) reportResource.getResource();
+      String center = loggedCrp.getName();
+      // Get datetime
+      ZonedDateTime timezone = ZonedDateTime.now();
+      DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
+      String zone = timezone.getOffset() + "";
+      if (zone.equals("Z")) {
+        zone = "+0";
+      }
+      String date = timezone.format(format) + "(GMT" + zone + ")";
+      Long idParam = loggedCrp.getId();
+      // Set Main_Query
+      CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
+      String masterQueryName = "main";
+      TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
+      TypedTableModel model = this.getMasterTableModel(center, date, String.valueOf(year), idParam);
+      sdf.addTable(masterQueryName, model);
+      masterReport.setDataFactory(cdf);
+      // Get details band
+      ItemBand masteritemBand = masterReport.getItemBand();
+      // Create new empty subreport hash map
+      HashMap<String, Element> hm = new HashMap<String, Element>();
+      // method to get all the subreports in the prpt and store in the HashMap
+      this.getAllSubreports(hm, masteritemBand);
+      // Uncomment to see which Subreports are detecting the method getAllSubreports
+      // System.out.println("Pentaho SubReports: " + hm);
+      ExcelReportUtil.createXLSX(masterReport, os);
+      bytesXLSX = os.toByteArray();
+      os.close();
+    } catch (Exception e) {
+      LOG.error("Error generating MOGSynthesisReporting" + e.getMessage());
+      throw e;
     }
-    String date = timezone.format(format) + "(GMT" + zone + ")";
-    Long idParam = loggedCrp.getId();
-
-    // Set Main_Query
-    CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
-    String masterQueryName = "main";
-    TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
-    TypedTableModel model = this.getMasterTableModel(center, date, String.valueOf(year), idParam);
-    sdf.addTable(masterQueryName, model);
-    masterReport.setDataFactory(cdf);
-
-    // Get details band
-    ItemBand masteritemBand = masterReport.getItemBand();
-    // Create new empty subreport hash map
-    HashMap<String, Element> hm = new HashMap<String, Element>();
-    // method to get all the subreports in the prpt and store in the HashMap
-    this.getAllSubreports(hm, masteritemBand);
-    // Uncomment to see which Subreports are detecting the method getAllSubreports
-    // System.out.println("Pentaho SubReports: " + hm);
-
-
-    System.out.println("Crp Id: " + idParam);
-    System.out.println("Center: " + center);
-    System.out.println("Year: " + year);
-
-    ExcelReportUtil.createXLSX(masterReport, os);
-    bytesXLSX = os.toByteArray();
-    os.close();
-
+    // Calculate time of generation
+    long stopTime = System.currentTimeMillis();
+    stopTime = stopTime - startTime;
+    LOG.info(
+      "Downloaded successfully: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
+        + ". CRP: " + this.loggedCrp.getAcronym() + ". Cycle: " + cycle + ". Time to generate: " + stopTime + "ms.");
     return SUCCESS;
   }
-
 
   /**
    * Get all subreports and store then in a hash map.
@@ -204,7 +198,7 @@ public class MOGSynthesisReportingSummaryAction extends BaseAction implements Su
     return cycle;
   }
 
-
+  @SuppressWarnings("unused")
   private File getFile(String fileName) {
     // Get file from resources folder
     ClassLoader classLoader = this.getClass().getClassLoader();
@@ -219,13 +213,10 @@ public class MOGSynthesisReportingSummaryAction extends BaseAction implements Su
     fileName.append(this.year + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
-
     return fileName.toString();
-
   }
 
   private void getFooterSubreports(HashMap<String, Element> hm, ReportFooter reportFooter) {
-
     int elementCount = reportFooter.getElementCount();
     for (int i = 0; i < elementCount; i++) {
       Element e = reportFooter.getElement(i);
@@ -233,7 +224,6 @@ public class MOGSynthesisReportingSummaryAction extends BaseAction implements Su
         hm.put(e.getName(), e);
         if (((SubReport) e).getElementCount() != 0) {
           this.getAllSubreports(hm, ((SubReport) e).getItemBand());
-
         }
       }
       if (e instanceof Band) {
@@ -242,12 +232,12 @@ public class MOGSynthesisReportingSummaryAction extends BaseAction implements Su
     }
   }
 
-  public String getHighlightsImagesUrl(String project_id) {
-    return config.getDownloadURL() + "/" + this.getHighlightsImagesUrlPath(project_id).replace('\\', '/');
+  public String getHighlightsImagesUrl(String projectId) {
+    return config.getDownloadURL() + "/" + this.getHighlightsImagesUrlPath(projectId).replace('\\', '/');
   }
 
-  public String getHighlightsImagesUrlPath(String project_id) {
-    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project_id + File.separator
+  public String getHighlightsImagesUrlPath(String projectId) {
+    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + projectId + File.separator
       + "hightlightsImage" + File.separator;
   }
 
@@ -278,10 +268,12 @@ public class MOGSynthesisReportingSummaryAction extends BaseAction implements Su
 
   @Override
   public void prepare() throws Exception {
+    // Get loggerCrp
     try {
       loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
       loggedCrp = crpManager.getCrpById(loggedCrp.getId());
     } catch (Exception e) {
+      LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
     }
 
     // Get parameters from URL
@@ -290,6 +282,8 @@ public class MOGSynthesisReportingSummaryAction extends BaseAction implements Su
       Map<String, Object> parameters = this.getParameters();
       year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
     } catch (Exception e) {
+      LOG.warn("Failed to get " + APConstants.YEAR_REQUEST
+        + " parameter. Parameter will be set as CurrentCycleYear. Exception: " + e.getMessage());
       year = this.getCurrentCycleYear();
     }
     // Get cycle
@@ -297,8 +291,15 @@ public class MOGSynthesisReportingSummaryAction extends BaseAction implements Su
       Map<String, Object> parameters = this.getParameters();
       cycle = (StringUtils.trim(((String[]) parameters.get(APConstants.CYCLE))[0]));
     } catch (Exception e) {
+      LOG.warn("Failed to get " + APConstants.CYCLE + " parameter. Parameter will be set as CurrentCycle. Exception: "
+        + e.getMessage());
       cycle = this.getCurrentCycle();
     }
+    // Calculate time to generate report
+    startTime = System.currentTimeMillis();
+    LOG.info(
+      "Start report download: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
+        + ". CRP: " + this.loggedCrp.getAcronym() + ". Cycle: " + cycle);
   }
 
 

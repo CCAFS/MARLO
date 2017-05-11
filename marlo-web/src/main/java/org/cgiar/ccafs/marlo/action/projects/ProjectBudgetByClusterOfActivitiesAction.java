@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetsCluserActvityManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.model.BudgetType;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -87,6 +88,9 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
   private AuditLogManager auditLogManager;
   private ProjectBudgetsCoAValidator validator;
 
+  private List<BudgetType> budgetTypesList;
+
+
   @Inject
   public ProjectBudgetByClusterOfActivitiesAction(APConfig config,
     CrpClusterOfActivityManager crpClusterOfActivityManager, ProjectManager projectManager, CrpManager crpManager,
@@ -128,6 +132,7 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
     return SUCCESS;
   }
 
+
   /**
    * This method clears the cache and re-load the user permissions in the next iteration.
    */
@@ -137,6 +142,7 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
       .clearCachedAuthorizationInfo(securityContext.getSubject().getPrincipals());
   }
 
+
   private Path getAutoSaveFilePath() {
     String composedClassName = project.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -145,13 +151,17 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-
   public ProjectBudgetsCluserActvity getBudget(Long activitiyId, int year, long type) {
     if (project.getBudgetsCluserActvities() == null) {
       project.setBudgetsCluserActvities(new ArrayList<>());
     }
     return project.getBudgetsCluserActvities().get(this.getIndexBudget(activitiyId, year, type));
   }
+
+  public List<BudgetType> getBudgetTypesList() {
+    return budgetTypesList;
+  }
+
 
   public int getIndexBudget(Long activitiyId, int year, long type) {
     if (project.getBudgetsCluserActvities() != null) {
@@ -192,7 +202,6 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
     return projectID;
   }
 
-
   public double getRemaining(Long type, int year) throws ParseException {
     double remaining = 100;
 
@@ -230,6 +239,7 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
 
     return remaining;
   }
+
 
   public Long getTotalAmount(Long type, int year) {
 
@@ -297,10 +307,10 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
     return total;
   }
 
-
   public String getTransaction() {
     return transaction;
   }
+
 
   public boolean hasBudgets(Long type, int year) {
     Project projectBD = projectManager.getProjectById(projectID);
@@ -312,13 +322,14 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
     return budgets.size() > 0;
   }
 
-
   @Override
   public void prepare() throws Exception {
     projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
 
+    // Budget Types list
+    budgetTypesList = budgetTypeManager.findAll();
 
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
 
@@ -410,6 +421,7 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
     }
 
   }
+
 
   public double round(double value, int places) {
     if (places < 0) {
@@ -512,6 +524,10 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
 
       }
     }
+  }
+
+  public void setBudgetTypesList(List<BudgetType> budgetTypesList) {
+    this.budgetTypesList = budgetTypesList;
   }
 
   public void setLoggedCrp(Crp loggedCrp) {

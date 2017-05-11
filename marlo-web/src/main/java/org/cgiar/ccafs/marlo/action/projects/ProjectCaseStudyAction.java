@@ -35,6 +35,7 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.utils.FileManager;
+import org.cgiar.ccafs.marlo.utils.HistoryComparator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectCaseStudyValidation;
 
 import java.io.BufferedReader;
@@ -76,6 +77,7 @@ public class ProjectCaseStudyAction extends BaseAction {
    */
   private static final long serialVersionUID = -5209003027874233584L;
   private AuditLogManager auditLogManager;
+  private HistoryComparator historyComparator;
 
 
   // Model for the back-end
@@ -116,7 +118,8 @@ public class ProjectCaseStudyAction extends BaseAction {
   public ProjectCaseStudyAction(APConfig config, ProjectManager projectManager, CaseStudyManager highLightManager,
     CrpManager crpManager, AuditLogManager auditLogManager, FileDBManager fileDBManager,
     CaseStudyProjectManager projectHighligthTypeManager, IpIndicatorManager ipIndicatorManager,
-    ProjectCaseStudyValidation caseStudyValidation, CaseStudyIndicatorManager caseStudyIndicatorManager) {
+    HistoryComparator historyComparator, ProjectCaseStudyValidation caseStudyValidation,
+    CaseStudyIndicatorManager caseStudyIndicatorManager) {
     super(config);
     this.projectManager = projectManager;
     this.caseStudyManager = highLightManager;
@@ -127,7 +130,7 @@ public class ProjectCaseStudyAction extends BaseAction {
     this.ipIndicatorManager = ipIndicatorManager;
     this.caseStudyIndicatorManager = caseStudyIndicatorManager;
     this.caseStudyValidation = caseStudyValidation;
-
+    this.historyComparator = historyComparator;
     this.caseStudyProjectManager = projectHighligthTypeManager;
 
 
@@ -268,6 +271,11 @@ public class ProjectCaseStudyAction extends BaseAction {
 
       if (history != null) {
         caseStudy = history;
+        Map<String, String> specialList = new HashMap<>();
+        specialList.put(APConstants.PROJECT_CASE_STUDIES_INDICATORS_RELATION, "caseStudyIndicatorsIds");
+
+        this.setDifferences(historyComparator.getDifferences(transaction, specialList, "caseStudy"));
+
       } else {
         this.transaction = null;
 

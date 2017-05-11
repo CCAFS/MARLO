@@ -20,7 +20,17 @@
   <div class="helpMessage infoText">
     [#-- <div  class="removeHelp"><span class="glyphicon glyphicon-remove"></span></div> --]
     <img class="col-md-2" src="${baseUrl}/images/global/icon-help.jpg" />
-    <p class="col-md-10"> [#if project.projectEditLeader] [#if reportingActive] [@s.text name="projectDescription.help3" /] [#else] [@s.text name="projectDescription.help2" /] [/#if]  [#else] [@s.text name="projectDescription.help1" /] [/#if]</p>
+    <p class="col-md-10"> 
+      [#if project.projectEditLeader]
+        [#if reportingActive] 
+          [@s.text name="projectDescription.help3" ] [@s.param][@s.text name="global.managementLiaison" /][/@s.param] [/@s.text]
+        [#else] 
+          [@s.text name="projectDescription.help2" ] [@s.param][@s.text name="global.managementLiaison" /][/@s.param] [/@s.text]
+        [/#if]  
+      [#else]
+        [@s.text name="projectDescription.help1" /] 
+      [/#if]
+    </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
 </div>
@@ -40,6 +50,8 @@
           
           <h3 class="headTitle">[@s.text name="projectDescription.title" /]</h3>  
           <div id="projectDescription" class="borderBox">
+            
+            
             [#-- Project Title --]
             <div class="form-group">
               [@customForm.textArea name="project.title" required=true className="project-title" editable=editable && action.hasPermission("title") /]
@@ -52,7 +64,8 @@
               </div>
               [#--  Project Owner Contact Person --]
               <div class="col-md-6"> 
-                
+                [#-- Loading --]
+                <div class="loading liaisonUsersBlock" style="display:none"></div>
                 [@customForm.select name="project.liaisonUser.id" className="liaisonUserSelect" i18nkey="project.liaisonUser"  listName="allOwners" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable && action.hasPermission("managementLiaison")/]
                 <span id="liaisonUserSelected" style="display:none">${(project.liaisonUser.id)!-1}</span>
               </div> 
@@ -111,10 +124,10 @@
               <h5>[@customForm.text name="projectDescription.projectWorking" readText=!editable /]:</h5>
             [/#if]
             
-            <div id="projectWorking" class="fullBlock clearfix">
+            <div id="projectWorking" class="fullBlock dottedBox clearfix">
               [#-- Flagships --] 
               <div class="col-md-6">
-                <div id="projectFlagshipsBlock" class="${action.changedField('project.flagshipValue')?string('changedField','')}">
+                <div id="projectFlagshipsBlock" class="${customForm.changedField('project.flagshipValue')}">
                   <p><label>[@s.text name="projectDescription.flagships" /]:[@customForm.req required=editable && action.hasPermission("flagships") /] </label></p>
                   [#if editable && action.hasPermission("flagships")]
                     [@s.fielderror cssClass="fieldError" fieldName="project.flagshipValue"/]
@@ -132,7 +145,7 @@
               [#-- Regions --] 
               <div class="col-md-6"> 
                 [#if regionFlagships?has_content] 
-                  <div id="projectRegionsBlock" class="${action.changedField('project.regionsValue')?string('changedField','')}">
+                  <div id="projectRegionsBlock" class="${customForm.changedField('project.flagshipValue')}">
                     <p><label>[@s.text name="projectDescription.regions" /]:[@customForm.req required=editable && action.hasPermission("regions") /]</label></p>
                     [#if editable && action.hasPermission("regions")]
                       [@s.fielderror cssClass="fieldError" fieldName="project.regionsValue"/]
@@ -161,10 +174,12 @@
             [#-- Cluster of Activities --]
             [#if !project.administrative && !phaseOne]
             <div class="panel tertiary">
-              <div class="panel-head"> 
-                <label for="">[@customForm.text name="projectDescription.clusterActivities" readText=!editable /]:[@customForm.req required=editable  && action.hasPermission("activities") /]</label>
+              <div class="panel-head ${customForm.changedField('project.clusterActivities')}"> 
+                <label for="">[@s.text name="projectDescription.clusterActivities"][@s.param][@s.text name="global.clusterOfActivities" /][/@s.param] [/@s.text]:[@customForm.req required=editable  && action.hasPermission("activities") /]</label>
               </div>
-              <div id="projectsList" class="panel-body" listname="project.clusterActivities"> 
+              <div id="projectsList" class="panel-body" listname="project.clusterActivities">
+                [#-- Loading --]
+                <div class="loading clustersBlock" style="display:none"></div>
                 <ul class="list">
                 [#if project.clusterActivities?has_content]
                   [#list project.clusterActivities as element]
@@ -186,8 +201,9 @@
                 [/#if]  
                 </ul>
                 [#if editable  && action.hasPermission("activities")]
+                  [#assign multipleCoA = action.hasSpecificities('crp_multiple_coa')]
                   <span id="coaSelectedIds" style="display:none">[#if project.clusterActivities?has_content][#list project.clusterActivities as e]${e.crpClusterOfActivity.id}[#if e_has_next],[/#if][/#list][/#if]</span>  
-                  [@customForm.select name="" label="" disabled=!canEdit i18nkey="" listName="clusterofActivites" keyFieldName="id" displayFieldName="ComposedName" className="CoASelect" value="" /]
+                  [@customForm.select name="" label="" disabled=!canEdit i18nkey="" listName="clusterofActivites" keyFieldName="id" displayFieldName="ComposedName" className="CoASelect multipleCoA-${multipleCoA?string}" value="" /]
                 [/#if] 
               </div>
             </div>
@@ -210,10 +226,10 @@
                       <label class="checkbox-inline"><input type="checkbox" name="project.crossCuttingCapacity" id="capacity" value="true" [#if (project.crossCuttingCapacity)!false ]checked="checked"[/#if]> Capacity Development</label>
                       <label class="checkbox-inline"><input type="checkbox" name="project.crossCuttingNa"       id="na"       value="true" [#if (project.crossCuttingNa)!false ]checked="checked"[/#if]> N/A</label>
                     [#else]
-                      [#if (project.crossCuttingGender)!false ] <p class="checked"> Gender</p>[/#if]
-                      [#if (project.crossCuttingYouth)!false ] <p class="checked"> Youth</p>[/#if]
-                      [#if (project.crossCuttingCapacity)!false ] <p class="checked"> Capacity Development</p>[/#if]
-                      [#if (project.crossCuttingNa)!false ] <p class="checked"> N/A</p>[/#if]
+                      <div class="${customForm.changedField('project.crossCuttingGender')}">[#if (project.crossCuttingGender)!false ] <p class="checked"> Gender</p>[/#if] </div>
+                      <div class="${customForm.changedField('project.crossCuttingYouth')}">[#if (project.crossCuttingYouth)!false ] <p class="checked"> Youth</p>[/#if]</div>
+                      <div class="${customForm.changedField('project.crossCuttingCapacity')}">[#if (project.crossCuttingCapacity)!false ] <p class="checked"> Capacity Development</p>[/#if]</div>
+                      <div class="${customForm.changedField('project.crossCuttingNa')}">[#if (project.crossCuttingNa)!false ] <p class="checked"> N/A</p>[/#if]</div>
                     [/#if]
                   </div>
                 </div>

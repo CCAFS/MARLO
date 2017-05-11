@@ -19,8 +19,10 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableFundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
@@ -29,6 +31,7 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.ByteArrayInputStream;
@@ -62,6 +65,8 @@ import org.pentaho.reporting.engine.classic.core.modules.output.table.xls.ExcelR
 import org.pentaho.reporting.engine.classic.core.util.TypedTableModel;
 import org.pentaho.reporting.libraries.resourceloader.Resource;
 import org.pentaho.reporting.libraries.resourceloader.ResourceManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Andrés Felipe Valencia Rivera. CCAFS
@@ -69,6 +74,7 @@ import org.pentaho.reporting.libraries.resourceloader.ResourceManager;
 
 public class FundingSourcesSummaryAction extends BaseAction implements Summary {
 
+  private static final Logger LOG = LoggerFactory.getLogger(FundingSourcesSummaryAction.class);
   /**
    * 
    */
@@ -78,11 +84,14 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
   private Crp loggedCrp;
   private int year;
   private String cycle;
+  private Boolean showPIEmail;
+  private Boolean showIfpriDivision;
+  private long startTime;
   // Managers
   private CrpManager crpManager;
   private CrpProgramManager programManager;
   private ProjectManager projectManager;
-
+  private DeliverableFundingSourceManager deliverableFundingSourceManager;
   // XLSX bytes
   private byte[] bytesXLSX;
 
@@ -91,11 +100,12 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
 
   @Inject
   public FundingSourcesSummaryAction(APConfig config, CrpManager crpManager, CrpProgramManager programManager,
-    ProjectManager projectManager) {
+    ProjectManager projectManager, DeliverableFundingSourceManager deliverableFundingSourceManager) {
     super(config);
     this.crpManager = crpManager;
     this.programManager = programManager;
     this.projectManager = projectManager;
+    this.deliverableFundingSourceManager = deliverableFundingSourceManager;
   }
 
   @Override
@@ -105,48 +115,58 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
 
     ResourceManager manager = new ResourceManager();
     manager.registerDefaults();
-
-    Resource reportResource =
-      manager.createDirectly(this.getClass().getResource("/pentaho/FundingSourcesSummary.prpt"), MasterReport.class);
-
-    MasterReport masterReport = (MasterReport) reportResource.getResource();
-    String center = loggedCrp.getName();
+    try {
+      Resource reportResource =
+        manager.createDirectly(this.getClass().getResource("/pentaho/FundingSourcesSummary.prpt"), MasterReport.class);
 
 
-    // Get datetime
-    ZonedDateTime timezone = ZonedDateTime.now();
-    DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
-    String zone = timezone.getOffset() + "";
-    if (zone.equals("Z")) {
-      zone = "+0";
+      MasterReport masterReport = (MasterReport) reportResource.getResource();
+      String center = loggedCrp.getName();
+
+
+      // Get datetime
+      ZonedDateTime timezone = ZonedDateTime.now();
+      DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
+      String zone = timezone.getOffset() + "";
+      if (zone.equals("Z")) {
+        zone = "+0";
+      }
+      String current_date = timezone.format(format) + "(GMT" + zone + ")";
+
+      // Set Main_Query
+      CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
+      String masterQueryName = "main";
+      TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
+      TypedTableModel model = this.getMasterTableModel(center, current_date);
+      sdf.addTable(masterQueryName, model);
+      masterReport.setDataFactory(cdf);
+
+
+      // Get details band
+      ItemBand masteritemBand = masterReport.getItemBand();
+      // Create new empty subreport hash map
+      HashMap<String, Element> hm = new HashMap<String, Element>();
+      // method to get all the subreports in the prpt and store in the HashMap
+      this.getAllSubreports(hm, masteritemBand);
+      // Uncomment to see which Subreports are detecting the method getAllSubreports
+      // System.out.println("Pentaho SubReports: " + hm);
+
+      this.fillSubreport((SubReport) hm.get("funding_sources"), "funding_sources");
+      this.fillSubreport((SubReport) hm.get("funding_sources_projects"), "funding_sources_projects");
+
+      ExcelReportUtil.createXLSX(masterReport, os);
+      bytesXLSX = os.toByteArray();
+      os.close();
+    } catch (Exception e) {
+      LOG.error("Error generating FundingSources " + e.getMessage());
+      throw e;
     }
-    String current_date = timezone.format(format) + "(GMT" + zone + ")";
-
-    // Set Main_Query
-    CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
-    String masterQueryName = "main";
-    TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
-    TypedTableModel model = this.getMasterTableModel(center, current_date);
-    sdf.addTable(masterQueryName, model);
-    masterReport.setDataFactory(cdf);
-
-
-    // Get details band
-    ItemBand masteritemBand = masterReport.getItemBand();
-    // Create new empty subreport hash map
-    HashMap<String, Element> hm = new HashMap<String, Element>();
-    // method to get all the subreports in the prpt and store in the HashMap
-    this.getAllSubreports(hm, masteritemBand);
-    // Uncomment to see which Subreports are detecting the method getAllSubreports
-    // System.out.println("Pentaho SubReports: " + hm);
-
-    this.fillSubreport((SubReport) hm.get("funding_sources"), "funding_sources");
-    this.fillSubreport((SubReport) hm.get("funding_sources_projects"), "funding_sources_projects");
-
-
-    ExcelReportUtil.createXLSX(masterReport, os);
-    bytesXLSX = os.toByteArray();
-    os.close();
+    // Calculate time of generation
+    long stopTime = System.currentTimeMillis();
+    stopTime = stopTime - startTime;
+    LOG.info(
+      "Downloaded successfully: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
+        + ". CRP: " + this.loggedCrp.getAcronym() + ". Cycle: " + cycle + ". Time to generate: " + stopTime + "ms.");
     return SUCCESS;
 
   }
@@ -239,12 +259,18 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
     return cycle;
   }
 
+  /**
+   * This method is used to get the file from resources. In this case the Pentaho *.prpt
+   * 
+   * @param fileName
+   * @return File: *.prpt from resources
+   */
+  @SuppressWarnings("unused")
   private File getFile(String fileName) {
     // Get file from resources folder
     ClassLoader classLoader = this.getClass().getClassLoader();
     File file = new File(classLoader.getResource(fileName).getFile());
     return file;
-
   }
 
 
@@ -287,32 +313,38 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
   private TypedTableModel getFundingSourcesProjectsTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"fs_title", "fs_id", "finance_code", "lead_partner", "fs_window", "project_id", "total_budget",
-        "flagships", "coas"},
+        "flagships", "coas", "donor"},
       new Class[] {String.class, Long.class, String.class, String.class, String.class, String.class, Double.class,
-        String.class, String.class},
+        String.class, String.class, String.class},
       0);
 
     for (FundingSource fundingSource : loggedCrp.getFundingSources().stream()
       .filter(fs -> fs.isActive() && fs.getBudgetType() != null).collect(Collectors.toList())) {
 
-      String fs_title = fundingSource.getTitle();
-      Long fs_id = fundingSource.getId();
-      String finance_code = fundingSource.getFinanceCode();
+      String fsTitle = fundingSource.getTitle();
+      Long fsId = fundingSource.getId();
+      String financeCode = fundingSource.getFinanceCode();
+      String donor = null;
 
 
-      String fs_window = fundingSource.getBudgetType().getName();
-
+      String fsWindow = fundingSource.getBudgetType().getName();
+      if (fundingSource.getInstitution() != null) {
+        donor = fundingSource.getInstitution().getComposedName();
+      }
 
       for (ProjectBudget projectBudget : fundingSource.getProjectBudgets().stream()
-        .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getProject() != null).collect(Collectors.toList())) {
-        String lead_partner = "";
-        String project_id = "";
-        Double total_budget = 0.0;
+        .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getProject() != null && pb.getProject().isActive()
+          && pb.getProject().getStatus() != null
+          && pb.getProject().getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
+        .collect(Collectors.toList())) {
+        String leadPartner = "";
+        String projectId = "";
+        Double totalBudget = 0.0;
         String flagships = null;
         String coas = null;
 
-        project_id = projectBudget.getProject().getId().toString();
-        if (project_id != null && !project_id.isEmpty()) {
+        projectId = projectBudget.getProject().getId().toString();
+        if (projectId != null && !projectId.isEmpty()) {
           // get Flagships related to the project sorted by acronym
           for (ProjectFocus projectFocuses : projectBudget.getProject().getProjectFocuses().stream()
             .sorted((o1, o2) -> o1.getCrpProgram().getAcronym().compareTo(o2.getCrpProgram().getAcronym()))
@@ -342,13 +374,13 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
         }
 
         if (projectBudget.getInstitution() != null) {
-          lead_partner = projectBudget.getInstitution().getComposedName();
+          leadPartner = projectBudget.getInstitution().getComposedName();
         }
 
-        total_budget = projectBudget.getAmount();
+        totalBudget = projectBudget.getAmount();
 
-        model.addRow(new Object[] {fs_title, fs_id, finance_code, lead_partner, fs_window, project_id, total_budget,
-          flagships, coas});
+        model.addRow(new Object[] {fsTitle, fsId, financeCode, leadPartner, fsWindow, projectId, totalBudget, flagships,
+          coas, donor});
       }
 
     }
@@ -359,67 +391,86 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
     TypedTableModel model = new TypedTableModel(
       new String[] {"fs_title", "fs_id", "finance_code", "lead_partner", "fs_window", "project_id", "total_budget",
         "summary", "start_date", "end_date", "contract", "status", "pi_name", "pi_email", "donor",
-        "total_budget_projects", "contract_name", "flagships", "coas"},
+        "total_budget_projects", "contract_name", "flagships", "coas", "deliverables"},
       new Class[] {String.class, Long.class, String.class, String.class, String.class, String.class, Double.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        Double.class, String.class, String.class, String.class},
+        Double.class, String.class, String.class, String.class, String.class},
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
 
     for (FundingSource fundingSource : loggedCrp.getFundingSources().stream()
       .filter(fs -> fs.isActive() && fs.getBudgetType() != null).collect(Collectors.toList())) {
 
-      String fs_title = fundingSource.getTitle();
-      Long fs_id = fundingSource.getId();
-      String finance_code = fundingSource.getFinanceCode();
-      String lead_partner = "";
+      String fsTitle = fundingSource.getTitle();
+      Long fsId = fundingSource.getId();
+      String financeCode = fundingSource.getFinanceCode();
+      String leadPartner = "";
       String summary = fundingSource.getDescription();
-      String start_date = "";
+      String starDate = "";
       if (fundingSource.getStartDate() != null) {
-        start_date = formatter.format(fundingSource.getStartDate());
+        starDate = formatter.format(fundingSource.getStartDate());
       }
-      String end_date = "";
+      String endDate = "";
 
       if (fundingSource.getEndDate() != null) {
-        end_date = formatter.format(fundingSource.getEndDate());
+        endDate = formatter.format(fundingSource.getEndDate());
       }
 
       String contract = "";
-      String contract_name = "";
+      String contractName = "";
 
       if (fundingSource.getFile() != null) {
         contract = this.getFundingSourceFileURL() + fundingSource.getFile().getFileName();
-        contract_name = fundingSource.getFile().getFileName();
+        contractName = fundingSource.getFile().getFileName();
       }
 
       String status = "";
       status = fundingSource.getStatusName();
 
-      String pi_name = "";
-      pi_name = fundingSource.getContactPersonName();
+      String piName = "";
+      piName = fundingSource.getContactPersonName();
 
-      String pi_email = "";
-      pi_email = fundingSource.getContactPersonEmail();
-
+      String piEmail = "";
+      // If PIEmail is shown, evaluate the PIEmail else isn't necesary
+      if (showPIEmail) {
+        piEmail = fundingSource.getContactPersonEmail();
+      }
       String donor = "";
       if (fundingSource.getInstitution() != null) {
         donor = fundingSource.getInstitution().getComposedName();
       }
 
 
-      for (FundingSourceInstitution fs_ins : fundingSource.getFundingSourceInstitutions().stream()
+      for (FundingSourceInstitution fsIns : fundingSource.getFundingSourceInstitutions().stream()
         .filter(fsi -> fsi.isActive()).collect(Collectors.toList())) {
-        if (lead_partner.isEmpty()) {
-          lead_partner = fs_ins.getInstitution().getComposedName();
+        if (leadPartner.isEmpty()) {
+          leadPartner = fsIns.getInstitution().getComposedName();
+          // Check IFPRI Division
+          if (this.showIfpriDivision) {
+
+
+            if (fsIns.getInstitution().getAcronym().equals("IFPRI") && fundingSource.getPartnerDivision() != null
+              && fundingSource.getPartnerDivision().getName() != null
+              && !fundingSource.getPartnerDivision().getName().trim().isEmpty()) {
+              leadPartner += " (" + fundingSource.getPartnerDivision().getName() + ")";
+            }
+          }
         } else {
-          lead_partner += ", \n" + fs_ins.getInstitution().getComposedName();
+          leadPartner += ", \n" + fsIns.getInstitution().getComposedName();
+          // Check IFPRI Division
+          if (this.showIfpriDivision) {
+            if (fsIns.getInstitution().getAcronym().equals("IFPRI")
+              && fundingSource.getPartnerDivision().getName() != null
+              && !fundingSource.getPartnerDivision().getName().trim().isEmpty()) {
+              leadPartner += " (" + fundingSource.getPartnerDivision().getName() + ")";
+            }
+          }
         }
-
       }
-      String fs_window = fundingSource.getBudgetType().getName();
+      String fsWindow = fundingSource.getBudgetType().getName();
 
 
-      String project_id = "";
+      String projectId = "";
       List<String> projectList = new ArrayList<String>();
       for (ProjectBudget projectBudget : fundingSource.getProjectBudgets().stream()
         .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getProject() != null).collect(Collectors.toList())) {
@@ -455,10 +506,10 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
         }
 
         // Add project to field
-        if (project_id.isEmpty()) {
-          project_id = "P" + projectString;
+        if (projectId.isEmpty()) {
+          projectId = "P" + projectString;
         } else {
-          project_id += ", P" + projectString;
+          projectId += ", P" + projectString;
         }
       }
       // Remove duplicates
@@ -481,25 +532,42 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
         }
       }
 
-      Double total_budget = 0.0;
-      Double total_budget_projects = 0.0;
+      Double totalBudget = 0.0;
+      Double totalBudgetProjects = 0.0;
 
       for (FundingSourceBudget fundingSourceBudget : fundingSource.getFundingSourceBudgets().stream()
         .filter(fsb -> fsb.isActive() && fsb.getYear() != null && fsb.getYear().intValue() == year)
         .collect(Collectors.toList())) {
-        total_budget += fundingSourceBudget.getBudget();
+        totalBudget += fundingSourceBudget.getBudget();
       }
 
       for (ProjectBudget projectBudget : fundingSource.getProjectBudgets().stream()
         .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getProject().isActive()
           && pb.getProject().getStatus() != null && pb.getProject().getStatus() == 2)
         .collect(Collectors.toList())) {
-        total_budget_projects += projectBudget.getAmount();
+        totalBudgetProjects += projectBudget.getAmount();
       }
 
-      model.addRow(new Object[] {fs_title, fs_id, finance_code, lead_partner, fs_window, project_id, total_budget,
-        summary, start_date, end_date, contract, status, pi_name, pi_email, donor, total_budget_projects, contract_name,
-        flagships, coas});
+      // get deliverable funding sources
+      String deliverables = "";
+      for (DeliverableFundingSource deliverableFundingSource : this.deliverableFundingSourceManager.findAll().stream()
+        .filter(df -> df.getFundingSource().getId().longValue() == fundingSource.getId().longValue() && df.isActive()
+          && df.getDeliverable() != null && df.getDeliverable().isActive() && df.getDeliverable().getProject() != null
+          && df.getDeliverable().getProject().isActive())
+        .sorted((df1, df2) -> Long.compare(df1.getDeliverable().getId(), df2.getDeliverable().getId()))
+        .collect(Collectors.toList())) {
+        if (deliverables.length() == 0) {
+          deliverables = "D" + deliverableFundingSource.getDeliverable().getId();
+        } else {
+          deliverables += ", D" + deliverableFundingSource.getDeliverable().getId();
+        }
+      }
+      if (deliverables.isEmpty()) {
+        deliverables = null;
+      }
+      model.addRow(new Object[] {fsTitle, fsId, financeCode, leadPartner, fsWindow, projectId, totalBudget, summary,
+        starDate, endDate, contract, status, piName, piEmail, donor, totalBudgetProjects, contractName, flagships, coas,
+        deliverables});
     }
     return model;
   }
@@ -523,8 +591,9 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
   private TypedTableModel getMasterTableModel(String center, String date) {
     // Initialization of Model
     TypedTableModel model =
-      new TypedTableModel(new String[] {"center", "date"}, new Class[] {String.class, String.class});
-    model.addRow(new Object[] {center, date});
+      new TypedTableModel(new String[] {"center", "date", "managingPPAField", "year", "showPIEmail"},
+        new Class[] {String.class, String.class, String.class, Integer.class, Boolean.class});
+    model.addRow(new Object[] {center, date, "Managing / PPA Partner", this.year, showPIEmail});
     return model;
   }
 
@@ -535,18 +604,21 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
 
   @Override
   public void prepare() {
+    // Get loggerCrp
     try {
       loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
       loggedCrp = crpManager.getCrpById(loggedCrp.getId());
     } catch (Exception e) {
+      LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
     }
-
     // Get parameters from URL
     // Get year
     try {
       Map<String, Object> parameters = this.getParameters();
       year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
     } catch (Exception e) {
+      LOG.warn("Failed to get " + APConstants.YEAR_REQUEST
+        + " parameter. Parameter will be set as CurrentCycleYear. Exception: " + e.getMessage());
       year = this.getCurrentCycleYear();
     }
     // Get cycle
@@ -554,8 +626,32 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
       Map<String, Object> parameters = this.getParameters();
       cycle = (StringUtils.trim(((String[]) parameters.get(APConstants.CYCLE))[0]));
     } catch (Exception e) {
+      LOG.warn("Failed to get " + APConstants.CYCLE + " parameter. Parameter will be set as CurrentCycle. Exception: "
+        + e.getMessage());
       cycle = this.getCurrentCycle();
     }
+    // Get PIEmail crp_parameter
+    try {
+      this.showPIEmail = this.hasSpecificities(this.getText(APConstants.CRP_EMAIL_FUNDING_SOURCE));
+    } catch (Exception e) {
+      LOG.warn("Failed to get " + APConstants.CRP_EMAIL_FUNDING_SOURCE
+        + " parameter. Parameter will be set false. Exception: " + e.getMessage());
+      this.showPIEmail = false;
+    }
+    // Get IfpriDivision crp_parameter
+    try {
+      this.showIfpriDivision = this.hasSpecificities(this.getText(APConstants.CRP_DIVISION_FS));
+    } catch (Exception e) {
+      LOG.warn("Failed to get " + APConstants.CRP_DIVISION_FS + " parameter. Parameter will be set false. Exception: "
+        + e.getMessage());
+      this.showIfpriDivision = false;
+    }
+
+    // Calculate time to generate report
+    startTime = System.currentTimeMillis();
+    LOG.info(
+      "Start report download: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
+        + ". CRP: " + this.loggedCrp.getAcronym() + ". Cycle: " + cycle);
   }
 
   public void setCycle(String cycle) {

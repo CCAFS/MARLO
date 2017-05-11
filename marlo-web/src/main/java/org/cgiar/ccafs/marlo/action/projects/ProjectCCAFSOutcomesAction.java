@@ -38,6 +38,8 @@ import org.cgiar.ccafs.marlo.data.model.ProjectFocusPrev;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.utils.HistoryComparator;
+import org.cgiar.ccafs.marlo.utils.HistoryDifference;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectCCAFSOutcomeValidator;
 
 import java.io.BufferedReader;
@@ -47,7 +49,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
@@ -76,6 +80,7 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
   private List<IpIndicator> previousIndicators;
   private List<Integer> allYears;
   private ProjectCCAFSOutcomeValidator ccafsOutcomeValidator;
+  private HistoryComparator historyComparator;
 
   private long projectID;
 
@@ -107,13 +112,14 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
   public ProjectCCAFSOutcomesAction(APConfig config, ProjectManager projectManager, CrpProgramManager crpProgramManager,
     IpElementManager ipElementManager, CrpManager crpManager, AuditLogManager auditLogManager,
     IpProjectIndicatorManager ipProjectIndicatorManager, IpIndicatorManager ipIndicatorManager,
-    ProjectCCAFSOutcomeValidator ccafsOutcomeValidator) {
+    HistoryComparator historyComparator, ProjectCCAFSOutcomeValidator ccafsOutcomeValidator) {
     super(config);
     this.crpProgramManager = crpProgramManager;
     this.projectManager = projectManager;
     this.crpManager = crpManager;
     this.ipElementManager = ipElementManager;
     this.auditLogManager = auditLogManager;
+    this.historyComparator = historyComparator;
     this.ipProjectIndicatorManager = ipProjectIndicatorManager;
     this.ccafsOutcomeValidator = ccafsOutcomeValidator;
     this.ipIndicatorManager = ipIndicatorManager;
@@ -494,6 +500,20 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
 
       if (history != null) {
         project = history;
+        List<HistoryDifference> differences = new ArrayList<>();
+        Map<String, String> specialList = new HashMap<>();
+        int i = 0;
+        project.setProjectIndicators(
+          project.getIpProjectIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        for (IpProjectIndicator projectOutcomePandr : project.getProjectIndicators()) {
+          int[] index = new int[1];
+          index[0] = i;
+          differences.addAll(historyComparator.getDifferencesList(projectOutcomePandr, transaction, specialList,
+            "project.projectIndicators[" + i + "]", "project", 1));
+          i++;
+        }
+
+        this.setDifferences(differences);
       } else {
         this.transaction = null;
 

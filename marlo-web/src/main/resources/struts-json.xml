@@ -253,6 +253,14 @@
         <param name="excludeNullProperties">true</param>
       </result>
     </action>
+    
+      <action name="clusterByFPsAction"
+      class="org.cgiar.ccafs.marlo.action.json.project.ClusterByFPsAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
 
    <action name="uploadDeliverable" class="org.cgiar.ccafs.marlo.action.json.project.UploadDeliverableAction">
       <interceptor-ref name="defaultStack" />
@@ -325,6 +333,13 @@
     </action>
     
     <action name="metadataByLink" class="org.cgiar.ccafs.marlo.action.json.project.MetadataByLink">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
+    
+    <action name="targetUnitRequest" class="org.cgiar.ccafs.marlo.action.json.crpadmin.RequestTargetUnitAction">
       <result type="json">
         <param name="noCache">true</param>
         <param name="excludeNullProperties">true</param>

@@ -144,5 +144,18 @@
 		<property name="marlo" type="boolean">
 			<column name="is_marlo" not-null="true" />
 		</property>
+		 <set name="genderTypes" table="gender_types" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="crp_id" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.GenderType" />
+        </set>
+        
+         <set name="crpLocElementTypes" table="crp_loc_element_types" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="crp_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpLocElementType" />
+        </set>
 	</class>
 </hibernate-mapping>

@@ -5,7 +5,8 @@ var notyDefaultOptions = {
     layout: 'bottomRight',
     type: 'error',
     theme: 'relax',
-    timeout: 5000,
+    timeout: 6000,
+    progressBar: true,
     animation: {
         open: 'animated bounceInRight',
         close: 'animated bounceOutRight'
@@ -209,7 +210,7 @@ $(document).ready(function() {
 
   yesnoEvent = function(target) {
     // var isChecked = $(this).is(':checked');
-    $t = $(target);
+    var $t = $(target);
     var isChecked = ($t.val() === "true");
     $t.siblings().removeClass('radio-checked');
     $t.next().addClass('radio-checked');
@@ -270,92 +271,10 @@ $(document).ready(function() {
   // Set autogrow
   $("textarea[id!='justification']").autoGrow();
 
-  // Generating hash from form information
-  setFormHash();
-
 });
 
 function isReportingCycle() {
   return false;
-}
-
-/**
- * Validate fields length when click to any button
- */
-function validateEvent(fields) {
-  var $justification = $('#justification');
-  var $parent = $justification.parent().parent();
-  var errorClass = 'fieldError';
-  $parent.prepend('<div class="loading" style="display:none"></div>');
-  $('[name=save], [name=next]').on('click', function(e) {
-    $parent.find('.loading').fadeIn();
-    var isNext = (e.target.name == 'next');
-    $justification.removeClass(errorClass);
-    /*
-     * var fieldErrors = $(document).find('input.fieldError, textarea.fieldError').length; if(fieldErrors != 0) {
-     * e.preventDefault(); $parent.find('.loading').fadeOut(500); var notyOptions = jQuery.extend({},
-     * notyDefaultOptions); $('html, body').animate({ scrollTop: $('.fieldError').offset().top - 80 }, 700);
-     * notyOptions.text = 'Something is wrong in this section, please fix it then save'; noty(notyOptions); } else {
-     */
-    if(!isChanged() && !forceChange && !isNext) {
-      // If there isn't any changes
-      e.preventDefault();
-      $parent.find('.loading').fadeOut(500);
-      var notyOptions = jQuery.extend({}, notyDefaultOptions);
-      notyOptions.text = 'Nothing has changed';
-      notyOptions.type = 'alert';
-      noty(notyOptions);
-    } else {
-      if(errorMessages.length != 0) {
-        // If there is an error message
-        e.preventDefault();
-        $parent.find('.loading').fadeOut(500);
-        var notyOptions = jQuery.extend({}, notyDefaultOptions);
-        notyOptions.text = errorMessages.join();
-        noty(notyOptions);
-      } else if(!validateField($('#justification')) && (isChanged() || forceChange)) {
-        // If field is not valid
-        e.preventDefault();
-        $parent.find('.loading').fadeOut(500);
-        $justification.addClass(errorClass);
-        var notyOptions = jQuery.extend({}, notyDefaultOptions);
-        notyOptions.text = 'The justification field needs to be filled';
-        noty(notyOptions);
-      }
-    }
-    // }
-
-  });
-
-  // Force change when an file input is changed
-  $("input:file").on('change', function() {
-    forceChange = true;
-  });
-}
-
-function isChanged() {
-  return (formBefore != getFormHash()) || forceChange;
-}
-
-function setFormHash() {
-  formBefore = getFormHash();
-}
-
-function getFormHash() {
-  return getHash($('form [id!="justification"]').serialize());
-}
-
-function getHash(str) {
-  var hash = 0, i, chr, len;
-  if(str.length == 0) {
-    return hash;
-  }
-  for(i = 0, len = str.length; i < len; i++) {
-    chr = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + chr;
-    hash |= 0; // Convert to 32bit integer
-  }
-  return hash;
 }
 
 setWordCounterToInputs('limitWords');
@@ -464,8 +383,9 @@ var searchInstitutionsOptions = function(includePPA) {
           delay: 350,
           data: function(params) {
             return {
-                q: params.term, // search term
-                isPPA: includePPA ? 1 : 0
+                q: params.term || '', // search term
+                withPPA: includePPA ? 1 : 0,
+                onlyPPA: projectPreSetting
             };
           },
           processResults: function(data,params) {
@@ -477,7 +397,7 @@ var searchInstitutionsOptions = function(includePPA) {
       escapeMarkup: function(markup) {
         return markup;
       }, // let our custom formatter work
-      minimumInputLength: 2,
+      minimumInputLength: 0,
       templateResult: formatRepo,
       templateSelection: formatRepoSelection,
       placeholder: placeholderText,
@@ -506,9 +426,10 @@ function formatRepo(repo) {
   } else {
     markup += "<strong>" + repo.name + "</strong>";
   }
+  markup += " <span class='grayColor'>(" + repo.location + ")</span> ";
   // Partner type
   markup += "<br>";
-  markup += "<small> <i>" + repo.type + "</i> </small> ";
+  markup += "<small> <i>" + repo.type + " </i></small> ";
   markup += "</div>";
   return markup;
 }

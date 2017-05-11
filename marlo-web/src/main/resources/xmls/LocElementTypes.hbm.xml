@@ -13,9 +13,10 @@
 			class="org.cgiar.ccafs.marlo.data.model.LocElementType" fetch="select">
 			<column name="parent_id" />
 		</many-to-one>
-		<many-to-one name="crp" class="org.cgiar.ccafs.marlo.data.model.Crp"
+			<many-to-one name="crp" class="org.cgiar.ccafs.marlo.data.model.Crp"
 			fetch="select">
 			<column name="crp_id" />
+		
 		</many-to-one>
 		<property name="name" type="string">
 			<column name="name" length="245" />
@@ -65,5 +66,11 @@
 			fetch="select">
 			<column name="modified_by" not-null="true" />
 		</many-to-one>
+		<set name="crpLocElementTypes" table="crp_loc_element_types" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="loc_element_type_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpLocElementType" />
+        </set>
 	</class>
 </hibernate-mapping>

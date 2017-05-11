@@ -22,75 +22,60 @@ function init() {
         $(this).datepicker('setDate', selectedDate);
       }
   });
-  /* Init Select2 plugin */
 
-  // Is this deliverable Open Access
-  $(".accessible .button-label").on("click", function() {
+  // YES/NO Event for deliverables
+  $(".button-label").on("click", function() {
     var valueSelected = $(this).hasClass('yes-button-label');
     var $input = $(this).parent().find('input');
     $input.val(valueSelected);
     $(this).parent().find("label").removeClass("radio-checked");
     $(this).addClass("radio-checked");
 
+    checkFAIRCompliant();
+  });
+
+  // Is this deliverable Open Access
+  $(".accessible .button-label").on("click", function() {
+    var valueSelected = $(this).hasClass('yes-button-label');
     if(!valueSelected) {
       $(".openAccessOptions").show("slow");
     } else {
       $(".openAccessOptions").hide("slow");
     }
-    checkFAIRCompliant();
   });
 
   // Is this deliverable already disseminated
   $(".findable .button-label").on("click", function() {
     var valueSelected = $(this).hasClass('yes-button-label');
-    var $input = $(this).parent().find('input');
-    $input.val(valueSelected);
-    $(this).parent().find("label").removeClass("radio-checked");
-    $(this).addClass("radio-checked");
-
     if(!valueSelected) {
       $(".findableOptions").hide("slow");
       $(".dataSharing").show("slow");
+      unSyncDeliverable();
     } else {
       $(".findableOptions").show("slow");
       $(".dataSharing").hide("slow");
     }
-    checkFAIRCompliant();
+
   });
 
   // Does the publication acknowledge
   $(".acknowledge .button-label").on("click", function() {
-    var valueSelected = $(this).hasClass('yes-button-label');
-    var $input = $(this).parent().find('input');
-    $input.val(valueSelected);
-    $(this).parent().find("label").removeClass("radio-checked");
-    $(this).addClass("radio-checked");
+    // Do Something
   });
 
   // Have you adopted a license
   $(".license .button-label").on("click", function() {
     var valueSelected = $(this).hasClass('yes-button-label');
-    var $input = $(this).parent().find('input');
-    $input.val(valueSelected);
-    $(this).parent().find("label").removeClass("radio-checked");
-    $(this).addClass("radio-checked");
-
     if(!valueSelected) {
       $(".licenseOptions-block").hide("slow");
     } else {
       $(".licenseOptions-block").show("slow");
     }
-    checkFAIRCompliant();
   });
 
   // Does this license allow modifications?
   $(".licenceModifications .button-label").on("click", function() {
-    var valueSelected = $(this).hasClass('yes-button-label');
-    var $input = $(this).parent().find('input');
-    $input.val(valueSelected);
-    $(this).parent().find("label").removeClass("radio-checked");
-    $(this).addClass("radio-checked");
-    checkFAIRCompliant();
+    // Do Something
   });
 
   $("#deliverableMetadataDate").datepicker({
@@ -106,7 +91,8 @@ function init() {
       }
   });
 
-  $(".addAuthor").on("click", addAuthor);
+  // Add Author
+  $(".addAuthor").on("click", addAuthorElement);
 
   // Remove a author
   $('.removeAuthor').on('click', removeAuthor);
@@ -114,7 +100,11 @@ function init() {
   // Change dissemination channel
   $(".disseminationChannel").on('change', changeDisseminationChannel);
 
-  $("#fillMetadata").on("click", loadAndFillMetadata);
+  // Harvest metadata from URL
+  $("#fillMetadata .checkButton, #fillMetadata .updateButton").on("click", syncMetadata);
+
+  // Unsync metadata
+  $("#fillMetadata .uncheckButton").on("click", unSyncDeliverable);
 
   $("input[name='deliverable.dissemination.type']").on("change", openAccessRestriction);
 
@@ -127,7 +117,7 @@ function init() {
   $(".handleMetadata").on("change keyup", checkHandleUrl);
   $(".doiMetadata").on("change keyup", checkDoiUrl);
 
-  // Ohter license type
+  // Other license type
   $("input[name='deliverable.license']").on("change", function() {
     if($(this).val() == "OTHER") {
       $(".licence-modifications").show("slow");
@@ -161,7 +151,7 @@ function init() {
     }
   });
 
-  // remove flagship
+  // Remove flagship
   $(".removeFlagship ").on("click", removeFlagship);
 
   if(editable) {
@@ -169,12 +159,13 @@ function init() {
       var spantext = $(this).text();
       $(this).empty().html('<input type="text" value="' + spantext + '">').find('input').focus();
     }).keypress(function(e) {
-      if(e.keyCode == 13) {
+      if((e.keyCode == 13) || (e.keyCode == 27)) {
         var text = $('input', this).val();
         if(text == "") {
           text = "Last Name";
         } else {
           $(this).parents(".author").find(".lastNameInput").val(text);
+          $(this).parents(".author").find(".id").val("");
         }
         $(this).html(text);
       }
@@ -183,12 +174,13 @@ function init() {
       var spantext = $(this).text();
       $(this).empty().html('<input type="text" value="' + spantext + '">').find('input').focus();
     }).keypress(function(e) {
-      if(e.keyCode == 13) {
+      if((e.keyCode == 13) || (e.keyCode == 27)) {
         var text = $('input', this).val();
         if(text == "") {
           text = "First Name";
         } else {
           $(this).parents(".author").find(".firstNameInput").val(text);
+          $(this).parents(".author").find(".id").val("");
         }
         $(this).html(text);
       }
@@ -197,12 +189,13 @@ function init() {
       var spantext = $(this).text();
       $(this).empty().html('<input type="text" value="' + spantext + '">').find('input').focus();
     }).keypress(function(e) {
-      if(e.keyCode == 13) {
+      if((e.keyCode == 13) || (e.keyCode == 27)) {
         var text = $('input', this).val();
         if(text == "") {
-          text = "orcid Id";
+          text = "";
         } else {
           $(this).parents(".author").find(".orcidIdInput").val(text);
+          $(this).parents(".author").find(".id").val("");
         }
         $(this).html(text);
       }
@@ -304,55 +297,25 @@ function openAccessRestriction() {
   }
 }
 
-function setMetadata(data) {
-  // $("a[href='#deliverable-mainInformation']").addClass("hideInfo");
-  if($(".citationMetadata").val() == "") {
-    $(".citationMetadata").val(data.citation).autoGrow();
-  }
-  if($("#deliverableMetadataDate").val() == "") {
-    $("#deliverableMetadataDate").datepicker('setDate', data.publicationDate);
-  }
-  if($(".languageMetadata").val() == "") {
-    $(".languageMetadata").val(data.languaje);
-  }
-  if($(".titleMetadata").val() == "") {
-    $(".titleMetadata").val(data.title);
-  }
-
-  if($(".descriptionMetadata").val() == "") {
-    $(".descriptionMetadata").val(data.description).autoGrow();
-  }
-
-  if($(".HandleMetadata").val() == "") {
-    $(".HandleMetadata").val(data.handle);
-  }
-  if($(".DOIMetadata").val() == "") {
-    $(".DOIMetadata").val(data.doi);
-  }
-  if($(".countryMetadata").val() == "") {
-    $(".countryMetadata").val(data.country);
-  }
-
-  if($(".keywordsMetadata ").val() == "") {
-    $(".keywordsMetadata ").val(data.keywords);
-  }
-
-}
-
 function changeDisseminationChannel() {
+
   var channel = $(".disseminationChannel").val();
   $('#disseminationUrl').find("input").val("");
   $("#metadata-output").empty();
   $(".exampleUrl-block").hide();
+
+  var channelsList = [
+      "cgspace", "dataverse", "ifpri", "ilri"
+  ];
+
   if(channel != "-1") {
-    // CGSpace, IFPRI or Dataverse
-    if((channel == "cgspace") || channel == "dataverse" || channel == "ifpri") {
+    $('#disseminationUrl').slideDown("slow");
+    if(channelsList.indexOf(channel) != -1) {
       $("#fillMetadata").slideDown("slow");
       $(".exampleUrl-block.channel-" + channel).slideDown("slow");
     } else {
       $("#fillMetadata").slideUp("slow");
     }
-    $('#disseminationUrl').slideDown("slow");
   } else {
     $('#disseminationUrl').slideUp("slow");
   }
@@ -360,38 +323,55 @@ function changeDisseminationChannel() {
   checkFAIRCompliant();
 }
 
-function addAuthor() {
-  if($(".lName").val() != "" && $(".fName").val() != "") {
-    $(".lName").removeClass("fieldError");
-    $(".fName").removeClass("fieldError");
-    $(".oId").removeClass("fieldError");
-    var $list = $('.authorsList');
-    var $item = $('#author-template').clone(true).removeAttr("id");
-    $item.find(".lastName").html($(".lName").val() + ", ");
-    $item.find(".firstName").html($(".fName").val());
-    if($(".oId").val() == "") {
-      $item.find(".orcidId").html("<b>orcid id:</b> not filled</small>");
-      $item.find(".orcidIdInput").val("");
-    } else {
-      $item.find(".orcidId").html($(".oId").val());
-      $item.find(".orcidIdInput").val($(".oId").val());
-    }
+function addAuthorElement() {
 
-    $item.find(".lastNameInput").val($(".lName").val());
-    $item.find(".firstNameInput").val($(".fName").val());
-    $list.append($item);
-    $item.show('slow');
-    updateAuthor();
-    checkNextAuthorItems($list);
+  var firstName = $(".fName").val();
+  var lastName = $(".lName").val();
+  var orcidId = $(".oId").val();
 
-    $(".lName").val("");
-    $(".fName").val("");
-    $(".oId").val("");
+  // Check if inputs are filled out
+  if(firstName && lastName) {
+    $(".lName, .fName, .oId").removeClass("fieldError");
+
+    // Add a new author
+    addAuthor({
+        lastName: lastName,
+        firstName: firstName,
+        orcidId: orcidId
+    });
+
+    // Clean add inputs
+    $(".lName, .fName, .oId").val("");
   } else {
-    $(".lName").addClass("fieldError");
-    $(".fName").addClass("fieldError");
-    $(".oId").addClass("fieldError");
+    $(".lName, .fName, .oId").addClass("fieldError");
   }
+}
+
+function addAuthor(author) {
+
+  var $list = $('.authorsList');
+  var $item = $('#author-template').clone(true).removeAttr("id");
+
+  // Last Name
+  $item.find(".lastName").html(author.lastName);
+  $item.find(".lastNameInput").val(author.lastName);
+
+  // First name
+  $item.find(".firstName").html(author.firstName);
+  $item.find(".firstNameInput").val(author.firstName);
+
+  // ORCID
+  if(author.orcidId) {
+    author.orcidId = (author.orcidId).replace(/^https?\:\/\//i, "");
+    $item.find(".orcidId strong").html(author.orcidId);
+    $item.find(".orcidIdInput").val(author.orcidId);
+  }
+
+  $list.append($item);
+  $item.show('slow');
+  updateAuthor();
+  checkNextAuthorItems($list);
+
 }
 
 function removeAuthor() {
@@ -406,7 +386,7 @@ function removeAuthor() {
 
 function updateAuthor() {
   $(".authorsList").find('.author').each(function(i,e) {
-    // Set activity indexes
+    // Set indexes
     $(e).setNameIndexes(1, i);
   });
 }
@@ -420,8 +400,97 @@ function checkNextAuthorItems(block) {
   }
 }
 
-/* Load Metadata and fill fields */
-function loadAndFillMetadata() {
+function setMetadata(data) {
+  console.log(data);
+
+  // Text area & Inputs fields
+  $.each(data, function(key,value) {
+    var $parent = $('.metadataElement-' + key);
+    var $input = $parent.find(".metadataValue");
+    var $hide = $parent.find('.hide');
+    if(value) {
+      $input.val(value);
+      $parent.find('textarea').autoGrow();
+      $input.attr('readOnly', true);
+      $hide.val("true");
+    } else {
+      $input.attr('readOnly', false);
+      $hide.val("false");
+    }
+  });
+
+  // Set Authors
+  if(data.authors.length > 0) {
+    // Clear Authors
+    $('.authorsList').empty();
+    // Add Authors from data source
+    $.each(data.authors, function(i,author) {
+      addAuthor(author);
+    });
+    // Hide authors
+    $('.author').addClass('hideAuthor');
+    $('.authorVisibles').hide();
+    $('.metadataElement-authors .hide').val("true");
+  } else {
+    // Show authors
+    $('.author').removeClass('hideAuthor');
+    $('.authorVisibles').show();
+    $('.metadataElement-authors .hide').val("false");
+  }
+
+  syncDeliverable();
+
+}
+
+function syncDeliverable() {
+
+  // Hide Sync Button & dissemination channel
+  $('#fillMetadata .checkButton, .disseminationChannelBlock').hide('slow');
+  // Show UnSync & Update Button
+  $('#fillMetadata .unSyncBlock').show();
+  // Set hidden inputs
+  $('#fillMetadata input:hidden').val(true);
+  // Dissemination URL
+  $('.deliverableDisseminationUrl').attr('readOnly', true);
+  // Check Fair
+  checkFAIRCompliant();
+  // Update component
+  $(document).trigger('updateComponent');
+}
+
+function unSyncDeliverable() {
+  // Show metadata
+  $('.metadataElement').each(function(i,e) {
+    var $parent = $(e);
+    var $input = $parent.find('.metadataValue');
+    var $hide = $parent.find('.hide');
+    $input.attr('readOnly', false);
+    $hide.val("false");
+  });
+
+  // Show authors
+  $('.author').removeClass('hideAuthor');
+  $('.authorVisibles').show();
+  $('.metadataElement-authors .hide').val("false");
+
+  // Show Sync Button & dissemination channel
+  $('#fillMetadata .checkButton, .disseminationChannelBlock').show('slow');
+  // Hide UnSync & Update Button
+  $('#fillMetadata .unSyncBlock').hide();
+  // Set hidden inputs
+  $('#fillMetadata input:hidden').val(false);
+  // Dissemination URL
+  $('.deliverableDisseminationUrl').attr('readOnly', false);
+  // Check Fair
+  checkFAIRCompliant();
+  // Update component
+  $(document).trigger('updateComponent');
+}
+
+/**
+ * Load Metadata and fill fields
+ */
+function syncMetadata() {
   var channel = $(".disseminationChannel").val();
   var url = $.trim($(".deliverableDisseminationUrl").val());
   // jsUri Library (https://github.com/derek-watson/jsUri)
@@ -441,8 +510,98 @@ function loadAndFillMetadata() {
   } else if(channel == "ifpri") {
     // Get IFPRI E-BRARY Metadata from MARLO server
     getIfpriMetadata(channel, url, uri);
+  } else if(channel == "ilri") {
+    // Get IFPRI E-BRARY Metadata from MARLO server
+    getIlriMetadata(channel, url, uri);
   }
 
+}
+
+function getIlriMetadata(channel,url,uri) {
+  var pathArray = uri.path().split('/');
+
+  var data = {
+      pageID: channel,
+      metadataID: pathArray[pathArray.indexOf("dataset") + 1]
+  }
+
+  // get data from url
+  // Ajax to service
+  $.ajax({
+      'url': baseURL + '/metadataByLink.do',
+      'type': "GET",
+      'data': data,
+      beforeSend: function() {
+        $(".deliverableDisseminationUrl").addClass('input-loading');
+        $('#metadata-output').html("Searching ... " + data.metadataID);
+      },
+      success: function(m) {
+
+        m.metadata = JSON.parse(m.metadata);
+
+        console.log(m.metadata);
+
+        if(jQuery.isEmptyObject(m.metadata)) {
+          $('#metadata-output').html("Metadata empty");
+        } else {
+          var result = m.metadata.result;
+
+          function ilriDate(date) {
+            if(date) {
+              var arrayDate = (date).split('/');
+              return arrayDate[2] + "-" + arrayDate[1] + "-" + arrayDate[0];
+            }
+            return "";
+          }
+
+          // Getting authors
+          var authors = [];
+          var authorsMetadata = result.ILRI_actystaff.split(',');
+          $.each(authorsMetadata, function(i,element) {
+            var elementArray = $.trim(element).split(' ');
+
+            authors.push({
+                lastName: elementArray[1],
+                firstName: elementArray[0],
+                orcidId: ''
+            });
+          });
+
+          // Setting Metadata
+          setMetadata({
+              title: result.title,
+              description: result.notes,
+              citation: result.ILRI_actycitation,
+              date: ilriDate(result.ILRI_actydatavailable),
+              language: '',
+              keywords: function() {
+                var output = [];
+                $.each(result.tags, function(i,element) {
+                  output.push(element.display_name);
+                })
+                return output.join(', ');
+              },
+              handle: '',
+              country: result.ILRI_actycountries.join(', '),
+              doi: '',
+              authors: authors
+          });
+
+          // Set Authors
+          // authorsByService(authors);
+
+          $('#metadata-output').empty().append("Found metadata for " + data.metadataID);
+        }
+
+      },
+      complete: function() {
+        $(".deliverableDisseminationUrl").removeClass('input-loading');
+      },
+      error: function() {
+        console.log("error");
+        $('#metadata-output').empty().append("Invalid URL for searching metadata");
+      }
+  });
 }
 
 function getIfpriMetadata(channel,url,uri) {
@@ -479,19 +638,6 @@ function getIfpriMetadata(channel,url,uri) {
           $('#metadata-output').html("Metadata empty");
         } else {
 
-          // Setting Metadata
-          setMetadata({
-              title: validateKeyObject(m.metadata.title),
-              description: validateKeyObject(m.metadata.descri),
-              citation: validateKeyObject(m.metadata.full),
-              publicationDate: validateKeyObject(m.metadata.date) + "-01-01",
-              languaje: validateKeyObject(m.metadata.langua),
-              keywords: validateKeyObject(m.metadata.loc),
-              handle: '',
-              country: validateKeyObject(m.metadata.contri),
-              doi: validateKeyObject(m.metadata.doi)
-          });
-
           function validateKeyObject(Obj) {
             if(typeof Obj === 'object') {
               if(jQuery.isEmptyObject(Obj)) {
@@ -519,8 +665,22 @@ function getIfpriMetadata(channel,url,uri) {
             });
           });
 
+          // Setting Metadata
+          setMetadata({
+              title: validateKeyObject(m.metadata.title),
+              description: validateKeyObject(m.metadata.descri),
+              citation: validateKeyObject(m.metadata.full),
+              date: validateKeyObject(m.metadata.dmcreated),
+              language: validateKeyObject(m.metadata.langua),
+              keywords: validateKeyObject(m.metadata.loc),
+              handle: '',
+              country: validateKeyObject(m.metadata.contri),
+              doi: validateKeyObject(m.metadata.doi),
+              authors: authors
+          });
+
           // Set Authors
-          authorsByService(authors);
+          // authorsByService(authors);
 
           $('#metadata-output').empty().append("Found metadata for " + data.metadataID);
         }
@@ -574,19 +734,6 @@ function getCGSpaceMetadata(channel,url,uri) {
               fields.push(key.charAt(0).toUpperCase() + key.slice(1));
             });
 
-            var sendDataJson = {};
-            sendDataJson.title = m.metadata['title'];
-            sendDataJson.citation = m.metadata['identifier.citation'];
-            var date = m.metadata['date.available'].split("T");
-            sendDataJson.publicationDate = date[0];
-            sendDataJson.languaje = m.metadata['language.iso'];
-            sendDataJson.description = m.metadata['description.abstract'];
-            sendDataJson.handle = m.metadata['identifier.uri'];
-            sendDataJson.doi = m.metadata['identifier.doi'];
-            sendDataJson.country = m.metadata['coverage.country'];
-            sendDataJson.keywords = m.metadata['subject'];
-            setMetadata(sendDataJson);
-
             // Getting authors
             var authors = [];
             $.each(m.metadata['contributor.author'], function(i,element) {
@@ -596,8 +743,22 @@ function getCGSpaceMetadata(channel,url,uri) {
               });
             });
 
+            // Setting Metadata
+            setMetadata({
+                title: m.metadata['title'],
+                citation: m.metadata['identifier.citation'],
+                date: m.metadata['date.available'].split("T")[0],
+                language: m.metadata['language.iso'],
+                country: m.metadata['coverage.country'],
+                description: m.metadata['description.abstract'],
+                keywords: m.metadata['subject'],
+                handle: m.metadata['identifier.uri'],
+                doi: m.metadata['identifier.doi'],
+                authors: authors
+            });
+
             // Set Authors
-            authorsByService(authors);
+            // authorsByService(authors);
 
             // Open Acces Validation
             var $input = $(".accessible ").parent().find('input');
@@ -646,17 +807,26 @@ function getDataverseMetadata(channel,url,uri) {
         $('#metadata-output').html("Searching ... " + data.persistentId);
       },
       success: function(m) {
-        console.log("success");
         if(m.status == "OK") {
 
           console.log(m.data);
+
+          // Getting authors
+          var authors = [];
+          $.each(m.data.metadata_blocks.citation.author, function(i,element) {
+            authors.push({
+                lastName: (element.authorName).split(',')[0],
+                firstName: (element.authorName).split(',')[1],
+                orcidId: element.authorIdentifier
+            });
+          });
 
           // Setting Metadata
           setMetadata({
               title: m.data.title,
               citation: '',
-              publicationDate: m.data.timestamps.publicationdate,
-              languaje: '',
+              date: m.data.timestamps.publicationdate.split(' ')[0],
+              language: '',
               description: function() {
                 var output = "";
                 $.each(m.data.metadata_blocks.citation.dsDescription, function(i,element) {
@@ -672,21 +842,12 @@ function getDataverseMetadata(channel,url,uri) {
                 return output.join(', ');
               },
               handle: '',
-              doi: data.persistentId
-          });
-
-          // Getting authors
-          var authors = [];
-          $.each(m.data.metadata_blocks.citation.author, function(i,element) {
-            authors.push({
-                lastName: (element.authorName).split(',')[0],
-                firstName: (element.authorName).split(',')[1],
-                orcidId: element.authorIdentifier
-            });
+              doi: data.persistentId,
+              authors: authors
           });
 
           // Set Authors
-          authorsByService(authors);
+          // authorsByService(authors);
 
           $('#metadata-output').empty().append("Found metadata for " + data.persistentId);
 
@@ -705,28 +866,8 @@ function getDataverseMetadata(channel,url,uri) {
 
 }
 
-function authorsByService(authors) {
-  var $list = $('.authorsList');
-  for(var i = 0; i < authors.length; i++) {
-    var validation = validateAuthors(authors[i].lastName, authors[i].firstName);
-    if(validation == false) {
-      var $item = $('#author-template').clone(true).removeAttr("id");
-      $($item).find(".lastName").text(authors[i].lastName + ", ");
-      $($item).find(".firstName").text(authors[i].firstName);
-      $($item).find(".orcidId").text(authors[i].orcidId);
-      $($item).find(".lastNameInput").val(authors[i].lastName + ", ");
-      $($item).find(".firstNameInput").val(authors[i].firstName);
-      $($item).find(".orcidIdInput").val(authors[i].orcidId);
-      $list.append($item);
-      $item.show('slow');
-      updateAuthor();
-      checkNextAuthorItems($list);
-    }
-  }
-}
-
 function validateAuthors(lastName,firstName) {
-  if($(".authorsList").find(".author input.lastNameInput[value='" + lastName + "']").exists()
+  if($(".authorsList").find('.author input.lastNameInput[value="' + lastName + '"]').exists()
       || $(".authorsList").find(".author input.firstNameInput[value='" + firstName + "']").exists()) {
     return true;
   } else {

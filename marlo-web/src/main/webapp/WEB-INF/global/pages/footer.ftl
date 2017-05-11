@@ -35,10 +35,13 @@
       var justificationLimitWords = 100;
       var errorMessages = [];
       var hashScroll = true;
-      var forceChange = ${draft?string};
+      var forceChange = false;
       
       var GOOGLE_API_KEY="${config.googleApiKey}";
       var PUSHER_KEY = "${config.pushApiKey}";
+      
+      var MIN_DATE = '2013-01-01';
+      var MAX_DATE = '2030-12-31';
       
       var actionName = "${actionName}";
       var production = ${config.production?string};
@@ -52,6 +55,9 @@
       var currentCrpSession='${(crpSession)!'-1'}';
       var currentCycleYear = ${(currentCycleYear)!1999};
       var reportingActive= ${((reportingActive)!false)?string};
+      var projectPreSetting= ${((project.projectEditLeader)!false)?string('0','1')};
+      
+      
       
       
       [#-- MARLO Develop ID as default --]
@@ -80,16 +86,19 @@
         [/#if]
       [/#if]
       
+      [#-- User tag --]
+      [#assign userTag][#if !config.production]([#if config.debug]Develop[#else]Testing[/#if])[/#if][/#assign]
+      
       [#-- Tawk.to Widget --]
       var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
       Tawk_LoadStart = new Date();
       Tawk_API.visitor = {
-        'name': '${(currentUser.composedCompleteName)!}',
+        'name': '${(userTag)!} ${(currentUser.composedCompleteName)!}',
       };
       
       Tawk_API.onLoad = function() {
         Tawk_API.setAttributes({
-            'fullName': '${(currentUser.composedCompleteName)!"No Name"}',
+            'fullName': '${(userTag)!} ${(currentUser.composedCompleteName)!"No Name"}',
             'userName' : '${(currentUser.username)!"No User name"}',
             'userId': '${(currentUser.id)!"No ID"}',
             'composedId': '${(currentUser.composedID)!"No Composed ID"}',
@@ -98,7 +107,7 @@
         }, function(error) {
            
         });
-        Tawk_API.addTags(['MARLO', '${config.production?string('Production','Development')}', '${(crpSession)!}'], function(error){});
+        [#--  Tawk_API.addTags(['MARLO', '${config.production?string('Production','Development')}', '${(crpSession)!}'], function(error){});--]
       };
       (function() {
         var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
@@ -131,10 +140,14 @@
     <script type="text/javascript" src="${baseUrl}/js/global/utils.js" ></script>
     <script type="text/javascript" src="${baseUrl}/js/global/global.js" ></script>
     [#if logged]
+      [#-- Pusher app --]
       <script type="text/javascript" src="${baseUrl}/js/global/pusher-app.js" ></script>
     [/#if]
     [#-- import the custom JS and CSS --]
     [#if customJS??][#list customJS as js]<script src="${js}"></script>[/#list][/#if]
+    
+    [#-- Changes on Save --]
+    <script type="text/javascript" src="${baseUrl}/js/global/changes.js" ></script>
     
     [/#compress]
     

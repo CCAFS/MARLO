@@ -41,7 +41,7 @@ ul.nav.nav-tabs.budget-tabs>li>a:hover {
 }
 
 .projectPartner .blockContent{
-    padding: 10px 30px 12px 30px;
+    padding: 10px 20px 12px 20px;
 }
 
 
@@ -64,8 +64,8 @@ ul.nav.nav-tabs.budget-tabs>li>a:hover {
 }
 
 .budgetColumn {
-    padding: 5px 22px !important;
-    width: 22%;
+    padding: 7px 4px !important;
+    /* width: 17%; */
 }
 
 .budgetColumn p{
@@ -99,11 +99,17 @@ ul.nav.nav-tabs.budget-tabs>li>a:hover {
     font-weight: bold;
     color: #5f96c5;
     padding: 5px 0px;
+    margin-bottom: 7px;
+}
+
+.overallYearBudget .title small{
+    font-weight: bold;
+    font-size: 1em;
 }
 
 .overallYearBudget .subTitle{
     margin: 0;
-    padding: 0 0 9px 0px;
+    padding: 10px 0 9px 0px;
 }
 
 .percentageAmount, .grayLabel {
@@ -131,8 +137,10 @@ span.contact.name {
     font-size: 1em;
 }
 
-.projectW3bilateralFund p {
-    padding-right: 21px !important;
+.projectW3bilateralFund p span.title {
+    /* padding-right: 18px !important; */
+    padding-bottom: 0px;
+    font-size: 0.9em;
 }
 
 .budgetByYears {
@@ -148,4 +156,8 @@ span.contact.name {
 .linkIcon {
     cursor: pointer;
     float: right;
+}
+
+.projectW3bilateralFund-list {
+    padding: 4px 10px;
 }

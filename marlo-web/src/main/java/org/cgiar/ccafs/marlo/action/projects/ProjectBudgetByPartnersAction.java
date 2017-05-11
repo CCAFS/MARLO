@@ -38,6 +38,8 @@ import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.utils.HistoryComparator;
+import org.cgiar.ccafs.marlo.utils.HistoryDifference;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectBudgetsValidator;
 
 import java.io.BufferedReader;
@@ -68,6 +70,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
 
   private BudgetTypeManager budgetTypeManager;
+  private HistoryComparator historyComparator;
 
 
   private ProjectManager projectManager;
@@ -96,6 +99,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   private List<Institution> institutions;
   // Model for the view
   private Map<String, String> budgetTypes;
+  private List<BudgetType> budgetTypesList;
   private Map<String, String> w3bilateralBudgetTypes;// List of W3/Bilateral budget types (W3, Bilateral).
   private List<ProjectPartner> projectPPAPartners; // Is used to list all the PPA partners that belongs to the project.
   private int budgetIndex;
@@ -104,7 +108,8 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   public ProjectBudgetByPartnersAction(APConfig config, InstitutionManager institutionManager,
     ProjectManager projectManager, CrpManager crpManager, ProjectBudgetManager projectBudgetManager,
     AuditLogManager auditLogManager, BudgetTypeManager budgetTypeManager, FundingSourceManager fundingSourceManager,
-    LiaisonInstitutionManager liaisonInstitutionManager, ProjectBudgetsValidator projectBudgetsValidator) {
+    HistoryComparator historyComparator, LiaisonInstitutionManager liaisonInstitutionManager,
+    ProjectBudgetsValidator projectBudgetsValidator) {
     super(config);
 
     this.institutionManager = institutionManager;
@@ -116,6 +121,8 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     this.fundingSourceManager = fundingSourceManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.projectBudgetsValidator = projectBudgetsValidator;
+    this.historyComparator = historyComparator;
+
   }
 
   public boolean canAddFunding(long institutionID) {
@@ -262,6 +269,11 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   }
 
 
+  public List<BudgetType> getBudgetTypesList() {
+    return budgetTypesList;
+  }
+
+
   public int getIndexBudget(long institutionId, int year, long type, long fundingSourceID) {
     if (project.getBudgets() != null) {
       int i = 0;
@@ -331,10 +343,10 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return institutions;
   }
 
-
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
   }
+
 
   public Crp getLoggedCrp() {
     return loggedCrp;
@@ -345,7 +357,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return project;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
@@ -354,10 +365,10 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return projectPPAPartners;
   }
 
+
   public Map<String, String> getStatus() {
     return status;
   }
-
 
   public String getTotalAmount(long institutionId, int year, long budgetType) {
     return projectBudgetManager.amountByBudgetType(institutionId, year, budgetType, projectID);
@@ -379,6 +390,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
     return totalGender;
   }
+
 
   public double getTotalGenderPer(long institutionId, int year, long budgetType) {
 
@@ -480,6 +492,10 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
 
     w3bilateralBudgetTypes = new HashMap<>();
+
+    // Budget Types list
+    budgetTypesList = budgetTypeManager.findAll();
+
     budgetTypes = new HashMap<>();
 
     for (BudgetType budgetType : budgetTypeManager.findAll()) {
@@ -503,6 +519,22 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
       if (history != null) {
         project = history;
+
+        List<HistoryDifference> differences = new ArrayList<>();
+        Map<String, String> specialList = new HashMap<>();
+        int i = 0;
+        project.setBudgets(project.getProjectBudgets().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        for (ProjectBudget budget : project.getBudgets()) {
+          int[] index = new int[1];
+          index[0] = i;
+          differences.addAll(historyComparator.getDifferencesList(budget, transaction, specialList,
+            "project.budgets[" + i + "]", "project", 1));
+          i++;
+        }
+
+        this.setDifferences(differences);
+
+
       } else {
         this.transaction = null;
 
@@ -636,6 +668,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
   }
 
+
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -679,7 +712,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     }
 
   }
-
 
   public void saveBasicBudgets() {
     Project projectDB = projectManager.getProjectById(projectID);
@@ -746,13 +778,18 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     projectBudgetManager.saveProjectBudget(projectBudget);
   }
 
+
   public void setBudgetIndex(int budgetIndex) {
     this.budgetIndex = budgetIndex;
   }
 
-
   public void setBudgetTypes(Map<String, String> budgetTypes) {
     this.budgetTypes = budgetTypes;
+  }
+
+
+  public void setBudgetTypesList(List<BudgetType> budgetTypesList) {
+    this.budgetTypesList = budgetTypesList;
   }
 
   public void setInstitutions(List<Institution> institutions) {

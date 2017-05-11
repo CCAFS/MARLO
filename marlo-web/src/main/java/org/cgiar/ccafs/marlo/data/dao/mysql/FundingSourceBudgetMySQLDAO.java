@@ -69,7 +69,7 @@ public class FundingSourceBudgetMySQLDAO implements FundingSourceBudgetDAO {
   @Override
   public FundingSourceBudget getByFundingSourceAndYear(long fundingSourceID, int year) {
     String query = "from " + FundingSourceBudget.class.getName() + " where funding_source_id= " + fundingSourceID
-      + "and year= " + year + " and is_active=1";
+      + " and year= " + year + " and is_active=1";
     List<FundingSourceBudget> list = dao.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
@@ -79,10 +79,16 @@ public class FundingSourceBudgetMySQLDAO implements FundingSourceBudgetDAO {
 
   @Override
   public long save(FundingSourceBudget fundingSourceBudget) {
-    if (fundingSourceBudget.getId() == null) {
-      dao.save(fundingSourceBudget);
-    } else {
+
+    String query = "from " + FundingSourceBudget.class.getName() + " where funding_source_id= "
+      + fundingSourceBudget.getFundingSource().getId() + " and year= " + fundingSourceBudget.getYear()
+      + " and is_active=1";
+    List<FundingSourceBudget> list = dao.findAll(query);
+    if (list.size() > 0) {
+      fundingSourceBudget.setId(list.get(0).getId());
       dao.update(fundingSourceBudget);
+    } else {
+      dao.save(fundingSourceBudget);
     }
 
 

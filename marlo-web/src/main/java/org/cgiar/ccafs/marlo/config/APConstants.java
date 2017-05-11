@@ -56,6 +56,13 @@ public final class APConstants {
   public static final String CRP_PMU_ROLE = "crp_pmu_rol";
   public static final String CRP_CL_ROLE = "crp_cl_rol";
   public static final String CRP_FPL_ROLE = "crp_fpl_rol";
+  public static final String CRP_FPM_ROLE = "crp_fpm_rol";
+  public static final String CRP_CUSTOM_GENDER = "crp_custom_gender";
+  public static final String CRP_RPM_ROLE = "crp_rpm_rol";
+  public static final String CRP_DIVISION_FS = "crp_division_fs";
+  public static final long IFPRI_ID = 89;
+  public static final String CRP_ONE_GENDER = "crp_one_gender";
+
   public static final String CRP_PL_ROLE = "crp_pl_rol";
   public static final String CRP_PC_ROLE = "crp_pc_rol";
   public static final String CRP_RPL_ROLE = "crp_rpl_rol";
@@ -73,13 +80,18 @@ public final class APConstants {
   public static final String CRP_PMU = "crp_pmu_closed";
 
   public static final String CRP_PARTNER_CONTRIBUTIONS = "crp_partner_contribution";
-
+  public static final String CRP_BUDGET_GENDER = "crp_budget_gender";
+  public static final String CRP_MULTIPLE_COA = "crp_multiple_coa";
+  public static final String CRP_EMAIL_FUNDING_SOURCE = "crp_email_funding_source";
+  public static final long INSTITUTION_CGIAR = 221;
   public static final String CRP_CU = "crp_cu";
   public static final int MID_OUTCOME_YEAR = 2019;
   public static final String CRP_CLOSED = "crp_closed";
   public static final String CRP_PROGRAM_ID = "crpProgramID";
   public static final String LIASON_INSTITUTION_ID = "liasonInstitutionID";
   public static final String CRP_ID = "crpID";
+  public static final String FLAGSHIP_ID = "flagshipID";
+
   public static final String TRANSACTION_ID = "transactionId";
   public static final String FILTER_BY = "filterBy";
   public static final String CRP_ADMIN_ACTIVE = "crp_admin_active";
@@ -99,6 +111,8 @@ public final class APConstants {
   // Query parameter
   public static final String QUERY_PARAMETER = "q";
   public static final String PPA_PARAMETER = "isPPA";
+  public static final String WITH_PPA_PARAMETER = "withPPA";
+  public static final String ONLY_PPA_PARAMETER = "onlyPPA";
   // Outlook institutional email
   public static final String OUTLOOK_EMAIL = "cgiar.org";
 

@@ -17,12 +17,13 @@
 package org.cgiar.ccafs.marlo.validation.fundingSource;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
+import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
-import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
-import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
+import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
@@ -42,6 +43,8 @@ public class FundingSourceValidator extends BaseValidator {
 
   @Inject
   private CrpManager crpManager;
+  @Inject
+  private InstitutionManager institutionManager;
 
   @Inject
   private FundingSourceManager fundingSourceManager;
@@ -54,6 +57,24 @@ public class FundingSourceValidator extends BaseValidator {
       fundingSource.getId() + "_" + composedClassName + "_" + crp.getAcronym() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+  }
+
+  public boolean hasIFPRI(FundingSource fundingSource) {
+
+
+    if (fundingSource.getInstitutions() != null) {
+      for (FundingSourceInstitution fundingSourceInstitution : fundingSource.getInstitutions().stream()
+        .filter(c -> c.isActive()).collect(Collectors.toList())) {
+        fundingSourceInstitution
+          .setInstitution(institutionManager.getInstitutionById(fundingSourceInstitution.getInstitution().getId()));
+        if (fundingSourceInstitution.getInstitution().getAcronym().equals("IFPRI")) {
+          return true;
+        }
+      }
+    }
+
+
+    return false;
   }
 
   public boolean isHasErros() {
@@ -100,37 +121,63 @@ public class FundingSourceValidator extends BaseValidator {
       action.getInvalidFields().put("input-fundingSource.contactPersonName", InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    if (!this.isValidString(fundingSource.getContactPersonEmail())) {
-      this.addMessage(action.getText("fundingSource.contactPersonEmail"));
-      action.getInvalidFields().put("input-fundingSource.contactPersonEmail", InvalidFieldsMessages.EMPTYFIELD);
-    }
 
-    double totalYear = 0;
-    FundingSource fundingSourceDB = fundingSourceManager.getFundingSourceById(fundingSource.getId());
-
-    for (ProjectBudget projectBudget : fundingSourceDB.getProjectBudgets().stream()
-      .filter(c -> c.isActive() && c.getYear() == action.getCurrentCycleYear()).collect(Collectors.toList())) {
-      totalYear = totalYear + projectBudget.getAmount().doubleValue();
-    }
-
-    if (fundingSource.getBudgets() != null) {
-      int i = 0;
-      for (FundingSourceBudget budget : fundingSource.getBudgets()) {
-        if (budget != null) {
-          if (budget.getYear() != null) {
-            if (budget.getYear().intValue() == action.getCurrentCycleYear()) {
-              double total = budget.getBudget().doubleValue() - totalYear;
-              if (total < 0) {
-                action.addFieldError("fundingSource.budgets[" + i + "].budget", "Invalid Budget Value");
-              }
+    if (this.hasIFPRI(fundingSource)) {
+      if (action.hasSpecificities(APConstants.CRP_DIVISION_FS)) {
+        if (fundingSource.getPartnerDivision() == null) {
+          this.addMessage(action.getText("fundingSource.division"));
+          action.getInvalidFields().put("input-fundingSource.partnerDivision.id", InvalidFieldsMessages.EMPTYFIELD);
+        }
+        if (fundingSource.getPartnerDivision() != null) {
+          if (fundingSource.getPartnerDivision().getId() == null) {
+            this.addMessage(action.getText("fundingSource.division"));
+            action.getInvalidFields().put("input-fundingSource.partnerDivision.id", InvalidFieldsMessages.EMPTYFIELD);
+          } else {
+            if (fundingSource.getPartnerDivision().getId().longValue() == -1) {
+              this.addMessage(action.getText("fundingSource.division"));
+              action.getInvalidFields().put("input-fundingSource.partnerDivision.id", InvalidFieldsMessages.EMPTYFIELD);
             }
           }
 
         }
-
-        i++;
       }
     }
+
+
+    if (action.hasSpecificities(APConstants.CRP_EMAIL_FUNDING_SOURCE)) {
+      if (!this.isValidString(fundingSource.getContactPersonEmail())) {
+        this.addMessage(action.getText("fundingSource.contactPersonEmail"));
+        action.getInvalidFields().put("input-fundingSource.contactPersonEmail", InvalidFieldsMessages.EMPTYFIELD);
+      }
+    }
+
+
+    // double totalYear = 0;
+    // FundingSource fundingSourceDB = fundingSourceManager.getFundingSourceById(fundingSource.getId());
+    //
+    // for (ProjectBudget projectBudget : fundingSourceDB.getProjectBudgets().stream()
+    // .filter(c -> c.isActive() && c.getYear() == action.getCurrentCycleYear()).collect(Collectors.toList())) {
+    // totalYear = totalYear + projectBudget.getAmount().doubleValue();
+    // }
+    //
+    // if (fundingSource.getBudgets() != null) {
+    // int i = 0;
+    // for (FundingSourceBudget budget : fundingSource.getBudgets()) {
+    // if (budget != null) {
+    // if (budget.getYear() != null) {
+    // if (budget.getYear().intValue() == action.getCurrentCycleYear()) {
+    // double total = budget.getBudget().doubleValue() - totalYear;
+    // if (total < 0) {
+    // action.addFieldError("fundingSource.budgets[" + i + "].budget", "Invalid Budget Value");
+    // }
+    // }
+    // }
+    //
+    // }
+    //
+    // i++;
+    // }
+    // }
     if (!action.getFieldErrors().isEmpty()) {
       hasErros = true;
       action.addActionError(action.getText("saving.fields.required"));

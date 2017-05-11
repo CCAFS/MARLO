@@ -130,10 +130,10 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
       if (crpProgram.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
 
         // If user is admin, it should have privileges to edit all projects.
-        if (baseAction.isAdmin()) {
+        if (baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin()) {
           canEdit = true;
         } else {
-          if (baseAction.hasPermission(baseAction.generatePermission(Permission.IMPACT_PATHWAY_EDIT_PRIVILEGES,
+          if (baseAction.hasPermissionNoBase(baseAction.generatePermission(Permission.IMPACT_PATHWAY_EDIT_PRIVILEGES,
             crp.getAcronym(), crpProgramID + ""))) {
             canEdit = true;
           }

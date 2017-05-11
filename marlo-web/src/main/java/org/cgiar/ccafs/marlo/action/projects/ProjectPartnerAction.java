@@ -58,6 +58,7 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.utils.HistoryComparator;
+import org.cgiar.ccafs.marlo.utils.HistoryDifference;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectPartnersValidator;
 
@@ -76,6 +77,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
@@ -543,6 +545,7 @@ public class ProjectPartnerAction extends BaseAction {
    */
   private void notifyRoleUnassigned(User userUnassigned, Role role) {
     userUnassigned = userManager.getUser(userUnassigned.getId());
+    String managementLiaisonText = this.getText("global.managementLiaison");
     Project project = projectManager.getProjectById(this.projectID);
     String projectRole = null;
     if (role.getId() == plRole.getId().longValue()) {
@@ -554,13 +557,15 @@ public class ProjectPartnerAction extends BaseAction {
     // Building the Email message:
     message.append(this.getText("email.dear", new String[] {userUnassigned.getFirstName()}));
     if (role.getId() == plRole.getId().longValue()) {
-      message.append(
-        this.getText("email.project.leader.unAssigned", new String[] {projectRole, loggedCrp.getAcronym().toUpperCase(),
-          project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER) + " - " + project.getTitle()}));
+      message.append(this.getText("email.project.leader.unAssigned",
+        new String[] {projectRole, loggedCrp.getAcronym().toUpperCase(),
+          project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER) + " - " + project.getTitle(),
+          managementLiaisonText}));
     } else {
       message.append(this.getText("email.project.coordinator.unAssigned",
         new String[] {projectRole, loggedCrp.getAcronym().toUpperCase(),
-          project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER) + " - " + project.getTitle()}));
+          project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER) + " - " + project.getTitle(),
+          managementLiaisonText}));
     }
 
     message.append(this.getText("email.support"));
@@ -656,7 +661,7 @@ public class ProjectPartnerAction extends BaseAction {
           (p1, p2) -> Boolean.compare(this.isPPA(p2.getInstitution()), this.isPPA(p1.getInstitution())));
 
 
-        List<String> differences = new ArrayList<>();
+        List<HistoryDifference> differences = new ArrayList<>();
         Map<String, String> specialList = new HashMap<>();
         int i = 0;
         for (ProjectPartner projectPartner : project.getPartners()) {
@@ -674,13 +679,14 @@ public class ProjectPartnerAction extends BaseAction {
             j++;
           }
           int k = 0;
+
           for (ProjectPartnerContribution projectPartnerContribution : projectPartner
             .getProjectPartnerContributions()) {
             differences
               .addAll(historyComparator.getDifferencesList(projectPartnerContribution, transaction, specialList,
                 "project.partners[" + i + "].partnerContributors[" + k + "]", "project.partnerContributors", 2));
             k++;
-          };
+          } ;
 
           List<ProjectPartnerOverall> overalls =
             projectPartner.getProjectPartnerOveralls().stream().filter(c -> c.isActive()).collect(Collectors.toList());
@@ -690,7 +696,7 @@ public class ProjectPartnerAction extends BaseAction {
                 "project.partners[" + i + "].partnerContributors[" + k + "]", "project.partnerContributors", 2)
               .isEmpty()) {
               if (!differences.contains("project.overall")) {
-                differences.add("project.overall");
+                differences.add(new HistoryDifference(UUID.randomUUID().toString(), "project.overall", true, "", ""));
               }
             }
           }

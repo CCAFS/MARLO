@@ -13,8 +13,8 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-[#assign startYear = ((fundingSource.startDate?string.yyyy)?number)!2014 /]
-[#assign endYear = ((fundingSource.endDate?string.yyyy)?number)!2017 /]
+[#assign startYear = ((fundingSource.startDate?string.yyyy)?number)!currentCycleYear /]
+[#assign endYear = ((fundingSource.endDate?string.yyyy)?number)!startYear /]
     
 <section class="container">
   <article class="fullBlock col-md-12" id="mainInformation">
@@ -29,15 +29,7 @@
   <h4 class="headTitle">General information</h4> 
     <div class="borderBox informationWrapper">
       [#-- Participating Center, CRP Lead Center --]
-      <div class="pull-right">
-        [#if editable]
-        <label for="cofundedMode-1"><input type="radio" name="fundingSource.centerType" id="cofundedMode-1" value="1" [#if fundingSource.centerType?? && fundingSource.centerType == 1]checked="checked"[/#if] /> [@s.text name="projectCofunded.participatingCenter" /] </label><br />
-        <label for="cofundedMode-2"><input type="radio" name="fundingSource.centerType" id="cofundedMode-2" value="2" [#if fundingSource.centerType?? && fundingSource.centerType == 2]checked="checked"[/#if] [#if !action.canEditCenterType()]disabled="disabled"[/#if]/> [@s.text name="projectCofunded.crpLeadCenter" /] </label>
-        [#else]
-          [#if fundingSource.centerType?? && fundingSource.centerType == 1][@s.text name="projectCofunded.participatingCenter" /][/#if]
-          [#if fundingSource.centerType?? && fundingSource.centerType == 2][@s.text name="projectCofunded.crpLeadCenter" /][/#if]
-        [/#if]
-      </div>
+      
       [#-- Project title --]
       <div class="form-group">
         <div class="row">
@@ -52,6 +44,7 @@
       </div>
       [#-- start date, end date and finance code --]
       <div class="form-group">
+        <div class="dateErrorBox"></div>
         <div class="row">
            <div class="col-md-4">[@customForm.input name="fundingSource.startDate" i18nkey="projectCofunded.startDate" required=true  editable=editable && action.canEditFundingSourceBudget() /] </div>
            <div class="col-md-4">[@customForm.input name="fundingSource.endDate" i18nkey="projectCofunded.endDate" required=true  editable=editable && action.canEditFundingSourceBudget() /] </div>
@@ -78,11 +71,13 @@
       [#-- Agreement status and total budget --]
       <div class="form-group">
         <div class="row">
-          <div class="col-md-6">[@customForm.select name="fundingSource.status" i18nkey="projectCofunded.agreementStatus"  listName="status" keyFieldName=""  displayFieldName="" header=false editable=editable /] </div>
-          <div class="col-md-6">[@customForm.select name="fundingSource.budgetType.id"   i18nkey="projectCofunded.type"  className="type" listName="budgetTypes" header=false required=true editable=editable&&action.canEditType() /]</div>
+          <div class="col-md-6">[@customForm.select name="fundingSource.status" i18nkey="projectCofunded.agreementStatus" className="agreementStatus"  listName="status" keyFieldName=""  displayFieldName="" header=false editable=editable /] </div>
+          <div class="col-md-6">[@customForm.select name="fundingSource.budgetType.id" i18nkey="projectCofunded.type" className="type" listName="budgetTypes" header=false required=true editable=editable && action.canEditType() /]</div>
         </div>
       </div>
+      
       [#-- CGIAR lead center --]
+      [#assign ifpriDivision = false /]
       <div class="form-group row">
         <div class="panel tertiary col-md-12">
          <div class="panel-head"><label for=""> [@customForm.text name="fundingSource.leadPartner" readText=!editable /]:[@customForm.req required=editable /]</label></div>
@@ -90,15 +85,21 @@
             <ul class="list">
             [#if fundingSource.institutions?has_content]
               [#list fundingSource.institutions as institutionLead]
-                <li id="" class="leadPartners clearfix col-md-6">
-                [#if editable ]
-                  <div class="removeLeadPartner removeIcon" title="Remove Lead partner"></div>
+                [#-- Show if is a headquarter institution --]
+                [#if !(institutionLead.headquarter??)]
+                  <li id="" class="leadPartners clearfix col-md-6">
+                  [#if editable ]
+                    <div class="removeLeadPartner removeIcon" title="Remove Lead partner"></div>
+                  [/#if]
+                    <input class="id" type="hidden" name="fundingSource.institutions[${institutionLead_index}].id" value="${institutionLead.id}" />
+                    <input class="fId" type="hidden" name="fundingSource.institutions[${institutionLead_index}].institution.id" value="${institutionLead.institution.id}" />
+                    <span class="name">${(institutionLead.institution.composedName)!}</span>
+                    <div class="clearfix"></div>
+                    
+                    [#-- Check IFPRI Division --]
+                    [#if institutionLead.institution.id == action.getIFPRIId() ] [#assign ifpriDivision = true /] [/#if]
+                  </li>
                 [/#if]
-                  <input class="id" type="hidden" name="fundingSource.institutions[${institutionLead_index}].id" value="${institutionLead.id}" />
-                  <input class="fId" type="hidden" name="fundingSource.institutions[${institutionLead_index}].institution.id" value="${institutionLead.institution.id}" />
-                  <span class="name">${(institutionLead.institution.composedName)!}</span>
-                  <div class="clearfix"></div>
-                </li>
               [/#list]
               [#else]
               <p class="emptyText"> [@s.text name="No lead partner added yet." /]</p> 
@@ -110,11 +111,23 @@
           </div>
         </div>
       </div>
+      
+      [#-- Division --]
+      [#if action.hasSpecificities('crp_division_fs')]
+        <div class="form-group row divisionBlock division-${action.getIFPRIId()}"  style="display:${ifpriDivision?string('block','none')}">
+          <div class="col-md-7">
+            [@customForm.select name="fundingSource.partnerDivision.id" i18nkey="projectCofunded.division" listName="divisions" keyFieldName="id" displayFieldName="composedName" required=true editable=editable /]
+          </div>
+        </div>
+      [/#if]
+      
       [#-- Contact person name and email --]
+      [#assign canSeePIEmail = action.hasSpecificities('crp_email_funding_source')]
       <div class="form-group row">
           <div class="col-md-6">[@customForm.input name="fundingSource.contactPersonName" i18nkey="projectCofunded.contactName" className="contactName" required=true editable=editable /]</div>
-          <div class="col-md-6">[@customForm.input name="fundingSource.contactPersonEmail" i18nkey="projectCofunded.contactEmail" className="contactEmail" required=true editable=editable /]</div>
+          <div class="col-md-6" style="display:${canSeePIEmail?string('block','none')}">[@customForm.input name="fundingSource.contactPersonEmail" i18nkey="projectCofunded.contactEmail" className="contactEmail" required=true editable=editable /]</div>
       </div>
+      
       [#-- Donor --]
       <div class="form-group">
         <div class="row">
@@ -149,8 +162,15 @@
       <div class="tab-content col-md-12 contributionContent">
         [#list startYear .. endYear as year]
           <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="fundingYear-${year}">
-          [#assign budget = action.getBudget(year) /]
-          [#assign budgetIndex = action.getIndexBugets(year) /]
+          
+          
+          [#attempt]
+            [#assign budget = (action.getBudget(year))!{} /]
+            [#assign budgetIndex = (action.getIndexBugets(year))!'-1' /]
+          [#recover]
+            [#assign budget = {} /]
+            [#assign budgetIndex = '-1' /]
+          [/#attempt]
           
           <small class="grayLabel pull-right"> (Remaining budget US$ <span class="projectAmount">${((fundingSource.getRemaining(year))!0)?number?string(",##0.00")}</span>) </small>
           
@@ -159,13 +179,12 @@
             <div class="col-md-4">
               <input type="hidden" name="fundingSource.budgets[${budgetIndex}].year" value="${year}"/>
               <input type="hidden" name="fundingSource.budgets[${budgetIndex}].id" value="${(budget.id)!}"/>
-              [#if editable  && action.canEditFundingSourceBudget() ]
+              [#if editable   ]
                 [@customForm.input name="fundingSource.budgets[${budgetIndex}].budget" i18nkey="projectCofunded.budgetYear" paramText="${year}" className="currencyInput" required=true editable=editable /]
               [#else]
               <div class="input">
               	<p>US$ <span>${((budget.budget)!0)?number?string(",##0.00")}</p>
               	 <input type="hidden" name="fundingSource.budgets[${budgetIndex}].budget" value="${(budget.budget)!0}"/>
-             
               </div>
                 
               [/#if]
@@ -191,13 +210,17 @@
           [#assign counter = 0 /]
           [#list fundingSource.projectBudgetsList as projectBudget]
             [#if projectBudget.year == year]
-             <tr>
+             <tr class="projectBudgetItem">
               <td>
-                <a href="[@s.url action="${crpSession}/budgetByPartners" namespace="/projects"] [@s.param name="projectID" value="${(projectBudget.project.id)!}"/] [/@s.url]">
+                <a href="[@s.url action="${crpSession}/budgetByPartners" namespace="/projects"] [@s.param name="projectID" value="${(projectBudget.project.id)!}"/] [@s.param name='edit']true[/@s.param][/@s.url]">
                   P${(projectBudget.project.id)!}              
                 </a>
               </td>
-              <td class="col-md-5">${(projectBudget.project.title)!}</td>
+              <td class="col-md-5">
+                <a href="[@s.url action="${crpSession}/budgetByPartners" namespace="/projects"] [@s.param name="projectID" value="${(projectBudget.project.id)!}"/] [@s.param name='edit']true[/@s.param][/@s.url]">
+                  ${(projectBudget.project.title)!}
+                </a>
+              </td>
               <td> ${(projectBudget.institution.acronym)!(projectBudget.institution.name)} </td>
               <td>${projectBudget.budgetType.name}</td>
               <td>US$ <span>${((projectBudget.amount)!0)?number?string(",##0.00")}</td>
@@ -234,5 +257,13 @@
   </li>
 </ul>
 
+[#-- Budget Types Description --]
+<ul style="display:none">
+  [#list budgetTypesList as budgetType]
+    <li class="budgetTypeDescription-${budgetType.id}">${(budgetType.description)!}</li>
+  [/#list]
+</ul>
+
+<span class="hidden cgiarConsortium">${action.getCGIARInsitution()}</span>
 
 [#include "/WEB-INF/global/pages/footer.ftl"]

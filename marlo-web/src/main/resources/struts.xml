@@ -9,20 +9,16 @@
 	<constant name="struts.multipart.saveDir" value="/tmp" />
 	
 	<!--  Rest api packages  -->
-	<constant name="struts.action.extension" value="do,,xml,json,action" />
+	<constant name="struts.action.extension" value="do,,json" />
 	<constant name="struts.mapper.class"
 		value="org.apache.struts2.dispatcher.mapper.PrefixBasedActionMapper" />		
 	<constant name="struts.mapper.prefixMapping" value="/api:rest,:struts" />
-
 	<constant name="struts.convention.action.suffix" value="Action, Controller" />
 	<constant name="struts.convention.action.mapAllMatches" value="true" />
 	<constant name="struts.convention.default.parent.package" value="rest-default"/>
 	<constant name="struts.convention.package.locators" value="rest"/>
 
-	<!-- set name space for REST, it should match with "struts.mapper.prefixMapping" -->
 	<constant name="struts.rest.namespace" value="/api" />
-
-	<!-- Default extension for REST calls -->
 	<constant name="struts.rest.defaultExtension" value="json" />
 	
 	<!-- Add addition packages and configuration here. -->
@@ -286,5 +282,6 @@
 	<include file="struts-synthesis.xml" />
 	<include file="struts-publications.xml" />
 	<include file="struts-rest.xml" />
+
 
 </struts>

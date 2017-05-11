@@ -62,8 +62,8 @@ public class InstitutionManagerImpl implements InstitutionManager {
   }
 
   @Override
-  public List<Institution> searchInstitution(String searchValue, int ppaPartner, long crpID) {
-    return institutionDao.searchInstitution(searchValue, ppaPartner, crpID);
+  public List<Institution> searchInstitution(String searchValue, int ppaPartner, int onlyPPA, long crpID) {
+    return institutionDao.searchInstitution(searchValue, ppaPartner, onlyPPA, crpID);
   }
 
 }

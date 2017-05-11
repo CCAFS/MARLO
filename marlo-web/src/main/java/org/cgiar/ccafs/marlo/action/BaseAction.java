@@ -18,6 +18,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpLocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramLeaderManager;
@@ -28,10 +29,12 @@ import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.IpLiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
+import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectComponentLessonManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
+import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
@@ -43,6 +46,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
+import org.cgiar.ccafs.marlo.data.model.CustomLevelSelect;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
@@ -52,6 +56,8 @@ import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
+import org.cgiar.ccafs.marlo.data.model.LocElement;
+import org.cgiar.ccafs.marlo.data.model.LocElementType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
@@ -60,6 +66,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
+import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
 import org.cgiar.ccafs.marlo.data.model.Submission;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
@@ -69,6 +76,7 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.security.SessionCounter;
 import org.cgiar.ccafs.marlo.security.UserToken;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.HistoryDifference;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -125,111 +133,120 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public static final String NOT_AUTHORIZED = "403";
 
+
   public static final String NOT_FOUND = "404";
   public static final String NOT_LOGGED = "401";
-
   public static final String REDIRECT = "redirect";
-  public static final String SAVED_STATUS = "savedStatus";
 
+  public static final String SAVED_STATUS = "savedStatus";
   private static final long serialVersionUID = -740360140511380630L;
 
-  private List<String> differences;
+  private List<HistoryDifference> differences;
 
   protected boolean add;
 
-
   @Inject
   private AuditLogManager auditLogManager;
+
 
   private String basePermission;
 
   protected boolean cancel;
 
-
   private boolean canEdit; // If user is able to edit the form.
+
 
   private boolean canSwitchProject; // If user is able to Switch Project. (generally is a project leader)
 
   protected APConfig config;
+
+
   @Inject
   private CrpClusterKeyOutputManager crpClusterKeyOutputManager;
-
   private Long crpID;
   // Managers
   @Inject
   private CrpManager crpManager;
+
   @Inject
   private CrpPpaPartnerManager crpPpaPartnerManager;
   @Inject
   private CrpProgramLeaderManager crpProgramLeaderManager;
-
   @Inject
   private CrpProgramManager crpProgramManager;
   // Variables
   private String crpSession;
+
   private Crp currentCrp;
   protected boolean dataSaved;
   protected boolean delete;
   @Inject
   private DeliverableManager deliverableManager;
-
-
   private boolean draft;
 
   @Inject
+  private SrfTargetUnitManager targetUnitManager;
+  @Inject
+  private LocElementTypeManager locElementTypeManager;
+
+  @Inject
+  private CrpLocElementTypeManager crpLocElementTypeManager;
+
+  @Inject
   private UserManager userManager;
+
+
   @Inject
   private FileDBManager fileDBManager;
+
   private boolean fullEditable; // If user is able to edit all the form.
-
-
   @Inject
   private FundingSourceManager fundingSourceManager;
-
   private HashMap<String, String> invalidFields;
+
+
   // User actions
   private boolean isEditable; // If user is able to edit the form.
+
   // Justification of the changes
   private String justification;
-
   private boolean lessonsActive;
-
   @Inject
   private LiaisonUserManager liaisonUserManager;
+
   protected boolean next;
+
   private Map<String, Object> parameters;
-
   private boolean planningActive;
-
   private int planningYear;
+
   @Inject
   private ProjectComponentLessonManager projectComponentLessonManager;
+
   @Inject
   private ProjectManager projectManager;
-
   @Inject
   private ProjectOutcomeManager projectOutcomeManager;
   private boolean reportingActive;
+
   private int reportingYear;
   private HttpServletRequest request;
   // button actions
   protected boolean save;
-
-
   private boolean saveable; // If user is able to see the save, cancel, delete buttons
-
   @Inject
   private SectionStatusManager sectionStatusManager;
 
   // Config Variables
   @Inject
   protected BaseSecurityContext securityContext;
+
   private Map<String, Object> session;
 
   private Submission submission;
   protected boolean submit;
-  private String url;
 
+  private String url;
   @Inject
   private UserRoleManager userRoleManager;
   @Inject
@@ -237,7 +254,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   @Inject
   private IpLiaisonInstitutionManager ipLiaisonInstitutionManager;
-
 
   @Inject
   public BaseAction(APConfig config) {
@@ -267,10 +283,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.securityContext.hasAllPermissions(Permission.FULL_PRIVILEGES);
   }
 
+
   public boolean canAcessCrp() {
     return this.canAcessPublications() || this.canAcessSynthesisMog();
   }
-
 
   public boolean canAcessCrpAdmin() {
     String permission = this.generatePermission(Permission.CRP_ADMIN_VISIBLE_PRIVILEGES, this.getCrpSession());
@@ -285,6 +301,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return permission;
 
   }
+
 
   public boolean canAcessImpactPathway() {
     String permission = this.generatePermission(Permission.IMPACT_PATHWAY_VISIBLE_PRIVILEGES, this.getCrpSession());
@@ -406,10 +423,54 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       if (clazz == CrpPpaPartner.class) {
         CrpPpaPartner crpPpaPartner = crpPpaPartnerManager.getCrpPpaPartnerById(id);
-        if (crpPpaPartner.getInstitution().getProjectPartners().stream().filter(c -> c.isActive())
+        if (crpPpaPartner.getInstitution().getProjectPartners().stream()
+          .filter(c -> c.isActive() && c.getProject().getCrp().getId().longValue() == this.getCrpID().longValue())
           .collect(Collectors.toList()).size() > 0) {
           return false;
         }
+      }
+
+      if (clazz == SrfTargetUnit.class) {
+        SrfTargetUnit targetUnit = targetUnitManager.getSrfTargetUnitById(id);
+
+        if (targetUnit == null) {
+          return true;
+        }
+
+        if (targetUnit.getCrpProgramOutcomes().stream().filter(o -> o.isActive()).collect(Collectors.toList())
+          .size() > 0) {
+          return false;
+        }
+
+        if (targetUnit.getCrpMilestones().stream().filter(u -> u.isActive()).collect(Collectors.toList()).size() > 0) {
+          return false;
+        }
+      }
+
+      if (clazz == LocElementType.class) {
+        LocElementType locElementType = locElementTypeManager.getLocElementTypeById(id);
+        if (locElementType.getCrpLocElementTypes().stream().filter(o -> o.isActive()).collect(Collectors.toList())
+          .size() > 0) {
+          return false;
+        }
+
+
+      }
+
+      if (clazz == CustomLevelSelect.class) {
+        LocElementType locElementType = locElementTypeManager.getLocElementTypeById(id);
+
+        for (LocElement locElements : locElementType.getLocElements().stream().filter(c -> c.isActive())
+          .collect(Collectors.toList())) {
+          if (!locElements.getProjectLocations().stream()
+            .filter(c -> c.isActive() && c.getProject().getCrp().getId().longValue() == this.getCrpID().longValue())
+            .collect(Collectors.toList()).isEmpty()) {
+            return false;
+          }
+
+        }
+
+
       }
       return true;
     } catch (Exception e) {
@@ -443,12 +504,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   public boolean canEditCenterType() {
     return this.hasPermissionNoBase(
       this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, this.getCrpSession()));
   }
-
 
   public boolean canProjectSubmited(long projectID) {
     String params[] = {crpManager.getCrpById(this.getCrpID()).getAcronym(), projectID + ""};
@@ -456,13 +515,21 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
 
-  public boolean changedField(String field) {
+  public HistoryDifference changedField(String field) {
+
+
     if (differences != null) {
-      return differences.contains(field);
+      if (differences.contains(new HistoryDifference(field))) {
+        int index = differences.indexOf(new HistoryDifference(field));
+        HistoryDifference historyDifference = differences.get(index);
+        historyDifference.setIndex(index);
+        return historyDifference;
+      }
     }
-    return false;
+    return null;
 
   }
+
 
   /**
    * This method clears the cache and re-load the user permissions in the next iteration.
@@ -472,6 +539,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       .clearCachedAuthorizationInfo(securityContext.getSubject().getPrincipals());
   }
 
+
   public String crpActivitesModule() {
     return APConstants.CRP_ACTIVITES_MODULE;
   }
@@ -480,7 +548,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public String delete() {
     return SUCCESS;
   }
-
 
   @Override
   public String execute() throws Exception {
@@ -505,6 +572,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   public String getActionName() {
     return ServletActionContext.getActionMapping().getName();
   }
@@ -515,6 +583,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public String getBaseUrl() {
     return config.getBaseUrl();
+  }
+
+  public long getCGIARInsitution() {
+    return APConstants.INSTITUTION_CGIAR;
   }
 
   public APConfig getConfig() {
@@ -598,7 +670,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.currentCrp;
   }
 
-
   public String getCurrentCycle() {
     try {
       if (this.isReportingActive()) {
@@ -642,6 +713,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return u;
   }
 
+
   /**
    * This method gets the specific section status from the sectionStatuses array for a Deliverable.
    * 
@@ -662,10 +734,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return null;
   }
 
-  public List<String> getDifferences() {
+  public List<HistoryDifference> getDifferences() {
     return differences;
   }
-
 
   public FileDB getFileDB(FileDB preview, File file, String fileFileName, String path) {
 
@@ -707,6 +778,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return null;
     }
 
+  }
+
+
+  public long getIFPRIId() {
+    return APConstants.IFPRI_ID;
   }
 
   public boolean getImpactSectionStatus(String section, long crpProgramID) {
@@ -1772,6 +1848,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           return null;
         }
 
+        // If the deliverable is synced
+        if ((deliverableBD.getDissemination().getSynced() != null)
+          && (deliverableBD.getDissemination().getSynced().booleanValue())) {
+          return true;
+        }
+
         switch (channel) {
           case "cgspace":
             if (!this.validURL(link)) {
@@ -1796,6 +1878,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             return null;
 
         }
+
+
         return true;
       }
       if (deliverableBD.getDissemination().getAlreadyDisseminated() == null) {
@@ -2249,7 +2333,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
 
-  public void setDifferences(List<String> differences) {
+  public void setDifferences(List<HistoryDifference> differences) {
     this.differences = differences;
   }
 

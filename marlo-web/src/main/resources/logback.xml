@@ -8,43 +8,34 @@
   <appender name="FILE-PRODUCTION"
     class="ch.qos.logback.core.rolling.RollingFileAppender">
     <file>${log.folder}/marlo.log</file>
-    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-      <level>INFO</level>
-    </filter>
+    <!-- deny all events with a level below INFO, that is TRACE and DEBUG -->
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">    
+ -      <level>INFO</level>   
+ -    </filter>
     <encoder>
       <pattern>%d{yyyy-MM-dd_HH:mm:ss.SSS} - [%thread]%logger{0} [%-5level]
         : %msg%n</pattern>
     </encoder>
-    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-      <fileNamePattern>tests.%i.log.zip</fileNamePattern>
-      <minIndex>1</minIndex>
-      <maxIndex>5</maxIndex>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+        <!-- 30 days, daily rollover -->   
+        <fileNamePattern>${log.folder}/marlo.%d{yyyy-MM-dd}.zip</fileNamePattern>
+        <maxHistory>30</maxHistory>
     </rollingPolicy>
-    <triggeringPolicy
-      class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-      <maxFileSize>30MB</maxFileSize>
-    </triggeringPolicy>
-
   </appender>
 
   <appender name="FILE-TEST"
     class="ch.qos.logback.core.rolling.RollingFileAppender">
     <file>${log.folder}/marlo-test.log</file>
-    <encoder>
-      <pattern>%d{yyyy-MM-dd_HH:mm:ss.SSS} - [%thread]%logger{0} [%-5level]
+    <encoder>     
+    <pattern>%d{yyyy-MM-dd_HH:mm:ss.SSS} - [%thread]%logger{0} [%-5level]
         : %msg%n</pattern>
-    </encoder>
-    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-      <fileNamePattern>tests.%i.log.zip</fileNamePattern>
-      <minIndex>1</minIndex>
-      <maxIndex>5</maxIndex>
-    </rollingPolicy>
-    <triggeringPolicy
-      class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-      <maxFileSize>30MB</maxFileSize>
-    </triggeringPolicy>
-
-  </appender>
+    </encoder>    
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+        <!-- 30 days, daily rollover -->   
+        <fileNamePattern>${log.folder}/marlo-test.%d{yyyy-MM-dd}.zip</fileNamePattern>
+        <maxHistory>30</maxHistory>
+    </rollingPolicy>     
+</appender>
 
 
   <!-- ======= Filters by levels to print logs in Console ======= -->
@@ -85,6 +76,7 @@
    <logger name="org.hibernate" level="ERROR" />
   <logger name="org.hibernate.type" level="ERROR" />
  
+
 
   
  

@@ -19,7 +19,6 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
-import org.cgiar.ccafs.marlo.data.model.CrpParameter;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.ByteArrayInputStream;
@@ -29,11 +28,8 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
@@ -57,16 +53,17 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
   private static final long serialVersionUID = 1L;
 
   private static Logger LOG = LoggerFactory.getLogger(ExpectedDeliverablesSummaryAction.class);
-  // Variables
+  // Parameters
   private Crp loggedCrp;
+  private long startTime;
+  private int year;
 
-
+  // Managers
   private CrpManager crpManager;
   // XLS bytes
   private byte[] bytesXLSX;
   // Streams
   InputStream inputStream;
-  private int year;
 
   @Inject
   public ExpectedDeliverablesSummaryAction(APConfig config, CrpManager crpManager) {
@@ -82,50 +79,42 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
 
     ResourceManager manager = new ResourceManager();
     manager.registerDefaults();
+    try {
+      Resource reportResource =
+        manager.createDirectly(this.getClass().getResource("/pentaho/deliverables.prpt"), MasterReport.class);
 
-    Resource reportResource =
-      manager.createDirectly(this.getClass().getResource("/pentaho/deliverables.prpt"), MasterReport.class);
+      MasterReport masterReport = (MasterReport) reportResource.getResource();
 
-    MasterReport masterReport = (MasterReport) reportResource.getResource();
-
-    Number idParam = loggedCrp.getId();
-
-
-    // Get datetime
-    ZonedDateTime timezone = ZonedDateTime.now();
-    DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
-    String zone = timezone.getOffset() + "";
-    if (zone.equals("Z")) {
-      zone = "+0";
-    }
-    String current_date = timezone.format(format) + "(GMT" + zone + ")";
+      Number idParam = loggedCrp.getId();
 
 
-    masterReport.getParameterValues().put("crp_id", idParam);
-    masterReport.getParameterValues().put("year", year);
-    masterReport.getParameterValues().put("date", current_date);
-
-    // Verify if the crp has regions avalaible
-    List<CrpParameter> hasRegionsList = new ArrayList<>();
-    Boolean hasRegions = false;
-    for (CrpParameter hasRegionsParam : this.loggedCrp.getCrpParameters().stream()
-      .filter(cp -> cp.isActive() && cp.getKey().equals(APConstants.CRP_HAS_REGIONS)).collect(Collectors.toList())) {
-      hasRegionsList.add(hasRegionsParam);
-    }
-
-    if (!hasRegionsList.isEmpty()) {
-      if (hasRegionsList.size() > 1) {
-        LOG.warn("There is for more than 1 key of type: " + APConstants.CRP_HAS_REGIONS);
+      // Get datetime
+      ZonedDateTime timezone = ZonedDateTime.now();
+      DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
+      String zone = timezone.getOffset() + "";
+      if (zone.equals("Z")) {
+        zone = "+0";
       }
-      hasRegions = Boolean.valueOf(hasRegionsList.get(0).getValue());
+      String currentDate = timezone.format(format) + "(GMT" + zone + ")";
+
+      masterReport.getParameterValues().put("crp_id", idParam);
+      masterReport.getParameterValues().put("year", year);
+      masterReport.getParameterValues().put("date", currentDate);
+      masterReport.getParameterValues().put("regionalAvalaible", this.hasProgramnsRegions());
+
+      ExcelReportUtil.createXLSX(masterReport, os);
+      bytesXLSX = os.toByteArray();
+      os.close();
+    } catch (Exception e) {
+      LOG.error("Error generating ExpectedDeliverables " + e.getMessage());
+      throw e;
     }
-
-    masterReport.getParameterValues().put("regionalAvalaible", hasRegions);
-
-
-    ExcelReportUtil.createXLSX(masterReport, os);
-    bytesXLSX = os.toByteArray();
-    os.close();
+    // Calculate time of generation
+    long stopTime = System.currentTimeMillis();
+    stopTime = stopTime - startTime;
+    LOG.info(
+      "Downloaded successfully: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
+        + ". CRP: " + this.loggedCrp.getAcronym() + ". Time to generate: " + stopTime + "ms.");
     return SUCCESS;
 
   }
@@ -140,16 +129,12 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
     return "application/xlsx";
   }
 
+  @SuppressWarnings("unused")
   private File getFile(String fileName) {
-
-
     // Get file from resources folder
     ClassLoader classLoader = this.getClass().getClassLoader();
     File file = new File(classLoader.getResource(fileName).getFile());
-
-
     return file;
-
   }
 
   @Override
@@ -184,10 +169,12 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
 
   @Override
   public void prepare() {
+    // Get loggerCrp
     try {
       loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
       loggedCrp = crpManager.getCrpById(loggedCrp.getId());
     } catch (Exception e) {
+      LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
     }
     // Get parameters from URL
     // Get year
@@ -195,8 +182,14 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
       Map<String, Object> parameters = this.getParameters();
       year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
     } catch (Exception e) {
+      LOG.warn("Failed to get " + APConstants.YEAR_REQUEST
+        + " parameter. Parameter will be set as CurrentCycleYear. Exception: " + e.getMessage());
       year = this.getCurrentCycleYear();
     }
+    // Calculate time to generate report
+    startTime = System.currentTimeMillis();
+    LOG.info("Start report download: " + this.getFileName() + ". User: "
+      + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.loggedCrp.getAcronym());
   }
 
 

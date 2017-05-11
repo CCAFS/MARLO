@@ -40,15 +40,10 @@
       </div>
       <div class="accordion-block create-user clearfix" style="display:none">
         <div class="create-user-block">
+          [#-- Loading --]
           <div class="loading" style="display:none"></div>
           [#-- Warning Info --]
           <p class="warning-info" style="display:none"></p> 
-          
-          [#-- Participating Center, CRP Lead Center --]
-          <div class="pull-right">
-            <label for="cofundedMode-1"><input type="radio" name="cofundedMode" id="cofundedMode-1" value="1" checked="checked"/> [@s.text name="projectCofunded.participatingCenter" /] </label>  
-            <label for="cofundedMode-2"><input type="radio" name="cofundedMode" id="cofundedMode-2" value="2" [#if !action.canEditCenterType()]disabled="disabled"[/#if]/> [@s.text name="projectCofunded.crpLeadCenter" /] </label>
-          </div>
           
           [#-- Title --]
           <div class="form-group">
@@ -88,17 +83,26 @@
               <div class="col-md-6">[@customForm.select name="budgetType"   i18nkey="projectCofunded.type" className="type" listName="budgetTypes" header=false required=true /]</div>
             </div>
           </div>
-          <div class="form-group">
-            <div class="row">
-              <div class="col-md-6">[@customForm.input name="contactName" i18nkey="projectCofunded.contactName" className="contactName" required=true/]</div>
-              <div class="col-md-6">[@customForm.input name="contactEmail" i18nkey="projectCofunded.contactEmail" className="contactEmail" required=true/]</div>
-            </div>
-          </div>
+          
+          [#-- Budget Types Description --]
+          <ul style="display:none">
+            [#list budgetTypesList as budgetType]
+              <li class="budgetTypeDescription-${budgetType.id}">${(budgetType.description)!}</li>
+            [/#list]
+          </ul>
+          
           <div class="form-group">
             <div class="row">
               <div class="col-md-12">
-                [@customForm.select name="institution" i18nkey="projectCofunded.donor"  listName="institutions " keyFieldName="id"  displayFieldName="composedName" required=true /]
+                [@customForm.select name="institution" i18nkey="projectCofunded.donor" value="${action.getCGIARInsitution()}"  listName="institutions " keyFieldName="id"  displayFieldName="composedNameLoc" required=true /]
               </div>
+            </div>
+          </div>
+          <div class="form-group"> 
+            [#assign canSeePIEmail = action.hasSpecificities('crp_email_funding_source')]
+            <div class="row">
+              <div class="col-md-6">[@customForm.input name="contactName" i18nkey="projectCofunded.contactName" className="contactName" required=true/]</div>
+              <div class="col-md-6" style="display:${canSeePIEmail?string('block','none')}">[@customForm.input name="contactEmail" i18nkey="projectCofunded.contactEmail" className="contactEmail validate-${canSeePIEmail?string}" required=true/]</div>
             </div>
           </div>
           [#--  
@@ -159,8 +163,8 @@
     <input type="hidden" id="created-message" value="[@s.text name="users.createUser.message" /]" />
     <input type="hidden" id="actionName" value="${(actionName)!}" />
   </div>  
+<span class="hidden cgiarConsortium">${action.getCGIARInsitution()}</span>
 </div>
-
 [#--  Funding Source Popup JS --]
 [#assign customJS =  [ "${baseUrl}/js/global/fundingSourcesPopup.js" ]  + customJS/]
   
