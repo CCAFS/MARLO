@@ -48,3 +48,11 @@ table {
     border: 1px solid #e6e6e6;
     font-size: 0.95em;
 }
+
+.redInfo{
+	color:red;
+}
+
+.blueInfo{
+	color:#2ECC71;
+}

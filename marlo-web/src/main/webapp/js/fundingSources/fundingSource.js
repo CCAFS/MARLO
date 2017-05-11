@@ -2,6 +2,17 @@ $(document).ready(init);
 
 function init() {
   
+  /** Check region option * */
+  $("#regionList").find(".region").each(function(i,e){
+    var option=$("#regionSelect").find("option[value='"+$(e).find("input.rId").val()+"-"+$(e).find("input.regionScope").val()+"']");
+    option.prop('disabled', true);
+    // option.hide();
+  });
+  
+  // Agreement status & Donor
+  $('form select').select2({
+    width: "100%"
+  });
   
   // Popup
   popups();
@@ -35,14 +46,17 @@ function init() {
   $(".removeCountry").on("click", removeCountry);
   
 // REGION item
-  $(".regionsSelect").on("change", function() {
+// $("#regionSelect").select2('destroy');
+  $("#regionSelect").on("change", function() {
     var option = $(this).find("option:selected");
     if(option.val() != "-1") {
       addRegion(option);
+      // Remove option from select
+      // option.remove();
+       option.prop('disabled', true);
+       $('#regionSelect').select2();
+      // $(this).trigger("change");
     }
-    // Remove option from select
-    option.remove();
-    $(this).trigger("change.select2");
   });
   $(".removeRegion").on("click", removeRegion);
 
@@ -51,11 +65,6 @@ function init() {
   date("form #fundingSource\\.startDate", "form #fundingSource\\.endDate");
 
   
-  // Agreement status & Donor
-  $('form select').select2({
-    width: "100%"
-  });
-  
   /* Select2 multiple for country and region select */
   $('.countriesSelect').select2({
       placeholder: "Select a country(ies)...",
@@ -63,10 +72,6 @@ function init() {
       templateSelection: formatState,
       width: '100%'
   });
-  $('.regionSelect').select2({
-    placeholder: "Select a region(s)...",
-    width: '100%'
-});
   
   changeDonorByFundingType($(".type").val(), $(".donor"))
   
@@ -380,18 +385,19 @@ function checkCountryList(block) {
 // Add a new region element
 function addRegion(option) {
 var canAdd = true;
-console.log(option.val());
 if(option.val() == "-1") {
  canAdd = false;
 }
+var optionValue=option.val().split("-")[0];
+var optionScope=option.val().split("-")[1];
 
-var $list = $(option).parents(".select").parents("#regionList").find(".list");
+var $list = $(option).parents("#regionList").find(".list");
 var $item = $("#regionTemplate").clone(true).removeAttr("id");
 var v = $(option).text().length > 20 ? $(option).text().substr(0, 20) + ' ... ' : $(option).text();
 
 // Check if is already selected
 $list.find('.region').each(function(i,e) {
- if($(e).find('input.rId').val() == option.val()) {
+ if($(e).find('input.rId').val() == optionValue) {
    canAdd = false;
    return;
  }
@@ -403,7 +409,8 @@ if(!canAdd) {
 // Set region parameters
 $item.find(".name").attr("title", $(option).text());
 $item.find(".name").html($(option).text());
-$item.find(".rId").val(option.val());
+$item.find(".rId").val(optionValue);
+$item.find(".regionScope").val(optionScope);
 $item.find(".id").val(-1);
 $list.append($item);
 $item.show('slow');
@@ -411,8 +418,8 @@ updateRegionList($list);
 checkRegionList($list);
 
 // Reset select
-$(option).val("-1");
-$(option).trigger('change.select2');
+// $(option).val("-1");
+// $(option).trigger('change.select2');
 
 }
 
@@ -420,6 +427,7 @@ function removeRegion() {
 var $list = $(this).parents('.list');
 var $item = $(this).parents('.region');
 var value = $item.find(".rId").val();
+var scope = $item.find(".regionScope").val();
 var name = $item.find(".name").attr("title");
 
 var $select = $(".regionsSelect");
@@ -428,9 +436,13 @@ $item.hide(300, function() {
  checkRegionList($list);
  updateRegionList($list);
 });
+var option= $select.find("option[value='"+value+"-"+scope+"']");
+console.log(option);
+option.prop('disabled', false);
+$('#regionSelect').select2();
 // Add region option again
-$select.addOption(value, name);
-$select.trigger("change.select2");
+// $select.addOption(value, name);
+// $select.trigger("change.select2");
 }
 
 function updateRegionList($list) {

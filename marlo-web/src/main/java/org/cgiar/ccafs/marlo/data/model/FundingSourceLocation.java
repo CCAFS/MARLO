@@ -13,6 +13,7 @@ import com.google.gson.annotations.Expose;
  */
 public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
 
+
   private static final long serialVersionUID = 2576251519811292346L;
 
 
@@ -23,11 +24,18 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
   @Expose
   private LocElement locElement;
 
+
+  @Expose
+  private LocElementType locElementType;
+
+
   @Expose
   private User modifiedBy;
 
+
   @Expose
   private User createdBy;
+
 
   @Expose
   private FundingSource fundingSource;
@@ -40,6 +48,8 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
 
   @Expose
   private String modificationJustification;
+
+  private boolean scope;
 
   public FundingSourceLocation() {
   }
@@ -56,7 +66,6 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -77,16 +86,13 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
   public Date getActiveSince() {
     return activeSince;
   }
 
-
   public User getCreatedBy() {
     return createdBy;
   }
-
 
   public FundingSource getFundingSource() {
     return fundingSource;
@@ -104,6 +110,11 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
   }
 
 
+  public LocElementType getLocElementType() {
+    return locElementType;
+  }
+
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -117,10 +128,12 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
     return modificationJustification;
   }
 
+
   @Override
   public User getModifiedBy() {
     return modifiedBy;
   }
+
 
   @Override
   public int hashCode() {
@@ -130,9 +143,14 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
     return result;
   }
 
+
   @Override
   public boolean isActive() {
     return active;
+  }
+
+  public boolean isScope() {
+    return scope;
   }
 
   public void setActive(boolean active) {
@@ -143,7 +161,6 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
   }
 
-
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
@@ -151,6 +168,7 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
   public void setFundingSource(FundingSource fundingSource) {
     this.fundingSource = fundingSource;
   }
+
 
   public void setId(Long id) {
     this.id = id;
@@ -160,13 +178,21 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
     this.locElement = locElement;
   }
 
+  public void setLocElementType(LocElementType locElementType) {
+    this.locElementType = locElementType;
+  }
+
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
 
-
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
+  }
+
+
+  public void setScope(boolean scope) {
+    this.scope = scope;
   }
 
 

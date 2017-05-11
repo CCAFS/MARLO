@@ -48,7 +48,8 @@
           
           <div class="row">
           <h3 class="headTitle col-md-7">[@s.text name="projectLocations.title" /]</h3>  
-              <div class="col-md-5 isGlobal">
+            [#-- 
+                <div class="col-md-5 isGlobal">
               <br />
               [#if editable]
               <label class="col-md-10" for=""><span id="globalText">[@s.text name="projectLocations.isGlobal" /]</span></label>
@@ -66,10 +67,7 @@
               </h4>
               [/#if]
             </div>
-            [#--  
-            <div id="view2" title="view 2" class="btn-primary  view" ><img src="${baseUrl}/images/global/layout-icon2.png" alt="Layout2" /></div>
-            <div id="view1" title="view 1" class="btn-primary  view" ><img src="${baseUrl}/images/global/layout-icon.png" alt="Layout1" /></div>
-            --]
+             --]
           </div>
           <div id="" class="borderBox projectLocationsWrapper">
             [#-- Content--]
@@ -86,6 +84,18 @@
                   <div id="map" class="col-md-12"></div>
                 </div>
                 
+                [#-- GLOBAL DIMENSION --]
+                <div class="form-group  col-md-12">
+                  [@customForm.yesNoInput  label="Does this Project have a global dimension?" name="fundingSource.global"  editable=editable inverse=false  cssClass="" /] 
+                </div>
+                <br />
+                <div class="form-group col-md-12 ">
+                  <hr />
+                </div>
+                <div class="form-group col-md-12">
+                  [@customForm.yesNoInput  label="Does this Project have a regional dimension?" name="region"  editable=editable inverse=false  cssClass="isRegional" /]
+                  <small style="color: #337ab7;">Select “yes” if work under the project is addressing issues pertaining to the region globally, as opposed to or in addition to issues pertaining to specific countries within a region.</small>
+                </div>
                 [#-- REGIONS IN WHICH THE PROJECT IS WORKING  --]
                     [#if scopeRegions?has_content]
                 <div class="col-md-12">

@@ -9,7 +9,10 @@
             <generator class="identity" />
         </id>
         <many-to-one name="locElement" class="org.cgiar.ccafs.marlo.data.model.LocElement" fetch="select">
-            <column name="loc_element_id" not-null="true" />
+            <column name="loc_element_id"/>
+        </many-to-one>
+        <many-to-one name="locElementType" class="org.cgiar.ccafs.marlo.data.model.LocElementType" fetch="select">
+            <column name="loc_element_type_id"/>
         </many-to-one>
         <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
             <column name="modified_by" />
