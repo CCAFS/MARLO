@@ -6505,9 +6505,13 @@ img.removeInput {
 }
 
 .newsButton a{
-	position: relative; 
-	padding: 5px; 
-	border-radius: 6px;  
-	font-size: 0.9em; 
-	border-bottom: 1px solid #444444;
+	position: relative;
+	padding: 1px 15px;
+	border-radius: 6px;
+	font-size: 0.9em;
+	border: 1px solid #f7f7f7;
+	box-shadow: 0px 1px 3px #c5c5c5;
+}
+.newsButton b{
+    font-weight: bolder;
 }
