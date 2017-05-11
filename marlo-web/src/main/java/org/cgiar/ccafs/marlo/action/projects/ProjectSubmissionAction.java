@@ -277,8 +277,11 @@ public class ProjectSubmissionAction extends BaseAction {
       reportingSummaryAction.setSession(this.getSession());
       reportingSummaryAction.setYear(this.getCurrentCycleYear());
       //
+      reportingSummaryAction.setLoggedCrp(loggedCrp);
       reportingSummaryAction.setCycle(this.getCurrentCycle());
       reportingSummaryAction.setProjectID(projectID);
+      reportingSummaryAction.setProject(projectManager.getProjectById(projectID));
+      reportingSummaryAction.setCrpSession(loggedCrp.getAcronym());
       reportingSummaryAction.execute();
       // Getting the file data.
       //
