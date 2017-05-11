@@ -495,8 +495,13 @@ public class FundingSourceAction extends BaseAction {
 
 
               } else {
-                fundingSourceLocation.setLocElementType(
-                  locElementTypeManager.getLocElementTypeById(fundingSourceLocation.getLocElement().getId()));
+                LocElementType elementType =
+                  locElementTypeManager.getLocElementTypeById(fundingSourceLocation.getLocElement().getId());
+
+                LocElement element = new LocElement();
+                element.setId(elementType.getId());
+                element.setName(elementType.getName());
+                fundingSourceLocation.setLocElement(element);
               }
 
             }
@@ -557,6 +562,10 @@ public class FundingSourceAction extends BaseAction {
             region = true;
             for (FundingSourceLocation fundingSourceLocation : regions) {
               fundingSourceLocation.setScope(true);
+              LocElement element = new LocElement();
+              element.setId(fundingSourceLocation.getLocElementType().getId());
+              element.setName(fundingSourceLocation.getLocElementType().getName());
+              fundingSourceLocation.setLocElement(element);
               regionsWScope.add(fundingSourceLocation);
             }
           }
@@ -814,11 +823,22 @@ public class FundingSourceAction extends BaseAction {
 
     if (fundingSource.getFundingRegions() != null) {
 
-      List<FundingSourceLocation> regions =
-        new ArrayList<>(fundingSourceDB
-          .getFundingSourceLocations().stream().filter(fl -> fl.isActive()
-            && fl.getLocElement().getLocElementType().getId() == 1 && fl.getLocElementType() != null)
-          .collect(Collectors.toList()));
+      List<FundingSourceLocation> regions = new ArrayList<>(fundingSourceDB.getFundingSourceLocations().stream()
+        .filter(
+          fl -> fl.isActive() && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 1)
+        .collect(Collectors.toList()));
+
+      if (regions != null && regions.size() > 0) {
+        for (FundingSourceLocation fundingSourceLocation : regions) {
+          if (!fundingSource.getFundingRegions().contains(fundingSourceLocation)) {
+            fundingSourceLocationsManager.deleteFundingSourceLocations(fundingSourceLocation.getId());
+          }
+        }
+      }
+
+      regions = new ArrayList<>(fundingSourceDB.getFundingSourceLocations().stream()
+        .filter(fl -> fl.isActive() && fl.getLocElementType() != null && fl.getLocElement() == null)
+        .collect(Collectors.toList()));
 
       if (regions != null && regions.size() > 0) {
         for (FundingSourceLocation fundingSourceLocation : regions) {
@@ -861,11 +881,10 @@ public class FundingSourceAction extends BaseAction {
 
     if (fundingSource.getFundingCountry() != null) {
 
-      List<FundingSourceLocation> countries =
-        new ArrayList<>(fundingSourceDB
-          .getFundingSourceLocations().stream().filter(fl -> fl.isActive()
-            && fl.getLocElement().getLocElementType().getId() == 2 && fl.getLocElementType() == null)
-          .collect(Collectors.toList()));
+      List<FundingSourceLocation> countries = new ArrayList<>(fundingSourceDB.getFundingSourceLocations().stream()
+        .filter(
+          fl -> fl.isActive() && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 2)
+        .collect(Collectors.toList()));
 
       if (countries != null && countries.size() > 0) {
         for (FundingSourceLocation fundingSourceLocation : countries) {
