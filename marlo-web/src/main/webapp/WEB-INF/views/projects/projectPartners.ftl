@@ -292,7 +292,7 @@
       
       [#--Select country office  (if applicable)  --]
       <h5 class="sectionSubTitle">[@s.text name="projectPartners.countryOffices" /]</h5>
-      <div class="countries-list items-list simpleBox">
+      <div class="countries-list items-list simpleBox" listname="${name}.selectedLocations">
         <ul class="">
           [#if (element.selectedLocations?has_content)!false]
             [#list element.selectedLocations as locElement]
