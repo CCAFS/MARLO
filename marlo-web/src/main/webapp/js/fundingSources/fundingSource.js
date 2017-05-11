@@ -4,7 +4,7 @@ function init() {
   
   /** Check region option * */
   $("#regionList").find(".region").each(function(i,e){
-    var option=$("#regionSelect").find("option[value='"+$(e).find("input.rId").val()+"']");
+    var option=$("#regionSelect").find("option[value='"+$(e).find("input.rId").val()+"-"+$(e).find("input.regionScope").val()+"']");
     option.prop('disabled', true);
     // option.hide();
   });
@@ -388,6 +388,8 @@ var canAdd = true;
 if(option.val() == "-1") {
  canAdd = false;
 }
+var optionValue=option.val().split("-")[0];
+var optionScope=option.val().split("-")[1];
 
 var $list = $(option).parents("#regionList").find(".list");
 var $item = $("#regionTemplate").clone(true).removeAttr("id");
@@ -395,7 +397,7 @@ var v = $(option).text().length > 20 ? $(option).text().substr(0, 20) + ' ... ' 
 
 // Check if is already selected
 $list.find('.region').each(function(i,e) {
- if($(e).find('input.rId').val() == option.val()) {
+ if($(e).find('input.rId').val() == optionValue) {
    canAdd = false;
    return;
  }
@@ -407,7 +409,8 @@ if(!canAdd) {
 // Set region parameters
 $item.find(".name").attr("title", $(option).text());
 $item.find(".name").html($(option).text());
-$item.find(".rId").val(option.val());
+$item.find(".rId").val(optionValue);
+$item.find(".regionScope").val(optionScope);
 $item.find(".id").val(-1);
 $list.append($item);
 $item.show('slow');
@@ -424,6 +427,7 @@ function removeRegion() {
 var $list = $(this).parents('.list');
 var $item = $(this).parents('.region');
 var value = $item.find(".rId").val();
+var scope = $item.find(".regionScope").val();
 var name = $item.find(".name").attr("title");
 
 var $select = $(".regionsSelect");
@@ -432,7 +436,7 @@ $item.hide(300, function() {
  checkRegionList($list);
  updateRegionList($list);
 });
-var option= $select.find("option[value='"+value+"']");
+var option= $select.find("option[value='"+value+"-"+scope+"']");
 console.log(option);
 option.prop('disabled', false);
 $('select').select2();

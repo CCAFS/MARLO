@@ -178,13 +178,9 @@
                     <div class="removeRegion removeIcon" title="Remove region"></div>
                   [/#if]
                     <input class="id" type="hidden" name="fundingSource.fundingRegions[${region_index}].id" value="${region.id}" />
-                    [#if region.locElementType?? && region.locElementType.scope]
-                    <input class="rId" type="hidden" name="fundingSource.fundingRegions[${region_index}].locElementType.id" value="${(region.locElementType.id)!}" />
-                    <span class="name">${(region.locElementType.name)!}</span>
-                    [#else]
                     <input class="rId" type="hidden" name="fundingSource.fundingRegions[${region_index}].locElement.id" value="${(region.locElement.id)!}" />
+                    <input class="regionScope" type="hidden" name="fundingSource.fundingRegions[${region_index}].scope" value="${(region.locElementType.scope?c)!}" />
                     <span class="name">${(region.locElement.name)!}</span>
-                    [/#if]
                     <div class="clearfix"></div>
                   </li>
               [/#list]
@@ -198,14 +194,14 @@
                 [#if scopeRegionLists?has_content]
                   <optgroup label="${(loggedCrp.acronym?upper_case)!} regions">
                   [#list scopeRegionLists as region]
-                  <option value="${(region.id)!}">${(region.name)!}</option>
+                  <option value="${(region.id)!}-${(region.locElementType.scope?c)!}">${(region.name)!}</option>
                   [/#list]
                   </optgroup>
                 [/#if]
                 [#if regionLists?has_content]
                 <optgroup label="UN standart (M49)">
                   [#list regionLists as region]
-                  <option value="${(region.id)!}">${(region.name)!}</option>
+                  <option value="${(region.id)!}-${(region.locElementType.scope?c)!}">${(region.name)!}</option>
                   [/#list]
                   </optgroup>
                 [/#if]
@@ -359,6 +355,7 @@
       <div class="removeRegion removeIcon" title="Remove region"></div>
       <input class="id" type="hidden" name="fundingSource.fundingRegions[-1].id" value="" />
       <input class="rId" type="hidden" name="fundingSource.fundingRegions[-1].locElement.id" value="" />
+      <input class="regionScope" type="hidden" name="fundingSource.fundingRegions[-1].scope" value="" />
       <span class="name"></span>
       <div class="clearfix"></div>
     </li>
