@@ -50,6 +50,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  * @author Andrés Valencia - CIAT/CCAFS
+ * @author Christian Garcia - CIAT/CCAFS
  */
 public class ProjectSubmissionAction extends BaseAction {
 

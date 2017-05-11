@@ -130,6 +130,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @author Andrés Felipe Valencia Rivera. CCAFS
+ * @author Christian Garcia - CIAT/CCAFS
  */
 public class ReportingSummaryAction extends BaseAction implements Summary {
 
@@ -2781,6 +2782,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
   @Override
   public void prepare() {
+    /*
+     * READ ME
+     * If you add a parameter you must add it in the ProjectSubmissionAction class
+     */
     // Get loggerCrp
     try {
       loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
