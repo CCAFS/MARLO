@@ -194,7 +194,7 @@
                 [#if scopeRegionLists?has_content]
                   <optgroup label="${(loggedCrp.acronym?upper_case)!} regions">
                   [#list scopeRegionLists as region]
-                  <option value="${(region.id)!}-${(region.locElementType.scope?c)!}">${(region.name)!}</option>
+                  <option value="${(region.id)!}-${(region.scope?c)!}">${(region.name)!}</option>
                   [/#list]
                   </optgroup>
                 [/#if]

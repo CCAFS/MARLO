@@ -489,17 +489,14 @@ public class FundingSourceAction extends BaseAction {
           for (FundingSourceLocation fundingSourceLocation : fundingSource.getFundingRegions()) {
             if (fundingSourceLocation != null) {
 
-              System.out.println("");
-
-
-              if (fundingSourceLocation.getLocElementType() == null) {
+              if (!fundingSourceLocation.isScope()) {
                 fundingSourceLocation
                   .setLocElement(locElementManager.getLocElementById(fundingSourceLocation.getLocElement().getId()));
 
 
               } else {
                 fundingSourceLocation.setLocElementType(
-                  locElementTypeManager.getLocElementTypeById(fundingSourceLocation.getLocElementType().getId()));
+                  locElementTypeManager.getLocElementTypeById(fundingSourceLocation.getLocElement().getId()));
               }
 
             }
@@ -541,11 +538,22 @@ public class FundingSourceAction extends BaseAction {
             .filter(fl -> fl.isActive() && fl.getLocElement().getLocElementType().getId() == 1)
             .collect(Collectors.toList()));
 
+
+          List<FundingSourceLocation> regionsWScope = new ArrayList<>();
           if (regions.size() > 0) {
             region = true;
+            for (FundingSourceLocation fundingSourceLocation : regions) {
+              if (fundingSourceLocation.getLocElementType() == null) {
+                fundingSourceLocation.setScope(false);
+              } else {
+                fundingSourceLocation.setScope(true);
+              }
+
+              regionsWScope.add(fundingSourceLocation);
+            }
           }
 
-          fundingSource.setFundingRegions(new ArrayList<>(regions));
+          fundingSource.setFundingRegions(new ArrayList<>(regionsWScope));
 
         }
 
@@ -830,8 +838,8 @@ public class FundingSourceAction extends BaseAction {
 
             fundingSourceLocationSave.setLocElement(locElement);
           } else {
-            LocElementType elementType =
-              locElementTypeManager.getLocElementTypeById(fundingSourceLocation.getLocElement().getId());
+            long elementId = fundingSourceLocation.getLocElement().getId();
+            LocElementType elementType = locElementTypeManager.getLocElementTypeById(elementId);
 
             fundingSourceLocationSave.setLocElementType(elementType);
           }
