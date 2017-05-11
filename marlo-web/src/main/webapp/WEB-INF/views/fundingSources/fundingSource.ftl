@@ -152,19 +152,40 @@
     <h4 class="headTitle">Location information</h4> 
     <div class="borderBox informationWrapper">
     [#-- GLOBAL DIMENSION --]
+    [#if editable]
       <div class="form-group row ">
-        <div class="col-md-6">[@customForm.yesNoInput  label="Does this Funding Source have a global dimension?" name="fundingSource.global"  editable=editable inverse=false  cssClass="" /] </div>
+        <div class="col-md-6">[@customForm.yesNoInput  label="projectCofunded.globalDimensionQuestion" name="fundingSource.global"  editable=editable inverse=false  cssClass="" /] </div>
       </div>
-      <br />
+      <hr />
       <div class="form-group row">
-        <div class="col-md-6">[@customForm.yesNoInput  label="Does this Funding Source have a regional dimension?" name="region"  editable=editable inverse=false  cssClass="isRegional" /] </div>
+        <div class="col-md-6">[@customForm.yesNoInput  label="projectCofunded.regionalDimensionQuestion" name="region"  editable=editable inverse=false  cssClass="isRegional" /] </div>
       </div>
-      
+      [#else]
+      <div class="form-group row ">
+        <div class="col-md-12">
+      [#if fundingSource.global]
+        <label for="">[@s.text name="projectCofunded.globalDimensionYes" /]</label>
+      [#else]
+        <label for="">[@s.text name="projectCofunded.globalDimensionNo" /]</label>
+      [/#if]
+        </div>
+      </div>
+      <hr />
+      <div class="form-group row ">
+      <div class="col-md-12">
+        [#if region]
+          <label for="">[@s.text name="projectCofunded.regionallDimensionYes" /]</label>
+        [#else]
+          <label for="">[@s.text name="projectCofunded.regionallDimensionNo" /]</label>
+        [/#if]
+      </div>
+      </div>
+      [/#if]
       [#-- REGIONAL SELECT --]
       <div class="regionsBox form-group row" style="display:${region?string('block','none')}">
         <div class="panel tertiary col-md-12">
          <div class="panel-head">
-           <label for=""> [@customForm.text name="Select the regions" readText=!editable /]:[@customForm.req required=editable /]</label>
+           <label for=""> [@customForm.text name="projectCofunded.selectRegions" readText=!editable /]:[@customForm.req required=editable /]</label>
            <br />
            <small style="color: #337ab7;">(Standart regions are defined by United Nations)</small>
          </div>
@@ -214,7 +235,7 @@
       [#-- SELECT COUNTRIES --]
       <div class="form-group row">
         <div class="panel tertiary col-md-12">
-         <div class="panel-head"><label for=""> [@customForm.text name="If the Funding Source focuses on specific countries, please list these countries" readText=!editable /]:</label></div>
+         <div class="panel-head"><label for=""> [@customForm.text name="projectCofunded.listCountries" readText=!editable /]:</label></div>
           <div id="countryList" class="panel-body" listname="fundingSource.fundingCountry"> 
             <ul class="list">
             [#if fundingSource.fundingCountry?has_content]
