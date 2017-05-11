@@ -493,3 +493,11 @@ small.orcidId {
 .partnerPersons {
   margin: 10px 0px;
 }
+
+.divisionBlock {
+  margin-left: -3px;
+}
+
+.divisionBlock label{
+  font-weight:bold;
+}
