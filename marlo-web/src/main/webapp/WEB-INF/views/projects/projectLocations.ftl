@@ -48,7 +48,8 @@
           
           <div class="row">
           <h3 class="headTitle col-md-7">[@s.text name="projectLocations.title" /]</h3>  
-              <div class="col-md-5 isGlobal">
+            [#-- 
+                <div class="col-md-5 isGlobal">
               <br />
               [#if editable]
               <label class="col-md-10" for=""><span id="globalText">[@s.text name="projectLocations.isGlobal" /]</span></label>
@@ -66,10 +67,7 @@
               </h4>
               [/#if]
             </div>
-            [#--  
-            <div id="view2" title="view 2" class="btn-primary  view" ><img src="${baseUrl}/images/global/layout-icon2.png" alt="Layout2" /></div>
-            <div id="view1" title="view 1" class="btn-primary  view" ><img src="${baseUrl}/images/global/layout-icon.png" alt="Layout1" /></div>
-            --]
+             --]
           </div>
           <div id="" class="borderBox projectLocationsWrapper">
             [#-- Content--]
@@ -84,6 +82,19 @@
                 </div>
                 <div  class="col-md-12 map">
                   <div id="map" class="col-md-12"></div>
+                </div>
+                
+                [#-- GLOBAL DIMENSION --]
+                <div class="form-group  col-md-12">
+                  [@customForm.yesNoInput  label="Does this Project have a global dimension?" name="fundingSource.global"  editable=editable inverse=false  cssClass="" /] 
+                </div>
+                <br />
+                <div class="col-md-12 form-group">
+                  <hr />
+                </div>
+                <div class="clearfix"></div>
+                <div class="form-group col-md-12">
+                  [@customForm.yesNoInput  label="Does this Project have a regional dimension?" name="region"  editable=editable inverse=false  cssClass="isRegional" /]
                 </div>
                 
                 [#-- REGIONS IN WHICH THE PROJECT IS WORKING  --]
