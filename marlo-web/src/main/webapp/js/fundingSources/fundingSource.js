@@ -54,7 +54,7 @@ function init() {
       // Remove option from select
       // option.remove();
        option.prop('disabled', true);
-       $('select').select2();
+       $('#regionSelect').select2();
       // $(this).trigger("change");
     }
   });
@@ -439,7 +439,7 @@ $item.hide(300, function() {
 var option= $select.find("option[value='"+value+"-"+scope+"']");
 console.log(option);
 option.prop('disabled', false);
-$('select').select2();
+$('#regionSelect').select2();
 // Add region option again
 // $select.addOption(value, name);
 // $select.trigger("change.select2");
