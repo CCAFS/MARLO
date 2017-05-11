@@ -32,8 +32,10 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
   @Expose
   private User modifiedBy;
 
+
   @Expose
   private User createdBy;
+
 
   @Expose
   private FundingSource fundingSource;
@@ -46,6 +48,9 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
 
   @Expose
   private String modificationJustification;
+
+  @Expose
+  private boolean scope;
 
   public FundingSourceLocation() {
   }
@@ -86,11 +91,9 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
-
   public User getCreatedBy() {
     return createdBy;
   }
-
 
   public FundingSource getFundingSource() {
     return fundingSource;
@@ -132,6 +135,7 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
     return modifiedBy;
   }
 
+
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -140,9 +144,14 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
     return result;
   }
 
+
   @Override
   public boolean isActive() {
     return active;
+  }
+
+  public boolean isScope() {
+    return scope;
   }
 
   public void setActive(boolean active) {
@@ -157,10 +166,10 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
     this.createdBy = createdBy;
   }
 
-
   public void setFundingSource(FundingSource fundingSource) {
     this.fundingSource = fundingSource;
   }
+
 
   public void setId(Long id) {
     this.id = id;
@@ -178,9 +187,13 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
-
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
+  }
+
+
+  public void setScope(boolean scope) {
+    this.scope = scope;
   }
 
 
