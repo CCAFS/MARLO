@@ -186,6 +186,7 @@
 <div class="modal fade" id="requestModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
+      <div class="loading" style="display:none"></div>
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="exampleModalLabel"></h4>
@@ -198,9 +199,11 @@
             [@customForm.select name="countriesID" i18nkey="location.select.country" listName="countries" header=true keyFieldName="isoAlpha2" displayFieldName="name" value="id" multiple=true placeholder="Select a country..." className="countriesRequest"/]
           </div>
         </form>
+        
+        <div class="messageBlock"></div>
       </div>
       <div class="modal-footer"> 
-        <button type="button" class="btn btn-primary"> <span class="glyphicon glyphicon-send"></span> Request</button>
+        <button type="button" class="requestButton btn btn-primary"> <span class="glyphicon glyphicon-send"></span> Request</button>
       </div>
     </div>
   </div>
