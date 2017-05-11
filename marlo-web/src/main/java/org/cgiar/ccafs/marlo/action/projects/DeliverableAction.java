@@ -350,13 +350,13 @@ public class DeliverableAction extends BaseAction {
     return deliverableID;
   }
 
-  public Long getDeliverablePartnership(long projectPeronID) {
+  public DeliverablePartnership getDeliverablePartnership(long projectPeronID) {
 
     for (DeliverablePartnership deliverablePartnership : deliverableManager.getDeliverableById(deliverableID)
       .getDeliverablePartnerships().stream().filter(c -> c.isActive()
         && c.getProjectPartnerPerson().getId().longValue() == projectPeronID && c.getPartnerType().equals("Other"))
       .collect(Collectors.toList())) {
-      return deliverablePartnership.getId().longValue();
+      return deliverablePartnership;
     }
 
     return null;
