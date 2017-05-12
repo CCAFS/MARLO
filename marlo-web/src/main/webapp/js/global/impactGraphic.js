@@ -123,6 +123,7 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
     }
 
     if(ele.data('type') === 'CoA') {
+      colorFlagship = ele.data('color');
       ele.css({
           'shape': 'rectangle',
           'background-color': '#F5F5F5',
@@ -137,7 +138,7 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
         ele.addClass('bottom-center');
       } else {
         ele.css({
-          'color': colorFlagship
+          'color': '#884809'
         });
       }
     }

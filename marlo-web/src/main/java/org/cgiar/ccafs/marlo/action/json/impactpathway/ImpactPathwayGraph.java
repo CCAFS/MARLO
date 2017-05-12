@@ -29,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.SrfSlo;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIdo;
+import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
@@ -76,6 +77,7 @@ public class ImpactPathwayGraph extends BaseAction {
     CrpProgram crpProgram = crpProgramManager.getCrpProgramById(crpProgramID);
     elements = new HashMap<>();
     Set<SrfSlo> slos = new HashSet<>();
+    Set<SrfSubIdo> subIdos = new HashSet<>();
     List<HashMap<String, Object>> dataNodes = new ArrayList<HashMap<String, Object>>();
     List<HashMap<String, Object>> dataEdges = new ArrayList<HashMap<String, Object>>();
     HashMap<String, Object> data = new HashMap<>();
@@ -114,6 +116,7 @@ public class ImpactPathwayGraph extends BaseAction {
 
 
         if (crpOutcomeSubIdo.getSrfSubIdo() != null && crpOutcomeSubIdo.getSrfSubIdo().isActive()) {
+          dataSubIdos = new HashMap<>();
           HashMap<String, Object> dataDetaiSubIDO = new HashMap<>();
           dataDetaiSubIDO.put("id", "SD" + crpOutcomeSubIdo.getSrfSubIdo().getId());
           dataDetaiSubIDO.put("label", "Sub-IDO #" + crpOutcomeSubIdo.getSrfSubIdo().getId());
@@ -123,6 +126,11 @@ public class ImpactPathwayGraph extends BaseAction {
 
           dataSubIdos.put("data", dataDetaiSubIDO);
 
+
+          if (!subIdos.contains(crpOutcomeSubIdo.getSrfSubIdo())) {
+            dataNodes.add(dataSubIdos);
+            subIdos.add(crpOutcomeSubIdo.getSrfSubIdo());
+          }
 
           HashMap<String, Object> dataDetaiSIDO = new HashMap<>();
           dataDetaiSIDO.put("id", "IDO" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
@@ -206,9 +214,11 @@ public class ImpactPathwayGraph extends BaseAction {
       if (dataOutcome.containsKey("data")) {
         dataNodes.add(dataOutcome);
       }
-      if (dataSubIdos.containsKey("data")) {
-        dataNodes.add(dataSubIdos);
-      }
+      /*
+       * if (dataSubIdos.containsKey("data")) {
+       * dataNodes.add(dataSubIdos);
+       * }
+       */
 
       if (dataIdos.containsKey("data")) {
         dataNodes.add(dataIdos);
