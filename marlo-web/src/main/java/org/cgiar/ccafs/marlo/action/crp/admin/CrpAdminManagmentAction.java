@@ -234,13 +234,19 @@ public class CrpAdminManagmentAction extends BaseAction {
       StringBuilder message = new StringBuilder();
       message.append(this.getText("email.dear", new String[] {user.getFirstName()}));
 
-      // TODO: Add CRPAdmin
+      // get CRPAdmin contacts
       String crpAdmins = "";
-      for (CrpUser crpUser : this.loggedCrp.getCrpUsers().stream()
-        .filter(cpu -> cpu.isActive() && cpu.getUser().isActive()).collect(Collectors.toList())) {
-        // crpUser.getUser().getUserRoles().stream().filter(ur->ur.getRole().equals(obj))
+      long adminRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_ADMIN_ROLE));
+      Role roleAdmin = roleManager.getRoleById(adminRol);
+      List<UserRole> userRoles = roleAdmin.getUserRoles().stream()
+        .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
+      for (UserRole userRole : userRoles) {
+        if (crpAdmins.isEmpty()) {
+          crpAdmins += userRole.getUser().getFirstName();
+        } else {
+          crpAdmins += ", " + userRole.getUser().getFirstName();
+        }
       }
-
 
       message.append(this.getText("email.newUser.part1", new String[] {this.getText("email.newUser.listRoles"),
         config.getBaseUrl(), user.getEmail(), password, this.getText("email.support", new String[] {crpAdmins})}));
