@@ -91,7 +91,7 @@ public class SrfSubIdo implements java.io.Serializable, IAuditLog {
       if (other.id != null) {
         return false;
       }
-    } else if (!id.equals(other.id)) {
+    } else if (!id.equals(other.getId())) {
       return false;
     }
     return true;
