@@ -3645,7 +3645,7 @@ span.partnerTag {
   margin-right: 5px;
   border-radius: 4px;
   cursor: pointer;
-
+font-size: 0.95em;
 }
 
 .contactPerson .tag:hover {
