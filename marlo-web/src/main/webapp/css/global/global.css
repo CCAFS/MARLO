@@ -393,7 +393,7 @@ p.username-message {
 p.checked, label.checked {
   background: url(../../images/global/icon-check.png) no-repeat 0 40%;
   padding: 3px 0  3px 23px;
-  margin-bottom: 0px;
+  margin-bottom: 5px;
   text-align: justify;
 }
 
@@ -3607,7 +3607,7 @@ span.partnerTag {
   b;
   background-position: 3px 1px;
   background-repeat: no-repeat;
-  padding: 2px 9px 0px 13px !important;
+  padding: 2px 10px 0px 14px !important;
   display: initial;
 }
 
@@ -3618,7 +3618,7 @@ span.partnerTag {
 
 .contactPerson {
   font-size: 0.96em;
-  padding: 7px 24px 3px 24px !important;
+  padding: 5px 37px 5px 34px !important;
 }
 
 .contactPerson .removeElement{
@@ -3645,7 +3645,7 @@ span.partnerTag {
   margin-right: 5px;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 0.95em;
+
 }
 
 .contactPerson .tag:hover {
@@ -5761,7 +5761,7 @@ span.select2-selection.select2-selection--multiple {
 }
 
 .select2-container--default .select2-selection--single .select2-selection__rendered {
-  line-height: 22px;
+  line-height: 25px;
 }
 
 
@@ -6500,6 +6500,25 @@ img.removeInput {
 
 .blue {
     color: #337ab7;
+}
+
+.newsButton{
+	position:absolute; 
+	right:1%; 
+	bottom:10%; 
+	cursor:pointer;
+}
+
+.newsButton a{
+	position: relative;
+	padding: 1px 15px;
+	border-radius: 6px;
+	font-size: 0.9em;
+	border: 1px solid #f7f7f7;
+	box-shadow: 0px 1px 3px #c5c5c5;
+}
+.newsButton b{
+    font-weight: bolder;
 }
 
 
