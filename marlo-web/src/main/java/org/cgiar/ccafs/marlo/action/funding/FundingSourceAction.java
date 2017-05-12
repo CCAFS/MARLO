@@ -667,7 +667,6 @@ public class FundingSourceAction extends BaseAction {
         fundingSource.getFundingCountry().clear();
       }
 
-
     }
   }
 
@@ -848,8 +847,14 @@ public class FundingSourceAction extends BaseAction {
         .collect(Collectors.toList()));
 
       if (regions != null && regions.size() > 0) {
-        for (FundingSourceLocation fundingSourceLocation : regions) {
-          if (!fundingSource.getFundingRegions().contains(fundingSourceLocation)) {
+        if (region) {
+          for (FundingSourceLocation fundingSourceLocation : regions) {
+            if (!fundingSource.getFundingRegions().contains(fundingSourceLocation)) {
+              fundingSourceLocationsManager.deleteFundingSourceLocations(fundingSourceLocation.getId());
+            }
+          }
+        } else {
+          for (FundingSourceLocation fundingSourceLocation : regions) {
             fundingSourceLocationsManager.deleteFundingSourceLocations(fundingSourceLocation.getId());
           }
         }
