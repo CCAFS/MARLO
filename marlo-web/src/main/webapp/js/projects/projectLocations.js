@@ -63,13 +63,13 @@ function attachEvents() {
   });
 
 // Yes-no button
-  $(".no-button-label").on("click", function() {
+  $(".allCountriesQuestion").find(".no-button-label").on("click", function() {
     $(this).parent().find(".yes-button-label").removeClass("radio-checked");
     $(this).addClass("radio-checked");
     $(this).parent().find("input").val(false);
     checkAllCountries(this);
   });
-  $(".yes-button-label").on("click", function() {
+  $(".allCountriesQuestion").find(".yes-button-label").on("click", function() {
     $(this).parent().find(".no-button-label").removeClass("radio-checked");
     $(this).addClass("radio-checked");
     $(this).parent().find("input").val(true);
@@ -736,8 +736,8 @@ function addLocLevel(locationName,locationId,locationIsList,$locationSelect,loca
   if(locationIsList == "true") {
     if(locationName == "Country") {
     } else {
-      $locationItem.find(".allCountriesQuestion").show();
-      $locationItem.find("span.question").html($("span.qCmvSites").text());
+// $locationItem.find(".allCountriesQuestion").show();
+// $locationItem.find("span.question").html($("span.qCmvSites").text());
     }
     addCountryIntoLocLevel(locationId, $locationSelect, locationName);
   } else {
