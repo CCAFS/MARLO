@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Institution;
@@ -49,6 +50,10 @@ public class ProjectPartnersValidator extends BaseValidator {
 
   @Inject
   private CrpManager crpManager;
+  @Inject
+  private ProjectManager projectManager;
+
+
   @Inject
   private InstitutionManager institutionManager;
   private boolean hasErros;
@@ -104,9 +109,11 @@ public class ProjectPartnersValidator extends BaseValidator {
           this.addMissingField("draft");
         }
       }
+
+      Project projectDb = projectManager.getProjectById(project.getId());
       if (project.getPartners() != null && !project.getPartners().isEmpty()) {
 
-        if (action.isReportingActive()) {
+        if (action.isReportingActive() && project.isProjectEditLeader()) {
           if (!this.isValidString(project.getOverall())) {
             this.addMessage(
               action.getText("Please provide Partnerships overall performance over the last reporting period"));
