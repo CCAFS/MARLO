@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
+import org.cgiar.ccafs.marlo.data.model.SrfIdo;
 import org.cgiar.ccafs.marlo.data.model.SrfSlo;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIdo;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
@@ -83,6 +84,7 @@ public class ImpactPathwayGraph extends BaseAction {
     elements = new HashMap<>();
     Set<SrfSlo> slos = new HashSet<>();
     Set<SrfSubIdo> subIdos = new HashSet<>();
+    Set<SrfIdo> srfIdos = new HashSet<>();
     List<HashMap<String, Object>> dataNodes = new ArrayList<HashMap<String, Object>>();
     List<HashMap<String, Object>> dataEdges = new ArrayList<HashMap<String, Object>>();
     HashMap<String, Object> data = new HashMap<>();
@@ -136,7 +138,7 @@ public class ImpactPathwayGraph extends BaseAction {
             dataNodes.add(dataSubIdos);
             subIdos.add(crpOutcomeSubIdo.getSrfSubIdo());
           }
-
+          dataIdos = new HashMap<>();
           HashMap<String, Object> dataDetaiSIDO = new HashMap<>();
           dataDetaiSIDO.put("id", "IDO" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
           if (crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().isIsCrossCutting()) {
@@ -148,7 +150,10 @@ public class ImpactPathwayGraph extends BaseAction {
           dataDetaiSIDO.put("type", "IDO");
 
           dataIdos.put("data", dataDetaiSIDO);
-
+          if (!srfIdos.contains(crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo())) {
+            dataNodes.add(dataIdos);
+            srfIdos.add(crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo());
+          }
 
           crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getSrfSloIdos().stream().filter(c -> c.isActive())
             .collect(Collectors.toList()).sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
