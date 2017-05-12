@@ -536,7 +536,8 @@ public class ImpactRelationAction extends BaseAction {
                 && c.getCrpProgramOutcome().getCrpProgram().getId().longValue() == myProgram.getId().longValue())
               .collect(Collectors.toList());
             for (CrpOutcomeSubIdo crpOutcomeSubIdo : subIdoOutcomes) {
-              this.addRelations(myProgram, crpOutcomeSubIdo.getCrpProgramOutcome(), null, null, srfIdo);
+              this.addRelations(myProgram, crpOutcomeSubIdo.getCrpProgramOutcome(), null,
+                crpOutcomeSubIdo.getSrfSubIdo(), srfIdo);
             }
 
           } else {
@@ -546,7 +547,8 @@ public class ImpactRelationAction extends BaseAction {
                   && c.getCrpProgramOutcome().getCrpProgram().getId().longValue() == myProgram.getId().longValue())
                 .collect(Collectors.toList());
               for (CrpOutcomeSubIdo crpOutcomeSubIdo : subIdoOutcomes) {
-                this.addRelations(myProgram, crpOutcomeSubIdo.getCrpProgramOutcome(), null, null, srfIdo);
+                this.addRelations(myProgram, crpOutcomeSubIdo.getCrpProgramOutcome(), null,
+                  crpOutcomeSubIdo.getSrfSubIdo(), srfIdo);
               }
             }
           }
@@ -581,7 +583,8 @@ public class ImpactRelationAction extends BaseAction {
                 && c.getCrpProgramOutcome().getCrpProgram().getId().longValue() == myProgram.getId().longValue())
               .collect(Collectors.toList());
             for (CrpOutcomeSubIdo crpOutcomeSubIdo : subIdoOutcomes) {
-              this.addRelations(myProgram, crpOutcomeSubIdo.getCrpProgramOutcome(), srfSlo, null, null);
+              this.addRelations(myProgram, crpOutcomeSubIdo.getCrpProgramOutcome(), srfSlo,
+                crpOutcomeSubIdo.getSrfSubIdo(), null);
             }
 
           } else {
@@ -591,7 +594,8 @@ public class ImpactRelationAction extends BaseAction {
                   && c.getCrpProgramOutcome().getCrpProgram().getId().longValue() == myProgram.getId().longValue())
                 .collect(Collectors.toList());
               for (CrpOutcomeSubIdo crpOutcomeSubIdo : subIdoOutcomes) {
-                this.addRelations(myProgram, crpOutcomeSubIdo.getCrpProgramOutcome(), srfSlo, null, null);
+                this.addRelations(myProgram, crpOutcomeSubIdo.getCrpProgramOutcome(), srfSlo,
+                  crpOutcomeSubIdo.getSrfSubIdo(), null);
               }
             }
           }
