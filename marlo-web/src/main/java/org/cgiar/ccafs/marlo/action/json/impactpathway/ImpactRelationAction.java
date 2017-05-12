@@ -189,9 +189,9 @@ public class ImpactRelationAction extends BaseAction {
                     if (srfSlo == null) {
                       relations.add(dataDetaiSIDO);
                     } else {
-                      if (!crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getSrfSloIdos().stream()
+                      if (crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getSrfSloIdos().stream()
                         .filter(c -> c.getSrfIdo().getId().longValue() == srfSlo.getId().longValue())
-                        .collect(Collectors.toList()).isEmpty()) {
+                        .collect(Collectors.toList()).size() > 0) {
                         relations.add(dataDetaiSIDO);
                       }
                     }
