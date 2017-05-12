@@ -215,10 +215,12 @@ public class CrpAdminManagmentAction extends BaseAction {
    */
   private void notifyNewUserCreated(User user) {
     user = userManager.getUser(user.getId());
+
     if (!user.isActive()) {
-
-      user.setActive(true);
-
+      String toEmail = user.getEmail();
+      String ccEmail = null;
+      String bbcEmails = this.config.getEmailNotification();
+      String subject = this.getText("email.newUser.subject", new String[] {user.getFirstName()});
       // Setting the password
       String password = this.getText("email.outlookPassword");
       if (!user.isCgiarUser()) {
@@ -232,15 +234,23 @@ public class CrpAdminManagmentAction extends BaseAction {
       StringBuilder message = new StringBuilder();
       message.append(this.getText("email.dear", new String[] {user.getFirstName()}));
 
-      message.append(this.getText("email.newUser.part1",
-        new String[] {config.getBaseUrl(), user.getEmail(), password, this.getText("global.clusterOfActivities")}));
-      message.append(this.getText("email.support"));
+      // TODO: Add CRPAdmin
+      String crpAdmins = "";
+      for (CrpUser crpUser : this.loggedCrp.getCrpUsers().stream()
+        .filter(cpu -> cpu.isActive() && cpu.getUser().isActive()).collect(Collectors.toList())) {
+        // crpUser.getUser().getUserRoles().stream().filter(ur->ur.getRole().equals(obj))
+      }
+
+
+      message.append(this.getText("email.newUser.part1", new String[] {this.getText("email.newUser.listRoles"),
+        config.getBaseUrl(), user.getEmail(), password, this.getText("email.support", new String[] {crpAdmins})}));
       message.append(this.getText("email.bye"));
 
       // Saving the new user configuration.
+      user.setActive(true);
       userManager.saveUser(user, this.getCurrentUser());
 
-      // Send pdf
+      // Send UserManual.pdf
       String contentType = "application/pdf";
       String fileName = "MARLO_UserManual_V1.1.pdf";
       byte[] buffer = null;
@@ -265,18 +275,14 @@ public class CrpAdminManagmentAction extends BaseAction {
           }
         }
       }
-      String bbcEmails = this.config.getEmailNotification();
 
       if (buffer != null && fileName != null && contentType != null) {
-        sendMail.send(user.getEmail(), null, bbcEmails,
-          this.getText("email.newUser.subject", new String[] {user.getComposedName()}), message.toString(), buffer,
-          contentType, fileName, true);
+        sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer, contentType, fileName, true);
       } else {
-        sendMail.send(user.getEmail(), null, bbcEmails,
-          this.getText("email.newUser.subject", new String[] {user.getComposedName()}), message.toString(), null, null,
-          null, true);
+        sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
       }
     }
+
   }
 
   /**
