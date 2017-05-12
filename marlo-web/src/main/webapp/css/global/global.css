@@ -2244,10 +2244,8 @@ h3.contentSubTitle {
 }
 
 .borderBox .buttons, .simpleBox .buttons{
-  
-float: none;
-  
-margin: 0;
+  float: none;
+  margin: 0;
 }
 
 .buttons button[name=save] {
@@ -5768,6 +5766,15 @@ h4.testEnvironment {
   color: #FFFFFF;
   background: #8EA786;
   border-bottom: 3px solid #7E9377;
+}
+
+.button-save.disabled, .button-save.disabled:hover {
+  color: #FFFFFF;
+  background: #ffffff !important;
+  border: 1px solid  #c5c5c5;
+  border-bottom: 3px solid #c5c5c5;
+  color: #848484;
+  cursor: auto;
 }
 
 .buttons-content.positionFixedBot {
