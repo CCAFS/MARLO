@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpOutcomeSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.SrfIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
@@ -63,7 +64,8 @@ public class ImpactPathwayGraph extends BaseAction {
 
   @Inject
   private SrfSubIdoManager srfSubIdoManager;
-
+  @Inject
+  private SrfIdoManager srfIdoManager;
   @Inject
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
   @Inject
@@ -150,9 +152,11 @@ public class ImpactPathwayGraph extends BaseAction {
           dataDetaiSIDO.put("type", "IDO");
 
           dataIdos.put("data", dataDetaiSIDO);
-          if (!srfIdos.contains(crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo())) {
+
+          SrfIdo srfIDODB = srfIdoManager.getSrfIdoById(crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
+          if (!srfIdos.contains(srfIDODB)) {
             dataNodes.add(dataIdos);
-            srfIdos.add(crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo());
+            srfIdos.add(srfIDODB);
           }
 
           crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getSrfSloIdos().stream().filter(c -> c.isActive())
@@ -223,15 +227,15 @@ public class ImpactPathwayGraph extends BaseAction {
        * dataNodes.add(dataSubIdos);
        * }
        */
-
-      if (dataIdos.containsKey("data")) {
-        dataNodes.add(dataIdos);
-      }
       /*
-       * if (dataSlos.containsKey("data")) {
-       * dataNodes.add(dataSlos);
+       * if (dataIdos.containsKey("data")) {
+       * dataNodes.add(dataIdos);
        * }
-       */
+       */ /*
+          * if (dataSlos.containsKey("data")) {
+          * dataNodes.add(dataSlos);
+          * }
+          */
 
       i++;
     }
