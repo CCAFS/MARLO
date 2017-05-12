@@ -123,11 +123,12 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
     }
 
     if(ele.data('type') === 'CoA') {
+      colorFlagship = ele.data('color');
       ele.css({
           'shape': 'rectangle',
           'background-color': '#F5F5F5',
           'border-color': colorFlagship,
-          'color': '#F5F5F5',
+          'color': '#884809',
           'text-outline-width': 0
       });
       if(ele.children().length > 0) {
@@ -137,7 +138,7 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
         ele.addClass('bottom-center');
       } else {
         ele.css({
-          'color': colorFlagship
+          'color': '#884809'
         });
       }
     }
