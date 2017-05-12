@@ -128,7 +128,7 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
           'shape': 'rectangle',
           'background-color': '#F5F5F5',
           'border-color': colorFlagship,
-          'color': '#884809',
+          'color': '#F5F5F5',
           'text-outline-width': 0
       });
       if(ele.children().length > 0) {
