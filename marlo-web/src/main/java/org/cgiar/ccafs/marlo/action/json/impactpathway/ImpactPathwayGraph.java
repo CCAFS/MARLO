@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpOutcomeSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
@@ -58,6 +59,10 @@ public class ImpactPathwayGraph extends BaseAction {
   long crpProgramID;
   @Inject
   private CrpProgramManager crpProgramManager;
+
+  @Inject
+  private SrfSubIdoManager srfSubIdoManager;
+
   @Inject
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
   @Inject
@@ -180,16 +185,10 @@ public class ImpactPathwayGraph extends BaseAction {
           HashMap<String, Object> dataEdgeKeyOoutput = new HashMap<>();
 
 
-          HashMap<String, Object> dataEdgeDetailIDO = new HashMap<>();
-          dataEdgeDetailIDO.put("target", "SD" + crpOutcomeSubIdo.getSrfSubIdo().getId());
-          dataEdgeDetailIDO.put("source", "IDO" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
-          HashMap<String, Object> dataEdgeIDO = new HashMap<>();
-
           dataEdgeKeyOoutput.put("data", dataEdgeDetailOutcome);
           dataEdges.add(dataEdgeKeyOoutput);
 
-          dataEdgeIDO.put("data", dataEdgeDetailIDO);
-          dataEdges.add(dataEdgeIDO);
+
         }
 
 
@@ -283,6 +282,17 @@ public class ImpactPathwayGraph extends BaseAction {
         return compareTO;
       }
     });
+
+
+    for (SrfSubIdo subIdo : subIdos) {
+      subIdo = srfSubIdoManager.getSrfSubIdoById(subIdo.getId());
+      HashMap<String, Object> dataEdgeDetailIDO = new HashMap<>();
+      dataEdgeDetailIDO.put("target", "SD" + subIdo.getId());
+      dataEdgeDetailIDO.put("source", "IDO" + subIdo.getSrfIdo().getId());
+      HashMap<String, Object> dataEdgeIDO = new HashMap<>();
+      dataEdgeIDO.put("data", dataEdgeDetailIDO);
+      dataEdges.add(dataEdgeIDO);
+    }
 
     Collections.sort(dataEdges, new Comparator<HashMap<String, Object>>() {
 
