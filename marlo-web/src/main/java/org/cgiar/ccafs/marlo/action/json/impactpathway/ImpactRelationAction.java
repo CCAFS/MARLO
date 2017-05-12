@@ -140,7 +140,7 @@ public class ImpactRelationAction extends BaseAction {
 
         for (CrpOutcomeSubIdo crpOutcomeSubIdo : crpProgramOutcome.getCrpOutcomeSubIdos().stream()
           .filter(c -> c.isActive()).collect(Collectors.toList())) {
-
+          boolean add = false;
 
           if (crpOutcomeSubIdo.getSrfSubIdo() != null && crpOutcomeSubIdo.getSrfSubIdo().isActive()
             && !subIdos.contains(crpOutcomeSubIdo.getSrfSubIdo())) {
@@ -157,70 +157,74 @@ public class ImpactRelationAction extends BaseAction {
               .collect(Collectors.toList()).isEmpty()) {
               if (srfSubIdo == null) {
                 relations.add(dataDetaiSubIDO);
+                add = true;
               } else {
                 if (srfSubIdo.getId().equals(crpOutcomeSubIdo.getSrfSubIdo().getId())) {
                   relations.add(dataDetaiSubIDO);
+                  add = true;
                 }
               }
 
             }
 
-
-            HashMap<String, Object> dataDetaiSIDO = new HashMap<>();
-            dataDetaiSIDO.put("id", "IDO" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
-            if (crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().isIsCrossCutting()) {
-              dataDetaiSIDO.put("label", "Cross-Cutting IDO #" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
-            } else {
-              dataDetaiSIDO.put("label", "IDO #" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
-            }
-            dataDetaiSIDO.put("description", crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getDescription());
-            dataDetaiSIDO.put("order", new Integer(2));
-            dataDetaiSIDO.put("type", "IDO");
-
-            if (relations.stream().filter(c -> c.get("id").equals(dataDetaiSIDO.get("id"))).collect(Collectors.toList())
-              .isEmpty()) {
-
-              if (srfIdo == null) {
-                relations.add(dataDetaiSIDO);
+            if (add) {
+              HashMap<String, Object> dataDetaiSIDO = new HashMap<>();
+              dataDetaiSIDO.put("id", "IDO" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
+              if (crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().isIsCrossCutting()) {
+                dataDetaiSIDO.put("label", "Cross-Cutting IDO #" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
               } else {
-                if (srfIdo.getId().equals(crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId())) {
-                  if (srfSlo == null) {
-                    relations.add(dataDetaiSIDO);
-                  } else {
-                    if (crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getSrfSloIdos().contains(srfSlo)) {
+                dataDetaiSIDO.put("label", "IDO #" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
+              }
+              dataDetaiSIDO.put("description", crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getDescription());
+              dataDetaiSIDO.put("order", new Integer(2));
+              dataDetaiSIDO.put("type", "IDO");
+
+              if (relations.stream().filter(c -> c.get("id").equals(dataDetaiSIDO.get("id")))
+                .collect(Collectors.toList()).isEmpty()) {
+
+                if (srfIdo == null) {
+                  relations.add(dataDetaiSIDO);
+                } else {
+                  if (srfIdo.getId().equals(crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId())) {
+                    if (srfSlo == null) {
                       relations.add(dataDetaiSIDO);
+                    } else {
+                      if (crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getSrfSloIdos().contains(srfSlo)) {
+                        relations.add(dataDetaiSIDO);
+                      }
                     }
                   }
                 }
+
               }
 
-            }
+
+              for (SrfSloIdo srfSloIdo : crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getSrfSloIdos()) {
+
+                HashMap<String, Object> dataDetaiSlo = new HashMap<>();
+                dataDetaiSlo.put("id", "SLO" + srfSloIdo.getSrfSlo().getId());
+                dataDetaiSlo.put("label", "SLO #" + srfSloIdo.getSrfSlo().getId());
+                dataDetaiSlo.put("description", srfSloIdo.getSrfSlo().getDescription());
+                dataDetaiSlo.put("order", new Integer(1));
+                dataDetaiSlo.put("type", "SLO");
 
 
-            for (SrfSloIdo srfSloIdo : crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getSrfSloIdos()) {
-
-              HashMap<String, Object> dataDetaiSlo = new HashMap<>();
-              dataDetaiSlo.put("id", "SLO" + srfSloIdo.getSrfSlo().getId());
-              dataDetaiSlo.put("label", "SLO #" + srfSloIdo.getSrfSlo().getId());
-              dataDetaiSlo.put("description", srfSloIdo.getSrfSlo().getDescription());
-              dataDetaiSlo.put("order", new Integer(1));
-              dataDetaiSlo.put("type", "SLO");
-
-
-              if (relations.stream().filter(c -> c.get("id").equals(dataDetaiSlo.get("id")))
-                .collect(Collectors.toList()).isEmpty()) {
-                if (srfSlo == null) {
-                  relations.add(dataDetaiSlo);
-                } else {
-                  if (srfSlo.getId().equals(srfSloIdo.getSrfSlo().getId())) {
+                if (relations.stream().filter(c -> c.get("id").equals(dataDetaiSlo.get("id")))
+                  .collect(Collectors.toList()).isEmpty()) {
+                  if (srfSlo == null) {
                     relations.add(dataDetaiSlo);
+                  } else {
+                    if (srfSlo.getId().equals(srfSloIdo.getSrfSlo().getId())) {
+                      relations.add(dataDetaiSlo);
+                    }
                   }
+
                 }
 
+
               }
-
-
             }
+
           }
         }
 
