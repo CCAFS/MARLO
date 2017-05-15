@@ -50,9 +50,7 @@ public class UserRole implements java.io.Serializable {
     if (obj == null) {
       return false;
     }
-    if (this.getClass() != obj.getClass()) {
-      return false;
-    }
+
     UserRole other = (UserRole) obj;
     if (role == null) {
       if (other.role != null) {
@@ -65,7 +63,7 @@ public class UserRole implements java.io.Serializable {
       if (other.user != null) {
         return false;
       }
-    } else if (!user.equals(other.getUser())) {
+    } else if (!user.getId().equals(other.getUser().getId())) {
       return false;
     }
     return true;

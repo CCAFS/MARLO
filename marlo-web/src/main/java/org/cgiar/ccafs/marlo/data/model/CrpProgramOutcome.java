@@ -122,15 +122,13 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
     if (obj == null) {
       return false;
     }
-    if (this.getClass() != obj.getClass()) {
-      return false;
-    }
+
     CrpProgramOutcome other = (CrpProgramOutcome) obj;
     if (id == null) {
       if (other.id != null) {
         return false;
       }
-    } else if (!id.equals(other.id)) {
+    } else if (!id.equals(other.getId())) {
       return false;
     }
     return true;

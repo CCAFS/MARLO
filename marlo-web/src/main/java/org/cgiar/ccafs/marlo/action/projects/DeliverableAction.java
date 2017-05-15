@@ -1134,9 +1134,22 @@ public class DeliverableAction extends BaseAction {
         partnerDivision = partnerDivisionManager
           .getPartnerDivisionById(deliverable.getResponsiblePartner().getPartnerDivision().getId());
       }
-
       DeliverablePartnership partnership = new DeliverablePartnership();
-      partnership.setId(deliverable.getResponsiblePartner().getId());
+
+
+      Deliverable deliverableDB = deliverableManager.getDeliverableById(deliverableID);
+      try {
+        DeliverablePartnership partnershipDB = deliverableDB.getDeliverablePartnerships().stream()
+          .filter(
+            dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
+          .collect(Collectors.toList()).get(0);
+        if (partnershipDB != null) {
+          partnership.setId(partnershipDB.getId());
+        }
+      } catch (Exception e) {
+        partnership.setId(null);
+      }
+
       partnership.setDeliverable(deliverable);
       partnership.setProjectPartnerPerson(partnerPerson);
       partnership.setPartnerDivision(partnerDivision);
@@ -1289,9 +1302,10 @@ public class DeliverableAction extends BaseAction {
         && deliverablePrew.getDeliverablePartnerships().size() > 0) {
 
         try {
-          partnershipResponsible = deliverablePrew.getDeliverablePartnerships().stream()
-            .filter(
-              dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
+          partnershipResponsible =
+            deliverablePrew.getDeliverablePartnerships().stream()
+              .filter(dp -> dp.isActive()
+                && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
             .collect(Collectors.toList()).get(0);
         } catch (Exception e) {
           partnershipResponsible = null;
@@ -1343,24 +1357,27 @@ public class DeliverableAction extends BaseAction {
 
           deliverablePartnershipManager.saveDeliverablePartnership(partnership);
         } else {
-          DeliverablePartnership partnershipDB =
-            deliverablePartnershipManager.getDeliverablePartnershipById(deliverable.getResponsiblePartner().getId());
 
-          if (deliverable.getResponsiblePartner().getPartnerDivision() != null
-            && deliverable.getResponsiblePartner().getPartnerDivision().getId().longValue() != -1) {
-            try {
-              PartnerDivision division = partnerDivisionManager
-                .getPartnerDivisionById(deliverable.getResponsiblePartner().getPartnerDivision().getId());
-              partnershipDB.setPartnerDivision(division);
-            } catch (Exception e) {
+          if (deliverable.getResponsiblePartner() != null) {
+            DeliverablePartnership partnershipDB =
+              deliverablePartnershipManager.getDeliverablePartnershipById(deliverable.getResponsiblePartner().getId());
+
+            if (deliverable.getResponsiblePartner().getPartnerDivision() != null
+              && deliverable.getResponsiblePartner().getPartnerDivision().getId().longValue() != -1) {
+              try {
+                PartnerDivision division = partnerDivisionManager
+                  .getPartnerDivisionById(deliverable.getResponsiblePartner().getPartnerDivision().getId());
+                partnershipDB.setPartnerDivision(division);
+              } catch (Exception e) {
+                partnershipDB.setPartnerDivision(null);
+              }
+            } else {
               partnershipDB.setPartnerDivision(null);
             }
-
-
-          } else {
-            partnershipDB.setPartnerDivision(null);
+            deliverablePartnershipManager.saveDeliverablePartnership(partnershipDB);
           }
-          deliverablePartnershipManager.saveDeliverablePartnership(partnershipDB);
+
+
         }
       } else if (partnershipResponsible == null && partnerPerson != null) {
 

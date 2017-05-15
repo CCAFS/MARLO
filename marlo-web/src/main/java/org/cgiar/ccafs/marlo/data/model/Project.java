@@ -352,11 +352,12 @@ public class Project implements java.io.Serializable, IAuditLog {
       return false;
     }
     Project other = (Project) obj;
+
     if (id == null) {
       if (other.id != null) {
         return false;
       }
-    } else if (!id.equals(other.id)) {
+    } else if (!id.equals(other.getId())) {
       return false;
     }
     return true;

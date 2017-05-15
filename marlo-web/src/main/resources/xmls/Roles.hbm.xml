@@ -20,6 +20,9 @@
 			<column name="acronym" length="50" not-null="true" />
 		</property>
 
+    <property name="order" type="java.lang.Integer">
+      <column name="order" />
+    </property>
 		<set lazy="true" name="userRoles" order-by="user_id" table="user_roles"
 			inverse="true" fetch="select">
 			<key>

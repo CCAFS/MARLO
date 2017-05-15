@@ -33,7 +33,7 @@ function init() {
     addSelect2();
 
   }
-// This function enables launch the pop up window
+  // This function enables launch the pop up window
   popups();
   // Attaching listeners
   attachEvents();

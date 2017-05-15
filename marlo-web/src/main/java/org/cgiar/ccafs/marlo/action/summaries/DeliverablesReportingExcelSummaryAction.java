@@ -391,6 +391,9 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
             leader = responsibleppp.getUser().getComposedName();
             if (responsibleppp.getInstitution() != null && responsibleppp.getInstitution().getAcronym() != null) {
               leader += " - " + responsibleppp.getInstitution().getAcronym();
+              if (responisble.getPartnerDivision() != null) {
+                leader += " (" + responisble.getPartnerDivision().getComposedName() + ")";
+              }
             }
           }
         }

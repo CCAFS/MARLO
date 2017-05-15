@@ -180,3 +180,9 @@ table#marloUsersTable tr {
 .radio input[type="radio"] + .radio-label:empty:before {
   margin-right: 0;
 }
+
+.locElementType {
+    width: 49%;
+    margin-left: 1%;
+    float: left;
+}

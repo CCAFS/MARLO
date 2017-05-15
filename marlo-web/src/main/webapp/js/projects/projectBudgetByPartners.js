@@ -9,6 +9,10 @@ function init() {
   $('a[data-toggle="tab"]').ready(showHelpText(), setViewMore());
 
   countFundingSources = parseInt($('#budgetIndex').text());
+
+  /**
+   * @override
+   */
   addProject = addFundingSource;
 
   // Setting Numeric Inputs
@@ -19,6 +23,9 @@ function init() {
 
   // Setting Percentage Inputs
   $('form input.percentageInput').percentageInput();
+
+  // Update total budget currency per Year
+  updateYearsTotalCurrency();
 
   // Attaching events
   attachEvents();
@@ -66,13 +73,15 @@ function removeBilateralFund() {
     $.each(budgetTypeJson, function(i,e) {
       updateActiveYearCurrency(e.id, $partner);
     });
+    updateYearsTotalCurrency();
   });
 }
 
 function calculateCurrencyPercentage() {
   var type = getClassParameter($(this), 'type');
   var $partner = $(this).parents('.projectPartner');
-  updateActiveYearCurrency(type, $partner)
+  updateActiveYearCurrency(type, $partner);
+  updateYearsTotalCurrency();
 }
 
 /**
@@ -127,7 +136,7 @@ function addFundingSource(fs) {
 }
 
 function updateActiveYearCurrency(type,partner) {
-  var totalyear = calculateBudgetCurrency(type);
+  var totalyear = getCurrencyByType(type);
   var $target = $('.tab-pane.active .totalByYear-' + type);
   // Set total budget amount of the active year
   $target.text(setCurrencyFormat(totalyear));
@@ -136,7 +145,7 @@ function updateActiveYearCurrency(type,partner) {
 
   // For each partner
   $('.tab-pane.active .projectPartner').each(function(i,e) {
-    var totalPartner = calculateBudgetCurrencyByPartner(type, $(e));
+    var totalPartner = getCurrencyByTypeAndPartner(type, $(e));
     // Set label no editable amount
     var $targetPartner = $(e).find('.currencyInput.totalByPartner-' + type);
     $targetPartner.text(setCurrencyFormat(totalPartner));
@@ -148,7 +157,30 @@ function updateActiveYearCurrency(type,partner) {
   calculateGenderBudget(type, $(partner));
 }
 
-function calculateBudgetCurrency(type) {
+function showHelpText() {
+  $('.helpMessage').show();
+  $('.helpMessage').addClass('animated flipInX');
+}
+
+function updateYearsTotalCurrency() {
+  $('.tab-pane').each(function(i,pane) {
+    var year = $(pane).attr('id').split('-')[1];
+    var totalyear = getTotalByYear(year);
+    var $target = $('.totalYear.year-' + year);
+    // Set total budget amount of the year
+    $target.text(setCurrencyFormat(totalyear));
+    // Animate CSS
+    $target.parent().animateCss('flipInX');
+  });
+}
+
+/**
+ * Get budget Currency filtered by budget type ID
+ * 
+ * @param {int} Budget Type ID
+ * @returns {number} Total
+ */
+function getCurrencyByType(type) {
   var total = 0
   $('.tab-pane.active input.currencyInput.type-' + type + ':enabled').each(function(i,e) {
     total = total + removeCurrencyFormat($(e).val() || "0");
@@ -156,7 +188,27 @@ function calculateBudgetCurrency(type) {
   return total;
 }
 
-function calculateBudgetCurrencyByPartner(type,partner) {
+/**
+ * Get total budget per year (All budget types included)
+ * 
+ * @param {int} Year
+ * @returns {number} Total
+ */
+function getTotalByYear(year) {
+  var total = 0
+  $('span.totalByYear.year-' + year).each(function(i,e) {
+    total = total + removeCurrencyFormat($(e).text() || "0");
+  });
+  return total;
+}
+
+/**
+ * Get budget Currency filtered by budget type ID and Partner
+ * 
+ * @param {int} Budget Type ID
+ * @param {DOM} Partner
+ */
+function getCurrencyByTypeAndPartner(type,partner) {
   var total = 0
   $(partner).find('input.currencyInput.type-' + type + ':enabled').each(function(i,e) {
     total = total + removeCurrencyFormat($(e).val() || "0");
@@ -164,6 +216,12 @@ function calculateBudgetCurrencyByPartner(type,partner) {
   return total;
 }
 
+/**
+ * Calculate gender budget currency and percentage filtered by budget type ID and Partner
+ * 
+ * @param {int} Budget Type ID
+ * @param {DOM} Partner
+ */
 function calculateGenderBudget(type,partner) {
   var totalAmount = 0;
   var percentage = 0;
@@ -175,16 +233,16 @@ function calculateGenderBudget(type,partner) {
     totalAmount = totalAmount + amount;
     genderAmount = genderAmount + ((amount / 100) * pcg);
   });
+
   percentage = ((genderAmount / totalAmount) * 100).toFixed(2);
+
   if(isNaN(percentage)) {
     percentage = 0;
   }
+
+  // Percentage
   $(partner).find('.percentageLabel.type-' + type).text(setPercentageFormat(percentage));
 
+  // Amount (Currency)
   $(partner).find('.percentageAmount.type-' + type + ' span').text(setCurrencyFormat(genderAmount));
-}
-
-function showHelpText() {
-  $('.helpMessage').show();
-  $('.helpMessage').addClass('animated flipInX');
 }
