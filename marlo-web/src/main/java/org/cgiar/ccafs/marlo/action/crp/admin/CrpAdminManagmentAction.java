@@ -368,6 +368,153 @@ public class CrpAdminManagmentAction extends BaseAction {
     }
   }
 
+  /**
+   * This method notify the user that is been assigned as Program Leader for an specific Flagship
+   * 
+   * @param user userAssigned is the user been assigned
+   * @param role is the role(Program Leader)
+   * @param crpProgram is the Flagship where is assigned
+   */
+  private void notifyRoleFlagshipManagerAssigned(User userAssigned, Role role, CrpProgram crpProgram) {
+    // Email send to the user assigned
+    String toEmail = userAssigned.getEmail();
+    // CC will be the user who is making the modification.
+    String ccEmail = "";
+    if (this.getCurrentUser() != null) {
+      ccEmail = this.getCurrentUser().getEmail();
+    }
+
+    crpProgram = this.crpProgramManager.getCrpProgramById(crpProgram.getId());
+    // CC will be also the others FL already assigned to the Flagship
+    for (CrpProgramLeader crpProgramLeader : crpProgram.getCrpProgramLeaders().stream()
+      .filter(cpl -> cpl.getUser().isActive() && cpl.isActive()).collect(Collectors.toList())) {
+      if (ccEmail.isEmpty()) {
+        ccEmail += crpProgramLeader.getUser().getEmail();
+      } else {
+        ccEmail += ", " + crpProgramLeader.getUser().getEmail();
+      }
+    }
+
+    // CC will be also the CRP Admins
+    String crpAdmins = "";
+    String crpAdminsEmail = "";
+    long adminRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_ADMIN_ROLE));
+    Role roleAdmin = roleManager.getRoleById(adminRol);
+    List<UserRole> userRoles = roleAdmin.getUserRoles().stream()
+      .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
+    for (UserRole userRole : userRoles) {
+      if (crpAdmins.isEmpty()) {
+        crpAdmins += userRole.getUser().getFirstName();
+        crpAdminsEmail += userRole.getUser().getEmail();
+
+      } else {
+        crpAdmins += ", " + userRole.getUser().getFirstName();
+        crpAdminsEmail += ", " + userRole.getUser().getEmail();
+      }
+    }
+    if (!crpAdminsEmail.isEmpty()) {
+      if (ccEmail.isEmpty()) {
+        ccEmail += crpAdminsEmail;
+      } else {
+        ccEmail += ", " + crpAdminsEmail;
+      }
+    }
+
+    // BBC will be our gmail notification email.
+    String bbcEmails = this.config.getEmailNotification();
+
+    String subject = this.getText("email.flagshipmanager.assigned.subject",
+      new String[] {crpProgram.getAcronym(), this.getText("CrpProgram.managers.short"), loggedCrp.getName()});
+
+    crpProgram = crpProgramManager.getCrpProgramById(crpProgram.getId());
+
+    userAssigned = userManager.getUser(userAssigned.getId());
+    StringBuilder message = new StringBuilder();
+    // Building the Email message:
+    message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
+    message.append(this.getText("email.flagshipmanager.assigned",
+      new String[] {this.getText("CrpProgram.managers"), crpProgram.getAcronym(), crpProgram.getName(),
+        loggedCrp.getName(), this.getText("email.flagshipmanager.responsabilities")}));
+
+    message.append(this.getText("email.support", new String[] {crpAdmins}));
+    message.append(this.getText("email.bye"));
+
+    if (role.equals(fplRole)) {
+      sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+    } else {
+      sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+    }
+  }
+
+
+  private void notifyRoleFlagshipManagerUnassigned(User userRemoved, Role role, CrpProgram crpProgram) {
+    // Email send to the user assigned
+    String toEmail = userRemoved.getEmail();
+    // CC will be the user who is making the modification.
+    String ccEmail = "";
+    if (this.getCurrentUser() != null) {
+      ccEmail = this.getCurrentUser().getEmail();
+    }
+    // CC will be also the others FL already assigned to the Flagship
+    crpProgram = this.crpProgramManager.getCrpProgramById(crpProgram.getId());
+    for (CrpProgramLeader crpProgramLeader : crpProgram.getCrpProgramLeaders().stream()
+      .filter(cpl -> cpl.getUser().isActive() && cpl.isActive()).collect(Collectors.toList())) {
+      if (ccEmail.isEmpty()) {
+        ccEmail += crpProgramLeader.getUser().getEmail();
+      } else {
+        ccEmail += ", " + crpProgramLeader.getUser().getEmail();
+      }
+    }
+    // get CRPAdmin contacts
+    String crpAdmins = "";
+    String crpAdminsEmail = "";
+    long adminRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_ADMIN_ROLE));
+    Role roleAdmin = roleManager.getRoleById(adminRol);
+    List<UserRole> userRoles = roleAdmin.getUserRoles().stream()
+      .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
+    for (UserRole userRole : userRoles) {
+      if (crpAdmins.isEmpty()) {
+        crpAdmins += userRole.getUser().getFirstName();
+        crpAdminsEmail += userRole.getUser().getEmail();
+      } else {
+        crpAdmins += ", " + userRole.getUser().getFirstName();
+        crpAdminsEmail += ", " + userRole.getUser().getEmail();
+      }
+    }
+    if (!crpAdminsEmail.isEmpty()) {
+      if (ccEmail.isEmpty()) {
+        ccEmail += crpAdminsEmail;
+      } else {
+        ccEmail += ", " + crpAdminsEmail;
+      }
+    }
+
+    // BBC will be our gmail notification email.
+    String bbcEmails = this.config.getEmailNotification();
+
+    String subject = this.getText("email.flagshipmanager.unassigned.subject",
+      new String[] {crpProgram.getAcronym(), this.getText("CrpProgram.managers.short"), loggedCrp.getName()});
+    crpProgram = crpProgramManager.getCrpProgramById(crpProgram.getId());
+
+    userRemoved = userManager.getUser(userRemoved.getId());
+    StringBuilder message = new StringBuilder();
+    // Building the Email message:
+    message.append(this.getText("email.dear", new String[] {userRemoved.getFirstName()}));
+    message.append(
+      this.getText("email.flagshipmanager.unassigned", new String[] {this.getText("programManagement.flagship.role"),
+        crpProgram.getAcronym(), crpProgram.getName(), loggedCrp.getName()}));
+
+
+    message.append(this.getText("email.support", new String[] {crpAdmins}));
+    message.append(this.getText("email.bye"));
+
+    if (role.equals(fplRole)) {
+      sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+    } else {
+      sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+    }
+  }
+
   private void notifyRoleFlagshipUnassigned(User userRemoved, Role role, CrpProgram crpProgram) {
     // Email send to the user assigned
     String toEmail = userRemoved.getEmail();
@@ -435,7 +582,6 @@ public class CrpAdminManagmentAction extends BaseAction {
     }
   }
 
-
   /**
    * This method notify the user that is been assigned as Program Leader for an specific Regional Program
    * 
@@ -489,6 +635,7 @@ public class CrpAdminManagmentAction extends BaseAction {
     sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
   }
 
+
   /**
    * This method notify the user that is been assigned as Program Leader for an specific Regional Program
    * 
@@ -536,7 +683,6 @@ public class CrpAdminManagmentAction extends BaseAction {
 
     sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
   }
-
 
   private void pmuRoleData() {
     Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
@@ -657,6 +803,7 @@ public class CrpAdminManagmentAction extends BaseAction {
     }
   }
 
+
   private void programLeaderData() {
     for (CrpProgram crpProgram : flagshipsPrograms) {
       CrpProgram crpProgramPrev = crpProgramManager.getCrpProgramById(crpProgram.getId());
@@ -764,7 +911,6 @@ public class CrpAdminManagmentAction extends BaseAction {
     }
   }
 
-
   private void programManagerData() {
     for (CrpProgram crpProgram : flagshipsPrograms) {
       CrpProgram crpProgramPrev = crpProgramManager.getCrpProgramById(crpProgram.getId());
@@ -798,7 +944,7 @@ public class CrpAdminManagmentAction extends BaseAction {
                   userRole.setUser(userManager.getUser(userRole.getUser().getId()));
                   // Notifiy user been unasigned Program Leader to Flagship
 
-                  this.notifyRoleFlagshipUnassigned(userRole.getUser(), userRole.getRole(), crpProgram);
+                  this.notifyRoleFlagshipManagerUnassigned(userRole.getUser(), userRole.getRole(), crpProgram);
                 }
               }
             }
@@ -844,7 +990,7 @@ public class CrpAdminManagmentAction extends BaseAction {
               userRole.setUser(userManager.getUser(userRole.getUser().getId()));
               this.notifyNewUserCreated(userRole.getUser());
               // Notifiy user been asigned Program Leader to Flagship
-              this.notifyRoleFlagshipAssigned(userRole.getUser(), userRole.getRole(), crpProgram);
+              this.notifyRoleFlagshipManagerAssigned(userRole.getUser(), userRole.getRole(), crpProgram);
             }
 
             this.addCrpUser(user);
@@ -853,7 +999,6 @@ public class CrpAdminManagmentAction extends BaseAction {
       }
     }
   }
-
 
   private void programsData() {
     List<CrpProgram> fgProgramsRewiev =
