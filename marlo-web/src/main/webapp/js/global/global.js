@@ -433,7 +433,7 @@ function formatRepo(repo) {
   } else {
     markup += "<strong>" + repo.name + "</strong>";
   }
-  markup += " <span class='grayColor'>(" + repo.location + ")</span> ";
+
   // Partner type
   markup += "<br>";
   markup += "<small> <i>" + repo.type + " </i></small> ";
