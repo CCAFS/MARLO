@@ -200,7 +200,20 @@
           </div>
         </form>
         
-        <div class="messageBlock"></div>
+        <div class="messageBlock" style="display:none">
+          <div class="notyMessage">
+            <h1 class="text-center brand-success"><span class="glyphicon glyphicon-ok-sign"></span></h1>
+            <p  class="text-center col-md-12">
+              Your request was sent to the MARLO Support team <br />
+              You will receive a confirmation message as soon as it has been processed.
+            </p>
+            <br />
+            [#-- Buttons --]
+            <div class="text-center">
+              <button class="btn btn-danger" type="button" class="close" data-dismiss="modal" aria-label="Close">Close</button>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="modal-footer"> 
         <button type="button" class="requestButton btn btn-primary"> <span class="glyphicon glyphicon-send"></span> Request</button>

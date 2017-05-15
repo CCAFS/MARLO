@@ -131,8 +131,9 @@ function attachEvents() {
     var partner = new PartnerObject($(event.relatedTarget).parents('.projectPartner'));
 
     var $modal = $(this);
-    // Hide Form & button
+    // Show Form & button
     $modal.find('form, .requestButton').show();
+    $modal.find('.messageBlock').hide();
     $modal.find('input.institution_id').val(partner.institutionId);
     $modal.find('select.countriesRequest').val(null).trigger('select2:change');
     $modal.find('select.countriesRequest').trigger('change');
@@ -155,25 +156,17 @@ function attachEvents() {
         if(data.sucess.result == "1"){
           // Hide Form & button
           $modal.find('form, .requestButton').hide();
-          // Noty Message
-          var message = "Your request was successfully sent to our MARLO Support team";
-          var notyOptions = jQuery.extend({}, notyDefaultOptions);
-          notyOptions.text = message;
-          notyOptions.type = 'success';
-          notyOptions.timeout = 5000;
-          notyOptions.animation = {
-            open: 'animated fadeIn', // Animate.css class names
-            close: 'animated fadeOut', // Animate.css class names
-            easing: 'swing', // unavailable - no need
-            speed: 400 // unavailable - no need
-          };
-          notyOptions.callback = {
-              onClose : function(){
-                $modal.modal('hide'); 
-              }
-          };
-          $modal.find('.messageBlock').noty(notyOptions); 
+          $modal.find('.messageBlock').show();
           
+          // Noty Message
+          /*
+           * var message = $modal.find('.messageBlock .notyMessage').html(); var notyOptions = jQuery.extend({},
+           * notyDefaultOptions); notyOptions.text = message; notyOptions.type = 'info'; notyOptions.timeout = 5000;
+           * notyOptions.animation = { open: 'animated fadeIn', // Animate.css class names close: 'animated fadeOut', //
+           * Animate.css class names easing: 'swing', // unavailable - no need speed: 400 // unavailable - no need };
+           * notyOptions.callback = { onClose : function(){ $modal.modal('hide'); } }; $modal.find('.messageBlock
+           * .notyMessage').noty(notyOptions);
+           */
         }
       },
       complete: function() {
