@@ -134,9 +134,7 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     if (obj == null) {
       return false;
     }
-    if (this.getClass() != obj.getClass()) {
-      return false;
-    }
+
     CrpProgram other = (CrpProgram) obj;
     if (id == null) {
       if (other.id != null) {
