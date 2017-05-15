@@ -20,12 +20,12 @@ $(document).ready(function() {
 
 function isChanged() {
   var itChange = ((formBefore != getFormHash()) || forceChange);
-  /*console.log({
+  console.log({
       formBefore: formBefore,
       getFormHash: getFormHash(),
       forceChange: forceChange,
       itChange: itChange
-  })*/
+  });
   return itChange;
 }
 

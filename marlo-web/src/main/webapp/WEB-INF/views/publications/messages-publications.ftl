@@ -46,6 +46,9 @@
       <p>[@s.text name="deliverable.message.concurrence" /] [@s.text name="deliverable.message.concurrenceNotEditing"][@s.param] <a href="[@s.url][@s.param name="deliverableID" value=deliverableID /][/@s.url]">click here</a> [/@s.param][/@s.text]</p>
     </div>
   </div>
+  
+  [#-- Draft Message --]
+  [#include "/WEB-INF/global/macros/draftMessage.ftl" /]
 
 [/#if]
 
