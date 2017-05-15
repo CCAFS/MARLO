@@ -147,18 +147,21 @@ public class ProjectPartnersValidator extends BaseValidator {
       if (!action.getFieldErrors().isEmpty()) {
         hasErros = true;
         action.addActionError(action.getText("saving.fields.required"));
+        System.out.println(action.getFieldErrors());
+
+
       } else if (validationMessage.length() > 0) {
         action
           .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
+        if (action.isReportingActive()) {
+          this.saveMissingFields(project, APConstants.REPORTING, action.getReportingYear(),
+            ProjectSectionStatusEnum.PARTNERS.getStatus());
+        } else {
+          this.saveMissingFields(project, APConstants.PLANNING, action.getPlanningYear(),
+            ProjectSectionStatusEnum.PARTNERS.getStatus());
+        }
       }
-      if (action.isReportingActive()) {
-        this.saveMissingFields(project, APConstants.REPORTING, action.getReportingYear(),
-          ProjectSectionStatusEnum.PARTNERS.getStatus());
-      } else {
-        this.saveMissingFields(project, APConstants.PLANNING, action.getPlanningYear(),
-          ProjectSectionStatusEnum.PARTNERS.getStatus());
-      }
-      // Saving missing fields.
+
 
     }
   }
@@ -234,9 +237,12 @@ public class ProjectPartnersValidator extends BaseValidator {
                 this.validateUser(action, c, j, person);
               }
 
+              j++;
 
-              c++;
             }
+
+
+            c++;
           }
         }
       }
@@ -309,15 +315,19 @@ public class ProjectPartnersValidator extends BaseValidator {
     try {
       if (person.getUser() == null) {
 
-        action.addFieldError("partner-" + partnerCounter + "-person-" + personCounter,
-          action.getText("validation.required", new String[] {action.getText("projectPartners.contactPersonEmail")}));
+        // action.addFieldError("partner-" + partnerCounter + "-person-" + personCounter,
+        // action.getText("validation.required", new String[] {action.getText("projectPartners.contactPersonEmail")}));
         // No need to add missing fields because field error doesn't allow to save into the database.
-
+        this.addMessage(action.getText("input-partner-" + partnerCounter + "-person-" + personCounter));
+        action.getInvalidFields().put("input-partner-" + partnerCounter + "-person-" + personCounter,
+          InvalidFieldsMessages.EMPTYFIELD);
 
       } else {
         if (person.getUser().getId() == null || person.getUser().getId() == -1) {
-          action.addFieldError("partner-" + partnerCounter + "-person-" + personCounter,
-            action.getText("validation.required", new String[] {action.getText("projectPartners.contactPersonEmail")}));
+          this.addMessage(action.getText("input-partner-" + partnerCounter + "-person-" + personCounter));
+          action.getInvalidFields().put("input-partner-" + partnerCounter + "-person-" + personCounter,
+            InvalidFieldsMessages.EMPTYFIELD);
+          person.setUser(null);
 
         }
       }
