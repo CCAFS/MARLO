@@ -103,10 +103,23 @@ function attachEvents() {
           partner.startLoader();
         },
         success: function(data) {
+          partner.clearCountries();
           $(partner.countriesSelect).empty();
           $(partner.countriesSelect).addOption(-1, "Select a country...");
           $.each(data.branches, function(index,branch) {
+
+            
+            if ((branch.name).indexOf("HQ") != "-1"){
+              partner.addCountry({
+                iso: branch.iso,
+                name: branch.name
+              });  
+            }
+            
             $(partner.countriesSelect).addOption(branch.iso, branch.name);
+            
+            
+            
           });
           $(partner.countriesSelect).trigger("change.select2");
         },
@@ -742,6 +755,7 @@ function PartnerObject(partner) {
     $(partner).setNameIndexes(1, index);
 
     // Update index for project Partner
+    
     $(partner).find("> .blockTitle .index_number").html(index + 1);
 
     // Update index for CCAFS Partners
@@ -844,8 +858,58 @@ function PartnerObject(partner) {
       setProjectPartnersIndexes();
     });
   };
-  this.showPPAs = function() {
+  this.clearCountries = function(){
+    var $list = $(partner).find(".countries-list.items-list ul");
+    $list.empty();
+  };
+  this.addCountry = function(country){
+    var contryISO = country.iso;
+    var countryName = country.name;
+    if(contryISO == "-1"){
+      return
+    }
+    
+    var $list = $(partner).find(".items-list ul");
 
+    var selectedCountries = $list.find('.locElement').map(function(){
+      return $(this).find('input.locElementCountry').val();
+    }).get();
+
+    if (selectedCountries.indexOf(contryISO) != -1){
+      var notyOptions = jQuery.extend({}, notyDefaultOptions);
+      notyOptions.text = 'Countries office cannot be repeated';
+      noty(notyOptions);
+      return
+    }
+    
+    var $item = $('#locElement-template').clone(true).removeAttr('id');
+    
+    // Fill item values
+    $item.find('span.name').text(countryName);
+    $item.find('span.coordinates').text("");
+    $item.find('input.locElementName').val(countryName);
+    $item.find('input.locElementCountry').val(contryISO);
+    
+    // Add Flag
+    var $flag = $item.find('.flag-icon');
+    var flag = '<i class="flag-sm flag-sm-' + contryISO.toUpperCase() + '"></i>';
+    $flag.html(flag);
+    // Remove coordinates span
+    $item.find('.coordinates').remove();
+    // Adding item to the list
+    $list.append($item);
+    // Update Locations Indexes
+    setProjectPartnersIndexes();
+    // Show item
+    $item.show('slow');
+    // Remove message
+    $list.parent().find('p.message').hide();
+    
+    // Reset select
+    $(this.countriesSelect).val('-1');
+    $(this.countriesSelect).trigger('select2:change');
+  };
+  this.showPPAs = function() {
     $(this.ppaPartnersList).slideDown();
   };
   this.hidePPAs = function() {
@@ -947,52 +1011,14 @@ function formatStateCountries(state) {
 // Locations (Country Offices)
 
 function addLocElementCountry() {
-  var countrySelected = $(this).find("option:selected");
-  var contryISO = countrySelected.val();
-  var countryName = countrySelected.text();
-  if(contryISO == "-1"){
-    return
-  }
+  var $partner = $(this).parents('.projectPartner');
+  var partner = new PartnerObject($partner);
   
-  var $list = $(this).parents('.projectPartner').find(".items-list ul");
-
-  var selectedCountries = $list.find('.locElement').map(function(){
-    return $(this).find('input.locElementCountry').val();
-  }).get();
-
-  if (selectedCountries.indexOf(contryISO) != -1){
-    var notyOptions = jQuery.extend({}, notyDefaultOptions);
-    notyOptions.text = 'Countries office cannot be repeated';
-    noty(notyOptions);
-    return
-  }
-  
-  var $item = $('#locElement-template').clone(true).removeAttr('id');
-  
-  // Fill item values
-  $item.find('span.name').text(countryName);
-  $item.find('span.coordinates').text("");
-  $item.find('input.locElementName').val(countryName);
-  $item.find('input.locElementCountry').val(contryISO);
-  
-  // Add Flag
-  var $flag = $item.find('.flag-icon');
-  var flag = '<i class="flag-sm flag-sm-' + contryISO.toUpperCase() + '"></i>';
-  $flag.html(flag);
-  // Remove coordinates span
-  $item.find('.coordinates').remove();
-  // Adding item to the list
-  $list.append($item);
-  // Update Locations Indexes
-  setProjectPartnersIndexes();
-  // Show item
-  $item.show('slow');
-  // Remove message
-  $list.parent().find('p.message').hide();
-  
-  // Reset select
-  $(this).val('-1');
-  $(this).trigger('select2:change');
+  var $countrySelected = $(this).find("option:selected");
+  partner.addCountry({
+    iso: $countrySelected.val(),
+    name: $countrySelected.text()
+  }); 
 }
 
 function removeLocElement() {
