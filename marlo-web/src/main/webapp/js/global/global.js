@@ -72,6 +72,13 @@ $(document).ready(function() {
     $dragButton.fadeIn();
   }
 
+  // Save Button click (Loading state)
+  $('.button-save, .button-save span').on('click', function(e) {
+    $(this).addClass('disabled animated flipInY');
+    $(this).find('.glyphicon').hide();
+    $(this).find('.saveText').html('Saving ... <img src="' + baseURL + '/images/global/loading_3.gif" />');
+  });
+
   // Yes / No Event
   $('input.onoffswitch-radio').on('change', function(e) {
     yesnoEvent($(this));
@@ -426,7 +433,7 @@ function formatRepo(repo) {
   } else {
     markup += "<strong>" + repo.name + "</strong>";
   }
-  markup += " <span class='grayColor'>(" + repo.location + ")</span> ";
+
   // Partner type
   markup += "<br>";
   markup += "<small> <i>" + repo.type + " </i></small> ";

@@ -9,7 +9,7 @@
         <h4 class="modal-title">Save Changes ?</h4>
       </div>
       <div class="modal-body">
-        <p>MARLO saved a temporary version of your work. Please confirm your changes by clicking on the save button.</p>
+        <p>[@s.text name="message.confirmChanges"][@s.param]save[/@s.param][/@s.text]</p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-success" onclick="acceptChanges()">Save</button>

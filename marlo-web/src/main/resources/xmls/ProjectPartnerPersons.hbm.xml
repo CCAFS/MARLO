@@ -18,7 +18,7 @@
             <column name="created_by" not-null="true" />
         </many-to-one>
         <many-to-one name="user" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
-            <column name="user_id" not-null="true" />
+            <column name="user_id"  />
         </many-to-one>
        
         <property name="contactType" type="string">

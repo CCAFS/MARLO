@@ -209,6 +209,46 @@
     </div>
   </div>
 </div>
+
+[#-- Request partners --]
+<div class="modal fade" id="requestModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="loading" style="display:none"></div>
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="exampleModalLabel"></h4>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <input type="hidden" name="projectID" value="${(project.id)!}"/>
+            <input type="hidden" class="institution_id" name="institutionID" value="" />
+            [@customForm.select name="countriesID" i18nkey="location.select.country" listName="countries" header=true keyFieldName="isoAlpha2" displayFieldName="name" value="id" multiple=true placeholder="Select a country..." className="countriesRequest"/]
+          </div>
+        </form>
+        
+        <div class="messageBlock" style="display:none">
+          <div class="notyMessage">
+            <h1 class="text-center brand-success"><span class="glyphicon glyphicon-ok-sign"></span></h1>
+            <p  class="text-center col-md-12">
+              Your request was sent to the MARLO Support team <br />
+              You will receive a confirmation message as soon as it has been processed.
+            </p>
+            <br />
+            [#-- Buttons --]
+            <div class="text-center">
+              <button class="btn btn-danger" type="button" class="close" data-dismiss="modal" aria-label="Close">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer"> 
+        <button type="button" class="requestButton btn btn-primary"> <span class="glyphicon glyphicon-send"></span> Request</button>
+      </div>
+    </div>
+  </div>
+</div>
   
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
@@ -329,6 +369,7 @@
         [/#if]
       </div>      --]
      
+     
       
       [#-- Indicate which PPA Partners for second level partners --]
       [#if (editable || ((!editable && element.partnerContributors?has_content)!false))]
@@ -382,7 +423,7 @@
 [/#macro]
 
 [#macro contactPersonMacro element name index=-1 partnerIndex=-1 editable=editable isTemplate=false]
-  <div id="contactPerson-${isTemplate?string('template',(element.id)!)}" class="contactPerson simpleBox ${(element.contactType)!}" style="display:${isTemplate?string('none','block')}">
+  <div id="contactPerson-${isTemplate?string('template',(element.id)!)}" class="contactPerson simpleBox ${(element.contactType)!}" style="display:${isTemplate?string('none','block')}" listname="partner-${partnerIndex}-person-${index}">
     [#-- Remove link for all partners --]
     [#if editable]
       <div class="removePerson removeElement" title="[@s.text name="projectPartners.removePerson" /]"></div>
@@ -418,7 +459,8 @@
             [/#if]
           </div>
     	    [#-- Contact Email --]
-          <div class="col-md-8 partnerPerson-email userField">
+         
+          <div class="col-md-8 partnerPerson-email userField" >
             [#attempt]
               [#assign canEditEmail=!((action.getActivitiesLedByUser((element.id)!-1)!false)?has_content) && canEditContactType/]
             [#recover]

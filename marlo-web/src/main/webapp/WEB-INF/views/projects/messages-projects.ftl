@@ -21,7 +21,6 @@
     [/#if]
   </div>
 [#else]
-
   [#-- Submission Message --]
   [#if submission]
     <div class="submission-mode text-center animated flipInX">
@@ -72,6 +71,9 @@
       </div> 
     </div>
   [/#if]
+
+  [#-- Draft Message --]
+  [#include "/WEB-INF/global/macros/draftMessage.ftl" /]
 
 [/#if]
 

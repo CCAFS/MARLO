@@ -227,14 +227,16 @@ public class PartnersSaveAction extends BaseAction {
       message.append(headQuaterName);
       message.append(" </br>");
     }
-    message.append("City: ");
+
+    // message.append("City: ");
     // message.append(city);
-    message.append(" </br>");
-    /*
-     * message.append("Country: ");
-     * message.append(countryName);
-     * message.append(" </br>");
-     */ // Is there a web page?
+    // message.append(" </br>");
+
+    // message.append("Country: ");
+    // message.append(countryName);
+    // message.append(" </br>");
+
+    // Is there a web page?
     if (this.partnerWebPage != null && !this.partnerWebPage.isEmpty()) {
       message.append("Web Page: ");
       message.append(partnerWebPage);

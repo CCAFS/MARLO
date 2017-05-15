@@ -331,6 +331,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return securityContext.hasPermission(permission);
   }
 
+
   public boolean canBeDeleted(long id, String className) {
     Class clazz;
     try {
@@ -543,7 +544,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.hasPermission(this.generatePermission(Permission.PROJECT_SUBMISSION_PERMISSION, params));
   }
 
-
   public HistoryDifference changedField(String field) {
 
 
@@ -573,6 +573,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return APConstants.CRP_ACTIVITES_MODULE;
   }
 
+
   /* Override this method depending of the delete action. */
   public String delete() {
     return SUCCESS;
@@ -601,9 +602,17 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public String getActionName() {
     return ServletActionContext.getActionMapping().getName();
+  }
+
+
+  private Boolean getAutoSaveFilePath(String simpleName, String actionName, long id) {
+    String composedClassName = simpleName;
+    String actionFile = this.getCrpSession() + "_" + actionName;
+    String autoSaveFile = id + "_" + composedClassName + "_" + actionFile + ".json";
+
+    return Paths.get(config.getAutoSaveFolder() + autoSaveFile).toFile().exists();
   }
 
   public String getBasePermission() {

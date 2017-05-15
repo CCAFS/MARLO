@@ -2244,10 +2244,8 @@ h3.contentSubTitle {
 }
 
 .borderBox .buttons, .simpleBox .buttons{
-  
-float: none;
-  
-margin: 0;
+  float: none;
+  margin: 0;
 }
 
 .buttons button[name=save] {
@@ -5775,6 +5773,15 @@ h4.testEnvironment {
   border-bottom: 3px solid #7E9377;
 }
 
+.button-save.disabled, .button-save.disabled:hover {
+  color: #FFFFFF;
+  background: #ffffff !important;
+  border: 1px solid  #c5c5c5;
+  border-bottom: 3px solid #c5c5c5;
+  color: #848484;
+  cursor: auto;
+}
+
 .buttons-content.positionFixedBot {
   position: fixed;
   bottom: 1px;
@@ -6502,26 +6509,6 @@ img.removeInput {
     color: #337ab7;
 }
 
-.newsButton{
-	position:absolute; 
-	right:1%; 
-	bottom:10%; 
-	cursor:pointer;
-}
-
-.newsButton a{
-	position: relative;
-	padding: 1px 15px;
-	border-radius: 6px;
-	font-size: 0.9em;
-	border: 1px solid #f7f7f7;
-	box-shadow: 0px 1px 3px #c5c5c5;
-}
-.newsButton b{
-    font-weight: bolder;
-}
-
-
 /* Radio */
 
 .inputsFlat input[type="radio"] {
@@ -6633,4 +6620,24 @@ img.removeInput {
 }
 .inputsFlat input[type="checkbox"] + .checkbox-label:empty:before {
   margin-right: 0;
+}
+
+/* News Button */
+.newsButton a{
+	position: relative;
+	padding: 1px 15px;
+	border-radius: 6px;
+	font-size: 0.9em;
+	border: 1px solid #f7f7f7;
+	box-shadow: 0px 1px 3px #c5c5c5;
+}
+.newsButton b{
+    font-weight: bolder;
+}
+
+.newsButton{
+  position:absolute; 
+  right:1%; 
+  bottom:10%; 
+  cursor:pointer;
 }

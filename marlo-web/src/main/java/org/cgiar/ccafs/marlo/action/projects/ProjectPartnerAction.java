@@ -1110,10 +1110,10 @@ public class ProjectPartnerAction extends BaseAction {
                 || partnerPerson.getContactType().equals(APConstants.PROJECT_PARTNER_PC)) {
                 this.notifyNewUserCreated(partnerPerson.getUser());
               }
-
+              projectPartnerPersonManager.saveProjectPartnerPerson(partnerPerson);
               if (partnerPerson.getUser() != null
                 && (partnerPerson.getUser().getId() != null && partnerPerson.getUser().getId().longValue() != -1)) {
-                projectPartnerPersonManager.saveProjectPartnerPerson(partnerPerson);
+
                 User userDB = userManager.getUser(partnerPerson.getUser().getId());
                 if (userDB.getCrpUsers().stream().filter(c -> c.getCrp().getId().equals(loggedCrp.getId()))
                   .collect(Collectors.toList()).isEmpty()) {
@@ -1564,7 +1564,8 @@ public class ProjectPartnerAction extends BaseAction {
 
             if (projectPartner.getPartnerPersons() != null) {
               for (ProjectPartnerPerson projectPartnerPerson : projectPartner.getPartnerPersons()) {
-                if (projectPartnerPerson.getUser() != null) {
+                if (projectPartnerPerson.getUser() != null && projectPartnerPerson.getUser().getId() != null
+                  && projectPartnerPerson.getUser().getId().longValue() != -1) {
                   projectPartnerPerson.setUser(userManager.getUser(projectPartnerPerson.getUser().getId()));
                 }
               }
