@@ -122,18 +122,15 @@ function attachEvents() {
           $(partner.countriesSelect).empty();
           $(partner.countriesSelect).addOption(-1, "Select a country...");
           $.each(data.branches, function(index,branch) {
-
             
             if ((branch.name).indexOf("HQ") != "-1"){
               partner.addCountry({
                 iso: branch.iso,
                 name: branch.name
               });  
+            }else{
+              $(partner.countriesSelect).addOption(branch.iso, branch.name);
             }
-            
-            $(partner.countriesSelect).addOption(branch.iso, branch.name);
-            
-            
             
           });
           $(partner.countriesSelect).trigger("change.select2");
@@ -921,6 +918,7 @@ function PartnerObject(partner) {
     $list.parent().find('p.message').hide();
     
     // Reset select
+    $(this.countriesSelect).removeOption(contryISO)
     $(this.countriesSelect).val('-1');
     $(this.countriesSelect).trigger('select2:change');
   };
@@ -1038,6 +1036,10 @@ function addLocElementCountry() {
 
 function removeLocElement() {
   var $parent = $(this).parent();
+  var $select = $parent.parents('.countries-list ').find('select.countriesList');
+  // Add removed item to the selection list
+  $select.addOption($parent.find('input.locElementCountry').val(), $parent.find('span.name').text());
+  // Removing item
   $parent.hide('slow', function() {
     $parent.remove();
     setProjectPartnersIndexes();
