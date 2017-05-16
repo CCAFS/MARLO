@@ -23,7 +23,6 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Institution;
-import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
@@ -34,7 +33,6 @@ import org.cgiar.ccafs.marlo.validation.model.ProjectValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
@@ -271,13 +269,17 @@ public class ProjectPartnersValidator extends BaseValidator {
     int c = 0;
     for (ProjectPartner partner : project.getPartners()) {
       if (partner.getSelectedLocations() == null) {
-        partner.setSelectedLocations(new ArrayList<InstitutionLocation>());
-      }
-      if (partner.getSelectedLocations().isEmpty()) {
         this.addMissingField("project.projectPartners[" + c + "].selectedLocations");
         action.getInvalidFields().put("list-project.partners[" + c + "].selectedLocations",
           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Offices"}));
+      } else {
+        if (partner.getSelectedLocations().isEmpty()) {
+          this.addMissingField("project.projectPartners[" + c + "].selectedLocations");
+          action.getInvalidFields().put("list-project.partners[" + c + "].selectedLocations",
+            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Offices"}));
+        }
       }
+
       c++;
     }
 
