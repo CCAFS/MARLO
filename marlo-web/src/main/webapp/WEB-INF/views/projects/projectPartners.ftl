@@ -2,7 +2,7 @@
 [#assign title = "Project Partners" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = ["select2", "flat-flags"] /]
-[#assign customJS = ["${baseUrl}/js/global/fieldsValidation.js","${baseUrl}/js/projects/projectPartners.js", "${baseUrl}/js/global/usersManagement.js", "${baseUrl}/js/global/autoSave.js"] /]  
+[#assign customJS = ["${baseUrl}/js/global/fieldsValidation.js", "${baseUrl}/js/global/usersManagement.js", "${baseUrl}/js/projects/projectPartners.js", "${baseUrl}/js/global/autoSave.js"] /]  
 [#assign customCSS = ["${baseUrl}/css/projects/projectPartners.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "partners" /]
@@ -28,9 +28,8 @@
 <section class="container">
     <div class="row">
       [#-- Project Menu --]
-         [#-- holi--]
       <div class="col-md-3">
-        [#include "/WEB-INF/views/projects/menu-projects.ftl." /]
+        [#include "/WEB-INF/views/projects/menu-projects.ftl" /]
       </div>
       [#-- Project Section Content --]
       <div class="col-md-9">
@@ -82,8 +81,7 @@
             <div id="projectPartnersBlock" class="simpleBox" listname="project.partners">
               [#if project.partners?has_content]
                 [#list project.partners as projectPartner]
-                 [#-- Can edit project partner --]
-                  [@projectPartnerMacro element=projectPartner name="project.partners[${projectPartner_index}]" editable=editable && action.canEditPartner((projectPartner.id)!-1) index=projectPartner_index /]
+                  [@projectPartnerMacro element=projectPartner name="project.partners[${projectPartner_index}]" index=projectPartner_index /]
                 [/#list]
               [#else]
                 [#if !editable]
@@ -202,33 +200,6 @@
           </div>
         </form>
         
-        <div class="messageBlock"></div>
-      </div>
-      <div class="modal-footer"> 
-        <button type="button" class="requestButton btn btn-primary"> <span class="glyphicon glyphicon-send"></span> Request</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-[#-- Request partners --]
-<div class="modal fade" id="requestModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="loading" style="display:none"></div>
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="exampleModalLabel"></h4>
-      </div>
-      <div class="modal-body">
-        <form>
-          <div class="form-group">
-            <input type="hidden" name="projectID" value="${(project.id)!}"/>
-            <input type="hidden" class="institution_id" name="institutionID" value="" />
-            [@customForm.select name="countriesID" i18nkey="location.select.country" listName="countries" header=true keyFieldName="isoAlpha2" displayFieldName="name" value="id" multiple=true placeholder="Select a country..." className="countriesRequest"/]
-          </div>
-        </form>
-        
         <div class="messageBlock" style="display:none">
           <div class="notyMessage">
             <h1 class="text-center brand-success"><span class="glyphicon glyphicon-ok-sign"></span></h1>
@@ -257,19 +228,16 @@
 [#----------------------------------------------------     MACROS     ----------------------------------------------------]
 [#------------------------------------------------------            ------------------------------------------------------]
 
-[#macro projectPartnerMacro element name index=-1  editable=editable isTemplate=false]
+[#macro projectPartnerMacro element name index=-1 isTemplate=false]
   [#local isLeader = (element.leader)!false/]
   [#local isCoordinator = (element.coordinator)!false/]
   [#local isPPA = (action.isPPA(element.institution))!false /]
   
-  <div id="projectPartner-${isTemplate?string('template',(element.id)!)}" class="projectPartner expandableBlock borderBox ${(isLeader?string('leader',''))!} ${(isCoordinator?string('coordinator',''))!}" style="display:${isTemplate?string('none','block')}">
+  <div id="projectPartner-${isTemplate?string('template',(projectPartner.id)!)}" class="projectPartner expandableBlock borderBox ${(isLeader?string('leader',''))!} ${(isCoordinator?string('coordinator',''))!}" style="display:${isTemplate?string('none','block')}">
     [#-- Loading --]
     <div class="loading" style="display:none"></div>
-      
-   
-    
     [#-- Remove link for all partners --]
-    [#if isTemplate || !(element.id??) || (editable && (element.id??) && action.canBeDeleted(element.id, element.class.name)) ]
+    [#if editable ] [#--&& (isTemplate) --]
       <div class="removeLink"><div id="removePartner" class="removePartner removeElement removeLink" title="[@s.text name="projectPartners.removePartner" /]"></div></div>
     [/#if]
     
@@ -316,7 +284,6 @@
       [/#if]
       --]
       
-       
       [#-- Institution / Organization --]
       [#if ((editable && isTemplate) || (editable && !element.institution??) || (editable && element.institution.id?number == -1))]
       <div class="form-group partnerName">
@@ -361,15 +328,6 @@
           </div>
         [/#if]
       </div>
-      [#--
-      <div class="form-group">
-       [#if editable ]
-        [@customForm.select name="${name}.yearEndDate" className="" required=true header=true i18nkey="projectPartners.partner.endYear" listName="endYears" editable=editable /]
-       [#else]
-           End Year:     ${element.yearEndDate}
-        [/#if]
-      </div>      --]
-     
      
       
       [#-- Indicate which PPA Partners for second level partners --]
@@ -407,7 +365,7 @@
         <div class="fullPartBlock" listname="${name}.partnerPersons">
         [#if element.partnerPersons?has_content]
           [#list element.partnerPersons as partnerPerson]
-            [@contactPersonMacro element=partnerPerson name="${name}.partnerPersons[${partnerPerson_index}]" index=partnerPerson_index editable=editable partnerIndex=index /]
+            [@contactPersonMacro element=partnerPerson name="${name}.partnerPersons[${partnerPerson_index}]" index=partnerPerson_index partnerIndex=index /]
           [/#list]
         [#else]
            [@contactPersonMacro element={} name="${name}.partnerPersons[0]" index=0 partnerIndex=index /]
@@ -423,7 +381,7 @@
   </div>
 [/#macro]
 
-[#macro contactPersonMacro element name index=-1 partnerIndex=-1 editable=editable isTemplate=false]
+[#macro contactPersonMacro element name index=-1 partnerIndex=-1 isTemplate=false]
   <div id="contactPerson-${isTemplate?string('template',(element.id)!)}" class="contactPerson simpleBox ${(element.contactType)!}" style="display:${isTemplate?string('none','block')}" listname="partner-${partnerIndex}-person-${index}">
     [#-- Remove link for all partners --]
     [#if editable]
@@ -448,7 +406,7 @@
       <span class="label label-info pull-right">Added/Updated</span> 
     [/#if]
     <div class="form-group">
-    	<div class="row">
+      <div class="row">
           [#-- Contact type --]
           <div class="col-md-4 partnerPerson-type ${customForm.changedField('${name}.contactType')}">
             [#if canEditContactType]
@@ -459,8 +417,7 @@
               <input type="hidden" name="${name}.contactType" class="partnerPersonType" value="${(element.contactType)!}" />
             [/#if]
           </div>
-    	    [#-- Contact Email --]
-         
+          [#-- Contact Email --]
           <div class="col-md-8 partnerPerson-email userField" >
             [#attempt]
               [#assign canEditEmail=!((action.getActivitiesLedByUser((element.id)!-1)!false)?has_content) && canEditContactType/]
@@ -475,7 +432,7 @@
             <input class="userId" type="hidden" name="${name}.user.id" value="${(element.user.id)!}" />   
             [#if editable && canEditEmail]<div class="searchUser button-blue button-float">[@s.text name="form.buttons.searchUser" /]</div>[/#if]
           </div>
-    	</div>
+      </div>
     </div> 
     
     [#if !isTemplate]
