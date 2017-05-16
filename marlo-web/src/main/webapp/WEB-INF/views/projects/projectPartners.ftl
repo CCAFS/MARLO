@@ -303,8 +303,8 @@
       </div>
       [/#if]
       
-      [#--Select country office  (if applicable)  --]
-      <h5 class="sectionSubTitle">[@s.text name="projectPartners.countryOffices" /]</h5>
+      [#--Select country office  (if applicable)  --] 
+      <h5 class="sectionSubTitle">[@s.text name="projectPartners.countryOffices${action.hasSpecificities('crp_partners_office')?string('.required','')}" /] <small>[@customForm.req required=action.hasSpecificities('crp_partners_office') /]</small></h5>
       <div class="countries-list items-list simpleBox" listname="${name}.selectedLocations">
         <ul class="">
           [#if (element.selectedLocations?has_content)!false]
