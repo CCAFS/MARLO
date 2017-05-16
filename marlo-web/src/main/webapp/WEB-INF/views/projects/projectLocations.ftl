@@ -119,7 +119,8 @@
                     [/#if]
                     
                 [#-- REGIONS SELECT --]
-                <div class="regionsBox form-group row" style="display:none">
+                <div class="row">
+                <div class="regionsBox form-group col-md-12" style="display:none">
                   <div class="panel tertiary col-md-12">
                    <div class="panel-head">
                      <label for=""> [@customForm.text name="projectCofunded.selectRegions" readText=!editable /]:[@customForm.req required=editable /]</label>
@@ -168,7 +169,7 @@
                     </div>
                   </div>
                 </div>
-                
+                </div>
                 [#-- LOCATION LIST --]
                 <div class="col-md-12">
                 <label for="">Locations list</label>
