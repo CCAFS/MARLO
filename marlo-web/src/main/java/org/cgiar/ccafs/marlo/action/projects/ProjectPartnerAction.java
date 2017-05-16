@@ -899,6 +899,18 @@ public class ProjectPartnerAction extends BaseAction {
       }
     }
 
+    for (ProjectPartner projectPartner : project.getPartners()) {
+      Institution institution = projectPartner.getInstitution();
+      List<InstitutionLocation> institutionLocations = new ArrayList<>();
+      institutionLocations.addAll(institution.getLocations());
+      for (InstitutionLocation institutionLocation : institutionLocations) {
+        if (projectPartner.getSelectedLocations().contains(institutionLocation)) {
+          institution.getLocations().remove(institutionLocation);
+
+        }
+      }
+    }
+
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_PARTNER_BASE_PERMISSION, params));
     plRole = roleManager.getRoleById(Long.parseLong((String) this.getSession().get(APConstants.CRP_PL_ROLE)));
