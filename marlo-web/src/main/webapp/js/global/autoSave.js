@@ -45,6 +45,7 @@ function autoSave() {
           $editedBy.find('.modifiedBy').text(data.status.modifiedBy);
 
           draft = true;
+          forceChange = true;
 
           // Validate section
           validateThisSection();
