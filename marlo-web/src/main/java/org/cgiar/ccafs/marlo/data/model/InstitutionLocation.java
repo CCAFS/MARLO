@@ -34,6 +34,28 @@ public class InstitutionLocation implements java.io.Serializable, IAuditLog {
     this.headquater = isHeadquater;
   }
 
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+
+    InstitutionLocation other = (InstitutionLocation) obj;
+    if (locElement == null) {
+      if (other.locElement != null) {
+        return false;
+      }
+    } else if (!this.getLocElement().getIsoAlpha2().equals(other.getLocElement().getIsoAlpha2())) {
+      return false;
+    }
+    return true;
+  }
+
+
   public String getCity() {
     return city;
   }
@@ -66,7 +88,6 @@ public class InstitutionLocation implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
-
   @Override
   public String getModificationJustification() {
 
@@ -79,6 +100,15 @@ public class InstitutionLocation implements java.io.Serializable, IAuditLog {
     User u = new User();
     u.setId(new Long(3));
     return u;
+  }
+
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((locElement == null) ? 0 : locElement.hashCode());
+    return result;
   }
 
   @Override
