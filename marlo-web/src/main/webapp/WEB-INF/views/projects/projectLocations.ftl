@@ -75,6 +75,11 @@
                 <div class="col-md-12">
                 <b>NOTE: </b>
                 <br />
+                <div class="note left">
+                  <div id="popup" class="helpMessage3">
+                  </div>
+                  <p><small>[@s.text name="The information below aggregates the information from the locations of the Funding Sources contributing to the project. Feel free to make some changes to better reflect the key locations of the project.”" /]</small></p>
+                </div>
                 <span><span><img style="width: 3%;" src="${baseUrl}/images/global/left-click.jpg" alt="" /></span>Left click to get detailed information of a specific location.</span>
                 <br />
                 <br />
