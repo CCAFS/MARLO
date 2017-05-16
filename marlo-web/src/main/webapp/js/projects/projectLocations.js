@@ -8,6 +8,10 @@ var countries = [];
 var layer;
 
 function init() {
+// Init select2
+  $('form select').select2({
+    width: "100%"
+  });
   loadScript();
   countID = $("form .locElement").length;
 
@@ -77,7 +81,14 @@ function attachEvents() {
   });
 
   // REGIONAL QUESTION
-// Is this deliverable Open Access
+  $(".button-label").on("click", function() {
+    var valueSelected = $(this).hasClass('yes-button-label');
+    var $input = $(this).parent().find('input');
+    $input.val(valueSelected);
+    $(this).parent().find("label").removeClass("radio-checked");
+    $(this).addClass("radio-checked");
+  });
+
   $(".isRegional .button-label").on("click", function() {
     var valueSelected = $(this).hasClass('yes-button-label');
     if(!valueSelected) {

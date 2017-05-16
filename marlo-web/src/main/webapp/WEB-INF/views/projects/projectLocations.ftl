@@ -117,6 +117,16 @@
                 </div>
                 </div>
                     [/#if]
+                 <div class="col-md-12">
+                  <label for="">Please select the predefined locations coming from your funding sources:</label>
+                  <div class="simpleBox">
+                    <p class="text-center inf">There is not locations recommended</p>
+                  </div>
+                 </div>
+                [#-- OTHER LOCATIONS LABEL --]   
+                <div class="col-md-12">
+                <h5 class="sectionSubTitle">Ohter locations</h5>
+                </div>    
                     
                 [#-- REGIONS SELECT --]
                 <div class="row">
