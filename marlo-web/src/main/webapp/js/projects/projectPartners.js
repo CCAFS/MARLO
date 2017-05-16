@@ -33,6 +33,21 @@ function init() {
     addSelect2();
 
   }
+  
+  addUser = function(composedName,userId) {
+    var $contact = $elementSelected.parents('.contactsPerson ').find('input[value="'+userId+'"]');
+    
+    if (!$contact.exists()){
+      $elementSelected.parents('.userField ').find("input.userName").val(composedName).addClass('animated flash');
+      $elementSelected.parents('.userField ').find("input.userId").val(userId);
+    }else{
+      var notyOptions = jQuery.extend({}, notyDefaultOptions);
+      notyOptions.text = 'Contact person cannot be repeated';
+      noty(notyOptions);
+    }
+    dialog.dialog("close");
+  }
+  
   // This function enables launch the pop up window
   popups();
   // Attaching listeners
