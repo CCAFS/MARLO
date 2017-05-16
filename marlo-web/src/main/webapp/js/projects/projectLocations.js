@@ -76,6 +76,17 @@ function attachEvents() {
     checkAllCountries(this);
   });
 
+  // REGIONAL QUESTION
+// Is this deliverable Open Access
+  $(".isRegional .button-label").on("click", function() {
+    var valueSelected = $(this).hasClass('yes-button-label');
+    if(!valueSelected) {
+      $(".regionsBox").hide("slow");
+    } else {
+      $(".regionsBox").show("slow");
+    }
+  });
+
 }
 
 // FUNCTIONS

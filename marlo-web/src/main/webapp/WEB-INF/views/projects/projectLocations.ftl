@@ -117,6 +117,57 @@
                 </div>
                 </div>
                     [/#if]
+                    
+                [#-- REGIONS SELECT --]
+                <div class="regionsBox form-group row" style="display:none">
+                  <div class="panel tertiary col-md-12">
+                   <div class="panel-head">
+                     <label for=""> [@customForm.text name="projectCofunded.selectRegions" readText=!editable /]:[@customForm.req required=editable /]</label>
+                     <br />
+                     <small style="color: #337ab7;">(Standart regions are defined by United Nations)</small>
+                   </div>
+                   
+                    <div id="regionList" class="panel-body" listname="fundingSource.fundingRegions"> 
+                      <ul class="list">
+                      [#if project.projectRegions?has_content]
+                        [#list project.projectRegions as region]
+                            <li id="" class="region clearfix col-md-3">
+                            [#if editable ]
+                              <div class="removeRegion removeIcon" title="Remove region"></div>
+                            [/#if]
+                              <input class="id" type="hidden" name="fundingSource.fundingRegions[${region_index}].id" value="${region.id}" />
+                              <input class="rId" type="hidden" name="fundingSource.fundingRegions[${region_index}].locElement.id" value="${(region.locElement.id)!}" />
+                              <input class="regionScope" type="hidden" name="fundingSource.fundingRegions[${region_index}].scope" value="${(region.scope?c)!}" />
+                              <span class="name">${(region.locElement.name)!}</span>
+                              <div class="clearfix"></div>
+                            </li>
+                        [/#list]
+                        [#else]
+                        <p class="emptyText"> [@s.text name="No regions added yet." /]</p> 
+                      [/#if]
+                      </ul>
+                      [#if editable ]
+                        <select name="" id="regionSelect" class="regionsSelect">
+                          <option value="-1">Select an option...</option>
+                          [#if scopeRegionLists?has_content]
+                            <optgroup label="${(loggedCrp.acronym?upper_case)!} regions">
+                            [#list scopeRegionLists as region]
+                            <option value="${(region.id)!}-${(region.scope?c)!}">${(region.name)!}</option>
+                            [/#list]
+                            </optgroup>
+                          [/#if]
+                          [#if regionLists?has_content]
+                          <optgroup label="UN standart (M49)">
+                            [#list regionLists as region]
+                            <option value="${(region.id)!}-${(region.locElementType.scope?c)!}">${(region.name)!}</option>
+                            [/#list]
+                            </optgroup>
+                          [/#if]
+                        </select>
+                      [/#if] 
+                    </div>
+                  </div>
+                </div>
                 
                 [#-- LOCATION LIST --]
                 <div class="col-md-12">
