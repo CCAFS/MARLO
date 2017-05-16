@@ -83,7 +83,7 @@
               [#if project.partners?has_content]
                 [#list project.partners as projectPartner]
                  [#-- Can edit project partner --]
-                  [@projectPartnerMacro element=projectPartner name="project.partners[${projectPartner_index}]" editable=action.canEditPartner((projectPartner.id)!-1) index=projectPartner_index /]
+                  [@projectPartnerMacro element=projectPartner name="project.partners[${projectPartner_index}]" editable=editable && action.canEditPartner((projectPartner.id)!-1) index=projectPartner_index /]
                 [/#list]
               [#else]
                 [#if !editable]
