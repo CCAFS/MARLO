@@ -624,6 +624,7 @@ function removePersonEvent(e) {
   var deliverables = person.getRelationsNumber('deliverables');
   var removeDialogOptions = {
       modal: true,
+      closeText: "",
       width: 500,
       buttons: {},
       close: function() {
