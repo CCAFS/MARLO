@@ -30,7 +30,7 @@
       [#-- Project Menu --]
          [#-- holi--]
       <div class="col-md-3">
-        [#include "/WEB-INF/views/projects/menu-projects.ftl" /]
+        [#include "/WEB-INF/views/projects/menu-projects.ftl." /]
       </div>
       [#-- Project Section Content --]
       <div class="col-md-9">
