@@ -79,12 +79,12 @@
           [#-- Field Check --]
           <td class=""> 
             [#if isCompleted]
-              <span class="hide">true</span>  <span class="icon-20 icon-check" title="[@s.text name="fundingSourceList.fieldCheck.complete" /]"></span>
+              <span class="hide">true</span>  <span class="icon-20 icon-check" title="[@s.text name="message.fieldsCheck.complete" /]"></span>
             [#else]
               [#if hasDraft]
-                <span class="hide">false</span> <span class="icon-20 icon-uncheck" title="[@s.text name="fundingSourceList.fieldCheck.draft" /]"></span> 
+                <span class="hide">false</span> <span class="icon-20 icon-uncheck" title="[@s.text name="message.fieldsCheck.draft" /]"></span> 
               [#else]
-                <span class="hide">false</span> <span class="icon-20 icon-uncheck" title="[@s.text name="fundingSourceList.fieldCheck.incomplete" /]"></span> 
+                <span class="hide">false</span> <span class="icon-20 icon-uncheck" title="[@s.text name="message.fieldsCheck.incomplete" /]"></span> 
               [/#if]
             [/#if]
           </td>

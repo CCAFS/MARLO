@@ -27,7 +27,7 @@
           <li id="menu-${item.action}" class="[#if item.slug == currentStage]currentSection[/#if] ${action.getImpactSectionStatus(item.action, crpProgramID)?string('submitted','toSubmit')} ${(item.active)?string('enabled','disabled')}">
             <a href="[@s.url action="${crpSession}/${item.action}"][@s.param name="crpProgramID" value=crpProgramID /][@s.param name="edit" value="true"/][/@s.url]" onclick="return ${item.active?string}" class="action-${crpSession}/${item.action}">
               [#-- Draft Tag --]
-              [#if hasDraft]<strong class="text-danger" title="It seems there are unconfirmed changes, please save your changes made"> <span class="glyphicon glyphicon-bell"></span> </strong>[/#if]
+              [#if hasDraft]<strong class="text-danger" title="[@s.text name="message.fieldsCheck.draft" /]"> <span class="glyphicon glyphicon-bell"></span> </strong>[/#if]
               [#-- Name --]
               [@s.text name=item.name/]
             </a>
