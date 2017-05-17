@@ -150,6 +150,8 @@
 	  <mapping resource="xmls/GenderTypes.hbm.xml" />
 	  <mapping resource="xmls/PartnerDivisions.hbm.xml" />	  
 	  <mapping resource="xmls/CrpLocElementTypes.hbm.xml" />   
+    <mapping resource="xmls/Parameters.hbm.xml" />   
+    <mapping resource="xmls/CustomParameters.hbm.xml" />   	  
 	</session-factory>
 </hibernate-configuration>
 

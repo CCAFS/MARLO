@@ -6,7 +6,7 @@ CREATE TABLE `parameters` (
 `default_value`  varchar(500) NULL ,
 `category`  int NULL ,
 PRIMARY KEY (`id`)
-)
+)ENGINE=InnoDB
 ;
 
 CREATE TABLE `custom_parameters` (
@@ -24,7 +24,7 @@ FOREIGN KEY (`parameter_id`) REFERENCES `parameters` (`id`) ON DELETE RESTRICT O
 FOREIGN KEY (`crp_id`) REFERENCES `crps` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
 FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
 FOREIGN KEY (`modified_by`) REFERENCES `users` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-)
+)ENGINE=InnoDB
 ;
 
 
