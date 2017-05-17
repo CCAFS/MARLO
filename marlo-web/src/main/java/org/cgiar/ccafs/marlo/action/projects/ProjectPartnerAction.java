@@ -36,6 +36,8 @@ import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrpClusterActivityLeader;
+import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
@@ -380,7 +382,7 @@ public class ProjectPartnerAction extends BaseAction {
 
     if (!user.isActive()) {
       String toEmail = user.getEmail();
-      String ccEmail = null;
+      String ccEmail = "";
       String bbcEmails = this.config.getEmailNotification();
       String subject = this.getText("email.newUser.subject", new String[] {user.getFirstName()});
       // Setting the password
@@ -521,6 +523,18 @@ public class ProjectPartnerAction extends BaseAction {
               ccEmail += ", " + crpProgramLeader.getUser().getEmail();
             }
           }
+          // CC will be also other Cluster Leaders
+          for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
+            .filter(cl -> cl.isActive()).collect(Collectors.toList())) {
+            for (CrpClusterActivityLeader crpClusterActivityLeader : crpClusterOfActivity.getCrpClusterActivityLeaders()
+              .stream().filter(cl -> cl.isActive()).collect(Collectors.toList())) {
+              if (ccEmail.isEmpty()) {
+                ccEmail += crpClusterActivityLeader.getUser().getEmail();
+              } else {
+                ccEmail += ", " + crpClusterActivityLeader.getUser().getEmail();
+              }
+            }
+          }
         }
       }
     }
@@ -622,6 +636,18 @@ public class ProjectPartnerAction extends BaseAction {
               ccEmail += crpProgramLeader.getUser().getEmail();
             } else {
               ccEmail += ", " + crpProgramLeader.getUser().getEmail();
+            }
+          }
+          // CC will be also other Cluster Leaders
+          for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
+            .filter(cl -> cl.isActive()).collect(Collectors.toList())) {
+            for (CrpClusterActivityLeader crpClusterActivityLeader : crpClusterOfActivity.getCrpClusterActivityLeaders()
+              .stream().filter(cl -> cl.isActive()).collect(Collectors.toList())) {
+              if (ccEmail.isEmpty()) {
+                ccEmail += crpClusterActivityLeader.getUser().getEmail();
+              } else {
+                ccEmail += ", " + crpClusterActivityLeader.getUser().getEmail();
+              }
             }
           }
         }

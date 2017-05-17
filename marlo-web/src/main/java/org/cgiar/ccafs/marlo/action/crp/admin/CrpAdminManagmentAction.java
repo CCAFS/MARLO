@@ -30,6 +30,8 @@ import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrpClusterActivityLeader;
+import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpParameter;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
@@ -394,6 +396,18 @@ public class CrpAdminManagmentAction extends BaseAction {
         ccEmail += ", " + crpProgramLeader.getUser().getEmail();
       }
     }
+    // CC will be also other Cluster Leaders
+    for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
+      .filter(cl -> cl.isActive()).collect(Collectors.toList())) {
+      for (CrpClusterActivityLeader crpClusterActivityLeader : crpClusterOfActivity.getCrpClusterActivityLeaders()
+        .stream().filter(cl -> cl.isActive()).collect(Collectors.toList())) {
+        if (ccEmail.isEmpty()) {
+          ccEmail += crpClusterActivityLeader.getUser().getEmail();
+        } else {
+          ccEmail += ", " + crpClusterActivityLeader.getUser().getEmail();
+        }
+      }
+    }
 
     // CC will be also the CRP Admins
     String crpAdmins = "";
@@ -465,6 +479,7 @@ public class CrpAdminManagmentAction extends BaseAction {
         ccEmail += ", " + crpProgramLeader.getUser().getEmail();
       }
     }
+
     // get CRPAdmin contacts
     String crpAdmins = "";
     String crpAdminsEmail = "";
@@ -486,6 +501,19 @@ public class CrpAdminManagmentAction extends BaseAction {
         ccEmail += crpAdminsEmail;
       } else {
         ccEmail += ", " + crpAdminsEmail;
+      }
+    }
+
+    // CC will be also other Cluster Leaders
+    for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
+      .filter(cl -> cl.isActive()).collect(Collectors.toList())) {
+      for (CrpClusterActivityLeader crpClusterActivityLeader : crpClusterOfActivity.getCrpClusterActivityLeaders()
+        .stream().filter(cl -> cl.isActive()).collect(Collectors.toList())) {
+        if (ccEmail.isEmpty()) {
+          ccEmail += crpClusterActivityLeader.getUser().getEmail();
+        } else {
+          ccEmail += ", " + crpClusterActivityLeader.getUser().getEmail();
+        }
       }
     }
 
