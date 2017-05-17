@@ -44,23 +44,24 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
   @Expose
   private String acronym;
+  private LocElement locElement;
 
 
   @Expose
   private String websiteLink;
+
+
   @Expose
   private Long programId;
 
-
   @Expose
   private Date added;
-
   private Set<CrpPpaPartner> crpPpaPartners = new HashSet<CrpPpaPartner>(0);
+
 
   private Set<LiaisonInstitution> liaisonInstitutions = new HashSet<LiaisonInstitution>(0);
 
   private Set<ProjectPartner> projectPartners = new HashSet<ProjectPartner>(0);
-
 
   private Set<ProjectBudget> projectBudgets = new HashSet<ProjectBudget>(0);
 
@@ -69,15 +70,16 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
   private Set<Institution> branches = new HashSet<Institution>(0);
 
-
   private Set<ProjectPartnerPerson> projectPartnerPersons = new HashSet<>(0);
-  private Set<InstitutionLocation> institutionsLocations = new HashSet<InstitutionLocation>(0);
-  private List<InstitutionLocation> locations;
 
+
+  private Set<InstitutionLocation> institutionsLocations = new HashSet<InstitutionLocation>(0);
+
+
+  private List<InstitutionLocation> locations;
 
   public Institution() {
   }
-
 
   public Institution(InstitutionType institutionType, String name, Date added) {
     this.institutionType = institutionType;
@@ -125,9 +127,11 @@ public class Institution implements java.io.Serializable, IAuditLog {
     return true;
   }
 
+
   public String getAcronym() {
     return this.acronym;
   }
+
 
   public Date getAdded() {
     return this.added;
@@ -159,7 +163,6 @@ public class Institution implements java.io.Serializable, IAuditLog {
    * }
    */
 
-
   public String getComposedName() {
     if (this.getAcronym() != null) {
       if (this.getAcronym().length() != 0) {
@@ -190,6 +193,15 @@ public class Institution implements java.io.Serializable, IAuditLog {
     return this.getName();
   }
 
+
+  public Set<CrpPpaPartner> getCrpPpaPartners() {
+    return crpPpaPartners;
+  }
+
+  public Set<FundingSource> getFundingSources() {
+    return fundingSources;
+  }
+
   /*
    * public String getComposedLocation() {
    * try {
@@ -212,14 +224,6 @@ public class Institution implements java.io.Serializable, IAuditLog {
    * }
    */
 
-  public Set<CrpPpaPartner> getCrpPpaPartners() {
-    return crpPpaPartners;
-  }
-
-  public Set<FundingSource> getFundingSources() {
-    return fundingSources;
-  }
-
   @Override
   public Long getId() {
     return this.id;
@@ -228,7 +232,6 @@ public class Institution implements java.io.Serializable, IAuditLog {
   public Set<InstitutionLocation> getInstitutionsLocations() {
     return institutionsLocations;
   }
-
 
   public InstitutionType getInstitutionType() {
     return institutionType;
@@ -250,6 +253,10 @@ public class Institution implements java.io.Serializable, IAuditLog {
     return locations;
   }
 
+
+  public LocElement getLocElement() {
+    return locElement;
+  }
 
   @Override
   public String getLogDeatil() {
@@ -280,6 +287,7 @@ public class Institution implements java.io.Serializable, IAuditLog {
   public String getName() {
     return this.name;
   }
+
 
   public Long getProgramId() {
     return this.programId;
@@ -334,10 +342,10 @@ public class Institution implements java.io.Serializable, IAuditLog {
     this.branches = branches;
   }
 
-
   public void setCrpPpaPartners(Set<CrpPpaPartner> crpPpaPartners) {
     this.crpPpaPartners = crpPpaPartners;
   }
+
 
   public void setFundingSources(Set<FundingSource> fundingSources) {
     this.fundingSources = fundingSources;
@@ -347,10 +355,10 @@ public class Institution implements java.io.Serializable, IAuditLog {
     this.id = id;
   }
 
-
   public void setInstitutionsLocations(Set<InstitutionLocation> institutionsLocations) {
     this.institutionsLocations = institutionsLocations;
   }
+
 
   public void setInstitutionType(InstitutionType institutionType) {
     this.institutionType = institutionType;
@@ -362,6 +370,10 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
   public void setLocations(List<InstitutionLocation> locations) {
     this.locations = locations;
+  }
+
+  public void setLocElement(LocElement locElement) {
+    this.locElement = locElement;
   }
 
 

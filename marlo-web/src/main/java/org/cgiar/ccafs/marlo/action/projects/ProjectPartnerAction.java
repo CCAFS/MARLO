@@ -904,10 +904,13 @@ public class ProjectPartnerAction extends BaseAction {
       List<InstitutionLocation> institutionLocations = new ArrayList<>();
       institutionLocations.addAll(institution.getLocations());
       for (InstitutionLocation institutionLocation : institutionLocations) {
-        if (projectPartner.getSelectedLocations().contains(institutionLocation)) {
-          institution.getLocations().remove(institutionLocation);
+        if (projectPartner.getSelectedLocations() != null) {
+          if (projectPartner.getSelectedLocations().contains(institutionLocation)) {
+            institution.getLocations().remove(institutionLocation);
 
+          }
         }
+
       }
     }
 
