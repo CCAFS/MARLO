@@ -22,6 +22,9 @@
     <tbody>
     [#if projects?has_content]
       [#list projects as project]
+        [#assign hasDraft = (action.getAutoSaveFilePath(project.class.simpleName, "fundingSource", project.id))!false /]
+        [#assign isCompleted = (action.getFundingSourceStatus(project.id))!false /]
+        
         <tr>
         [#-- ID --]
         <td class="projectId">
@@ -29,9 +32,9 @@
         </td>
           [#-- Funding source Title --]
           <td class="left"> 
-            [#if (action.getAutoSaveFilePath(project.class.simpleName, "fundingSource", project.id))!false]
-              [DRAFT] 
-            [/#if]
+            [#-- Draft Tag --]
+            [#if hasDraft]<strong class="text-info">[DRAFT]</strong>[/#if]
+            
             [#if project.title?has_content]
               <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='fundingSourceID']${project.id}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]" title="${project.title}">
               [#if project.title?length < 120] ${project.title}</a> [#else] [@utilities.wordCutter string=project.title maxPos=120 /]...</a> [/#if]
@@ -75,10 +78,14 @@
           
           [#-- Field Check --]
           <td class=""> 
-            [#if action.getFundingSourceStatus(project.id)]
-              <span class="hide">true</span>  <span class="icon-20 icon-check" title="Complete"></span>
+            [#if isCompleted]
+              <span class="hide">true</span>  <span class="icon-20 icon-check" title="[@s.text name="fundingSourceList.fieldCheck.complete" /]"></span>
             [#else]
-              <span class="hide">false</span> <span class="icon-20 icon-uncheck" title=""></span> 
+              [#if hasDraft]
+                <span class="hide">false</span> <span class="icon-20 icon-uncheck" title="[@s.text name="fundingSourceList.fieldCheck.draft" /]"></span> 
+              [#else]
+                <span class="hide">false</span> <span class="icon-20 icon-uncheck" title="[@s.text name="fundingSourceList.fieldCheck.incomplete" /]"></span> 
+              [/#if]
             [/#if]
           </td>
         
