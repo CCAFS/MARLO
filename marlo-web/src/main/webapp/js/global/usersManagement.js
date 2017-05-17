@@ -96,6 +96,7 @@ $(document)
               .on(
                   "click",
                   function() {
+                    $("#errorInfo").remove();
                     $dialogContent.find('.warning-info').empty().hide();
                     var invalidFields = [];
                     var user = {};
@@ -138,7 +139,6 @@ $(document)
                               'url': baseURL + '/createUser.do',
                               data: user,
                               beforeSend: function() {
-                                $("#errorInfo").remove();
                                 $dialogContent.find('.loading').show();
                               },
                               success: function(data) {
@@ -170,6 +170,7 @@ $(document)
           /** Functions * */
 
           openSearchDialog = function(target) {
+            $("#errorInfo").remove();
             $elementSelected = $(target);
             dialog.dialog("open");
             $dialogContent.find(".search-loader").fadeOut("slow");
