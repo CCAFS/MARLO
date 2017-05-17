@@ -157,7 +157,7 @@ public class PartnersSaveAction extends BaseAction {
     institutionName = activityPartner.getPartner().getName();
     institutionAcronym = activityPartner.getPartner().getAcronym();
     partnerTypeId = activityPartner.getPartner().getInstitutionType().getId();
-    // countryId = String.valueOf(activityPartner.getPartner().getLocElement().getId());
+    countryId = String.valueOf(activityPartner.getPartner().getLocElement().getId());
     // city = activityPartner.getPartner().getCity();
     website = activityPartner.getPartner().getWebsiteLink();
     headQuaterName = "";
@@ -172,6 +172,8 @@ public class PartnersSaveAction extends BaseAction {
      * countryName = locationManager.getLocElementById(Long.parseLong(countryId)).getName();
      */
     // Get the partner type name
+    countryName = locationManager.getLocElementById(Long.parseLong(countryId)).getName();
+
     institutionTypeName = "";
     for (InstitutionType pt : institutionTypesList) {
       if (pt.getId() == partnerTypeId) {
@@ -232,9 +234,9 @@ public class PartnersSaveAction extends BaseAction {
     // message.append(city);
     // message.append(" </br>");
 
-    // message.append("Country: ");
-    // message.append(countryName);
-    // message.append(" </br>");
+    message.append("Country: ");
+    message.append(countryName);
+    message.append(" </br>");
 
     // Is there a web page?
     if (this.partnerWebPage != null && !this.partnerWebPage.isEmpty()) {
