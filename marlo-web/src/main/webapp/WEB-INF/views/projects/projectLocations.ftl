@@ -117,10 +117,18 @@
                 </div>
                 </div>
                     [/#if]
+                 [#-- RECOMMENDED LOCATIONS --]
+                 [#assign project = {"recomendedLoc":"[]"}/]
                  <div class="col-md-12">
                   <label for="">Please select the predefined locations coming from your funding sources:</label>
                   <div class="simpleBox">
+                  [#if project.recommendedLoc?has_content]
+                    [#list project.recommendedLoc as location]
+                      [@recommendedLocation element=location name="${locationLevelName}.${locationName}" index=-1 template=true /]
+                    [/#list]
+                  [#else]
                     <p class="text-center inf">There is not locations recommended</p>
+                  [/#if]
                   </div>
                  </div>
                 [#-- OTHER LOCATIONS LABEL --]   
@@ -227,6 +235,8 @@
 [@locationLevel element={} name="${locationLevelName}" index=-1 template=true /]
 
 [@locationMacro element={} name="${locationLevelName}[-1].${locationName}" index=-1 template=true /]
+
+[@recommendedLocation element={} name="${locationLevelName}.${locationName}" index=-1 template=true /]
 
 <input type="hidden" id="locationLevelName" value="${locationLevelName}" />
 <input type="hidden" id="locationName" value="${locationName}" />
@@ -358,6 +368,27 @@
   [#assign countID = countID+1/]
   [#-- Content collapsible--]
   <div id="location-${template?string('template',countID)}" class="col-md-4 locElement" style="display:${template?string('none','block')}">
+    <div class="locations col-md-12">
+      <div class="locationName"><span class="lName">${(element.name)!}</span> [#if element.locGeoposition?? && element.locGeoposition.latitude?? && element.locGeoposition.longitude?? && element.locGeoposition.latitude!=0 && element.locGeoposition.longitude!=0] <span class="lPos">[#if isList!=true](${(element.locGeoposition.latitude)!}, ${(element.locGeoposition.longitude)!})[/#if]</span> [/#if] </div>
+      [#if editable]
+      <div class="removeLocation removeIcon" title="Remove Location"></div>
+      [/#if]
+    </div>
+    [#-- Hidden inputs --]
+    <input type="hidden" class="locElementId" name="${customName}.id" value="${(element.id)!}"/>
+    <input type="hidden" class="locElementName" name="${customName}.name" value="${(element.name)!}" />
+    <input type="hidden" class="locElementCountry" name="${customName}.locElement.isoAlpha2" value="${(element.isoAlpha2)!}" />
+    <input type="hidden" class="geoId" name="${customName}.locGeoposition.id"  value="${(element.locGeoposition.id)!}" />
+    
+    <input type="hidden" class="geoLatitude" name="${customName}.locGeoposition.latitude"  value="${(element.locGeoposition?? && element.locGeoposition.latitude?? && element.locGeoposition.latitude!=0)?string((element.locGeoposition.latitude?c)!,'')}" /> 
+    <input type="hidden" class="geoLongitude" name="${customName}.locGeoposition.longitude"  value="${(element.locGeoposition?? && element.locGeoposition.longitude?? && element.locGeoposition.longitude!=0)?string((element.locGeoposition.longitude?c)!,'')}" />
+  </div>
+[/#macro]
+
+[#macro recommendedLocation element  name index template=false ]
+  [#local customName = "${name}[${index}]" /]
+  [#-- Content collapsible--]
+  <div id="recommendedLocation-${template?string('template',countID)}" class="col-md-4 recommended locElement" style="display:${template?string('none','block')}">
     <div class="locations col-md-12">
       <div class="locationName"><span class="lName">${(element.name)!}</span> [#if element.locGeoposition?? && element.locGeoposition.latitude?? && element.locGeoposition.longitude?? && element.locGeoposition.latitude!=0 && element.locGeoposition.longitude!=0] <span class="lPos">[#if isList!=true](${(element.locGeoposition.latitude)!}, ${(element.locGeoposition.longitude)!})[/#if]</span> [/#if] </div>
       [#if editable]
