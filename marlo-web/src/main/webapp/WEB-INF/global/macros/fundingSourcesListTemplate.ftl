@@ -76,9 +76,9 @@
           [#-- Field Check --]
           <td class=""> 
             [#if action.getFundingSourceStatus(project.id)]
-              <span class="icon-20 icon-check" title="Complete"></span>
+              <span class="hide">true</span>  <span class="icon-20 icon-check" title="Complete"></span>
             [#else]
-              <span class="icon-20 icon-uncheck" title=""></span> 
+              <span class="hide">false</span> <span class="icon-20 icon-uncheck" title=""></span> 
             [/#if]
           </td>
         
