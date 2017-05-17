@@ -584,12 +584,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
 
-  private Boolean getAutoSaveFilePath(String simpleName, String actionName, long id) {
+  public Boolean getAutoSaveFilePath(String simpleName, String actionName, long id) {
     String composedClassName = simpleName;
     String actionFile = this.getCrpSession() + "_" + actionName;
     String autoSaveFile = id + "_" + composedClassName + "_" + actionFile + ".json";
-
-    return Paths.get(config.getAutoSaveFolder() + autoSaveFile).toFile().exists();
+    boolean exist = Paths.get(config.getAutoSaveFolder() + autoSaveFile).toFile().exists();
+    return exist;
   }
 
   public String getBasePermission() {
@@ -805,7 +805,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     if (!sectionStatuses.isEmpty()) {
       SectionStatus sectionStatus = sectionStatuses.get(0);
-      return sectionStatus.getMissingFields().length() == 0;
+      return sectionStatus.getMissingFields().length() == 0
+        && !this.getAutoSaveFilePath(fundingSource.getClass().getSimpleName(),
+          ProjectSectionStatusEnum.FUNDINGSOURCE.getStatus(), fundingSource.getId());
 
     } else {
       fundingSourceValidator.validate(this, fundingSource, false);

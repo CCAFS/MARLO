@@ -29,7 +29,7 @@
         </td>
           [#-- Funding source Title --]
           <td class="left"> 
-            [#if (action.getAutoSaveFilePath(project.class.simpleName, actionName, project.id))!false]
+            [#if (action.getAutoSaveFilePath(project.class.simpleName, "fundingSource", project.id))!false]
               [DRAFT] 
             [/#if]
             [#if project.title?has_content]
