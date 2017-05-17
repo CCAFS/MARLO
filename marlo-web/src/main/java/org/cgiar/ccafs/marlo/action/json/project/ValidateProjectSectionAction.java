@@ -321,9 +321,7 @@ public class ValidateProjectSectionAction extends BaseAction {
         section = new HashMap<String, Object>();
         section.put("sectionName", sectionStatus.getSectionName());
         section.put("missingFields", sectionStatus.getMissingFields());
-        if (project.getActivities().stream().filter(d -> d.isActive()).collect(Collectors.toList()).isEmpty()) {
-          section.put("missingFields", section.get("missingFields") + "-" + "activities");
-        }
+
 
         break;
 

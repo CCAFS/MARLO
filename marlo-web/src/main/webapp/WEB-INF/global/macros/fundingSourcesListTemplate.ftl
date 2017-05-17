@@ -5,7 +5,7 @@
     <thead>
       <tr class="header">
         <th colspan="7">Funding Source information</th>
-        <th colspan="1">Actions</th> 
+        <th colspan="2">Actions</th> 
       </tr>
       <tr class="subHeader">
         <th id="ids">[@s.text name="projectsList.projectids" /]</th>
@@ -15,12 +15,16 @@
         <th id="projectStatus">[@s.text name="projectsList.projectStatus" /]</th>
         <th id="leader" >[@s.text name="projectsList.institutions" /]</th>
         <th id="projectDonor" >[@s.text name="projectsList.projectDonor" /]</th>
+        <th id="fieldCheck" >Fields Check</th>
         <th id="projectDelete">[@s.text name="projectsList.delete" /]</th>
       </tr>
     </thead>
     <tbody>
     [#if projects?has_content]
       [#list projects as project]
+        [#assign hasDraft = (action.getAutoSaveFilePath(project.class.simpleName, "fundingSource", project.id))!false /]
+        [#assign isCompleted = (action.getFundingSourceStatus(project.id))!false /]
+        
         <tr>
         [#-- ID --]
         <td class="projectId">
@@ -28,6 +32,9 @@
         </td>
           [#-- Funding source Title --]
           <td class="left"> 
+            [#-- Draft Tag --]
+            [#if hasDraft]<strong class="text-info">[DRAFT]</strong>[/#if]
+            
             [#if project.title?has_content]
               <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='fundingSourceID']${project.id}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]" title="${project.title}">
               [#if project.title?length < 120] ${project.title}</a> [#else] [@utilities.wordCutter string=project.title maxPos=120 /]...</a> [/#if]
@@ -67,6 +74,19 @@
           [#-- Donor --]
           <td class=""> 
             ${(project.institution.composedNameLoc)!'Not defined'}
+          </td>
+          
+          [#-- Field Check --]
+          <td class=""> 
+            [#if isCompleted]
+              <span class="hide">true</span>  <span class="icon-20 icon-check" title="[@s.text name="message.fieldsCheck.complete" /]"></span>
+            [#else]
+              [#if hasDraft]
+                <span class="hide">false</span> <span class="icon-20 icon-uncheck" title="[@s.text name="message.fieldsCheck.draft" /]"></span> 
+              [#else]
+                <span class="hide">false</span> <span class="icon-20 icon-uncheck" title="[@s.text name="message.fieldsCheck.incomplete" /]"></span> 
+              [/#if]
+            [/#if]
           </td>
         
           [#-- Delete Project--]

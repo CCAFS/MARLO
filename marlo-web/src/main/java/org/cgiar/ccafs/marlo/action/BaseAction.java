@@ -80,6 +80,7 @@ import org.cgiar.ccafs.marlo.security.SessionCounter;
 import org.cgiar.ccafs.marlo.security.UserToken;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.HistoryDifference;
+import org.cgiar.ccafs.marlo.validation.fundingSource.FundingSourceValidator;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -205,6 +206,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private boolean fullEditable; // If user is able to edit all the form.
   @Inject
   private FundingSourceManager fundingSourceManager;
+
+  @Inject
+  private FundingSourceValidator fundingSourceValidator;
   private HashMap<String, String> invalidFields;
 
 
@@ -230,6 +234,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private ProjectManager projectManager;
   @Inject
   private ProjectOutcomeManager projectOutcomeManager;
+
+
   private boolean reportingActive;
 
   private int reportingYear;
@@ -607,12 +613,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
 
-  private Boolean getAutoSaveFilePath(String simpleName, String actionName, long id) {
+  public Boolean getAutoSaveFilePath(String simpleName, String actionName, long id) {
     String composedClassName = simpleName;
     String actionFile = this.getCrpSession() + "_" + actionName;
     String autoSaveFile = id + "_" + composedClassName + "_" + actionFile + ".json";
-
-    return Paths.get(config.getAutoSaveFolder() + autoSaveFile).toFile().exists();
+    boolean exist = Paths.get(config.getAutoSaveFolder() + autoSaveFile).toFile().exists();
+    return exist;
   }
 
   public String getBasePermission() {
@@ -819,6 +825,27 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
 
+  public boolean getFundingSourceStatus(long fundingSourceID) {
+    FundingSource fundingSource = fundingSourceManager.getFundingSourceById(fundingSourceID);
+
+    List<SectionStatus> sectionStatuses = fundingSource.getSectionStatuses().stream()
+
+      .collect(Collectors.toList());
+
+    if (!sectionStatuses.isEmpty()) {
+      SectionStatus sectionStatus = sectionStatuses.get(0);
+      return sectionStatus.getMissingFields().length() == 0
+        && !this.getAutoSaveFilePath(fundingSource.getClass().getSimpleName(),
+          ProjectSectionStatusEnum.FUNDINGSOURCE.getStatus(), fundingSource.getId());
+
+    } else {
+      fundingSourceValidator.validate(this, fundingSource, false);
+      return this.getFundingSourceStatus(fundingSource.getId());
+    }
+
+
+  }
+
   public long getIFPRIId() {
     return APConstants.IFPRI_ID;
   }
@@ -826,7 +853,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean getImpactSectionStatus(String section, long crpProgramID) {
     SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByCrpProgam(crpProgramID, section);
     if (sectionStatus != null) {
-      if (sectionStatus.getMissingFields().length() == 0) {
+      if (sectionStatus.getMissingFields().length() == 0
+        && !this.getAutoSaveFilePath(CrpProgram.class.getSimpleName(), section, crpProgramID)) {
         return true;
       }
     }
@@ -874,10 +902,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return Locale.ENGLISH;
   }
 
+
   public String getNamespace() {
     return ServletActionContext.getActionMapping().getNamespace();
   }
-
 
   /**
    * get the number of users log in in the application
@@ -925,11 +953,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   public Map<String, Object> getParameters() {
     parameters = ActionContext.getContext().getParameters();
     return parameters;
   }
-
 
   public String getParameterValue(String param) {
     Object paramObj = this.getParameters().get(param);

@@ -81,6 +81,12 @@ public class SectionStatusManagerImpl implements SectionStatusManager {
   }
 
   @Override
+  public SectionStatus getSectionStatusByFundingSource(long fundingSource, String cycle, Integer year,
+    String sectionName) {
+    return sectionStatusDAO.getSectionStatusByFundingSource(fundingSource, cycle, year, sectionName);
+  }
+
+  @Override
   public SectionStatus getSectionStatusById(long sectionStatusID) {
 
     return sectionStatusDAO.find(sectionStatusID);

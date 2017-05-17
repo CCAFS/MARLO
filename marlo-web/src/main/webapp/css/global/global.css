@@ -6635,6 +6635,13 @@ img.removeInput {
     font-weight: bolder;
 }
 
+.pdfIcon {
+    cursor: pointer;
+    color: red;
+    font-size: 1.8em;
+    margin: 5px 0 0 0px;
+}
+
 .newsButton{
   position:absolute; 
   right:1%; 
