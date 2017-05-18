@@ -20,20 +20,21 @@ package org.cgiar.ccafs.marlo.action.crp.admin;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramLeaderManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
+import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
+import org.cgiar.ccafs.marlo.data.manager.ParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
-import org.cgiar.ccafs.marlo.data.model.CrpParameter;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
+import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
@@ -94,7 +95,9 @@ public class CrpAdminManagmentAction extends BaseAction {
   private UserRoleManager userRoleManager;
   private CrpProgramManager crpProgramManager;
   private CrpManager crpManager;
-  private CrpParameterManager crpParameterManager;
+  private CustomParameterManager crpParameterManager;
+  private ParameterManager parameterManager;
+
   private CrpUserManager crpUserManager;
   // Variables
   private Crp loggedCrp;
@@ -107,7 +110,7 @@ public class CrpAdminManagmentAction extends BaseAction {
   private List<CrpProgram> regionsPrograms;
 
 
-  private List<CrpParameter> parameters;
+  private List<CustomParameter> parameters;
 
   private CrpProgramLeaderManager crpProgramLeaderManager;
   private LiaisonUserManager liaisonUserManager;
@@ -124,10 +127,10 @@ public class CrpAdminManagmentAction extends BaseAction {
 
   @Inject
   public CrpAdminManagmentAction(APConfig config, RoleManager roleManager, UserRoleManager userRoleManager,
-    CrpProgramManager crpProgramManager, CrpManager crpManager, CrpParameterManager crpParameterManager,
+    CrpProgramManager crpProgramManager, CrpManager crpManager, CustomParameterManager crpParameterManager,
     CrpProgramLeaderManager crpProgramLeaderManager, UserManager userManager, SendMailS sendMail,
     LiaisonUserManager liaisonUserManager, LiaisonInstitutionManager liaisonInstitutionManager,
-    CrpUserManager crpUserManager) {
+    CrpUserManager crpUserManager, ParameterManager parameterManager) {
     super(config);
     this.roleManager = roleManager;
     this.userRoleManager = userRoleManager;
@@ -135,6 +138,7 @@ public class CrpAdminManagmentAction extends BaseAction {
     this.crpProgramManager = crpProgramManager;
     this.crpParameterManager = crpParameterManager;
     this.userManager = userManager;
+    this.parameterManager = parameterManager;
     this.crpProgramLeaderManager = crpProgramLeaderManager;
     this.sendMail = sendMail;
     this.liaisonUserManager = liaisonUserManager;
@@ -558,8 +562,9 @@ public class CrpAdminManagmentAction extends BaseAction {
     }
 
 
-    parameters = loggedCrp.getCrpParameters().stream().filter(c -> c.getKey().equals(APConstants.CRP_HAS_REGIONS)
-      && c.isActive() && c.getCrp().getId().equals(loggedCrp.getId())).collect(Collectors.toList());
+    parameters =
+      loggedCrp.getCustomParameters().stream().filter(c -> c.getParameter().getKey().equals(APConstants.CRP_HAS_REGIONS)
+        && c.isActive() && c.getCrp().getId().equals(loggedCrp.getId())).collect(Collectors.toList());
     if (parameters.size() == 0) {
       loggedCrp.setHasRegions(false);
     } else {
@@ -844,23 +849,26 @@ public class CrpAdminManagmentAction extends BaseAction {
       this.programLeaderData();
       this.programManagerData();
 
-      CrpParameter parameter = null;
+      CustomParameter parameter = null;
       if (parameters.size() == 0) {
-        parameter = new CrpParameter();
+        parameter = new CustomParameter();
         parameter.setActive(true);
         parameter.setCrp(loggedCrp);
-        parameter.setKey(APConstants.CRP_HAS_REGIONS);
+
+        parameter.setParameter(parameterManager.getParameterByKey(APConstants.CRP_HAS_REGIONS));
+        parameter.setActiveSince(new Date());
+        parameter.setCreatedBy(this.getCurrentUser());
 
       } else {
         parameter = parameters.get(0);
       }
       parameter.setValue(loggedCrp.isHasRegions() + "");
-      parameter.setCreatedBy(this.getCurrentUser());
+
       parameter.setModifiedBy(this.getCurrentUser());
       parameter.setModificationJustification("");
-      parameter.setActiveSince(new Date());
-      crpParameterManager.saveCrpParameter(parameter);
-      this.getSession().put(parameter.getKey(), parameter.getValue());
+
+      crpParameterManager.saveCustomParameter(parameter);
+      this.getSession().put(parameter.getParameter().getKey(), parameter.getValue());
 
       /*
        * Desactive regions

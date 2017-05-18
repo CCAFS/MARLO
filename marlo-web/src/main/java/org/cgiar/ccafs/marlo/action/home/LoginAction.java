@@ -22,7 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.ADLoginMessages;
 import org.cgiar.ccafs.marlo.data.model.Crp;
-import org.cgiar.ccafs.marlo.data.model.CrpParameter;
+import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -122,6 +122,7 @@ public class LoginAction extends BaseAction {
     }
   }
 
+  @Override
   public String getUrl() {
     return url;
   }
@@ -155,9 +156,9 @@ public class LoginAction extends BaseAction {
             this.getSession().put(APConstants.SESSION_USER, loggedUser);
             this.getSession().put(APConstants.SESSION_CRP, loggedCrp);
             // put the crp parameters in the session
-            for (CrpParameter parameter : loggedCrp.getCrpParameters()) {
+            for (CustomParameter parameter : loggedCrp.getCustomParameters()) {
               if (parameter.isActive()) {
-                this.getSession().put(parameter.getKey(), parameter.getValue());
+                this.getSession().put(parameter.getParameter().getKey(), parameter.getValue());
               }
             }
             this.getSession().put("color", this.randomColor());
@@ -256,6 +257,7 @@ public class LoginAction extends BaseAction {
     this.crp = crp;
   }
 
+  @Override
   public void setUrl(String url) {
     this.url = url;
   }

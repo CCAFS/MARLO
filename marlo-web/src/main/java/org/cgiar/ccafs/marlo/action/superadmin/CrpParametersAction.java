@@ -18,9 +18,10 @@ package org.cgiar.ccafs.marlo.action.superadmin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpParameterManager;
+import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
+import org.cgiar.ccafs.marlo.data.manager.ParameterManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
-import org.cgiar.ccafs.marlo.data.model.CrpParameter;
+import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
@@ -39,14 +40,17 @@ public class CrpParametersAction extends BaseAction {
 
 
   private CrpManager crpManager;
-  private CrpParameterManager crpParameterManager;
+  private CustomParameterManager crpParameterManager;
+  private ParameterManager parameterManager;
 
   private List<Crp> crps;
 
   @Inject
-  public CrpParametersAction(APConfig config, CrpManager crpManager, CrpParameterManager crpParameterManager) {
+  public CrpParametersAction(APConfig config, CrpManager crpManager, CustomParameterManager crpParameterManager,
+    ParameterManager parameterManager) {
 
     super(config);
+    this.parameterManager = parameterManager;
     this.crpManager = crpManager;
     this.crpParameterManager = crpParameterManager;
   }
@@ -63,7 +67,7 @@ public class CrpParametersAction extends BaseAction {
     super.prepare();
     crps = crpManager.findAll().stream().filter(c -> c.isMarlo()).collect(Collectors.toList());
     for (Crp crp : crps) {
-      crp.setParameters(crp.getCrpParameters().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+      crp.setParameters(crp.getCustomParameters().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
     }
     if (this.isHttpPost()) {
       for (Crp crp : crps) {
@@ -80,26 +84,38 @@ public class CrpParametersAction extends BaseAction {
 
       for (Crp crp : crps) {
         if (crp.getParameters() == null) {
-          crp.setParameters(new ArrayList<CrpParameter>());
+          crp.setParameters(new ArrayList<CustomParameter>());
         }
         Crp crpDB = crpManager.getCrpById(crp.getId());
-        for (CrpParameter parameter : crpDB.getCrpParameters()) {
+        for (CustomParameter parameter : crpDB.getCustomParameters()) {
           if (!crp.getParameters().contains(parameter)) {
-            crpParameterManager.deleteCrpParameter(parameter.getId());
+            crpParameterManager.deleteCustomParameter(parameter.getId());
           }
         }
 
-        for (CrpParameter parameter : crp.getParameters()) {
+        for (CustomParameter parameter : crp.getParameters()) {
           if (parameter.getId() != null && parameter.getId().intValue() == -1) {
             parameter.setId(null);
+            parameter.setActiveSince(new Date());
+            parameter.setActive(true);
+            parameter.setCreatedBy(this.getCurrentUser());
+            parameter.setCrp(crp);
+            parameter.setParameter(parameterManager.getParameterByKey(parameter.getParameter().getKey()));
+            parameter.setModificationJustification("");
+            parameter.setModifiedBy(this.getCurrentUser());
+            crpParameterManager.saveCustomParameter(parameter);
+          } else {
+            CustomParameter customParameterDB = crpParameterManager.getCustomParameterById(parameter.getId());
+            parameter.setActiveSince(customParameterDB.getActiveSince());
+            parameter.setActive(true);
+            parameter.setCreatedBy(customParameterDB.getCreatedBy());
+            parameter.setCrp(crp);
+            parameter.setParameter(parameterManager.getParameterByKey(parameter.getParameter().getKey()));
+            parameter.setModificationJustification("");
+            parameter.setModifiedBy(this.getCurrentUser());
+            crpParameterManager.saveCustomParameter(parameter);
           }
-          parameter.setActiveSince(new Date());
-          parameter.setActive(true);
-          parameter.setCreatedBy(this.getCurrentUser());
-          parameter.setCrp(crp);
-          parameter.setModificationJustification("");
-          parameter.setModifiedBy(this.getCurrentUser());
-          crpParameterManager.saveCrpParameter(parameter);
+
         }
 
       }

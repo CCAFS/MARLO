@@ -39,7 +39,7 @@
 		<mapping resource="xmls/CrpUsers.hbm.xml" />
 		<mapping resource="xmls/Roles.hbm.xml" />
 		<mapping resource="xmls/UserRoles.hbm.xml" />
-		<mapping resource="xmls/CrpParameters.hbm.xml" />
+	
 		<mapping resource="xmls/SrfIdos.hbm.xml" />
 		<mapping resource="xmls/CrpsSitesIntegration.hbm.xml" />
 		<mapping resource="xmls/CrpProgramLeaders.hbm.xml" />
