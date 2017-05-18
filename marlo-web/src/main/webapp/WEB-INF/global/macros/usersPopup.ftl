@@ -29,7 +29,7 @@
                   [@s.param name="0"]<span class="link">[@s.text name="form.buttons.clickingHere" /]</span>[/@s.param]
                 [/@s.text] 
               </p>
-              <ul></ul>
+              <ul class="usersFound"></ul>
             </div>
           </div> 
         </div>

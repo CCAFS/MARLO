@@ -89,8 +89,9 @@ public class CrpUsersAction extends BaseAction {
 
 
         for (CrpProgramLeader crpProgramsLeader : user.getCrpProgramLeaders().stream()
-          .filter(c -> c.isActive()
-            && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && !c.isManager())
+          .filter(
+            c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+              && !c.isManager() && c.getCrpProgram().getCrp().getId().longValue() == this.getCrpID().longValue())
           .collect(Collectors.toList())) {
           relations.add(crpProgramsLeader.getCrpProgram().getAcronym());
         }
@@ -100,8 +101,9 @@ public class CrpUsersAction extends BaseAction {
 
 
         for (CrpProgramLeader crpProgramsLeader : user.getCrpProgramLeaders().stream()
-          .filter(c -> c.isActive()
-            && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isManager())
+          .filter(
+            c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+              && c.isManager() && c.getCrpProgram().getCrp().getId().longValue() == this.getCrpID().longValue())
           .collect(Collectors.toList())) {
           relations.add(crpProgramsLeader.getCrpProgram().getAcronym());
         }
@@ -110,8 +112,9 @@ public class CrpUsersAction extends BaseAction {
 
       case "RPL":
         for (CrpProgramLeader crpProgramsLeader : user.getCrpProgramLeaders().stream()
-          .filter(c -> c.isActive()
-            && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue() && !c.isManager())
+          .filter(
+            c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()
+              && !c.isManager() && c.getCrpProgram().getCrp().getId().longValue() == this.getCrpID().longValue())
           .collect(Collectors.toList())) {
           relations.add(crpProgramsLeader.getCrpProgram().getAcronym());
         }
@@ -119,8 +122,9 @@ public class CrpUsersAction extends BaseAction {
 
       case "RPM":
         for (CrpProgramLeader crpProgramsLeader : user.getCrpProgramLeaders().stream()
-          .filter(c -> c.isActive()
-            && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue() && c.isManager())
+          .filter(
+            c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()
+              && c.isManager() && c.getCrpProgram().getCrp().getId().longValue() == this.getCrpID().longValue())
           .collect(Collectors.toList())) {
           relations.add(crpProgramsLeader.getCrpProgram().getAcronym());
         }
@@ -128,8 +132,9 @@ public class CrpUsersAction extends BaseAction {
 
       case "ML":
 
-        for (LiaisonUser liaisonUser : user.getLiasonsUsers().stream()
-          .filter(c -> c.isActive() && c.getLiaisonInstitution().isActive()).collect(Collectors.toList())) {
+        for (LiaisonUser liaisonUser : user.getLiasonsUsers().stream().filter(c -> c.isActive()
+          && c.getLiaisonInstitution().isActive() && c.getCrp().getId().longValue() == this.getCrpID().longValue())
+          .collect(Collectors.toList())) {
           relations.add(liaisonUser.getLiaisonInstitution().getAcronym());
         }
         break;
@@ -164,14 +169,17 @@ public class CrpUsersAction extends BaseAction {
       case "CL":
         for (CrpClusterActivityLeader crpClusterActivityLeader : user.getCrpClusterActivityLeaders().stream()
           .filter(c -> c.isActive() && c.getCrpClusterOfActivity().isActive()
-            && c.getCrpClusterOfActivity().getCrpProgram().isActive())
+            && c.getCrpClusterOfActivity().getCrpProgram().isActive()
+            && c.getCrpClusterOfActivity().getCrpProgram().getCrp().getId().longValue() == this.getCrpID().longValue())
           .collect(Collectors.toList())) {
           relations.add(crpClusterActivityLeader.getCrpClusterOfActivity().getIdentifier());
         }
         break;
 
       case "SL":
-        for (CrpSitesLeader crpSitesLeader : user.getCrpSitesLeaders().stream().filter(c -> c.isActive())
+        for (CrpSitesLeader crpSitesLeader : user.getCrpSitesLeaders().stream()
+          .filter(
+            c -> c.isActive() && c.getCrpsSiteIntegration().getCrp().getId().longValue() == this.getCrpID().longValue())
           .collect(Collectors.toList())) {
           relations.add(crpSitesLeader.getCrpsSiteIntegration().getLocElement().getIsoAlpha2());
         }
