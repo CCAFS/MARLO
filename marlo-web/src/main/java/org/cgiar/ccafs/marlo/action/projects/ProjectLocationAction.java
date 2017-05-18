@@ -19,18 +19,23 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.LocGeopositionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLocationElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.model.CountryFundingSources;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpLocElementType;
+import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.LocElementType;
 import org.cgiar.ccafs.marlo.data.model.LocGeoposition;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocationElementType;
 import org.cgiar.ccafs.marlo.data.model.ScopeData;
@@ -50,6 +55,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -83,11 +89,14 @@ public class ProjectLocationAction extends BaseAction {
 
   private ProjectLocationValidator locationValidator;
 
+
   private LocElementManager locElementManager;
 
   private LocElementTypeManager locElementTypeManager;
 
   private LocGeopositionManager locGeopositionManager;
+
+  private FundingSourceManager fundingSourceManager;
 
   private Crp loggedCrp;
 
@@ -95,13 +104,14 @@ public class ProjectLocationAction extends BaseAction {
 
   private long projectID;
 
+  private List<CountryFundingSources> countryFS;
 
   private ProjectLocationElementTypeManager projectLocationElementTypeManager;
 
   private ProjectLocationManager projectLocationManager;
 
-  private ProjectManager projectManager;
 
+  private ProjectManager projectManager;
 
   private String transaction;
 
@@ -110,7 +120,7 @@ public class ProjectLocationAction extends BaseAction {
     LocElementTypeManager locElementTypeManager, LocElementManager locElementManager,
     ProjectLocationManager projectLocationManager, LocGeopositionManager locGeopositionManager,
     AuditLogManager auditLogManager, ProjectLocationValidator locationValidator,
-    ProjectLocationElementTypeManager projectLocationElementTypeManager) {
+    ProjectLocationElementTypeManager projectLocationElementTypeManager, FundingSourceManager fundingSourceManager) {
     super(config);
     this.crpManager = crpManager;
     this.projectManager = projectManager;
@@ -121,7 +131,9 @@ public class ProjectLocationAction extends BaseAction {
     this.auditLogManager = auditLogManager;
     this.locationValidator = locationValidator;
     this.projectLocationElementTypeManager = projectLocationElementTypeManager;
+    this.fundingSourceManager = fundingSourceManager;
   }
+
 
   @Override
   public String cancel() {
@@ -153,6 +165,10 @@ public class ProjectLocationAction extends BaseAction {
     String autoSaveFile = project.getId() + "_" + composedClassName + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+  }
+
+  public List<CountryFundingSources> getCountryFS() {
+    return countryFS;
   }
 
   public List<LocationLevel> getLocationsLevels() {
@@ -302,7 +318,6 @@ public class ProjectLocationAction extends BaseAction {
     return transaction;
   }
 
-
   public void listScopeRegions() {
 
     List<LocElementType> scopeRegionsPrew = locElementTypeManager.findAll().stream()
@@ -416,6 +431,7 @@ public class ProjectLocationAction extends BaseAction {
 
   }
 
+
   @Override
   public void prepare() throws Exception {
 
@@ -482,6 +498,8 @@ public class ProjectLocationAction extends BaseAction {
       }
     }
 
+    this.prepareFundingList();
+
     this.listScopeRegions();
 
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
@@ -494,6 +512,64 @@ public class ProjectLocationAction extends BaseAction {
 
       project.setLocationGlobal(false);
     }
+
+  }
+
+  public void prepareFundingList() {
+
+
+    List<ProjectBudget> projectBudgets = new ArrayList<>(project.getProjectBudgets().stream()
+      .filter(pb -> pb.isActive() && pb.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList()));
+
+    List<FundingSource> fundingSources = new ArrayList<>();
+    for (ProjectBudget projectBudget : projectBudgets) {
+
+      fundingSources.add(projectBudget.getFundingSource());
+
+    }
+
+    HashSet<FundingSource> fuHashSet = new HashSet<>();
+    fuHashSet.addAll(fundingSources);
+
+    fundingSources = new ArrayList<>(fuHashSet);
+
+    List<LocElement> locElements = new ArrayList<>();
+    List<LocElementType> locElementTypes = new ArrayList<>();
+
+    for (FundingSource fundingSource : fundingSources) {
+
+      List<FundingSourceLocation> fundingSourceLocations = new ArrayList<>(
+        fundingSource.getFundingSourceLocations().stream().filter(fs -> fs.isActive()).collect(Collectors.toList()));
+
+      for (FundingSourceLocation fundingSourceLocation : fundingSourceLocations) {
+        if (fundingSourceLocation.getLocElementType() != null) {
+          locElements.add(fundingSourceLocation.getLocElement());
+        } else {
+          locElementTypes.add(fundingSourceLocation.getLocElementType());
+        }
+      }
+
+
+    }
+
+    countryFS = new ArrayList<>();
+
+    HashSet<LocElement> hashElements = new HashSet<>();
+    hashElements.addAll(locElements);
+    locElements = new ArrayList<>(hashElements);
+
+    for (LocElement locElement : hashElements) {
+      CountryFundingSources countryFundingSources = new CountryFundingSources();
+      countryFundingSources.setLocElement(locElement);
+
+      List<FundingSource> sources = fundingSourceManager.searchFundingSourcesByLocElement(projectID, locElement.getId(),
+        this.getCurrentCycleYear());
+      countryFundingSources.setFundingSources(new ArrayList<>(sources));
+
+      countryFS.add(countryFundingSources);
+
+    }
+
 
   }
 
@@ -813,6 +889,10 @@ public class ProjectLocationAction extends BaseAction {
       projectLocationManager.saveProjectLocation(projectLocation);
     }
 
+  }
+
+  public void setCountryFS(List<CountryFundingSources> countryFS) {
+    this.countryFS = countryFS;
   }
 
   public void setLocationsLevels(List<LocationLevel> locationsLevels) {
