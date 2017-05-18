@@ -96,7 +96,7 @@ public class CrpParametersAction extends BaseAction {
     }
 
     parametersTypes = Arrays.asList(ParameterCategoryEnum.values());
-
+    parametersTypes.sort((p1, p2) -> p1.getId().compareTo(p2.getId()) * -1);
 
     if (this.isHttpPost()) {
       for (Crp crp : crps) {
