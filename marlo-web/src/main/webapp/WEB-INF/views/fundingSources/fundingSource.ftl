@@ -220,7 +220,7 @@
                   </optgroup>
                 [/#if]
                 [#if regionLists?has_content]
-                <optgroup label="UN standart (M49)">
+                <optgroup label="United Nations standart (M.49)">
                   [#list regionLists as region]
                   <option value="${(region.id)!}-${(region.locElementType.scope?c)!}">${(region.name)!}</option>
                   [/#list]
