@@ -13,7 +13,7 @@ CREATE TABLE `custom_parameters` (
 `id`  bigint(20) NOT NULL AUTO_INCREMENT ,
 `parameter_id`  bigint(20) NOT NULL ,
 `crp_id`  bigint(20) NOT NULL ,
-`value`  varchar(500) NOT NULL ,
+`value`  varchar(500)  NULL ,
 `created_by`  bigint(20) NULL DEFAULT NULL COMMENT 'foreign key to the table users' ,
 `is_active`  tinyint(1) NOT NULL DEFAULT 1 ,
 `active_since`  timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ,

@@ -186,3 +186,7 @@ table#marloUsersTable tr {
     margin-left: 1%;
     float: left;
 }
+
+table.ui-datepicker-calendar {
+  display: block;
+}

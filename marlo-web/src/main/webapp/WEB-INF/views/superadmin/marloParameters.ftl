@@ -53,13 +53,6 @@
   </div>
 </section>
 
-[#-- Parameter template --]
-<table>
-	<tbody>
-    [@parameterMacro element={} name="crps[-1].parameters" index=-1 isTemplate=true /]
-	</tbody>
-</table>
-
 [#include "/WEB-INF/global/pages/footer.ftl" /]
 
 [#-- MACROS --]
@@ -73,10 +66,8 @@
     
     <div class="blockContent" style="display:none">
       <hr />
- 
-      
- 
       [#if element.parameters??]
+        [#-- Roles(1, "Roles"), Specificities(2, "Specificities"), Settings(3, "Settings"); --]
         <ul class="nav nav-tabs" role="tablist">
         [#list parametersTypes as type]
           <li class="${type?is_first?string('active','')}"><a href="#type-${type_index}-${element.id}" role="tab" data-toggle="tab">${type.format}</a></li>
@@ -87,9 +78,8 @@
             <div role="tabpanel" class="tab-pane ${type?is_first?string('active','')}" id="type-${type_index}-${element.id}">
               <table class="table table-striped table-condensed ">
                 <tbody>
-                [#list element.parameters as parameter]
-               
-                  [#if type.id ==parameter.parameter.category][@parameterMacro element=parameter name="${customName}.parameters" index=parameter_index /][/#if]
+                [#list element.parameters as crpParameter]
+                  [#if type.id ==crpParameter.parameter.category][@parameterMacro element=crpParameter name="${customName}.parameters" index=crpParameter_index /][/#if]
                 [/#list]
                 </tbody>
               </table>
@@ -97,13 +87,6 @@
           [/#list]
         </div>
       [/#if]
-      [#-- Add parameter 
-      <div class="buttonBlock text-right">
-        <div class="addParameter button-blue">
-          <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addParameter"/]
-        </div>
-      </div>
-      --]
       
     </div>
   </div>
@@ -127,29 +110,18 @@
       [/#if]
     </td>
     <td>
-      [#--  Types {1 => Role} {2 => Yes/No} {3 => 1/0} {4 => Text} --]
-      [#if (element.type == 1)!false]
-        [@customForm.input name="${customName}.value" placeholder="Value" showTitle=false /]
-      [#elseif (element.type == 2)!false]
+      [#--  Boolean(1, "Boolean"), Date(2, "Date"), Int(3, "Int"), Text(4, "Text"); --]
+      [#if (element.parameter.format == 1)!false]
         <div class="radioFlat radio-inline">
-          <input id="yes-${element.id}" type="radio" name="${customName}.value" value="true" [#if (element.value == "true")!false]checked[/#if] />
-          <label for="yes-${element.id}" class="radio-label radio-label-yes"> Yes</label>
+          <input id="yes-${(element.id)!}" type="radio" name="${customName}.value" value="true" [#if (element.value == "true")!false]checked[/#if] />
+          <label for="yes-${(element.id)!}" class="radio-label radio-label-yes"> Yes</label>
         </div>
         <div class="radioFlat radio-inline">
-          <input id="no-${element.id}" type="radio" name="${customName}.value" value="false"  [#if (element.value == "false")!false]checked[/#if]/>
-          <label for="no-${element.id}" class="radio-label radio-label-no"> No</label>
+          <input id="no-${(element.id)!}" type="radio" name="${customName}.value" value="false"  [#if (element.value == "false")!false]checked[/#if]/>
+          <label for="no-${(element.id)!}" class="radio-label radio-label-no"> No</label>
         </div>
-      [#elseif (element.type == 3)!false]
-        <div class="radioFlat radio-inline">
-          <input id="yes-${element.id}" type="radio" name="${customName}.value" value="1"  [#if (element.value == "1")!false]checked[/#if]/>
-          <label for="yes-${element.id}" class="radio-label radio-label-yes"> Yes</label>
-        </div>
-        <div class="radioFlat radio-inline">
-          <input id="no-${element.id}" type="radio" name="${customName}.value" value="0"  [#if (element.value == "0")!false]checked[/#if]/>
-          <label for="no-${element.id}" class="radio-label radio-label-no"> No</label>
-        </div>
-      [#else]
-        [@customForm.input name="${customName}.value" placeholder="Value" showTitle=false /]
+      [#else] 
+        [@customForm.input name="${customName}.value" className="parameterValue type-${element.parameter.format}" placeholder="Value" showTitle=false /]
       [/#if]
     </td>
   </tr>

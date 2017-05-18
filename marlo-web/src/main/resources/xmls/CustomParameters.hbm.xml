@@ -23,7 +23,7 @@
             </column>
         </many-to-one>
         <property name="value" type="string">
-            <column name="value" length="500" not-null="true" />
+            <column name="value" length="500"  />
         </property>
         <property name="active" type="boolean">
             <column name="is_active" not-null="true" />
