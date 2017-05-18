@@ -542,10 +542,12 @@ public class ProjectLocationAction extends BaseAction {
         fundingSource.getFundingSourceLocations().stream().filter(fs -> fs.isActive()).collect(Collectors.toList()));
 
       for (FundingSourceLocation fundingSourceLocation : fundingSourceLocations) {
-        if (fundingSourceLocation.getLocElementType() != null) {
+        if (fundingSourceLocation.getLocElementType() == null) {
           locElements.add(fundingSourceLocation.getLocElement());
+
         } else {
           locElementTypes.add(fundingSourceLocation.getLocElementType());
+
         }
       }
 
@@ -567,6 +569,14 @@ public class ProjectLocationAction extends BaseAction {
       countryFundingSources.setFundingSources(new ArrayList<>(sources));
 
       countryFS.add(countryFundingSources);
+
+    }
+
+    HashSet<LocElementType> hashElementTypes = new HashSet<>();
+    hashElementTypes.addAll(locElementTypes);
+    locElementTypes = new ArrayList<>(hashElementTypes);
+
+    for (LocElementType locElementType : hashElementTypes) {
 
     }
 
