@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.ParameterManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CustomParameter;
+import org.cgiar.ccafs.marlo.data.model.Parameter;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
@@ -68,7 +69,24 @@ public class CrpParametersAction extends BaseAction {
     crps = crpManager.findAll().stream().filter(c -> c.isMarlo()).collect(Collectors.toList());
     for (Crp crp : crps) {
       crp.setParameters(crp.getCustomParameters().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+      List<Parameter> parameters =
+        parameterManager.findAll().stream()
+          .filter(c -> c.getCustomParameters().stream()
+            .filter(p -> p.isActive() && p.getCrp().getId().equals(this.getCrpID())).collect(Collectors.toList())
+            .isEmpty())
+          .collect(Collectors.toList());
+
+      for (Parameter parameter : parameters) {
+        CustomParameter customParameter = new CustomParameter();
+        customParameter.setParameter(parameter);
+        customParameter.setValue(parameter.getDefaultValue());
+        crp.getParameters().add(customParameter);
+
+      }
     }
+
+
     if (this.isHttpPost()) {
       for (Crp crp : crps) {
         if (crp.getParameters() != null) {
@@ -98,7 +116,7 @@ public class CrpParametersAction extends BaseAction {
         for (CustomParameter parameter : crp.getParameters()) {
 
           if (parameter != null) {
-            if (parameter.getId() != null && parameter.getId().intValue() == -1) {
+            if (parameter.getId() == null || parameter.getId().intValue() == -1) {
               parameter.setId(null);
               parameter.setActiveSince(new Date());
               parameter.setActive(true);
