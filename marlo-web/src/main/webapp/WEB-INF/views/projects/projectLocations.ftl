@@ -121,8 +121,9 @@
                  <div class="col-md-12">
                   <label for="">Please select the predefined locations coming from your funding sources:</label>
                   <div class="simpleBox">
-                  [#if project.recommendedLoc?has_content]
-                    [#list project.recommendedLoc as location]
+                  ${(countryFS)!}
+                  [#if countryFS?has_content]
+                    [#list countryFS as location]
                       [@recommendedLocation element=location name="${locationLevelName}.${locationName}" index=-1 template=true /]
                     [/#list]
                   [#else]
