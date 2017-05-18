@@ -19,7 +19,7 @@ package org.cgiar.ccafs.marlo.data.model;
 
 public enum ParameterCategoryEnum {
 
-  ROL(3, "Role"), TRUEORFALSE(1, "Boolean"), YESORNO(4, "Bit"), Other(2, "Other");
+  Roles(1, "Roles"), Specificities(2, "Specificities"), Settings(3, "Settings");
 
   public static ParameterCategoryEnum getValue(int id) {
     ParameterCategoryEnum[] lst = ParameterCategoryEnum.values();
@@ -35,10 +35,11 @@ public enum ParameterCategoryEnum {
   private String format;
 
 
-  private int id;
+  private Integer id;
 
 
   private ParameterCategoryEnum(int id, String format) {
+    this.id = id;
     this.format = format;
   }
 
@@ -47,7 +48,7 @@ public enum ParameterCategoryEnum {
     return format;
   }
 
-  public int getId() {
+  public Integer getId() {
     return id;
   }
 
@@ -55,7 +56,7 @@ public enum ParameterCategoryEnum {
     this.format = format;
   }
 
-  public void setId(int id) {
+  public void setId(Integer id) {
     this.id = id;
   }
 

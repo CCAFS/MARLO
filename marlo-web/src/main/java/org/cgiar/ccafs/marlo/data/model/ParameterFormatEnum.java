@@ -19,7 +19,7 @@ package org.cgiar.ccafs.marlo.data.model;
 
 public enum ParameterFormatEnum {
 
-  BOOL(1, "bool"), STRING(2, "string"), INT(3, "int"), DECIMAL(4, "decimal"), DATE(5, "date");
+  Boolean(1, "Boolean"), Date(2, "Date"), Int(3, "Int"), Text(4, "Text");
 
   public static ParameterFormatEnum getValue(int id) {
     ParameterFormatEnum[] lst = ParameterFormatEnum.values();
@@ -39,6 +39,7 @@ public enum ParameterFormatEnum {
 
 
   private ParameterFormatEnum(int id, String format) {
+    this.id = id;
     this.format = format;
   }
 

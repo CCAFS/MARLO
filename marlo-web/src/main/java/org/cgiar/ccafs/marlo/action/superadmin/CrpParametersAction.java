@@ -23,9 +23,11 @@ import org.cgiar.ccafs.marlo.data.manager.ParameterManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.data.model.Parameter;
+import org.cgiar.ccafs.marlo.data.model.ParameterCategoryEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,7 +45,7 @@ public class CrpParametersAction extends BaseAction {
   private CrpManager crpManager;
   private CustomParameterManager crpParameterManager;
   private ParameterManager parameterManager;
-
+  private List<ParameterCategoryEnum> parametersTypes;
   private List<Crp> crps;
 
   @Inject
@@ -59,6 +61,11 @@ public class CrpParametersAction extends BaseAction {
 
   public List<Crp> getCrps() {
     return crps;
+  }
+
+
+  public List<ParameterCategoryEnum> getParametersTypes() {
+    return parametersTypes;
   }
 
 
@@ -86,6 +93,8 @@ public class CrpParametersAction extends BaseAction {
       }
     }
 
+    parametersTypes = Arrays.asList(ParameterCategoryEnum.values());
+
 
     if (this.isHttpPost()) {
       for (Crp crp : crps) {
@@ -95,6 +104,7 @@ public class CrpParametersAction extends BaseAction {
       }
     }
   }
+
 
   @Override
   public String save() {
@@ -149,7 +159,12 @@ public class CrpParametersAction extends BaseAction {
     }
   }
 
+
   public void setCrps(List<Crp> crps) {
     this.crps = crps;
+  }
+
+  public void setParametersTypes(List<ParameterCategoryEnum> parametersTypes) {
+    this.parametersTypes = parametersTypes;
   }
 }

@@ -73,16 +73,13 @@
     
     <div class="blockContent" style="display:none">
       <hr />
-      [#assign parametersTypes = [
-        {"name": 'Yes/No', "ids": [1, 4]},
-        {"name": 'Roles', "ids": [3]},
-        {"name": 'Text', "ids": [2]}
-      ] /]
+ 
       
+ 
       [#if element.parameters??]
         <ul class="nav nav-tabs" role="tablist">
         [#list parametersTypes as type]
-          <li class="${type?is_first?string('active','')}"><a href="#type-${type_index}-${element.id}" role="tab" data-toggle="tab">${type.name}</a></li>
+          <li class="${type?is_first?string('active','')}"><a href="#type-${type_index}-${element.id}" role="tab" data-toggle="tab">${type.format}</a></li>
         [/#list]
         </ul>
         <div class="tab-content">
@@ -91,7 +88,8 @@
               <table class="table table-striped table-condensed ">
                 <tbody>
                 [#list element.parameters as parameter]
-                  [#if type.ids?seq_contains(parameter.parameter.category)][@parameterMacro element=parameter name="${customName}.parameters" index=parameter_index /][/#if]
+               
+                  [#if type.id ==parameter.parameter.category][@parameterMacro element=parameter name="${customName}.parameters" index=parameter_index /][/#if]
                 [/#list]
                 </tbody>
               </table>
