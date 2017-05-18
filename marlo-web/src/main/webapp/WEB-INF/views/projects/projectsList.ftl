@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "MARLO Projects" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
-[#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
+[#assign pageLibs = ["datatables.net", "datatables.net-bs","font-awesome"] /]
 [#assign customJS = ["${baseUrl}/js/projects/projectsList.js" ] /]
 [#assign customCSS = ["${baseUrl}/css/global/customDataTable.css"] /]
 [#assign currentSection = "projects" /]

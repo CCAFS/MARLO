@@ -120,7 +120,8 @@ $(document).ready(function() {
     if(e.which == 2) {
       return;
     }
-    if((isChanged() || forceChange) && editable && draft && selectedUrl && (myTurn == 1)) {
+
+    if((isChanged() || forceChange || draft) && editable && draft && selectedUrl && (myTurn == 1)) {
       e.preventDefault();
       $('#discardChanges').modal();
     }
