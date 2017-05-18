@@ -19,7 +19,7 @@ package org.cgiar.ccafs.marlo.data.model;
 
 public enum ParameterCategoryEnum {
 
-  ROL(1, "Role"), TRUEORFALSE(2, "Boolean"), YESORNO(3, "Bit"), Other(4, "Other");
+  ROL(3, "Role"), TRUEORFALSE(1, "Boolean"), YESORNO(4, "Bit"), Other(2, "Other");
 
   public static ParameterCategoryEnum getValue(int id) {
     ParameterCategoryEnum[] lst = ParameterCategoryEnum.values();

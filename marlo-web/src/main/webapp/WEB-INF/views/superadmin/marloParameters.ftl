@@ -74,9 +74,9 @@
     <div class="blockContent" style="display:none">
       <hr />
       [#assign parametersTypes = [
-        {"name": 'Yes/No', "ids": [2, 3]},
-        {"name": 'Roles', "ids": [1]},
-        {"name": 'Text', "ids": [4]}
+        {"name": 'Yes/No', "ids": [1, 4]},
+        {"name": 'Roles', "ids": [3]},
+        {"name": 'Text', "ids": [2]}
       ] /]
       
       [#if element.parameters??]
@@ -91,7 +91,7 @@
               <table class="table table-striped table-condensed ">
                 <tbody>
                 [#list element.parameters as parameter]
-                  [#if type.ids?seq_contains(parameter.type)][@parameterMacro element=parameter name="${customName}.parameters" index=parameter_index /][/#if]
+                  [#if type.ids?seq_contains(parameter.parameter.category)][@parameterMacro element=parameter name="${customName}.parameters" index=parameter_index /][/#if]
                 [/#list]
                 </tbody>
               </table>
@@ -116,15 +116,16 @@
   <tr id="parameter-${isTemplate?string('template',index)}" class="parameter" style="display:${isTemplate?string('none','table-row')}">
     <td>
       <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
+      <input type="hidden" name="${customName}.parameter.key" value="${(element.parameter.key)!}" />
       [#if isTemplate]
-        [@customForm.input name="${customName}.description" placeholder="Description" showTitle=false /]
-        [@customForm.input name="${customName}.key" placeholder="Key" showTitle=false /]
-        <input type="hidden" name="${customName}.type" value="4" />
+        [@customForm.input name="${customName}.paramater.description" placeholder="Description" showTitle=false /]
+        [@customForm.input name="${customName}.paramater.key" placeholder="Key" showTitle=false /]
+        <input type="hidden" name="${customName}.category" value="4" />
       [#else]
-        <input type="hidden" name="${customName}.description" value="${(element.description)!}" />
-        <input type="hidden" name="${customName}.key" value="${(element.key)!}" />
-        <input type="hidden" name="${customName}.type" value="${(element.type)!}" />
-        <strong>${(element.key)!} </strong> <br /> <small><i>(${(element.description)!})</i></small>
+        <input type="hidden" name="${customName}.parameter.description" value="${(element.parameter.description)!}" />
+        <input type="hidden" name="${customName}.paramater.key" value="${(element.parameter.key)!}" />
+        <input type="hidden" name="${customName}.parameter.category" value="${(element.parameter.category)!}" />
+        <strong>${(element.parameter.key)!} </strong> <br /> <small><i>(${(element.parameter.description)!})</i></small>
       [/#if]
     </td>
     <td>
