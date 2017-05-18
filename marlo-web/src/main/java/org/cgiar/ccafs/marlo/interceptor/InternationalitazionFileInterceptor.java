@@ -93,8 +93,8 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
         for (CustomParameter parameter : loggedCrp.getCustomParameters()) {
           if (parameter.isActive()) {
             if (parameter.getParameter().getKey().equals(APConstants.CRP_REFRESH)) {
-              session.put(parameter.getParameter().getKey(), "0");
-              parameter.setValue("0");
+              session.put(parameter.getParameter().getKey(), "false");
+              parameter.setValue("false");
               crpParameterManager.saveCustomParameter(parameter);
             } else {
               session.put(parameter.getParameter().getKey(), parameter.getValue());
@@ -114,9 +114,9 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
   public boolean isCrpRefresh(Crp crp) {
     try {
       // return Integer.parseInt(this.getSession().get(APConstants.CRP_CLOSED).toString()) == 1;
-      return Integer.parseInt(crpManager.getCrpById(crp.getId()).getCustomParameters().stream()
+      return Boolean.parseBoolean(crpManager.getCrpById(crp.getId()).getCustomParameters().stream()
         .filter(c -> c.getParameter().getKey().equals(APConstants.CRP_REFRESH)).collect(Collectors.toList()).get(0)
-        .getValue()) == 1;
+        .getValue());
     } catch (Exception e) {
       return false;
     }

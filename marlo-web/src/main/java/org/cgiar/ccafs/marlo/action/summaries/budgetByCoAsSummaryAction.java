@@ -326,9 +326,8 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
       new Class[] {String.class, String.class, Boolean.class, Boolean.class});
     Boolean hasGender = false;
     try {
-      hasGender = Integer.parseInt(loggedCrp.getCustomParameters().stream()
-        .filter(cp -> cp.isActive() && cp.getParameter().getKey().equals(APConstants.CRP_BUDGET_GENDER))
-        .collect(Collectors.toList()).get(0).getValue()) == 1;
+      hasGender = this.hasSpecificities(APConstants.CRP_BUDGET_GENDER);
+
     } catch (Exception e) {
       LOG.warn("Failed to get " + APConstants.CRP_BUDGET_GENDER + " parameter. Parameter was set null. Exception: "
         + e.getMessage());
