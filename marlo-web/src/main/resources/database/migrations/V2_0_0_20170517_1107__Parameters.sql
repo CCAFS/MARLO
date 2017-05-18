@@ -1,7 +1,7 @@
 CREATE TABLE `parameters` (
 `id`  bigint(20) NOT NULL AUTO_INCREMENT ,
 `key`  varchar(500) NULL ,
-`description`  text NOT NULL ,
+`description`  text  NULL ,
 `format`  int NULL ,
 `default_value`  varchar(500) NULL ,
 `category`  int NULL ,

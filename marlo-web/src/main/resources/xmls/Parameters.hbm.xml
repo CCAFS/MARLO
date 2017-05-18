@@ -12,7 +12,7 @@
             <column name="key" length="500" />
         </property>
         <property name="description" type="string">
-            <column name="description" length="65535" not-null="true" />
+            <column name="description" length="65535" />
         </property>
         <property name="format" type="java.lang.Integer">
             <column name="format" />
