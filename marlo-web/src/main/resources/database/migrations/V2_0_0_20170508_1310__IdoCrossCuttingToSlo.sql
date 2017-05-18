@@ -1,0 +1,12 @@
+INSERT INTO `srf_slo_idos` (`slo_id`, `ido_id`, `is_active`, `created_by`, `modified_by`, `modification_justification`) VALUES ('1', '11', '1', '1', '1', 'Initial Data');
+INSERT INTO `srf_slo_idos` (`slo_id`, `ido_id`, `is_active`, `created_by`, `modified_by`, `modification_justification`) VALUES ('2', '11', '1', '1', '1', 'Initial Data');
+INSERT INTO `srf_slo_idos` (`slo_id`, `ido_id`, `is_active`, `created_by`, `modified_by`, `modification_justification`) VALUES ('3', '11', '1', '1', '1', 'Initial Data');
+INSERT INTO `srf_slo_idos` (`slo_id`, `ido_id`, `is_active`, `created_by`, `modified_by`, `modification_justification`) VALUES ('1', '12', '1', '1', '1', 'Initial Data');
+INSERT INTO `srf_slo_idos` (`slo_id`, `ido_id`, `is_active`, `created_by`, `modified_by`, `modification_justification`) VALUES ('2', '12', '1', '1', '1', 'Initial Data');
+INSERT INTO `srf_slo_idos` (`slo_id`, `ido_id`, `is_active`, `created_by`, `modified_by`, `modification_justification`) VALUES ('3', '12', '1', '1', '1', 'Initial Data');
+INSERT INTO `srf_slo_idos` (`slo_id`, `ido_id`, `is_active`, `created_by`, `modified_by`, `modification_justification`) VALUES ('1', '13', '1', '1', '1', 'Initial Data');
+INSERT INTO `srf_slo_idos` (`slo_id`, `ido_id`, `is_active`, `created_by`, `modified_by`, `modification_justification`) VALUES ('2', '13', '1', '1', '1', 'Initial Data');
+INSERT INTO `srf_slo_idos` (`slo_id`, `ido_id`, `is_active`, `created_by`, `modified_by`, `modification_justification`) VALUES ('3', '13', '1', '1', '1', 'Initial Data');
+INSERT INTO `srf_slo_idos` (`slo_id`, `ido_id`, `is_active`, `created_by`, `modified_by`, `modification_justification`) VALUES ('1', '14', '1', '1', '1', 'Initial Data');
+INSERT INTO `srf_slo_idos` (`slo_id`, `ido_id`, `is_active`, `created_by`, `modified_by`, `modification_justification`) VALUES ('2', '14', '1', '1', '1', 'Initial Data');
+INSERT INTO `srf_slo_idos` (`slo_id`, `ido_id`, `is_active`, `created_by`, `modified_by`, `modification_justification`) VALUES ('3', '14', '1', '1', '1', 'Initial Data');

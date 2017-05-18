@@ -53,6 +53,9 @@
       <p>[@s.text name="synthesis.message.concurrence" /] [@s.text name="synthesis.message.concurrenceNotEditing"][@s.param] <a href="[@s.url][@s.param name="liaisonInstitutionID" value=liaisonInstitutionID /][/@s.url]">click here</a> [/@s.param][/@s.text]</p>
     </div>
   </div>
+  
+  [#-- Draft Message --]
+  [#include "/WEB-INF/global/macros/draftMessage.ftl" /]
 
 [/#if]
 

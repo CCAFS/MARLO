@@ -64,12 +64,11 @@ $(document).ready(function() {
     selectedUrl = $.trim($(this).attr("href"));
     selectedAction = getClassParameter($(this), 'action');
 
-    console.log(selectedAction);
     // Prevent middle click
     if(e.which == 2) {
       return;
     }
-    if((isChanged() || forceChange) && editable && draft && selectedUrl && (myTurn == 1)) {
+    if((isChanged() || forceChange || draft) && editable && draft && selectedUrl && (myTurn == 1)) {
       e.preventDefault();
       $('#discardChanges').modal();
     }

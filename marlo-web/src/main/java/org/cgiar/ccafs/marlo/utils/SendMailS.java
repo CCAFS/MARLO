@@ -14,7 +14,6 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.utils;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.Properties;
 
@@ -25,6 +24,7 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
+import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
@@ -72,9 +72,9 @@ public class SendMailS {
       ccEmail = ccEmail.replaceAll(", " + toEmail, "");
 
     }
-    properties.put("mail.smtp.auth", "true");
-    properties.put("mail.smtp.starttls.enable", "true");
-    properties.put("mail.smtp.ssl.trust", config.getEmailHost());
+    // properties.put("mail.smtp.auth", "true");
+    // properties.put("mail.smtp.starttls.enable", "true");
+    // properties.put("mail.smtp.ssl.trust", config.getEmailHost());
     properties.put("mail.smtp.host", config.getEmailHost());
     properties.put("mail.smtp.port", config.getEmailPort());
 
@@ -135,7 +135,14 @@ public class SendMailS {
           LOG.info("   - CC: " + ccEmail);
         }
       }
-      msg.setFrom(new InternetAddress(config.getEmailHost(), "MARLO Platform"));
+
+      try {
+        msg.setFrom(new InternetAddress(config.getEmailNotification()));
+      } catch (AddressException e) {
+        msg.setFrom((InternetAddress) null);
+        LOG.error("There was an error setting up the FROM Email when trying to send a message", e.getMessage());
+      }
+
       if (bbcEmail != null) {
         msg.setRecipients(Message.RecipientType.BCC, InternetAddress.parse(bbcEmail, false));
         LOG.info("   - BBC: " + bbcEmail);
@@ -175,8 +182,7 @@ public class SendMailS {
     } catch (MessagingException e) {
       e.printStackTrace();
       LOG.error("There was an error sending a message", e.getMessage());
-    } catch (UnsupportedEncodingException e) {
-      LOG.error("There was an error setting up the FROM Email when trying to send a message", e.getMessage());
+
     }
   }
 

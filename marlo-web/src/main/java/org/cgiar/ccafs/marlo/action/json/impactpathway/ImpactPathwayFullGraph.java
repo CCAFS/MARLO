@@ -55,10 +55,10 @@ public class ImpactPathwayFullGraph extends BaseAction {
   long crpID;
   @Inject
   private CrpManager crpManager;
-  private HashMap<String, Object> elements;
-
   @Inject
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
+
+  private HashMap<String, Object> elements;
 
   @Inject
   public ImpactPathwayFullGraph(APConfig config) {
@@ -84,7 +84,7 @@ public class ImpactPathwayFullGraph extends BaseAction {
       HashMap<String, Object> dataIdos = new HashMap<>();
       HashMap<String, Object> dataSlos = new HashMap<>();
 
-      dataProgram.put("id", crpProgram.getAcronym());
+      dataProgram.put("id", "F" + crpProgram.getId());
       dataProgram.put("label", crpProgram.getAcronym());
       dataProgram.put("description", crpProgram.getName());
       dataProgram.put("color", crpProgram.getColor());
@@ -103,7 +103,7 @@ public class ImpactPathwayFullGraph extends BaseAction {
         dataDetailOutcome.put("label", "Outcome #" + i);
         dataDetailOutcome.put("description", crpProgramOutcome.getDescription());
         dataDetailOutcome.put("color", crpProgramOutcome.getCrpProgram().getColor());
-        dataDetailOutcome.put("parent", crpProgram.getAcronym());
+        dataDetailOutcome.put("parent", "F" + crpProgram.getId());
         dataDetailOutcome.put("type", "O");
         dataOutcome.put("data", dataDetailOutcome);
         // dataEdgeDetailOutcome.put("source", crpProgram.getAcronym());
@@ -121,7 +121,7 @@ public class ImpactPathwayFullGraph extends BaseAction {
           if (crpOutcomeSubIdo.getSrfSubIdo() != null && crpOutcomeSubIdo.getSrfSubIdo().isActive()) {
             HashMap<String, Object> dataDetaiSubIDO = new HashMap<>();
             dataDetaiSubIDO.put("id", "SD" + crpOutcomeSubIdo.getSrfSubIdo().getId());
-            dataDetaiSubIDO.put("label", "SubIDO #" + crpOutcomeSubIdo.getSrfSubIdo().getId());
+            dataDetaiSubIDO.put("label", "Sub-IDO #" + crpOutcomeSubIdo.getSrfSubIdo().getId());
             dataDetaiSubIDO.put("description", crpOutcomeSubIdo.getSrfSubIdo().getDescription());
 
             dataDetaiSubIDO.put("type", "SD");
@@ -131,7 +131,12 @@ public class ImpactPathwayFullGraph extends BaseAction {
 
             HashMap<String, Object> dataDetaiSIDO = new HashMap<>();
             dataDetaiSIDO.put("id", "IDO" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
+
+            if (crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().isIsCrossCutting()) {
+              dataDetaiSIDO.put("color", "#676b6d");
+            }
             dataDetaiSIDO.put("label", "IDO #" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
+
             dataDetaiSIDO.put("description", crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getDescription());
 
             dataDetaiSIDO.put("type", "IDO");
@@ -222,11 +227,11 @@ public class ImpactPathwayFullGraph extends BaseAction {
         HashMap<String, Object> dataOutcome = new HashMap<>();
         HashMap<String, Object> dataDetailOutcome = new HashMap<>();
         dataDetailOutcome.put("id", "C" + crpClusterOfActivity.getId());
-        dataDetailOutcome.put("label", "CoA #" + i1);
+        dataDetailOutcome.put("label", crpClusterOfActivity.getIdentifier());
         dataDetailOutcome.put("description", crpClusterOfActivity.getComposedName());
         dataDetailOutcome.put("color", "#c0c0c0");
         dataDetailOutcome.put("type", "CoA");
-        dataDetailOutcome.put("parent", crpProgram.getAcronym());
+        dataDetailOutcome.put("parent", "F" + crpProgram.getId());
         dataOutcome.put("data", dataDetailOutcome);
         dataNodes.add(dataOutcome);
 
