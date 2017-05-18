@@ -77,12 +77,14 @@ public class CrpParametersAction extends BaseAction {
     for (Crp crp : crps) {
       crp.setParameters(crp.getCustomParameters().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
-      List<Parameter> parameters =
-        parameterManager.findAll().stream()
-          .filter(c -> c.getCustomParameters().stream()
-            .filter(p -> p.isActive() && p.getCrp().getId().equals(this.getCrpID())).collect(Collectors.toList())
-            .isEmpty())
-          .collect(Collectors.toList());
+
+      if (crp.getId().equals(new Long(21))) {
+        System.out.println("a");
+      }
+      List<Parameter> parameters = parameterManager.findAll().stream()
+        .filter(c -> c.getCustomParameters().stream()
+          .filter(p -> p.isActive() && p.getCrp().getId().equals(crp.getId())).collect(Collectors.toList()).isEmpty())
+        .collect(Collectors.toList());
 
       for (Parameter parameter : parameters) {
         CustomParameter customParameter = new CustomParameter();
