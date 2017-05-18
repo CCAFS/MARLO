@@ -68,7 +68,7 @@ public class ParameterMySQLDAO implements ParameterDAO {
 
   @Override
   public Parameter getParameterByKey(String key) {
-    String query = "from " + Parameter.class.getName() + " where `key`='" + key + "'";
+    String query = "from " + Parameter.class.getName() + " where key='" + key + "'";
     List<Parameter> list = dao.findAll(query);
     if (list.size() > 0) {
       return list.get(0);

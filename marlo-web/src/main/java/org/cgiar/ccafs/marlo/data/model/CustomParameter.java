@@ -14,7 +14,11 @@ public class CustomParameter implements java.io.Serializable {
    * 
    */
   private static final long serialVersionUID = 9127311887995427567L;
+
+
   private Long id;
+
+
   private Crp crp;
   private Parameter parameter;
   private User modifiedBy;
@@ -26,7 +30,6 @@ public class CustomParameter implements java.io.Serializable {
 
   public CustomParameter() {
   }
-
 
   public CustomParameter(Crp crp, Parameter parameter, User usersByModifiedBy, String value, boolean isActive,
     Date activeSince, String modificationJustification) {
@@ -52,10 +55,29 @@ public class CustomParameter implements java.io.Serializable {
   }
 
 
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+
+    CustomParameter other = (CustomParameter) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!this.getId().equals(other.getId())) {
+      return false;
+    }
+    return true;
+  }
+
   public Date getActiveSince() {
     return activeSince;
   }
-
 
   public User getCreatedBy() {
     return createdBy;
@@ -89,6 +111,15 @@ public class CustomParameter implements java.io.Serializable {
 
   public String getValue() {
     return value;
+  }
+
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
   }
 
 
@@ -139,6 +170,13 @@ public class CustomParameter implements java.io.Serializable {
 
   public void setValue(String value) {
     this.value = value;
+  }
+
+
+  @Override
+  public String toString() {
+
+    return id.toString();
   }
 
 

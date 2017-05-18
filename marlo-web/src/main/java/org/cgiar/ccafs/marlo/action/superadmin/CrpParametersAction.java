@@ -87,36 +87,42 @@ public class CrpParametersAction extends BaseAction {
           crp.setParameters(new ArrayList<CustomParameter>());
         }
         Crp crpDB = crpManager.getCrpById(crp.getId());
-        for (CustomParameter parameter : crpDB.getCustomParameters()) {
+        for (CustomParameter parameter : crpDB.getCustomParameters().stream().filter(c -> c.isActive())
+          .collect(Collectors.toList())) {
           if (!crp.getParameters().contains(parameter)) {
+            System.out.println(parameter.getParameter().getKey());
             crpParameterManager.deleteCustomParameter(parameter.getId());
           }
         }
 
         for (CustomParameter parameter : crp.getParameters()) {
-          if (parameter.getId() != null && parameter.getId().intValue() == -1) {
-            parameter.setId(null);
-            parameter.setActiveSince(new Date());
-            parameter.setActive(true);
-            parameter.setCreatedBy(this.getCurrentUser());
-            parameter.setCrp(crp);
-            parameter.setParameter(parameterManager.getParameterByKey(parameter.getParameter().getKey()));
-            parameter.setModificationJustification("");
-            parameter.setModifiedBy(this.getCurrentUser());
-            crpParameterManager.saveCustomParameter(parameter);
-          } else {
-            CustomParameter customParameterDB = crpParameterManager.getCustomParameterById(parameter.getId());
-            parameter.setActiveSince(customParameterDB.getActiveSince());
-            parameter.setActive(true);
-            parameter.setCreatedBy(customParameterDB.getCreatedBy());
-            parameter.setCrp(crp);
-            parameter.setParameter(parameterManager.getParameterByKey(parameter.getParameter().getKey()));
-            parameter.setModificationJustification("");
-            parameter.setModifiedBy(this.getCurrentUser());
-            crpParameterManager.saveCustomParameter(parameter);
-          }
 
+          if (parameter != null) {
+            if (parameter.getId() != null && parameter.getId().intValue() == -1) {
+              parameter.setId(null);
+              parameter.setActiveSince(new Date());
+              parameter.setActive(true);
+              parameter.setCreatedBy(this.getCurrentUser());
+              parameter.setCrp(crp);
+              parameter.setParameter(parameterManager.getParameterByKey(parameter.getParameter().getKey()));
+              parameter.setModificationJustification("");
+              parameter.setModifiedBy(this.getCurrentUser());
+              crpParameterManager.saveCustomParameter(parameter);
+            } else {
+              CustomParameter customParameterDB = crpParameterManager.getCustomParameterById(parameter.getId());
+              parameter.setActiveSince(customParameterDB.getActiveSince());
+              parameter.setActive(true);
+              parameter.setCreatedBy(customParameterDB.getCreatedBy());
+              parameter.setCrp(crp);
+              parameter.setParameter(parameterManager.getParameterByKey(parameter.getParameter().getKey()));
+              parameter.setModificationJustification("");
+              parameter.setModifiedBy(this.getCurrentUser());
+              crpParameterManager.saveCustomParameter(parameter);
+            }
+
+          }
         }
+
 
       }
       return SUCCESS;
