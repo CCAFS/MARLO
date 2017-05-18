@@ -118,7 +118,6 @@
                 </div>
                     [/#if]
                  [#-- RECOMMENDED LOCATIONS --]
-                 [#assign project = {"recomendedLoc":"[]"}/]
                  <div class="col-md-12">
                   <label for="">Please select the predefined locations coming from your funding sources:</label>
                   <div class="simpleBox">
@@ -222,7 +221,6 @@
           </div> 
           
           [#include "/WEB-INF/views/projects/buttons-projects.ftl" /]
-             
          
           [/@s.form] 
       </div>
