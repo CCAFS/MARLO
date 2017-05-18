@@ -190,3 +190,7 @@ table#marloUsersTable tr {
 table.ui-datepicker-calendar {
   display: block;
 }
+
+td {
+  vertical-align: middle;
+}

@@ -120,8 +120,8 @@
           <input id="no-${(element.id)!}" type="radio" name="${customName}.value" value="false"  [#if (element.value == "false")!false]checked[/#if]/>
           <label for="no-${(element.id)!}" class="radio-label radio-label-no"> No</label>
         </div>
-      [#else] 
-        [@customForm.input name="${customName}.value" className="parameterValue type-${element.parameter.format}" placeholder="Value" showTitle=false /]
+      [#else]
+        [@customForm.input name="${customName}.value" className="parameterValue type-${element.parameter.format}" placeholder="${(element.parameter.defaultValue)!'Value'}" showTitle=false /]
       [/#if]
     </td>
   </tr>
