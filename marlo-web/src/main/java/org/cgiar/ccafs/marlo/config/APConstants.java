@@ -25,11 +25,14 @@ package org.cgiar.ccafs.marlo.config;
 public final class APConstants {
 
   public static final String AUTOSAVE_REQUEST = "autoSave";
+  public static final String COUNTRY_REQUEST_ID = "countryID";
+  public static final String COUNTRIES_REQUEST_ID = "countriesID";
+  public static final String CRP_PARTNERS_OFFICE = "crp_partners_office";
+  public static final String PARTNER_ID = "partnerId";
 
   public static final String BUDGET_TYPE_REQUEST_ID = "budgetTypeID";
   public static final String CASE_STUDY_REQUEST_ID = "caseStudyID";
   public static final String CLASS_NAME = "className";
-  public static final String COUNTRY_REQUEST_ID = "countryID";
   public static final String CRP_ACTIVITES_MODULE = "crp_activities_module";
   public static final String CRP_ADMIN_ACTIVE = "crp_admin_active";
   public static final String CRP_ADMIN_ROLE = "crp_admin_rol";
@@ -61,7 +64,7 @@ public final class APConstants {
   public static final String CRP_PARAMETERS = "crp_parameters";
   public static final String CRP_PARTNER_CONTRIBUTIONS = "crp_partner_contribution";
   public static final String CRP_PC_ROLE = "crp_pc_rol";
-  public static final String CRP_FS_W1W2_COFINANCING = "crp_fs_w1w2_cofinancing";
+
   public static final String CRP_PL_ROLE = "crp_pl_rol";
   public static final String CRP_PLANNING_ACTIVE = "crp_planning_active";
   public static final String CRP_PLANNING_YEAR = "crp_planning_year";
@@ -331,6 +334,4 @@ public final class APConstants {
     return FILTER_BY;
   }
 
-
 }
-

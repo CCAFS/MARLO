@@ -12,6 +12,9 @@ function init() {
     width: '100%'
   });
 
+  // Update Parters selected lists
+  updateProjectPartnersSelects();
+
   $(".fundingSource").select2({
       templateResult: formatState,
       templateSelection: formatState
@@ -37,55 +40,61 @@ function init() {
 
   // On change any partner person
   $('.projectPartnerPerson select.id').on("change", function() {
-    var option = $(this).find("option:selected");
-    var $division = $(this).parents('.projectPartnerPerson').find('.division-IFPRI');
-    // Show IFPRI Division
-    if((option.text()).indexOf("IFPRI") > -1) {
-      $division.show();
+    var $select = $(this);
+    var isResp = $select.hasClass('responsible');
+    if(isResp) {
+      var $list = $select.parents(".responsiblePartner").find(".partnerPersons");
     } else {
-      $division.hide();
+      var $list = $select.parents(".deliverablePartner").find(".partnerPersons");
     }
-  });
+    var $list = $select.parents(".deliverablePartner, .responsiblePartner").find(".partnerPersons");
+    var option = $select.find("option:selected");
 
-  // Update value of responsible person
-  $(".responsible").on("change", function() {
-    var option = $(this).find("option:selected");
-    // validate if exists this person in contact person list
-    var validation = $(this).parents(".fullBlock").parent().find(".personList").find("select");
-    if(option.val() != "-1") {
-      if(validation.exists()) {
-        validation.each(function(i,e) {
-          if($(e).val() == option.val()) {
-            // Remove from contact person list
-            $(e).parents(".deliverablePartner").hide("slow", function() {
-              $(this).remove();
-              updatePartners();
-            })
-            // Show message
-            var text = option.html() + ' was removed from contact persons list';
-            notify(text);
+    console.log(option.text());
+
+    $.ajax({
+        url: baseURL + '/personByParnters.do',
+        data: {
+          partnerId: option.val()
+        },
+        beforeSend: function() {
+          $list.empty();
+        },
+        success: function(data) {
+          $.each(data.persons, function(i,person) {
+
+            if(isResp) {
+              var $item = $('#deliverablePerson-template.resp').clone(true);
+            } else {
+              var $item = $('#deliverablePerson-template.other').clone(true);
+            }
+            $item.removeAttr('id');
+            $item.find('input[type="checkbox"], input[type="radio"]').val(person.id);
+            $item.find('label.checkbox-label, label.radio-label').text(person.user);
+
+            $list.append($item);
+            $item.show();
+          });
+
+        },
+        complete: function() {
+          if(isResp) {
+            updatePartnersResp();
+          } else {
+            updatePartners();
           }
-        });
-      }
-    } else {
-      $(this).parents(".responsiblePartner").find(".id").val(-1);
-    }
-  });
 
-  // Update value of partner
-  $(".partner").on("change", function() {
-    var option = $(this).find("option:selected");
-    // validate if exists this person in contact person list
-    var validation = $(this).parents(".partnerWrapper").find(".responsibleWrapper").find("select");
-    if(validation.exists()) {
-      if(validation.val() == option.val()) {
-        option.parent().val(-1);
-        option.parent().trigger("change.select2");
-        // Show message
-        var text = option.html() + ' is the responsible person of this deliverable';
-        notify(text);
-      }
-    }
+          var $division = $select.parents('.projectPartnerPerson').find('.division-IFPRI');
+          // Show IFPRI Division
+          if((option.text()).indexOf("IFPRI") > -1) {
+            $division.show();
+          } else {
+            $division.hide();
+          }
+
+        }
+    });
+
   });
 
   // CHANGE STATUS
@@ -387,7 +396,7 @@ function justificationByStatus(statusId) {
 
 // Add a new person element
 function addPartnerEvent() {
-  var $list = $(".personList");
+  var $list = $(".partnersList");
   var $item = $("#deliverablePartner-template").clone(true).removeAttr("id");
   $list.append($item);
   $item.find('select').select2({
@@ -400,7 +409,7 @@ function addPartnerEvent() {
 
 // Remove person element
 function removePartnerEvent() {
-  var $list = $(this).parents('.personList');
+  var $list = $(this).parents('.partnersList');
   var $item = $(this).parents('.deliverablePartner');
   $item.hide(1000, function() {
     $item.remove();
@@ -411,15 +420,47 @@ function removePartnerEvent() {
 }
 
 function updatePartners() {
-  var name = "deliverable.otherPartners";
-  $(".personList").find('.deliverablePartner').each(function(i,item) {
+  $(".partnersList").find('.deliverablePerson.checkbox').each(function(i,item) {
+    var personID = $(item).find('input[type="checkbox"]').val();
+    var customID = "checkbox-" + i + "-" + personID;
+    $(item).setNameIndexes(1, i);
 
-    var customName = name + '[' + i + ']';
-    $(item).find('span.index').html(i + 1);
-    $(item).find('.id').attr('name', customName + '.projectPartnerPerson.id');
-    $(item).find('.type').attr('name', customName + '.projectPartnerPerson.type');
-    $(item).find('.divisionField').attr('name', customName + '.partnerDivision.id');
-    $(item).find('.element').attr('name', customName + '.id');
+    $(item).find('input[type="checkbox"]').attr('id', customID);
+    $(item).find('label.checkbox-label').attr('for', customID);
+  });
+
+  updateProjectPartnersSelects();
+}
+
+function updatePartnersResp() {
+  $(".responsibleWrapper ").find('.deliverablePerson.radio').each(function(i,item) {
+    var personID = $(item).find('input[type="radio"]').val();
+    var customID = "radio-" + i + "-" + personID;
+
+    $(item).find('input[type="radio"]').attr('id', customID);
+    $(item).find('label.radio-label').attr('for', customID);
+  });
+
+  updateProjectPartnersSelects();
+
+}
+
+function updateProjectPartnersSelects() {
+  // Update selects
+  var selectedValues = []
+  $("select.partner.id").each(function(i,select) {
+    selectedValues.push($(select).find("option:selected").val());
+  });
+
+  $("select.partner.id").each(function(i,select) {
+    console.log("-- Select #" + i);
+    $(select).find('option').attr('disabled', false).prop('disabled', false);
+    $.each(selectedValues, function(i,optionValue) {
+      if(optionValue != -1) {
+        $(select).find('option[value="' + optionValue + '"]').attr('disabled', true).prop('disabled', true);
+      }
+    });
+    $(select).trigger("select2.change");
   });
 }
 

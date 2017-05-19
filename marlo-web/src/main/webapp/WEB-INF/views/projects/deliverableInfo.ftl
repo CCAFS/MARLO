@@ -86,7 +86,7 @@
         <input type="hidden" name="deliverable.newExpectedYear" value="${(deliverable.newExpectedYear)!}"/>
         <div class="select">
           <label for="">Expected year:</label>
-        	<p>${(deliverable.newExpectedYear)!}</p>
+          <p>${(deliverable.newExpectedYear)!}</p>
         </div>
       [/#if]
     </div> 
@@ -234,6 +234,7 @@
 [#-- Partners --] 
 <h3 class="headTitle">[@s.text name="Partners contributing to this deliverable" /]</h3>  
 <div id="deliverable-partnership" class="form-group simpleBox">
+
   <div class="partnerWrapper">
     [#-- Partner who is responsible --]
     <label for="">[@customForm.text name="project.deliverable.indicateResponsablePartner" readText=!editable/]:[@customForm.req required=editable /]</label>
@@ -246,18 +247,16 @@
     [#-- Other contact person that will contribute --]
     [#assign displayOtherPerson = (!deliverable.otherPartners?has_content && !editable)?string('none','block') /]
     <label for="" style="display:${displayOtherPerson}">[@customForm.text name="projectDeliverable.otherContactContributing" readText=!editable/]</label>
-    <div class="personList listname="deliverable.otherPartners" style="display:${displayOtherPerson}">
-      [#if deliverable.otherPartners?has_content]
-        [#list deliverable.otherPartners as dp]
-          [@deliverableList.deliverablePartner dp=dp dp_name="deliverable.otherPartners" dp_index=dp_index editable=editable /]
-        [/#list]
+    <div class="partnersList listname="deliverable.otherPartners" style="display:${displayOtherPerson}">
+      [#if action.getSelectedPartners()?has_content]
+        [@deliverableList.deliverablePartnerOther dp=action.getSelectedPartners() dp_name="deliverable.otherPartners" editable=editable /]
       [#else]
         <p class="simpleBox emptyText center"> [@s.text name="project.deliverable.partnership.emptyText" /] </p>
       [/#if]
     </div>
     [#if editable && canEdit]
       <div id="addPartnerBlock" class="addPerson text-right">
-        <div class="button-blue  addPartner"><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="form.buttons.addPerson" /]</div>
+        <div class="button-blue  addPartner"><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="form.buttons.addPartner" /]</div>
       </div>
     [/#if]
   </div>

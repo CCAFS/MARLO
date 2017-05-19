@@ -74,6 +74,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectOtherContribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcomePandr;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerOverall;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -1145,8 +1146,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
             ProjectPartnerPerson responsibleppp = responisble.getProjectPartnerPerson();
             leader =
               responsibleppp.getUser().getComposedName() + "<br>&lt;" + responsibleppp.getUser().getEmail() + "&gt;";
-            if (responsibleppp.getInstitution() != null) {
-              institution = responsibleppp.getInstitution().getComposedName();
+            if (responsibleppp.getProjectPartner() != null) {
+              if (responsibleppp.getProjectPartner().getInstitution() != null) {
+                institution = responsibleppp.getProjectPartner().getInstitution().getComposedName();
+              }
             }
           }
         }
@@ -1646,8 +1649,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
             ProjectPartnerPerson responsibleppp = responisble.getProjectPartnerPerson();
             leader =
               responsibleppp.getUser().getComposedName() + "<br>&lt;" + responsibleppp.getUser().getEmail() + "&gt;";
-            if (responsibleppp.getInstitution() != null) {
-              institution = responsibleppp.getInstitution().getComposedName();
+            if (responsibleppp.getProjectPartner() != null) {
+              if (responsibleppp.getProjectPartner().getInstitution() != null) {
+                institution = responsibleppp.getProjectPartner().getInstitution().getComposedName();
+              }
             }
           }
         }
@@ -1777,9 +1782,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     String status = ProjectStatusEnum.getValue(project.getStatus().intValue()).getStatus();
     if (projectLeader.getInstitution() != null) {
       orgLeader = projectLeader.getInstitution().getComposedName();
-      if (projectLeader.getInstitution().getLocElement() != null) {
-        orgLeader += " - " + projectLeader.getInstitution().getLocElement().getName();
-      }
+
     }
     String leader = null;
     if (project.getLeaderPerson() != null) {
@@ -2334,19 +2337,40 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
   private TypedTableModel getPartnerLeaderTableModel(ProjectPartner projectLeader) {
     TypedTableModel model =
-      new TypedTableModel(new String[] {"org_leader", "pp_id"}, new Class[] {String.class, Long.class}, 0);
+      new TypedTableModel(new String[] {"org_leader", "pp_id", "responsibilities", "countryOffices"},
+        new Class[] {String.class, Long.class, String.class, String.class}, 0);
     long ppId = 0;
     String orgLeader = null;
+    String responsibilities = null;
+    String countryOffices = null;
     if (projectLeader.getId() != null && projectLeader.getInstitution() != null) {
       ppId = projectLeader.getId();
       orgLeader = projectLeader.getInstitution().getComposedName();
-      model.addRow(new Object[] {orgLeader, ppId});
+      responsibilities = projectLeader.getResponsibilities();
+      for (ProjectPartnerLocation projectPartnerLocation : projectLeader.getProjectPartnerLocations().stream()
+        .filter(ppl -> ppl.isActive()).collect(Collectors.toList())) {
+        if (countryOffices == null || countryOffices.isEmpty()) {
+          countryOffices = projectPartnerLocation.getInstitutionLocation().getLocElement().getName();
+        } else {
+          countryOffices += ", " + projectPartnerLocation.getInstitutionLocation().getLocElement().getName();
+        }
+      }
+      model.addRow(new Object[] {orgLeader, ppId, responsibilities, countryOffices});
     } else if (projectLeader.getId() != null && projectLeader.getInstitution() == null) {
       ppId = projectLeader.getId();
-      model.addRow(new Object[] {null, ppId});
+      model.addRow(new Object[] {null, ppId, responsibilities, countryOffices});
     } else if (projectLeader.getId() == null && projectLeader.getInstitution() != null) {
       orgLeader = projectLeader.getInstitution().getComposedName();
-      model.addRow(new Object[] {orgLeader, null});
+      responsibilities = projectLeader.getResponsibilities();
+      for (ProjectPartnerLocation projectPartnerLocation : projectLeader.getProjectPartnerLocations().stream()
+        .filter(ppl -> ppl.isActive()).collect(Collectors.toList())) {
+        if (countryOffices == null || countryOffices.isEmpty()) {
+          countryOffices = projectPartnerLocation.getInstitutionLocation().getLocElement().getName();
+        } else {
+          countryOffices += ", " + projectPartnerLocation.getInstitutionLocation().getLocElement().getName();
+        }
+      }
+      model.addRow(new Object[] {orgLeader, null, responsibilities, countryOffices});
     }
     return model;
   }
@@ -2370,23 +2394,46 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   }
 
   private TypedTableModel getPartnersOtherTableModel(ProjectPartner projectLeader) {
-    TypedTableModel model = new TypedTableModel(new String[] {"instituttion", "pp_id", "leader_count"},
-      new Class[] {String.class, Long.class, Integer.class}, 0);
+    TypedTableModel model =
+      new TypedTableModel(new String[] {"instituttion", "pp_id", "leader_count", "responsibilities", "countryOffices"},
+        new Class[] {String.class, Long.class, Integer.class, String.class, String.class}, 0);
     int leaderCount = 0;
+    String responsibilities = null;
+    String countryOffices = null;
     if (projectLeader.getId() != null) {
       leaderCount = 1;
       // Get list of partners except project leader
       for (ProjectPartner projectPartner : project.getProjectPartners().stream()
         .filter(c -> c.isActive() && c.getId() != projectLeader.getId()).collect(Collectors.toList())) {
-        model.addRow(
-          new Object[] {projectPartner.getInstitution().getComposedName(), projectPartner.getId(), leaderCount});
+        countryOffices = null;
+        responsibilities = projectPartner.getResponsibilities();
+        for (ProjectPartnerLocation projectPartnerLocation : projectPartner.getProjectPartnerLocations().stream()
+          .filter(ppl -> ppl.isActive()).collect(Collectors.toList())) {
+          if (countryOffices == null || countryOffices.isEmpty()) {
+            countryOffices = projectPartnerLocation.getInstitutionLocation().getLocElement().getName();
+          } else {
+            countryOffices += ", " + projectPartnerLocation.getInstitutionLocation().getLocElement().getName();
+          }
+        }
+        model.addRow(new Object[] {projectPartner.getInstitution().getComposedName(), projectPartner.getId(),
+          leaderCount, responsibilities, countryOffices});
       }
     } else {
       // Get all partners
       for (ProjectPartner projectPartner : project.getProjectPartners().stream().filter(c -> c.isActive())
         .collect(Collectors.toList())) {
-        model.addRow(
-          new Object[] {projectPartner.getInstitution().getComposedName(), projectPartner.getId(), leaderCount});
+        countryOffices = null;
+        responsibilities = projectPartner.getResponsibilities();
+        for (ProjectPartnerLocation projectPartnerLocation : projectPartner.getProjectPartnerLocations().stream()
+          .filter(ppl -> ppl.isActive()).collect(Collectors.toList())) {
+          if (countryOffices == null || countryOffices.isEmpty()) {
+            countryOffices = projectPartnerLocation.getInstitutionLocation().getLocElement().getName();
+          } else {
+            countryOffices += ", " + projectPartnerLocation.getInstitutionLocation().getLocElement().getName();
+          }
+        }
+        model.addRow(new Object[] {projectPartner.getInstitution().getComposedName(), projectPartner.getId(),
+          leaderCount, responsibilities, countryOffices});
       }
     }
     return model;

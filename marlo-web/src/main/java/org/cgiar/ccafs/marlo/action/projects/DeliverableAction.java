@@ -68,6 +68,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.GenderType;
+import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.PartnerDivision;
@@ -210,6 +211,10 @@ public class DeliverableAction extends BaseAction {
 
   private List<ProjectPartnerPerson> partnerPersons;
 
+
+  private List<ProjectPartner> partners;
+
+
   private Project project;
 
   private long projectID;
@@ -218,24 +223,24 @@ public class DeliverableAction extends BaseAction {
 
   private List<ProjectOutcome> projectOutcome;
 
-
   private ProjectPartnerManager projectPartnerManager;
 
-
   private ProjectPartnerPersonManager projectPartnerPersonManager;
+
 
   private List<ProjectFocus> projectPrograms;
 
 
   private Map<String, String> status;
 
-
   private String transaction;
 
 
   private int indexTab;
 
+
   private PartnerDivisionManager partnerDivisionManager;
+
 
   private List<PartnerDivision> divisions;
 
@@ -318,7 +323,6 @@ public class DeliverableAction extends BaseAction {
     return answers;
   }
 
-
   private Path getAutoSaveFilePath() {
     String composedClassName = deliverable.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -326,7 +330,6 @@ public class DeliverableAction extends BaseAction {
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
-
 
   public Map<String, String> getChannels() {
     return channels;
@@ -337,12 +340,26 @@ public class DeliverableAction extends BaseAction {
     return crps;
   }
 
+
   public Deliverable getDeliverable() {
     return deliverable;
   }
 
+
   public long getDeliverableID() {
     return deliverableID;
+  }
+
+  public DeliverablePartnership getDeliverablePartnership(long projectPeronID) {
+
+    for (DeliverablePartnership deliverablePartnership : deliverableManager.getDeliverableById(deliverableID)
+      .getDeliverablePartnerships().stream().filter(c -> c.isActive()
+        && c.getProjectPartnerPerson().getId().longValue() == projectPeronID && c.getPartnerType().equals("Other"))
+      .collect(Collectors.toList())) {
+      return deliverablePartnership;
+    }
+
+    return null;
   }
 
   public List<Map<String, Object>> getDeliverablesSubTypes(long deliverableTypeID) {
@@ -383,7 +400,6 @@ public class DeliverableAction extends BaseAction {
       + "deliverable" + File.separator + fileType + File.separator;
   }
 
-
   public List<PartnerDivision> getDivisions() {
     return divisions;
   }
@@ -392,6 +408,7 @@ public class DeliverableAction extends BaseAction {
   public List<FundingSource> getFundingSources() {
     return fundingSources;
   }
+
 
   public List<GenderType> getGenderLevels() {
     return genderLevels;
@@ -409,9 +426,18 @@ public class DeliverableAction extends BaseAction {
     return loggedCrp;
   }
 
-
   public List<ProjectPartnerPerson> getPartnerPersons() {
     return partnerPersons;
+  }
+
+
+  public List<ProjectPartner> getPartners() {
+    return partners;
+  }
+
+  public List<ProjectPartnerPerson> getPersons(long partnerID) {
+    ProjectPartner projectPartner = projectPartnerManager.getProjectPartnerById(partnerID);
+    return projectPartner.getProjectPartnerPersons().stream().filter(c -> c.isActive()).collect(Collectors.toList());
   }
 
   public Map<String, String> getPrograms() {
@@ -432,6 +458,36 @@ public class DeliverableAction extends BaseAction {
 
   public List<ProjectFocus> getProjectPrograms() {
     return projectPrograms;
+  }
+
+  public List<ProjectPartner> getSelectedPartners() {
+    Set<ProjectPartner> deliverablePartnerPersonsSet = new HashSet();
+    List<ProjectPartner> deliverablePartnerPersons = new ArrayList<>();
+
+    for (DeliverablePartnership deliverablePartnership : deliverableManager.getDeliverableById(deliverableID)
+      .getDeliverablePartnerships().stream().filter(c -> c.isActive() && c.getPartnerType().equals("Other"))
+      .collect(Collectors.toList())) {
+      deliverablePartnerPersonsSet.add(deliverablePartnership.getProjectPartnerPerson().getProjectPartner());
+    }
+
+    deliverablePartnerPersons.addAll(deliverablePartnerPersonsSet);
+    return deliverablePartnerPersons;
+
+  }
+
+  public List<ProjectPartnerPerson> getSelectedPersons(long partnerID) {
+
+    List<ProjectPartnerPerson> deliverablePartnerPersons = new ArrayList<>();
+
+    for (DeliverablePartnership deliverablePartnership : deliverableManager.getDeliverableById(deliverableID)
+      .getDeliverablePartnerships().stream()
+      .filter(c -> c.isActive() && c.getProjectPartnerPerson().getProjectPartner().getId().longValue() == partnerID
+        && c.getPartnerType().equals("Other"))
+      .collect(Collectors.toList())) {
+      deliverablePartnerPersons.add(deliverablePartnership.getProjectPartnerPerson());
+    }
+    return deliverablePartnerPersons;
+
   }
 
   public Map<String, String> getStatus() {
@@ -481,6 +537,7 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+
   public Boolean isDeliverabletNew(long deliverableID) {
 
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
@@ -517,6 +574,26 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+  public boolean isPPA(Institution institution) {
+    if (institution == null) {
+      return false;
+    }
+
+    if (institution.getId() != null) {
+      institution = institutionManager.getInstitutionById(institution.getId());
+      if (institution != null) {
+        if (institution.getCrpPpaPartners().stream()
+          .filter(c -> c.getCrp().getId().longValue() == loggedCrp.getId().longValue() && c.isActive())
+          .collect(Collectors.toList()).size() > 0) {
+          return true;
+        }
+      }
+
+    }
+
+    return false;
+  }
+
 
   public List<DeliverablePartnership> otherPartners() {
     try {
@@ -524,12 +601,7 @@ public class DeliverableAction extends BaseAction {
         .filter(dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
         .collect(Collectors.toList());
 
-      for (DeliverablePartnership deliverablePartnership : list) {
-        deliverablePartnership.getProjectPartnerPerson()
-          .setInstitution(institutionManager.getInstitutionById(
-            deliverablePartnershipManager.getDeliverablePartnershipById(deliverablePartnership.getId())
-              .getProjectPartnerPerson().getInstitution().getId()));
-      }
+
       return list;
     } catch (Exception e) {
       return null;
@@ -563,107 +635,114 @@ public class DeliverableAction extends BaseAction {
 
   }
 
-
   public void parnershipNewData() {
     if (deliverable.getOtherPartners() != null) {
       for (DeliverablePartnership deliverablePartnership : deliverable.getOtherPartners()) {
-        if (deliverablePartnership.getId() == null || deliverablePartnership.getId() == -1) {
+        if (deliverablePartnership.getProjectPartnerPerson() != null) {
+          if (deliverablePartnership.getId() == null && (deliverablePartnership.getProjectPartnerPerson() != null)
+            && (deliverablePartnership.getProjectPartnerPerson().getId() != null)) {
 
-          ProjectPartnerPerson partnerPerson = projectPartnerPersonManager
-            .getProjectPartnerPersonById(deliverablePartnership.getProjectPartnerPerson().getId());
-
-          if (partnerPerson != null) {
-            DeliverablePartnership partnership = new DeliverablePartnership();
-            partnership.setProjectPartnerPerson(partnerPerson);
-            partnership.setPartnerType(DeliverablePartnershipTypeEnum.OTHER.getValue());
-            partnership.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
-            partnership.setActive(true);
-            partnership.setCreatedBy(this.getCurrentUser());
-            partnership.setModifiedBy(this.getCurrentUser());
-            partnership.setModificationJustification("");
-            partnership.setActiveSince(new Date());
-
-            if (deliverablePartnership.getPartnerDivision() != null
-              && deliverablePartnership.getPartnerDivision().getId().longValue() != -1) {
-              try {
-                PartnerDivision division =
-                  partnerDivisionManager.getPartnerDivisionById(deliverablePartnership.getPartnerDivision().getId());
-                partnership.setPartnerDivision(division);
-              } catch (Exception e) {
-                partnership.setPartnerDivision(null);
-              }
-            } else {
-              partnership.setPartnerDivision(null);
-            }
-
-            deliverablePartnershipManager.saveDeliverablePartnership(partnership);
-
-          }
-
-
-        } else {
-
-          long partnerShipPrewId = deliverablePartnershipManager
-            .getDeliverablePartnershipById(deliverablePartnership.getId()).getProjectPartnerPerson().getId();
-
-          long partnerShipId = deliverablePartnership.getProjectPartnerPerson().getId();
-          if (partnerShipPrewId != partnerShipId) {
 
             ProjectPartnerPerson partnerPerson = projectPartnerPersonManager
               .getProjectPartnerPersonById(deliverablePartnership.getProjectPartnerPerson().getId());
 
-            deliverablePartnershipManager.deleteDeliverablePartnership(deliverablePartnership.getId());
-
             if (partnerPerson != null) {
-
-              DeliverablePartnership partnershipNew = new DeliverablePartnership();
-              partnershipNew.setProjectPartnerPerson(partnerPerson);
-              partnershipNew.setPartnerType(DeliverablePartnershipTypeEnum.OTHER.getValue());
-              partnershipNew.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
-              partnershipNew.setActive(true);
-              partnershipNew.setCreatedBy(this.getCurrentUser());
-              partnershipNew.setModifiedBy(this.getCurrentUser());
-              partnershipNew.setModificationJustification("");
-              partnershipNew.setActiveSince(new Date());
+              DeliverablePartnership partnership = new DeliverablePartnership();
+              partnership.setProjectPartnerPerson(partnerPerson);
+              partnership.setPartnerType(DeliverablePartnershipTypeEnum.OTHER.getValue());
+              partnership.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
+              partnership.setActive(true);
+              partnership.setCreatedBy(this.getCurrentUser());
+              partnership.setModifiedBy(this.getCurrentUser());
+              partnership.setModificationJustification("");
+              partnership.setActiveSince(new Date());
 
               if (deliverablePartnership.getPartnerDivision() != null
                 && deliverablePartnership.getPartnerDivision().getId().longValue() != -1) {
                 try {
                   PartnerDivision division =
                     partnerDivisionManager.getPartnerDivisionById(deliverablePartnership.getPartnerDivision().getId());
-                  partnershipNew.setPartnerDivision(division);
+                  partnership.setPartnerDivision(division);
                 } catch (Exception e) {
-                  partnershipNew.setPartnerDivision(null);
+                  partnership.setPartnerDivision(null);
                 }
               } else {
-                partnershipNew.setPartnerDivision(null);
+                partnership.setPartnerDivision(null);
               }
-              deliverablePartnershipManager.saveDeliverablePartnership(partnershipNew);
+
+              deliverablePartnershipManager.saveDeliverablePartnership(partnership);
+
             }
 
 
           } else {
-            DeliverablePartnership partnershipDB =
-              deliverablePartnershipManager.getDeliverablePartnershipById(deliverablePartnership.getId());
 
-            if (deliverablePartnership.getPartnerDivision() != null
-              && deliverablePartnership.getPartnerDivision().getId().longValue() != -1) {
-              try {
-                PartnerDivision division =
-                  partnerDivisionManager.getPartnerDivisionById(deliverablePartnership.getPartnerDivision().getId());
-                partnershipDB.setPartnerDivision(division);
-              } catch (Exception e) {
+            long partnerShipPrewId = 0;
+
+            partnerShipPrewId = deliverablePartnershipManager
+              .getDeliverablePartnershipById(deliverablePartnership.getId()).getProjectPartnerPerson().getId();
+
+
+            long partnerShipId = deliverablePartnership.getProjectPartnerPerson().getId();
+            if (partnerShipPrewId != partnerShipId) {
+
+              ProjectPartnerPerson partnerPerson = projectPartnerPersonManager
+                .getProjectPartnerPersonById(deliverablePartnership.getProjectPartnerPerson().getId());
+
+              deliverablePartnershipManager.deleteDeliverablePartnership(deliverablePartnership.getId());
+
+              if (partnerPerson != null) {
+
+                DeliverablePartnership partnershipNew = new DeliverablePartnership();
+                partnershipNew.setProjectPartnerPerson(partnerPerson);
+                partnershipNew.setPartnerType(DeliverablePartnershipTypeEnum.OTHER.getValue());
+                partnershipNew.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
+                partnershipNew.setActive(true);
+                partnershipNew.setCreatedBy(this.getCurrentUser());
+                partnershipNew.setModifiedBy(this.getCurrentUser());
+                partnershipNew.setModificationJustification("");
+                partnershipNew.setActiveSince(new Date());
+
+                if (deliverablePartnership.getPartnerDivision() != null
+                  && deliverablePartnership.getPartnerDivision().getId().longValue() != -1) {
+                  try {
+                    PartnerDivision division = partnerDivisionManager
+                      .getPartnerDivisionById(deliverablePartnership.getPartnerDivision().getId());
+                    partnershipNew.setPartnerDivision(division);
+                  } catch (Exception e) {
+                    partnershipNew.setPartnerDivision(null);
+                  }
+                } else {
+                  partnershipNew.setPartnerDivision(null);
+                }
+                deliverablePartnershipManager.saveDeliverablePartnership(partnershipNew);
+              }
+
+
+            } else {
+              DeliverablePartnership partnershipDB =
+                deliverablePartnershipManager.getDeliverablePartnershipById(deliverablePartnership.getId());
+
+              if (deliverablePartnership.getPartnerDivision() != null
+                && deliverablePartnership.getPartnerDivision().getId().longValue() != -1) {
+                try {
+                  PartnerDivision division =
+                    partnerDivisionManager.getPartnerDivisionById(deliverablePartnership.getPartnerDivision().getId());
+                  partnershipDB.setPartnerDivision(division);
+                } catch (Exception e) {
+                  partnershipDB.setPartnerDivision(null);
+                }
+
+              } else {
                 partnershipDB.setPartnerDivision(null);
               }
 
-            } else {
-              partnershipDB.setPartnerDivision(null);
+              deliverablePartnershipManager.saveDeliverablePartnership(partnershipDB);
+
             }
-
-            deliverablePartnershipManager.saveDeliverablePartnership(partnershipDB);
-
           }
         }
+
       }
     }
   }
@@ -675,6 +754,14 @@ public class DeliverableAction extends BaseAction {
         .filter(dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
         .collect(Collectors.toList());
 
+      if (deliverable.getOtherPartners() == null) {
+        deliverable.setOtherPartners(new ArrayList<>());
+      }
+      for (DeliverablePartnership deliverablePartnership : deliverable.getOtherPartners()) {
+        if (deliverablePartnership.getProjectPartnerPerson() == null) {
+          deliverablePartnership.setId(null);
+        }
+      }
 
       for (DeliverablePartnership deliverablePartnership : partnerShipsPrew) {
         if (deliverable.getOtherPartners() != null) {
@@ -686,7 +773,6 @@ public class DeliverableAction extends BaseAction {
       }
     }
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -997,6 +1083,17 @@ public class DeliverableAction extends BaseAction {
 
         }
       }
+
+      // Getting partners list
+      partners = new ArrayList<>();
+      for (ProjectPartner partner : projectPartnerManager.findAll().stream()
+        .filter(pp -> pp.isActive() && (pp.getProject().getId() == projectID
+          && !pp.getProjectPartnerPersons().stream().filter(c -> c.isActive()).collect(Collectors.toList()).isEmpty()))
+        .collect(Collectors.toList())) {
+        partners.add(partner);
+      }
+
+
       partnerPersons = new ArrayList<>();
       for (ProjectPartner partner : projectPartnerManager.findAll().stream()
         .filter(pp -> pp.isActive() && pp.getProject().getId() == projectID).collect(Collectors.toList())) {
@@ -1007,6 +1104,7 @@ public class DeliverableAction extends BaseAction {
           partnerPersons.add(partnerPerson);
         }
       }
+
       this.fundingSources = new ArrayList<>();
       List<FundingSource> fundingSources =
         fundingSourceManager.findAll().stream().filter(fs -> fs.isActive()).collect(Collectors.toList());
@@ -1163,6 +1261,7 @@ public class DeliverableAction extends BaseAction {
 
   }
 
+
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -1302,10 +1401,9 @@ public class DeliverableAction extends BaseAction {
         && deliverablePrew.getDeliverablePartnerships().size() > 0) {
 
         try {
-          partnershipResponsible =
-            deliverablePrew.getDeliverablePartnerships().stream()
-              .filter(dp -> dp.isActive()
-                && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
+          partnershipResponsible = deliverablePrew.getDeliverablePartnerships().stream()
+            .filter(
+              dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
             .collect(Collectors.toList()).get(0);
         } catch (Exception e) {
           partnershipResponsible = null;
@@ -1750,7 +1848,6 @@ public class DeliverableAction extends BaseAction {
 
   }
 
-
   public void saveMetadata() {
     if (deliverable.getMetadataElements() != null) {
       for (DeliverableMetadataElement deliverableMetadataElement : deliverable.getMetadataElements()) {
@@ -1763,6 +1860,7 @@ public class DeliverableAction extends BaseAction {
 
   }
 
+
   public void savePublicationMetadata() {
     if (deliverable.getPublication() != null) {
       deliverable.getPublication().setDeliverable(deliverable);
@@ -1773,7 +1871,6 @@ public class DeliverableAction extends BaseAction {
 
     }
   }
-
 
   public void saveQualityCheck() {
     DeliverableQualityCheck qualityCheck;
@@ -1894,6 +1991,7 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+
   public void setAnswers(List<DeliverableQualityAnswer> answers) {
     this.answers = answers;
   }
@@ -1948,6 +2046,10 @@ public class DeliverableAction extends BaseAction {
 
   public void setPartnerPersons(List<ProjectPartnerPerson> partnerPersons) {
     this.partnerPersons = partnerPersons;
+  }
+
+  public void setPartners(List<ProjectPartner> partners) {
+    this.partners = partners;
   }
 
   public void setPrograms(Map<String, String> programs) {
