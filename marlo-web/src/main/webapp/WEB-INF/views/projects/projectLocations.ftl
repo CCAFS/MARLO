@@ -122,27 +122,27 @@
                   <label for="">Please select the predefined locations coming from your funding sources:</label>
                   <div class="simpleBox col-md-12">
                   <div class="row recommendedList">
-                    [#-- RECOMMENDED COUNTRIES LIST --]
-                    [#if countryFS?has_content]
-                      <div class="col-md-12">
-                        <h5 class="sectionSubTitle">Recommended Countries:</h5>
-                      </div>
-                      [#list countryFS as location]
-                        [@recommendedLocation element=location name="countryFS" index=location_index template=false /]
-                      [/#list]
-                    [#else]
-                      [#assign recommendedCountries=0]
-                    [/#if]
                     [#-- RECOMMENDED REGIONS LIST --]
                     [#if regionFS?has_content]
                       <div class="col-md-12">
-                        <h5 class="sectionSubTitle">Recommended Regions:</h5>
+                        <h5 class="sectionSubTitle">Suggested Regions:</h5>
                       </div>
                       [#list regionFS as location]
                         [@recommendedLocation element=location name="regionFS" index=location_index template=false /]
                       [/#list]
                     [#else]
                       [#assign recommendedRegions=0]
+                    [/#if]
+                    [#-- RECOMMENDED COUNTRIES LIST --]
+                    [#if countryFS?has_content]
+                      <div class="col-md-12">
+                        <h5 class="sectionSubTitle">Suggested Countries:</h5>
+                      </div>
+                      [#list countryFS as location]
+                        [@recommendedLocation element=location name="countryFS" index=location_index template=false /]
+                      [/#list]
+                    [#else]
+                      [#assign recommendedCountries=0]
                     [/#if]
                     [#if recommendedCountries?? && recommendedCountries==0 && recommendedRegions?? && recommendedRegions==0]
                       <p class="text-center inf">There is not locations recommended</p>
