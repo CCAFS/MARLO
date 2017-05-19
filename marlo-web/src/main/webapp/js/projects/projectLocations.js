@@ -18,9 +18,16 @@ function init() {
   /* Declaring Events */
   attachEvents();
 
-  /* Array countries */
+  /** Array countries * */
+  // From other countries
   $("input[value='Country']").parents(".locationLevel").find(".locElement").each(function(i,e) {
     countries.push($(e).find(".locElementCountry").val());
+  });
+  // From funding source countries
+  $(".recommendedList").find(".recommended.locElement").each(function(i,e) {
+    if($(e).find(".isoAlpha").exists()) {
+      countries.push($(e).find(".isoAlpha").text());
+    }
   });
 }
 

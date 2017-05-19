@@ -121,7 +121,7 @@
                  <div class="col-md-12">
                   <label for="">Please select the predefined locations coming from your funding sources:</label>
                   <div class="simpleBox col-md-12">
-                  <div class="row">
+                  <div class="row recommendedList">
                     [#-- RECOMMENDED COUNTRIES LIST --]
                     [#if countryFS?has_content]
                       <div class="col-md-12">
@@ -406,7 +406,7 @@
 [#macro recommendedLocation element  name index template=false ]
   [#local customName = "${name}[${index}]" /]
   [#-- Content collapsible--]
-  <div id="recommendedLocation-${template?string('template',countID)}" class="col-md-4 recommended locElement" style="display:${template?string('none','block')}">
+  <div id="recommendedLocation-${template?string('template',index)}" class="col-md-4 recommended locElement" style="display:${template?string('none','block')}">
     <div class="locations col-md-12">
       [#-- Location Name --]
       <div class="recommendedLocName"><span class="lName"><b>${(element.locElement.name)!}</b></span> </div>
@@ -414,6 +414,9 @@
       [#if editable]
         [#if element.locElement?? && action.locElementSelected((element.locElement.id))]
         <div class="acceptLocation" title="Accept recommended location"> <img src="${baseUrl}/images/global/icon-check.png" alt="" /></div>
+          [#if element.locElement.locElementType.id==2 ]
+            <span class="hidden isoAlpha">${(element.locElement.isoAlpha2)!}</span>
+          [/#if]
         [#else]
         <div class="notAcceptLocation" title="Accept recommended location"> <img src="${baseUrl}/images/global/checked-false.png" alt="" /></div>
         [/#if]
