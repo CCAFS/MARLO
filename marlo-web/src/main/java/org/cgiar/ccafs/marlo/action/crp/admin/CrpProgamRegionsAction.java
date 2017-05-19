@@ -20,13 +20,13 @@ package org.cgiar.ccafs.marlo.action.crp.admin;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramLeaderManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpSitesLeaderManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpsSiteIntegrationManager;
+import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
@@ -34,13 +34,13 @@ import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
-import org.cgiar.ccafs.marlo.data.model.CrpParameter;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramCountry;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpSitesLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.CrpsSiteIntegration;
+import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
@@ -101,7 +101,7 @@ public class CrpProgamRegionsAction extends BaseAction {
   private UserRoleManager userRoleManager;
   private CrpProgramManager crpProgramManager;
   private CrpManager crpManager;
-  private CrpParameterManager crpParameterManager;
+  private CustomParameterManager crpParameterManager;
   private CrpUserManager crpUserManager;
   // Variables
   private Crp loggedCrp;
@@ -109,7 +109,7 @@ public class CrpProgamRegionsAction extends BaseAction {
   private long pmuRol;
   private List<LocElement> countriesList;
   private List<CrpProgram> regionsPrograms;
-  private List<CrpParameter> parameters;
+  private List<CustomParameter> parameters;
   private LocElementManager locElementManger;
   private CrpProgramLeaderManager crpProgramLeaderManager;
   private CrpProgramCountryManager crpProgramCountryManager;
@@ -133,7 +133,7 @@ public class CrpProgamRegionsAction extends BaseAction {
 
   @Inject
   public CrpProgamRegionsAction(APConfig config, RoleManager roleManager, UserRoleManager userRoleManager,
-    CrpProgramManager crpProgramManager, CrpManager crpManager, CrpParameterManager crpParameterManager,
+    CrpProgramManager crpProgramManager, CrpManager crpManager, CustomParameterManager crpParameterManager,
     CrpProgramLeaderManager crpProgramLeaderManager, UserManager userManager, LocElementManager locElementManger,
     CrpProgramCountryManager crpProgramCountryManager, CrpSitesLeaderManager crpSitesLeaderManager,
     CrpsSiteIntegrationManager crpsSiteIntegrationManager, SendMailS sendMail, LiaisonUserManager liaisonUserManager,

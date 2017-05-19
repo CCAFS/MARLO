@@ -3643,7 +3643,7 @@ span.partnerTag {
   margin-right: 5px;
   border-radius: 4px;
   cursor: pointer;
-font-size: 0.95em;
+
 }
 
 .contactPerson .tag:hover {
@@ -5586,7 +5586,7 @@ table.evaluationRank thead th{
 .radio-label {
     overflow: hidden;
     cursor: pointer;
-    margin: 0 10px !important;
+    /* margin: 0 10px !important; */
 }
 
 .radio-label .onoffswitch-radio:checked + label{ 
@@ -6640,6 +6640,19 @@ img.removeInput {
     color: red;
     font-size: 1.8em;
     margin: 5px 0 0 0px;
+}
+
+.usersFound{
+	max-height:220px!important;
+}
+
+.error-info{
+	  background-color: #f2dede;
+    border-color: #ebccd1;
+    color: #a94442;
+    padding: 3px 10px;
+    border-radius: 4px;
+    text-align:center;
 }
 
 .newsButton{

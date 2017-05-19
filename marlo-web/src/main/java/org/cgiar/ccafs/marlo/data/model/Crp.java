@@ -51,8 +51,6 @@ public class Crp implements java.io.Serializable, IAuditLog {
 
   private Set<Role> roles = new HashSet<Role>(0);
 
-  private Set<CrpParameter> crpParameters = new HashSet<CrpParameter>(0);
-
 
   private Set<CrpProgram> crpPrograms = new HashSet<CrpProgram>(0);
 
@@ -67,6 +65,9 @@ public class Crp implements java.io.Serializable, IAuditLog {
 
   private Set<LiaisonInstitution> liaisonInstitutions = new HashSet<LiaisonInstitution>(0);
 
+  private Set<CustomParameter> customParameters = new HashSet<CustomParameter>(0);
+  private List<CustomParameter> parameters;
+
 
   private Set<CrpSubIdosContribution> crpSubIdosContributions = new HashSet<CrpSubIdosContribution>(0);
 
@@ -77,11 +78,12 @@ public class Crp implements java.io.Serializable, IAuditLog {
 
 
   private Set<Deliverable> deliverables = new HashSet<Deliverable>(0);
+
+
   private Set<CrpLocElementType> crpLocElementTypes = new HashSet<CrpLocElementType>(0);
 
 
   private List<Deliverable> deliverablesList;
-
 
   private Set<GenderType> genderTypes = new HashSet<GenderType>(0);
 
@@ -108,11 +110,15 @@ public class Crp implements java.io.Serializable, IAuditLog {
 
   private Set<CrpPpaPartner> crpPpaPartners = new HashSet<CrpPpaPartner>(0);
 
+
   private Set<LocElement> locElements = new HashSet<LocElement>(0);
+
 
   private List<UserRole> programManagmenTeam;
 
+
   private List<CrpPpaPartner> crpInstitutionsPartners;
+
 
   private List<CrpsSiteIntegration> siteIntegrations;
 
@@ -124,27 +130,24 @@ public class Crp implements java.io.Serializable, IAuditLog {
 
   private boolean hasRegions;
 
-  private List<CrpParameter> parameters;
-
-
   private List<TargetUnitSelect> targetUnits;
+
   private List<CustomLevelSelect> customLevels;
 
 
   public Crp() {
   }
 
-
   public Crp(String name) {
     this.name = name;
   }
 
-  public Crp(String name, String acronym, Set<CrpUser> crpUsers, Set<Role> roles, Set<CrpParameter> crpParameters) {
+
+  public Crp(String name, String acronym, Set<CrpUser> crpUsers, Set<Role> roles) {
     this.name = name;
     this.acronym = acronym;
     this.crpUsers = crpUsers;
     this.roles = roles;
-    this.crpParameters = crpParameters;
   }
 
   @Override
@@ -169,9 +172,11 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return true;
   }
 
+
   public String getAcronym() {
     return acronym;
   }
+
 
   public Date getActiveSince() {
     return activeSince;
@@ -185,25 +190,18 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return crpInstitutionsPartners;
   }
 
-
   public Set<CrpLocElementType> getCrpLocElementTypes() {
     return crpLocElementTypes;
   }
-
-
-  public Set<CrpParameter> getCrpParameters() {
-    return this.crpParameters;
-  }
-
 
   public Set<CrpPpaPartner> getCrpPpaPartners() {
     return crpPpaPartners;
   }
 
-
   public Set<CrpProgram> getCrpPrograms() {
     return crpPrograms;
   }
+
 
   public Set<CrpsSiteIntegration> getCrpsSitesIntegrations() {
     return crpsSitesIntegrations;
@@ -214,9 +212,11 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return crpSubIdosContributions;
   }
 
+
   public Set<CrpTargetUnit> getCrpTargetUnits() {
     return crpTargetUnits;
   }
+
 
   public Set<CrpUser> getCrpUsers() {
     return this.crpUsers;
@@ -224,6 +224,11 @@ public class Crp implements java.io.Serializable, IAuditLog {
 
   public List<CustomLevelSelect> getCustomLevels() {
     return customLevels;
+  }
+
+
+  public Set<CustomParameter> getCustomParameters() {
+    return customParameters;
   }
 
   public Set<Deliverable> getDeliverables() {
@@ -263,16 +268,13 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return locationElementTypes;
   }
 
-
   public Set<LocElement> getLocElements() {
     return locElements;
   }
 
-
   public Set<LocElementType> getLocElementTypes() {
     return locElementTypes;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -287,22 +289,26 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return modificationJustification;
   }
 
+
   @Override
   public User getModifiedBy() {
     return modifiedBy;
   }
 
+
   public String getName() {
     return this.name;
   }
 
-  public List<CrpParameter> getParameters() {
+
+  public List<CustomParameter> getParameters() {
     return parameters;
   }
 
   public List<UserRole> getProgramManagmenTeam() {
     return programManagmenTeam;
   }
+
 
   public Set<Project> getProjects() {
     return projects;
@@ -315,7 +321,6 @@ public class Crp implements java.io.Serializable, IAuditLog {
   public List<CrpsSiteIntegration> getSiteIntegrations() {
     return siteIntegrations;
   }
-
 
   public List<TargetUnitSelect> getTargetUnits() {
     return targetUnits;
@@ -348,6 +353,7 @@ public class Crp implements java.io.Serializable, IAuditLog {
     this.acronym = acronym;
   }
 
+
   public void setActive(boolean active) {
     this.active = active;
   }
@@ -355,7 +361,6 @@ public class Crp implements java.io.Serializable, IAuditLog {
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
-
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
@@ -365,17 +370,15 @@ public class Crp implements java.io.Serializable, IAuditLog {
     this.crpInstitutionsPartners = crpInstitutionsPartners;
   }
 
+
   public void setCrpLocElementTypes(Set<CrpLocElementType> crpLocElementTypes) {
     this.crpLocElementTypes = crpLocElementTypes;
-  }
-
-  public void setCrpParameters(Set<CrpParameter> crpParameters) {
-    this.crpParameters = crpParameters;
   }
 
   public void setCrpPpaPartners(Set<CrpPpaPartner> crpPpaPartners) {
     this.crpPpaPartners = crpPpaPartners;
   }
+
 
   public void setCrpPrograms(Set<CrpProgram> crpPrograms) {
     this.crpPrograms = crpPrograms;
@@ -389,11 +392,9 @@ public class Crp implements java.io.Serializable, IAuditLog {
     this.crpSubIdosContributions = crpSubIdosContributions;
   }
 
-
   public void setCrpTargetUnits(Set<CrpTargetUnit> crpTargetUnits) {
     this.crpTargetUnits = crpTargetUnits;
   }
-
 
   public void setCrpUsers(Set<CrpUser> crpUsers) {
     this.crpUsers = crpUsers;
@@ -405,9 +406,15 @@ public class Crp implements java.io.Serializable, IAuditLog {
   }
 
 
+  public void setCustomParameters(Set<CustomParameter> customParameters) {
+    this.customParameters = customParameters;
+  }
+
+
   public void setDeliverables(Set<Deliverable> deliverables) {
     this.deliverables = deliverables;
   }
+
 
   public void setDeliverablesList(List<Deliverable> deliverablesList) {
     this.deliverablesList = deliverablesList;
@@ -416,7 +423,6 @@ public class Crp implements java.io.Serializable, IAuditLog {
   public void setFundingSources(Set<FundingSource> fundingSources) {
     this.fundingSources = fundingSources;
   }
-
 
   public void setGenderTypes(Set<GenderType> genderTypes) {
     this.genderTypes = genderTypes;
@@ -479,7 +485,8 @@ public class Crp implements java.io.Serializable, IAuditLog {
     this.name = name;
   }
 
-  public void setParameters(List<CrpParameter> parameters) {
+
+  public void setParameters(List<CustomParameter> parameters) {
     this.parameters = parameters;
   }
 
