@@ -231,6 +231,13 @@ public class ProjectListAction extends BaseAction {
       project.setStatus(Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId()));
       project.setAdministrative(new Boolean(admin));
       projectID = projectManager.saveProject(project);
+      Phase phase = this.phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), this.getCrpID());
+      if (phase != null) {
+        ProjectPhase projectPhase = new ProjectPhase();
+        projectPhase.setPhase(phase);
+        projectPhase.setProject(project);
+        projectPhaseManager.saveProjectPhase(projectPhase);
+      }
       SectionStatus status = null;
       if (status == null) {
 
@@ -242,6 +249,7 @@ public class ProjectListAction extends BaseAction {
 
 
       }
+
       status.setMissingFields("");
       sectionStatusManager.saveSectionStatus(status);
 
