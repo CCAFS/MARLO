@@ -430,5 +430,6 @@
     </div>
     [#-- Hidden inputs --]
     <input type="hidden" class="locElementId" name="${customName}.id" value="${(element.locElement.id)!}"/>
+    <input type="hidden" class="locElementType" name="${customName}.type" value="${(element.locElement.locElementType.id)!}"/>
   </div>
 [/#macro]

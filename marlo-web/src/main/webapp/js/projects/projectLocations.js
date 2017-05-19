@@ -124,8 +124,23 @@ function attachEvents() {
 
 // FUNCTIONS
 
-function checkRecommendedLocation(locParent) {
-  console.log(locParent);
+function checkRecommendedLocation(loc) {
+  var locParent = loc.parent();
+  var type = locParent.find("input.locElementType").val();
+  if(type == "2") {
+    var inputFound =
+        $("#selectsContent").find("input.locationLevelId").parents(".locationLevel").find(
+            "input.locElementId[value='" + locParent.find("input.locElementId").val() + "']");
+    if(inputFound.exists()) {
+      inputFound.parent().hide(function() {
+        inputFound.parent().remove();
+      });
+    } else {
+      console.log("Does not exists");
+    }
+  } else {
+
+  }
 }
 
 function checkAllCountries($this) {
