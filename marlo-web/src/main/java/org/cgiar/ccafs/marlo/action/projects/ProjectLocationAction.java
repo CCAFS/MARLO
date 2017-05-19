@@ -74,22 +74,24 @@ public class ProjectLocationAction extends BaseAction {
 
   private static final long serialVersionUID = -3215013554941621274L;
 
+  private List<LocElement> regionLists;
+
 
   private AuditLogManager auditLogManager;
 
+
   private List<CountryFundingSources> countryFS;
+
   private List<CountryFundingSources> regionFS;
 
-
   private CrpManager crpManager;
-
-
   private FundingSourceManager fundingSourceManager;
+
 
   private List<LocationLevel> locationsLevels;
 
-  private ProjectLocationValidator locationValidator;
 
+  private ProjectLocationValidator locationValidator;
 
   private LocElementManager locElementManager;
 
@@ -99,6 +101,7 @@ public class ProjectLocationAction extends BaseAction {
   private LocGeopositionManager locGeopositionManager;
 
   private Crp loggedCrp;
+
 
   private Project project;
 
@@ -115,7 +118,6 @@ public class ProjectLocationAction extends BaseAction {
   private List<LocElementType> scopeRegions;
 
   private String transaction;
-
 
   @Inject
   public ProjectLocationAction(APConfig config, CrpManager crpManager, ProjectManager projectManager,
@@ -160,6 +162,7 @@ public class ProjectLocationAction extends BaseAction {
     return SUCCESS;
   }
 
+
   private Path getAutoSaveFilePath() {
     String composedClassName = project.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -168,7 +171,6 @@ public class ProjectLocationAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-
   public List<CountryFundingSources> getCountryFS() {
     return countryFS;
   }
@@ -176,6 +178,7 @@ public class ProjectLocationAction extends BaseAction {
   public List<LocationLevel> getLocationsLevels() {
     return locationsLevels;
   }
+
 
   public Crp getLoggedCrp() {
     return loggedCrp;
@@ -312,10 +315,14 @@ public class ProjectLocationAction extends BaseAction {
     return regionFS;
   }
 
+  public List<LocElement> getRegionLists() {
+    return regionLists;
+  }
 
   public List<ScopeData> getScopeData() {
     return scopeData;
   }
+
 
   public List<LocElementType> getScopeRegions() {
     return scopeRegions;
@@ -540,7 +547,10 @@ public class ProjectLocationAction extends BaseAction {
       countryLocationLevel.getLocElements().removeAll(similar);
 
     }
-
+    regionLists = new ArrayList<>(locElementManager.findAll().stream()
+      .filter(le -> le.isActive() && le.getLocElementType() != null && le.getLocElementType().getId() == 1)
+      .collect(Collectors.toList()));
+    Collections.sort(regionLists, (r1, r2) -> r1.getName().compareTo(r2.getName()));
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_LOCATION_BASE_PERMISSION, params));
 
@@ -553,7 +563,6 @@ public class ProjectLocationAction extends BaseAction {
     }
 
   }
-
 
   public void prepareFundingList() {
 
@@ -630,6 +639,7 @@ public class ProjectLocationAction extends BaseAction {
 
 
   }
+
 
   public void projectLocationNewData() {
 
@@ -961,7 +971,6 @@ public class ProjectLocationAction extends BaseAction {
     this.loggedCrp = loggedCrp;
   }
 
-
   public void setProject(Project project) {
     this.project = project;
   }
@@ -971,8 +980,13 @@ public class ProjectLocationAction extends BaseAction {
     this.projectID = projectID;
   }
 
+
   public void setRegionFS(List<CountryFundingSources> regionFS) {
     this.regionFS = regionFS;
+  }
+
+  public void setRegionLists(List<LocElement> regionLists) {
+    this.regionLists = regionLists;
   }
 
   public void setScopeData(List<ScopeData> scopeData) {
