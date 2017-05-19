@@ -194,9 +194,9 @@ public class UnsubmitProjectAction extends BaseAction {
       ccEmails.append(userRole.getUser().getEmail());
       ccEmails.append(", ");
       if (crpAdmins.isEmpty()) {
-        crpAdmins += userRole.getUser().getFirstName();
+        crpAdmins += userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
       } else {
-        crpAdmins += ", " + userRole.getUser().getFirstName();
+        crpAdmins += ", " + userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
       }
     }
 
