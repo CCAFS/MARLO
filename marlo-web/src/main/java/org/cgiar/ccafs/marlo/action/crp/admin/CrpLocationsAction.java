@@ -59,6 +59,8 @@ public class CrpLocationsAction extends BaseAction {
   private Crp loggedCrp;
   private List<LocElement> countriesList;
 
+  private List<LocElement> regions;
+
   private List<LocElementType> defaultLocationTypes;
 
 
@@ -92,18 +94,22 @@ public class CrpLocationsAction extends BaseAction {
 
   }
 
+
   public List<LocElement> getCountriesList() {
     return countriesList;
   }
-
 
   public List<LocElementType> getDefaultLocationTypes() {
     return defaultLocationTypes;
   }
 
-
   public Crp getLoggedCrp() {
     return loggedCrp;
+  }
+
+
+  public List<LocElement> getRegions() {
+    return regions;
   }
 
 
@@ -189,6 +195,7 @@ public class CrpLocationsAction extends BaseAction {
       }
     }
   }
+
 
   private void locationCustomPreviousData() {
     List<LocElementType> locElementTypesPrew = new ArrayList<LocElementType>(loggedCrp.getLocElementTypes().stream()
@@ -373,7 +380,6 @@ public class CrpLocationsAction extends BaseAction {
     }
   }
 
-
   @Override
   public void prepare() throws Exception {
     super.prepare();
@@ -412,6 +418,10 @@ public class CrpLocationsAction extends BaseAction {
       locElementManger.findAll().stream().filter(c -> c.getLocElementType().getId() == 2).collect(Collectors.toList());
     Collections.sort(locs, (l1, l2) -> l1.getName().compareTo(l2.getName()));
     countriesList = locs;
+
+    regions =
+      locElementManger.findAll().stream().filter(c -> c.getLocElementType().getId() == 1).collect(Collectors.toList());
+    Collections.sort(locs, (l1, l2) -> l1.getName().compareTo(l2.getName()));
 
     if (loggedCrp.getLocElementTypes() != null) {
 
@@ -468,6 +478,7 @@ public class CrpLocationsAction extends BaseAction {
       }
     }
   }
+
 
   @Override
   public String save() {
@@ -549,6 +560,10 @@ public class CrpLocationsAction extends BaseAction {
 
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
+  }
+
+  public void setRegions(List<LocElement> regions) {
+    this.regions = regions;
   }
 
 }
