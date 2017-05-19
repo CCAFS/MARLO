@@ -239,7 +239,6 @@ public class CrpAdminManagmentAction extends BaseAction {
       // Building the Email message:
       StringBuilder message = new StringBuilder();
       message.append(this.getText("email.dear", new String[] {user.getFirstName()}));
-
       // get CRPAdmin contacts
       String crpAdmins = "";
       long adminRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_ADMIN_ROLE));
@@ -248,11 +247,14 @@ public class CrpAdminManagmentAction extends BaseAction {
         .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
       for (UserRole userRole : userRoles) {
         if (crpAdmins.isEmpty()) {
-          crpAdmins += userRole.getUser().getFirstName();
+          crpAdmins += userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
         } else {
-          crpAdmins += ", " + userRole.getUser().getFirstName();
+          crpAdmins += ", " + userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
         }
       }
+      message.append(this.getText("email.newUser.part1", new String[] {this.getText("email.newUser.listRoles"),
+        config.getBaseUrl(), user.getEmail(), password, this.getText("email.support", new String[] {crpAdmins})}));
+
 
       message.append(this.getText("email.newUser.part1", new String[] {this.getText("email.newUser.listRoles"),
         config.getBaseUrl(), user.getEmail(), password, this.getText("email.support", new String[] {crpAdmins})}));
@@ -305,6 +307,7 @@ public class CrpAdminManagmentAction extends BaseAction {
    * @param crpProgram is the Flagship where is assigned
    */
   private void notifyRoleFlagshipAssigned(User userAssigned, Role role, CrpProgram crpProgram) {
+
     // Email send to the user assigned
     String toEmail = userAssigned.getEmail();
     // CC will be the user who is making the modification.
@@ -333,11 +336,11 @@ public class CrpAdminManagmentAction extends BaseAction {
       .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
     for (UserRole userRole : userRoles) {
       if (crpAdmins.isEmpty()) {
-        crpAdmins += userRole.getUser().getFirstName();
+        crpAdmins += userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
         crpAdminsEmail += userRole.getUser().getEmail();
 
       } else {
-        crpAdmins += ", " + userRole.getUser().getFirstName();
+        crpAdmins += ", " + userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
         crpAdminsEmail += ", " + userRole.getUser().getEmail();
       }
     }
@@ -422,11 +425,11 @@ public class CrpAdminManagmentAction extends BaseAction {
       .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
     for (UserRole userRole : userRoles) {
       if (crpAdmins.isEmpty()) {
-        crpAdmins += userRole.getUser().getFirstName();
+        crpAdmins += userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
         crpAdminsEmail += userRole.getUser().getEmail();
 
       } else {
-        crpAdmins += ", " + userRole.getUser().getFirstName();
+        crpAdmins += ", " + userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
         crpAdminsEmail += ", " + userRole.getUser().getEmail();
       }
     }
@@ -441,6 +444,7 @@ public class CrpAdminManagmentAction extends BaseAction {
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
 
+
     String subject = this.getText("email.flagshipmanager.assigned.subject",
       new String[] {crpProgram.getAcronym(), this.getText("CrpProgram.managers.short"), loggedCrp.getName()});
 
@@ -452,7 +456,8 @@ public class CrpAdminManagmentAction extends BaseAction {
     message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
     message.append(this.getText("email.flagshipmanager.assigned",
       new String[] {this.getText("CrpProgram.managers"), crpProgram.getAcronym(), crpProgram.getName(),
-        loggedCrp.getName(), this.getText("email.flagshipmanager.responsabilities")}));
+        loggedCrp.getName(), this.getText("email.flagshipmanager.responsabilities"),
+        this.getText("email.flagshipmanager.note")}));
 
     message.append(this.getText("email.support", new String[] {crpAdmins}));
     message.append(this.getText("email.bye"));
@@ -493,10 +498,10 @@ public class CrpAdminManagmentAction extends BaseAction {
       .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
     for (UserRole userRole : userRoles) {
       if (crpAdmins.isEmpty()) {
-        crpAdmins += userRole.getUser().getFirstName();
+        crpAdmins += userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
         crpAdminsEmail += userRole.getUser().getEmail();
       } else {
-        crpAdmins += ", " + userRole.getUser().getFirstName();
+        crpAdmins += ", " + userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
         crpAdminsEmail += ", " + userRole.getUser().getEmail();
       }
     }
@@ -508,18 +513,6 @@ public class CrpAdminManagmentAction extends BaseAction {
       }
     }
 
-    // CC will be also other Cluster Leaders
-    for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
-      .filter(cl -> cl.isActive()).collect(Collectors.toList())) {
-      for (CrpClusterActivityLeader crpClusterActivityLeader : crpClusterOfActivity.getCrpClusterActivityLeaders()
-        .stream().filter(cl -> cl.isActive()).collect(Collectors.toList())) {
-        if (ccEmail.isEmpty()) {
-          ccEmail += crpClusterActivityLeader.getUser().getEmail();
-        } else {
-          ccEmail += ", " + crpClusterActivityLeader.getUser().getEmail();
-        }
-      }
-    }
 
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
@@ -574,10 +567,10 @@ public class CrpAdminManagmentAction extends BaseAction {
       .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
     for (UserRole userRole : userRoles) {
       if (crpAdmins.isEmpty()) {
-        crpAdmins += userRole.getUser().getFirstName();
+        crpAdmins += userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
         crpAdminsEmail += userRole.getUser().getEmail();
       } else {
-        crpAdmins += ", " + userRole.getUser().getFirstName();
+        crpAdmins += ", " + userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
         crpAdminsEmail += ", " + userRole.getUser().getEmail();
       }
     }
@@ -632,10 +625,10 @@ public class CrpAdminManagmentAction extends BaseAction {
       .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
     for (UserRole userRole : userRoles) {
       if (crpAdmins.isEmpty()) {
-        crpAdmins += userRole.getUser().getFirstName();
+        crpAdmins += userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
         crpAdminsEmail += userRole.getUser().getEmail();
       } else {
-        crpAdmins += ", " + userRole.getUser().getFirstName();
+        crpAdmins += ", " + userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
         crpAdminsEmail += ", " + userRole.getUser().getEmail();
       }
     }
@@ -686,10 +679,10 @@ public class CrpAdminManagmentAction extends BaseAction {
       .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
     for (UserRole userRole : userRoles) {
       if (crpAdmins.isEmpty()) {
-        crpAdmins += userRole.getUser().getFirstName();
+        crpAdmins += userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
         crpAdminsEmail += userRole.getUser().getEmail();
       } else {
-        crpAdmins += ", " + userRole.getUser().getFirstName();
+        crpAdmins += ", " + userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
         crpAdminsEmail += ", " + userRole.getUser().getEmail();
       }
     }
