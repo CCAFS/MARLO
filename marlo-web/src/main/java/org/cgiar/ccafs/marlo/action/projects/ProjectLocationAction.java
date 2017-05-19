@@ -77,15 +77,15 @@ public class ProjectLocationAction extends BaseAction {
 
   private AuditLogManager auditLogManager;
 
+  private List<CountryFundingSources> countryFS;
+
+
   private CrpManager crpManager;
+
+  private FundingSourceManager fundingSourceManager;
 
 
   private List<LocationLevel> locationsLevels;
-
-  private List<LocElementType> scopeRegions;
-
-
-  private List<ScopeData> scopeData;
 
   private ProjectLocationValidator locationValidator;
 
@@ -96,22 +96,22 @@ public class ProjectLocationAction extends BaseAction {
 
   private LocGeopositionManager locGeopositionManager;
 
-  private FundingSourceManager fundingSourceManager;
-
   private Crp loggedCrp;
 
   private Project project;
 
   private long projectID;
 
-  private List<CountryFundingSources> countryFS;
-
   private ProjectLocationElementTypeManager projectLocationElementTypeManager;
 
   private ProjectLocationManager projectLocationManager;
 
-
   private ProjectManager projectManager;
+
+  private List<ScopeData> scopeData;
+
+
+  private List<LocElementType> scopeRegions;
 
   private String transaction;
 
@@ -389,7 +389,7 @@ public class ProjectLocationAction extends BaseAction {
     countryLocationLevels = new ArrayList<>();
     List<LocElementType> customElementTypes =
       locElementTypeManager.findAll().stream().filter(let -> let.isActive() && let.getCrp() != null
-        && let.getCrp().equals(loggedCrp) && let.getId() != 1 && !let.isScope()).collect(Collectors.toList());
+      && let.getCrp().equals(loggedCrp) && let.getId() != 1 && !let.isScope()).collect(Collectors.toList());
 
     for (LocElementType locElementType : customElementTypes) {
       CountryLocationLevel countryLocationLevel = new CountryLocationLevel();
@@ -403,7 +403,7 @@ public class ProjectLocationAction extends BaseAction {
     }
 
     locationsLevels
-      .add(new LocationLevel(loggedCrp.getAcronym().toUpperCase() + " Custom Locations", countryLocationLevels));
+    .add(new LocationLevel(loggedCrp.getAcronym().toUpperCase() + " Custom Locations", countryLocationLevels));
 
     countryLocationLevels = new ArrayList<>();
     List<LocElementType> elementTypes = new ArrayList<>();
@@ -511,6 +511,10 @@ public class ProjectLocationAction extends BaseAction {
 
     this.prepareFundingList();
 
+
+
+    this.listScopeRegions();
+
     Collection<LocElement> fsLocs = new ArrayList<>();
     for (CountryFundingSources locElement : countryFS) {
       fsLocs.add(locElement.getLocElement());
@@ -518,19 +522,17 @@ public class ProjectLocationAction extends BaseAction {
 
     for (CountryLocationLevel countryLocationLevel : project.getLocationsData()) {
 
-      if (add) {
-        Collection<LocElement> similar = new HashSet<LocElement>(countryLocationLevel.getLocElements());
-        Collection<LocElement> different = new HashSet<LocElement>();
-        different.addAll(countryLocationLevel.getLocElements());
-        different.addAll(fsLocs);
-        similar.retainAll(fsLocs);
-        different.removeAll(similar);
 
-        countryLocationLevel.getLocElements().removeAll(similar);
-      }
+      Collection<LocElement> similar = new HashSet<LocElement>(countryLocationLevel.getLocElements());
+      Collection<LocElement> different = new HashSet<LocElement>();
+      different.addAll(countryLocationLevel.getLocElements());
+      different.addAll(fsLocs);
+      similar.retainAll(fsLocs);
+      different.removeAll(similar);
+
+      countryLocationLevel.getLocElements().removeAll(similar);
+
     }
-
-    this.listScopeRegions();
 
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_LOCATION_BASE_PERMISSION, params));
