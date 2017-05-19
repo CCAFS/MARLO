@@ -263,3 +263,28 @@ li.select2-search.select2-search--inline{
     border-radius: 2px;
     text-decoration: none;
 }
+
+.acceptLocation{
+	position:absolute;
+	right: 3px;
+  top: -3px;
+}
+
+.notAcceptLocation{
+  position:absolute;
+  right: 3px;
+  top: -3px;
+}
+
+.recommendedLocName{
+	cursor:pointer;
+}
+
+.fundingContent{
+	border:1px dashed #ccc; 
+	margin:-7px 0 10px 0;
+	min-height:90px;
+	max-height:90px;
+	overflow: auto;
+}
+}
