@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
@@ -65,6 +66,7 @@ public class ProjectListAction extends BaseAction {
   private CrpManager crpManager;
 
   private PhaseManager phaseManager;
+  private ProjectPhaseManager projectPhaseManager;
 
   private LiaisonUserManager liaisonUserManager;
   private LiaisonInstitutionManager liaisonInstitutionManager;
@@ -78,11 +80,12 @@ public class ProjectListAction extends BaseAction {
   @Inject
   public ProjectListAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
     LiaisonUserManager liaisonUserManager, LiaisonInstitutionManager liaisonInstitutionManager,
-    PhaseManager phaseManager) {
+    ProjectPhaseManager projectPhaseManager, PhaseManager phaseManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
     this.phaseManager = phaseManager;
+    this.projectPhaseManager = projectPhaseManager;
     this.liaisonUserManager = liaisonUserManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
   }
@@ -228,6 +231,13 @@ public class ProjectListAction extends BaseAction {
       project.setStatus(Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId()));
       project.setAdministrative(new Boolean(admin));
       projectID = projectManager.saveProject(project);
+      Phase phase = this.phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), this.getCrpID());
+      if (phase != null) {
+        ProjectPhase projectPhase = new ProjectPhase();
+        projectPhase.setPhase(phase);
+        projectPhase.setProject(project);
+        projectPhaseManager.saveProjectPhase(projectPhase);
+      }
       SectionStatus status = null;
       if (status == null) {
 
@@ -239,6 +249,7 @@ public class ProjectListAction extends BaseAction {
 
 
       }
+
       status.setMissingFields("");
       sectionStatusManager.saveSectionStatus(status);
 
@@ -265,6 +276,14 @@ public class ProjectListAction extends BaseAction {
       project.setAdministrative(new Boolean(admin));
 
       projectID = projectManager.saveProject(project);
+
+      Phase phase = this.phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), this.getCrpID());
+      if (phase != null) {
+        ProjectPhase projectPhase = new ProjectPhase();
+        projectPhase.setPhase(phase);
+        projectPhase.setProject(project);
+        projectPhaseManager.saveProjectPhase(projectPhase);
+      }
       SectionStatus status = null;
       if (status == null) {
 
