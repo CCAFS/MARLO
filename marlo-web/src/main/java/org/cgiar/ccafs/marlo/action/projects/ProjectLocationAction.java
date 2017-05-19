@@ -187,6 +187,7 @@ public class ProjectLocationAction extends BaseAction {
     return projectID;
   }
 
+
   public List<CountryLocationLevel> getProjectLocationsData() {
 
     List<Map<String, Object>> parentLocations = new ArrayList<>();
@@ -428,6 +429,15 @@ public class ProjectLocationAction extends BaseAction {
     }
 
     locationsLevels.add(new LocationLevel("Other Locations", countryLocationLevels));
+
+  }
+
+  public boolean locElementSelected(long locElementID) {
+    Project projectDB = projectManager.getProjectById(projectID);
+    List<ProjectLocation> locElements = projectDB.getProjectLocations().stream()
+      .filter(c -> c.isActive() && c.getLocElement().getId().longValue() == locElementID).collect(Collectors.toList());
+
+    return !locElements.isEmpty();
 
   }
 
