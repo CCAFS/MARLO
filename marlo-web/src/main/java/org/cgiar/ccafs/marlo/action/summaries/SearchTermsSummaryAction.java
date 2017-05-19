@@ -301,7 +301,6 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
                   insLeader = "<font size=2 face='Segoe UI' color='#000000'>";
                   insLeader +=
                     activity.getProjectPartnerPerson().getProjectPartner().getInstitution().getComposedName();
-
                 }
               }
             }
@@ -458,7 +457,12 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
                 ProjectPartnerPerson responsibleppp = responisble.getProjectPartnerPerson();
                 leader = "<font size=2 face='Segoe UI' color='#000000'>" + responsibleppp.getUser().getComposedName()
                   + "\n&lt;" + responsibleppp.getUser().getEmail() + "&gt;</font>";
-
+                if (responsibleppp.getProjectPartner() != null) {
+                  if (responsibleppp.getProjectPartner().getInstitution() != null) {
+                    leadIns = "<font size=2 face='Segoe UI' color='#000000'>"
+                      + responsibleppp.getProjectPartner().getInstitution().getComposedName() + "</font>";
+                  }
+                }
               }
             }
             model.addRow(new Object[] {projectId, title, devId, devTitle, devType, devSubType, leadIns, leader,
@@ -672,7 +676,6 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
             if (projectLeader.getInstitution() != null) {
               insLeader = "<font size=2 face='Segoe UI' color='#000000'>";
               insLeader += projectLeader.getInstitution().getComposedName();
-
             }
           }
           if (insLeader.isEmpty()) {
