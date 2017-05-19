@@ -41,7 +41,7 @@
       
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
            
-          <p class="bg-primary" style="padding: 18px;">
+          <p class="bg-primary" style="padding: 18px; display:none;">
             <span class="glyphicon glyphicon-flash"></span> We are re-vamping this section in order to make it more user-friendly. 
             Please apologies if something is not properly working. It would be great if you can inform us about any issue.
           </p>
@@ -120,15 +120,34 @@
                  [#-- RECOMMENDED LOCATIONS --]
                  <div class="col-md-12">
                   <label for="">Please select the predefined locations coming from your funding sources:</label>
-                  <div class="simpleBox">
-                  ${(countryFS)!}
-                  [#if countryFS?has_content]
-                    [#list countryFS as location]
-                      [@recommendedLocation element=location name="${locationLevelName}.${locationName}" index=-1 template=true /]
-                    [/#list]
-                  [#else]
-                    <p class="text-center inf">There is not locations recommended</p>
-                  [/#if]
+                  <div class="simpleBox col-md-12">
+                  <div class="row">
+                    [#-- RECOMMENDED COUNTRIES LIST --]
+                    [#if countryFS?has_content]
+                      <div class="col-md-12">
+                        <h5 class="sectionSubTitle">Recommended Countries:</h5>
+                      </div>
+                      [#list countryFS as location]
+                        [@recommendedLocation element=location name="countryFS" index=location_index template=false /]
+                      [/#list]
+                    [#else]
+                      [#assign recommendedCountries=0]
+                    [/#if]
+                    [#-- RECOMMENDED REGIONS LIST --]
+                    [#if regionFS?has_content]
+                      <div class="col-md-12">
+                        <h5 class="sectionSubTitle">Recommended Regions:</h5>
+                      </div>
+                      [#list regionFS as location]
+                        [@recommendedLocation element=location name="regionFS" index=location_index template=false /]
+                      [/#list]
+                    [#else]
+                      [#assign recommendedRegions=0]
+                    [/#if]
+                    [#if recommendedCountries?? && recommendedCountries==0 && recommendedRegions?? && recommendedRegions==0]
+                      <p class="text-center inf">There is not locations recommended</p>
+                    [/#if]
+                  </div>
                   </div>
                  </div>
                 [#-- OTHER LOCATIONS LABEL --]   
@@ -389,18 +408,28 @@
   [#-- Content collapsible--]
   <div id="recommendedLocation-${template?string('template',countID)}" class="col-md-4 recommended locElement" style="display:${template?string('none','block')}">
     <div class="locations col-md-12">
-      <div class="locationName"><span class="lName">${(element.name)!}</span> [#if element.locGeoposition?? && element.locGeoposition.latitude?? && element.locGeoposition.longitude?? && element.locGeoposition.latitude!=0 && element.locGeoposition.longitude!=0] <span class="lPos">[#if isList!=true](${(element.locGeoposition.latitude)!}, ${(element.locGeoposition.longitude)!})[/#if]</span> [/#if] </div>
+      [#-- Location Name --]
+      <div class="recommendedLocName"><span class="lName"><b>${(element.locElement.name)!}</b></span> </div>
+      [#-- Check Icon --]
       [#if editable]
-      <div class="removeLocation removeIcon" title="Remove Location"></div>
+        [#if element.locElement?? && action.locElementSelected((element.locElement.id))]
+        <div class="acceptLocation" title="Accept recommended location"> <img src="${baseUrl}/images/global/icon-check.png" alt="" /></div>
+        [#else]
+        <div class="notAcceptLocation" title="Accept recommended location"> <img src="${baseUrl}/images/global/checked-false.png" alt="" /></div>
+        [/#if]
       [/#if]
     </div>
-    [#-- Hidden inputs --]
-    <input type="hidden" class="locElementId" name="${customName}.id" value="${(element.id)!}"/>
-    <input type="hidden" class="locElementName" name="${customName}.name" value="${(element.name)!}" />
-    <input type="hidden" class="locElementCountry" name="${customName}.locElement.isoAlpha2" value="${(element.isoAlpha2)!}" />
-    <input type="hidden" class="geoId" name="${customName}.locGeoposition.id"  value="${(element.locGeoposition.id)!}" />
     
-    <input type="hidden" class="geoLatitude" name="${customName}.locGeoposition.latitude"  value="${(element.locGeoposition?? && element.locGeoposition.latitude?? && element.locGeoposition.latitude!=0)?string((element.locGeoposition.latitude?c)!,'')}" /> 
-    <input type="hidden" class="geoLongitude" name="${customName}.locGeoposition.longitude"  value="${(element.locGeoposition?? && element.locGeoposition.longitude?? && element.locGeoposition.longitude!=0)?string((element.locGeoposition.longitude?c)!,'')}" />
+    <div class="col-md-12 fundingContent">
+    [#if element.fundingSources?has_content]
+      [#list element.fundingSources as fs]
+        <span style="font-size:0.7em;">${fs.composedName}</span>
+        <br />
+      [/#list]
+    [/#if]
+    </div>
+    [#-- Hidden inputs --]
+    <input type="hidden" class="locElementId" name="${customName}.id" value="${(element.locElement.id)!}"/>
+    <input type="hidden" class="locElementType" name="${customName}.type" value="${(element.locElement.locElementType.id)!}"/>
   </div>
 [/#macro]

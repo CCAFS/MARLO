@@ -46,6 +46,28 @@ function attachEvents() {
     }
   });
 
+// Clicking recommended location
+  $('.recommendedLocName').on(
+      'click',
+      function() {
+        var accepted =
+            '<div class="acceptLocation" title="Accept recommended location"> <img src="' + baseURL
+                + '/images/global/icon-check.png" alt="" /></div>';
+        var notAccepted =
+            '<div class="notAcceptLocation" title=""> <img src="' + baseURL
+                + '/images/global/checked-false.png" alt="" /></div>';
+        var parent = $(this).parent();
+        if(parent.find(".acceptLocation").exists()) {
+          parent.find(".acceptLocation").remove();
+          parent.append(notAccepted);
+        } else {
+          checkRecommendedLocation(parent);
+          parent.find(".notAcceptLocation").remove();
+          parent.append(accepted);
+        }
+
+      });
+
   $('.projectLocationsWrapper .button-label').on('click', function() {
     var $t = $(this).parent().find('input.onoffswitch-radio');
     var value = ($(this).hasClass('yes-button-label'));
@@ -101,6 +123,25 @@ function attachEvents() {
 }
 
 // FUNCTIONS
+
+function checkRecommendedLocation(loc) {
+  var locParent = loc.parent();
+  var type = locParent.find("input.locElementType").val();
+  if(type == "2") {
+    var inputFound =
+        $("#selectsContent").find("input.locationLevelId").parents(".locationLevel").find(
+            "input.locElementId[value='" + locParent.find("input.locElementId").val() + "']");
+    if(inputFound.exists()) {
+      inputFound.parent().hide(function() {
+        inputFound.parent().remove();
+      });
+    } else {
+      console.log("Does not exists");
+    }
+  } else {
+
+  }
+}
 
 function checkAllCountries($this) {
   var parent = $($this).parents(".locationLevel");
