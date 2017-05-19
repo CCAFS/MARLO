@@ -77,6 +77,18 @@
         </div>
         
         <h4 class="sectionTitle">[@s.text name="crpLocations.customizeScopes"] [@s.param]${(crpSession?upper_case)!}[/@s.param] [/@s.text]</h4>
+        <div class="simpleBox col-md-12 col-sm-12">
+        [#list regions as region]
+          <span class="col-lg-3 col-md-4 col-sm-4" style="padding:5px 3px; cursor:pointer;" title="${(region.name)!}">
+          <img src="${baseUrl}/images/global/icon-check.png" alt="" />
+           [@utilities.wordCutter string=(region.name) maxPos=20 substr=" "/]
+          </span>
+          [/#list]
+        </div>
+        <span class="note info col-md-12">
+          These default common regions follows the <b>UN M.49</b> standard defined by the United Nations. Please <a href="https://unstats.un.org/unsd/methodology/m49/" target="_blank">click here </a> for more information.
+        </span>
+        <div class="clearfix"></div>
         <div class="scopesBlock" listname="loggedCrp.locationElementTypes">
           [#-- Scopes/Regions List --]
           <div class="scopes-list">
@@ -91,7 +103,7 @@
             <div class="addLocationLevel type-scope bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>[@s.text name="form.buttons.addScopeLevel"/]</div>
           [/#if]
         </div>
-        
+        <div class="clearfix"></div>
         [#-- Section Buttons--]
         <div class="buttons">
           <div class="buttons-content">

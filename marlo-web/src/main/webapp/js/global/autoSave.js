@@ -10,7 +10,7 @@ $(document).ready(function() {
 
   /* Event triggers */
   $(document).on('updateComponent', changeDetected);
-  $(':input').on('keyup change', changeDetected);
+  $('form:first :input').on('keyup change', changeDetected);
 
   if($('#generalMessages ul.messages li').exists()) {
     // Validate section
