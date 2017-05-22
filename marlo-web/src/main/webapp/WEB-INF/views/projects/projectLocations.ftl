@@ -176,7 +176,14 @@
                               <input class="id" type="hidden" name="project.projectRegions[${region_index}].id" value="${region.id}" />
                               <input class="rId" type="hidden" name="project.projectRegions[${region_index}].locElement.id" value="${(region.locElement.id)!}" />
                               <input class="regionScope" type="hidden" name="project.projectRegions[${region_index}].scope" value="${(region.scope?c)!}" />
-                              <span class="name">${(region.locElement.name)!}</span>
+                             [#if region.locElement?has_content ]
+                             <span class="name">${(region.locElement.name)!}</span>
+                             
+                              [#else]
+                                 <span class="name">${(region.locElementType.name)!}</span>
+                            [/#if]
+                           
+                              
                               <div class="clearfix"></div>
                             </li>
                         [/#list]
