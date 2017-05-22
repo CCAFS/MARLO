@@ -82,9 +82,9 @@
               <span class="hide">true</span>  <span class="icon-20 icon-check" title="[@s.text name="message.fieldsCheck.complete" /]"></span>
             [#else]
               [#if hasDraft]
-                <span class="hide">false</span> <span class="icon-20 icon-uncheck" title="[@s.text name="message.fieldsCheck.draft" /]"></span> 
+                <span class="hide">false</span> <span class="icon-20 icon-uncheck" title="[@s.text name="message.fieldsCheck.draft" ][@s.param]funding source[/@s.param][/@s.text]"></span> 
               [#else]
-                <span class="hide">false</span> <span class="icon-20 icon-uncheck" title="[@s.text name="message.fieldsCheck.incomplete" /]"></span> 
+                <span class="hide">false</span> <span class="icon-20 icon-uncheck" title="[@s.text name="message.fieldsCheck.incomplete"][@s.param]funding source[/@s.param][/@s.text]"></span> 
               [/#if]
             [/#if]
           </td>
