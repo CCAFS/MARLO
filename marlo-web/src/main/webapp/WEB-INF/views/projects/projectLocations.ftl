@@ -19,6 +19,7 @@
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
+[#import "/WEB-INF/global/macros/utils.ftl" as utilities/]
 
 <div class="container helpText viewMore-block">
   <div  class="helpMessage infoText">
@@ -179,10 +180,9 @@
                               <input class="rId" type="hidden" name="project.projectRegions[${region_index}].locElement.id" value="${(region.locElement.id)!}" />
                               <input class="regionScope" type="hidden" name="project.projectRegions[${region_index}].scope" value="${(region.scope?c)!}" />
                              [#if region.locElement?has_content ]
-                             <span class="name">${(region.locElement.name)!}</span>
-                             
+                             <span class="name" title="${(region.locElement.name)!}">[@utilities.wordCutter string=(region.locElement.name)!'No name' maxPos=20 /]</span>
                               [#else]
-                                 <span class="name">${(region.locElementType.name)!}</span>
+                                 <span class="name" title="${(region.locElementType.name)!}">[@utilities.wordCutter string=(region.locElementType.name)!'No name' maxPos=20 /]</span>
                             [/#if]
                            
                               
