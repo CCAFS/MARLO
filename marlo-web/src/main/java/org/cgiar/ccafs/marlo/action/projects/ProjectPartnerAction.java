@@ -412,12 +412,12 @@ public class ProjectPartnerAction extends BaseAction {
       String bbcEmails = this.config.getEmailNotification();
       // Send pdf
       String contentType = "application/pdf";
-      String fileName = "MARLO_UserManual_V1.1.pdf";
+      String fileName = "Introduction_To_MARLO_v2.1.pdf";
       byte[] buffer = null;
       InputStream inputStream = null;
 
       try {
-        inputStream = this.getClass().getResourceAsStream("/manual/MARLO_UserManual_20170111_AV_HT_AW.pdf");
+        inputStream = this.getClass().getResourceAsStream("/manual/Introduction_To_MARLO_v2.1.pdf");
         buffer = readFully(inputStream);
       } catch (FileNotFoundException e) {
         // TODO Auto-generated catch block
