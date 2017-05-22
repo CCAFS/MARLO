@@ -2,7 +2,7 @@
 <div class="simpleBox">
   [#-- Title input --] 
   <div class="form-group">
-    [@customForm.input name="deliverable.title" value="${(deliverable.title)!}" type="text" i18nkey="project.deliverable.generalInformation.title"  placeholder="" className="limitWords-15" required=true editable=editable /]
+    [@customForm.input name="deliverable.title" value="${(deliverable.title)!}" type="text" i18nkey="project.deliverable.generalInformation.title"  placeholder="" className="limitWords-25" required=true editable=editable /]
   </div>
   
   [#-- Type and subtype inputs --] 

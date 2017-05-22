@@ -86,12 +86,12 @@ public class ProjectDescriptionValidator extends BaseValidator
   }
 
   public void validateDescription(BaseAction action, Project project) {
-    if (!(this.isValidString(project.getTitle()) && this.wordCount(project.getTitle()) <= 20)) {
+    if (!(this.isValidString(project.getTitle()) && this.wordCount(project.getTitle()) <= 30)) {
       this.addMessage(action.getText("project.title"));
       action.getInvalidFields().put("input-project.title", InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    if (!(this.isValidString(project.getSummary()) && this.wordCount(project.getSummary()) <= 150)) {
+    if (!(this.isValidString(project.getSummary()) && this.wordCount(project.getSummary()) <= 250)) {
       this.addMessage(action.getText("project.summary"));
       action.getInvalidFields().put("input-project.summary", InvalidFieldsMessages.EMPTYFIELD);
     }
@@ -175,7 +175,7 @@ public class ProjectDescriptionValidator extends BaseValidator
       }
 
       if (project.isProjectEditLeader()) {
-        if (!(this.isValidString(project.getGenderAnalysis()) && this.wordCount(project.getGenderAnalysis()) <= 50)) {
+        if (!(this.isValidString(project.getGenderAnalysis()) && this.wordCount(project.getGenderAnalysis()) <= 100)) {
           this.addMessage(action.getText("project.genderAnalysis"));
           action.getInvalidFields().put("input-project.genderAnalysis", InvalidFieldsMessages.EMPTYFIELD);
         }
