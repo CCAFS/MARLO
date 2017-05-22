@@ -74,9 +74,12 @@ $(document).ready(function() {
 
   // Save Button click (Loading state)
   $('.button-save, .button-save span').on('click', function(e) {
-    $(this).addClass('disabled animated flipInY');
-    $(this).find('.glyphicon').hide();
-    $(this).find('.saveText').html('Saving ... <img src="' + baseURL + '/images/global/loading_3.gif" />');
+    var justification = $("form:first").find(".justification");
+    if(justification.exists() && justification.val().trim().length != 0) {
+      $(this).addClass('disabled animated flipInY');
+      $(this).find('.glyphicon').hide();
+      $(this).find('.saveText').html('Saving ... <img src="' + baseURL + '/images/global/loading_3.gif" />');
+    }
   });
 
   // Yes / No Event
