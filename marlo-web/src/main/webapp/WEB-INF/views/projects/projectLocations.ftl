@@ -165,7 +165,7 @@
                      <small style="color: #337ab7;">(Standart regions are defined by United Nations)</small>
                    </div>
                    
-                    <div id="regionList" class="panel-body" listname="fundingSource.fundingRegions"> 
+                    <div id="regionList" class="panel-body" listname="project.projectRegions"> 
                       <ul class="list">
                       [#if project.projectRegions?has_content]
                         [#list project.projectRegions as region]
@@ -173,9 +173,9 @@
                             [#if editable ]
                               <div class="removeRegion removeIcon" title="Remove region"></div>
                             [/#if]
-                              <input class="id" type="hidden" name="fundingSource.fundingRegions[${region_index}].id" value="${region.id}" />
-                              <input class="rId" type="hidden" name="fundingSource.fundingRegions[${region_index}].locElement.id" value="${(region.locElement.id)!}" />
-                              <input class="regionScope" type="hidden" name="fundingSource.fundingRegions[${region_index}].scope" value="${(region.scope?c)!}" />
+                              <input class="id" type="hidden" name="project.projectRegions[${region_index}].id" value="${region.id}" />
+                              <input class="rId" type="hidden" name="project.projectRegions[${region_index}].locElement.id" value="${(region.locElement.id)!}" />
+                              <input class="regionScope" type="hidden" name="project.projectRegions[${region_index}].scope" value="${(region.scope?c)!}" />
                               <span class="name">${(region.locElement.name)!}</span>
                               <div class="clearfix"></div>
                             </li>
@@ -338,6 +338,18 @@
     <span id="okInfo" class=" addButton pull-right" style="margin-top:15px; border-radius:8px;">[@s.text name="Ok" /]</span>
   </div>
 </div>
+
+[#-- Region element template --]
+<ul style="display:none">
+  <li id="regionTemplate" class="region clearfix col-md-3">
+      <div class="removeRegion removeIcon" title="Remove region"></div>
+      <input class="id" type="hidden" name="project.projectRegions[-1].id" value="" />
+      <input class="rId" type="hidden" name="project.projectRegions[-1].locElement.id" value="" />
+      <input class="regionScope" type="hidden" name="project.projectRegions[-1].scope" value="" />
+      <span class="name"></span>
+      <div class="clearfix"></div>
+    </li>
+</ul>
 
 [#-- Country and CMVS templates --]
 <span class="hidden qCountry">[@s.text name="projectLocations.selectAllCountries" /]</span>
