@@ -547,32 +547,28 @@ public class ProjectLocationAction extends BaseAction {
     }
 
 
-    this.prepareFundingList();
+    // this.prepareFundingList();
 
 
     this.listScopeRegions();
-
-    Collection<LocElement> fsLocs = new ArrayList<>();
-    for (CountryFundingSources locElement : countryFS) {
-      fsLocs.add(locElement.getLocElement());
-    }
-    for (CountryFundingSources locElement : regionFS) {
-      fsLocs.add(locElement.getLocElement());
-    }
-
-    for (CountryLocationLevel countryLocationLevel : project.getLocationsData()) {
-
-
-      Collection<LocElement> similar = new HashSet<LocElement>(countryLocationLevel.getLocElements());
-      Collection<LocElement> different = new HashSet<LocElement>();
-      different.addAll(countryLocationLevel.getLocElements());
-      different.addAll(fsLocs);
-      similar.retainAll(fsLocs);
-      different.removeAll(similar);
-
-      countryLocationLevel.getLocElements().removeAll(similar);
-
-    }
+    /*
+     * Collection<LocElement> fsLocs = new ArrayList<>();
+     * for (CountryFundingSources locElement : countryFS) {
+     * fsLocs.add(locElement.getLocElement());
+     * }
+     * for (CountryFundingSources locElement : regionFS) {
+     * fsLocs.add(locElement.getLocElement());
+     * }
+     * for (CountryLocationLevel countryLocationLevel : project.getLocationsData()) {
+     * Collection<LocElement> similar = new HashSet<LocElement>(countryLocationLevel.getLocElements());
+     * Collection<LocElement> different = new HashSet<LocElement>();
+     * different.addAll(countryLocationLevel.getLocElements());
+     * different.addAll(fsLocs);
+     * similar.retainAll(fsLocs);
+     * different.removeAll(similar);
+     * countryLocationLevel.getLocElements().removeAll(similar);
+     * }
+     */
     regionLists = new ArrayList<>(locElementManager.findAll().stream()
       .filter(le -> le.isActive() && le.getLocElementType() != null && le.getLocElementType().getId() == 1)
       .collect(Collectors.toList()));
