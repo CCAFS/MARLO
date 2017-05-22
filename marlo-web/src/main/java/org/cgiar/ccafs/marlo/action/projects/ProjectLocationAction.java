@@ -645,6 +645,7 @@ public class ProjectLocationAction extends BaseAction {
       countryFundingSources.setLocElementType(locElementType);
       List<FundingSource> sources = fundingSourceManager.searchFundingSourcesByLocElementType(projectID,
         locElementType.getId(), this.getCurrentCycleYear());
+      countryFundingSources.setFundingSources(new ArrayList<>(sources));
       regionFS.add(countryFundingSources);
     }
 

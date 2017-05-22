@@ -409,7 +409,12 @@
   <div id="recommendedLocation-${template?string('template',index)}" class="col-md-4 recommended locElement" style="display:${template?string('none','block')}">
     <div class="locations col-md-12">
       [#-- Location Name --]
+      
+       [#if element.locElement??]
       <div class="recommendedLocName"><span class="lName"><b>${(element.locElement.name)!}</b></span> </div>
+       [#else]
+        <div class="recommendedLocName"><span class="lName"><b>${(element.locElementType.name)!}</b></span> </div>
+        [/#if]
       [#-- Check Icon --]
       [#if editable]
         [#if element.locElement?? && action.locElementSelected((element.locElement.id))]
