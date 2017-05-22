@@ -67,6 +67,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   @Expose
   private PartnerDivision partnerDivision;
 
+
   @Expose
   private String financeCode;
 
@@ -75,14 +76,16 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   private Set<FundingSource> fundingSources = new HashSet<FundingSource>(0);
 
+
   private Set<FundingSourceInstitution> fundingSourceInstitutions = new HashSet<FundingSourceInstitution>(0);
+
+  private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
 
   @Expose
   private Long id;
 
   @Expose
   private Institution institution;
-
 
   @Expose
   private String modificationJustification;
@@ -92,7 +95,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
 
   private Set<ProjectBudget> projectBudgets = new HashSet<ProjectBudget>(0);
-
 
   private List<ProjectBudget> projectBudgetsList;
 
@@ -104,8 +106,10 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   @Expose
   private Integer status;
 
+
   @Expose
   private String title;
+
 
   public FundingSource() {
   }
@@ -186,7 +190,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return contactPersonEmail;
   }
 
-
   public String getContactPersonName() {
     return contactPersonName;
   }
@@ -213,15 +216,14 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return file;
   }
 
+
   public String getFinanceCode() {
     return financeCode;
   }
 
-
   public Set<FundingSourceBudget> getFundingSourceBudgets() {
     return fundingSourceBudgets;
   }
-
 
   public Set<FundingSourceInstitution> getFundingSourceInstitutions() {
     return fundingSourceInstitutions;
@@ -243,9 +245,11 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return institution;
   }
 
+
   public List<FundingSourceInstitution> getInstitutions() {
     return institutions;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -259,7 +263,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return modificationJustification;
   }
 
-
   @Override
   public User getModifiedBy() {
     return modifiedBy;
@@ -269,6 +272,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return partnerDivision;
   }
 
+
   public Set<ProjectBudget> getProjectBudgets() {
     return projectBudgets;
   }
@@ -276,7 +280,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   public List<ProjectBudget> getProjectBudgetsList() {
     return projectBudgetsList;
   }
-
 
   public double getRemaining(int year) {
     double used = 0;
@@ -295,6 +298,10 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     }
     return total - used;
 
+  }
+
+  public Set<SectionStatus> getSectionStatuses() {
+    return sectionStatuses;
   }
 
 
@@ -355,10 +362,10 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     this.active = active;
   }
 
+
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
-
 
   public void setBudgets(List<FundingSourceBudget> budgets) {
     this.budgets = budgets;
@@ -384,10 +391,10 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     this.createdBy = createdBy;
   }
 
+
   public void setCrp(Crp crp) {
     this.crp = crp;
   }
-
 
   public void setDescription(String description) {
     this.description = description;
@@ -397,6 +404,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   public void setEndDate(Date endDate) {
     this.endDate = endDate;
   }
+
 
   public void setFile(FileDB file) {
     this.file = file;
@@ -434,10 +442,10 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
-
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
   }
+
 
   public void setPartnerDivision(PartnerDivision partnerDivision) {
     this.partnerDivision = partnerDivision;
@@ -449,6 +457,10 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   public void setProjectBudgetsList(List<ProjectBudget> projectBudgetsList) {
     this.projectBudgetsList = projectBudgetsList;
+  }
+
+  public void setSectionStatuses(Set<SectionStatus> sectionStatuses) {
+    this.sectionStatuses = sectionStatuses;
   }
 
 

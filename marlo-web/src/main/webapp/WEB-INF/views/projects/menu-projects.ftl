@@ -69,10 +69,15 @@
         <ul><p class="menuTitle">${menu.title}</p>
           [#list menu.items as item]
             [#assign submitStatus = (action.getProjectSectionStatus(item.action, projectID))!false /]
+            [#assign hasDraft = (action.getAutoSaveFilePath(project.class.simpleName, item.action, project.id))!false /]
             [#if (item.show)!true ]
               <li id="menu-${item.action}" class="[#if item.slug == currentStage]currentSection[/#if] ${submitStatus?string('submitted','toSubmit')} ${(item.active)?string('enabled','disabled')}">
                 <a href="[@s.url action="${crpSession}/${item.action}"][@s.param name="projectID" value=projectID /][@s.param name="edit" value="true"/][/@s.url]" onclick="return ${item.active?string}" class="action-${crpSession}/${item.action}">
+                  [#-- Name --]
                   [@s.text name=item.name/]
+                  [#-- Draft Tag 
+                  [#if hasDraft][@s.text name="message.fieldsCheck.draft" ][@s.param]section[/@s.param][/@s.text][/#if]
+                  --]
                 </a>
               </li>
               [#if item.active]
