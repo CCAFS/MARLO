@@ -15,7 +15,7 @@
         <th id="projectStatus">[@s.text name="projectsList.projectStatus" /]</th>
         <th id="leader" >[@s.text name="projectsList.institutions" /]</th>
         <th id="projectDonor" >[@s.text name="projectsList.projectDonor" /]</th>
-        <th id="fieldCheck" >Fields Check</th>
+        <th id="fieldCheck" >[@s.text name="message.fieldsCheck.required" /]</th>
         <th id="projectDelete">[@s.text name="projectsList.delete" /]</th>
       </tr>
     </thead>
@@ -82,9 +82,9 @@
               <span class="hide">true</span>  <span class="icon-20 icon-check" title="[@s.text name="message.fieldsCheck.complete" /]"></span>
             [#else]
               [#if hasDraft]
-                <span class="hide">false</span> <span class="icon-20 icon-uncheck" title="[@s.text name="message.fieldsCheck.draft" ][@s.param]funding source[/@s.param][/@s.text]"></span> 
+                <span class="hide">false</span> <span class="icon-20 icon-uncheck" title="[@s.text name="message.fieldsCheck.draft" ][@s.param][@s.text name="global.fundingSource" /][/@s.param][/@s.text]"></span> 
               [#else]
-                <span class="hide">false</span> <span class="icon-20 icon-uncheck" title="[@s.text name="message.fieldsCheck.incomplete"][@s.param]funding source[/@s.param][/@s.text]"></span> 
+                <span class="hide">false</span> <span class="icon-20 icon-uncheck" title="[@s.text name="message.fieldsCheck.incomplete"][@s.param][@s.text name="global.fundingSource" /][/@s.param][/@s.text]"></span> 
               [/#if]
             [/#if]
           </td>
