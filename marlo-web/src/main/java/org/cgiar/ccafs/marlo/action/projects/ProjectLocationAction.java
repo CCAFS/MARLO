@@ -903,7 +903,7 @@ public class ProjectLocationAction extends BaseAction {
       this.projectLocationPreviousData();
 
       this.projectLocationNewData();
-
+      this.saveRegions();
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_LOCATIONS_RELATION);
       project = projectManager.getProjectById(projectID);
@@ -983,6 +983,86 @@ public class ProjectLocationAction extends BaseAction {
 
       projectLocationManager.saveProjectLocation(projectLocation);
     }
+
+  }
+
+  public void saveRegions() {
+
+    Project projectDB = projectManager.getProjectById(projectID);
+
+    if (project.getProjectRegions() == null) {
+      project.setProjectRegions(new ArrayList<>());
+    }
+
+
+    List<ProjectLocation> regions = new ArrayList<>(projectDB.getProjectLocations().stream()
+      .filter(fl -> fl.isActive() && fl.getLocElement().getLocElementType().getId() == 1).collect(Collectors.toList()));
+    regions.addAll(projectDB.getProjectLocations().stream()
+      .filter(fl -> fl.isActive() && fl.getLocElement() == null && fl.getLocElementType() != null)
+      .collect(Collectors.toList()));
+    if (regions != null && regions.size() > 0) {
+
+      if (project.getLocationRegional()) {
+        for (ProjectLocation projectLocation : regions) {
+          if (!project.getProjectRegions().contains(projectLocation)) {
+            projectLocationManager.deleteProjectLocation(projectLocation.getId());
+          }
+        }
+      } else {
+        for (ProjectLocation projectLocation : regions) {
+          projectLocationManager.deleteProjectLocation(projectLocation.getId());
+        }
+      }
+    }
+
+    regions = new ArrayList<>(projectDB
+      .getProjectLocations().stream().filter(fl -> fl.isActive() && fl.getLocElementType() == null
+        && fl.getLocElement() != null && fl.getLocElement().getLocElementType().getId().longValue() == 1)
+      .collect(Collectors.toList()));
+
+    if (regions != null && regions.size() > 0) {
+
+      if (project.getLocationRegional()) {
+        for (ProjectLocation projectLocation : regions) {
+          if (!project.getProjectRegions().contains(projectLocation)) {
+            projectLocationManager.deleteProjectLocation(projectLocation.getId());
+          }
+        }
+      } else {
+        for (ProjectLocation projectLocation : regions) {
+          projectLocationManager.deleteProjectLocation(projectLocation.getId());
+        }
+      }
+    }
+
+    for (ProjectLocation projectLocation : project.getProjectRegions()) {
+
+
+      if (projectLocation.getId() == null || projectLocation.getId() == -1) {
+
+        ProjectLocation projectLocationSave = new ProjectLocation();
+        projectLocationSave.setActive(true);
+        projectLocationSave.setActiveSince(new Date());
+        projectLocationSave.setCreatedBy(this.getCurrentUser());
+        projectLocationSave.setModifiedBy(this.getCurrentUser());
+        projectLocationSave.setModificationJustification("");
+        projectLocationSave.setProject(project);
+
+        if (!projectLocation.isScope()) {
+          LocElement locElement = locElementManager.getLocElementById(projectLocation.getLocElement().getId());
+
+          projectLocationSave.setLocElement(locElement);
+        } else {
+          long elementId = projectLocation.getLocElement().getId();
+          LocElementType elementType = locElementTypeManager.getLocElementTypeById(elementId);
+
+          projectLocationSave.setLocElementType(elementType);
+        }
+
+        projectLocationManager.saveProjectLocation(projectLocationSave);
+      }
+    }
+
 
   }
 

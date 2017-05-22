@@ -43,6 +43,10 @@ public class ProjectLocation implements java.io.Serializable, IAuditLog {
   @Expose
   private boolean active;
 
+
+  @Expose
+  private boolean scope;
+
   @Expose
   private LocElementType locElementType;
 
@@ -57,6 +61,7 @@ public class ProjectLocation implements java.io.Serializable, IAuditLog {
 
   @Expose
   private User modifiedBy;
+
 
   @Expose
   private String modificationJustification;
@@ -85,28 +90,27 @@ public class ProjectLocation implements java.io.Serializable, IAuditLog {
     if (obj == null) {
       return false;
     }
-    if (this.getClass() != obj.getClass()) {
-      return false;
-    }
+
     ProjectLocation other = (ProjectLocation) obj;
     if (id == null) {
       if (other.id != null) {
         return false;
       }
-    } else if (!id.equals(other.id)) {
+    } else if (!this.getId().equals(other.getId())) {
       return false;
     }
     return true;
   }
 
-
   public Date getActiveSince() {
     return activeSince;
   }
 
+
   public User getCreatedBy() {
     return createdBy;
   }
+
 
   @Override
   public Long getId() {
@@ -141,7 +145,6 @@ public class ProjectLocation implements java.io.Serializable, IAuditLog {
     return modifiedBy;
   }
 
-
   public Project getProject() {
     return project;
   }
@@ -151,6 +154,11 @@ public class ProjectLocation implements java.io.Serializable, IAuditLog {
     return active;
   }
 
+
+  public boolean isScope() {
+    return scope;
+  }
+
   public void setActive(boolean active) {
     this.active = active;
   }
@@ -158,7 +166,6 @@ public class ProjectLocation implements java.io.Serializable, IAuditLog {
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
-
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
@@ -174,6 +181,7 @@ public class ProjectLocation implements java.io.Serializable, IAuditLog {
     this.locElement = locElement;
   }
 
+
   public void setLocElementType(LocElementType locElementType) {
     this.locElementType = locElementType;
   }
@@ -188,6 +196,10 @@ public class ProjectLocation implements java.io.Serializable, IAuditLog {
 
   public void setProject(Project project) {
     this.project = project;
+  }
+
+  public void setScope(boolean scope) {
+    this.scope = scope;
   }
 
 
