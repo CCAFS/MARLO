@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
+import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
@@ -152,32 +153,6 @@ public class FundingSourceValidator extends BaseValidator {
     }
 
 
-    // double totalYear = 0;
-    // FundingSource fundingSourceDB = fundingSourceManager.getFundingSourceById(fundingSource.getId());
-    //
-    // for (ProjectBudget projectBudget : fundingSourceDB.getProjectBudgets().stream()
-    // .filter(c -> c.isActive() && c.getYear() == action.getCurrentCycleYear()).collect(Collectors.toList())) {
-    // totalYear = totalYear + projectBudget.getAmount().doubleValue();
-    // }
-    //
-    // if (fundingSource.getBudgets() != null) {
-    // int i = 0;
-    // for (FundingSourceBudget budget : fundingSource.getBudgets()) {
-    // if (budget != null) {
-    // if (budget.getYear() != null) {
-    // if (budget.getYear().intValue() == action.getCurrentCycleYear()) {
-    // double total = budget.getBudget().doubleValue() - totalYear;
-    // if (total < 0) {
-    // action.addFieldError("fundingSource.budgets[" + i + "].budget", "Invalid Budget Value");
-    // }
-    // }
-    // }
-    //
-    // }
-    //
-    // i++;
-    // }
-    // }
     if (!action.getFieldErrors().isEmpty()) {
       hasErros = true;
       action.addActionError(action.getText("saving.fields.required"));
@@ -188,6 +163,8 @@ public class FundingSourceValidator extends BaseValidator {
       action
         .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
     }
+
+    this.saveMissingFields(fundingSource, null, null, ProjectSectionStatusEnum.FUNDINGSOURCE.getStatus());
 
 
   }
