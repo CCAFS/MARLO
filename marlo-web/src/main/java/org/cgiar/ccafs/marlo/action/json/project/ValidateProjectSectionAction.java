@@ -446,7 +446,8 @@ public class ValidateProjectSectionAction extends BaseAction {
       project.getProjectLocationElementTypes().stream().filter(pl -> pl.getIsGlobal()).collect(Collectors.toList()));
 
     project.setLocations(new ArrayList<ProjectLocation>(project.getProjectLocations().stream()
-      .filter(p -> p.isActive() && p.getLocElementType() != null).collect(Collectors.toList())));
+      .filter(p -> p.isActive() && p.getLocElementType() == null && p.getLocElement() != null)
+      .collect(Collectors.toList())));
     Map<String, Object> locationParent;
     if (!project.getLocations().isEmpty()) {
 

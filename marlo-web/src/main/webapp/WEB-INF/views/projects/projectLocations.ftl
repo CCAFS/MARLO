@@ -98,7 +98,7 @@
                   <hr />
                 </div>
                 <div class="form-group col-md-12">
-                  [@customForm.yesNoInput  label="Does this Project have a regional dimension?" name="project.locationRegional"  editable=editable inverse=false  cssClass="isRegional" /]
+                  [@customForm.yesNoInput  label="Does this Project have a regional dimension?" name="project.locationRegional"   editable=editable inverse=false  cssClass="isRegional" /]
                   <small style="color: #337ab7;">Select “yes” if work under the project is addressing issues pertaining to the region globally, as opposed to or in addition to issues pertaining to specific countries within a region.</small>
                 </div>
                 [#-- REGIONS IN WHICH THE PROJECT IS WORKING  --]
@@ -175,6 +175,8 @@
                             [/#if]
                               <input class="id" type="hidden" name="project.projectRegions[${region_index}].id" value="${region.id}" />
                               <input class="rId" type="hidden" name="project.projectRegions[${region_index}].locElement.id" value="${(region.locElement.id)!}" />
+                              <input class="rId" type="hidden" name="project.projectRegions[${region_index}].locElementType.id" value="${(region.locElementType.id)!}" />
+
                               <input class="regionScope" type="hidden" name="project.projectRegions[${region_index}].scope" value="${(region.scope?c)!}" />
                              [#if region.locElement?has_content ]
                              <span class="name">${(region.locElement.name)!}</span>

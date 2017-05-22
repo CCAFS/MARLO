@@ -1007,8 +1007,11 @@ public class ProjectLocationAction extends BaseAction {
     }
 
 
-    List<ProjectLocation> regions = new ArrayList<>(projectDB.getProjectLocations().stream()
-      .filter(fl -> fl.isActive() && fl.getLocElement().getLocElementType().getId() == 1).collect(Collectors.toList()));
+    List<ProjectLocation> regions =
+      new ArrayList<>(projectDB.getProjectLocations().stream()
+        .filter(
+          fl -> fl.isActive() && fl.getLocElement() != null && fl.getLocElement().getLocElementType().getId() == 1)
+        .collect(Collectors.toList()));
     regions.addAll(projectDB.getProjectLocations().stream()
       .filter(fl -> fl.isActive() && fl.getLocElement() == null && fl.getLocElementType() != null)
       .collect(Collectors.toList()));
