@@ -97,7 +97,7 @@ public class DeliverableValidator extends BaseValidator {
       }
       if (!(deliverable.getStatus() != null
         && deliverable.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId()))) {
-        if (!(this.isValidString(deliverable.getTitle()) && this.wordCount(deliverable.getTitle()) <= 15)) {
+        if (!(this.isValidString(deliverable.getTitle()) && this.wordCount(deliverable.getTitle()) <= 25)) {
           this.addMessage(action.getText("project.deliverable.generalInformation.title"));
           action.getInvalidFields().put("input-deliverable.title", InvalidFieldsMessages.EMPTYFIELD);
         }
