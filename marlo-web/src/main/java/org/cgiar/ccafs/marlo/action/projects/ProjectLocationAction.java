@@ -204,8 +204,10 @@ public class ProjectLocationAction extends BaseAction {
     List<ProjectLocationElementType> locationsElementType = new ArrayList<>(
       project.getProjectLocationElementTypes().stream().filter(pl -> pl.getIsGlobal()).collect(Collectors.toList()));
 
-    project.setLocations(new ArrayList<ProjectLocation>(
-      project.getProjectLocations().stream().filter(p -> p.isActive()).collect(Collectors.toList())));
+    project.setLocations(new ArrayList<ProjectLocation>(project
+      .getProjectLocations().stream().filter(p -> p.isActive() && p.getLocElementType() == null
+        && p.getLocElement() != null && p.getLocElement().getLocElementType().getId().longValue() != 1)
+      .collect(Collectors.toList())));
     Map<String, Object> locationParent;
     if (!project.getLocations().isEmpty()) {
 
@@ -531,6 +533,15 @@ public class ProjectLocationAction extends BaseAction {
       } else {
         this.setDraft(false);
         project.setLocationsData(this.getProjectLocationsData());
+
+        project.setProjectRegions(new ArrayList<ProjectLocation>(project
+          .getProjectLocations().stream().filter(p -> p.isActive() && p.getLocElementType() == null
+            && p.getLocElement() != null && p.getLocElement().getLocElementType().getId().longValue() == 1)
+          .collect(Collectors.toList())));
+        project.getProjectRegions()
+          .addAll(project.getProjectLocations().stream()
+            .filter(p -> p.isActive() && p.getLocElementType() != null && p.getLocElement() == null)
+            .collect(Collectors.toList()));
       }
     }
 
