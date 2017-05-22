@@ -464,7 +464,8 @@ public class ProjectLocationAction extends BaseAction {
   public boolean locElementSelected(long locElementID) {
     Project projectDB = projectManager.getProjectById(projectID);
     List<ProjectLocation> locElements = projectDB.getProjectLocations().stream()
-      .filter(c -> c.isActive() && c.getLocElement().getId().longValue() == locElementID).collect(Collectors.toList());
+      .filter(c -> c.isActive() && c.getLocElement() != null && c.getLocElement().getId().longValue() == locElementID)
+      .collect(Collectors.toList());
 
     return !locElements.isEmpty();
 
