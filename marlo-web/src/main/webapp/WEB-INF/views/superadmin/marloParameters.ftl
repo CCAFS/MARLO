@@ -63,7 +63,7 @@
     <div class="blockTitle closed">
       <strong>${(element.acronym?upper_case)!}</strong> - ${(element.name)!} <small>(Parameters: ${(element.parameters?size)!0})</small>
     </div>
-    
+     
     <div class="blockContent" style="display:none">
       <hr />
       [#if element.parameters??]
@@ -79,7 +79,9 @@
               <table class="table table-striped table-condensed ">
                 <tbody>
                 [#list element.parameters as crpParameter]
-                  [#if type.id ==crpParameter.parameter.category][@parameterMacro element=crpParameter name="${customName}.parameters" index=crpParameter_index /][/#if]
+                  [#if type.id ==crpParameter.parameter.category]
+                    [@parameterMacro element=crpParameter name="${customName}.parameters" index=crpParameter_index crpIndex=index/]
+                  [/#if]
                 [/#list]
                 </tbody>
               </table>
@@ -92,7 +94,7 @@
   </div>
 [/#macro]
 
-[#macro parameterMacro element name index isTemplate=false]
+[#macro parameterMacro element name index crpIndex=-1 isTemplate=false]
   [#local customName = "${name}[${index}]"]
   <tr id="parameter-${isTemplate?string('template',index)}" class="parameter" style="display:${isTemplate?string('none','table-row')}">
     <td>
@@ -121,7 +123,11 @@
           <label for="no-${(element.id)!}" class="radio-label radio-label-no"> No</label>
         </div>
       [#else]
-        [@customForm.input name="${customName}.value" className="parameterValue type-${element.parameter.format}" placeholder="${(element.parameter.defaultValue)!'Value'}" showTitle=false /]
+        [#if element.parameter.category == 1]
+          [@customForm.select name="${customName}.value" i18nkey="" className="parameterValue type-${element.parameter.format}" listName="crps[${crpIndex}].roles" keyFieldName="id" displayFieldName="description" showTitle=false  /]
+        [#else]
+          [@customForm.input name="${customName}.value" className="parameterValue type-${element.parameter.format}" placeholder="${(element.parameter.defaultValue)!'Value'}" showTitle=false /]
+        [/#if]
       [/#if]
     </td>
   </tr>
