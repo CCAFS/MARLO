@@ -133,12 +133,12 @@
             <div class="form-group">
               [#if (project.crossCuttingGender)!false]
                 <div class="form-group">
-                  [@customForm.textArea name="projectOutcome.genderDimenssion" required=true className="limitWords-50" editable=editable /]
+                  [@customForm.textArea name="projectOutcome.genderDimenssion" required=true className="limitWords-100" editable=editable /]
                 </div>
               [/#if]
               [#if (project.crossCuttingYouth)!false]
                 <div class="form-group">
-                  [@customForm.textArea name="projectOutcome.youthComponent" required=true className="limitWords-50" editable=editable /]
+                  [@customForm.textArea name="projectOutcome.youthComponent" required=true className="limitWords-100" editable=editable /]
                 </div> 
               [/#if]
             </div>
@@ -337,7 +337,7 @@
         </div>
         
         <div class="form-group">
-          [@customForm.textArea name="${customName}.narrativeTarget" i18nkey="projectOutcomeMilestone.expectedNarrative" required=isYearRequired(year) className="limitWords-50" editable=editable && !reportingActive /]
+          [@customForm.textArea name="${customName}.narrativeTarget" i18nkey="projectOutcomeMilestone.expectedNarrative" required=isYearRequired(year) className="limitWords-100" editable=editable && !reportingActive /]
         </div>
         [#-- REPORTING BLOCK --]
         [#if reportingActive]
@@ -370,11 +370,11 @@
       </div>
       [#-- Knowledge, attitude, skills and practice changes expected in this next user --]
       <div class="form-group">
-        [@customForm.textArea name="${customName}.knowledge" i18nkey="projectOutcomeNextUser.knowledge" help="projectOutcomeNextUser.knowledge.help" required=true className="limitWords-50" editable=editable && !reportingActive /]
+        [@customForm.textArea name="${customName}.knowledge" i18nkey="projectOutcomeNextUser.knowledge" help="projectOutcomeNextUser.knowledge.help" required=true className="limitWords-100" editable=editable && !reportingActive /]
       </div>
       [#-- Strategies will be used to encourage and enable this next user to utilize deliverables and adopt changes --]
       <div class="form-group">
-        [@customForm.textArea name="${customName}.strategies" i18nkey="projectOutcomeNextUser.strategies" help="projectOutcomeNextUser.strategies.help" required=true className="limitWords-50" editable=editable && !reportingActive /]
+        [@customForm.textArea name="${customName}.strategies" i18nkey="projectOutcomeNextUser.strategies" help="projectOutcomeNextUser.strategies.help" required=true className="limitWords-100" editable=editable && !reportingActive /]
       </div>
       [#-- Status (Active, Inactive) --]
      

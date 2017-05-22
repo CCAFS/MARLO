@@ -143,7 +143,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
 
 
         if (!(this.isValidString(projectMilestone.getNarrativeTarget())
-          && this.wordCount(projectMilestone.getNarrativeTarget()) <= 50)) {
+          && this.wordCount(projectMilestone.getNarrativeTarget()) <= 100)) {
           this.addMessage(action.getText("projectOutcomeMilestone.requeried.expectedNarrative", params));
           action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].narrativeTarget",
             InvalidFieldsMessages.EMPTYFIELD);
@@ -169,13 +169,14 @@ public class ProjectOutcomeValidator extends BaseValidator {
       action.getInvalidFields().put("input-projectOutcome.nextUsers[" + i + "].nextUser",
         InvalidFieldsMessages.EMPTYFIELD);
     }
-    if (!(this.isValidString(projectNextuser.getKnowledge()) && this.wordCount(projectNextuser.getKnowledge()) <= 50)) {
+    if (!(this.isValidString(projectNextuser.getKnowledge())
+      && this.wordCount(projectNextuser.getKnowledge()) <= 100)) {
       this.addMessage(action.getText("projectOutcomeNextUser.requeried.knowledge", params));
       action.getInvalidFields().put("input-projectOutcome.nextUsers[" + i + "].knowledge",
         InvalidFieldsMessages.EMPTYFIELD);
     }
     if (!(this.isValidString(projectNextuser.getStrategies())
-      && this.wordCount(projectNextuser.getStrategies()) <= 50)) {
+      && this.wordCount(projectNextuser.getStrategies()) <= 100)) {
       this.addMessage(action.getText("projectOutcomeNextUser.requeried.strategies", params));
       action.getInvalidFields().put("input-projectOutcome.nextUsers[" + i + "].strategies",
         InvalidFieldsMessages.EMPTYFIELD);
@@ -228,7 +229,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
       if (project.getCrossCuttingGender() != null && project.getCrossCuttingGender().booleanValue() == true) {
 
         if (!(this.isValidString(projectOutcome.getGenderDimenssion())
-          && this.wordCount(projectOutcome.getGenderDimenssion()) <= 50)) {
+          && this.wordCount(projectOutcome.getGenderDimenssion()) <= 100)) {
           this.addMessage(action.getText("projectOutcome.genderDimenssion"));
           action.getInvalidFields().put("input-projectOutcome.genderDimenssion", InvalidFieldsMessages.EMPTYFIELD);
         }
@@ -238,7 +239,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
       if (project.getCrossCuttingYouth() != null && project.getCrossCuttingYouth().booleanValue() == true) {
 
         if (!(this.isValidString(projectOutcome.getYouthComponent())
-          && this.wordCount(projectOutcome.getYouthComponent()) <= 50)) {
+          && this.wordCount(projectOutcome.getYouthComponent()) <= 100)) {
           this.addMessage(action.getText("projectOutcome.youthComponent"));
           action.getInvalidFields().put("input-projectOutcome.youthComponent", InvalidFieldsMessages.EMPTYFIELD);
         }
