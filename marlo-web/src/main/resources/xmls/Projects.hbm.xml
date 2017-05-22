@@ -96,6 +96,9 @@
 		<property name="locationGlobal" type="boolean">
 			<column name="is_location_global" />
 		</property>
+		<property name="locationRegional" type="java.lang.Boolean">
+      <column name="is_location_regional" />
+    </property>
 		<property name="noRegional" type="java.lang.Boolean">
 			<column name="no_regional" />
 		</property>

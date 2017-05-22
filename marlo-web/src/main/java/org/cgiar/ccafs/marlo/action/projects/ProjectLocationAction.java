@@ -120,6 +120,9 @@ public class ProjectLocationAction extends BaseAction {
 
   private String transaction;
 
+  private boolean region;
+
+
   @Inject
   public ProjectLocationAction(APConfig config, CrpManager crpManager, ProjectManager projectManager,
     LocElementTypeManager locElementTypeManager, LocElementManager locElementManager,
@@ -138,6 +141,7 @@ public class ProjectLocationAction extends BaseAction {
     this.projectLocationElementTypeManager = projectLocationElementTypeManager;
     this.fundingSourceManager = fundingSourceManager;
   }
+
 
   @Override
   public String cancel() {
@@ -163,7 +167,6 @@ public class ProjectLocationAction extends BaseAction {
     return SUCCESS;
   }
 
-
   private Path getAutoSaveFilePath() {
     String composedClassName = project.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -176,10 +179,10 @@ public class ProjectLocationAction extends BaseAction {
     return countryFS;
   }
 
+
   public List<LocationLevel> getLocationsLevels() {
     return locationsLevels;
   }
-
 
   public Crp getLoggedCrp() {
     return loggedCrp;
@@ -188,6 +191,7 @@ public class ProjectLocationAction extends BaseAction {
   public Project getProject() {
     return project;
   }
+
 
   public long getProjectID() {
     return projectID;
@@ -324,7 +328,6 @@ public class ProjectLocationAction extends BaseAction {
     return scopeData;
   }
 
-
   public List<LocElementType> getScopeRegionLists() {
     return scopeRegionLists;
   }
@@ -333,8 +336,13 @@ public class ProjectLocationAction extends BaseAction {
     return scopeRegions;
   }
 
+
   public String getTransaction() {
     return transaction;
+  }
+
+  public boolean isRegion() {
+    return region;
   }
 
   public void listScopeRegions() {
@@ -460,7 +468,6 @@ public class ProjectLocationAction extends BaseAction {
 
   }
 
-
   @Override
   public void prepare() throws Exception {
 
@@ -564,6 +571,12 @@ public class ProjectLocationAction extends BaseAction {
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_LOCATION_BASE_PERMISSION, params));
 
+    if (!project.getLocationsData().stream().filter(c -> c.getId().longValue() != 2).collect(Collectors.toList())
+      .isEmpty()) {
+      region = true;
+    } else {
+      region = false;
+    }
     if (this.isHttpPost()) {
       if (project.getLocationsData() != null) {
         project.getLocationsData().clear();
@@ -651,6 +664,7 @@ public class ProjectLocationAction extends BaseAction {
 
 
   }
+
 
   public void projectLocationNewData() {
 
@@ -830,7 +844,6 @@ public class ProjectLocationAction extends BaseAction {
 
   }
 
-
   public void projectLocationPreviousData() {
     List<CountryLocationLevel> locationsDataPrew = this.getProjectLocationsData();
 
@@ -873,6 +886,7 @@ public class ProjectLocationAction extends BaseAction {
 
   }
 
+
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -885,7 +899,7 @@ public class ProjectLocationAction extends BaseAction {
       project.setActiveSince(projectDB.getActiveSince());
 
       boolean isProjectGlobal = project.isLocationGlobal();
-
+      boolean isProjectRegional = project.getLocationRegional();
       this.projectLocationPreviousData();
 
       this.projectLocationNewData();
@@ -897,6 +911,7 @@ public class ProjectLocationAction extends BaseAction {
       project.setModificationJustification(this.getJustification());
       project.setModifiedBy(this.getCurrentUser());
       project.setLocationGlobal(isProjectGlobal);
+      project.setLocationRegional(isProjectRegional);
       projectManager.saveProject(project, this.getActionName(), relationsName);
       Path path = this.getAutoSaveFilePath();
 
@@ -989,6 +1004,10 @@ public class ProjectLocationAction extends BaseAction {
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
+  }
+
+  public void setRegion(boolean region) {
+    this.region = region;
   }
 
 

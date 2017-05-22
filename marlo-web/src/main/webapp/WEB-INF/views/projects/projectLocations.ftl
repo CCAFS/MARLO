@@ -91,14 +91,14 @@
                 
                 [#-- GLOBAL DIMENSION --]
                 <div class="form-group  col-md-12">
-                  [@customForm.yesNoInput  label="Does this Project have a global dimension?" name="fundingSource.global"  editable=editable inverse=false  cssClass="" /] 
+                  [@customForm.yesNoInput  label="Does this Project have a global dimension?" name="project.locationGlobal"  editable=editable inverse=false  cssClass="" /] 
                 </div>
                 <br />
                 <div class="form-group col-md-12 ">
                   <hr />
                 </div>
                 <div class="form-group col-md-12">
-                  [@customForm.yesNoInput  label="Does this Project have a regional dimension?" name="region"  editable=editable inverse=false  cssClass="isRegional" /]
+                  [@customForm.yesNoInput  label="Does this Project have a regional dimension?" name="project.locationRegional"  editable=editable inverse=false  cssClass="isRegional" /]
                   <small style="color: #337ab7;">Select “yes” if work under the project is addressing issues pertaining to the region globally, as opposed to or in addition to issues pertaining to specific countries within a region.</small>
                 </div>
                 [#-- REGIONS IN WHICH THE PROJECT IS WORKING  --]
