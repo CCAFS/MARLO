@@ -127,9 +127,97 @@ function attachEvents() {
     }
   });
 
+  // Region Select
+  $("#regionSelect").on("change", function() {
+    var option = $(this).find("option:selected");
+    if(option.val() != "-1") {
+      addRegion(option);
+      // Remove option from select
+      // option.remove();
+      option.prop('disabled', true);
+      $('#regionSelect').select2();
+      // $(this).trigger("select2:change");
+    }
+  });
+  // REMOVE REGION
+  $(".removeRegion").on("click", removeRegion);
+
 }
 
 // FUNCTIONS
+
+// Add Regions
+function addRegion(option) {
+  var canAdd = true;
+  if(option.val() == "-1") {
+    canAdd = false;
+  }
+  var optionValue = option.val().split("-")[0];
+  var optionScope = option.val().split("-")[1];
+
+  var $list = $(option).parents("#regionList").find(".list");
+  var $item = $("#regionTemplate").clone(true).removeAttr("id");
+  var v = $(option).text().length > 20 ? $(option).text().substr(0, 20) + ' ... ' : $(option).text();
+
+  // Check if is already selected
+  $list.find('.region').each(function(i,e) {
+    if($(e).find('input.rId').val() == optionValue) {
+      canAdd = false;
+      return;
+    }
+  });
+  if(!canAdd) {
+    return;
+  }
+
+  // Set region parameters
+  $item.find(".name").attr("title", $(option).text());
+  $item.find(".name").html(v);
+  $item.find(".rId").val(optionValue);
+  $item.find(".regionScope").val(optionScope);
+  $item.find(".id").val(-1);
+  $list.append($item);
+  $item.show('slow');
+  updateRegionList($list);
+  checkRegionList($list);
+
+}
+
+function removeRegion() {
+  var $list = $(this).parents('.list');
+  var $item = $(this).parents('.region');
+  var value = $item.find(".rId").val();
+  var scope = $item.find(".regionScope").val();
+  var name = $item.find(".name").attr("title");
+
+  var $select = $(".regionsSelect");
+  $item.hide(300, function() {
+    $item.remove();
+    checkRegionList($list);
+    updateRegionList($list);
+  });
+  var option = $select.find("option[value='" + value + "-" + scope + "']");
+  console.log(option);
+  option.prop('disabled', false);
+  $('#regionSelect').select2();
+}
+
+function updateRegionList($list) {
+
+  $($list).find('.region').each(function(i,e) {
+    // Set regions indexes
+    $(e).setNameIndexes(1, i);
+  });
+}
+
+function checkRegionList(block) {
+  var items = $(block).find('.region').length;
+  if(items == 0) {
+    $(block).parent().find('p.emptyText').fadeIn();
+  } else {
+    $(block).parent().find('p.emptyText').fadeOut();
+  }
+}
 
 function checkRecommendedLocation(loc) {
   var locParent = loc.parent();
