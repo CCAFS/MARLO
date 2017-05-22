@@ -73,10 +73,11 @@
             [#if (item.show)!true ]
               <li id="menu-${item.action}" class="[#if item.slug == currentStage]currentSection[/#if] ${submitStatus?string('submitted','toSubmit')} ${(item.active)?string('enabled','disabled')}">
                 <a href="[@s.url action="${crpSession}/${item.action}"][@s.param name="projectID" value=projectID /][@s.param name="edit" value="true"/][/@s.url]" onclick="return ${item.active?string}" class="action-${crpSession}/${item.action}">
-                  [#-- Draft Tag --]
-                  [#if hasDraft]<strong class="text-danger" title="[@s.text name="message.fieldsCheck.draft" /]"> <span class="glyphicon glyphicon-bell"></span> </strong>[/#if]
                   [#-- Name --]
                   [@s.text name=item.name/]
+                  [#-- Draft Tag 
+                  [#if hasDraft][@s.text name="message.fieldsCheck.draft" ][@s.param]section[/@s.param][/@s.text][/#if]
+                  --]
                 </a>
               </li>
               [#if item.active]
