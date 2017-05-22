@@ -504,9 +504,8 @@ public class CrpAdminManagmentAction extends BaseAction {
     StringBuilder message = new StringBuilder();
     // Building the Email message:
     message.append(this.getText("email.dear", new String[] {userRemoved.getFirstName()}));
-    message.append(
-      this.getText("email.flagshipmanager.unassigned", new String[] {this.getText("programManagement.flagship.role"),
-        crpProgram.getAcronym(), crpProgram.getName(), loggedCrp.getName()}));
+    message.append(this.getText("email.flagshipmanager.unassigned", new String[] {this.getText("CrpProgram.managers"),
+      crpProgram.getAcronym(), crpProgram.getName(), loggedCrp.getName()}));
 
 
     message.append(this.getText("email.support", new String[] {crpAdmins}));
