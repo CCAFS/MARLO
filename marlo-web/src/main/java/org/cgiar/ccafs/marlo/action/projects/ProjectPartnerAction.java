@@ -900,18 +900,22 @@ public class ProjectPartnerAction extends BaseAction {
     }
 
     for (ProjectPartner projectPartner : project.getPartners()) {
+
       Institution institution = projectPartner.getInstitution();
-      List<InstitutionLocation> institutionLocations = new ArrayList<>();
-      institutionLocations.addAll(institution.getLocations());
-      for (InstitutionLocation institutionLocation : institutionLocations) {
-        if (projectPartner.getSelectedLocations() != null) {
-          if (projectPartner.getSelectedLocations().contains(institutionLocation)) {
-            institution.getLocations().remove(institutionLocation);
+      if (institution != null) {
+        List<InstitutionLocation> institutionLocations = new ArrayList<>();
+        institutionLocations.addAll(institution.getLocations());
+        for (InstitutionLocation institutionLocation : institutionLocations) {
+          if (projectPartner.getSelectedLocations() != null) {
+            if (projectPartner.getSelectedLocations().contains(institutionLocation)) {
+              institution.getLocations().remove(institutionLocation);
 
+            }
           }
-        }
 
+        }
       }
+
     }
 
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
