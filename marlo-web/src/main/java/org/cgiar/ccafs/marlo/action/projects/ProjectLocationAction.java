@@ -116,6 +116,7 @@ public class ProjectLocationAction extends BaseAction {
   private List<ScopeData> scopeData;
 
   private List<LocElementType> scopeRegions;
+  private List<LocElementType> scopeRegionLists;
 
   private String transaction;
 
@@ -324,6 +325,10 @@ public class ProjectLocationAction extends BaseAction {
   }
 
 
+  public List<LocElementType> getScopeRegionLists() {
+    return scopeRegionLists;
+  }
+
   public List<LocElementType> getScopeRegions() {
     return scopeRegions;
   }
@@ -339,6 +344,7 @@ public class ProjectLocationAction extends BaseAction {
       .collect(Collectors.toList());
 
     scopeRegions = new ArrayList<>();
+
 
     if (project.getLocationsData() != null) {
       for (CountryLocationLevel locationData : project.getLocationsData()) {
@@ -454,6 +460,7 @@ public class ProjectLocationAction extends BaseAction {
 
   }
 
+
   @Override
   public void prepare() throws Exception {
 
@@ -551,6 +558,9 @@ public class ProjectLocationAction extends BaseAction {
       .filter(le -> le.isActive() && le.getLocElementType() != null && le.getLocElementType().getId() == 1)
       .collect(Collectors.toList()));
     Collections.sort(regionLists, (r1, r2) -> r1.getName().compareTo(r2.getName()));
+    scopeRegionLists = new ArrayList<>(locElementTypeManager.findAll().stream()
+      .filter(le -> le.isActive() && le.getCrp() != null && le.getCrp().equals(loggedCrp) && le.isScope())
+      .collect(Collectors.toList()));
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_LOCATION_BASE_PERMISSION, params));
 
@@ -563,6 +573,7 @@ public class ProjectLocationAction extends BaseAction {
     }
 
   }
+
 
   public void prepareFundingList() {
 
@@ -639,7 +650,6 @@ public class ProjectLocationAction extends BaseAction {
 
 
   }
-
 
   public void projectLocationNewData() {
 
@@ -819,6 +829,7 @@ public class ProjectLocationAction extends BaseAction {
 
   }
 
+
   public void projectLocationPreviousData() {
     List<CountryLocationLevel> locationsDataPrew = this.getProjectLocationsData();
 
@@ -975,7 +986,6 @@ public class ProjectLocationAction extends BaseAction {
     this.project = project;
   }
 
-
   public void setProjectID(long projectID) {
     this.projectID = projectID;
   }
@@ -985,12 +995,17 @@ public class ProjectLocationAction extends BaseAction {
     this.regionFS = regionFS;
   }
 
+
   public void setRegionLists(List<LocElement> regionLists) {
     this.regionLists = regionLists;
   }
 
   public void setScopeData(List<ScopeData> scopeData) {
     this.scopeData = scopeData;
+  }
+
+  public void setScopeRegionLists(List<LocElementType> scopeRegionLists) {
+    this.scopeRegionLists = scopeRegionLists;
   }
 
   public void setScopeRegions(List<LocElementType> scopeRegions) {

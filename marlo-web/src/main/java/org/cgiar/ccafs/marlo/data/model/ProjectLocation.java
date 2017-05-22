@@ -43,9 +43,13 @@ public class ProjectLocation implements java.io.Serializable, IAuditLog {
   @Expose
   private boolean active;
 
+  @Expose
+  private LocElementType locElementType;
+
 
   @Expose
   private Date activeSince;
+
 
   @Expose
   private User createdBy;
@@ -61,7 +65,6 @@ public class ProjectLocation implements java.io.Serializable, IAuditLog {
   public ProjectLocation() {
   }
 
-
   public ProjectLocation(LocElement locElement, Project project, boolean active, Date activeSince, User createdBy,
     User modifiedBy, String modificationJustification) {
     this.locElement = locElement;
@@ -72,6 +75,7 @@ public class ProjectLocation implements java.io.Serializable, IAuditLog {
     this.modifiedBy = modifiedBy;
     this.modificationJustification = modificationJustification;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -95,6 +99,7 @@ public class ProjectLocation implements java.io.Serializable, IAuditLog {
     return true;
   }
 
+
   public Date getActiveSince() {
     return activeSince;
   }
@@ -112,6 +117,10 @@ public class ProjectLocation implements java.io.Serializable, IAuditLog {
     return locElement;
   }
 
+  public LocElementType getLocElementType() {
+    return locElementType;
+  }
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -122,15 +131,16 @@ public class ProjectLocation implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
-
 
   @Override
   public User getModifiedBy() {
     return modifiedBy;
   }
+
 
   public Project getProject() {
     return project;
@@ -144,7 +154,6 @@ public class ProjectLocation implements java.io.Serializable, IAuditLog {
   public void setActive(boolean active) {
     this.active = active;
   }
-
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
@@ -160,8 +169,13 @@ public class ProjectLocation implements java.io.Serializable, IAuditLog {
     this.id = id;
   }
 
+
   public void setLocElement(LocElement locElement) {
     this.locElement = locElement;
+  }
+
+  public void setLocElementType(LocElementType locElementType) {
+    this.locElementType = locElementType;
   }
 
   public void setModificationJustification(String modificationJustification) {
