@@ -61,9 +61,7 @@ public class CountryLocationLevel implements Serializable {
     if (obj == null) {
       return false;
     }
-    if (this.getClass() != obj.getClass()) {
-      return false;
-    }
+
     CountryLocationLevel other = (CountryLocationLevel) obj;
     if (id != other.id) {
       return false;

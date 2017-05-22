@@ -19,6 +19,7 @@
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
+[#import "/WEB-INF/global/macros/utils.ftl" as utilities/]
 
 <div class="container helpText viewMore-block">
   <div  class="helpMessage infoText">
@@ -41,7 +42,7 @@
       
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
            
-          <p class="bg-primary" style="padding: 18px;">
+          <p class="bg-primary" style="padding: 18px; display:none;">
             <span class="glyphicon glyphicon-flash"></span> We are re-vamping this section in order to make it more user-friendly. 
             Please apologies if something is not properly working. It would be great if you can inform us about any issue.
           </p>
@@ -75,6 +76,11 @@
                 <div class="col-md-12">
                 <b>NOTE: </b>
                 <br />
+                <div class="note left">
+                  <div id="popup" class="helpMessage3">
+                  </div>
+                  <p><small>[@s.text name="The information below aggregates the information from the locations of the Funding Sources contributing to the project. Feel free to make some changes to better reflect the key locations of the project.”" /]</small></p>
+                </div>
                 <span><span><img style="width: 3%;" src="${baseUrl}/images/global/left-click.jpg" alt="" /></span>Left click to get detailed information of a specific location.</span>
                 <br />
                 <br />
@@ -86,14 +92,14 @@
                 
                 [#-- GLOBAL DIMENSION --]
                 <div class="form-group  col-md-12">
-                  [@customForm.yesNoInput  label="Does this Project have a global dimension?" name="fundingSource.global"  editable=editable inverse=false  cssClass="" /] 
+                  [@customForm.yesNoInput  label="Does this Project have a global dimension?" name="project.locationGlobal"  editable=editable inverse=false  cssClass="" /] 
                 </div>
                 <br />
                 <div class="form-group col-md-12 ">
                   <hr />
                 </div>
                 <div class="form-group col-md-12">
-                  [@customForm.yesNoInput  label="Does this Project have a regional dimension?" name="region"  editable=editable inverse=false  cssClass="isRegional" /]
+                  [@customForm.yesNoInput  label="Does this Project have a regional dimension?" name="project.locationRegional"   editable=editable inverse=false  cssClass="isRegional" /]
                   <small style="color: #337ab7;">Select “yes” if work under the project is addressing issues pertaining to the region globally, as opposed to or in addition to issues pertaining to specific countries within a region.</small>
                 </div>
                 [#-- REGIONS IN WHICH THE PROJECT IS WORKING  --]
@@ -112,7 +118,106 @@
                 </div>
                 </div>
                     [/#if]
-                
+                 [#-- RECOMMENDED LOCATIONS --]
+                 <div class="col-md-12">
+                  <label for="">Please select the predefined locations coming from your funding sources:</label>
+                  <div class="simpleBox col-md-12">
+                  <div class="row recommendedList">
+                    [#-- RECOMMENDED REGIONS LIST --]
+                    [#if regionFS?has_content]
+                    <div class="regionsContent" style="display:${(project.locationRegional?string("block","none"))!"none"};">
+                      <div class="col-md-12" >
+                        <h5 class="sectionSubTitle">Suggested Regions:</h5>
+                      </div>
+                      [#list regionFS as location]
+                        [@recommendedLocation element=location name="regionFS" index=location_index template=false /]
+                      [/#list]
+                    </div>
+                    [#else]
+                      [#assign recommendedRegions=0]
+                    [/#if]
+                    [#-- RECOMMENDED COUNTRIES LIST --]
+                    [#if countryFS?has_content]
+                      <div class="col-md-12">
+                        <h5 class="sectionSubTitle">Suggested Countries:</h5>
+                      </div>
+                      [#list countryFS as location]
+                        [@recommendedLocation element=location name="countryFS" index=location_index template=false /]
+                      [/#list]
+                    [#else]
+                      [#assign recommendedCountries=0]
+                    [/#if]
+                    [#if recommendedCountries?? && recommendedCountries==0 && recommendedRegions?? && recommendedRegions==0]
+                      <p class="text-center inf">There is not locations recommended</p>
+                    [/#if]
+                  </div>
+                  </div>
+                 </div>
+                [#-- OTHER LOCATIONS LABEL --]   
+                <div class="col-md-12">
+                <h5 class="sectionSubTitle">Ohter locations</h5>
+                </div>    
+                    
+                [#-- REGIONS SELECT --]
+                <div class="row">
+                <div class="regionsBox form-group col-md-12" style="display:${(project.locationRegional?string("block","none"))!"none"};">
+                  <div class="panel tertiary col-md-12">
+                   <div class="panel-head">
+                     <label for=""> [@customForm.text name="projectCofunded.selectRegions" readText=!editable /]:[@customForm.req required=editable /]</label>
+                     <br />
+                     <small style="color: #337ab7;">(Standart regions are defined by United Nations)</small>
+                   </div>
+                   
+                    <div id="regionList" class="panel-body" listname="project.projectRegions"> 
+                      <ul class="list">
+                      [#if project.projectRegions?has_content]
+                        [#list project.projectRegions as region]
+                            <li id="" class="region clearfix col-md-3">
+                            [#if editable ]
+                              <div class="removeRegion removeIcon" title="Remove region"></div>
+                            [/#if]
+                              <input class="id" type="hidden" name="project.projectRegions[${region_index}].id" value="${region.id}" />
+                              <input class="rId" type="hidden" name="project.projectRegions[${region_index}].locElement.id" value="${(region.locElement.id)!}" />
+                              <input class="rId" type="hidden" name="project.projectRegions[${region_index}].locElementType.id" value="${(region.locElementType.id)!}" />
+
+                              <input class="regionScope" type="hidden" name="project.projectRegions[${region_index}].scope" value="${(region.scope?c)!}" />
+                             [#if region.locElement?has_content ]
+                             <span class="name" title="${(region.locElement.name)!}">[@utilities.wordCutter string=(region.locElement.name)!'No name' maxPos=20 /]</span>
+                              [#else]
+                                 <span class="name" title="${(region.locElementType.name)!}">[@utilities.wordCutter string=(region.locElementType.name)!'No name' maxPos=20 /]</span>
+                            [/#if]
+                           
+                              
+                              <div class="clearfix"></div>
+                            </li>
+                        [/#list]
+                        [#else]
+                        <p class="emptyText"> [@s.text name="No regions added yet." /]</p> 
+                      [/#if]
+                      </ul>
+                      [#if editable ]
+                        <select name="" id="regionSelect" class="regionsSelect">
+                          <option value="-1">Select an option...</option>
+                          [#if scopeRegionLists?has_content]
+                            <optgroup label="${(loggedCrp.acronym?upper_case)!} regions">
+                            [#list scopeRegionLists as region]
+                            <option value="${(region.id)!}-${(region.scope?c)!}">${(region.name)!}</option>
+                            [/#list]
+                            </optgroup>
+                          [/#if]
+                          [#if regionLists?has_content]
+                          <optgroup label="UN standart (M49)">
+                            [#list regionLists as region]
+                            <option value="${(region.id)!}-${(region.locElementType.scope?c)!}">${(region.name)!}</option>
+                            [/#list]
+                            </optgroup>
+                          [/#if]
+                        </select>
+                      [/#if] 
+                    </div>
+                  </div>
+                </div>
+                </div>
                 [#-- LOCATION LIST --]
                 <div class="col-md-12">
                 <label for="">Locations list</label>
@@ -147,7 +252,6 @@
           </div> 
           
           [#include "/WEB-INF/views/projects/buttons-projects.ftl" /]
-             
          
           [/@s.form] 
       </div>
@@ -160,6 +264,8 @@
 [@locationLevel element={} name="${locationLevelName}" index=-1 template=true /]
 
 [@locationMacro element={} name="${locationLevelName}[-1].${locationName}" index=-1 template=true /]
+
+[@recommendedLocation element={} name="${locationLevelName}.${locationName}" index=-1 template=true /]
 
 <input type="hidden" id="locationLevelName" value="${locationLevelName}" />
 <input type="hidden" id="locationName" value="${locationName}" />
@@ -244,6 +350,18 @@
   </div>
 </div>
 
+[#-- Region element template --]
+<ul style="display:none">
+  <li id="regionTemplate" class="region clearfix col-md-3">
+      <div class="removeRegion removeIcon" title="Remove region"></div>
+      <input class="id" type="hidden" name="project.projectRegions[-1].id" value="" />
+      <input class="rId" type="hidden" name="project.projectRegions[-1].locElement.id" value="" />
+      <input class="regionScope" type="hidden" name="project.projectRegions[-1].scope" value="" />
+      <span class="name"></span>
+      <div class="clearfix"></div>
+    </li>
+</ul>
+
 [#-- Country and CMVS templates --]
 <span class="hidden qCountry">[@s.text name="projectLocations.selectAllCountries" /]</span>
 <span class="hidden qCmvSites">[@s.text name="projectLocations.selectAllCmvs" /]</span>
@@ -305,5 +423,44 @@
     
     <input type="hidden" class="geoLatitude" name="${customName}.locGeoposition.latitude"  value="${(element.locGeoposition?? && element.locGeoposition.latitude?? && element.locGeoposition.latitude!=0)?string((element.locGeoposition.latitude?c)!,'')}" /> 
     <input type="hidden" class="geoLongitude" name="${customName}.locGeoposition.longitude"  value="${(element.locGeoposition?? && element.locGeoposition.longitude?? && element.locGeoposition.longitude!=0)?string((element.locGeoposition.longitude?c)!,'')}" />
+  </div>
+[/#macro]
+
+[#macro recommendedLocation element  name index template=false ]
+  [#local customName = "${name}[${index}]" /]
+  [#-- Content collapsible--]
+  <div id="recommendedLocation-${template?string('template',index)}" class="col-md-4 recommended locElement" style="display:${template?string('none','block')}">
+    <div class="locations col-md-12">
+      [#-- Location Name --]
+      
+       [#if element.locElement??]
+      <div class="recommendedLocName"><span class="lName"><b>${(element.locElement.name)!}</b></span> </div>
+       [#else]
+        <div class="recommendedLocName"><span class="lName"><b>${(element.locElementType.name)!}</b></span> </div>
+        [/#if]
+      [#-- Check Icon --]
+      [#if editable]
+        [#if element.locElement?? && action.locElementSelected((element.locElement.id))]
+        <div class="acceptLocation" title="Accept recommended location"> <img src="${baseUrl}/images/global/icon-check.png" alt="" /></div>
+          [#if element.locElement.locElementType.id==2 ]
+            <span class="hidden isoAlpha">${(element.locElement.isoAlpha2)!}</span>
+          [/#if]
+        [#else]
+        <div class="notAcceptLocation" title="Accept recommended location"> <img src="${baseUrl}/images/global/checked-false.png" alt="" /></div>
+        [/#if]
+      [/#if]
+    </div>
+    
+    <div class="col-md-12 fundingContent">
+    [#if element.fundingSources?has_content]
+      [#list element.fundingSources as fs]
+        <span style="font-size:0.7em;">${fs.composedName}</span>
+        <br />
+      [/#list]
+    [/#if]
+    </div>
+    [#-- Hidden inputs --]
+    <input type="hidden" class="locElementId" name="${customName}.id" value="${(element.locElement.id)!}"/>
+    <input type="hidden" class="locElementType" name="${customName}.type" value="${(element.locElement.locElementType.id)!}"/>
   </div>
 [/#macro]

@@ -153,5 +153,65 @@ public class FundingSourceMySQLDAO implements FundingSourceDAO {
     return fundingSourcesReturn;
   }
 
+  @Override
+  public List<FundingSource> searchFundingSourcesByLocElement(long projectId, long locElementId, int year) {
+
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT DISTINCT  ");
+    query.append("funding_sources.id as id ");
+    query.append("FROM ");
+    query.append("funding_source_locations ");
+    query.append("INNER JOIN funding_sources ON funding_source_locations.funding_source_id = funding_sources.id ");
+    query.append("INNER JOIN project_budgets ON project_budgets.funding_source_id = funding_sources.id ");
+    query.append("WHERE ");
+    query.append("funding_source_locations.loc_element_id =" + locElementId + " AND  ");
+    query.append("project_budgets.is_active = 1 AND  ");
+    query.append("project_budgets.`year` =" + year);
+
+    List<Map<String, Object>> rList = dao.findCustomQuery(query.toString());
+
+    List<FundingSource> fundingSources = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        FundingSource fundingSource = this.find(Long.parseLong(map.get("id").toString()));
+        fundingSources.add(fundingSource);
+      }
+    }
+
+    return fundingSources;
+
+  }
+
+  @Override
+  public List<FundingSource> searchFundingSourcesByLocElementType(long projectId, long locElementTypeId, int year) {
+
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT DISTINCT  ");
+    query.append("funding_sources.id as id ");
+    query.append("FROM ");
+    query.append("funding_source_locations ");
+    query.append("INNER JOIN funding_sources ON funding_source_locations.funding_source_id = funding_sources.id ");
+    query.append("INNER JOIN project_budgets ON project_budgets.funding_source_id = funding_sources.id ");
+    query.append("WHERE ");
+    query.append("funding_source_locations.loc_element_type_id =" + locElementTypeId + " AND  ");
+    query.append("project_budgets.is_active = 1 AND  ");
+    query.append("project_budgets.`year` =" + year);
+
+    List<Map<String, Object>> rList = dao.findCustomQuery(query.toString());
+
+    List<FundingSource> fundingSources = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        FundingSource fundingSource = this.find(Long.parseLong(map.get("id").toString()));
+        fundingSources.add(fundingSource);
+      }
+    }
+
+    return fundingSources;
+
+  }
+
 
 }
