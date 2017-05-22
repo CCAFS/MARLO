@@ -19,6 +19,7 @@
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
+[#import "/WEB-INF/global/macros/utils.ftl" as utilities/]
 
 <div class="container helpText viewMore-block">
   <div  class="helpMessage infoText">
@@ -124,12 +125,14 @@
                   <div class="row recommendedList">
                     [#-- RECOMMENDED REGIONS LIST --]
                     [#if regionFS?has_content]
-                      <div class="col-md-12">
+                    <div class="regionsContent" style="display:${(project.locationRegional?string("block","none"))!"none"};">
+                      <div class="col-md-12" >
                         <h5 class="sectionSubTitle">Suggested Regions:</h5>
                       </div>
                       [#list regionFS as location]
                         [@recommendedLocation element=location name="regionFS" index=location_index template=false /]
                       [/#list]
+                    </div>
                     [#else]
                       [#assign recommendedRegions=0]
                     [/#if]
@@ -157,7 +160,7 @@
                     
                 [#-- REGIONS SELECT --]
                 <div class="row">
-                <div class="regionsBox form-group col-md-12" style="display:none">
+                <div class="regionsBox form-group col-md-12" style="display:${(project.locationRegional?string("block","none"))!"none"};">
                   <div class="panel tertiary col-md-12">
                    <div class="panel-head">
                      <label for=""> [@customForm.text name="projectCofunded.selectRegions" readText=!editable /]:[@customForm.req required=editable /]</label>
@@ -179,10 +182,9 @@
 
                               <input class="regionScope" type="hidden" name="project.projectRegions[${region_index}].scope" value="${(region.scope?c)!}" />
                              [#if region.locElement?has_content ]
-                             <span class="name">${(region.locElement.name)!}</span>
-                             
+                             <span class="name" title="${(region.locElement.name)!}">[@utilities.wordCutter string=(region.locElement.name)!'No name' maxPos=20 /]</span>
                               [#else]
-                                 <span class="name">${(region.locElementType.name)!}</span>
+                                 <span class="name" title="${(region.locElementType.name)!}">[@utilities.wordCutter string=(region.locElementType.name)!'No name' maxPos=20 /]</span>
                             [/#if]
                            
                               

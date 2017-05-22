@@ -122,8 +122,10 @@ function attachEvents() {
     var valueSelected = $(this).hasClass('yes-button-label');
     if(!valueSelected) {
       $(".regionsBox").hide("slow");
+      $(".regionsContent").hide("slow");
     } else {
       $(".regionsBox").show("slow");
+      $(".regionsContent").show("slow");
     }
   });
 
