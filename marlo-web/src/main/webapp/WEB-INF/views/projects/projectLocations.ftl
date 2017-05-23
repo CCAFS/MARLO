@@ -446,14 +446,14 @@
       [#if editable]
      [#if element.locElement??]
         [#if action.locElementSelected((element.locElement.id))]
-        <div class="acceptLocation" title="Accept recommended location"> <img src="${baseUrl}/images/global/icon-check.png" alt="" /></div>
+        <div class="acceptLocation iconSelected" title="Accept recommended location"></div>
          <input type="hidden" class="recommendedSelected" name="${customName}.selected" value="true"/>
           [#if element.locElement.locElementType.id==2 ]
             <span class="hidden isoAlpha">${(element.locElement.isoAlpha2)!}</span>
           [/#if]
         [#else]
         <input type="hidden" class="recommendedSelected" name="${customName}.selected" value="false"/>
-        <div class="notAcceptLocation" title="Accept recommended location"> <img src="${baseUrl}/images/global/checked-false.png" alt="" /></div>
+        <div class="notAcceptLocation iconSelected" title="Accept recommended location"></div>
         [/#if]
          [/#if]
          
