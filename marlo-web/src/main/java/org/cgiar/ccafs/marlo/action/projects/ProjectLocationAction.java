@@ -556,9 +556,7 @@ public class ProjectLocationAction extends BaseAction {
     for (CountryFundingSources locElement : countryFS) {
       fsLocs.add(locElement.getLocElement());
     }
-    for (CountryFundingSources locElement : regionFS) {
-      fsLocs.add(locElement.getLocElement());
-    }
+
 
     for (CountryLocationLevel countryLocationLevel : project.getLocationsData()) {
 
@@ -571,6 +569,37 @@ public class ProjectLocationAction extends BaseAction {
       different.removeAll(similar);
 
       countryLocationLevel.getLocElements().removeAll(similar);
+
+    }
+    Collection<LocElement> fsLocsRegions = new ArrayList<>();
+    for (CountryFundingSources locElement : regionFS) {
+      if (locElement.getLocElement() != null) {
+        fsLocsRegions.add(locElement.getLocElement());
+      }
+
+    }
+
+    for (ProjectLocation projectLocation : project.getProjectRegions().stream().filter(c -> c.getLocElement() != null)
+      .collect(Collectors.toList())) {
+
+      if (fsLocsRegions.contains(projectLocation.getLocElement())) {
+        project.getProjectRegions().remove(projectLocation);
+      }
+
+    }
+    Collection<LocElementType> fsLocsCustomRegions = new ArrayList<>();
+    for (CountryFundingSources locElement : regionFS) {
+      if (locElement.getLocElementType() != null) {
+        fsLocsCustomRegions.add(locElement.getLocElementType());
+      }
+
+    }
+    for (ProjectLocation projectLocation : project.getProjectRegions().stream()
+      .filter(c -> c.getLocElementType() != null).collect(Collectors.toList())) {
+
+      if (fsLocsCustomRegions.contains(projectLocation.getLocElementType())) {
+        project.getProjectRegions().remove(projectLocation);
+      }
 
     }
     regionLists = new ArrayList<>(locElementManager.findAll().stream()

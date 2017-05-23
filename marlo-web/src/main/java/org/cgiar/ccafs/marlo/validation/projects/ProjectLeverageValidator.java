@@ -149,7 +149,7 @@ public class ProjectLeverageValidator extends BaseValidator {
 
 
   public void validateTitleLeverage(BaseAction action, String title, int c) {
-    if (!(this.isValidString(title) && this.wordCount(title) <= 15)) {
+    if (!(this.isValidString(title) && this.wordCount(title) <= 50)) {
       this.addMessage("Leverage #" + (c + 1) + ": Title");
       this.addMissingField("project.leverages[" + c + "].Title");
       action.getInvalidFields().put("input-project.leverages[" + c + "].title", InvalidFieldsMessages.EMPTYFIELD);

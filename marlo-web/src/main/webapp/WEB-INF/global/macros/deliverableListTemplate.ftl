@@ -19,6 +19,7 @@
     [#if deliverables?has_content]
       [#list deliverables as deliverable]
         [#assign isDeliverableNew = action.isDeliverableNew(deliverable.id) /]
+        [#assign hasDraft = (action.getAutoSaveFilePath(deliverable.class.simpleName, "deliverable", deliverable.id))!false /]
         
         [#-- isDeliverableComplete --]
         [#if action.getDeliverableStatus(deliverable.id)??]
@@ -32,15 +33,19 @@
         [/#if]
         
         <tr>
-        [#-- ID --]
-        <td class="deliverableId">
-          <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='deliverableID']${deliverable.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]">
-            D${deliverable.id}
-          </a>
-        </td>
+          [#-- ID --]
+          <td class="deliverableId">
+            <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='deliverableID']${deliverable.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]">
+              D${deliverable.id}
+            </a>
+          </td>
           [#-- Deliverable Title --]
           <td class="left">
+            [#-- New Tag --]
             [#if isDeliverableNew]<span class="label label-info">New</span>[/#if]
+            
+            [#-- Draft Tag --]
+            [#if hasDraft]<strong class="text-info">[DRAFT]</strong>[/#if]
 
             [#if deliverable.isRequieriedReporting(currentCycleYear) && reportingActive && !isDeliverableComplete]
               <span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>

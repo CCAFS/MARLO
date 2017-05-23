@@ -150,11 +150,16 @@
 [#macro outcomeContributionMacro projectOutcome name index isTemplate=false ]
   [#local projectOutcomeID =  projectOutcome.id /] 
   [#local projectOutcomeUrl = "${baseUrl}/projects/${crpSession}/contributionCrp.do?projectOutcomeID=${projectOutcomeID}&edit=true" /]
+  [#local hasDraft = (action.getAutoSaveFilePath(projectOutcome.class.simpleName, "contributionCrp", projectOutcome.id))!false /]
   <tr class="projectOutcome">
       [#-- Flagship outcome --]
       <td class="text-center">${projectOutcome.crpProgramOutcome.crpProgram.acronym}</td>
       [#-- Title --]
-      <td><a href="${projectOutcomeUrl}">${projectOutcome.crpProgramOutcome.description}</a></td>
+      <td>
+        [#-- Draft Tag --]
+        [#if hasDraft]<strong class="text-info">[DRAFT]</strong>[/#if]
+        <a href="${projectOutcomeUrl}">${projectOutcome.crpProgramOutcome.description}</a>
+      </td>
       [#-- Contribution Status --]
       <td class="text-center">
         [#if action.getProjectOutcomeStatus(projectOutcome.id)??]

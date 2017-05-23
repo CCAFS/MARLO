@@ -54,7 +54,7 @@
             
             [#-- Project Title --]
             <div class="form-group">
-              [@customForm.textArea name="project.title" required=true className="project-title" editable=editable && action.hasPermission("title") /]
+              [@customForm.textArea name="project.title" required=true className="project-title limitWords-30" editable=editable && action.hasPermission("title") /]
             </div>
             <div class="form-group row">
               [#-- Project Program Creator --]
@@ -90,7 +90,7 @@
             
             [#-- Project Summary --]
             <div class="form-group">
-              [@customForm.textArea name="project.summary" required=!((project.bilateralProject)!false) className="project-description" editable=editable && action.hasPermission("summary") /]
+              [@customForm.textArea name="project.summary" required=!((project.bilateralProject)!false) className="project-description limitWords-250" editable=editable && action.hasPermission("summary") /]
             </div>
             
             [#-- Project status 
@@ -212,7 +212,7 @@
             [#if project.projectEditLeader && !phaseOne]
               [#--  What type of gender analysis informed the design of this project and how? --]
               <div class="form-group">
-                [@customForm.textArea name="project.genderAnalysis" required=true className=" limitWords-50" editable=editable /]
+                [@customForm.textArea name="project.genderAnalysis" required=true className=" limitWords-100" editable=editable /]
               </div>
               
               [#-- Select the cross-cutting dimension(s) to this project? --]
