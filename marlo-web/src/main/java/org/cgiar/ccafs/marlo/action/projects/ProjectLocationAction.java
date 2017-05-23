@@ -590,14 +590,17 @@ public class ProjectLocationAction extends BaseAction {
 
     }
 
-    for (ProjectLocation projectLocation : project.getProjectRegions().stream().filter(c -> c.getLocElement() != null)
-      .collect(Collectors.toList())) {
+    if (project.getProjectRegions() != null) {
+      for (ProjectLocation projectLocation : project.getProjectRegions().stream().filter(c -> c.getLocElement() != null)
+        .collect(Collectors.toList())) {
 
-      if (fsLocsRegions.contains(projectLocation.getLocElement())) {
-        project.getProjectRegions().remove(projectLocation);
+        if (fsLocsRegions.contains(projectLocation.getLocElement())) {
+          project.getProjectRegions().remove(projectLocation);
+        }
+
       }
-
     }
+
     Collection<LocElementType> fsLocsCustomRegions = new ArrayList<>();
     for (CountryFundingSources locElement : regionFS) {
       if (locElement.getLocElementType() != null) {
@@ -714,6 +717,7 @@ public class ProjectLocationAction extends BaseAction {
       countryFundingSources.setFundingSources(new ArrayList<>(sources));
       regionFS.add(countryFundingSources);
     }
+    Collections.sort(countryFS, (tu1, tu2) -> tu1.getLocElement().getName().compareTo(tu2.getLocElement().getName()));
 
 
   }
@@ -906,7 +910,19 @@ public class ProjectLocationAction extends BaseAction {
           ProjectLocation projectLocation = project.getProjectLocations().stream()
             .filter(pl -> pl.isActive() && pl.getLocElement().getId() == locElement.getId())
             .collect(Collectors.toList()).get(0);
-          projectLocationManager.deleteProjectLocation(projectLocation.getId());
+
+          if (locElementManager.getLocElementById(projectLocation.getLocElement().getId()).getLocElementType().getId()
+            .longValue() == 2) {
+            if (countryFS.stream()
+              .filter(c -> c.getLocElement() != null
+                && c.getLocElement().getId().longValue() == projectLocation.getLocElement().getId().longValue()
+                && c.isSelected())
+              .collect(Collectors.toList()).isEmpty()) {
+              projectLocationManager.deleteProjectLocation(projectLocation.getId());
+            }
+          } else {
+            projectLocationManager.deleteProjectLocation(projectLocation.getId());
+          }
 
 
         }
@@ -927,7 +943,18 @@ public class ProjectLocationAction extends BaseAction {
                   ProjectLocation projectLocation = project.getProjectLocations().stream().filter(
                     pl -> pl.isActive() && pl.getLocElement() != null && pl.getLocElement().getId() == element.getId())
                     .collect(Collectors.toList()).get(0);
-                  projectLocationManager.deleteProjectLocation(projectLocation.getId());
+                  if (locElementManager.getLocElementById(projectLocation.getLocElement().getId()).getLocElementType()
+                    .getId().longValue() == 2) {
+                    if (countryFS.stream()
+                      .filter(c -> c.getLocElement() != null
+                        && c.getLocElement().getId().longValue() == projectLocation.getLocElement().getId().longValue()
+                        && c.isSelected())
+                      .collect(Collectors.toList()).isEmpty()) {
+                      projectLocationManager.deleteProjectLocation(projectLocation.getId());
+                    }
+                  } else {
+                    projectLocationManager.deleteProjectLocation(projectLocation.getId());
+                  }
                 }
               }
 
@@ -1060,9 +1087,22 @@ public class ProjectLocationAction extends BaseAction {
 
       if (project.getLocationRegional()) {
         for (ProjectLocation projectLocation : regions) {
-          if (!project.getProjectRegions().contains(projectLocation)) {
-            projectLocationManager.deleteProjectLocation(projectLocation.getId());
+
+          if (projectLocation != null) {
+            if (!project.getProjectRegions().contains(projectLocation)) {
+              if (projectLocation.getLocElementType() != null && projectLocation.getLocElementType().getId() != null) {
+                if (regionFS.stream()
+                  .filter(c -> c.getLocElementType() != null && c.getLocElementType().getId()
+                    .longValue() == projectLocation.getLocElementType().getId().longValue() && c.isSelected())
+                  .collect(Collectors.toList()).isEmpty()) {
+                  projectLocationManager.deleteProjectLocation(projectLocation.getId());
+                }
+              }
+
+            }
           }
+
+
         }
       } else {
         for (ProjectLocation projectLocation : regions) {
@@ -1080,9 +1120,21 @@ public class ProjectLocationAction extends BaseAction {
 
       if (project.getLocationRegional()) {
         for (ProjectLocation projectLocation : regions) {
-          if (!project.getProjectRegions().contains(projectLocation)) {
-            projectLocationManager.deleteProjectLocation(projectLocation.getId());
+          if (projectLocation != null) {
+            if (!project.getProjectRegions().contains(projectLocation)) {
+              if (projectLocation.getLocElement() != null && projectLocation.getLocElement().getId() != null) {
+                if (regionFS.stream()
+                  .filter(c -> c.getLocElement() != null
+                    && c.getLocElement().getId().longValue() == projectLocation.getLocElement().getId().longValue()
+                    && c.isSelected())
+                  .collect(Collectors.toList()).isEmpty()) {
+                  projectLocationManager.deleteProjectLocation(projectLocation.getId());
+                }
+              }
+
+            }
           }
+
         }
       } else {
         for (ProjectLocation projectLocation : regions) {

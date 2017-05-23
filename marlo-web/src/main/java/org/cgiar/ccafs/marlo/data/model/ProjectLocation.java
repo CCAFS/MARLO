@@ -44,9 +44,6 @@ public class ProjectLocation implements java.io.Serializable, IAuditLog {
   private boolean active;
 
 
-  private boolean selected;
-
-
   @Expose
   private boolean scope;
 
@@ -161,10 +158,6 @@ public class ProjectLocation implements java.io.Serializable, IAuditLog {
     return scope;
   }
 
-  public boolean isSelected() {
-    return selected;
-  }
-
 
   public void setActive(boolean active) {
     this.active = active;
@@ -207,10 +200,6 @@ public class ProjectLocation implements java.io.Serializable, IAuditLog {
 
   public void setScope(boolean scope) {
     this.scope = scope;
-  }
-
-  public void setSelected(boolean selected) {
-    this.selected = selected;
   }
 
 
