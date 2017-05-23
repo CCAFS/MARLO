@@ -434,12 +434,12 @@
       [#-- Location Name --]
      
        [#if element.locElement??]
-        <input type="hidden" class="elementID" name="${customName}.element.locElement.id" value="${(element.locElement.id)!}"/>
+        <input type="hidden" class="elementID" name="${customName}.locElement.id" value="${(element.locElement.id)!}"/>
        
       <div class="recommendedLocName"><span class="lName"><b>${(element.locElement.name)!}</b></span> </div>
       
        [#else]
-        <input type="hidden" class="elementID" name="${customName}.element.locElementType.id" value="${(element.locElementType.id)!}"/>
+        <input type="hidden" class="elementID" name="${customName}.locElementType.id" value="${(element.locElementType.id)!}"/>
         <div class="recommendedLocName"><span class="lName"><b>${(element.locElementType.name)!}</b></span> </div>
         [/#if]
       [#-- Check Icon --]
