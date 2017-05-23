@@ -471,6 +471,17 @@ public class ProjectLocationAction extends BaseAction {
 
   }
 
+  public boolean locElementTypeSelected(long locElementID) {
+    Project projectDB = projectManager.getProjectById(projectID);
+    List<ProjectLocation> locElements = projectDB.getProjectLocations().stream()
+      .filter(
+        c -> c.isActive() && c.getLocElementType() != null && c.getLocElementType().getId().longValue() == locElementID)
+      .collect(Collectors.toList());
+
+    return !locElements.isEmpty();
+
+  }
+
   @Override
   public void prepare() throws Exception {
 
@@ -591,6 +602,7 @@ public class ProjectLocationAction extends BaseAction {
     for (CountryFundingSources locElement : regionFS) {
       if (locElement.getLocElementType() != null) {
         fsLocsCustomRegions.add(locElement.getLocElementType());
+
       }
 
     }

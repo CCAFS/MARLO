@@ -440,7 +440,8 @@
         [/#if]
       [#-- Check Icon --]
       [#if editable]
-        [#if element.locElement?? && action.locElementSelected((element.locElement.id))]
+     [#if element.locElement??]
+        [#if action.locElementSelected((element.locElement.id))]
         <div class="acceptLocation" title="Accept recommended location"> <img src="${baseUrl}/images/global/icon-check.png" alt="" /></div>
           [#if element.locElement.locElementType.id==2 ]
             <span class="hidden isoAlpha">${(element.locElement.isoAlpha2)!}</span>
@@ -448,6 +449,16 @@
         [#else]
         <div class="notAcceptLocation" title="Accept recommended location"> <img src="${baseUrl}/images/global/checked-false.png" alt="" /></div>
         [/#if]
+         [/#if]
+         
+         [#if element.locElementType??]
+        [#if action.locElementTypeSelected((element.locElementType.id))]
+        <div class="acceptLocation" title="Accept recommended location"> <img src="${baseUrl}/images/global/icon-check.png" alt="" /></div>
+          
+        [#else]
+        <div class="notAcceptLocation" title="Accept recommended location"> <img src="${baseUrl}/images/global/checked-false.png" alt="" /></div>
+        [/#if]
+         [/#if]
       [/#if]
     </div>
     

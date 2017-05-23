@@ -93,7 +93,7 @@ public class ProjectLocation implements java.io.Serializable, IAuditLog {
 
     ProjectLocation other = (ProjectLocation) obj;
     if (id == null) {
-      if (other.id != null) {
+      if (other.getId() != null) {
         return false;
       }
     } else if (!this.getId().equals(other.getId())) {
@@ -205,7 +205,11 @@ public class ProjectLocation implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return id.toString();
+    try {
+      return this.getLocElement().getName();
+    } catch (Exception e) {
+      return this.getLocElementType().getName();
+    }
   }
 
 }

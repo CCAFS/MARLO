@@ -66,4 +66,13 @@ public class CountryFundingSources implements Serializable {
     this.locElementType = locElementType;
   }
 
+  @Override
+  public String toString() {
+    try {
+      return this.getLocElement().getName();
+    } catch (Exception e) {
+      return this.getLocElementType().getName();
+    }
+  }
+
 }
