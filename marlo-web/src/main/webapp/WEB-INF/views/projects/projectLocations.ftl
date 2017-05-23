@@ -432,10 +432,14 @@
   <div id="recommendedLocation-${template?string('template',index)}" class="col-md-4 recommended locElement" style="display:${template?string('none','block')}">
     <div class="locations col-md-12">
       [#-- Location Name --]
-      
+     
        [#if element.locElement??]
+        <input type="hidden" class="elementID" name="${customName}.element.locElement.id" value="${(element.locElement.id)!}"/>
+       
       <div class="recommendedLocName"><span class="lName"><b>${(element.locElement.name)!}</b></span> </div>
+      
        [#else]
+        <input type="hidden" class="elementID" name="${customName}.element.locElementType.id" value="${(element.locElementType.id)!}"/>
         <div class="recommendedLocName"><span class="lName"><b>${(element.locElementType.name)!}</b></span> </div>
         [/#if]
       [#-- Check Icon --]
@@ -443,10 +447,12 @@
      [#if element.locElement??]
         [#if action.locElementSelected((element.locElement.id))]
         <div class="acceptLocation" title="Accept recommended location"> <img src="${baseUrl}/images/global/icon-check.png" alt="" /></div>
+         <input type="hidden" class="recommendedSelected" name="${customName}.selected" value="true"/>
           [#if element.locElement.locElementType.id==2 ]
             <span class="hidden isoAlpha">${(element.locElement.isoAlpha2)!}</span>
           [/#if]
         [#else]
+        <input type="hidden" class="recommendedSelected" name="${customName}.selected" value="false"/>
         <div class="notAcceptLocation" title="Accept recommended location"> <img src="${baseUrl}/images/global/checked-false.png" alt="" /></div>
         [/#if]
          [/#if]
@@ -454,8 +460,9 @@
          [#if element.locElementType??]
         [#if action.locElementTypeSelected((element.locElementType.id))]
         <div class="acceptLocation" title="Accept recommended location"> <img src="${baseUrl}/images/global/icon-check.png" alt="" /></div>
-          
+         <input type="hidden" class="recommendedSelected" name="${customName}.selected" value="true"/>  
         [#else]
+        <input type="hidden" class="recommendedSelected" name="${customName}.selected" value="false"/>
         <div class="notAcceptLocation" title="Accept recommended location"> <img src="${baseUrl}/images/global/checked-false.png" alt="" /></div>
         [/#if]
          [/#if]
@@ -471,7 +478,5 @@
     [/#if]
     </div>
     [#-- Hidden inputs --]
-    <input type="hidden" class="locElementId" name="${customName}.id" value="${(element.locElement.id)!}"/>
-    <input type="hidden" class="locElementType" name="${customName}.type" value="${(element.locElement.locElementType.id)!}"/>
   </div>
 [/#macro]

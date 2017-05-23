@@ -924,8 +924,8 @@ public class ProjectLocationAction extends BaseAction {
             for (LocElement element : locElements) {
               if (locationData.getLocElements() != null) {
                 if (!locationData.getLocElements().contains(element)) {
-                  ProjectLocation projectLocation = project.getProjectLocations().stream()
-                    .filter(pl -> pl.isActive() && pl.getLocElement().getId() == element.getId())
+                  ProjectLocation projectLocation = project.getProjectLocations().stream().filter(
+                    pl -> pl.isActive() && pl.getLocElement() != null && pl.getLocElement().getId() == element.getId())
                     .collect(Collectors.toList()).get(0);
                   projectLocationManager.deleteProjectLocation(projectLocation.getId());
                 }
