@@ -538,6 +538,17 @@ public class ProjectLocationAction extends BaseAction {
           }
 
         }
+        if (project.getProjectRegions() != null) {
+          for (ProjectLocation projectLocation : project.getProjectRegions()) {
+            if (projectLocation.getLocElement() != null) {
+              projectLocation
+                .setLocElement(locElementManager.getLocElementById(projectLocation.getLocElement().getId()));
+            } else {
+              projectLocation.setLocElementType(
+                locElementTypeManager.getLocElementTypeById(projectLocation.getLocElementType().getId()));
+            }
+          }
+        }
 
 
         reader.close();
@@ -646,8 +657,10 @@ public class ProjectLocationAction extends BaseAction {
 
   public void prepareFundingList() {
 
+    Project projectDB = projectManager.getProjectById(project.getId());
 
-    List<ProjectBudget> projectBudgets = new ArrayList<>(project.getProjectBudgets().stream()
+
+    List<ProjectBudget> projectBudgets = new ArrayList<>(projectDB.getProjectBudgets().stream()
       .filter(pb -> pb.isActive() && pb.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList()));
 
     List<FundingSource> fundingSources = new ArrayList<>();
