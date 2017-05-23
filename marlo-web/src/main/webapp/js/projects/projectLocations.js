@@ -54,26 +54,23 @@ function attachEvents() {
   });
 
 // Clicking recommended location
-  $('.recommendedLocName').on(
-      'click',
-      function() {
-        var accepted =
-            '<div class="acceptLocation" title="Accept recommended location"> <img src="' + baseURL
-                + '/images/global/icon-check.png" alt="" /></div>';
-        var notAccepted =
-            '<div class="notAcceptLocation" title=""> <img src="' + baseURL
-                + '/images/global/checked-false.png" alt="" /></div>';
-        var parent = $(this).parent();
-        if(parent.find(".acceptLocation").exists()) {
-          parent.find(".acceptLocation").remove();
-          parent.append(notAccepted);
-        } else {
-          checkRecommendedLocation(parent);
-          parent.find(".notAcceptLocation").remove();
-          parent.append(accepted);
-        }
+  $('.recommendedLocName, .iconSelected').on('click', function() {
+    var parent = $(this).parent();
+    var selectedInput = parent.find("input.recommendedSelected");
+    console.log(parent);
+    console.log(selectedInput);
+    if(parent.find(".acceptLocation").exists()) {
+      parent.find(".iconSelected").removeClass("acceptLocation");
+      parent.find(".iconSelected").addClass("notAcceptLocation");
+      selectedInput.val("false");
+    } else {
+      checkRecommendedLocation(parent);
+      parent.find(".iconSelected").removeClass("notAcceptLocation");
+      parent.find(".iconSelected").addClass("acceptLocation");
+      selectedInput.val("true");
+    }
 
-      });
+  });
 
   $('.projectLocationsWrapper .button-label').on('click', function() {
     var $t = $(this).parent().find('input.onoffswitch-radio');
