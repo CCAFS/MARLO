@@ -264,23 +264,28 @@ li.select2-search.select2-search--inline{
     text-decoration: none;
 }
 
-.iconSelected{
+
+.acceptLocation{
 	position:absolute;
   right: 0px;
   top: 4px;
   width:20px;
   height:20px;
   cursor:pointer;
-}
-
-.acceptLocation{
   background-image:url(../../images/global/icon-check.png);
   background-repeat: no-repeat;
 }
 
 .notAcceptLocation{
-  background-image:url(../../images/global/checked-false.png);
+	position:absolute;
+  right: 0px;
+  top: 4px;
+  width:20px;
+  height:20px;
+  cursor:pointer;
+  background-image:url(../../images/global/icon-check.png);
   background-repeat: no-repeat;
+  opacity:0.2;
 }
 
 .recommendedLocName{
