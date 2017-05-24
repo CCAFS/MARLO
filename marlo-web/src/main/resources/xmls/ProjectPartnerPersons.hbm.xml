@@ -18,17 +18,13 @@
             <column name="created_by" not-null="true" />
         </many-to-one>
         <many-to-one name="user" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
-            <column name="user_id" not-null="true" />
+            <column name="user_id"  />
         </many-to-one>
-        <many-to-one name="institution" class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
-            <column name="institution_id" not-null="true" />
-        </many-to-one>
+       
         <property name="contactType" type="string">
             <column name="contact_type" length="3" not-null="true" />
         </property>
-        <property name="responsibilities" type="string">
-            <column name="responsibilities" length="65535" />
-        </property>
+       
         <property name="active" type="boolean">
             <column name="is_active" not-null="true" />
         </property>

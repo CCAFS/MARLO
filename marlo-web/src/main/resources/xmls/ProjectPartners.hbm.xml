@@ -27,6 +27,9 @@
         <property name="active" type="boolean">
             <column name="is_active" not-null="true" />
         </property>
+         <property name="responsibilities" type="string">
+            <column name="responsibilities" length="65535" />
+        </property>
         <property name="activeSince" type="timestamp">
             <column name="active_since" length="19" not-null="true" />
         </property>
@@ -56,6 +59,12 @@
                 <column name="project_partner_id" not-null="true" />
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson" />
+        </set>
+        <set name="projectPartnerLocations" table="project_partner_locations" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="project_partner_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation" />
         </set>
     </class>
 </hibernate-mapping>

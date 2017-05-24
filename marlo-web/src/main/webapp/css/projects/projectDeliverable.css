@@ -483,3 +483,21 @@ div#deliverable-mainInformation {
 small.orcidId {
     /* font-size: 0.85em; */
 }
+
+.deliverablePerson {
+  width: 50%;
+  float: left;
+  margin: 3px 0px !important;
+}
+
+.partnerPersons {
+  margin: 10px 0px;
+}
+
+.divisionBlock {
+  margin-left: -3px;
+}
+
+.divisionBlock label{
+  font-weight:bold;
+}

@@ -17,8 +17,9 @@ package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
-import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
@@ -33,74 +34,60 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * @author Christian Garcia - CIAT/CCAFS
  */
-public class InstitutionsByBudgetTypeAction extends BaseAction {
+public class PersonsbyPartnerAction extends BaseAction {
 
 
   /**
    * 
    */
-  private static final long serialVersionUID = -8182788196525839215L;
-
-  private List<Map<String, Object>> institutions;
-
-  private long budgetTypeID;
+  private static final long serialVersionUID = 3674950424554096761L;
 
 
-  private InstitutionManager institutionManager;
+  private long partnerID;
 
+
+  private ProjectPartnerManager projectPartnerManager;
+
+
+  private List<Map<String, Object>> persons;
 
   @Inject
-  public InstitutionsByBudgetTypeAction(APConfig config, InstitutionManager institutionManager) {
+  public PersonsbyPartnerAction(APConfig config, ProjectPartnerManager projectPartnerManager) {
     super(config);
-
-    this.institutionManager = institutionManager;
-
+    this.projectPartnerManager = projectPartnerManager;
   }
 
   @Override
   public String execute() throws Exception {
-
-
-    institutions = new ArrayList<>();
-    Map<String, Object> institution;
-    List<Institution> institutionsType = null;
-
-
-    if (budgetTypeID == 1) {
-      institutionsType = institutionManager.findAll().stream()
-        .filter(i -> i.isActive() && i.getInstitutionType().getId().intValue() == 3).collect(Collectors.toList());
-
-    } else {
-      institutionsType = institutionManager.findAll().stream()
-        .filter(i -> i.isActive() && i.getInstitutionType().getId().intValue() != 3).collect(Collectors.toList());
-
+    persons = new ArrayList<>();
+    Map<String, Object> person;
+    ProjectPartner projectPartner = projectPartnerManager.getProjectPartnerById(partnerID);
+    for (ProjectPartnerPerson partnerPerson : projectPartner.getProjectPartnerPersons().stream()
+      .filter(c -> c.isActive()).collect(Collectors.toList())) {
+      person = new HashMap<String, Object>();
+      person.put("id", partnerPerson.getId());
+      person.put("user", partnerPerson.getComposedCompleteName());
+      persons.add(person);
     }
-
-
-    for (Institution i : institutionsType) {
-      institution = new HashMap<>();
-      institution.put("id", i.getId());
-      institution.put("name", i.getComposedName());
-      institutions.add(institution);
-    }
-
     return SUCCESS;
 
   }
 
-  public List<Map<String, Object>> getInstitutions() {
-    return institutions;
+
+  public List<Map<String, Object>> getPersons() {
+    return persons;
   }
+
 
   @Override
   public void prepare() throws Exception {
     Map<String, Object> parameters = this.getParameters();
-    budgetTypeID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.BUDGET_TYPE_REQUEST_ID))[0]));
-
+    partnerID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.PARTNER_ID))[0]));
   }
 
-  public void setInstitutions(List<Map<String, Object>> institutions) {
-    this.institutions = institutions;
+
+  public void setPersons(List<Map<String, Object>> persons) {
+    this.persons = persons;
   }
 
 

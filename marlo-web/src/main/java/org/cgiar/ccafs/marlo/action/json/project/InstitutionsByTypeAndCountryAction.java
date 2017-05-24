@@ -72,13 +72,12 @@ public class InstitutionsByTypeAndCountryAction extends BaseAction {
 
     institutions = new ArrayList<>();
     Map<String, Object> institution;
-    List<Institution> institutionsByTypeAndCountry = institutionManager.findAll().stream()
-      .filter(i -> i.isActive() && i.getHeadquarter() == null).collect(Collectors.toList());
+    List<Institution> institutionsByTypeAndCountry =
+      institutionManager.findAll().stream().filter(i -> i.isActive()).collect(Collectors.toList());
 
 
     if (institutionTypeID == -1 && locElement != null) {
-      for (Institution i : institutionsByTypeAndCountry.stream()
-        .filter(i -> i.isActive() && i.getLocElement() != null && i.getLocElement().equals(locElement))
+      for (Institution i : institutionsByTypeAndCountry.stream().filter(i -> i.isActive())
         .collect(Collectors.toList())) {
         institution = new HashMap<>();
         institution.put("id", i.getId());
@@ -112,31 +111,6 @@ public class InstitutionsByTypeAndCountryAction extends BaseAction {
       return SUCCESS;
     }
 
-    for (Institution i : institutionsByTypeAndCountry) {
-
-      LocElement iLocElement = i.getLocElement();
-      InstitutionType iType = i.getInstitutionType();
-
-      if (iLocElement == null) {
-        if (locElement == null) {
-          if (iType.equals(institutionType)) {
-            institution = new HashMap<>();
-            institution.put("id", i.getId());
-            institution.put("name", i.getComposedName());
-            institutions.add(institution);
-          }
-        }
-      } else {
-        if (iLocElement.equals(locElement) && iType.equals(institutionType)) {
-          institution = new HashMap<>();
-          institution.put("id", i.getId());
-          institution.put("name", i.getComposedName());
-          institutions.add(institution);
-        }
-      }
-
-
-    }
 
     return SUCCESS;
   }

@@ -80,6 +80,14 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		
+		  <action name="requestCountryOffice"
+      class="org.cgiar.ccafs.marlo.action.json.project.RequestCountryOfficeAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
 
 
 
@@ -215,6 +223,13 @@
 			</result>
 		</action>
 
+<action name="personByParnters"
+      class="org.cgiar.ccafs.marlo.action.json.project.PersonsbyPartnerAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
 
     <action name="keyOutputList"
       class="org.cgiar.ccafs.marlo.action.json.project.KeyOutputListAction">

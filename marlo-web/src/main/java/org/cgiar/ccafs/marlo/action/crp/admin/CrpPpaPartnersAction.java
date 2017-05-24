@@ -93,8 +93,7 @@ public class CrpPpaPartnersAction extends BaseAction {
     }
 
 
-    institutions =
-      institutionManager.findAll().stream().filter(c -> c.getHeadquarter() == null).collect(Collectors.toList());
+    institutions = institutionManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
     institutions.sort((i1, i2) -> i1.getName().compareTo(i2.getName()));
 
 

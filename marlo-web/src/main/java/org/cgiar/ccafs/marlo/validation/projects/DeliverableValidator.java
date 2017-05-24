@@ -185,7 +185,7 @@ public class DeliverableValidator extends BaseValidator {
 
               if (projectPartnerPersonManager
                 .getProjectPartnerPersonById(deliverable.getResponsiblePartner().getProjectPartnerPerson().getId())
-                .getInstitution().getAcronym().equalsIgnoreCase("IFPRI")) {
+                .getProjectPartner().getInstitution().getAcronym().equalsIgnoreCase("IFPRI")) {
                 if (action.hasSpecificities(APConstants.CRP_DIVISION_FS)) {
                   if (deliverable.getResponsiblePartner().getPartnerDivision() == null) {
                     this.addMessage(action.getText("deliverable.division"));
@@ -223,10 +223,11 @@ public class DeliverableValidator extends BaseValidator {
         if (deliverable.getOtherPartners() != null) {
           int i = 0;
           for (DeliverablePartnership deliverablePartnership : deliverable.getOtherPartners()) {
-            if (deliverablePartnership != null && deliverablePartnership.getProjectPartnerPerson() != null) {
+            if (deliverablePartnership != null && deliverablePartnership.getProjectPartnerPerson() != null
+              && deliverablePartnership.getProjectPartnerPerson().getId() != null) {
               if (projectPartnerPersonManager
-                .getProjectPartnerPersonById(deliverablePartnership.getProjectPartnerPerson().getId()).getInstitution()
-                .getAcronym().equalsIgnoreCase("IFPRI")) {
+                .getProjectPartnerPersonById(deliverablePartnership.getProjectPartnerPerson().getId())
+                .getProjectPartner().getInstitution().getAcronym().equalsIgnoreCase("IFPRI")) {
                 if (action.hasSpecificities(APConstants.CRP_DIVISION_FS)) {
                   if (deliverablePartnership.getPartnerDivision() == null) {
                     this.addMessage(action.getText("deliverable.division"));
@@ -349,6 +350,7 @@ public class DeliverableValidator extends BaseValidator {
 
 
     if (!action.getFieldErrors().isEmpty()) {
+      System.out.println(action.getFieldErrors());
       action.addActionError(action.getText("saving.fields.required"));
     } else if (validationMessage.length() > 0) {
       action
