@@ -177,14 +177,17 @@
                               <div class="removeRegion removeIcon" title="Remove region"></div>
                             [/#if]
                               <input class="id" type="hidden" name="project.projectRegions[${region_index}].id" value="${region.id}" />
-                              <input class="rId" type="hidden" name="project.projectRegions[${region_index}].locElement.id" value="${(region.locElement.id)!}" />
-                              <input class="rId" type="hidden" name="project.projectRegions[${region_index}].locElementType.id" value="${(region.locElementType.id)!}" />
+                              
+                              
 
-                              <input class="regionScope" type="hidden" name="project.projectRegions[${region_index}].scope" value="${(region.scope?c)!}" />
                              [#if region.locElement?has_content ]
                              <span class="name" title="${(region.locElement.name)!}">[@utilities.wordCutter string=(region.locElement.name)!'No name' maxPos=20 /]</span>
-                              [#else]
+                              <input class="regionScope" type="hidden" name="project.projectRegions[${region_index}].scope" value="${(region.locElement.locElementType.scope?c)!}" />
+                              <input class="rId" type="hidden" name="project.projectRegions[${region_index}].locElement.id" value="${(region.locElement.id)!}" />
+                                [#else]
                                  <span class="name" title="${(region.locElementType.name)!}">[@utilities.wordCutter string=(region.locElementType.name)!'No name' maxPos=20 /]</span>
+                              <input class="regionScope" type="hidden" name="project.projectRegions[${region_index}].scope" value="${(region.locElementType.scope?c)!}" />
+                            <input class="rId" type="hidden" name="project.projectRegions[${region_index}].locElementType.id" value="${(region.locElementType.id)!}" />
                             [/#if]
                            
                               
@@ -435,11 +438,12 @@
      
        [#if element.locElement??]
         <input type="hidden" class="elementID" name="${customName}.locElement.id" value="${(element.locElement.id)!}"/>
-       
+        <input type="hidden" class="locScope" name="${customName}.scope" value="${(element.locElement.locElementType.scope?c)!}"/>       
       <div class="recommendedLocName"><span class="lName"><b>${(element.locElement.name)!}</b></span> </div>
       
        [#else]
         <input type="hidden" class="elementID" name="${customName}.locElementType.id" value="${(element.locElementType.id)!}"/>
+        <input type="hidden" class="locScope" name="${customName}.scope" value="${(element.locElementType.scope?c)!}"/>
         <div class="recommendedLocName"><span class="lName"><b>${(element.locElementType.name)!}</b></span> </div>
         [/#if]
       [#-- Check Icon --]
