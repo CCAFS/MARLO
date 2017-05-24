@@ -37,6 +37,11 @@
       class="org.cgiar.ccafs.marlo.data.model.IpProgram" fetch="select">
       <column name="ip_program_id" />
     </many-to-one>
+    
+      <many-to-one name="fundingSource"
+      class="org.cgiar.ccafs.marlo.data.model.FundingSource" fetch="select">
+      <column name="funding_source_id" />
+    </many-to-one>
     <many-to-one name="ipLiaisonInstitution"
       class="org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution" fetch="select">      
       <column name="ip_liaison_id" />

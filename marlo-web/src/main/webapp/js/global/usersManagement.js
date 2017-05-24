@@ -131,7 +131,7 @@ $(document)
                     }
 
                     if(invalidFields.length > 0) {
-                      var msj = "You must fill " + invalidFields.join(', ');
+                      var msj = "Please enter a " + invalidFields.join(', ');
                       $dialogContent.find('.warning-info').text(msj).fadeIn('slow');
                     } else {
                       $

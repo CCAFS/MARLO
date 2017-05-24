@@ -307,23 +307,27 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
           .collect(Collectors.toList())) {
           for (ProjectMilestone projectMilestone : crpMilestone.getProjectMilestones().stream()
             .filter(pm -> pm.isActive()).collect(Collectors.toList())) {
-            String projectId = "", title = "", flagship = "", outcome = "", projectUrl = "", milestone = "",
-              expectedUnit = "", narrativeTarget = "";
-            Long expectedValue = -1L;
-            projectId = projectMilestone.getProjectOutcome().getProject().getId().toString();
-            title = projectMilestone.getProjectOutcome().getProject().getTitle();
-            flagship = projectMilestone.getProjectOutcome().getCrpProgramOutcome().getCrpProgram().getAcronym();
-            outcome = projectMilestone.getProjectOutcome().getCrpProgramOutcome().getDescription();
-            projectUrl = "P" + projectMilestone.getProjectOutcome().getProject().getId().toString();
-            milestone = crpMilestone.getComposedName();
-            expectedValue = projectMilestone.getExpectedValue();
-            if (projectMilestone.getExpectedUnit() != null) {
-              expectedUnit = projectMilestone.getExpectedUnit().getName();
+
+            if (projectMilestone.getProjectOutcome().isActive()) {
+              String projectId = "", title = "", flagship = "", outcome = "", projectUrl = "", milestone = "",
+                expectedUnit = "", narrativeTarget = "";
+              Long expectedValue = -1L;
+              projectId = projectMilestone.getProjectOutcome().getProject().getId().toString();
+              title = projectMilestone.getProjectOutcome().getProject().getTitle();
+              flagship = projectMilestone.getProjectOutcome().getCrpProgramOutcome().getCrpProgram().getAcronym();
+              outcome = projectMilestone.getProjectOutcome().getCrpProgramOutcome().getDescription();
+              projectUrl = "P" + projectMilestone.getProjectOutcome().getProject().getId().toString();
+              milestone = crpMilestone.getComposedName();
+              expectedValue = projectMilestone.getExpectedValue();
+              if (projectMilestone.getExpectedUnit() != null) {
+                expectedUnit = projectMilestone.getExpectedUnit().getName();
+              }
+              narrativeTarget = projectMilestone.getNarrativeTarget();
+              model.addRow(new Object[] {projectId, flagship, outcome, projectUrl, milestone, expectedValue,
+                expectedUnit, narrativeTarget, title});
             }
-            narrativeTarget = projectMilestone.getNarrativeTarget();
-            model.addRow(new Object[] {projectId, flagship, outcome, projectUrl, milestone, expectedValue,
-              expectedUnit, narrativeTarget, title});
           }
+
         }
       }
     }
@@ -363,8 +367,8 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
           }
           expectedNarrative = projectOutcome.getNarrativeTarget();
         }
-        model.addRow(new Object[] {projectId, title, flagship, outcome, expectedValue, expectedUnit,
-          expectedNarrative, projectUrl});
+        model.addRow(new Object[] {projectId, title, flagship, outcome, expectedValue, expectedUnit, expectedNarrative,
+          projectUrl});
       }
     }
     return model;

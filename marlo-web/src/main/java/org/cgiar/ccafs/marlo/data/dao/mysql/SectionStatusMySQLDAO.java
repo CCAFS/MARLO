@@ -113,6 +113,18 @@ public class SectionStatusMySQLDAO implements SectionStatusDAO {
   }
 
   @Override
+  public SectionStatus getSectionStatusByFundingSource(long fundingSource, String cycle, Integer year,
+    String sectionName) {
+    String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName
+      + "' and funding_source_id=" + fundingSource;
+    List<SectionStatus> list = dao.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+  }
+
+  @Override
   public SectionStatus getSectionStatusByIpProgram(long ipProgramID, String cycle, int year, String sectionName) {
     String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName + "' and cycle='"
       + cycle + "' and year=" + year + " and ip_program_id=" + ipProgramID;
