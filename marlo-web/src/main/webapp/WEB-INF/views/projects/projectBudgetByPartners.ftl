@@ -78,7 +78,7 @@
                     <div class="overallYearBudget clearfix">
                       [#-- Total year --]
                       <h4 class="title text-right">Overall ${year} budget <small>US$ <span class="totalYear year-${year}">0.00</span></small></h4>
-                      <div class="row fieldset">
+                      <div class="row fieldset" listname="project.budgets">
                         [#-- Total year budget type --]
                         <table class="text-center">
                           <tr>
@@ -166,7 +166,7 @@
     
     <div class="blockContent" style="display:block">
       <hr />
-      <table class="table">
+      <table class="table" >
         <thead>
           <tr>
             <th class="amountType"> </th>
@@ -209,7 +209,7 @@
       <div class="projectW3bilateralFund-block">
         [#-- Funding sources --]
         [#assign fundingSources = 0 /]
-        <div class="projectW3bilateralFund-list simpleBox">
+        <div class="projectW3bilateralFund-list simpleBox" >
           [#attempt]
             [#list action.getBudgetsByPartner(element.institution.id,selectedYear) as budget ]
                 [#assign fundingSources++ /]
