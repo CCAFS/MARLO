@@ -29,6 +29,25 @@ function init() {
       countries.push($(e).find(".isoAlpha").text());
     }
   });
+
+  /** Remove region option from region select */
+  var regionSelect = $("#regionSelect");
+  $(".regionsContent").find(".recommended.locElement").each(function(i,e) {
+    if($(e).find(".recommendedSelected").val() == "true") {
+      var id = $(e).find(".elementID");
+      var scope = $(e).find(".locScope");
+      var option = regionSelect.find("option[value='" + id.val() + "-" + scope.val() + "']");
+      option.prop('disabled', true);
+    }
+  });
+
+  $("#regionList").find(".region").each(function(i,e) {
+    var id = $(e).find("input.rId");
+    var scope = $(e).find("input.regionScope");
+    var option = regionSelect.find("option[value='" + id.val() + "-" + scope.val() + "']");
+    option.prop('disabled', true);
+  });
+
 }
 
 function attachEvents() {
@@ -54,25 +73,31 @@ function attachEvents() {
   });
 
 // Clicking recommended location
-  $('.recommendedLocName').on(
+  $('.recommendedLocName, .iconSelected').on(
       'click',
       function() {
-        var accepted =
-            '<div class="acceptLocation" title="Accept recommended location"> <img src="' + baseURL
-                + '/images/global/icon-check.png" alt="" /></div>';
-        var notAccepted =
-            '<div class="notAcceptLocation" title=""> <img src="' + baseURL
-                + '/images/global/checked-false.png" alt="" /></div>';
         var parent = $(this).parent();
+        var selectedInput = parent.find("input.recommendedSelected");
+        var option =
+            $("#regionSelect").find(
+                "option[value='" + parent.find("input.elementID").val() + "-" + parent.find("input.locScope").val()
+                    + "']");
         if(parent.find(".acceptLocation").exists()) {
-          parent.find(".acceptLocation").remove();
-          parent.append(notAccepted);
+          parent.find(".iconSelected").removeClass("acceptLocation");
+          parent.find(".iconSelected").addClass("notAcceptLocation");
+          selectedInput.val("false");
+          option.prop('disabled', false);
+          $('#regionSelect').select2();
         } else {
           checkRecommendedLocation(parent);
-          parent.find(".notAcceptLocation").remove();
-          parent.append(accepted);
-        }
+          parent.find(".iconSelected").removeClass("notAcceptLocation");
+          parent.find(".iconSelected").addClass("acceptLocation");
+          selectedInput.val("true");
+          option.prop('disabled', true);
+          $('#regionSelect').select2();
 
+        }
+        $(document).trigger('updateComponent');
       });
 
   $('.projectLocationsWrapper .button-label').on('click', function() {
@@ -116,6 +141,7 @@ function attachEvents() {
     $input.val(valueSelected);
     $(this).parent().find("label").removeClass("radio-checked");
     $(this).addClass("radio-checked");
+    $(document).trigger('updateComponent');
   });
 
   $(".isRegional .button-label").on("click", function() {

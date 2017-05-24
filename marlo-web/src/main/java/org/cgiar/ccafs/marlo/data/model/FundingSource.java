@@ -82,7 +82,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
    * Funding Source Locations
    */
   private Set<FundingSourceLocation> fundingSourceLocations = new HashSet<FundingSourceLocation>(0);
-
+  private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
 
   private List<FundingSourceLocation> fundingRegions;
 
@@ -107,7 +107,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   private User modifiedBy;
 
   private Set<ProjectBudget> projectBudgets = new HashSet<ProjectBudget>(0);
-
 
   private List<ProjectBudget> projectBudgetsList;
 

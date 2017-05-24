@@ -124,25 +124,25 @@
                   <div class="simpleBox col-md-12">
                   <div class="row recommendedList">
                     [#-- RECOMMENDED REGIONS LIST --]
-                    [#if regionFS?has_content]
+                    [#if project.regionFS?has_content]
                     <div class="regionsContent" style="display:${(project.locationRegional?string("block","none"))!"none"};">
                       <div class="col-md-12" >
                         <h5 class="sectionSubTitle">Suggested Regions:</h5>
                       </div>
-                      [#list regionFS as location]
-                        [@recommendedLocation element=location name="regionFS" index=location_index template=false /]
+                      [#list project.regionFS as location]
+                        [@recommendedLocation element=location name="project.regionFS" index=location_index template=false /]
                       [/#list]
                     </div>
                     [#else]
                       [#assign recommendedRegions=0]
                     [/#if]
                     [#-- RECOMMENDED COUNTRIES LIST --]
-                    [#if countryFS?has_content]
+                    [#if project.countryFS?has_content]
                       <div class="col-md-12">
                         <h5 class="sectionSubTitle">Suggested Countries:</h5>
                       </div>
-                      [#list countryFS as location]
-                        [@recommendedLocation element=location name="countryFS" index=location_index template=false /]
+                      [#list project.countryFS as location]
+                        [@recommendedLocation element=location name="project.countryFS" index=location_index template=false /]
                       [/#list]
                     [#else]
                       [#assign recommendedCountries=0]
@@ -177,14 +177,17 @@
                               <div class="removeRegion removeIcon" title="Remove region"></div>
                             [/#if]
                               <input class="id" type="hidden" name="project.projectRegions[${region_index}].id" value="${region.id}" />
-                              <input class="rId" type="hidden" name="project.projectRegions[${region_index}].locElement.id" value="${(region.locElement.id)!}" />
-                              <input class="rId" type="hidden" name="project.projectRegions[${region_index}].locElementType.id" value="${(region.locElementType.id)!}" />
+                              
+                              
 
-                              <input class="regionScope" type="hidden" name="project.projectRegions[${region_index}].scope" value="${(region.scope?c)!}" />
                              [#if region.locElement?has_content ]
                              <span class="name" title="${(region.locElement.name)!}">[@utilities.wordCutter string=(region.locElement.name)!'No name' maxPos=20 /]</span>
-                              [#else]
+                              <input class="regionScope" type="hidden" name="project.projectRegions[${region_index}].scope" value="${(region.locElement.locElementType.scope?c)!}" />
+                              <input class="rId" type="hidden" name="project.projectRegions[${region_index}].locElement.id" value="${(region.locElement.id)!}" />
+                                [#else]
                                  <span class="name" title="${(region.locElementType.name)!}">[@utilities.wordCutter string=(region.locElementType.name)!'No name' maxPos=20 /]</span>
+                              <input class="regionScope" type="hidden" name="project.projectRegions[${region_index}].scope" value="${(region.locElementType.scope?c)!}" />
+                            <input class="rId" type="hidden" name="project.projectRegions[${region_index}].locElementType.id" value="${(region.locElementType.id)!}" />
                             [/#if]
                            
                               
@@ -432,23 +435,41 @@
   <div id="recommendedLocation-${template?string('template',index)}" class="col-md-4 recommended locElement" style="display:${template?string('none','block')}">
     <div class="locations col-md-12">
       [#-- Location Name --]
-      
+     
        [#if element.locElement??]
+        <input type="hidden" class="elementID" name="${customName}.locElement.id" value="${(element.locElement.id)!}"/>
+        <input type="hidden" class="locScope" name="${customName}.scope" value="${(element.locElement.locElementType.scope?c)!}"/>       
       <div class="recommendedLocName"><span class="lName"><b>${(element.locElement.name)!}</b></span> </div>
+      
        [#else]
+        <input type="hidden" class="elementID" name="${customName}.locElementType.id" value="${(element.locElementType.id)!}"/>
+        <input type="hidden" class="locScope" name="${customName}.scope" value="${(element.locElementType.scope?c)!}"/>
         <div class="recommendedLocName"><span class="lName"><b>${(element.locElementType.name)!}</b></span> </div>
         [/#if]
       [#-- Check Icon --]
-      [#if editable]
-        [#if element.locElement?? && action.locElementSelected((element.locElement.id))]
-        <div class="acceptLocation" title="Accept recommended location"> <img src="${baseUrl}/images/global/icon-check.png" alt="" /></div>
+      
+     [#if element.locElement??]
+        [#if element.selected]
+        <div class="acceptLocation [#if editable]iconSelected[/#if]" title="Accept recommended location"></div>
+         <input type="hidden" class="recommendedSelected" name="${customName}.selected" value="true"/>
           [#if element.locElement.locElementType.id==2 ]
             <span class="hidden isoAlpha">${(element.locElement.isoAlpha2)!}</span>
           [/#if]
         [#else]
-        <div class="notAcceptLocation" title="Accept recommended location"> <img src="${baseUrl}/images/global/checked-false.png" alt="" /></div>
+        <input type="hidden" class="recommendedSelected" name="${customName}.selected" value="false"/>
+        <div class="notAcceptLocation [#if editable]iconSelected[/#if]" title="Accept recommended location"></div>
         [/#if]
-      [/#if]
+         [/#if]
+         
+         [#if element.locElementType??]
+        [#if element.selected]
+        <div class="acceptLocation [#if editable]iconSelected[/#if]" title="Accept recommended location"> <img src="${baseUrl}/images/global/icon-check.png" alt="" /></div>
+         <input type="hidden" class="recommendedSelected" name="${customName}.selected" value="true"/>  
+        [#else]
+        <input type="hidden" class="recommendedSelected" name="${customName}.selected" value="false"/>
+        <div class="notAcceptLocation [#if editable]iconSelected[/#if]" title="Accept recommended location"> <img src="${baseUrl}/images/global/checked-false.png" alt="" /></div>
+        [/#if]
+         [/#if]
     </div>
     
     <div class="col-md-12 fundingContent">
@@ -460,7 +481,5 @@
     [/#if]
     </div>
     [#-- Hidden inputs --]
-    <input type="hidden" class="locElementId" name="${customName}.id" value="${(element.locElement.id)!}"/>
-    <input type="hidden" class="locElementType" name="${customName}.type" value="${(element.locElement.locElementType.id)!}"/>
   </div>
 [/#macro]

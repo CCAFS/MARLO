@@ -34,6 +34,7 @@ public class CountryFundingSources implements Serializable {
 
 
   private List<FundingSource> fundingSources;
+  private boolean selected;
 
 
   public CountryFundingSources() {
@@ -45,6 +46,7 @@ public class CountryFundingSources implements Serializable {
     return fundingSources;
   }
 
+
   public LocElement getLocElement() {
     return locElement;
   }
@@ -53,6 +55,11 @@ public class CountryFundingSources implements Serializable {
   public LocElementType getLocElementType() {
     return locElementType;
   }
+
+  public boolean isSelected() {
+    return selected;
+  }
+
 
   public void setFundingSources(List<FundingSource> fundingSources) {
     this.fundingSources = fundingSources;
@@ -64,6 +71,19 @@ public class CountryFundingSources implements Serializable {
 
   public void setLocElementType(LocElementType locElementType) {
     this.locElementType = locElementType;
+  }
+
+  public void setSelected(boolean selected) {
+    this.selected = selected;
+  }
+
+  @Override
+  public String toString() {
+    try {
+      return this.getLocElement().getName();
+    } catch (Exception e) {
+      return this.getLocElementType().getName();
+    }
   }
 
 }

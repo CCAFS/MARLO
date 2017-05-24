@@ -74,36 +74,30 @@ public class ProjectLocationAction extends BaseAction {
 
   private static final long serialVersionUID = -3215013554941621274L;
 
-  private List<LocElement> regionLists;
-
-
   private AuditLogManager auditLogManager;
 
 
   private List<CountryFundingSources> countryFS;
 
-  private List<CountryFundingSources> regionFS;
 
-  private CrpManager crpManager;
   private FundingSourceManager fundingSourceManager;
-
-
   private List<LocationLevel> locationsLevels;
 
 
   private ProjectLocationValidator locationValidator;
 
+
   private LocElementManager locElementManager;
 
   private LocElementTypeManager locElementTypeManager;
 
-
   private LocGeopositionManager locGeopositionManager;
+
 
   private Crp loggedCrp;
 
-
   private Project project;
+
 
   private long projectID;
 
@@ -113,14 +107,16 @@ public class ProjectLocationAction extends BaseAction {
 
   private ProjectManager projectManager;
 
-  private List<ScopeData> scopeData;
+  private boolean region;
 
-  private List<LocElementType> scopeRegions;
+  private List<LocElement> regionLists;
+
+  private List<ScopeData> scopeData;
   private List<LocElementType> scopeRegionLists;
 
-  private String transaction;
+  private List<LocElementType> scopeRegions;
 
-  private boolean region;
+  private String transaction;
 
 
   @Inject
@@ -175,10 +171,6 @@ public class ProjectLocationAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-  public List<CountryFundingSources> getCountryFS() {
-    return countryFS;
-  }
-
 
   public List<LocationLevel> getLocationsLevels() {
     return locationsLevels;
@@ -206,7 +198,7 @@ public class ProjectLocationAction extends BaseAction {
 
     project.setLocations(new ArrayList<ProjectLocation>(project
       .getProjectLocations().stream().filter(p -> p.isActive() && p.getLocElementType() == null
-        && p.getLocElement() != null && p.getLocElement().getLocElementType().getId().longValue() != 1)
+      && p.getLocElement() != null && p.getLocElement().getLocElementType().getId().longValue() != 1)
       .collect(Collectors.toList())));
     Map<String, Object> locationParent;
     if (!project.getLocations().isEmpty()) {
@@ -318,9 +310,6 @@ public class ProjectLocationAction extends BaseAction {
     return locationLevels;
   }
 
-  public List<CountryFundingSources> getRegionFS() {
-    return regionFS;
-  }
 
   public List<LocElement> getRegionLists() {
     return regionLists;
@@ -418,7 +407,7 @@ public class ProjectLocationAction extends BaseAction {
     countryLocationLevels = new ArrayList<>();
     List<LocElementType> customElementTypes =
       locElementTypeManager.findAll().stream().filter(let -> let.isActive() && let.getCrp() != null
-        && let.getCrp().equals(loggedCrp) && let.getId() != 1 && !let.isScope()).collect(Collectors.toList());
+      && let.getCrp().equals(loggedCrp) && let.getId() != 1 && !let.isScope()).collect(Collectors.toList());
 
     for (LocElementType locElementType : customElementTypes) {
       CountryLocationLevel countryLocationLevel = new CountryLocationLevel();
@@ -432,7 +421,7 @@ public class ProjectLocationAction extends BaseAction {
     }
 
     locationsLevels
-      .add(new LocationLevel(loggedCrp.getAcronym().toUpperCase() + " Custom Locations", countryLocationLevels));
+    .add(new LocationLevel(loggedCrp.getAcronym().toUpperCase() + " Custom Locations", countryLocationLevels));
 
     countryLocationLevels = new ArrayList<>();
     List<LocElementType> elementTypes = new ArrayList<>();
@@ -462,12 +451,59 @@ public class ProjectLocationAction extends BaseAction {
   }
 
   public boolean locElementSelected(long locElementID) {
-    Project projectDB = projectManager.getProjectById(projectID);
-    List<ProjectLocation> locElements = projectDB.getProjectLocations().stream()
-      .filter(c -> c.isActive() && c.getLocElement() != null && c.getLocElement().getId().longValue() == locElementID)
-      .collect(Collectors.toList());
 
-    return !locElements.isEmpty();
+    if (project.getLocationsData()!=null) {
+
+      if (locElementManager.getLocElementById(locElementID).getLocElementType().getId().longValue()==1 ) {
+
+        if (project.getProjectRegions()!=null) {
+          List<ProjectLocation> locElements = project.getProjectRegions().stream()
+            .filter(c ->  c.getLocElement() != null && c.getLocElement().getId().longValue() == locElementID)
+            .collect(Collectors.toList());
+
+          return !locElements.isEmpty();  
+        }else{
+          return  false;
+        }
+
+
+      }else{
+        List<CountryLocationLevel> locElements = project.getLocationsData().stream()
+          .filter(c ->  c.getLocElements().contains(locElementManager.getLocElementById(locElementID)))
+          .collect(Collectors.toList());
+        return !locElements.isEmpty();
+
+      }
+    }else{
+      Project projectDB = projectManager.getProjectById(projectID);
+      List<ProjectLocation> locElements = projectDB.getProjectLocations().stream()
+        .filter(c -> c.isActive() && c.getLocElement() != null && c.getLocElement().getId().longValue() == locElementID)
+        .collect(Collectors.toList());
+
+      return !locElements.isEmpty();
+    }
+
+
+  }
+
+  public boolean locElementTypeSelected(long locElementID) {
+
+    if (project.getProjectRegions()!=null) {
+      List<ProjectLocation> locElements = project.getProjectRegions().stream()
+        .filter(c -> c.getLocElementType() != null && c.getLocElementType().getId().longValue() == locElementID)
+        .collect(Collectors.toList());
+
+      return !locElements.isEmpty();  
+    }else{
+      Project projectDB = projectManager.getProjectById(projectID);
+      List<ProjectLocation> locElements = projectDB.getProjectLocations().stream()
+        .filter(
+          c -> c.isActive() && c.getLocElementType() != null && c.getLocElementType().getId().longValue() == locElementID)
+        .collect(Collectors.toList());
+
+      return !locElements.isEmpty();
+    }
+
 
   }
 
@@ -527,22 +563,92 @@ public class ProjectLocationAction extends BaseAction {
           }
 
         }
+        if (project.getProjectRegions() != null) {
+          for (ProjectLocation projectLocation : project.getProjectRegions()) {
+            if (projectLocation.getLocElement() != null && projectLocation.getLocElement().getId()!=null)  {
+              projectLocation
+              .setLocElement(locElementManager.getLocElementById(projectLocation.getLocElement().getId()));
+              projectLocation.setLocElementType(null);
+            } else {
+              projectLocation.setLocElementType(
+                locElementTypeManager.getLocElementTypeById(projectLocation.getLocElementType().getId()));
+              projectLocation.setLocElement(null);
+            }
+          }
+        }
 
+        if (project.getRegionFS() != null) {
+          for (CountryFundingSources co : project.getRegionFS()) {
+            if (co.getLocElement() != null) {
+              co.setLocElement(locElementManager.getLocElementById(co.getLocElement().getId()));
+              List<FundingSource> sources = fundingSourceManager.searchFundingSourcesByLocElement(projectID, co.getLocElement().getId(),
+                this.getCurrentCycleYear());
+              co.setFundingSources(sources);
+            } else {
+              co.setLocElementType(locElementTypeManager.getLocElementTypeById(co.getLocElementType().getId()));
+              List<FundingSource> sources = fundingSourceManager.searchFundingSourcesByLocElementType(projectID,
+                co.getLocElementType().getId(), this.getCurrentCycleYear());
+              co.setFundingSources(sources);
+            }
+            if (!co.isSelected()) {
+              if (co.getLocElement() != null) {
+                co.setSelected(this.locElementSelected(co.getLocElement().getId()));
+              } else {
+                co.setSelected(this.locElementTypeSelected(co.getLocElementType().getId()));
+              }
+            }
+          }
+        }
+        if (project.getCountryFS() != null) {
+          for (CountryFundingSources co : project.getCountryFS()) {
+            if (co.getLocElement() != null) {
+              co.setLocElement(locElementManager.getLocElementById(co.getLocElement().getId()));
 
+              List<FundingSource> sources = fundingSourceManager.searchFundingSourcesByLocElement(projectID, co.getLocElement().getId(),
+                this.getCurrentCycleYear());
+              co.setFundingSources(new ArrayList<>(sources));
+
+            } else {
+              co.setLocElementType(locElementTypeManager.getLocElementTypeById(co.getLocElementType().getId()));
+            }
+            if (!co.isSelected()) {
+              if (co.getLocElement() != null) {
+                co.setSelected(this.locElementSelected(co.getLocElement().getId()));
+              } else {
+                co.setSelected(this.locElementTypeSelected(co.getLocElementType().getId()));
+              }
+            }
+          }
+        }
         reader.close();
         this.setDraft(true);
       } else {
         this.setDraft(false);
-        project.setLocationsData(this.getProjectLocationsData());
 
+
+
+        this.prepareFundingList();
+        for (CountryFundingSources locElement : project.getCountryFS()) {
+          locElement.setSelected(this.locElementSelected(locElement.getLocElement().getId()));
+        }
+        for (CountryFundingSources locElement : project.getRegionFS()) {
+          if (locElement.getLocElement() != null) {
+            locElement.setSelected(this.locElementSelected(locElement.getLocElement().getId()));
+          } else {
+            locElement.setSelected(this.locElementTypeSelected(locElement.getLocElementType().getId()));
+          }
+
+        }
+        project.setLocationsData(this.getProjectLocationsData());
         project.setProjectRegions(new ArrayList<ProjectLocation>(project
           .getProjectLocations().stream().filter(p -> p.isActive() && p.getLocElementType() == null
-            && p.getLocElement() != null && p.getLocElement().getLocElementType().getId().longValue() == 1)
+          && p.getLocElement() != null && p.getLocElement().getLocElementType().getId().longValue() == 1)
           .collect(Collectors.toList())));
         project.getProjectRegions()
-          .addAll(project.getProjectLocations().stream()
-            .filter(p -> p.isActive() && p.getLocElementType() != null && p.getLocElement() == null)
-            .collect(Collectors.toList()));
+        .addAll(project.getProjectLocations().stream()
+          .filter(p -> p.isActive() && p.getLocElementType() != null && p.getLocElement() == null)
+          .collect(Collectors.toList()));
+
       }
     }
 
@@ -569,6 +675,65 @@ public class ProjectLocationAction extends BaseAction {
      * countryLocationLevel.getLocElements().removeAll(similar);
      * }
      */
+
+    Collection<LocElement> fsLocs = new ArrayList<>();
+    for (CountryFundingSources locElement : project.getCountryFS()) {
+      fsLocs.add(locElement.getLocElement());
+    }
+
+
+    for (CountryLocationLevel countryLocationLevel : project.getLocationsData()) {
+
+
+      Collection<LocElement> similar = new HashSet<LocElement>(countryLocationLevel.getLocElements());
+      Collection<LocElement> different = new HashSet<LocElement>();
+      different.addAll(countryLocationLevel.getLocElements());
+      different.addAll(fsLocs);
+      similar.retainAll(fsLocs);
+      different.removeAll(similar);
+
+      countryLocationLevel.getLocElements().removeAll(similar);
+
+    }
+    Collection<LocElement> fsLocsRegions = new ArrayList<>();
+    for (CountryFundingSources locElement : project.getRegionFS()) {
+      if (locElement.getLocElement() != null) {
+        fsLocsRegions.add(locElement.getLocElement());
+      }
+
+    }
+
+    if (project.getProjectRegions() != null) {
+      for (ProjectLocation projectLocation : project.getProjectRegions().stream().filter(c -> c.getLocElement() != null)
+        .collect(Collectors.toList())) {
+
+        if (fsLocsRegions.contains(projectLocation.getLocElement())) {
+          project.getProjectRegions().remove(projectLocation);
+        }
+
+      }
+    }
+
+    Collection<LocElementType> fsLocsCustomRegions = new ArrayList<>();
+    for (CountryFundingSources locElement : project.getRegionFS()) {
+      if (locElement.getLocElementType() != null) {
+        fsLocsCustomRegions.add(locElement.getLocElementType());
+
+      }
+
+    }
+
+    if (project.getProjectRegions()!=null) {
+      for (ProjectLocation projectLocation : project.getProjectRegions().stream()
+        .filter(c -> c.getLocElementType() != null).collect(Collectors.toList())) {
+
+        if (fsLocsCustomRegions.contains(projectLocation.getLocElementType())) {
+          project.getProjectRegions().remove(projectLocation);
+        }
+
+      }
+    }
+
     regionLists = new ArrayList<>(locElementManager.findAll().stream()
       .filter(le -> le.isActive() && le.getLocElementType() != null && le.getLocElementType().getId() == 1)
       .collect(Collectors.toList()));
@@ -598,8 +763,10 @@ public class ProjectLocationAction extends BaseAction {
 
   public void prepareFundingList() {
 
+    Project projectDB = projectManager.getProjectById(project.getId());
 
-    List<ProjectBudget> projectBudgets = new ArrayList<>(project.getProjectBudgets().stream()
+
+    List<ProjectBudget> projectBudgets = new ArrayList<>(projectDB.getProjectBudgets().stream()
       .filter(pb -> pb.isActive() && pb.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList()));
 
     List<FundingSource> fundingSources = new ArrayList<>();
@@ -635,8 +802,8 @@ public class ProjectLocationAction extends BaseAction {
 
     }
 
-    countryFS = new ArrayList<>();
-    regionFS = new ArrayList<>();
+    project.setCountryFS(new ArrayList<>());
+    project.setRegionFS(new ArrayList<>());
     HashSet<LocElement> hashElements = new HashSet<>();
     hashElements.addAll(locElements);
     locElements = new ArrayList<>(hashElements);
@@ -649,9 +816,9 @@ public class ProjectLocationAction extends BaseAction {
         this.getCurrentCycleYear());
       countryFundingSources.setFundingSources(new ArrayList<>(sources));
       if (locElement.getLocElementType().getId().longValue() == 2) {
-        countryFS.add(countryFundingSources);
+        project.getCountryFS().add(countryFundingSources);
       } else {
-        regionFS.add(countryFundingSources);
+        project.getRegionFS().add(countryFundingSources);
       }
 
 
@@ -667,8 +834,10 @@ public class ProjectLocationAction extends BaseAction {
       List<FundingSource> sources = fundingSourceManager.searchFundingSourcesByLocElementType(projectID,
         locElementType.getId(), this.getCurrentCycleYear());
       countryFundingSources.setFundingSources(new ArrayList<>(sources));
-      regionFS.add(countryFundingSources);
+      project.getRegionFS().add(countryFundingSources);
     }
+    Collections.sort(project.getCountryFS(),
+      (tu1, tu2) -> tu1.getLocElement().getName().compareTo(tu2.getLocElement().getName()));
 
 
   }
@@ -850,6 +1019,36 @@ public class ProjectLocationAction extends BaseAction {
     }
 
 
+    Project projectDB = projectManager.getProjectById(projectID);
+    List<LocElement> regionsCustomSaved = new ArrayList<>();
+
+    for (ProjectLocation projectLocation : projectDB.getProjectLocations().stream().filter(
+      c -> c.isActive() && c.getLocElement() != null && c.getLocElement().getLocElementType().getId().longValue() == 2)
+      .collect(Collectors.toList())) {
+
+      regionsCustomSaved.add(projectLocation.getLocElement());
+
+    }
+
+    for (CountryFundingSources countryFundingSources : project.getCountryFS()) {
+
+      ProjectLocation projectLocationSave = new ProjectLocation();
+      projectLocationSave.setActive(true);
+      projectLocationSave.setActiveSince(new Date());
+      projectLocationSave.setCreatedBy(this.getCurrentUser());
+      projectLocationSave.setModifiedBy(this.getCurrentUser());
+      projectLocationSave.setModificationJustification("");
+      projectLocationSave.setProject(project);
+
+      if (!regionsCustomSaved.contains(countryFundingSources.getLocElement()) && countryFundingSources.isSelected()) {
+
+        projectLocationSave.setLocElement(countryFundingSources.getLocElement());
+        projectLocationManager.saveProjectLocation(projectLocationSave);
+      }
+
+    }
+
+
   }
 
   public void projectLocationPreviousData() {
@@ -859,9 +1058,21 @@ public class ProjectLocationAction extends BaseAction {
       if (!project.getLocationsData().contains(countryLocationLevel)) {
         for (LocElement locElement : countryLocationLevel.getLocElements()) {
           ProjectLocation projectLocation = project.getProjectLocations().stream()
-            .filter(pl -> pl.isActive() && pl.getLocElement().getId() == locElement.getId())
+            .filter(pl -> pl.isActive() && pl.getLocElement() !=null && pl.getLocElement().getId() == locElement.getId())
             .collect(Collectors.toList()).get(0);
-          projectLocationManager.deleteProjectLocation(projectLocation.getId());
+
+          if (locElementManager.getLocElementById(projectLocation.getLocElement().getId()).getLocElementType().getId()
+            .longValue() == 2) {
+            if (project.getCountryFS().stream()
+              .filter(c -> c.getLocElement() != null
+              && c.getLocElement().getId().longValue() == projectLocation.getLocElement().getId().longValue()
+              && c.isSelected())
+              .collect(Collectors.toList()).isEmpty()) {
+              projectLocationManager.deleteProjectLocation(projectLocation.getId());
+            }
+          } else {
+            projectLocationManager.deleteProjectLocation(projectLocation.getId());
+          }
 
 
         }
@@ -879,10 +1090,21 @@ public class ProjectLocationAction extends BaseAction {
             for (LocElement element : locElements) {
               if (locationData.getLocElements() != null) {
                 if (!locationData.getLocElements().contains(element)) {
-                  ProjectLocation projectLocation = project.getProjectLocations().stream()
-                    .filter(pl -> pl.isActive() && pl.getLocElement().getId() == element.getId())
+                  ProjectLocation projectLocation = project.getProjectLocations().stream().filter(
+                    pl -> pl.isActive() && pl.getLocElement() != null && pl.getLocElement().getId() == element.getId())
                     .collect(Collectors.toList()).get(0);
-                  projectLocationManager.deleteProjectLocation(projectLocation.getId());
+                  if (locElementManager.getLocElementById(projectLocation.getLocElement().getId()).getLocElementType()
+                    .getId().longValue() == 2) {
+                    if (project.getCountryFS().stream()
+                      .filter(c -> c.getLocElement() != null
+                      && c.getLocElement().getId().longValue() == projectLocation.getLocElement().getId().longValue()
+                      && c.isSelected())
+                      .collect(Collectors.toList()).isEmpty()) {
+                      projectLocationManager.deleteProjectLocation(projectLocation.getId());
+                    }
+                  } else {
+                    projectLocationManager.deleteProjectLocation(projectLocation.getId());
+                  }
                 }
               }
 
@@ -1015,9 +1237,22 @@ public class ProjectLocationAction extends BaseAction {
 
       if (project.getLocationRegional()) {
         for (ProjectLocation projectLocation : regions) {
-          if (!project.getProjectRegions().contains(projectLocation)) {
-            projectLocationManager.deleteProjectLocation(projectLocation.getId());
+
+          if (projectLocation != null) {
+            if (!project.getProjectRegions().contains(projectLocation)) {
+              if (projectLocation.getLocElementType() != null && projectLocation.getLocElementType().getId() != null) {
+                if (project.getRegionFS().stream()
+                  .filter(c -> c.getLocElementType() != null && c.getLocElementType().getId()
+                  .longValue() == projectLocation.getLocElementType().getId().longValue() && c.isSelected())
+                  .collect(Collectors.toList()).isEmpty()) {
+                  projectLocationManager.deleteProjectLocation(projectLocation.getId());
+                }
+              }
+
+            }
           }
+
+
         }
       } else {
         for (ProjectLocation projectLocation : regions) {
@@ -1028,16 +1263,28 @@ public class ProjectLocationAction extends BaseAction {
 
     regions = new ArrayList<>(projectDB
       .getProjectLocations().stream().filter(fl -> fl.isActive() && fl.getLocElementType() == null
-        && fl.getLocElement() != null && fl.getLocElement().getLocElementType().getId().longValue() == 1)
+      && fl.getLocElement() != null && fl.getLocElement().getLocElementType().getId().longValue() == 1)
       .collect(Collectors.toList()));
 
     if (regions != null && regions.size() > 0) {
 
       if (project.getLocationRegional()) {
         for (ProjectLocation projectLocation : regions) {
-          if (!project.getProjectRegions().contains(projectLocation)) {
-            projectLocationManager.deleteProjectLocation(projectLocation.getId());
+          if (projectLocation != null) {
+            if (!project.getProjectRegions().contains(projectLocation)) {
+              if (projectLocation.getLocElement() != null && projectLocation.getLocElement().getId() != null) {
+                if (project.getRegionFS().stream()
+                  .filter(c -> c.getLocElement() != null
+                  && c.getLocElement().getId().longValue() == projectLocation.getLocElement().getId().longValue()
+                  && c.isSelected())
+                  .collect(Collectors.toList()).isEmpty()) {
+                  projectLocationManager.deleteProjectLocation(projectLocation.getId());
+                }
+              }
+
+            }
           }
+
         }
       } else {
         for (ProjectLocation projectLocation : regions) {
@@ -1074,12 +1321,56 @@ public class ProjectLocationAction extends BaseAction {
       }
     }
 
+    projectDB = projectManager.getProjectById(projectID);
+    regions =
+      new ArrayList<>(projectDB.getProjectLocations().stream()
+        .filter(
+          fl -> fl.isActive() && fl.getLocElement() != null && fl.getLocElement().getLocElementType().getId() == 1)
+        .collect(Collectors.toList()));
+    regions.addAll(projectDB.getProjectLocations().stream()
+      .filter(fl -> fl.isActive() && fl.getLocElement() == null && fl.getLocElementType() != null)
+      .collect(Collectors.toList()));
 
+    List<LocElement> regionsSaved = new ArrayList<>();
+    List<LocElementType> regionsCustomSaved = new ArrayList<>();
+
+    for (ProjectLocation projectLocation : regions) {
+      if (projectLocation.getLocElement() == null) {
+        regionsCustomSaved.add(projectLocation.getLocElementType());
+      } else {
+        regionsSaved.add(projectLocation.getLocElement());
+      }
+    }
+
+    for (CountryFundingSources countryFundingSources : project.getRegionFS()) {
+
+      ProjectLocation projectLocationSave = new ProjectLocation();
+      projectLocationSave.setActive(true);
+      projectLocationSave.setActiveSince(new Date());
+      projectLocationSave.setCreatedBy(this.getCurrentUser());
+      projectLocationSave.setModifiedBy(this.getCurrentUser());
+      projectLocationSave.setModificationJustification("");
+      projectLocationSave.setProject(project);
+
+      if (countryFundingSources.getLocElement() == null) {
+        if (!regionsCustomSaved.contains(countryFundingSources.getLocElementType())
+          && countryFundingSources.isSelected()) {
+
+          projectLocationSave.setLocElementType(countryFundingSources.getLocElementType());
+          projectLocationManager.saveProjectLocation(projectLocationSave);
+        }
+
+
+      } else {
+        if (!regionsSaved.contains(countryFundingSources.getLocElement()) && countryFundingSources.isSelected()) {
+
+          projectLocationSave.setLocElement(countryFundingSources.getLocElement());
+          projectLocationManager.saveProjectLocation(projectLocationSave);
+        }
+      }
+    }
   }
 
-  public void setCountryFS(List<CountryFundingSources> countryFS) {
-    this.countryFS = countryFS;
-  }
 
   public void setLocationsLevels(List<LocationLevel> locationsLevels) {
     this.locationsLevels = locationsLevels;
@@ -1099,11 +1390,6 @@ public class ProjectLocationAction extends BaseAction {
 
   public void setRegion(boolean region) {
     this.region = region;
-  }
-
-
-  public void setRegionFS(List<CountryFundingSources> regionFS) {
-    this.regionFS = regionFS;
   }
 
 
