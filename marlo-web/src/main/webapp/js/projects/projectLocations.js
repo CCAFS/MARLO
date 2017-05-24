@@ -38,7 +38,6 @@ function init() {
       var scope = $(e).find(".locScope");
       var option = regionSelect.find("option[value='" + id.val() + "-" + scope.val() + "']");
       option.prop('disabled', true);
-      console.log(option);
     }
   });
 
@@ -47,7 +46,6 @@ function init() {
     var scope = $(e).find("input.regionScope");
     var option = regionSelect.find("option[value='" + id.val() + "-" + scope.val() + "']");
     option.prop('disabled', true);
-    console.log(option);
   });
 
 }
@@ -99,7 +97,7 @@ function attachEvents() {
           $('#regionSelect').select2();
 
         }
-
+        $(document).trigger('updateComponent');
       });
 
   $('.projectLocationsWrapper .button-label').on('click', function() {
@@ -143,6 +141,7 @@ function attachEvents() {
     $input.val(valueSelected);
     $(this).parent().find("label").removeClass("radio-checked");
     $(this).addClass("radio-checked");
+    $(document).trigger('updateComponent');
   });
 
   $(".isRegional .button-label").on("click", function() {
