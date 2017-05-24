@@ -1006,6 +1006,7 @@ public class ProjectPartnerAction extends BaseAction {
     }
 
     for (ProjectPartner projectPartner : project.getPartners()) {
+
       Institution institution = projectPartner.getInstitution();
       if (institution != null) {
         List<InstitutionLocation> institutionLocations = new ArrayList<>();
