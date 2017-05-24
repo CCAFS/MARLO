@@ -229,6 +229,7 @@ div.disabled {/* Required for IE 5, 6, 7 */
 }
 
 .fieldset {
+	position:relative;
   padding: 0px 10px;
   margin: 6px 0px;
   border: 1px dotted #5f96c5;
