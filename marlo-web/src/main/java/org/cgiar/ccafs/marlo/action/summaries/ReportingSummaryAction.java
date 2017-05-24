@@ -47,6 +47,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
+import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.IpElement;
 import org.cgiar.ccafs.marlo.data.model.IpIndicator;
@@ -156,20 +157,17 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   private HashMap<Long, String> targetUnitList;
   private SrfTargetUnitManager srfTargetUnitManager;
   private Project project;
-
+  private Boolean hasW1W2Co;
   // Front-end
   private long projectID;
-
-
   private int year;
-
-
   private String cycle;
-  private GenderTypeManager genderTypeManager;
+
+
   // Managers
   private ProjectManager projectManager;
   private CrpProgramManager programManager;
-
+  private GenderTypeManager genderTypeManager;
   private InstitutionManager institutionManager;
   private ProjectBudgetManager projectBudgetManager;
   private LocElementManager locElementManager;
@@ -780,32 +778,76 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   private TypedTableModel getBudgetsbyPartnersTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"year", "institution", "w1w2", "w3", "bilateral", "center", "institution_id", "p_id", "w1w2Gender",
-        "w3Gender", "bilateralGender", "centerGender", "w1w2GAmount", "w3GAmount", "bilateralGAmount", "centerGAmount"},
+        "w3Gender", "bilateralGender", "centerGender", "w1w2GAmount", "w3GAmount", "bilateralGAmount", "centerGAmount",
+        "w1w2CoFinancing", "w1w2CoFinancingGender", "w1w2CoFinancingGAmount"},
       new Class[] {Integer.class, String.class, String.class, String.class, String.class, String.class, Long.class,
         Long.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class},
+        String.class, String.class, String.class, String.class},
       0);
     // Get ppaPartners of project
     for (ProjectPartner pp : project.getProjectPartners().stream().filter(pp -> pp.isActive())
       .collect(Collectors.toList())) {
       if (this.isPPA(pp.getInstitution())) {
         DecimalFormat myFormatter = new DecimalFormat("###,###.00");
-        String w1w2Budget =
-          myFormatter.format(Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 1, 3)));
-        String w3Budget =
-          myFormatter.format(Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 2, 1)));
-        String bilateralBudget =
-          myFormatter.format(Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 3, 1)));
-        String centerBudget =
-          myFormatter.format(Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 4, 1)));
-        String w1w2Gender = myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 1, 3));
-        String w3Gender = myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 2, 1));
-        String bilateralGender = myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 3, 1));
-        String centerGender = myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 4, 1));
-        String w1w2GAmount = myFormatter.format(this.getTotalGender(pp.getInstitution().getId(), year, 1, 3));
-        String w3GAmount = myFormatter.format(this.getTotalGender(pp.getInstitution().getId(), year, 2, 1));
-        String bilateralGAmount = myFormatter.format(this.getTotalGender(pp.getInstitution().getId(), year, 3, 1));
-        String centerGAmount = myFormatter.format(this.getTotalGender(pp.getInstitution().getId(), year, 4, 1));
+        String w1w2Budget = null;
+        String w1w2CoBudget = null;
+        String w1w2Gender = null;
+        String w1w2CoGender = null;
+        String w1w2GAmount = null;
+        String w1w2CoGAmount = null;
+        // Nuevo
+        if (hasW1W2Co) {
+          w1w2Budget = myFormatter
+            .format(Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 1, project.getId(), 3)));
+          w1w2CoBudget = myFormatter
+            .format(Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 1, project.getId(), 2)));
+
+          w1w2Gender =
+            myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 1, project.getId(), 3) / 100);
+          w1w2CoGender =
+            myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 1, project.getId(), 2) / 100);
+
+          w1w2GAmount =
+            myFormatter.format(this.getTotalGender(pp.getInstitution().getId(), year, 1, project.getId(), 3));
+          w1w2CoGAmount =
+            myFormatter.format(this.getTotalGender(pp.getInstitution().getId(), year, 1, project.getId(), 2));
+        } else {
+          w1w2Budget = myFormatter
+            .format(Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 1, project.getId(), 1)));
+          w1w2Gender =
+            myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 1, project.getId(), 1) / 100);
+          w1w2GAmount =
+            myFormatter.format(this.getTotalGender(pp.getInstitution().getId(), year, 1, project.getId(), 1));
+          w1w2CoBudget = myFormatter.format(0.0);
+          w1w2CoGender = myFormatter.format(0.0);
+          w1w2CoGAmount = myFormatter.format(0.0);
+        }
+
+        String w3Budget = myFormatter
+          .format(Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 2, project.getId(), 1)));
+        String bilateralBudget = myFormatter
+          .format(Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 3, project.getId(), 1)));
+        String centerBudget = myFormatter
+          .format(Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 4, project.getId(), 1)));
+
+
+        String w3Gender =
+          myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 2, project.getId(), 1) / 100);
+        String bilateralGender =
+          myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 3, project.getId(), 1) / 100);
+        String centerGender =
+          myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 4, project.getId(), 1) / 100);
+
+
+        String w3GAmount =
+          myFormatter.format(this.getTotalGender(pp.getInstitution().getId(), year, 2, project.getId(), 1));
+        String bilateralGAmount =
+          myFormatter.format(this.getTotalGender(pp.getInstitution().getId(), year, 3, project.getId(), 1));
+        String centerGAmount =
+          myFormatter.format(this.getTotalGender(pp.getInstitution().getId(), year, 4, project.getId(), 1));
+
+        // End
+
         model.addRow(new Object[] {year, pp.getInstitution().getComposedName(), w1w2Budget, w3Budget, bilateralBudget,
           centerBudget, pp.getInstitution().getId(), projectID, w1w2Gender, w3Gender, bilateralGender, centerGender,
           w1w2GAmount, w3GAmount, bilateralGAmount, centerGAmount});
@@ -815,19 +857,27 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   }
 
   private TypedTableModel getBudgetSummaryTableModel() {
-    TypedTableModel model = new TypedTableModel(new String[] {"year", "w1w2", "w3", "bilateral", "centerfunds"},
-      new Class[] {Integer.class, String.class, String.class, String.class, String.class}, 0);
+    TypedTableModel model =
+      new TypedTableModel(new String[] {"year", "w1w2", "w3", "bilateral", "centerfunds", "w1w2CoFinancing"},
+        new Class[] {Integer.class, String.class, String.class, String.class, String.class, String.class}, 0);
     String w1w2 = null;
     String w3 = null;
     String bilateral = null;
     String centerfunds = null;
+    String w1w2CoFinancing = null;
     // Decimal format
     DecimalFormat myFormatter = new DecimalFormat("###,###.00");
-    w1w2 = myFormatter.format(this.getTotalYear(year, 1));
-    w3 = myFormatter.format(this.getTotalYear(year, 2));
-    bilateral = myFormatter.format(this.getTotalYear(year, 3));
-    centerfunds = myFormatter.format(this.getTotalYear(year, 4));
-    model.addRow(new Object[] {year, w1w2, w3, bilateral, centerfunds});
+
+    if (hasW1W2Co) {
+      w1w2 = myFormatter.format(this.getTotalYear(year, 1, project, 3));
+      w1w2CoFinancing = myFormatter.format(this.getTotalYear(year, 1, project, 2));
+    } else {
+      w1w2 = myFormatter.format(this.getTotalYear(year, 1, project, 1));
+    }
+    w3 = myFormatter.format(this.getTotalYear(year, 2, project, 1));
+    bilateral = myFormatter.format(this.getTotalYear(year, 3, project, 1));
+    centerfunds = myFormatter.format(this.getTotalYear(year, 4, project, 1));
+    model.addRow(new Object[] {year, w1w2, w3, bilateral, centerfunds, w1w2CoFinancing});
     return model;
   }
 
@@ -2009,9 +2059,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     // Initialization of Model
     TypedTableModel model = new TypedTableModel(
       new String[] {"title", "center", "current_date", "project_submission", "cycle", "isNew", "isAdministrative",
-        "type", "isGlobal", "isPhaseOne", "budget_gender", "hasTargetUnit"},
+        "type", "isGlobal", "isPhaseOne", "budget_gender", "hasTargetUnit", "hasW1W2Co"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, Boolean.class, Boolean.class,
-        String.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class});
+        String.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class});
     // Filling title
     String title = "";
     if (projectLeader != null) {
@@ -2102,8 +2152,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     if (targetUnitList.size() > 0) {
       hasTargetUnit = true;
     }
+
     model.addRow(new Object[] {title, centerAcry, currentDate, submission, cycle, isNew, isAdministrative, type,
-      project.isLocationGlobal(), this.isPhaseOne(), hasGender, hasTargetUnit});
+      project.isLocationGlobal(), this.isPhaseOne(), hasGender, hasTargetUnit, hasW1W2Co});
     return model;
   }
 
@@ -2731,8 +2782,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
    * @param budgetType
    * @return String with the total amount.
    */
-  public String getTotalAmount(long institutionId, int year, long budgetType, Integer coFinancing) {
-    return projectBudgetManager.amountByBudgetType(institutionId, year, budgetType, projectID, coFinancing);
+  public String getTotalAmount(long institutionId, int year, long budgetType, Long projectId, Integer coFinancing) {
+    return projectBudgetManager.amountByBudgetType(institutionId, year, budgetType, projectId, coFinancing);
   }
 
   /**
@@ -2743,17 +2794,21 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
    * @param budgetType
    * @return
    */
-  public double getTotalGender(long institutionId, int year, long budgetType, Integer coFinancing) {
+  public double getTotalGender(long institutionId, int year, long budgetType, long projectID, Integer coFinancing) {
+
     List<ProjectBudget> budgets =
       projectBudgetManager.getByParameters(institutionId, year, budgetType, projectID, coFinancing);
+
     double totalGender = 0;
     if (budgets != null) {
       for (ProjectBudget projectBudget : budgets) {
-        double amount = projectBudget.getAmount() != null ? projectBudget.getAmount() : 0;
-        double gender = projectBudget.getGenderPercentage() != null ? projectBudget.getGenderPercentage() : 0;
+        double amount = projectBudget.getAmount() != null ? projectBudget.getAmount() : 0.0;
+        double gender = projectBudget.getGenderPercentage() != null ? projectBudget.getGenderPercentage() : 0.0;
+
         totalGender = totalGender + (amount * (gender / 100));
       }
     }
+
     return totalGender;
   }
 
@@ -2765,10 +2820,14 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
    * @param budgetType
    * @return
    */
-  public double getTotalGenderPer(long institutionId, int year, long budgetType, Integer coFinancing) {
-    String totalAmount = this.getTotalAmount(institutionId, year, budgetType, coFinancing);
+  public double getTotalGenderPer(long institutionId, int year, long budgetType, long projectId, Integer coFinancing) {
+
+    String totalAmount = this.getTotalAmount(institutionId, year, budgetType, projectId, coFinancing);
+
     double dTotalAmount = Double.parseDouble(totalAmount);
-    double totalGender = this.getTotalGender(institutionId, year, budgetType, coFinancing);
+
+    double totalGender = this.getTotalGender(institutionId, year, budgetType, projectId, coFinancing);
+
     if (dTotalAmount != 0) {
       return (totalGender * 100) / dTotalAmount;
     } else {
@@ -2781,16 +2840,49 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
    * 
    * @param year current year in the platform
    * @param type budget type (W1W2/Bilateral/W3/Center funds)
+   * @param coFinancing coFinancing 1: cofinancing+no cofinancing, 2: cofinancing 3: no cofinancing
    * @return total budget in the year and type passed as parameters
    */
-  public double getTotalYear(int year, long type) {
+  public double getTotalYear(int year, long type, Project project, Integer coFinancing) {
     double total = 0;
-    for (ProjectBudget pb : project.getProjectBudgets().stream()
-      .filter(
-        pb -> pb.isActive() && pb.getYear() == year && pb.getBudgetType() != null && pb.getBudgetType().getId() == type)
-      .collect(Collectors.toList())) {
-      total = total + pb.getAmount();
+
+    switch (coFinancing) {
+      case 1:
+        for (ProjectBudget pb : project.getProjectBudgets().stream().filter(pb -> pb.isActive() && pb.getYear() == year
+          && pb.getBudgetType() != null && pb.getBudgetType().getId() == type).collect(Collectors.toList())) {
+          total = total + pb.getAmount();
+        }
+        break;
+      case 2:
+        for (ProjectBudget pb : project.getProjectBudgets().stream()
+          .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getBudgetType() != null
+            && pb.getBudgetType().getId() == type && pb.getFundingSource() != null
+            && pb.getFundingSource().getW1w2() != null && pb.getFundingSource().getW1w2().booleanValue() == true)
+          .collect(Collectors.toList())) {
+          FundingSource fsActual = pb.getFundingSource();
+          Boolean w1w2 = pb.getFundingSource().getW1w2();
+          total = total + pb.getAmount();
+        }
+        break;
+      case 3:
+        for (ProjectBudget pb : project.getProjectBudgets().stream()
+          .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getBudgetType() != null
+            && pb.getBudgetType().getId() == type && pb.getFundingSource() != null
+            && pb.getFundingSource().getW1w2() != null && pb.getFundingSource().getW1w2().booleanValue() == false)
+          .collect(Collectors.toList())) {
+          ProjectBudget pbActual = pb;
+          FundingSource fsActual = pbActual.getFundingSource();
+          Boolean w1w2 = pb.getFundingSource().getW1w2();
+          Boolean validation = pb.getFundingSource().getW1w2().booleanValue() == false;
+
+          total = total + pb.getAmount();
+        }
+        break;
+
+      default:
+        break;
     }
+
     return total;
   }
 
@@ -2872,6 +2964,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         + e.getMessage());
       cycle = this.getCurrentCycle();
     }
+    // get w1w2 co
+    hasW1W2Co = this.hasSpecificities(APConstants.CRP_FS_W1W2_COFINANCING);
 
   }
 
