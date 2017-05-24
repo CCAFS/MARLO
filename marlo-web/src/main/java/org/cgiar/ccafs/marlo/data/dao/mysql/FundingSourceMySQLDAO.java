@@ -167,7 +167,7 @@ public class FundingSourceMySQLDAO implements FundingSourceDAO {
     query.append(
       "funding_source_locations.loc_element_id =" + locElementId + " AND  funding_source_locations.is_active=1 ");
     query.append("project_budgets.is_active = 1 AND  ");
-    query.append("project_budgets.`year` =" + year + " and project_budgets.project_id=" + projectId);
+    query.append("project_budgets.`year` =" + year);
 
     List<Map<String, Object>> rList = dao.findCustomQuery(query.toString());
 
@@ -200,7 +200,7 @@ public class FundingSourceMySQLDAO implements FundingSourceDAO {
     query.append("funding_source_locations.loc_element_type_id =" + locElementTypeId
       + " AND  funding_source_locations.is_active=1 and ");
     query.append("project_budgets.is_active = 1 AND  ");
-    query.append("project_budgets.`year` =" + year + " and project_budgets.project_id=" + projectId);
+    query.append("project_budgets.`year` =" + year);
 
     List<Map<String, Object>> rList = dao.findCustomQuery(query.toString());
 
