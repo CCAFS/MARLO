@@ -32,7 +32,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   private List<FundingSourceBudget> budgets;
 
   private List<FundingSourceInstitution> institutions;
-  private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
 
 
   @Expose
