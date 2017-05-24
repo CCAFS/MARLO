@@ -463,11 +463,11 @@
          
          [#if element.locElementType??]
         [#if element.selected]
-        <div class="acceptLocation [#if editable]iconSelected[/#if]" title="Accept recommended location"> <img src="${baseUrl}/images/global/icon-check.png" alt="" /></div>
+        <div class="acceptLocation [#if editable]iconSelected[/#if]" title="Accept recommended location"></div>
          <input type="hidden" class="recommendedSelected" name="${customName}.selected" value="true"/>  
         [#else]
         <input type="hidden" class="recommendedSelected" name="${customName}.selected" value="false"/>
-        <div class="notAcceptLocation [#if editable]iconSelected[/#if]" title="Accept recommended location"> <img src="${baseUrl}/images/global/checked-false.png" alt="" /></div>
+        <div class="notAcceptLocation [#if editable]iconSelected[/#if]" title="Accept recommended location"></div>
         [/#if]
          [/#if]
     </div>
