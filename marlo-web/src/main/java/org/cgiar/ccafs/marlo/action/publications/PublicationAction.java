@@ -581,8 +581,8 @@ public class PublicationAction extends BaseAction {
     }
     institutions = new HashMap<>();
 
-    for (Institution institution : institutionManager.findAll().stream()
-      .filter(c -> c.isActive() && c.getHeadquarter() == null).collect(Collectors.toList())) {
+    for (Institution institution : institutionManager.findAll().stream().filter(c -> c.isActive())
+      .collect(Collectors.toList())) {
       institutions.put(institution.getId().toString(), institution.getComposedName());
 
     }

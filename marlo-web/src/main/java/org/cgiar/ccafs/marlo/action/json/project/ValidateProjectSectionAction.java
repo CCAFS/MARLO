@@ -53,6 +53,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectLocationElementType;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerContribution;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerOverall;
 import org.cgiar.ccafs.marlo.data.model.ProjectScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
@@ -1019,6 +1020,12 @@ public class ValidateProjectSectionAction extends BaseAction {
       projectPartner.setPartnerContributors(contributors);
       projectPartner.setPartnerPersons(
         projectPartner.getProjectPartnerPersons().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+      projectPartner.setSelectedLocations(new ArrayList<>());
+      for (ProjectPartnerLocation projectPartnerLocation : projectPartner.getProjectPartnerLocations().stream()
+        .filter(c -> c.isActive()).collect(Collectors.toList())) {
+        projectPartner.getSelectedLocations().add(projectPartnerLocation.getInstitutionLocation());
+      }
+
     }
     if (this.isLessonsActive()) {
       this.loadLessons(loggedCrp, project, ProjectSectionStatusEnum.PARTNERS.getStatus());

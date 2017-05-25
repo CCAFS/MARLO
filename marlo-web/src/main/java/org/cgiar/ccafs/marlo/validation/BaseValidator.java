@@ -292,8 +292,10 @@ public class BaseValidator {
 
 
     }
+
     status.setMissingFields(this.missingFields.toString());
     sectionStatusManager.saveSectionStatus(status);
+
   }
 
 
