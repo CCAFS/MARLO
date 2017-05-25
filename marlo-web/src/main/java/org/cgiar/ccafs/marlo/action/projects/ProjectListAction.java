@@ -321,7 +321,12 @@ public class ProjectListAction extends BaseAction {
         project.setModifiedBy(this.getCurrentUser());
 
         boolean deleted = projectManager.deleteProject(project);
+
+
         if (deleted) {
+          for (ProjectPhase projectPhase : project.getProjectPhases()) {
+            projectPhaseManager.deleteProjectPhase(projectPhase.getId());
+          }
           this.addActionMessage(
             "message:" + this.getText("deleting.successProject", new String[] {this.getText("project").toLowerCase()}));
         } else {

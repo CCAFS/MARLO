@@ -324,8 +324,8 @@ public class ProjectLeveragesAction extends BaseAction {
 
     // Getting the list of all institutions
     this.allInstitutions = new HashMap<>();
-    List<Institution> allInstitutions = institutionManager.findAll().stream()
-      .filter(c -> c.isActive() && c.getHeadquarter() == null).collect(Collectors.toList());
+    List<Institution> allInstitutions =
+      institutionManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
     for (Institution institution : allInstitutions) {
       this.allInstitutions.put(String.valueOf(institution.getId()), institution.getComposedName());
     }

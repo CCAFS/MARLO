@@ -91,10 +91,12 @@ public class LocElement implements java.io.Serializable, IAuditLog {
   private Set<Institution> institutions = new HashSet<Institution>(0);
 
   private Set<ProjectLocation> projectLocations = new HashSet<ProjectLocation>(0);
+  private Set<InstitutionLocation> institutionLocations = new HashSet<InstitutionLocation>(0);
 
 
   public LocElement() {
   }
+
 
   public LocElement(LocElementType locElementTypes, LocGeoposition locGeopositions, String name, String isoAlpha2,
     LocElement locElement, Boolean isSiteIntegration, Set<CrpsSiteIntegration> crpsSitesIntegrations,
@@ -123,7 +125,7 @@ public class LocElement implements java.io.Serializable, IAuditLog {
     if (obj == null) {
       return false;
     }
-
+   
     LocElement other = (LocElement) obj;
     if (id == null) {
       if (other.id != null) {
@@ -158,6 +160,10 @@ public class LocElement implements java.io.Serializable, IAuditLog {
   @Override
   public Long getId() {
     return this.id;
+  }
+
+  public Set<InstitutionLocation> getInstitutionLocations() {
+    return institutionLocations;
   }
 
   public Set<Institution> getInstitutions() {
@@ -195,17 +201,16 @@ public class LocElement implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
-
   @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
 
+
   @Override
   public User getModifiedBy() {
     return modifiedBy;
   }
-
 
   public String getName() {
     return this.name;
@@ -215,6 +220,7 @@ public class LocElement implements java.io.Serializable, IAuditLog {
   public Set<ProjectLocation> getProjectLocations() {
     return projectLocations;
   }
+
 
   @Override
   public boolean isActive() {
@@ -247,6 +253,10 @@ public class LocElement implements java.io.Serializable, IAuditLog {
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+  public void setInstitutionLocations(Set<InstitutionLocation> institutionLocations) {
+    this.institutionLocations = institutionLocations;
   }
 
   public void setInstitutions(Set<Institution> institutions) {

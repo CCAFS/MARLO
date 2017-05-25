@@ -606,16 +606,14 @@ public class FundingSourceAction extends BaseAction {
         if (fundingSource.getBudgetType().getId().longValue() == 1) {
 
           institutionsDonors = institutionManager.findAll().stream()
-            .filter(i -> i.isActive() && i.getHeadquarter() == null && i.getInstitutionType().getId().intValue() == 3)
-            .collect(Collectors.toList());
+            .filter(i -> i.isActive() && i.getInstitutionType().getId().intValue() == 3).collect(Collectors.toList());
         } else {
           institutionsDonors = institutionManager.findAll().stream()
-            .filter(i -> i.isActive() && i.getHeadquarter() == null && i.getInstitutionType().getId().intValue() != 3)
-            .collect(Collectors.toList());
+            .filter(i -> i.isActive() && i.getInstitutionType().getId().intValue() != 3).collect(Collectors.toList());
         }
       } else {
-        institutionsDonors = institutionManager.findAll().stream()
-          .filter(i -> i.isActive() && i.getHeadquarter() == null).collect(Collectors.toList());
+        institutionsDonors =
+          institutionManager.findAll().stream().filter(i -> i.isActive()).collect(Collectors.toList());
       }
 
       institutions.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
