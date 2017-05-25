@@ -108,7 +108,7 @@ public class EditCaseStudyInterceptor extends AbstractInterceptor implements Ser
 
       String params[] = {crp.getAcronym(), projectIDParameter};
 
-      if (baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin()) {
+      if (baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin()) {
 
         canEdit = true;
         canSwitchProject = true;
@@ -144,7 +144,7 @@ public class EditCaseStudyInterceptor extends AbstractInterceptor implements Ser
 
       // Check the permission if user want to edit or save the form
       if (editParameter || parameters.get("save") != null) {
-        hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin())) ? true : baseAction
+        hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin())) ? true : baseAction
           .hasPermission(baseAction.generatePermission(Permission.PROJECT_CASE_STUDY_EDIT_PERMISSION, params));
       }
 
@@ -162,7 +162,7 @@ public class EditCaseStudyInterceptor extends AbstractInterceptor implements Ser
           caseStudy
             .getCaseStudyProjects().stream().filter(cs -> cs.isActive()
               && cs.getProject().getId().longValue() == project.getId().longValue() && cs.isCreated())
-            .collect(Collectors.toList()));
+          .collect(Collectors.toList()));
 
       if (caseStudyProjects.isEmpty()) {
         canEdit = false;

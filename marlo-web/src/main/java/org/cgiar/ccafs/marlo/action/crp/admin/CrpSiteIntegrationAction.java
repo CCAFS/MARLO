@@ -196,14 +196,12 @@ public class CrpSiteIntegrationAction extends BaseAction {
   private void notifyNewUserCreated(User user) {
     user = userManager.getUser(user.getId());
     if (!user.isActive()) {
+      String toEmail = user.getEmail();
+      String ccEmail = null;
+      String bbcEmails = this.config.getEmailNotification();
+      String subject = this.getText("email.newUser.subject", new String[] {user.getFirstName()});
 
-      user.setActive(true);
-      // Building the Email message:
-      StringBuilder message = new StringBuilder();
-      message.append(this.getText("email.dear", new String[] {user.getFirstName()}));
-      // message.append(this.getText("email.newUser.part1"));
-
-
+      // Setting the password
       String password = this.getText("email.outlookPassword");
       if (!user.isCgiarUser()) {
         // Generating a random password.
@@ -212,26 +210,35 @@ public class CrpSiteIntegrationAction extends BaseAction {
         user.setPassword(password);
       }
 
-      message.append(this.getText("email.newUser.part1",
-        new String[] {config.getBaseUrl(), user.getEmail(), password, this.getText("global.clusterOfActivities")}));
 
-      // message
-      // .append(this.getText("email.newUser.part3", new String[] {config.getBaseUrl(), user.getEmail(), password}));
-      message.append(this.getText("email.support"));
+      // Building the Email message:
+      StringBuilder message = new StringBuilder();
+      message.append(this.getText("email.dear", new String[] {user.getFirstName()}));
+
+      // get CRPAdmin contacts
+      String crpAdmins = "";
+      long adminRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_ADMIN_ROLE));
+      Role roleAdmin = roleManager.getRoleById(adminRol);
+      List<UserRole> userRoles = roleAdmin.getUserRoles().stream()
+        .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
+      for (UserRole userRole : userRoles) {
+        if (crpAdmins.isEmpty()) {
+          crpAdmins += userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+        } else {
+          crpAdmins += ", " + userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+        }
+      }
+
+      message.append(this.getText("email.newUser.part1", new String[] {this.getText("email.newUser.listRoles"),
+        config.getBaseUrl(), user.getEmail(), password, this.getText("email.support", new String[] {crpAdmins})}));
       message.append(this.getText("email.bye"));
 
       // Saving the new user configuration.
+      user.setActive(true);
       userManager.saveUser(user, this.getCurrentUser());
 
-      String toEmail = null;
-      if (config.isProduction()) {
-        // Send email to the new user and the P&R notification email.
-        // TO
-        toEmail = user.getEmail();
-      }
-      // BBC
-      String bbcEmails = this.config.getEmailNotification();
-      // Send pdf
+
+      // Send UserManual.pdf
       String contentType = "application/pdf";
       String fileName = "Introduction_To_MARLO_v2.1.pdf";
       byte[] buffer = null;
@@ -258,13 +265,9 @@ public class CrpSiteIntegrationAction extends BaseAction {
       }
 
       if (buffer != null && fileName != null && contentType != null) {
-        sendMail.send(toEmail, null, bbcEmails,
-          this.getText("email.newUser.subject", new String[] {user.getComposedName()}), message.toString(), buffer,
-          contentType, fileName, true);
+        sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer, contentType, fileName, true);
       } else {
-        sendMail.send(toEmail, null, bbcEmails,
-          this.getText("email.newUser.subject", new String[] {user.getComposedName()}), message.toString(), null, null,
-          null, true);
+        sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
       }
     }
   }

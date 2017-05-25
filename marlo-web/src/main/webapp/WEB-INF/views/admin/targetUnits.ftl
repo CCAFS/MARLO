@@ -51,18 +51,22 @@
             <div class="clearfix"></div>
           </div>
           <hr />
+             [#if editable]
           <div class="note center">
             If you don’t find the target unit in the list, please <a class="requestPopUp" href=""> click here </a> to request it.
           </div>
+           [/#if]
           [#-- Request target unit --]
         </div>
         
+        [#if editable]
         [#-- Section Buttons--]
         <div class="buttons">
           <div class="buttons-content">
             [@s.submit type="button" name="save" cssClass="button-save"]<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> [@s.text name="form.buttons.save" /][/@s.submit]
           </div>
         </div>
+        [/#if]
         
         [/@s.form]
         
@@ -102,7 +106,12 @@
     <input type="hidden" class="id" name="${customName}.targetUnit.id" value="${(element.targetUnit.id)!}" />
     <input type="hidden" class="name" name="${customName}.targetUnit.name" value="${(element.targetUnit.name)!}" />
     [#-- Check Input --]
-    <span class=" pull-right" > <input [#if element?? && element.targetUnit?? && action.canBeDeletedCrptargetUnit((element.targetUnit.id)!, (element.targetUnit.class.name)!)!][#else]style="opacity:0.5; cursor: not-allowed;" onclick="return false;" onkeydown="e = e || window.event; if(e.keyCode !== 9) return false;"[/#if] type="checkbox" value="true" name="${customName}.check" id="" [#if element.check?? && element.check]checked[/#if] /></span>  
+    <span class=" pull-right" > 
+     [#if editable]
+      <input [#if element?? && element.targetUnit?? && action.canBeDeletedCrptargetUnit((element.targetUnit.id)!, (element.targetUnit.class.name)!)!][#else]style="opacity:0.5; cursor: not-allowed;" onclick="return false;" onkeydown="e = e || window.event; if(e.keyCode !== 9) return false;"[/#if] type="checkbox" value="true" name="${customName}.check" id="" [#if element.check?? && element.check]checked[/#if] />  
+     [#else]
+      [#if element.check?? && element.check]checked[/#if]
+     [/#if] </span>
     [#-- Icon --]
     <span class="glyphicon glyphicon-scale"></span>  
     [#-- Name --]

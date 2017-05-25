@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
+import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
@@ -78,6 +79,7 @@ public class GuestUsersAction extends BaseAction {
   private UserRoleManager userRoleManager;
 
   private CrpUserManager crpUserManager;
+  private RoleManager roleManager;
 
   private SendMailS sendMailS;
 
@@ -95,13 +97,14 @@ public class GuestUsersAction extends BaseAction {
 
   @Inject
   public GuestUsersAction(APConfig config, UserManager userManager, CrpManager crpManager,
-    CrpUserManager crpUserManager, UserRoleManager userRoleManager, SendMailS sendMailS) {
+    CrpUserManager crpUserManager, UserRoleManager userRoleManager, SendMailS sendMailS, RoleManager roleManager) {
     super(config);
     this.userManager = userManager;
     this.crpManager = crpManager;
     this.crpUserManager = crpUserManager;
     this.userRoleManager = userRoleManager;
     this.sendMailS = sendMailS;
+    this.roleManager = roleManager;
   }
 
   public List<Crp> getCrps() {
@@ -245,21 +248,39 @@ public class GuestUsersAction extends BaseAction {
   }
 
   public void sendMailNewUser(User user, Crp crp) throws NoSuchAlgorithmException {
-    // Building the Email message:
-    StringBuilder message = new StringBuilder();
-    message.append(this.getText("email.dear", new String[] {user.getFirstName()}));
+    String toEmail = user.getEmail();
+    String ccEmail = null;
+    String bbcEmails = this.config.getEmailNotification();
+    String subject = this.getText("email.newUser.subject", new String[] {user.getFirstName()});
+    // Setting the password
     String password = this.getText("email.outlookPassword");
     if (!user.isCgiarUser()) {
       password = this.user.getPassword();
+      // Applying the password to the user.
+      user.setPassword(password);
     }
+
+    // get CRPAdmin contacts
+    String crpAdmins = "";
+    long adminRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_ADMIN_ROLE));
+    Role roleAdmin = roleManager.getRoleById(adminRol);
+    List<UserRole> userRoles = roleAdmin.getUserRoles().stream()
+      .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
+    for (UserRole userRole : userRoles) {
+      if (crpAdmins.isEmpty()) {
+        crpAdmins += userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+      } else {
+        crpAdmins += ", " + userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+      }
+    }
+
+    // Building the Email message:
+    StringBuilder message = new StringBuilder();
+    message.append(this.getText("email.dear", new String[] {user.getFirstName()}));
+
     message.append(this.getText("email.newUser.part2",
-      new String[] {config.getBaseUrl(), user.getEmail(), password, crp.getName()}));
-    message.append(this.getText("email.support"));
-    message.append(this.getText("email.bye"));
-
-
-    message.append(this.getText("email.newUser.part1", new String[] {config.getBaseUrl(), user.getEmail(), password}));
-    message.append(this.getText("email.support"));
+      new String[] {this.getText("global.sClusterOfActivities").toLowerCase(), config.getBaseUrl(), crp.getName(),
+        user.getEmail(), password, this.getText("email.support", new String[] {crpAdmins})}));
     message.append(this.getText("email.bye"));
 
     // Send pdf
@@ -287,16 +308,11 @@ public class GuestUsersAction extends BaseAction {
         }
       }
     }
-    String bbcEmails = this.config.getEmailNotification();
 
     if (buffer != null && fileName != null && contentType != null) {
-      sendMailS.send(user.getEmail(), null, bbcEmails,
-        this.getText("email.newUser.subject", new String[] {user.getComposedName()}), message.toString(), buffer,
-        contentType, fileName, true);
+      sendMailS.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer, contentType, fileName, true);
     } else {
-      sendMailS.send(user.getEmail(), null, bbcEmails,
-        this.getText("email.newUser.subject", new String[] {user.getComposedName()}), message.toString(), null, null,
-        null, true);
+      sendMailS.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
     }
 
   }

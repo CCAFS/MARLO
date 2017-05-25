@@ -20,12 +20,15 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.SubmissionManager;
+import org.cgiar.ccafs.marlo.data.model.CrpClusterActivityLeader;
+import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.Submission;
+import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 
@@ -127,52 +130,15 @@ public class UnsubmitProjectAction extends BaseAction {
   }
 
   private void sendNotficationEmail(Project project) {
-    // Building the email message
-    StringBuilder message = new StringBuilder();
-    String[] values = new String[6];
-    values[0] = this.getCurrentUser().getComposedCompleteName();
-    values[1] = project.getCrp().getName();
-    values[2] = project.getTitle();
-    values[3] = String.valueOf(this.getCurrentCycleYear());
-    values[4] = this.getCurrentCycle().toLowerCase();
-    values[5] = justification;
-
-    String subject = null;
-    message.append(this.getText("unsubmit.email.message", values));
-    message.append(this.getText("email.support"));
-    message.append(this.getText("email.bye"));
-    subject = this.getText("unsubmit.email.subject", new String[] {project.getCrp().getName(),
-      String.valueOf(project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER))});
-
-
-    String toEmail = null;
-    String ccEmail = null;
-
-    StringBuilder toEmails = new StringBuilder();
-
+    String toEmail = "";
     // Add project leader
     if (project.getLeaderPerson() != null
       && project.getLeaderPerson().getUser().getId() != this.getCurrentUser().getId()) {
-      toEmails.append(project.getLeaderPerson().getUser().getEmail());
-      toEmails.append(", ");
-    }
-    // Add project coordinator(s)
-    for (ProjectPartnerPerson projectPartnerPerson : project.getCoordinatorPersons()) {
-      if (projectPartnerPerson.getUser().getId() != this.getCurrentUser().getId()) {
-        toEmails.append(projectPartnerPerson.getUser().getEmail());
-        toEmails.append(", ");
-      }
+      toEmail = project.getLeaderPerson().getUser().getEmail();
     }
 
-    // CC will be the other MLs.
-    toEmail = toEmails.toString().isEmpty() ? null : toEmails.toString();
-    // Detect if a last ; was added to CC and remove it
-    if (toEmail != null && toEmail.length() > 0 && toEmail.charAt(toEmail.length() - 2) == ',') {
-      // Send email to the user that is submitting the project.
-      // TO
-      toEmail = toEmail.substring(0, toEmail.length() - 2);
-    }
-
+    // CC Emails
+    String ccEmail = "";
     StringBuilder ccEmails = new StringBuilder();
 
     ccEmails.append(this.getCurrentUser().getEmail());
@@ -198,9 +164,41 @@ public class UnsubmitProjectAction extends BaseAction {
           ccEmails.append(crpProgramLeader.getUser().getEmail());
           ccEmails.append(", ");
         }
+        // CC will be also other Cluster Leaders
+        for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
+          .filter(cl -> cl.isActive()).collect(Collectors.toList())) {
+          for (CrpClusterActivityLeader crpClusterActivityLeader : crpClusterOfActivity.getCrpClusterActivityLeaders()
+            .stream().filter(cl -> cl.isActive()).collect(Collectors.toList())) {
+            ccEmails.append(crpClusterActivityLeader.getUser().getEmail());
+            ccEmails.append(", ");
+          }
+        }
       }
     }
 
+    // Add project coordinator(s)
+    for (ProjectPartnerPerson projectPartnerPerson : project.getCoordinatorPersons()) {
+      if (projectPartnerPerson.getUser().getId() != this.getCurrentUser().getId()) {
+        ccEmails.append(projectPartnerPerson.getUser().getEmail());
+        ccEmails.append(", ");
+      }
+    }
+
+    // CC will be also the CRP Admins
+    String crpAdmins = "";
+    long adminRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_ADMIN_ROLE));
+    Role roleAdmin = roleManager.getRoleById(adminRol);
+    List<UserRole> userRoles = roleAdmin.getUserRoles().stream()
+      .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
+    for (UserRole userRole : userRoles) {
+      ccEmails.append(userRole.getUser().getEmail());
+      ccEmails.append(", ");
+      if (crpAdmins.isEmpty()) {
+        crpAdmins += userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+      } else {
+        crpAdmins += ", " + userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+      }
+    }
 
     ccEmail = ccEmails.toString().isEmpty() ? null : ccEmails.toString();
     // Detect if a last ; was added to CC and remove it
@@ -210,6 +208,31 @@ public class UnsubmitProjectAction extends BaseAction {
 
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
+
+    // subject
+    String subject = this.getText("unsubmit.email.subject", new String[] {project.getCrp().getName(),
+      String.valueOf(project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER))});
+
+    // Building the email message
+    StringBuilder message = new StringBuilder();
+    String[] values = new String[8];
+    String plName = "";
+    if (project.getLeaderPerson() != null
+      && project.getLeaderPerson().getUser().getId() != this.getCurrentUser().getId()) {
+      plName = project.getLeaderPerson().getUser().getFirstName();
+    }
+    values[0] = plName;
+    values[1] = this.getCurrentUser().getFirstName();
+    values[2] = project.getCrp().getName();
+    values[3] = project.getTitle();
+    values[4] = String.valueOf(project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER));
+    values[5] = String.valueOf(this.getCurrentCycleYear());
+    values[6] = this.getCurrentCycle().toLowerCase();
+    values[7] = justification;
+
+    message.append(this.getText("unsubmit.email.message", values));
+    message.append(this.getText("email.support", new String[] {crpAdmins}));
+    message.append(this.getText("email.bye"));
 
     sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
   }
