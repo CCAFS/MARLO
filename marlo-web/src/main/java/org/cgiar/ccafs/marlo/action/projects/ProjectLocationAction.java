@@ -1016,6 +1016,11 @@ public class ProjectLocationAction extends BaseAction {
 
     }
 
+
+    if (project.getCountryFS() == null) {
+      project.setCountryFS(new ArrayList<>());
+    }
+
     for (CountryFundingSources countryFundingSources : project.getCountryFS()) {
 
       ProjectLocation projectLocationSave = new ProjectLocation();
@@ -1327,6 +1332,10 @@ public class ProjectLocationAction extends BaseAction {
       } else {
         regionsSaved.add(projectLocation.getLocElement());
       }
+    }
+
+    if (project.getRegionFS() == null) {
+      project.setRegionFS(new ArrayList<>());
     }
 
     for (CountryFundingSources countryFundingSources : project.getRegionFS()) {
