@@ -406,8 +406,6 @@ public class ValidateProjectSectionAction extends BaseAction {
 
 
       case LEVERAGES:
-
-
         sectionStatus =
           sectionStatusManager.getSectionStatusByProject(projectID, cycle, this.getCurrentCycleYear(), sectionName);
         section = new HashMap<String, Object>();
@@ -538,22 +536,13 @@ public class ValidateProjectSectionAction extends BaseAction {
 
           locationElementType =
             projectLocationElementTypeManager.getByProjectAndElementType(projectID, elementType.getId());
-
           countryLocationLevel.setList(true);
-          if (locationElementType != null) {
-            countryLocationLevel.setAllCountries(locationElementType.getIsGlobal());
-          }
         } else {
           countryLocationLevel.setList(false);
-          countryLocationLevel.setAllCountries(false);
         }
-
         locationLevels.add(countryLocationLevel);
       }
-
-
     }
-
     return locationLevels;
   }
 

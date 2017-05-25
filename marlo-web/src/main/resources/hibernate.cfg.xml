@@ -154,8 +154,11 @@
 	  <mapping resource="xmls/FundingSourceLocations.hbm.xml" /> 
 	  <mapping resource="xmls/InstitutionsLocations.hbm.xml"/>
 	  <mapping resource="xmls/ProjectPartnerLocations.hbm.xml"/>
+<<<<<<< HEAD
     <mapping resource="xmls/Parameters.hbm.xml" />   
     <mapping resource="xmls/CustomParameters.hbm.xml" />   	  
+=======
+>>>>>>> refs/heads/dev-locations_fundingSources
 	</session-factory>
 </hibernate-configuration>
 
