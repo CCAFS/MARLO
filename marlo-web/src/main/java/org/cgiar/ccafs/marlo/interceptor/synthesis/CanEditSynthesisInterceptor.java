@@ -125,7 +125,7 @@ public class CanEditSynthesisInterceptor extends AbstractInterceptor implements 
 
     String params[] = {crp.getAcronym(), program.getId() + "",};
 
-    if (baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin()) {
+    if (baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin()) {
       canEdit = true;
     } else {
       if (baseAction.hasPermission(baseAction.generatePermission(Permission.SYNTHESIS_BY_MOG_PERMISSION, params))) {
@@ -148,7 +148,7 @@ public class CanEditSynthesisInterceptor extends AbstractInterceptor implements 
 
     // Check the permission if user want to edit or save the form
     if (editParameter || parameters.get("save") != null) {
-      hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin())) ? true
+      hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin())) ? true
         : baseAction.hasPermission(baseAction.generatePermission(Permission.SYNTHESIS_BY_MOG_PERMISSION, params));
     }
 
