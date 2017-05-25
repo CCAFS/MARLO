@@ -396,8 +396,8 @@ public class ProjectLocationAction extends BaseAction {
   }
 
   /**
-   * 
-   */
+  * 
+  */
   public void locationLevels() {
 
     locationsLevels = new ArrayList<>();
