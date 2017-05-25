@@ -84,7 +84,7 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
 
     if (project != null) {
       String params[] = {crp.getAcronym(), project.getId() + ""};
-      if (baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin()) {
+      if (baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin()) {
         canEdit = true;
       } else {
         List<FundingSource> projects = fundingSourceManager.getFundingSource(user.getId(), crp.getAcronym());
@@ -112,7 +112,7 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
 
       // Check the permission if user want to edit or save the form
       if (editParameter || parameters.get("save") != null) {
-        hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin())) ? true : baseAction
+        hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin())) ? true : baseAction
           .hasPermission(baseAction.generatePermission(Permission.PROJECT_FUNDING_SOURCE_BASE_PERMISSION, params));
       }
 

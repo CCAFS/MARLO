@@ -95,7 +95,7 @@ public class EditHighLightInterceptor extends AbstractInterceptor implements Ser
 
       String params[] = {crp.getAcronym(), projectHighlight.getProject().getId() + ""};
 
-      if (baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin()) {
+      if (baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin()) {
 
         canEdit = true;
         canSwitchProject = true;
@@ -117,7 +117,7 @@ public class EditHighLightInterceptor extends AbstractInterceptor implements Ser
 
         }
 
-   
+
       }
 
       // TODO Validate is the project is new
@@ -131,7 +131,7 @@ public class EditHighLightInterceptor extends AbstractInterceptor implements Ser
 
       // Check the permission if user want to edit or save the form
       if (editParameter || parameters.get("save") != null) {
-        hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin())) ? true : baseAction
+        hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin())) ? true : baseAction
           .hasPermission(baseAction.generatePermission(Permission.PROJECT_DELIVERABLE_LIST_EDIT_PERMISSION, params));
       }
 

@@ -84,7 +84,7 @@ public class PublicationInterceptor extends AbstractInterceptor implements Seria
     if (project != null) {
       String params[] = {crp.getAcronym()};
       String paramDeliverableID[] = {crp.getAcronym(), project.getId() + ""};
-      if (baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin()) {
+      if (baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin()) {
         canEdit = true;
       } else {
 
@@ -110,7 +110,7 @@ public class PublicationInterceptor extends AbstractInterceptor implements Seria
         }
       }
       if (editParameter || parameters.get("save") != null) {
-        hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin())) ? true
+        hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin())) ? true
           : baseAction.hasPermission(baseAction.generatePermission(Permission.PUBLICATION_FULL_PERMISSION, params))
             || baseAction
               .hasPermission(baseAction.generatePermission(Permission.PUBLICATION_INSTITUTION, paramDeliverableID))

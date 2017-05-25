@@ -95,7 +95,7 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
 
       String params[] = {crp.getAcronym(), deliverable.getProject().getId() + ""};
 
-      if (baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin()) {
+      if (baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin() || baseAction.canAcessCrpAdmin()) {
 
         if (!baseAction.isSubmit(deliverable.getProject().getId())) {
 
@@ -122,7 +122,7 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
 
         }
 
-      
+
       }
 
       // TODO Validate is the project is new
@@ -136,8 +136,10 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
 
       // Check the permission if user want to edit or save the form
       if (editParameter || parameters.get("save") != null) {
-        hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin())) ? true : baseAction
-          .hasPermission(baseAction.generatePermission(Permission.PROJECT_DELIVERABLE_LIST_EDIT_PERMISSION, params));
+        hasPermissionToEdit =
+          ((baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin() || baseAction.canAcessCrpAdmin())) ? true
+            : baseAction.hasPermission(
+              baseAction.generatePermission(Permission.PROJECT_DELIVERABLE_LIST_EDIT_PERMISSION, params));
       }
 
       if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
