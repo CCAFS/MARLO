@@ -143,7 +143,10 @@ public class CrpUsersAction extends BaseAction {
         for (LiaisonUser liaisonUser : user.getLiasonsUsers().stream().filter(c -> c.isActive()
           && c.getLiaisonInstitution().isActive() && c.getLiaisonInstitution().getCrpProgram() == null)
           .collect(Collectors.toList())) {
-          relations.add(liaisonUser.getLiaisonInstitution().getAcronym());
+          if (!relations.contains(liaisonUser.getLiaisonInstitution().getAcronym())) {
+            relations.add(liaisonUser.getLiaisonInstitution().getAcronym());
+          }
+
         }
         break;
       case "PL":
