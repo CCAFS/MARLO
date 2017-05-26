@@ -425,10 +425,10 @@ public class CrpProgamRegionsAction extends BaseAction {
     String toEmail = userAssigned.getEmail();
     // CC will be the user who is making the modification.
     String ccEmail = this.getCurrentUser().getEmail();
-    // CC will be also others RPM
+    // CC will be also others leaders
     crpProgram = crpProgramManager.getCrpProgramById(crpProgram.getId());
-    for (CrpProgramLeader crpProgramLeader : crpProgram.getCrpProgramLeaders().stream()
-      .filter(cp -> cp.isActive() && cp.isManager()).collect(Collectors.toList())) {
+    for (CrpProgramLeader crpProgramLeader : crpProgram.getCrpProgramLeaders().stream().filter(cp -> cp.isActive())
+      .collect(Collectors.toList())) {
       if (ccEmail.isEmpty()) {
         ccEmail += crpProgramLeader.getUser().getEmail();
       } else {
