@@ -10,7 +10,7 @@
     <div class="container"> 
       <div class="borderBox center">
         <p class="errorText primary">[@s.text name="server.error.401" /]</p> 
-        <div class="col-md-10 col-md-offset-1">
+        <div class="col-md-6 col-md-offset-3">
           [#-- Login Form --]
           [#include "/WEB-INF/global/pages/loginForm.ftl" /]
         </div>
