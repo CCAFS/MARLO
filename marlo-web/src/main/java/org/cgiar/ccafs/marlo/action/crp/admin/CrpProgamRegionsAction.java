@@ -379,7 +379,7 @@ public class CrpProgamRegionsAction extends BaseAction {
 
       // Send UserManual.pdf
       String contentType = "application/pdf";
-      String fileName = "`_v2.1.pdf";
+      String fileName = "Introduction_To_MARLO_v2.1.pdf";
       byte[] buffer = null;
       InputStream inputStream = null;
 
