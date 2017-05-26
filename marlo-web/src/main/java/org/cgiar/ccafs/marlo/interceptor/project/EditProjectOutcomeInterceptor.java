@@ -90,7 +90,7 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
     if (project != null && project.isActive()) {
 
       String params[] = {crp.getAcronym(), project.getProject().getId() + ""};
-      if (baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin()) {
+      if (baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin()) {
         if (!baseAction.isSubmit(project.getProject().getId())) {
 
           canSwitchProject = true;
@@ -132,7 +132,7 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
 
       // Check the permission if user want to edit or save the form
       if (editParameter || parameters.get("save") != null) {
-        hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin())) ? true : baseAction
+        hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin())) ? true : baseAction
           .hasPermission(baseAction.generatePermission(Permission.PROJECT_CONTRIBRUTIONCRP_EDIT_PERMISSION, params));
       }
 

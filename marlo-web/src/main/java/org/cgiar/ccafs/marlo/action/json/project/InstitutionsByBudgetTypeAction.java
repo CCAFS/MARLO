@@ -68,13 +68,11 @@ public class InstitutionsByBudgetTypeAction extends BaseAction {
 
     if (budgetTypeID == 1) {
       institutionsType = institutionManager.findAll().stream()
-        .filter(i -> i.isActive() && i.getHeadquarter() == null && i.getInstitutionType().getId().intValue() == 3)
-        .collect(Collectors.toList());
+        .filter(i -> i.isActive() && i.getInstitutionType().getId().intValue() == 3).collect(Collectors.toList());
 
     } else {
       institutionsType = institutionManager.findAll().stream()
-        .filter(i -> i.isActive() && i.getHeadquarter() == null && i.getInstitutionType().getId().intValue() != 3)
-        .collect(Collectors.toList());
+        .filter(i -> i.isActive() && i.getInstitutionType().getId().intValue() != 3).collect(Collectors.toList());
 
     }
 

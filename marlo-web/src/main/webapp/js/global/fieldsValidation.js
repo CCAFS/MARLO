@@ -20,7 +20,7 @@ function missingFields(errorList) {
   if(errorList.length != 0) {
     errorList.each(function(i,e) {
       var list = $(e).html();
-      var fieldName = list.split(":")[0].split("-")[1];
+      var fieldName = list.split(":")[0].split(/-(.+)/)[1];
       var type = list.split(":")[0].split("-")[0];
       var message = list.split(":")[1];
 
@@ -56,7 +56,8 @@ function getListElement(fieldName,message) {
 
 function getInputElement(fieldName,message) {
   var elementQuery = $("input[name='" + fieldName + "']");
-// validate if it's input
+  console.log(elementQuery);
+  // validate if it's input
   if(elementQuery.length == 0) {
     // validate if it's textaera
     elementQuery = $("textarea[name='" + fieldName + "']");

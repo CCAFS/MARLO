@@ -6,6 +6,7 @@ import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.CaseStudy;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -133,6 +134,34 @@ public class BaseValidator {
   }
 
   /**
+   * This method saves the missing fields into the database for a section at project Outcome level.
+   * 
+   * @param fundingSource is a funding Source
+   * @param cycle could be 'Planning' or 'Reporting'
+   * @param sectionName is the name of the section inside deliverables.
+   */
+  protected void saveMissingFields(FundingSource fundingSource, String cycle, Integer year, String sectionName) {
+    // Reporting missing fields into the database.
+    int a = 0;
+    System.out.println(a);
+    SectionStatus status =
+      sectionStatusManager.getSectionStatusByFundingSource(fundingSource.getId(), cycle, year, sectionName);
+    if (status == null) {
+
+      status = new SectionStatus();
+      status.setCycle(cycle);
+      status.setYear(year);
+      status.setFundingSource(fundingSource);
+      status.setSectionName(sectionName);
+
+
+    }
+    status.setMissingFields(this.missingFields.toString());
+    sectionStatusManager.saveSectionStatus(status);
+    this.missingFields.setLength(0);
+  }
+
+  /**
    * This method saves the missing fields into the database for a section at deliverable level.
    * 
    * @param ipLiaisonInstitution is a ipLiaisonInstitution.
@@ -214,6 +243,7 @@ public class BaseValidator {
     this.missingFields.setLength(0);
   }
 
+
   /**
    * This method saves the missing fields into the database for a section at project Case Study level.
    * 
@@ -241,7 +271,6 @@ public class BaseValidator {
     this.missingFields.setLength(0);
   }
 
-
   /**
    * This method saves the missing fields into the database for a section at project level.
    * 
@@ -263,9 +292,12 @@ public class BaseValidator {
 
 
     }
+
     status.setMissingFields(this.missingFields.toString());
     sectionStatusManager.saveSectionStatus(status);
+
   }
+
 
   /**
    * This method saves the missing fields into the database for a section at project Outcome level.

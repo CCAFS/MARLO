@@ -23,8 +23,13 @@
     <li>
       <ul>
         [#list items as item]
+          [#assign hasDraft = (action.getAutoSaveFilePath(selectedProgram.class.simpleName, item.action, selectedProgram.id))!false /]
           <li id="menu-${item.action}" class="[#if item.slug == currentStage]currentSection[/#if] ${action.getImpactSectionStatus(item.action, crpProgramID)?string('submitted','toSubmit')} ${(item.active)?string('enabled','disabled')}">
             <a href="[@s.url action="${crpSession}/${item.action}"][@s.param name="crpProgramID" value=crpProgramID /][@s.param name="edit" value="true"/][/@s.url]" onclick="return ${item.active?string}" class="action-${crpSession}/${item.action}">
+              [#-- Draft Tag 
+              [#if hasDraft][@s.text name="message.fieldsCheck.draft" ][@s.param]section[/@s.param][/@s.text][/#if]
+              --]
+              [#-- Name --]
               [@s.text name=item.name/]
             </a>
           </li>

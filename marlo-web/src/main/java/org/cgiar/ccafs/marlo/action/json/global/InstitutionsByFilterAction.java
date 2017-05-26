@@ -46,9 +46,8 @@ public class InstitutionsByFilterAction extends BaseAction {
     LocElement country = new LocElement();
     country.setId(countryID);
 
-    institutions =
-      institutionManager.findAll().stream().filter(c -> c.getInstitutionType().getId().longValue() == type.getId()
-        && c.getLocElement().getId().longValue() == country.getId()).collect(Collectors.toList());
+    institutions = institutionManager.findAll().stream()
+      .filter(c -> c.getInstitutionType().getId().longValue() == type.getId()).collect(Collectors.toList());
     LOG.info("The list of institutions by country='{}' and type='{}' was loaded.", countryID, institutionTypeID);
     return SUCCESS;
   }

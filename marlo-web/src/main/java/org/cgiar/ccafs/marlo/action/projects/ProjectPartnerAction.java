@@ -22,12 +22,14 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
+import org.cgiar.ccafs.marlo.data.manager.InstitutionLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectComponentLessonManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerContributionManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerOverallManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
@@ -36,18 +38,22 @@ import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrpClusterActivityLeader;
+import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerContribution;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerOverall;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.Role;
@@ -130,6 +136,9 @@ public class ProjectPartnerAction extends BaseAction {
   private RoleManager roleManager;
   private ProjectManager projectManager;
   private CrpPpaPartnerManager crpPpaPartnerManager;
+  private ProjectPartnerLocationManager projectPartnerLocationManager;
+  private InstitutionLocationManager institutionLocationManager;
+
   private CrpManager crpManager;
 
   private CrpUserManager crpUserManager;
@@ -168,18 +177,21 @@ public class ProjectPartnerAction extends BaseAction {
     ProjectPartnerPersonManager projectPartnerPersonManager, AuditLogManager auditLogManager,
     ProjectComponentLesson projectComponentLesson, ProjectPartnersValidator projectPartnersValidator,
     HistoryComparator historyComparator, ProjectComponentLessonManager projectComponentLessonManager,
-    CrpUserManager crpUserManager) {
+    CrpUserManager crpUserManager, ProjectPartnerLocationManager projectPartnerLocationManager,
+    InstitutionLocationManager institutionLocationManager) {
     super(config);
     this.projectPartnersValidator = projectPartnersValidator;
     this.auditLogManager = auditLogManager;
     this.projectPartnerManager = projectPartnerManager;
     this.institutionManager = institutionManager;
     this.institutionTypeManager = institutionTypeManager;
+    this.projectPartnerLocationManager = projectPartnerLocationManager;
     this.locationManager = locationManager;
     this.historyComparator = historyComparator;
     this.projectManager = projectManager;
     this.userManager = userManager;
     this.crpManager = crpManager;
+    this.institutionLocationManager = institutionLocationManager;
     this.crpPpaPartnerManager = crpPpaPartnerManager;
     this.projectPartnerOverallManager = projectPartnerOverallManager;
     this.sendMail = sendMail;
@@ -376,76 +388,84 @@ public class ProjectPartnerAction extends BaseAction {
    * @param leader is a PartnerPerson object that could be the leader or the coordinator.
    */
   private void notifyNewUserCreated(User user) {
-    user = userManager.getUser(user.getId());
-    Project project = projectManager.getProjectById(this.projectID);
-    if (!user.isActive()) {
 
-      user.setActive(true);
-      // Building the Email message:
-      StringBuilder message = new StringBuilder();
-      message.append(this.getText("email.dear", new String[] {user.getFirstName()}));
-      // message.append(this.getText("email.newUser.part1"));
-      // message.append(this.getText("email.newUser.part2"));
+    if (user != null && user.getId() != null) {
+      user = userManager.getUser(user.getId());
 
-      String password = this.getText("email.outlookPassword");
-      if (!user.isCgiarUser()) {
-        // Generating a random password.
-        password = RandomStringUtils.randomNumeric(6);
-        // Applying the password to the user.
-        user.setPassword(password);
-      }
-      message
-        .append(this.getText("email.newUser.part1", new String[] {config.getBaseUrl(), user.getEmail(), password}));
-      message.append(this.getText("email.support"));
-      message.append(this.getText("email.bye"));
+      if (!user.isActive()) {
+        String toEmail = user.getEmail();
+        String ccEmail = "";
+        String bbcEmails = this.config.getEmailNotification();
+        String subject = this.getText("email.newUser.subject", new String[] {user.getFirstName()});
+        // Setting the password
+        String password = this.getText("email.outlookPassword");
+        if (!user.isCgiarUser()) {
+          // Generating a random password.
+          password = RandomStringUtils.randomNumeric(6);
+          // Applying the password to the user.
+          user.setPassword(password);
+        }
 
-      // Saving the new user configuration.
-      userManager.saveUser(user, this.getCurrentUser());
+        // Building the Email message:
+        StringBuilder message = new StringBuilder();
+        message.append(this.getText("email.dear", new String[] {user.getFirstName()}));
 
-      String toEmail = null;
-
-      // Send email to the new user and the P&R notification email.
-      // TO
-      toEmail = user.getEmail();
-
-      // BBC
-      String bbcEmails = this.config.getEmailNotification();
-      // Send pdf
-      String contentType = "application/pdf";
-      String fileName = "MARLO_UserManual_V1.1.pdf";
-      byte[] buffer = null;
-      InputStream inputStream = null;
-
-      try {
-        inputStream = this.getClass().getResourceAsStream("/manual/MARLO_UserManual_20170111_AV_HT_AW.pdf");
-        buffer = readFully(inputStream);
-      } catch (FileNotFoundException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      } finally {
-        if (inputStream != null) {
-          try {
-            inputStream.close();
-          } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        // get CRPAdmin contacts
+        String crpAdmins = "";
+        long adminRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_ADMIN_ROLE));
+        Role roleAdmin = roleManager.getRoleById(adminRol);
+        List<UserRole> userRoles = roleAdmin.getUserRoles().stream()
+          .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
+        for (UserRole userRole : userRoles) {
+          if (crpAdmins.isEmpty()) {
+            crpAdmins += userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+          } else {
+            crpAdmins += ", " + userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
           }
         }
-      }
 
-      if (buffer != null && fileName != null && contentType != null) {
-        sendMail.send(toEmail, null, bbcEmails,
-          this.getText("email.newUser.subject", new String[] {user.getComposedName()}), message.toString(), buffer,
-          contentType, fileName, true);
-      } else {
-        sendMail.send(toEmail, null, bbcEmails,
-          this.getText("email.newUser.subject", new String[] {user.getComposedName()}), message.toString(), null, null,
-          null, true);
+        message.append(this.getText("email.newUser.part1", new String[] {this.getText("email.newUser.listRoles"),
+          config.getBaseUrl(), user.getEmail(), password, this.getText("email.support", new String[] {crpAdmins})}));
+        message.append(this.getText("email.bye"));
+
+        // Saving the new user configuration.
+        user.setActive(true);
+        userManager.saveUser(user, this.getCurrentUser());
+
+        // Send UserManual.pdf
+        String contentType = "application/pdf";
+        String fileName = "Introduction_To_MARLO_v2.1.pdf";
+        byte[] buffer = null;
+        InputStream inputStream = null;
+
+        try {
+          inputStream = this.getClass().getResourceAsStream("/manual/Introduction_To_MARLO_v2.1.pdf");
+          buffer = readFully(inputStream);
+        } catch (FileNotFoundException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        } catch (IOException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        } finally {
+          if (inputStream != null) {
+            try {
+              inputStream.close();
+            } catch (IOException e) {
+              // TODO Auto-generated catch block
+              e.printStackTrace();
+            }
+          }
+        }
+
+        if (buffer != null && fileName != null && contentType != null) {
+          sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer, contentType, fileName, true);
+        } else {
+          sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+        }
       }
     }
+
   }
 
   /**
@@ -455,86 +475,114 @@ public class ProjectPartnerAction extends BaseAction {
    * @param role is the role (Project Leader or Project Coordinator).
    */
   private void notifyRoleAssigned(User userAssigned, Role role) {
-    String projectRole = null;
-    Project project = projectManager.getProjectById(this.projectID);
-    if (role.getId() == plRole.getId()) {
-      projectRole = this.getText("projectPartners.types.PL");
-    } else {
-      projectRole = this.getText("projectPartners.types.PC");
-    }
     userAssigned = userManager.getUser(userAssigned.getId());
+    Project project = projectManager.getProjectById(this.projectID);
+
+    // TO will be the new user
+    String toEmail = userAssigned.getEmail();
+    // CC will be the user who is making the modification.
+    String ccEmail = this.getCurrentUser().getEmail();
+    // CC will be also the CRP Admins
+    String crpAdmins = "";
+    String crpAdminsEmail = "";
+    long adminRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_ADMIN_ROLE));
+    Role roleAdmin = roleManager.getRoleById(adminRol);
+    List<UserRole> userRoles = roleAdmin.getUserRoles().stream()
+      .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
+    for (UserRole userRole : userRoles) {
+      if (crpAdmins.isEmpty()) {
+        crpAdmins += userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+        crpAdminsEmail += userRole.getUser().getEmail();
+
+      } else {
+        crpAdmins += ", " + userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+        crpAdminsEmail += ", " + userRole.getUser().getEmail();
+      }
+    }
+    if (!crpAdminsEmail.isEmpty()) {
+      if (ccEmail.isEmpty()) {
+        ccEmail += crpAdminsEmail;
+      } else {
+        ccEmail += ", " + crpAdminsEmail;
+      }
+    }
+    // CC for leaders and coordinators
+    // CC will be also the Management Liaison associated with the flagship(s), if is PMU only the PMU contact
+    Long crpPmuRole = Long.parseLong((String) this.getSession().get(APConstants.CRP_PMU_ROLE));
+    Role roleCrpPmu = roleManager.getRoleById(crpPmuRole);
+    // If Managment liason is PMU
+    if (project.getLiaisonInstitution() != null && project.getLiaisonUser() != null) {
+      if (project.getLiaisonInstitution().getAcronym().equals(roleCrpPmu.getAcronym())) {
+        if (ccEmail.isEmpty()) {
+          ccEmail += project.getLiaisonUser().getUser().getEmail();
+        } else {
+          ccEmail += ", " + project.getLiaisonUser().getUser().getEmail();
+        }
+      } else if (project.getLiaisonInstitution() != null && project.getLiaisonInstitution().getCrpProgram() != null
+        && project.getLiaisonInstitution().getCrpProgram().getProgramType() == 1) {
+        // If Managment liason is FL
+        List<CrpProgram> crpPrograms = project.getCrp().getCrpPrograms().stream()
+          .filter(cp -> cp.getId() == project.getLiaisonInstitution().getCrpProgram().getId())
+          .collect(Collectors.toList());
+        if (crpPrograms != null) {
+          if (crpPrograms.size() > 1) {
+            LOG.warn("Crp programs should be 1");
+          }
+          CrpProgram crpProgram = crpPrograms.get(0);
+          for (CrpProgramLeader crpProgramLeader : crpProgram.getCrpProgramLeaders().stream()
+            .filter(cpl -> cpl.getUser().isActive() && cpl.isActive()).collect(Collectors.toList())) {
+            if (ccEmail.isEmpty()) {
+              ccEmail += crpProgramLeader.getUser().getEmail();
+            } else {
+              ccEmail += ", " + crpProgramLeader.getUser().getEmail();
+            }
+          }
+          // CC will be also other Cluster Leaders
+          for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
+            .filter(cl -> cl.isActive()).collect(Collectors.toList())) {
+            for (CrpClusterActivityLeader crpClusterActivityLeader : crpClusterOfActivity.getCrpClusterActivityLeaders()
+              .stream().filter(cl -> cl.isActive()).collect(Collectors.toList())) {
+              if (ccEmail.isEmpty()) {
+                ccEmail += crpClusterActivityLeader.getUser().getEmail();
+              } else {
+                ccEmail += ", " + crpClusterActivityLeader.getUser().getEmail();
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // BBC will be our gmail notification email.
+    String bbcEmails = this.config.getEmailNotification();
+
+    // Subject
+    String projectRole = null;
+    if (role.getId() == plRole.getId()) {
+      projectRole = this.getText("email.project.assigned.PL");
+    } else {
+      projectRole = this.getText("email.project.assigned.PC");
+    }
+
+    String subject = this.getText("email.project.assigned.subject",
+      new String[] {projectRole, loggedCrp.getName(), project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)});
+
+
+    // message
     StringBuilder message = new StringBuilder();
     // Building the Email message:
     message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
-    message
-      .append(this.getText("email.project.assigned", new String[] {projectRole, loggedCrp.getAcronym().toUpperCase(),
-        project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER) + " - " + project.getTitle()}));
+    message.append(this.getText("email.project.assigned", new String[] {projectRole, loggedCrp.getName(),
+      project.getTitle(), project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)}));
     if (role.getId() == plRole.getId()) {
       message.append(this.getText("email.project.leader.responsabilities"));
     } else {
       message.append(this.getText("email.project.coordinator.responsabilities"));
     }
-
-    message.append(this.getText("email.support"));
+    message.append(this.getText("email.support", new String[] {crpAdmins}));
     message.append(this.getText("email.bye"));
 
-    String toEmail = null;
-    String ccEmail = "";
-
-    // TO will be the new user
-    toEmail = userAssigned.getEmail();
-    // CC will be the user who is making the modification.
-    if (this.getCurrentUser() != null) {
-      ccEmail = this.getCurrentUser().getEmail() + ", ";
-    }
-    // CC for leaders
-    if (role.getId() == plRole.getId()) {
-      // CC will be also the Management Liaison associated with the flagship(s), if is PMU only the PMU contact
-      Long crpPmuRole = Long.parseLong((String) this.getSession().get(APConstants.CRP_PMU_ROLE));
-      Role roleCrpPmu = roleManager.getRoleById(crpPmuRole);
-      // If Managment liason is PMU
-      if (project.getLiaisonInstitution() != null && project.getLiaisonUser() != null) {
-        if (project.getLiaisonInstitution().getAcronym().equals(roleCrpPmu.getAcronym())) {
-          ccEmail += project.getLiaisonUser().getUser().getEmail() + ", ";
-        } else if (project.getLiaisonInstitution() != null && project.getLiaisonInstitution().getCrpProgram() != null
-          && project.getLiaisonInstitution().getCrpProgram().getProgramType() == 1) {
-          // If Managment liason is FL
-          List<CrpProgram> crpPrograms = project.getCrp().getCrpPrograms().stream()
-            .filter(cp -> cp.getId() == project.getLiaisonInstitution().getCrpProgram().getId())
-            .collect(Collectors.toList());
-          if (crpPrograms != null) {
-            if (crpPrograms.size() > 1) {
-              LOG.warn("Crp programs should be 1");
-            }
-            CrpProgram crpProgram = crpPrograms.get(0);
-            for (CrpProgramLeader crpProgramLeader : crpProgram.getCrpProgramLeaders().stream()
-              .filter(cpl -> cpl.getUser().isActive() && cpl.isActive()).collect(Collectors.toList())) {
-              ccEmail += crpProgramLeader.getUser().getEmail() + ", ";
-            }
-          }
-        }
-      }
-
-    } else {
-      // CC for coordinators
-      if (project.getLeaderPerson() != null) {
-        ccEmail += project.getLeaderPerson().getUser().getEmail() + ", ";
-      }
-    }
-    // Detect if a last ; was added to CC and remove it
-    if (ccEmail != null && ccEmail.length() > 0 && ccEmail.charAt(ccEmail.length() - 2) == ',') {
-      ccEmail = ccEmail.substring(0, ccEmail.length() - 2);
-    }
-
-
-    // BBC will be our gmail notification email.
-    String bbcEmails = this.config.getEmailNotification();
-
-    sendMail.send(toEmail, ccEmail, bbcEmails,
-      this.getText("email.project.assigned.subject",
-        new String[] {projectRole, loggedCrp.getAcronym().toUpperCase(),
-          project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)}),
-      message.toString(), null, null, null, true);
+    sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
   }
 
   /**
@@ -544,92 +592,117 @@ public class ProjectPartnerAction extends BaseAction {
    * @param role is the user role that stopped contributing (Project Leader or Project Coordinator).
    */
   private void notifyRoleUnassigned(User userUnassigned, Role role) {
-    userUnassigned = userManager.getUser(userUnassigned.getId());
-    String managementLiaisonText = this.getText("global.managementLiaison");
-    Project project = projectManager.getProjectById(this.projectID);
-    String projectRole = null;
-    if (role.getId() == plRole.getId().longValue()) {
-      projectRole = this.getText("projectPartners.types.PL");
-    } else {
-      projectRole = this.getText("projectPartners.types.PC");
-    }
-    StringBuilder message = new StringBuilder();
-    // Building the Email message:
-    message.append(this.getText("email.dear", new String[] {userUnassigned.getFirstName()}));
-    if (role.getId() == plRole.getId().longValue()) {
-      message.append(this.getText("email.project.leader.unAssigned",
-        new String[] {projectRole, loggedCrp.getAcronym().toUpperCase(),
-          project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER) + " - " + project.getTitle(),
-          managementLiaisonText}));
-    } else {
-      message.append(this.getText("email.project.coordinator.unAssigned",
-        new String[] {projectRole, loggedCrp.getAcronym().toUpperCase(),
-          project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER) + " - " + project.getTitle(),
-          managementLiaisonText}));
-    }
-
-    message.append(this.getText("email.support"));
-    message.append(this.getText("email.bye"));
-
-    String toEmail = null;
-    String ccEmail = null;
-
     // Send email to the new user and the P&R notification email.
     // TO
-    toEmail = userUnassigned.getEmail();
+    String toEmail = userUnassigned.getEmail();
     // CC will be the user who is making the modification.
-    if (this.getCurrentUser() != null) {
-      ccEmail = this.getCurrentUser().getEmail() + ", ";
+    String ccEmail = this.getCurrentUser().getEmail();
+    // CC will be also the CRP Admins
+    String crpAdmins = "";
+    String crpAdminsEmail = "";
+    long adminRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_ADMIN_ROLE));
+    Role roleAdmin = roleManager.getRoleById(adminRol);
+    List<UserRole> userRoles = roleAdmin.getUserRoles().stream()
+      .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
+    for (UserRole userRole : userRoles) {
+      if (crpAdmins.isEmpty()) {
+        crpAdmins += userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+        crpAdminsEmail += userRole.getUser().getEmail();
+
+      } else {
+        crpAdmins += ", " + userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+        crpAdminsEmail += ", " + userRole.getUser().getEmail();
+      }
     }
+    if (!crpAdminsEmail.isEmpty()) {
+      if (ccEmail.isEmpty()) {
+        ccEmail += crpAdminsEmail;
+      } else {
+        ccEmail += ", " + crpAdminsEmail;
+      }
+    }
+    // CC for leaders and coordinators
     // CC will be also the Management Liaison associated with the flagship(s), if is PMU only the PMU contact
     Long crpPmuRole = Long.parseLong((String) this.getSession().get(APConstants.CRP_PMU_ROLE));
     Role roleCrpPmu = roleManager.getRoleById(crpPmuRole);
-
-    // For Leaders
-    if (role.getId() == plRole.getId().longValue()) {
-      // If Managment liason is PMU
-      if (project.getLiaisonInstitution() != null && project.getLiaisonUser() != null) {
-        if (project.getLiaisonInstitution().getAcronym().equals(roleCrpPmu.getAcronym())) {
-          ccEmail += project.getLiaisonUser().getUser().getEmail() + ", ";
-        } else if (project.getLiaisonInstitution().getCrpProgram() != null
-          && project.getLiaisonInstitution().getCrpProgram().getProgramType() == 1) {
-          // If Managment liason is FL
-          List<CrpProgram> crpPrograms = project.getCrp().getCrpPrograms().stream()
-            .filter(cp -> cp.getId() == project.getLiaisonInstitution().getCrpProgram().getId())
-            .collect(Collectors.toList());
-          if (crpPrograms != null) {
-            if (crpPrograms.size() > 1) {
-              LOG.warn("Crp programs should be 1");
+    // If Managment liason is PMU
+    if (project.getLiaisonInstitution() != null && project.getLiaisonUser() != null) {
+      if (project.getLiaisonInstitution().getAcronym().equals(roleCrpPmu.getAcronym())) {
+        if (ccEmail.isEmpty()) {
+          ccEmail += project.getLiaisonUser().getUser().getEmail();
+        } else {
+          ccEmail += ", " + project.getLiaisonUser().getUser().getEmail();
+        }
+      } else if (project.getLiaisonInstitution() != null && project.getLiaisonInstitution().getCrpProgram() != null
+        && project.getLiaisonInstitution().getCrpProgram().getProgramType() == 1) {
+        // If Managment liason is FL
+        List<CrpProgram> crpPrograms = project.getCrp().getCrpPrograms().stream()
+          .filter(cp -> cp.getId() == project.getLiaisonInstitution().getCrpProgram().getId())
+          .collect(Collectors.toList());
+        if (crpPrograms != null) {
+          if (crpPrograms.size() > 1) {
+            LOG.warn("Crp programs should be 1");
+          }
+          CrpProgram crpProgram = crpPrograms.get(0);
+          for (CrpProgramLeader crpProgramLeader : crpProgram.getCrpProgramLeaders().stream()
+            .filter(cpl -> cpl.getUser().isActive() && cpl.isActive()).collect(Collectors.toList())) {
+            if (ccEmail.isEmpty()) {
+              ccEmail += crpProgramLeader.getUser().getEmail();
+            } else {
+              ccEmail += ", " + crpProgramLeader.getUser().getEmail();
             }
-            CrpProgram crpProgram = crpPrograms.get(0);
-            for (CrpProgramLeader crpProgramLeader : crpProgram.getCrpProgramLeaders().stream()
-              .filter(cpl -> cpl.getUser().isActive() && cpl.isActive()).collect(Collectors.toList())) {
-              ccEmail += crpProgramLeader.getUser().getEmail() + ", ";
+          }
+          // CC will be also other Cluster Leaders
+          for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
+            .filter(cl -> cl.isActive()).collect(Collectors.toList())) {
+            for (CrpClusterActivityLeader crpClusterActivityLeader : crpClusterOfActivity.getCrpClusterActivityLeaders()
+              .stream().filter(cl -> cl.isActive()).collect(Collectors.toList())) {
+              if (ccEmail.isEmpty()) {
+                ccEmail += crpClusterActivityLeader.getUser().getEmail();
+              } else {
+                ccEmail += ", " + crpClusterActivityLeader.getUser().getEmail();
+              }
             }
           }
         }
       }
-    } else {
-      // CC for coordinators
-      if (project.getLeaderPerson() != null) {
-        ccEmail += project.getLeaderPerson().getUser().getEmail() + ", ";
-      }
     }
-
-    // Detect if a last ; was added to CC and remove it
-    if (ccEmail != null && ccEmail.length() > 0 && ccEmail.charAt(ccEmail.length() - 2) == ',') {
-      ccEmail = ccEmail.substring(0, ccEmail.length() - 2);
-    }
-
 
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
 
-    sendMail.send(toEmail, ccEmail, bbcEmails,
-      this.getText("email.project.unAssigned.subject",
-        new String[] {projectRole, loggedCrp.getAcronym().toUpperCase(),
-          project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)}),
-      message.toString(), null, null, null, true);
+    // subject
+    String projectRole = null;
+    Project project = projectManager.getProjectById(this.projectID);
+    if (role.getId() == plRole.getId()) {
+      projectRole = this.getText("email.project.assigned.PL");
+    } else {
+      projectRole = this.getText("email.project.assigned.PC");
+    }
+
+    String subject = this.getText("email.project.unAssigned.subject",
+      new String[] {projectRole, loggedCrp.getName(), project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)});
+
+
+    userUnassigned = userManager.getUser(userUnassigned.getId());
+
+    // message
+    StringBuilder message = new StringBuilder();
+    // Building the Email message:
+    message.append(this.getText("email.dear", new String[] {userUnassigned.getFirstName()}));
+
+    if (role.getId() == plRole.getId().longValue()) {
+      message.append(this.getText("email.project.leader.unAssigned", new String[] {projectRole, loggedCrp.getName(),
+        project.getTitle(), project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)}));
+    } else {
+      message.append(this.getText("email.project.coordinator.unAssigned", new String[] {projectRole,
+        loggedCrp.getName(), project.getTitle(), project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)}));
+    }
+
+    message.append(this.getText("email.support", new String[] {crpAdmins}));
+    message.append(this.getText("email.bye"));
+
+    sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
   }
 
 
@@ -686,7 +759,7 @@ public class ProjectPartnerAction extends BaseAction {
               .addAll(historyComparator.getDifferencesList(projectPartnerContribution, transaction, specialList,
                 "project.partners[" + i + "].partnerContributors[" + k + "]", "project.partnerContributors", 2));
             k++;
-          } ;
+          };
 
           List<ProjectPartnerOverall> overalls =
             projectPartner.getProjectPartnerOveralls().stream().filter(c -> c.isActive()).collect(Collectors.toList());
@@ -761,11 +834,28 @@ public class ProjectPartnerAction extends BaseAction {
 
                 }
                 pp.setInstitution(inst);
+                pp.getInstitution().setLocations(pp.getInstitution().getInstitutionsLocations().stream()
+                  .filter(c -> c.isActive()).collect(Collectors.toList()));
               }
             }
 
 
           }
+
+          if (pp.getSelectedLocations() != null) {
+
+            List<InstitutionLocation> locElements = new ArrayList<>();
+            for (InstitutionLocation locElement : pp.getSelectedLocations()) {
+              LocElement locElementDB =
+                locationManager.getLocElementByISOCode(locElement.getLocElement().getIsoAlpha2());
+              InstitutionLocation institutionLocation = institutionLocationManager.findByLocation(locElementDB.getId(),
+                pp.getInstitution().getId().longValue());
+              locElements.add(institutionLocation);
+            }
+            pp.getSelectedLocations().clear();
+            pp.getSelectedLocations().addAll(locElements);
+          }
+
 
           if (pp.getPartnerPersons() != null) {
             for (ProjectPartnerPerson projectPartnerPerson : pp.getPartnerPersons()) {
@@ -833,6 +923,15 @@ public class ProjectPartnerAction extends BaseAction {
 
         }
         for (ProjectPartner projectPartner : project.getPartners()) {
+          projectPartner.setSelectedLocations(new ArrayList<>());
+          for (ProjectPartnerLocation projectPartnerLocation : projectPartner.getProjectPartnerLocations().stream()
+            .filter(c -> c.isActive()).collect(Collectors.toList())) {
+            projectPartner.getSelectedLocations().add(projectPartnerLocation.getInstitutionLocation());
+          }
+
+
+          projectPartner.getInstitution().setLocations(projectPartner.getInstitution().getInstitutionsLocations()
+            .stream().filter(c -> c.isActive()).collect(Collectors.toList()));
           projectPartner.setPartnerPersons(
             projectPartner.getProjectPartnerPersons().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
         }
@@ -863,6 +962,25 @@ public class ProjectPartnerAction extends BaseAction {
       }
     }
 
+    for (ProjectPartner projectPartner : project.getPartners()) {
+
+      Institution institution = projectPartner.getInstitution();
+      if (institution != null) {
+        List<InstitutionLocation> institutionLocations = new ArrayList<>();
+        institutionLocations.addAll(institution.getLocations());
+        for (InstitutionLocation institutionLocation : institutionLocations) {
+          if (projectPartner.getSelectedLocations() != null) {
+            if (projectPartner.getSelectedLocations().contains(institutionLocation)) {
+              institution.getLocations().remove(institutionLocation);
+
+            }
+          }
+
+        }
+      }
+
+    }
+
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_PARTNER_BASE_PERMISSION, params));
     plRole = roleManager.getRoleById(Long.parseLong((String) this.getSession().get(APConstants.CRP_PL_ROLE)));
@@ -879,8 +997,7 @@ public class ProjectPartnerAction extends BaseAction {
       }
 
     } else {
-      allInstitutions =
-        institutionManager.findAll().stream().filter(c -> c.getHeadquarter() == null).collect(Collectors.toList());
+      allInstitutions = institutionManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
 
     }
     allInstitutions.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
@@ -930,7 +1047,6 @@ public class ProjectPartnerAction extends BaseAction {
 
   }
 
-
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -979,6 +1095,15 @@ public class ProjectPartnerAction extends BaseAction {
             projectPartner.setProject(project);
 
             projectPartnerManager.saveProjectPartner(projectPartner);
+          } else {
+            ProjectPartner projectPartnerDB = projectPartnerManager.getProjectPartnerById(projectPartner.getId());
+            projectPartner.setActive(true);
+            projectPartner.setProject(project);
+            projectPartner.setCreatedBy(projectPartnerDB.getCreatedBy());
+            projectPartner.setModifiedBy(this.getCurrentUser());
+            projectPartner.setModificationJustification("");
+            projectPartner.setActiveSince(projectPartnerDB.getActiveSince());
+            projectPartnerManager.saveProjectPartner(projectPartner);
           }
 
 
@@ -1009,9 +1134,7 @@ public class ProjectPartnerAction extends BaseAction {
                 partnerPerson.setModifiedBy(this.getCurrentUser());
                 partnerPerson.setModificationJustification("");
                 partnerPerson.setActiveSince(dbPerson.getActiveSince());
-                if (!project.isProjectEditLeader()) {
-                  partnerPerson.setResponsibilities(dbPerson.getResponsibilities());
-                }
+
 
               }
               partnerPerson.setProjectPartner(projectPartner);
@@ -1020,22 +1143,25 @@ public class ProjectPartnerAction extends BaseAction {
                 || partnerPerson.getContactType().equals(APConstants.PROJECT_PARTNER_PC)) {
                 this.notifyNewUserCreated(partnerPerson.getUser());
               }
-
-
               projectPartnerPersonManager.saveProjectPartnerPerson(partnerPerson);
-              User userDB = userManager.getUser(partnerPerson.getUser().getId());
-              if (userDB.getCrpUsers().stream().filter(c -> c.getCrp().getId().equals(loggedCrp.getId()))
-                .collect(Collectors.toList()).isEmpty()) {
-                CrpUser crpUser = new CrpUser();
-                crpUser.setUser(userDB);
-                crpUser.setActiveSince(new Date());
-                crpUser.setCreatedBy(this.getCurrentUser());
-                crpUser.setCrp(loggedCrp);
-                crpUser.setModificationJustification("");
-                crpUser.setModifiedBy(this.getCurrentUser());
-                crpUserManager.saveCrpUser(crpUser);
+              if (partnerPerson.getUser() != null
+                && (partnerPerson.getUser().getId() != null && partnerPerson.getUser().getId().longValue() != -1)) {
 
+                User userDB = userManager.getUser(partnerPerson.getUser().getId());
+                if (userDB.getCrpUsers().stream().filter(c -> c.getCrp().getId().equals(loggedCrp.getId()))
+                  .collect(Collectors.toList()).isEmpty()) {
+                  CrpUser crpUser = new CrpUser();
+                  crpUser.setUser(userDB);
+                  crpUser.setActiveSince(new Date());
+                  crpUser.setCreatedBy(this.getCurrentUser());
+                  crpUser.setCrp(loggedCrp);
+                  crpUser.setModificationJustification("");
+                  crpUser.setModifiedBy(this.getCurrentUser());
+                  crpUserManager.saveCrpUser(crpUser);
+
+                }
               }
+
 
             }
           }
@@ -1086,7 +1212,7 @@ public class ProjectPartnerAction extends BaseAction {
 
             }
           }
-
+          this.saveLocations(projectPartner);
 
         }
       }
@@ -1171,6 +1297,45 @@ public class ProjectPartnerAction extends BaseAction {
 
   }
 
+  public void saveLocations(ProjectPartner partner) {
+
+    if (partner.getSelectedLocations() == null) {
+      partner.setSelectedLocations(new ArrayList<>());
+    }
+    ProjectPartner projectPartnerBD = projectPartnerManager.getProjectPartnerById(partner.getId());
+    List<ProjectPartnerLocation> locationsPrev =
+      projectPartnerBD.getProjectPartnerLocations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+    for (ProjectPartnerLocation projectPartnerLocation : locationsPrev) {
+      if (partner.getSelectedLocations().stream()
+        .filter(c -> c.getLocElement().getIsoAlpha2()
+          .equals(projectPartnerLocation.getInstitutionLocation().getLocElement().getIsoAlpha2()))
+        .collect(Collectors.toList()).isEmpty()) {
+        projectPartnerLocationManager.deleteProjectPartnerLocation(projectPartnerLocation.getId());
+      }
+    }
+    for (InstitutionLocation iso : partner.getSelectedLocations()) {
+      if (locationsPrev.stream()
+        .filter(c -> c.isActive()
+          && c.getInstitutionLocation().getLocElement().getIsoAlpha2().equals(iso.getLocElement().getIsoAlpha2()))
+        .collect(Collectors.toList()).isEmpty()) {
+        LocElement locElement = locationManager.getLocElementByISOCode(iso.getLocElement().getIsoAlpha2());
+        InstitutionLocation institutionLocation =
+          institutionLocationManager.findByLocation(locElement.getId(), partner.getInstitution().getId());
+        ProjectPartnerLocation partnerLocation = new ProjectPartnerLocation();
+        partnerLocation.setInstitutionLocation(institutionLocation);
+        partnerLocation.setActive(true);
+        partnerLocation.setActiveSince(new Date());
+        partnerLocation.setCreatedBy(this.getCurrentUser());
+        partnerLocation.setModificationJustification("");
+        partnerLocation.setModifiedBy(this.getCurrentUser());
+        partnerLocation.setProjectPartner(partner);
+        projectPartnerLocationManager.saveProjectPartnerLocation(partnerLocation);
+      }
+    }
+
+
+  }
+
 
   public void setAllInstitutions(List<Institution> allInstitutions) {
     this.allInstitutions = allInstitutions;
@@ -1238,45 +1403,52 @@ public class ProjectPartnerAction extends BaseAction {
     String roleAcronym = role.getAcronym();
     if (previousPartnerPerson != null && partnerPerson != null) {
       for (ProjectPartnerPerson projectPartnerPerson : partnerPerson) {
-        if (!previousPartnerPerson.contains(projectPartnerPerson)) {
-          UserRole userRole = new UserRole();
-          userRole.setRole(role);
-          userRole.setUser(projectPartnerPerson.getUser());
 
-          role = roleManager.getRoleById(role.getId());
-          if (!role.getUserRoles().contains(userRole)) {
-            userRoleManager.saveUserRole(userRole);
-            this.addCrpUser(projectPartnerPerson.getUser());
+        if (projectPartnerPerson.getUser() != null && projectPartnerPerson.getUser().getId() != null) {
+          if (!previousPartnerPerson.contains(projectPartnerPerson)) {
+            UserRole userRole = new UserRole();
+            userRole.setRole(role);
+            userRole.setUser(projectPartnerPerson.getUser());
+
+            role = roleManager.getRoleById(role.getId());
+            if (!role.getUserRoles().contains(userRole)) {
+              userRoleManager.saveUserRole(userRole);
+              this.addCrpUser(projectPartnerPerson.getUser());
+            }
+
+
+            // Notifying user is assigned as Project Leader/Coordinator.
+            this.notifyRoleAssigned(projectPartnerPerson.getUser(), role);
           }
-
-
-          // Notifying user is assigned as Project Leader/Coordinator.
-          this.notifyRoleAssigned(projectPartnerPerson.getUser(), role);
         }
+
       }
 
       for (ProjectPartnerPerson projectPartnerPerson : previousPartnerPerson) {
-        if (!partnerPerson.contains(projectPartnerPerson)) {
-          List<UserRole> rolesUser = userRoleManager.getUserRolesByUserId(projectPartnerPerson.getUser().getId());
-          if (rolesUser != null) {
-            rolesUser =
-              rolesUser.stream().filter(c -> c.getRole().getId().longValue() == roleId).collect(Collectors.toList());
-            if (!rolesUser.isEmpty()) {
-              if (projectPartnerPerson.getUser().getProjectPartnerPersons().stream()
-                .filter(
-                  c -> c.isActive() && c.getContactType().equals(roleAcronym) && c.getProjectPartner().getProject()
-                    .getId().longValue() != projectPartnerPerson.getProjectPartner().getProject().getId().longValue())
-                .collect(Collectors.toList()).size() == 0) {
-                userRoleManager.deleteUserRole(rolesUser.get(0).getId());
-                this.checkCrpUserByRole(projectPartnerPerson.getUser());
+        if (projectPartnerPerson.getUser() != null && projectPartnerPerson.getUser().getId() != null) {
+          if (!partnerPerson.contains(projectPartnerPerson)) {
+
+            List<UserRole> rolesUser = userRoleManager.getUserRolesByUserId(projectPartnerPerson.getUser().getId());
+            if (rolesUser != null) {
+              rolesUser =
+                rolesUser.stream().filter(c -> c.getRole().getId().longValue() == roleId).collect(Collectors.toList());
+              if (!rolesUser.isEmpty()) {
+                if (projectPartnerPerson.getUser().getProjectPartnerPersons().stream()
+                  .filter(
+                    c -> c.isActive() && c.getContactType().equals(roleAcronym)
+                      && c.getProjectPartner().getProject().getId().longValue() != projectPartnerPerson
+                        .getProjectPartner().getProject().getId().longValue())
+                  .collect(Collectors.toList()).size() == 0) {
+                  userRoleManager.deleteUserRole(rolesUser.get(0).getId());
+                  this.checkCrpUserByRole(projectPartnerPerson.getUser());
+                }
               }
             }
+            // Notifying user that is not the project leader anymore
+            this.notifyRoleUnassigned(projectPartnerPerson.getUser(), role);
           }
-          // Notifying user that is not the project leader anymore
-          this.notifyRoleUnassigned(projectPartnerPerson.getUser(), role);
         }
       }
-
     }
     /*
      * else if (previousPartnerPerson != null && partnerPerson == null) {
@@ -1432,7 +1604,8 @@ public class ProjectPartnerAction extends BaseAction {
 
             if (projectPartner.getPartnerPersons() != null) {
               for (ProjectPartnerPerson projectPartnerPerson : projectPartner.getPartnerPersons()) {
-                if (projectPartnerPerson.getUser() != null) {
+                if (projectPartnerPerson.getUser() != null && projectPartnerPerson.getUser().getId() != null
+                  && projectPartnerPerson.getUser().getId().longValue() != -1) {
                   projectPartnerPerson.setUser(userManager.getUser(projectPartnerPerson.getUser().getId()));
                 }
               }

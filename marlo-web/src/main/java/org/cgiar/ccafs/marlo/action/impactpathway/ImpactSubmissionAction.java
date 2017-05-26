@@ -19,13 +19,18 @@ package org.cgiar.ccafs.marlo.action.impactpathway;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.SubmissionManager;
+import org.cgiar.ccafs.marlo.data.model.CrpClusterActivityLeader;
+import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
+import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.Submission;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
@@ -58,7 +63,7 @@ public class ImpactSubmissionAction extends BaseAction {
   private CrpProgramManager crpProgramManager;
 
   private SectionStatusManager sectionStatusManager;
-
+  private RoleManager roleManager;
   private SubmissionManager submissionManager;
 
   private List<SectionStatus> sectionStatus;
@@ -66,12 +71,14 @@ public class ImpactSubmissionAction extends BaseAction {
 
   @Inject
   public ImpactSubmissionAction(APConfig config, CrpProgramManager crpProgramManager,
-    SectionStatusManager sectionStatusManager, SubmissionManager submissionManager, SendMailS sendMail) {
+    SectionStatusManager sectionStatusManager, SubmissionManager submissionManager, SendMailS sendMail,
+    RoleManager roleManager) {
     super(config);
     this.crpProgramManager = crpProgramManager;
     this.sectionStatusManager = sectionStatusManager;
     this.submissionManager = submissionManager;
     this.sendMail = sendMail;
+    this.roleManager = roleManager;
   }
 
   @Override
@@ -145,67 +152,77 @@ public class ImpactSubmissionAction extends BaseAction {
   }
 
   private void sendNotficationEmail() {
-    // Building the email message
-    StringBuilder message = new StringBuilder();
-    String[] values = new String[4];
-    values[0] = this.getCurrentUser().getComposedCompleteName();
-    values[1] = "<b>" + crpProgram.getCrp().getAcronym().toUpperCase() + " impact pathway</b> for <b>"
-      + crpProgram.getAcronym().toUpperCase() + " - " + crpProgram.getName() + "</b>";
-    values[2] = crpProgram.getAcronym().toUpperCase();
-    values[3] = this.getText("global.managementLiaison");
-    String subject = null;
-
-    message.append(this.getText("impact.submit.email.message", values));
-    message.append(this.getText("email.support"));
-    message.append(this.getText("email.bye"));
-    subject = this.getText("impact.submit.email.subject",
-      new String[] {crpProgram.getCrp().getAcronym().toUpperCase() + " " + crpProgram.getAcronym().toUpperCase()});
-
-
-    /**
-     * 
-     */
-    String toEmail = null;
-    String ccEmail = null;
-
     // Send email to the user that is submitting the project.
     // TO
-    toEmail = this.getCurrentUser().getEmail();
-
-
+    String toEmail = this.getCurrentUser().getEmail();
+    String ccEmail = "";
+    // CC will be the other MLs.
     List<CrpProgramLeader> owners =
       crpProgram.getCrpProgramLeaders().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-    StringBuilder ccEmails = new StringBuilder();
     for (CrpProgramLeader crpProgramLeader : owners) {
       User user = crpProgramLeader.getUser();
       if (user.getId() != this.getCurrentUser().getId()) {
-        ccEmails.append(user.getEmail());
-        ccEmails.append(", ");
+        if (ccEmail.isEmpty()) {
+          ccEmail = user.getEmail();
+        } else {
+          ccEmail += ", " + user.getEmail();
+        }
       }
     }
-    // CC will be the other MLs.
-    ccEmail = ccEmails.toString().isEmpty() ? null : ccEmails.toString();
-    // Detect if a last ; was added to CC and remove it
-    if (ccEmail != null && ccEmail.length() > 0 && ccEmail.charAt(ccEmail.length() - 2) == ',') {
-      ccEmail = ccEmail.substring(0, ccEmail.length() - 2);
+    // CC will be also the CRP Admins
+    String crpAdmins = "";
+    String crpAdminsEmail = "";
+    long adminRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_ADMIN_ROLE));
+    Role roleAdmin = roleManager.getRoleById(adminRol);
+    List<UserRole> userRoles = roleAdmin.getUserRoles().stream()
+      .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
+    for (UserRole userRole : userRoles) {
+      if (crpAdmins.isEmpty()) {
+        crpAdmins += userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+        crpAdminsEmail += userRole.getUser().getEmail();
+      } else {
+        crpAdmins += ", " + userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+        crpAdminsEmail += ", " + userRole.getUser().getEmail();
+      }
     }
-
-
+    if (!crpAdminsEmail.isEmpty()) {
+      if (ccEmail.isEmpty()) {
+        ccEmail = crpAdminsEmail;
+      } else {
+        ccEmail += ", " + crpAdminsEmail;
+      }
+    }
+    // CC will be also other Cluster Leaders
+    for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
+      .filter(cl -> cl.isActive()).collect(Collectors.toList())) {
+      for (CrpClusterActivityLeader crpClusterActivityLeader : crpClusterOfActivity.getCrpClusterActivityLeaders()
+        .stream().filter(cl -> cl.isActive()).collect(Collectors.toList())) {
+        if (ccEmail.isEmpty()) {
+          ccEmail += crpClusterActivityLeader.getUser().getEmail();
+        } else {
+          ccEmail += ", " + crpClusterActivityLeader.getUser().getEmail();
+        }
+      }
+    }
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
 
-    /*
-     * // Get the PDF from the Project report url.
-     * ByteBuffer buffer = null;
-     * String fileName = null;
-     * String contentType = null;
-     * if (buffer != null && fileName != null && contentType != null) {
-     * sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer.array(), contentType, fileName,
-     * true);
-     * } else {
-     * sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
-     * }
-     */
+    // subject
+    String subject = null;
+    subject = this.getText("impact.submit.email.subject",
+      new String[] {crpProgram.getCrp().getName(), crpProgram.getAcronym()});
+    // Building the email message
+    StringBuilder message = new StringBuilder();
+    String[] values = new String[4];
+    values[0] = this.getCurrentUser().getFirstName();
+    values[1] = crpProgram.getAcronym();
+    values[2] = crpProgram.getCrp().getName();
+    values[3] = crpProgram.getName();
+
+    message.append(this.getText("impact.submit.email.message", values));
+    message.append(this.getText("email.support", new String[] {crpAdmins}));
+    message.append(this.getText("email.bye"));
+
     sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
   }
 

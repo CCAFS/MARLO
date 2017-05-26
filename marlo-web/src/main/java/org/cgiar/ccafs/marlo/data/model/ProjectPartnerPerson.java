@@ -29,9 +29,6 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
   @Expose
   private User modifiedBy;
 
-  @Expose
-  private Institution institution;
-
 
   @Expose
   private User createdBy;
@@ -41,8 +38,7 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
 
   @Expose
   private String contactType;
-  @Expose
-  private String responsibilities;
+
   @Expose
   private boolean active;
   @Expose
@@ -56,8 +52,22 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
   }
 
   public ProjectPartnerPerson(ProjectPartner projectPartner, User usersByModifiedBy, User usersByCreatedBy,
+    User usersByUserId, String contactType, boolean isActive, Date activeSince, String modificationJustification) {
+    this.projectPartner = projectPartner;
+    this.modifiedBy = usersByModifiedBy;
+    this.createdBy = usersByCreatedBy;
+    this.user = usersByUserId;
+    this.contactType = contactType;
+
+    this.active = isActive;
+    this.activeSince = activeSince;
+    this.modificationJustification = modificationJustification;
+  }
+
+
+  public ProjectPartnerPerson(ProjectPartner projectPartner, User usersByModifiedBy, User usersByCreatedBy,
     User usersByUserId, String contactType, boolean isActive, Date activeSince, String modificationJustification,
-    Set<DeliverablePartnership> deliverablePartnerships, Institution institution) {
+    Set<DeliverablePartnership> deliverablePartnerships) {
     this.projectPartner = projectPartner;
     this.modifiedBy = usersByModifiedBy;
     this.createdBy = usersByCreatedBy;
@@ -67,22 +77,7 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
     this.deliverablePartnerships = deliverablePartnerships;
-    this.institution = institution;
-  }
 
-
-  public ProjectPartnerPerson(ProjectPartner projectPartner, User usersByModifiedBy, User usersByCreatedBy,
-    User usersByUserId, String contactType, String responsibilities, boolean isActive, Date activeSince,
-    String modificationJustification) {
-    this.projectPartner = projectPartner;
-    this.modifiedBy = usersByModifiedBy;
-    this.createdBy = usersByCreatedBy;
-    this.user = usersByUserId;
-    this.contactType = contactType;
-    this.responsibilities = responsibilities;
-    this.active = isActive;
-    this.activeSince = activeSince;
-    this.modificationJustification = modificationJustification;
   }
 
 
@@ -116,14 +111,12 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
     return activities;
   }
 
+  public String getComposedCompleteName() {
+    return this.user.getComposedCompleteName();
+  }
+
   public String getComposedName() {
-
-    if (this.getInstitution().getAcronym() != null) {
-      return this.getInstitution().getAcronym() + " - " + this.user.getComposedName();
-    } else {
-      return this.getInstitution().getName() + " - " + this.user.getComposedName();
-    }
-
+    return this.user.getComposedName();
   }
 
   public String getContactType() {
@@ -144,9 +137,6 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
     return this.id;
   }
 
-  public Institution getInstitution() {
-    return institution;
-  }
 
   @Override
   public String getLogDeatil() {
@@ -176,9 +166,6 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
     return this.projectPartner;
   }
 
-  public String getResponsibilities() {
-    return this.responsibilities;
-  }
 
   public User getUser() {
     return this.user;
@@ -229,11 +216,6 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
   }
 
 
-  public void setInstitution(Institution institution) {
-    this.institution = institution;
-  }
-
-
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
@@ -248,10 +230,6 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
 
   public void setProjectPartners(ProjectPartner projectPartner) {
     this.projectPartner = projectPartner;
-  }
-
-  public void setResponsibilities(String responsibilities) {
-    this.responsibilities = responsibilities;
   }
 
 

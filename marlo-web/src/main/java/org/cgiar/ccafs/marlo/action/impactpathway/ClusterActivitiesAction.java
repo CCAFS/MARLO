@@ -274,15 +274,13 @@ public class ClusterActivitiesAction extends BaseAction {
    */
   private void notifyNewUserCreated(User user) {
     user = userManager.getUser(user.getId());
+
     if (!user.isActive()) {
-
-      user.setActive(true);
-      // Building the Email message:
-      StringBuilder message = new StringBuilder();
-      message.append(this.getText("email.dear", new String[] {user.getFirstName()}));
-      // message.append(this.getText("email.newUser.part1"));
-      // message.append(this.getText("email.newUser.part2"));
-
+      String toEmail = user.getEmail();
+      String ccEmail = null;
+      String bbcEmails = this.config.getEmailNotification();
+      String subject = this.getText("email.newUser.subject", new String[] {user.getFirstName()});
+      // Setting the password
       String password = this.getText("email.outlookPassword");
       if (!user.isCgiarUser()) {
         // Generating a random password.
@@ -290,30 +288,41 @@ public class ClusterActivitiesAction extends BaseAction {
         // Applying the password to the user.
         user.setPassword(password);
       }
-      message
-        .append(this.getText("email.newUser.part1", new String[] {config.getBaseUrl(), user.getEmail(), password}));
-      message.append(this.getText("email.support"));
+
+      // Building the Email message:
+      StringBuilder message = new StringBuilder();
+      message.append(this.getText("email.dear", new String[] {user.getFirstName()}));
+
+      // get CRPAdmin contacts
+      String crpAdmins = "";
+      long adminRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_ADMIN_ROLE));
+      Role roleAdmin = roleManager.getRoleById(adminRol);
+      List<UserRole> userRoles = roleAdmin.getUserRoles().stream()
+        .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
+      for (UserRole userRole : userRoles) {
+        if (crpAdmins.isEmpty()) {
+          crpAdmins += userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+        } else {
+          crpAdmins += ", " + userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+        }
+      }
+
+      message.append(this.getText("email.newUser.part1", new String[] {this.getText("email.newUser.listRoles"),
+        config.getBaseUrl(), user.getEmail(), password, this.getText("email.support", new String[] {crpAdmins})}));
       message.append(this.getText("email.bye"));
 
       // Saving the new user configuration.
+      user.setActive(true);
       userManager.saveUser(user, this.getCurrentUser());
 
-      String toEmail = null;
-      // Send email to the new user and the P&R notification email.
-      // TO
-      toEmail = user.getEmail();
-
-      // BBC
-      String bbcEmails = this.config.getEmailNotification();
-
-
+      // Send UserManual.pdf
       String contentType = "application/pdf";
-      String fileName = "MARLO_UserManual_V1.1.pdf";
+      String fileName = "Introduction_To_MARLO_v2.1.pdf";
       byte[] buffer = null;
       InputStream inputStream = null;
 
       try {
-        inputStream = this.getClass().getResourceAsStream("/manual/MARLO_UserManual_20170111_AV_HT_AW.pdf");
+        inputStream = this.getClass().getResourceAsStream("/manual/Introduction_To_MARLO_v2.1.pdf");
         buffer = readFully(inputStream);
       } catch (FileNotFoundException e) {
         // TODO Auto-generated catch block
@@ -332,18 +341,11 @@ public class ClusterActivitiesAction extends BaseAction {
         }
       }
 
-
       if (buffer != null && fileName != null && contentType != null) {
-        sendMail.send(toEmail, null, bbcEmails,
-          this.getText("email.newUser.subject", new String[] {user.getComposedName()}), message.toString(), buffer,
-          contentType, fileName, true);
+        sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer, contentType, fileName, true);
       } else {
-        sendMail.send(toEmail, null, bbcEmails,
-          this.getText("email.newUser.subject", new String[] {user.getComposedName()}), message.toString(), null, null,
-          null, true);
+        sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
       }
-
-
     }
   }
 
@@ -354,70 +356,145 @@ public class ClusterActivitiesAction extends BaseAction {
    * @param crpClusterPreview is the crpCluster
    */
   private void notifyRoleAssigned(User userAssigned, Role role, CrpClusterOfActivity crpClusterPreview) {
-    String ClusterRole = this.getText("cluster.role");
-    String ClusterRoleAcronym = this.getText("cluster.role.acronym");
-
-    userAssigned = userManager.getUser(userAssigned.getId());
-    StringBuilder message = new StringBuilder();
-    // Building the Email message:
-    message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
-    message.append(this.getText("email.cluster.assigned", new String[] {ClusterRole,
-      crpClusterPreview.getCrpProgram().getName(), crpClusterPreview.getCrpProgram().getAcronym()}));
-    message.append(this.getText("email.support"));
-    message.append(this.getText("email.bye"));
-
-    String toEmail = null;
-    String ccEmail = null;
-
     // Send email to the new user and the P&R notification email.
     // TO
-    toEmail = userAssigned.getEmail();
+    String toEmail = userAssigned.getEmail();;
+    String ccEmail = null;
     // CC will be the user who is making the modification.
     if (this.getCurrentUser() != null) {
       ccEmail = this.getCurrentUser().getEmail();
     }
-
+    // CC will be also the CRP Admins
+    String crpAdmins = "";
+    String crpAdminsEmail = "";
+    long adminRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_ADMIN_ROLE));
+    Role roleAdmin = roleManager.getRoleById(adminRol);
+    List<UserRole> userRoles = roleAdmin.getUserRoles().stream()
+      .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
+    for (UserRole userRole : userRoles) {
+      if (crpAdmins.isEmpty()) {
+        crpAdmins += userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+        crpAdminsEmail += userRole.getUser().getEmail();
+      } else {
+        crpAdmins += ", " + userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+        crpAdminsEmail += ", " + userRole.getUser().getEmail();
+      }
+    }
+    if (!crpAdminsEmail.isEmpty()) {
+      if (ccEmail.isEmpty()) {
+        ccEmail += crpAdminsEmail;
+      } else {
+        ccEmail += ", " + crpAdminsEmail;
+      }
+    }
+    // Also others Cluster Leaders
+    for (CrpClusterActivityLeader crpClusterActivityLeader : crpClusterPreview.getCrpClusterActivityLeaders().stream()
+      .filter(cal -> cal.isActive() && cal.getUser().isActive()).collect(Collectors.toList())) {
+      if (ccEmail.isEmpty()) {
+        ccEmail += crpClusterActivityLeader.getUser().getEmail();
+      } else {
+        ccEmail += ", " + crpClusterActivityLeader.getUser().getEmail();
+      }
+    }
+    // Also crp program Leaders
+    for (CrpProgramLeader crpProgramLeader : crpClusterPreview.getCrpProgram().getCrpProgramLeaders().stream()
+      .filter(l -> l.isActive() && l.getUser().isActive()).collect(Collectors.toList())) {
+      if (ccEmail.isEmpty()) {
+        ccEmail += crpProgramLeader.getUser().getEmail();
+      } else {
+        ccEmail += ", " + crpProgramLeader.getUser().getEmail();
+      }
+    }
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
-    /*
-     * sendMail.send(toEmail, ccEmail, bbcEmails,
-     * this.getText("email.cluster.assigned.subject",
-     * new String[] {loggedCrp.getName(), ClusterRoleAcronym, crpClusterPreview.getCrpProgram().getAcronym()}),
-     * message.toString(), null, null, null, true);
-     */ }
+
+    // Subject
+    String subject = this.getText("email.cluster.assigned.subject",
+      new String[] {crpClusterPreview.getIdentifier(), loggedCrp.getName()});
+
+    // Message
+    userAssigned = userManager.getUser(userAssigned.getId());
+    StringBuilder message = new StringBuilder();
+    // Building the Email message:
+    message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
+    message.append(this.getText("email.cluster.assigned", new String[] {crpClusterPreview.getIdentifier(),
+      crpClusterPreview.getDescription(), loggedCrp.getName(), this.getText("email.cluster.responsabilities")}));
+    message.append(this.getText("email.support", new String[] {crpAdmins}));
+    message.append(this.getText("email.bye"));
+
+    sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+  }
 
   private void notifyRoleUnassigned(User userAssigned, Role role, CrpClusterOfActivity crpClusterOfActivity) {
-    String ClusterRole = this.getText("cluster.role");
-    String ClusterRoleAcronym = this.getText("cluster.role.acronym");
-
-    userAssigned = userManager.getUser(userAssigned.getId());
-    StringBuilder message = new StringBuilder();
-    // Building the Email message:
-    message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
-    message.append(this.getText("email.cluster.unassigned", new String[] {ClusterRole,
-      crpClusterOfActivity.getCrpProgram().getName(), crpClusterOfActivity.getCrpProgram().getAcronym()}));
-    message.append(this.getText("email.support"));
-    message.append(this.getText("email.bye"));
-
-    String toEmail = null;
-    String ccEmail = null;
-
     // Send email to the new user and the P&R notification email.
     // TO
-    toEmail = userAssigned.getEmail();
+    String toEmail = userAssigned.getEmail();
+    String ccEmail = null;
     // CC will be the user who is making the modification.
     if (this.getCurrentUser() != null) {
       ccEmail = this.getCurrentUser().getEmail();
     }
+    // CC will be also the CRP Admins
+    String crpAdmins = "";
+    String crpAdminsEmail = "";
+    long adminRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_ADMIN_ROLE));
+    Role roleAdmin = roleManager.getRoleById(adminRol);
+    List<UserRole> userRoles = roleAdmin.getUserRoles().stream()
+      .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
+    for (UserRole userRole : userRoles) {
+      if (crpAdmins.isEmpty()) {
+        crpAdmins += userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+        crpAdminsEmail += userRole.getUser().getEmail();
+      } else {
+        crpAdmins += ", " + userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+        crpAdminsEmail += ", " + userRole.getUser().getEmail();
+      }
+    }
+    if (!crpAdminsEmail.isEmpty()) {
+      if (ccEmail.isEmpty()) {
+        ccEmail += crpAdminsEmail;
+      } else {
+        ccEmail += ", " + crpAdminsEmail;
+      }
+    }
+    // Also others Cluster Leaders
+    for (CrpClusterActivityLeader crpClusterActivityLeader : crpClusterOfActivity.getCrpClusterActivityLeaders()
+      .stream().filter(cal -> cal.isActive() && cal.getUser().isActive()).collect(Collectors.toList())) {
+      if (ccEmail.isEmpty()) {
+        ccEmail += crpClusterActivityLeader.getUser().getEmail();
+      } else {
+        ccEmail += ", " + crpClusterActivityLeader.getUser().getEmail();
+      }
+    }
+    // Also crp program Leaders
+    for (CrpProgramLeader crpProgramLeader : crpClusterOfActivity.getCrpProgram().getCrpProgramLeaders().stream()
+      .filter(l -> l.isActive() && l.getUser().isActive()).collect(Collectors.toList())) {
+      if (ccEmail.isEmpty()) {
+        ccEmail += crpProgramLeader.getUser().getEmail();
+      } else {
+        ccEmail += ", " + crpProgramLeader.getUser().getEmail();
+      }
+    }
 
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
-    /*
-     * sendMail.send(toEmail, ccEmail, bbcEmails,
-     * this.getText("email.cluster.unassigned.subject",
-     * new String[] {loggedCrp.getName(), ClusterRoleAcronym, crpClusterOfActivity.getCrpProgram().getAcronym()}),
-     * message.toString(), null, null, null, true);
-     */
+
+    // Subject
+    String subject = this.getText("email.cluster.unassigned.subject",
+      new String[] {crpClusterOfActivity.getIdentifier(), loggedCrp.getName()});
+
+
+    // Message
+    userAssigned = userManager.getUser(userAssigned.getId());
+    StringBuilder message = new StringBuilder();
+    // Building the Email message:
+    message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
+    message.append(this.getText("email.cluster.unassigned",
+      new String[] {crpClusterOfActivity.getIdentifier(), crpClusterOfActivity.getDescription(), loggedCrp.getName()}));
+    message.append(this.getText("email.support", new String[] {crpAdmins}));
+    message.append(this.getText("email.bye"));
+
+    sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
   }
 
   @Override
