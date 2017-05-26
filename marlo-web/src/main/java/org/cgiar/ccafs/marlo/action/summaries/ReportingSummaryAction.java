@@ -694,10 +694,11 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     DecimalFormat df = new DecimalFormat("###,###.00");
     TypedTableModel model = new TypedTableModel(
       new String[] {"description", "year", "w1w2", "w3", "bilateral", "center", "w1w2GenderPer", "w3GenderPer",
-        "bilateralGenderPer", "centerGenderPer"},
+        "bilateralGenderPer", "centerGenderPer", "w1w2CoFinancing", "w1w2CoFinancingGenderPer", "hasW1W2CoTemp"},
       new Class[] {String.class, Integer.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, Boolean.class},
       0);
+    Boolean hasW1W2CoTemp = false;
     List<ProjectClusterActivity> coAs = new ArrayList<>();
     coAs = project.getProjectClusterActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList());
     if (coAs.size() == 1) {
@@ -710,10 +711,13 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       String bilateralGenderPer = null;
       String center = null;
       String centerGenderPer = null;
+      String w1w2CoFinancing = null;
+      String w1w2CoFinancingGenderPer = null;
       // Get types of funding sources
       for (ProjectBudget pb : project.getProjectBudgets().stream()
         .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getBudgetType() != null)
         .collect(Collectors.toList())) {
+
         if (pb.getBudgetType().getId() == 1) {
           w1w2 = "100";
           w1w2GenderPer = "100";
@@ -732,7 +736,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         }
       }
       model.addRow(new Object[] {description, year, w1w2, w3, bilateral, center, w1w2GenderPer, w3GenderPer,
-        bilateralGenderPer, centerGenderPer});
+        bilateralGenderPer, centerGenderPer, w1w2CoFinancing, w1w2CoFinancingGenderPer, hasW1W2CoTemp});
     } else {
       for (ProjectClusterActivity clusterActivity : coAs) {
         String description = clusterActivity.getCrpClusterOfActivity().getComposedName();
@@ -744,18 +748,28 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         String bilateralGenderPer = null;
         String center = null;
         String centerGenderPer = null;
-        ProjectBudgetsCluserActvity w1w2pb =
-          this.getBudgetbyCoa(clusterActivity.getCrpClusterOfActivity().getId(), year, 1);
+        String w1w2CoFinancing = null;
+        String w1w2CoFinancingGenderPer = null;
+
+        if (hasW1W2Co) {
+
+        } else {
+          ProjectBudgetsCluserActvity w1w2pb =
+            this.getBudgetbyCoa(clusterActivity.getCrpClusterOfActivity().getId(), year, 1);
+          if (w1w2pb != null) {
+            w1w2 = df.format(w1w2pb.getAmount());
+            w1w2GenderPer = df.format(w1w2pb.getGenderPercentage());
+          }
+        }
+
+
         ProjectBudgetsCluserActvity w3pb =
           this.getBudgetbyCoa(clusterActivity.getCrpClusterOfActivity().getId(), year, 2);
         ProjectBudgetsCluserActvity bilateralpb =
           this.getBudgetbyCoa(clusterActivity.getCrpClusterOfActivity().getId(), year, 3);
         ProjectBudgetsCluserActvity centerpb =
           this.getBudgetbyCoa(clusterActivity.getCrpClusterOfActivity().getId(), year, 4);
-        if (w1w2pb != null) {
-          w1w2 = df.format(w1w2pb.getAmount());
-          w1w2GenderPer = df.format(w1w2pb.getGenderPercentage());
-        }
+
         if (w3pb != null) {
           w3 = df.format(w3pb.getAmount());
           w3GenderPer = df.format(w3pb.getGenderPercentage());
@@ -769,7 +783,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           centerGenderPer = df.format(centerpb.getGenderPercentage());
         }
         model.addRow(new Object[] {description, year, w1w2, w3, bilateral, center, w1w2GenderPer, w3GenderPer,
-          bilateralGenderPer, centerGenderPer});
+          bilateralGenderPer, centerGenderPer, w1w2CoFinancing, w1w2CoFinancingGenderPer, hasW1W2CoTemp});
       }
     }
     return model;
