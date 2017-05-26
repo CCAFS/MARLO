@@ -1,16 +1,16 @@
 $(document).ready(init);
+var cookieTime;
 var username = $("input[name='user.email']");
 function init() {
   initJreject();
 
-  var cookieTime = 5;
+  cookieTime = 10;
 
-  if(verifyCookie("CRP") == true) {
-    var crpCookie = $("li#" + getCookie("CRP"));
-    console.log(crpCookie);
-    crpCookie.addClass('selected').siblings().removeClass('selected');
-    $('#crp').val(crpCookie.attr('id').split("-")[1]);
-    crpCookie.parents('.loginForm').find('.secondForm').slideDown();
+  if((verifyCookie("CRP") == true) && (getCookie("CRP") != "undefined")) {
+
+    var crpSelected = getCookie("CRP");
+    setCRP(crpSelected);
+
     if(verifyCookie("username.email") == true) {
       username.val(getCookie("username.email"));
     } else {
@@ -19,16 +19,16 @@ function init() {
   }
 
   $('.crpGroup ul li').on('click', function() {
-    // Add 'selected' class and removing sibling's class if any
-    $(this).addClass('selected').siblings().removeClass('selected');
-    // Setting up the CRP value into a hidden input
-    $('#crp').val($(this).attr('id').split('-')[1]);
-    // Show Second Form (Email, password & login button)
-    $(this).parents('.loginForm').find('.secondForm').slideDown();
+    var crpSelected = $(this).attr('id').split('-')[1];
+    setCRP(crpSelected);
+  });
 
-    // Create crp cookie
-    setCookie("CRP", $(this).attr('id'), cookieTime);
+  $("a.goBackToSelect").on('click', function() {
+    // Hide Second Form (Email, password & login button)
+    $(this).parents('.loginForm').find('.secondForm').slideUp();
 
+    // Show First Form (CRPs, Centers & Platforms)
+    $(this).parents('.loginForm').find('.firstForm').slideDown();
   });
 
   // Username cookie
@@ -36,6 +36,32 @@ function init() {
     setCookie("username.email", username.val(), cookieTime);
   });
 
+}
+
+function setCRP(crpSelected) {
+  var $li = $("li#crp-" + crpSelected);
+
+  console.log($li);
+
+  // Removing class selected
+  $(".loginOption").removeClass('selected');
+
+  // Add 'selected' class and removing sibling's class if any
+  $li.addClass('selected');
+
+  // Setting up the CRP value into a hidden input
+  $('#crp').val(crpSelected);
+
+  $("#crpSelectedImage").attr("src", baseURL + "/images/global/crps/" + crpSelected + ".png");
+
+  // Show Second Form (Email, password & login button)
+  $li.parents('.loginForm').find('.secondForm').slideDown();
+
+  // Hide First Form (CRPs, Centers & Platforms)
+  $li.parents('.loginForm').find('.firstForm').slideUp();
+
+  // Create crp cookie
+  setCookie("CRP", crpSelected, cookieTime);
 }
 
 function initJreject() {

@@ -9,21 +9,22 @@
 
 <section> 
   <div class="container">
-    <div class="col-md-6">
-      <h3>[@s.text name="login.marloTitle" /]</h3>
-      <p>[@s.text name="login.marloDescription" /]  </p>
-      
-      [#if !config.production]
-      <div class="note">
-        <p>[@s.text name="login.testersMessage2"/]</p>
-        <p>[@s.text name="login.testersMessage3"/]</p>
+    <div class="form-group row">
+      <div class="col-md-10 col-md-offset-1">
+        <h3 class="text-center">[@s.text name="login.marloTitle" /]</h3>
+        <p class="text-center">[@s.text name="login.marloDescription" /]  </p>
+        [#if !config.production]
+        <div class="note">
+          <p>[@s.text name="login.testersMessage2"/]</p>
+          <p>[@s.text name="login.testersMessage3"/]</p>
+        </div>
+        [/#if]
       </div>
-      [/#if]
-      
     </div>
-    <div class="col-md-offset-1 col-md-5">
-      [#-- Login Form --]
-      [#include "/WEB-INF/global/pages/loginForm.ftl" /]
+    <div class="form-group row">
+      <div class="col-md-10 col-md-offset-1">
+        [#include "/WEB-INF/global/pages/loginForm.ftl" /]
+      </div>
     </div>
   </div>
 </section>
