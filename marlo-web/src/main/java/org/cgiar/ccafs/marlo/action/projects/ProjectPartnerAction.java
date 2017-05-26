@@ -1403,45 +1403,52 @@ public class ProjectPartnerAction extends BaseAction {
     String roleAcronym = role.getAcronym();
     if (previousPartnerPerson != null && partnerPerson != null) {
       for (ProjectPartnerPerson projectPartnerPerson : partnerPerson) {
-        if (!previousPartnerPerson.contains(projectPartnerPerson)) {
-          UserRole userRole = new UserRole();
-          userRole.setRole(role);
-          userRole.setUser(projectPartnerPerson.getUser());
 
-          role = roleManager.getRoleById(role.getId());
-          if (!role.getUserRoles().contains(userRole)) {
-            userRoleManager.saveUserRole(userRole);
-            this.addCrpUser(projectPartnerPerson.getUser());
+        if (projectPartnerPerson.getUser() != null && projectPartnerPerson.getUser().getId() != null) {
+          if (!previousPartnerPerson.contains(projectPartnerPerson)) {
+            UserRole userRole = new UserRole();
+            userRole.setRole(role);
+            userRole.setUser(projectPartnerPerson.getUser());
+
+            role = roleManager.getRoleById(role.getId());
+            if (!role.getUserRoles().contains(userRole)) {
+              userRoleManager.saveUserRole(userRole);
+              this.addCrpUser(projectPartnerPerson.getUser());
+            }
+
+
+            // Notifying user is assigned as Project Leader/Coordinator.
+            this.notifyRoleAssigned(projectPartnerPerson.getUser(), role);
           }
-
-
-          // Notifying user is assigned as Project Leader/Coordinator.
-          this.notifyRoleAssigned(projectPartnerPerson.getUser(), role);
         }
+
       }
 
       for (ProjectPartnerPerson projectPartnerPerson : previousPartnerPerson) {
-        if (!partnerPerson.contains(projectPartnerPerson)) {
-          List<UserRole> rolesUser = userRoleManager.getUserRolesByUserId(projectPartnerPerson.getUser().getId());
-          if (rolesUser != null) {
-            rolesUser =
-              rolesUser.stream().filter(c -> c.getRole().getId().longValue() == roleId).collect(Collectors.toList());
-            if (!rolesUser.isEmpty()) {
-              if (projectPartnerPerson.getUser().getProjectPartnerPersons().stream()
-                .filter(
-                  c -> c.isActive() && c.getContactType().equals(roleAcronym) && c.getProjectPartner().getProject()
-                    .getId().longValue() != projectPartnerPerson.getProjectPartner().getProject().getId().longValue())
-                .collect(Collectors.toList()).size() == 0) {
-                userRoleManager.deleteUserRole(rolesUser.get(0).getId());
-                this.checkCrpUserByRole(projectPartnerPerson.getUser());
+        if (projectPartnerPerson.getUser() != null && projectPartnerPerson.getUser().getId() != null) {
+          if (!partnerPerson.contains(projectPartnerPerson)) {
+
+            List<UserRole> rolesUser = userRoleManager.getUserRolesByUserId(projectPartnerPerson.getUser().getId());
+            if (rolesUser != null) {
+              rolesUser =
+                rolesUser.stream().filter(c -> c.getRole().getId().longValue() == roleId).collect(Collectors.toList());
+              if (!rolesUser.isEmpty()) {
+                if (projectPartnerPerson.getUser().getProjectPartnerPersons().stream()
+                  .filter(
+                    c -> c.isActive() && c.getContactType().equals(roleAcronym)
+                      && c.getProjectPartner().getProject().getId().longValue() != projectPartnerPerson
+                        .getProjectPartner().getProject().getId().longValue())
+                  .collect(Collectors.toList()).size() == 0) {
+                  userRoleManager.deleteUserRole(rolesUser.get(0).getId());
+                  this.checkCrpUserByRole(projectPartnerPerson.getUser());
+                }
               }
             }
+            // Notifying user that is not the project leader anymore
+            this.notifyRoleUnassigned(projectPartnerPerson.getUser(), role);
           }
-          // Notifying user that is not the project leader anymore
-          this.notifyRoleUnassigned(projectPartnerPerson.getUser(), role);
         }
       }
-
     }
     /*
      * else if (previousPartnerPerson != null && partnerPerson == null) {
