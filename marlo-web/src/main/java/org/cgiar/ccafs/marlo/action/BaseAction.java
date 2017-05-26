@@ -1408,8 +1408,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public boolean hasSpecificities(String specificity) {
     try {
-      int param = Integer.parseInt(this.getSession().get(specificity).toString());
-      return param == 1;
+      boolean param = Boolean.parseBoolean(this.getSession().get(specificity).toString());
+      return param;
     } catch (Exception e) {
       return false;
     }
@@ -1769,8 +1769,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean isCrpClosed() {
     try {
       // return Integer.parseInt(this.getSession().get(APConstants.CRP_CLOSED).toString()) == 1;
-      return Integer.parseInt(crpManager.getCrpById(this.getCrpID()).getCrpParameters().stream()
-        .filter(c -> c.getKey().equals(APConstants.CRP_CLOSED)).collect(Collectors.toList()).get(0).getValue()) == 1;
+      return Boolean.parseBoolean(crpManager.getCrpById(this.getCrpID()).getCustomParameters().stream()
+        .filter(c -> c.getParameter().getKey().equals(APConstants.CRP_CLOSED)).collect(Collectors.toList()).get(0)
+        .getValue());
     } catch (Exception e) {
       return false;
     }
@@ -1779,8 +1780,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean isCrpRefresh() {
     try {
       // return Integer.parseInt(this.getSession().get(APConstants.CRP_CLOSED).toString()) == 1;
-      return Integer.parseInt(crpManager.getCrpById(this.getCrpID()).getCrpParameters().stream()
-        .filter(c -> c.getKey().equals(APConstants.CRP_REFRESH)).collect(Collectors.toList()).get(0).getValue()) == 1;
+      return Boolean.parseBoolean(crpManager.getCrpById(this.getCrpID()).getCustomParameters().stream()
+        .filter(c -> c.getParameter().getKey().equals(APConstants.CRP_REFRESH)).collect(Collectors.toList()).get(0)
+        .getValue());
     } catch (Exception e) {
       return false;
     }
@@ -1936,7 +1938,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean isLessonsActive() {
-    return Integer.parseInt(this.getSession().get(APConstants.CRP_LESSONS_ACTIVE).toString()) == 1;
+    return Boolean.parseBoolean(this.getSession().get(APConstants.CRP_LESSONS_ACTIVE).toString());
   }
 
   /**
@@ -1964,7 +1966,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean isPlanningActive() {
-    return Integer.parseInt(this.getSession().get(APConstants.CRP_PLANNING_ACTIVE).toString()) == 1;
+    return Boolean.parseBoolean(this.getSession().get(APConstants.CRP_PLANNING_ACTIVE).toString());
   }
 
   public boolean isPMU() {
@@ -2060,7 +2062,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public boolean isReportingActive() {
 
-    return Integer.parseInt(this.getSession().get(APConstants.CRP_REPORTING_ACTIVE).toString()) == 1;
+    return Boolean.parseBoolean(this.getSession().get(APConstants.CRP_REPORTING_ACTIVE).toString());
 
   }
 
