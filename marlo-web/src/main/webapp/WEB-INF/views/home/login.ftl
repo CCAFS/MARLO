@@ -10,7 +10,7 @@
 <section> 
   <div class="container loginPage">
     <div class="form-group row">
-      <div class="col-md-10 col-md-offset-1">
+      <div class="col-md-6">
         <h3 class="text-center">[@s.text name="login.marloTitle" /]</h3>
         <p class="text-center">[@s.text name="login.marloDescription" /]  </p>
         [#if !config.production]
@@ -20,12 +20,11 @@
         </div>
         [/#if]
       </div>
-    </div>
-    <div class="form-group row">
-      <div class="col-md-10 col-md-offset-1">
+      <div class="col-md-offset-1 col-md-5 ">
         [#include "/WEB-INF/global/pages/loginForm.ftl" /]
       </div>
     </div>
+     
   </div>
 </section>
 

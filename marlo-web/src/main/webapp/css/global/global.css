@@ -6663,3 +6663,26 @@ img.removeInput {
   bottom:10%; 
   cursor:pointer;
 }
+
+
+#loginFormContainer .tab-pane {
+  padding: 19px 20px;
+}
+
+#loginFormContainer .nav>li {}
+
+#loginFormContainer .nav>li a {
+  background: #f7f7f7;
+  border-radius: 0;
+  box-shadow: 0px 1px 2px #ccc;
+  padding: 9px 42px;
+  font-size: 1.2em;
+}
+
+#loginFormContainer .nav>li.active {}
+
+#loginFormContainer .nav>li.active a{
+  background: #1b84ab;
+  border-radius: 0;
+  color: #fff;
+}
