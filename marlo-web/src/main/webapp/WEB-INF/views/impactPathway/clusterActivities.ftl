@@ -207,7 +207,7 @@
       <hr />
       [#-- Statement --]
       <div class="form-group col-md-9">
-        [@customForm.textArea  name="${customName}.keyOutput" i18nkey="cluster.keyOutput.statement" value="${(element.keyOutput)!}" required=true className="limitWords-30 keyOutputInput" editable=editable /]
+        [@customForm.textArea  name="${customName}.keyOutput" i18nkey="cluster.keyOutput.statement" value="${(element.keyOutput)!}" required=true className="limitWords-50 keyOutputInput" editable=editable /]
         <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
       </div>
       [#-- Contribution --]

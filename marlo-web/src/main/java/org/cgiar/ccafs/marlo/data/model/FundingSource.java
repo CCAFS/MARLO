@@ -80,6 +80,8 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   private Set<FundingSourceInstitution> fundingSourceInstitutions = new HashSet<FundingSourceInstitution>(0);
 
+  private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
+
   @Expose
   private Long id;
 
@@ -299,6 +301,10 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   }
 
+  public Set<SectionStatus> getSectionStatuses() {
+    return sectionStatuses;
+  }
+
   public Date getStartDate() {
     return startDate;
   }
@@ -456,6 +462,10 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   public void setProjectBudgetsList(List<ProjectBudget> projectBudgetsList) {
     this.projectBudgetsList = projectBudgetsList;
+  }
+
+  public void setSectionStatuses(Set<SectionStatus> sectionStatuses) {
+    this.sectionStatuses = sectionStatuses;
   }
 
   public void setStartDate(Date startDate) {

@@ -97,7 +97,7 @@ public class DeliverableValidator extends BaseValidator {
       }
       if (!(deliverable.getStatus() != null
         && deliverable.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId()))) {
-        if (!(this.isValidString(deliverable.getTitle()) && this.wordCount(deliverable.getTitle()) <= 15)) {
+        if (!(this.isValidString(deliverable.getTitle()) && this.wordCount(deliverable.getTitle()) <= 25)) {
           this.addMessage(action.getText("project.deliverable.generalInformation.title"));
           action.getInvalidFields().put("input-deliverable.title", InvalidFieldsMessages.EMPTYFIELD);
         }
@@ -171,7 +171,8 @@ public class DeliverableValidator extends BaseValidator {
         }
 
 
-        if (deliverable.getResponsiblePartner() != null) {
+        if (deliverable.getResponsiblePartner() != null
+          && deliverable.getResponsiblePartner().getProjectPartnerPerson() != null) {
           if (deliverable.getResponsiblePartner().getProjectPartnerPerson().getId() == null
             || deliverable.getResponsiblePartner().getProjectPartnerPerson().getId() == -1) {
             this.addMessage(action.getText("project.deliverable.generalInformation.partnerResponsible"));

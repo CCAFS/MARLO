@@ -103,7 +103,7 @@
     <input type="hidden" class="leverageId" name="${leverageCustomName}.id" value="${(leverage.id)!}"/>
     <div class="form-group title">
       [#-- title --] 
-      [@customForm.input name="${leverageCustomName}.title" value="${(leverage.title)!}" type="text" i18nkey="Title"  placeholder="" className="limitWords-15" required=true editable=isEditable /]
+      [@customForm.input name="${leverageCustomName}.title" value="${(leverage.title)!}" type="text" i18nkey="Title"  placeholder="" className="limitWords-50" required=true editable=isEditable /]
     </div>
      
     <div class="form-group">

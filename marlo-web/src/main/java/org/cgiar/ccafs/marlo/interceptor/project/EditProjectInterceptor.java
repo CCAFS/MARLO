@@ -72,6 +72,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
       this.setPermissionParameters(invocation);
       return invocation.invoke();
     } catch (Exception e) {
+      e.printStackTrace();
       return BaseAction.NOT_FOUND;
     }
   }
@@ -106,7 +107,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
       String params[] =
         {crp.getAcronym(), project.getId() + "", baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "")};
 
-      if (baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin()) {
+      if (baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin()) {
         if (!baseAction.isSubmit(projectId)) {
 
           canSwitchProject = true;
@@ -174,7 +175,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
       // Check the permission if user want to edit or save the form
       if (editParameter || parameters.get("save") != null) {
-        hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin())) ? true
+        hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin())) ? true
           : baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__PERMISSION, params));
       }
 

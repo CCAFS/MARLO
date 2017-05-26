@@ -35,7 +35,7 @@
       [#-- Project title --]
       <div class="form-group">
         <div class="row">
-          <div class="col-md-12">[@customForm.input name="fundingSource.title" i18nkey="projectCofunded.title" required=true editable=editable /] </div>
+          <div class="col-md-12">[@customForm.input name="fundingSource.title" i18nkey="projectCofunded.title" className="limitWords-40" required=true editable=editable /] </div>
         </div>
       </div>
       [#-- Project summary --]

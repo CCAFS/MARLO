@@ -82,6 +82,9 @@ public interface SectionStatusManager {
    */
   public SectionStatus getSectionStatusByDeliverable(long deliverableID, String cycle, int year, String sectionName);
 
+  public SectionStatus getSectionStatusByFundingSource(long fundingSource, String cycle, Integer year,
+    String sectionName);
+
   /**
    * This method gets a sectionStatus object by a given sectionStatus identifier.
    * 
@@ -113,6 +116,7 @@ public interface SectionStatusManager {
    * @return a SectionStatus object.
    */
   public SectionStatus getSectionStatusByProjectCofunded(long projectID, String cycle, int year, String sectionName);
+
 
   /**
    * This method gets a sectionStatus object by a given sectionStatus identifier.
