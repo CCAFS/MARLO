@@ -15,9 +15,9 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
-import org.cgiar.ccafs.marlo.data.dao.CrpParameterDAO;
-import org.cgiar.ccafs.marlo.data.manager.CrpParameterManager;
-import org.cgiar.ccafs.marlo.data.model.CrpParameter;
+import org.cgiar.ccafs.marlo.data.dao.CustomParameterDAO;
+import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
+import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 
 import java.util.List;
 
@@ -26,49 +26,49 @@ import com.google.inject.Inject;
 /**
  * @author Christian Garcia
  */
-public class CrpParameterManagerImpl implements CrpParameterManager {
+public class CustomParameterManagerImpl implements CustomParameterManager {
 
 
-  private CrpParameterDAO crpParameterDAO;
+  private CustomParameterDAO customParameterDAO;
   // Managers
 
 
   @Inject
-  public CrpParameterManagerImpl(CrpParameterDAO crpParameterDAO) {
-    this.crpParameterDAO = crpParameterDAO;
+  public CustomParameterManagerImpl(CustomParameterDAO customParameterDAO) {
+    this.customParameterDAO = customParameterDAO;
 
 
   }
 
   @Override
-  public boolean deleteCrpParameter(long crpParameterId) {
+  public boolean deleteCustomParameter(long customParameterId) {
 
-    return crpParameterDAO.deleteCrpParameter(crpParameterId);
+    return customParameterDAO.deleteCustomParameter(customParameterId);
   }
 
   @Override
-  public boolean existCrpParameter(long crpParameterID) {
+  public boolean existCustomParameter(long customParameterID) {
 
-    return crpParameterDAO.existCrpParameter(crpParameterID);
+    return customParameterDAO.existCustomParameter(customParameterID);
   }
 
   @Override
-  public List<CrpParameter> findAll() {
+  public List<CustomParameter> findAll() {
 
-    return crpParameterDAO.findAll();
+    return customParameterDAO.findAll();
 
   }
 
   @Override
-  public CrpParameter getCrpParameterById(long crpParameterID) {
+  public CustomParameter getCustomParameterById(long customParameterID) {
 
-    return crpParameterDAO.find(crpParameterID);
+    return customParameterDAO.find(customParameterID);
   }
 
   @Override
-  public long saveCrpParameter(CrpParameter crpParameter) {
+  public long saveCustomParameter(CustomParameter customParameter) {
 
-    return crpParameterDAO.save(crpParameter);
+    return customParameterDAO.save(customParameter);
   }
 
 
