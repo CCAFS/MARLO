@@ -80,6 +80,7 @@ public final class APConstants {
   public static final String CRP_SL_ROLE = "crp_sl_rol";
   public static final String CUSTOM_FILE = "global";
   public static final String CUSTOM_LAGUAGE = "en";
+  public static final String CRP_CLUSTER_LEADER = "crp_cluster_leader";
 
   public static final String CYCLE = "cycle";
   // Date Formats
