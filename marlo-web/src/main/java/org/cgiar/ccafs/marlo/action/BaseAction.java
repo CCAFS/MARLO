@@ -388,7 +388,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
             for (Project project : projects) {
               if (project.getLiaisonInstitution().getCrpProgram().getId()
-                .equals(crpProgramLeader.getCrpProgram().getId())) {
+                .equals(crpProgramLeader.getCrpProgram().getId())
+                && project.getLiaisonInstitution().getCrpProgram() != null && project.getLiaisonInstitution()
+                  .getCrpProgram().getId().longValue() == crpProgramLeader.getCrpProgram().getId().longValue()) {
                 if (project.getStatus() != null) {
                   switch (ProjectStatusEnum.getValue(project.getStatus().intValue())) {
                     case Ongoing:
