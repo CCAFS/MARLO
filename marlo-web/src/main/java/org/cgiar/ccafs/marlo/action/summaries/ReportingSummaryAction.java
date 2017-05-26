@@ -793,7 +793,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     TypedTableModel model = new TypedTableModel(
       new String[] {"year", "institution", "w1w2", "w3", "bilateral", "center", "institution_id", "p_id", "w1w2Gender",
         "w3Gender", "bilateralGender", "centerGender", "w1w2GAmount", "w3GAmount", "bilateralGAmount", "centerGAmount",
-        "w1w2CoFinancing", "w1w2CoFinancingGender", "w1w2CoFinancingGAmount"},
+        "w1w2CoBudget", "w1w2CoGender", "w1w2CoGAmount"},
       new Class[] {Integer.class, String.class, String.class, String.class, String.class, String.class, Long.class,
         Long.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class},
@@ -864,7 +864,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
         model.addRow(new Object[] {year, pp.getInstitution().getComposedName(), w1w2Budget, w3Budget, bilateralBudget,
           centerBudget, pp.getInstitution().getId(), projectID, w1w2Gender, w3Gender, bilateralGender, centerGender,
-          w1w2GAmount, w3GAmount, bilateralGAmount, centerGAmount});
+          w1w2GAmount, w3GAmount, bilateralGAmount, centerGAmount, w1w2CoBudget, w1w2CoGender, w1w2CoGAmount});
       }
     }
     return model;
