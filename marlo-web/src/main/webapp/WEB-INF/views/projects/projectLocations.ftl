@@ -49,26 +49,6 @@
           
           <div class="row">
           <h3 class="headTitle col-md-7">[@s.text name="projectLocations.title" /]</h3>  
-            [#-- 
-                <div class="col-md-5 isGlobal">
-              <br />
-              [#if editable]
-              <label class="col-md-10" for=""><span id="globalText">[@s.text name="projectLocations.isGlobal" /]</span></label>
-              <div class=" col-md-2">
-              <input id="" class="" type="checkbox" name="project.locationGlobal" value=[#if project.locationGlobal]"true" checked[#else]"false"[/#if]/>
-              <label for=""></label>
-              </div>
-              [#else]
-              <h4 style="text-align:center; display: inline-block">
-                [#if (project.locationGlobal?has_content)?string('true','false')=="true"]
-                  <label for="">[@s.text name="projectLocations.isGlobalYes" /]</label>
-                [#else]
-                  <label>[@s.text name="projectLocations.isGlobalNo" /]</label>
-                [/#if]
-              </h4>
-              [/#if]
-            </div>
-             --]
           </div>
           <div id="" class="borderBox projectLocationsWrapper">
             [#-- Content--]
@@ -386,7 +366,6 @@
    [#if editable]<span class="listButton remove removeLocationLevel pull-right" style="padding: 0 5px 3px 5px;">[@s.text name="form.buttons.remove" /] location level</span>[/#if]
     </h5>
     <div class=" locationLevel-optionContent " listname="${customName}.locElements">
-    [#-- style="display:[#if element?has_content && list && element.name?contains("Climate Smart Village Sites")]inline-block[#else]none[/#if]" --]
       <span class="allCountriesQuestion" style="display:none">
         <span class="question">[@s.text name="projectLocations.selectAllCmvs" /]</span>
         [@customForm.yesNoInput name="${customName}.allCountries"  editable=editable inverse=false  cssClass="allCountries text-center" /]
@@ -400,6 +379,21 @@
           [/#list]
         [/#if]
       </div>
+    </div>
+    [#-- TEST FORM BY LOCATION LEVEL --]
+    <div class="row">
+    [#if list]
+      <div class="selectLocation col-md-12" >
+        <label for="">Select location(s)</label>
+        <select name="" data-placeholder="Click here to drop down the options" id="countriesCmvs" multiple="true"></select>
+      </div>
+    [#else]
+      <div id="inputFormWrapper" class="col-md-12">
+        <div class="nameWrapper"><label for="">Location name:</label><input placeholder="name (Required)" class="name form-control" type="text" /></div>
+        <div class="latitudeWrapper"><label for="">Latitude:</label><input placeholder="Latitude" class="latitude form-control" type="text" value="" /></div>
+        <div class="longitudeWrapper"><label for="">Longitude:</label><input placeholder="Longitude" class="longitude form-control " type="text"  value=""/></div>
+      </div>
+    [/#if]
     </div>
     <input class="locationLevelId" type="hidden" name="${locationLevelName}[${index}].id" value="${(element.id)!}"/>
     <input class="locationLevelName" type="hidden" name="${locationLevelName}[${index}].name" value="${(element.name)!}"/>
