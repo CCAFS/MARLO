@@ -14,6 +14,7 @@
         <h3 class="">[@s.text name="login.marloTitle" /]</h3>
         <p class="text-justify">[@s.text name="login.marloDescription" /]  </p>
         [#if !config.production]
+        <br />
         <div class="note testerMessage">
           <p class="text-justify">[@s.text name="login.testersMessage2"/]</p>
           <p class="text-justify">[@s.text name="login.testersMessage3"/]</p>
