@@ -120,20 +120,6 @@ function attachEvents() {
     }
   });
 
-// Yes-no button
-  $(".allCountriesQuestion").find(".no-button-label").on("click", function() {
-    $(this).parent().find(".yes-button-label").removeClass("radio-checked");
-    $(this).addClass("radio-checked");
-    $(this).parent().find("input").val(false);
-    checkAllCountries(this);
-  });
-  $(".allCountriesQuestion").find(".yes-button-label").on("click", function() {
-    $(this).parent().find(".no-button-label").removeClass("radio-checked");
-    $(this).addClass("radio-checked");
-    $(this).parent().find("input").val(true);
-    checkAllCountries(this);
-  });
-
   // REGIONAL QUESTION
   $(".button-label").on("click", function() {
     var valueSelected = $(this).hasClass('yes-button-label');
@@ -266,64 +252,6 @@ function checkRecommendedLocation(loc) {
   }
 }
 
-function checkAllCountries($this) {
-  var parent = $($this).parents(".locationLevel");
-  console.log(parent);
-  if($($this).parent().find("input").val() == "true") {
-    parent.find(".locElement").each(function(i,e) {
-      $(e).hide("slow");
-      var id = $(e).attr("id").split('-')[1];
-      if(markers[id] != undefined) {
-        removeMarker(id);
-      }
-    });
-    var url = baseURL + "/searchCountryListPL.do";
-    var data = {
-      parentId: 10
-    };
-    $.ajax({
-        url: url,
-        type: 'GET',
-        dataType: "json",
-        data: data
-    }).done(function(m) {
-      console.log(m);
-      $.each(m.locElements, function(i,e) {
-        addMarker(map, e.id, e.lat, e.lng, e.name, "true", 2);
-      });
-    });
-    if($(parent).find(".locationLevelName").val() == "Climate Smart Village Sites") {
-      $("#locLevelSelect").find("option[value='10-true-Climate Smart Village Sites']").remove();
-    }
-  } else {
-    // Delete all
-    $.each(markers, function(i,e) {
-      if(typeof e === 'undefined') {
-      } else {
-        if(e.type == 2) {
-          removeMarker(e.gElement.id);
-        }
-      }
-    });
-    // Add current
-    parent.find(".locElement").each(
-        function(i,e) {
-          $(e).show("slow");
-          var id = $(e).attr("id").split('-')[1];
-          var locLevelName = $(e).parent().parent().parent().find(".locationLevelName");
-          if(locLevelName.val() == "Climate Smart Village Sites") {
-            addMarker(map, id, parseFloat($(e).find(".geoLatitude").val()),
-                parseFloat($(e).find(".geoLongitude").val()), $(e).find(".locElementName").val(), "true", 2);
-          }
-        });
-    if($(parent).find(".locationLevelName").val() == "Climate Smart Village Sites") {
-      $("#locLevelSelect").append(
-          "<option value='10-true-Climate Smart Village Sites'>Climate Smart Village Sites</option>");
-    }
-  }
-  updateIndex();
-}
-
 // Remove a location level element-Function
 function removeLocationLevelItem() {
   var globalList = $(this).parents('.locationLevel').parents("#selectsContent");
@@ -415,7 +343,7 @@ function loadScript() {
         var site = $(locItem).find(".locElementName").val();
         var idMarker = $(locItem).attr("id").split("-")[1];
         if(latitude != "" && longitude != "" && latitude != 0 && longitude != 0) {
-          if($(item).find(".locationLevelName").val() == "Climate Smart Village Sites") {
+          if($(item).find("input.locationLevelId").val() == "10") {
             addMarker(map, (idMarker), parseFloat(latitude), parseFloat(longitude), site, isList, 2);
           } else {
             addMarker(map, (idMarker), parseFloat(latitude), parseFloat(longitude), site, isList, 1);
