@@ -20,7 +20,7 @@ package org.cgiar.ccafs.marlo.data.model;
 public enum CrpCategoryEnum {
 
   //
-  CRP("1", "Crps"), CENTER("2", "Centers"), PLATAFORMS("3", "Plataforms");
+  CRP("1", "Crps"), CENTER("2", "Centers"), PLATFORMS("3", "Platforms");
 
   /**
    * Get ChannelEnum value from the id parameter

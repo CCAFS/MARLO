@@ -61,7 +61,10 @@ public class LoginAction extends BaseAction {
 
   // Managers
   private UserManager userManager;
+
+
   private CrpManager crpManager;
+
   private CrpUserManager crpUserManager;
 
   @Inject
@@ -72,7 +75,6 @@ public class LoginAction extends BaseAction {
     this.crpUserManager = crpUserManager;
   }
 
-
   @Override
   public String execute() throws Exception {
     return SUCCESS;
@@ -81,6 +83,7 @@ public class LoginAction extends BaseAction {
   public String getCrp() {
     return crp;
   }
+
 
   private void getLoginMessages() {
     Session session = SecurityUtils.getSubject().getSession();
@@ -127,10 +130,10 @@ public class LoginAction extends BaseAction {
     return url;
   }
 
-
   public User getUser() {
     return user;
   }
+
 
   public UserManager getUserManager() {
     return userManager;
@@ -256,6 +259,7 @@ public class LoginAction extends BaseAction {
   public void setCrp(String crp) {
     this.crp = crp;
   }
+
 
   @Override
   public void setUrl(String url) {
