@@ -51,27 +51,30 @@ public class Crp implements java.io.Serializable, IAuditLog {
 
   private Set<Role> roles = new HashSet<Role>(0);
 
+  @Expose
+  private Integer category;
+
 
   private Set<CrpProgram> crpPrograms = new HashSet<CrpProgram>(0);
+
 
   private Set<CrpsSiteIntegration> crpsSitesIntegrations = new HashSet<CrpsSiteIntegration>(0);
 
 
   private Set<LocElementType> locElementTypes = new HashSet<LocElementType>(0);
 
-
   private Set<LiaisonUser> liasonUsers = new HashSet<LiaisonUser>(0);
 
 
   private Set<LiaisonInstitution> liaisonInstitutions = new HashSet<LiaisonInstitution>(0);
 
+
   private Set<CustomParameter> customParameters = new HashSet<CustomParameter>(0);
+
+
   private List<CustomParameter> parameters;
 
-
   private Set<CrpSubIdosContribution> crpSubIdosContributions = new HashSet<CrpSubIdosContribution>(0);
-
-
   private Set<FundingSource> fundingSources = new HashSet<FundingSource>(0);
 
 
@@ -86,32 +89,32 @@ public class Crp implements java.io.Serializable, IAuditLog {
 
   private List<Deliverable> deliverablesList;
 
+
   private Set<GenderType> genderTypes = new HashSet<GenderType>(0);
 
 
   @Expose
   private boolean active;
+
   @Expose
   private boolean marlo;
 
 
   @Expose
   private User createdBy;
-
-
   @Expose
   private Date activeSince;
 
 
   @Expose
   private User modifiedBy;
+
+
   @Expose
   private String modificationJustification;
 
 
   private Set<CrpPpaPartner> crpPpaPartners = new HashSet<CrpPpaPartner>(0);
-
-
   private Set<LocElement> locElements = new HashSet<LocElement>(0);
 
 
@@ -123,7 +126,9 @@ public class Crp implements java.io.Serializable, IAuditLog {
 
   private List<CrpsSiteIntegration> siteIntegrations;
 
+
   private List<LocElementType> locationElementTypes;
+
 
   private List<LocElementType> locationCustomElementTypes;
 
@@ -134,7 +139,6 @@ public class Crp implements java.io.Serializable, IAuditLog {
   private List<TargetUnitSelect> targetUnits;
 
   private List<CustomLevelSelect> customLevels;
-
 
   public Crp() {
   }
@@ -178,10 +182,15 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return acronym;
   }
 
-
   public Date getActiveSince() {
     return activeSince;
   }
+
+
+  public Integer getCategory() {
+    return category;
+  }
+
 
   public User getCreatedBy() {
     return createdBy;
@@ -203,7 +212,6 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return crpPrograms;
   }
 
-
   public Set<CrpsSiteIntegration> getCrpsSitesIntegrations() {
     return crpsSitesIntegrations;
   }
@@ -223,14 +231,15 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return this.crpUsers;
   }
 
+
   public List<CustomLevelSelect> getCustomLevels() {
     return customLevels;
   }
 
-
   public Set<CustomParameter> getCustomParameters() {
     return customParameters;
   }
+
 
   public Set<Deliverable> getDeliverables() {
     return deliverables;
@@ -284,7 +293,6 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
-
   @Override
   public String getModificationJustification() {
     return modificationJustification;
@@ -306,14 +314,15 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return parameters;
   }
 
+
   public List<UserRole> getProgramManagmenTeam() {
     return programManagmenTeam;
   }
 
-
   public Set<Project> getProjects() {
     return projects;
   }
+
 
   public Set<Role> getRoles() {
     return this.roles;
@@ -335,32 +344,36 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return result;
   }
 
-
   @Override
   public boolean isActive() {
     return active;
   }
 
+
   public boolean isHasRegions() {
     return hasRegions;
   }
-
 
   public boolean isMarlo() {
     return marlo;
   }
 
+
   public void setAcronym(String acronym) {
     this.acronym = acronym;
   }
-
 
   public void setActive(boolean active) {
     this.active = active;
   }
 
+
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
+  }
+
+  public void setCategory(Integer category) {
+    this.category = category;
   }
 
   public void setCreatedBy(User createdBy) {
