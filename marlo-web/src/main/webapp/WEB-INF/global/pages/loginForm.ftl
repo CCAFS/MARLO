@@ -19,7 +19,7 @@
       <div class="crpGroup tab-content">
       
         [#-- CRPs --]
-        <div role="tabpanel" id="crps" class="tab-pane active col-md-12 animated bounceIn">
+        <div role="tabpanel" id="crps" class="tab-pane active col-sm-12 animated bounceIn">
            
           <ul>
           [#if crpList?has_content]
@@ -32,7 +32,7 @@
           </ul>
         </div>
         [#-- Platforms --]
-        <div id="platforms" class="tab-pane col-md-12 animated bounceIn">
+        <div id="platforms" class="tab-pane col-sm-12 animated bounceIn">
           
           <ul>
           [#assign platformsList = [
@@ -50,7 +50,7 @@
           </ul> 
         </div>
         [#-- Centers --]
-        <div id="centers" class="tab-pane col-md-12 animated bounceIn">
+        <div id="centers" class="tab-pane col-sm-12 animated bounceIn">
            
           <ul>
           [#assign centersList = [{"acronym": "ciat"}] /]
@@ -68,22 +68,22 @@
     <div class="secondForm" style="display:${(crpSession?has_content)?string('block', 'none')}">
       <div class="form-group row">
         
-        <div class="col-md-12">
+        <div class="col-sm-12">
           <div class="row">
             <br />
              
             [#-- Form --]
-            <div class="col-md-12 text-center">
+            <div class="col-sm-12 text-center">
               [#-- Image --]
-              <img id="crpSelectedImage"  width="100%" src="${baseUrl}/images/global/crps/${(crpSession)!'default'}.png" alt="${(crpSession)!}" />
+              <img id="crpSelectedImage"  width="300px" src="${baseUrl}/images/global/crps/${(crpSession)!'default'}.png" alt="${(crpSession)!}" />
               [#-- CRP Session --]
               <input type="hidden" id="crp" name="crp" value="${(crpSession)!}" />
               [#-- Email --]
-              <div class="form-group">
+              <div class="form-group text-left">
                 [@customForm.input name="user.email" i18nkey="login.email" required=true /]
               </div>
               [#-- Password --]
-              <div class="form-group">
+              <div class="form-group text-left">
                 [@customForm.input name="user.password" i18nkey="login.password" required=true type="password" /]
               </div>
               [#-- Login (Submit button) --]
@@ -91,7 +91,7 @@
               <br />
               <br />
               [#-- Go back --]
-              <a class="goBackToSelect" href="#">Select another (CRP, Center or Platform)</a>
+              <a class="goBackToSelect" href="#"><span class="glyphicon glyphicon-menu-down"></span> Select another (CRP, Center or Platform)</a>
             </div>
           </div>
           <br />
