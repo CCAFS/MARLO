@@ -435,80 +435,84 @@ public class ProjectPartnerAction extends BaseAction {
    * @param leader is a PartnerPerson object that could be the leader or the coordinator.
    */
   private void notifyNewUserCreated(User user) {
-    user = userManager.getUser(user.getId());
 
-    if (!user.isActive()) {
-      String toEmail = user.getEmail();
-      String ccEmail = "";
-      String bbcEmails = this.config.getEmailNotification();
-      String subject = this.getText("email.newUser.subject", new String[] {user.getFirstName()});
-      // Setting the password
-      String password = this.getText("email.outlookPassword");
-      if (!user.isCgiarUser()) {
-        // Generating a random password.
-        password = RandomStringUtils.randomNumeric(6);
-        // Applying the password to the user.
-        user.setPassword(password);
-      }
+    if (user != null && user.getId() != null) {
+      user = userManager.getUser(user.getId());
 
-      // Building the Email message:
-      StringBuilder message = new StringBuilder();
-      message.append(this.getText("email.dear", new String[] {user.getFirstName()}));
-
-      // get CRPAdmin contacts
-      String crpAdmins = "";
-      long adminRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_ADMIN_ROLE));
-      Role roleAdmin = roleManager.getRoleById(adminRol);
-      List<UserRole> userRoles = roleAdmin.getUserRoles().stream()
-        .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
-      for (UserRole userRole : userRoles) {
-        if (crpAdmins.isEmpty()) {
-          crpAdmins += userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
-        } else {
-          crpAdmins += ", " + userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+      if (!user.isActive()) {
+        String toEmail = user.getEmail();
+        String ccEmail = "";
+        String bbcEmails = this.config.getEmailNotification();
+        String subject = this.getText("email.newUser.subject", new String[] {user.getFirstName()});
+        // Setting the password
+        String password = this.getText("email.outlookPassword");
+        if (!user.isCgiarUser()) {
+          // Generating a random password.
+          password = RandomStringUtils.randomNumeric(6);
+          // Applying the password to the user.
+          user.setPassword(password);
         }
-      }
 
-      message.append(this.getText("email.newUser.part1", new String[] {this.getText("email.newUser.listRoles"),
-        config.getBaseUrl(), user.getEmail(), password, this.getText("email.support", new String[] {crpAdmins})}));
-      message.append(this.getText("email.bye"));
+        // Building the Email message:
+        StringBuilder message = new StringBuilder();
+        message.append(this.getText("email.dear", new String[] {user.getFirstName()}));
 
-      // Saving the new user configuration.
-      user.setActive(true);
-      userManager.saveUser(user, this.getCurrentUser());
-
-      // Send UserManual.pdf
-      String contentType = "application/pdf";
-      String fileName = "Introduction_To_MARLO_v2.1.pdf";
-      byte[] buffer = null;
-      InputStream inputStream = null;
-
-      try {
-        inputStream = this.getClass().getResourceAsStream("/manual/Introduction_To_MARLO_v2.1.pdf");
-        buffer = readFully(inputStream);
-      } catch (FileNotFoundException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      } finally {
-        if (inputStream != null) {
-          try {
-            inputStream.close();
-          } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        // get CRPAdmin contacts
+        String crpAdmins = "";
+        long adminRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_ADMIN_ROLE));
+        Role roleAdmin = roleManager.getRoleById(adminRol);
+        List<UserRole> userRoles = roleAdmin.getUserRoles().stream()
+          .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
+        for (UserRole userRole : userRoles) {
+          if (crpAdmins.isEmpty()) {
+            crpAdmins += userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+          } else {
+            crpAdmins += ", " + userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
           }
         }
-      }
 
-      if (buffer != null && fileName != null && contentType != null) {
-        sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer, contentType, fileName, true);
-      } else {
-        sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+        message.append(this.getText("email.newUser.part1", new String[] {this.getText("email.newUser.listRoles"),
+          config.getBaseUrl(), user.getEmail(), password, this.getText("email.support", new String[] {crpAdmins})}));
+        message.append(this.getText("email.bye"));
+
+        // Saving the new user configuration.
+        user.setActive(true);
+        userManager.saveUser(user, this.getCurrentUser());
+
+        // Send UserManual.pdf
+        String contentType = "application/pdf";
+        String fileName = "Introduction_To_MARLO_v2.1.pdf";
+        byte[] buffer = null;
+        InputStream inputStream = null;
+
+        try {
+          inputStream = this.getClass().getResourceAsStream("/manual/Introduction_To_MARLO_v2.1.pdf");
+          buffer = readFully(inputStream);
+        } catch (FileNotFoundException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        } catch (IOException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        } finally {
+          if (inputStream != null) {
+            try {
+              inputStream.close();
+            } catch (IOException e) {
+              // TODO Auto-generated catch block
+              e.printStackTrace();
+            }
+          }
+        }
+
+        if (buffer != null && fileName != null && contentType != null) {
+          sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer, contentType, fileName, true);
+        } else {
+          sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+        }
       }
     }
+
   }
 
   /**
@@ -1448,45 +1452,52 @@ public class ProjectPartnerAction extends BaseAction {
     String roleAcronym = role.getAcronym();
     if (previousPartnerPerson != null && partnerPerson != null) {
       for (ProjectPartnerPerson projectPartnerPerson : partnerPerson) {
-        if (!previousPartnerPerson.contains(projectPartnerPerson)) {
-          UserRole userRole = new UserRole();
-          userRole.setRole(role);
-          userRole.setUser(projectPartnerPerson.getUser());
 
-          role = roleManager.getRoleById(role.getId());
-          if (!role.getUserRoles().contains(userRole)) {
-            userRoleManager.saveUserRole(userRole);
-            this.addCrpUser(projectPartnerPerson.getUser());
+        if (projectPartnerPerson.getUser() != null && projectPartnerPerson.getUser().getId() != null) {
+          if (!previousPartnerPerson.contains(projectPartnerPerson)) {
+            UserRole userRole = new UserRole();
+            userRole.setRole(role);
+            userRole.setUser(projectPartnerPerson.getUser());
+
+            role = roleManager.getRoleById(role.getId());
+            if (!role.getUserRoles().contains(userRole)) {
+              userRoleManager.saveUserRole(userRole);
+              this.addCrpUser(projectPartnerPerson.getUser());
+            }
+
+
+            // Notifying user is assigned as Project Leader/Coordinator.
+            this.notifyRoleAssigned(projectPartnerPerson.getUser(), role);
           }
-
-
-          // Notifying user is assigned as Project Leader/Coordinator.
-          this.notifyRoleAssigned(projectPartnerPerson.getUser(), role);
         }
+
       }
 
       for (ProjectPartnerPerson projectPartnerPerson : previousPartnerPerson) {
-        if (!partnerPerson.contains(projectPartnerPerson)) {
-          List<UserRole> rolesUser = userRoleManager.getUserRolesByUserId(projectPartnerPerson.getUser().getId());
-          if (rolesUser != null) {
-            rolesUser =
-              rolesUser.stream().filter(c -> c.getRole().getId().longValue() == roleId).collect(Collectors.toList());
-            if (!rolesUser.isEmpty()) {
-              if (projectPartnerPerson.getUser().getProjectPartnerPersons().stream()
-                .filter(
-                  c -> c.isActive() && c.getContactType().equals(roleAcronym) && c.getProjectPartner().getProject()
-                    .getId().longValue() != projectPartnerPerson.getProjectPartner().getProject().getId().longValue())
-                .collect(Collectors.toList()).size() == 0) {
-                userRoleManager.deleteUserRole(rolesUser.get(0).getId());
-                this.checkCrpUserByRole(projectPartnerPerson.getUser());
+        if (projectPartnerPerson.getUser() != null && projectPartnerPerson.getUser().getId() != null) {
+          if (!partnerPerson.contains(projectPartnerPerson)) {
+
+            List<UserRole> rolesUser = userRoleManager.getUserRolesByUserId(projectPartnerPerson.getUser().getId());
+            if (rolesUser != null) {
+              rolesUser =
+                rolesUser.stream().filter(c -> c.getRole().getId().longValue() == roleId).collect(Collectors.toList());
+              if (!rolesUser.isEmpty()) {
+                if (projectPartnerPerson.getUser().getProjectPartnerPersons().stream()
+                  .filter(
+                    c -> c.isActive() && c.getContactType().equals(roleAcronym)
+                      && c.getProjectPartner().getProject().getId().longValue() != projectPartnerPerson
+                        .getProjectPartner().getProject().getId().longValue())
+                  .collect(Collectors.toList()).size() == 0) {
+                  userRoleManager.deleteUserRole(rolesUser.get(0).getId());
+                  this.checkCrpUserByRole(projectPartnerPerson.getUser());
+                }
               }
             }
+            // Notifying user that is not the project leader anymore
+            this.notifyRoleUnassigned(projectPartnerPerson.getUser(), role);
           }
-          // Notifying user that is not the project leader anymore
-          this.notifyRoleUnassigned(projectPartnerPerson.getUser(), role);
         }
       }
-
     }
     /*
      * else if (previousPartnerPerson != null && partnerPerson == null) {

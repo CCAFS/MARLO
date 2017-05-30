@@ -49,7 +49,7 @@ public class EditCrpAdminInterceptor extends AbstractInterceptor implements Seri
     session = invocation.getInvocationContext().getSession();
     crp = (Crp) session.get(APConstants.SESSION_CRP);
     /*
-     * if (!baseAction.canAcessCrpAdmin()) {
+     * if (!baseAction.canEditCrpAdmin()) {
      * return BaseAction.NOT_AUTHORIZED;
      * }
      */
@@ -70,7 +70,7 @@ public class EditCrpAdminInterceptor extends AbstractInterceptor implements Seri
 
 
     // If user is admin, it should have privileges to edit all projects.
-    if (baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin()) {
+    if (baseAction.canAccessSuperAdmin() && baseAction.canEditCrpAdmin()) {
       canEdit = true;
     } else {
       if (baseAction
@@ -95,7 +95,7 @@ public class EditCrpAdminInterceptor extends AbstractInterceptor implements Seri
     }
 
     // Set the variable that indicates if the user can edit the section
-    baseAction.setEditableParameter(editParameter);
+    baseAction.setEditableParameter(editParameter && canEdit);
     baseAction.setCanEdit(canEdit);
 
   }

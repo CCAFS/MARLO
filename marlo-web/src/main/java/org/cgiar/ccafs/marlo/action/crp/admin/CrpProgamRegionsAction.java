@@ -421,43 +421,63 @@ public class CrpProgamRegionsAction extends BaseAction {
    */
   private void notifyRoleAssigned(User userAssigned, Role role, CrpProgram crpProgram) {
     userAssigned = userManager.getUser(userAssigned.getId());
-    String regionRole = role.getDescription();
-    String regionRoleAcronym = this.getText("regionalMapping.CrpProgram.leaders.acronym");
+    // TO will be the new user
+    String toEmail = userAssigned.getEmail();
+    // CC will be the user who is making the modification.
+    String ccEmail = this.getCurrentUser().getEmail();
+    // CC will be also others leaders
+    crpProgram = crpProgramManager.getCrpProgramById(crpProgram.getId());
+    for (CrpProgramLeader crpProgramLeader : crpProgram.getCrpProgramLeaders().stream().filter(cp -> cp.isActive())
+      .collect(Collectors.toList())) {
+      if (ccEmail.isEmpty()) {
+        ccEmail += crpProgramLeader.getUser().getEmail();
+      } else {
+        ccEmail += ", " + crpProgramLeader.getUser().getEmail();
+      }
+    }
+
+    // CC will be also the CRP Admins
+    String crpAdmins = "";
+    String crpAdminsEmail = "";
+    long adminRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_ADMIN_ROLE));
+    Role roleAdmin = roleManager.getRoleById(adminRol);
+    List<UserRole> userRoles = roleAdmin.getUserRoles().stream()
+      .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
+    for (UserRole userRole : userRoles) {
+      if (crpAdmins.isEmpty()) {
+        crpAdmins += userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+        crpAdminsEmail += userRole.getUser().getEmail();
+
+      } else {
+        crpAdmins += ", " + userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+        crpAdminsEmail += ", " + userRole.getUser().getEmail();
+      }
+    }
+    if (!crpAdminsEmail.isEmpty()) {
+      if (ccEmail.isEmpty()) {
+        ccEmail += crpAdminsEmail;
+      } else {
+        ccEmail += ", " + crpAdminsEmail;
+      }
+    }
+
+    // BBC will be our gmail notification email.
+    String bbcEmails = this.config.getEmailNotification();
+
+    String subject =
+      this.getText("email.region.assigned.subject", new String[] {crpProgram.getAcronym(), loggedCrp.getName()});
+
     userAssigned = userManager.getUser(userAssigned.getId());
     StringBuilder message = new StringBuilder();
     // Building the Email message:
     message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
-    if (role.equals(rplRole)) {
-      message.append(this.getText("email.region.assigned",
-        new String[] {regionRole, crpProgram.getName(), crpProgram.getAcronym()}));
-    } else {
-      message.append(this.getText("email.regionmanager.assigned",
-        new String[] {regionRole, crpProgram.getName(), crpProgram.getAcronym()}));
-    }
-
-    message.append(this.getText("email.support"));
+    message.append(this.getText("email.region.assigned",
+      new String[] {crpProgram.getAcronym(), crpProgram.getName(), loggedCrp.getName()}));
+    message.append(this.getText("email.support", new String[] {crpAdmins}));
     message.append(this.getText("email.bye"));
-    String toEmail = null;
-    String ccEmail = null;
-    if (config.isProduction()) {
-      // Send email to the new user and the P&R notification email.
-      // TO
-      toEmail = userAssigned.getEmail();
-      // CC will be the user who is making the modification.
-      if (this.getCurrentUser() != null) {
-        ccEmail = this.getCurrentUser().getEmail();
-      }
-    }
-    // BBC will be our gmail notification email.
-    String bbcEmails = this.config.getEmailNotification();
-    if (role.equals(rplRole)) {
-      sendMail.send(toEmail, ccEmail, bbcEmails,
-        this.getText("email.region.assigned.subject", new String[] {loggedCrp.getName(), crpProgram.getAcronym()}),
-        message.toString(), null, null, null, true);
-    } else {
-      sendMail.send(toEmail, ccEmail, bbcEmails, this.getText("email.regionmanager.assigned.subject",
-        new String[] {loggedCrp.getName(), crpProgram.getAcronym()}), message.toString(), null, null, null, true);
-    }
+
+    sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+
   }
 
   private void notifyRoleUnassigned(User userAssigned, Role role, CrpProgram crpProgram) {
@@ -626,6 +646,7 @@ public class CrpProgamRegionsAction extends BaseAction {
               userRole.setUser(userManager.getUser(userRole.getUser().getId()));
               this.notifyNewUserCreated(userRole.getUser());
               // Notifiy user been asigned Program Leader to Flagship
+              // New Science officer
               this.notifyRoleAssigned(userRole.getUser(), userRole.getRole(), crpProgram);
             }
 
@@ -818,9 +839,10 @@ public class CrpProgamRegionsAction extends BaseAction {
                 }
 
                 // Notify assigned role
-                UserRole userRole = new UserRole(slRole, crpProgramLeader.getUser());
+                UserRole userRole = new UserRole(rplRole, crpProgramLeader.getUser());
                 if (!crpProgramLeader.getUser().getUserRoles().contains(userRole)) {
                   this.notifyNewUserCreated(crpProgramLeader.getUser());
+                  // new RPL
                   this.notifyRoleAssigned(crpProgramLeader.getUser(), userRole.getRole(),
                     crpProgramLeader.getCrpProgram());
                 }
