@@ -2,6 +2,17 @@ $(document).ready(init);
 
 function init() {
 
+  $(".parameterValue.type-2").datepicker({
+      dateFormat: "yy-mm-dd",
+      minDate: '2012-01-01',
+      maxDate: '2030-12-31',
+      changeMonth: true,
+      numberOfMonths: 1,
+      changeYear: true
+  });
+
+  $(".parameterValue.type-3").numericInput();
+
   /* Declaring Events */
   attachEvents();
 

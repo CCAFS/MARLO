@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,7 +18,7 @@ package org.cgiar.ccafs.marlo.interceptor;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.model.Crp;
-import org.cgiar.ccafs.marlo.data.model.CrpParameter;
+import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.List;
@@ -79,8 +79,9 @@ public class AccessibleStageInterceptor extends AbstractInterceptor {
   }
 
   public String sectionActive(String section) {
-    List<CrpParameter> parameters = loggedCrp.getCrpParameters().stream()
-      .filter(p -> p.getKey().equals(section) && p.isActive() && p.getCrp().getId().equals(loggedCrp.getId()))
+    List<CustomParameter> parameters = loggedCrp.getCustomParameters().stream()
+      .filter(
+        p -> p.getParameter().getKey().equals(section) && p.isActive() && p.getCrp().getId().equals(loggedCrp.getId()))
       .collect(Collectors.toList());
 
     if (parameters.size() == 0) {
