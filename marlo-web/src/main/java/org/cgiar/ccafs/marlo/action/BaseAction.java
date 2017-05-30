@@ -615,7 +615,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return Arrays.asList(CrpCategoryEnum.values());
   }
 
-  public long getCGIARInsitution() {
+  public long getCGIARInstitution() {
     return APConstants.INSTITUTION_CGIAR;
   }
 
