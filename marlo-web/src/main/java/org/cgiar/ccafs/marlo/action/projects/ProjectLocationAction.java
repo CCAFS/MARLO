@@ -293,12 +293,10 @@ public class ProjectLocationAction extends BaseAction {
             projectLocationElementTypeManager.getByProjectAndElementType(projectID, elementType.getId());
 
           countryLocationLevel.setList(true);
-          if (locationElementType != null) {
-            countryLocationLevel.setAllCountries(locationElementType.getIsGlobal());
-          }
+
         } else {
           countryLocationLevel.setList(false);
-          countryLocationLevel.setAllCountries(false);
+
         }
 
         locationLevels.add(countryLocationLevel);
@@ -398,8 +396,8 @@ public class ProjectLocationAction extends BaseAction {
   }
 
   /**
-   * 
-   */
+  * 
+  */
   public void locationLevels() {
 
     locationsLevels = new ArrayList<>();
@@ -674,11 +672,24 @@ public class ProjectLocationAction extends BaseAction {
      * }
      */
 
+
     Collection<LocElement> fsLocs = new ArrayList<>();
+
+    if (project.getCountryFS() == null) {
+      project.setCountryFS(new ArrayList<>());
+    }
+    if (project.getRegionFS() == null) {
+      project.setRegionFS(new ArrayList<>());
+    }
+
     for (CountryFundingSources locElement : project.getCountryFS()) {
       fsLocs.add(locElement.getLocElement());
     }
 
+
+    if (project.getLocationsData() == null) {
+      project.setLocationsData(new ArrayList<>());
+    }
 
     for (CountryLocationLevel countryLocationLevel : project.getLocationsData()) {
 
@@ -906,49 +917,22 @@ public class ProjectLocationAction extends BaseAction {
 
               newProjectLocationElementType.setProject(project);
 
-              newProjectLocationElementType.setIsGlobal(locationData.isAllCountries());
+              newProjectLocationElementType.setIsGlobal(false);
 
               projectLocationElementTypeManager.saveProjectLocationElementType(newProjectLocationElementType);
 
             } else {
-              projectLocationElementType.setIsGlobal(locationData.isAllCountries());
+              projectLocationElementType.setIsGlobal(false);
 
               projectLocationElementTypeManager.saveProjectLocationElementType(projectLocationElementType);
             }
 
-          } else {
-            if (locationData.isAllCountries()) {
-
-              ProjectLocationElementType projectLocationElementType =
-                projectLocationElementTypeManager.getByProjectAndElementType(project.getId(), locationData.getId());
-
-              if (projectLocationElementType == null) {
-                ProjectLocationElementType newProjectLocationElementType = new ProjectLocationElementType();
-
-                LocElementType locElementType = locElementTypeManager.getLocElementTypeById(locationData.getId());
-
-                newProjectLocationElementType.setLocElementType(locElementType);
-
-                Project project = projectManager.getProjectById(this.project.getId());
-
-                newProjectLocationElementType.setProject(project);
-
-                newProjectLocationElementType.setIsGlobal(locationData.isAllCountries());
-
-                projectLocationElementTypeManager.saveProjectLocationElementType(newProjectLocationElementType);
-
-              } else {
-                projectLocationElementType.setIsGlobal(locationData.isAllCountries());
-
-                projectLocationElementTypeManager.saveProjectLocationElementType(projectLocationElementType);
-              }
-            }
           }
         } else {
 
           ProjectLocationElementType projectLocationElementType =
             projectLocationElementTypeManager.getByProjectAndElementType(project.getId(), locationData.getId());
-          projectLocationElementType.setIsGlobal(locationData.isAllCountries());
+          projectLocationElementType.setIsGlobal(false);
           projectLocationElementTypeManager.saveProjectLocationElementType(projectLocationElementType);
 
           if (locationData.getLocElements() != null) {
@@ -979,30 +963,13 @@ public class ProjectLocationAction extends BaseAction {
                     ProjectLocation projectLocation = new ProjectLocation();
                     projectLocation.setProject(project);
                     projectLocation.setLocElement(element);
-                    projectLocation.setActive(!locationData.isAllCountries());
+                    projectLocation.setActive(true);
                     projectLocation.setActiveSince(new Date());
                     projectLocation.setCreatedBy(this.getCurrentUser());
                     projectLocation.setModificationJustification("");
                     projectLocation.setModifiedBy(this.getCurrentUser());
 
                     projectLocationManager.saveProjectLocation(projectLocation);
-                  } else {
-                    if (!locationData.isAllCountries()) {
-                      if (!existProjectLocation.isActive()) {
-                        existProjectLocation.setActive(true);
-                        existProjectLocation.setActiveSince(new Date());
-                        existProjectLocation.setCreatedBy(this.getCurrentUser());
-                        existProjectLocation.setModificationJustification("");
-                        existProjectLocation.setModifiedBy(this.getCurrentUser());
-                        projectLocationManager.saveProjectLocation(existProjectLocation);
-                      }
-                    } else {
-                      if (existProjectLocation.isActive()) {
-                        existProjectLocation.setActive(false);
-                        existProjectLocation.setModifiedBy(this.getCurrentUser());
-                        projectLocationManager.saveProjectLocation(existProjectLocation);
-                      }
-                    }
                   }
                 }
               } else {
@@ -1026,6 +993,11 @@ public class ProjectLocationAction extends BaseAction {
 
       regionsCustomSaved.add(projectLocation.getLocElement());
 
+    }
+
+
+    if (project.getCountryFS() == null) {
+      project.setCountryFS(new ArrayList<>());
     }
 
     for (CountryFundingSources countryFundingSources : project.getCountryFS()) {
@@ -1339,6 +1311,10 @@ public class ProjectLocationAction extends BaseAction {
       } else {
         regionsSaved.add(projectLocation.getLocElement());
       }
+    }
+
+    if (project.getRegionFS() == null) {
+      project.setRegionFS(new ArrayList<>());
     }
 
     for (CountryFundingSources countryFundingSources : project.getRegionFS()) {
