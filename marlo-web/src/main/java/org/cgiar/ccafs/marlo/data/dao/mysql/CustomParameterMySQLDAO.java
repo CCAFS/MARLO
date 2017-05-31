@@ -16,33 +16,33 @@
 
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
-import org.cgiar.ccafs.marlo.data.dao.CrpParameterDAO;
-import org.cgiar.ccafs.marlo.data.model.CrpParameter;
+import org.cgiar.ccafs.marlo.data.dao.CustomParameterDAO;
+import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 
 import java.util.List;
 
 import com.google.inject.Inject;
 
-public class CrpParameterMySQLDAO implements CrpParameterDAO {
+public class CustomParameterMySQLDAO implements CustomParameterDAO {
 
   private StandardDAO dao;
 
   @Inject
-  public CrpParameterMySQLDAO(StandardDAO dao) {
+  public CustomParameterMySQLDAO(StandardDAO dao) {
     this.dao = dao;
   }
 
   @Override
-  public boolean deleteCrpParameter(long crpParameterId) {
-    CrpParameter crpParameter = this.find(crpParameterId);
-    crpParameter.setActive(false);
-    return this.save(crpParameter) > 0;
+  public boolean deleteCustomParameter(long customParameterId) {
+    CustomParameter customParameter = this.find(customParameterId);
+    customParameter.setActive(false);
+    return this.save(customParameter) > 0;
   }
 
   @Override
-  public boolean existCrpParameter(long crpParameterID) {
-    CrpParameter crpParameter = this.find(crpParameterID);
-    if (crpParameter == null) {
+  public boolean existCustomParameter(long customParameterID) {
+    CustomParameter customParameter = this.find(customParameterID);
+    if (customParameter == null) {
       return false;
     }
     return true;
@@ -50,15 +50,15 @@ public class CrpParameterMySQLDAO implements CrpParameterDAO {
   }
 
   @Override
-  public CrpParameter find(long id) {
-    return dao.find(CrpParameter.class, id);
+  public CustomParameter find(long id) {
+    return dao.find(CustomParameter.class, id);
 
   }
 
   @Override
-  public List<CrpParameter> findAll() {
-    String query = "from " + CrpParameter.class.getName() + " where is_active=1";
-    List<CrpParameter> list = dao.findAll(query);
+  public List<CustomParameter> findAll() {
+    String query = "from " + CustomParameter.class.getName() + " where is_active=1";
+    List<CustomParameter> list = dao.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -67,13 +67,15 @@ public class CrpParameterMySQLDAO implements CrpParameterDAO {
   }
 
   @Override
-  public long save(CrpParameter crpParameter) {
-    if (crpParameter.getId() == null) {
-      dao.save(crpParameter);
+  public long save(CustomParameter customParameter) {
+    if (customParameter.getId() == null) {
+      dao.save(customParameter);
     } else {
-      dao.update(crpParameter);
+      dao.update(customParameter);
     }
-    return crpParameter.getId();
+
+
+    return customParameter.getId();
   }
 
 
