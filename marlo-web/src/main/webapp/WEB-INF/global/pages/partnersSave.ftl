@@ -42,7 +42,15 @@
         
         [#-- Partner types list --]
         <div id="partnerTypes" class="col-xs-6 form-group">
-          [@customForm.select name="activityPartner.partner.institutionType.id" required=true label="" i18nkey="Type" listName="institutionTypesList" keyFieldName="id"  displayFieldName="name" /]
+          [@customForm.select name="activityPartner.partner.institutionType.id" className="institutionTypes" required=true label="" i18nkey="Type" listName="institutionTypesList" keyFieldName="id"  displayFieldName="name" /]
+          <div style="display:none">
+            [#list institutionTypesList as type]
+              <div id="institutionType-${type.id}">
+                <strong>${(type.acronym)!} ${(type.name)!'No Name'}</strong><br />
+                <i>${(type.description)!'No description'}</i>
+              </div>
+            [/#list]
+          </div>
         </div>
         
         [#-- Countries list --]

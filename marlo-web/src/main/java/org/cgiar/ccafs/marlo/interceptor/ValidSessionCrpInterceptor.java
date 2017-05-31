@@ -20,7 +20,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
-import org.cgiar.ccafs.marlo.data.model.CrpParameter;
+import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.UserToken;
 
@@ -82,16 +82,16 @@ public class ValidSessionCrpInterceptor extends AbstractInterceptor {
         } else {
           User user = (User) session.get(APConstants.SESSION_USER);
           if (crpUserManager.existCrpUser(user.getId(), crp.getId())) {
-            for (CrpParameter parameter : loggedCrp.getCrpParameters()) {
+            for (CustomParameter parameter : loggedCrp.getCustomParameters()) {
               if (parameter.isActive()) {
-                session.remove(parameter.getKey());
+                session.remove(parameter.getParameter().getKey());
               }
             }
             session.replace(APConstants.SESSION_CRP, crp);
             // put the crp parameters in the session
-            for (CrpParameter parameter : crp.getCrpParameters()) {
+            for (CustomParameter parameter : crp.getCustomParameters()) {
               if (parameter.isActive()) {
-                session.put(parameter.getKey(), parameter.getValue());
+                session.put(parameter.getParameter().getKey(), parameter.getValue());
               }
             }
             this.changeSessionSection(session);

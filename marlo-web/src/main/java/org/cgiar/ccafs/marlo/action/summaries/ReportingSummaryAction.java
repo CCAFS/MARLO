@@ -2090,9 +2090,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     Boolean isNew = this.isProjectNew(projectID);
     Boolean hasGender = false;
     try {
-      hasGender = Integer.parseInt(project.getCrp().getCrpParameters().stream()
-        .filter(cp -> cp.isActive() && cp.getKey().equals(APConstants.CRP_BUDGET_GENDER)).collect(Collectors.toList())
-        .get(0).getValue()) == 1;
+      hasGender = this.hasSpecificities(APConstants.CRP_BUDGET_GENDER);
     } catch (Exception e) {
       LOG.warn("Failed to get " + APConstants.CRP_BUDGET_GENDER
         + " parameter. Parameter will be set as false. Exception: " + e.getMessage());

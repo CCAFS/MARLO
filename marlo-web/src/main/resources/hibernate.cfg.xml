@@ -39,7 +39,7 @@
 		<mapping resource="xmls/CrpUsers.hbm.xml" />
 		<mapping resource="xmls/Roles.hbm.xml" />
 		<mapping resource="xmls/UserRoles.hbm.xml" />
-		<mapping resource="xmls/CrpParameters.hbm.xml" />
+	
 		<mapping resource="xmls/SrfIdos.hbm.xml" />
 		<mapping resource="xmls/CrpsSitesIntegration.hbm.xml" />
 		<mapping resource="xmls/CrpProgramLeaders.hbm.xml" />
@@ -151,6 +151,8 @@
 	  <mapping resource="xmls/PartnerDivisions.hbm.xml" />	  
 	  <mapping resource="xmls/CrpLocElementTypes.hbm.xml" />   
 	  <mapping resource="xmls/FundingSourceLocations.hbm.xml" /> 
+    <mapping resource="xmls/Parameters.hbm.xml" />   
+    <mapping resource="xmls/CustomParameters.hbm.xml" />   	  
 	  <mapping resource="xmls/InstitutionsLocations.hbm.xml"/>
 	  <mapping resource="xmls/ProjectPartnerLocations.hbm.xml"/>
 	</session-factory>
