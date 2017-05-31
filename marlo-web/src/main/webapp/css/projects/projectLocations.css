@@ -321,11 +321,20 @@ li.select2-search.select2-search--inline{
 }
 
 .addLoc-locLevel{
-	  background-color: #0d7ca6;
-	  border-radius: 8px;
+	  background-color: #668fda;
 	  color: white;
-	  /* width: 40px; */
 	  text-align: center;
-	  /* height: 20px; */
-	  padding: 3px;
+	  padding-left: 5px;
+	  padding-right: 5px;
+	  cursor:pointer;
+	  line-height: 25px;
+	  box-shadow: 0 2px 6px rgba(0,0,0,.3);
+	  border-radius: 3px;
+	  border: 1px solid #668fda;
+	  font-size: 12px;
+	  margin-top:8px;
+}
+
+.addLoc-locLevel b{
+	font-family: Roboto,Arial,sans-sefif;
 }
