@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.validation.BaseValidator;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 
@@ -89,6 +90,35 @@ public class ProjectLocationValidator extends BaseValidator {
         this.addMessage(action.getText("project.locationsData"));
       }
     }
+    if (!action.hasSpecificities(APConstants.CRP_OTHER_LOCATIONS)) {
+
+
+      if (!project.isLocationGlobal()) {
+        if (project.getCountryFS() != null) {
+
+          if (project.getCountryFS().stream().filter(c -> c.isSelected()).collect(Collectors.toList()).isEmpty()) {
+            action.getInvalidFields().put("list-project.locationsData",
+              action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Locations"}));
+            this.addMessage(action.getText("project.locationsData"));
+          }
+          if (project.getLocationRegional()) {
+            if (project.getRegionFS() != null) {
+              if (project.getRegionFS().stream().filter(c -> c.isSelected()).collect(Collectors.toList()).isEmpty()) {
+                action.getInvalidFields().put("list-project.locationsData",
+                  action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Locations"}));
+                this.addMessage(action.getText("project.locationsData"));
+              }
+            }
+          }
+
+        } else {
+          action.getInvalidFields().put("list-project.locationsData",
+            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Locations"}));
+          this.addMessage(action.getText("project.locationsData"));
+        }
+      }
+    }
+
 
   }
 
