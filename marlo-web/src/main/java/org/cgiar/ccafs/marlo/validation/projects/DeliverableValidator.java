@@ -171,7 +171,8 @@ public class DeliverableValidator extends BaseValidator {
         }
 
 
-        if (deliverable.getResponsiblePartner() != null) {
+        if (deliverable.getResponsiblePartner() != null
+          && deliverable.getResponsiblePartner().getProjectPartnerPerson() != null) {
           if (deliverable.getResponsiblePartner().getProjectPartnerPerson().getId() == null
             || deliverable.getResponsiblePartner().getProjectPartnerPerson().getId() == -1) {
             this.addMessage(action.getText("project.deliverable.generalInformation.partnerResponsible"));

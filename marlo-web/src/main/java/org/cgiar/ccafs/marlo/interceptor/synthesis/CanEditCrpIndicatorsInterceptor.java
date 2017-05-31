@@ -115,7 +115,7 @@ public class CanEditCrpIndicatorsInterceptor extends AbstractInterceptor impleme
 
     String params[] = {crp.getAcronym(), currentLiaisonInstitution.getId() + "",};
 
-    if (baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin()) {
+    if (baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin()) {
       canEdit = true;
     } else {
       if (baseAction.hasPermission(baseAction.generatePermission(Permission.CRP_INDICATORS_PERMISSION, params))) {
@@ -138,7 +138,7 @@ public class CanEditCrpIndicatorsInterceptor extends AbstractInterceptor impleme
 
     // Check the permission if user want to edit or save the form
     if (editParameter || parameters.get("save") != null) {
-      hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin())) ? true
+      hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin())) ? true
         : baseAction.hasPermission(baseAction.generatePermission(Permission.CRP_INDICATORS_PERMISSION, params));
     }
 

@@ -34,14 +34,24 @@ public class InstitutionType implements java.io.Serializable, IAuditLog {
 
   @Expose
   private String acronym;
+
+  @Expose
+  private String description;
+
+  @Expose
+  private Boolean old;
+
   private Set<Institution> institutions = new HashSet<Institution>(0);
+
 
   public InstitutionType() {
   }
 
+
   public InstitutionType(String name) {
     this.name = name;
   }
+
 
   public InstitutionType(String name, String acronym, Set<Institution> institutions) {
     this.name = name;
@@ -73,6 +83,10 @@ public class InstitutionType implements java.io.Serializable, IAuditLog {
 
   public String getAcronym() {
     return this.acronym;
+  }
+
+  public String getDescription() {
+    return description;
   }
 
   @Override
@@ -111,6 +125,10 @@ public class InstitutionType implements java.io.Serializable, IAuditLog {
     return this.name;
   }
 
+  public Boolean getOld() {
+    return old;
+  }
+
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -129,6 +147,10 @@ public class InstitutionType implements java.io.Serializable, IAuditLog {
     this.acronym = acronym;
   }
 
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
   public void setId(Long id) {
     this.id = id;
   }
@@ -139,6 +161,10 @@ public class InstitutionType implements java.io.Serializable, IAuditLog {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public void setOld(Boolean old) {
+    this.old = old;
   }
 
   @Override

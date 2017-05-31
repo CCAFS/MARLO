@@ -43,6 +43,7 @@ import org.cgiar.ccafs.marlo.data.model.Auditlog;
 import org.cgiar.ccafs.marlo.data.model.CaseStudy;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrpCategoryEnum;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
@@ -93,6 +94,7 @@ import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -311,11 +313,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public boolean canAcessImpactPathway() {
     String permission = this.generatePermission(Permission.IMPACT_PATHWAY_VISIBLE_PRIVILEGES, this.getCrpSession());
     return securityContext.hasPermission(permission);
   }
+
 
   public boolean canAcessPublications() {
     String params[] = {this.getCrpSession()};
@@ -336,7 +338,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     String permission = this.generatePermission(Permission.PROJECT_CORE_ADD, this.getCrpSession());
     return securityContext.hasPermission(permission);
   }
-
 
   public boolean canBeDeleted(long id, String className) {
     Class clazz;
@@ -382,7 +383,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
       if (clazz == CrpProgramLeader.class) {
         CrpProgramLeader crpProgramLeader = crpProgramLeaderManager.getCrpProgramLeaderById(id);
-        for (LiaisonUser liaisonUser : crpProgramLeader.getUser().getLiasonsUsers()) {
+        for (LiaisonUser liaisonUser : crpProgramLeader.getUser().getLiasonsUsers().stream()
+          .filter(c -> c.getLiaisonInstitution().getCrpProgram() != null && c.getLiaisonInstitution().getCrpProgram()
+            .getId().longValue() == crpProgramLeader.getCrpProgram().getId().longValue())
+          .collect(Collectors.toList())) {
 
 
           List<Project> projects =
@@ -516,6 +520,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   /* Override this method depending of the cancel action. */
   public String cancel() {
     return CANCEL;
@@ -543,6 +548,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean canEditCenterType() {
     return this.hasPermissionNoBase(
       this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, this.getCrpSession()));
+  }
+
+  public boolean canEditCrpAdmin() {
+    String permission = this.generatePermission(Permission.CRP_ADMIN_EDIT_PRIVILEGES, this.getCrpSession());
+    return securityContext.hasPermission(permission);
   }
 
   public boolean canProjectSubmited(long projectID) {
@@ -629,12 +639,23 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return config.getBaseUrl();
   }
 
-  public long getCGIARInsitution() {
+  public List<CrpCategoryEnum> getCategories() {
+
+    return Arrays.asList(CrpCategoryEnum.values());
+  }
+
+  public long getCGIARInstitution() {
     return APConstants.INSTITUTION_CGIAR;
   }
 
   public APConfig getConfig() {
     return config;
+  }
+
+  public List<Crp> getCrpCategoryList(String category) {
+    return crpManager.findAll().stream()
+      .filter(c -> c.isMarlo() && c.getCategory().intValue() == Integer.parseInt(category))
+      .collect(Collectors.toList());
   }
 
   /**

@@ -93,6 +93,7 @@ public final class APConstants {
   public static final String CRP_RPM_ROLE = "crp_rpm_rol";
   public static final String CRP_SL_ROLE = "crp_sl_rol";
   public static final String CUSTOM_FILE = "global";
+  public static final String CRP_OTHER_LOCATIONS = "crp_other_locations";
 
   public static final String CUSTOM_LAGUAGE = "en";
   public static final String TRANSACTION_ID = "transactionId";
@@ -102,6 +103,7 @@ public final class APConstants {
   public static final String SECTION_NAME = "sectionName";
   public static final String IDO_ID = "idoID";
   public static final String CRP_CLUSTER_ACTIVITY_ID = "clusterActivityID";
+  public static final String CRP_CLUSTER_LEADER = "crp_cluster_leader";
 
   public static final String DELIVERABLE_ID = "deliverableId";
   public static final String CRP_ADMIN_ROLE = "crp_admin_rol";

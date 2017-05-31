@@ -300,3 +300,32 @@ li.select2-search.select2-search--inline{
 	overflow: auto;
 }
 }
+
+.nameWrapper-locLevel {}
+
+.nameWrapper-locLevel {
+    width: 40%;
+    float: left;
+}
+
+.latitudeWrapper-locLevel {
+    width: 20%;
+    float: left;
+    margin-left: 10px;
+}
+
+.longitudeWrapper-locLevel {
+    width: 20%;
+    float: left;
+    margin-left: 10px;
+}
+
+.addLoc-locLevel{
+	  background-color: #0d7ca6;
+	  border-radius: 8px;
+	  color: white;
+	  /* width: 40px; */
+	  text-align: center;
+	  /* height: 20px; */
+	  padding: 3px;
+}

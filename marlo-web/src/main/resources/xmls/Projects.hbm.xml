@@ -235,6 +235,12 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectBudget" />
 		</set>
+		       <set name="projectPhases" table="project_phases" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="project_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectPhase" />
+        </set>
 		<set name="projectBudgets" order-by="id" table="project_budgets"
 			inverse="true" lazy="true" fetch="select">
 			<key>
