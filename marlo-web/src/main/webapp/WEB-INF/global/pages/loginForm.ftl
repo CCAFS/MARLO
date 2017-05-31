@@ -19,12 +19,12 @@
       <div class="crpGroup tab-content">
       
         [#-- CRPs --]
-        <div role="tabpanel" id="crps" class="tab-pane active col-sm-12 animated bounceIn">
+        <div role="tabpanel" id="crps" class="tab-pane active col-sm-12">
           <ul>
           [#assign crpList = action.getCrpCategoryList("1") /]
           [#if crpList?has_content]
             [#list crpList as crp]
-              <li id="crp-${crp.acronym}" class="loginOption [#if crpSession?? && (crp.acronym == crpSession)]selected[/#if]"><img src="${baseUrl}/images/global/crps/${crp.acronym}.png" alt="${crp.name}" /></li>
+              [@crpItem element=crp /]
             [/#list]
           [#else]
             <p>Not CRPs loaded</p>
@@ -33,12 +33,12 @@
         </div>
         
         [#-- Centers --]
-        <div id="centers" class="tab-pane col-sm-12 animated bounceIn">
+        <div id="centers" class="tab-pane col-sm-12">
           <ul>
           [#assign centersList = action.getCrpCategoryList("2") /]
           [#if centersList?has_content]
-            [#list centersList as crp]
-              <li id="crp-${crp.acronym}" class="loginOption [#if crpSession?? && (crp.acronym == crpSession)]selected[/#if]"><img src="${baseUrl}/images/global/crps/${crp.acronym}.png" alt="${crp.name}" /></li>
+            [#list centersList as center]
+              [@crpItem element=center /]
             [/#list]
           [#else]
             <p>Not Centers loaded</p>
@@ -47,12 +47,12 @@
         </div>
         
         [#-- Platforms --]
-        <div id="platforms" class="tab-pane col-sm-12 animated bounceIn">
+        <div id="platforms" class="tab-pane col-sm-12">
           <ul>
           [#assign platformsList = action.getCrpCategoryList("3") /]
           [#if platformsList?has_content]
-            [#list platformsList as crp]
-              <li id="crp-${crp.acronym}" class="loginOption [#if crpSession?? && (crp.acronym == crpSession)]selected[/#if]"><img src="${baseUrl}/images/global/crps/${crp.acronym}.png" alt="${crp.name}" /></li>
+            [#list platformsList as platform]
+              [@crpItem element=platform /]
             [/#list]
           [#else]
             <p>Not Platforms loaded</p>
@@ -99,3 +99,9 @@
   <div class="alert alert-warning" role="alert">[@s.text name="login.disclaimer"/]</div>
   
 </div><!-- End loginFormContainer -->
+
+[#macro crpItem element]
+  <li id="crp-${element.acronym}" class="loginOption ${element.login?string('enabled', 'disabled')} [#if crpSession?? && (element.acronym == crpSession)]selected[/#if]" title="${element.login?string('', 'Coming soon...')}">
+    <img class="${element.login?string('animated bounceIn', '')} " src="${baseUrl}/images/global/crps/${element.acronym}.png" alt="${element.name}" />
+  </li>
+[/#macro]

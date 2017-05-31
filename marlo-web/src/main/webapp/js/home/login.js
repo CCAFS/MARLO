@@ -5,20 +5,21 @@ function init() {
   initJreject();
 
   cookieTime = 10;
+  var crpInput = $('input#crp').val();
 
-  if((verifyCookie("CRP") == true) && (getCookie("CRP") != "undefined")) {
+  if(verifyCookie("CRP") && (getCookie("CRP") != "undefined") && (!crpInput)) {
 
     var crpSelected = getCookie("CRP");
     setCRP(crpSelected);
 
-    if(verifyCookie("username.email") == true) {
+    if(verifyCookie("username.email")) {
       username.val(getCookie("username.email"));
     } else {
       username.val(getCookie(""));
     }
   }
 
-  $('.crpGroup ul li').on('click', function() {
+  $('.crpGroup ul li.enabled').on('click', function() {
     var crpSelected = $(this).attr('id').split('-')[1];
     setCRP(crpSelected);
   });
@@ -40,8 +41,6 @@ function init() {
 
 function setCRP(crpSelected) {
   var $li = $("li#crp-" + crpSelected);
-
-  console.log($li);
 
   // Removing class selected
   $(".loginOption").removeClass('selected');

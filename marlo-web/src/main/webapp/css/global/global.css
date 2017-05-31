@@ -2606,6 +2606,12 @@ input.userName {
   border-radius: 2px;
 }
 
+.crpGroup li.disabled{
+  opacity: 0.3 !important;
+  cursor: not-allowed;
+  filter: grayscale(100%);
+}
+
 .crpGroup li:hover, .crpGroup li.selected{
   border: 1px solid #d4d4d4; 
   
@@ -6677,7 +6683,7 @@ img.removeInput {
   background: #f7f7f7;
   border-radius: 0;
   box-shadow: 0px 1px 2px #ccc;
-  padding: 4% 27%;
+  padding: 5% 0%;
   text-align: center;
 }
 
