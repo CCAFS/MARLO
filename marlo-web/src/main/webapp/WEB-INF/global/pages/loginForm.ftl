@@ -21,6 +21,7 @@
         [#-- CRPs --]
         <div role="tabpanel" id="crps" class="tab-pane active col-sm-12 animated bounceIn">
           <ul>
+          [#assign crpList = action.getCrpCategoryList("1") /]
           [#if crpList?has_content]
             [#list crpList as crp]
               <li id="crp-${crp.acronym}" class="loginOption [#if crpSession?? && (crp.acronym == crpSession)]selected[/#if]"><img src="${baseUrl}/images/global/crps/${crp.acronym}.png" alt="${crp.name}" /></li>
@@ -34,7 +35,7 @@
         [#-- Centers --]
         <div id="centers" class="tab-pane col-sm-12 animated bounceIn">
           <ul>
-          [#assign centersList = [{"acronym": "ciat", "name": "Centro Internacional de Agricultura Tropical"}] /]
+          [#assign centersList = action.getCrpCategoryList("2") /]
           [#if centersList?has_content]
             [#list centersList as crp]
               <li id="crp-${crp.acronym}" class="loginOption [#if crpSession?? && (crp.acronym == crpSession)]selected[/#if]"><img src="${baseUrl}/images/global/crps/${crp.acronym}.png" alt="${crp.name}" /></li>
@@ -48,11 +49,7 @@
         [#-- Platforms --]
         <div id="platforms" class="tab-pane col-sm-12 animated bounceIn">
           <ul>
-          [#assign platformsList = [
-            {"acronym": "bigData", "name": "Platform for Big Data in Agriculture"},
-            {"acronym": "breeding", "name": "Excellence in Breeading Platform"}, 
-            {"acronym": "genebank", "name": "Genebank Platform"}
-          ] /]
+          [#assign platformsList = action.getCrpCategoryList("3") /]
           [#if platformsList?has_content]
             [#list platformsList as crp]
               <li id="crp-${crp.acronym}" class="loginOption [#if crpSession?? && (crp.acronym == crpSession)]selected[/#if]"><img src="${baseUrl}/images/global/crps/${crp.acronym}.png" alt="${crp.name}" /></li>
