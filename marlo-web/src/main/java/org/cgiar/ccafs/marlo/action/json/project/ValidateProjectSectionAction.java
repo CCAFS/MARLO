@@ -1069,6 +1069,18 @@ public class ValidateProjectSectionAction extends BaseAction {
     project.setLocationsData(new ArrayList<>(this.getProjectLocationsData(project)));
     this.prepareFundingList(project);
     for (CountryFundingSources locElement : project.getRegionFS()) {
+
+
+      if (locElement.getLocElement() != null) {
+        locElement.setSelected(this.locElementSelected(locElement.getLocElement().getId(), project.getId()));
+      } else {
+        locElement.setSelected(this.locElementTypeSelected(locElement.getLocElementType().getId(), project.getId()));
+      }
+
+    }
+    for (CountryFundingSources locElement : project.getCountryFS()) {
+
+
       if (locElement.getLocElement() != null) {
         locElement.setSelected(this.locElementSelected(locElement.getLocElement().getId(), project.getId()));
       } else {
