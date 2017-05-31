@@ -25,9 +25,11 @@
           <ul class="subMenu">
           [#if crpList?has_content]
             [#list crpList as crp]
+              [#if crp.login]
               <li class="[#if crpSession?? && crpSession == crp.acronym?lower_case ]currentSection[/#if]">
                 <a href="[@s.url namespace="/" action="${crp.acronym?lower_case}/dashboard" ][@s.param name="edit" value="true"/][/@s.url]">${crp.name}</a>
               </li>
+              [/#if]
             [/#list]
            [/#if]
           </ul>
