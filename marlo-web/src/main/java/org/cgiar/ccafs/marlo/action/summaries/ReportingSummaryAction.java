@@ -694,7 +694,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     DecimalFormat df = new DecimalFormat("###,###.00");
     TypedTableModel model = new TypedTableModel(
       new String[] {"description", "year", "w1w2", "w3", "bilateral", "center", "w1w2GenderPer", "w3GenderPer",
-        "bilateralGenderPer", "centerGenderPer", "w1w2CoFinancing", "w1w2CoFinancingGenderPer", "hasW1W2CoTemp"},
+        "bilateralGenderPer", "centerGenderPer", "w1w2CoFinancing", "w1w2CoFinancingGenderPer", "hasW1W2Co"},
       new Class[] {String.class, Integer.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, Boolean.class},
       0);
@@ -793,7 +793,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     TypedTableModel model = new TypedTableModel(
       new String[] {"year", "institution", "w1w2", "w3", "bilateral", "center", "institution_id", "p_id", "w1w2Gender",
         "w3Gender", "bilateralGender", "centerGender", "w1w2GAmount", "w3GAmount", "bilateralGAmount", "centerGAmount",
-        "w1w2CoBudget", "w1w2CoGender", "w1w2CoGAmount"},
+        "w1w2CoFinancing", "w1w2CoFinancingGender", "w1w2CoFinancingGAmount"},
       new Class[] {Integer.class, String.class, String.class, String.class, String.class, String.class, Long.class,
         Long.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class},
@@ -817,9 +817,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
             .format(Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 1, project.getId(), 2)));
 
           w1w2Gender =
-            myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 1, project.getId(), 3) / 100);
+            myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 1, project.getId(), 3));
           w1w2CoGender =
-            myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 1, project.getId(), 2) / 100);
+            myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 1, project.getId(), 2));
 
           w1w2GAmount =
             myFormatter.format(this.getTotalGender(pp.getInstitution().getId(), year, 1, project.getId(), 3));
@@ -829,7 +829,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           w1w2Budget = myFormatter
             .format(Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 1, project.getId(), 1)));
           w1w2Gender =
-            myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 1, project.getId(), 1) / 100);
+            myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 1, project.getId(), 1));
           w1w2GAmount =
             myFormatter.format(this.getTotalGender(pp.getInstitution().getId(), year, 1, project.getId(), 1));
           w1w2CoBudget = myFormatter.format(0.0);
@@ -846,11 +846,11 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
 
         String w3Gender =
-          myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 2, project.getId(), 1) / 100);
+          myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 2, project.getId(), 1));
         String bilateralGender =
-          myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 3, project.getId(), 1) / 100);
+          myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 3, project.getId(), 1));
         String centerGender =
-          myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 4, project.getId(), 1) / 100);
+          myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 4, project.getId(), 1));
 
 
         String w3GAmount =
