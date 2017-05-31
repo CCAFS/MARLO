@@ -79,6 +79,7 @@ public final class APConstants {
   public static final String CRP_RPM_ROLE = "crp_rpm_rol";
   public static final String CRP_SL_ROLE = "crp_sl_rol";
   public static final String CUSTOM_FILE = "global";
+  public static final String CRP_OTHER_LOCATIONS = "crp_other_locations";
 
   public static final String CUSTOM_LAGUAGE = "en";
   public static final String CYCLE = "cycle";
@@ -124,7 +125,6 @@ public final class APConstants {
 
   public static final String FUNDING_SOURCES_INSTITUTIONS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.FundingSource.fundingInstitutions)";
-
 
 
   public static final String FUNDING_SOURCES_LOCATIONS_RELATION =
