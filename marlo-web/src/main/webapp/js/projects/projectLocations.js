@@ -156,18 +156,29 @@ function attachEvents() {
   // REMOVE REGION
   $(".removeRegion").on("click", removeRegion);
 
-  $(".addLoc-locLevel").on("click", function() {
-    $("html, body").animate({
-      scrollTop: $("#map").offset().top - 45
-    }, 600);
-    var latLng = new google.maps.LatLng(map.getCenter().lat(), map.getCenter().lng());
-    openInfoWindowForm(latLng);
-    return false;
-  });
+  $(".addLoc-locLevel").on("click", addLocationFromLocLevel);
 
 }
 
 // FUNCTIONS
+
+// Function to add location from location level
+function addLocationFromLocLevel() {
+  var parent = $(this).parents(".locationLevel");
+  $("html, body").animate({
+    scrollTop: $("#map").offset().top - 45
+  }, 600);
+  var latLng = new google.maps.LatLng(map.getCenter().lat(), map.getCenter().lng());
+  openInfoWindowForm(latLng);
+  var locationValue = parent.find("input.locationLevelId").val();
+  var isList = parent.find("input.isList").val();
+  var locName = parent.find("input.locationLevelName").val();
+  var select = $("#locLevelSelect");
+  console.log(parent);
+  console.log(locationValue + "-" + isList + "-" + locName);
+  select.val(locationValue + "-" + isList + "-" + locName).trigger("change")
+
+}
 
 // Add Regions
 function addRegion(option) {
