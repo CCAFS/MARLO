@@ -2606,6 +2606,12 @@ input.userName {
   border-radius: 2px;
 }
 
+.crpGroup li.disabled{
+  opacity: 0.3 !important;
+  cursor: not-allowed;
+  filter: grayscale(100%);
+}
+
 .crpGroup li:hover, .crpGroup li.selected{
   border: 1px solid #d4d4d4; 
   
@@ -6181,7 +6187,7 @@ span.programTag {
 }
 .footer{
 	background: #0b5da6 url("./../../images/global/footerBackground.png") repeat-x 0 0;
-	margin-top: 135px;
+	margin-top: 100px;
 }
 .footer:before {
 	background: url("./../../images/global/tract.png"),url("./../../images/global/tract.png"),url("./../../images/global/tract.png");
@@ -6661,4 +6667,42 @@ img.removeInput {
   right:1%; 
   bottom:10%; 
   cursor:pointer;
+}
+
+
+#loginFormContainer .tab-pane {
+  padding: 12px 0px;
+}
+
+#loginFormContainer .nav>li {
+  width: 33%;
+}
+
+#loginFormContainer .nav>li a {
+  background: #f7f7f7;
+  border-radius: 0;
+  box-shadow: 0px 1px 2px #ccc;
+  padding: 5% 0%;
+  text-align: center;
+}
+
+#loginFormContainer .nav>li.active {}
+
+#loginFormContainer .nav>li.active a{
+  background: #1b84ab;
+  border-radius: 0;
+  color: #fff;
+}
+
+#loginFormContainer .nav-tabs {
+  border: 0;
+}
+
+.note.testerMessage {
+  padding: 12px 21px;
+}
+
+img#crpSelectedImage {
+  max-width: 300px;
+  width: 100%;
 }

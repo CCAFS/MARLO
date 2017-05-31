@@ -400,6 +400,6 @@
   [/#list]
 </ul>
 
-<span class="hidden cgiarConsortium">${action.getCGIARInsitution()}</span>
+<span class="hidden cgiarConsortium">${action.getCGIARInstitution()}</span>
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
