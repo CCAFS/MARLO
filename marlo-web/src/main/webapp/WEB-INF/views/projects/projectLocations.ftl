@@ -82,22 +82,6 @@
                   [@customForm.yesNoInput  label="Does this Project have a regional dimension?" name="project.locationRegional"   editable=editable inverse=false  cssClass="isRegional" /]
                   <small style="color: #337ab7;">Select “yes” if work under the project is addressing issues pertaining to the region globally, as opposed to or in addition to issues pertaining to specific countries within a region.</small>
                 </div>
-                [#-- REGIONS IN WHICH THE PROJECT IS WORKING  --]
-                    [#if scopeRegions?has_content]
-                <div class="col-md-12">
-                <label for="">Regions in which the project is working:</label>
-                <div id="selectsContent" class="col-md-12 simpleBox " listname="project.locationsData">
-                  [#-- Content collapsible--]
-                  <div class="selectWrapper row">
-                      [#list scopeRegions as region]
-                      <span class="col-md-3">
-                        <p class="checked"><b>${region.name}</b></p>
-                      </span>
-                      [/#list]
-                  </div>
-                </div>
-                </div>
-                    [/#if]
                  [#-- RECOMMENDED LOCATIONS --]
                  <div class="col-md-12">
                   <label for="">Please select the predefined locations coming from your funding sources:</label>
@@ -134,89 +118,91 @@
                   </div>
                  </div>
                 [#-- OTHER LOCATIONS LABEL --]   
-                <div class="col-md-12">
-                <h5 class="sectionSubTitle">Ohter locations</h5>
-                </div>    
-                    
-                [#-- REGIONS SELECT --]
-                <div class="row">
-                <div class="regionsBox form-group col-md-12" style="display:${(project.locationRegional?string("block","none"))!"none"};">
-                  <div class="panel tertiary col-md-12">
-                   <div class="panel-head">
-                     <label for=""> [@customForm.text name="projectCofunded.selectRegions" readText=!editable /]:[@customForm.req required=editable /]</label>
-                     <br />
-                     <small style="color: #337ab7;">(Standart regions are defined by United Nations)</small>
-                   </div>
-                   
-                    <div id="regionList" class="panel-body" listname="project.projectRegions"> 
-                      <ul class="list">
-                      [#if project.projectRegions?has_content]
-                        [#list project.projectRegions as region]
-                            <li id="" class="region clearfix col-md-3">
-                            [#if editable ]
-                              <div class="removeRegion removeIcon" title="Remove region"></div>
+                [#if action.hasSpecificities('crp_other_locations')]
+                  <div class="col-md-12">
+                  <h5 class="sectionSubTitle">Ohter locations</h5>
+                  </div>    
+                      
+                  [#-- REGIONS SELECT --]
+                  <div class="row">
+                  <div class="regionsBox form-group col-md-12" style="display:${(project.locationRegional?string("block","none"))!"none"};">
+                    <div class="panel tertiary col-md-12">
+                     <div class="panel-head">
+                       <label for=""> [@customForm.text name="projectCofunded.selectRegions" readText=!editable /]:[@customForm.req required=editable /]</label>
+                       <br />
+                       <small style="color: #337ab7;">(Standart regions are defined by United Nations)</small>
+                     </div>
+                     
+                      <div id="regionList" class="panel-body" listname="project.projectRegions"> 
+                        <ul class="list">
+                        [#if project.projectRegions?has_content]
+                          [#list project.projectRegions as region]
+                              <li id="" class="region clearfix col-md-3">
+                              [#if editable ]
+                                <div class="removeRegion removeIcon" title="Remove region"></div>
+                              [/#if]
+                                <input class="id" type="hidden" name="project.projectRegions[${region_index}].id" value="${region.id}" />
+                                
+                                
+  
+                               [#if region.locElement?has_content ]
+                               <span class="name" title="${(region.locElement.name)!}">[@utilities.wordCutter string=(region.locElement.name)!'No name' maxPos=20 /]</span>
+                                <input class="regionScope" type="hidden" name="project.projectRegions[${region_index}].scope" value="${(region.locElement.locElementType.scope?c)!}" />
+                                <input class="rId" type="hidden" name="project.projectRegions[${region_index}].locElement.id" value="${(region.locElement.id)!}" />
+                                  [#else]
+                                   <span class="name" title="${(region.locElementType.name)!}">[@utilities.wordCutter string=(region.locElementType.name)!'No name' maxPos=20 /]</span>
+                                <input class="regionScope" type="hidden" name="project.projectRegions[${region_index}].scope" value="${(region.locElementType.scope?c)!}" />
+                              <input class="rId" type="hidden" name="project.projectRegions[${region_index}].locElementType.id" value="${(region.locElementType.id)!}" />
+                              [/#if]
+                             
+                                
+                                <div class="clearfix"></div>
+                              </li>
+                          [/#list]
+                          [#else]
+                          <p class="emptyText"> [@s.text name="No regions added yet." /]</p> 
+                        [/#if]
+                        </ul>
+                        [#if editable ]
+                          <select name="" id="regionSelect" class="regionsSelect">
+                            <option value="-1">Select an option...</option>
+                            [#if scopeRegionLists?has_content]
+                              <optgroup label="${(loggedCrp.acronym?upper_case)!} regions">
+                              [#list scopeRegionLists as region]
+                              <option value="${(region.id)!}-${(region.scope?c)!}">${(region.name)!}</option>
+                              [/#list]
+                              </optgroup>
                             [/#if]
-                              <input class="id" type="hidden" name="project.projectRegions[${region_index}].id" value="${region.id}" />
-                              
-                              
-
-                             [#if region.locElement?has_content ]
-                             <span class="name" title="${(region.locElement.name)!}">[@utilities.wordCutter string=(region.locElement.name)!'No name' maxPos=20 /]</span>
-                              <input class="regionScope" type="hidden" name="project.projectRegions[${region_index}].scope" value="${(region.locElement.locElementType.scope?c)!}" />
-                              <input class="rId" type="hidden" name="project.projectRegions[${region_index}].locElement.id" value="${(region.locElement.id)!}" />
-                                [#else]
-                                 <span class="name" title="${(region.locElementType.name)!}">[@utilities.wordCutter string=(region.locElementType.name)!'No name' maxPos=20 /]</span>
-                              <input class="regionScope" type="hidden" name="project.projectRegions[${region_index}].scope" value="${(region.locElementType.scope?c)!}" />
-                            <input class="rId" type="hidden" name="project.projectRegions[${region_index}].locElementType.id" value="${(region.locElementType.id)!}" />
+                            [#if regionLists?has_content]
+                            <optgroup label="UN standart (M49)">
+                              [#list regionLists as region]
+                              <option value="${(region.id)!}-${(region.locElementType.scope?c)!}">${(region.name)!}</option>
+                              [/#list]
+                              </optgroup>
                             [/#if]
-                           
-                              
-                              <div class="clearfix"></div>
-                            </li>
-                        [/#list]
-                        [#else]
-                        <p class="emptyText"> [@s.text name="No regions added yet." /]</p> 
-                      [/#if]
-                      </ul>
-                      [#if editable ]
-                        <select name="" id="regionSelect" class="regionsSelect">
-                          <option value="-1">Select an option...</option>
-                          [#if scopeRegionLists?has_content]
-                            <optgroup label="${(loggedCrp.acronym?upper_case)!} regions">
-                            [#list scopeRegionLists as region]
-                            <option value="${(region.id)!}-${(region.scope?c)!}">${(region.name)!}</option>
-                            [/#list]
-                            </optgroup>
-                          [/#if]
-                          [#if regionLists?has_content]
-                          <optgroup label="UN standart (M49)">
-                            [#list regionLists as region]
-                            <option value="${(region.id)!}-${(region.locElementType.scope?c)!}">${(region.name)!}</option>
-                            [/#list]
-                            </optgroup>
-                          [/#if]
-                        </select>
-                      [/#if] 
+                          </select>
+                        [/#if] 
+                      </div>
                     </div>
                   </div>
-                </div>
-                </div>
-                [#-- LOCATION LIST --]
-                <div class="col-md-12">
-                <label for="">Locations list</label>
-                <div id="selectsContent" class="col-md-12 simpleBox " listname="project.locationsData">
-                  [#-- Content collapsible--]
-                  <div class="selectWrapper row">
-                    [#if project.locationsData?has_content]
-                      [#list project.locationsData as locationLevels]
-                        [@locationLevel element=locationLevels name="${locationLevelName}" index=locationLevels_index list=locationLevels.list?? && locationLevels.list /]
-                      [/#list]
-                    [#else]
-                    <p class="text-center borderBox inf">There is not locations added, please use the map to add new locations.</p>
-                    [/#if]
                   </div>
-                </div>
-                </div>
+                  [#-- LOCATION LIST --]
+                  <div class="col-md-12">
+                  <label for="">Locations list</label>
+                  <div id="selectsContent" class="col-md-12 simpleBox " listname="project.locationsData">
+                    [#-- Content collapsible--]
+                    <div class="selectWrapper row">
+                      [#if project.locationsData?has_content]
+                        [#list project.locationsData as locationLevels]
+                          [@locationLevel element=locationLevels name="${locationLevelName}" index=locationLevels_index list=locationLevels.list?? && locationLevels.list /]
+                        [/#list]
+                      [#else]
+                      <p class="text-center borderBox inf">There is not locations added, please use the map to add new locations.</p>
+                      [/#if]
+                    </div>
+                  </div>
+                  </div>
+                [/#if]
               </div>
               
             [#--[#if editable]
@@ -345,6 +331,8 @@
     </li>
 </ul>
 
+<span class="hidden has_otherLoc">${action.hasSpecificities('crp_other_locations')?string("true","false")!}</span>
+
 [#-- Country and CMVS templates --]
 <span class="hidden qCountry">[@s.text name="projectLocations.selectAllCountries" /]</span>
 <span class="hidden qCmvSites">[@s.text name="projectLocations.selectAllCmvs" /]</span>
@@ -381,19 +369,8 @@
       </div>
     </div>
     [#-- TEST FORM BY LOCATION LEVEL --]
-    <div class="row">
-    [#if list]
-      <div class="selectLocation col-md-12" >
-        <label for="">Select location(s)</label>
-        <select name="" data-placeholder="Click here to drop down the options" id="countriesCmvs" multiple="true"></select>
-      </div>
-    [#else]
-      <div id="inputFormWrapper" class="col-md-12">
-        <div class="nameWrapper"><label for="">Location name:</label><input placeholder="name (Required)" class="name form-control" type="text" /></div>
-        <div class="latitudeWrapper"><label for="">Latitude:</label><input placeholder="Latitude" class="latitude form-control" type="text" value="" /></div>
-        <div class="longitudeWrapper"><label for="">Longitude:</label><input placeholder="Longitude" class="longitude form-control " type="text"  value=""/></div>
-      </div>
-    [/#if]
+    <div class="col-md-12" style="display:none;">
+      <span id="" class="pull-right addLoc-locLevel">[@s.text name="Add location" /]</span>
     </div>
     <input class="locationLevelId" type="hidden" name="${locationLevelName}[${index}].id" value="${(element.id)!}"/>
     <input class="locationLevelName" type="hidden" name="${locationLevelName}[${index}].name" value="${(element.name)!}"/>

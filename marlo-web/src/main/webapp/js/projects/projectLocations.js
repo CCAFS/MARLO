@@ -463,12 +463,11 @@ function initMap() {
       styles: style
   });
   var centerControlDiv = document.createElement('div');
-  if(editable) {
+  if(editable && $("span.has_otherLoc").text() == "true") {
     var centerControl = new CenterControl(centerControlDiv, map);
+    centerControlDiv.index = 1;
+    map.controls[google.maps.ControlPosition.TOP_CENTER].push(centerControlDiv);
   }
-
-  centerControlDiv.index = 1;
-  map.controls[google.maps.ControlPosition.TOP_CENTER].push(centerControlDiv);
 
   infoWindow = new google.maps.InfoWindow();
 
