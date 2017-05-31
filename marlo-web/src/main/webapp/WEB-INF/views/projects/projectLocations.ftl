@@ -369,8 +369,8 @@
       </div>
     </div>
     [#-- TEST FORM BY LOCATION LEVEL --]
-    <div class="col-md-12" style="display:none;">
-      <span id="" class="pull-right addLoc-locLevel">[@s.text name="Add location" /]</span>
+    <div class="col-md-12" style="">
+      <span class="pull-right glyphicon glyphicon-plus addLoc-locLevel"><b> [@s.text name="Add new location" /]</b></span>
     </div>
     <input class="locationLevelId" type="hidden" name="${locationLevelName}[${index}].id" value="${(element.id)!}"/>
     <input class="locationLevelName" type="hidden" name="${locationLevelName}[${index}].name" value="${(element.name)!}"/>
