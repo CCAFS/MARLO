@@ -75,6 +75,8 @@ public final class APConstants {
   public static final int MID_OUTCOME_YEAR = 2019;
   public static final String CRP_CLOSED = "crp_closed";
   public static final String CRP_PC_ROLE = "crp_pc_rol";
+
+  public static final String CRP_FS_W1W2_COFINANCING = "crp_fs_w1w2_cofinancing";
   public static final String CRP_PL_ROLE = "crp_pl_rol";
   public static final String CRP_PLANNING_ACTIVE = "crp_planning_active";
   public static final String CRP_PLANNING_YEAR = "crp_planning_year";

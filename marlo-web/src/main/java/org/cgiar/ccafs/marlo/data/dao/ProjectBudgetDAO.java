@@ -35,7 +35,7 @@ public interface ProjectBudgetDAO {
    * @param projectId
    * @return
    */
-  public String amountByBudgetType(long institutionId, int year, long budgetType, long projectId);
+  public String amountByBudgetType(long institutionId, int year, long budgetType, long projectId, Integer coFinancing);
 
   /**
    * Gets the budget amount for a specific funding source and year
@@ -87,7 +87,8 @@ public interface ProjectBudgetDAO {
    * @param projectId
    * @return a list from ProjectBudget null if no exist records
    */
-  public List<ProjectBudget> getByParameters(long institutionID, int year, long budgetTypeId, long projectId);
+  public List<ProjectBudget> getByParameters(long institutionID, int year, long budgetTypeId, long projectId,
+    Integer coFinancing);
 
   /**
    * This method saves the information of the given projectBudget

@@ -70,6 +70,9 @@
 		<property name="global" type="boolean">
       <column name="global" not-null="true" />
     </property>
+    <property name="w1w2" type="java.lang.Boolean">
+      <column name="w1w2"  default="0"/>
+    </property>
 		<property name="activeSince" type="timestamp">
 			<column name="active_since" length="19" not-null="true" />
 		</property>

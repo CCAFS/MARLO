@@ -399,13 +399,14 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return status;
   }
 
-  public String getTotalAmount(long institutionId, int year, long budgetType) {
-    return projectBudgetManager.amountByBudgetType(institutionId, year, budgetType, projectID);
+  public String getTotalAmount(long institutionId, int year, long budgetType, Integer coFinancing) {
+    return projectBudgetManager.amountByBudgetType(institutionId, year, budgetType, projectID, coFinancing);
   }
 
-  public double getTotalGender(long institutionId, int year, long budgetType) {
+  public double getTotalGender(long institutionId, int year, long budgetType, Integer coFinancing) {
 
-    List<ProjectBudget> budgets = projectBudgetManager.getByParameters(institutionId, year, budgetType, projectID);
+    List<ProjectBudget> budgets =
+      projectBudgetManager.getByParameters(institutionId, year, budgetType, projectID, coFinancing);
 
     double totalGender = 0;
     if (budgets != null) {
@@ -421,13 +422,13 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   }
 
 
-  public double getTotalGenderPer(long institutionId, int year, long budgetType) {
+  public double getTotalGenderPer(long institutionId, int year, long budgetType, Integer coFinancing) {
 
-    String totalAmount = this.getTotalAmount(institutionId, year, budgetType);
+    String totalAmount = this.getTotalAmount(institutionId, year, budgetType, coFinancing);
 
     double dTotalAmount = Double.parseDouble(totalAmount);
 
-    double totalGender = this.getTotalGender(institutionId, year, budgetType);
+    double totalGender = this.getTotalGender(institutionId, year, budgetType, coFinancing);
 
     if (dTotalAmount != 0) {
       return (totalGender * 100) / dTotalAmount;

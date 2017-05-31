@@ -35,9 +35,10 @@ public interface ProjectBudgetManager {
    * @param year
    * @param budgetType
    * @param projectId
+   * @param coFinancing 1: cofinancing+no cofinancing, 2: cofinancing 3: no cofinancing
    * @return
    */
-  public String amountByBudgetType(long institutionId, int year, long budgetType, long projectId);
+  public String amountByBudgetType(long institutionId, int year, long budgetType, long projectId, Integer coFinancing);
 
 
   /**
@@ -72,9 +73,11 @@ public interface ProjectBudgetManager {
    * @param year
    * @param budgetTypeId
    * @param projectId
+   * @param coFinancing 1: cofinancing+no cofinancing, 2: cofinancing 3: no cofinancing
    * @return a list from ProjectBudget null if no exist records
    */
-  public List<ProjectBudget> getByParameters(long institutionID, int year, long budgetTypeId, long projectId);
+  public List<ProjectBudget> getByParameters(long institutionID, int year, long budgetTypeId, long projectId,
+    Integer coFinancing);
 
   /**
    * This method gets a projectBudget object by a given projectBudget identifier.
