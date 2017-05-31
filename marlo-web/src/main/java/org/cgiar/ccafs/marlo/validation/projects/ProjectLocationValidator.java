@@ -83,15 +83,16 @@ public class ProjectLocationValidator extends BaseValidator {
 
   public void validateLocation(BaseAction action, Project project) {
 
-    if (action.hasSpecificities(APConstants.CRP_OTHER_LOCATIONS)) {
-      if (project.getLocationsData() == null || project.getLocationsData().isEmpty()) {
-        if (!project.isLocationGlobal()) {
-          action.getInvalidFields().put("list-project.locationsData",
-            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Locations"}));
-          this.addMessage(action.getText("project.locationsData"));
-        }
+    if (project.getLocationsData() == null || project.getLocationsData().isEmpty()) {
+      if (!project.isLocationGlobal()) {
+        action.getInvalidFields().put("list-project.locationsData",
+          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Locations"}));
+        this.addMessage(action.getText("project.locationsData"));
       }
-    } else {
+    }
+    if (!action.hasSpecificities(APConstants.CRP_OTHER_LOCATIONS)) {
+
+
       if (!project.isLocationGlobal()) {
         if (project.getCountryFS() != null) {
 
