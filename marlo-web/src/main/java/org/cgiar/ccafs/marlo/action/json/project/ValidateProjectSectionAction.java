@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.CaseStudy;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyIndicator;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
+import org.cgiar.ccafs.marlo.data.model.CountryFundingSources;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
@@ -38,10 +39,13 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableFile;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
+import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.LocElementType;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
@@ -78,7 +82,9 @@ import org.cgiar.ccafs.marlo.validation.projects.ProjectOutputsValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectPartnersValidator;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -567,6 +573,33 @@ public class ValidateProjectSectionAction extends BaseAction {
   }
 
 
+  public boolean locElementSelected(long locElementID, long projectID) {
+
+
+    Project projectDB = projectManager.getProjectById(projectID);
+    List<ProjectLocation> locElements = projectDB.getProjectLocations().stream()
+      .filter(c -> c.isActive() && c.getLocElement() != null && c.getLocElement().getId().longValue() == locElementID)
+      .collect(Collectors.toList());
+
+    return !locElements.isEmpty();
+
+
+  }
+
+  public boolean locElementTypeSelected(long locElementID, long projectID) {
+
+
+    Project projectDB = projectManager.getProjectById(projectID);
+    List<ProjectLocation> locElements = projectDB.getProjectLocations().stream()
+      .filter(
+        c -> c.isActive() && c.getLocElementType() != null && c.getLocElementType().getId().longValue() == locElementID)
+      .collect(Collectors.toList());
+
+    return !locElements.isEmpty();
+
+
+  }
+
   public List<DeliverablePartnership> otherPartners(Deliverable deliverable) {
     try {
       List<DeliverablePartnership> list = deliverable.getDeliverablePartnerships().stream()
@@ -595,6 +628,82 @@ public class ValidateProjectSectionAction extends BaseAction {
 
   }
 
+  public void prepareFundingList(Project project) {
+
+    Project projectDB = projectManager.getProjectById(project.getId());
+
+
+    List<ProjectBudget> projectBudgets = new ArrayList<>(projectDB.getProjectBudgets().stream()
+      .filter(pb -> pb.isActive() && pb.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList()));
+
+    List<FundingSource> fundingSources = new ArrayList<>();
+    for (ProjectBudget projectBudget : projectBudgets) {
+
+      fundingSources.add(projectBudget.getFundingSource());
+
+    }
+
+    HashSet<FundingSource> fuHashSet = new HashSet<>();
+    fuHashSet.addAll(fundingSources);
+
+    fundingSources = new ArrayList<>(fuHashSet);
+
+    List<LocElement> locElements = new ArrayList<>();
+    List<LocElementType> locElementTypes = new ArrayList<>();
+
+    for (FundingSource fundingSource : fundingSources) {
+
+      List<FundingSourceLocation> fundingSourceLocations = new ArrayList<>(
+        fundingSource.getFundingSourceLocations().stream().filter(fs -> fs.isActive()).collect(Collectors.toList()));
+
+      for (FundingSourceLocation fundingSourceLocation : fundingSourceLocations) {
+        if (fundingSourceLocation.getLocElementType() == null) {
+          locElements.add(fundingSourceLocation.getLocElement());
+
+        } else {
+          locElementTypes.add(fundingSourceLocation.getLocElementType());
+
+        }
+      }
+
+
+    }
+
+    project.setCountryFS(new ArrayList<>());
+    project.setRegionFS(new ArrayList<>());
+    HashSet<LocElement> hashElements = new HashSet<>();
+    hashElements.addAll(locElements);
+    locElements = new ArrayList<>(hashElements);
+
+    for (LocElement locElement : hashElements) {
+      CountryFundingSources countryFundingSources = new CountryFundingSources();
+      countryFundingSources.setLocElement(locElement);
+
+
+      if (locElement.getLocElementType().getId().longValue() == 2) {
+        project.getCountryFS().add(countryFundingSources);
+      } else {
+        project.getRegionFS().add(countryFundingSources);
+      }
+
+
+    }
+
+    HashSet<LocElementType> hashElementTypes = new HashSet<>();
+    hashElementTypes.addAll(locElementTypes);
+    locElementTypes = new ArrayList<>(hashElementTypes);
+
+    for (LocElementType locElementType : hashElementTypes) {
+      CountryFundingSources countryFundingSources = new CountryFundingSources();
+      countryFundingSources.setLocElementType(locElementType);
+      project.getRegionFS().add(countryFundingSources);
+    }
+    Collections.sort(project.getCountryFS(),
+      (tu1, tu2) -> tu1.getLocElement().getName().compareTo(tu2.getLocElement().getName()));
+
+
+  }
+
   public DeliverablePartnership responsiblePartner(Deliverable deliverable) {
     try {
       DeliverablePartnership partnership = deliverable.getDeliverablePartnerships().stream()
@@ -614,6 +723,7 @@ public class ValidateProjectSectionAction extends BaseAction {
   public void setProjectID(Long projectID) {
     this.projectID = projectID;
   }
+
 
   public void setSection(Map<String, Object> section) {
     this.section = section;
@@ -721,6 +831,7 @@ public class ValidateProjectSectionAction extends BaseAction {
 
   }
 
+
   public void validateOutcomesPandR() {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
@@ -731,7 +842,6 @@ public class ValidateProjectSectionAction extends BaseAction {
 
 
   }
-
 
   public void validateOutputs() {
     // Getting the project information.
@@ -777,7 +887,6 @@ public class ValidateProjectSectionAction extends BaseAction {
     projectActivitiesValidator.validate(this, project, false);
   }
 
-
   public void validateProjectBudgets() {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
@@ -788,6 +897,7 @@ public class ValidateProjectSectionAction extends BaseAction {
     projectBudgetsValidator.validate(this, project, false);
 
   }
+
 
   public void validateProjectBudgetsCoAs() {
     // Getting the project information.
@@ -953,12 +1063,19 @@ public class ValidateProjectSectionAction extends BaseAction {
     descriptionValidator.validate(this, project, false);
   }
 
-
   public void validateProjectLocations() {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
     project.setLocationsData(new ArrayList<>(this.getProjectLocationsData(project)));
+    this.prepareFundingList(project);
+    for (CountryFundingSources locElement : project.getRegionFS()) {
+      if (locElement.getLocElement() != null) {
+        locElement.setSelected(this.locElementSelected(locElement.getLocElement().getId(), project.getId()));
+      } else {
+        locElement.setSelected(this.locElementTypeSelected(locElement.getLocElementType().getId(), project.getId()));
+      }
 
+    }
     locationValidator.validate(this, project, false);
   }
 
