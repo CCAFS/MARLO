@@ -64,6 +64,7 @@ public final class APConstants {
   public static final String CRP_PARAMETERS = "crp_parameters";
   public static final String CRP_PARTNER_CONTRIBUTIONS = "crp_partner_contribution";
   public static final String CRP_PC_ROLE = "crp_pc_rol";
+  public static final String CRP_CP_ML = "crp_cp_ml";
 
   public static final String CRP_PL_ROLE = "crp_pl_rol";
   public static final String CRP_PLANNING_ACTIVE = "crp_planning_active";

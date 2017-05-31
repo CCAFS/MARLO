@@ -552,8 +552,19 @@ public class ProjectDescriptionAction extends BaseAction {
     allOwners.addAll(loggedCrp.getLiasonUsers());
     liaisonInstitutions = new ArrayList<LiaisonInstitution>();
 
-    liaisonInstitutions
-      .addAll(loggedCrp.getLiaisonInstitutions().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+    liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
+      .filter(c -> c.isActive() && c.getCrpProgram() != null).collect(Collectors.toList()));
+
+    liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
+      .filter(c -> c.isActive() && c.getCrpProgram() == null && c.getAcronym().equals("PMU"))
+      .collect(Collectors.toList()));
+
+
+    if (this.hasSpecificities(APConstants.CRP_CP_ML)) {
+      liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
+        .filter(c -> c.isActive() && c.getCrpProgram() == null && !c.getAcronym().equals("PMU"))
+        .collect(Collectors.toList()));
+    }
     liaisonInstitutions.addAll(
       liaisonInstitutionManager.findAll().stream().filter(c -> c.getCrp() == null).collect(Collectors.toList()));
     programFlagships = new ArrayList<>();
