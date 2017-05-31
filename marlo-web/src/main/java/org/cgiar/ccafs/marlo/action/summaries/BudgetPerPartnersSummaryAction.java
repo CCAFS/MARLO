@@ -568,8 +568,9 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
 
   private TypedTableModel getMasterTableModel() {
     // Initialization of Model
-    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "year", "crp_id", "regionalAvalaible"},
-      new Class[] {String.class, String.class, Integer.class, Long.class, Boolean.class});
+    TypedTableModel model =
+      new TypedTableModel(new String[] {"center", "date", "year", "crp_id", "regionalAvalaible", "hasW1W2Co"},
+        new Class[] {String.class, String.class, Integer.class, Long.class, Boolean.class, Boolean.class});
 
     String center = loggedCrp.getName();
     // Get datetime
@@ -580,7 +581,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
       zone = "+0";
     }
     String date = timezone.format(format) + "(GMT" + zone + ")";
-    model.addRow(new Object[] {center, date, this.getYear(), loggedCrp.getId(), this.hasProgramnsRegions()});
+    model.addRow(new Object[] {center, date, this.getYear(), loggedCrp.getId(), this.hasProgramnsRegions(), hasW1W2Co});
     return model;
   }
 

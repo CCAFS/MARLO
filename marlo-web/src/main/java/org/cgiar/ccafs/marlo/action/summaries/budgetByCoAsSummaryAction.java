@@ -386,7 +386,7 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
         .collect(Collectors.toList())) {
         // System.out.println(pp.getInstitution().getComposedName());
         if (this.isPPA(pp.getInstitution())) {
-          totalW1w2Gender += this.getTotalGender(pp.getInstitution().getId(), year, 1, project, 3);
+          totalW1w2Gender += this.getTotalGender(pp.getInstitution().getId(), year, 1, project, 1);
           totalW3Gender += this.getTotalGender(pp.getInstitution().getId(), year, 2, project, 1);
           totalBilateralGender += this.getTotalGender(pp.getInstitution().getId(), year, 3, project, 1);
           totalCenterGender += this.getTotalGender(pp.getInstitution().getId(), year, 4, project, 1);
