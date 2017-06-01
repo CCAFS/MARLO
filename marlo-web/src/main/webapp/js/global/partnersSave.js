@@ -6,6 +6,16 @@ function init() {
     width: '100%'
   });
 
+  $("select.institutionTypes").select2({
+    templateResult: function(state) {
+      if (state.id == -1){
+        return
+      }
+      var $state = $("<span>" + $('#institutionType-' + state.id).html() + "</span>");
+      return $state;
+    }
+  });
+
   $(".yes-button-label").on("click", function() {
     $(".no-button-label").removeClass("radio-checked");
     $(this).addClass("radio-checked");
