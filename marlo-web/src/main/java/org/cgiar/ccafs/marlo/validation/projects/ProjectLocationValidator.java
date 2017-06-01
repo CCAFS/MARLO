@@ -101,7 +101,8 @@ public class ProjectLocationValidator extends BaseValidator {
           this.addMessage(action.getText("project.countries"));
         }
       }
-      if (project.getLocationRegional()) {
+
+      if (project.getLocationRegional() != null && project.getLocationRegional()) {
         if (project.getRegionFS() != null) {
           if (project.getRegionFS().stream().filter(c -> c.isSelected()).collect(Collectors.toList()).isEmpty()) {
             action.getInvalidFields().put("list-project.locationsData",
@@ -146,7 +147,7 @@ public class ProjectLocationValidator extends BaseValidator {
               this.addMessage(action.getText("project.countries"));
             }
           }
-          if (project.getLocationRegional()) {
+          if (project.getLocationRegional() != null && project.getLocationRegional()) {
             if (project.getRegionFS() != null) {
               if (project.getRegionFS().stream().filter(c -> c.isSelected()).collect(Collectors.toList()).isEmpty()) {
                 action.getInvalidFields().put("list-project.locationsData",
