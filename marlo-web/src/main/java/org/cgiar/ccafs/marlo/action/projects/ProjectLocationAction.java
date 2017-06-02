@@ -618,6 +618,7 @@ public class ProjectLocationAction extends BaseAction {
           }
         }
         reader.close();
+        this.prepareFundingList();
         this.setDraft(true);
       } else {
         this.setDraft(false);
@@ -790,8 +791,16 @@ public class ProjectLocationAction extends BaseAction {
 
     }
 
-    project.setCountryFS(new ArrayList<>());
-    project.setRegionFS(new ArrayList<>());
+
+    if (project.getCountryFS() == null) {
+      project.setCountryFS(new ArrayList<>());
+    }
+
+    if (project.getRegionFS() == null) {
+      project.setRegionFS(new ArrayList<>());
+    }
+
+
     HashSet<LocElement> hashElements = new HashSet<>();
     hashElements.addAll(locElements);
     locElements = new ArrayList<>(hashElements);
@@ -804,9 +813,14 @@ public class ProjectLocationAction extends BaseAction {
         this.getCurrentCycleYear(), loggedCrp.getId());
       countryFundingSources.setFundingSources(new ArrayList<>(sources));
       if (locElement.getLocElementType().getId().longValue() == 2) {
-        project.getCountryFS().add(countryFundingSources);
+        if (!project.getCountryFS().contains(countryFundingSources)) {
+          project.getCountryFS().add(countryFundingSources);
+        }
+
       } else {
-        project.getRegionFS().add(countryFundingSources);
+        if (!project.getRegionFS().contains(countryFundingSources)) {
+          project.getRegionFS().add(countryFundingSources);
+        }
       }
 
 
@@ -822,7 +836,10 @@ public class ProjectLocationAction extends BaseAction {
       List<FundingSource> sources = fundingSourceManager.searchFundingSourcesByLocElementType(projectID,
         locElementType.getId(), this.getCurrentCycleYear(), loggedCrp.getId());
       countryFundingSources.setFundingSources(new ArrayList<>(sources));
-      project.getRegionFS().add(countryFundingSources);
+      if (!project.getRegionFS().contains(countryFundingSources)) {
+        project.getRegionFS().add(countryFundingSources);
+      }
+
     }
     Collections.sort(project.getCountryFS(),
       (tu1, tu2) -> tu1.getLocElement().getName().compareTo(tu2.getLocElement().getName()));
