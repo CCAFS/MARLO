@@ -579,12 +579,12 @@ public class ProjectLocationAction extends BaseAction {
             if (co.getLocElement() != null) {
               co.setLocElement(locElementManager.getLocElementById(co.getLocElement().getId()));
               List<FundingSource> sources = fundingSourceManager.searchFundingSourcesByLocElement(projectID,
-                co.getLocElement().getId(), this.getCurrentCycleYear());
+                co.getLocElement().getId(), this.getCurrentCycleYear(), loggedCrp.getId());
               co.setFundingSources(sources);
             } else {
               co.setLocElementType(locElementTypeManager.getLocElementTypeById(co.getLocElementType().getId()));
               List<FundingSource> sources = fundingSourceManager.searchFundingSourcesByLocElementType(projectID,
-                co.getLocElementType().getId(), this.getCurrentCycleYear());
+                co.getLocElementType().getId(), this.getCurrentCycleYear(), loggedCrp.getId());
               co.setFundingSources(sources);
             }
             if (!co.isSelected()) {
@@ -602,7 +602,7 @@ public class ProjectLocationAction extends BaseAction {
               co.setLocElement(locElementManager.getLocElementById(co.getLocElement().getId()));
 
               List<FundingSource> sources = fundingSourceManager.searchFundingSourcesByLocElement(projectID,
-                co.getLocElement().getId(), this.getCurrentCycleYear());
+                co.getLocElement().getId(), this.getCurrentCycleYear(), loggedCrp.getId());
               co.setFundingSources(new ArrayList<>(sources));
 
             } else {
@@ -618,6 +618,7 @@ public class ProjectLocationAction extends BaseAction {
           }
         }
         reader.close();
+        this.prepareFundingList();
         this.setDraft(true);
       } else {
         this.setDraft(false);
@@ -811,8 +812,16 @@ public class ProjectLocationAction extends BaseAction {
 
     }
 
-    project.setCountryFS(new ArrayList<>());
-    project.setRegionFS(new ArrayList<>());
+
+    if (project.getCountryFS() == null) {
+      project.setCountryFS(new ArrayList<>());
+    }
+
+    if (project.getRegionFS() == null) {
+      project.setRegionFS(new ArrayList<>());
+    }
+
+
     HashSet<LocElement> hashElements = new HashSet<>();
     hashElements.addAll(locElements);
     locElements = new ArrayList<>(hashElements);
@@ -822,12 +831,17 @@ public class ProjectLocationAction extends BaseAction {
       countryFundingSources.setLocElement(locElement);
 
       List<FundingSource> sources = fundingSourceManager.searchFundingSourcesByLocElement(projectID, locElement.getId(),
-        this.getCurrentCycleYear());
+        this.getCurrentCycleYear(), loggedCrp.getId());
       countryFundingSources.setFundingSources(new ArrayList<>(sources));
       if (locElement.getLocElementType().getId().longValue() == 2) {
-        project.getCountryFS().add(countryFundingSources);
+        if (!project.getCountryFS().contains(countryFundingSources)) {
+          project.getCountryFS().add(countryFundingSources);
+        }
+
       } else {
-        project.getRegionFS().add(countryFundingSources);
+        if (!project.getRegionFS().contains(countryFundingSources)) {
+          project.getRegionFS().add(countryFundingSources);
+        }
       }
 
 
@@ -841,9 +855,12 @@ public class ProjectLocationAction extends BaseAction {
       CountryFundingSources countryFundingSources = new CountryFundingSources();
       countryFundingSources.setLocElementType(locElementType);
       List<FundingSource> sources = fundingSourceManager.searchFundingSourcesByLocElementType(projectID,
-        locElementType.getId(), this.getCurrentCycleYear());
+        locElementType.getId(), this.getCurrentCycleYear(), loggedCrp.getId());
       countryFundingSources.setFundingSources(new ArrayList<>(sources));
-      project.getRegionFS().add(countryFundingSources);
+      if (!project.getRegionFS().contains(countryFundingSources)) {
+        project.getRegionFS().add(countryFundingSources);
+      }
+
     }
     Collections.sort(project.getCountryFS(),
       (tu1, tu2) -> tu1.getLocElement().getName().compareTo(tu2.getLocElement().getName()));
