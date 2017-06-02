@@ -872,26 +872,36 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
   private TypedTableModel getBudgetSummaryTableModel() {
     TypedTableModel model =
-      new TypedTableModel(new String[] {"year", "w1w2", "w3", "bilateral", "centerfunds", "w1w2CoFinancing"},
-        new Class[] {Integer.class, String.class, String.class, String.class, String.class, String.class}, 0);
+      new TypedTableModel(new String[] {"year", "w1w2", "w3", "bilateral", "centerfunds", "w1w2CoFinancing", "total"},
+        new Class[] {Integer.class, String.class, String.class, String.class, String.class, String.class, String.class},
+        0);
     String w1w2 = null;
     String w3 = null;
     String bilateral = null;
     String centerfunds = null;
     String w1w2CoFinancing = null;
+    String total = null;
+    double totalDouble = 0.0;
     // Decimal format
     DecimalFormat myFormatter = new DecimalFormat("###,###.00");
 
     if (hasW1W2Co) {
       w1w2 = myFormatter.format(this.getTotalYear(year, 1, project, 3));
       w1w2CoFinancing = myFormatter.format(this.getTotalYear(year, 1, project, 2));
+      totalDouble += this.getTotalYear(year, 1, project, 3);
+      totalDouble += this.getTotalYear(year, 1, project, 2);
     } else {
       w1w2 = myFormatter.format(this.getTotalYear(year, 1, project, 1));
+      totalDouble += this.getTotalYear(year, 1, project, 1);
     }
     w3 = myFormatter.format(this.getTotalYear(year, 2, project, 1));
+    totalDouble += this.getTotalYear(year, 2, project, 1);
     bilateral = myFormatter.format(this.getTotalYear(year, 3, project, 1));
+    totalDouble += this.getTotalYear(year, 3, project, 1);
     centerfunds = myFormatter.format(this.getTotalYear(year, 4, project, 1));
-    model.addRow(new Object[] {year, w1w2, w3, bilateral, centerfunds, w1w2CoFinancing});
+    totalDouble += this.getTotalYear(year, 4, project, 1);
+    total = myFormatter.format(totalDouble);
+    model.addRow(new Object[] {year, w1w2, w3, bilateral, centerfunds, w1w2CoFinancing, total});
     return model;
   }
 
