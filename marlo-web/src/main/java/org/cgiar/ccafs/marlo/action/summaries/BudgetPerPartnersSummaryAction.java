@@ -92,6 +92,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
   private int year;
   private String cycle;
   private Boolean hasW1W2Co;
+  private Boolean hasGenderBudget;
   private long startTime;
 
   private PhaseManager phaseManager;
@@ -568,9 +569,9 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
 
   private TypedTableModel getMasterTableModel() {
     // Initialization of Model
-    TypedTableModel model =
-      new TypedTableModel(new String[] {"center", "date", "year", "crp_id", "regionalAvalaible", "hasW1W2Co"},
-        new Class[] {String.class, String.class, Integer.class, Long.class, Boolean.class, Boolean.class});
+    TypedTableModel model = new TypedTableModel(
+      new String[] {"center", "date", "year", "crp_id", "regionalAvalaible", "hasW1W2Co", "hasGenderBudget"},
+      new Class[] {String.class, String.class, Integer.class, Long.class, Boolean.class, Boolean.class, Boolean.class});
 
     String center = loggedCrp.getName();
     // Get datetime
@@ -581,7 +582,8 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
       zone = "+0";
     }
     String date = timezone.format(format) + "(GMT" + zone + ")";
-    model.addRow(new Object[] {center, date, this.getYear(), loggedCrp.getId(), this.hasProgramnsRegions(), hasW1W2Co});
+    model.addRow(new Object[] {center, date, this.getYear(), loggedCrp.getId(), this.hasProgramnsRegions(), hasW1W2Co,
+      hasGenderBudget});
     return model;
   }
 
@@ -744,6 +746,9 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
       cycle = this.getCurrentCycle();
     }
     hasW1W2Co = this.hasSpecificities(APConstants.CRP_FS_W1W2_COFINANCING);
+    // budget gender
+    hasGenderBudget = this.hasSpecificities(APConstants.CRP_BUDGET_GENDER);
+
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
     LOG.info(
