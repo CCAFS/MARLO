@@ -15,6 +15,12 @@
 		<property name="acronym" type="string">
 			<column name="acronym" length="200" />
 		</property>
+		 <property name="old" type="java.lang.Boolean">
+            <column name="old" />
+        </property>
+        <property name="description" type="string">
+            <column name="description" length="65535" />
+        </property>
 		<set name="institutions" table="institutions" inverse="true" lazy="true"
 			fetch="select">
 			<key>

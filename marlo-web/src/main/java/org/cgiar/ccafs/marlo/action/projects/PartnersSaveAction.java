@@ -132,7 +132,8 @@ public class PartnersSaveAction extends BaseAction {
 
     this.countriesList = locationManager.findAll().stream()
       .filter(c -> c.isActive() && c.getLocElementType().getId().longValue() == 2).collect(Collectors.toList());
-    this.institutionTypesList = institutionManager.findAll();
+    this.institutionTypesList =
+      institutionManager.findAll().stream().filter(c -> c.isActive() && !c.getOld()).collect(Collectors.toList());;
     institutions = institutionsManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
 
     institutions.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
