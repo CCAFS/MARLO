@@ -1089,8 +1089,7 @@ function openInfoWindowCountries(country) {
   $(contentItem).find(".nameMap").text(country.row.Name.value);
   $(contentItem).find(".latMap").parents(".latitudeWrapper").hide();
   $(contentItem).find(".lngMap").parents(".longitudeWrapper").hide();
-// $(contentItem).find(".latMap").text(country.latLng.lat().toFixed(4));
-// $(contentItem).find(".lngMap").text(country.latLng.lng().toFixed(4));
+  $(contentItem).find(".infoLocName").parent().hide();
 
   var locationLevel =
       $(contentItem).parent().find("input.locElementCountry[value='" + country.row.ISO_2DIGIT.value + "']").parents(

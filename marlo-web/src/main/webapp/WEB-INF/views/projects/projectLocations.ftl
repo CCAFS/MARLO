@@ -59,7 +59,7 @@
                 <div class="note left">
                   <div id="popup" class="helpMessage3">
                   </div>
-                  <p><small>[@s.text name="The information below aggregates the information from the locations of the Funding Sources contributing to the project. Feel free to make some changes to better reflect the key locations of the project.”" /]</small></p>
+                  <p><small>[@s.text name="The locations for this project are aggregated from the Funding Sources contributing to this project. From the options below, select the locations where this project is working." /]</small></p>
                 </div>
                 <span><span><img style="width: 3%;" src="${baseUrl}/images/global/left-click.jpg" alt="" /></span>Left click to get detailed information of a specific location.</span>
                 <br />
@@ -80,11 +80,11 @@
                 </div>
                 <div class="form-group col-md-12">
                   [@customForm.yesNoInput  label="Does this Project have a regional dimension?" name="project.locationRegional"   editable=editable inverse=false  cssClass="isRegional" /]
-                  <small style="color: #337ab7;">Select “yes” if work under the project is addressing issues pertaining to the region globally, as opposed to or in addition to issues pertaining to specific countries within a region.</small>
+                  <small style="color: #337ab7;">Select “yes” if work under the project is addressing issues pertaining to an entire region, as opposed to or in addition to issues pertaining to specific countries within a region.</small>
                 </div>
                  [#-- RECOMMENDED LOCATIONS --]
                  <div class="col-md-12">
-                  <label for="">Please select the predefined locations coming from your funding sources:</label>
+                  <label for="">Please select from the options below the locations where this project is working:</label>
                   <div class="simpleBox col-md-12">
                   <div class="row recommendedList">
                     [#-- RECOMMENDED REGIONS LIST --]
