@@ -1524,8 +1524,11 @@ public class ProjectPartnerAction extends BaseAction {
 
       role = roleManager.getRoleById(role.getId());
       if (!role.getUserRoles().contains(userRole)) {
-        userRoleManager.saveUserRole(userRole);
-        this.addCrpUser(partnerPerson.getUser());
+        if (userRole.getUser() != null) {
+          userRoleManager.saveUserRole(userRole);
+          this.addCrpUser(partnerPerson.getUser());
+        }
+
       }
 
 
@@ -1551,7 +1554,8 @@ public class ProjectPartnerAction extends BaseAction {
 
       // Notifying user that is not the project leader anymore
       this.notifyRoleUnassigned(previousPartnerPerson.getUser(), role);
-    } else if (previousPartnerPerson != null && partnerPerson != null) {
+    } else if (previousPartnerPerson != null && partnerPerson != null && partnerPerson.getUser() != null
+      && partnerPerson.getUser().getId() != null) {
       if (!partnerPerson.getUser().getId().equals(previousPartnerPerson.getUser().getId())) {
         UserRole userRole = new UserRole();
         userRole.setRole(role);
