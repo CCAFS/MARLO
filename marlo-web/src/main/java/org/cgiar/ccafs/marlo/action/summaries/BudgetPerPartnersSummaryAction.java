@@ -570,8 +570,10 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
   private TypedTableModel getMasterTableModel() {
     // Initialization of Model
     TypedTableModel model = new TypedTableModel(
-      new String[] {"center", "date", "year", "crp_id", "regionalAvalaible", "hasW1W2Co", "hasGenderBudget"},
-      new Class[] {String.class, String.class, Integer.class, Long.class, Boolean.class, Boolean.class, Boolean.class});
+      new String[] {"center", "date", "year", "crp_id", "regionalAvalaible", "hasW1W2Co", "hasGenderBudget",
+        "imageUrl"},
+      new Class[] {String.class, String.class, Integer.class, Long.class, Boolean.class, Boolean.class, Boolean.class,
+        String.class});
 
     String center = loggedCrp.getName();
     // Get datetime
@@ -582,8 +584,10 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
       zone = "+0";
     }
     String date = timezone.format(format) + "(GMT" + zone + ")";
+    // set CIAT imgage URL from repo
+    String imageUrl = this.getBaseUrl() + "/images/global/crps/" + this.loggedCrp.getAcronym().toLowerCase() + ".png";
     model.addRow(new Object[] {center, date, this.getYear(), loggedCrp.getId(), this.hasProgramnsRegions(), hasW1W2Co,
-      hasGenderBudget});
+      hasGenderBudget, imageUrl});
     return model;
   }
 

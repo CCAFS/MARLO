@@ -101,6 +101,9 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
       masterReport.getParameterValues().put("year", year);
       masterReport.getParameterValues().put("date", currentDate);
       masterReport.getParameterValues().put("regionalAvalaible", this.hasProgramnsRegions());
+      // set CIAT imgage URL from repo
+      String imageUrl = this.getBaseUrl() + "/images/global/crps/" + this.loggedCrp.getAcronym().toLowerCase() + ".png";
+      masterReport.getParameterValues().put("imageUrl", imageUrl);
 
       ExcelReportUtil.createXLSX(masterReport, os);
       bytesXLSX = os.toByteArray();

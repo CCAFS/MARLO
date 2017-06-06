@@ -286,9 +286,11 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
 
   private TypedTableModel getMasterTableModel(String center, String date, String year) {
     // Initialization of Model
-    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "year"},
-      new Class[] {String.class, String.class, String.class});
-    model.addRow(new Object[] {center, date, year});
+    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "year", "imageUrl"},
+      new Class[] {String.class, String.class, String.class, String.class});
+    // set CIAT imgage URL from repo
+    String imageUrl = this.getBaseUrl() + "/images/global/crps/" + this.loggedCrp.getAcronym().toLowerCase() + ".png";
+    model.addRow(new Object[] {center, date, year, imageUrl});
     return model;
   }
 

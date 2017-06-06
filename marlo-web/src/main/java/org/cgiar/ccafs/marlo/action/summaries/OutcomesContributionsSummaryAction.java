@@ -282,13 +282,15 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
 
   private TypedTableModel getMasterTableModel(String center, String date) {
     // Initialization of Model
-    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "hasTargetUnit"},
-      new Class[] {String.class, String.class, Boolean.class});
+    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "hasTargetUnit", "imageUrl"},
+      new Class[] {String.class, String.class, Boolean.class, String.class});
     Boolean hasTargetUnit = false;
     if (targetUnitList.size() > 0) {
       hasTargetUnit = true;
     }
-    model.addRow(new Object[] {center, date, hasTargetUnit});
+    // set CIAT imgage URL from repo
+    String imageUrl = this.getBaseUrl() + "/images/global/crps/" + this.loggedCrp.getAcronym().toLowerCase() + ".png";
+    model.addRow(new Object[] {center, date, hasTargetUnit, imageUrl});
     return model;
   }
 

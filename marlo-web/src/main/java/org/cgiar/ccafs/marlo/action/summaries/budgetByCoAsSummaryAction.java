@@ -322,8 +322,9 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
 
   private TypedTableModel getMasterTableModel(String center, String date) {
     // Initialization of Model
-    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "regionalAvailable", "budget_gender"},
-      new Class[] {String.class, String.class, Boolean.class, Boolean.class});
+    TypedTableModel model =
+      new TypedTableModel(new String[] {"center", "date", "regionalAvailable", "budget_gender", "imageUrl"},
+        new Class[] {String.class, String.class, Boolean.class, Boolean.class, String.class});
     Boolean hasGender = false;
     try {
       hasGender = this.hasSpecificities(APConstants.CRP_BUDGET_GENDER);
@@ -333,7 +334,10 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
         + e.getMessage());
       hasGender = false;
     }
-    model.addRow(new Object[] {center, date, this.hasProgramnsRegions(), hasGender});
+    // set CIAT imgage URL from repo
+    String imageUrl = this.getBaseUrl() + "/images/global/crps/" + this.loggedCrp.getAcronym().toLowerCase() + ".png";
+
+    model.addRow(new Object[] {center, date, this.hasProgramnsRegions(), hasGender, imageUrl});
     return model;
   }
 
@@ -695,6 +699,7 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
         + e.getMessage());
       cycle = this.getCurrentCycle();
     }
+
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
     LOG.info(

@@ -1579,9 +1579,12 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
 
   private TypedTableModel getMasterTableModel(String center, String date, String year) {
     // Initialization of Model
-    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "year", "regionalAvalaible"},
-      new Class[] {String.class, String.class, String.class, Boolean.class});
-    model.addRow(new Object[] {center, date, year, this.hasProgramnsRegions()});
+    TypedTableModel model =
+      new TypedTableModel(new String[] {"center", "date", "year", "regionalAvalaible", "imageUrl"},
+        new Class[] {String.class, String.class, String.class, Boolean.class, String.class});
+    // set CIAT imgage URL from repo
+    String imageUrl = this.getBaseUrl() + "/images/global/crps/" + this.loggedCrp.getAcronym().toLowerCase() + ".png";
+    model.addRow(new Object[] {center, date, year, this.hasProgramnsRegions(), imageUrl});
     return model;
   }
 

@@ -524,8 +524,8 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
   private TypedTableModel getMasterTableModel(String center, String date) {
     // Initialization of Model
     TypedTableModel model =
-      new TypedTableModel(new String[] {"center", "date", "keys", "regionalAvailable", "hasW1W2Co"},
-        new Class[] {String.class, String.class, String.class, Boolean.class, Boolean.class});
+      new TypedTableModel(new String[] {"center", "date", "keys", "regionalAvailable", "hasW1W2Co", "imageUrl"},
+        new Class[] {String.class, String.class, String.class, Boolean.class, Boolean.class, String.class});
     String keysString = "";
     int countKeys = 0;
     for (String key : keys) {
@@ -537,7 +537,9 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
         countKeys++;
       }
     }
-    model.addRow(new Object[] {center, date, keysString, hasRegions, hasW1W2Co});
+    // set CIAT imgage URL from repo
+    String imageUrl = this.getBaseUrl() + "/images/global/crps/" + this.loggedCrp.getAcronym().toLowerCase() + ".png";
+    model.addRow(new Object[] {center, date, keysString, hasRegions, hasW1W2Co, imageUrl});
     return model;
   }
 

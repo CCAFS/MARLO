@@ -93,6 +93,9 @@ public class InstitutionsSummaryAction extends BaseAction implements Summary {
       masterReport.getParameterValues().put("crp_id", idParam);
       masterReport.getParameterValues().put("date", currentDate);
       masterReport.getParameterValues().put("cycle", cycle);
+      // set CIAT imgage URL from repo
+      String imageUrl = this.getBaseUrl() + "/images/global/crps/" + this.loggedCrp.getAcronym().toLowerCase() + ".png";
+      masterReport.getParameterValues().put("imageUrl", imageUrl);
       ExcelReportUtil.createXLSX(masterReport, os);
       bytesXLSX = os.toByteArray();
       os.close();

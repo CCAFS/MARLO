@@ -255,9 +255,11 @@ public class MOGSynthesisReportingSummaryAction extends BaseAction implements Su
 
   private TypedTableModel getMasterTableModel(String center, String date, String year, Long idParam) {
     // Initialization of Model
-    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "year", "crp_id"},
-      new Class[] {String.class, String.class, String.class, Long.class});
-    model.addRow(new Object[] {center, date, year, idParam});
+    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "year", "crp_id", "imageUrl"},
+      new Class[] {String.class, String.class, String.class, Long.class, String.class});
+    // set CIAT imgage URL from repo
+    String imageUrl = this.getBaseUrl() + "/images/global/crps/" + this.loggedCrp.getAcronym().toLowerCase() + ".png";
+    model.addRow(new Object[] {center, date, year, idParam, imageUrl});
     return model;
   }
 

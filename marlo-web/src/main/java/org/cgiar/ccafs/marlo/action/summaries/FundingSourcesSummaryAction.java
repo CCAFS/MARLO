@@ -598,9 +598,11 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
   private TypedTableModel getMasterTableModel(String center, String date) {
     // Initialization of Model
     TypedTableModel model =
-      new TypedTableModel(new String[] {"center", "date", "managingPPAField", "year", "showPIEmail"},
-        new Class[] {String.class, String.class, String.class, Integer.class, Boolean.class});
-    model.addRow(new Object[] {center, date, "Managing / PPA Partner", this.year, showPIEmail});
+      new TypedTableModel(new String[] {"center", "date", "managingPPAField", "year", "showPIEmail", "imageUrl"},
+        new Class[] {String.class, String.class, String.class, Integer.class, Boolean.class, String.class});
+    // set CIAT imgage URL from repo
+    String imageUrl = this.getBaseUrl() + "/images/global/crps/" + this.loggedCrp.getAcronym().toLowerCase() + ".png";
+    model.addRow(new Object[] {center, date, "Managing / PPA Partner", this.year, showPIEmail, imageUrl});
     return model;
   }
 
