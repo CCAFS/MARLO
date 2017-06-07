@@ -28,7 +28,31 @@
   
   <h4 class="headTitle">General information</h4> 
     <div class="borderBox informationWrapper">
-      [#-- Participating Center, CRP Lead Center --]
+      [#-- Finance code --]
+      <div class="form-group row">
+        <div class="col-md-offset-6 col-md-6">
+          <div class="url-field">
+            [@customForm.input name="fundingSource.financeCode"  i18nkey="projectCofunded.financeCode" placeholder="projectCofunded.financeCode.placeholder" editable=editable/]
+          </div>
+          <div class="buttons-field">
+            [#if editable]
+              [#assign isSynced = false ]
+              [#assign showSync = true ]
+              <div id="fillMetadata" style="display:${showSync?string('block','none')};">
+                <input type="hidden" name="fundingSource.synced" value="${isSynced?string}" />
+                [#-- Sync Button --]
+                <div class="checkButton" style="display:${isSynced?string('none','block')};">[@s.text name="project.deliverable.dissemination.sync" /]</div>
+                <div class="unSyncBlock" style="display:${isSynced?string('block','none')};">
+                  [#-- Update Button --]
+                  <div class="updateButton">[@s.text name="project.deliverable.dissemination.update" /]</div>
+                  [#-- Unsync Button --]
+                  <div class="uncheckButton">[@s.text name="project.deliverable.dissemination.unsync" /]</div>
+                </div>
+              </div>
+            [/#if]
+          </div>
+        </div>
+      </div>
       
       [#-- Project title --]
       <div class="form-group">
@@ -48,7 +72,7 @@
         <div class="row">
            <div class="col-md-4">[@customForm.input name="fundingSource.startDate" i18nkey="projectCofunded.startDate" required=true  editable=editable && action.canEditFundingSourceBudget() /] </div>
            <div class="col-md-4">[@customForm.input name="fundingSource.endDate" i18nkey="projectCofunded.endDate" required=true  editable=editable && action.canEditFundingSourceBudget() /] </div>
-           <div class="col-md-4">[@customForm.input name="fundingSource.financeCode"  i18nkey="projectCofunded.financeCode" placeholder="projectCofunded.financeCode.placeholder" editable=editable/] </div>
+           
         </div>
       </div>
       
