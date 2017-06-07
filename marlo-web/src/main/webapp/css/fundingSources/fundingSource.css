@@ -48,3 +48,19 @@ table {
     border: 1px solid #e6e6e6;
     font-size: 0.95em;
 }
+
+/* Metadata */
+
+
+
+.url-field{
+  width: 65%;
+  float:left;
+}
+
+.buttons-field{
+  width: 35%;
+  float:right;
+  margin-top: 22px;
+  text-align: center;
+}

@@ -37,8 +37,7 @@
           <div class="buttons-field">
             [#if editable]
               [#assign isSynced = false ]
-              [#assign showSync = true ]
-              <div id="fillMetadata" style="display:${showSync?string('block','none')};">
+              <div id="fillMetadata">
                 <input type="hidden" name="fundingSource.synced" value="${isSynced?string}" />
                 [#-- Sync Button --]
                 <div class="checkButton" style="display:${isSynced?string('none','block')};">[@s.text name="project.deliverable.dissemination.sync" /]</div>
@@ -52,6 +51,7 @@
             [/#if]
           </div>
         </div>
+        <hr />
       </div>
       
       [#-- Project title --]
