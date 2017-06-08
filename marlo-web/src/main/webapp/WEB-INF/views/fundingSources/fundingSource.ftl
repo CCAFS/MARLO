@@ -32,7 +32,7 @@
       <div class="form-group row">
         <div class="col-md-offset-6 col-md-6">
           <div class="url-field">
-            [@customForm.input name="fundingSource.financeCode"  i18nkey="projectCofunded.financeCode" placeholder="projectCofunded.financeCode.placeholder" editable=editable/]
+            [@customForm.input name="fundingSource.financeCode"  i18nkey="projectCofunded.financeCode" className="financeCode" placeholder="projectCofunded.financeCode.placeholder" editable=editable/]
           </div>
           <div class="buttons-field">
             [#if editable]
@@ -55,24 +55,19 @@
       </div>
       
       [#-- Project title --]
-      <div class="form-group">
-        <div class="row">
-          <div class="col-md-12">[@customForm.input name="fundingSource.title" i18nkey="projectCofunded.title" className="limitWords-40" required=true editable=editable /] </div>
-        </div>
+      <div class="form-group metadataElement-description">
+        [@customForm.input name="fundingSource.title" i18nkey="projectCofunded.title" className="limitWords-40 metadataValue" required=true editable=editable /] 
       </div>
       [#-- Project summary --]
-      <div class="form-group">
-        <div class="row">
-          <div class="col-md-12">[@customForm.textArea name="fundingSource.description" i18nkey="projectCofunded.description" className="limitWords-150" required=false editable=editable /] </div>
-        </div>
+      <div class="form-group metadataElement-objectives">
+        [@customForm.textArea name="fundingSource.description" i18nkey="projectCofunded.description" className="limitWords-150 metadataValue" required=false editable=editable /]
       </div>
-      [#-- start date, end date and finance code --]
+      [#-- Start date, End date and finance code --]
       <div class="form-group">
         <div class="dateErrorBox"></div>
         <div class="row">
-           <div class="col-md-4">[@customForm.input name="fundingSource.startDate" i18nkey="projectCofunded.startDate" required=true  editable=editable && action.canEditFundingSourceBudget() /] </div>
-           <div class="col-md-4">[@customForm.input name="fundingSource.endDate" i18nkey="projectCofunded.endDate" required=true  editable=editable && action.canEditFundingSourceBudget() /] </div>
-           
+           <div class="col-md-4 metadataElement-startDate">[@customForm.input name="fundingSource.startDate" i18nkey="projectCofunded.startDate" className="metadataValue" required=true  editable=editable && action.canEditFundingSourceBudget() /] </div>
+           <div class="col-md-4 metadataElement-endDate">[@customForm.input name="fundingSource.endDate" i18nkey="projectCofunded.endDate" className="metadataValue" required=true  editable=editable && action.canEditFundingSourceBudget() /] </div>
         </div>
       </div>
       

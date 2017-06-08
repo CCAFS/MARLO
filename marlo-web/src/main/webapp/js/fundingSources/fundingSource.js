@@ -7,6 +7,13 @@ function init() {
 
   // Add Data Table
   addDataTable();
+  
+  
+  // Harvest metadata from URL
+  $("#fillMetadata .checkButton, #fillMetadata .updateButton").on("click", syncMetadata);
+
+  // Unsync metadata
+  $("#fillMetadata .uncheckButton").on("click", unSyncDeliverable);
 
   // Lead partner
   $(".institution").on("change", function() {
@@ -109,6 +116,107 @@ function init() {
     autoSaveActive = false;
   });
 }
+
+/**
+ * Harvest metadata functions
+ */
+
+function syncMetadata() {
+  getOCSMetadata();
+}
+
+function setMetadata(data) {
+  console.log(data);
+
+  // Text area & Inputs fields
+  $.each(data, function(key,value) {
+    var $parent = $('.metadataElement-' + key);
+    var $input = $parent.find(".metadataValue");
+    var $hide = $parent.find('.hide');
+    if(value) {
+      $input.val(value);
+      $parent.find('textarea').autoGrow();
+      $input.attr('readOnly', true);
+      $hide.val("true");
+    } else {
+      $input.attr('readOnly', false);
+      $hide.val("false");
+    }
+    
+    // Date picker
+    if($input.hasClass('hasDatepicker')){
+      console.log(key+" in date");
+      $input.datepicker( "hide" );
+      $input.datepicker( "refresh" );
+    }
+  });
+
+  syncDeliverable();
+
+}
+
+function syncDeliverable() {
+  // Hide Sync Button & dissemination channel
+  $('#fillMetadata .checkButton, .disseminationChannelBlock').hide('slow');
+  // Show UnSync & Update Button
+  $('#fillMetadata .unSyncBlock').show();
+  // Set hidden inputs
+  $('#fillMetadata input:hidden').val(true);
+  // Dissemination URL
+  $('.financeCode').attr('readOnly', true);
+  // Update component
+  $(document).trigger('updateComponent');
+}
+
+function unSyncDeliverable() {
+  // Show metadata
+  $('[class*="metadataElement"]').each(function(i,e) {
+    var $parent = $(e);
+    var $input = $parent.find('.metadataValue');
+    var $hide = $parent.find('.hide');
+    $input.attr('readOnly', false);
+    $hide.val("false");
+    
+  });
+
+  // Show Sync Button & dissemination channel
+  $('#fillMetadata .checkButton, .disseminationChannelBlock').show('slow');
+  // Hide UnSync & Update Button
+  $('#fillMetadata .unSyncBlock').hide();
+  // Set hidden inputs
+  $('#fillMetadata input:hidden').val(false);
+  // Dissemination URL
+  $('.financeCode').attr('readOnly', false);
+
+  // Update component
+  $(document).trigger('updateComponent');
+}
+
+function getOCSMetadata(){
+  // get data from url
+  // Ajax to service
+  $.ajax({
+      'url': baseURL + '/',
+      'data': {},
+      beforeSend: function() {
+        $(".financeCode").addClass('input-loading');
+      },
+      success: function(data) {
+          
+        // Setting Metadata
+        setMetadata(agreementData);
+
+      },
+      complete: function() {
+        $(".financeCode").removeClass('input-loading');
+      },
+      error: function() {
+        console.log("error");
+        $('#metadata-output').empty().append("Invalid URL for searching metadata");
+      }
+  });
+}
+
 
 /**
  * Check Agreement status
@@ -471,44 +579,42 @@ function changeDonorByFundingType(budgetType,$select) {
 
 
 
-var data = {
-    "agreement": {
-      "id": "A128",
-      "description":"Effecting change in  seed security response: In crisis, chronic stress and developmental contexts",
-      "donor": {
-        "id": "444426081",
-        "name": "USAID-United States Agency for International Development"
-      },
-      "countries": [
-        {"code": "CG", "description": "Congo", "percentage": "25"},
-        {"code": "MG", "description": "Madagascar", "percentage": "25"},
-        {"code": "TP", "description": "East Timor", "percentage": "25"},
-        {"code": "ZM", "description": "Zambia", "percentage": "25"}
-      ],
-      "crps": [
-        {"id": "35", "name": "11 GLDC - GRAIN LEGUMES AND DRY LAND CEREALS", "percentage": "100"}
-      ],
-      "researcher": {
-        "id": "06230",
-        "name": "BURUCHARA , ROBIN ARANI"
-      },
-      "shortTitle": "",
-      "objectives": "THIS PROJECT FOCUSES ON &NBSP;TOOL DEVELOPMENT AND CAPACITY-BUILDING IN SEED SYSTEM SECURITY ASSESSMENT (SSSA). &NBSP;SUCH RESEARCH SKILLS ARE CRITICAL FOR DESIGNING&NBSP; IMMEDIATE RESPONSE AND LONGER-TERM PROGRAMS WHICH &NBSP;SUPPORT FARMERS DURING PERIODS OF &NBSP;ACUTE (DISASTER) AND CHRONIC STRESS. THE SSSA IS THE FIRST TOOL IN THE WORLD TO SPECIFICALLY DISTINGUISH BETWEEN SEED SECURITY ISSUES AND FOOD SECURITY ISSUES, AND PUTS AGRICULTURAL THEMES AT THE HEART OF DISASTER RECOVERY.",
-      "grantAmount": "831091.00",
-      "startDate": "4/1/2012",
-      "endDate": "3/31/2014",
-      "extensionDate": "6/30/2016",
-      "contractStatus": "C",
-      "fundingType": "BLR",
-      "plas": [
-        {
-          "id": "C-032-15",
-          "description": "AGREEMENT BETWEEN INTERNATIONAL CENTRE FOR TROPICAL AGRICULTURE AND CATHOLIC RELIEF SERVICES,GUINEA",
-          "partners": [ {"id": "GN000472U", "name": "CATHOLIC RELIEF SERVICES-GUINEA"} ],
-          "countries": [{"code": "GN", "description": "Guinea", "percentage": "100"}]
-        }
-      ]
-    }
+var agreementData =  {
+    "id": "A128",
+    "description":"Effecting change in  seed security response: In crisis, chronic stress and developmental contexts",
+    "donor": {
+      "id": "444426081",
+      "name": "USAID-United States Agency for International Development"
+    },
+    "countries": [
+      {"code": "CG", "description": "Congo", "percentage": "25"},
+      {"code": "MG", "description": "Madagascar", "percentage": "25"},
+      {"code": "TP", "description": "East Timor", "percentage": "25"},
+      {"code": "ZM", "description": "Zambia", "percentage": "25"}
+    ],
+    "crps": [
+      {"id": "35", "name": "11 GLDC - GRAIN LEGUMES AND DRY LAND CEREALS", "percentage": "100"}
+    ],
+    "researcher": {
+      "id": "06230",
+      "name": "BURUCHARA , ROBIN ARANI"
+    },
+    "shortTitle": "",
+    "objectives": "THIS PROJECT FOCUSES ON &NBSP;TOOL DEVELOPMENT AND CAPACITY-BUILDING IN SEED SYSTEM SECURITY ASSESSMENT (SSSA). &NBSP;SUCH RESEARCH SKILLS ARE CRITICAL FOR DESIGNING&NBSP; IMMEDIATE RESPONSE AND LONGER-TERM PROGRAMS WHICH &NBSP;SUPPORT FARMERS DURING PERIODS OF &NBSP;ACUTE (DISASTER) AND CHRONIC STRESS. THE SSSA IS THE FIRST TOOL IN THE WORLD TO SPECIFICALLY DISTINGUISH BETWEEN SEED SECURITY ISSUES AND FOOD SECURITY ISSUES, AND PUTS AGRICULTURAL THEMES AT THE HEART OF DISASTER RECOVERY.",
+    "grantAmount": "831091.00",
+    "startDate": "4/1/2012",
+    "endDate": "3/31/2014",
+    "extensionDate": "6/30/2016",
+    "contractStatus": "C",
+    "fundingType": "BLR",
+    "plas": [
+      {
+        "id": "C-032-15",
+        "description": "AGREEMENT BETWEEN INTERNATIONAL CENTRE FOR TROPICAL AGRICULTURE AND CATHOLIC RELIEF SERVICES,GUINEA",
+        "partners": [ {"id": "GN000472U", "name": "CATHOLIC RELIEF SERVICES-GUINEA"} ],
+        "countries": [{"code": "GN", "description": "Guinea", "percentage": "100"}]
+      }
+    ]
   }
 
 
