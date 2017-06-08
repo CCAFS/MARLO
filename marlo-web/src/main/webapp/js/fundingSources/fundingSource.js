@@ -1,3 +1,46 @@
+var agreementData =  {
+  "id": "A128",
+  "description":"Effecting change in  seed security response: In crisis, chronic stress and developmental contexts",
+  "donor": {
+    "id": "444426081",
+    "name": "USAID-United States Agency for International Development"
+  },
+  "countries": [
+    {"code": "CG", "description": "Congo", "percentage": "25"},
+    {"code": "MG", "description": "Madagascar", "percentage": "25"},
+    {"code": "TP", "description": "East Timor", "percentage": "25"},
+    {"code": "ZM", "description": "Zambia", "percentage": "25"}
+  ],
+  "crps": [
+    {"id": "35", "name": "11 GLDC - GRAIN LEGUMES AND DRY LAND CEREALS", "percentage": "100"}
+  ],
+  "researcher": {
+    "id": "06230",
+    "name": "BURUCHARA , ROBIN ARANI"
+  },
+  "shortTitle": "",
+  "objectives": "THIS PROJECT FOCUSES ON &NBSP;TOOL DEVELOPMENT AND CAPACITY-BUILDING IN SEED SYSTEM SECURITY ASSESSMENT (SSSA). &NBSP;SUCH RESEARCH SKILLS ARE CRITICAL FOR DESIGNING&NBSP; IMMEDIATE RESPONSE AND LONGER-TERM PROGRAMS WHICH &NBSP;SUPPORT FARMERS DURING PERIODS OF &NBSP;ACUTE (DISASTER) AND CHRONIC STRESS. THE SSSA IS THE FIRST TOOL IN THE WORLD TO SPECIFICALLY DISTINGUISH BETWEEN SEED SECURITY ISSUES AND FOOD SECURITY ISSUES, AND PUTS AGRICULTURAL THEMES AT THE HEART OF DISASTER RECOVERY.",
+  "grantAmount": "831091.00",
+  "startDate": "2014-04-01",
+  "endDate": "2017-03-31",
+  "extensionDate": "6/30/2016",
+  "contractStatus": "C",
+  "fundingType": "BLR",
+  "plas": [
+    {
+      "id": "C-032-15",
+      "description": "AGREEMENT BETWEEN INTERNATIONAL CENTRE FOR TROPICAL AGRICULTURE AND CATHOLIC RELIEF SERVICES,GUINEA",
+      "partners": [
+        {"id": "GN000472U", "name": "CATHOLIC RELIEF SERVICES-GUINEA"}
+      ],
+      "countries": [
+        {"code": "GN", "description": "Guinea", "percentage": "100"}
+      ]
+    }
+  ]
+}
+
+
 $(document).ready(init);
 
 function init() {
@@ -49,9 +92,6 @@ function init() {
         return $state;
       }
   });
-  
-  // $(".donor").select2(searchInstitutionsOptions(true));
-  // $(".donor").parent().find("span.select2-selection__placeholder").text(placeholderText);
 
   $(".removeLeadPartner").on("click", removeLeadPartner);
 
@@ -146,8 +186,7 @@ function setMetadata(data) {
     // Date picker
     if($input.hasClass('hasDatepicker')){
       console.log(key+" in date");
-      $input.datepicker( "hide" );
-      $input.datepicker( "refresh" );
+      $input.datepicker( "destroy" );
     }
   });
 
@@ -176,7 +215,6 @@ function unSyncDeliverable() {
     var $hide = $parent.find('.hide');
     $input.attr('readOnly', false);
     $hide.val("false");
-    
   });
 
   // Show Sync Button & dissemination channel
@@ -193,7 +231,6 @@ function unSyncDeliverable() {
 }
 
 function getOCSMetadata(){
-  // get data from url
   // Ajax to service
   $.ajax({
       'url': baseURL + '/',
@@ -201,17 +238,14 @@ function getOCSMetadata(){
       beforeSend: function() {
         $(".financeCode").addClass('input-loading');
       },
-      success: function(data) {
-          
+      success: function() {
         // Setting Metadata
         setMetadata(agreementData);
-
       },
       complete: function() {
         $(".financeCode").removeClass('input-loading');
       },
       error: function() {
-        console.log("error");
         $('#metadata-output').empty().append("Invalid URL for searching metadata");
       }
   });
@@ -576,46 +610,3 @@ function changeDonorByFundingType(budgetType,$select) {
     $select.val($(".cgiarConsortium").text()).trigger("change");
   }
 }
-
-
-
-var agreementData =  {
-    "id": "A128",
-    "description":"Effecting change in  seed security response: In crisis, chronic stress and developmental contexts",
-    "donor": {
-      "id": "444426081",
-      "name": "USAID-United States Agency for International Development"
-    },
-    "countries": [
-      {"code": "CG", "description": "Congo", "percentage": "25"},
-      {"code": "MG", "description": "Madagascar", "percentage": "25"},
-      {"code": "TP", "description": "East Timor", "percentage": "25"},
-      {"code": "ZM", "description": "Zambia", "percentage": "25"}
-    ],
-    "crps": [
-      {"id": "35", "name": "11 GLDC - GRAIN LEGUMES AND DRY LAND CEREALS", "percentage": "100"}
-    ],
-    "researcher": {
-      "id": "06230",
-      "name": "BURUCHARA , ROBIN ARANI"
-    },
-    "shortTitle": "",
-    "objectives": "THIS PROJECT FOCUSES ON &NBSP;TOOL DEVELOPMENT AND CAPACITY-BUILDING IN SEED SYSTEM SECURITY ASSESSMENT (SSSA). &NBSP;SUCH RESEARCH SKILLS ARE CRITICAL FOR DESIGNING&NBSP; IMMEDIATE RESPONSE AND LONGER-TERM PROGRAMS WHICH &NBSP;SUPPORT FARMERS DURING PERIODS OF &NBSP;ACUTE (DISASTER) AND CHRONIC STRESS. THE SSSA IS THE FIRST TOOL IN THE WORLD TO SPECIFICALLY DISTINGUISH BETWEEN SEED SECURITY ISSUES AND FOOD SECURITY ISSUES, AND PUTS AGRICULTURAL THEMES AT THE HEART OF DISASTER RECOVERY.",
-    "grantAmount": "831091.00",
-    "startDate": "4/1/2012",
-    "endDate": "3/31/2014",
-    "extensionDate": "6/30/2016",
-    "contractStatus": "C",
-    "fundingType": "BLR",
-    "plas": [
-      {
-        "id": "C-032-15",
-        "description": "AGREEMENT BETWEEN INTERNATIONAL CENTRE FOR TROPICAL AGRICULTURE AND CATHOLIC RELIEF SERVICES,GUINEA",
-        "partners": [ {"id": "GN000472U", "name": "CATHOLIC RELIEF SERVICES-GUINEA"} ],
-        "countries": [{"code": "GN", "description": "Guinea", "percentage": "100"}]
-      }
-    ]
-  }
-
-
-

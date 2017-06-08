@@ -17,11 +17,11 @@
 [#assign endYear = ((fundingSource.endDate?string.yyyy)?number)!startYear /]
     
 <section class="container">
-  <article class="fullBlock col-md-12" id="mainInformation">
+  <article class="" id="mainInformation">
   
   [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
   
-  <div class="col-md-12">
+  <div class="col-md-offset-1 col-md-10">
   
   [#-- Messages --]
   [#include "/WEB-INF/views/fundingSources/messages-fundingSource.ftl" /]
@@ -51,7 +51,7 @@
             [/#if]
           </div>
         </div>
-        <hr />
+        <div id="metadata-output"></div>
       </div>
       
       [#-- Project title --]
