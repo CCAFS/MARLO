@@ -146,7 +146,7 @@
           </div>
           
           [#-- Project Milestones and Communications contributions per year--]
-          <h4 class="headTitle">Milestones/ progress towards your outcome target contribution </h4>
+          <h4 class="headTitle"> [@s.text name="projectOutcome.contributionToMilestones" /]</h4>
           
           [#-- List milestones  --]
           <div class="milestonesYearBlock borderBox" listname="milestonesProject">
