@@ -52,25 +52,26 @@ public class CountryFundingSources implements Serializable {
     }
 
     CountryFundingSources other = (CountryFundingSources) obj;
-    if (locElement == null) {
-      if (other.locElement != null) {
-        return false;
-      } else {
-        if (locElementType != null) {
-          if (other.locElementType == null) {
-            return false;
-          } else {
-            if (!locElement.getId().equals(other.getLocElement().getId())) {
-              return false;
-            }
-          }
 
-        }
+    if (this.getLocElement() == null) {
+      if (other.getLocElement() != null) {
+        return false;
       }
-    } else if (!locElement.getId().equals(other.getLocElement().getId())) {
-      return false;
+      if (other.getLocElementType() != null) {
+        return other.getLocElementType().getId().equals(this.getLocElementType().getId());
+      }
     }
-    return true;
+
+    if (this.getLocElementType() == null) {
+      if (other.getLocElementType() != null) {
+        return false;
+      }
+      if (other.getLocElement() != null) {
+        return other.getLocElement().getId().equals(this.getLocElement().getId());
+      }
+    }
+
+    return false;
   }
 
 
