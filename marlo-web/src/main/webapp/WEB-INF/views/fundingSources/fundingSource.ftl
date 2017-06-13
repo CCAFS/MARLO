@@ -305,7 +305,7 @@
             <div class="clearfix"></div>
           </div>
           <br />
-          <h5 class="sectionSubTitle">Projects</h5>
+          <h5 class="sectionSubTitle">[@s.text name="fundingSource.projectsAssigned" /]:</h5>
           
           <table class="table">
           <thead>

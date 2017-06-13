@@ -71,7 +71,7 @@
           <div class="borderBox">
             [#-- Project Outcome expected target (AT THE BEGINNING) --]
             [#if showExpectedTarget]
-            <h5 class="sectionSubTitle">Expected contribution to this outcome</h5>
+            <h5 class="sectionSubTitle">[@s.text name="projectOutcome.contributionToThisOutcome" /]</h5>
             <div class="form-group">
               <div class="row form-group" style="display:${showOutcomeValue?string('block', 'none')}">
                 <div class="col-md-5">
@@ -146,7 +146,7 @@
           </div>
           
           [#-- Project Milestones and Communications contributions per year--]
-          <h4 class="headTitle">Milestones/ progress towards your outcome target contribution </h4>
+          <h4 class="headTitle"> [@s.text name="projectOutcome.contributionToMilestones" /]</h4>
           
           [#-- List milestones  --]
           <div class="milestonesYearBlock borderBox" listname="milestonesProject">
