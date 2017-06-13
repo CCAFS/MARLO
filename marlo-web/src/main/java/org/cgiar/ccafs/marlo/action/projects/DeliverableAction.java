@@ -1425,6 +1425,7 @@ public class DeliverableAction extends BaseAction {
       }
 
       if (deliverable.getResponsiblePartner() != null
+        && deliverable.getResponsiblePartner().getProjectPartnerPerson() != null
         && deliverable.getResponsiblePartner().getProjectPartnerPerson().getId() != null
         && deliverable.getResponsiblePartner().getProjectPartnerPerson().getId().longValue() != -1) {
         partnerPerson = projectPartnerPersonManager

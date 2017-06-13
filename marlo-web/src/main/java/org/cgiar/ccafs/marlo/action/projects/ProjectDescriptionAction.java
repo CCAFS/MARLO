@@ -166,6 +166,9 @@ public class ProjectDescriptionAction extends BaseAction {
     this.locationTypeManager = locationManager;
   }
 
+  /**
+   * In this method it is checked if there is a draft file and it is eliminated
+   */
   @Override
   public String cancel() {
 
@@ -212,6 +215,11 @@ public class ProjectDescriptionAction extends BaseAction {
     return config.getDownloadURL() + "/" + this.getAnualReportRelativePath().replace('\\', '/');
   }
 
+  /**
+   * The name of the autosave file is constructed and the path is searched
+   * 
+   * @return Auto save file path
+   */
   private Path getAutoSaveFilePath() {
     String composedClassName = project.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -383,17 +391,24 @@ public class ProjectDescriptionAction extends BaseAction {
     } catch (Exception e) {
 
     }
-    // SendMailGun s = new SendMailGun();
-    // s.SendSimple();
-
+    /*
+     * We check that you have a TRANSACTION_ID to know if it is history version
+     */
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
 
 
       transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
+      /*
+       * auditLogManager.getHistory Bring us the history with the transaction id
+       */
       Project history = (Project) auditLogManager.getHistory(transaction);
+
+
       Map<String, String> specialList = new HashMap<>();
       specialList.put(APConstants.PROJECT_FOCUSES_RELATION, "flagshipValue");
-
+      /*
+       * We load the differences of this version with the previous version
+       */
       this.setDifferences(historyComparator.getDifferences(transaction, specialList, "project"));
 
 
@@ -421,6 +436,9 @@ public class ProjectDescriptionAction extends BaseAction {
     }
 
     if (project != null) {
+      /*
+       * We validate if there is a draft version
+       */
       Path path = this.getAutoSaveFilePath();
 
       if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
@@ -435,11 +453,16 @@ public class ProjectDescriptionAction extends BaseAction {
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
-
+        /*
+         * We read the JSON serialized by the front-end and cast it to the object
+         */
         project = (Project) autoSaveReader.readFromJson(jReader);
         Project projectDb = projectManager.getProjectById(project.getId());
         project.setProjectEditLeader(projectDb.isProjectEditLeader());
         project.setAdministrative(projectDb.getAdministrative());
+        /*
+         * We load some BD objects, since the draft only keeps IDs and some data is shown with a different labe
+         */
         if (project.getClusterActivities() != null) {
           for (ProjectClusterActivity projectClusterActivity : project.getClusterActivities()) {
             projectClusterActivity.setCrpClusterOfActivity(crpClusterOfActivityManager
@@ -493,9 +516,15 @@ public class ProjectDescriptionAction extends BaseAction {
         project.setFlagships(programs);
         project.setRegions(regions);
         reader.close();
+        /*
+         * We change this variable so that the user knows that he is working on a draft version
+         */
         this.setDraft(true);
       } else {
         this.setDraft(false);
+        /*
+         * Load the DB information and adjust it to the structures with which the front end
+         */
         project.setFlagshipValue("");
         project.setRegionsValue("");
         List<CrpProgram> programs = new ArrayList<>();
@@ -547,7 +576,9 @@ public class ProjectDescriptionAction extends BaseAction {
         project.setScopes(projectLocations);
       }
     }
-
+    /*
+     * The lists that the front-end needs are loaded
+     */
     allOwners = new ArrayList<LiaisonUser>();
     allOwners.addAll(loggedCrp.getLiasonUsers());
     liaisonInstitutions = new ArrayList<LiaisonInstitution>();
@@ -616,9 +647,16 @@ public class ProjectDescriptionAction extends BaseAction {
     projectScales.put(APConstants.PROJECT_SCAPE_REGIONAL, this.getText("project.projectScape.regional"));
     projectScales.put(APConstants.PROJECT_SCAPE_GLOBAL, this.getText("project.projectType.global"));
 
-
+    /*
+     * The base permission is established for the current section
+     */
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_DESCRIPTION_BASE_PERMISSION, params));
+
+    /*
+     * If it is post, the lists are cleaned, this is done because there is a bug of struts, if this is not done it does
+     * not delete the items deleted by the user
+     */
     if (this.isHttpPost()) {
       if (project.getClusterActivities() != null) {
         project.getClusterActivities().clear();
@@ -640,6 +678,9 @@ public class ProjectDescriptionAction extends BaseAction {
     if (this.hasPermission("canEdit")) {
 
       Project projectDB = projectManager.getProjectById(project.getId());
+      /*
+       * Load basic info project to be saved
+       */
       project.setActive(true);
       project.setCreatedBy(projectDB.getCreatedBy());
       project.setModifiedBy(this.getCurrentUser());
@@ -647,12 +688,12 @@ public class ProjectDescriptionAction extends BaseAction {
       project.setActiveSince(projectDB.getActiveSince());
       project.setCreateDate(projectDB.getCreateDate());
       project.setPresetDate(projectDB.getPresetDate());
-
+      /*
+       * Validations to fill the checkbox fields
+       */
       if (project.isNoRegional() == null) {
         project.setNoRegional(false);
       }
-
-
       if (project.getCrossCuttingCapacity() == null) {
         project.setCrossCuttingCapacity(false);
       }
@@ -719,7 +760,9 @@ public class ProjectDescriptionAction extends BaseAction {
           project.setLiaisonUser(null);
         }
       }
-
+      /*
+       * Saving the flaghsips and regions
+       */
       if (project.getFlagshipValue() != null && project.getFlagshipValue().length() > 0) {
 
         for (ProjectFocus projectFocus : projectDB.getProjectFocuses().stream()
@@ -884,6 +927,9 @@ public class ProjectDescriptionAction extends BaseAction {
           project.setAnnualReportToDonnor(null);
         }
       }
+      /*
+       * Saving project and add relations we want to save on the history
+       */
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_FOCUSES_RELATION);
       relationsName.add(APConstants.PROJECT_CLUSTER_ACTIVITIES_RELATION);
@@ -894,12 +940,14 @@ public class ProjectDescriptionAction extends BaseAction {
       project.setModificationJustification(this.getJustification());
       projectManager.saveProject(project, this.getActionName(), relationsName);
       Path path = this.getAutoSaveFilePath();
-
+      // delete the draft file if exists
       if (path.toFile().exists()) {
         path.toFile().delete();
       }
 
+      // check if there is a url to redirect
       if (this.getUrl() == null || this.getUrl().isEmpty()) {
+        // check if there are missing field
         Collection<String> messages = this.getActionMessages();
         if (!this.getInvalidFields().isEmpty()) {
           this.setActionMessages(null);
@@ -1012,6 +1060,7 @@ public class ProjectDescriptionAction extends BaseAction {
 
   @Override
   public void validate() {
+    // if is saving call the validator to check for the missing fields
     if (save) {
       validator.validate(this, project, true);
     }
