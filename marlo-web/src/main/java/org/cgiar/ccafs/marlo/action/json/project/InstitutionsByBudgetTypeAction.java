@@ -66,7 +66,7 @@ public class InstitutionsByBudgetTypeAction extends BaseAction {
     List<Institution> institutionsType = null;
 
 
-    if (budgetTypeID == 1) {
+    if (budgetTypeID == 1 || budgetTypeID == 4) {
       institutionsType = institutionManager.findAll().stream()
         .filter(i -> i.isActive() && i.getInstitutionType().getId().intValue() == 3).collect(Collectors.toList());
 

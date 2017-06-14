@@ -453,7 +453,8 @@ public class FundingSourceAction extends BaseAction {
       }
 
       if (fundingSource.getBudgetType() != null) {
-        if (fundingSource.getBudgetType().getId().longValue() == 1) {
+        if (fundingSource.getBudgetType().getId().longValue() == 1
+          || fundingSource.getBudgetType().getId().longValue() == 4) {
 
           institutionsDonors = institutionManager.findAll().stream()
             .filter(i -> i.isActive() && i.getInstitutionType().getId().intValue() == 3).collect(Collectors.toList());
