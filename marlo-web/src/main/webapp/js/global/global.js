@@ -390,6 +390,13 @@ function isStatusOnGoing(statusId) {
 
 var placeholderText = 'Search the organization here...'
 var searchInstitutionsOptions = function(includePPA) {
+  return searchInstitutionsOptionsData({
+    includePPA: includePPA,
+    projectPreSetting: projectPreSetting
+  });
+}
+
+var searchInstitutionsOptionsData = function(optionsData) {
   return {
       ajax: {
           url: baseURL + '/searchInstitutions.do',
@@ -398,8 +405,8 @@ var searchInstitutionsOptions = function(includePPA) {
           data: function(params) {
             return {
                 q: params.term || '', // search term
-                withPPA: includePPA ? 1 : 0,
-                onlyPPA: projectPreSetting
+                withPPA: optionsData.includePPA ? 1 : 0,
+                onlyPPA: optionsData.projectPreSetting
             };
           },
           processResults: function(data,params) {
