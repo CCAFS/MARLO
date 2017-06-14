@@ -455,9 +455,17 @@ public class FundingSourceAction extends BaseAction {
       if (fundingSource.getBudgetType() != null) {
         if (fundingSource.getBudgetType().getId().longValue() == 1
           || fundingSource.getBudgetType().getId().longValue() == 4) {
+          List<Institution> allInstitutions = null;
+          institutionsDonors = new ArrayList<>();
+          allInstitutions = institutionManager.findAll();
+          for (Institution institutionObject : allInstitutions) {
+            // validate if the institutions is PPA
+            if (this.isPPA(institutionObject)) {
+              institutionsDonors.add(institutionObject);
+            }
 
-          institutionsDonors = institutionManager.findAll().stream()
-            .filter(i -> i.isActive() && i.getInstitutionType().getId().intValue() == 3).collect(Collectors.toList());
+          }
+
         } else {
           institutionsDonors = institutionManager.findAll().stream()
             .filter(i -> i.isActive() && i.getInstitutionType().getId().intValue() != 3).collect(Collectors.toList());

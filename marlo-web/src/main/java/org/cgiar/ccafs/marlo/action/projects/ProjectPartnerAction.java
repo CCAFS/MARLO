@@ -361,25 +361,6 @@ public class ProjectPartnerAction extends BaseAction {
     return transaction;
   }
 
-  public boolean isPPA(Institution institution) {
-    if (institution == null) {
-      return false;
-    }
-
-    if (institution.getId() != null) {
-      institution = institutionManager.getInstitutionById(institution.getId());
-      if (institution != null) {
-        if (institution.getCrpPpaPartners().stream()
-          .filter(c -> c.getCrp().getId().longValue() == loggedCrp.getId().longValue() && c.isActive())
-          .collect(Collectors.toList()).size() > 0) {
-          return true;
-        }
-      }
-
-    }
-
-    return false;
-  }
 
   /**
    * This method will validate if the user is deactivated. If so, it will send an email indicating the credentials to
