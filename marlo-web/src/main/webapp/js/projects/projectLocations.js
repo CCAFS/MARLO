@@ -101,9 +101,7 @@ function attachEvents() {
       });
 
   $('input.recommendedSelected').on('change', function() {
-    console.log(this.value);
-
-    $(this).val(!this.value);
+    $(this).next().val($(this).is(":checked"));
   });
 
   $('.projectLocationsWrapper .button-label').on('click', function() {

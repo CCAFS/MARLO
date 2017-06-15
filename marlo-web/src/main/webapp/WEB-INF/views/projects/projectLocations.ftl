@@ -426,13 +426,23 @@
        
       [#-- Check Icon --]
       [#if element.locElement??]
-        <input type="checkbox" class="recommendedSelected pull-right" name="${customName}.selected" value="true" [#if element.selected]checked[/#if]/>
+        [#if editable]
+          <input type="checkbox" class="recommendedSelected pull-right" name="" [#if element.selected]checked[/#if]/>
+        [#else]
+          [#if element.selected]<span class="glyphicon glyphicon-ok text-success pull-right"></span>[/#if]
+        [/#if]
+        <input type="hidden" name="${customName}.selected" value="${element.selected?string}" />
         [#if element.locElement.locElementType.id==2 ]
           <span class="hidden isoAlpha">${(element.locElement.isoAlpha2)!}</span>
         [/#if]
       [/#if]
       [#if element.locElementType??]
-        <input type="checkbox" class="recommendedSelected pull-right" name="${customName}.selected" value="true" [#if element.selected]checked[/#if]/>  
+        [#if editable]
+        <input type="checkbox" class="recommendedSelected pull-right" name="" [#if element.selected]checked[/#if]/>
+        [#else]
+          [#if element.selected]<span class="glyphicon glyphicon-ok text-success pull-right"></span>[/#if]
+        [/#if]
+        <input type="hidden" name="${customName}.selected" value="${element.selected?string}" />
       [/#if]
     </div>
     
