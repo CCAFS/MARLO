@@ -383,7 +383,9 @@ public class ProjectListAction extends BaseAction {
         for (ProjectPhase projectPhase : phase.getProjectPhases()) {
           myProjects.add(projectPhase.getProject());
         }
+        allProjects = new ArrayList<>();
 
+        allProjects.addAll(myProjects);
       } else {
 
         allProjects = new ArrayList<>();
