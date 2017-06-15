@@ -43,8 +43,9 @@
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
            
           <p class="bg-primary" style="padding: 18px; display:none;">
-            <span class="glyphicon glyphicon-flash"></span> We are re-vamping this section in order to make it more user-friendly. 
-            Please apologies if something is not properly working. It would be great if you can inform us about any issue.
+            <span class="glyphicon glyphicon-flash"></span>
+              We are re-vamping this section in order to make it more user-friendly. 
+              Please apologies if something is not properly working. It would be great if you can inform us about any issue.
           </p>
           
           <div class="row">
@@ -59,7 +60,7 @@
                 <div class="note left">
                   <div id="popup" class="helpMessage3">
                   </div>
-                  <p><small>[@s.text name="The locations for this project are aggregated from the Funding Sources contributing to this project. From the options below, select the locations where this project is working." /]</small></p>
+                  <p><small>[@s.text name="projectLocations.note" /] </small></p>
                 </div>
                 <span><span><img style="width: 3%;" src="${baseUrl}/images/global/left-click.jpg" alt="" /></span>Left click to get detailed information of a specific location.</span>
                 <br />
@@ -81,12 +82,12 @@
                 <div class="form-group col-md-12">
                   [@customForm.yesNoInput  label="Does this Project have a regional dimension?" name="project.locationRegional"   editable=editable && action.hasSpecificities("crp_other_locations") inverse=false  cssClass="isRegional" /]
                   [#if editable && action.hasSpecificities("crp_other_locations")]
-                  <small style="color: #337ab7;">Select “yes” if work under the project is addressing issues pertaining to an entire region, as opposed to or in addition to issues pertaining to specific countries within a region.</small>
+                    <small style="color: #337ab7;">[@s.text name="projectLocations.regionsNote" /] </small>
                   [/#if]
                 </div>
                  [#-- RECOMMENDED LOCATIONS --]
                  <div class="col-md-12">
-                  <label for="">Please select from the options below the locations where this project is working:</label>
+                  <label for="">[@s.text name="projectLocations.locationsBelow" /]:</label>
                   <div class="simpleBox col-md-12">
                   <div class="row recommendedList">
                     [#-- RECOMMENDED REGIONS LIST --]
@@ -144,9 +145,6 @@
                                 <div class="removeRegion removeIcon" title="Remove region"></div>
                               [/#if]
                                 <input class="id" type="hidden" name="project.projectRegions[${region_index}].id" value="${region.id}" />
-                                
-                                
-  
                                [#if region.locElement?has_content ]
                                <span class="name" title="${(region.locElement.name)!}">[@utilities.wordCutter string=(region.locElement.name)!'No name' maxPos=20 /]</span>
                                 <input class="regionScope" type="hidden" name="project.projectRegions[${region_index}].scope" value="${(region.locElement.locElementType.scope?c)!}" />
@@ -167,7 +165,7 @@
                         </ul>
                         [#if editable ]
                           <select name="" id="regionSelect" class="regionsSelect">
-                            <option value="-1">Select an option...</option>
+                            <option value="-1">[@s.text name="form.select.placeholder" /]</option>
                             [#if scopeRegionLists?has_content]
                               <optgroup label="${(loggedCrp.acronym?upper_case)!} regions">
                               [#list scopeRegionLists as region]
@@ -176,7 +174,7 @@
                               </optgroup>
                             [/#if]
                             [#if regionLists?has_content]
-                            <optgroup label="UN standart (M49)">
+                            <optgroup label="[@s.text name="projectLocations.unStandard" /]">
                               [#list regionLists as region]
                               <option value="${(region.id)!}-${(region.locElementType.scope?c)!}">${(region.name)!}</option>
                               [/#list]
