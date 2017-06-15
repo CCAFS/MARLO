@@ -625,6 +625,8 @@ public class ProjectLocationAction extends BaseAction {
 
 
         this.prepareFundingList();
+
+
         for (CountryFundingSources locElement : project.getCountryFS()) {
           locElement.setSelected(this.locElementSelected(locElement.getLocElement().getId()));
         }
@@ -772,19 +774,38 @@ public class ProjectLocationAction extends BaseAction {
 
     List<LocElement> locElements = new ArrayList<>();
     List<LocElementType> locElementTypes = new ArrayList<>();
+    if (project.getLocationRegional() == null) {
+      project.setLocationRegional(false);
+    }
 
+    boolean calculateYesOrNo = !this.hasSpecificities(APConstants.CRP_OTHER_LOCATIONS);
+    if (calculateYesOrNo) {
+      project.setLocationGlobal(false);
+      project.setLocationRegional(false);
+    }
     for (FundingSource fundingSource : fundingSources) {
+      if (calculateYesOrNo) {
+        project.setLocationGlobal(project.isLocationGlobal() || fundingSource.isGlobal());
 
+      }
       List<FundingSourceLocation> fundingSourceLocations = new ArrayList<>(
         fundingSource.getFundingSourceLocations().stream().filter(fs -> fs.isActive()).collect(Collectors.toList()));
 
       for (FundingSourceLocation fundingSourceLocation : fundingSourceLocations) {
         if (fundingSourceLocation.getLocElementType() == null) {
           locElements.add(fundingSourceLocation.getLocElement());
+          if (fundingSourceLocation.getLocElement().getLocElementType().getId() != 2) {
+            if (calculateYesOrNo) {
+              project.setLocationRegional(project.getLocationRegional() || true);
+            }
+
+          }
 
         } else {
           locElementTypes.add(fundingSourceLocation.getLocElementType());
-
+          if (calculateYesOrNo) {
+            project.setLocationRegional(project.getLocationRegional() || true);
+          }
         }
       }
 
