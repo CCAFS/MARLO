@@ -79,8 +79,10 @@
                   <hr />
                 </div>
                 <div class="form-group col-md-12">
-                  [@customForm.yesNoInput  label="Does this Project have a regional dimension?" name="project.locationRegional"   editable=editable inverse=false  cssClass="isRegional" /]
+                  [@customForm.yesNoInput  label="Does this Project have a regional dimension?" name="project.locationRegional"   editable=editable && action.hasSpecificities("crp_other_locations") inverse=false  cssClass="isRegional" /]
+                  [#if editable && action.hasSpecificities("crp_other_locations")]
                   <small style="color: #337ab7;">Select “yes” if work under the project is addressing issues pertaining to an entire region, as opposed to or in addition to issues pertaining to specific countries within a region.</small>
+                  [/#if]
                 </div>
                  [#-- RECOMMENDED LOCATIONS --]
                  <div class="col-md-12">
