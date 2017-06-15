@@ -574,6 +574,8 @@ public class ProjectLocationAction extends BaseAction {
           }
         }
 
+        List<CountryFundingSources> reCountryFundingSources = new ArrayList<>();
+        List<CountryFundingSources> coCountryFundingSources = new ArrayList<>();
         if (project.getRegionFS() != null) {
           for (CountryFundingSources co : project.getRegionFS()) {
             if (co.getLocElement() != null) {
@@ -594,8 +596,17 @@ public class ProjectLocationAction extends BaseAction {
                 co.setSelected(this.locElementTypeSelected(co.getLocElementType().getId()));
               }
             }
+            if (!co.getFundingSources().stream()
+              .filter(c -> c.isActive() && c.getProjectBudgets().stream()
+                .filter(fp -> fp.isActive() && fp.getProject().getId().longValue() == projectID)
+                .collect(Collectors.toList()).size() > 0)
+              .collect(Collectors.toList()).isEmpty()) {
+              reCountryFundingSources.add(co);
+            }
+
           }
         }
+        project.setRegionFS(reCountryFundingSources);
         if (project.getCountryFS() != null) {
           for (CountryFundingSources co : project.getCountryFS()) {
             if (co.getLocElement() != null) {
@@ -615,7 +626,15 @@ public class ProjectLocationAction extends BaseAction {
                 co.setSelected(this.locElementTypeSelected(co.getLocElementType().getId()));
               }
             }
+            if (!co.getFundingSources().stream()
+              .filter(c -> c.isActive() && c.getProjectBudgets().stream()
+                .filter(fp -> fp.isActive() && fp.getProject().getId().longValue() == projectID)
+                .collect(Collectors.toList()).size() > 0)
+              .collect(Collectors.toList()).isEmpty()) {
+              coCountryFundingSources.add(co);
+            }
           }
+          project.setCountryFS(coCountryFundingSources);
         }
         reader.close();
         this.prepareFundingList();
