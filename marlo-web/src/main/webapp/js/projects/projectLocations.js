@@ -72,7 +72,7 @@ function attachEvents() {
     }
   });
 
-// Clicking recommended location
+  // Clicking recommended location
   $('.recommendedLocName, .iconSelected').on(
       'click',
       function() {
@@ -99,6 +99,12 @@ function attachEvents() {
         }
         $(document).trigger('updateComponent');
       });
+
+  $('input.recommendedSelected').on('change', function() {
+    console.log(this.value);
+
+    $(this).val(!this.value);
+  });
 
   $('.projectLocationsWrapper .button-label').on('click', function() {
     var $t = $(this).parent().find('input.onoffswitch-radio');

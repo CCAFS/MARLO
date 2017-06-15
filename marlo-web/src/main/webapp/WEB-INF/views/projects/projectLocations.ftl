@@ -406,41 +406,34 @@
   <div id="recommendedLocation-${template?string('template',index)}" class="col-md-4 recommended locElement" style="display:${template?string('none','block')}">
     <div class="locations col-md-12">
       [#-- Location Name --]
-     
-       [#if element.locElement??]
+      <div class="recommendedLocName pull-left">
+      [#if element.locElement??]
         <input type="hidden" class="elementID" name="${customName}.locElement.id" value="${(element.locElement.id)!}"/>
-        <input type="hidden" class="locScope" name="${customName}.scope" value="${(element.locElement.locElementType.scope?c)!}"/>       
-      <div class="recommendedLocName"><span class="lName"><b>${(element.locElement.name)!}</b></span> </div>
-      
-       [#else]
+        <input type="hidden" class="locScope" name="${customName}.scope" value="${(element.locElement.locElementType.scope?c)!}"/>
+        <span class="lName">
+        [#assign miniName= (element.locElement.name)!""]
+        <b title="${(element.locElement.name)!}">[#if miniName?length < 23]${miniName}[#else]${miniName?substring(0,22)} ...[/#if]</b>
+        </span> 
+      [#else]
         <input type="hidden" class="elementID" name="${customName}.locElementType.id" value="${(element.locElementType.id)!}"/>
         <input type="hidden" class="locScope" name="${customName}.scope" value="${(element.locElementType.scope?c)!}"/>
-        <div class="recommendedLocName"><span class="lName"><b>${(element.locElementType.name)!}</b></span> </div>
-        [/#if]
+        <span class="lName">
+        [#assign miniName= (element.locElementType.name)!""]
+        <b title="${(element.locElementType.name)!}">[#if miniName?length < 23]${miniName}[#else]${miniName?substring(0,22)}...[/#if]</b>
+        </span> 
+      [/#if]
+      </div>  
+       
       [#-- Check Icon --]
-      
-     [#if element.locElement??]
-        [#if element.selected]
-        <div class="acceptLocation [#if editable]iconSelected[/#if]" title="Accept recommended location"></div>
-         <input type="hidden" class="recommendedSelected" name="${customName}.selected" value="true"/>
-          [#if element.locElement.locElementType.id==2 ]
-            <span class="hidden isoAlpha">${(element.locElement.isoAlpha2)!}</span>
-          [/#if]
-        [#else]
-        <input type="hidden" class="recommendedSelected" name="${customName}.selected" value="false"/>
-        <div class="notAcceptLocation [#if editable]iconSelected[/#if]" title="Accept recommended location"></div>
+      [#if element.locElement??]
+        <input type="checkbox" class="recommendedSelected pull-right" name="${customName}.selected" value="true" [#if element.selected]checked[/#if]/>
+        [#if element.locElement.locElementType.id==2 ]
+          <span class="hidden isoAlpha">${(element.locElement.isoAlpha2)!}</span>
         [/#if]
-         [/#if]
-         
-         [#if element.locElementType??]
-        [#if element.selected]
-        <div class="acceptLocation [#if editable]iconSelected[/#if]" title="Accept recommended location"></div>
-         <input type="hidden" class="recommendedSelected" name="${customName}.selected" value="true"/>  
-        [#else]
-        <input type="hidden" class="recommendedSelected" name="${customName}.selected" value="false"/>
-        <div class="notAcceptLocation [#if editable]iconSelected[/#if]" title="Accept recommended location"></div>
-        [/#if]
-         [/#if]
+      [/#if]
+      [#if element.locElementType??]
+        <input type="checkbox" class="recommendedSelected pull-right" name="${customName}.selected" value="true" [#if element.selected]checked[/#if]/>  
+      [/#if]
     </div>
     
     <div class="col-md-12 fundingContent">
