@@ -79,8 +79,10 @@
                   <hr />
                 </div>
                 <div class="form-group col-md-12">
-                  [@customForm.yesNoInput  label="Does this Project have a regional dimension?" name="project.locationRegional"   editable=editable inverse=false  cssClass="isRegional" /]
+                  [@customForm.yesNoInput  label="Does this Project have a regional dimension?" name="project.locationRegional"   editable=editable && action.hasSpecificities("crp_other_locations") inverse=false  cssClass="isRegional" /]
+                  [#if editable && action.hasSpecificities("crp_other_locations")]
                   <small style="color: #337ab7;">Select “yes” if work under the project is addressing issues pertaining to an entire region, as opposed to or in addition to issues pertaining to specific countries within a region.</small>
+                  [/#if]
                 </div>
                  [#-- RECOMMENDED LOCATIONS --]
                  <div class="col-md-12">
@@ -120,7 +122,7 @@
                 [#-- OTHER LOCATIONS LABEL --]   
                 [#if action.hasSpecificities('crp_other_locations')]
                   <div class="col-md-12">
-                  <h5 class="sectionSubTitle">Ohter locations</h5>
+                  <h5 class="sectionSubTitle">[@s.text name="projectLocations.otherLocations" /]</h5>
                   </div>    
                       
                   [#-- REGIONS SELECT --]
@@ -130,7 +132,7 @@
                      <div class="panel-head">
                        <label for=""> [@customForm.text name="projectCofunded.selectRegions" readText=!editable /]:[@customForm.req required=editable /]</label>
                        <br />
-                       <small style="color: #337ab7;">(Standart regions are defined by United Nations)</small>
+                       <small style="color: #337ab7;">([@s.text name="projectLocations.standardLocations" /])</small>
                      </div>
                      
                       <div id="regionList" class="panel-body" listname="project.projectRegions"> 
@@ -197,7 +199,7 @@
                           [@locationLevel element=locationLevels name="${locationLevelName}" index=locationLevels_index list=locationLevels.list?? && locationLevels.list /]
                         [/#list]
                       [#else]
-                      <p class="text-center borderBox inf">There is not locations added, please use the map to add new locations.</p>
+                      <p class="text-center borderBox inf">No locations has been added, please use the map to add new locations.</p>
                       [/#if]
                     </div>
                   </div>
