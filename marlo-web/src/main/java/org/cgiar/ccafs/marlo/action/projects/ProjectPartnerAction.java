@@ -1536,7 +1536,7 @@ public class ProjectPartnerAction extends BaseAction {
       // Notifying user that is not the project leader anymore
       this.notifyRoleUnassigned(previousPartnerPerson.getUser(), role);
     } else if (previousPartnerPerson != null && partnerPerson != null && partnerPerson.getUser() != null
-      && partnerPerson.getUser().getId() != null) {
+      && partnerPerson.getUser().getId() != null && previousPartnerPerson.getUser() != null) {
       if (!partnerPerson.getUser().getId().equals(previousPartnerPerson.getUser().getId())) {
         UserRole userRole = new UserRole();
         userRole.setRole(role);
