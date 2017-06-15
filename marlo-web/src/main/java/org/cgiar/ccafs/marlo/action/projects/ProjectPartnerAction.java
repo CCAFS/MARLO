@@ -361,25 +361,6 @@ public class ProjectPartnerAction extends BaseAction {
     return transaction;
   }
 
-  public boolean isPPA(Institution institution) {
-    if (institution == null) {
-      return false;
-    }
-
-    if (institution.getId() != null) {
-      institution = institutionManager.getInstitutionById(institution.getId());
-      if (institution != null) {
-        if (institution.getCrpPpaPartners().stream()
-          .filter(c -> c.getCrp().getId().longValue() == loggedCrp.getId().longValue() && c.isActive())
-          .collect(Collectors.toList()).size() > 0) {
-          return true;
-        }
-      }
-
-    }
-
-    return false;
-  }
 
   /**
    * This method will validate if the user is deactivated. If so, it will send an email indicating the credentials to
@@ -1555,7 +1536,7 @@ public class ProjectPartnerAction extends BaseAction {
       // Notifying user that is not the project leader anymore
       this.notifyRoleUnassigned(previousPartnerPerson.getUser(), role);
     } else if (previousPartnerPerson != null && partnerPerson != null && partnerPerson.getUser() != null
-      && partnerPerson.getUser().getId() != null) {
+      && partnerPerson.getUser().getId() != null && previousPartnerPerson.getUser() != null) {
       if (!partnerPerson.getUser().getId().equals(previousPartnerPerson.getUser().getId())) {
         UserRole userRole = new UserRole();
         userRole.setRole(role);
