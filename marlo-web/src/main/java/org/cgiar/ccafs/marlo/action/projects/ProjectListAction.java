@@ -385,7 +385,7 @@ public class ProjectListAction extends BaseAction {
         }
         allProjects = new ArrayList<>();
 
-        allProjects.addAll(myProjects);
+
       } else {
 
         allProjects = new ArrayList<>();

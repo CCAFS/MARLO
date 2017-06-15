@@ -67,7 +67,7 @@ public class InstitutionsByBudgetTypeAction extends BaseAction {
     List<Institution> allInstitutions = null;
 
 
-    if (budgetTypeID == 1 || budgetTypeID == 4) {
+    if (budgetTypeID == 4) {
       allInstitutions = institutionManager.findAll();
       for (Institution institutionObject : allInstitutions) {
         // validate if the institutions is PPA
@@ -79,8 +79,15 @@ public class InstitutionsByBudgetTypeAction extends BaseAction {
 
 
     } else {
-      institutionsType = institutionManager.findAll().stream()
-        .filter(i -> i.isActive() && i.getInstitutionType().getId().intValue() != 3).collect(Collectors.toList());
+
+      if (budgetTypeID == 1) {
+        institutionsType = institutionManager.findAll().stream()
+          .filter(i -> i.isActive() && i.getInstitutionType().getId().intValue() == 3).collect(Collectors.toList());
+      } else {
+        institutionsType = institutionManager.findAll().stream()
+          .filter(i -> i.isActive() && i.getInstitutionType().getId().intValue() != 3).collect(Collectors.toList());
+      }
+
 
     }
 

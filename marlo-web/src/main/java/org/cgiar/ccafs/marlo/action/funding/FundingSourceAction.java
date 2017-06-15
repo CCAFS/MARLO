@@ -453,8 +453,7 @@ public class FundingSourceAction extends BaseAction {
       }
 
       if (fundingSource.getBudgetType() != null) {
-        if (fundingSource.getBudgetType().getId().longValue() == 1
-          || fundingSource.getBudgetType().getId().longValue() == 4) {
+        if (fundingSource.getBudgetType().getId().longValue() == 4) {
           List<Institution> allInstitutions = null;
           institutionsDonors = new ArrayList<>();
           allInstitutions = institutionManager.findAll();
@@ -467,8 +466,14 @@ public class FundingSourceAction extends BaseAction {
           }
 
         } else {
-          institutionsDonors = institutionManager.findAll().stream()
-            .filter(i -> i.isActive() && i.getInstitutionType().getId().intValue() != 3).collect(Collectors.toList());
+          if (fundingSource.getBudgetType().getId().longValue() == 1) {
+            institutionsDonors = institutionManager.findAll().stream()
+              .filter(i -> i.isActive() && i.getInstitutionType().getId().intValue() == 3).collect(Collectors.toList());
+          } else {
+            institutionsDonors = institutionManager.findAll().stream()
+              .filter(i -> i.isActive() && i.getInstitutionType().getId().intValue() != 3).collect(Collectors.toList());
+          }
+
         }
       } else {
         institutionsDonors =
