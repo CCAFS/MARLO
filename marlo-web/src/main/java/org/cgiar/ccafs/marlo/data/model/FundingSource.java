@@ -194,9 +194,9 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   public String getComposedName() {
     try {
-      return "<b> (F" + this.id + ") " + this.getBudgetType().getName() + "</b> - " + this.title;
+      return "<b> (FS" + this.id + ") " + this.getBudgetType().getName() + "</b> - " + this.title;
     } catch (Exception e) {
-      return "<b> (F" + this.id + ") </b> - " + this.title;
+      return "<b> (FS" + this.id + ") </b> - " + this.title;
     }
   }
 
