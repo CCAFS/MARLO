@@ -525,8 +525,8 @@ public class FundingSourceAction extends BaseAction {
         fundingSource.setInstitutions(new ArrayList<>(fundingSource.getFundingSourceInstitutions().stream()
           .filter(pb -> pb.isActive()).collect(Collectors.toList())));
 
-        fundingSource.setProjectBudgetsList(
-          fundingSource.getProjectBudgets().stream().filter(pb -> pb.isActive()).collect(Collectors.toList()));
+        fundingSource.setProjectBudgetsList(fundingSource.getProjectBudgets().stream()
+          .filter(pb -> pb.isActive() && pb.getProject().isActive()).collect(Collectors.toList()));
 
         /*
          * Funding source Locations

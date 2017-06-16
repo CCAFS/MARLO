@@ -598,9 +598,11 @@ public class ProjectLocationAction extends BaseAction {
               }
             }
             if (!co.getFundingSources().stream()
-              .filter(c -> c.isActive() && c.getProjectBudgets().stream()
-                .filter(fp -> fp.isActive() && fp.getProject().getId().longValue() == projectID)
-                .collect(Collectors.toList()).size() > 0)
+              .filter(
+                c -> c.isActive() && c.getProjectBudgets().stream()
+                  .filter(fp -> fp.isActive() && fp.getProject().getId().longValue() == projectID
+                    && fp.getProject().isActive())
+                  .collect(Collectors.toList()).size() > 0)
               .collect(Collectors.toList()).isEmpty()) {
               reCountryFundingSources.add(co);
             }
@@ -628,9 +630,11 @@ public class ProjectLocationAction extends BaseAction {
               }
             }
             if (!co.getFundingSources().stream()
-              .filter(c -> c.isActive() && c.getProjectBudgets().stream()
-                .filter(fp -> fp.isActive() && fp.getProject().getId().longValue() == projectID)
-                .collect(Collectors.toList()).size() > 0)
+              .filter(
+                c -> c.isActive() && c.getProjectBudgets().stream()
+                  .filter(fp -> fp.isActive() && fp.getProject().getId().longValue() == projectID
+                    && fp.getProject().isActive())
+                  .collect(Collectors.toList()).size() > 0)
               .collect(Collectors.toList()).isEmpty()) {
               coCountryFundingSources.add(co);
             }
