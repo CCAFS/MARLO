@@ -600,8 +600,8 @@ public class ProjectLocationAction extends BaseAction {
             if (!co.getFundingSources().stream()
               .filter(
                 c -> c.isActive() && c.getProjectBudgets().stream()
-                  .filter(fp -> fp.isActive() && fp.getProject().getId().longValue() == projectID
-                    && fp.getProject().isActive())
+                  .filter(fp -> fp.isActive() && fp.getProject().isActive()
+                    && fp.getProject().getId().longValue() == projectID)
                   .collect(Collectors.toList()).size() > 0)
               .collect(Collectors.toList()).isEmpty()) {
               reCountryFundingSources.add(co);
@@ -632,8 +632,8 @@ public class ProjectLocationAction extends BaseAction {
             if (!co.getFundingSources().stream()
               .filter(
                 c -> c.isActive() && c.getProjectBudgets().stream()
-                  .filter(fp -> fp.isActive() && fp.getProject().getId().longValue() == projectID
-                    && fp.getProject().isActive())
+                  .filter(fp -> fp.isActive() && fp.getProject().isActive()
+                    && fp.getProject().getId().longValue() == projectID)
                   .collect(Collectors.toList()).size() > 0)
               .collect(Collectors.toList()).isEmpty()) {
               coCountryFundingSources.add(co);
@@ -789,7 +789,8 @@ public class ProjectLocationAction extends BaseAction {
 
 
     List<ProjectBudget> projectBudgets = new ArrayList<>(projectDB.getProjectBudgets().stream()
-      .filter(pb -> pb.isActive() && pb.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList()));
+      .filter(pb -> pb.isActive() && pb.getYear() == this.getCurrentCycleYear() && pb.getProject().isActive())
+      .collect(Collectors.toList()));
 
     List<FundingSource> fundingSources = new ArrayList<>();
     for (ProjectBudget projectBudget : projectBudgets) {
