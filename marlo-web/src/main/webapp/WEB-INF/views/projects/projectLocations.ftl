@@ -403,25 +403,28 @@
 [#macro recommendedLocation element  name index template=false ]
   [#local customName = "${name}[${index}]" /]
   [#-- Content collapsible--]
-  <div id="recommendedLocation-${template?string('template',index)}" class="col-md-4 recommended locElement" style="display:${template?string('none','block')}">
+    
+  <div id="recommendedLocation-${template?string('template',index)}" class="col-md-4 recommended locElement [#if !editable]${((element.selected)?string('', 'hidden'))!}[/#if]" style="display:${template?string('none','block')}">
+    
+    
     <div class="locations col-md-12">
       [#-- Location Name --]
       <div class="recommendedLocName pull-left">
-      [#if element.locElement??]
-        <input type="hidden" class="elementID" name="${customName}.locElement.id" value="${(element.locElement.id)!}"/>
-        <input type="hidden" class="locScope" name="${customName}.scope" value="${(element.locElement.locElementType.scope?c)!}"/>
-        <span class="lName">
-        [#assign miniName= (element.locElement.name)!""]
-        <b title="${(element.locElement.name)!}">[#if miniName?length < 23]${miniName}[#else]${miniName?substring(0,22)} ...[/#if]</b>
-        </span> 
-      [#else]
-        <input type="hidden" class="elementID" name="${customName}.locElementType.id" value="${(element.locElementType.id)!}"/>
-        <input type="hidden" class="locScope" name="${customName}.scope" value="${(element.locElementType.scope?c)!}"/>
-        <span class="lName">
-        [#assign miniName= (element.locElementType.name)!""]
-        <b title="${(element.locElementType.name)!}">[#if miniName?length < 23]${miniName}[#else]${miniName?substring(0,22)}...[/#if]</b>
-        </span> 
-      [/#if]
+        [#if element.locElement??]
+          <input type="hidden" class="elementID" name="${customName}.locElement.id" value="${(element.locElement.id)!}"/>
+          <input type="hidden" class="locScope" name="${customName}.scope" value="${(element.locElement.locElementType.scope?c)!}"/>
+          <span class="lName">
+          [#assign miniName= (element.locElement.name)!""]
+          <b title="${(element.locElement.name)!}">[#if miniName?length < 23]${miniName}[#else]${miniName?substring(0,22)} ...[/#if]</b>
+          </span> 
+        [#else]
+          <input type="hidden" class="elementID" name="${customName}.locElementType.id" value="${(element.locElementType.id)!}"/>
+          <input type="hidden" class="locScope" name="${customName}.scope" value="${(element.locElementType.scope?c)!}"/>
+          <span class="lName">
+          [#assign miniName= (element.locElementType.name)!""]
+          <b title="${(element.locElementType.name)!}">[#if miniName?length < 23]${miniName}[#else]${miniName?substring(0,22)}...[/#if]</b>
+          </span> 
+        [/#if]
       </div>  
        
       [#-- Check Icon --]
@@ -447,13 +450,12 @@
     </div>
     
     <div class="col-md-12 fundingContent">
-    [#if element.fundingSources?has_content]
-      [#list element.fundingSources as fs]
-        <span style="font-size:0.7em;">${fs.composedName}</span>
-        <br />
-      [/#list]
-    [/#if]
+      [#if element.fundingSources?has_content]
+        [#list element.fundingSources as fs]
+          <span style="font-size:0.7em;">${fs.composedName}</span><br />
+        [/#list]
+      [/#if]
     </div>
-    [#-- Hidden inputs --]
+     
   </div>
 [/#macro]
