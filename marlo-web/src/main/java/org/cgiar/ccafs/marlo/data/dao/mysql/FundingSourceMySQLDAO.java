@@ -165,7 +165,7 @@ public class FundingSourceMySQLDAO implements FundingSourceDAO {
     query.append("INNER JOIN project_budgets ON project_budgets.funding_source_id = funding_sources.id ");
     query.append("WHERE ");
     query.append("funding_source_locations.loc_element_id =" + locElementId + "   AND funding_sources.crp_id=" + crpID
-      + "  AND  funding_source_locations.is_active=1 and ");
+      + " AND project_budgets.project_id=" + projectId + "  AND  funding_source_locations.is_active=1 and ");
     query.append("project_budgets.is_active = 1 AND  ");
     query.append("project_budgets.`year` =" + year);
 
@@ -199,7 +199,7 @@ public class FundingSourceMySQLDAO implements FundingSourceDAO {
     query.append("INNER JOIN project_budgets ON project_budgets.funding_source_id = funding_sources.id ");
     query.append("WHERE ");
     query.append("funding_source_locations.loc_element_type_id =" + locElementTypeId + " AND funding_sources.crp_id="
-      + crpID + "  AND  funding_source_locations.is_active=1 and ");
+      + crpID + " AND project_budgets.project_id=" + projectId + "  AND  funding_source_locations.is_active=1 and ");
     query.append("project_budgets.is_active = 1 AND  ");
     query.append("project_budgets.`year` =" + year);
 

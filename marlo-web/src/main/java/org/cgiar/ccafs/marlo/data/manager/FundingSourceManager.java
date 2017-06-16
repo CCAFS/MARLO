@@ -103,6 +103,7 @@ public interface FundingSourceManager {
    * @param year - the year
    * @return the list of FundingSource
    */
+
   public List<FundingSource> searchFundingSourcesByLocElement(long projectId, long locElementId, int year, long crpID);
 
   /**
@@ -113,6 +114,7 @@ public interface FundingSourceManager {
    * @param year - the year
    * @return the list of FundingSource
    */
+
   public List<FundingSource> searchFundingSourcesByLocElementType(long projectId, long locElementTypeId, int year,
     long crpID);
 

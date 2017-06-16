@@ -820,6 +820,7 @@ public class ProjectLocationAction extends BaseAction {
         project.setLocationGlobal(project.isLocationGlobal() || fundingSource.isGlobal());
 
       }
+      // Filter The Fundign Source Location Acroding
       List<FundingSourceLocation> fundingSourceLocations = new ArrayList<>(
         fundingSource.getFundingSourceLocations().stream().filter(fs -> fs.isActive()).collect(Collectors.toList()));
 
