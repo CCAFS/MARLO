@@ -57,6 +57,7 @@ public class UserMySQLDAO implements UserDAO {
 
   @Override
   public User getUser(String email) {
+    // validate the email on lower charters
     String query = "select * from users where LOWER(email)= '" + email.toLowerCase() + "'";
     List<Map<String, Object>> users = dao.findCustomQuery(query);
     if (users.size() > 0) {
