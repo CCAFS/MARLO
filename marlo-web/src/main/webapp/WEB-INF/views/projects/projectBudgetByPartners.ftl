@@ -280,7 +280,7 @@
           <div class="row"><strong>Amount:</strong></div>
         </div>
         <div class="row col-md-9">
-        [#if (editable && isYearEditable(selectedYear) && action.canEditFunding(((element.fundingSource.budgetType.id)!-1),(element.institution.id)!-1) )|| isTemplate]
+        [#if (editable && isYearEditable(selectedYear) && (action.canEditFunding(((element.fundingSource.budgetType.id)!-1),(element.institution.id)!-1)||action.canSearchFunding(element.institution.id) ))|| isTemplate]
           [@customForm.input name="${customName}.amount" i18nkey="budget.amount" showTitle=false className="currencyInput fundInput type-${(element.fundingSource.budgetType.id)!'none'}" required=true /]
         [#else]
           <div class="input"><p>US$ <span>${((element.amount)!0)?number?string(",##0.00")}</span></p></div>
@@ -292,7 +292,7 @@
         [#if project.projectEditLeader && action.hasSpecificities('crp_budget_gender')]
           <div class="row col-md-6"> <div class="row"><strong>Gender %:</strong></div> </div>
           <div class="row col-md-7">
-          [#if (editable && isYearEditable(selectedYear)) || isTemplate]
+          [#if (editable && isYearEditable(selectedYear) && action.canSearchFunding(element.institution.id)) || isTemplate]
             [@customForm.input name="${customName}.genderPercentage" i18nkey="budget.genderPercentage" showTitle=false className="percentageInput type-${(element.fundingSource.budgetType.id)!'none'}" required=true   /]
           [#else]  
             <div class="input"><p><span>${((element.genderPercentage)!0)}%</span></p></div>
