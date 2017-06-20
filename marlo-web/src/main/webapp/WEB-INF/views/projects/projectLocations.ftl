@@ -73,14 +73,14 @@
                 
                 [#-- GLOBAL DIMENSION --]
                 <div class="form-group  col-md-12">
-                  [@customForm.yesNoInput  label="Does this Project have a global dimension?" name="project.locationGlobal"  editable=editable inverse=false  cssClass="" /] 
+                  [@customForm.yesNoInput  label="projectLocations.globalDimension" name="project.locationGlobal"  editable=editable && action.hasSpecificities("crp_other_locations") inverse=false  cssClass="" /] 
                 </div>
                 <br />
                 <div class="form-group col-md-12 ">
                   <hr />
                 </div>
                 <div class="form-group col-md-12">
-                  [@customForm.yesNoInput  label="Does this Project have a regional dimension?" name="project.locationRegional"   editable=editable && action.hasSpecificities("crp_other_locations") inverse=false  cssClass="isRegional" /]
+                  [@customForm.yesNoInput  label="projectLocations.regionalDimension" name="project.locationRegional"   editable=editable && action.hasSpecificities("crp_other_locations") inverse=false  cssClass="isRegional" /]
                   [#if editable && action.hasSpecificities("crp_other_locations")]
                     <small style="color: #337ab7;">[@s.text name="projectLocations.regionsNote" /] </small>
                   [/#if]
@@ -403,10 +403,7 @@
 [#macro recommendedLocation element  name index template=false ]
   [#local customName = "${name}[${index}]" /]
   [#-- Content collapsible--]
-    
   <div id="recommendedLocation-${template?string('template',index)}" class="col-md-4 recommended locElement [#if !editable]${((element.selected)?string('', 'hidden'))!}[/#if]" style="display:${template?string('none','block')}">
-    
-    
     <div class="locations col-md-12">
       [#-- Location Name --]
       <div class="recommendedLocName pull-left">
