@@ -82,6 +82,9 @@ public final class APConstants {
   public static final String CUSTOM_LAGUAGE = "en";
   public static final String CRP_CLUSTER_LEADER = "crp_cluster_leader";
 
+  // Email parameters to copy to FL FM CL
+  public static final String CRP_EMAIL_CC_FL_FM_CL = "crp_email_cc_fl_fm_cl";
+
   public static final String CYCLE = "cycle";
   // Date Formats
   public static final String DATE_FORMAT = "yyyy-MM-dd";
