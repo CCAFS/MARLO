@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -57,10 +57,11 @@ public class UserMySQLDAO implements UserDAO {
 
   @Override
   public User getUser(String email) {
-    String query = "from " + User.class.getName() + " where email= '" + email + "'";
-    List<User> users = dao.findAll(query);
+    // validate the email on lower charters
+    String query = "select * from users where LOWER(email)= '" + email.toLowerCase() + "'";
+    List<Map<String, Object>> users = dao.findCustomQuery(query);
     if (users.size() > 0) {
-      return users.get(0);
+      return this.getUser(Long.parseLong(users.get(0).get("id").toString()));
     }
     return null;
   }

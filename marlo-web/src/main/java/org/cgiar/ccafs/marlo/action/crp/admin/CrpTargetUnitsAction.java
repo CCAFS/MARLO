@@ -66,7 +66,7 @@ public class CrpTargetUnitsAction extends BaseAction {
   }
 
   public boolean canBeDeletedCrptargetUnit(long id, String className) {
-    Class clazz;
+    Class<?> clazz;
     try {
       clazz = Class.forName(className);
 
