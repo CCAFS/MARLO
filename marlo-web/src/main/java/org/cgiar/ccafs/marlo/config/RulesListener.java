@@ -24,7 +24,7 @@ import org.easyrules.core.RulesEngineBuilder;
 
 public class RulesListener implements ServletContextListener {
 
-  private static Class clazz = RulesEngine.class;
+  private static Class<?> clazz = RulesEngine.class;
   public static final String KEY_NAME = clazz.getName();
 
   @Override

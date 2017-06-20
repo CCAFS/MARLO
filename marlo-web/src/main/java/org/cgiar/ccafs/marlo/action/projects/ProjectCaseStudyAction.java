@@ -343,7 +343,7 @@ public class ProjectCaseStudyAction extends BaseAction {
 
 
     List<IpIndicator> listIndicators = ipIndicatorManager.getIndicatorsFlagShips();
-    caseStudyIndicators = new HashMap();
+    caseStudyIndicators = new HashMap<>();
     for (IpIndicator ipIndicator : listIndicators) {
       caseStudyIndicators.put(String.valueOf(ipIndicator.getId()), ipIndicator.getDescription());
     }
@@ -363,10 +363,9 @@ public class ProjectCaseStudyAction extends BaseAction {
     if (projectManager.findAll() != null) {
 
       if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin()) {
-        myProjects =
-          loggedCrp.getProjects().stream()
-            .filter(p -> p.isActive()
-              && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
+        myProjects = loggedCrp.getProjects().stream()
+          .filter(
+            p -> p.isActive() && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
           .collect(Collectors.toList());
         myProjects.remove(project);
       } else {
