@@ -47,11 +47,10 @@
           <h3 class="headTitle"> Project Contribution </h3>
           [#-- Outcomen name --]
           [#assign showOutcomeValue = projectOutcome.crpProgramOutcome.srfTargetUnit??  && projectOutcome.crpProgramOutcome.srfTargetUnit.id?? && (projectOutcome.crpProgramOutcome.srfTargetUnit.id != -1) /]
-          [#if editable]
-           <div class="note">
-             [@s.text name="contribution.message" /]
-            </div>
-            [/#if]
+          [#assign pimText][@s.text name="contribution.message" /][/#assign]
+          [#if editable && pimText?has_content]
+           <div class="note">${pimText}</div>
+          [/#if]
           <div class="grayBox">
           
           
