@@ -269,7 +269,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
     }
 
 
-    if (action.getCrpID().intValue() != 5) {
+    if (action.hasSpecificities(APConstants.CRP_NEXT_USERS)) {
       if (projectOutcome.getNextUsers() != null && projectOutcome.getNextUsers().size() > 0) {
         for (int i = 0; i < projectOutcome.getNextUsers().size(); i++) {
           this.validateProjectNextUser(action, projectOutcome.getNextUsers().get(i), i);

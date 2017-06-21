@@ -213,7 +213,7 @@
           
           [#-- Next Users --]
           [#-- For A4NH CRP, nextusers aren't required --]
-          [#if !(crpSession == "a4nh")]
+          [#if action.hasSpecificities('crp_next_users')]
           <h4 class="headTitle">(Next) Users </h4>
           <div class="nextUsersBlock borderBox">
             <div class="nextUsersList">
