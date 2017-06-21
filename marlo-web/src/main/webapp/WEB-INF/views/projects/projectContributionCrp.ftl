@@ -47,8 +47,14 @@
           <h3 class="headTitle"> Project Contribution </h3>
           [#-- Outcomen name --]
           [#assign showOutcomeValue = projectOutcome.crpProgramOutcome.srfTargetUnit??  && projectOutcome.crpProgramOutcome.srfTargetUnit.id?? && (projectOutcome.crpProgramOutcome.srfTargetUnit.id != -1) /]
-          
+          [#if editable]
+           <div class="note">
+             [@s.text name="contribution.message" /]
+            </div>
+            [/#if]
           <div class="grayBox">
+          
+          
             <div class="col-md-12">
               <strong>${(projectOutcome.crpProgramOutcome.crpProgram.acronym)!} - Outcome ${(projectOutcome.crpProgramOutcome.year)!}</strong>: ${projectOutcome.crpProgramOutcome.description}
             </div>
