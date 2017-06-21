@@ -183,7 +183,7 @@
             [#list budgetTypesList as budgetType]
               [#-- Budget Type--]
               <td class="budgetColumn">
-                <div class="input"><p>US$ <span class="currencyInput totalByPartner-${budgetType.id}">${((action.getTotalAmount(element.institution.id, selectedYear, budgetType.id))!0)?number?string(",##0.00")}</span></p></div>
+                <div class="input"><p>US$ <span class="currencyInput totalByPartner-${budgetType.id}">${((action.getTotalAmount(element.institution.id, selectedYear, budgetType.id,1))!0)?number?string(",##0.00")}</span></p></div>
               </td>
             [/#list]
           </tr>
@@ -194,9 +194,9 @@
             [#list budgetTypesList as budgetType]
               [#-- Budget Type--]
               <td class="budgetColumn">
-                <div class="input"><p><span class="percentageLabel type-${budgetType.id}">${((action.getTotalGenderPer(element.institution.id, selectedYear, budgetType.id))!0)}%</span></p></div>
+                <div class="input"><p><span class="percentageLabel type-${budgetType.id}">${((action.getTotalGenderPer(element.institution.id, selectedYear, budgetType.id,1))!0)}%</span></p></div>
                 <div class="row percentageAmount type-${budgetType.id} text-center">
-                  <small>US$ <span>${((action.getTotalGender(element.institution.id, selectedYear, budgetType.id))!0)?number?string(",##0.00")}</span></small>
+                  <small>US$ <span>${((action.getTotalGender(element.institution.id, selectedYear, budgetType.id,1))!0)?number?string(",##0.00")}</span></small>
                 </div>
               </td>
             [/#list]
@@ -272,7 +272,9 @@
       <div class="col-md-4">
         <div class="row col-md-6"> <strong>Type:</strong> </div>
         <div class="row col-md-8">
-          <span class="budgetTypeName">${(element.fundingSource.budgetType.name)!}</span> 
+          <span class="budgetTypeName">${(element.fundingSource.budgetType.name)!} 
+            [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')] ${(element.fundingSource.w1w2?string('<small class="text-primary">(Co-Financing)</small>',''))!} [/#if]
+          </span> 
           <input type="hidden" class="budgetTypeId" name="${customName}.budgetType.id" value="${(element.fundingSource.budgetType.id)!}" />
         </div>
       </div>

@@ -386,10 +386,10 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
         .collect(Collectors.toList())) {
         // System.out.println(pp.getInstitution().getComposedName());
         if (this.isPPA(pp.getInstitution())) {
-          totalW1w2Gender += this.getTotalGender(pp.getInstitution().getId(), year, 1, project);
-          totalW3Gender += this.getTotalGender(pp.getInstitution().getId(), year, 2, project);
-          totalBilateralGender += this.getTotalGender(pp.getInstitution().getId(), year, 3, project);
-          totalCenterGender += this.getTotalGender(pp.getInstitution().getId(), year, 4, project);
+          totalW1w2Gender += this.getTotalGender(pp.getInstitution().getId(), year, 1, project, 1);
+          totalW3Gender += this.getTotalGender(pp.getInstitution().getId(), year, 2, project, 1);
+          totalBilateralGender += this.getTotalGender(pp.getInstitution().getId(), year, 3, project, 1);
+          totalCenterGender += this.getTotalGender(pp.getInstitution().getId(), year, 4, project, 1);
         }
       }
 
@@ -611,10 +611,10 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
    * @param budgetType
    * @return
    */
-  public double getTotalGender(long institutionId, int year, long budgetType, Project project) {
+  public double getTotalGender(long institutionId, int year, long budgetType, Project project, Integer coFinancing) {
 
     List<ProjectBudget> budgets =
-      projectBudgetManager.getByParameters(institutionId, year, budgetType, project.getId());
+      projectBudgetManager.getByParameters(institutionId, year, budgetType, project.getId(), coFinancing);
 
     double totalGender = 0;
     if (budgets != null) {

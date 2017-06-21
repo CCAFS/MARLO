@@ -67,6 +67,9 @@
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>
+		<property name="w1w2" type="java.lang.Boolean">
+      <column name="w1w2"  default="0"/>
+    </property>
 		<property name="global" type="boolean">
       <column name="global" not-null="true" />
     </property>
@@ -123,4 +126,3 @@
     </set>
 	</class>
 </hibernate-mapping>
-

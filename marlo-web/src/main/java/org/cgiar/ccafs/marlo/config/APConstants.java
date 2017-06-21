@@ -64,7 +64,12 @@ public final class APConstants {
   public static final String CRP_PARAMETERS = "crp_parameters";
   public static final String CRP_PARTNER_CONTRIBUTIONS = "crp_partner_contribution";
 
+
   public static final String CRP_PC_ROLE = "crp_pc_rol";
+
+
+  public static final String CRP_FS_W1W2_COFINANCING = "crp_fs_w1w2_cofinancing";
+
   public static final String CRP_PL_ROLE = "crp_pl_rol";
   public static final String CRP_PLANNING_ACTIVE = "crp_planning_active";
   public static final String CRP_PLANNING_YEAR = "crp_planning_year";
@@ -349,4 +354,6 @@ public final class APConstants {
     return FILTER_BY;
   }
 
+
 }
+
