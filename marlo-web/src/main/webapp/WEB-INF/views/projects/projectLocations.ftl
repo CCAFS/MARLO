@@ -449,6 +449,7 @@
     <div class="col-md-12 fundingContent">
       [#if element.fundingSources?has_content]
         [#list element.fundingSources as fs]
+          [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')] ${(fs.w1w2?string('<small class="text-primary">(Co-Financing)</small>',''))!} [/#if]
           <span style="font-size:0.7em;">${fs.composedName}</span><br />
         [/#list]
       [/#if]
