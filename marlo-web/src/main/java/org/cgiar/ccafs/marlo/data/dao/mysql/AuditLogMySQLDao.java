@@ -162,7 +162,7 @@ public class AuditLogMySQLDao implements AuditLogDao {
   }
 
   @Override
-  public List<Auditlog> listLogs(Class classAudit, long id, String actionName) {
+  public List<Auditlog> listLogs(Class<?> classAudit, long id, String actionName) {
 
     List<Auditlog> auditLogs = dao.findAll(
       "from " + Auditlog.class.getName() + " where ENTITY_NAME='class " + classAudit.getName() + "' and ENTITY_ID=" + id
@@ -188,7 +188,7 @@ public class AuditLogMySQLDao implements AuditLogDao {
         .registerTypeAdapter(Float.class, new FloatTypeAdapter())
         .registerTypeAdapter(BigDecimal.class, new BigDecimalTypeAdapter())
         .registerTypeAdapter(Date.class, new DateTypeAdapter()).create();
-      Class classToCast = Class.forName(auditlog.getEntityName().replace("class ", ""));
+      Class<?> classToCast = Class.forName(auditlog.getEntityName().replace("class ", ""));
       IAuditLog iAuditLog = (IAuditLog) gson.fromJson(auditlog.getEntityJson(), classToCast);
 
       return iAuditLog;

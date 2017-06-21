@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "PPA Partners" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
-[#assign pageLibs = ["bootstrap-select"] /]
+[#assign pageLibs = ["select2"] /]
 [#assign customJS = [ "${baseUrl}/js/admin/ppaPartners.js","${baseUrl}/js/global/fieldsValidation.js" ] /]
 [#assign customCSS = [ "${baseUrl}/css/admin/ppaPartners.css" ] /]
 [#assign currentSection = "admin" /]
@@ -31,20 +31,20 @@
       </div>
       <div class="col-md-9">
         [@s.form action=actionName enctype="multipart/form-data" ]
-        <h4 class="text-center">[@s.text name="ppaPartners.title" /]</h4>
+        <h4 class="sectionTitle">[@s.text name="ppaPartners.title" /]</h4>
         <div class=" borderBox formWrapper " listname="loggedCrp.crpInstitutionsPartners">
             [#-- PPA Partners --]
   	      	<div  id="partnerContent" class="" >
   	      		[#list loggedCrp.crpInstitutionsPartners as ppaPartners]
   	      			[@intitutionMacro ppaPartners=ppaPartners index=institution_index /]
-  	      		 [/#list]
+  	      	  [/#list]
   	      	</div>
   	      	[#--Select an institution --]
-  	      	[#if editable]  	      	
+  	      	[#if editable]
+  	      	<hr />
         		<div class="form-group">
-        		<div class="clearfix"></div>
-        		<label >Select an institution:</label>
-        		  [@customForm.select name="" showTitle=false placeholder="form.select.placeholder" className="selectpicker col-md-12" listName="institutions" keyFieldName="id" displayFieldName="composedName" editable=true  /]
+        		  <label >Select an institution:</label>
+        		  [@customForm.select name="" showTitle=false listName="" keyFieldName="" displayFieldName="" header=false editable=true  /]
       			</div>
       			[/#if]
       	</div>
@@ -70,21 +70,31 @@
   </div>
 </section>
 
+[#-- Institutions array --]
+<ul style="display:none">
+[#list institutions as institution]
+  <li id="institutionArray-${(institution)!}">${(institution.composedName?html)!}</li>
+[/#list]
+</ul>
+
+
+[#-- Partner institution --]
 [@intitutionMacro ppaPartners={} isTemplate=true /]
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]
 
 [#macro intitutionMacro ppaPartners index=0 isTemplate=false]
-	<div id="institution-${isTemplate?string('template','')}" class="institution col-md-12" style="display:${isTemplate?string('none','block')}">
-		<span class="index hidden" >${index+1}</span>
-		<span class="title col-md-11">${(ppaPartners.institution.composedName)!'Null'} </span>
+	<div id="institution-${isTemplate?string('template','')}" class="institution" style="display:${isTemplate?string('none','block')}">
+		[#-- Title --]
+		<span class="title ">${(ppaPartners.institution.composedName)!'Null'} </span>
+		[#-- Hidden inputs --]
 		<input class="institutionId" type="hidden" name="loggedCrp.crpInstitutionsPartners[${index}].institution.id" value="${(ppaPartners.institution.id)!'null'}"/>
 		<input class="id" type="hidden" name="loggedCrp.crpInstitutionsPartners[${index}].id" value="${(ppaPartners.id)!}"/>
 		[#if editable && ppaPartners?hasContent && action.canBeDeleted(ppaPartners.id,ppaPartners.class.name) ]
-		<span class="delete col-md-1 glyphicon glyphicon-remove red" ></span>
+		  <span class="glyphicon glyphicon-remove pull-right remove-userItem delete red" aria-hidden="true"></span>
 		[/#if]
 		[#if  !ppaPartners?hasContent]
-		  <span class="delete col-md-1 glyphicon glyphicon-remove red" ></span>
+		  <span class="glyphicon glyphicon-remove pull-right remove-userItem delete red" aria-hidden="true"></span>
 		[/#if]
 	</div>
 [/#macro]

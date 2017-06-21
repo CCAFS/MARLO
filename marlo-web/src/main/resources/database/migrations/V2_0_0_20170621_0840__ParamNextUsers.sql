@@ -1,0 +1,8 @@
+INSERT INTO `parameters` (`id`, `key`, `description`, `format`, `default_value`, `category`) VALUES ('42','crp_next_users', 'Next Users Availabe', '1', NULL, '2');
+INSERT INTO `custom_parameters` (`parameter_id`, `crp_id`, `value`, `created_by`, `is_active`, `active_since`,`modified_by`, `modification_justification`) VALUES ('42', '1', 'true', '3', '1', CURRENT_TIMESTAMP, '1', '');
+INSERT INTO `custom_parameters` (`parameter_id`, `crp_id`, `value`, `created_by`, `is_active`, `active_since`,`modified_by`, `modification_justification`) VALUES ('42', '3', 'false', '3', '1', CURRENT_TIMESTAMP, '1', '');
+INSERT INTO `custom_parameters` (`parameter_id`, `crp_id`, `value`, `created_by`, `is_active`, `active_since`,`modified_by`, `modification_justification`) VALUES ('42', '4', 'true', '3', '1', CURRENT_TIMESTAMP, '1', '');
+INSERT INTO `custom_parameters` (`parameter_id`, `crp_id`, `value`, `created_by`, `is_active`, `active_since`,`modified_by`, `modification_justification`) VALUES ('42', '5', 'false', '3', '1', CURRENT_TIMESTAMP, '1', '');
+INSERT INTO `custom_parameters` (`parameter_id`, `crp_id`, `value`, `created_by`, `is_active`, `active_since`,`modified_by`, `modification_justification`) VALUES ('42', '7', 'true', '3', '1', CURRENT_TIMESTAMP, '1', '');
+INSERT INTO `custom_parameters` (`parameter_id`, `crp_id`, `value`, `created_by`, `is_active`, `active_since`,`modified_by`, `modification_justification`) VALUES ('42', '21', 'true', '3', '1', CURRENT_TIMESTAMP, '1', '');
+INSERT INTO `custom_parameters` (`parameter_id`, `crp_id`, `value`, `created_by`, `is_active`, `active_since`,`modified_by`, `modification_justification`) VALUES ('42', '22', 'true', '3', '1', CURRENT_TIMESTAMP, '1', '');

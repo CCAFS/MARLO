@@ -453,15 +453,35 @@ public class FundingSourceAction extends BaseAction {
       }
 
       if (fundingSource.getBudgetType() != null) {
-        if (fundingSource.getBudgetType().getId().longValue() == 1) {
+        // if the funding source is type center funds -- institutions are ppa
+        if (fundingSource.getBudgetType().getId().longValue() == 4) {
+          List<Institution> allInstitutions = null;
+          institutionsDonors = new ArrayList<>();
+          allInstitutions = institutionManager.findAll();
+          for (Institution institutionObject : allInstitutions) {
+            // validate if the institutions is PPA
+            if (this.isPPA(institutionObject)) {
+              institutionsDonors.add(institutionObject);
+            }
 
-          institutionsDonors = institutionManager.findAll().stream()
-            .filter(i -> i.isActive() && i.getInstitutionType().getId().intValue() == 3).collect(Collectors.toList());
+          }
+
         } else {
-          institutionsDonors = institutionManager.findAll().stream()
-            .filter(i -> i.isActive() && i.getInstitutionType().getId().intValue() != 3).collect(Collectors.toList());
+          // if the funding source is type w1 -- institutions are cgiar center
+          if (fundingSource.getBudgetType().getId().longValue() == 1) {
+            institutionsDonors = institutionManager.findAll().stream()
+              .filter(i -> i.isActive() && i.getInstitutionType().getId().intValue() == 3).collect(Collectors.toList());
+          } else {
+
+            // if the funding source is type bilateral -- institutions are not cgiar center
+            institutionsDonors = institutionManager.findAll().stream()
+              .filter(i -> i.isActive() && i.getInstitutionType().getId().intValue() != 3).collect(Collectors.toList());
+          }
+
         }
       } else {
+        // if the funding source don't hava a selected type -- institutions are not cgiar center
+
         institutionsDonors =
           institutionManager.findAll().stream().filter(i -> i.isActive()).collect(Collectors.toList());
       }

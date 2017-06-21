@@ -1,0 +1,8 @@
+INSERT INTO `parameters` (`id`, `key`, `description`, `format`, `default_value`, `category`) VALUES ('37','crp_email_cc_fl_fm_cl', 'Send CC email to FL, FM and CL', '1', NULL, '2');
+INSERT INTO `custom_parameters` (`parameter_id`, `crp_id`, `value`, `created_by`, `is_active`, `active_since`,`modified_by`, `modification_justification`) VALUES ('37', '1', 'true', '3', '1', CURRENT_TIMESTAMP, '1', '');
+INSERT INTO `custom_parameters` (`parameter_id`, `crp_id`, `value`, `created_by`, `is_active`, `active_since`,`modified_by`, `modification_justification`) VALUES ('37', '3', 'true', '3', '1', CURRENT_TIMESTAMP, '1', '');
+INSERT INTO `custom_parameters` (`parameter_id`, `crp_id`, `value`, `created_by`, `is_active`, `active_since`,`modified_by`, `modification_justification`) VALUES ('37', '4', 'false', '3', '1', CURRENT_TIMESTAMP, '1', '');
+INSERT INTO `custom_parameters` (`parameter_id`, `crp_id`, `value`, `created_by`, `is_active`, `active_since`,`modified_by`, `modification_justification`) VALUES ('37', '5', 'true', '3', '1', CURRENT_TIMESTAMP, '1', '');
+INSERT INTO `custom_parameters` (`parameter_id`, `crp_id`, `value`, `created_by`, `is_active`, `active_since`,`modified_by`, `modification_justification`) VALUES ('37', '7', 'true', '3', '1', CURRENT_TIMESTAMP, '1', '');
+INSERT INTO `custom_parameters` (`parameter_id`, `crp_id`, `value`, `created_by`, `is_active`, `active_since`,`modified_by`, `modification_justification`) VALUES ('37', '21', 'true', '3', '1', CURRENT_TIMESTAMP, '1', '');
+INSERT INTO `custom_parameters` (`parameter_id`, `crp_id`, `value`, `created_by`, `is_active`, `active_since`,`modified_by`, `modification_justification`) VALUES ('37', '22', 'true', '3', '1', CURRENT_TIMESTAMP, '1', '');

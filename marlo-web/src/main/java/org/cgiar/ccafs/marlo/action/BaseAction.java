@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
+import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpLiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
@@ -52,6 +53,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
@@ -149,6 +151,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   @Inject
   private AuditLogManager auditLogManager;
 
+  @Inject
+  private InstitutionManager institutionManager;
 
   private String basePermission;
 
@@ -274,7 +278,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return SUCCESS;
   }
 
-
   /**
    * This function add a flag (--warn--) to the message in order to give
    * a different style to the success message using javascript once the html is ready.
@@ -289,10 +292,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.securityContext.hasAllPermissions(Permission.FULL_PRIVILEGES);
   }
 
-
   public boolean canAcessCrp() {
     return this.canAcessPublications() || this.canAcessSynthesisMog();
   }
+
 
   public boolean canAcessCrpAdmin() {
     String permission = this.generatePermission(Permission.CRP_ADMIN_VISIBLE_PRIVILEGES, this.getCrpSession());
@@ -313,11 +316,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return securityContext.hasPermission(permission);
   }
 
-
   public boolean canAcessPublications() {
     String params[] = {this.getCrpSession()};
     return (this.hasPermission(this.generatePermission(Permission.PUBLICATION_ADD, params)));
   }
+
 
   public boolean canAcessSynthesisMog() {
     String permission = this.generatePermission(Permission.SYNTHESIS_BY_MOG_PERMISSION, this.getCrpSession());
@@ -335,7 +338,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean canBeDeleted(long id, String className) {
-    Class clazz;
+    Class<?> clazz;
     try {
       clazz = Class.forName(className);
       if (clazz == UserRole.class) {
@@ -489,11 +492,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   /* Override this method depending of the cancel action. */
   public String cancel() {
     return CANCEL;
   }
+
 
   /**
    * Verify if the project have Cluster of Activity to activate Budget by CoA
@@ -544,7 +547,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   /**
    * This method clears the cache and re-load the user permissions in the next iteration.
    */
@@ -563,6 +565,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public String delete() {
     return SUCCESS;
   }
+
 
   @Override
   public String execute() throws Exception {
@@ -591,7 +594,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return ServletActionContext.getActionMapping().getName();
   }
 
-
   public Boolean getAutoSaveFilePath(String simpleName, String actionName, long id) {
     String composedClassName = simpleName;
     String actionFile = this.getCrpSession() + "_" + actionName;
@@ -599,6 +601,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     boolean exist = Paths.get(config.getAutoSaveFolder() + autoSaveFile).toFile().exists();
     return exist;
   }
+
 
   public String getBasePermission() {
     return basePermission;
@@ -705,7 +708,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   public int getCurrentCycleYear() {
     try {
       if (this.isReportingActive()) {
@@ -757,6 +759,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return null;
   }
 
+
   public List<HistoryDifference> getDifferences() {
     return differences;
   }
@@ -803,7 +806,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public boolean getFundingSourceStatus(long fundingSourceID) {
     FundingSource fundingSource = fundingSourceManager.getFundingSourceById(fundingSourceID);
 
@@ -824,6 +826,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
   }
+
 
   public long getIFPRIId() {
     return APConstants.IFPRI_ID;
@@ -881,10 +884,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return Locale.ENGLISH;
   }
 
-
   public String getNamespace() {
     return ServletActionContext.getActionMapping().getNamespace();
   }
+
 
   /**
    * get the number of users log in in the application
@@ -932,11 +935,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public Map<String, Object> getParameters() {
     parameters = ActionContext.getContext().getParameters();
     return parameters;
   }
+
 
   public String getParameterValue(String param) {
     Object paramObj = this.getParameters().get(param);
@@ -1074,7 +1077,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                     || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
                     || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
                       || a.getStatus().intValue() == 0 || a.getStatus().intValue() == -1))))
-            .collect(Collectors.toList());
+              .collect(Collectors.toList());
         } else {
           openA = deliverables.stream()
             .filter(a -> a.isActive()
@@ -1222,10 +1225,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return Integer.parseInt(this.getSession().get(APConstants.CRP_REPORTING_YEAR).toString());
   }
 
-
   public HttpServletRequest getRequest() {
     return request;
   }
+
 
   public String getRoles() {
     String roles = "";
@@ -1268,7 +1271,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return SessionCounter.users;
   }
 
-
   /**
    * Return the artifact version of the Marlo project pom.xml
    * 
@@ -1287,6 +1289,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return version;
   }
+
 
   public int goldDataValue(long deliverableID) {
     Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
@@ -1352,13 +1355,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   public boolean hasPermissionCrpIndicators(long liaisonID) {
     String params[] = {this.getCrpSession(), liaisonID + "",};
     boolean permission =
       this.hasPermissionNoBase(this.generatePermission(Permission.CRP_INDICATORS_PERMISSION, params));
     return permission;
   }
+
 
   public boolean hasPermissionNoBase(String fieldName) {
 
@@ -1399,7 +1402,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return permissions;
   }
 
-
   public boolean hasProgramnsRegions() {
     try {
       return Boolean.parseBoolean(this.getSession().get(APConstants.CRP_HAS_REGIONS).toString());
@@ -1418,6 +1420,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
 
   }
+
 
   public Boolean isA(long deliverableID) {
     try {
@@ -1438,7 +1441,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   /**
    * @param role
    * @return true if is the user role
@@ -1446,6 +1448,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean isAdmin() {
     return securityContext.hasRole("Admin");
   }
+
 
   public boolean isCanEdit() {
     return canEdit;
@@ -1499,7 +1502,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
-
   public boolean isCompletePreProject(long projectID) {
 
     Project project = projectManager.getProjectById(projectID);
@@ -1540,6 +1542,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return true;
   }
+
 
   public boolean isCompleteProject(long projectID) {
 
@@ -1839,10 +1842,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return draft;
   }
 
-
   public boolean isEditable() {
     return isEditable;
   }
+
 
   public Boolean isF(long deliverableID) {
 
@@ -1865,7 +1868,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public boolean isFullEditable() {
     return fullEditable;
   }
@@ -1877,6 +1879,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return false;
   }
+
 
   public Boolean isI(long deliverableID) {
     try {
@@ -1980,6 +1983,26 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
+  public boolean isPPA(Institution institution) {
+    if (institution == null) {
+      return false;
+    }
+
+    if (institution.getId() != null) {
+      institution = institutionManager.getInstitutionById(institution.getId());
+      if (institution != null) {
+        if (institution.getCrpPpaPartners().stream()
+          .filter(c -> c.getCrp().getId().longValue() == this.getCrpID() && c.isActive()).collect(Collectors.toList())
+          .size() > 0) {
+          return true;
+        }
+      }
+
+    }
+
+    return false;
+  }
+
   public Boolean isProjectNew(long projectID) {
 
     Project project = projectManager.getProjectById(projectID);
@@ -2080,7 +2103,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       project
         .getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
           && c.getYear().intValue() == year && (c.isUnSubmit() == null || !c.isUnSubmit()))
-      .collect(Collectors.toList());
+        .collect(Collectors.toList());
     if (submissions.isEmpty()) {
       return false;
     }

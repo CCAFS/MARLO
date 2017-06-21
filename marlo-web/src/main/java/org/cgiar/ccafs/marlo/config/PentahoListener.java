@@ -25,7 +25,7 @@ import org.pentaho.reporting.libraries.resourceloader.ResourceManager;
 
 public class PentahoListener implements ServletContextListener {
 
-  private static Class clazz = ResourceManager.class;
+  private static Class<?> clazz = ResourceManager.class;
   public static final String KEY_NAME = clazz.getName();
 
   @Override

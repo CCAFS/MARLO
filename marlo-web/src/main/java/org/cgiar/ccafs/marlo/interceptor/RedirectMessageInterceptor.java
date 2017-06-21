@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -81,10 +81,9 @@ public class RedirectMessageInterceptor extends MethodFilterInterceptor {
    * Retrieve the errors and messages from the session and add them to the action.
    */
   protected void before(ActionInvocation invocation, BaseAction action) throws Exception {
-    @SuppressWarnings("unchecked")
     Map<String, ?> session = invocation.getInvocationContext().getSession();
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     Collection<String> actionErrors = (Collection) session.remove(ACTION_ERRORS_KEY);
     if (actionErrors != null && !actionErrors.isEmpty()) {
       for (String error : actionErrors) {
@@ -92,7 +91,7 @@ public class RedirectMessageInterceptor extends MethodFilterInterceptor {
       }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     Collection<String> actionMessages = (Collection) session.remove(ACTION_MESSAGES_KEY);
     if (actionMessages != null && !actionMessages.isEmpty()) {
       for (String message : actionMessages) {
@@ -100,7 +99,7 @@ public class RedirectMessageInterceptor extends MethodFilterInterceptor {
       }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     Map<String, List<String>> fieldErrors = (Map) session.remove(FIELD_ERRORS_KEY);
     if (fieldErrors != null && !fieldErrors.isEmpty()) {
       for (Map.Entry<String, List<String>> fieldError : fieldErrors.entrySet()) {

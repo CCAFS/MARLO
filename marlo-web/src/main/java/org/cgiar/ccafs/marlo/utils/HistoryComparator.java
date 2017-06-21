@@ -59,7 +59,7 @@ public class HistoryComparator {
 
   private void addRelationField(Set<HistoryDifference> differencesUniques, Auditlog actual, Auditlog before,
     Auditlog principal, Map<String, String> specialList) throws ClassNotFoundException {
-    Class classRelation = Class.forName(actual.getEntityName().replace("class ", ""));
+    Class<?> classRelation = Class.forName(actual.getEntityName().replace("class ", ""));
     String listName = this.getListName(classRelation);
     if (listName != null) {
       differencesUniques.add(new HistoryDifference(UUID.randomUUID().toString(), listName, true, "", ""));
@@ -192,7 +192,7 @@ public class HistoryComparator {
 
   public List<HistoryDifference> getDifferencesList(IAuditLog iaAuditLog, String transactionID,
     Map<String, String> specialList, String subFix, String subFixDelete, int levels)
-      throws ClassNotFoundException, NoSuchFieldException, SecurityException {
+    throws ClassNotFoundException, NoSuchFieldException, SecurityException {
     List<HistoryDifference> differences = new ArrayList<>();
     Auditlog principal = auditlogManager.getAuditlog(transactionID, iaAuditLog);
     if (principal != null) {
@@ -288,7 +288,7 @@ public class HistoryComparator {
     return null;
   }
 
-  private String getListName(Class objectClass) {
+  private String getListName(Class<?> objectClass) {
 
     Field[] fields = c.getDeclaredFields();
 

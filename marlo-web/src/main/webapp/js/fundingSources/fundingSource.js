@@ -436,7 +436,7 @@ function addDataTable() {
       "bAutoWidth": true, // This option enables the auto adjust columns width
       "iDisplayLength": 100,// Number of rows to show on the table
       "language": {
-        "emptyTable": "No projects adopting this funding source."
+        "emptyTable": "This funding source has not been assigned to any project."
       },
       aoColumnDefs: [
         {

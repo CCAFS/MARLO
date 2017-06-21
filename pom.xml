@@ -3,7 +3,7 @@
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.cgiar.ccafs</groupId>
    <artifactId>marlo</artifactId>
-   <version>4.1.5-SNAPSHOT</version>
+   <version>4.1.6-SNAPSHOT</version>
    <packaging>pom</packaging>
    <name>ccfas-marlo</name>
    <description>Marlo Platform</description>
@@ -142,7 +142,7 @@
       </license>
    </licenses>
    <modules>
-   	<module>marlo-web</module>   	
    	<module>marlo-utils</module>
+   	<module>marlo-web</module>
    </modules>
 </project>
