@@ -1,142 +1,160 @@
-/**
- * MarloServiceLocator.java
- *
- * This file was auto-generated from WSDL
- * by the Apache Axis 1.4 Apr 22, 2006 (06:55:48 PDT) WSDL2Java emitter.
- */
+/*****************************************************************
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
+ * MARLO is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * at your option) any later version.
+ * MARLO is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
+ *****************************************************************/
 
 package org.cgiar.ccafs.marlo.ocs.ws.client;
 
-public class MarloServiceLocator extends org.apache.axis.client.Service implements org.cgiar.ccafs.marlo.ocs.ws.client.MarloService {
+public class MarloServiceLocator extends org.apache.axis.client.Service
+  implements org.cgiar.ccafs.marlo.ocs.ws.client.MarloService {
 
-    public MarloServiceLocator() {
+  // Use to get a proxy class for MarloPort
+  private java.lang.String MarloPort_address = "http://beta.ciat.cgiar.org:80/abwinterface/MarloPort";
+
+
+  // The WSDD service name defaults to the port name.
+  private java.lang.String MarloPortWSDDServiceName = "MarloPort";
+
+  private java.util.HashSet ports = null;
+
+  public MarloServiceLocator() {
+  }
+
+  public MarloServiceLocator(java.lang.String wsdlLoc, javax.xml.namespace.QName sName)
+    throws javax.xml.rpc.ServiceException {
+    super(wsdlLoc, sName);
+  }
+
+  public MarloServiceLocator(org.apache.axis.EngineConfiguration config) {
+    super(config);
+  }
+
+  @Override
+  public org.cgiar.ccafs.marlo.ocs.ws.client.WSMarlo getMarloPort() throws javax.xml.rpc.ServiceException {
+    java.net.URL endpoint;
+    try {
+      endpoint = new java.net.URL(MarloPort_address);
+    } catch (java.net.MalformedURLException e) {
+      throw new javax.xml.rpc.ServiceException(e);
     }
+    return this.getMarloPort(endpoint);
+  }
 
-
-    public MarloServiceLocator(org.apache.axis.EngineConfiguration config) {
-        super(config);
+  @Override
+  public org.cgiar.ccafs.marlo.ocs.ws.client.WSMarlo getMarloPort(java.net.URL portAddress)
+    throws javax.xml.rpc.ServiceException {
+    try {
+      org.cgiar.ccafs.marlo.ocs.ws.client.MarloPortBindingStub _stub =
+        new org.cgiar.ccafs.marlo.ocs.ws.client.MarloPortBindingStub(portAddress, this);
+      _stub.setPortName(this.getMarloPortWSDDServiceName());
+      return _stub;
+    } catch (org.apache.axis.AxisFault e) {
+      return null;
     }
+  }
 
-    public MarloServiceLocator(java.lang.String wsdlLoc, javax.xml.namespace.QName sName) throws javax.xml.rpc.ServiceException {
-        super(wsdlLoc, sName);
+  @Override
+  public java.lang.String getMarloPortAddress() {
+    return MarloPort_address;
+  }
+
+  public java.lang.String getMarloPortWSDDServiceName() {
+    return MarloPortWSDDServiceName;
+  }
+
+  /**
+   * For the given interface, get the stub implementation.
+   * If this service has no port for the given interface,
+   * then ServiceException is thrown.
+   */
+  @Override
+  public java.rmi.Remote getPort(Class serviceEndpointInterface) throws javax.xml.rpc.ServiceException {
+    try {
+      if (org.cgiar.ccafs.marlo.ocs.ws.client.WSMarlo.class.isAssignableFrom(serviceEndpointInterface)) {
+        org.cgiar.ccafs.marlo.ocs.ws.client.MarloPortBindingStub _stub =
+          new org.cgiar.ccafs.marlo.ocs.ws.client.MarloPortBindingStub(new java.net.URL(MarloPort_address), this);
+        _stub.setPortName(this.getMarloPortWSDDServiceName());
+        return _stub;
+      }
+    } catch (java.lang.Throwable t) {
+      throw new javax.xml.rpc.ServiceException(t);
     }
+    throw new javax.xml.rpc.ServiceException("There is no stub implementation for the interface:  "
+      + (serviceEndpointInterface == null ? "null" : serviceEndpointInterface.getName()));
+  }
 
-    // Use to get a proxy class for MarloPort
-    private java.lang.String MarloPort_address = "http://beta.ciat.cgiar.org:80/abwinterface/MarloPort";
-
-    public java.lang.String getMarloPortAddress() {
-        return MarloPort_address;
+  /**
+   * For the given interface, get the stub implementation.
+   * If this service has no port for the given interface,
+   * then ServiceException is thrown.
+   */
+  @Override
+  public java.rmi.Remote getPort(javax.xml.namespace.QName portName, Class serviceEndpointInterface)
+    throws javax.xml.rpc.ServiceException {
+    if (portName == null) {
+      return this.getPort(serviceEndpointInterface);
     }
-
-    // The WSDD service name defaults to the port name.
-    private java.lang.String MarloPortWSDDServiceName = "MarloPort";
-
-    public java.lang.String getMarloPortWSDDServiceName() {
-        return MarloPortWSDDServiceName;
+    java.lang.String inputPortName = portName.getLocalPart();
+    if ("MarloPort".equals(inputPortName)) {
+      return this.getMarloPort();
+    } else {
+      java.rmi.Remote _stub = this.getPort(serviceEndpointInterface);
+      ((org.apache.axis.client.Stub) _stub).setPortName(portName);
+      return _stub;
     }
+  }
 
-    public void setMarloPortWSDDServiceName(java.lang.String name) {
-        MarloPortWSDDServiceName = name;
+  @Override
+  public java.util.Iterator getPorts() {
+    if (ports == null) {
+      ports = new java.util.HashSet();
+      ports.add(new javax.xml.namespace.QName("http://logic.control.abw.ciat.cgiar.org/", "MarloPort"));
     }
+    return ports.iterator();
+  }
 
-    public org.cgiar.ccafs.marlo.ocs.ws.client.WSMarlo getMarloPort() throws javax.xml.rpc.ServiceException {
-       java.net.URL endpoint;
-        try {
-            endpoint = new java.net.URL(MarloPort_address);
-        }
-        catch (java.net.MalformedURLException e) {
-            throw new javax.xml.rpc.ServiceException(e);
-        }
-        return getMarloPort(endpoint);
+  @Override
+  public javax.xml.namespace.QName getServiceName() {
+    return new javax.xml.namespace.QName("http://logic.control.abw.ciat.cgiar.org/", "MarloService");
+  }
+
+  /**
+   * Set the endpoint address for the specified port name.
+   */
+  public void setEndpointAddress(java.lang.String portName, java.lang.String address)
+    throws javax.xml.rpc.ServiceException {
+
+    if ("MarloPort".equals(portName)) {
+      this.setMarloPortEndpointAddress(address);
+    } else { // Unknown Port Name
+      throw new javax.xml.rpc.ServiceException(" Cannot set Endpoint Address for Unknown Port" + portName);
     }
+  }
 
-    public org.cgiar.ccafs.marlo.ocs.ws.client.WSMarlo getMarloPort(java.net.URL portAddress) throws javax.xml.rpc.ServiceException {
-        try {
-            org.cgiar.ccafs.marlo.ocs.ws.client.MarloPortBindingStub _stub = new org.cgiar.ccafs.marlo.ocs.ws.client.MarloPortBindingStub(portAddress, this);
-            _stub.setPortName(getMarloPortWSDDServiceName());
-            return _stub;
-        }
-        catch (org.apache.axis.AxisFault e) {
-            return null;
-        }
-    }
+  /**
+   * Set the endpoint address for the specified port name.
+   */
+  public void setEndpointAddress(javax.xml.namespace.QName portName, java.lang.String address)
+    throws javax.xml.rpc.ServiceException {
+    this.setEndpointAddress(portName.getLocalPart(), address);
+  }
 
-    public void setMarloPortEndpointAddress(java.lang.String address) {
-        MarloPort_address = address;
-    }
+  public void setMarloPortEndpointAddress(java.lang.String address) {
+    MarloPort_address = address;
+  }
 
-    /**
-     * For the given interface, get the stub implementation.
-     * If this service has no port for the given interface,
-     * then ServiceException is thrown.
-     */
-    public java.rmi.Remote getPort(Class serviceEndpointInterface) throws javax.xml.rpc.ServiceException {
-        try {
-            if (org.cgiar.ccafs.marlo.ocs.ws.client.WSMarlo.class.isAssignableFrom(serviceEndpointInterface)) {
-                org.cgiar.ccafs.marlo.ocs.ws.client.MarloPortBindingStub _stub = new org.cgiar.ccafs.marlo.ocs.ws.client.MarloPortBindingStub(new java.net.URL(MarloPort_address), this);
-                _stub.setPortName(getMarloPortWSDDServiceName());
-                return _stub;
-            }
-        }
-        catch (java.lang.Throwable t) {
-            throw new javax.xml.rpc.ServiceException(t);
-        }
-        throw new javax.xml.rpc.ServiceException("There is no stub implementation for the interface:  " + (serviceEndpointInterface == null ? "null" : serviceEndpointInterface.getName()));
-    }
-
-    /**
-     * For the given interface, get the stub implementation.
-     * If this service has no port for the given interface,
-     * then ServiceException is thrown.
-     */
-    public java.rmi.Remote getPort(javax.xml.namespace.QName portName, Class serviceEndpointInterface) throws javax.xml.rpc.ServiceException {
-        if (portName == null) {
-            return getPort(serviceEndpointInterface);
-        }
-        java.lang.String inputPortName = portName.getLocalPart();
-        if ("MarloPort".equals(inputPortName)) {
-            return getMarloPort();
-        }
-        else  {
-            java.rmi.Remote _stub = getPort(serviceEndpointInterface);
-            ((org.apache.axis.client.Stub) _stub).setPortName(portName);
-            return _stub;
-        }
-    }
-
-    public javax.xml.namespace.QName getServiceName() {
-        return new javax.xml.namespace.QName("http://logic.control.abw.ciat.cgiar.org/", "MarloService");
-    }
-
-    private java.util.HashSet ports = null;
-
-    public java.util.Iterator getPorts() {
-        if (ports == null) {
-            ports = new java.util.HashSet();
-            ports.add(new javax.xml.namespace.QName("http://logic.control.abw.ciat.cgiar.org/", "MarloPort"));
-        }
-        return ports.iterator();
-    }
-
-    /**
-    * Set the endpoint address for the specified port name.
-    */
-    public void setEndpointAddress(java.lang.String portName, java.lang.String address) throws javax.xml.rpc.ServiceException {
-        
-if ("MarloPort".equals(portName)) {
-            setMarloPortEndpointAddress(address);
-        }
-        else 
-{ // Unknown Port Name
-            throw new javax.xml.rpc.ServiceException(" Cannot set Endpoint Address for Unknown Port" + portName);
-        }
-    }
-
-    /**
-    * Set the endpoint address for the specified port name.
-    */
-    public void setEndpointAddress(javax.xml.namespace.QName portName, java.lang.String address) throws javax.xml.rpc.ServiceException {
-        setEndpointAddress(portName.getLocalPart(), address);
-    }
+  public void setMarloPortWSDDServiceName(java.lang.String name) {
+    MarloPortWSDDServiceName = name;
+  }
 
 }

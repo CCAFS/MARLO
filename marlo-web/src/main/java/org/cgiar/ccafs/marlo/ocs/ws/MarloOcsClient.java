@@ -13,14 +13,11 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.ocs.ws.client;
 
-public interface MarloService extends javax.xml.rpc.Service {
 
-  public org.cgiar.ccafs.marlo.ocs.ws.client.WSMarlo getMarloPort() throws javax.xml.rpc.ServiceException;
+package org.cgiar.ccafs.marlo.ocs.ws;
 
-  public org.cgiar.ccafs.marlo.ocs.ws.client.WSMarlo getMarloPort(java.net.URL portAddress)
-    throws javax.xml.rpc.ServiceException;
 
-  public java.lang.String getMarloPortAddress();
+public class MarloOcsClient {
+
 }
