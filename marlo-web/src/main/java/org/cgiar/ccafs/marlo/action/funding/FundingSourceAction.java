@@ -543,9 +543,11 @@ public class FundingSourceAction extends BaseAction {
       fundingSourceDB.setModificationJustification("");
       fundingSourceDB.setActiveSince(fundingSourceDB.getActiveSince());
 
-
+      // if donor has a select option, no option put donor null
       if (fundingSource.getInstitution().getId().longValue() != -1) {
         fundingSourceDB.setInstitution(fundingSource.getInstitution());
+      } else {
+        fundingSourceDB.setInstitution(null);
       }
 
 
