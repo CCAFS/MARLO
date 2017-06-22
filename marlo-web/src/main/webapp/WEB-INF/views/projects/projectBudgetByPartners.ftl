@@ -222,9 +222,9 @@
           
           [#if fundingSources == 0]
             [#if editable && isYearEditable(selectedYear) && action.canSearchFunding(element.institution.id)]
-              <p class="emptyMessage text-center">Add a new one clicking on "[@s.text name="form.buttons.selectProject" /]" button below.</p>
+              <p class="emptyMessage text-center">[@s.text name="projectBudgetByPartners.assginFundingSourceClicking" /] "[@s.text name="form.buttons.selectProject" /]".</p>
             [#else]
-              <p class="emptyMessage text-center">Theres is not a funding source added.</p>
+              <p class="emptyMessage text-center">[@s.text name="projectBudgetByPartners.noFundingSourcesAdded" /].</p>
             [/#if]
           [/#if]
         </div>
