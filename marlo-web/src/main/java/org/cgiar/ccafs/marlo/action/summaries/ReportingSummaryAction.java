@@ -793,10 +793,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     TypedTableModel model = new TypedTableModel(
       new String[] {"year", "institution", "w1w2", "w3", "bilateral", "center", "institution_id", "p_id", "w1w2Gender",
         "w3Gender", "bilateralGender", "centerGender", "w1w2GAmount", "w3GAmount", "bilateralGAmount", "centerGAmount",
-        "w1w2CoFinancing", "w1w2CoFinancingGender", "w1w2CoFinancingGAmount"},
+        "w1w2CoFinancing", "w1w2CoFinancingGender", "w1w2CoFinancingGAmount", "partner_total"},
       new Class[] {Integer.class, String.class, String.class, String.class, String.class, String.class, Long.class,
         Long.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class},
       0);
     // Get ppaPartners of project
     for (ProjectPartner pp : project.getProjectPartners().stream().filter(pp -> pp.isActive())
@@ -809,7 +809,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         String w1w2CoGender = null;
         String w1w2GAmount = null;
         String w1w2CoGAmount = null;
-        // Nuevo
+        // Partner Total
+        String partnerTotal = null;
+        double partnerTotald = 0.0;
+
         if (hasW1W2Co) {
           w1w2Budget = myFormatter
             .format(Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 1, project.getId(), 3)));
@@ -825,6 +828,12 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
             myFormatter.format(this.getTotalGender(pp.getInstitution().getId(), year, 1, project.getId(), 3));
           w1w2CoGAmount =
             myFormatter.format(this.getTotalGender(pp.getInstitution().getId(), year, 1, project.getId(), 2));
+
+          // increment partner total
+          partnerTotald +=
+            Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 1, project.getId(), 3));
+          partnerTotald +=
+            Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 1, project.getId(), 2));
         } else {
           w1w2Budget = myFormatter
             .format(Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 1, project.getId(), 1)));
@@ -835,6 +844,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           w1w2CoBudget = myFormatter.format(0.0);
           w1w2CoGender = myFormatter.format(0.0);
           w1w2CoGAmount = myFormatter.format(0.0);
+
+          // increment partner total
+          partnerTotald +=
+            Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 1, project.getId(), 1));
         }
 
         String w3Budget = myFormatter
@@ -860,38 +873,61 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         String centerGAmount =
           myFormatter.format(this.getTotalGender(pp.getInstitution().getId(), year, 4, project.getId(), 1));
 
-        // End
+        // increment partner total
+        partnerTotald +=
+          Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 2, project.getId(), 1));
+        partnerTotald +=
+          Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 3, project.getId(), 1));
+        partnerTotald +=
+          Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 4, project.getId(), 1));
+
+        // set partner total
+        partnerTotal = "$" + myFormatter.format(partnerTotald);
 
         model.addRow(new Object[] {year, pp.getInstitution().getComposedName(), w1w2Budget, w3Budget, bilateralBudget,
           centerBudget, pp.getInstitution().getId(), projectID, w1w2Gender, w3Gender, bilateralGender, centerGender,
-          w1w2GAmount, w3GAmount, bilateralGAmount, centerGAmount, w1w2CoBudget, w1w2CoGender, w1w2CoGAmount});
+          w1w2GAmount, w3GAmount, bilateralGAmount, centerGAmount, w1w2CoBudget, w1w2CoGender, w1w2CoGAmount,
+          partnerTotal});
       }
     }
     return model;
   }
 
   private TypedTableModel getBudgetSummaryTableModel() {
-    TypedTableModel model =
-      new TypedTableModel(new String[] {"year", "w1w2", "w3", "bilateral", "centerfunds", "w1w2CoFinancing"},
-        new Class[] {Integer.class, String.class, String.class, String.class, String.class, String.class}, 0);
+    TypedTableModel model = new TypedTableModel(
+      new String[] {"year", "w1w2", "w3", "bilateral", "centerfunds", "w1w2CoFinancing", "grand_total"},
+      new Class[] {Integer.class, String.class, String.class, String.class, String.class, String.class, String.class},
+      0);
     String w1w2 = null;
     String w3 = null;
     String bilateral = null;
     String centerfunds = null;
     String w1w2CoFinancing = null;
+    // Budget Total
+    String grand_total = null;
+    double grand_totald = 0.0;
     // Decimal format
     DecimalFormat myFormatter = new DecimalFormat("###,###.00");
 
     if (hasW1W2Co) {
       w1w2 = myFormatter.format(this.getTotalYear(year, 1, project, 3));
       w1w2CoFinancing = myFormatter.format(this.getTotalYear(year, 1, project, 2));
+      // increment Budget Total with w1w2 cofinancing
+      grand_totald += this.getTotalYear(year, 1, project, 3) + this.getTotalYear(year, 1, project, 2);
     } else {
       w1w2 = myFormatter.format(this.getTotalYear(year, 1, project, 1));
+      // increment Budget Total with w1w2 
+      grand_totald += this.getTotalYear(year, 1, project, 1);
     }
     w3 = myFormatter.format(this.getTotalYear(year, 2, project, 1));
     bilateral = myFormatter.format(this.getTotalYear(year, 3, project, 1));
     centerfunds = myFormatter.format(this.getTotalYear(year, 4, project, 1));
-    model.addRow(new Object[] {year, w1w2, w3, bilateral, centerfunds, w1w2CoFinancing});
+    // increment Budget Total with w3,bilateral and centerfunds
+    grand_totald += this.getTotalYear(year, 2, project, 1) + this.getTotalYear(year, 3, project, 1)
+      + this.getTotalYear(year, 4, project, 1);
+    grand_total = "$" + myFormatter.format(grand_totald);
+
+    model.addRow(new Object[] {year, w1w2, w3, bilateral, centerfunds, w1w2CoFinancing, grand_total});
     return model;
   }
 
@@ -2908,6 +2944,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
    * @param institution
    * @return boolean with true if is ppa and false if not
    */
+  @Override
   public boolean isPPA(Institution institution) {
     if (institution == null) {
       return false;
