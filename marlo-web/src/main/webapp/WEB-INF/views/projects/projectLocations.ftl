@@ -62,14 +62,21 @@
                   </div>
                   <p><small>[@s.text name="projectLocations.note" /] </small></p>
                 </div>
+                [#-- Hide map hint depending on 'crp_other_locations' parameter --]
+                [#if action.hasSpecificities('crp_other_locations')]
                 <span><span><img style="width: 3%;" src="${baseUrl}/images/global/left-click.jpg" alt="" /></span>Left click to get detailed information of a specific location.</span>
+                [/#if]
                 <br />
                 <br />
+                
                 [#-- <span><span><img style="width: 3%;" src="${baseUrl}/images/global/right-click.jpg" alt="" /></span>Right click in the map to add a new location.</span> --]
                 </div>
+                [#-- Hide map depending on 'crp_other_locations' parameter --]
+                [#if action.hasSpecificities('crp_other_locations')]
                 <div  class="col-md-12 map">
                   <div id="map" class="col-md-12"></div>
                 </div>
+                [/#if]
                 
                 [#-- GLOBAL DIMENSION --]
                 <div class="form-group  col-md-12">
