@@ -166,7 +166,7 @@ $(document).ready(function() {
         // WARNING MESSAGE
         var message = ""
         message += "Information was correctly saved. <br> ";
-        message += "Please keep in mind the highlighted fields below are missing or incorrect.";
+        message += "Please keep in mind that the fields highlighted below are missing or incorrect.";
         var messageType = "warning";
         notifyErrorMessage(messageType, message);
       }
