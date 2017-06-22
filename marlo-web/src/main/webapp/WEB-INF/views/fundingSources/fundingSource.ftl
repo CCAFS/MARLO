@@ -207,7 +207,7 @@
          <div class="panel-head">
            <label for=""> [@customForm.text name="projectCofunded.selectRegions" readText=!editable /]:[@customForm.req required=editable /]</label>
            <br />
-           <small style="color: #337ab7;">(Standart regions are defined by United Nations)</small>
+           <small style="color: #337ab7;">(Standart regions are defined by World Bank)</small>
          </div>
          
           <div id="regionList" class="panel-body" listname="fundingSource.fundingRegions"> 
@@ -240,7 +240,7 @@
                   </optgroup>
                 [/#if]
                 [#if regionLists?has_content]
-                <optgroup label="United Nations standart (M.49)">
+                <optgroup label="World Bank classifies regions">
                   [#list regionLists as region]
                   <option value="${(region.id)!}-${(region.locElementType.scope?c)!}">${(region.name)!}</option>
                   [/#list]
