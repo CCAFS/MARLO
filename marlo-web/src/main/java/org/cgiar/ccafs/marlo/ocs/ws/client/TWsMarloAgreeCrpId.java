@@ -5,7 +5,7 @@
  * by the Apache Axis 1.4 Apr 22, 2006 (06:55:48 PDT) WSDL2Java emitter.
  */
 
-package org.cgiar.ciat.abw.control.logic;
+package org.cgiar.ccafs.marlo.ocs.ws.client;
 
 public class TWsMarloAgreeCrpId  implements java.io.Serializable {
     private java.lang.String agreementId;

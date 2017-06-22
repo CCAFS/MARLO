@@ -5,9 +5,9 @@
  * by the Apache Axis 1.4 Apr 22, 2006 (06:55:48 PDT) WSDL2Java emitter.
  */
 
-package org.cgiar.ciat.abw.control.logic;
+package org.cgiar.ccafs.marlo.ocs.ws.client;
 
-public class MarloServiceLocator extends org.apache.axis.client.Service implements org.cgiar.ciat.abw.control.logic.MarloService {
+public class MarloServiceLocator extends org.apache.axis.client.Service implements org.cgiar.ccafs.marlo.ocs.ws.client.MarloService {
 
     public MarloServiceLocator() {
     }
@@ -39,7 +39,7 @@ public class MarloServiceLocator extends org.apache.axis.client.Service implemen
         MarloPortWSDDServiceName = name;
     }
 
-    public org.cgiar.ciat.abw.control.logic.WSMarlo getMarloPort() throws javax.xml.rpc.ServiceException {
+    public org.cgiar.ccafs.marlo.ocs.ws.client.WSMarlo getMarloPort() throws javax.xml.rpc.ServiceException {
        java.net.URL endpoint;
         try {
             endpoint = new java.net.URL(MarloPort_address);
@@ -50,9 +50,9 @@ public class MarloServiceLocator extends org.apache.axis.client.Service implemen
         return getMarloPort(endpoint);
     }
 
-    public org.cgiar.ciat.abw.control.logic.WSMarlo getMarloPort(java.net.URL portAddress) throws javax.xml.rpc.ServiceException {
+    public org.cgiar.ccafs.marlo.ocs.ws.client.WSMarlo getMarloPort(java.net.URL portAddress) throws javax.xml.rpc.ServiceException {
         try {
-            org.cgiar.ciat.abw.control.logic.MarloPortBindingStub _stub = new org.cgiar.ciat.abw.control.logic.MarloPortBindingStub(portAddress, this);
+            org.cgiar.ccafs.marlo.ocs.ws.client.MarloPortBindingStub _stub = new org.cgiar.ccafs.marlo.ocs.ws.client.MarloPortBindingStub(portAddress, this);
             _stub.setPortName(getMarloPortWSDDServiceName());
             return _stub;
         }
@@ -72,8 +72,8 @@ public class MarloServiceLocator extends org.apache.axis.client.Service implemen
      */
     public java.rmi.Remote getPort(Class serviceEndpointInterface) throws javax.xml.rpc.ServiceException {
         try {
-            if (org.cgiar.ciat.abw.control.logic.WSMarlo.class.isAssignableFrom(serviceEndpointInterface)) {
-                org.cgiar.ciat.abw.control.logic.MarloPortBindingStub _stub = new org.cgiar.ciat.abw.control.logic.MarloPortBindingStub(new java.net.URL(MarloPort_address), this);
+            if (org.cgiar.ccafs.marlo.ocs.ws.client.WSMarlo.class.isAssignableFrom(serviceEndpointInterface)) {
+                org.cgiar.ccafs.marlo.ocs.ws.client.MarloPortBindingStub _stub = new org.cgiar.ccafs.marlo.ocs.ws.client.MarloPortBindingStub(new java.net.URL(MarloPort_address), this);
                 _stub.setPortName(getMarloPortWSDDServiceName());
                 return _stub;
             }

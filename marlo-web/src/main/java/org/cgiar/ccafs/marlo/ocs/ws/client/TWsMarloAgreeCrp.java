@@ -5,16 +5,16 @@
  * by the Apache Axis 1.4 Apr 22, 2006 (06:55:48 PDT) WSDL2Java emitter.
  */
 
-package org.cgiar.ciat.abw.control.logic;
+package org.cgiar.ccafs.marlo.ocs.ws.client;
 
 public class TWsMarloAgreeCrp  implements java.io.Serializable {
-    private org.cgiar.ciat.abw.control.logic.TWsMarloAgreeCrpId id;
+    private org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloAgreeCrpId id;
 
     public TWsMarloAgreeCrp() {
     }
 
     public TWsMarloAgreeCrp(
-           org.cgiar.ciat.abw.control.logic.TWsMarloAgreeCrpId id) {
+           org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloAgreeCrpId id) {
            this.id = id;
     }
 
@@ -24,7 +24,7 @@ public class TWsMarloAgreeCrp  implements java.io.Serializable {
      * 
      * @return id
      */
-    public org.cgiar.ciat.abw.control.logic.TWsMarloAgreeCrpId getId() {
+    public org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloAgreeCrpId getId() {
         return id;
     }
 
@@ -34,7 +34,7 @@ public class TWsMarloAgreeCrp  implements java.io.Serializable {
      * 
      * @param id
      */
-    public void setId(org.cgiar.ciat.abw.control.logic.TWsMarloAgreeCrpId id) {
+    public void setId(org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloAgreeCrpId id) {
         this.id = id;
     }
 

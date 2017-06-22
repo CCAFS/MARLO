@@ -5,9 +5,9 @@
  * by the Apache Axis 1.4 Apr 22, 2006 (06:55:48 PDT) WSDL2Java emitter.
  */
 
-package org.cgiar.ciat.abw.control.logic;
+package org.cgiar.ccafs.marlo.ocs.ws.client;
 
-public class MarloPortBindingStub extends org.apache.axis.client.Stub implements org.cgiar.ciat.abw.control.logic.WSMarlo {
+public class MarloPortBindingStub extends org.apache.axis.client.Stub implements org.cgiar.ccafs.marlo.ocs.ws.client.WSMarlo {
     private java.util.Vector cachedSerClasses = new java.util.Vector();
     private java.util.Vector cachedSerQNames = new java.util.Vector();
     private java.util.Vector cachedSerFactories = new java.util.Vector();
@@ -29,7 +29,7 @@ public class MarloPortBindingStub extends org.apache.axis.client.Stub implements
         param.setOmittable(true);
         oper.addParameter(param);
         oper.setReturnType(new javax.xml.namespace.QName("http://logic.control.abw.ciat.cgiar.org/", "tWsMarloAgree"));
-        oper.setReturnClass(org.cgiar.ciat.abw.control.logic.TWsMarloAgree[].class);
+        oper.setReturnClass(org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloAgree[].class);
         oper.setReturnQName(new javax.xml.namespace.QName("", "return"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
@@ -41,7 +41,7 @@ public class MarloPortBindingStub extends org.apache.axis.client.Stub implements
         param.setOmittable(true);
         oper.addParameter(param);
         oper.setReturnType(new javax.xml.namespace.QName("http://logic.control.abw.ciat.cgiar.org/", "tWsMarloAgreeCrp"));
-        oper.setReturnClass(org.cgiar.ciat.abw.control.logic.TWsMarloAgreeCrp[].class);
+        oper.setReturnClass(org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloAgreeCrp[].class);
         oper.setReturnQName(new javax.xml.namespace.QName("", "return"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
@@ -53,7 +53,7 @@ public class MarloPortBindingStub extends org.apache.axis.client.Stub implements
         param.setOmittable(true);
         oper.addParameter(param);
         oper.setReturnType(new javax.xml.namespace.QName("http://logic.control.abw.ciat.cgiar.org/", "tWsMarloAgreeCountry"));
-        oper.setReturnClass(org.cgiar.ciat.abw.control.logic.TWsMarloAgreeCountry[].class);
+        oper.setReturnClass(org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloAgreeCountry[].class);
         oper.setReturnQName(new javax.xml.namespace.QName("", "return"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
@@ -65,7 +65,7 @@ public class MarloPortBindingStub extends org.apache.axis.client.Stub implements
         param.setOmittable(true);
         oper.addParameter(param);
         oper.setReturnType(new javax.xml.namespace.QName("http://logic.control.abw.ciat.cgiar.org/", "tWsMarloPla"));
-        oper.setReturnClass(org.cgiar.ciat.abw.control.logic.TWsMarloPla[].class);
+        oper.setReturnClass(org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloPla[].class);
         oper.setReturnQName(new javax.xml.namespace.QName("", "return"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
@@ -77,7 +77,7 @@ public class MarloPortBindingStub extends org.apache.axis.client.Stub implements
         param.setOmittable(true);
         oper.addParameter(param);
         oper.setReturnType(new javax.xml.namespace.QName("http://logic.control.abw.ciat.cgiar.org/", "tWsMarloPlaCountry"));
-        oper.setReturnClass(org.cgiar.ciat.abw.control.logic.TWsMarloPlaCountry[].class);
+        oper.setReturnClass(org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloPlaCountry[].class);
         oper.setReturnQName(new javax.xml.namespace.QName("", "return"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
@@ -89,7 +89,7 @@ public class MarloPortBindingStub extends org.apache.axis.client.Stub implements
         param.setOmittable(true);
         oper.addParameter(param);
         oper.setReturnType(new javax.xml.namespace.QName("http://logic.control.abw.ciat.cgiar.org/", "fileTransfer"));
-        oper.setReturnClass(org.cgiar.ciat.abw.control.logic.FileTransfer[].class);
+        oper.setReturnClass(org.cgiar.ccafs.marlo.ocs.ws.client.FileTransfer[].class);
         oper.setReturnQName(new javax.xml.namespace.QName("", "return"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
@@ -128,63 +128,63 @@ public class MarloPortBindingStub extends org.apache.axis.client.Stub implements
             java.lang.Class simplelistdf = org.apache.axis.encoding.ser.SimpleListDeserializerFactory.class;
             qName = new javax.xml.namespace.QName("http://logic.control.abw.ciat.cgiar.org/", "fileTransfer");
             cachedSerQNames.add(qName);
-            cls = org.cgiar.ciat.abw.control.logic.FileTransfer.class;
+            cls = org.cgiar.ccafs.marlo.ocs.ws.client.FileTransfer.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
             qName = new javax.xml.namespace.QName("http://logic.control.abw.ciat.cgiar.org/", "tWsMarloAgree");
             cachedSerQNames.add(qName);
-            cls = org.cgiar.ciat.abw.control.logic.TWsMarloAgree.class;
+            cls = org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloAgree.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
             qName = new javax.xml.namespace.QName("http://logic.control.abw.ciat.cgiar.org/", "tWsMarloAgreeCountry");
             cachedSerQNames.add(qName);
-            cls = org.cgiar.ciat.abw.control.logic.TWsMarloAgreeCountry.class;
+            cls = org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloAgreeCountry.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
             qName = new javax.xml.namespace.QName("http://logic.control.abw.ciat.cgiar.org/", "tWsMarloAgreeCountryId");
             cachedSerQNames.add(qName);
-            cls = org.cgiar.ciat.abw.control.logic.TWsMarloAgreeCountryId.class;
+            cls = org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloAgreeCountryId.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
             qName = new javax.xml.namespace.QName("http://logic.control.abw.ciat.cgiar.org/", "tWsMarloAgreeCrp");
             cachedSerQNames.add(qName);
-            cls = org.cgiar.ciat.abw.control.logic.TWsMarloAgreeCrp.class;
+            cls = org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloAgreeCrp.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
             qName = new javax.xml.namespace.QName("http://logic.control.abw.ciat.cgiar.org/", "tWsMarloAgreeCrpId");
             cachedSerQNames.add(qName);
-            cls = org.cgiar.ciat.abw.control.logic.TWsMarloAgreeCrpId.class;
+            cls = org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloAgreeCrpId.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
             qName = new javax.xml.namespace.QName("http://logic.control.abw.ciat.cgiar.org/", "tWsMarloPla");
             cachedSerQNames.add(qName);
-            cls = org.cgiar.ciat.abw.control.logic.TWsMarloPla.class;
+            cls = org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloPla.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
             qName = new javax.xml.namespace.QName("http://logic.control.abw.ciat.cgiar.org/", "tWsMarloPlaCountry");
             cachedSerQNames.add(qName);
-            cls = org.cgiar.ciat.abw.control.logic.TWsMarloPlaCountry.class;
+            cls = org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloPlaCountry.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
             qName = new javax.xml.namespace.QName("http://logic.control.abw.ciat.cgiar.org/", "tWsMarloPlaCountryId");
             cachedSerQNames.add(qName);
-            cls = org.cgiar.ciat.abw.control.logic.TWsMarloPlaCountryId.class;
+            cls = org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloPlaCountryId.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
@@ -255,7 +255,7 @@ public class MarloPortBindingStub extends org.apache.axis.client.Stub implements
         }
     }
 
-    public org.cgiar.ciat.abw.control.logic.TWsMarloAgree[] getMarloAgreements(java.lang.String agreementId) throws java.rmi.RemoteException {
+    public org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloAgree[] getMarloAgreements(java.lang.String agreementId) throws java.rmi.RemoteException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
@@ -279,9 +279,9 @@ public class MarloPortBindingStub extends org.apache.axis.client.Stub implements
         else {
             extractAttachments(_call);
             try {
-                return (org.cgiar.ciat.abw.control.logic.TWsMarloAgree[]) _resp;
+                return (org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloAgree[]) _resp;
             } catch (java.lang.Exception _exception) {
-                return (org.cgiar.ciat.abw.control.logic.TWsMarloAgree[]) org.apache.axis.utils.JavaUtils.convert(_resp, org.cgiar.ciat.abw.control.logic.TWsMarloAgree[].class);
+                return (org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloAgree[]) org.apache.axis.utils.JavaUtils.convert(_resp, org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloAgree[].class);
             }
         }
   } catch (org.apache.axis.AxisFault axisFaultException) {
@@ -289,7 +289,7 @@ public class MarloPortBindingStub extends org.apache.axis.client.Stub implements
 }
     }
 
-    public org.cgiar.ciat.abw.control.logic.TWsMarloAgreeCrp[] getMarloAgreeCrp(java.lang.String agreementId) throws java.rmi.RemoteException {
+    public org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloAgreeCrp[] getMarloAgreeCrp(java.lang.String agreementId) throws java.rmi.RemoteException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
@@ -313,9 +313,9 @@ public class MarloPortBindingStub extends org.apache.axis.client.Stub implements
         else {
             extractAttachments(_call);
             try {
-                return (org.cgiar.ciat.abw.control.logic.TWsMarloAgreeCrp[]) _resp;
+                return (org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloAgreeCrp[]) _resp;
             } catch (java.lang.Exception _exception) {
-                return (org.cgiar.ciat.abw.control.logic.TWsMarloAgreeCrp[]) org.apache.axis.utils.JavaUtils.convert(_resp, org.cgiar.ciat.abw.control.logic.TWsMarloAgreeCrp[].class);
+                return (org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloAgreeCrp[]) org.apache.axis.utils.JavaUtils.convert(_resp, org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloAgreeCrp[].class);
             }
         }
   } catch (org.apache.axis.AxisFault axisFaultException) {
@@ -323,7 +323,7 @@ public class MarloPortBindingStub extends org.apache.axis.client.Stub implements
 }
     }
 
-    public org.cgiar.ciat.abw.control.logic.TWsMarloAgreeCountry[] getMarloAgreeCountry(java.lang.String agreementId) throws java.rmi.RemoteException {
+    public org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloAgreeCountry[] getMarloAgreeCountry(java.lang.String agreementId) throws java.rmi.RemoteException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
@@ -347,9 +347,9 @@ public class MarloPortBindingStub extends org.apache.axis.client.Stub implements
         else {
             extractAttachments(_call);
             try {
-                return (org.cgiar.ciat.abw.control.logic.TWsMarloAgreeCountry[]) _resp;
+                return (org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloAgreeCountry[]) _resp;
             } catch (java.lang.Exception _exception) {
-                return (org.cgiar.ciat.abw.control.logic.TWsMarloAgreeCountry[]) org.apache.axis.utils.JavaUtils.convert(_resp, org.cgiar.ciat.abw.control.logic.TWsMarloAgreeCountry[].class);
+                return (org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloAgreeCountry[]) org.apache.axis.utils.JavaUtils.convert(_resp, org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloAgreeCountry[].class);
             }
         }
   } catch (org.apache.axis.AxisFault axisFaultException) {
@@ -357,7 +357,7 @@ public class MarloPortBindingStub extends org.apache.axis.client.Stub implements
 }
     }
 
-    public org.cgiar.ciat.abw.control.logic.TWsMarloPla[] getMarloPla(java.lang.String agreementId) throws java.rmi.RemoteException {
+    public org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloPla[] getMarloPla(java.lang.String agreementId) throws java.rmi.RemoteException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
@@ -381,9 +381,9 @@ public class MarloPortBindingStub extends org.apache.axis.client.Stub implements
         else {
             extractAttachments(_call);
             try {
-                return (org.cgiar.ciat.abw.control.logic.TWsMarloPla[]) _resp;
+                return (org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloPla[]) _resp;
             } catch (java.lang.Exception _exception) {
-                return (org.cgiar.ciat.abw.control.logic.TWsMarloPla[]) org.apache.axis.utils.JavaUtils.convert(_resp, org.cgiar.ciat.abw.control.logic.TWsMarloPla[].class);
+                return (org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloPla[]) org.apache.axis.utils.JavaUtils.convert(_resp, org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloPla[].class);
             }
         }
   } catch (org.apache.axis.AxisFault axisFaultException) {
@@ -391,7 +391,7 @@ public class MarloPortBindingStub extends org.apache.axis.client.Stub implements
 }
     }
 
-    public org.cgiar.ciat.abw.control.logic.TWsMarloPlaCountry[] getMarloPlaCountry(java.lang.String plaId) throws java.rmi.RemoteException {
+    public org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloPlaCountry[] getMarloPlaCountry(java.lang.String plaId) throws java.rmi.RemoteException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
@@ -415,9 +415,9 @@ public class MarloPortBindingStub extends org.apache.axis.client.Stub implements
         else {
             extractAttachments(_call);
             try {
-                return (org.cgiar.ciat.abw.control.logic.TWsMarloPlaCountry[]) _resp;
+                return (org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloPlaCountry[]) _resp;
             } catch (java.lang.Exception _exception) {
-                return (org.cgiar.ciat.abw.control.logic.TWsMarloPlaCountry[]) org.apache.axis.utils.JavaUtils.convert(_resp, org.cgiar.ciat.abw.control.logic.TWsMarloPlaCountry[].class);
+                return (org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloPlaCountry[]) org.apache.axis.utils.JavaUtils.convert(_resp, org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloPlaCountry[].class);
             }
         }
   } catch (org.apache.axis.AxisFault axisFaultException) {
@@ -425,7 +425,7 @@ public class MarloPortBindingStub extends org.apache.axis.client.Stub implements
 }
     }
 
-    public org.cgiar.ciat.abw.control.logic.FileTransfer[] getMarloAgreeDocument(java.lang.String agreementId) throws java.rmi.RemoteException {
+    public org.cgiar.ccafs.marlo.ocs.ws.client.FileTransfer[] getMarloAgreeDocument(java.lang.String agreementId) throws java.rmi.RemoteException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
@@ -449,9 +449,9 @@ public class MarloPortBindingStub extends org.apache.axis.client.Stub implements
         else {
             extractAttachments(_call);
             try {
-                return (org.cgiar.ciat.abw.control.logic.FileTransfer[]) _resp;
+                return (org.cgiar.ccafs.marlo.ocs.ws.client.FileTransfer[]) _resp;
             } catch (java.lang.Exception _exception) {
-                return (org.cgiar.ciat.abw.control.logic.FileTransfer[]) org.apache.axis.utils.JavaUtils.convert(_resp, org.cgiar.ciat.abw.control.logic.FileTransfer[].class);
+                return (org.cgiar.ccafs.marlo.ocs.ws.client.FileTransfer[]) org.apache.axis.utils.JavaUtils.convert(_resp, org.cgiar.ccafs.marlo.ocs.ws.client.FileTransfer[].class);
             }
         }
   } catch (org.apache.axis.AxisFault axisFaultException) {

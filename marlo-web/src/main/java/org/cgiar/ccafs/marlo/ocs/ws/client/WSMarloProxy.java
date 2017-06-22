@@ -1,8 +1,8 @@
-package org.cgiar.ciat.abw.control.logic;
+package org.cgiar.ccafs.marlo.ocs.ws.client;
 
-public class WSMarloProxy implements org.cgiar.ciat.abw.control.logic.WSMarlo {
+public class WSMarloProxy implements org.cgiar.ccafs.marlo.ocs.ws.client.WSMarlo {
   private String _endpoint = null;
-  private org.cgiar.ciat.abw.control.logic.WSMarlo wSMarlo = null;
+  private org.cgiar.ccafs.marlo.ocs.ws.client.WSMarlo wSMarlo = null;
   
   public WSMarloProxy() {
     _initWSMarloProxy();
@@ -15,7 +15,7 @@ public class WSMarloProxy implements org.cgiar.ciat.abw.control.logic.WSMarlo {
   
   private void _initWSMarloProxy() {
     try {
-      wSMarlo = (new org.cgiar.ciat.abw.control.logic.MarloServiceLocator()).getMarloPort();
+      wSMarlo = (new org.cgiar.ccafs.marlo.ocs.ws.client.MarloServiceLocator()).getMarloPort();
       if (wSMarlo != null) {
         if (_endpoint != null)
           ((javax.xml.rpc.Stub)wSMarlo)._setProperty("javax.xml.rpc.service.endpoint.address", _endpoint);
@@ -38,43 +38,43 @@ public class WSMarloProxy implements org.cgiar.ciat.abw.control.logic.WSMarlo {
     
   }
   
-  public org.cgiar.ciat.abw.control.logic.WSMarlo getWSMarlo() {
+  public org.cgiar.ccafs.marlo.ocs.ws.client.WSMarlo getWSMarlo() {
     if (wSMarlo == null)
       _initWSMarloProxy();
     return wSMarlo;
   }
   
-  public org.cgiar.ciat.abw.control.logic.TWsMarloAgree[] getMarloAgreements(java.lang.String agreementId) throws java.rmi.RemoteException{
+  public org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloAgree[] getMarloAgreements(java.lang.String agreementId) throws java.rmi.RemoteException{
     if (wSMarlo == null)
       _initWSMarloProxy();
     return wSMarlo.getMarloAgreements(agreementId);
   }
   
-  public org.cgiar.ciat.abw.control.logic.TWsMarloAgreeCrp[] getMarloAgreeCrp(java.lang.String agreementId) throws java.rmi.RemoteException{
+  public org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloAgreeCrp[] getMarloAgreeCrp(java.lang.String agreementId) throws java.rmi.RemoteException{
     if (wSMarlo == null)
       _initWSMarloProxy();
     return wSMarlo.getMarloAgreeCrp(agreementId);
   }
   
-  public org.cgiar.ciat.abw.control.logic.TWsMarloAgreeCountry[] getMarloAgreeCountry(java.lang.String agreementId) throws java.rmi.RemoteException{
+  public org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloAgreeCountry[] getMarloAgreeCountry(java.lang.String agreementId) throws java.rmi.RemoteException{
     if (wSMarlo == null)
       _initWSMarloProxy();
     return wSMarlo.getMarloAgreeCountry(agreementId);
   }
   
-  public org.cgiar.ciat.abw.control.logic.TWsMarloPla[] getMarloPla(java.lang.String agreementId) throws java.rmi.RemoteException{
+  public org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloPla[] getMarloPla(java.lang.String agreementId) throws java.rmi.RemoteException{
     if (wSMarlo == null)
       _initWSMarloProxy();
     return wSMarlo.getMarloPla(agreementId);
   }
   
-  public org.cgiar.ciat.abw.control.logic.TWsMarloPlaCountry[] getMarloPlaCountry(java.lang.String plaId) throws java.rmi.RemoteException{
+  public org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloPlaCountry[] getMarloPlaCountry(java.lang.String plaId) throws java.rmi.RemoteException{
     if (wSMarlo == null)
       _initWSMarloProxy();
     return wSMarlo.getMarloPlaCountry(plaId);
   }
   
-  public org.cgiar.ciat.abw.control.logic.FileTransfer[] getMarloAgreeDocument(java.lang.String agreementId) throws java.rmi.RemoteException{
+  public org.cgiar.ccafs.marlo.ocs.ws.client.FileTransfer[] getMarloAgreeDocument(java.lang.String agreementId) throws java.rmi.RemoteException{
     if (wSMarlo == null)
       _initWSMarloProxy();
     return wSMarlo.getMarloAgreeDocument(agreementId);

@@ -37,6 +37,8 @@
 		<pusher-http-java>1.0.0</pusher-http-java>
 		<log-properties>0.9.28</log-properties>
 		<pentaho-report.version>6.1.0.1-196</pentaho-report.version>
+	  <org-apache-axis.version>1.4</org-apache-axis.version> 
+	  <javax-xml.version>1.1</javax-xml.version>
 	</properties>
 
 	<developers>
@@ -459,17 +461,17 @@
     <version>2.4.0</version>
 </dependency>
 
-<!-- https://mvnrepository.com/artifact/org.apache.axis/axis -->
+<!-- library to ws client -->
 <dependency>
     <groupId>org.apache.axis</groupId>
     <artifactId>axis</artifactId>
-    <version>1.4</version>
+    <version>${org-apache-axis.version}</version>
 </dependency>
-
+<!-- library to cast xml to object -->
 <dependency>
     <groupId>javax.xml</groupId>
     <artifactId>jaxrpc-api</artifactId>
-    <version>1.1</version>
+    <version>${javax-xml.version}</version>
 </dependency>
 
 	</dependencies>

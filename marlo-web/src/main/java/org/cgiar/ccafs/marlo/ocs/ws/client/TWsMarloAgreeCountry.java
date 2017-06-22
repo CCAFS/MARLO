@@ -1,47 +1,47 @@
 /**
- * TWsMarloPlaCountry.java
+ * TWsMarloAgreeCountry.java
  *
  * This file was auto-generated from WSDL
  * by the Apache Axis 1.4 Apr 22, 2006 (06:55:48 PDT) WSDL2Java emitter.
  */
 
-package org.cgiar.ciat.abw.control.logic;
+package org.cgiar.ccafs.marlo.ocs.ws.client;
 
-public class TWsMarloPlaCountry  implements java.io.Serializable {
-    private org.cgiar.ciat.abw.control.logic.TWsMarloPlaCountryId id;
+public class TWsMarloAgreeCountry  implements java.io.Serializable {
+    private org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloAgreeCountryId id;
 
-    public TWsMarloPlaCountry() {
+    public TWsMarloAgreeCountry() {
     }
 
-    public TWsMarloPlaCountry(
-           org.cgiar.ciat.abw.control.logic.TWsMarloPlaCountryId id) {
+    public TWsMarloAgreeCountry(
+           org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloAgreeCountryId id) {
            this.id = id;
     }
 
 
     /**
-     * Gets the id value for this TWsMarloPlaCountry.
+     * Gets the id value for this TWsMarloAgreeCountry.
      * 
      * @return id
      */
-    public org.cgiar.ciat.abw.control.logic.TWsMarloPlaCountryId getId() {
+    public org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloAgreeCountryId getId() {
         return id;
     }
 
 
     /**
-     * Sets the id value for this TWsMarloPlaCountry.
+     * Sets the id value for this TWsMarloAgreeCountry.
      * 
      * @param id
      */
-    public void setId(org.cgiar.ciat.abw.control.logic.TWsMarloPlaCountryId id) {
+    public void setId(org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloAgreeCountryId id) {
         this.id = id;
     }
 
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
-        if (!(obj instanceof TWsMarloPlaCountry)) return false;
-        TWsMarloPlaCountry other = (TWsMarloPlaCountry) obj;
+        if (!(obj instanceof TWsMarloAgreeCountry)) return false;
+        TWsMarloAgreeCountry other = (TWsMarloAgreeCountry) obj;
         if (obj == null) return false;
         if (this == obj) return true;
         if (__equalsCalc != null) {
@@ -73,14 +73,14 @@ public class TWsMarloPlaCountry  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(TWsMarloPlaCountry.class, true);
+        new org.apache.axis.description.TypeDesc(TWsMarloAgreeCountry.class, true);
 
     static {
-        typeDesc.setXmlType(new javax.xml.namespace.QName("http://logic.control.abw.ciat.cgiar.org/", "tWsMarloPlaCountry"));
+        typeDesc.setXmlType(new javax.xml.namespace.QName("http://logic.control.abw.ciat.cgiar.org/", "tWsMarloAgreeCountry"));
         org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("id");
         elemField.setXmlName(new javax.xml.namespace.QName("", "id"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://logic.control.abw.ciat.cgiar.org/", "tWsMarloPlaCountryId"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://logic.control.abw.ciat.cgiar.org/", "tWsMarloAgreeCountryId"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
