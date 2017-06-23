@@ -1,3 +1,17 @@
+/*****************************************************************
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
+ * MARLO is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * at your option) any later version.
+ * MARLO is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
+ *****************************************************************/
 
 package org.cgiar.ccafs.marlo.ocs.ws.client;
 
@@ -7,9 +21,10 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for tWsMarloAgreeCrp complex type.
- * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * Java class for tWsMarloAgreeCrp complex type.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="tWsMarloAgreeCrp">
@@ -22,39 +37,33 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tWsMarloAgreeCrp", propOrder = {
-    "id"
-})
+@XmlType(name = "tWsMarloAgreeCrp", propOrder = {"id"})
 public class TWsMarloAgreeCrp {
 
-    protected TWsMarloAgreeCrpId id;
+  protected TWsMarloAgreeCrpId id;
 
-    /**
-     * Gets the value of the id property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link TWsMarloAgreeCrpId }
-     *     
-     */
-    public TWsMarloAgreeCrpId getId() {
-        return id;
-    }
+  /**
+   * Gets the value of the id property.
+   * 
+   * @return
+   *         possible object is
+   *         {@link TWsMarloAgreeCrpId }
+   */
+  public TWsMarloAgreeCrpId getId() {
+    return id;
+  }
 
-    /**
-     * Sets the value of the id property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link TWsMarloAgreeCrpId }
-     *     
-     */
-    public void setId(TWsMarloAgreeCrpId value) {
-        this.id = value;
-    }
+  /**
+   * Sets the value of the id property.
+   * 
+   * @param value
+   *        allowed object is
+   *        {@link TWsMarloAgreeCrpId }
+   */
+  public void setId(TWsMarloAgreeCrpId value) {
+    this.id = value;
+  }
 
 }
