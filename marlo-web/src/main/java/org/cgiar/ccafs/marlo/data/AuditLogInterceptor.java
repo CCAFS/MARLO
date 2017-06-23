@@ -329,7 +329,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
                 if (audit.isActive()) {
                   try {
                     String name = audit.getClass().getName();
-                    Class className = Class.forName(name);
+                    Class<?> className = Class.forName(name);
 
                     Object obj = dao.find(className, (Serializable) audit.getId());
 

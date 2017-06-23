@@ -30,7 +30,7 @@ import org.hibernate.cfg.Configuration;
 
 public class HibernateListener implements ServletContextListener {
 
-  private static Class clazz = HibernateListener.class;
+  private static Class<?> clazz = HibernateListener.class;
   public static final String KEY_NAME = clazz.getName();
   private Configuration config;
   private SessionFactory factory;

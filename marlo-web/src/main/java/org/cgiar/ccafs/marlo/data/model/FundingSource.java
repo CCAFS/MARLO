@@ -36,6 +36,8 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   @Expose
   private BudgetType budgetType;
 
+  @Expose
+  private Boolean w1w2;
 
   @Expose
   private String contactPersonEmail;
@@ -44,9 +46,9 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   @Expose
   private String contactPersonName;
 
-
   @Expose
   private User createdBy;
+
 
   @Expose
   private Crp crp;
@@ -54,7 +56,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   @Expose
   private String description;
-
 
   @Expose
   private Date endDate;
@@ -304,7 +305,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return sectionStatuses;
   }
 
-
   public Date getStartDate() {
     return startDate;
   }
@@ -329,6 +329,11 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   public String getTitle() {
     return title;
+  }
+
+
+  public Boolean getW1w2() {
+    return w1w2;
   }
 
 
@@ -463,10 +468,10 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     this.sectionStatuses = sectionStatuses;
   }
 
-
   public void setStartDate(Date startDate) {
     this.startDate = startDate;
   }
+
 
   public void setStatus(Integer status) {
     this.status = status;
@@ -474,6 +479,10 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   public void setTitle(String title) {
     this.title = title;
+  }
+
+  public void setW1w2(Boolean w1w2) {
+    this.w1w2 = w1w2;
   }
 
 

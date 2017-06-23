@@ -28,6 +28,7 @@
   
   <h4 class="headTitle">General information</h4> 
     <div class="borderBox informationWrapper">
+
       [#-- Finance code --]
       <div class="form-group row">
         <div class="col-md-offset-6 col-md-6">
@@ -53,7 +54,10 @@
         </div>
         <div id="metadata-output"></div>
       </div>
-      
+
+      [#-- Loading --]
+      <div class="loading" style="display:none"></div>
+
       [#-- Project title --]
       <div class="form-group metadataElement-description">
         [@customForm.input name="fundingSource.title" i18nkey="projectCofunded.title" className="limitWords-40 metadataValue" required=true editable=editable /] 
@@ -91,7 +95,25 @@
       <div class="form-group">
         <div class="row">
           <div class="col-md-6">[@customForm.select name="fundingSource.status" i18nkey="projectCofunded.agreementStatus" className="agreementStatus"  listName="status" keyFieldName=""  displayFieldName="" header=false editable=editable /] </div>
-          <div class="col-md-6">[@customForm.select name="fundingSource.budgetType.id" i18nkey="projectCofunded.type" className="type" listName="budgetTypes" header=false required=true editable=editable && action.canEditType() /]</div>
+          <div class="col-md-6">
+            [@customForm.select name="fundingSource.budgetType.id" i18nkey="projectCofunded.type" className="type" listName="budgetTypes" header=false required=true editable=editable && action.canEditType() /]
+            [#-- W1W2 Tag --]
+            [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')]
+              [#assign isW1W2 = (fundingSource.budgetType.id == 1)!false /]
+              [#assign w1w2TagValue = (fundingSource.w1w2)!false /]
+              <div class="w1w2-tag" style="display:${isW1W2?string('block','none')};">
+                <div class="checkbox dottedBox">
+                  <label for="w1w2-tag-input">
+                    [#if editable]
+                    <input type="checkbox" name="fundingSource.w1w2" value="true" id="w1w2-tag-input" [#if w1w2TagValue]checked[/#if]/>
+                    [#else]
+                       <img src="${baseUrl}/images/global/checked-${w1w2TagValue?string}.png" /> 
+                    [/#if]
+                    <small>[@customForm.text name="fundingSource.w1w2Tag" readText=!editable /]</small></label>
+                </div>
+              </div>
+            [/#if]
+          </div>
         </div>
       </div>
       
@@ -211,7 +233,7 @@
             <div class="clearfix"></div>
           </div>
           <br />
-          <h5 class="sectionSubTitle">Projects</h5>
+          <h5 class="sectionSubTitle">[@s.text name="fundingSource.projectsAssigned" /]:</h5>
           
           <table class="table">
           <thead>

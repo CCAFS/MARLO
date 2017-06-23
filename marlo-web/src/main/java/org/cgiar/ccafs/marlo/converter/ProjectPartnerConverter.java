@@ -39,7 +39,8 @@ public class ProjectPartnerConverter extends StrutsTypeConverter {
   }
 
   @Override
-  public Object convertFromString(Map context, String[] values, Class toClass) {
+  public Object convertFromString(@SuppressWarnings("rawtypes") Map context, String[] values,
+    @SuppressWarnings("rawtypes") Class toClass) {
     if (toClass == ProjectPartner.class) {
       String id = values[0];
       try {
@@ -56,7 +57,7 @@ public class ProjectPartnerConverter extends StrutsTypeConverter {
   }
 
   @Override
-  public String convertToString(Map context, Object o) {
+  public String convertToString(@SuppressWarnings("rawtypes") Map context, Object o) {
     if (o != null) {
       ProjectPartner projectPartner = (ProjectPartner) o;
       LOG.debug(">> convertToString > id = {} ", projectPartner.getId());

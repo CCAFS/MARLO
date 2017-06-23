@@ -112,8 +112,9 @@ public class FundingSourceValidator extends BaseValidator {
       action.getInvalidFields().put("input-fundingSource.endDate", InvalidFieldsMessages.EMPTYFIELD);
     }
 
-
-    if (fundingSource.getInstitution() == null || fundingSource.getInstitution().getId() == null) {
+    // Validate the donor with id -1, beacause front end send this when there is not one selected
+    if (fundingSource.getInstitution() == null || fundingSource.getInstitution().getId() == null
+      || fundingSource.getInstitution().getId().longValue() == -1) {
       this.addMessage(action.getText("fundingSource.institution.id"));
       action.getInvalidFields().put("input-fundingSource.institution.id", InvalidFieldsMessages.EMPTYFIELD);
     }

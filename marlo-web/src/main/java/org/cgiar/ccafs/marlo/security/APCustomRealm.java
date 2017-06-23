@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.authentication.Authenticator;
+import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import org.cgiar.ciat.auth.LDAPService;
 import org.cgiar.ciat.auth.LDAPUser;
@@ -68,6 +69,7 @@ public class APCustomRealm extends AuthorizingRealm {
 
   // Variables
   final AllowAllCredentialsMatcher credentialsMatcher = new AllowAllCredentialsMatcher();
+  private APConfig config;
 
 
   // Managers
@@ -83,12 +85,13 @@ public class APCustomRealm extends AuthorizingRealm {
 
   @Inject
   public APCustomRealm(UserManager userManager, UserRoleManager userRoleManager,
-    @Named("DB") Authenticator dbAuthenticator, @Named("LDAP") Authenticator ldapAuthenticator) {
+    @Named("DB") Authenticator dbAuthenticator, @Named("LDAP") Authenticator ldapAuthenticator, APConfig config) {
     super(new MemoryConstrainedCacheManager());
     this.userManager = userManager;
     this.userRoleManager = userRoleManager;
     this.dbAuthenticator = dbAuthenticator;
     this.ldapAuthenticator = ldapAuthenticator;
+    this.config = config;
     this.setName("APCustomRealm");
   }
 
@@ -183,10 +186,20 @@ public class APCustomRealm extends AuthorizingRealm {
   }
 
   boolean getCgiarNickname(User user) {
-
-    LDAPUser ldapUser = new LDAPService().searchUserByEmail(user.getEmail());
+    // ldap createe instace
+    LDAPService service = new LDAPService();
+    // validate internal or external connection
+    if (config.isProduction()) {
+      service.setInternalConnection(false);
+    } else {
+      service.setInternalConnection(true);
+    }
+    // get info form LDAP User
+    LDAPUser ldapUser = service.searchUserByEmail(user.getEmail());
     if (ldapUser != null) {
+      // get the username from LDAP
       user.setUsername(ldapUser.getLogin().toLowerCase());
+      // Save user
       userManager.saveUser(user, user);
       return true;
     } else {

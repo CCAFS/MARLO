@@ -64,7 +64,7 @@ public final class APConstants {
   public static final String CRP_PARAMETERS = "crp_parameters";
   public static final String CRP_PARTNER_CONTRIBUTIONS = "crp_partner_contribution";
   public static final String CRP_PC_ROLE = "crp_pc_rol";
-
+  public static final String CRP_FS_W1W2_COFINANCING = "crp_fs_w1w2_cofinancing";
   public static final String CRP_PL_ROLE = "crp_pl_rol";
   public static final String CRP_PLANNING_ACTIVE = "crp_planning_active";
   public static final String CRP_PLANNING_YEAR = "crp_planning_year";
@@ -81,6 +81,9 @@ public final class APConstants {
   public static final String CUSTOM_FILE = "global";
   public static final String CUSTOM_LAGUAGE = "en";
   public static final String CRP_CLUSTER_LEADER = "crp_cluster_leader";
+  public static final String CRP_NEXT_USERS = "crp_next_users";
+  // Email parameters to copy to FL FM CL
+  public static final String CRP_EMAIL_CC_FL_FM_CL = "crp_email_cc_fl_fm_cl";
 
   public static final String CYCLE = "cycle";
   // Date Formats
@@ -335,4 +338,6 @@ public final class APConstants {
     return FILTER_BY;
   }
 
+
 }
+

@@ -31,8 +31,6 @@ import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
 import org.cgiar.ccafs.marlo.data.model.Institution;
-import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
-import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.text.SimpleDateFormat;
@@ -66,6 +64,10 @@ public class FundingSourceAddAction extends BaseAction {
   private static String CONTACT_NAME = "contactName";
   private static String CONTACT_EMAIL = "contactEmail";
   private static String DONOR = "institution";
+  private static String LEADER = "liaisonInstitution";
+
+  private static String W1W2 = "w1w2";
+
   private static String CENTER_TYPE = "cofundedMode";
   private static String TYPE = "budgetType";
   private static String BUDGETS = "budgets";
@@ -130,6 +132,14 @@ public class FundingSourceAddAction extends BaseAction {
     fundingSource.setContactPersonEmail(StringUtils.trim(((String[]) parameters.get(CONTACT_EMAIL))[0]));
     fundingSource.setContactPersonName(StringUtils.trim(((String[]) parameters.get(CONTACT_NAME))[0]));
 
+
+    try {
+      fundingSource.setW1w2(Boolean.parseBoolean(StringUtils.trim(((String[]) parameters.get(W1W2))[0])));
+    } catch (Exception e2) {
+      fundingSource.setW1w2(null);
+    }
+
+
     fundingSource.setStatus(Integer.parseInt(StringUtils.trim(((String[]) parameters.get(STATUS))[0])));
     try {
       fundingSource
@@ -156,31 +166,43 @@ public class FundingSourceAddAction extends BaseAction {
 
     long fundingSourceID = fundingSourceManager.saveFundingSource(fundingSource);
 
+    /*
+     * LiaisonUser user = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId(), loggedCrp.getId());
+     * if (user != null) {
+     * LiaisonInstitution liaisonInstitution = user.getLiaisonInstitution();
+     * try {
+     * if (liaisonInstitution != null && liaisonInstitution.getInstitution() != null) {
+     * Institution institution = institutionManager.getInstitutionById(liaisonInstitution.getInstitution().getId());
+     * FundingSourceInstitution fundingSourceInstitution = new FundingSourceInstitution();
+     * fundingSourceInstitution.setFundingSource(fundingSource);
+     * fundingSourceInstitution.setInstitution(institution);
+     * fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
+     * }
+     * } catch (Exception e) {
+     * }
+     * }
+     */
 
-    LiaisonUser user = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId(), loggedCrp.getId());
-    if (user != null) {
-      LiaisonInstitution liaisonInstitution = user.getLiaisonInstitution();
-      try {
-        if (liaisonInstitution != null && liaisonInstitution.getInstitution() != null) {
-          Institution institution = institutionManager.getInstitutionById(liaisonInstitution.getInstitution().getId());
 
-          FundingSourceInstitution fundingSourceInstitution = new FundingSourceInstitution();
-          fundingSourceInstitution.setFundingSource(fundingSource);
+    Institution institution =
+      institutionManager.getInstitutionById(Long.parseLong(StringUtils.trim(((String[]) parameters.get(LEADER))[0])));
 
-          fundingSourceInstitution.setInstitution(institution);
-          fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
-        }
-      } catch (Exception e) {
+    FundingSourceInstitution fundingSourceInstitution = new FundingSourceInstitution();
+    fundingSourceInstitution.setFundingSource(fundingSource);
 
-      }
-    }
+    fundingSourceInstitution.setInstitution(institution);
+    fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
+
 
     fundingSource = fundingSourceManager.getFundingSourceById(fundingSourceID);
+
     double remaining = 0;
     boolean hasYear = false;
     boolean hasAmount = false;
     FundingSourceBudget fundingSourceBudget = null;
-    for (String comaString : budgets.split(",")) {
+    for (String comaString : budgets.split(","))
+
+    {
 
       String[] value = comaString.split(":");
 
@@ -225,19 +247,24 @@ public class FundingSourceAddAction extends BaseAction {
     }
 
 
-    if (fundingSourceID > 0) {
+    if (fundingSourceID > 0)
+
+    {
       fsProp.put("id", fundingSourceID);
       fsProp.put("title", fundingSource.getDescription());
       fsProp.put("ammount", remaining);
       fsProp.put("type", budgetType.getName());
       fsProp.put("typeID", budgetType.getId());
       fsProp.put("status", "OK");
-    } else {
+    } else
+
+    {
       fsProp.put("status", "FAIL");
       fsProp.put("message", this.getText("manageUsers.email.notAdded"));
     }
 
     return SUCCESS;
+
   }
 
 

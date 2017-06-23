@@ -41,8 +41,8 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
   }
 
   @Override
-  public String amountByBudgetType(long institutionId, int year, long budgetType, long projectId) {
-    return projectBudgetDAO.amountByBudgetType(institutionId, year, budgetType, projectId);
+  public String amountByBudgetType(long institutionId, int year, long budgetType, long projectId, Integer coFinancing) {
+    return projectBudgetDAO.amountByBudgetType(institutionId, year, budgetType, projectId, coFinancing);
   }
 
   @Override
@@ -65,8 +65,9 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
   }
 
   @Override
-  public List<ProjectBudget> getByParameters(long institutionID, int year, long budgetTypeId, long projectId) {
-    return projectBudgetDAO.getByParameters(institutionID, year, budgetTypeId, projectId);
+  public List<ProjectBudget> getByParameters(long institutionID, int year, long budgetTypeId, long projectId,
+    Integer coFinancing) {
+    return projectBudgetDAO.getByParameters(institutionID, year, budgetTypeId, projectId, coFinancing);
   }
 
   @Override

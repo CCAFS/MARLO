@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.cgiar.ccafs</groupId>
 		<artifactId>marlo</artifactId>
-		<version>4.1.5-SNAPSHOT</version>
+		<version>4.1.6-SNAPSHOT</version>
 	</parent>
 	<artifactId>marlo-web</artifactId>
 	<packaging>war</packaging>
@@ -70,7 +70,7 @@
 		<dependency>
 			<groupId>org.cgiar.ccafs</groupId>
 			<artifactId>marlo-utils</artifactId>
-			<version>4.1.5-SNAPSHOT</version>
+			<version>4.1.6-SNAPSHOT</version>
 		</dependency>
 		<!-- End of project dependecies -->
 		<!-- STRUTS 2 - Framework Core -->

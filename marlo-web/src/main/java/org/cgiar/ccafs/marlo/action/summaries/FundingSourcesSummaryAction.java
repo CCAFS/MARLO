@@ -87,6 +87,7 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
   private Boolean showPIEmail;
   private Boolean showIfpriDivision;
   private long startTime;
+  private Boolean hasW1W2Co;
   // Managers
   private CrpManager crpManager;
   private CrpProgramManager programManager;
@@ -328,6 +329,9 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
 
 
       String fsWindow = fundingSource.getBudgetType().getName();
+      if (hasW1W2Co && fundingSource.getW1w2() != null && fundingSource.getW1w2()) {
+        fsWindow = "W1/W2 Co-Financing";
+      }
       if (fundingSource.getInstitution() != null) {
         donor = fundingSource.getInstitution().getComposedName();
       }
@@ -468,6 +472,9 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
         }
       }
       String fsWindow = fundingSource.getBudgetType().getName();
+      if (hasW1W2Co && fundingSource.getW1w2() != null && fundingSource.getW1w2()) {
+        fsWindow = "W1/W2 Co-Financing";
+      }
 
 
       String projectId = "";
@@ -646,7 +653,7 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
         + e.getMessage());
       this.showIfpriDivision = false;
     }
-
+    hasW1W2Co = this.hasSpecificities(APConstants.CRP_FS_W1W2_COFINANCING);
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
     LOG.info(
