@@ -43,8 +43,6 @@ import java.util.Map;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.handler.MessageContext;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,11 +62,9 @@ public class MarloOcsClient {
 
   /**
    * @param agreementID the id to search
-   * @return Json structure with the info of the agreement
+   * @return AgreementOCS object with all the info
    */
-  public String getagreement(String agreementID) {
-    Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
-    String jsontoRet = null;
+  public AgreementOCS getagreement(String agreementID) {
     AgreementOCS agreementOCS = new AgreementOCS();
     this.loadBasicInfo(agreementID, agreementOCS);
     this.loadCountries(agreementID, agreementOCS);
@@ -77,11 +73,8 @@ public class MarloOcsClient {
     if (agreementOCS.getId() == null) {
       return null;
     } else {
-      jsontoRet = gson.toJson(agreementOCS);
-      return jsontoRet;
+      return agreementOCS;
     }
-
-
   }
 
 

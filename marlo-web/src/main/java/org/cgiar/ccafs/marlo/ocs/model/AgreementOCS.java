@@ -19,6 +19,8 @@ package org.cgiar.ccafs.marlo.ocs.model;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.struts2.json.annotations.JSON;
+
 public class AgreementOCS {
 
 
@@ -31,6 +33,7 @@ public class AgreementOCS {
   private String shortTitle;
   private String objectives;
   private String grantAmount;
+
   private Date startDate;
   private Date endDate;
   private Date extensionDate;
@@ -63,12 +66,12 @@ public class AgreementOCS {
     return donor;
   }
 
-
+  @JSON(format = "yyyy-MM-dd")
   public Date getEndDate() {
     return endDate;
   }
 
-
+  @JSON(format = "yyyy-MM-dd")
   public Date getExtensionDate() {
     return extensionDate;
   }
@@ -108,7 +111,7 @@ public class AgreementOCS {
     return shortTitle;
   }
 
-
+  @JSON(format = "yyyy-MM-dd")
   public Date getStartDate() {
     return startDate;
   }
