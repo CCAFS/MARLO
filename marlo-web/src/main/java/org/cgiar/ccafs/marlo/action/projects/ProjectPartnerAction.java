@@ -607,7 +607,7 @@ public class ProjectPartnerAction extends BaseAction {
       }
     }
 
- // Copy to FL, CL and FM depending on CRP_EMAIL_CC_FL_FM_CL specificity
+    // Copy to FL, CL and FM depending on CRP_EMAIL_CC_FL_FM_CL specificity
     if (this.hasSpecificities(APConstants.CRP_EMAIL_CC_FL_FM_CL)) {
       // CC for leaders and coordinators
       // CC will be also the Management Liaison associated with the flagship(s), if is PMU only the PMU contact
@@ -748,7 +748,7 @@ public class ProjectPartnerAction extends BaseAction {
               .addAll(historyComparator.getDifferencesList(projectPartnerContribution, transaction, specialList,
                 "project.partners[" + i + "].partnerContributors[" + k + "]", "project.partnerContributors", 2));
             k++;
-          } ;
+          };
 
           List<ProjectPartnerOverall> overalls =
             projectPartner.getProjectPartnerOveralls().stream().filter(c -> c.isActive()).collect(Collectors.toList());
@@ -1407,7 +1407,10 @@ public class ProjectPartnerAction extends BaseAction {
 
 
             // Notifying user is assigned as Project Leader/Coordinator.
-            this.notifyRoleAssigned(projectPartnerPerson.getUser(), role);
+            if (projectPartnerPerson.getUser() != null) {
+              this.notifyRoleAssigned(projectPartnerPerson.getUser(), role);
+            }
+
           }
         }
 
@@ -1521,8 +1524,11 @@ public class ProjectPartnerAction extends BaseAction {
       }
 
 
+      if (partnerPerson.getUser() != null) {
+        this.notifyRoleAssigned(partnerPerson.getUser(), role);
+      }
       // Notifying user is assigned as Project Leader/Coordinator.
-      this.notifyRoleAssigned(partnerPerson.getUser(), role);
+
     } else if (previousPartnerPerson != null && partnerPerson == null) {
 
       List<UserRole> rolesUser = userRoleManager.getUserRolesByUserId(previousPartnerPerson.getUser().getId());
@@ -1556,8 +1562,9 @@ public class ProjectPartnerAction extends BaseAction {
           this.addCrpUser(partnerPerson.getUser());
         }
         // Notifying user is assigned as Project Leader/Coordinator.
-        this.notifyRoleAssigned(partnerPerson.getUser(), role);
-        // Deleting role.
+        if (partnerPerson.getUser() != null) {
+          this.notifyRoleAssigned(partnerPerson.getUser(), role);
+        } // Deleting role.
         List<UserRole> rolesUser = userRoleManager.getUserRolesByUserId(previousPartnerPerson.getUser().getId());
         if (rolesUser != null) {
           rolesUser =
