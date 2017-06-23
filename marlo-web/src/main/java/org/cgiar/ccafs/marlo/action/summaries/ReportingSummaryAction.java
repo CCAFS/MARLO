@@ -1343,7 +1343,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
               }
               if (deliverableDissemination.getRestrictedUseAgreement() != null
                 && deliverableDissemination.getRestrictedUseAgreement() == true) {
-                restrictedAccess = "Restricted Use Agreement - Restricted access (if so, what are these periods?)";
+                restrictedAccess = "Restricted Use AgreementOCS - Restricted access (if so, what are these periods?)";
                 isLastTwoRestricted = true;
                 if (deliverableDissemination.getRestrictedAccessUntil() != null) {
                   restrictedDate =

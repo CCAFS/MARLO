@@ -1,130 +1,60 @@
-/*****************************************************************
- * This file is part of Managing Agricultural Research for Learning &
- * Outcomes Platform (MARLO).
- * MARLO is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * at your option) any later version.
- * MARLO is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License
- * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
- *****************************************************************/
-
 
 package org.cgiar.ccafs.marlo.ocs.ws.client;
 
-public class TWsMarloPlaCountry implements java.io.Serializable {
-
-  // Type metadata
-  private static org.apache.axis.description.TypeDesc typeDesc =
-    new org.apache.axis.description.TypeDesc(TWsMarloPlaCountry.class, true);
-
-  static {
-    typeDesc
-      .setXmlType(new javax.xml.namespace.QName("http://logic.control.abw.ciat.cgiar.org/", "tWsMarloPlaCountry"));
-    org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
-    elemField.setFieldName("id");
-    elemField.setXmlName(new javax.xml.namespace.QName("", "id"));
-    elemField
-      .setXmlType(new javax.xml.namespace.QName("http://logic.control.abw.ciat.cgiar.org/", "tWsMarloPlaCountryId"));
-    elemField.setMinOccurs(0);
-    elemField.setNillable(false);
-    typeDesc.addFieldDesc(elemField);
-  }
-
-  /**
-   * Get Custom Deserializer
-   */
-  public static org.apache.axis.encoding.Deserializer getDeserializer(java.lang.String mechType,
-    java.lang.Class _javaType, javax.xml.namespace.QName _xmlType) {
-    return new org.apache.axis.encoding.ser.BeanDeserializer(_javaType, _xmlType, typeDesc);
-  }
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlType;
 
 
-  /**
-   * Get Custom Serializer
-   */
-  public static org.apache.axis.encoding.Serializer getSerializer(java.lang.String mechType, java.lang.Class _javaType,
-    javax.xml.namespace.QName _xmlType) {
-    return new org.apache.axis.encoding.ser.BeanSerializer(_javaType, _xmlType, typeDesc);
-  }
+/**
+ * <p>Java class for tWsMarloPlaCountry complex type.
+ * 
+ * <p>The following schema fragment specifies the expected content contained within this class.
+ * 
+ * <pre>
+ * &lt;complexType name="tWsMarloPlaCountry">
+ *   &lt;complexContent>
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *       &lt;sequence>
+ *         &lt;element name="id" type="{http://logic.control.abw.ciat.cgiar.org/}tWsMarloPlaCountryId" minOccurs="0"/>
+ *       &lt;/sequence>
+ *     &lt;/restriction>
+ *   &lt;/complexContent>
+ * &lt;/complexType>
+ * </pre>
+ * 
+ * 
+ */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "tWsMarloPlaCountry", propOrder = {
+    "id"
+})
+public class TWsMarloPlaCountry {
 
+    protected TWsMarloPlaCountryId id;
 
-  /**
-   * Return type metadata object
-   */
-  public static org.apache.axis.description.TypeDesc getTypeDesc() {
-    return typeDesc;
-  }
-
-  private org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloPlaCountryId id;
-  private java.lang.Object __equalsCalc = null;
-
-  private boolean __hashCodeCalc = false;
-
-  public TWsMarloPlaCountry() {
-  }
-
-  public TWsMarloPlaCountry(org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloPlaCountryId id) {
-    this.id = id;
-  }
-
-  @Override
-  public synchronized boolean equals(java.lang.Object obj) {
-    if (!(obj instanceof TWsMarloPlaCountry)) {
-      return false;
+    /**
+     * Gets the value of the id property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link TWsMarloPlaCountryId }
+     *     
+     */
+    public TWsMarloPlaCountryId getId() {
+        return id;
     }
-    TWsMarloPlaCountry other = (TWsMarloPlaCountry) obj;
-    if (obj == null) {
-      return false;
-    }
-    if (this == obj) {
-      return true;
-    }
-    if (__equalsCalc != null) {
-      return (__equalsCalc == obj);
-    }
-    __equalsCalc = obj;
-    boolean _equals;
-    _equals =
-      true && ((this.id == null && other.getId() == null) || (this.id != null && this.id.equals(other.getId())));
-    __equalsCalc = null;
-    return _equals;
-  }
 
-  /**
-   * Gets the id value for this TWsMarloPlaCountry.
-   * 
-   * @return id
-   */
-  public org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloPlaCountryId getId() {
-    return id;
-  }
-
-  @Override
-  public synchronized int hashCode() {
-    if (__hashCodeCalc) {
-      return 0;
+    /**
+     * Sets the value of the id property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link TWsMarloPlaCountryId }
+     *     
+     */
+    public void setId(TWsMarloPlaCountryId value) {
+        this.id = value;
     }
-    __hashCodeCalc = true;
-    int _hashCode = 1;
-    if (this.getId() != null) {
-      _hashCode += this.getId().hashCode();
-    }
-    __hashCodeCalc = false;
-    return _hashCode;
-  }
-
-  /**
-   * Sets the id value for this TWsMarloPlaCountry.
-   * 
-   * @param id
-   */
-  public void setId(org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloPlaCountryId id) {
-    this.id = id;
-  }
 
 }

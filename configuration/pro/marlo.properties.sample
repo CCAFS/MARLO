@@ -78,3 +78,7 @@ log.file=true
 log.production=true
 #Test log shows logs of all types trace, debug, info, warn and error 
 log.test=false
+#OCS Ws config
+ocs.link=link ws
+ocs.user=user ws
+ocs.password=password ws

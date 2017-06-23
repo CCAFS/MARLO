@@ -1,236 +1,141 @@
-/*****************************************************************
- * This file is part of Managing Agricultural Research for Learning &
- * Outcomes Platform (MARLO).
- * MARLO is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * at your option) any later version.
- * MARLO is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License
- * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
- *****************************************************************/
-
 
 package org.cgiar.ccafs.marlo.ocs.ws.client;
 
-public class TWsMarloAgreeCrpId implements java.io.Serializable {
-
-  // Type metadata
-  private static org.apache.axis.description.TypeDesc typeDesc =
-    new org.apache.axis.description.TypeDesc(TWsMarloAgreeCrpId.class, true);
-
-  static {
-    typeDesc
-      .setXmlType(new javax.xml.namespace.QName("http://logic.control.abw.ciat.cgiar.org/", "tWsMarloAgreeCrpId"));
-    org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
-    elemField.setFieldName("agreementId");
-    elemField.setXmlName(new javax.xml.namespace.QName("", "agreementId"));
-    elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
-    elemField.setMinOccurs(0);
-    elemField.setNillable(false);
-    typeDesc.addFieldDesc(elemField);
-    elemField = new org.apache.axis.description.ElementDesc();
-    elemField.setFieldName("crp");
-    elemField.setXmlName(new javax.xml.namespace.QName("", "crp"));
-    elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
-    elemField.setMinOccurs(0);
-    elemField.setNillable(false);
-    typeDesc.addFieldDesc(elemField);
-    elemField = new org.apache.axis.description.ElementDesc();
-    elemField.setFieldName("crpText");
-    elemField.setXmlName(new javax.xml.namespace.QName("", "crpText"));
-    elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
-    elemField.setMinOccurs(0);
-    elemField.setNillable(false);
-    typeDesc.addFieldDesc(elemField);
-    elemField = new org.apache.axis.description.ElementDesc();
-    elemField.setFieldName("percentage");
-    elemField.setXmlName(new javax.xml.namespace.QName("", "percentage"));
-    elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "double"));
-    elemField.setMinOccurs(0);
-    elemField.setNillable(false);
-    typeDesc.addFieldDesc(elemField);
-  }
-
-  /**
-   * Get Custom Deserializer
-   */
-  public static org.apache.axis.encoding.Deserializer getDeserializer(java.lang.String mechType,
-    java.lang.Class _javaType, javax.xml.namespace.QName _xmlType) {
-    return new org.apache.axis.encoding.ser.BeanDeserializer(_javaType, _xmlType, typeDesc);
-  }
-
-  /**
-   * Get Custom Serializer
-   */
-  public static org.apache.axis.encoding.Serializer getSerializer(java.lang.String mechType, java.lang.Class _javaType,
-    javax.xml.namespace.QName _xmlType) {
-    return new org.apache.axis.encoding.ser.BeanSerializer(_javaType, _xmlType, typeDesc);
-  }
-
-  /**
-   * Return type metadata object
-   */
-  public static org.apache.axis.description.TypeDesc getTypeDesc() {
-    return typeDesc;
-  }
-
-  private java.lang.String agreementId;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlType;
 
 
-  private java.lang.String crp;
+/**
+ * <p>Java class for tWsMarloAgreeCrpId complex type.
+ * 
+ * <p>The following schema fragment specifies the expected content contained within this class.
+ * 
+ * <pre>
+ * &lt;complexType name="tWsMarloAgreeCrpId">
+ *   &lt;complexContent>
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *       &lt;sequence>
+ *         &lt;element name="agreementId" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="crp" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="crpText" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="percentage" type="{http://www.w3.org/2001/XMLSchema}double" minOccurs="0"/>
+ *       &lt;/sequence>
+ *     &lt;/restriction>
+ *   &lt;/complexContent>
+ * &lt;/complexType>
+ * </pre>
+ * 
+ * 
+ */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "tWsMarloAgreeCrpId", propOrder = {
+    "agreementId",
+    "crp",
+    "crpText",
+    "percentage"
+})
+public class TWsMarloAgreeCrpId {
 
+    protected String agreementId;
+    protected String crp;
+    protected String crpText;
+    protected Double percentage;
 
-  private java.lang.String crpText;
-
-
-  private java.lang.Double percentage;
-
-
-  private java.lang.Object __equalsCalc = null;
-
-
-  private boolean __hashCodeCalc = false;
-
-
-  public TWsMarloAgreeCrpId() {
-  }
-
-
-  public TWsMarloAgreeCrpId(java.lang.String agreementId, java.lang.String crp, java.lang.String crpText,
-    java.lang.Double percentage) {
-    this.agreementId = agreementId;
-    this.crp = crp;
-    this.crpText = crpText;
-    this.percentage = percentage;
-  }
-
-
-  @Override
-  public synchronized boolean equals(java.lang.Object obj) {
-    if (!(obj instanceof TWsMarloAgreeCrpId)) {
-      return false;
+    /**
+     * Gets the value of the agreementId property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getAgreementId() {
+        return agreementId;
     }
-    TWsMarloAgreeCrpId other = (TWsMarloAgreeCrpId) obj;
-    if (obj == null) {
-      return false;
+
+    /**
+     * Sets the value of the agreementId property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setAgreementId(String value) {
+        this.agreementId = value;
     }
-    if (this == obj) {
-      return true;
+
+    /**
+     * Gets the value of the crp property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getCrp() {
+        return crp;
     }
-    if (__equalsCalc != null) {
-      return (__equalsCalc == obj);
+
+    /**
+     * Sets the value of the crp property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setCrp(String value) {
+        this.crp = value;
     }
-    __equalsCalc = obj;
-    boolean _equals;
-    _equals = true
-      && ((this.agreementId == null && other.getAgreementId() == null)
-        || (this.agreementId != null && this.agreementId.equals(other.getAgreementId())))
-      && ((this.crp == null && other.getCrp() == null) || (this.crp != null && this.crp.equals(other.getCrp())))
-      && ((this.crpText == null && other.getCrpText() == null)
-        || (this.crpText != null && this.crpText.equals(other.getCrpText())))
-      && ((this.percentage == null && other.getPercentage() == null)
-        || (this.percentage != null && this.percentage.equals(other.getPercentage())));
-    __equalsCalc = null;
-    return _equals;
-  }
 
-  /**
-   * Gets the agreementId value for this TWsMarloAgreeCrpId.
-   * 
-   * @return agreementId
-   */
-  public java.lang.String getAgreementId() {
-    return agreementId;
-  }
-
-  /**
-   * Gets the crp value for this TWsMarloAgreeCrpId.
-   * 
-   * @return crp
-   */
-  public java.lang.String getCrp() {
-    return crp;
-  }
-
-  /**
-   * Gets the crpText value for this TWsMarloAgreeCrpId.
-   * 
-   * @return crpText
-   */
-  public java.lang.String getCrpText() {
-    return crpText;
-  }
-
-  /**
-   * Gets the percentage value for this TWsMarloAgreeCrpId.
-   * 
-   * @return percentage
-   */
-  public java.lang.Double getPercentage() {
-    return percentage;
-  }
-
-  @Override
-  public synchronized int hashCode() {
-    if (__hashCodeCalc) {
-      return 0;
+    /**
+     * Gets the value of the crpText property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getCrpText() {
+        return crpText;
     }
-    __hashCodeCalc = true;
-    int _hashCode = 1;
-    if (this.getAgreementId() != null) {
-      _hashCode += this.getAgreementId().hashCode();
-    }
-    if (this.getCrp() != null) {
-      _hashCode += this.getCrp().hashCode();
-    }
-    if (this.getCrpText() != null) {
-      _hashCode += this.getCrpText().hashCode();
-    }
-    if (this.getPercentage() != null) {
-      _hashCode += this.getPercentage().hashCode();
-    }
-    __hashCodeCalc = false;
-    return _hashCode;
-  }
 
-  /**
-   * Sets the agreementId value for this TWsMarloAgreeCrpId.
-   * 
-   * @param agreementId
-   */
-  public void setAgreementId(java.lang.String agreementId) {
-    this.agreementId = agreementId;
-  }
+    /**
+     * Sets the value of the crpText property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setCrpText(String value) {
+        this.crpText = value;
+    }
 
-  /**
-   * Sets the crp value for this TWsMarloAgreeCrpId.
-   * 
-   * @param crp
-   */
-  public void setCrp(java.lang.String crp) {
-    this.crp = crp;
-  }
+    /**
+     * Gets the value of the percentage property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Double }
+     *     
+     */
+    public Double getPercentage() {
+        return percentage;
+    }
 
-  /**
-   * Sets the crpText value for this TWsMarloAgreeCrpId.
-   * 
-   * @param crpText
-   */
-  public void setCrpText(java.lang.String crpText) {
-    this.crpText = crpText;
-  }
-
-  /**
-   * Sets the percentage value for this TWsMarloAgreeCrpId.
-   * 
-   * @param percentage
-   */
-  public void setPercentage(java.lang.Double percentage) {
-    this.percentage = percentage;
-  }
+    /**
+     * Sets the value of the percentage property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Double }
+     *     
+     */
+    public void setPercentage(Double value) {
+        this.percentage = value;
+    }
 
 }

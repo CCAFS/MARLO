@@ -1,237 +1,141 @@
-/*****************************************************************
- * This file is part of Managing Agricultural Research for Learning &
- * Outcomes Platform (MARLO).
- * MARLO is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * at your option) any later version.
- * MARLO is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License
- * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
- *****************************************************************/
-
 
 package org.cgiar.ccafs.marlo.ocs.ws.client;
 
-public class TWsMarloAgreeCountryId implements java.io.Serializable {
-
-  // Type metadata
-  private static org.apache.axis.description.TypeDesc typeDesc =
-    new org.apache.axis.description.TypeDesc(TWsMarloAgreeCountryId.class, true);
-
-  static {
-    typeDesc
-      .setXmlType(new javax.xml.namespace.QName("http://logic.control.abw.ciat.cgiar.org/", "tWsMarloAgreeCountryId"));
-    org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
-    elemField.setFieldName("agreementId");
-    elemField.setXmlName(new javax.xml.namespace.QName("", "agreementId"));
-    elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
-    elemField.setMinOccurs(0);
-    elemField.setNillable(false);
-    typeDesc.addFieldDesc(elemField);
-    elemField = new org.apache.axis.description.ElementDesc();
-    elemField.setFieldName("country");
-    elemField.setXmlName(new javax.xml.namespace.QName("", "country"));
-    elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
-    elemField.setMinOccurs(0);
-    elemField.setNillable(false);
-    typeDesc.addFieldDesc(elemField);
-    elemField = new org.apache.axis.description.ElementDesc();
-    elemField.setFieldName("countrytext");
-    elemField.setXmlName(new javax.xml.namespace.QName("", "countrytext"));
-    elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
-    elemField.setMinOccurs(0);
-    elemField.setNillable(false);
-    typeDesc.addFieldDesc(elemField);
-    elemField = new org.apache.axis.description.ElementDesc();
-    elemField.setFieldName("percentage");
-    elemField.setXmlName(new javax.xml.namespace.QName("", "percentage"));
-    elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "double"));
-    elemField.setMinOccurs(0);
-    elemField.setNillable(false);
-    typeDesc.addFieldDesc(elemField);
-  }
-
-  /**
-   * Get Custom Deserializer
-   */
-  public static org.apache.axis.encoding.Deserializer getDeserializer(java.lang.String mechType,
-    java.lang.Class _javaType, javax.xml.namespace.QName _xmlType) {
-    return new org.apache.axis.encoding.ser.BeanDeserializer(_javaType, _xmlType, typeDesc);
-  }
-
-  /**
-   * Get Custom Serializer
-   */
-  public static org.apache.axis.encoding.Serializer getSerializer(java.lang.String mechType, java.lang.Class _javaType,
-    javax.xml.namespace.QName _xmlType) {
-    return new org.apache.axis.encoding.ser.BeanSerializer(_javaType, _xmlType, typeDesc);
-  }
-
-  /**
-   * Return type metadata object
-   */
-  public static org.apache.axis.description.TypeDesc getTypeDesc() {
-    return typeDesc;
-  }
-
-  private java.lang.String agreementId;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlType;
 
 
-  private java.lang.String country;
+/**
+ * <p>Java class for tWsMarloAgreeCountryId complex type.
+ * 
+ * <p>The following schema fragment specifies the expected content contained within this class.
+ * 
+ * <pre>
+ * &lt;complexType name="tWsMarloAgreeCountryId">
+ *   &lt;complexContent>
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *       &lt;sequence>
+ *         &lt;element name="agreementId" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="country" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="countrytext" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="percentage" type="{http://www.w3.org/2001/XMLSchema}double" minOccurs="0"/>
+ *       &lt;/sequence>
+ *     &lt;/restriction>
+ *   &lt;/complexContent>
+ * &lt;/complexType>
+ * </pre>
+ * 
+ * 
+ */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "tWsMarloAgreeCountryId", propOrder = {
+    "agreementId",
+    "country",
+    "countrytext",
+    "percentage"
+})
+public class TWsMarloAgreeCountryId {
 
+    protected String agreementId;
+    protected String country;
+    protected String countrytext;
+    protected Double percentage;
 
-  private java.lang.String countrytext;
-
-
-  private java.lang.Double percentage;
-
-
-  private java.lang.Object __equalsCalc = null;
-
-
-  private boolean __hashCodeCalc = false;
-
-
-  public TWsMarloAgreeCountryId() {
-  }
-
-
-  public TWsMarloAgreeCountryId(java.lang.String agreementId, java.lang.String country, java.lang.String countrytext,
-    java.lang.Double percentage) {
-    this.agreementId = agreementId;
-    this.country = country;
-    this.countrytext = countrytext;
-    this.percentage = percentage;
-  }
-
-
-  @Override
-  public synchronized boolean equals(java.lang.Object obj) {
-    if (!(obj instanceof TWsMarloAgreeCountryId)) {
-      return false;
+    /**
+     * Gets the value of the agreementId property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getAgreementId() {
+        return agreementId;
     }
-    TWsMarloAgreeCountryId other = (TWsMarloAgreeCountryId) obj;
-    if (obj == null) {
-      return false;
+
+    /**
+     * Sets the value of the agreementId property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setAgreementId(String value) {
+        this.agreementId = value;
     }
-    if (this == obj) {
-      return true;
+
+    /**
+     * Gets the value of the country property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getCountry() {
+        return country;
     }
-    if (__equalsCalc != null) {
-      return (__equalsCalc == obj);
+
+    /**
+     * Sets the value of the country property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setCountry(String value) {
+        this.country = value;
     }
-    __equalsCalc = obj;
-    boolean _equals;
-    _equals = true
-      && ((this.agreementId == null && other.getAgreementId() == null)
-        || (this.agreementId != null && this.agreementId.equals(other.getAgreementId())))
-      && ((this.country == null && other.getCountry() == null)
-        || (this.country != null && this.country.equals(other.getCountry())))
-      && ((this.countrytext == null && other.getCountrytext() == null)
-        || (this.countrytext != null && this.countrytext.equals(other.getCountrytext())))
-      && ((this.percentage == null && other.getPercentage() == null)
-        || (this.percentage != null && this.percentage.equals(other.getPercentage())));
-    __equalsCalc = null;
-    return _equals;
-  }
 
-  /**
-   * Gets the agreementId value for this TWsMarloAgreeCountryId.
-   * 
-   * @return agreementId
-   */
-  public java.lang.String getAgreementId() {
-    return agreementId;
-  }
-
-  /**
-   * Gets the country value for this TWsMarloAgreeCountryId.
-   * 
-   * @return country
-   */
-  public java.lang.String getCountry() {
-    return country;
-  }
-
-  /**
-   * Gets the countrytext value for this TWsMarloAgreeCountryId.
-   * 
-   * @return countrytext
-   */
-  public java.lang.String getCountrytext() {
-    return countrytext;
-  }
-
-  /**
-   * Gets the percentage value for this TWsMarloAgreeCountryId.
-   * 
-   * @return percentage
-   */
-  public java.lang.Double getPercentage() {
-    return percentage;
-  }
-
-  @Override
-  public synchronized int hashCode() {
-    if (__hashCodeCalc) {
-      return 0;
+    /**
+     * Gets the value of the countrytext property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getCountrytext() {
+        return countrytext;
     }
-    __hashCodeCalc = true;
-    int _hashCode = 1;
-    if (this.getAgreementId() != null) {
-      _hashCode += this.getAgreementId().hashCode();
-    }
-    if (this.getCountry() != null) {
-      _hashCode += this.getCountry().hashCode();
-    }
-    if (this.getCountrytext() != null) {
-      _hashCode += this.getCountrytext().hashCode();
-    }
-    if (this.getPercentage() != null) {
-      _hashCode += this.getPercentage().hashCode();
-    }
-    __hashCodeCalc = false;
-    return _hashCode;
-  }
 
-  /**
-   * Sets the agreementId value for this TWsMarloAgreeCountryId.
-   * 
-   * @param agreementId
-   */
-  public void setAgreementId(java.lang.String agreementId) {
-    this.agreementId = agreementId;
-  }
+    /**
+     * Sets the value of the countrytext property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setCountrytext(String value) {
+        this.countrytext = value;
+    }
 
-  /**
-   * Sets the country value for this TWsMarloAgreeCountryId.
-   * 
-   * @param country
-   */
-  public void setCountry(java.lang.String country) {
-    this.country = country;
-  }
+    /**
+     * Gets the value of the percentage property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Double }
+     *     
+     */
+    public Double getPercentage() {
+        return percentage;
+    }
 
-  /**
-   * Sets the countrytext value for this TWsMarloAgreeCountryId.
-   * 
-   * @param countrytext
-   */
-  public void setCountrytext(java.lang.String countrytext) {
-    this.countrytext = countrytext;
-  }
-
-  /**
-   * Sets the percentage value for this TWsMarloAgreeCountryId.
-   * 
-   * @param percentage
-   */
-  public void setPercentage(java.lang.Double percentage) {
-    this.percentage = percentage;
-  }
+    /**
+     * Sets the value of the percentage property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Double }
+     *     
+     */
+    public void setPercentage(Double value) {
+        this.percentage = value;
+    }
 
 }
