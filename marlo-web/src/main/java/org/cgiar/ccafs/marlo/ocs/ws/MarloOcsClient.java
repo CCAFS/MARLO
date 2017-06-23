@@ -93,12 +93,12 @@ public class MarloOcsClient {
   public WSMarlo getWSClient() {
     MarloService service = new MarloService();
     WSMarlo client = service.getMarloPort();
-    Map<String, Object> req_ctx = ((BindingProvider) client).getRequestContext();
-    req_ctx.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, apConfig.getOcsLink());
+    Map<String, Object> reqCtx = ((BindingProvider) client).getRequestContext();
+    reqCtx.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, apConfig.getOcsLink());
     Map<String, List<String>> headers = new HashMap<String, List<String>>();
     headers.put("username", Collections.singletonList(apConfig.getOcsUser()));
     headers.put("password", Collections.singletonList(apConfig.getOcsPassword()));
-    req_ctx.put(MessageContext.HTTP_REQUEST_HEADERS, headers);
+    reqCtx.put(MessageContext.HTTP_REQUEST_HEADERS, headers);
 
     return client;
 
