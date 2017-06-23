@@ -281,12 +281,13 @@ $(document).ready(function() {
   });
   
   // Datatables language
-  $.extend( true, $.fn.dataTable.defaults, {
+ /* $.extend( true, $.fn.dataTable.defaults, {
     "language": {
       "infoFiltered": "(filtered from a total of _MAX_ entries)"
   }
   });
-
+*/
+  
   // Cancel button
   $('#cancelButton').on('click', function() {
     $('button[name="cancel"]').trigger('click');
