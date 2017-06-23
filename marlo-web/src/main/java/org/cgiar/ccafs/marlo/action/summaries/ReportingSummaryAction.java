@@ -191,6 +191,22 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     this.srfTargetUnitManager = srfTargetUnitManager;
   }
 
+  /**
+   * Method to add i8n parameters to masterReport in Pentaho
+   * 
+   * @param masterReport
+   * @return masterReport with i8n parameters added
+   */
+  private MasterReport addi8nParameters(MasterReport masterReport) {
+    /*
+     * Description
+     */
+    masterReport.getParameterValues().put("i8nCluster", this.getText("global.clusterOfActivities"));
+
+    return masterReport;
+  }
+
+
   public String calculateAcumulativeTarget(int yearCalculate, IpProjectIndicator id) {
     int acumulative = 0;
     try {
@@ -254,7 +270,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     }
     return false;
   }
-
 
   @Override
   public String execute() throws Exception {
@@ -337,6 +352,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         TypedTableModel model = this.getMasterTableModel(flagships, regions, projectLeader);
         sdf.addTable(masterQueryName, model);
         masterReport.setDataFactory(cdf);
+        // Set i8n for pentaho
+        masterReport = this.addi8nParameters(masterReport);
+
         // Start Setting Planning Subreports
         // Subreport Description
         args.add(projectLeader);
@@ -916,7 +934,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       grand_totald += this.getTotalYear(year, 1, project, 3) + this.getTotalYear(year, 1, project, 2);
     } else {
       w1w2 = myFormatter.format(this.getTotalYear(year, 1, project, 1));
-      // increment Budget Total with w1w2 
+      // increment Budget Total with w1w2
       grand_totald += this.getTotalYear(year, 1, project, 1);
     }
     w3 = myFormatter.format(this.getTotalYear(year, 2, project, 1));
@@ -2175,8 +2193,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           + ": &lt;Not Defined&gt;";
       }
     }
-    String centerAcry = "";
-    centerAcry = project.getCrp().getName();
+    // Get image from repository
+    String centerURL = "";
+    // set CRP imgage URL from repo
+    centerURL = this.getBaseUrl() + "/images/global/crps/" + project.getCrp().getAcronym() + ".png";
     Boolean isAdministrative = false;
     String type = "Research Project";
     if (project.getAdministrative() != null) {
@@ -2201,7 +2221,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       hasTargetUnit = true;
     }
 
-    model.addRow(new Object[] {title, centerAcry, currentDate, submission, cycle, isNew, isAdministrative, type,
+    model.addRow(new Object[] {title, centerURL, currentDate, submission, cycle, isNew, isAdministrative, type,
       project.isLocationGlobal(), this.isPhaseOne(), hasGender, hasTargetUnit, hasW1W2Co});
     return model;
   }
