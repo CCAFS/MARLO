@@ -37,6 +37,8 @@
 		<pusher-http-java>1.0.0</pusher-http-java>
 		<log-properties>0.9.28</log-properties>
 		<pentaho-report.version>6.1.0.1-196</pentaho-report.version>
+	  <org-apache-axis.version>1.4</org-apache-axis.version> 
+	  <javax-xml.version>1.1</javax-xml.version>
 	</properties>
 
 	<developers>
@@ -457,6 +459,31 @@
     <groupId>org.easyrules</groupId>
     <artifactId>easyrules-core</artifactId>
     <version>2.4.0</version>
+</dependency>
+
+<!-- library to ws client -->
+<dependency>
+    <groupId>org.apache.axis</groupId>
+    <artifactId>axis</artifactId>
+    <version>${org-apache-axis.version}</version>
+</dependency>
+<!-- library to cast xml to object -->
+<dependency>
+    <groupId>javax.xml</groupId>
+    <artifactId>jaxrpc-api</artifactId>
+    <version>${javax-xml.version}</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/commons-discovery/commons-discovery -->
+<dependency>
+    <groupId>commons-discovery</groupId>
+    <artifactId>commons-discovery</artifactId>
+    <version>0.4</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/wsdl4j/wsdl4j -->
+<dependency>
+    <groupId>wsdl4j</groupId>
+    <artifactId>wsdl4j</artifactId>
+    <version>1.6.2</version>
 </dependency>
 
 	</dependencies>

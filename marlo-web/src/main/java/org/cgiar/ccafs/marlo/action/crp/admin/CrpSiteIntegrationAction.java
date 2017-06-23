@@ -273,7 +273,7 @@ public class CrpSiteIntegrationAction extends BaseAction {
   }
 
   /**
-   * This method notify the user that is been assigned as Site Leaders for an specific Country
+   * This method notify the user that is been assigned as Site Leaders for an specific CountryOCS
    * 
    * @param userAssigned is the user been assigned
    * @param role is the role(Program Leader)

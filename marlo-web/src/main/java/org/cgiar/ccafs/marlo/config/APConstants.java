@@ -165,6 +165,7 @@ public final class APConstants {
   public static final String OTHER_CONTRIBUTIONS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.otherContributions)";
   public static final String OUTCOME_REQUEST_ID = "outcomeID";
+  public static final String OCS_CODE_REQUEST_ID = "ocsCode";
   // Outlook institutional email
   public static final String OUTLOOK_EMAIL = "cgiar.org";
   public static final String PAGE_ID = "pageID";
