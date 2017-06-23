@@ -323,8 +323,8 @@ function changePartnerPersonType(e) {
     // If there is a PL previous selected
     if(!jQuery.isEmptyObject(projectLeader)) {
       var previousLeaderName = projectLeader.contactInfo;
-      var messages = '<li>Please be aware that you can only have one project leader per project. <br/>';
-      messages += 'Therefore <strong>' + previousLeaderName + '</strong> was assigned a contact person role.</li>';
+      var messages = '<li>Please note that there can only be one project leader per project. <br/>';
+      messages += 'Therefore <strong>' + previousLeaderName + '</strong> was assigned a Project collaborator/partner role.</li>';
       // Show a pop up with the message
       $("#contactChangeType-dialog").find('.messages').append(messages);
       $("#contactChangeType-dialog").dialog({

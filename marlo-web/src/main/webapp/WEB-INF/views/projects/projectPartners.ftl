@@ -170,7 +170,7 @@
 </div>
 
 [#-- Change partner person type dialog --]
-<div id="contactChangeType-dialog" title="Change person type" style="display:none">
+<div id="contactChangeType-dialog" title="Change contact person’s role" style="display:none">
   <ul class="messages"></ul>
 </div>
 

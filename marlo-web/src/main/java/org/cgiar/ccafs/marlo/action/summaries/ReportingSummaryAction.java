@@ -2193,12 +2193,13 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           + ": &lt;Not Defined&gt;";
       }
     }
-    // Get image from repository
+    // TODO: Get image from repository
     String centerURL = "";
     // set CRP imgage URL from repo
-    centerURL = this.getBaseUrl() + "/images/global/crps/" + project.getCrp().getAcronym() + ".png";
-    //Add center url to LOG
-    LOG.info("Center URL is: " + centerURL);
+    // centerURL = this.getBaseUrl() + "/images/global/crps/" + project.getCrp().getAcronym() + ".png";
+    // Add center url to LOG
+    // LOG.info("Center URL is: " + centerURL);
+    centerURL = project.getCrp().getAcronym();
     Boolean isAdministrative = false;
     String type = "Research Project";
     if (project.getAdministrative() != null) {
