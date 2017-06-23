@@ -109,7 +109,12 @@
             [#include "/WEB-INF/views/projects/buttons-projects.ftl" /]
             [/#if]
           [#else]
-            <div class="simpleBox emptyMessage text-center">Before entering this section, please fill project start & end date <a href="[@s.url action="${crpSession}/description"][@s.param name="projectID" value=projectID /][@s.param name="edit" value=true /][/@s.url]">description section </a>and click <span class="label label-success">save</span></div>  
+            <div class="simpleBox emptyMessage text-center">
+              [@s.text name="projectBudgetByPartners.beforeFillingSections"]
+                [@s.param]<a href="[@s.url action="${crpSession}/description"][@s.param name="projectID" value=projectID /][@s.param name="edit" value=true /][/@s.url]">description section </a>[/@s.param]
+                [@s.param]<span class="label label-success">save</span>[/@s.param]
+              [/@s.text]
+            </div>  
           [/#if]
          
         [/@s.form] 

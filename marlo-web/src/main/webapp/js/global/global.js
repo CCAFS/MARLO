@@ -16,6 +16,9 @@ var notyDefaultOptions = {
     ]
 };
 
+
+
+
 /**
  * Global javascript must be here.
  */
@@ -165,7 +168,7 @@ $(document).ready(function() {
       } else if(messageSelector.length >= 1 && messageSelector.html().split(":")[0] != "message") {
         // WARNING MESSAGE
         var message = ""
-        message += "Information was correctly saved. <br> ";
+        message += "The Information was correctly saved. <br> ";
         message += "Please keep in mind that the fields highlighted below are missing or incorrect.";
         var messageType = "warning";
         notifyErrorMessage(messageType, message);
@@ -275,6 +278,13 @@ $(document).ready(function() {
         }
     });
 
+  });
+  
+  // Datatables language
+  $.extend( true, $.fn.dataTable.defaults, {
+    "language": {
+      "infoFiltered": "(filtered from a total of _MAX_ entries)"
+  }
   });
 
   // Cancel button
