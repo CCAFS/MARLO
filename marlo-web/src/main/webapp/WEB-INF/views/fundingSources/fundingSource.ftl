@@ -34,6 +34,7 @@
         <div class="col-md-offset-6 col-md-6">
           <div class="url-field">
             [@customForm.input name="fundingSource.financeCode"  i18nkey="projectCofunded.financeCode" className="financeCode" placeholder="projectCofunded.financeCode.placeholder" editable=editable/]
+            <span class="financeCode-message"></span>
           </div>
           <div class="buttons-field">
             [#if editable]
@@ -72,6 +73,7 @@
         <div class="row">
            <div class="col-md-4 metadataElement-startDate">[@customForm.input name="fundingSource.startDate" i18nkey="projectCofunded.startDate" className="metadataValue" required=true  editable=editable && action.canEditFundingSourceBudget() /] </div>
            <div class="col-md-4 metadataElement-endDate">[@customForm.input name="fundingSource.endDate" i18nkey="projectCofunded.endDate" className="metadataValue" required=true  editable=editable && action.canEditFundingSourceBudget() /] </div>
+           <div class="col-md-4 metadataElement-extensionDate">[@customForm.input name="fundingSource.extensionDate" i18nkey="projectCofunded.extensionDate" className="metadataValue" required=true  editable=editable && action.canEditFundingSourceBudget() /] </div>
         </div>
       </div>
       
@@ -95,8 +97,9 @@
       <div class="form-group">
         <div class="row">
           <div class="col-md-6">[@customForm.select name="fundingSource.status" i18nkey="projectCofunded.agreementStatus" className="agreementStatus"  listName="status" keyFieldName=""  displayFieldName="" header=false editable=editable /] </div>
-          <div class="col-md-6">
+          <div class="col-md-6 metadataElement-fundingType">
             [@customForm.select name="fundingSource.budgetType.id" i18nkey="projectCofunded.type" className="type" listName="budgetTypes" header=false required=true editable=editable && action.canEditType() /]
+            <span class="text-warning metadataSuggested"></span>
             [#-- W1W2 Tag --]
             [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')]
               [#assign isW1W2 = (fundingSource.budgetType.id == 1)!false /]
@@ -165,15 +168,16 @@
       [#-- Contact person name and email --]
       [#assign canSeePIEmail = action.hasSpecificities('crp_email_funding_source')]
       <div class="form-group row">
-          <div class="col-md-6">[@customForm.input name="fundingSource.contactPersonName" i18nkey="projectCofunded.contactName" className="contactName" required=true editable=editable /]</div>
+          <div class="col-md-6 metadataElement-pInvestigator">[@customForm.input name="fundingSource.contactPersonName" i18nkey="projectCofunded.contactName" className="contactName metadataValue" required=true editable=editable /]</div>
           <div class="col-md-6" style="display:${canSeePIEmail?string('block','none')}">[@customForm.input name="fundingSource.contactPersonEmail" i18nkey="projectCofunded.contactEmail" className="contactEmail" required=true editable=editable /]</div>
       </div>
       
       [#-- Donor --]
       <div class="form-group">
         <div class="row">
-          <div class="col-md-12">
+          <div class="col-md-12 metadataElement-donorName">
             [@customForm.select name="fundingSource.institution.id" i18nkey="projectCofunded.donor" className="donor"  listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" required=true editable=editable /]
+            <span class="text-warning metadataSuggested"></span><br />
           </div>
         </div>
         
@@ -263,7 +267,7 @@
                 </a>
               </td>
               <td> ${(projectBudget.institution.acronym)!(projectBudget.institution.name)} </td>
-              <td>${projectBudget.budgetType.name}</td>
+              <td>${(projectBudget.budgetType.name)!}</td>
               <td>US$ <span>${((projectBudget.amount)!0)?number?string(",##0.00")}</td>
              </tr>
             [#assign counter = counter + 1 /]

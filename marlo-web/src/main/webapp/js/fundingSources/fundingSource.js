@@ -173,14 +173,17 @@ function setMetadata(data) {
   $.each(data, function(key,value) {
     var $parent = $('.metadataElement-' + key);
     var $input = $parent.find(".metadataValue");
+    var $spanSuggested = $parent.find(".metadataSuggested");
     var $hide = $parent.find('.hide');
     if(value) {
       $input.val(value);
+      $spanSuggested.text("Suggested: "+value).animateCss("flipInY");
       $parent.find('textarea').autoGrow();
       $input.attr('readOnly', true);
       $hide.val("true");
     } else {
       $input.attr('readOnly', false);
+      $spanSuggested.text("");
       $hide.val("false");
     }
     
@@ -213,7 +216,9 @@ function unSyncDeliverable() {
   $('[class*="metadataElement"]').each(function(i,e) {
     var $parent = $(e);
     var $input = $parent.find('.metadataValue');
+    var $spanSuggested = $parent.find(".metadataSuggested");
     var $hide = $parent.find('.hide');
+    $spanSuggested.text("");
     $input.attr('readOnly', false);
     $hide.val("false");
   });
@@ -232,16 +237,29 @@ function unSyncDeliverable() {
 }
 
 function getOCSMetadata(){
+  var currentCode = $('input.financeCode').val();
   // Ajax to service
   $.ajax({
-      'url': baseURL + '/',
-      'data': {},
+      'url': baseURL + '/ocsService.do',
+      'data': {
+        ocsCode: $('input.financeCode').val()
+      },
       beforeSend: function() {
         $(".financeCode").addClass('input-loading');
+        $('.financeCode-message').text("");
       },
-      success: function() {
-        // Setting Metadata
-        setMetadata(agreementData);
+      success: function(data) {
+        if (data.json){
+          var agreement = data.json;
+          // Principal Investigator
+          agreement.pInvestigator = agreement.researcher.name;
+          // Donor
+          agreement.donorName = agreement.donor.name;
+          // Setting Metadata
+          setMetadata(agreement);
+        }else{
+          $('.financeCode-message').text("Agreement "+ currentCode +" not found");
+        }
       },
       complete: function() {
         $(".financeCode").removeClass('input-loading');
