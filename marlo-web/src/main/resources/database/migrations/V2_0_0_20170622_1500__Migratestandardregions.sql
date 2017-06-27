@@ -7,19 +7,21 @@ UPDATE `loc_elements` SET  `is_active`='0' WHERE (`id`='725');
 UPDATE `loc_element_types` SET `is_active`='0' WHERE (`id`='12');
 /*=========================================================*/
 
-/*Create new regions*/
-INSERT INTO `loc_elements` (`id`, `name`, `iso_alpha_2`, `iso_numeric`, `parent_id`, `element_type_id`, `geoposition_id`, `is_site_integration`, `crp_id`, `is_active`, `created_by`, `active_since`, `modified_by`, `modification_justification`) VALUES ('813', 'East Asia and Pacific', NULL, NULL, NULL, '1', NULL, '0', NULL, '1', NULL, CURRENT_TIMESTAMP, '1', '');
-INSERT INTO `loc_elements` (`id`, `name`, `iso_alpha_2`, `iso_numeric`, `parent_id`, `element_type_id`, `geoposition_id`, `is_site_integration`, `crp_id`, `is_active`, `created_by`, `active_since`, `modified_by`, `modification_justification`) VALUES ('814', 'Europe and Central Asia', NULL, NULL, NULL, '1', NULL, '0', NULL, '1', NULL, CURRENT_TIMESTAMP, '1', '');
-INSERT INTO `loc_elements` (`id`, `name`, `iso_alpha_2`, `iso_numeric`, `parent_id`, `element_type_id`, `geoposition_id`, `is_site_integration`, `crp_id`, `is_active`, `created_by`, `active_since`, `modified_by`, `modification_justification`) VALUES ('815', 'Latin America & the Caribbean', NULL, NULL, NULL, '1', NULL, '0', NULL, '1', NULL, CURRENT_TIMESTAMP, '1', '');
-INSERT INTO `loc_elements` (`id`, `name`, `iso_alpha_2`, `iso_numeric`, `parent_id`, `element_type_id`, `geoposition_id`, `is_site_integration`, `crp_id`, `is_active`, `created_by`, `active_since`, `modified_by`, `modification_justification`) VALUES ('816', 'Middle East and North Africa', NULL, NULL, NULL, '1', NULL, '0', NULL, '1', NULL, CURRENT_TIMESTAMP, '1', '');
-INSERT INTO `loc_elements` (`id`, `name`, `iso_alpha_2`, `iso_numeric`, `parent_id`, `element_type_id`, `geoposition_id`, `is_site_integration`, `crp_id`, `is_active`, `created_by`, `active_since`, `modified_by`, `modification_justification`) VALUES ('817', 'North America', NULL, NULL, NULL, '1', NULL, '0', NULL, '1', NULL, CURRENT_TIMESTAMP, '1', '');
-INSERT INTO `loc_elements` (`id`, `name`, `iso_alpha_2`, `iso_numeric`, `parent_id`, `element_type_id`, `geoposition_id`, `is_site_integration`, `crp_id`, `is_active`, `created_by`, `active_since`, `modified_by`, `modification_justification`) VALUES ('818', 'South Asia', NULL, NULL, NULL, '1', NULL, '0', NULL, '1', NULL, CURRENT_TIMESTAMP, '1', '');
-INSERT INTO `loc_elements` (`id`, `name`, `iso_alpha_2`, `iso_numeric`, `parent_id`, `element_type_id`, `geoposition_id`, `is_site_integration`, `crp_id`, `is_active`, `created_by`, `active_since`, `modified_by`, `modification_justification`) VALUES ('819', 'Sub-Saharan Africa', NULL, NULL, NULL, '1', NULL, '0', NULL, '1', NULL, CURRENT_TIMESTAMP, '1', '');
+/*Create new regions
+ * Bug: Because the databases have different records, the ids of the new regions were changed.
+ * */
+INSERT INTO `loc_elements` (`id`, `name`, `iso_alpha_2`, `iso_numeric`, `parent_id`, `element_type_id`, `geoposition_id`, `is_site_integration`, `crp_id`, `is_active`, `created_by`, `active_since`, `modified_by`, `modification_justification`) VALUES ('823', 'East Asia and Pacific', NULL, NULL, NULL, '1', NULL, '0', NULL, '1', NULL, CURRENT_TIMESTAMP, '1', '');
+INSERT INTO `loc_elements` (`id`, `name`, `iso_alpha_2`, `iso_numeric`, `parent_id`, `element_type_id`, `geoposition_id`, `is_site_integration`, `crp_id`, `is_active`, `created_by`, `active_since`, `modified_by`, `modification_justification`) VALUES ('824', 'Europe and Central Asia', NULL, NULL, NULL, '1', NULL, '0', NULL, '1', NULL, CURRENT_TIMESTAMP, '1', '');
+INSERT INTO `loc_elements` (`id`, `name`, `iso_alpha_2`, `iso_numeric`, `parent_id`, `element_type_id`, `geoposition_id`, `is_site_integration`, `crp_id`, `is_active`, `created_by`, `active_since`, `modified_by`, `modification_justification`) VALUES ('825', 'Latin America & the Caribbean', NULL, NULL, NULL, '1', NULL, '0', NULL, '1', NULL, CURRENT_TIMESTAMP, '1', '');
+INSERT INTO `loc_elements` (`id`, `name`, `iso_alpha_2`, `iso_numeric`, `parent_id`, `element_type_id`, `geoposition_id`, `is_site_integration`, `crp_id`, `is_active`, `created_by`, `active_since`, `modified_by`, `modification_justification`) VALUES ('826', 'Middle East and North Africa', NULL, NULL, NULL, '1', NULL, '0', NULL, '1', NULL, CURRENT_TIMESTAMP, '1', '');
+INSERT INTO `loc_elements` (`id`, `name`, `iso_alpha_2`, `iso_numeric`, `parent_id`, `element_type_id`, `geoposition_id`, `is_site_integration`, `crp_id`, `is_active`, `created_by`, `active_since`, `modified_by`, `modification_justification`) VALUES ('827', 'North America', NULL, NULL, NULL, '1', NULL, '0', NULL, '1', NULL, CURRENT_TIMESTAMP, '1', '');
+INSERT INTO `loc_elements` (`id`, `name`, `iso_alpha_2`, `iso_numeric`, `parent_id`, `element_type_id`, `geoposition_id`, `is_site_integration`, `crp_id`, `is_active`, `created_by`, `active_since`, `modified_by`, `modification_justification`) VALUES ('828', 'South Asia', NULL, NULL, NULL, '1', NULL, '0', NULL, '1', NULL, CURRENT_TIMESTAMP, '1', '');
+INSERT INTO `loc_elements` (`id`, `name`, `iso_alpha_2`, `iso_numeric`, `parent_id`, `element_type_id`, `geoposition_id`, `is_site_integration`, `crp_id`, `is_active`, `created_by`, `active_since`, `modified_by`, `modification_justification`) VALUES ('829', 'Sub-Saharan Africa', NULL, NULL, NULL, '1', NULL, '0', NULL, '1', NULL, CURRENT_TIMESTAMP, '1', '');
 /*=========================================================*/
 
 /*Update  EAST ASIA AND PACIFIC countries [38 countries]*/
 UPDATE loc_elements l
-SET l.parent_id = 813
+SET l.parent_id = 823
 WHERE
     l.is_active
 AND l.element_type_id = 2
@@ -66,7 +68,7 @@ AND (
 
 /*Update  EUROPE AND CENTRAL ASIA  countries [58 countries]*/
 UPDATE loc_elements l
-SET l.parent_id = 814
+SET l.parent_id = 824
 WHERE
   l.is_active
 AND l.element_type_id = 2
@@ -139,7 +141,7 @@ AND (
 
 /*Update  LATIN AMERICA AND THE CARIBBEAN  countries [42 countries]*/
 UPDATE loc_elements l
-SET l.parent_id = 815
+SET l.parent_id = 825
 WHERE
   l.is_active
 AND l.element_type_id = 2
@@ -190,12 +192,12 @@ AND (
 /*=========================================================*/
 
 /* Insert State of Palestine. Consists of the West Bank and the Gaza Strip */
-INSERT INTO `loc_elements` (`name`, `iso_alpha_2`, `iso_numeric`, `parent_id`, `element_type_id`, `geoposition_id`, `is_site_integration`, `crp_id`, `is_active`, `created_by`, `active_since`, `modified_by`, `modification_justification`) VALUES ('State of Palestine', 'PS', '275', '816', '2', NULL, '1', NULL, '1', NULL, CURRENT_TIMESTAMP, '1', '');
+INSERT INTO `loc_elements` (`name`, `iso_alpha_2`, `iso_numeric`, `parent_id`, `element_type_id`, `geoposition_id`, `is_site_integration`, `crp_id`, `is_active`, `created_by`, `active_since`, `modified_by`, `modification_justification`) VALUES ('State of Palestine', 'PS', '275', '826', '2', NULL, '1', NULL, '1', NULL, CURRENT_TIMESTAMP, '1', '');
 /* end insert State of Palestine.  */
 
 /*Update  MIDDLE EAST AND NORTH AFRICA  countries [20 countries]*/
 UPDATE loc_elements l
-SET l.parent_id = 816
+SET l.parent_id = 826
 WHERE
   l.is_active
 AND l.element_type_id = 2
@@ -226,7 +228,7 @@ AND (
 
 /*Update  NORTH AMERICA  countries [3 countries]*/
 UPDATE loc_elements l
-SET l.parent_id = 817
+SET l.parent_id = 827
 WHERE
   l.is_active
 AND l.element_type_id = 2
@@ -239,7 +241,7 @@ AND (
 
 /*Update  SOUTH ASIA  countries [8 countries]*/
 UPDATE loc_elements l
-SET l.parent_id = 818
+SET l.parent_id = 828
 WHERE
   l.is_active
 AND l.element_type_id = 2
@@ -257,7 +259,7 @@ AND (
 
 /*Update SUB-SAHARAN AFRICA countries [48 countries]*/
 UPDATE loc_elements l
-SET l.parent_id = 819
+SET l.parent_id = 829
 WHERE
   l.is_active
 AND l.element_type_id = 2
@@ -318,13 +320,13 @@ AND (
 UPDATE loc_elements l
 LEFT JOIN loc_elements l_parent ON l_parent.id = l.parent_id
 SET  l.parent_id = 6
-WHERE l.element_type_id=2 AND l.is_active AND  l_parent.is_active AND (l.parent_id < 813 OR l.parent_id > 819);
+WHERE l.element_type_id=2 AND l.is_active AND  l_parent.is_active AND (l.parent_id < 823 OR l.parent_id > 829);
 /*=========================================================*/
 
 
 /* Deactivate old regions except 'others' region*/
 UPDATE loc_elements l
 SET  l.is_active=0
-WHERE l.element_type_id=1  AND (l.id < 813 OR l.id > 819) AND l.id!=6;
+WHERE l.element_type_id=1  AND (l.id < 823 OR l.id > 829) AND l.id!=6;
 /*=========================================================*/
 
