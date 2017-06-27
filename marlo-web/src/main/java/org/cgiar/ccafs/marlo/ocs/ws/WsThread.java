@@ -111,6 +111,7 @@ public class WsThread implements Runnable {
         researcherOCS.setId(myAgree.getResearcher());
         researcherOCS.setName(myAgree.getResearcherText());
         agreementOCS.setResearcher(researcherOCS);
+        agreementOCS.setContractStatus(myAgree.getStatus());
       }
     } catch (ParseException e) {
       e.printStackTrace();
