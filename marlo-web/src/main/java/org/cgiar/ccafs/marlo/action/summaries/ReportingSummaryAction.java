@@ -47,7 +47,6 @@ import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
-import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.IpElement;
 import org.cgiar.ccafs.marlo.data.model.IpIndicator;
@@ -198,10 +197,72 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
    * @return masterReport with i8n parameters added
    */
   private MasterReport addi8nParameters(MasterReport masterReport) {
+    /**
+     * Menus Planning
+     */
+    masterReport.getParameterValues().put("i8nProjectMenu", this.getText("projects.menu.description"));
+    masterReport.getParameterValues().put("i8nPartnersMenu", this.getText("projects.menu.partners"));
+    masterReport.getParameterValues().put("i8nLocationsMenu", this.getText("projects.menu.locations"));
+    masterReport.getParameterValues().put("i8nOutcomesMenu", this.getText("projects.menu.contributionsCrpList"));
+    masterReport.getParameterValues().put("i8nDeliverablesMenu",
+      "Expected " + this.getText("projects.menu.deliverables"));
+    masterReport.getParameterValues().put("i8nActivitiesMenu", this.getText("projects.menu.activities"));
+    masterReport.getParameterValues().put("i8nBudgetMenu", "Project " + this.getText("projects.menu.budget"));
+    masterReport.getParameterValues().put("i8nBudgetPartnerMenu", this.getText("projects.menu.budgetByPartners"));
+    masterReport.getParameterValues().put("i8nBudgetCoAsMenu", this.getText("projects.menu.budgetByCoAs"));
+
     /*
      * Description
      */
-    masterReport.getParameterValues().put("i8nCluster", this.getText("global.clusterOfActivities"));
+    masterReport.getParameterValues().put("i8nProjectTitle", this.getText("project.title"));
+    masterReport.getParameterValues().put("i8nProjectStartDate", this.getText("project.startDate"));
+    masterReport.getParameterValues().put("i8nProjectEndDate", this.getText("project.endDate"));
+    masterReport.getParameterValues().put("i8nProjectFundingSourcesTypes", this.getText("project.fundingSourcesTypes"));
+    masterReport.getParameterValues().put("i8nProjectStatus", this.getText("projectsList.projectStatus"));
+    masterReport.getParameterValues().put("i8nProjectLeadOrg", this.getText("project.leadOrg"));
+    masterReport.getParameterValues().put("i8nProjectPL", this.getText("projectPartners.types.PL"));
+    masterReport.getParameterValues().put("i8nProjectDescFLRP", this.getText("project.menuFLRP"));
+    masterReport.getParameterValues().put("i8nProjectFL", this.getText("project.Flagships"));
+    masterReport.getParameterValues().put("i8nProjectRP", this.getText("project.Regions"));
+    masterReport.getParameterValues().put("i8nProjectCluster", this.getText("global.clusterOfActivities"));
+    masterReport.getParameterValues().put("i8nProjectSummary", this.getText("project.summary"));
+    masterReport.getParameterValues().put("i8nProjectGenderDesc", this.getText("project.GenderDesc"));
+    masterReport.getParameterValues().put("i8nProjectCrossCutting",
+      this.getText("project.crossCuttingDimensions.readText"));
+
+
+    /*
+     * Partners
+     */
+
+    /*
+     * Locations
+     */
+
+    /*
+     * Contribution to flagship outcomes
+     */
+
+    /*
+     * Deliverables
+     */
+
+
+    /*
+     * Activities
+     */
+
+    /*
+     * Budget
+     */
+
+    /*
+     * Budget by Partners
+     */
+
+    /*
+     * Budget by CoAs
+     */
 
     return masterReport;
   }
@@ -1961,6 +2022,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
+  @SuppressWarnings("unused")
   private File getFile(String fileName) {
     // Get file from resources folder
     ClassLoader classLoader = this.getClass().getClassLoader();
@@ -2931,8 +2993,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
             && pb.getBudgetType().getId() == type && pb.getFundingSource() != null
             && pb.getFundingSource().getW1w2() != null && pb.getFundingSource().getW1w2().booleanValue() == true)
           .collect(Collectors.toList())) {
-          FundingSource fsActual = pb.getFundingSource();
-          Boolean w1w2 = pb.getFundingSource().getW1w2();
           total = total + pb.getAmount();
         }
         break;
@@ -2943,9 +3003,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
             && pb.getFundingSource().getW1w2() != null && pb.getFundingSource().getW1w2().booleanValue() == false)
           .collect(Collectors.toList())) {
           ProjectBudget pbActual = pb;
-          FundingSource fsActual = pbActual.getFundingSource();
-          Boolean w1w2 = pb.getFundingSource().getW1w2();
-          Boolean validation = pb.getFundingSource().getW1w2().booleanValue() == false;
 
           total = total + pb.getAmount();
         }
