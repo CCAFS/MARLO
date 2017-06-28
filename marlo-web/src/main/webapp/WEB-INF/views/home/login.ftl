@@ -8,23 +8,24 @@
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
 <section> 
-  <div class="container">
-    <div class="col-md-6">
-      <h3>[@s.text name="login.marloTitle" /]</h3>
-      <p>[@s.text name="login.marloDescription" /]  </p>
-      
-      [#if !config.production]
-      <div class="note">
-        <p>[@s.text name="login.testersMessage2"/]</p>
-        <p>[@s.text name="login.testersMessage3"/]</p>
+  <div class="container loginPage">
+    <div class="form-group row">
+      <div class="col-md-offset-1 col-md-6">
+        <h3 class="">[@s.text name="login.marloTitle" /]</h3>
+        <p class="text-justify">[@s.text name="login.marloDescription" /]  </p>
+        [#if !config.production]
+        <br />
+        <div class="note testerMessage">
+          <p class="text-justify">[@s.text name="login.testersMessage2"/]</p>
+          <p class="text-justify">[@s.text name="login.testersMessage3"/]</p>
+        </div>
+        [/#if]
       </div>
-      [/#if]
-      
+      <div class=" col-md-4 ">
+        [#include "/WEB-INF/global/pages/loginForm.ftl" /]
+      </div>
     </div>
-    <div class="col-md-offset-1 col-md-5">
-      [#-- Login Form --]
-      [#include "/WEB-INF/global/pages/loginForm.ftl" /]
-    </div>
+     
   </div>
 </section>
 

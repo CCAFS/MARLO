@@ -105,7 +105,7 @@
           <div class="form-group">
             <div class="row">
               <div class="col-md-12">
-                [@customForm.select name="institution" i18nkey="projectCofunded.donor" value="${action.getCGIARInsitution()}"  listName="institutions " keyFieldName="id"  displayFieldName="composedNameLoc" required=true /]
+                [@customForm.select name="institution" i18nkey="projectCofunded.donor" value="${action.getCGIARInstitution()}"  listName="institutions " keyFieldName="id"  displayFieldName="composedNameLoc" required=true /]
               </div>
             </div>
           </div>
@@ -174,7 +174,7 @@
     <input type="hidden" id="created-message" value="[@s.text name="users.createUser.message" /]" />
     <input type="hidden" id="actionName" value="${(actionName)!}" />
   </div>  
-<span class="hidden cgiarConsortium">${action.getCGIARInsitution()}</span>
+<span class="hidden cgiarConsortium">${action.getCGIARInstitution()}</span>
 </div>
 [#--  Funding Source Popup JS --]
 [#assign customJS =  [ "${baseUrl}/js/global/fundingSourcesPopup.js" ]  + customJS/]

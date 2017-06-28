@@ -43,6 +43,7 @@ import org.cgiar.ccafs.marlo.data.model.Auditlog;
 import org.cgiar.ccafs.marlo.data.model.CaseStudy;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrpCategoryEnum;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
@@ -92,6 +93,7 @@ import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -611,12 +613,23 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return config.getBaseUrl();
   }
 
-  public long getCGIARInsitution() {
+  public List<CrpCategoryEnum> getCategories() {
+
+    return Arrays.asList(CrpCategoryEnum.values());
+  }
+
+  public long getCGIARInstitution() {
     return APConstants.INSTITUTION_CGIAR;
   }
 
   public APConfig getConfig() {
     return config;
+  }
+
+  public List<Crp> getCrpCategoryList(String category) {
+    return crpManager.findAll().stream()
+      .filter(c -> c.isMarlo() && c.getCategory().intValue() == Integer.parseInt(category))
+      .collect(Collectors.toList());
   }
 
   /**
