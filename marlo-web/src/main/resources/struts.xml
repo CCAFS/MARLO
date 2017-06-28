@@ -280,6 +280,7 @@
 	<include file="struts-fundingSources.xml" />
 	<include file="struts-summaries.xml" />
 	<include file="struts-synthesis.xml" />
+	<include file="struts-powb.xml" />
 	<include file="struts-publications.xml" />
 	<include file="struts-rest.xml" />
 

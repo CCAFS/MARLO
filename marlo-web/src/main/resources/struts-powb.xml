@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN" "http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+  <!-- Add addition packages and configuration here. -->
+  <package name="powb" namespace="/powb" extends="marlo-default">
+    
+    <!-- CRP Plan of Work and Budget (POWB) -->
+    <action name="{crp}/delivery" class="org.cgiar.ccafs.marlo.action.BaseAction">
+      <interceptor-ref name="editSynthesisStack" />
+      <result name="input">/WEB-INF/views/synthesis/powbDelivery.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/delivery</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="edit">true</param>
+      </result>
+    </action>
+    
+  </package>
+</struts>
