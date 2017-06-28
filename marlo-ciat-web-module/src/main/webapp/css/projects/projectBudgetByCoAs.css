@@ -1,0 +1,117 @@
+.tab-content.budget-content {
+    border: 1px solid #d1d1d1;
+    padding: 10px 2em;
+    border-radius: 0px 4px 4px 4px;
+}
+
+ul.nav.nav-tabs.budget-tabs {
+    border: 0;
+}
+
+ul.nav.nav-tabs.budget-tabs li a{
+    background-color: #f5f5f5;
+    line-height: 1em;
+    padding: 5px 15px;
+    height: 29px;
+}
+
+ul.nav.nav-tabs.budget-tabs>li.active>a, 
+ul.nav.nav-tabs.budget-tabs>li.active>a:focus, 
+ul.nav.nav-tabs.budget-tabs>li.active>a:hover {
+    background-color: #fff;
+    line-height: 1em;
+}
+
+ul.nav.nav-tabs.budget-tabs>li {
+    /* border-bottom: 1px solid #dddddd; */
+    margin-bottom: -1px;
+}
+
+ul.nav.nav-tabs.budget-tabs>li.active {
+    border-bottom: 1px solid #fff;
+    z-index: 10;
+}
+
+ul.nav.nav-tabs.budget-tabs>li>a:hover {
+    border-color: #d1d1d1 #d1d1d1 #fff;
+}
+
+.projectPartner {
+    padding: 10px 0px 12px 0px;
+}
+
+.amountType {
+    font-weight: bold;
+    width: 150px;
+    color: #ceb286;
+}
+
+.w3bilateralFund {
+    font-size: 0.85em;
+}
+
+.w3bilateralFund strong{
+    padding-top: 0px;
+    /* text-align: right; */
+    display: block;
+}
+
+.budgetColumn {
+    padding: 5px 22px !important;
+    width: 20%;
+}
+
+.budgetColumn p{
+  text-align: center !important;
+}
+
+.budgetColumn input {
+    height: 25px;
+    text-align: center !important;
+}
+
+.blockTitle {
+    margin-left: 20px;
+}
+
+.accordion-block {
+    height: 471px;
+}
+
+.overallYearBudget {
+
+}
+
+
+.overallYearBudget .title{
+    margin: 0;
+    font-weight: bold;
+    color: #5f96c5;
+    padding: 5px 0px;
+}
+
+.overallYearBudget .subTitle{
+    margin: 0;
+    padding: 0 0 9px 0px;
+}
+
+.percentageAmount {
+    color: #ccc;
+    /* font-style: italic; */
+}
+
+.projectW3bilateralFund {
+    border: 1px solid #f3f2f2;
+}
+
+.expandableBlock .blockTitle.opened {
+    opacity: 1 !important;
+}
+
+span.contact.name {
+    font-size: 1em;
+}
+
+.blockContent {
+    padding: 0 15px 0px 15px !important;
+}

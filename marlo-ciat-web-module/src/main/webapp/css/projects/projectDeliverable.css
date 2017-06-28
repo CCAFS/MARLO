@@ -1,0 +1,128 @@
+.fair div {
+    background-color: #999;
+    margin: 0 0 5px 5px;
+    color: #fff;
+    padding: 0 7px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+    margin-right: 2px;
+    font-size: 0.9em;
+    border-radius: 2px;
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+.fair .active {
+    background-color: #0a8829;
+    color: white;
+}
+
+#deliverableInformation input {
+    height: 28px;
+}
+
+#deliverableInformation {
+    margin-top: 60px;
+}
+
+.tab-content {
+    border: 1px solid #ddd;
+    padding: 10px 2em;
+    border-top: none;
+}
+
+.nav {
+    margin-top: 60px;
+}
+
+ul.nav li a {
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+}
+
+.title {
+    padding: 2px;
+}
+
+.fair span {
+    background: #999;
+    border-radius: 3px;
+    padding: 0px 4px;
+    margin-right: 0px;
+    margin-bottom: 4px;
+    font-size: 0.9em;
+    cursor: pointer;
+    opacity: 0.9;
+    color: white;
+    margin-left: 1px;
+}
+
+#deliverable-partnership {
+    margin-top: 20px;
+}
+
+.addDeliverable a {
+    text-decoration: initial;
+}
+
+span#achieved {
+    background-color: green;
+    padding: 0px 8px;
+    border-radius: 20px;
+    margin-right: 5px;
+}
+
+span#notAchieved {
+    background-color: #ca1010;
+    padding: 0px 8px;
+    border-radius: 20px;
+    margin-right: 5px;
+}
+
+span#notDefined {
+    background-color: #a3a3a3;
+    padding: 0px 8px;
+    border-radius: 20px;
+    margin-right: 5px;
+}
+
+.legendContent {
+    position: relative;
+    -webkit-box-shadow: 1px 2px 8px rgba(0, 0, 0, 0.3);
+    -moz-box-shadow: 1px 2px 8px rgba(0,0,0,.3);
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+    padding: 5px;
+    border: 1px solid #EEE;
+    background: #F8F8F8;
+    margin-bottom: 25px;
+}
+
+.legendContent span {
+    border-radius: 3px;
+    padding: 0px 4%;
+    margin-right: 5px;
+    margin-bottom: 4px;
+    cursor: pointer;
+    opacity: 0.9;
+    color: #444;
+    margin-left: 1px;
+    border: 1px dashed #8e8e91;
+}
+
+.explanation {
+    border: 1px dashed #d5d5d5;
+    padding: 5px;
+}
+
+.colors {
+    border: 1px dashed #d5d5d5;
+    padding: 5px;
+    min-height: 106px;
+}
+
+.explanation span {
+    min-width: 22px; */
+    float: left;
+    float: left;
+    margin-bottom: 0;
+}

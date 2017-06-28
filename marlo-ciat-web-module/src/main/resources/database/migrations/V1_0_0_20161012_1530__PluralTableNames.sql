@@ -1,0 +1,10 @@
+Alter table research_center RENAME TO research_centers;
+Alter table research_area RENAME TO research_areas;
+Alter table research_program RENAME TO research_programs;
+Alter table research_impact RENAME TO reserach_impacts;
+Alter table research_topic RENAME TO  research_topics;
+Alter table impact_outcome RENAME TO reserach_outcomes;
+Alter table impact_output RENAME TO reserach_outputs;
+Alter table research_leader RENAME TO research_leaders;
+Alter table impact_objective RENAME TO reserach_objectives;
+Alter table research_partner RENAME TO research_partners;

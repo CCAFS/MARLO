@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN" "http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<!-- Add addition packages and configuration here. -->
+	<package name="admin" namespace="/admin" extends="marlo-default">
+	
+		<action name="{centerSession}/coordination"
+			class="org.cgiar.ccafs.marlo.action.admin.ProgramCoordinatorAction">
+			<interceptor-ref name="homeStack" />
+			<result name="input">/WEB-INF/views/admin/coordination.ftl</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">${centerSession}/coordination</param>
+				<param name="edit">true</param>
+			</result>
+		</action>
+		
+		<action name="{centerSession}/objectives"
+      class="org.cgiar.ccafs.marlo.action.admin.StrategicObjectivesAction">
+      <interceptor-ref name="homeStack" />
+      <result name="input">/WEB-INF/views/admin/strategicObjectives.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${centerSession}/objectives</param>
+        <param name="edit">true</param>
+      </result>
+    </action>
+    
+    <action name="{centerSession}/researchManagement"
+      class="org.cgiar.ccafs.marlo.action.admin.ResearchManagementAction">
+      <interceptor-ref name="homeStack" />
+      <result name="input">/WEB-INF/views/admin/researchManagement.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${centerSession}/researchManagement</param>
+        <param name="edit">true</param>
+      </result>
+    </action>
+    
+	</package>
+</struts>

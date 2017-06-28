@@ -1,0 +1,19 @@
+{
+  "name": "vanilla-color-picker",
+  "version": "0.1.7",
+  "authors": [
+    "Oleksii Miroshko <miroshko@live.com>"
+  ],
+  "description": "Dead simple javascript color picker. Without jQuery or other dependencies.",
+  "main": "dist/vanilla-color-picker.min.js",
+  "keywords": [
+    "color",
+    "picker",
+    "standalone",
+    "javascript",
+    "html5"
+  ],
+  "license": "MIT",
+  "homepage": "miroshko.name/vanilla-color-picker",
+  "ignore": ["./!(dist)"]
+}

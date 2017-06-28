@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN" "http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="json" namespace="/" extends="json-default">
+
+		<interceptors>
+			<!-- Json interceptors -->
+			<interceptor name="SecurityControl"
+				class="org.cgiar.ccafs.marlo.interceptor.json.SecurityJsonInterceptor" />
+
+			<interceptor-stack name="jsonStack">
+				<interceptor-ref name="defaultStack" />
+				<interceptor-ref name="SecurityControl" />
+				<interceptor-ref name="prepare" />
+			</interceptor-stack>
+		</interceptors>
+
+		<default-interceptor-ref name="jsonStack"></default-interceptor-ref>
+
+		<action name="searchUsers"
+			class="org.cgiar.ccafs.marlo.action.json.global.ManageUsersAction"
+			method="search">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+		<action name="createUser"
+			class="org.cgiar.ccafs.marlo.action.json.global.ManageUsersAction"
+			method="create">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+		<action name="sendNotification"
+			class="org.cgiar.ccafs.marlo.action.json.global.MessagesAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+		<action name="pusherAutentication"
+			class="org.cgiar.ccafs.marlo.action.json.global.PusherAutentication">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+				<param name="root">jsonString</param>
+			</result>
+		</action>
+
+		<action name="beneficiaryByType"
+			class="org.cgiar.ccafs.marlo.action.json.impactpathway.BeneficiaryListAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+		
+		<action name="nextUserByType"
+			class="org.cgiar.ccafs.marlo.action.json.impactpathway.NextUserListAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+		<action name="validateImpactPathway"
+			class="org.cgiar.ccafs.marlo.action.json.impactpathway.ValidateImpactPathwaySectionAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+		<action name="impactPathwayGraphByProgram"
+			class="org.cgiar.ccafs.marlo.action.json.impactpathway.graph.GraphByProgramAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+		<action name="impactPathwayGraphByArea"
+			class="org.cgiar.ccafs.marlo.action.json.impactpathway.graph.GraphByAreaAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+		
+		<action name="impactPathwayGraphByCenter"
+      class="org.cgiar.ccafs.marlo.action.json.impactpathway.graph.GraphByCenterAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
+
+		<action name="autosaveWriter"
+			class="org.cgiar.ccafs.marlo.action.json.autosave.AutoSaveWriterAction">
+			<result type="json">
+				<param name="encoding">UTF-8</param>
+				<param name="status">status</param>
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+				<param name="defaultEncoding">utf-8</param>
+			</result>
+		</action>
+		
+		<action name="outputInfo"
+      class="org.cgiar.ccafs.marlo.action.json.monitoring.project.OutputInfoAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
+    
+    <action name="addMilestone"
+      class="org.cgiar.ccafs.marlo.action.json.monitoring.outcome.MilestoneAddAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
+    
+    <action name="validateProject"
+      class="org.cgiar.ccafs.marlo.action.json.monitoring.project.ValidateProjectSectionAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
+    
+    <action name="deliverableSubType"
+      class="org.cgiar.ccafs.marlo.action.json.monitoring.project.DeliverableSubTypeAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
+    
+    <action name="outputRequest"
+      class="org.cgiar.ccafs.marlo.action.json.monitoring.project.OuputRequestAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
+    
+     <action name="outcomeTree"
+      class="org.cgiar.ccafs.marlo.action.json.monitoring.outcome.OutcomeTreeAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
+
+	</package>
+</struts>

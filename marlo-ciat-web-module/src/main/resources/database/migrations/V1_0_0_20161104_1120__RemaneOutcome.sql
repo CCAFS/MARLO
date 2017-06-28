@@ -1,0 +1,1 @@
+RENAME TABLE reserach_outcomes TO research_outcomes;

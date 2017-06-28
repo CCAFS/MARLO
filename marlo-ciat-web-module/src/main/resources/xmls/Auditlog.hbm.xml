@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jun 8, 2016 11:23:28 AM by Hibernate Tools 4.3.1.Final -->
+<hibernate-mapping>
+	<class name="org.cgiar.ccafs.marlo.data.model.Auditlog" table="auditlog"
+		optimistic-lock="version">
+		<id name="auditLogId" type="java.lang.Long">
+			<column name="AUDIT_LOG_ID" />
+			<generator class="identity" />
+		</id>
+		<property name="action" type="string">
+			<column name="ACTION" length="100" not-null="true" />
+		</property>
+		<property name="detail" type="string">
+			<column name="DETAIL" length="65535" not-null="true" />
+		</property>
+		<property name="createdDate" type="timestamp">
+			<column name="CREATED_DATE" length="19" not-null="true" />
+		</property>
+		<property name="entityId" type="string">
+			<column name="ENTITY_ID" length="50" not-null="true" />
+		</property>
+		<property name="entityName" type="string">
+			<column name="ENTITY_NAME" not-null="true" />
+		</property>
+		<property name="entityJson" type="string">
+			<column name="Entity_json" length="65535" not-null="true" />
+
+		</property>
+	 <property name="userId" type="java.lang.Long">
+      <column name="user_id" not-null="true" />
+
+    </property>
+      <property name="transactionId" type="java.lang.String">
+      <column name="transaction_id" length="65535" not-null="true" />
+
+    </property>
+    
+     <property name="main" type="java.lang.Long">
+      <column name="main" not-null="false" />
+
+    </property>
+		
+		<property name="relationName" type="string">
+      <column name="relation_name" length="500" not-null="false" />
+      </property>
+	</class>
+</hibernate-mapping>

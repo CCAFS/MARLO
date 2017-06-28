@@ -144,5 +144,6 @@
    <modules>
    	<module>marlo-utils</module>
    	<module>marlo-web</module>
+   	<module>marlo-ciat-web-module</module>
    </modules>
 </project>

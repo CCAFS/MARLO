@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Nov 23, 2016 10:03:30 AM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.LocGeoposition" table="loc_geopositions" optimistic-lock="version">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="modified_by" not-null="true" />
+        </many-to-one>
+        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="created_by" />
+        </many-to-one>
+        <many-to-one name="locGeoposition" class="org.cgiar.ccafs.marlo.data.model.LocGeoposition" fetch="select">
+            <column name="parent_id" />
+        </many-to-one>
+        <property name="latitude" type="double">
+            <column name="latitude" precision="22" scale="0" not-null="true" />
+        </property>
+        <property name="longitude" type="double">
+            <column name="longitude" precision="22" scale="0" not-null="true" />
+        </property>
+        <property name="active" type="boolean">
+            <column name="is_active" not-null="true" />
+        </property>
+        <property name="activeSince" type="timestamp">
+            <column name="active_since" length="19" not-null="true" />
+        </property>
+        <property name="modificationJustification" type="string">
+            <column name="modification_justification" length="65535" not-null="true" />
+        </property>
+        <set name="locGeopositions" table="loc_geopositions" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="parent_id" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.LocGeoposition" />
+        </set>
+        <set name="locElements" table="loc_elements" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="geoposition_id" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.LocElement" />
+        </set>
+    </class>
+</hibernate-mapping>

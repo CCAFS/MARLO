@@ -1,0 +1,120 @@
+<configuration>
+  <contextName>Marlo Activities</contextName>
+  <property resource="marlo.properties" />
+
+
+  <!-- ======= Filters by levels to print logs in file ======= -->
+
+  <appender name="FILE-PRODUCTION"
+    class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${log.folder}/marlo.log</file>
+    <!-- deny all events with a level below INFO, that is TRACE and DEBUG -->
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>INFO</level>
+    </filter>
+    <encoder>
+      <pattern>%d{yyyy-MM-dd_HH:mm:ss.SSS} - [%thread]%logger{0} [%-5level]
+        : %msg%n</pattern>
+    </encoder>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+        <!-- 30 days, daily rollover -->   
+        <fileNamePattern>${log.folder}/marlo.%d{yyyy-MM-dd}.zip</fileNamePattern>
+        <maxHistory>30</maxHistory>
+    </rollingPolicy>
+  </appender>
+
+  <appender name="FILE-TEST"
+    class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${log.folder}/marlo-test.log</file>
+    <encoder>
+      <pattern>%d{yyyy-MM-dd_HH:mm:ss.SSS} - [%thread]%logger{0} [%-5level]
+        : %msg%n</pattern>
+    </encoder>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+        <!-- 30 days, daily rollover -->   
+        <fileNamePattern>${log.folder}/marlo-test.%d{yyyy-MM-dd}.zip</fileNamePattern>
+        <maxHistory>30</maxHistory>
+    </rollingPolicy>
+  </appender>
+
+
+  <!-- ======= Filters by levels to print logs in Console ======= -->
+
+  <appender name="CONSOLE-PRODUCTION" class="ch.qos.logback.core.ConsoleAppender">
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>INFO</level>
+    </filter>
+    <encoder>
+      <pattern>%d{yyyy-MM-dd_HH:mm:ss.SSS} - [%thread]%logger{0} [%-5level]
+        : %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="CONSOLE-TEST" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d{yyyy-MM-dd_HH:mm:ss.SSS} - [%thread]%logger{0} [%-5level]
+        : %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <!-- ======= Only show error messages from the framework ======= -->
+  <logger name="org.apache.struts2">
+    <level value="WARN" />
+  </logger>
+  <logger name="org.apache.struts2.components">
+    <level value="WARN" />
+  </logger>
+  <logger name="com.opensymphony.xwork2">
+    <level value="ERROR" />
+  </logger>
+  <logger name="com.opensymphony.xwork2.ognl.OgnlValueStack">
+    <level value="ERROR" />
+  </logger>
+  <logger name="org.apache.shiro">
+    <level value="WARN" />
+  </logger>
+   <logger name="org.hibernate" level="ERROR" />
+  <logger name="org.hibernate.type" level="ERROR" />
+ 
+
+
+  <!-- ======= Attach the appenders according to the configuration properties 
+    ======= -->
+  <root level="ALL">
+    <if condition='property("log.console").equalsIgnoreCase("true")'>
+      <then>
+
+        <if condition='property("log.production").equalsIgnoreCase("true")'>
+          <then>
+            <appender-ref ref="CONSOLE-PRODUCTION" />
+          </then>
+        </if>
+
+        <if condition='property("log.test").equalsIgnoreCase("true")'>
+          <then>
+            <appender-ref ref="CONSOLE-TEST" />
+          </then>
+        </if>
+
+      </then>
+    </if>
+
+    <if condition='property("log.file").equalsIgnoreCase("true")'>
+      <then>
+
+        <if condition='property("log.production").equalsIgnoreCase("true")'>
+          <then>
+            <appender-ref ref="FILE-PRODUCTION" />
+          </then>
+        </if>
+
+        <if condition='property("log.test").equalsIgnoreCase("true")'>
+          <then>
+            <appender-ref ref="FILE-TEST" />
+          </then>
+        </if>
+
+      </then>
+    </if>
+  </root>
+</configuration>

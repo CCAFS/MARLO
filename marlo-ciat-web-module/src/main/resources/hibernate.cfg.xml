@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+	<session-factory>
+
+		<property name="hibernate.bytecode.use_reflection_optimizer">false</property>
+		<property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+		<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+		<property name="hibernate.search.autoregister_listeners">false</property>
+		<property name="hibernate.validator.apply_to_ddl">false</property>
+		<property name="connection.autoReconnect">true</property>
+		<property name="connection.autoReconnectForPools">true</property>
+		<property name="connection.is-connection-validation-required">true</property>
+		<property name="show_sql">false</property>
+		<property name="use_sql_comments">false</property>
+		<property name="generate_statistics">false</property>
+
+		<property name="hibernate.connection.verifyServerCertificate">false</property>
+		<property name="hibernate.connection.requireSSL">false</property>
+		<property name="hibernate.connection.useSSL">false</property>
+
+		<property name="hibernate.c3p0.idle_test_period">6</property>
+		<property name="hibernate.c3p0.timeout">6</property>
+		<property name="hibernate.c3p0.max_size">7000</property>
+		<property name="hibernate.c3p0.min_size">20</property>
+		<property name="hibernate.c3p0.max_statements">100</property>
+		<property name="hibernate.c3p0.preferredTestQuery">select 1;</property>
+		<property name="connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider</property>
+		<property name="hibernate.c3p0.validate">true</property>
+
+		<!-- Model Mappings -->
+		<mapping resource="xmls/Auditlog.hbm.xml" />
+		<mapping resource="xmls/CenterUsers.hbm.xml" />
+		<mapping resource="xmls/CenterAllTypes.hbm.xml" />
+		<mapping resource="xmls/Files.hbm.xml" />
+		<mapping resource="xmls/CenterMilestones.hbm.xml" />
+		<mapping resource="xmls/CenterAreas.hbm.xml" />
+		<mapping resource="xmls/Centers.hbm.xml" />
+		<mapping resource="xmls/CenterImpact.hbm.xml" />
+		<mapping resource="xmls/CenterLeaders.hbm.xml" />
+		<mapping resource="xmls/CenterObjective.hbm.xml" />
+		<mapping resource="xmls/CenterOutcome.hbm.xml" />
+		<mapping resource="xmls/CenterOutput.hbm.xml" />
+		<mapping resource="xmls/CenterPrograms.hbm.xml" />
+		<mapping resource="xmls/CenterTopic.hbm.xml" />
+		<mapping resource="xmls/CenterRoles.hbm.xml" />
+		<mapping resource="xmls/CenterUserRoles.hbm.xml" />
+		<mapping resource="xmls/Users.hbm.xml" />
+		<mapping resource="xmls/CenterImpactObjectives.hbm.xml" />
+		<mapping resource="xmls/CenterSectionStatuses.hbm.xml" />
+		<mapping resource="xmls/CenterTargetUnits.hbm.xml" />
+		<mapping resource="xmls/Institutions.hbm.xml" />
+		<mapping resource="xmls/InstitutionTypes.hbm.xml" />
+		<mapping resource="xmls/LocElements.hbm.xml" />
+		<mapping resource="xmls/LocElementTypes.hbm.xml" />
+		<mapping resource="xmls/LocGeopositions.hbm.xml" />
+		<mapping resource="xmls/CenterBeneficiaries.hbm.xml" />
+		<mapping resource="xmls/CenterBeneficiaryTypes.hbm.xml" />
+		<mapping resource="xmls/CenterImpactBeneficiaries.hbm.xml" />
+		<mapping resource="xmls/CenterRegions.hbm.xml" />
+		<mapping resource="xmls/CenterNextuserTypes.hbm.xml" />
+		<mapping resource="xmls/CenterOutputsNextUsers.hbm.xml" />
+		<mapping resource="xmls/CenterCycles.hbm.xml" />
+		<mapping resource="xmls/CenterSubmissions.hbm.xml" />
+		<mapping resource="xmls/CenterProjectOutputs.hbm.xml" />
+		<mapping resource="xmls/CenterProjects.hbm.xml" />
+		<mapping resource="xmls/CenterProjectStatus.hbm.xml" />
+		<mapping resource="xmls/CenterFundingSourceTypes.hbm.xml" />
+		<mapping resource="xmls/CenterProjectFundingSources.hbm.xml" />
+		<mapping resource="xmls/CenterProjectCrosscutingThemes.hbm.xml" />
+		<mapping resource="xmls/CenterDeliverables.hbm.xml" />
+		<mapping resource="xmls/CenterDeliverableTypes.hbm.xml" />
+		<mapping resource="xmls/CenterDeliverableDocuments.hbm.xml" />
+		<mapping resource="xmls/CenterMonitoringOutcomes.hbm.xml" />
+		<mapping resource="xmls/CenterMonitoringMilestones.hbm.xml" />
+		<mapping resource="xmls/CenterMonitoringOutcomeEvidences.hbm.xml" />
+		<mapping resource="xmls/CenterProjectPartnerPersons.hbm.xml" />
+		<mapping resource="xmls/CenterProjectPartners.hbm.xml" />
+		<mapping resource="xmls/CenterProjectLocations.hbm.xml" />
+		<mapping resource="xmls/CenterDeliverableCrosscutingThemes.hbm.xml" />
+		<mapping resource="xmls/CenterDeliverableOutputs.hbm.xml" />
+		<mapping resource="xmls/CenterProjectTypes.hbm.xml" />
+		<mapping resource="xmls/Crps.hbm.xml" />
+		<mapping resource="xmls/CenterParameters.hbm.xml" />
+		<mapping resource="xmls/CenterCustomParameters.hbm.xml" />
+		<mapping resource="xmls/SrfCrossCuttingIssues.hbm.xml" />
+		<mapping resource="xmls/SrfIdos.hbm.xml" />
+		<mapping resource="xmls/CenterImpactStatement.hbm.xml" />		
+	</session-factory>
+
+</hibernate-configuration>
+
+   

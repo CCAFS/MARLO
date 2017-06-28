@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Nov 23, 2016 10:03:30 AM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.Institution" table="institutions" optimistic-lock="version">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="locElement" class="org.cgiar.ccafs.marlo.data.model.LocElement" fetch="select">
+            <column name="country_id" />
+        </many-to-one>
+        <many-to-one name="institutionType" class="org.cgiar.ccafs.marlo.data.model.InstitutionType" fetch="select">
+            <column name="institution_type_id" not-null="true" />
+        </many-to-one>
+        <many-to-one name="institution" class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
+            <column name="headquarter" />
+        </many-to-one>
+        <property name="name" type="string">
+            <column name="name" length="65535" not-null="true" />
+        </property>
+        <property name="acronym" type="string">
+            <column name="acronym" length="45" />
+        </property>
+        <property name="city" type="string">
+            <column name="city" />
+        </property>
+        <property name="websiteLink" type="string">
+            <column name="website_link" />
+        </property>
+        <property name="added" type="timestamp">
+            <column name="added" length="19" not-null="true" />
+        </property>
+        <set name="branches" table="institutions" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="headquarter" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.Institution" />
+        </set>
+    </class>
+</hibernate-mapping>
