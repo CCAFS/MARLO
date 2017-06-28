@@ -154,6 +154,7 @@
     <mapping resource="xmls/CustomParameters.hbm.xml" />   	  
 	  <mapping resource="xmls/InstitutionsLocations.hbm.xml"/>
 	  <mapping resource="xmls/ProjectPartnerLocations.hbm.xml"/>
+	  <mapping resource="xmls/ProjectsInfo.hbm.xml"/>
 	</session-factory>
 </hibernate-configuration>
 

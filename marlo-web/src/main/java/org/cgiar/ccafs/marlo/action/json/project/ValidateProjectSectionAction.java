@@ -47,6 +47,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlightType;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighligthsTypeEnum;
+import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectLeverage;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocationElementType;
@@ -240,7 +241,7 @@ public class ValidateProjectSectionAction extends BaseAction {
     }
 
     Project project = projectManager.getProjectById(projectID);
-
+    ProjectInfo projectInfo = project.getProjecInfoPhase(this.getActualPhase());
     switch (ProjectSectionStatusEnum.value(sectionName.toUpperCase())) {
       case OUTCOMES:
         section = new HashMap<String, Object>();
@@ -251,7 +252,7 @@ public class ValidateProjectSectionAction extends BaseAction {
           project.getProjectOutcomes().stream().filter(c -> c.isActive()).collect(Collectors.toList());
 
 
-        if (!(project.getAdministrative() != null && project.getAdministrative().booleanValue() == true)) {
+        if (!(projectInfo.getAdministrative() != null && projectInfo.getAdministrative().booleanValue() == true)) {
           if (projectOutcomes.isEmpty()) {
             section.put("missingFields", section.get("missingFields") + "-" + "outcomes");
           }
@@ -913,17 +914,20 @@ public class ValidateProjectSectionAction extends BaseAction {
 
   public void validateProjectDescription() {
     Project project = projectManager.getProjectById(projectID);
+    ProjectInfo projectInfo = project.getProjecInfoPhase(this.getActualPhase());
+
     List<CrpProgram> programs = new ArrayList<>();
     for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
       .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
       .collect(Collectors.toList())) {
       programs.add(projectFocuses.getCrpProgram());
 
-      if (project.getFlagshipValue() == null) {
-        project.setFlagshipValue(projectFocuses.getCrpProgram().getId().toString());
+      if (projectInfo.getFlagshipValue() == null) {
+        projectInfo.setFlagshipValue(projectFocuses.getCrpProgram().getId().toString());
 
       } else {
-        project.setFlagshipValue(project.getFlagshipValue() + "," + projectFocuses.getCrpProgram().getId().toString());
+        projectInfo
+          .setFlagshipValue(projectInfo.getFlagshipValue() + "," + projectFocuses.getCrpProgram().getId().toString());
       }
     }
 

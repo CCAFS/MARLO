@@ -368,8 +368,8 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
 
         project = (Project) autoSaveReader.readFromJson(jReader);
         Project projectDb = projectManager.getProjectById(project.getId());
-        project.setProjectEditLeader(projectDb.isProjectEditLeader());
-        project.setAdministrative(projectDb.getAdministrative());
+        project.setProjectInfo(projectDb.getProjecInfoPhase(this.getActualPhase()));
+
         reader.close();
 
         this.setDraft(true);
@@ -385,8 +385,7 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
 
 
       Project projectBD = projectManager.getProjectById(projectID);
-      project.setStartDate(projectBD.getStartDate());
-      project.setEndDate(projectBD.getEndDate());
+      project.setProjectInfo(projectBD.getProjecInfoPhase(this.getActualPhase()));
 
 
       List<CrpClusterOfActivity> activities = new ArrayList<CrpClusterOfActivity>();
@@ -442,9 +441,7 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_BUDGETS_ACTVITIES_RELATION);
 
       project = projectManager.getProjectById(projectID);
-      project.setModifiedBy(this.getCurrentUser());
       project.setActiveSince(new Date());
-      project.setModificationJustification(this.getJustification());
       projectManager.saveProject(project, this.getActionName(), relationsName);
       Path path = this.getAutoSaveFilePath();
 

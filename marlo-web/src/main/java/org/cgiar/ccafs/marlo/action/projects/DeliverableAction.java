@@ -574,6 +574,7 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+  @Override
   public boolean isPPA(Institution institution) {
     if (institution == null) {
       return false;
@@ -849,7 +850,7 @@ public class DeliverableAction extends BaseAction {
         }
         Deliverable deliverableDb = deliverableManager.getDeliverableById(deliverable.getId());
         deliverable.setProject(deliverableDb.getProject());
-        project.setProjectEditLeader(deliverableDb.getProject().isProjectEditLeader());
+        project.setProjectInfo(deliverableDb.getProject().getProjecInfoPhase(this.getActualPhase()));
         project.setProjectLocations(deliverableDb.getProject().getProjectLocations());
         reader.close();
 
@@ -1269,8 +1270,6 @@ public class DeliverableAction extends BaseAction {
       Project projectDB = projectManager.getProjectById(project.getId());
       project.setActive(true);
       project.setCreatedBy(projectDB.getCreatedBy());
-      project.setModifiedBy(this.getCurrentUser());
-      project.setModificationJustification(this.getJustification());
       project.setActiveSince(projectDB.getActiveSince());
 
       Deliverable deliverablePrew = deliverableManager.getDeliverableById(deliverableID);

@@ -424,7 +424,7 @@ public class ProjectActivitiesAction extends BaseAction {
 
         project = (Project) autoSaveReader.readFromJson(jReader);
         Project projectDb = projectManager.getProjectById(project.getId());
-        project.setProjectEditLeader(projectDb.isProjectEditLeader());
+        project.setProjectInfo(projectDb.getProjecInfoPhase(this.getActualPhase()));
         project.setProjectLocations(projectDb.getProjectLocations());
 
 
@@ -564,8 +564,6 @@ public class ProjectActivitiesAction extends BaseAction {
       Project projectDB = projectManager.getProjectById(project.getId());
       project.setActive(true);
       project.setCreatedBy(projectDB.getCreatedBy());
-      project.setModifiedBy(this.getCurrentUser());
-      project.setModificationJustification(this.getJustification());
       project.setActiveSince(projectDB.getActiveSince());
 
       this.activitiesPreviousData(project.getProjectActivities(), true);
@@ -578,7 +576,6 @@ public class ProjectActivitiesAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_ACTIVITIES_RELATION);
       project = projectManager.getProjectById(projectID);
       project.setActiveSince(new Date());
-      project.setModifiedBy(this.getCurrentUser());
       projectManager.saveProject(project, this.getActionName(), relationsName);
       Path path = this.getAutoSaveFilePath();
 

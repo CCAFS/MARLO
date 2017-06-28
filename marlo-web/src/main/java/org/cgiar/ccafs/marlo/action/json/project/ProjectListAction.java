@@ -75,7 +75,7 @@ public class ProjectListAction extends BaseAction {
     for (Project project : allProjects) {
       Map<String, String> projectInfo = new HashMap<String, String>();
       projectInfo.put("id", project.getId().toString());
-      projectInfo.put("description", project.getTitle());
+      projectInfo.put("description", project.getProjecInfoPhase(this.getActualPhase()).getTitle());
 
       projects.add(projectInfo);
     }

@@ -280,7 +280,7 @@ public class DeliverableListAction extends BaseAction {
 
       if (project != null) {
 
-        allYears = project.getAllYears();
+        allYears = project.getProjecInfoPhase(this.getActualPhase()).getAllYears();
 
         if (deliverableTypeManager.findAll() != null) {
           deliverablesType = new ArrayList<>(deliverableTypeManager.findAll());

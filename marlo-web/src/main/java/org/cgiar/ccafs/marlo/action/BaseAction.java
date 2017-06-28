@@ -31,6 +31,7 @@ import org.cgiar.ccafs.marlo.data.manager.IpLiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectComponentLessonManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
@@ -60,6 +61,7 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.LocElementType;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
@@ -164,8 +166,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private boolean canSwitchProject; // If user is able to Switch Project. (generally is a project leader)
 
   protected APConfig config;
-
-
+  @Inject
+  private PhaseManager phaseManager;
   @Inject
   private CrpClusterKeyOutputManager crpClusterKeyOutputManager;
   private Long crpID;
@@ -296,11 +298,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.canAcessPublications() || this.canAcessSynthesisMog();
   }
 
-
   public boolean canAcessCrpAdmin() {
     String permission = this.generatePermission(Permission.CRP_ADMIN_VISIBLE_PRIVILEGES, this.getCrpSession());
     return securityContext.hasPermission(permission);
   }
+
 
   public boolean canAcessFunding() {
 
@@ -321,11 +323,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return (this.hasPermission(this.generatePermission(Permission.PUBLICATION_ADD, params)));
   }
 
-
   public boolean canAcessSynthesisMog() {
     String permission = this.generatePermission(Permission.SYNTHESIS_BY_MOG_PERMISSION, this.getCrpSession());
     return securityContext.hasPermission(permission);
   }
+
 
   public boolean canAddBilateralProject() {
     String permission = this.generatePermission(Permission.PROJECT_BILATERAL_ADD, this.getCrpSession());
@@ -497,7 +499,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return CANCEL;
   }
 
-
   /**
    * Verify if the project have Cluster of Activity to activate Budget by CoA
    * 
@@ -516,6 +517,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
   }
+
 
   public boolean canEditCenterType() {
     return this.hasPermissionNoBase(
@@ -555,7 +557,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       .clearCachedAuthorizationInfo(securityContext.getSubject().getPrincipals());
   }
 
-
   public String crpActivitesModule() {
     return APConstants.CRP_ACTIVITES_MODULE;
   }
@@ -585,6 +586,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return INPUT;
   }
 
+
   public String generatePermission(String permission, String... params) {
     return this.getText(permission, params);
 
@@ -592,6 +594,22 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public String getActionName() {
     return ServletActionContext.getActionMapping().getName();
+  }
+
+  /**
+   * get the actual
+   * 
+   * @return the actual phase of the crp
+   */
+  public Phase getActualPhase() {
+    if (this.getSession().containsKey(APConstants.CURRENT_PHASE)) {
+      return (Phase) this.getSession().get(APConstants.CURRENT_PHASE);
+    } else {
+      Phase phase = phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), this.getCrpID());
+      return phase;
+    }
+
+
   }
 
   public Boolean getAutoSaveFilePath(String simpleName, String actionName, long id) {
@@ -1077,7 +1095,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                     || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
                     || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
                       || a.getStatus().intValue() == 0 || a.getStatus().intValue() == -1))))
-              .collect(Collectors.toList());
+            .collect(Collectors.toList());
         } else {
           openA = deliverables.stream()
             .filter(a -> a.isActive()
@@ -2103,7 +2121,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       project
         .getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
           && c.getYear().intValue() == year && (c.isUnSubmit() == null || !c.isUnSubmit()))
-        .collect(Collectors.toList());
+      .collect(Collectors.toList());
     if (submissions.isEmpty()) {
       return false;
     }

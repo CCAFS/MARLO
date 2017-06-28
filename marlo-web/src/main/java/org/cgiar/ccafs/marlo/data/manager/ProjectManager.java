@@ -62,6 +62,7 @@ public interface ProjectManager {
    */
   public Project getProjectById(long projectID);
 
+
   /**
    * Get the list of projects that the user can access and edit.
    * 

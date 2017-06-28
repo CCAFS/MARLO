@@ -17,9 +17,11 @@ package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -41,6 +43,7 @@ public class ProjectLeaderEditAction extends BaseAction {
   @Inject
   private SectionStatusManager sectionStatusManager;
   private ProjectManager projectManager;
+  private ProjectInfoManager projectInfoManager;
   private long projectId;
   private boolean projectStatus;
   private Map<String, Object> status;
@@ -48,24 +51,27 @@ public class ProjectLeaderEditAction extends BaseAction {
   private ValidateProjectSectionAction validateProject;
 
   @Inject
-  public ProjectLeaderEditAction(APConfig config, ProjectManager projectManager) {
+  public ProjectLeaderEditAction(APConfig config, ProjectManager projectManager,
+    ProjectInfoManager projectInfoManager) {
     super(config);
+    this.projectInfoManager = projectInfoManager;
     this.projectManager = projectManager;
   }
 
   @Override
   public String execute() throws Exception {
     Project project = projectManager.getProjectById(projectId);
+    ProjectInfo projectInfo = project.getProjecInfoPhase(this.getActualPhase());
     status = new HashMap<String, Object>();
     status.put("ProjectId", projectId);
     if (project != null) {
 
-      project.setProjectEditLeader(projectStatus);
-      project.setPresetDate(new Date());
-      projectManager.saveProject(project);
+      projectInfo.setProjectEditLeader(projectStatus);
+      projectInfo.setPresetDate(new Date());
+      projectInfoManager.saveProjectInfo(projectInfo);
 
 
-      status.put("status", project.isProjectEditLeader());
+      status.put("status", projectInfo.isProjectEditLeader());
       status.put("ok", true);
       validateProject.setProjectID(projectId);
       validateProject.setExistProject(true);

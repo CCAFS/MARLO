@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.Submission;
@@ -130,6 +131,9 @@ public class UnsubmitProjectAction extends BaseAction {
   }
 
   private void sendNotficationEmail(Project project) {
+
+    ProjectInfo projectInfo = project.getProjecInfoPhase(this.getActualPhase());
+
     String toEmail = "";
     // Add project leader
     if (project.getLeaderPerson() != null
@@ -148,14 +152,14 @@ public class UnsubmitProjectAction extends BaseAction {
     Long crpPmuRole = Long.parseLong((String) this.getSession().get(APConstants.CRP_PMU_ROLE));
     Role roleCrpPmu = roleManager.getRoleById(crpPmuRole);
     // If Managment liason is PMU
-    if (project.getLiaisonInstitution().getAcronym().equals(roleCrpPmu.getAcronym())) {
-      ccEmails.append(project.getLiaisonUser().getUser().getEmail());
+    if (projectInfo.getLiaisonInstitution().getAcronym().equals(roleCrpPmu.getAcronym())) {
+      ccEmails.append(projectInfo.getLiaisonUser().getUser().getEmail());
       ccEmails.append(", ");
-    } else if (project.getLiaisonInstitution().getCrpProgram() != null
-      && project.getLiaisonInstitution().getCrpProgram().getProgramType() == 1) {
+    } else if (projectInfo.getLiaisonInstitution().getCrpProgram() != null
+      && projectInfo.getLiaisonInstitution().getCrpProgram().getProgramType() == 1) {
       // If Managment liason is FL
       List<CrpProgram> crpPrograms = project.getCrp().getCrpPrograms().stream()
-        .filter(cp -> cp.getId() == project.getLiaisonInstitution().getCrpProgram().getId())
+        .filter(cp -> cp.getId() == projectInfo.getLiaisonInstitution().getCrpProgram().getId())
         .collect(Collectors.toList());
       if (crpPrograms != null) {
         CrpProgram crpProgram = crpPrograms.get(0);
@@ -224,7 +228,7 @@ public class UnsubmitProjectAction extends BaseAction {
     values[0] = plName;
     values[1] = this.getCurrentUser().getFirstName();
     values[2] = project.getCrp().getName();
-    values[3] = project.getTitle();
+    values[3] = projectInfo.getTitle();
     values[4] = String.valueOf(project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER));
     values[5] = String.valueOf(this.getCurrentCycleYear());
     values[6] = this.getCurrentCycle().toLowerCase();

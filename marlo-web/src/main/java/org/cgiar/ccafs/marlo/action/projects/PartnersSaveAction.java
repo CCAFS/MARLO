@@ -225,7 +225,7 @@ public class PartnersSaveAction extends BaseAction {
       message.append("Project: (");
       message.append(projectID);
       message.append(") - ");
-      message.append(projectManager.getProjectById(projectID).getTitle());
+      message.append(projectManager.getProjectById(projectID).getProjecInfoPhase(this.getActualPhase()).getTitle());
     }
 
     message.append(".</br>");
