@@ -367,8 +367,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         if (programs.size() > 0) {
 
           for (ProjectFocus projectFocus : programs) {
-            if (projectFocus.getProject().getStatus() != null) {
-              switch (ProjectStatusEnum.getValue(projectFocus.getProject().getStatus().intValue())) {
+            if (projectFocus.getProject().getProjecInfoPhase(this.getActualPhase()).getStatus() != null) {
+              switch (ProjectStatusEnum
+                .getValue(projectFocus.getProject().getProjecInfoPhase(this.getActualPhase()).getStatus().intValue())) {
                 case Ongoing:
                 case Extended:
                   deleted = false;
@@ -395,10 +396,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           if (projects.size() > 0) {
 
             for (Project project : projects) {
-              if (project.getLiaisonInstitution().getCrpProgram().getId()
+              if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram().getId()
                 .equals(crpProgramLeader.getCrpProgram().getId())) {
-                if (project.getStatus() != null) {
-                  switch (ProjectStatusEnum.getValue(project.getStatus().intValue())) {
+                if (project.getProjecInfoPhase(this.getActualPhase()).getStatus() != null) {
+                  switch (ProjectStatusEnum
+                    .getValue(project.getProjecInfoPhase(this.getActualPhase()).getStatus().intValue())) {
                     case Ongoing:
                     case Extended:
                       deleted = false;
@@ -1002,7 +1004,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
         project.setOutcomes(projectOutcomes);
 
-        if (!(project.getAdministrative() != null && project.getAdministrative().booleanValue() == true)) {
+        if (!(project.getProjecInfoPhase(this.getActualPhase()).getAdministrative() != null
+          && project.getProjecInfoPhase(this.getActualPhase()).getAdministrative().booleanValue() == true)) {
           if (project.getOutcomes().isEmpty()) {
             return false;
           }
@@ -1664,7 +1667,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           return totalSections == 8;
         } else {
 
-          if (!(project.getAdministrative() != null && project.getAdministrative().booleanValue() == true)) {
+          if (!(project.getProjecInfoPhase(this.getActualPhase()).getAdministrative() != null
+            && project.getProjecInfoPhase(this.getActualPhase()).getAdministrative().booleanValue() == true)) {
             return totalSections == 7;
           } else {
             return totalSections == 6;
@@ -1734,11 +1738,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
         }
-        if (caseStudies.isEmpty() && !project.getAdministrative()) {
+        if (caseStudies.isEmpty() && !project.getProjecInfoPhase(this.getActualPhase()).getAdministrative()) {
           totalSections++;
         }
 
-        if ((project.getAdministrative() != null && project.getAdministrative().booleanValue() == true)) {
+        if ((project.getProjecInfoPhase(this.getActualPhase()).getAdministrative() != null
+          && project.getProjecInfoPhase(this.getActualPhase()).getAdministrative().booleanValue() == true)) {
           return totalSections == 9;
         } else {
           return totalSections == 12;
@@ -2299,7 +2304,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public void saveLessons(Crp crp, Project project) {
 
-    if (project.isProjectEditLeader() && !this.isProjectNew(project.getId())) {
+    if (project.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader()
+      && !this.isProjectNew(project.getId())) {
 
       String actionName = this.getActionName().replaceAll(crp.getAcronym() + "/", "");
 
@@ -2327,7 +2333,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public void saveLessonsOutcome(Crp crp, ProjectOutcome projectOutcome) {
 
     Project project = projectManager.getProjectById(projectOutcome.getProject().getId());
-    if (project.isProjectEditLeader() && !this.isProjectNew(project.getId())) {
+    if (project.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader()
+      && !this.isProjectNew(project.getId())) {
 
       String actionName = this.getActionName().replaceAll(crp.getAcronym() + "/", "");
 

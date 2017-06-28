@@ -301,6 +301,10 @@ public final class APConstants {
   public static final String PROJECT_SCOPES_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectScopes)";
 
+  public static final String PROJECT_INFO_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectInfos)";
+
+
   // Query parameter
   public static final String QUERY_PARAMETER = "q";
   public static final String REPORTING = "Reporting";

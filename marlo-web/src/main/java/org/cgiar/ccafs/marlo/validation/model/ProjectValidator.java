@@ -40,7 +40,7 @@ public class ProjectValidator extends BaseValidator {
   }
 
 
-  public boolean isValidLeader(ProjectPartner leader, boolean isBilateral) {
+  public boolean isValidLeader(ProjectPartner leader) {
     if (leader == null) {
       return false;
     }

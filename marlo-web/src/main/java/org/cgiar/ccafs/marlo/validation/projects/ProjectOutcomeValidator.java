@@ -86,7 +86,8 @@ public class ProjectOutcomeValidator extends BaseValidator {
     }
 
     Project project = projectManager.getProjectById(projectOutcome.getProject().getId());
-    if (!(project.getAdministrative() != null && project.getAdministrative().booleanValue() == true)) {
+    if (!(project.getProjecInfoPhase(action.getActualPhase()).getAdministrative() != null
+      && project.getProjecInfoPhase(action.getActualPhase()).getAdministrative().booleanValue() == true)) {
       this.validateProjectOutcome(action, projectOutcome);
       if (!action.getFieldErrors().isEmpty()) {
         action.addActionError(action.getText("saving.fields.required"));
@@ -189,11 +190,11 @@ public class ProjectOutcomeValidator extends BaseValidator {
     int startYear = 0;
     int endYear = 0;
     Calendar startDate = Calendar.getInstance();
-    startDate.setTime(project.getStartDate());
+    startDate.setTime(project.getProjecInfoPhase(action.getActualPhase()).getStartDate());
     startYear = startDate.get(Calendar.YEAR);
 
     Calendar endDate = Calendar.getInstance();
-    endDate.setTime(project.getEndDate());
+    endDate.setTime(project.getProjecInfoPhase(action.getActualPhase()).getEndDate());
     endYear = endDate.get(Calendar.YEAR);
 
     if (!action.isProjectNew(project.getId())) {
@@ -226,7 +227,8 @@ public class ProjectOutcomeValidator extends BaseValidator {
 
       // TODO: Validate outcome gender here
 
-      if (project.getCrossCuttingGender() != null && project.getCrossCuttingGender().booleanValue() == true) {
+      if (project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingGender() != null
+        && project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingGender().booleanValue() == true) {
 
         if (!(this.isValidString(projectOutcome.getGenderDimenssion())
           && this.wordCount(projectOutcome.getGenderDimenssion()) <= 100)) {
@@ -236,7 +238,8 @@ public class ProjectOutcomeValidator extends BaseValidator {
       }
 
 
-      if (project.getCrossCuttingYouth() != null && project.getCrossCuttingYouth().booleanValue() == true) {
+      if (project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingYouth() != null
+        && project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingYouth().booleanValue() == true) {
 
         if (!(this.isValidString(projectOutcome.getYouthComponent())
           && this.wordCount(projectOutcome.getYouthComponent()) <= 100)) {

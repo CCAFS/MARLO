@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectClusterActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
@@ -80,6 +81,8 @@ public class ProjectDescriptionAction extends BaseAction {
 
   // Managers
   private ProjectManager projectManager;
+  private ProjectInfoManager projectInfoManagerManager;
+
   private SectionStatusManager sectionStatusManager;
 
   private ProjectFocusManager projectFocusManager;
@@ -143,9 +146,11 @@ public class ProjectDescriptionAction extends BaseAction {
     AuditLogManager auditLogManager, ProjectDescriptionValidator validator,
     ProjectClusterActivityManager projectClusterActivityManager,
     CrpClusterOfActivityManager crpClusterOfActivityManager, LocElementTypeManager locationManager,
-    ProjectScopeManager projectLocationManager, HistoryComparator historyComparator) {
+    ProjectScopeManager projectLocationManager, HistoryComparator historyComparator,
+    ProjectInfoManager projectInfoManagerManager) {
     super(config);
     this.projectManager = projectManager;
+    this.projectInfoManagerManager = projectInfoManagerManager;
     this.programManager = programManager;
     this.crpManager = crpManager;
     // this.userManager = userManager;
@@ -422,18 +427,6 @@ public class ProjectDescriptionAction extends BaseAction {
 
       if (history != null) {
         project = history;
-        // we load the all information form the files related to the project
-        if (project.getWorkplan() != null) {
-          project.setWorkplan(fileDBManager.getFileDBById(project.getWorkplan().getId()));
-        }
-        if (project.getBilateralContractName() != null) {
-          project.setBilateralContractName(fileDBManager.getFileDBById(project.getBilateralContractName().getId()));
-        }
-        if (project.getAnnualReportToDonnor() != null) {
-          project.setAnnualReportToDonnor(fileDBManager.getFileDBById(project.getAnnualReportToDonnor().getId()));
-        }
-
-
       } else {
         // not a valid transatacion
         this.transaction = null;
@@ -470,8 +463,10 @@ public class ProjectDescriptionAction extends BaseAction {
         project = (Project) autoSaveReader.readFromJson(jReader);
         // We load some BD objects, since the draft only keeps IDs and some data is shown with a different labe
         Project projectDb = projectManager.getProjectById(project.getId());
-        project.setProjectEditLeader(projectDb.isProjectEditLeader());
-        project.setAdministrative(projectDb.getAdministrative());
+        project.getProjectInfo()
+          .setProjectEditLeader(projectDb.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader());
+        project.getProjectInfo()
+          .setAdministrative(projectDb.getProjecInfoPhase(this.getActualPhase()).getAdministrative());
         // load Cluster of activites info
         if (project.getClusterActivities() != null) {
           for (ProjectClusterActivity projectClusterActivity : project.getClusterActivities()) {
@@ -491,19 +486,21 @@ public class ProjectDescriptionAction extends BaseAction {
         }
 
         // load LiaisonUser info
-        if (project.getLiaisonUser() != null) {
-          project.setLiaisonUser(liaisonUserManager.getLiaisonUserById(project.getLiaisonUser().getId()));
+        if (project.getProjectInfo().getLiaisonUser() != null) {
+          project.getProjectInfo()
+            .setLiaisonUser(liaisonUserManager.getLiaisonUserById(project.getProjectInfo().getLiaisonUser().getId()));
         }
         // load LiaisonUser info
-        if (project.getLiaisonInstitution() != null) {
-          project.setLiaisonInstitution(
-            liaisonInstitutionManager.getLiaisonInstitutionById(project.getLiaisonInstitution().getId()));
+        if (project.getProjectInfo().getLiaisonInstitution() != null) {
+          project.getProjectInfo().setLiaisonInstitution(liaisonInstitutionManager
+            .getLiaisonInstitutionById(project.getProjectInfo().getLiaisonInstitution().getId()));
         }
 
         // load fps value
         List<CrpProgram> programs = new ArrayList<>();
-        if (project.getFlagshipValue() != null) {
-          for (String programID : project.getFlagshipValue().trim().replace("[", "").replace("]", "").split(",")) {
+        if (project.getProjectInfo().getFlagshipValue() != null) {
+          for (String programID : project.getProjectInfo().getFlagshipValue().trim().replace("[", "").replace("]", "")
+            .split(",")) {
             try {
               CrpProgram program = programManager.getCrpProgramById(Long.parseLong(programID.trim()));
               programs.add(program);
@@ -537,8 +534,8 @@ public class ProjectDescriptionAction extends BaseAction {
         this.setDraft(false);
 
         // Load the DB information and adjust it to the structures with which the front end
-
-        project.setFlagshipValue("");
+        project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
+        project.getProjectInfo().setFlagshipValue("");
         project.setRegionsValue("");
         List<CrpProgram> programs = new ArrayList<>();
         for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
@@ -546,11 +543,11 @@ public class ProjectDescriptionAction extends BaseAction {
             c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
           .collect(Collectors.toList())) {
           programs.add(projectFocuses.getCrpProgram());
-          if (project.getFlagshipValue().isEmpty()) {
-            project.setFlagshipValue(projectFocuses.getCrpProgram().getId().toString());
+          if (project.getProjectInfo().getFlagshipValue().isEmpty()) {
+            project.getProjectInfo().setFlagshipValue(projectFocuses.getCrpProgram().getId().toString());
           } else {
-            project
-              .setFlagshipValue(project.getFlagshipValue() + "," + projectFocuses.getCrpProgram().getId().toString());
+            project.getProjectInfo().setFlagshipValue(
+              project.getProjectInfo().getFlagshipValue() + "," + projectFocuses.getCrpProgram().getId().toString());
           }
         }
 
@@ -560,10 +557,10 @@ public class ProjectDescriptionAction extends BaseAction {
             c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
           .collect(Collectors.toList())) {
           regions.add(projectFocuses.getCrpProgram());
-          if (project.getRegionsValue().isEmpty()) {
-            project.setRegionsValue(projectFocuses.getCrpProgram().getId().toString());
+          if (project.getProjectInfo().getRegionsValue().isEmpty()) {
+            project.getProjectInfo().setRegionsValue(projectFocuses.getCrpProgram().getId().toString());
           } else {
-            project
+            project.getProjectInfo()
               .setRegionsValue(project.getRegionsValue() + "," + projectFocuses.getCrpProgram().getId().toString());
           }
         }
@@ -659,11 +656,11 @@ public class ProjectDescriptionAction extends BaseAction {
         project.getClusterActivities().clear();
 
       }
-      project.setNoRegional(null);
-      project.setCrossCuttingGender(null);
-      project.setCrossCuttingCapacity(null);
-      project.setCrossCuttingNa(null);
-      project.setCrossCuttingYouth(null);
+      project.getProjectInfo().setNoRegional(null);
+      project.getProjectInfo().setCrossCuttingGender(null);
+      project.getProjectInfo().setCrossCuttingCapacity(null);
+      project.getProjectInfo().setCrossCuttingNa(null);
+      project.getProjectInfo().setCrossCuttingYouth(null);
     }
 
   }
@@ -679,68 +676,71 @@ public class ProjectDescriptionAction extends BaseAction {
 
       project.setActive(true);
       project.setCreatedBy(projectDB.getCreatedBy());
-      project.setModifiedBy(this.getCurrentUser());
-      project.setModificationJustification("");
       project.setActiveSince(projectDB.getActiveSince());
       project.setCreateDate(projectDB.getCreateDate());
-      project.setPresetDate(projectDB.getPresetDate());
+      project.getProjectInfo().setPresetDate(projectDB.getProjectInfo().getPresetDate());
 
       // Validations to fill the checkbox fields
 
-      if (project.isNoRegional() == null) {
-        project.setNoRegional(false);
+      if (project.getProjectInfo().getNoRegional() == null) {
+        project.getProjectInfo().setNoRegional(false);
       }
-      if (project.getCrossCuttingCapacity() == null) {
-        project.setCrossCuttingCapacity(false);
+      if (project.getProjectInfo().getCrossCuttingCapacity() == null) {
+        project.getProjectInfo().setCrossCuttingCapacity(false);
       }
-      if (project.getCrossCuttingNa() == null) {
-        project.setCrossCuttingNa(false);
+      if (project.getProjectInfo().getCrossCuttingNa() == null) {
+        project.getProjectInfo().setCrossCuttingNa(false);
       }
-      if (project.getCrossCuttingGender() == null) {
-        project.setCrossCuttingGender(false);
+      if (project.getProjectInfo().getCrossCuttingGender() == null) {
+        project.getProjectInfo().setCrossCuttingGender(false);
       }
-      if (project.getCrossCuttingYouth() == null) {
-        project.setCrossCuttingYouth(false);
+      if (project.getProjectInfo().getCrossCuttingYouth() == null) {
+        project.getProjectInfo().setCrossCuttingYouth(false);
       }
-      project.setStatus(projectDB.getStatus());
+      project.getProjectInfo().setStatus(projectDB.getProjectInfo().getStatus());
       if (this.isReportingActive()) {
 
-        project.setCrossCuttingCapacity(projectDB.getCrossCuttingCapacity());
-        project.setCrossCuttingNa(projectDB.getCrossCuttingNa());
-        project.setCrossCuttingGender(projectDB.getCrossCuttingGender());
-        project.setCrossCuttingYouth(projectDB.getCrossCuttingYouth());
+        project.getProjectInfo()
+          .setCrossCuttingCapacity(projectDB.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingCapacity());
+        project.getProjectInfo()
+          .setCrossCuttingNa(projectDB.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingNa());
+        project.getProjectInfo()
+          .setCrossCuttingGender(projectDB.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingGender());
+        project.getProjectInfo()
+          .setCrossCuttingYouth(projectDB.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingYouth());
 
 
       }
 
 
       // no liaison institution selected
-      if (project.getLiaisonInstitution() != null) {
-        if (project.getLiaisonInstitution().getId() == -1) {
-          project.setLiaisonInstitution(null);
+      if (project.getProjectInfo().getLiaisonInstitution() != null) {
+        if (project.getProjectInfo().getLiaisonInstitution().getId() == -1) {
+          project.getProjectInfo().setLiaisonInstitution(null);
         }
       }
       // no liaison user selected
-      if (project.getLiaisonUser() != null) {
-        if (project.getLiaisonUser().getId() == -1) {
-          project.setLiaisonUser(null);
+      if (project.getProjectInfo().getLiaisonUser() != null) {
+        if (project.getProjectInfo().getLiaisonUser().getId() == -1) {
+          project.getProjectInfo().setLiaisonUser(null);
         }
       }
       // Saving the flaghsips
 
-      if (project.getFlagshipValue() != null && project.getFlagshipValue().length() > 0) {
+      if (project.getProjectInfo().getFlagshipValue() != null
+        && project.getProjectInfo().getFlagshipValue().length() > 0) {
 
         for (ProjectFocus projectFocus : projectDB.getProjectFocuses().stream()
           .filter(
             c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
           .collect(Collectors.toList())) {
 
-          if (!project.getFlagshipValue().contains(projectFocus.getCrpProgram().getId().toString())) {
+          if (!project.getProjectInfo().getFlagshipValue().contains(projectFocus.getCrpProgram().getId().toString())) {
             projectFocusManager.deleteProjectFocus(projectFocus.getId());
 
           }
         }
-        for (String programID : project.getFlagshipValue().trim().split(",")) {
+        for (String programID : project.getProjectInfo().getFlagshipValue().trim().split(",")) {
           if (programID.length() > 0) {
             CrpProgram program = programManager.getCrpProgramById(Long.parseLong(programID.trim()));
             ProjectFocus projectFocus = new ProjectFocus();
@@ -873,7 +873,7 @@ public class ProjectDescriptionAction extends BaseAction {
 
       // load basic info to project
       project.setCrp(loggedCrp);
-      project.setCofinancing(projectDB.isCofinancing());
+      project.getProjectInfo().setCofinancing(projectDB.getProjectInfo().isCofinancing());
       // project.setGlobal(projectDB.isGlobal());
 
 
@@ -883,11 +883,15 @@ public class ProjectDescriptionAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_FOCUSES_RELATION);
       relationsName.add(APConstants.PROJECT_CLUSTER_ACTIVITIES_RELATION);
       relationsName.add(APConstants.PROJECT_SCOPES_RELATION);
+      relationsName.add(APConstants.PROJECT_INFO_RELATION);
+
       project.setActiveSince(new Date());
-      project.setReporting(projectDB.getReporting());
-      project.setAdministrative(projectDB.getAdministrative());
-      project.setModificationJustification(this.getJustification());
+      project.getProjectInfo().setReporting(projectDB.getProjectInfo().getReporting());
+      project.getProjectInfo().setAdministrative(projectDB.getProjectInfo().getAdministrative());
+      project.getProjectInfo().setModificationJustification(this.getJustification());
+      projectInfoManagerManager.saveProjectInfo(project.getProjectInfo());
       projectManager.saveProject(project, this.getActionName(), relationsName);
+
       Path path = this.getAutoSaveFilePath();
       // delete the draft file if exists
       if (path.toFile().exists()) {
