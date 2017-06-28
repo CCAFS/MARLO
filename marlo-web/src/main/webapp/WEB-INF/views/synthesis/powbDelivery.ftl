@@ -1,21 +1,6 @@
 [#ftl]
-[#assign canEdit = true /]
-[#assign editable = true /]
-[#assign program = {
-  'flagshipProgram' : true
-} /]
-[#assign liaisonInstitutionID = 1 /]
-[#assign liaisonInstitutions = [
-  { 'id': 1, 'acronym': 'F1', 'name': 'Priorities and Policies for CSA'},
-  { 'id': 2, 'acronym': 'F2', 'name': 'Climate-Smart Technologies and Practices'},
-  { 'id': 3, 'acronym': 'F3', 'name': 'Low emissions development'},
-  { 'id': 4, 'acronym': 'F4', 'name': 'Climate services and safety nets'}
-] /]
-
-[#-- TODO: Remove fake data above --]
-
 [#assign title = "POWB Report" /]
-[#assign currentSectionString = "synthesis-${actionName?replace('/','-')}-${liaisonInstitutionID}" /]
+[#assign currentSectionString = "powb-${actionName?replace('/','-')}-${liaisonInstitutionID}" /]
 [#assign pageLibs = [ ] /]
 [#assign customJS = [ ] /]
 [#assign customCSS = ["${baseUrl}/css/synthesis/synthesisGlobal.css"] /]

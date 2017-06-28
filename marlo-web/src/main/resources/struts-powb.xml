@@ -5,7 +5,7 @@
   <package name="powb" namespace="/powb" extends="marlo-default">
     
     <!-- CRP Plan of Work and Budget (POWB) -->
-    <action name="{crp}/delivery" class="org.cgiar.ccafs.marlo.action.BaseAction">
+    <action name="{crp}/delivery" class="org.cgiar.ccafs.marlo.action.powb.DeliveryAction">
       <interceptor-ref name="editSynthesisStack" />
       <result name="input">/WEB-INF/views/synthesis/powbDelivery.ftl</result>
       <result name="success" type="redirectAction">
