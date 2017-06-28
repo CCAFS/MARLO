@@ -196,13 +196,16 @@ public class ProjectSubmissionAction extends BaseAction {
     Long crpPmuRole = Long.parseLong((String) this.getSession().get(APConstants.CRP_PMU_ROLE));
     Role roleCrpPmu = roleManager.getRoleById(crpPmuRole);
     // If Managment liason is PMU
-    if (project.getLiaisonInstitution().getAcronym().equals(roleCrpPmu.getAcronym())) {
-      ccEmails.append(project.getLiaisonUser().getUser().getEmail());
+    if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getAcronym()
+      .equals(roleCrpPmu.getAcronym())) {
+      ccEmails.append(project.getProjecInfoPhase(this.getActualPhase()).getLiaisonUser().getUser().getEmail());
       ccEmails.append(", ");
-    } else if (project.getLiaisonInstitution().getCrpProgram() != null) {
+    } else if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram() != null) {
       // If Managment liason is FL
-      List<CrpProgram> crpPrograms = project.getCrp().getCrpPrograms().stream()
-        .filter(cp -> cp.getId() == project.getLiaisonInstitution().getCrpProgram().getId())
+      List<CrpProgram> crpPrograms =
+        project
+          .getCrp().getCrpPrograms().stream().filter(cp -> cp.getId() == project
+            .getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram().getId())
         .collect(Collectors.toList());
       if (crpPrograms != null) {
         if (crpPrograms.size() > 1) {
@@ -225,7 +228,8 @@ public class ProjectSubmissionAction extends BaseAction {
         }
       }
     } else {
-      for (LiaisonUser liaisonUser : project.getLiaisonInstitution().getLiaisonUsers()) {
+      for (LiaisonUser liaisonUser : project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution()
+        .getLiaisonUsers()) {
         ccEmails.append(liaisonUser.getUser().getEmail());
         ccEmails.append(", ");
       }
@@ -282,7 +286,7 @@ public class ProjectSubmissionAction extends BaseAction {
     String[] values = new String[6];
     values[0] = this.getCurrentUser().getFirstName();
     values[1] = loggedCrp.getName();
-    values[2] = project.getTitle();
+    values[2] = project.getProjecInfoPhase(this.getActualPhase()).getTitle();
     values[3] = String.valueOf(project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER));
     values[4] = String.valueOf(this.getCurrentCycleYear());
     values[5] = this.getCurrentCycle().toLowerCase();

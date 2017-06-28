@@ -190,7 +190,7 @@ public class ProjectCaseStudiesListAction extends BaseAction {
     // Getting the Deliverables Main Types.
 
 
-    allYears = project.getAllYears();
+    allYears = project.getProjecInfoPhase(this.getActualPhase()).getAllYears();
 
     // Getting the List of Expected Deliverables
 

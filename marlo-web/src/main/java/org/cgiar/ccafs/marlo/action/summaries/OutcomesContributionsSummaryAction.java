@@ -313,7 +313,8 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
                 expectedUnit = "", narrativeTarget = "";
               Long expectedValue = -1L;
               projectId = projectMilestone.getProjectOutcome().getProject().getId().toString();
-              title = projectMilestone.getProjectOutcome().getProject().getTitle();
+              title =
+                projectMilestone.getProjectOutcome().getProject().getProjecInfoPhase(this.getActualPhase()).getTitle();
               flagship = projectMilestone.getProjectOutcome().getCrpProgramOutcome().getCrpProgram().getAcronym();
               outcome = projectMilestone.getProjectOutcome().getCrpProgramOutcome().getDescription();
               projectUrl = "P" + projectMilestone.getProjectOutcome().getProject().getId().toString();
@@ -341,7 +342,8 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
       new Class[] {String.class, String.class, String.class, String.class, BigDecimal.class, String.class, String.class,
         String.class},
       0);
-    for (Project project : loggedCrp.getProjects().stream().filter(p -> p.isActive() && p.getStatus().intValue() == 2)
+    for (Project project : loggedCrp.getProjects().stream()
+      .filter(p -> p.isActive() && p.getProjecInfoPhase(this.getActualPhase()).getStatus().intValue() == 2)
       .collect(Collectors.toList())) {
       for (ProjectOutcome projectOutcome : project.getProjectOutcomes().stream().filter(po -> po.isActive())
         .collect(Collectors.toList())) {
@@ -355,7 +357,7 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
         String projectUrl = "";
         projectId = project.getId().toString();
         projectUrl = "P" + project.getId().toString();
-        title = project.getTitle();
+        title = project.getProjecInfoPhase(this.getActualPhase()).getTitle();
         if (projectOutcome.getCrpProgramOutcome() != null) {
           if (projectOutcome.getCrpProgramOutcome().getCrpProgram() != null) {
             flagship = projectOutcome.getCrpProgramOutcome().getCrpProgram().getAcronym();

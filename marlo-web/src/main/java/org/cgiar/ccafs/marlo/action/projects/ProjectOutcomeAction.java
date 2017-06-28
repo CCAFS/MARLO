@@ -363,8 +363,7 @@ public class ProjectOutcomeAction extends BaseAction {
         project = projectManager.getProjectById(projectOutcome.getProject().getId());
         projectID = project.getId();
         Project projectDb = projectManager.getProjectById(project.getId());
-        project.setProjectEditLeader(projectDb.isProjectEditLeader());
-        project.setAdministrative(projectDb.getAdministrative());
+        project.setProjectInfo(projectDb.getProjecInfoPhase(this.getActualPhase()));
         List<ProjectMilestone> milestones = new ArrayList<>();
 
         if (projectOutcome.getMilestones() != null) {
@@ -677,11 +676,11 @@ public class ProjectOutcomeAction extends BaseAction {
     int startYear = 0;
     int endYear = 0;
     Calendar startDate = Calendar.getInstance();
-    startDate.setTime(project.getStartDate());
+    startDate.setTime(project.getProjecInfoPhase(this.getActualPhase()).getStartDate());
     startYear = startDate.get(Calendar.YEAR);
 
     Calendar endDate = Calendar.getInstance();
-    endDate.setTime(project.getEndDate());
+    endDate.setTime(project.getProjecInfoPhase(this.getActualPhase()).getEndDate());
     endYear = endDate.get(Calendar.YEAR);
 
     if (this.isPlanningActive() || this.getCurrentCycleYear() == endYear) {

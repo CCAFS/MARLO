@@ -72,13 +72,13 @@ import org.slf4j.LoggerFactory;
  * @author Andrés Felipe Valencia Rivera. CCAFS
  */
 
-public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
+public class BudgetByCoAsSummaryAction extends BaseAction implements Summary {
 
   /**
    * 
    */
   private static final long serialVersionUID = 1L;
-  private static Logger LOG = LoggerFactory.getLogger(budgetByCoAsSummaryAction.class);
+  private static Logger LOG = LoggerFactory.getLogger(BudgetByCoAsSummaryAction.class);
 
   // Parameters
   private Crp loggedCrp;
@@ -106,7 +106,7 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
 
 
   @Inject
-  public budgetByCoAsSummaryAction(APConfig config, CrpManager crpManager, CrpProgramManager programManager,
+  public BudgetByCoAsSummaryAction(APConfig config, CrpManager crpManager, CrpProgramManager programManager,
     ProjectBudgetManager projectBudgetManager, InstitutionManager institutionManager, PhaseManager phaseManager) {
     super(config);
     this.crpManager = crpManager;
@@ -401,7 +401,7 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
 
         projectId = project.getId().toString();
         projectUrl = "P" + project.getId().toString();
-        title = project.getTitle();
+        title = project.getProjecInfoPhase(this.getActualPhase()).getTitle();
         // get Flagships related to the project sorted by acronym
         List<CrpProgram> flagshipsList = new ArrayList<>();
         for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
@@ -433,7 +433,8 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
               regionsList.add(programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()));
             }
           }
-          if (project.getNoRegional() != null && project.getNoRegional()) {
+          if (project.getProjecInfoPhase(this.getActualPhase()).getNoRegional() != null
+            && project.getProjecInfoPhase(this.getActualPhase()).getNoRegional()) {
             regions = "Global";
             if (regionsList.size() > 0) {
               LOG.warn("Project is global and has regions selected");
@@ -506,7 +507,7 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
           coa = clusterActivity.getCrpClusterOfActivity().getComposedName();
           projectId = project.getId().toString();
           projectUrl = "P" + project.getId().toString();
-          title = project.getTitle();
+          title = project.getProjecInfoPhase(this.getActualPhase()).getTitle();
           // get Flagships related to the project sorted by acronym
           List<CrpProgram> flagshipsList = new ArrayList<>();
           for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
@@ -538,7 +539,8 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
               regionsList.add(programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()));
             }
           }
-          if (project.getNoRegional() != null && project.getNoRegional()) {
+          if (project.getProjecInfoPhase(this.getActualPhase()).getNoRegional() != null
+            && project.getProjecInfoPhase(this.getActualPhase()).getNoRegional()) {
             regions = "Global";
             if (regionsList.size() > 0) {
               LOG.warn("Project is global and has regions selected");
@@ -651,6 +653,7 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
    * @param institution
    * @return boolean with true if is ppa and false if not
    */
+  @Override
   public boolean isPPA(Institution institution) {
     if (institution == null) {
       return false;

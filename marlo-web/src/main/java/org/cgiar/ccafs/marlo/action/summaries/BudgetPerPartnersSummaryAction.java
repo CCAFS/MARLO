@@ -313,7 +313,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
             genderW1W2Co = null;
 
           projectId = project.getId();
-          projectTitle = project.getTitle();
+          projectTitle = project.getProjecInfoPhase(this.getActualPhase()).getTitle();
           ppaPartner = pp.getComposedName();
 
           // get Flagships related to the project sorted by acronym
@@ -355,7 +355,8 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
               }
             }
 
-            if (project.getNoRegional() != null && project.getNoRegional()) {
+            if (project.getProjecInfoPhase(this.getActualPhase()).getNoRegional() != null
+              && project.getProjecInfoPhase(this.getActualPhase()).getNoRegional()) {
               regions = "Global";
               if (regionsList.size() > 0) {
                 LOG.warn("Project is global and has regions selected");
@@ -698,6 +699,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
    * @param institution
    * @return boolean with true if is ppa and false if not
    */
+  @Override
   public boolean isPPA(Institution institution) {
     if (institution == null) {
       return false;

@@ -276,7 +276,7 @@ public class LeveragesReportingSummaryAction extends BaseAction implements Summa
     for (ProjectLeverage projectLeverage : this.projectLeverageManager.findAll().stream()
       .filter(l -> l.isActive() && l.getYear() != null && l.getYear() == this.year && l.getProject() != null
         && l.getProject().getCrp() != null && l.getProject().getCrp().getId().equals(this.loggedCrp.getId())
-        && l.getProject().isActive() && l.getProject().getReporting())
+        && l.getProject().isActive() && l.getProject().getProjecInfoPhase(this.getActualPhase()).getReporting())
       .collect(Collectors.toList())) {
       String title = null, partnerName = null, flagship = null;
       Long projectID = null;
@@ -300,8 +300,8 @@ public class LeveragesReportingSummaryAction extends BaseAction implements Summa
       if (projectLeverage.getProject() != null) {
         projectID = projectLeverage.getProject().getId();
       }
-      model.addRow(
-        new Object[] {projectLeverage.getId(), title, partnerName, leverageYear, flagship, budget, projectID});
+      model
+        .addRow(new Object[] {projectLeverage.getId(), title, partnerName, leverageYear, flagship, budget, projectID});
     }
     return model;
   }

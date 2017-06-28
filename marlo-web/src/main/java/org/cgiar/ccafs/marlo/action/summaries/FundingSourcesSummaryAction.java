@@ -338,8 +338,9 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
 
       for (ProjectBudget projectBudget : fundingSource.getProjectBudgets().stream()
         .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getProject() != null && pb.getProject().isActive()
-          && pb.getProject().getStatus() != null
-          && pb.getProject().getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
+          && pb.getProject().getProjecInfoPhase(this.getActualPhase()).getStatus() != null
+          && pb.getProject().getProjecInfoPhase(this.getActualPhase()).getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
         .collect(Collectors.toList())) {
         String leadPartner = "";
         String projectId = "";
@@ -550,7 +551,8 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
 
       for (ProjectBudget projectBudget : fundingSource.getProjectBudgets().stream()
         .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getProject().isActive()
-          && pb.getProject().getStatus() != null && pb.getProject().getStatus() == 2)
+          && pb.getProject().getProjecInfoPhase(this.getActualPhase()).getStatus() != null
+          && pb.getProject().getProjecInfoPhase(this.getActualPhase()).getStatus() == 2)
         .collect(Collectors.toList())) {
         totalBudgetProjects += projectBudget.getAmount();
       }

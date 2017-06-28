@@ -306,7 +306,7 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
       .sorted((h1, h2) -> Long.compare(h1.getId(), h2.getId()))
       .filter(ph -> ph.isActive() && ph.getProject() != null && ph.getYear() == year
         && ph.getProject().getCrp().getId().longValue() == loggedCrp.getId().longValue() && ph.getProject().isActive()
-        && ph.getProject().getReporting())
+        && ph.getProject().getProjecInfoPhase(this.getActualPhase()).getReporting())
       .collect(Collectors.toList())) {
       String title = null, author = null, subject = null, publisher = null, highlightsTypes = "",
         highlightsIsGlobal = null, startDate = null, endDate = null, keywords = null, countries = "", image = "",

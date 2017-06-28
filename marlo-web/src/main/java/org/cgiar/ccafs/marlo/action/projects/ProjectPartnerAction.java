@@ -495,18 +495,23 @@ public class ProjectPartnerAction extends BaseAction {
       Long crpPmuRole = Long.parseLong((String) this.getSession().get(APConstants.CRP_PMU_ROLE));
       Role roleCrpPmu = roleManager.getRoleById(crpPmuRole);
       // If Managment liason is PMU
-      if (project.getLiaisonInstitution() != null && project.getLiaisonUser() != null) {
-        if (project.getLiaisonInstitution().getAcronym().equals(roleCrpPmu.getAcronym())) {
+      if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution() != null
+        && project.getProjecInfoPhase(this.getActualPhase()).getLiaisonUser() != null) {
+        if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getAcronym()
+          .equals(roleCrpPmu.getAcronym())) {
           if (ccEmail.isEmpty()) {
-            ccEmail += project.getLiaisonUser().getUser().getEmail();
+            ccEmail += project.getProjecInfoPhase(this.getActualPhase()).getLiaisonUser().getUser().getEmail();
           } else {
-            ccEmail += ", " + project.getLiaisonUser().getUser().getEmail();
+            ccEmail += ", " + project.getProjecInfoPhase(this.getActualPhase()).getLiaisonUser().getUser().getEmail();
           }
-        } else if (project.getLiaisonInstitution() != null && project.getLiaisonInstitution().getCrpProgram() != null
-          && project.getLiaisonInstitution().getCrpProgram().getProgramType() == 1) {
+        } else if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution() != null
+          && project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram() != null
+          && project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram()
+            .getProgramType() == 1) {
           // If Managment liason is FL
-          List<CrpProgram> crpPrograms = project.getCrp().getCrpPrograms().stream()
-            .filter(cp -> cp.getId() == project.getLiaisonInstitution().getCrpProgram().getId())
+          List<CrpProgram> crpPrograms = project
+            .getCrp().getCrpPrograms().stream().filter(cp -> cp.getId() == project
+              .getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram().getId())
             .collect(Collectors.toList());
           if (crpPrograms != null) {
             if (crpPrograms.size() > 1) {
@@ -557,8 +562,9 @@ public class ProjectPartnerAction extends BaseAction {
     StringBuilder message = new StringBuilder();
     // Building the Email message:
     message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
-    message.append(this.getText("email.project.assigned", new String[] {projectRole, loggedCrp.getName(),
-      project.getTitle(), project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)}));
+    message.append(this.getText("email.project.assigned",
+      new String[] {projectRole, loggedCrp.getName(), project.getProjecInfoPhase(this.getActualPhase()).getTitle(),
+        project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)}));
     if (role.getId() == plRole.getId()) {
       message.append(this.getText("email.project.leader.responsabilities"));
     } else {
@@ -614,18 +620,23 @@ public class ProjectPartnerAction extends BaseAction {
       Long crpPmuRole = Long.parseLong((String) this.getSession().get(APConstants.CRP_PMU_ROLE));
       Role roleCrpPmu = roleManager.getRoleById(crpPmuRole);
       // If Managment liason is PMU
-      if (project.getLiaisonInstitution() != null && project.getLiaisonUser() != null) {
-        if (project.getLiaisonInstitution().getAcronym().equals(roleCrpPmu.getAcronym())) {
+      if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution() != null
+        && project.getProjecInfoPhase(this.getActualPhase()).getLiaisonUser() != null) {
+        if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getAcronym()
+          .equals(roleCrpPmu.getAcronym())) {
           if (ccEmail.isEmpty()) {
-            ccEmail += project.getLiaisonUser().getUser().getEmail();
+            ccEmail += project.getProjecInfoPhase(this.getActualPhase()).getLiaisonUser().getUser().getEmail();
           } else {
-            ccEmail += ", " + project.getLiaisonUser().getUser().getEmail();
+            ccEmail += ", " + project.getProjecInfoPhase(this.getActualPhase()).getLiaisonUser().getUser().getEmail();
           }
-        } else if (project.getLiaisonInstitution() != null && project.getLiaisonInstitution().getCrpProgram() != null
-          && project.getLiaisonInstitution().getCrpProgram().getProgramType() == 1) {
+        } else if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution() != null
+          && project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram() != null
+          && project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram()
+            .getProgramType() == 1) {
           // If Managment liason is FL
-          List<CrpProgram> crpPrograms = project.getCrp().getCrpPrograms().stream()
-            .filter(cp -> cp.getId() == project.getLiaisonInstitution().getCrpProgram().getId())
+          List<CrpProgram> crpPrograms = project
+            .getCrp().getCrpPrograms().stream().filter(cp -> cp.getId() == project
+              .getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram().getId())
             .collect(Collectors.toList());
           if (crpPrograms != null) {
             if (crpPrograms.size() > 1) {
@@ -681,11 +692,19 @@ public class ProjectPartnerAction extends BaseAction {
     message.append(this.getText("email.dear", new String[] {userUnassigned.getFirstName()}));
 
     if (role.getId() == plRole.getId().longValue()) {
-      message.append(this.getText("email.project.leader.unAssigned", new String[] {projectRole, loggedCrp.getName(),
-        project.getTitle(), project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)}));
+      message
+        .append(
+          this.getText("email.project.leader.unAssigned",
+            new String[] {projectRole, loggedCrp.getName(),
+              project.getProjecInfoPhase(this.getActualPhase()).getTitle(),
+              project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)}));
     } else {
-      message.append(this.getText("email.project.coordinator.unAssigned", new String[] {projectRole,
-        loggedCrp.getName(), project.getTitle(), project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)}));
+      message
+        .append(
+          this.getText("email.project.coordinator.unAssigned",
+            new String[] {projectRole, loggedCrp.getName(),
+              project.getProjecInfoPhase(this.getActualPhase()).getTitle(),
+              project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)}));
     }
 
     message.append(this.getText("email.support", new String[] {crpAdmins}));
@@ -806,8 +825,7 @@ public class ProjectPartnerAction extends BaseAction {
 
         project = (Project) autoSaveReader.readFromJson(jReader);
         Project projectDb = projectManager.getProjectById(project.getId());
-        project.setProjectEditLeader(projectDb.isProjectEditLeader());
-        project.setAdministrative(projectDb.getAdministrative());
+        project.setProjectInfo(projectDb.getProjecInfoPhase(this.getActualPhase()));
         this.projectPPAPartners = new ArrayList<ProjectPartner>();
         for (ProjectPartner pp : project.getPartners()) {
 
@@ -877,7 +895,7 @@ public class ProjectPartnerAction extends BaseAction {
         this.setDraft(false);
 
 
-        if (project.isProjectEditLeader()) {
+        if (project.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader()) {
           project
             .setPartners(project.getProjectPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
@@ -977,7 +995,7 @@ public class ProjectPartnerAction extends BaseAction {
 
     // Getting the list of all institutions
 
-    if (!project.isProjectEditLeader()) {
+    if (!project.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader()) {
       allInstitutions = new ArrayList<>();
       for (CrpPpaPartner crpPpaPartner : crpPpaPartnerManager.findAll().stream()
         .filter(c -> c.getCrp().getId().longValue() == loggedCrp.getId().longValue() && c.isActive())
@@ -1049,7 +1067,7 @@ public class ProjectPartnerAction extends BaseAction {
         if (project.getPartners() == null || !project.getPartners().contains(previousPartner)) {
 
 
-          if (project.isProjectEditLeader()) {
+          if (project.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader()) {
             projectPartnerManager.deleteProjectPartner(previousPartner.getId());
 
           } else {
@@ -1247,21 +1265,14 @@ public class ProjectPartnerAction extends BaseAction {
       this.updateRoles(previousProject.getCoordinatorPersons(), project.getCoordinatorPersons(), pcRole);
       project = projectManager.getProjectById(projectID);
       project.setActiveSince(new Date());
-      project.setModificationJustification(this.getJustification());
-      project.setModifiedBy(this.getCurrentUser());
-
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_PARTNERS_RELATION);
       relationsName.add(APConstants.PROJECT_LESSONS_RELATION);
-
       projectManager.saveProject(project, this.getActionName(), relationsName);
-
       Path path = this.getAutoSaveFilePath();
-
       if (path.toFile().exists()) {
         path.toFile().delete();
       }
-
       if (this.getUrl() == null || this.getUrl().isEmpty()) {
         Collection<String> messages = this.getActionMessages();
         if (!this.getInvalidFields().isEmpty()) {

@@ -223,7 +223,7 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
           String actDesc = activity.getDescription();
           String startDate = null;
           String endDate = null;
-          String projectTitle = project.getTitle();
+          String projectTitle = project.getProjecInfoPhase(this.getActualPhase()).getTitle();
           String insLeader = "";
           String leader = "";
           // Search keys in activity title
@@ -278,8 +278,9 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
             } else {
               endDate = "<font size=2 face='Segoe UI' color='#000000'></font>";
             }
-            if (project.getTitle() != null) {
-              projectTitle = "<font size=2 face='Segoe UI' color='#000000'>" + project.getTitle() + "</font>";
+            if (project.getProjecInfoPhase(this.getActualPhase()).getTitle() != null) {
+              projectTitle = "<font size=2 face='Segoe UI' color='#000000'>"
+                + project.getProjecInfoPhase(this.getActualPhase()).getTitle() + "</font>";
             } else {
               projectTitle = "<font size=2 face='Segoe UI' color='#000000'></font>";
             }
@@ -426,7 +427,7 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
             String projectId =
               "<font size=2 face='Segoe UI' color='#0000ff'>P" + project.getId().toString() + "</font>";
             String projectUrl = project.getId().toString();
-            String title = project.getTitle();
+            String title = project.getProjecInfoPhase(this.getActualPhase()).getTitle();
             String devId =
               "<font size=2 face='Segoe UI' color='#0000ff'>D" + deliverable.getId().toString() + "</font>";
             String devUrl = deliverable.getId().toString();
@@ -434,8 +435,9 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
             String devSubType = "<font size=2 face='Segoe UI' color='#000000'></font>";
             String leadIns = "<font size=2 face='Segoe UI' color='#000000'></font>";
             String leader = "<font size=2 face='Segoe UI' color='#000000'></font>";
-            if (project.getTitle() != null) {
-              title = "<font size=2 face='Segoe UI' color='#000000'>" + project.getTitle() + "</font>";
+            if (project.getProjecInfoPhase(this.getActualPhase()).getTitle() != null) {
+              title = "<font size=2 face='Segoe UI' color='#000000'>"
+                + project.getProjecInfoPhase(this.getActualPhase()).getTitle() + "</font>";
             } else {
               title = "<font size=2 face='Segoe UI' color='#000000'></font>";
             }
@@ -561,8 +563,8 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
         projects.add((projectPhase.getProject()));
       }
       for (Project project : projects) {
-        String title = project.getTitle();
-        String summary = project.getSummary();
+        String title = project.getProjecInfoPhase(this.getActualPhase()).getTitle();
+        String summary = project.getProjecInfoPhase(this.getActualPhase()).getSummary();
         String startDate = null;
         String endDate = null;
         String flagships = "";
@@ -577,8 +579,9 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
         // count and store occurrences
         Set<String> matchesTitle = new HashSet<>();
         Set<String> matchesSummary = new HashSet<>();
-        if (project.getTitle() != null) {
-          title = "<font size=2 face='Segoe UI' color='#000000'>" + project.getTitle() + "</font>";
+        if (project.getProjecInfoPhase(this.getActualPhase()).getTitle() != null) {
+          title = "<font size=2 face='Segoe UI' color='#000000'>"
+            + project.getProjecInfoPhase(this.getActualPhase()).getTitle() + "</font>";
           // Hash set list of matches, avoiding duplicates
           // Find keys in title
           Matcher matcher = pattern.matcher(title);
@@ -594,8 +597,9 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
         } else {
           title = "<font size=2 face='Segoe UI' color='#000000'></font>";
         }
-        if (project.getSummary() != null) {
-          summary = "<font size=2 face='Segoe UI' color='#000000'>" + project.getSummary() + "</font>";
+        if (project.getProjecInfoPhase(this.getActualPhase()).getSummary() != null) {
+          summary = "<font size=2 face='Segoe UI' color='#000000'>"
+            + project.getProjecInfoPhase(this.getActualPhase()).getSummary() + "</font>";
           // Hash set list of matches, avoiding duplicates
           // Find keys in title
           Matcher matcher = pattern.matcher(summary);
@@ -613,15 +617,15 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
         }
         if ((matchesSummary.size() + matchesTitle.size()) > 0) {
           // set dates
-          if (project.getStartDate() != null) {
-            startDate = "<font size=2 face='Segoe UI' color='#000000'>" + dateFormatter.format(project.getStartDate())
-              + "</font>";
+          if (project.getProjecInfoPhase(this.getActualPhase()).getStartDate() != null) {
+            startDate = "<font size=2 face='Segoe UI' color='#000000'>"
+              + dateFormatter.format(project.getProjecInfoPhase(this.getActualPhase()).getStartDate()) + "</font>";
           } else {
             startDate = "<font size=2 face='Segoe UI' color='#000000'></font>";
           }
-          if (project.getEndDate() != null) {
-            endDate =
-              "<font size=2 face='Segoe UI' color='#000000'>" + dateFormatter.format(project.getEndDate()) + "</font>";
+          if (project.getProjecInfoPhase(this.getActualPhase()).getEndDate() != null) {
+            endDate = "<font size=2 face='Segoe UI' color='#000000'>"
+              + dateFormatter.format(project.getProjecInfoPhase(this.getActualPhase()).getEndDate()) + "</font>";
           } else {
             endDate = "<font size=2 face='Segoe UI' color='#000000'></font>";
           }
@@ -648,7 +652,8 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
           }
           // If has regions, add the regions to regionsArrayList, else do nothing
           if (hasRegions) {
-            if (project.getNoRegional() != null && project.getNoRegional()) {
+            if (project.getProjecInfoPhase(this.getActualPhase()).getNoRegional() != null
+              && project.getProjecInfoPhase(this.getActualPhase()).getNoRegional()) {
               regions = "<font size=2 face='Segoe UI' color='#000000'>Global";
             } else {
               // Get Regions related to the project sorted by acronym

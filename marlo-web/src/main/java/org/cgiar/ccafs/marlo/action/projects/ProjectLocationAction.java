@@ -387,9 +387,9 @@ public class ProjectLocationAction extends BaseAction {
 
         project = (Project) autoSaveReader.readFromJson(jReader);
         Project projectDb = projectManager.getProjectById(project.getId());
-        project.setProjectEditLeader(projectDb.isProjectEditLeader());
+        project.setProjectInfo(projectDb.getProjecInfoPhase(this.getActualPhase()));
         project.setProjectLocations(projectDb.getProjectLocations());
-        project.setAdministrative(projectDb.getAdministrative());
+
         if (project.getLocationsData() != null) {
           for (CountryLocationLevel level : project.getLocationsData()) {
             LocElementType elementType = locElementTypeManager.getLocElementTypeById(level.getId());
@@ -419,7 +419,7 @@ public class ProjectLocationAction extends BaseAction {
         project.getLocationsData().clear();
       }
 
-      project.setLocationGlobal(false);
+      project.getProjecInfoPhase(this.getActualPhase()).setLocationGlobal(false);
     }
 
   }
@@ -638,11 +638,9 @@ public class ProjectLocationAction extends BaseAction {
       Project projectDB = projectManager.getProjectById(project.getId());
       project.setActive(true);
       project.setCreatedBy(projectDB.getCreatedBy());
-      project.setModifiedBy(this.getCurrentUser());
-      project.setModificationJustification("");
       project.setActiveSince(projectDB.getActiveSince());
 
-      boolean isProjectGlobal = project.isLocationGlobal();
+      boolean isProjectGlobal = project.getProjecInfoPhase(this.getActualPhase()).getLocationGlobal();
 
       this.projectLocationPreviousData();
 
@@ -652,9 +650,6 @@ public class ProjectLocationAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_LOCATIONS_RELATION);
       project = projectManager.getProjectById(projectID);
       project.setActiveSince(new Date());
-      project.setModificationJustification(this.getJustification());
-      project.setModifiedBy(this.getCurrentUser());
-      project.setLocationGlobal(isProjectGlobal);
       projectManager.saveProject(project, this.getActionName(), relationsName);
       Path path = this.getAutoSaveFilePath();
 

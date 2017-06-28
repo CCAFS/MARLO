@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
@@ -32,6 +33,7 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -45,7 +47,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author Sebastian Amariles - CIAT/CCAFS
@@ -63,6 +64,7 @@ public class ProjectListAction extends BaseAction {
 
   // Managers
   private ProjectManager projectManager;
+  private ProjectInfoManager projectInfoManager;
   private CrpManager crpManager;
 
   private PhaseManager phaseManager;
@@ -80,13 +82,14 @@ public class ProjectListAction extends BaseAction {
   @Inject
   public ProjectListAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
     LiaisonUserManager liaisonUserManager, LiaisonInstitutionManager liaisonInstitutionManager,
-    ProjectPhaseManager projectPhaseManager, PhaseManager phaseManager) {
+    ProjectPhaseManager projectPhaseManager, PhaseManager phaseManager, ProjectInfoManager projectInfoManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
     this.phaseManager = phaseManager;
     this.projectPhaseManager = projectPhaseManager;
     this.liaisonUserManager = liaisonUserManager;
+    this.projectInfoManager = projectInfoManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
   }
 
@@ -215,22 +218,23 @@ public class ProjectListAction extends BaseAction {
 
       Project project = new Project();
       project.setCreatedBy(this.getCurrentUser());
-      project.setModifiedBy(this.getCurrentUser());
-      project.setModificationJustification("New expected Project created");
       project.setActive(true);
       project.setActiveSince(new Date());
-      project.setType(type);
-      project.setLiaisonUser(liaisonUser);
-      project.setLiaisonInstitution(liaisonInstitution);
-      project.setScale(0);
-      project.setCofinancing(false);
       project.setCrp(loggedCrp);
-      project.setCreateDate(new Date());
-      project.setProjectEditLeader(false);
-      project.setPresetDate(new Date());
-      project.setStatus(Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId()));
-      project.setAdministrative(new Boolean(admin));
       projectID = projectManager.saveProject(project);
+
+      ProjectInfo projectInfo = new ProjectInfo();
+      projectInfo.setModifiedBy(this.getCurrentUser());
+      projectInfo.setModificationJustification("New expected Project created");
+      projectInfo.setType(type);
+      projectInfo.setLiaisonUser(liaisonUser);
+      projectInfo.setLiaisonInstitution(liaisonInstitution);
+      projectInfo.setScale(0);
+      projectInfo.setCofinancing(false);
+      projectInfo.setProjectEditLeader(false);
+      projectInfo.setPresetDate(new Date());
+      projectInfo.setStatus(Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId()));
+      projectInfo.setAdministrative(new Boolean(admin));
       Phase phase = this.phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), this.getCrpID());
       if (phase != null) {
         ProjectPhase projectPhase = new ProjectPhase();
@@ -238,6 +242,9 @@ public class ProjectListAction extends BaseAction {
         projectPhase.setProject(project);
         projectPhaseManager.saveProjectPhase(projectPhase);
       }
+      projectInfo.setPhase(phase);
+      projectInfo.setProject(project);
+      projectInfoManager.saveProjectInfo(projectInfo);
       SectionStatus status = null;
       if (status == null) {
 
@@ -261,22 +268,23 @@ public class ProjectListAction extends BaseAction {
     } else {
       Project project = new Project();
       project.setCreatedBy(this.getCurrentUser());
-      project.setModifiedBy(this.getCurrentUser());
-      project.setModificationJustification("New expected Project created");
       project.setActive(true);
       project.setActiveSince(new Date());
-      project.setType(type);
-      project.setScale(0);
-      project.setCofinancing(false);
       project.setCrp(loggedCrp);
-      project.setCreateDate(new Date());
-      project.setProjectEditLeader(false);
-      project.setPresetDate(new Date());
-      project.setStatus(Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId()));
-      project.setAdministrative(new Boolean(admin));
-
       projectID = projectManager.saveProject(project);
 
+      ProjectInfo projectInfo = new ProjectInfo();
+      projectInfo.setModifiedBy(this.getCurrentUser());
+      projectInfo.setModificationJustification("New expected Project created");
+      projectInfo.setType(type);
+      projectInfo.setLiaisonUser(liaisonUser);
+      projectInfo.setLiaisonInstitution(liaisonInstitution);
+      projectInfo.setScale(0);
+      projectInfo.setCofinancing(false);
+      projectInfo.setProjectEditLeader(false);
+      projectInfo.setPresetDate(new Date());
+      projectInfo.setStatus(Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId()));
+      projectInfo.setAdministrative(new Boolean(admin));
       Phase phase = this.phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), this.getCrpID());
       if (phase != null) {
         ProjectPhase projectPhase = new ProjectPhase();
@@ -284,6 +292,9 @@ public class ProjectListAction extends BaseAction {
         projectPhase.setProject(project);
         projectPhaseManager.saveProjectPhase(projectPhase);
       }
+      projectInfo.setPhase(phase);
+      projectInfo.setProject(project);
+      projectInfoManager.saveProjectInfo(projectInfo);
       SectionStatus status = null;
       if (status == null) {
 
@@ -316,10 +327,6 @@ public class ProjectListAction extends BaseAction {
       if (permission) {
         Project project = projectManager.getProjectById(projectID);
         project.setActive(false);
-        project
-          .setModificationJustification(this.getJustification() == null ? "Project deleted" : this.getJustification());
-        project.setModifiedBy(this.getCurrentUser());
-
         boolean deleted = projectManager.deleteProject(project);
 
 
@@ -373,9 +380,8 @@ public class ProjectListAction extends BaseAction {
 
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
-    Phase phase =
-      phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), loggedCrp.getId().longValue());
-
+    Phase phase = this.getActualPhase();
+    phase = phaseManager.getPhaseById(phase.getId());
     if (projectManager.findAll() != null) {
 
       if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin()) {
@@ -417,32 +423,7 @@ public class ProjectListAction extends BaseAction {
 
       }
 
-      filterBy = this.getRequest().getParameter(APConstants.FILTER_BY);
 
-      if (filterBy != null) {
-
-        String type = StringUtils.trim(filterBy);
-
-        if (type.equals("w1")) {
-          myProjects =
-            myProjects.stream().filter(c -> c.getType().equals(APConstants.PROJECT_CORE)).collect(Collectors.toList());
-
-          if (allProjects != null) {
-            allProjects = allProjects.stream().filter(c -> c.getType().equals(APConstants.PROJECT_CORE))
-              .collect(Collectors.toList());
-
-          }
-        }
-        if (type.equals("w3")) {
-          myProjects = myProjects.stream().filter(c -> c.getType().equals(APConstants.PROJECT_BILATERAL))
-            .collect(Collectors.toList());
-          if (allProjects != null) {
-            allProjects = allProjects.stream().filter(c -> c.getType().equals(APConstants.PROJECT_BILATERAL))
-              .collect(Collectors.toList());
-          }
-        }
-
-      }
       for (Project project : myProjects) {
         List<CrpProgram> programs = new ArrayList<>();
         List<CrpProgram> regions = new ArrayList<>();

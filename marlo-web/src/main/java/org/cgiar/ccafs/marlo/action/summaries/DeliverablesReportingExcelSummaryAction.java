@@ -287,19 +287,20 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
       // get Reporting deliverables
       List<Deliverable> deliverables = new ArrayList<>(deliverableManager.findAll().stream()
         .filter(d -> d.isActive() && d.getProject() != null && d.getProject().isActive()
-          && d.getProject().getReporting() != null && d.getProject().getReporting() && d.getProject().getCrp() != null
+          && d.getProject().getProjecInfoPhase(this.getActualPhase()).getReporting() != null
+          && d.getProject().getProjecInfoPhase(this.getActualPhase()).getReporting() && d.getProject().getCrp() != null
           && d.getProject().getCrp().getId().equals(this.loggedCrp.getId()) && d.getStatus() != null
           && ((d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
             && (d.getYear() >= this.year
               || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() >= this.year)))
-            || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-              && (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))
-            || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
-              && (d.getYear() == this.year
-                || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))))
-          && (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-            || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-            || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
+          || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+            && (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))
+          || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+            && (d.getYear() == this.year
+              || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))))
+        && (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+          || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+          || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
         .collect(Collectors.toList()));
 
       deliverables.sort((p1, p2) -> p1.isRequieriedReporting(year).compareTo(p2.isRequieriedReporting(year)));
@@ -330,8 +331,9 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
 
         if (deliverable.getProject() != null) {
           projectID = deliverable.getProject().getId().toString();
-          if (deliverable.getProject().getTitle() != null && !deliverable.getProject().getTitle().trim().isEmpty()) {
-            projectTitle = deliverable.getProject().getTitle();
+          if (deliverable.getProject().getProjecInfoPhase(this.getActualPhase()).getTitle() != null
+            && !deliverable.getProject().getProjecInfoPhase(this.getActualPhase()).getTitle().trim().isEmpty()) {
+            projectTitle = deliverable.getProject().getProjecInfoPhase(this.getActualPhase()).getTitle();
           }
         }
 
@@ -977,7 +979,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
               regions += ", " + programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
             }
           }
-          if (deliverable.getProject().getNoRegional() != null && deliverable.getProject().getNoRegional()) {
+          if (deliverable.getProject().getProjecInfoPhase(this.getActualPhase()).getNoRegional() != null
+            && deliverable.getProject().getProjecInfoPhase(this.getActualPhase()).getNoRegional()) {
             if (regions != null && !regions.isEmpty()) {
               LOG.warn("Project is global and has regions selected");
             }

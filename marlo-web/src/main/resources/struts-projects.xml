@@ -107,7 +107,7 @@
 		</action>
 
 		<action name="{crp}/budgetByCoAsSummary"
-			class="org.cgiar.ccafs.marlo.action.summaries.budgetByCoAsSummaryAction">
+			class="org.cgiar.ccafs.marlo.action.summaries.BudgetByCoAsSummaryAction">
 			<interceptor-ref name="homeStack" />
 			<result name="success" type="stream">
 				<param name="inputName">inputStream</param>
