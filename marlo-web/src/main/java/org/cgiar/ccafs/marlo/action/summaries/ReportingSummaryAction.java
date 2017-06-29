@@ -277,11 +277,26 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       this.getText("projectOutcome.lessons.planning"));
     masterReport.getParameterValues().put("i8nOutcomeYear", this.getText("outcome.inputTargetYear.placeholder"));
     masterReport.getParameterValues().put("i8nOutcomeLessons", this.getText("outcome.lessons"));
-
-
     /*
      * Deliverables
      */
+    masterReport.getParameterValues().put("i8nDeliverableNoData", this.getText("deliverable.NoData"));
+    masterReport.getParameterValues().put("i8nDeliverableType", this.getText("deliverable.type"));
+    masterReport.getParameterValues().put("i8nDeliverableSubType", this.getText("deliverable.subtype"));
+    masterReport.getParameterValues().put("i8nDeliverableStatus",
+      this.getText("project.deliverable.generalInformation.status"));
+    masterReport.getParameterValues().put("i8nDeliverableExpectedYear",
+      this.getText("project.deliverable.generalInformation.year"));
+    masterReport.getParameterValues().put("i8nDeliverableKeyOutput",
+      this.getText("project.deliverable.generalInformation.keyOutput"));
+    masterReport.getParameterValues().put("i8nDeliverableFundingSources", this.getText("deliverable.fundingSource"));
+    masterReport.getParameterValues().put("i8nDeliverableCrossCutting",
+      this.getText("project.crossCuttingDimensions.readText"));
+    masterReport.getParameterValues().put("i8nDeliverablePartnersStatement",
+      this.getText("project.deliverable.partnership"));
+    masterReport.getParameterValues().put("i8nDeliverableInstitution", this.getText("deliverable.institution"));
+    masterReport.getParameterValues().put("i8nDeliverablePartner", this.getText("project.deliverable.partner"));
+    masterReport.getParameterValues().put("i8nDeliverableType", this.getText("deliverable.type"));
 
 
     /*
