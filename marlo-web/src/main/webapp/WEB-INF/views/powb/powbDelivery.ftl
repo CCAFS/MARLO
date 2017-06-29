@@ -38,13 +38,18 @@
         [#-- Title --]
         <h3 class="headTitle">[@s.text name="powbDelivery.title" /]</h3>
         <div class="borderBox">
+          [#-- A.1.1 Adjustments/changes to your Theories of Change --] 
+          <div class="form-group">
+            [@customForm.textArea name="liaisonInstitution.powb.adjustmentsToC" help="liaisonInstitution.powb.adjustmentsToC.help" required=true className="limitWords-100" editable=editable /]
+          </div>
+          
           [#-- A.1.2 Highlight expected Outcomes and Outputs --] 
           <div class="form-group">
-            [@customForm.textArea name="liaisonInstitution.powb.highlightExpected" required=true className="limitWords-100" editable=editable /]
+            [@customForm.textArea name="liaisonInstitution.powb.highlightExpected" help="liaisonInstitution.powb.highlightExpected.help" required=true className="limitWords-100" editable=editable /]
           </div>
+          
           [#-- Deliverables contribution to key outputs --]
           <div class="form-group">
-            <br />
             <h5 class="sectionSubTitle">[@s.text name="powbDelivery.deliverableContributions" /]</h5>
             <table class="">
               <thead>
@@ -57,7 +62,7 @@
                 </tr>
               </thead>
               <tbody>
-              [#list 1..3 as deliverable]
+                [#list 1..3 as deliverable]
                 <tr>
                   <td>D1234</td>
                   <td>Best practice guide to socially and gender-inclusive development in the Kenyan intensive dairy sector</td>
@@ -69,6 +74,18 @@
               </tbody>
             </table>
           </div>
+          
+          [#-- A.1.3 Use of different Funding Sources --] 
+          <div class="form-group">
+            <label for="">[@s.text name="liaisonInstitution.powb.useFundingSource" /]</label>
+            <p><i>[@s.text name="powbDelivery.useFundingSource" /]</i></p>
+          </div>
+          
+          [#-- A.1.4 Planned Revisions to your Program of Work --] 
+          <div class="form-group">
+            [@customForm.textArea name="liaisonInstitution.powb.plannedRevisions" help="liaisonInstitution.powb.plannedRevisions.help" required=true className="limitWords-100" editable=editable /]
+          </div>
+          
         
         </div>
         

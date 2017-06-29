@@ -38,7 +38,48 @@
         [#-- Title --]
         <h3 class="headTitle">[@s.text name="powbBudget.title" /]</h3>
         <div class="borderBox">
-        
+         
+          [#-- A.1.3 Use of different Funding Sources --] 
+          <div class="form-group">
+            [@customForm.textArea name="liaisonInstitution.powb.useFundingSource" help="liaisonInstitution.powb.useFundingSource.help" required=true className="limitWords-100" editable=editable /]
+          </div>
+          
+          [#-- Deliverables contribution to key outputs --]
+          <div class="form-group">
+            <h5 class="sectionSubTitle">[@s.text name="powbBudget.plannedBudget"][@s.param]${currentCycleYear}[/@s.param] [/@s.text]</h5>
+            <table class="">
+              <thead>
+                <tr>
+                  <th>Flagship</th>
+                  <th>W1/W2</th>
+                  <th>W3/Bilateral</th>
+                  <th><strong>Total</strong></th> 
+                </tr>
+              </thead>
+              <tbody>
+                [#list 1..4 as deliverable]
+                <tr>
+                  <td>FP1 - Priorities and Policies for CSA</td>
+                  <td>
+                    [@customForm.input name="" showTitle=false editable=editable /]
+                    <i>Suggested US$ 3,643.00</i>
+                  </td>
+                  <td>
+                    [@customForm.input name="" showTitle=false editable=editable /]
+                    <i>Suggested US$ 3,643.00</i>
+                  </td>
+                  <td> US$ 0.00</td>
+                </tr>
+                [/#list]
+                <tr>
+                  <td><strong>Total</strong></td>
+                  <td> US$ 0.00</td>
+                  <td> US$ 0.00</td>
+                  <td> US$ 0.00</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         
         </div>
         

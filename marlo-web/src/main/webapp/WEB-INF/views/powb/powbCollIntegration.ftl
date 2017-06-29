@@ -38,7 +38,10 @@
         [#-- Title --]
         <h3 class="headTitle">[@s.text name="powbCollIntegration.title" /]</h3>
         <div class="borderBox">
-        
+          [#-- A.2.2 Cross-CRP interactions --] 
+          <div class="form-group">
+            [@customForm.textArea name="liaisonInstitution.powb.crossCrpInteractions" help="liaisonInstitution.powb.crossCrpInteractions.help" required=true className="limitWords-100" editable=editable /]
+          </div>
         
         </div>
         
