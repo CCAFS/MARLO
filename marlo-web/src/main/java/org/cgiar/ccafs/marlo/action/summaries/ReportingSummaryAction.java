@@ -157,6 +157,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   private SrfTargetUnitManager srfTargetUnitManager;
   private Project project;
   private Boolean hasW1W2Co;
+  private Boolean hasGender;
   // Front-end
   private long projectID;
   private int year;
@@ -334,6 +335,21 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
   @Override
   public String execute() throws Exception {
+    try {
+      hasGender = this.hasSpecificities(APConstants.CRP_BUDGET_GENDER);
+    } catch (Exception e) {
+      LOG.warn("Failed to get " + APConstants.CYCLE + " parameter. Parameter will be set as false. Exception: "
+        + e.getMessage());
+      hasGender = false;
+    }
+    // get w1w2 co
+    try {
+      hasW1W2Co = this.hasSpecificities(APConstants.CRP_FS_W1W2_COFINANCING);
+    } catch (Exception e) {
+      LOG.warn("Failed to get " + APConstants.CYCLE + " parameter. Parameter will be set as false. Exception: "
+        + e.getMessage());
+      hasW1W2Co = false;
+    }
 
     // Fill target unit list
     targetUnitList = new HashMap<>();
@@ -837,7 +853,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
             this.getBudgetbyCoa(clusterActivity.getCrpClusterOfActivity().getId(), year, 1);
           if (w1w2pb != null) {
             w1w2 = df.format(w1w2pb.getAmount());
-            w1w2GenderPer = df.format(w1w2pb.getGenderPercentage());
+            if (w1w2pb.getGenderPercentage() != null) {
+              w1w2GenderPer = df.format(w1w2pb.getGenderPercentage());
+            }
           }
         }
 
@@ -851,15 +869,22 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
         if (w3pb != null) {
           w3 = df.format(w3pb.getAmount());
-          w3GenderPer = df.format(w3pb.getGenderPercentage());
+          if (w3pb.getGenderPercentage() != null) {
+            w3GenderPer = df.format(w3pb.getGenderPercentage());
+          }
         }
         if (bilateralpb != null) {
           bilateral = df.format(bilateralpb.getAmount());
-          bilateralGenderPer = df.format(bilateralpb.getGenderPercentage());
+          if (bilateralpb.getGenderPercentage() != null) {
+            bilateralGenderPer = df.format(bilateralpb.getGenderPercentage());
+          }
+
         }
         if (centerpb != null) {
           center = df.format(centerpb.getAmount());
-          centerGenderPer = df.format(centerpb.getGenderPercentage());
+          if (centerpb.getGenderPercentage() != null) {
+            centerGenderPer = df.format(centerpb.getGenderPercentage());
+          }
         }
         model.addRow(new Object[] {description, year, w1w2, w3, bilateral, center, w1w2GenderPer, w3GenderPer,
           bilateralGenderPer, centerGenderPer, w1w2CoFinancing, w1w2CoFinancingGenderPer, hasW1W2CoTemp});
@@ -3049,12 +3074,12 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   }
 
   @Override
+  /**
+   * Prepare the parameters of the project.
+   * Note: If you add a parameter here, you must add it in the ProjectSubmissionAction class
+   */
   public void prepare() {
-    /*
-     * READ ME
-     * If you add a parameter you must add it in the ProjectSubmissionAction class
-     */
-    // Get loggerCrp
+    // Get loggedCrp
     try {
       loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
       loggedCrp = crpManager.getCrpById(loggedCrp.getId());
@@ -3094,8 +3119,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         + e.getMessage());
       cycle = this.getCurrentCycle();
     }
-    // get w1w2 co
-    hasW1W2Co = this.hasSpecificities(APConstants.CRP_FS_W1W2_COFINANCING);
 
   }
 
@@ -3117,6 +3140,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
   public void setCycle(String cycle) {
     this.cycle = cycle;
+  }
+
+  public void setHasW1W2Co(Boolean hasW1W2Co) {
+    this.hasW1W2Co = hasW1W2Co;
   }
 
   public void setLoggedCrp(Crp loggedCrp) {
