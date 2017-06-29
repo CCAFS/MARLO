@@ -235,6 +235,20 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     /*
      * Partners
      */
+    masterReport.getParameterValues().put("i8nPartnerNoData", this.getText("partner.noData"));
+    masterReport.getParameterValues().put("i8nPartner", this.getText("partner.partnerSingular"));
+    masterReport.getParameterValues().put("i8nPartnerLeader", this.getText("projectsList.projectLeader"));
+    masterReport.getParameterValues().put("i8nPartnerInstitution", this.getText("partner.institution") + ":");
+    masterReport.getParameterValues().put("i8nPartnerResponsibilities", this.getText("partner.responsabilities") + ":");
+    masterReport.getParameterValues().put("i8nPartnerCountryOffices", this.getText("partner.countryOffices") + ":");
+    masterReport.getParameterValues().put("i8nPartnerContacts", this.getText("partner.contacts") + ":");
+    masterReport.getParameterValues().put("i8nPartnerType", this.getText("projectPartners.partnerType"));
+    masterReport.getParameterValues().put("i8nPartnerContact", this.getText("projectPartners.contactPersonEmail"));
+    masterReport.getParameterValues().put("i8nPartnerLessonsStatement",
+      this.getText("projectPartners.lessons.planning.readText"));
+    masterReport.getParameterValues().put("i8nPartnerYear", this.getText("partner.year"));
+    masterReport.getParameterValues().put("i8nPartnerLessons", this.getText("partner.lessons"));
+
 
     /*
      * Locations
