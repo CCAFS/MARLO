@@ -425,6 +425,7 @@ public class ProjectListAction extends BaseAction {
 
 
       for (Project project : myProjects) {
+        project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
         List<CrpProgram> programs = new ArrayList<>();
         List<CrpProgram> regions = new ArrayList<>();
         for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
@@ -444,6 +445,7 @@ public class ProjectListAction extends BaseAction {
       }
       if (allProjects != null) {
         for (Project project : allProjects) {
+          project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
           List<CrpProgram> programs = new ArrayList<>();
           List<CrpProgram> regions = new ArrayList<>();
           for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()

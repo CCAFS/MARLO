@@ -42,9 +42,9 @@
           [#-- Project Title --]
           <td class="left">
             [#if isProjectNew]<span class="label label-info">New</span>[/#if]
-            [#if project.title?has_content]
+            [#if project.projectInfo.title?has_content]
               <a href="${projectUrl}" title="${project.projectInfo.title}">
-              [#if project.title?length < 120] ${project.projectInfo.title}</a> [#else] [@utilities.wordCutter string=project.title maxPos=120 /]...</a> [/#if]
+              [#if project.projectInfo.title?length < 120] ${project.projectInfo.title}</a> [#else] [@utilities.wordCutter string=project.projectInfo.title maxPos=120 /]...</a> [/#if]
             [#else]
               <a href="${projectUrl}">
                 [@s.text name="projectsList.title.none" /]
@@ -62,7 +62,7 @@
           --]
           [#-- Flagship / Regions --]
           <td>
-          [#if !project.administrative]
+          [#if !project.projectInfo.administrative]
             [#if project.flagships?has_content || project.regions?has_content]
               [#if project.flagships?has_content][#list project.flagships as element]<span class="programTag" style="border-color:${(element.color)!'#fff'}">${element.acronym}</span>[/#list][/#if][#if project.regions?has_content][#list project.regions as element]<span class="programTag" style="border-color:${(element.color)!'#fff'}">${element.acronym}</span>[/#list][/#if]
             [#else]
@@ -124,7 +124,7 @@
               [/#if]
             [/#if]
             
-            [#if !project.projectEditLeader]
+            [#if !project.projectInfo.isProjectEditLeader()]
               <p>Pre-setting</p>
             [#else]
               [#if !submission]
@@ -190,8 +190,8 @@
           </td>
           [#-- Project Title --]
           <td class="left"> 
-            [#if project.title?has_content]
-              <a href="${projectUrl}" title="${project.title}">[@utilities.wordCutter string=project.title maxPos=120 /]</a>  
+            [#if project.projectInfo.title?has_content]
+              <a href="${projectUrl}" title="${project.projectInfo.title}">[@utilities.wordCutter string=project.projectInfo.title maxPos=120 /]</a>  
             [#else]
               <a href="${projectUrl}">[@s.text name="projectsList.title.none" /]</a>
             [/#if]
@@ -204,11 +204,11 @@
             [#if project.regions?has_content][#list project.regions as element]<p class="focus flagship">${(element.acronym)!}</p>[/#list][/#if]
           </td>
           [#-- Year --]
-          <td><p class="center">${project.yearEvaluation}</p></td>
+          <td><p class="center">${project.projectInfo.yearEvaluation}</p></td>
           [#-- Status --]
-          <td><p class="center">${project.statusEvaluation}</p></td>
+          <td><p class="center">${project.projectInfo.statusEvaluation}</p></td>
           [#-- Total Score --]
-          <td><p class="totalScore">${project.totalScoreEvaluation}</p></td>
+          <td><p class="totalScore">${project.projectInfo.totalScoreEvaluation}</p></td>
         </tr>  
       [/#list]
     [/#if]

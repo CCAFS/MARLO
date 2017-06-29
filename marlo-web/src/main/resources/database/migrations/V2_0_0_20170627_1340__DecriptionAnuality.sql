@@ -116,7 +116,7 @@ FROM
 INNER JOIN phases ph on ph.id=pp.id_phase 
 
 where p.is_active=1 ;
-;
+
 
 
 
