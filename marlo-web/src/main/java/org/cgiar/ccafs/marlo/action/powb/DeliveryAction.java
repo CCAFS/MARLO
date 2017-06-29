@@ -63,7 +63,7 @@ public class DeliveryAction extends BaseAction {
   private String transaction;
   private AuditLogManager auditLogManager;
   private UserManager userManager;
-  private IpLiaisonInstitution currentLiaisonInstitution;
+  private IpLiaisonInstitution liaisonInstitution;
   private Long liaisonInstitutionID;
   private IpProgramManager ipProgramManager;
   private Crp loggedCrp;
@@ -88,15 +88,15 @@ public class DeliveryAction extends BaseAction {
   }
 
   private Path getAutoSaveFilePath() {
-    String composedClassName = currentLiaisonInstitution.getClass().getSimpleName();
+    String composedClassName = liaisonInstitution.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile = currentLiaisonInstitution.getId() + "_" + composedClassName + "_" + loggedCrp.getAcronym()
-      + "_powb_" + actionFile + ".json";
+    String autoSaveFile = liaisonInstitution.getId() + "_" + composedClassName + "_" + loggedCrp.getAcronym() + "_powb_"
+      + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-  public IpLiaisonInstitution getCurrentLiaisonInstitution() {
-    return currentLiaisonInstitution;
+  public IpLiaisonInstitution getliaisonInstitution() {
+    return liaisonInstitution;
   }
 
   public Long getLiaisonInstitutionID() {
@@ -117,8 +117,8 @@ public class DeliveryAction extends BaseAction {
 
   public boolean isFlagship() {
     boolean isFP = false;
-    if (currentLiaisonInstitution.getIpProgram() != null) {
-      IpProgram ipProgram = ipProgramManager.getIpProgramById(currentLiaisonInstitution.getIpProgram().longValue());
+    if (liaisonInstitution.getIpProgram() != null) {
+      IpProgram ipProgram = ipProgramManager.getIpProgramById(liaisonInstitution.getIpProgram().longValue());
       if (ipProgram.isFlagshipProgram()) {
         isFP = true;
       }
@@ -171,17 +171,17 @@ public class DeliveryAction extends BaseAction {
     }
 
     // If the URL doesn't has a liaisoninstitutionID
-    if (currentLiaisonInstitution != null) {
+    if (liaisonInstitution != null) {
       Path path = this.getAutoSaveFilePath();
       // Verify if there is a Draft file
       if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
-        BufferedReader reader = null;
+        BufferedReader reader;
         reader = new BufferedReader(new FileReader(path.toFile()));
         Gson gson = new GsonBuilder().create();
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
         AutoSaveReader autoSaveReader = new AutoSaveReader();
-        currentLiaisonInstitution = (IpLiaisonInstitution) autoSaveReader.readFromJson(jReader);
-        liaisonInstitutionID = currentLiaisonInstitution.getId();
+        liaisonInstitution = (IpLiaisonInstitution) autoSaveReader.readFromJson(jReader);
+        liaisonInstitutionID = liaisonInstitution.getId();
         this.setDraft(true);
         reader.close();
       } else {
@@ -197,24 +197,24 @@ public class DeliveryAction extends BaseAction {
       transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
       IpLiaisonInstitution history = (IpLiaisonInstitution) auditLogManager.getHistory(transaction);
       if (history != null) {
-        currentLiaisonInstitution = history;
-        liaisonInstitutionID = currentLiaisonInstitution.getId();
-        currentLiaisonInstitution.setIndicatorReports((currentLiaisonInstitution.getCrpIndicatorReportses().stream()
-          .filter(c -> c.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList())));
-        currentLiaisonInstitution.getIndicatorReports()
+        liaisonInstitution = history;
+        liaisonInstitutionID = liaisonInstitution.getId();
+        liaisonInstitution.setIndicatorReports(liaisonInstitution.getCrpIndicatorReportses().stream()
+          .filter(c -> c.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList()));
+        liaisonInstitution.getIndicatorReports()
           .sort((p1, p2) -> p1.getCrpIndicator().getId().compareTo(p2.getCrpIndicator().getId()));
       } else {
         this.transaction = null;
         this.setTransaction("-1");
       }
     } else {
-      currentLiaisonInstitution = liaisonInstitutionManager.getIpLiaisonInstitutionById(liaisonInstitutionID);
+      liaisonInstitution = liaisonInstitutionManager.getIpLiaisonInstitutionById(liaisonInstitutionID);
     }
 
     // Get the list of liaison institutions.
     // TODO: List only Flagships and the PMU
     liaisonInstitutions = liaisonInstitutionManager.getLiaisonInstitutionSynthesisByMog();
-    String params[] = {loggedCrp.getAcronym(), currentLiaisonInstitution.getId() + ""};
+    String params[] = {loggedCrp.getAcronym(), liaisonInstitution.getId() + ""};
     this.setBasePermission(this.getText(Permission.CRP_INDICATORS_BASE_PERMISSION, params));
 
   }
@@ -224,8 +224,8 @@ public class DeliveryAction extends BaseAction {
     return SUCCESS;
   }
 
-  public void setCurrentLiaisonInstitution(IpLiaisonInstitution currentLiaisonInstitution) {
-    this.currentLiaisonInstitution = currentLiaisonInstitution;
+  public void setliaisonInstitution(IpLiaisonInstitution liaisonInstitution) {
+    this.liaisonInstitution = liaisonInstitution;
   }
 
   public void setLiaisonInstitutionID(Long liaisonInstitutionID) {
@@ -247,7 +247,7 @@ public class DeliveryAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      validator.validate(this, currentLiaisonInstitution.getIndicatorReports(), currentLiaisonInstitution, true);
+      validator.validate(this, liaisonInstitution.getIndicatorReports(), liaisonInstitution, true);
     }
   }
 
