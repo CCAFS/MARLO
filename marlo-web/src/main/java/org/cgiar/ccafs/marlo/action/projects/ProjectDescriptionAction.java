@@ -557,7 +557,8 @@ public class ProjectDescriptionAction extends BaseAction {
             c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
           .collect(Collectors.toList())) {
           regions.add(projectFocuses.getCrpProgram());
-          if (project.getProjectInfo().getRegionsValue().isEmpty()) {
+          if (project.getProjectInfo().getRegionsValue() != null
+            && project.getProjectInfo().getRegionsValue().isEmpty()) {
             project.getProjectInfo().setRegionsValue(projectFocuses.getCrpProgram().getId().toString());
           } else {
             project.getProjectInfo()

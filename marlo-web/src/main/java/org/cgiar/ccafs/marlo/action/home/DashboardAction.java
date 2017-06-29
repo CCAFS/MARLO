@@ -106,7 +106,7 @@ public class DashboardAction extends BaseAction {
         List<Project> mProjects = new ArrayList<>();
         mProjects.addAll(myProjects);
         for (Project project : mProjects) {
-
+          project.getProjecInfoPhase(this.getActualPhase());
 
           if (!allProjects.contains(project)) {
             myProjects.remove(project);
