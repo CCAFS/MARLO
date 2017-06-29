@@ -258,11 +258,26 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     masterReport.getParameterValues().put("i8nLocationName", this.getText("location.inputName.placeholder"));
     masterReport.getParameterValues().put("i8nLocationGlobal", this.getText("projectLocations.isGlobalYes"));
     masterReport.getParameterValues().put("i8nLocationNoGlobal", this.getText("projectLocations.isGlobalNo"));
-
-
     /*
      * Contribution to flagship outcomes
      */
+    masterReport.getParameterValues().put("i8nOutcomeNoData", this.getText("outcome.noData"));
+    masterReport.getParameterValues().put("i8nOutcome", this.getText("outcome.statement.readText"));
+    masterReport.getParameterValues().put("i8nOutcomeTargetUnit", this.getText("outcome.targetUnit"));
+    masterReport.getParameterValues().put("i8nOutcomeTargetValue", this.getText("outcome.targetValue"));
+    masterReport.getParameterValues().put("i8nOutcomeExpectedContribution",
+      this.getText("outcome.expectedContribution"));
+    masterReport.getParameterValues().put("i8nOutcomeExpectedUnit", this.getText("projectOutcome.expectedUnit"));
+    masterReport.getParameterValues().put("i8nOutcomeExpectedValue", this.getText("outcome.expectedValue"));
+    masterReport.getParameterValues().put("i8nOutcomeExpectedNarrative", this.getText("outcome.expectedNarrative"));
+    masterReport.getParameterValues().put("i8nOutcomeCrossCutting", this.getText("outcome.crossCutting"));
+    masterReport.getParameterValues().put("i8nOutcomeMilestones", this.getText("outcome.milestone"));
+    masterReport.getParameterValues().put("i8nOutcomeNextUsers", this.getText("outcome.nextUsers"));
+    masterReport.getParameterValues().put("i8nOutcomeLesssonsStatement",
+      this.getText("projectOutcome.lessons.planning"));
+    masterReport.getParameterValues().put("i8nOutcomeYear", this.getText("outcome.inputTargetYear.placeholder"));
+    masterReport.getParameterValues().put("i8nOutcomeLessons", this.getText("outcome.lessons"));
+
 
     /*
      * Deliverables
