@@ -16,7 +16,7 @@
                 <comment>foreign key to the table liaison_users</comment>
             </column>
         </many-to-one>
-        <many-to-one name="phases" class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
+        <many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
             <column name="id_phase" />
         </many-to-one>
         <many-to-one name="project" class="org.cgiar.ccafs.marlo.data.model.Project" fetch="select">
@@ -49,7 +49,7 @@
         <property name="modificationJustification" type="string">
             <column name="modification_justification" length="65535" not-null="true" />
         </property>
-        <property name="projectLeaderEdit" type="java.lang.Boolean">
+        <property name="projectEditLeader" type="java.lang.Boolean">
             <column name="is_project_leader_edit" />
         </property>
         <property name="scale" type="int">

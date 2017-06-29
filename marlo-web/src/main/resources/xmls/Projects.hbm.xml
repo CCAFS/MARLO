@@ -159,7 +159,7 @@
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.ProjectBudgetsCluserActvity" />
     </set>
-    <set name="projectHighligths" order-by="id" table="project_highligths"
+    <set name="projectHighlights" order-by="id" table="project_highligths"
       inverse="true" lazy="true" fetch="select">
       <key>
         <column name="project_id" not-null="true" />

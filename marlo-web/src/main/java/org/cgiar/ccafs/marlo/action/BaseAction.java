@@ -590,6 +590,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
   public String generatePermission(String permission, String... params) {
+    Phase phase = this.getActualPhase();
+    params[0] = params[0] + ":" + phase.getDescription() + ":" + phase.getYear();
     return this.getText(permission, params);
 
   }
@@ -604,11 +606,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return the actual phase of the crp
    */
   public Phase getActualPhase() {
-    if (this.getSession().containsKey(APConstants.CURRENT_PHASE)) {
-      return (Phase) this.getSession().get(APConstants.CURRENT_PHASE);
-    } else {
-      Phase phase = phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), this.getCrpID());
-      return phase;
+    try {
+      if (this.getSession().containsKey(APConstants.CURRENT_PHASE)) {
+        return (Phase) this.getSession().get(APConstants.CURRENT_PHASE);
+      } else {
+        Phase phase = phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), this.getCrpID());
+        return phase;
+      }
+    } catch (Exception e) {
+      return new Phase(null, "", -1);
     }
 
 
@@ -1369,6 +1375,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean hasPermission(String fieldName) {
+    if (this.getCrpSession() != null) {
+      Phase phase = this.getActualPhase();
+      fieldName =
+        fieldName.replaceAll(this.getCrpSession(), fieldName + ":" + phase.getDescription() + ":" + phase.getYear());
+    }
+
     if (basePermission == null) {
       return securityContext.hasPermission(fieldName);
     } else {
