@@ -248,11 +248,17 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       this.getText("projectPartners.lessons.planning.readText"));
     masterReport.getParameterValues().put("i8nPartnerYear", this.getText("partner.year"));
     masterReport.getParameterValues().put("i8nPartnerLessons", this.getText("partner.lessons"));
-
-
     /*
      * Locations
      */
+    masterReport.getParameterValues().put("i8nLocationNoData", this.getText("location.noData"));
+    masterReport.getParameterValues().put("i8nLocationProjectLevel", this.getText("location.projectLevel"));
+    masterReport.getParameterValues().put("i8nLocationLatitude", this.getText("location.inputLatitude.placeholder"));
+    masterReport.getParameterValues().put("i8nLocationLongitude", this.getText("location.inputLongitude.placeholder"));
+    masterReport.getParameterValues().put("i8nLocationName", this.getText("location.inputName.placeholder"));
+    masterReport.getParameterValues().put("i8nLocationGlobal", this.getText("projectLocations.isGlobalYes"));
+    masterReport.getParameterValues().put("i8nLocationNoGlobal", this.getText("projectLocations.isGlobalNo"));
+
 
     /*
      * Contribution to flagship outcomes
