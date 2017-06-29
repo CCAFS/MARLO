@@ -297,16 +297,29 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     masterReport.getParameterValues().put("i8nDeliverableInstitution", this.getText("deliverable.institution"));
     masterReport.getParameterValues().put("i8nDeliverablePartner", this.getText("project.deliverable.partner"));
     masterReport.getParameterValues().put("i8nDeliverableType", this.getText("deliverable.type"));
-
-
     /*
      * Activities
      */
-
+    masterReport.getParameterValues().put("i8nActivityNoData", this.getText("activity.noData"));
+    masterReport.getParameterValues().put("i8nActivityDescription",
+      this.getText("project.activities.inputDescription.readText"));
+    masterReport.getParameterValues().put("i8nActivityStartDate", this.getText("project.activities.inputStartDate"));
+    masterReport.getParameterValues().put("i8nActivityEndDate", this.getText("project.activities.inputEndDate"));
+    masterReport.getParameterValues().put("i8nActivityLeader", this.getText("project.activities.inputLeader"));
+    masterReport.getParameterValues().put("i8nActivityStatus", this.getText("project.activities.inputStatus"));
+    masterReport.getParameterValues().put("i8nActivityDeliverables",
+      this.getText("project.activities.deliverableList"));
     /*
      * Budget
      */
-
+    masterReport.getParameterValues().put("i8nBudgetNoData", this.getText("budget.noData"));
+    masterReport.getParameterValues().put("i8nBudgetTotal", this.getText("budget.total"));
+    masterReport.getParameterValues().put("i8nBudget", this.getText("projects.menu.budget").toLowerCase());
+    masterReport.getParameterValues().put("i8nBudgetW1W2", this.getText("projectsList.W1W2projectBudget"));
+    masterReport.getParameterValues().put("i8nBudgetW1W2Cofinancing", this.getText("budget.w1w2cofinancing"));
+    masterReport.getParameterValues().put("i8nBudgetW3", this.getText("projectsList.W3projectBudget"));
+    masterReport.getParameterValues().put("i8nBudgetBilateral", this.getText("projectsList.BILATERALprojectBudget"));
+    masterReport.getParameterValues().put("i8nBudgetCenterFunds", this.getText("budget.centerFunds"));
     /*
      * Budget by Partners
      */
