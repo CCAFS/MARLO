@@ -72,6 +72,11 @@
 			<artifactId>marlo-utils</artifactId>
 			<version>4.1.6-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+      <groupId>org.cgiar.ccafs</groupId>
+      <artifactId>marlo-data</artifactId>
+      <version>4.1.6-SNAPSHOT</version>
+    </dependency>
 		<!-- End of project dependecies -->
 		<!-- STRUTS 2 - Framework Core -->
 		<dependency>
@@ -231,31 +236,9 @@
 			<artifactId>flyway-core</artifactId>
 			<version>${flyway.version}</version>
 		</dependency>
-		<!-- START Hibernate -->
-		<!-- Hibernate Core -->
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-core</artifactId>
-			<version>${hibbernate-core-version}</version>
-		</dependency>
 
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-c3p0</artifactId>
-			<version>${hibbernate-core-version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>javassist</groupId>
-			<artifactId>javassist</artifactId>
-			<version>3.12.1.GA</version>
-		</dependency>
-		<!-- Dependency needed for Hibernate -->
-		<dependency>
-			<groupId>javax.transaction</groupId>
-			<artifactId>jta</artifactId>
-			<version>${jta-version}</version>
-		</dependency>
+		
+		
 		  <!-- <dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging</artifactId>

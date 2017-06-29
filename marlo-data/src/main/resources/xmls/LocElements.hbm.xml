@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated May 26, 2016 9:42:29 AM by Hibernate Tools 4.3.1.Final -->
+<hibernate-mapping>
+	<class name="org.cgiar.ccafs.marlo.data.model.LocElement" table="loc_elements"
+		optimistic-lock="version">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<many-to-one name="crp" class="org.cgiar.ccafs.marlo.data.model.Crp"
+			fetch="select">
+			<column name="crp_id" />
+		</many-to-one>
+		<many-to-one name="locElementType"
+			class="org.cgiar.ccafs.marlo.data.model.LocElementType" fetch="select">
+			<column name="element_type_id" not-null="true" />
+		</many-to-one>
+		<many-to-one name="locGeoposition"
+			class="org.cgiar.ccafs.marlo.data.model.LocGeoposition" fetch="select">
+			<column name="geoposition_id" />
+		</many-to-one>
+		<many-to-one name="locElement"
+			class="org.cgiar.ccafs.marlo.data.model.LocElement" fetch="select">
+			<column name="parent_id" />
+		</many-to-one>
+		<property name="name" type="string">
+			<column name="name" length="65535" not-null="true" />
+		</property>
+		<property name="isoNumeric" type="java.lang.Long">
+			<column name="iso_numeric" />
+		</property>
+		<property name="isoAlpha2" type="string">
+			<column name="iso_alpha_2" length="45" />
+		</property>
+		<property name="isSiteIntegration" type="java.lang.Boolean">
+			<column name="is_site_integration" />
+		</property>
+		<set lazy="true" name="crpsSitesIntegrations" table="crps_sites_integration"
+			inverse="true" fetch="select">
+			<key>
+				<column name="location_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpsSiteIntegration" />
+		</set>
+		<set name="institutions" table="institutions" inverse="true" lazy="true"
+			fetch="select">
+			<key>
+				<column name="country_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.Institution" />
+		</set>
+		<set name="crpProgramCountries" table="crp_program_countries"
+			order-by="id" inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="loc_element_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpProgramCountry" />
+		</set>
+		<set name="projectLocations" table="project_locations"
+      order-by="id" inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="loc_element_id" not-null="true" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectLocation" />
+    </set>
+		<property name="active" type="boolean">
+			<column name="is_active" not-null="true" />
+		</property>
+		<property name="modificationJustification" type="string">
+			<column name="modification_justification" length="65535"
+				not-null="true" />
+		</property>
+		<property name="activeSince" type="timestamp">
+			<column name="active_since" length="19" not-null="true" />
+		</property>
+		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select">
+			<column name="created_by" not-null="false" />
+		</many-to-one>
+		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select">
+			<column name="modified_by" not-null="true" />
+		</many-to-one>
+		<set name="institutionLocations" table="institutions_locations" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="loc_element_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.InstitutionLocation" />
+        </set>
+	</class>
+</hibernate-mapping>

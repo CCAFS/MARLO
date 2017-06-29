@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated May 5, 2017 11:04:03 AM by Hibernate Tools 4.3.1.Final -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.InstitutionLocation" table="institutions_locations"  optimistic-lock="version">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="institution" class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
+            <column name="institution_id" not-null="true" />
+        </many-to-one>
+        <many-to-one name="locElement" class="org.cgiar.ccafs.marlo.data.model.LocElement" fetch="select">
+            <column name="loc_element_id" not-null="true" />
+        </many-to-one>
+        <property name="headquater" type="boolean">
+            <column name="is_headquater" not-null="true" />
+        </property>
+          <property name="city" type="string">
+      <column name="city" />
+    </property>
+    </class>
+</hibernate-mapping>
