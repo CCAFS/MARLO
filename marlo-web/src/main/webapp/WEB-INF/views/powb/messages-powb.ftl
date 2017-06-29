@@ -1,7 +1,4 @@
 [#ftl]
-[#-- Projects data information --]
-[#include "/WEB-INF/views/projects/dataInfo-projects.ftl" /]
-
 [#-- History Message --]
 [#if transaction??]
   <div class="history-mode text-center animated flipInX">

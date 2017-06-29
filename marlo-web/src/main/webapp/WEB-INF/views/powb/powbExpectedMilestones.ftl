@@ -5,51 +5,45 @@
 [#assign customJS = [ ] /]
 [#assign customCSS = ["${baseUrl}/css/powb/powbGlobal.css"] /]
 [#assign currentSection = "synthesis" /]
-[#assign currentStage = "delivery" /]
+[#assign currentStage = "expectedMilestones" /]
 
 [#assign breadCrumb = [
   {"label":"${currentSection}", "nameSpace":"", "action":""},
   {"label":"powbReport", "nameSpace":"powb", "action":"${crpSession}/delivery"},
-  {"label":"powbDelivery", "nameSpace":"powb", "action":"${crpSession}/delivery"}
+  {"label":"powbExpectedMilestones", "nameSpace":"powb", "action":"${crpSession}/expectedMilestones"}
 ]/]
 
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities /]
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-<div class="container helpText viewMore-block">
-  <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrl}/images/global/icon-help.jpg" />
-    <p class="col-md-10"> [@s.text name="" /] </p>
-  </div> 
-  <div style="display:none" class="viewMore closed"></div>
-</div>
+[#-- Helptext --]
+[@utilities.helpBox name="powbExpectedMilestones.help" /]
     
 <section class="container">
   [#-- Program (Flagships and PMU) --]
-  [#include "/WEB-INF/views/synthesis/submenu-powb.ftl" /]
+  [#include "/WEB-INF/views/powb/submenu-powb.ftl" /]
   
   <div class="row">
     [#-- POWB Menu --]
     <div class="col-md-3">
-      [#include "/WEB-INF/views/synthesis/menu-powb.ftl" /]
+      [#include "/WEB-INF/views/powb/menu-powb.ftl" /]
     </div> 
     <div class="col-md-9">
       [#-- Section Messages --]
-      [#include "/WEB-INF/views/synthesis/messages-powb.ftl" /]
+      [#include "/WEB-INF/views/powb/messages-powb.ftl" /]
       
       [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
          
         [#-- Title --]
-        <h3 class="headTitle">Delivery</h3>
+        <h3 class="headTitle">[@s.text name="powbExpectedMilestones.title" /]</h3>
         <div class="borderBox">
-        
         
         
         </div>
         
         [#-- Section Buttons & hidden inputs--]
-        [#include "/WEB-INF/views/synthesis/buttons-powb.ftl" /]
+        [#include "/WEB-INF/views/powb/buttons-powb.ftl" /]
         
       [/@s.form] 
     </div> 
