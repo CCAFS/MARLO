@@ -3,7 +3,7 @@
 [#assign currentSectionString = "powb-${actionName?replace('/','-')}-${liaisonInstitutionID}" /]
 [#assign pageLibs = [ ] /]
 [#assign customJS = [ ] /]
-[#assign customCSS = ["${baseUrl}/css/synthesis/synthesisGlobal.css"] /]
+[#assign customCSS = ["${baseUrl}/css/powb/powbGlobal.css"] /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = "delivery" /]
 
@@ -38,12 +38,13 @@
       [#-- Section Messages --]
       [#include "/WEB-INF/views/synthesis/messages-powb.ftl" /]
       
-      [#-- Title --]
-      <h3 class="headTitle">Delivery</h3>
-      
       [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
          
+        [#-- Title --]
+        <h3 class="headTitle">Delivery</h3>
         <div class="borderBox">
+        
+        
         
         </div>
         
@@ -54,6 +55,4 @@
     </div> 
   </div> 
 </section>
-
-
 [#include "/WEB-INF/global/pages/footer.ftl"]

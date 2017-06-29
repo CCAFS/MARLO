@@ -24,54 +24,6 @@ $(document).ready(function() {
     });
   });
 
-  /* Change Pre-setting state */
-  $('.projectEditLeader .button-label').on('click', function() {
-    var $t = $(this).parent().find('input.onoffswitch-radio');
-    var value = ($(this).hasClass('yes-button-label'));
-    var $thisLabel = $(this);
-    var notyOptions = jQuery.extend({}, notyDefaultOptions);
-    if(value) {
-      notyOptions.text = "Are you sure this project is ready to be completed by the project leader?";
-    } else {
-      notyOptions.text = "Are you sure you want to make this project to be in pre-set mode? ";
-      notyOptions.text += "it won't be able to be edited by the Project Leader and/or Coordinator";
-    }
-    notyOptions.type = 'confirm';
-    notyOptions.layout = 'center';
-    notyOptions.modal = true;
-    notyOptions.buttons = [
-        {
-            addClass: 'btn btn-primary',
-            text: 'Yes',
-            onClick: function($noty) {
-              $.ajax({
-                  url: baseURL + "/projectLeaderEdit.do",
-                  data: {
-                      projectID: $('input[name="projectID"]').val(),
-                      projectStatus: value
-                  },
-                  success: function(data) {
-                    location.reload();
-                    if(data.ok) {
-                      $thisLabel.siblings().removeClass('radio-checked');
-                      $thisLabel.addClass('radio-checked');
-                      $t.val(value);
-                    }
-                  }
-              });
-            }
-        }, {
-            addClass: 'btn btn-primary',
-            text: 'No',
-            onClick: function($noty) {
-              $noty.close();
-            }
-        }
-    ];
-    noty(notyOptions);
-
-  });
-
   // Click on submit button
   $('.submitButton, .projectSubmitButton').on('click', submitButtonEvent);
 
