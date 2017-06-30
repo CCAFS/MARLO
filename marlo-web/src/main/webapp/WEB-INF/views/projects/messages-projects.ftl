@@ -34,7 +34,7 @@
     [#if crpClosed]
       <p class="readPrivileges">MARLO is closed.</p>
     [#else]
-      [#if project.projectEditLeader]
+      [#if project.projectInfo.isProjectEditLeader()]
         <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
       [#else]
         <p class="readPrivileges">This project is being preset by [@s.text name="global.managementLiaison" /], it will be able for editing by the project leader soon...</p>

@@ -1,5 +1,6 @@
 [#ftl]
-[#if !((project.projectEditLeader)!false)]
+
+[#if !((project.projectInfo.isProjectEditLeader())!false)]
   [#assign menus= [
     { 'title': 'General Information', 'show': true,
       'items': [
@@ -19,7 +20,7 @@
       { 'slug': 'locations',  'name': 'projects.menu.locations',  'action': 'locations',  'active': true  }
       ]
     },
-    { 'title': 'Outcomes', 'show': !project.administrative,
+    { 'title': 'Outcomes', 'show': !project.projectInfo.administrative,
       'items': [
       { 'slug': 'contributionsCrpList',  'name': 'projects.menu.contributionsCrpList',  'action': 'contributionsCrpList',  'active': true, 'show':!phaseOne },
       { 'slug': 'projectOutcomes',  'name': 'projects.menu.projectOutcomes',  'action': 'outcomesPandR',  'active': true, 'show':  phaseOne  },
@@ -61,7 +62,7 @@
 
 [#-- Menu--]
 <nav id="secondaryMenu" class="">
-  <p>Project Menu <br /><small> [#if project.administrative]Program Management [#else] Research Project [/#if]</small> </p> 
+  <p>Project Menu <br /><small> [#if project.projectInfo.administrative]Program Management [#else] Research Project [/#if]</small> </p> 
   <ul>
     [#list menus as menu]
       [#if menu.show]
@@ -98,21 +99,21 @@
 <span id="sectionsForChecking" style="display:none">[#list sectionsForChecking as item]${item}[#if item_has_next],[/#if][/#list]</span>
 
 [#-- Open for Project Leaders --]
-[#if !reportingActive && canSwitchProject && (action.isCompletePreProject(project.id) || project.projectEditLeader) && !crpClosed]
+[#if !reportingActive && canSwitchProject && (action.isCompletePreProject(project.id) || project.projectInfo.isProjectEditLeader()) && !crpClosed]
   [#if !submission]
   <div class="grayBox text-center">
-    [@customForm.yesNoInput name="project.projectEditLeader" label="project.isOpen" editable=true inverse=false cssClass="projectEditLeader text-center" /]  
+    [@customForm.yesNoInput name="project.projectInfo.isProjectEditLeader()" label="project.isOpen" editable=true inverse=false cssClass="projectEditLeader text-center" /]  
   </div>
   <br />
   [/#if]
 [#else]
-  [#if !((project.projectEditLeader)!false)]
+  [#if !((project.projectInfo.isProjectEditLeader())!false)]
     <p class="text-justify note"><small>All sections need to be completed (green check mark) for the Project Leader to be able to enter the project details.</small></p>
   [/#if]
 [/#if]
 
 
-[#if ((project.projectEditLeader)!false)]
+[#if ((project.projectInfo.isProjectEditLeader())!false)]
 
   [#-- Submition message --]
   [#if !submission && completed && !canSubmit]

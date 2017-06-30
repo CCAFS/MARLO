@@ -94,6 +94,7 @@ import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -591,8 +592,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public String generatePermission(String permission, String... params) {
     Phase phase = this.getActualPhase();
-    params[0] = params[0] + ":" + phase.getDescription() + ":" + phase.getYear();
-    return this.getText(permission, params);
+    String paramsRefactor[] = Arrays.copyOf(params, params.length);
+    paramsRefactor[0] = paramsRefactor[0] + ":" + phase.getDescription() + ":" + phase.getYear();
+    return this.getText(permission, paramsRefactor);
 
   }
 
@@ -1375,15 +1377,16 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean hasPermission(String fieldName) {
-    if (this.getCrpSession() != null) {
-      Phase phase = this.getActualPhase();
-      fieldName =
-        fieldName.replaceAll(this.getCrpSession(), fieldName + ":" + phase.getDescription() + ":" + phase.getYear());
-    }
 
     if (basePermission == null) {
       return securityContext.hasPermission(fieldName);
     } else {
+      if (this.getCrpSession() != null) {
+        Phase phase = this.getActualPhase();
+        fieldName =
+          fieldName.replaceAll(this.getCrpSession(), fieldName + ":" + phase.getDescription() + ":" + phase.getYear());
+      }
+
       return securityContext.hasPermission(this.getBasePermission() + ":" + fieldName);
     }
   }

@@ -21,7 +21,7 @@
     [#-- <div  class="removeHelp"><span class="glyphicon glyphicon-remove"></span></div> --]
     <img class="col-md-2" src="${baseUrl}/images/global/icon-help.jpg" />
     <p class="col-md-10"> 
-      [#if project.projectEditLeader]
+      [#if project.projectInfo.isProjectEditLeader()]
         [#if reportingActive] 
           [@s.text name="projectDescription.help3" ] [@s.param][@s.text name="global.managementLiaison" /][/@s.param] [/@s.text]
         [#else] 
@@ -54,43 +54,43 @@
             
             [#-- Project Title --]
             <div class="form-group">
-              [@customForm.textArea name="project.title" required=true className="project-title limitWords-30" editable=editable && action.hasPermission("title") /]
+              [@customForm.textArea name="project.projectInfo.title" i18nkey="project.title" required=true className="project-title limitWords-30" editable=editable && action.hasPermission("title") /]
             </div>
             <div class="form-group row">
               [#-- Project Program Creator --]
               <div class="col-md-6">
                
-                [@customForm.select name="project.liaisonInstitution.id" className="liaisonInstitutionSelect" i18nkey="project.liaisonInstitution"  disabled=!editable  listName="liaisonInstitutions" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable && action.hasPermission("managementLiaison") /]
+                [@customForm.select name="project.projectInfo.liaisonInstitution.id" className="liaisonInstitutionSelect" i18nkey="project.liaisonInstitution"  disabled=!editable  listName="liaisonInstitutions" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable && action.hasPermission("managementLiaison") /]
               </div>
               [#--  Project Owner Contact Person --]
               <div class="col-md-6"> 
                 [#-- Loading --]
                 <div class="loading liaisonUsersBlock" style="display:none"></div>
-                [@customForm.select name="project.liaisonUser.id" className="liaisonUserSelect" i18nkey="project.liaisonUser"  listName="allOwners" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable && action.hasPermission("managementLiaison")/]
-                <span id="liaisonUserSelected" style="display:none">${(project.liaisonUser.id)!-1}</span>
+                [@customForm.select name="project.projectInfo.liaisonUser.id" className="liaisonUserSelect" i18nkey="project.liaisonUser"  listName="allOwners" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable && action.hasPermission("managementLiaison")/]
+                <span id="liaisonUserSelected" style="display:none">${(project.projectInfo.liaisonUser.id)!-1}</span>
               </div> 
             </div>  
             <div class="form-group row">  
               [#-- Start Date --]
               <div class="col-md-6">
-                [@customForm.input name="project.startDate" type="text" disabled=!editable  required=true editable=editable && action.hasPermission("startDate")  /]
+                [@customForm.input name="project.projectInfo.startDate"  i18nkey="project.startDate" type="text" disabled=!editable  required=true editable=editable && action.hasPermission("startDate")  /]
               </div> 
               [#-- End Date --]
               <div class="col-md-6">
-                [@customForm.input name="project.endDate" type="text" disabled=!editable required=true editable=editable && action.hasPermission("endDate")  /]
+                [@customForm.input name="project.projectInfo.endDate"  i18nkey="project.endDate" type="text" disabled=!editable required=true editable=editable && action.hasPermission("endDate")  /]
               </div>
             </div>
             <div class="form-group row">
               [#-- Project Type 
               <div class="col-md-6"> 
-                [@customForm.select name="project.type" value="${(project.type)!}" i18nkey="project.type" listName="projectTypes" disabled=true editable=false stringKey=true /]
+                [@customForm.select name="project.projectInfo.type" value="${(project.projectInfo.type)!}" i18nkey="project.type" listName="projectTypes" disabled=true editable=false stringKey=true /]
               </div>
               --]
             </div> 
             
             [#-- Project Summary --]
             <div class="form-group">
-              [@customForm.textArea name="project.summary" required=!((project.bilateralProject)!false) className="project-description limitWords-250" editable=editable && action.hasPermission("summary") /]
+              [@customForm.textArea name="project.projectInfo.summary"  i18nkey="project.summary" required=!((project.bilateralProject)!false) className="project-description limitWords-250" editable=editable && action.hasPermission("summary") /]
             </div>
             
             [#-- Project status 
@@ -114,7 +114,7 @@
             --]
             
             [#--  Regions/global and Flagships that the project is working on --]
-            [#if !project.administrative]
+            [#if !project.projectInfo.administrative]
             
             [#if regionFlagships?has_content]
               [#-- For the CRPs which has Regional Programs --]
@@ -127,17 +127,17 @@
             <div id="projectWorking" class="fullBlock dottedBox clearfix">
               [#-- Flagships --] 
               <div class="col-md-6">
-                <div id="projectFlagshipsBlock" class="${customForm.changedField('project.flagshipValue')}">
+                <div id="projectFlagshipsBlock" class="${customForm.changedField('project.projectInfo.flagshipValue')}">
                   <p><label>[@s.text name="projectDescription.flagships" /]:[@customForm.req required=editable && action.hasPermission("flagships") /] </label></p>
                   [#if editable && action.hasPermission("flagships")]
-                    [@s.fielderror cssClass="fieldError" fieldName="project.flagshipValue"/]
-                    [@s.checkboxlist name="project.flagshipValue" list="programFlagships" listKey="id" listValue="composedName" cssClass="checkboxInput fpInput"  value="flagshipIds" /]
+                    [@s.fielderror cssClass="fieldError" fieldName="project.projectInfo.flagshipValue"/]
+                    [@s.checkboxlist name="project.projectInfo.flagshipValue" list="programFlagships" listKey="id" listValue="composedName" cssClass="checkboxInput fpInput"  value="flagshipIds" /]
                   [#else]
-                    <input type="hidden" name="project.flagshipValue" value="${(project.flagshipValue)!}"/>
+                    <input type="hidden" name="project.projectInfo.flagshipValue" value="${(project.projectInfo.flagshipValue)!}"/>
                     [#if project.flagships?has_content]
                       [#list project.flagships as element]<p class="checked">${element.composedName}</p>[/#list]
                     [#else]
-                      [#if !((project.bilateralProject)!false)]<span class="fieldError">[@s.text name="form.values.required" /]</span>[/#if]
+                    
                     [/#if]
                   [/#if]
                 </div>
@@ -172,7 +172,7 @@
             [/#if]
             
             [#-- Cluster of Activities --]
-            [#if !project.administrative && !phaseOne]
+            [#if !project.projectInfo.administrative && !phaseOne]
             <div class="panel tertiary">
               <div class="panel-head ${customForm.changedField('project.clusterActivities')}"> 
                 <label for="">[@s.text name="projectDescription.clusterActivities"][@s.param][@s.text name="global.clusterOfActivities" /][/@s.param] [/@s.text]:[@customForm.req required=editable  && action.hasPermission("activities") /]</label>
@@ -209,27 +209,27 @@
             </div>
             [/#if]
             
-            [#if project.projectEditLeader && !phaseOne]
+            [#if project.projectInfo.isProjectEditLeader() && !phaseOne]
               [#--  What type of gender analysis informed the design of this project and how? --]
               <div class="form-group">
-                [@customForm.textArea name="project.genderAnalysis" required=true className=" limitWords-100" editable=editable /]
+                [@customForm.textArea name="project.projectInfo.genderAnalysis" i18nkey="project.genderAnalysis" required=true className=" limitWords-100" editable=editable /]
               </div>
               
               [#-- Select the cross-cutting dimension(s) to this project? --]
               <div class="form-group">
-                <label for="">[@customForm.text name="project.crossCuttingDimensions" readText=!editable/] [@customForm.req required=editable/]</label>
+                <label for="">[@customForm.text name="project.crossCuttingDimensions"  readText=!editable/] [@customForm.req required=editable/]</label>
                 <div class="row">
                   <div class="col-md-12">
                     [#if editable]
-                      <label class="checkbox-inline"><input type="checkbox" name="project.crossCuttingGender"   id="gender"   value="true" [#if (project.crossCuttingGender)!false ]checked="checked"[/#if]> Gender</label>
-                      <label class="checkbox-inline"><input type="checkbox" name="project.crossCuttingYouth"    id="youth"    value="true" [#if (project.crossCuttingYouth)!false ]checked="checked"[/#if]> Youth</label>
-                      <label class="checkbox-inline"><input type="checkbox" name="project.crossCuttingCapacity" id="capacity" value="true" [#if (project.crossCuttingCapacity)!false ]checked="checked"[/#if]> Capacity Development</label>
-                      <label class="checkbox-inline"><input type="checkbox" name="project.crossCuttingNa"       id="na"       value="true" [#if (project.crossCuttingNa)!false ]checked="checked"[/#if]> N/A</label>
+                      <label class="checkbox-inline"><input type="checkbox" name="project.projectInfo.crossCuttingGender"   id="gender"   value="true" [#if (project.projectInfo.crossCuttingGender)!false ]checked="checked"[/#if]> Gender</label>
+                      <label class="checkbox-inline"><input type="checkbox" name="project.projectInfo.crossCuttingYouth"    id="youth"    value="true" [#if (project.projectInfo.crossCuttingYouth)!false ]checked="checked"[/#if]> Youth</label>
+                      <label class="checkbox-inline"><input type="checkbox" name="project.projectInfo.crossCuttingCapacity" id="capacity" value="true" [#if (project.projectInfo.crossCuttingCapacity)!false ]checked="checked"[/#if]> Capacity Development</label>
+                      <label class="checkbox-inline"><input type="checkbox" name="project.projectInfo.crossCuttingNa"       id="na"       value="true" [#if (project.projectInfo.crossCuttingNa)!false ]checked="checked"[/#if]> N/A</label>
                     [#else]
-                      <div class="${customForm.changedField('project.crossCuttingGender')}">[#if (project.crossCuttingGender)!false ] <p class="checked"> Gender</p>[/#if] </div>
-                      <div class="${customForm.changedField('project.crossCuttingYouth')}">[#if (project.crossCuttingYouth)!false ] <p class="checked"> Youth</p>[/#if]</div>
-                      <div class="${customForm.changedField('project.crossCuttingCapacity')}">[#if (project.crossCuttingCapacity)!false ] <p class="checked"> Capacity Development</p>[/#if]</div>
-                      <div class="${customForm.changedField('project.crossCuttingNa')}">[#if (project.crossCuttingNa)!false ] <p class="checked"> N/A</p>[/#if]</div>
+                      <div class="${customForm.changedField('project.projectInfo.crossCuttingGender')}">[#if (project.projectInfo.crossCuttingGender)!false ] <p class="checked"> Gender</p>[/#if] </div>
+                      <div class="${customForm.changedField('project.projectInfo.crossCuttingYouth')}">[#if (project.projectInfo.crossCuttingYouth)!false ] <p class="checked"> Youth</p>[/#if]</div>
+                      <div class="${customForm.changedField('project.projectInfo.crossCuttingCapacity')}">[#if (project.projectInfo.crossCuttingCapacity)!false ] <p class="checked"> Capacity Development</p>[/#if]</div>
+                      <div class="${customForm.changedField('project.projectInfo.crossCuttingNa')}">[#if (project.projectInfo.crossCuttingNa)!false ] <p class="checked"> N/A</p>[/#if]</div>
                     [/#if]
                   </div>
                 </div>
@@ -237,8 +237,8 @@
               </div>
               
               [#-- If no gender dimension, then please explain why not --]
-              <div id="gender-question" class="form-group" style="display:${((project.crossCuttingGender)!false)?string('none','block')}">
-                [@customForm.textArea name="project.dimension" required=true className=" limitWords-50" editable=editable /]
+              <div id="gender-question" class="form-group" style="display:${((project.projectInfo.crossCuttingGender)!false)?string('none','block')}">
+                [@customForm.textArea name="project.projectInfo.dimension" required=true className=" limitWords-50" editable=editable /]
               </div>
             [/#if]
           </div> 
@@ -285,8 +285,6 @@
   <ul class="messages"><li>[@s.text name="projectDescription.removeCoADialog" /]</li></ul>
 </div>
 
-[#-- File upload Template--]
-[@customForm.inputFile name="file" fileUrl="${(workplanURL)!}" fileName="project.workplan.fileName" template=true /]
 
 [@customForm.inputFile name="fileReporting" template=true /] 
   

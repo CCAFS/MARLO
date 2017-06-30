@@ -85,8 +85,8 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
     User user = (User) session.get(APConstants.SESSION_USER);
     baseAction.setSession(session);
-    phase = phaseManager.findCycle(baseAction.getCurrentCycle(), baseAction.getCurrentCycleYear(),
-      loggedCrp.getId().longValue());
+    phase = baseAction.getActualPhase();
+    phase = phaseManager.getPhaseById(phase.getId());
 
     boolean canEdit = false;
     boolean hasPermissionToEdit = false;
