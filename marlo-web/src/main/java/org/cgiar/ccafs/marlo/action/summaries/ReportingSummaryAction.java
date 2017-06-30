@@ -381,6 +381,47 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       this.getText("projectOutcomes.Annual"));
     masterReport.getParameterValues().put("i8nProjectOutcomesRLessons",
       this.getText("projectOutcomes.lessons.readText"));
+    /*
+     * Reporting
+     * CCAFS Outcomes
+     */
+    masterReport.getParameterValues().put("i8nCCAFSOutcomesRNoData", this.getText("ccafsOutcomes.noData"));
+    masterReport.getParameterValues().put("i8nCCAFSOutcomesRTargetValue",
+      this.getText("projectCcafsOutcomes.targetValue"));
+    masterReport.getParameterValues().put("i8nCCAFSOutcomesRCumulativeTarget",
+      this.getText("projectCcafsOutcomes.comulativeTarget"));
+    masterReport.getParameterValues().put("i8nCCAFSOutcomesRAchievedTarget",
+      this.getText("projectCcafsOutcomes.achievedTarget"));
+    masterReport.getParameterValues().put("i8nCCAFSOutcomesRTargetNarrative",
+      this.getText("projectCcafsOutcomes.targetNarrative"));
+    masterReport.getParameterValues().put("i8nCCAFSOutcomesRTargetNarrativeAchieved",
+      this.getText("projectCcafsOutcomes.targetNarrativeAchieved"));
+    masterReport.getParameterValues().put("i8nCCAFSOutcomesRTargetNarrativeGenderAchieved",
+      this.getText("projectCcafsOutcomes.targetNarrativeGenderAchieved"));
+    masterReport.getParameterValues().put("i8nCCAFSOutcomesRTargetGender",
+      this.getText("projectCcafsOutcomes.targetGender"));
+    masterReport.getParameterValues().put("i8nCCAFSOutcomesRMogs", this.getText("projectCcafsOutcomes.mogs"));
+    /*
+     * Reporting
+     * Other Contributions
+     */
+    masterReport.getParameterValues().put("i8nOtherContributionsRNoData", this.getText("otherContributions.noData"));
+    masterReport.getParameterValues().put("i8nOtherContributionsRStatement",
+      this.getText("projectOtherContributions.contribution.readText"));
+    masterReport.getParameterValues().put("i8nOtherContributionsRRegion",
+      this.getText("projectOtherContributions.region"));
+    masterReport.getParameterValues().put("i8nOtherContributionsRIndicator",
+      this.getText("projectOtherContributions.indicators"));
+    masterReport.getParameterValues().put("i8nOtherContributionsRContributionTarget",
+      this.getText("otherContributions.contributionTarget"));
+    masterReport.getParameterValues().put("i8nOtherContributionsRTargetValueContrib",
+      this.getText("projectOtherContributions.target.readText"));
+    masterReport.getParameterValues().put("i8nOtherContributionsRColaboratingCRPS",
+      this.getText("projectOtherContributions.collaboratingCRPs.readText"));
+    masterReport.getParameterValues().put("i8nOtherContributionsRCRPEmpty",
+      this.getText("projectOtherContributions.crpsEmpty"));
+    masterReport.getParameterValues().put("i8nOtherContributionsRColaboratingDescription",
+      this.getText("projectOtherContributions.collaborationNature.readText"));
 
     return masterReport;
   }
