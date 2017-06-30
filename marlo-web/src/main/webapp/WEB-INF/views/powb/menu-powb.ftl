@@ -1,6 +1,4 @@
 [#ftl]
-${flagship?string}
-${PMU?string}
 
 [#assign menus= [
   { 'title': 'A. CRP Level', 'show': true,
@@ -27,7 +25,6 @@ ${PMU?string}
     ]
   }
 ]/]
-
 
 
 [#assign submission = false /]

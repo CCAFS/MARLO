@@ -39,9 +39,11 @@
         <h3 class="headTitle">[@s.text name="powbDelivery.title" /]</h3>
         <div class="borderBox">
           [#-- A.1.1 Adjustments/changes to your Theories of Change --] 
+          [#if PMU]
           <div class="form-group">
             [@customForm.textArea name="liaisonInstitution.powb.adjustmentsToC" help="liaisonInstitution.powb.adjustmentsToC.help" required=true className="limitWords-100" editable=editable /]
           </div>
+          [/#if]
           
           [#-- A.1.2 Highlight expected Outcomes and Outputs --] 
           <div class="form-group">
@@ -49,6 +51,7 @@
           </div>
           
           [#-- Deliverables contribution to key outputs --]
+          [#if flagship]
           <div class="form-group">
             <h5 class="sectionSubTitle">[@s.text name="powbDelivery.deliverableContributions" /]</h5>
             <table class="">
@@ -74,18 +77,45 @@
               </tbody>
             </table>
           </div>
+          [/#if]
           
-          [#-- A.1.3 Use of different Funding Sources --] 
+          [#-- Flagships - Highlight expected Outcomes and Outputs  --]
+          [#if PMU]
+          <div class="form-group">
+            <h5 class="sectionSubTitle">[@s.text name="powbDelivery.flagshipsExpectedOutcomesOutputs" /]</h5>
+            <table class="">
+              <thead>
+                <tr>
+                  <th>Flagship</th>
+                  <th>Narrative</th>
+                </tr>
+              </thead>
+              <tbody>
+                [#list 1..4 as flagship]
+                <tr>
+                  <td>FP1 - Priorities and Policies for CSA</td>
+                  <td><i>Prefilled when available</i></td>
+                </tr>
+                [/#list]
+              </tbody>
+            </table>
+          </div>
+          [/#if]
+          
+          [#-- A.1.3 Use of different Funding Sources --]
+          [#if PMU]
           <div class="form-group">
             <label for="">[@s.text name="liaisonInstitution.powb.useFundingSource" /]</label>
             <p><i>[@s.text name="powbDelivery.useFundingSource" /]</i></p>
           </div>
+          [/#if]
           
           [#-- A.1.4 Planned Revisions to your Program of Work --] 
+          [#if PMU]
           <div class="form-group">
             [@customForm.textArea name="liaisonInstitution.powb.plannedRevisions" help="liaisonInstitution.powb.plannedRevisions.help" required=true className="limitWords-100" editable=editable /]
           </div>
-          
+          [/#if]
         
         </div>
         
