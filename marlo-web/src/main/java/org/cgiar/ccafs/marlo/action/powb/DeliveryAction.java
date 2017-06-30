@@ -19,13 +19,14 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
-import org.cgiar.ccafs.marlo.data.manager.IpLiaisonInstitutionManager;
-import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
-import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
-import org.cgiar.ccafs.marlo.data.model.IpLiaisonUser;
-import org.cgiar.ccafs.marlo.data.model.IpProgram;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
+import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -56,28 +57,28 @@ public class DeliveryAction extends BaseAction {
 
   // Managers
   private CrpManager crpManager;
-  private IpLiaisonInstitutionManager liaisonInstitutionManager;
+  private LiaisonInstitutionManager liaisonInstitutionManager;
 
   // Model for the front-end
-  private List<IpLiaisonInstitution> liaisonInstitutions;
+  private List<LiaisonInstitution> liaisonInstitutions;
   private String transaction;
   private AuditLogManager auditLogManager;
   private UserManager userManager;
-  private IpLiaisonInstitution liaisonInstitution;
+  private LiaisonInstitution liaisonInstitution;
   private Long liaisonInstitutionID;
-  private IpProgramManager ipProgramManager;
+  private CrpProgramManager crpProgramManager;
   private Crp loggedCrp;
   private CrpIndicatorsValidator validator;
 
   @Inject
-  public DeliveryAction(APConfig config, CrpManager crpManager, IpLiaisonInstitutionManager liaisonInstitutionManager,
-    CrpIndicatorsValidator validator, AuditLogManager auditLogManager, IpProgramManager ipProgramManager,
+  public DeliveryAction(APConfig config, CrpManager crpManager, LiaisonInstitutionManager liaisonInstitutionManager,
+    CrpIndicatorsValidator validator, AuditLogManager auditLogManager, CrpProgramManager crpProgramManager,
     UserManager userManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.validator = validator;
-    this.ipProgramManager = ipProgramManager;
+    this.crpProgramManager = crpProgramManager;
     this.auditLogManager = auditLogManager;
     this.userManager = userManager;
   }
@@ -95,7 +96,8 @@ public class DeliveryAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-  public IpLiaisonInstitution getliaisonInstitution() {
+
+  public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
 
@@ -103,7 +105,7 @@ public class DeliveryAction extends BaseAction {
     return liaisonInstitutionID;
   }
 
-  public List<IpLiaisonInstitution> getLiaisonInstitutions() {
+  public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
   }
 
@@ -115,17 +117,28 @@ public class DeliveryAction extends BaseAction {
     return transaction;
   }
 
+
   public boolean isFlagship() {
     boolean isFP = false;
-    if (liaisonInstitution.getIpProgram() != null) {
-      IpProgram ipProgram = ipProgramManager.getIpProgramById(liaisonInstitution.getIpProgram().longValue());
-      if (ipProgram.isFlagshipProgram()) {
+    if (liaisonInstitution.getCrpProgram() != null) {
+      CrpProgram crpProgram =
+        crpProgramManager.getCrpProgramById(liaisonInstitution.getCrpProgram().getId().longValue());
+      if (crpProgram.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
         isFP = true;
       }
     }
     return isFP;
   }
 
+  @Override
+  public boolean isPMU() {
+    boolean isFP = false;
+    if (liaisonInstitution.getCrpProgram() == null) {
+      isFP = true;
+    }
+    return isFP;
+
+  }
 
   @Override
   public String next() {
@@ -150,14 +163,14 @@ public class DeliveryAction extends BaseAction {
         Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.LIAISON_INSTITUTION_REQUEST_ID)));
     } catch (NumberFormatException e) {
       User user = userManager.getUser(this.getCurrentUser().getId());
-      if (user.getIpLiaisonUsers() != null || !user.getIpLiaisonUsers().isEmpty()) {
+      if (user.getLiasonsUsers() != null || !user.getLiasonsUsers().isEmpty()) {
 
-        List<IpLiaisonUser> liaisonUsers = new ArrayList<>(user.getIpLiaisonUsers());
+        List<LiaisonUser> liaisonUsers = new ArrayList<>(user.getLiasonsUsers());
 
         if (!liaisonUsers.isEmpty()) {
-          IpLiaisonUser liaisonUser = new IpLiaisonUser();
+          LiaisonUser liaisonUser = new LiaisonUser();
           liaisonUser = liaisonUsers.get(0);
-          liaisonInstitutionID = liaisonUser.getIpLiaisonInstitution().getId();
+          liaisonInstitutionID = liaisonUser.getLiaisonInstitution().getId();
           if (liaisonInstitutionID == 1) {
             liaisonInstitutionID = new Long(2);
           }
@@ -180,7 +193,7 @@ public class DeliveryAction extends BaseAction {
         Gson gson = new GsonBuilder().create();
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
         AutoSaveReader autoSaveReader = new AutoSaveReader();
-        liaisonInstitution = (IpLiaisonInstitution) autoSaveReader.readFromJson(jReader);
+        liaisonInstitution = (LiaisonInstitution) autoSaveReader.readFromJson(jReader);
         liaisonInstitutionID = liaisonInstitution.getId();
         this.setDraft(true);
         reader.close();
@@ -195,36 +208,40 @@ public class DeliveryAction extends BaseAction {
     // If there is a history version being loaded
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
       transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
-      IpLiaisonInstitution history = (IpLiaisonInstitution) auditLogManager.getHistory(transaction);
+      LiaisonInstitution history = (LiaisonInstitution) auditLogManager.getHistory(transaction);
       if (history != null) {
         liaisonInstitution = history;
         liaisonInstitutionID = liaisonInstitution.getId();
-        liaisonInstitution.setIndicatorReports(liaisonInstitution.getCrpIndicatorReportses().stream()
-          .filter(c -> c.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList()));
-        liaisonInstitution.getIndicatorReports()
-          .sort((p1, p2) -> p1.getCrpIndicator().getId().compareTo(p2.getCrpIndicator().getId()));
+
       } else {
         this.transaction = null;
         this.setTransaction("-1");
       }
     } else {
-      liaisonInstitution = liaisonInstitutionManager.getIpLiaisonInstitutionById(liaisonInstitutionID);
+      liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
     }
 
     // Get the list of liaison institutions.
     // TODO: List only Flagships and the PMU
-    liaisonInstitutions = liaisonInstitutionManager.getLiaisonInstitutionSynthesisByMog();
+    liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
+      .filter(c -> c.getCrpProgram() != null
+        && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+      .collect(Collectors.toList());
+    liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
+      .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU")).collect(Collectors.toList()));
     String params[] = {loggedCrp.getAcronym(), liaisonInstitution.getId() + ""};
     this.setBasePermission(this.getText(Permission.CRP_INDICATORS_BASE_PERMISSION, params));
 
   }
+
 
   @Override
   public String save() {
     return SUCCESS;
   }
 
-  public void setliaisonInstitution(IpLiaisonInstitution liaisonInstitution) {
+
+  public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
   }
 
@@ -232,7 +249,7 @@ public class DeliveryAction extends BaseAction {
     this.liaisonInstitutionID = liaisonInstitutionID;
   }
 
-  public void setLiaisonInstitutions(List<IpLiaisonInstitution> liaisonInstitutions) {
+  public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
   }
 
@@ -247,7 +264,7 @@ public class DeliveryAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      validator.validate(this, liaisonInstitution.getIndicatorReports(), liaisonInstitution, true);
+
     }
   }
 
