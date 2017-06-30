@@ -355,13 +355,32 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
      */
 
     /*
-     * Partners Reporting
+     * Reporting
+     * Partners
      */
     masterReport.getParameterValues().put("i8nPartnerRLessonsStatement",
       this.getText("projectPartners.lessons.reporting.readText"));
     masterReport.getParameterValues().put("i8nPartnerROverall",
       this.getText("projectPartners.partnershipsOverall.readText"));
-
+    /*
+     * Reporting
+     * Project Outcomes
+     */
+    masterReport.getParameterValues().put("i8nProjectOutcomesRNoData", this.getText("projectOutcomes.noData"));
+    masterReport.getParameterValues().put("i8nProjectOutcomesRStatement",
+      this.getText("projectOutcomes.statement.readText"));
+    masterReport.getParameterValues().put("i8nProjectOutcomesRAnnualProgress",
+      this.getText("projectOutcomes.annualProgress.readText", new String[] {String.valueOf(year)}));
+    masterReport.getParameterValues().put("i8nProjectOutcomesRAnnualProgressCurrent",
+      this.getText("projectOutcomes.annualProgressCurrentReporting.readText", new String[] {String.valueOf(year)}));
+    masterReport.getParameterValues().put("i8nProjectOutcomesRComunnicationCurrent",
+      this.getText("projectOutcomes.commEngagementOutcomes.readText"));
+    masterReport.getParameterValues().put("i8nProjectOutcomesREvidence",
+      this.getText("projectOutcomes.uploadSummary.readText"));
+    masterReport.getParameterValues().put("i8nProjectOutcomesRAnnualProgressOutcome",
+      this.getText("projectOutcomes.Annual"));
+    masterReport.getParameterValues().put("i8nProjectOutcomesRLessons",
+      this.getText("projectOutcomes.lessons.readText"));
 
     return masterReport;
   }
