@@ -51,24 +51,44 @@
         </div>
           
           <h3 class="headTitle">[@s.text name="projectDescription.title" /]</h3>  
-          <div id="projectDescription" class="borderBox">            
-            <div class="form-group row">  
-              [#-- OCS code --]
-              <div class="col-md-4">
-                [@customForm.input name="project.ocsCode" i18nkey="projectDescription.ocsCode" type="text" disabled=!editable  required=true editable=editable /]
-              </div> 
-              <div class="col-md-2">
-                <br />
-                [#if editable]<div id="fillMetadata" class="checkButtonDisable" style="display:block;">[@s.text name="projectDescription.sync" /]</div>[/#if]
+          <div id="projectDescription" class="borderBox">
+          
+            [#-- Finance code --]
+            <div class="form-group row">
+              <div class="col-md-offset-6 col-md-6">
+                <div class="url-field">
+                  [@customForm.input name="project.ocsCode" i18nkey="projectDescription.ocsCode" type="text" disabled=!editable  required=true editable=editable /]
+                  <span class="financeCode-message"></span>
+                </div>
+                <div class="buttons-field">
+                  [#if editable]
+                    [#assign isSynced = false ]
+                    <div id="fillMetadata">
+                      <input type="hidden" name="fundingSource.synced" value="${isSynced?string}" />
+                      [#-- Sync Button --]
+                      <div class="checkButton" style="display:${isSynced?string('none','block')};">[@s.text name="form.buttons.sync" /]</div>
+                      <div class="unSyncBlock" style="display:${isSynced?string('block','none')};">
+                        [#-- Update Button --]
+                        <div class="updateButton">[@s.text name="form.buttons.update" /]</div>
+                        [#-- Unsync Button --]
+                        <div class="uncheckButton">[@s.text name="form.buttons.unsync" /]</div>
+                      </div>
+                    </div>
+                  [/#if]
+                </div>
+              </div>
+              <div id="metadata-output"></div>
+            </div>
+            
+            [#-- Principal Investigator --]
+            <div class="form-group row">
+              <div class="col-md-6">
+                [@customForm.input name="principalInvestigator" i18nkey="projectDescription.pl" type="text" disabled=!editable  required=true editable=false /]
               </div>
               <div class="col-md-6">
-                  [@customForm.select name="project.projectType.id" label=""  i18nkey="Type" listName="projectTypes" keyFieldName="id"  displayFieldName="name"  multiple=false required=true header=false className="" editable=editable/]
+                [@customForm.select name="project.projectType.id" label=""  i18nkey="Type" listName="projectTypes" keyFieldName="id"  displayFieldName="name"  multiple=false required=true header=false className="" editable=editable/]
               </div>
-              [#-- Principal Investigator --]
-              <div class="col-md-12">
-                [@customForm.input name="principalInvestigator" i18nkey="projectDescription.pl" type="text" disabled=!editable  required=true editable=false /]
-              </div>   
-            </div>
+            </div>   
             [#-- Project Title --]
             <div class="form-group">
               [@customForm.textArea name="project.name" i18nkey="projectDescription.name" required=true className="project-title" editable=editable && action.hasPermission("title") /]
