@@ -423,6 +423,131 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     masterReport.getParameterValues().put("i8nOtherContributionsRColaboratingDescription",
       this.getText("projectOtherContributions.collaborationNature.readText"));
 
+    /*
+     * Reporting
+     * Case Studies
+     */
+    masterReport.getParameterValues().put("i8nCaseStudiesRNoData", this.getText("caseStudy.noData"));
+    masterReport.getParameterValues().put("i8nCaseStudiesRCaseStudy", this.getText("breadCrumb.menu.caseStudy"));
+    masterReport.getParameterValues().put("i8nCaseStudiesRTitle", this.getText("caseStudy.title"));
+    masterReport.getParameterValues().put("i8nCaseStudiesRYear", this.getText("caseStudy.caseStudyYear"));
+    masterReport.getParameterValues().put("i8nCaseStudiesRProjects", this.getText("caseStudy.projects"));
+    masterReport.getParameterValues().put("i8nCaseStudiesRStatement",
+      this.getText("caseStudy.outcomeStatement.readText"));
+    masterReport.getParameterValues().put("i8nCaseStudiesRResearchOutputs",
+      this.getText("caseStudy.researchOutput.readText"));
+    masterReport.getParameterValues().put("i8nCaseStudiesRResearchPartners",
+      this.getText("caseStudy.researchPartners.readText"));
+    masterReport.getParameterValues().put("i8nCaseStudiesRActivities",
+      this.getText("caseStudy.activitiesContributed.readText"));
+    masterReport.getParameterValues().put("i8nCaseStudiesRNonResearchPartners",
+      this.getText("caseStudy.nonResearchPartners.readText"));
+    masterReport.getParameterValues().put("i8nCaseStudiesROutputUsers", this.getText("caseStudy.outputUsers.readText"));
+    masterReport.getParameterValues().put("i8nCaseStudiesREvidence", this.getText("caseStudy.evidence.readText"));
+    masterReport.getParameterValues().put("i8nCaseStudiesROutputUsers", this.getText("caseStudy.outputUsers.readText"));
+    masterReport.getParameterValues().put("i8nCaseStudiesRReferences", this.getText("caseStudy.references.readText"));
+    masterReport.getParameterValues().put("i8nCaseStudiesRIndicators",
+      this.getText("caseStudy.caseStudyIndicators.readText"));
+    masterReport.getParameterValues().put("i8nCaseStudiesRExplainIndicatorRelation",
+      this.getText("caseStudy.explainIndicatorRelation.readText"));
+    masterReport.getParameterValues().put("i8nCaseStudiesRUploadAnnexes",
+      this.getText("caseStudy.uploadAnnexes.readText"));
+    /*
+     * Reporting
+     * Overview By MOGs
+     */
+    masterReport.getParameterValues().put("i8nOverviewByMOGsRNoData", this.getText("overviewByMOGS.noData"));
+    masterReport.getParameterValues().put("i8nOverviewByMOGsRMogs", this.getText("projectCcafsOutcomes.mogs"));
+
+    /*
+     * Reporting
+     * Deliverables
+     */
+    masterReport.getParameterValues().put("i8nDeliverablesRMainInfo",
+      this.getText("project.deliverable.generalInformation.titleTab"));
+    masterReport.getParameterValues().put("i8nDeliverablesRType",
+      this.getText("project.deliverable.generalInformation.type"));
+    masterReport.getParameterValues().put("i8nDeliverablesRSubType",
+      this.getText("project.deliverable.generalInformation.subType"));
+    masterReport.getParameterValues().put("i8nDeliverablesRStatus",
+      this.getText("project.deliverable.generalInformation.status"));
+    masterReport.getParameterValues().put("i8nDeliverablesRYearExpectedCompletion",
+      this.getText("project.deliverable.generalInformation.year"));
+    masterReport.getParameterValues().put("i8nDeliverablesRNewExpectedYear",
+      this.getText("deliverable.newExpectedYear"));
+    masterReport.getParameterValues().put("i8nDeliverablesRJustificationNewExpectedDate",
+      this.getText("deliverable.justificationNewExpectedDate"));
+    masterReport.getParameterValues().put("i8nDeliverablesRKeyOutput",
+      this.getText("project.deliverable.generalInformation.keyOutput"));
+    masterReport.getParameterValues().put("i8nDeliverablesRFundingSource",
+      this.getText("project.deliverable.fundingSource.readText"));
+    masterReport.getParameterValues().put("i8nDeliverablesRCrossCuttingDimensions",
+      this.getText("deliverable.crossCuttingDimensions.readText"));
+    masterReport.getParameterValues().put("i8nDeliverablesRDiseminationTitle",
+      this.getText("deliverable.diseminationTitle"));
+    masterReport.getParameterValues().put("i8nDeliverablesRAlreadyDisseminatedQuestion",
+      this.getText("project.deliverable.dissemination.alreadyDisseminatedQuestion"));
+    masterReport.getParameterValues().put("i8nDeliverablesRDisseminationChanel",
+      this.getText("project.deliverable.dissemination.v.DisseminationChanel"));
+    masterReport.getParameterValues().put("i8nDeliverablesRDisseminationUrl",
+      this.getText("project.deliverable.dissemination.disseminationUrl"));
+    masterReport.getParameterValues().put("i8nDeliverablesRIsOpenAccess",
+      this.getText("project.deliverable.dissemination.v.isOpenAccess"));
+    masterReport.getParameterValues().put("i8nDeliverablesROpenAccessRestriction",
+      this.getText("project.deliverable.dissemination.v.openAccessRestriction"));
+    masterReport.getParameterValues().put("i8nDeliverablesRALicense", this.getText("project.deliverable.v.ALicense"));
+    masterReport.getParameterValues().put("i8nDeliverablesRPublicationAllowModifications",
+      this.getText("publication.publicationAllowModifications"));
+    masterReport.getParameterValues().put("i8nDeliverablesRMetadataSubtitle",
+      this.getText("project.deliverable.dissemination.metadataSubtitle"));
+    masterReport.getParameterValues().put("i8nDeliverablesRMetadataTitle", this.getText("metadata.title"));
+    masterReport.getParameterValues().put("i8nDeliverablesRMetadataDescription",
+      this.getText("metadata.description.readText"));
+    masterReport.getParameterValues().put("i8nDeliverablesRMetadataDate", this.getText("metadata.date"));
+    masterReport.getParameterValues().put("i8nDeliverablesRLanguage", this.getText("metadata.language"));
+    masterReport.getParameterValues().put("i8nDeliverablesRCountry", this.getText("metadata.country"));
+    masterReport.getParameterValues().put("i8nDeliverablesRKeywords", this.getText("metadata.keywords.help"));
+    masterReport.getParameterValues().put("i8nDeliverablesRCitation", this.getText("metadata.citation.readText"));
+    masterReport.getParameterValues().put("i8nDeliverablesRHandle", this.getText("metadata.handle"));
+    masterReport.getParameterValues().put("i8nDeliverablesRDoi", this.getText("metadata.doi"));
+    masterReport.getParameterValues().put("i8nDeliverablesRCreator", this.getText("metadata.creator"));
+    masterReport.getParameterValues().put("i8nDeliverablesRPublicationTitle",
+      this.getText("project.deliverable.dissemination.publicationTitle"));
+    masterReport.getParameterValues().put("i8nDeliverablesRVolume",
+      this.getText("project.deliverable.dissemination.volume"));
+    masterReport.getParameterValues().put("i8nDeliverablesRIssue",
+      this.getText("project.deliverable.dissemination.issue"));
+    masterReport.getParameterValues().put("i8nDeliverablesRPages",
+      this.getText("project.deliverable.dissemination.pages"));
+    masterReport.getParameterValues().put("i8nDeliverablesRJournalName",
+      this.getText("project.deliverable.dissemination.journalName"));
+    masterReport.getParameterValues().put("i8nDeliverablesRIndicatorsJournal",
+      this.getText("project.deliverable.dissemination.indicatorsJournal"));
+    masterReport.getParameterValues().put("i8nDeliverablesRPublicationAcknowledge",
+      this.getText("deliverable.publicationAcknowledge"));
+    masterReport.getParameterValues().put("i8nDeliverablesRPublicationFLContribution",
+      this.getText("deliverable.publicationFLContribution"));
+    masterReport.getParameterValues().put("i8nDeliverablesRQualityCheckTitle",
+      this.getText("deliverable.qualityCheckTitle"));
+    masterReport.getParameterValues().put("i8nDeliverablesRFairTitle",
+      this.getText("project.deliverable.quality.fairTitle"));
+    masterReport.getParameterValues().put("i8nDeliverablesRQualityCheckAssurance",
+      this.getText("deliverable.qualityCheckAssurance"));
+    masterReport.getParameterValues().put("i8nDeliverablesRQualityCheckDataDictionary",
+      this.getText("deliverable.qualityCheckDataDictionary"));
+    masterReport.getParameterValues().put("i8nDeliverablesRQualityCheckQuestion3",
+      this.getText("project.deliverable.quality.question3"));
+    masterReport.getParameterValues().put("i8nDeliverablesRDataSharingTitle",
+      this.getText("projectDeliverable.dataSharingTitle"));
+    masterReport.getParameterValues().put("i8nDeliverablesRDeliverableFiles",
+      this.getText("projectDeliverable.dataSharing.deliverableFiles"));
+    masterReport.getParameterValues().put("i8nDeliverablesRPartnership",
+      this.getText("project.deliverable.partnership"));
+    masterReport.getParameterValues().put("i8nDeliverablesRInstitution", this.getText("deliverable.institution"));
+    masterReport.getParameterValues().put("i8nDeliverablesRPartnerSingular", this.getText("partner.partnerSingular"));
+    masterReport.getParameterValues().put("i8nDeliverablesRType2", this.getText("deliverable.type"));
+
+
     return masterReport;
   }
 
