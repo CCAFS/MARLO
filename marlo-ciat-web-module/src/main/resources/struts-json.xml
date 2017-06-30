@@ -59,7 +59,7 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
-		
+
 		<action name="nextUserByType"
 			class="org.cgiar.ccafs.marlo.action.json.impactpathway.NextUserListAction">
 			<result type="json">
@@ -91,14 +91,14 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
-		
+
 		<action name="impactPathwayGraphByCenter"
-      class="org.cgiar.ccafs.marlo.action.json.impactpathway.graph.GraphByCenterAction">
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
+			class="org.cgiar.ccafs.marlo.action.json.impactpathway.graph.GraphByCenterAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
 
 		<action name="autosaveWriter"
 			class="org.cgiar.ccafs.marlo.action.json.autosave.AutoSaveWriterAction">
@@ -110,54 +110,62 @@
 				<param name="defaultEncoding">utf-8</param>
 			</result>
 		</action>
-		
+
 		<action name="outputInfo"
-      class="org.cgiar.ccafs.marlo.action.json.monitoring.project.OutputInfoAction">
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
-    
-    <action name="addMilestone"
-      class="org.cgiar.ccafs.marlo.action.json.monitoring.outcome.MilestoneAddAction">
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
-    
-    <action name="validateProject"
-      class="org.cgiar.ccafs.marlo.action.json.monitoring.project.ValidateProjectSectionAction">
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
-    
-    <action name="deliverableSubType"
-      class="org.cgiar.ccafs.marlo.action.json.monitoring.project.DeliverableSubTypeAction">
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
-    
-    <action name="outputRequest"
-      class="org.cgiar.ccafs.marlo.action.json.monitoring.project.OuputRequestAction">
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
-    
-     <action name="outcomeTree"
-      class="org.cgiar.ccafs.marlo.action.json.monitoring.outcome.OutcomeTreeAction">
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
+			class="org.cgiar.ccafs.marlo.action.json.monitoring.project.OutputInfoAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+		<action name="addMilestone"
+			class="org.cgiar.ccafs.marlo.action.json.monitoring.outcome.MilestoneAddAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+		<action name="validateProject"
+			class="org.cgiar.ccafs.marlo.action.json.monitoring.project.ValidateProjectSectionAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+		<action name="deliverableSubType"
+			class="org.cgiar.ccafs.marlo.action.json.monitoring.project.DeliverableSubTypeAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+		<action name="outputRequest"
+			class="org.cgiar.ccafs.marlo.action.json.monitoring.project.OuputRequestAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+		<action name="outcomeTree"
+			class="org.cgiar.ccafs.marlo.action.json.monitoring.outcome.OutcomeTreeAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+		<action name="ocsService"
+			class="org.cgiar.ccafs.marlo.action.json.global.OcsServiceAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
 
 	</package>
 </struts>

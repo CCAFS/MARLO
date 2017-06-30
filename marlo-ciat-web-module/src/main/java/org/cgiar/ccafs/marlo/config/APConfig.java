@@ -62,7 +62,7 @@ public class APConfig {
 
   private static final String AUTOSAVE_FOLDER = "autosave.folder";
 
-  private static final String BASE_URL = "marlo.baseUrl";
+  private static final String BASE_URL = "marlo.ciat.baseUrl";
   // Logging.
   private static final Logger LOG = LoggerFactory.getLogger(APConfig.class);
 
