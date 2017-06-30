@@ -39,6 +39,15 @@
         <h3 class="headTitle">[@s.text name="powbManGovMonEvaLea.title" /]</h3>
         <div class="borderBox">
         
+          [#-- A 3.1 Relevant Changes in Management and Governance--] 
+          <div class="form-group">
+            [@customForm.textArea name="liaisonInstitution.powb.relevantChanges" help="liaisonInstitution.powb.relevantChanges.help" required=true className="limitWords-100" editable=editable /]
+          </div>
+          
+          [#-- A 3.2 Monitoring, Evaluation, Impact Assessment and Learning Plans --] 
+          <div class="form-group">
+            [@customForm.textArea name="liaisonInstitution.powb.MonEvaImpAssLeaPlans" help="liaisonInstitution.powb.MonEvaImpAssLeaPlans.help" required=true className="limitWords-100" editable=editable /]
+          </div>
         
         </div>
         
