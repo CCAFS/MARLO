@@ -221,14 +221,15 @@ public class DeliveryAction extends BaseAction {
       liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
     }
 
-    // Get the list of liaison institutions.
-    // TODO: List only Flagships and the PMU
+    // Get the list of liaison institutions Flagships and PMU.
     liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null
         && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
       .collect(Collectors.toList());
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU")).collect(Collectors.toList()));
+
+    // Set Base permission
     String params[] = {loggedCrp.getAcronym(), liaisonInstitution.getId() + ""};
     this.setBasePermission(this.getText(Permission.CRP_INDICATORS_BASE_PERMISSION, params));
 

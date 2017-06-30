@@ -38,9 +38,64 @@
         [#-- Title --]
         <h3 class="headTitle">[@s.text name="powbCollIntegration.title" /]</h3>
         <div class="borderBox">
+          [#-- A.2.1 Contribution to and from Platforms --] 
+          <div class="form-group">
+            [@customForm.textArea name="liaisonInstitution.powb.contributionTo" help="liaisonInstitution.powb.contributionTo.help" required=true className="limitWords-100" editable=editable /]
+          </div>
+        
           [#-- A.2.2 Cross-CRP interactions --] 
           <div class="form-group">
             [@customForm.textArea name="liaisonInstitution.powb.crossCrpInteractions" help="liaisonInstitution.powb.crossCrpInteractions.help" required=true className="limitWords-100" editable=editable /]
+          </div>
+          
+          [#-- Flagships Cross CRP interactions --]
+          <div class="form-group">
+            <h5 class="sectionSubTitle">[@s.text name="powbCollIntegration.flagshipsCrossInteractions" /]</h5>
+            <table class="">
+              <thead>
+                <tr>
+                  <th>Flagship</th>
+                  <th>Narrative of collaboration</th>
+                </tr>
+              </thead>
+              <tbody>
+                [#list 1..4 as flagship]
+                <tr>
+                  <td>FP1 - Priorities and Policies for CSA</td>
+                  <td><i>Prefilled when available</i></td>
+                </tr>
+                [/#list]
+              </tbody>
+            </table>
+          </div>
+          
+          [#-- A.2.3 Expected Efforts on Country Coordination --] 
+          <div class="form-group">
+            [@customForm.textArea name="liaisonInstitution.powb.expectedEfforts" help="liaisonInstitution.powb.expectedEfforts.help" required=true className="limitWords-100" editable=editable /]
+          </div>
+          
+          [#-- Countries contribuions --]
+          <div class="form-group">
+            <h5 class="sectionSubTitle">[@s.text name="powbCollIntegration.countriesContributions" /]</h5>
+            <table class="">
+              <thead>
+                <tr>
+                  <th>Country</th>
+                  <th>Projects</th>
+                  <th>Funding Sources</th>
+                </tr>
+              </thead>
+              <tbody>
+                [#list 1..4 as flagship]
+                <tr>
+                  <td>Vietnam</td>
+                  <td>
+                    <a href=""></a>
+                  </td>
+                </tr>
+                [/#list]
+              </tbody>
+            </table>
           </div>
         
         </div>
