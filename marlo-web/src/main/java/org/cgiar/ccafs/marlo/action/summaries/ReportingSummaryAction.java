@@ -324,9 +324,16 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
      * Budget by Partners
      */
 
+    masterReport.getParameterValues().put("i8nBudgetPartnerGender", this.getText("budgetPartner.gender"));
+    masterReport.getParameterValues().put("i8nBudgetPartnerType", this.getText("budgetPartner.type"));
+    masterReport.getParameterValues().put("i8nBudgetPartnerAmount", this.getText("budget.amount"));
+    masterReport.getParameterValues().put("i8nBudgetPartnerFundingSources",
+      this.getText("budgetPartner.fundingSource"));
+    masterReport.getParameterValues().put("i8nBudgetPartnerBudget", this.getText("projects.menu.budget"));
     /*
      * Budget by CoAs
      */
+
 
     return masterReport;
   }
