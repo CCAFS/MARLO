@@ -199,18 +199,37 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
    */
   private MasterReport addi8nParameters(MasterReport masterReport) {
     /**
-     * Menus Planning
+     * Menus Planning & Reporting
      */
     masterReport.getParameterValues().put("i8nProjectMenu", this.getText("projects.menu.description"));
     masterReport.getParameterValues().put("i8nPartnersMenu", this.getText("projects.menu.partners"));
     masterReport.getParameterValues().put("i8nLocationsMenu", this.getText("projects.menu.locations"));
+    masterReport.getParameterValues().put("i8nActivitiesMenu", this.getText("projects.menu.activities"));
+    /**
+     * Menus Planning
+     */
     masterReport.getParameterValues().put("i8nOutcomesMenu", this.getText("projects.menu.contributionsCrpList"));
     masterReport.getParameterValues().put("i8nDeliverablesMenu",
       "Expected " + this.getText("projects.menu.deliverables"));
-    masterReport.getParameterValues().put("i8nActivitiesMenu", this.getText("projects.menu.activities"));
     masterReport.getParameterValues().put("i8nBudgetMenu", "Project " + this.getText("projects.menu.budget"));
     masterReport.getParameterValues().put("i8nBudgetPartnerMenu", this.getText("projects.menu.budgetByPartners"));
     masterReport.getParameterValues().put("i8nBudgetCoAsMenu", this.getText("projects.menu.budgetByCoAs"));
+
+    /**
+     * Menus Reporting
+     */
+    masterReport.getParameterValues().put("i8nOutcomesRMenu", this.getText("breadCrumb.menu.outcomes"));
+    masterReport.getParameterValues().put("i8nProjectOutcomesRMenu", this.getText("projects.menu.projectOutcomes"));
+    masterReport.getParameterValues().put("i8nCCAFSOutcomesRMenu", this.getText("projects.menu.ccafsOutcomes"));
+    masterReport.getParameterValues().put("i8nOtherContributionsRMenu",
+      this.getText("projects.menu.otherContributions"));
+    masterReport.getParameterValues().put("i8nCaseStudiesRMenu", this.getText("projects.menu.caseStudies"));
+    masterReport.getParameterValues().put("i8nProjectOutputsRMenu", this.getText("projects.menu.projectOutputs"));
+    masterReport.getParameterValues().put("i8nOverviewByMOGsRMenu", this.getText("projects.menu.overviewByMogs"));
+    masterReport.getParameterValues().put("i8nDeliverablesRMenu", this.getText("projects.menu.deliverables"));
+    masterReport.getParameterValues().put("i8nProjectHighlightsRMenu",
+      this.getText("breadCrumb.menu.projectHighlights"));
+    masterReport.getParameterValues().put("i8nLeveragesRMenu", this.getText("breadCrumb.menu.leverage"));
 
     /*
      * Description
@@ -330,9 +349,18 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     masterReport.getParameterValues().put("i8nBudgetPartnerFundingSources",
       this.getText("budgetPartner.fundingSource"));
     masterReport.getParameterValues().put("i8nBudgetPartnerBudget", this.getText("projects.menu.budget"));
+
     /*
-     * Budget by CoAs
+     * Reporting Only
      */
+
+    /*
+     * Partners Reporting
+     */
+    masterReport.getParameterValues().put("i8nPartnerRLessonsStatement",
+      this.getText("projectPartners.lessons.reporting.readText"));
+    masterReport.getParameterValues().put("i8nPartnerROverall",
+      this.getText("projectPartners.partnershipsOverall.readText"));
 
 
     return masterReport;
