@@ -83,8 +83,10 @@ public class DashboardAction extends BaseAction {
       if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin()) {
         myProjects = new ArrayList<>();
         for (ProjectPhase projectPhase : phase.getProjectPhases()) {
+          projectPhase.getProject().setProjectInfo(projectPhase.getProject().getProjecInfoPhase(this.getActualPhase()));
           myProjects.add(projectPhase.getProject());
         }
+
 
       } else {
 

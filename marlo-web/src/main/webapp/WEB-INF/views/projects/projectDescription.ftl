@@ -51,7 +51,7 @@
           <h3 class="headTitle">[@s.text name="projectDescription.title" /]</h3>  
           <div id="projectDescription" class="borderBox">
             
-            
+             <input class="projectInfo" type="hidden" name="project.projectInfo.id" value="${project.projectInfo.id}" />
             [#-- Project Title --]
             <div class="form-group">
               [@customForm.textArea name="project.projectInfo.title" i18nkey="project.title" required=true className="project-title limitWords-30" editable=editable && action.hasPermission("title") /]

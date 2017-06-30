@@ -889,7 +889,9 @@ public class ProjectDescriptionAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_INFO_RELATION);
 
       project.setActiveSince(new Date());
+      project.getProjectInfo().setModifiedBy(this.getCurrentUser());
       project.getProjectInfo().setPhase(this.getActualPhase());
+      project.getProjectInfo().setProject(project);
       project.getProjectInfo().setReporting(projectDB.getProjectInfo().getReporting());
       project.getProjectInfo().setAdministrative(projectDB.getProjectInfo().getAdministrative());
       project.getProjectInfo().setModificationJustification(this.getJustification());
