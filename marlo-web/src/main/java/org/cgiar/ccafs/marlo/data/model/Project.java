@@ -61,7 +61,8 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   @Expose
   private boolean isActive;
-
+  @Expose
+  private User modifiedBy;
 
   @Expose
   private Date activeSince;
@@ -254,15 +255,13 @@ public class Project implements java.io.Serializable, IAuditLog {
     if (obj == null) {
       return false;
     }
-    if (this.getClass() != obj.getClass()) {
-      return false;
-    }
+
     Project other = (Project) obj;
     if (id == null) {
       if (other.id != null) {
         return false;
       }
-    } else if (!id.equals(other.id)) {
+    } else if (!id.equals(other.getId())) {
       return false;
     }
     return true;
@@ -562,9 +561,7 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   @Override
   public User getModifiedBy() {
-    User u = new User();
-    u.setId(new Long(3));
-    return u;
+    return modifiedBy;
   }
 
 
@@ -617,7 +614,8 @@ public class Project implements java.io.Serializable, IAuditLog {
     if (this.getProjectInfo() != null) {
       return this.getProjectInfo();
     } else {
-      List<ProjectInfo> infos = projectInfos.stream().filter(c -> c.getPhase().getId().longValue() == phase.getId())
+      List<ProjectInfo> infos = projectInfos.stream().filter(
+        c -> c.getPhase() != null && c.getPhase().getId() != null && c.getPhase().getId().longValue() == phase.getId())
         .collect(Collectors.toList());
       if (!infos.isEmpty()) {
         this.setProjectInfo(infos.get(0));
@@ -628,10 +626,10 @@ public class Project implements java.io.Serializable, IAuditLog {
     return null;
   }
 
+
   public List<Activity> getProjectActivities() {
     return projectActivities;
   }
-
 
   public Set<ProjectBudget> getProjectBudgetCofinances() {
     return projectBudgetCofinances;
@@ -647,10 +645,10 @@ public class Project implements java.io.Serializable, IAuditLog {
     return projectBudgetsCluserActvities;
   }
 
+
   public Set<ProjectClusterActivity> getProjectClusterActivities() {
     return projectClusterActivities;
   }
-
 
   public ProjectComponentLesson getProjectComponentLesson() {
     return projectComponentLesson;
@@ -880,14 +878,15 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.closedProjectActivities = closedProjectActivities;
   }
 
+
   public void setClusterActivities(List<ProjectClusterActivity> clusterActivities) {
     this.clusterActivities = clusterActivities;
   }
 
-
   public void setCreateDate(Date createDate) {
     this.createDate = createDate;
   }
+
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
@@ -955,6 +954,10 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   public void setLocationsData(List<CountryLocationLevel> locationsData) {
     this.locationsData = locationsData;
+  }
+
+  public void setModifiedBy(User modifiedBy) {
+    this.modifiedBy = modifiedBy;
   }
 
   public void setMogs(List<IpElement> mogs) {

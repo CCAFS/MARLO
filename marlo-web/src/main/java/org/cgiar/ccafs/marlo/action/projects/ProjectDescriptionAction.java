@@ -422,8 +422,9 @@ public class ProjectDescriptionAction extends BaseAction {
 
       // We load the differences of this version with the previous version
 
-      this.setDifferences(historyComparator.getDifferences(transaction, specialList, "project"));
-
+      this.setDifferences(new ArrayList<>());
+      this.getDifferences().addAll(historyComparator.getDifferencesList(
+        history.getProjecInfoPhase(this.getActualPhase()), transaction, specialList, "project.projectInfo", "", 1));
 
       if (history != null) {
         project = history;
@@ -673,6 +674,7 @@ public class ProjectDescriptionAction extends BaseAction {
     if (this.hasPermission("canEdit")) {
 
       Project projectDB = projectManager.getProjectById(project.getId());
+      projectDB.setProjectInfo(projectDB.getProjecInfoPhase(this.getActualPhase()));
       // Load basic info project to be saved
 
       project.setActive(true);
@@ -887,10 +889,12 @@ public class ProjectDescriptionAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_INFO_RELATION);
 
       project.setActiveSince(new Date());
+      project.getProjectInfo().setPhase(this.getActualPhase());
       project.getProjectInfo().setReporting(projectDB.getProjectInfo().getReporting());
       project.getProjectInfo().setAdministrative(projectDB.getProjectInfo().getAdministrative());
       project.getProjectInfo().setModificationJustification(this.getJustification());
       projectInfoManagerManager.saveProjectInfo(project.getProjectInfo());
+      project.setModifiedBy(this.getCurrentUser());
       projectManager.saveProject(project, this.getActionName(), relationsName);
 
       Path path = this.getAutoSaveFilePath();

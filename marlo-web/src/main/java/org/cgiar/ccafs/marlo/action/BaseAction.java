@@ -1383,11 +1383,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     } else {
       if (this.getCrpSession() != null) {
         Phase phase = this.getActualPhase();
-        fieldName =
-          fieldName.replaceAll(this.getCrpSession(), fieldName + ":" + phase.getDescription() + ":" + phase.getYear());
+        String basePhase = this.getBasePermission().replaceAll(this.getCrpSession(),
+          this.getCrpSession() + ":" + phase.getDescription() + ":" + phase.getYear());
+        return securityContext.hasPermission(basePhase + ":" + fieldName) || securityContext.hasPermission(basePhase);
+      } else {
+        return securityContext.hasPermission(this.getBasePermission() + ":" + fieldName);
       }
 
-      return securityContext.hasPermission(this.getBasePermission() + ":" + fieldName);
+
     }
   }
 
