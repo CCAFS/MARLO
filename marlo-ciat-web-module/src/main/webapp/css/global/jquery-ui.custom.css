@@ -793,7 +793,4 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
 }
 
 
-table.ui-datepicker-calendar {
-    display: none;
-}
 
