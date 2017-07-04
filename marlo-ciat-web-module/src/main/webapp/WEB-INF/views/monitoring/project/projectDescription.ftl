@@ -96,8 +96,8 @@
               </div>
             </div>   
             [#-- Project Title --]
-            <div class="form-group">
-              [@customForm.textArea name="project.name" i18nkey="projectDescription.name" required=true className="project-title" editable=editable && action.hasPermission("title") /]
+            <div class="form-group metadataElement-description">
+              [@customForm.textArea name="project.name" i18nkey="projectDescription.name" required=true className="project-title metadataValue" editable=editable && action.hasPermission("title") /]
             </div>
             [#-- Project Suggested Title --]
             <div class="form-group">
@@ -109,19 +109,19 @@
             </div>            
             <div class="form-group row">  
               [#-- Start Date --]
-              <div class="col-md-4">
-                [@customForm.input name="project.startDate" i18nkey="projectDescription.startDate" type="text" disabled=!editable  required=true editable=editable /]
+              <div class="col-md-4 metadataElement-startDate">
+                [@customForm.input name="project.startDate" i18nkey="projectDescription.startDate" className="metadataValue" type="text" disabled=!editable  required=true editable=editable /]
               </div> 
               [#-- End Date --]
-              <div class="col-md-4">
-                [@customForm.input name="project.endDate" i18nkey="projectDescription.endDate" type="text" disabled=!editable required=false editable=editable /]
+              <div class="col-md-4 metadataElement-endDate">
+                [@customForm.input name="project.endDate" i18nkey="projectDescription.endDate" className="metadataValue" type="text" disabled=!editable required=false editable=editable /]
               </div>
               [#-- Extension Date --]
-              <div class="col-md-4">
-                [@customForm.input name="project.extensionDate" i18nkey="projectDescription.extensionDate" type="text" disabled=!editable required=false editable=editable /]
+              <div class="col-md-4 metadataElement-extensionDate">
+                [@customForm.input name="project.extensionDate" i18nkey="projectDescription.extensionDate" className="metadataValue"  type="text" disabled=!editable required=false editable=editable /]
               </div>
             </div>
-            <div class="form-group ">
+            <div class="form-group metadataElement-pInvestigator">
               [#-- Project contact --]
               <div class="partnerPerson-email userField" style="position: relative;">
                 <input type="hidden" class="canEditEmail" value="" />
@@ -129,23 +129,23 @@
                 <input class="userId" type="hidden" name="project.projectLeader.id" value="${(project.projectLeader.id)!}" />   
                 [#if editable]<div class="searchUser button-blue button-float">[@s.text name="form.buttons.searchUser" /]</div>[/#if]
               </div>
+              <span class="text-warning metadataSuggested"></span><br />
             </div>
             
             [#-- Budget Information --]
             <h4 class="headTitle">Budget Information</h4> 
              [#-- Original Donor --]
-            <div class="form-group">
-              [@customForm.input name="project.originalDonor" i18nkey="projectDescription.originalDonor" type="text" required=true  editable=editable/]
+            <div class="form-group metadataElement-donorName">
+              [@customForm.input name="project.originalDonor" i18nkey="projectDescription.originalDonor" className="metadataValue" type="text" required=true  editable=editable/]
             </div>
             [#-- Customer Donor --]
             <div class="form-group">
               [@customForm.input name="project.directDonor" i18nkey="projectDescription.customerDonor" type="text" required=false  editable=editable/]
             </div>
             [#-- Total Amount --]
-            <div class="form-group">
+            <div class="form-group metadataElement-donorName">
               [@customForm.input name="project.totalAmount" className="amount" i18nkey="projectDescription.totalAmount" type="text" required=true  editable=editable/]
             </div>
-           
            
              [#-- Funding source --]
             <div class="form-group ">
@@ -163,10 +163,7 @@
                 <div class="button-green addFundingSource"><span class="glyphicon glyphicon-plus-sign"></span>[@s.text name="Add a funding source" /]</div>
               </div>
               [/#if]
-            </div> 
-            
-            
-           
+            </div>  
             
             [#-- LOCATION INFORMATION --]
             <h4 class="headTitle">Location information</h4> 
@@ -272,34 +269,30 @@
             [#-- Select the cross-cutting dimension(s) to this project? --]
             <div class="form-group">
               <label for="">[@customForm.text name="projectDescription.crossCuttingDimensions" readText=!editable/] [@customForm.req required=editable/]</label>
-              <div class="">
+                [#assign crossCutingName = "project.projectCrosscutingTheme" /]
+                <div class="checkbox">
                 [#if editable]
-                  <label class="checkbox-inline"><input type="checkbox" name="project.projectCrosscutingTheme.climateChange"   id="climate"   value="true" [#if (project.projectCrosscutingTheme.climateChange)!false ]checked="checked"[/#if] > Climate Change</label>
-                  <label class="checkbox-inline"><input type="checkbox" name="project.projectCrosscutingTheme.gender"    id="gender"    value="true" [#if (project.projectCrosscutingTheme.gender)!false ]checked="checked"[/#if] > Gender</label>
-                  <label class="checkbox-inline"><input type="checkbox" name="project.projectCrosscutingTheme.youth"    id="youth"    value="true" [#if (project.projectCrosscutingTheme.youth)!false ]checked="checked"[/#if] > Youth</label>
-                  <label class="checkbox-inline"><input type="checkbox" name="project.projectCrosscutingTheme.policiesInstitutions"    id="policies"    value="true" [#if (project.projectCrosscutingTheme.policiesInstitutions)!false ]checked="checked"[/#if] > Policies and Institutions</label>
+                  <label class="col-md-3"><input type="checkbox" name="${crossCutingName}.climateChange"         id="climate"   value="true" [#if (project.projectCrosscutingTheme.climateChange)!false ]checked="checked"[/#if] > Climate Change</label>
+                  <label class="col-md-3"><input type="checkbox" name="${crossCutingName}.gender"                id="gender"    value="true" [#if (project.projectCrosscutingTheme.gender)!false ]checked="checked"[/#if] > Gender</label>
+                  <label class="col-md-3"><input type="checkbox" name="${crossCutingName}.youth"                 id="youth"    value="true" [#if (project.projectCrosscutingTheme.youth)!false ]checked="checked"[/#if] > Youth</label>
+                  <label class="col-md-3"><input type="checkbox" name="${crossCutingName}.policiesInstitutions"  id="policies"    value="true" [#if (project.projectCrosscutingTheme.policiesInstitutions)!false ]checked="checked"[/#if] > Policies and Institutions</label>
+                  <label class="col-md-3"><input type="checkbox" name="${crossCutingName}.capacityDevelopment"   id="capacity" value="true" [#if (project.projectCrosscutingTheme.capacityDevelopment)!false ]checked="checked"[/#if] > Capacity Development</label>
+                  <label class="col-md-3"><input type="checkbox" name="${crossCutingName}.bigData"               id="bigData" value="true" [#if (project.projectCrosscutingTheme.bigData)!false ]checked="checked"[/#if] > Big Data</label>
+                  <label class="col-md-3"><input type="checkbox" name="${crossCutingName}.impactAssessment"      id="impactAssessment" value="true" [#if (project.projectCrosscutingTheme.impactAssessment)!false ]checked="checked"[/#if] > Impact Assessment</label>
+                  <label class="col-md-3"><input type="checkbox" name="${crossCutingName}.na"                    id="na"       value="true" [#if (project.projectCrosscutingTheme.na)!false ]checked="checked"[/#if] > N/A</label>
+                  <div class="clearfix"></div>
                 [#else]
                   [#if (project.projectCrosscutingTheme.climateChange)!false ]<p class="checked"> Climate Change</p>[/#if]
                   [#if (project.projectCrosscutingTheme.gender)!false ]<p class="checked"> Gender</p>[/#if]
                   [#if (project.projectCrosscutingTheme.youth)!false ]<p class="checked"> Youth</p>[/#if]
-                  [#if (project.projectCrosscutingTheme.policiesInstitutions)!false ]<p class="checked"> Policies and Institutions</p>[/#if]                      
-                [/#if]
-              </div>
-              <div class="">
-                [#if editable]
-                  <label class="checkbox-inline"><input type="checkbox" name="project.projectCrosscutingTheme.capacityDevelopment" id="capacity" value="true" [#if (project.projectCrosscutingTheme.capacityDevelopment)!false ]checked="checked"[/#if] > Capacity Development</label>
-                  <label class="checkbox-inline"><input type="checkbox" name="project.projectCrosscutingTheme.bigData" id="bigData" value="true" [#if (project.projectCrosscutingTheme.bigData)!false ]checked="checked"[/#if] > Big Data</label>
-                  <label class="checkbox-inline"><input type="checkbox" name="project.projectCrosscutingTheme.impactAssessment" id="impactAssessment" value="true" [#if (project.projectCrosscutingTheme.impactAssessment)!false ]checked="checked"[/#if] > Impact Assessment</label>
-                  <label class="checkbox-inline"><input type="checkbox" name="project.projectCrosscutingTheme.na"       id="na"       value="true" [#if (project.projectCrosscutingTheme.na)!false ]checked="checked"[/#if] > N/A</label>
-                [#else]
+                  [#if (project.projectCrosscutingTheme.policiesInstitutions)!false ]<p class="checked"> Policies and Institutions</p>[/#if]
                   [#if (project.projectCrosscutingTheme.capacityDevelopment)!false ]<p class="checked"> Capacity Development</p>[/#if]
                   [#if (project.projectCrosscutingTheme.bigData)!false ]<p class="checked"> Big Data</p>[/#if]
                   [#if (project.projectCrosscutingTheme.impactAssessment)!false ]<p class="checked"> Impact Assessment</p>[/#if]
                   [#if (project.projectCrosscutingTheme.na)!false ]<p class="checked"> N/A</p>[/#if]                     
                 [/#if]
-              </div>
+                </div>
             </div>
-           
            
           [#-- Outputs --]
           <div class="form-group">      
