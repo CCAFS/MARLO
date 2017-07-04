@@ -17,22 +17,22 @@ package org.cgiar.ccafs.marlo.action.impactpathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConfig;
-import org.cgiar.ccafs.marlo.data.model.CenterArea;
+import org.cgiar.ccafs.marlo.data.manager.ICenterAreaManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterSectionStatusManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterTopicManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Center;
+import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterLeader;
 import org.cgiar.ccafs.marlo.data.model.CenterLeaderTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
-import org.cgiar.ccafs.marlo.data.model.CenterTopic;
 import org.cgiar.ccafs.marlo.data.model.CenterSectionStatus;
+import org.cgiar.ccafs.marlo.data.model.CenterTopic;
 import org.cgiar.ccafs.marlo.data.model.User;
-import org.cgiar.ccafs.marlo.data.service.ICenterManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterProgramManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterAreaManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterOutcomeManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterTopicManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterSectionStatusManager;
-import org.cgiar.ccafs.marlo.data.service.IUserManager;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 
 import java.util.ArrayList;
@@ -67,7 +67,7 @@ public class OutcomesListAction extends BaseAction {
   private CenterProgram selectedProgram;
   private CenterArea selectedResearchArea;
   private CenterTopic selectedResearchTopic;
-  private IUserManager userService;
+  private UserManager userService;
   private ICenterSectionStatusManager sectionStatusService;
 
   private long topicID;
@@ -78,7 +78,7 @@ public class OutcomesListAction extends BaseAction {
 
   @Inject
   public OutcomesListAction(APConfig config, ICenterManager centerService, ICenterProgramManager programService,
-    ICenterAreaManager researchAreaService, IUserManager userService, ICenterTopicManager researchTopicService,
+    ICenterAreaManager researchAreaService, UserManager userService, ICenterTopicManager researchTopicService,
     ICenterOutcomeManager outcomeService, ICenterSectionStatusManager sectionStatusService) {
     super(config);
     this.centerService = centerService;
@@ -243,10 +243,11 @@ public class OutcomesListAction extends BaseAction {
         } catch (Exception ex) {
           User user = userService.getUser(this.getCurrentUser().getId());
 
-          List<CenterLeader> userAreaLeads = new ArrayList<>(user.getResearchLeaders().stream()
-            .filter(rl -> rl.isActive()
-              && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue())
-            .collect(Collectors.toList()));
+          List<CenterLeader> userAreaLeads =
+            new ArrayList<>(user.getResearchLeaders().stream()
+              .filter(rl -> rl.isActive()
+                && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue())
+              .collect(Collectors.toList()));
           if (!userAreaLeads.isEmpty()) {
             areaID = userAreaLeads.get(0).getResearchArea().getId();
           } else {

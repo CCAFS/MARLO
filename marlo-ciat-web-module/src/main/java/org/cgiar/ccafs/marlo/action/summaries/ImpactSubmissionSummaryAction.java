@@ -17,17 +17,17 @@ package org.cgiar.ccafs.marlo.action.summaries;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConfig;
 import org.cgiar.ccafs.marlo.config.PentahoListener;
-import org.cgiar.ccafs.marlo.data.model.ImpactPathwayCyclesEnum;
+import org.cgiar.ccafs.marlo.data.manager.ICenterCycleManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.model.CenterCycle;
 import org.cgiar.ccafs.marlo.data.model.CenterImpact;
 import org.cgiar.ccafs.marlo.data.model.CenterImpactObjective;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
-import org.cgiar.ccafs.marlo.data.model.CenterTopic;
 import org.cgiar.ccafs.marlo.data.model.CenterSubmission;
-import org.cgiar.ccafs.marlo.data.service.ICenterProgramManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterCycleManager;
+import org.cgiar.ccafs.marlo.data.model.CenterTopic;
+import org.cgiar.ccafs.marlo.data.model.ImpactPathwayCyclesEnum;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 
 import java.io.ByteArrayInputStream;
@@ -338,7 +338,8 @@ public class ImpactSubmissionSummaryAction extends BaseAction implements Summary
       impactSubmission = "Submitted on " + submissionDate + " (" + fisrtSubmission.getResearchCycle().getName()
         + " cycle " + fisrtSubmission.getYear() + ")";
     } else {
-      impactSubmission = "CenterSubmission for " + researchCycle.getName() + " cycle " + this.getYear() + ": &lt;pending&gt;";
+      impactSubmission =
+        "CenterSubmission for " + researchCycle.getName() + " cycle " + this.getYear() + ": &lt;pending&gt;";
     }
 
     // Get CIAT imgage URL from repo

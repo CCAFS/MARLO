@@ -17,14 +17,14 @@ package org.cgiar.ccafs.marlo.action.summaries;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConfig;
 import org.cgiar.ccafs.marlo.config.PentahoListener;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
-import org.cgiar.ccafs.marlo.data.model.CenterProject;
-import org.cgiar.ccafs.marlo.data.model.CenterProjectOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
+import org.cgiar.ccafs.marlo.data.model.CenterProject;
+import org.cgiar.ccafs.marlo.data.model.CenterProjectOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
-import org.cgiar.ccafs.marlo.data.service.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 
 import java.io.ByteArrayInputStream;
@@ -351,8 +351,8 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
         String projectOutputs = "";
         for (CenterOutput researchOutput : researchOutcome.getResearchOutputs().stream().filter(ro -> ro.isActive())
           .collect(Collectors.toList())) {
-          for (CenterProjectOutput projectOutput : researchOutput.getProjectOutputs().stream().filter(po -> po.isActive())
-            .collect(Collectors.toList())) {
+          for (CenterProjectOutput projectOutput : researchOutput.getProjectOutputs().stream()
+            .filter(po -> po.isActive()).collect(Collectors.toList())) {
             if (projectOutputs.isEmpty()) {
               projectOutputs =
                 "P" + projectOutput.getProject().getId() + " - " + projectOutput.getResearchOutput().getComposedName();

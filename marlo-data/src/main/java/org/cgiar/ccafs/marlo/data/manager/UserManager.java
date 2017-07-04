@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -28,6 +28,17 @@ import com.google.inject.ImplementedBy;
  */
 @ImplementedBy(UserManagerImp.class)
 public interface UserManager {
+
+  /**
+   * This method gets the data of a Permissions identified with a given id.
+   * 
+   * @param userId: the user id to search permissions
+   * @param center: the center acronym that user is loggin
+   * @return a List with string permissions
+   */
+
+
+  public List<String> getCenterPermission(int userId, String crp);
 
   /**
    * This method gets the data of a Permissions identified with a given id.

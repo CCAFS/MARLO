@@ -16,8 +16,8 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.data.dao.ICenterMilestoneDAO;
+import org.cgiar.ccafs.marlo.data.manager.ICenterMilestoneManager;
 import org.cgiar.ccafs.marlo.data.model.CenterMilestone;
-import org.cgiar.ccafs.marlo.data.service.ICenterMilestoneManager;
 
 import java.util.List;
 

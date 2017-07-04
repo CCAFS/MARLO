@@ -17,10 +17,10 @@ package org.cgiar.ccafs.marlo.action.summaries;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConfig;
 import org.cgiar.ccafs.marlo.config.PentahoListener;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.model.CenterImpact;
 import org.cgiar.ccafs.marlo.data.model.CenterImpactObjective;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
-import org.cgiar.ccafs.marlo.data.service.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 
 import java.io.ByteArrayInputStream;

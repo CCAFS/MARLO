@@ -17,16 +17,16 @@ package org.cgiar.ccafs.marlo.action.json.impactpathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConfig;
-import org.cgiar.ccafs.marlo.data.model.ImpactPathwaySectionsEnum;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterSectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.CenterImpact;
 import org.cgiar.ccafs.marlo.data.model.CenterImpactObjective;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
-import org.cgiar.ccafs.marlo.data.model.CenterTopic;
 import org.cgiar.ccafs.marlo.data.model.CenterSectionStatus;
-import org.cgiar.ccafs.marlo.data.service.ICenterProgramManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterSectionStatusManager;
+import org.cgiar.ccafs.marlo.data.model.CenterTopic;
+import org.cgiar.ccafs.marlo.data.model.ImpactPathwaySectionsEnum;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 import org.cgiar.ccafs.marlo.validation.impactpathway.OutcomesValidator;
 import org.cgiar.ccafs.marlo.validation.impactpathway.OutputsValidator;
@@ -73,8 +73,8 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
 
   @Inject
   public ValidateImpactPathwaySectionAction(APConfig config, ICenterProgramManager programServcie,
-    ICenterSectionStatusManager sectionStatusService, OutcomesValidator outcomeValidator, OutputsValidator outputValidator,
-    ProgramImpactsValidator impactValidator, ResearchTopicsValidator topicValidator) {
+    ICenterSectionStatusManager sectionStatusService, OutcomesValidator outcomeValidator,
+    OutputsValidator outputValidator, ProgramImpactsValidator impactValidator, ResearchTopicsValidator topicValidator) {
     super(config);
     this.programServcie = programServcie;
     this.sectionStatusService = sectionStatusService;

@@ -17,13 +17,13 @@ package org.cgiar.ccafs.marlo.action.home;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConfig;
+import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterUserManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.ADLoginMessages;
-import org.cgiar.ccafs.marlo.data.model.CenterCustomParameter;
 import org.cgiar.ccafs.marlo.data.model.Center;
+import org.cgiar.ccafs.marlo.data.model.CenterCustomParameter;
 import org.cgiar.ccafs.marlo.data.model.User;
-import org.cgiar.ccafs.marlo.data.service.ICenterManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterUserManager;
-import org.cgiar.ccafs.marlo.data.service.impl.UserManager;
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 

@@ -16,16 +16,16 @@
 package org.cgiar.ccafs.marlo.interceptor.impactpathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.data.model.CenterArea;
+import org.cgiar.ccafs.marlo.data.manager.ICenterAreaManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Center;
+import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterLeader;
 import org.cgiar.ccafs.marlo.data.model.CenterLeaderTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.User;
-import org.cgiar.ccafs.marlo.data.service.ICenterManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterProgramManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterAreaManager;
-import org.cgiar.ccafs.marlo.data.service.IUserManager;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 
@@ -47,7 +47,7 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
 
   private static final long serialVersionUID = 1217563340228252130L;
   private ICenterManager centerService;
-  private IUserManager userService;
+  private UserManager userService;
   private ICenterProgramManager programService;
   private ICenterAreaManager areaServcie;
 
@@ -58,7 +58,7 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
   private long areaID = -1;
 
   @Inject
-  public EditImpactPathwayInterceptor(ICenterManager centerService, IUserManager userService,
+  public EditImpactPathwayInterceptor(ICenterManager centerService, UserManager userService,
     ICenterProgramManager programService, ICenterAreaManager areaServcie) {
     this.centerService = centerService;
     this.userService = userService;
@@ -75,12 +75,10 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
       User user = (User) session.get(APConstants.SESSION_USER);
       user = userService.getUser(user.getId());
 
-      List<CenterLeader> userAreaLeads =
-        new ArrayList<>(
-          user.getResearchLeaders().stream()
-            .filter(rl -> rl.isActive()
-              && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue())
-            .collect(Collectors.toList()));
+      List<CenterLeader> userAreaLeads = new ArrayList<>(user.getResearchLeaders().stream()
+        .filter(
+          rl -> rl.isActive() && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue())
+        .collect(Collectors.toList()));
       if (!userAreaLeads.isEmpty()) {
         areaID = userAreaLeads.get(0).getResearchArea().getId();
         CenterArea area = areaServcie.find(areaID);
@@ -88,10 +86,11 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
           area.getResearchPrograms().stream().filter(rp -> rp.isActive()).collect(Collectors.toList());
         programID = programs.get(0).getId();
       } else {
-        List<CenterLeader> userProgramLeads = new ArrayList<>(user.getResearchLeaders().stream()
-          .filter(rl -> rl.isActive()
-            && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_PROGRAM_LEADER_TYPE.getValue())
-          .collect(Collectors.toList()));
+        List<CenterLeader> userProgramLeads =
+          new ArrayList<>(user.getResearchLeaders().stream()
+            .filter(rl -> rl.isActive()
+              && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_PROGRAM_LEADER_TYPE.getValue())
+            .collect(Collectors.toList()));
         if (!userProgramLeads.isEmpty()) {
           programID = userProgramLeads.get(0).getResearchProgram().getId();
         } else {

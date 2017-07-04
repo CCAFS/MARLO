@@ -16,10 +16,10 @@
 package org.cgiar.ccafs.marlo.interceptor;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterUserManager;
 import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.User;
-import org.cgiar.ccafs.marlo.data.service.ICenterManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterUserManager;
 import org.cgiar.ccafs.marlo.security.UserToken;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 

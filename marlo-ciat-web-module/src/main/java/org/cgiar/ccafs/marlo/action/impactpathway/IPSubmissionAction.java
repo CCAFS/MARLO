@@ -18,17 +18,17 @@ package org.cgiar.ccafs.marlo.action.impactpathway;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.action.summaries.ImpactSubmissionSummaryAction;
 import org.cgiar.ccafs.marlo.config.APConfig;
-import org.cgiar.ccafs.marlo.data.model.ImpactPathwayCyclesEnum;
-import org.cgiar.ccafs.marlo.data.model.CenterArea;
+import org.cgiar.ccafs.marlo.data.manager.ICenterCycleManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterSubmissionManager;
 import org.cgiar.ccafs.marlo.data.model.Center;
+import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterCycle;
 import org.cgiar.ccafs.marlo.data.model.CenterLeader;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterSubmission;
-import org.cgiar.ccafs.marlo.data.service.ICenterManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterProgramManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterCycleManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterSubmissionManager;
+import org.cgiar.ccafs.marlo.data.model.ImpactPathwayCyclesEnum;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 import org.cgiar.ccafs.marlo.utils.SendMail;
@@ -74,8 +74,9 @@ public class IPSubmissionAction extends BaseAction {
   ImpactSubmissionSummaryAction impactSubmissionSummaryAction;
 
   @Inject
-  public IPSubmissionAction(APConfig config, ICenterSubmissionManager submissionService, ICenterProgramManager programService,
-    ICenterCycleManager cycleService, ICenterManager centerService, SendMail sendMail) {
+  public IPSubmissionAction(APConfig config, ICenterSubmissionManager submissionService,
+    ICenterProgramManager programService, ICenterCycleManager cycleService, ICenterManager centerService,
+    SendMail sendMail) {
     super(config);
     this.programService = programService;
     this.submissionService = submissionService;

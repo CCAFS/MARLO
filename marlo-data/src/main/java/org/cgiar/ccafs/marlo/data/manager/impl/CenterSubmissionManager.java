@@ -16,8 +16,8 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.data.dao.ICenterSubmissionDAO;
+import org.cgiar.ccafs.marlo.data.manager.ICenterSubmissionManager;
 import org.cgiar.ccafs.marlo.data.model.CenterSubmission;
-import org.cgiar.ccafs.marlo.data.service.ICenterSubmissionManager;
 
 import java.util.List;
 

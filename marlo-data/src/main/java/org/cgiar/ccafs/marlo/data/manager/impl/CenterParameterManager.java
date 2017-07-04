@@ -16,8 +16,8 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.data.dao.ICenterParameterDAO;
+import org.cgiar.ccafs.marlo.data.manager.ICenterParameterManager;
 import org.cgiar.ccafs.marlo.data.model.CenterParameter;
-import org.cgiar.ccafs.marlo.data.service.ICenterParameterManager;
 
 import java.util.List;
 

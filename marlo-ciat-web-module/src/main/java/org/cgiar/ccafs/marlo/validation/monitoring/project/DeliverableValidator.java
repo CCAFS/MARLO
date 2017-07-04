@@ -16,13 +16,13 @@
 package org.cgiar.ccafs.marlo.validation.monitoring.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
+import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverableDocument;
+import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionsEnum;
-import org.cgiar.ccafs.marlo.data.model.Center;
-import org.cgiar.ccafs.marlo.data.model.CenterProgram;
-import org.cgiar.ccafs.marlo.data.service.ICenterManager;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
@@ -54,8 +54,8 @@ public class DeliverableValidator extends BaseValidator {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-  public void validate(BaseAction baseAction, CenterDeliverable deliverable, CenterProject project, CenterProgram selectedProgram,
-    boolean saving) {
+  public void validate(BaseAction baseAction, CenterDeliverable deliverable, CenterProject project,
+    CenterProgram selectedProgram, boolean saving) {
 
     baseAction.setInvalidFields(new HashMap<>());
 

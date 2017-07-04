@@ -19,16 +19,16 @@
 package org.cgiar.ccafs.marlo.action;
 
 import org.cgiar.ccafs.marlo.config.APConfig;
+import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterRoleManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterUserRoleManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterRole;
 import org.cgiar.ccafs.marlo.data.model.User;
-import org.cgiar.ccafs.marlo.data.service.IAuditLogManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterProgramManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterRoleManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterUserRoleManager;
-import org.cgiar.ccafs.marlo.data.service.IUserManager;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 import org.cgiar.ccafs.marlo.utils.SendMail;
 
@@ -53,12 +53,12 @@ public class CenterActivitiesAction extends BaseAction {
   private ICenterRoleManager roleService;
   private ICenterUserRoleManager userRoleService;
   private ICenterManager crpService;
-  private IUserManager userService;
+  private UserManager userService;
   private ICenterProgramManager programService;
   private CenterRole role;
   private long clRol;
   private CenterProgram selectedProgram;
-  private IAuditLogManager auditLogService;
+  private AuditLogManager auditLogService;
   private Center loggedCrp;
   private CenterRole roleCl;
   private List<CenterProgram> programs;
@@ -71,8 +71,8 @@ public class CenterActivitiesAction extends BaseAction {
 
   @Inject
   public CenterActivitiesAction(APConfig config, ICenterRoleManager roleManager, ICenterUserRoleManager userRoleManager,
-    ICenterManager crpManager, IUserManager userManager, ICenterProgramManager crpProgramService,
-    IAuditLogManager auditLogManager, SendMail sendMail) {
+    ICenterManager crpManager, UserManager userManager, ICenterProgramManager crpProgramService,
+    AuditLogManager auditLogManager, SendMail sendMail) {
     super(config);
     this.roleService = roleManager;
     this.userRoleService = userRoleManager;

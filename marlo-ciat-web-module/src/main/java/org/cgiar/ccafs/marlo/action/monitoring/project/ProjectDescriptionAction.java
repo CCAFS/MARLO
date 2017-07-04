@@ -17,6 +17,19 @@ package org.cgiar.ccafs.marlo.action.monitoring.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConfig;
+import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterFundingSourceTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterOutputManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProjectCrosscutingThemeManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProjectFundingSourceManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProjectLocationManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProjectOutputManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProjectTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterFundingSourceType;
@@ -36,19 +49,6 @@ import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.OutcomeOutputs;
 import org.cgiar.ccafs.marlo.data.model.TopicOutcomes;
 import org.cgiar.ccafs.marlo.data.model.User;
-import org.cgiar.ccafs.marlo.data.service.IAuditLogManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterFundingSourceTypeManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterOutputManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterProjectCrosscutingThemeManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterProjectFundingSourceManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterProjectLocationManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterProjectOutputManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterProjectManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterProjectTypeManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterManager;
-import org.cgiar.ccafs.marlo.data.service.ICrpManager;
-import org.cgiar.ccafs.marlo.data.service.ILocElementManager;
-import org.cgiar.ccafs.marlo.data.service.IUserManager;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -85,7 +85,7 @@ public class ProjectDescriptionAction extends BaseAction {
   private ICenterProjectManager projectService;
 
 
-  private IUserManager userService;
+  private UserManager userService;
 
   private ICenterOutputManager outputService;
 
@@ -97,7 +97,7 @@ public class ProjectDescriptionAction extends BaseAction {
 
   private ICenterProjectLocationManager projectLocationService;
 
-  private ILocElementManager locElementService;
+  private LocElementManager locElementService;
 
 
   private ICenterProjectFundingSourceManager projectFundingSourceService;
@@ -105,13 +105,13 @@ public class ProjectDescriptionAction extends BaseAction {
   private ICenterProjectCrosscutingThemeManager projectCrosscutingThemeService;
 
 
-  private IAuditLogManager auditLogService;
+  private AuditLogManager auditLogService;
 
 
   private ProjectDescriptionValidator validator;
 
 
-  private ICrpManager crpService;
+  private CrpManager crpService;
 
   private ICenterProjectTypeManager projectTypeService;
 
@@ -145,12 +145,12 @@ public class ProjectDescriptionAction extends BaseAction {
 
   @Inject
   public ProjectDescriptionAction(APConfig config, ICenterManager centerService, ICenterProjectManager projectService,
-    IUserManager userService, ICenterFundingSourceTypeManager fundingSourceService,
+    UserManager userService, ICenterFundingSourceTypeManager fundingSourceService,
     ProjectDescriptionValidator validator, ICenterOutputManager outputService,
     ICenterProjectOutputManager projectOutputService, ICenterProjectFundingSourceManager projectFundingSourceService,
     ICenterProjectCrosscutingThemeManager projectCrosscutingThemeService,
-    ICenterProjectLocationManager projectLocationService, ILocElementManager locElementService,
-    IAuditLogManager auditLogService, ICrpManager crpService, ICenterProjectTypeManager projectTypeService) {
+    ICenterProjectLocationManager projectLocationService, LocElementManager locElementService,
+    AuditLogManager auditLogService, CrpManager crpService, ICenterProjectTypeManager projectTypeService) {
     super(config);
     this.centerService = centerService;
     this.projectService = projectService;

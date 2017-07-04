@@ -16,8 +16,8 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.data.dao.ICenterRegionDAO;
+import org.cgiar.ccafs.marlo.data.manager.ICenterRegionManager;
 import org.cgiar.ccafs.marlo.data.model.CenterRegion;
-import org.cgiar.ccafs.marlo.data.service.ICenterRegionManager;
 
 import java.util.List;
 

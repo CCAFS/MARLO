@@ -17,11 +17,11 @@ package org.cgiar.ccafs.marlo.action.json.monitoring.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConfig;
+import org.cgiar.ccafs.marlo.data.manager.ICenterOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProjectManager;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.TopicOutcomes;
-import org.cgiar.ccafs.marlo.data.service.ICenterOutcomeManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterProjectManager;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 import org.cgiar.ccafs.marlo.utils.SendMail;
 

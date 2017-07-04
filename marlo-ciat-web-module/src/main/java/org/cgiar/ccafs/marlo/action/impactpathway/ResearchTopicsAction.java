@@ -20,19 +20,19 @@ package org.cgiar.ccafs.marlo.action.impactpathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConfig;
-import org.cgiar.ccafs.marlo.data.model.CenterArea;
+import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterAreaManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterTopicManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Center;
+import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterLeader;
 import org.cgiar.ccafs.marlo.data.model.CenterLeaderTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
 import org.cgiar.ccafs.marlo.data.model.User;
-import org.cgiar.ccafs.marlo.data.service.IAuditLogManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterProgramManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterAreaManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterTopicManager;
-import org.cgiar.ccafs.marlo.data.service.IUserManager;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -73,8 +73,8 @@ public class ResearchTopicsAction extends BaseAction {
 
   private ICenterAreaManager researchAreaService;
   private ICenterTopicManager researchTopicService;
-  private IAuditLogManager auditLogService;
-  private IUserManager userService;
+  private AuditLogManager auditLogService;
+  private UserManager userService;
   private ResearchTopicsValidator validator;
   // Local Variables
   private Center loggedCenter;
@@ -91,8 +91,8 @@ public class ResearchTopicsAction extends BaseAction {
 
   @Inject
   public ResearchTopicsAction(APConfig config, ICenterManager centerService, ICenterProgramManager programService,
-    ICenterAreaManager researchAreaService, ICenterTopicManager researchTopicService, IUserManager userService,
-    ResearchTopicsValidator validator, IAuditLogManager auditLogService) {
+    ICenterAreaManager researchAreaService, ICenterTopicManager researchTopicService, UserManager userService,
+    ResearchTopicsValidator validator, AuditLogManager auditLogService) {
     super(config);
     this.centerService = centerService;
     this.programService = programService;
@@ -199,10 +199,11 @@ public class ResearchTopicsAction extends BaseAction {
         } catch (Exception ex) {
           User user = userService.getUser(this.getCurrentUser().getId());
 
-          List<CenterLeader> userAreaLeads = new ArrayList<>(user.getResearchLeaders().stream()
-            .filter(rl -> rl.isActive()
-              && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue())
-            .collect(Collectors.toList()));
+          List<CenterLeader> userAreaLeads =
+            new ArrayList<>(user.getResearchLeaders().stream()
+              .filter(rl -> rl.isActive()
+                && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue())
+              .collect(Collectors.toList()));
           if (!userAreaLeads.isEmpty()) {
             areaID = userAreaLeads.get(0).getResearchArea().getId();
           } else {

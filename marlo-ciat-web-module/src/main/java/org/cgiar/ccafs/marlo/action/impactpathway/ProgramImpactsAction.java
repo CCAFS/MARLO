@@ -20,10 +20,24 @@ package org.cgiar.ccafs.marlo.action.impactpathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConfig;
+import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterAreaManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterBeneficiaryManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterBeneficiaryTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterImpactBeneficiaryManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterImpactManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterImpactObjectiveManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterImpactStatementManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterLeaderManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterObjectiveManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterRegionManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.model.Center;
+import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterBeneficiary;
 import org.cgiar.ccafs.marlo.data.model.CenterBeneficiaryType;
-import org.cgiar.ccafs.marlo.data.model.CenterArea;
-import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterImpact;
 import org.cgiar.ccafs.marlo.data.model.CenterImpactBeneficiary;
 import org.cgiar.ccafs.marlo.data.model.CenterImpactObjective;
@@ -34,20 +48,6 @@ import org.cgiar.ccafs.marlo.data.model.CenterObjective;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterRegion;
 import org.cgiar.ccafs.marlo.data.model.User;
-import org.cgiar.ccafs.marlo.data.service.IAuditLogManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterBeneficiaryManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterBeneficiaryTypeManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterProgramManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterAreaManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterImpactBeneficiaryManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterImpactObjectiveManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterImpactManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterImpactStatementManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterLeaderManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterObjectiveManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterRegionManager;
-import org.cgiar.ccafs.marlo.data.service.IUserManager;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -92,11 +92,11 @@ public class ProgramImpactsAction extends BaseAction {
   private ICenterBeneficiaryTypeManager beneficiaryTypeService;
   private ICenterImpactBeneficiaryManager impactBeneficiaryService;
   private ICenterAreaManager researchAreaService;
-  private IUserManager userService;
+  private UserManager userService;
   private ICenterObjectiveManager objectiveService;
   private ICenterImpactManager impactService;
   private ICenterImpactObjectiveManager impactObjectiveService;
-  private IAuditLogManager auditLogService;
+  private AuditLogManager auditLogService;
   private ICenterBeneficiaryManager beneficiaryService;
   private Center loggedCenter;
   private List<CenterArea> researchAreas;
@@ -116,10 +116,10 @@ public class ProgramImpactsAction extends BaseAction {
 
   @Inject
   public ProgramImpactsAction(APConfig config, ICenterManager centerService, ICenterProgramManager programService,
-    ICenterAreaManager researchAreaService, ICenterLeaderManager researchLeaderService, IUserManager userService,
+    ICenterAreaManager researchAreaService, ICenterLeaderManager researchLeaderService, UserManager userService,
     ICenterObjectiveManager objectiveService, ICenterImpactManager impactService,
     ICenterImpactObjectiveManager impactObjectiveService, ProgramImpactsValidator validator,
-    IAuditLogManager auditLogService, ICenterRegionManager regionService,
+    AuditLogManager auditLogService, ICenterRegionManager regionService,
     ICenterBeneficiaryTypeManager beneficiaryTypeService, ICenterImpactBeneficiaryManager impactBeneficiaryService,
     ICenterBeneficiaryManager beneficiaryService, ICenterImpactStatementManager statementService) {
     super(config);
@@ -265,10 +265,11 @@ public class ProgramImpactsAction extends BaseAction {
         } catch (Exception ex) {
           User user = userService.getUser(this.getCurrentUser().getId());
 
-          List<CenterLeader> userAreaLeads = new ArrayList<>(user.getResearchLeaders().stream()
-            .filter(rl -> rl.isActive()
-              && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue())
-            .collect(Collectors.toList()));
+          List<CenterLeader> userAreaLeads =
+            new ArrayList<>(user.getResearchLeaders().stream()
+              .filter(rl -> rl.isActive()
+                && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue())
+              .collect(Collectors.toList()));
           if (!userAreaLeads.isEmpty()) {
             areaID = userAreaLeads.get(0).getResearchArea().getId();
           } else {
@@ -704,7 +705,8 @@ public class ProgramImpactsAction extends BaseAction {
 
           impactBeneficiaryNew.setResearchRegion(region);
 
-          CenterBeneficiary beneficiary = beneficiaryService.getBeneficiaryById(impactBeneficiary.getBeneficiary().getId());
+          CenterBeneficiary beneficiary =
+            beneficiaryService.getBeneficiaryById(impactBeneficiary.getBeneficiary().getId());
 
           impactBeneficiaryNew.setBeneficiary(beneficiary);
 
@@ -718,7 +720,8 @@ public class ProgramImpactsAction extends BaseAction {
             impactBeneficiaryService.getResearchImpactBeneficiaryById(impactBeneficiary.getId());
 
           CenterRegion region = regionService.getResearchRegionById(impactBeneficiary.getResearchRegion().getId());
-          CenterBeneficiary beneficiary = beneficiaryService.getBeneficiaryById(impactBeneficiary.getBeneficiary().getId());
+          CenterBeneficiary beneficiary =
+            beneficiaryService.getBeneficiaryById(impactBeneficiary.getBeneficiary().getId());
 
           if (impactBeneficiaryPrew.getResearchRegion() != null) {
             if (!impactBeneficiaryPrew.getResearchRegion().equals(region)) {

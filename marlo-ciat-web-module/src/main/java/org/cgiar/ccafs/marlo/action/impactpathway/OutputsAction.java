@@ -20,21 +20,21 @@ package org.cgiar.ccafs.marlo.action.impactpathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConfig;
-import org.cgiar.ccafs.marlo.data.model.CenterNextuserType;
-import org.cgiar.ccafs.marlo.data.model.CenterArea;
+import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterNextuserTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterOutputManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterOutputsNextUserManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.model.Center;
+import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterLeader;
+import org.cgiar.ccafs.marlo.data.model.CenterNextuserType;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterOutputsNextUser;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
-import org.cgiar.ccafs.marlo.data.service.IAuditLogManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterNextuserTypeManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterProgramManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterOutputManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterOutputsNextUserManager;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -72,7 +72,7 @@ public class OutputsAction extends BaseAction {
   private ICenterManager centerService;
 
 
-  private IAuditLogManager auditLogService;
+  private AuditLogManager auditLogService;
 
 
   private ICenterProgramManager programService;
@@ -105,7 +105,7 @@ public class OutputsAction extends BaseAction {
    * @param config
    */
   @Inject
-  public OutputsAction(APConfig config, ICenterManager centerService, IAuditLogManager auditLogService,
+  public OutputsAction(APConfig config, ICenterManager centerService, AuditLogManager auditLogService,
     ICenterProgramManager programService, ICenterOutputManager outputService, OutputsValidator validator,
     ICenterNextuserTypeManager nextUserService, ICenterOutputsNextUserManager outputNextUserService) {
     super(config);
@@ -286,7 +286,8 @@ public class OutputsAction extends BaseAction {
             List<CenterOutputsNextUser> ouputNextUsers = new ArrayList<>(output.getNextUsers());
             List<CenterOutputsNextUser> autoSaveOutputNextrUsers = new ArrayList<>();
             for (CenterOutputsNextUser outputNextUser : ouputNextUsers) {
-              CenterNextuserType nextuserType = nextUserService.getNextuserTypeById(outputNextUser.getNextuserType().getId());
+              CenterNextuserType nextuserType =
+                nextUserService.getNextuserTypeById(outputNextUser.getNextuserType().getId());
 
               CenterOutputsNextUser autoSaveOutputNextUser = new CenterOutputsNextUser();
 
@@ -419,7 +420,8 @@ public class OutputsAction extends BaseAction {
           nextUserNew.setModificationJustification("");
 
           nextUserNew.setResearchOutput(outputSave);
-          CenterNextuserType nextuserType = nextUserService.getNextuserTypeById(outputNextUser.getNextuserType().getId());
+          CenterNextuserType nextuserType =
+            nextUserService.getNextuserTypeById(outputNextUser.getNextuserType().getId());
           nextUserNew.setNextuserType(nextuserType);
           outputNextUserService.saveResearchOutputsNextUser(nextUserNew);
 
@@ -429,7 +431,8 @@ public class OutputsAction extends BaseAction {
           CenterOutputsNextUser nextUserPrev =
             outputNextUserService.getResearchOutputsNextUserById(outputNextUser.getId());
 
-          CenterNextuserType nextuserType = nextUserService.getNextuserTypeById(outputNextUser.getNextuserType().getId());
+          CenterNextuserType nextuserType =
+            nextUserService.getNextuserTypeById(outputNextUser.getNextuserType().getId());
 
           if (nextUserPrev.getNextuserType() != null) {
             if (!nextUserPrev.getNextuserType().equals(nextuserType)) {

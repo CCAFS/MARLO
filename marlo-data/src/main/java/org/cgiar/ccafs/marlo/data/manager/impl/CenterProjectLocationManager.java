@@ -16,8 +16,8 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.data.dao.ICenterProjectLocationDAO;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProjectLocationManager;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectLocation;
-import org.cgiar.ccafs.marlo.data.service.ICenterProjectLocationManager;
 
 import java.util.List;
 
@@ -78,7 +78,8 @@ public class CenterProjectLocationManager implements ICenterProjectLocationManag
   }
 
   @Override
-  public long saveProjectLocation(CenterProjectLocation projectLocation, String actionName, List<String> relationsName) {
+  public long saveProjectLocation(CenterProjectLocation projectLocation, String actionName,
+    List<String> relationsName) {
     return projectLocationDAO.save(projectLocation, actionName, relationsName);
   }
 

@@ -17,6 +17,15 @@ package org.cgiar.ccafs.marlo.action.monitoring.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConfig;
+import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableCrosscutingThemeManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableDocumentManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableOutputManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterOutputManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
@@ -28,15 +37,6 @@ import org.cgiar.ccafs.marlo.data.model.CenterOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectOutput;
-import org.cgiar.ccafs.marlo.data.service.IAuditLogManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterDeliverableCrosscutingThemeManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterDeliverableDocumentManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterDeliverableOutputManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterDeliverableManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterDeliverableTypeManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterOutputManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterProjectManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterManager;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -87,7 +87,7 @@ public class ProjectDeliverableAction extends BaseAction {
 
   private ICenterProjectManager projectService;
 
-  private IAuditLogManager auditLogService;
+  private AuditLogManager auditLogService;
   private DeliverableValidator validator;
   private long deliverableID;
   private long projectID;
@@ -112,7 +112,7 @@ public class ProjectDeliverableAction extends BaseAction {
     ICenterProjectManager projectService, ICenterDeliverableDocumentManager deliverableDocumentService,
     DeliverableValidator validator, ICenterDeliverableCrosscutingThemeManager deliverableCrosscutingService,
     ICenterDeliverableOutputManager deliverableOutputService, ICenterOutputManager outputService,
-    IAuditLogManager auditLogService) {
+    AuditLogManager auditLogService) {
     super(config);
     this.centerService = centerService;
     this.deliverableTypeService = deliverableTypeService;

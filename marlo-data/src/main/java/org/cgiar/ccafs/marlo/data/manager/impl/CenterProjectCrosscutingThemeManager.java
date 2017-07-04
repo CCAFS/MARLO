@@ -16,8 +16,8 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.data.dao.ICenterProjectCrosscutingThemeDAO;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProjectCrosscutingThemeManager;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectCrosscutingTheme;
-import org.cgiar.ccafs.marlo.data.service.ICenterProjectCrosscutingThemeManager;
 
 import java.util.List;
 

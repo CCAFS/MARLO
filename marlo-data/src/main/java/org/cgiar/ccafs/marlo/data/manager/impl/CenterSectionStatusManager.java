@@ -16,8 +16,8 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.data.dao.ICenterSectionStatusDAO;
+import org.cgiar.ccafs.marlo.data.manager.ICenterSectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.CenterSectionStatus;
-import org.cgiar.ccafs.marlo.data.service.ICenterSectionStatusManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,7 +96,8 @@ public class CenterSectionStatusManager implements ICenterSectionStatusManager {
   }
 
   @Override
-  public CenterSectionStatus getSectionStatusByDeliverable(long deliverableId, long projectId, String sectionName, int year) {
+  public CenterSectionStatus getSectionStatusByDeliverable(long deliverableId, long projectId, String sectionName,
+    int year) {
     return sectionStatusDAO.getSectionStatusByDeliverable(deliverableId, projectId, sectionName, year);
   }
 

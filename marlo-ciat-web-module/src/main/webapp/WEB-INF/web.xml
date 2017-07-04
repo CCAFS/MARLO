@@ -28,11 +28,7 @@
     <listener-class>org.cgiar.ccafs.marlo.config.FlywayContextListener</listener-class>
   </listener>
     -->
-    <!--  Hibernate listener  -->
-   <listener>
-    <listener-class>org.cgiar.ccafs.marlo.config.HibernateListener</listener-class>
-  </listener>
-  
+
   <!--  Pentaho listener  -->
    <listener>
     <listener-class>org.cgiar.ccafs.marlo.config.PentahoListener</listener-class>

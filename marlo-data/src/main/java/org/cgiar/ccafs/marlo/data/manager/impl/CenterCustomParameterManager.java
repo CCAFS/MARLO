@@ -16,8 +16,8 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.data.dao.ICenterCustomParameterDAO;
+import org.cgiar.ccafs.marlo.data.manager.ICenterCustomParameterManager;
 import org.cgiar.ccafs.marlo.data.model.CenterCustomParameter;
-import org.cgiar.ccafs.marlo.data.service.ICenterCustomParameterManager;
 
 import java.util.List;
 
@@ -78,7 +78,8 @@ public class CenterCustomParameterManager implements ICenterCustomParameterManag
   }
 
   @Override
-  public long saveCenterCustomParameter(CenterCustomParameter centerCustomParameter, String actionName, List<String> relationsName) {
+  public long saveCenterCustomParameter(CenterCustomParameter centerCustomParameter, String actionName,
+    List<String> relationsName) {
     return centerCustomParameterDAO.save(centerCustomParameter, actionName, relationsName);
   }
 

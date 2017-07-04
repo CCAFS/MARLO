@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Mar 16, 2017 9:21:01 AM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+	<class name="org.cgiar.ccafs.marlo.data.model.CenterMonitoringOutcome"
+		table="center_monitoring_outcomes" optimistic-lock="version">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select">
+			<column name="modified_by" />
+		</many-to-one>
+		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select">
+			<column name="created_by" />
+		</many-to-one>
+		<many-to-one name="researchOutcome"
+			class="org.cgiar.ccafs.marlo.data.model.CenterOutcome" fetch="select">
+			<column name="outcome_id" not-null="true" />
+		</many-to-one>
+		<property name="year" type="int">
+			<column name="year" precision="4" scale="0" not-null="true" />
+		</property>
+		<property name="narrative" type="string">
+			<column name="narrative" length="65535" />
+		</property>
+		<property name="active" type="boolean">
+			<column name="is_active" not-null="true" />
+		</property>
+		<property name="activeSince" type="timestamp">
+			<column name="active_since" length="19" />
+		</property>
+		<property name="modificationJustification" type="string">
+			<column name="modification_justification" length="65535" />
+		</property>
+		<set name="monitoringMilestones" table="center_monitoring_milestones"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="monitoring_outcome_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterMonitoringMilestone" />
+		</set>
+		<set name="monitorignOutcomeEvidences" table="center_monitoring_outcome_evidences"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="monitoring_outcome_id" not-null="true" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.CenterMonitoringOutcomeEvidence" />
+		</set>
+	</class>
+</hibernate-mapping>

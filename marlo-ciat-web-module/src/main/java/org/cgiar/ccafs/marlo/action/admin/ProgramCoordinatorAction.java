@@ -17,14 +17,14 @@ package org.cgiar.ccafs.marlo.action.admin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConfig;
+import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterRoleManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterUserRoleManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterRole;
-import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.CenterUserRole;
-import org.cgiar.ccafs.marlo.data.service.ICenterManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterRoleManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterUserRoleManager;
-import org.cgiar.ccafs.marlo.data.service.IUserManager;
+import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 
@@ -41,7 +41,7 @@ public class ProgramCoordinatorAction extends BaseAction {
 
   private static final long serialVersionUID = 1843943617459402461L;
 
-  private IUserManager userService;
+  private UserManager userService;
   private ICenterUserRoleManager userRoleService;
   private ICenterRoleManager roleService;
   private ICenterManager centerService;
@@ -49,7 +49,7 @@ public class ProgramCoordinatorAction extends BaseAction {
   private List<CenterUserRole> userRoles;
 
   @Inject
-  public ProgramCoordinatorAction(APConfig config, IUserManager userService, ICenterManager centerService,
+  public ProgramCoordinatorAction(APConfig config, UserManager userService, ICenterManager centerService,
     ICenterRoleManager roleService, ICenterUserRoleManager userRoleService) {
     super(config);
     this.userService = userService;

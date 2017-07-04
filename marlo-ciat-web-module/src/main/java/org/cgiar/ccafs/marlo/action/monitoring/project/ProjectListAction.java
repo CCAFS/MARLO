@@ -17,6 +17,12 @@ package org.cgiar.ccafs.marlo.action.monitoring.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConfig;
+import org.cgiar.ccafs.marlo.data.manager.ICenterAreaManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProjectCrosscutingThemeManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.manager.impl.CenterProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterLeader;
@@ -26,12 +32,6 @@ import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectCrosscutingTheme;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectStatus;
 import org.cgiar.ccafs.marlo.data.model.User;
-import org.cgiar.ccafs.marlo.data.service.ICenterAreaManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterProgramManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterProjectCrosscutingThemeManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterManager;
-import org.cgiar.ccafs.marlo.data.service.IUserManager;
-import org.cgiar.ccafs.marlo.data.service.impl.CenterProjectManager;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 
@@ -73,12 +73,12 @@ public class ProjectListAction extends BaseAction {
   private List<CenterProgram> researchPrograms;
   private CenterProgram selectedProgram;
   private CenterArea selectedResearchArea;
-  private IUserManager userService;
+  private UserManager userService;
   private String justification;
 
   @Inject
   public ProjectListAction(APConfig config, ICenterManager centerService, ICenterProgramManager programService,
-    CenterProjectManager projectService, IUserManager userService, ICenterAreaManager researchAreaService,
+    CenterProjectManager projectService, UserManager userService, ICenterAreaManager researchAreaService,
     ICenterProjectCrosscutingThemeManager projectCrosscutingService) {
     super(config);
     this.centerService = centerService;

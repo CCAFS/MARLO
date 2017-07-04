@@ -17,6 +17,9 @@ package org.cgiar.ccafs.marlo.action.monitoring.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConfig;
+import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
@@ -24,9 +27,6 @@ import org.cgiar.ccafs.marlo.data.model.CenterDeliverableCrosscutingTheme;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectStatus;
-import org.cgiar.ccafs.marlo.data.service.ICenterDeliverableManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterProjectManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterManager;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 

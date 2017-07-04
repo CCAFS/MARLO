@@ -17,8 +17,8 @@ package org.cgiar.ccafs.marlo.action.json.monitoring.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConfig;
+import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverableType;
-import org.cgiar.ccafs.marlo.data.service.ICenterDeliverableTypeManager;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 
 import java.util.ArrayList;

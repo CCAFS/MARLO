@@ -17,6 +17,8 @@ package org.cgiar.ccafs.marlo.action.summaries;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConfig;
 import org.cgiar.ccafs.marlo.config.PentahoListener;
+import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverableDocument;
@@ -26,8 +28,6 @@ import org.cgiar.ccafs.marlo.data.model.CenterProjectFundingSource;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectPartner;
-import org.cgiar.ccafs.marlo.data.service.ICenterProjectManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterManager;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 
 import java.io.ByteArrayInputStream;

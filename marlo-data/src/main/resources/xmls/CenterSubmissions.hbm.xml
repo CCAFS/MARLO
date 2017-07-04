@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Dec 2, 2016 11:02:01 AM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.CenterSubmission" table="center_submissions" optimistic-lock="version">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="user" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="user_id" not-null="true" />
+        </many-to-one>
+        <many-to-one name="researchCycle" class="org.cgiar.ccafs.marlo.data.model.CenterCycle" fetch="select">
+            <column name="cycle_id">
+                <comment>Cycling period type.</comment>
+            </column>
+        </many-to-one>
+        <many-to-one name="researchProgram" class="org.cgiar.ccafs.marlo.data.model.CenterProgram" fetch="select">
+            <column name="program_id" />
+        </many-to-one>
+        <many-to-one name="project" class="org.cgiar.ccafs.marlo.data.model.CenterProject" fetch="select">
+            <column name="project_id" />
+        </many-to-one>
+        <property name="dateTime" type="timestamp">
+            <column name="date_time" length="19" not-null="true">
+                <comment>The date time when the report was made.</comment>
+            </column>
+        </property>
+        <property name="modificationJustification" type="string">
+            <column name="modification_justification" length="16777215" />
+        </property>
+        <property name="year" type="java.lang.Short">
+            <column name="year">
+                <comment>Year to which the report is happening.</comment>
+            </column>
+        </property>
+    </class>
+</hibernate-mapping>

@@ -16,8 +16,8 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.data.dao.ICenterTopicDAO;
+import org.cgiar.ccafs.marlo.data.manager.ICenterTopicManager;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
-import org.cgiar.ccafs.marlo.data.service.ICenterTopicManager;
 
 import java.util.List;
 

@@ -16,8 +16,8 @@
 package org.cgiar.ccafs.marlo.interceptor;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
 import org.cgiar.ccafs.marlo.data.model.Center;
-import org.cgiar.ccafs.marlo.data.service.ICenterManager;
 
 import com.google.inject.Inject;
 import com.opensymphony.xwork2.ActionContext;

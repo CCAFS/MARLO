@@ -17,12 +17,12 @@ package org.cgiar.ccafs.marlo.action.json.monitoring.outcome;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConfig;
+import org.cgiar.ccafs.marlo.data.manager.ICenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
-import org.cgiar.ccafs.marlo.data.model.CenterProject;
-import org.cgiar.ccafs.marlo.data.model.CenterProjectOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
-import org.cgiar.ccafs.marlo.data.service.ICenterOutcomeManager;
+import org.cgiar.ccafs.marlo.data.model.CenterProject;
+import org.cgiar.ccafs.marlo.data.model.CenterProjectOutput;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 
 import java.util.ArrayList;

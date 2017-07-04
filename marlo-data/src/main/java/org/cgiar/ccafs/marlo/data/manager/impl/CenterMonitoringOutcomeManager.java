@@ -16,8 +16,8 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.data.dao.ICenterMonitoringOutcomeDAO;
+import org.cgiar.ccafs.marlo.data.manager.ICenterMonitoringOutcomeManager;
 import org.cgiar.ccafs.marlo.data.model.CenterMonitoringOutcome;
-import org.cgiar.ccafs.marlo.data.service.ICenterMonitoringOutcomeManager;
 
 import java.util.List;
 

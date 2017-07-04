@@ -16,8 +16,8 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.data.dao.ICenterImpactDAO;
+import org.cgiar.ccafs.marlo.data.manager.ICenterImpactManager;
 import org.cgiar.ccafs.marlo.data.model.CenterImpact;
-import org.cgiar.ccafs.marlo.data.service.ICenterImpactManager;
 
 import java.util.List;
 

@@ -16,6 +16,16 @@ package org.cgiar.ccafs.marlo.action;
 
 import org.cgiar.ccafs.marlo.config.APConfig;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
+import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterCycleManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterImpactManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterOutputManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterSectionStatusManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterTopicManager;
 import org.cgiar.ccafs.marlo.data.model.Auditlog;
 import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterCycle;
@@ -33,16 +43,6 @@ import org.cgiar.ccafs.marlo.data.model.ImpactPathwayCyclesEnum;
 import org.cgiar.ccafs.marlo.data.model.ImpactPathwaySectionsEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionsEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
-import org.cgiar.ccafs.marlo.data.service.IAuditLogManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterCycleManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterDeliverableManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterImpactManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterOutcomeManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterOutputManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterProgramManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterProjectManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterSectionStatusManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterTopicManager;
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.security.BaseSecurityContext;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -98,7 +98,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   @Inject
   protected BaseSecurityContext securityContext;
   @Inject
-  private IAuditLogManager auditLogManager;
+  private AuditLogManager auditLogManager;
   @Inject
   private ICenterTopicManager topicService;
   @Inject

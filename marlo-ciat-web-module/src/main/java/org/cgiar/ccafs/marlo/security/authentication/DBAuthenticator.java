@@ -15,8 +15,8 @@
 
 package org.cgiar.ccafs.marlo.security.authentication;
 
+import org.cgiar.ccafs.marlo.data.manager.AuthenticationManager;
 import org.cgiar.ccafs.marlo.utils.APConstants;
-import org.cgiar.ccafs.marlo.data.service.AuthenticationManager;
 import org.cgiar.ccafs.marlo.utils.MD5Convert;
 
 import java.util.HashMap;

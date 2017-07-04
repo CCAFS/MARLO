@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="org.cgiar.ccafs.marlo.data.model.CenterArea" table="center_areas"
+		optimistic-lock="version">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<property name="active" type="boolean">
+      <column name="is_active" not-null="true" />
+    </property>
+    <property name="activeSince" type="timestamp">
+      <column name="active_since" length="19" not-null="true" />
+    </property>
+    <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
+      fetch="select">
+      <column name="created_by" not-null="false" />
+    </many-to-one>
+    <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
+      fetch="select">
+      <column name="modified_by" not-null="false" />
+    </many-to-one>
+    <many-to-one name="researchCenter" class="org.cgiar.ccafs.marlo.data.model.Center"
+      fetch="select">
+      <column name="research_center_id" not-null="false" />
+    </many-to-one>
+    <property name="modificationJustification" type="string">
+      <column name="modification_justification" length="65535"
+        not-null="false" />
+    </property>
+		<property name="name" type="string">
+			<column name="name" length="65535" not-null="true" />
+		</property>
+		<property name="acronym" type="string">
+			<column name="acronym" length="50" not-null="true" />
+		</property>
+		<property name="color" type="string">
+      <column name="color" length="8" />
+    </property>
+		<set lazy="true" name="researchPrograms" table="center_programs" order-by="id"
+      cascade="save-update" fetch="select">
+      <key>
+        <column name="research_area_id" not-null="true" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterProgram" />
+    </set>
+    <set lazy="true" name="researchLeaders" table="center_leaders" order-by="id"
+      cascade="save-update" fetch="select">
+      <key>
+        <column name="research_area_id" not-null="true" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterLeader" />
+    </set>		
+	</class>
+</hibernate-mapping>

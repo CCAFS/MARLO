@@ -16,8 +16,8 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.data.dao.ICenterBeneficiaryTypeDAO;
+import org.cgiar.ccafs.marlo.data.manager.ICenterBeneficiaryTypeManager;
 import org.cgiar.ccafs.marlo.data.model.CenterBeneficiaryType;
-import org.cgiar.ccafs.marlo.data.service.ICenterBeneficiaryTypeManager;
 
 import java.util.List;
 

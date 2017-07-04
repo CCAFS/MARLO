@@ -17,6 +17,14 @@ package org.cgiar.ccafs.marlo.action.impactpathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConfig;
+import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterImpactManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterMilestoneManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterTargetUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterTopicManager;
 import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterImpact;
@@ -25,14 +33,6 @@ import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterTargetUnit;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
-import org.cgiar.ccafs.marlo.data.service.IAuditLogManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterImpactManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterMilestoneManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterOutcomeManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterProgramManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterTargetUnitManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterTopicManager;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -72,7 +72,7 @@ public class OutcomesAction extends BaseAction {
   // Services - Managers
   private ICenterManager centerService;
   private ICenterOutcomeManager outcomeService;
-  private IAuditLogManager auditLogService;
+  private AuditLogManager auditLogService;
   private ICenterTargetUnitManager targetUnitService;
   private ICenterTopicManager researchTopicService;
   private ICenterProgramManager programService;
@@ -105,7 +105,7 @@ public class OutcomesAction extends BaseAction {
   public OutcomesAction(APConfig config, ICenterManager centerService, ICenterOutcomeManager outcomeService,
     ICenterTargetUnitManager targetUnitService, ICenterTopicManager researchTopicService,
     ICenterProgramManager programService, ICenterImpactManager impactService, ICenterMilestoneManager milestoneService,
-    OutcomesValidator validator, IAuditLogManager auditLogService) {
+    OutcomesValidator validator, AuditLogManager auditLogService) {
     super(config);
     this.centerService = centerService;
     this.outcomeService = outcomeService;

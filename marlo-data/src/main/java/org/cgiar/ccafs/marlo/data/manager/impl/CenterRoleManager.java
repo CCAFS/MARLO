@@ -16,8 +16,8 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.data.dao.ICenterRoleDAO;
+import org.cgiar.ccafs.marlo.data.manager.ICenterRoleManager;
 import org.cgiar.ccafs.marlo.data.model.CenterRole;
-import org.cgiar.ccafs.marlo.data.service.ICenterRoleManager;
 
 import java.util.List;
 

@@ -17,8 +17,8 @@ package org.cgiar.ccafs.marlo.action.json.impactpathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConfig;
+import org.cgiar.ccafs.marlo.data.manager.ICenterNextuserTypeManager;
 import org.cgiar.ccafs.marlo.data.model.CenterNextuserType;
-import org.cgiar.ccafs.marlo.data.service.ICenterNextuserTypeManager;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 
 import java.util.ArrayList;

@@ -17,11 +17,11 @@ package org.cgiar.ccafs.marlo.action.json.autosave;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConfig;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
-import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
-import org.cgiar.ccafs.marlo.data.service.IUserManager;
+import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 
 import java.io.BufferedWriter;
@@ -61,10 +61,10 @@ public class AutoSaveWriterAction extends BaseAction {
 
   private Map<String, Object> status;
 
-  private IUserManager userService;
+  private UserManager userService;
 
   @Inject
-  public AutoSaveWriterAction(APConfig config, IUserManager userService) {
+  public AutoSaveWriterAction(APConfig config, UserManager userService) {
 
     super(config);
     this.userService = userService;

@@ -16,8 +16,8 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.data.dao.ICenterTargetUnitDAO;
+import org.cgiar.ccafs.marlo.data.manager.ICenterTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.model.CenterTargetUnit;
-import org.cgiar.ccafs.marlo.data.service.ICenterTargetUnitManager;
 
 import java.util.List;
 

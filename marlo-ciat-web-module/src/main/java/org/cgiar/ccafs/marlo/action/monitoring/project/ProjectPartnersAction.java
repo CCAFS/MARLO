@@ -17,6 +17,13 @@ package org.cgiar.ccafs.marlo.action.monitoring.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConfig;
+import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProjectPartnerManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProjectPartnerPersonManager;
+import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
@@ -25,13 +32,6 @@ import org.cgiar.ccafs.marlo.data.model.CenterProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.User;
-import org.cgiar.ccafs.marlo.data.service.IAuditLogManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterProjectPartnerPersonManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterProjectPartnerManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterProjectManager;
-import org.cgiar.ccafs.marlo.data.service.ICenterManager;
-import org.cgiar.ccafs.marlo.data.service.IInstitutionManager;
-import org.cgiar.ccafs.marlo.data.service.IUserManager;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -73,11 +73,11 @@ public class ProjectPartnersAction extends BaseAction {
 
 
   private ICenterProjectManager projectService;
-  private IAuditLogManager auditLogService;
+  private AuditLogManager auditLogService;
   private ICenterProjectPartnerManager partnerService;
   private ICenterProjectPartnerPersonManager partnerPersonService;
-  private IInstitutionManager institutionService;
-  private IUserManager userService;
+  private InstitutionManager institutionService;
+  private UserManager userService;
 
   // Front Variables
   private Center loggedCenter;
@@ -102,8 +102,8 @@ public class ProjectPartnersAction extends BaseAction {
   @Inject
   public ProjectPartnersAction(APConfig config, ICenterManager centerService, ICenterProjectManager projectService,
     ICenterProjectPartnerManager partnerService, ICenterProjectPartnerPersonManager partnerPersonService,
-    IInstitutionManager institutionService, IUserManager userService, ProjectPartnerValidator validator,
-    IAuditLogManager auditLogService) {
+    InstitutionManager institutionService, UserManager userService, ProjectPartnerValidator validator,
+    AuditLogManager auditLogService) {
     super(config);
     this.centerService = centerService;
     this.projectService = projectService;

@@ -16,8 +16,8 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.data.dao.ICenterFundingSourceTypeDAO;
+import org.cgiar.ccafs.marlo.data.manager.ICenterFundingSourceTypeManager;
 import org.cgiar.ccafs.marlo.data.model.CenterFundingSourceType;
-import org.cgiar.ccafs.marlo.data.service.ICenterFundingSourceTypeManager;
 
 import java.util.List;
 

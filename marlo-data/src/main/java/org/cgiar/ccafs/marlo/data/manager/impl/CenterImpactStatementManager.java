@@ -16,8 +16,8 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.data.dao.ICenterImpactStatementDAO;
+import org.cgiar.ccafs.marlo.data.manager.ICenterImpactStatementManager;
 import org.cgiar.ccafs.marlo.data.model.CenterImpactStatement;
-import org.cgiar.ccafs.marlo.data.service.ICenterImpactStatementManager;
 
 import java.util.List;
 
@@ -78,7 +78,8 @@ public class CenterImpactStatementManager implements ICenterImpactStatementManag
   }
 
   @Override
-  public long saveResearchImpactStatement(CenterImpactStatement researchImpactStatement, String actionName, List<String> relationsName) {
+  public long saveResearchImpactStatement(CenterImpactStatement researchImpactStatement, String actionName,
+    List<String> relationsName) {
     return researchImpactStatementDAO.save(researchImpactStatement, actionName, relationsName);
   }
 

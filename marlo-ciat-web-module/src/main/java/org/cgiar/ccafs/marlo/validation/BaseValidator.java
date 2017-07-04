@@ -2,13 +2,13 @@ package org.cgiar.ccafs.marlo.validation;
 
 
 import org.cgiar.ccafs.marlo.config.APConfig;
+import org.cgiar.ccafs.marlo.data.manager.ICenterSectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
-import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
+import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.CenterSectionStatus;
-import org.cgiar.ccafs.marlo.data.service.ICenterSectionStatusManager;
 
 import java.util.Calendar;
 
@@ -132,34 +132,6 @@ public class BaseValidator {
    * This method saves the missing fields into the database for a section at ImpactPathway - Outcome.
    * 
    * @param program is a CenterProgram.
-   * @param project is a CenterProject.
-   * @param sectionName is the name of the section (researchImpact, researchTopics, etc.).
-   */
-  protected void saveMissingFields(CenterProgram program, CenterProject project, String sectionName) {
-    int year = Calendar.getInstance().get(Calendar.YEAR);
-
-    CenterSectionStatus status =
-      sectionStatusService.getSectionStatusByProject(program.getId(), project.getId(), sectionName, year);
-    if (status == null) {
-
-      status = new CenterSectionStatus();
-      status.setSectionName(sectionName);
-      status.setProject(project);
-      status.setYear(year);
-    }
-    if (this.missingFields.length() > 0) {
-      status.setMissingFields(this.missingFields.toString());
-    } else {
-      status.setMissingFields("");
-    }
-
-    sectionStatusService.saveSectionStatus(status);
-  }
-
-  /**
-   * This method saves the missing fields into the database for a section at ImpactPathway - Outcome.
-   * 
-   * @param program is a CenterProgram.
    * @param outcome is a CenterOutcome.
    * @param sectionName is the name of the section (researchImpact, researchTopics, etc.).
    */
@@ -203,6 +175,34 @@ public class BaseValidator {
       status.setSectionName(sectionName);
       status.setResearchProgram(program);
       status.setResearchOutput(output);
+      status.setYear(year);
+    }
+    if (this.missingFields.length() > 0) {
+      status.setMissingFields(this.missingFields.toString());
+    } else {
+      status.setMissingFields("");
+    }
+
+    sectionStatusService.saveSectionStatus(status);
+  }
+
+  /**
+   * This method saves the missing fields into the database for a section at ImpactPathway - Outcome.
+   * 
+   * @param program is a CenterProgram.
+   * @param project is a CenterProject.
+   * @param sectionName is the name of the section (researchImpact, researchTopics, etc.).
+   */
+  protected void saveMissingFields(CenterProgram program, CenterProject project, String sectionName) {
+    int year = Calendar.getInstance().get(Calendar.YEAR);
+
+    CenterSectionStatus status =
+      sectionStatusService.getSectionStatusByProject(program.getId(), project.getId(), sectionName, year);
+    if (status == null) {
+
+      status = new CenterSectionStatus();
+      status.setSectionName(sectionName);
+      status.setProject(project);
       status.setYear(year);
     }
     if (this.missingFields.length() > 0) {

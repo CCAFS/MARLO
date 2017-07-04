@@ -16,8 +16,8 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.data.dao.ICenterDeliverableTypeDAO;
+import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverableType;
-import org.cgiar.ccafs.marlo.data.service.ICenterDeliverableTypeManager;
 
 import java.util.List;
 

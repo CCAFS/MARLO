@@ -22,7 +22,7 @@
 			<column name="email" not-null="true" unique="true" />
 		</property>
 		<property name="password" type="string">
-			<column name="password"/>
+			<column name="password" />
 		</property>
 		<property name="cgiarUser" type="boolean">
 			<column name="is_cgiar_user" not-null="true" />
@@ -31,8 +31,8 @@
 			<column name="is_active" not-null="true" />
 		</property>
 		<property name="autoSave" type="boolean">
-      <column name="auto_save" not-null="true" />
-    </property>
+			<column name="auto_save" not-null="true" />
+		</property>
 		<property name="modificationJustification" type="string">
 			<column name="modification_justification" length="65535"
 				not-null="true" />
@@ -89,41 +89,62 @@
 			<one-to-many
 				class="org.cgiar.ccafs.marlo.data.model.CrpClusterActivityLeader" />
 		</set>
-		
-		
-		    <set name="liasonsUsers" order-by="id"
-      table="liaison_users" inverse="true" lazy="true"
-      fetch="select">
-      <key>
-        <column name="user_id" not-null="true" />
-      </key>
-      <one-to-many
-        class="org.cgiar.ccafs.marlo.data.model.LiaisonUser" />
-    </set>
-		
-		
-		 <set name="submissions" table="submissions" inverse="true" 
-		 order-by="id" lazy="true" fetch="select">
-            <key>
-                <column name="user_id" not-null="true" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.Submission" />
-        </set>
-        
-        <set name="projectPartnerPersons" order-by="id" table="project_partner_persons" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="user_id" not-null="true" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson" />
-        </set>
-        
-        <set name="ipLiaisonUsers" order-by="id" table="ip_liaison_users" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="user_id" not-null="true">
-                    <comment>This field is a link to the table users</comment>
-                </column>
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.IpLiaisonUser" />
-        </set>
+
+
+		<set name="liasonsUsers" order-by="id" table="liaison_users"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="user_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.LiaisonUser" />
+		</set>
+
+
+		<set name="submissions" table="submissions" inverse="true"
+			order-by="id" lazy="true" fetch="select">
+			<key>
+				<column name="user_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.Submission" />
+		</set>
+
+		<set name="projectPartnerPersons" order-by="id"
+			table="project_partner_persons" inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="user_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson" />
+		</set>
+
+		<set name="ipLiaisonUsers" order-by="id" table="ip_liaison_users"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="user_id" not-null="true">
+					<comment>This field is a link to the table users</comment>
+				</column>
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.IpLiaisonUser" />
+		</set>
+		<set lazy="true" name="centerUserRoles" order-by="user_id" table="user_roles"
+			inverse="true" fetch="select">
+			<key>
+				<column name="user_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterUserRole" />
+		</set>
+		<set lazy="true" name="centerUsers" table="center_users" inverse="true"
+			fetch="select">
+			<key>
+				<column name="user_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterUser" />
+		</set>
+		<set lazy="true" name="researchLeaders" table="center_leaders"
+			inverse="true" fetch="select">
+			<key>
+				<column name="user_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterLeader" />
+		</set>
 	</class>
 </hibernate-mapping>

@@ -16,8 +16,8 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.data.dao.ICenterDeliverableOutputDAO;
+import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableOutputManager;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverableOutput;
-import org.cgiar.ccafs.marlo.data.service.ICenterDeliverableOutputManager;
 
 import java.util.List;
 
@@ -78,7 +78,8 @@ public class CenterDeliverableOutputManager implements ICenterDeliverableOutputM
   }
 
   @Override
-  public long saveDeliverableOutput(CenterDeliverableOutput deliverableOutput, String actionName, List<String> relationsName) {
+  public long saveDeliverableOutput(CenterDeliverableOutput deliverableOutput, String actionName,
+    List<String> relationsName) {
     return deliverableOutputDAO.save(deliverableOutput, actionName, relationsName);
   }
 

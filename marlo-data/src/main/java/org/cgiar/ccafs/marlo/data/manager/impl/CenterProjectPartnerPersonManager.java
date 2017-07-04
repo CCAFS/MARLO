@@ -16,8 +16,8 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.data.dao.ICenterProjectPartnerPersonDAO;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProjectPartnerPersonManager;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectPartnerPerson;
-import org.cgiar.ccafs.marlo.data.service.ICenterProjectPartnerPersonManager;
 
 import java.util.List;
 

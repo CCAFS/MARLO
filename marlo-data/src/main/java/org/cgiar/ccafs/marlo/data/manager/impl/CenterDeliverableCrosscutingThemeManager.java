@@ -16,8 +16,8 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.data.dao.ICenterDeliverableCrosscutingThemeDAO;
+import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableCrosscutingThemeManager;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverableCrosscutingTheme;
-import org.cgiar.ccafs.marlo.data.service.ICenterDeliverableCrosscutingThemeManager;
 
 import java.util.List;
 
@@ -35,7 +35,8 @@ public class CenterDeliverableCrosscutingThemeManager implements ICenterDelivera
 
 
   @Inject
-  public CenterDeliverableCrosscutingThemeManager(ICenterDeliverableCrosscutingThemeDAO deliverableCrosscutingThemeDAO) {
+  public CenterDeliverableCrosscutingThemeManager(
+    ICenterDeliverableCrosscutingThemeDAO deliverableCrosscutingThemeDAO) {
     this.deliverableCrosscutingThemeDAO = deliverableCrosscutingThemeDAO;
 
 
@@ -78,7 +79,8 @@ public class CenterDeliverableCrosscutingThemeManager implements ICenterDelivera
   }
 
   @Override
-  public long saveDeliverableCrosscutingTheme(CenterDeliverableCrosscutingTheme deliverableCrosscutingTheme, String actionName, List<String> relationsName) {
+  public long saveDeliverableCrosscutingTheme(CenterDeliverableCrosscutingTheme deliverableCrosscutingTheme,
+    String actionName, List<String> relationsName) {
     return deliverableCrosscutingThemeDAO.save(deliverableCrosscutingTheme, actionName, relationsName);
   }
 
