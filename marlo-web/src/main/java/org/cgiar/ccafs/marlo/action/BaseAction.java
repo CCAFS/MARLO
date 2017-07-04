@@ -497,6 +497,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   /* Override this method depending of the cancel action. */
   public String cancel() {
     return CANCEL;
@@ -521,11 +522,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   public boolean canEditCenterType() {
     return this.hasPermissionNoBase(
       this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, this.getCrpSession()));
   }
+
 
   public boolean canEditCrpAdmin() {
     String permission = this.generatePermission(Permission.CRP_ADMIN_EDIT_PRIVILEGES, this.getCrpSession());
@@ -564,7 +565,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return APConstants.CRP_ACTIVITES_MODULE;
   }
 
-
   /* Override this method depending of the delete action. */
   public String delete() {
     return SUCCESS;
@@ -598,6 +598,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   public String getActionName() {
     return ServletActionContext.getActionMapping().getName();
   }
@@ -613,6 +614,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         return (Phase) this.getSession().get(APConstants.CURRENT_PHASE);
       } else {
         Phase phase = phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), this.getCrpID());
+        this.getSession().put(APConstants.CURRENT_PHASE, phase);
         return phase;
       }
     } catch (Exception e) {
@@ -630,10 +632,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return exist;
   }
 
-
   public String getBasePermission() {
     return basePermission;
   }
+
 
   public String getBaseUrl() {
     return config.getBaseUrl();
@@ -748,7 +750,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   /**
    * Get the user that is currently saved in the session.
    * 
@@ -791,6 +792,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public List<HistoryDifference> getDifferences() {
     return differences;
   }
+
 
   public FileDB getFileDB(FileDB preview, File file, String fileFileName, String path) {
 
@@ -855,10 +857,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public long getIFPRIId() {
     return APConstants.IFPRI_ID;
   }
+
 
   public boolean getImpactSectionStatus(String section, long crpProgramID) {
     SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByCrpProgam(crpProgramID, section);
@@ -916,7 +918,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return ServletActionContext.getActionMapping().getNamespace();
   }
 
-
   /**
    * get the number of users log in in the application
    * 
@@ -928,6 +929,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return 0;
   }
+
 
   public List<Deliverable> getOpenDeliverables(List<Deliverable> deliverables) {
 
@@ -968,13 +970,28 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return parameters;
   }
 
-
   public String getParameterValue(String param) {
     Object paramObj = this.getParameters().get(param);
     if (paramObj == null) {
       return null;
     }
     return ((String[]) paramObj)[0];
+  }
+
+  /**
+   * validate if the list of phases are on session if not, will be find on bd
+   * 
+   * @return the list of the phases for the crp
+   */
+  public List<Phase> getPhases() {
+    if (this.getSession().containsKey(APConstants.PHASES)) {
+      return (List<Phase>) this.getSession().get(APConstants.PHASES);
+    } else {
+      List<Phase> phases = phaseManager.findAll().stream()
+        .filter(c -> c.getCrp().getId().longValue() == this.getCrpID().longValue()).collect(Collectors.toList());
+      this.getSession().put(APConstants.PHASES, phases);
+      return phases;
+    }
   }
 
   public int getPlanningYear() {

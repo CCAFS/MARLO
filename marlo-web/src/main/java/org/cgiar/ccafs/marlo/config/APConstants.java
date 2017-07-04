@@ -75,6 +75,7 @@ public final class APConstants {
   public static final String CRP_REPORTING_ACTIVE = "crp_reporting_active";
   public static final String CRP_REPORTING_YEAR = "crp_reporting_year";
   public static final String CURRENT_PHASE = "crp_current_phase";
+  public static final String PHASES = "crp_phases";
   public static final String CRP_REQUEST = "crp";
   public static final String CRP_RPL_ROLE = "crp_rpl_rol";
   public static final String CRP_RPM_ROLE = "crp_rpm_rol";
@@ -150,6 +151,8 @@ public final class APConstants {
   public static final String JUSTIFICATION_REQUEST = "justification";
   public static final String LIAISON_INSTITUTION_REQUEST_ID = "liaisonInstitutionID";
   public static final String LIASON_INSTITUTION_ID = "liasonInstitutionID";
+  public static final String PHASE_ID = "phaseID";
+
   public static final String LOC_ELEMENT_ID = "locElementID";
   public static final String LOCATION_PARENT_ID_PARAMETER = "parentId";
   public static final String LOGIN_MESSAGE = "loginMessage";

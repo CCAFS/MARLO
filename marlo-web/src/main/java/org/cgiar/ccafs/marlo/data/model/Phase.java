@@ -66,6 +66,10 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return true;
   }
 
+  public String getComposedName() {
+    return this.description + " - " + year;
+  }
+
   public Crp getCrp() {
     return this.crp;
   }
