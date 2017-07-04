@@ -547,6 +547,63 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     masterReport.getParameterValues().put("i8nDeliverablesRPartnerSingular", this.getText("partner.partnerSingular"));
     masterReport.getParameterValues().put("i8nDeliverablesRType2", this.getText("deliverable.type"));
 
+    /*
+     * Reporting
+     * Project highlights
+     */
+    masterReport.getParameterValues().put("i8nProjectHighlightsRNoData", this.getText("projectHighlight.noData"));
+    masterReport.getParameterValues().put("i8nProjectHighlightsRSingular", this.getText("projectHighlight.singular"));
+    masterReport.getParameterValues().put("i8nProjectHighlightsRTitle", this.getText("highlight.title"));
+    masterReport.getParameterValues().put("i8nProjectHighlightsRAuthor", this.getText("highlight.author"));
+    masterReport.getParameterValues().put("i8nProjectHighlightsRSubject", this.getText("highlight.subject"));
+    masterReport.getParameterValues().put("i8nProjectHighlightsRPublisher", this.getText("highlight.publisher"));
+    masterReport.getParameterValues().put("i8nProjectHighlightsRYear", this.getText("highlight.year"));
+    masterReport.getParameterValues().put("i8nProjectHighlightsRTypes", this.getText("highlight.types"));
+    masterReport.getParameterValues().put("i8nProjectHighlightsRIsGlobal", this.getText("highlight.isGlobal.readText"));
+    masterReport.getParameterValues().put("i8nProjectHighlightsRStartDate", this.getText("highlight.startDate"));
+    masterReport.getParameterValues().put("i8nProjectHighlightsREndDate", this.getText("highlight.endDate"));
+    masterReport.getParameterValues().put("i8nProjectHighlightsRKeywords", this.getText("highlight.keywords"));
+    masterReport.getParameterValues().put("i8nProjectHighlightsRCountries", this.getText("highlight.countries"));
+    masterReport.getParameterValues().put("i8nProjectHighlightsRDescripition",
+      this.getText("highlight.descripition.readText"));
+    masterReport.getParameterValues().put("i8nProjectHighlightsRObjectives",
+      this.getText("highlight.objectives.readText"));
+    masterReport.getParameterValues().put("i8nProjectHighlightsRResults", this.getText("highlight.results.readText"));
+    masterReport.getParameterValues().put("i8nProjectHighlightsRPartners", this.getText("highlight.partners.readText"));
+    masterReport.getParameterValues().put("i8nProjectHighlightsRLinks", this.getText("highlight.links.readText"));
+
+    /*
+     * Reporting
+     * Project activities
+     */
+    masterReport.getParameterValues().put("i8nProjectActivityRNoData", this.getText("projectActivity.noData"));
+    masterReport.getParameterValues().put("i8nProjectActivityRInputDescription",
+      this.getText("project.activities.inputDescription.readText"));
+    masterReport.getParameterValues().put("i8nProjectActivityRInputStartDate",
+      this.getText("project.activities.inputStartDate"));
+    masterReport.getParameterValues().put("i8nProjectActivityRInputEndDate",
+      this.getText("project.activities.inputEndDate"));
+    masterReport.getParameterValues().put("i8nProjectActivityRInputLeader",
+      this.getText("project.activities.inputLeader"));
+    masterReport.getParameterValues().put("i8nProjectActivityRInputStatus",
+      this.getText("project.activities.inputStatus"));
+    masterReport.getParameterValues().put("i8nProjectActivityRStatusJustification",
+      this.getText("project.activities.statusJustification.status2.readText"));
+    masterReport.getParameterValues().put("i8nProjectActivityRDeliverableList",
+      this.getText("project.activities.deliverableList"));
+
+    /*
+     * Reporting
+     * Project leverages
+     */
+    masterReport.getParameterValues().put("i8nProjectLeverageRNoData", this.getText("projectLeverage.noData"));
+    masterReport.getParameterValues().put("i8nProjectLeverageRSingular", this.getText("projectLeverage.singular"));
+    masterReport.getParameterValues().put("i8nProjectLeverageRPartnerName",
+      this.getText("projectLeverage.partnerName"));
+    masterReport.getParameterValues().put("i8nProjectLeverageRYear", this.getText("reporting.projectLeverages.year"));
+    masterReport.getParameterValues().put("i8nProjectLeverageRFlagship", this.getText("projectLeverage.flagship"));
+    masterReport.getParameterValues().put("i8nProjectLeverageRBudget", this.getText("projectLeverage.budget"));
+
 
     return masterReport;
   }
