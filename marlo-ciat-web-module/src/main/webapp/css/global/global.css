@@ -4100,34 +4100,64 @@ margin: 0;}
 }
 
 #disseminationUrl div.input{
-  float:left;
-  width: 80%;
+  /* float:left; */
+  /* width: 75%; */
 }
 #disseminationUrl div#fillMetadata{
-  float: right;
-  position: absolute;
-  right: 0;
-  bottom: 0;
+  /* float: right; */
+  /* position: absolute; */
+  /* right: 0; */
+  /* bottom: 0; */
+  text-align: center;
+}
+
+#disseminationUrl .url-field{
+  width: 63%;
+  float:left;
+}
+
+#disseminationUrl .buttons-field{
+  width: 36%;
+  float:right;
+  margin-top: 21px;
 }
 
 .checkButton{
   background-color: #7FB06F;
   color: #fff;
-  padding: 5px 12px;
+  padding: 4px 12px;
   border-radius: 2px;
   cursor: pointer;
 }
-
-.checkButtonDisable{
-  background-color: #BDBDBD;
-  color: #fff;
-  padding: 5px 12px;
-  border-radius: 2px;
-  cursor: pointer;
-}
-
 .checkButton:hover{
   background-color: #749E66;
+}
+
+.uncheckButton{
+  background-color: #F44336;
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 2px;
+  cursor: pointer;
+  width: 49%;
+  float: right;
+}
+.uncheckButton:hover{
+  background-color: #e03d31;
+}
+
+.updateButton{
+  background-color: #668fda;
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 2px;
+  cursor: pointer;
+  margin-right: 1%;
+  width: 49%;
+  float: left;
+}
+.updateButton:hover{
+  background-color: #5b80c3;
 }
 
 #metadata-output{

@@ -2,7 +2,13 @@
 [#assign title = "Project Description" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = ["select2","flat-flags"] /]
-[#assign customJS = ["${baseUrl}/js/global/fieldsValidation.js","${baseUrl}/js/global/usersManagement.js", "${baseUrl}/js/monitoring/projects/projectDescription.js","${baseUrl}/js/global/autoSave.js"] /]
+[#assign customJS = [
+  "${baseUrl}/js/global/fieldsValidation.js",
+  "${baseUrl}/js/global/usersManagement.js", 
+  "${baseUrl}/js/monitoring/projects/projectDescription.js",
+  "${baseUrl}/js/monitoring/projects/projectSync.js",
+  "${baseUrl}/js/global/autoSave.js"
+  ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "description" /]
 
@@ -55,9 +61,9 @@
           
             [#-- Finance code --]
             <div class="form-group row">
-              <div class="col-md-offset-6 col-md-6">
+              <div id="disseminationUrl" class="col-md-offset-6 col-md-6">
                 <div class="url-field">
-                  [@customForm.input name="project.ocsCode" i18nkey="projectDescription.ocsCode" type="text" disabled=!editable  required=true editable=editable /]
+                  [@customForm.input name="project.ocsCode" i18nkey="projectDescription.ocsCode" className="financeCode" type="text" disabled=!editable  required=true editable=editable /]
                   <span class="financeCode-message"></span>
                 </div>
                 <div class="buttons-field">
