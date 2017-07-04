@@ -75,7 +75,15 @@ function init() {
   $(".countriesSelect").on("change", function() {
     var option = $(this).find("option:selected");
     if(option.val() != "-1") {
-      addCountry(option);
+      var countryISO = $(option).val();
+      var countryName = $(option).text();
+      
+      // Add Country
+      addCountry(countryISO, countryName);
+      
+      // Reset select
+      option.val("-1");
+      option.trigger('change.select2');
     }
     // Remove option from select
     option.remove();
@@ -158,20 +166,16 @@ function init() {
 
 /** COUNTRIES SELECT FUNCTIONS * */
 // Add a new country element
-function addCountry(option) {
-  var canAdd = true;
-  console.log(option.val());
-  if(option.val() == "-1") {
-    canAdd = false;
-  }
-
-  var $list = $(option).parents(".select").parents("#countryList").find(".list");
+function addCountry(countryISO, countryName) {
+  var canAdd = true; 
+  
+  var $list = $("#countryList").find(".list");
   var $item = $("#countryTemplate").clone(true).removeAttr("id");
-  var v = $(option).text().length > 12 ? $(option).text().substr(0, 12) + ' ... ' : $(option).text();
+  var v = countryName.length > 12 ? countryName.substr(0, 12) + ' ... ' : countryName;
 
-// Check if is already selected
+  // Check if is already selected
   $list.find('.country').each(function(i,e) {
-    if($(e).find('input.cId').val() == option.val()) {
+    if($(e).find('input.cId').val() == countryISO) {
       canAdd = false;
       return;
     }
@@ -180,20 +184,18 @@ function addCountry(option) {
     return;
   }
 
-// Set country parameters
-  $item.find(".name").attr("title", $(option).text());
-  var $state = $('<span> <i class="flag-sm flag-sm-' + option.val() + '"></i>  ' + v + '</span>');
+  // Set country parameters
+  $item.find(".name").attr("title", countryName);
+  var $state = $('<span> <i class="flag-sm flag-sm-' + countryISO + '"></i>  ' + v + '</span>');
   $item.find(".name").html($state);
-  $item.find(".cId").val(option.val());
+  $item.find(".cId").val(countryISO);
   $item.find(".id").val(-1);
   $list.append($item);
   $item.show('slow');
   updateCountryList($list);
   checkCountryList($list);
 
-// Reset select
-  $(option).val("-1");
-  $(option).trigger('change.select2');
+ 
 
 }
 

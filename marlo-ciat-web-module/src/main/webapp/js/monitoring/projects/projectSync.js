@@ -109,6 +109,12 @@ function getOCSMetadata() {
           agreement.donorName = agreement.donor.name;
           // Setting Metadata
           setMetadata(agreement);
+
+          // Setting Countries
+          $.each(agreement.countries, function(i,e) {
+            addCountry(e.code, e.description);
+          });
+
         } else {
           $('.financeCode-message').text("Agreement " + currentCode + " not found");
         }
