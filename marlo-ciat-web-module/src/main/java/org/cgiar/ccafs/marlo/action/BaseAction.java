@@ -33,16 +33,16 @@ import org.cgiar.ccafs.marlo.data.model.ImpactPathwayCyclesEnum;
 import org.cgiar.ccafs.marlo.data.model.ImpactPathwaySectionsEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionsEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
-import org.cgiar.ccafs.marlo.data.service.IAuditLogService;
-import org.cgiar.ccafs.marlo.data.service.ICenterCycleService;
-import org.cgiar.ccafs.marlo.data.service.ICenterDeliverableService;
-import org.cgiar.ccafs.marlo.data.service.ICenterImpactService;
-import org.cgiar.ccafs.marlo.data.service.ICenterOutcomeService;
-import org.cgiar.ccafs.marlo.data.service.ICenterOutputService;
-import org.cgiar.ccafs.marlo.data.service.ICenterProgramService;
-import org.cgiar.ccafs.marlo.data.service.ICenterProjectService;
-import org.cgiar.ccafs.marlo.data.service.ICenterSectionStatusService;
-import org.cgiar.ccafs.marlo.data.service.ICenterTopicService;
+import org.cgiar.ccafs.marlo.data.service.IAuditLogManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterCycleManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterDeliverableManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterImpactManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterOutcomeManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterOutputManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterProgramManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterProjectManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterSectionStatusManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterTopicManager;
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.security.BaseSecurityContext;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -98,27 +98,27 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   @Inject
   protected BaseSecurityContext securityContext;
   @Inject
-  private IAuditLogService auditLogManager;
+  private IAuditLogManager auditLogManager;
   @Inject
-  private ICenterTopicService topicService;
+  private ICenterTopicManager topicService;
   @Inject
-  private ICenterImpactService impactService;
+  private ICenterImpactManager impactService;
   @Inject
-  private ICenterOutcomeService outcomeService;
+  private ICenterOutcomeManager outcomeService;
   @Inject
-  private ICenterOutputService outputService;
+  private ICenterOutputManager outputService;
   @Inject
-  private ICenterSectionStatusService secctionStatusService;
+  private ICenterSectionStatusManager secctionStatusService;
   @Inject
-  private ICenterCycleService cycleService;
+  private ICenterCycleManager cycleService;
   @Inject
-  private ICenterProgramService programService;
+  private ICenterProgramManager programService;
   @Inject
-  private ICenterProjectService projectService;
+  private ICenterProjectManager projectService;
   @Inject
-  private ICenterDeliverableService deliverableService;
+  private ICenterDeliverableManager deliverableService;
   @Inject
-  private ICenterSectionStatusService sectionStatusService;
+  private ICenterSectionStatusManager sectionStatusService;
 
   protected boolean add;
   private String basePermission;

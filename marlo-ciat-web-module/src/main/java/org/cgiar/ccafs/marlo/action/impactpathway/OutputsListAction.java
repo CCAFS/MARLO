@@ -27,14 +27,14 @@ import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
 import org.cgiar.ccafs.marlo.data.model.CenterSectionStatus;
 import org.cgiar.ccafs.marlo.data.model.User;
-import org.cgiar.ccafs.marlo.data.service.ICenterService;
-import org.cgiar.ccafs.marlo.data.service.ICenterProgramService;
-import org.cgiar.ccafs.marlo.data.service.ICenterAreaService;
-import org.cgiar.ccafs.marlo.data.service.ICenterOutcomeService;
-import org.cgiar.ccafs.marlo.data.service.ICenterOutputService;
-import org.cgiar.ccafs.marlo.data.service.ICenterTopicService;
-import org.cgiar.ccafs.marlo.data.service.ICenterSectionStatusService;
-import org.cgiar.ccafs.marlo.data.service.IUserService;
+import org.cgiar.ccafs.marlo.data.service.ICenterManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterProgramManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterAreaManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterOutcomeManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterOutputManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterTopicManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterSectionStatusManager;
+import org.cgiar.ccafs.marlo.data.service.IUserManager;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 
 import java.util.ArrayList;
@@ -54,14 +54,14 @@ public class OutputsListAction extends BaseAction {
 
   private static final long serialVersionUID = 6922866669964604405L;
 
-  private ICenterService centerService;
-  private ICenterProgramService programService;
-  private ICenterAreaService researchAreaService;
-  private ICenterTopicService researchTopicService;
-  private ICenterOutcomeService outcomeService;
-  private IUserService userService;
-  private ICenterOutputService outputService;
-  private ICenterSectionStatusService sectionStatusService;
+  private ICenterManager centerService;
+  private ICenterProgramManager programService;
+  private ICenterAreaManager researchAreaService;
+  private ICenterTopicManager researchTopicService;
+  private ICenterOutcomeManager outcomeService;
+  private IUserManager userService;
+  private ICenterOutputManager outputService;
+  private ICenterSectionStatusManager sectionStatusService;
 
   private List<CenterArea> researchAreas;
   private List<CenterProgram> researchPrograms;
@@ -82,10 +82,10 @@ public class OutputsListAction extends BaseAction {
   private String justification;
 
   @Inject
-  public OutputsListAction(APConfig config, ICenterService centerService, ICenterProgramService programService,
-    ICenterAreaService researchAreaService, ICenterTopicService researchTopicService,
-    ICenterOutcomeService outcomeService, IUserService userService, ICenterOutputService outputService,
-    ICenterSectionStatusService sectionStatusService) {
+  public OutputsListAction(APConfig config, ICenterManager centerService, ICenterProgramManager programService,
+    ICenterAreaManager researchAreaService, ICenterTopicManager researchTopicService,
+    ICenterOutcomeManager outcomeService, IUserManager userService, ICenterOutputManager outputService,
+    ICenterSectionStatusManager sectionStatusService) {
     super(config);
     this.centerService = centerService;
     this.programService = programService;

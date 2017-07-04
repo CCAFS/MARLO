@@ -48,6 +48,11 @@
 	</issueManagement>
 	<dependencies>
 		<!-- Project dependecies -->
+		<dependency>
+      <groupId>org.cgiar.ccafs</groupId>
+      <artifactId>marlo-data</artifactId>
+      <version>4.1.6-SNAPSHOT</version>
+    </dependency>
 		<!-- STRUTS 2 - Framework Core -->
 		<dependency>
 			<groupId>org.apache.struts</groupId>
@@ -165,16 +170,6 @@
 			<version>${guice.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.hibernate.javax.persistence</groupId>
-			<artifactId>hibernate-jpa-2.1-api</artifactId>
-			<version>1.0.0.Final</version>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-entitymanager</artifactId>
-			<version>${hibbernate-core-version}</version>
-		</dependency>
-		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>18.0</version>
@@ -233,36 +228,6 @@
 			<artifactId>flyway-core</artifactId>
 			<version>${flyway.version}</version>
 		</dependency>
-		<!-- START Hibernate -->
-		<!-- Hibernate Core -->
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-core</artifactId>
-			<version>${hibbernate-core-version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-c3p0</artifactId>
-			<version>${hibbernate-core-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>javassist</groupId>
-			<artifactId>javassist</artifactId>
-			<version>3.12.1.GA</version>
-		</dependency>
-		<!-- Dependency needed for Hibernate -->
-		<dependency>
-			<groupId>javax.transaction</groupId>
-			<artifactId>jta</artifactId>
-			<version>${jta-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<version>${log-properties}</version>
-		</dependency>
-		<!-- END Hibernate -->
 		<!-- jasper -->
 		<dependency>
 			<groupId>net.sf.jasperreports</groupId>

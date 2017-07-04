@@ -20,8 +20,8 @@ import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
-import org.cgiar.ccafs.marlo.data.service.ICenterProgramService;
-import org.cgiar.ccafs.marlo.data.service.ICenterOutputService;
+import org.cgiar.ccafs.marlo.data.service.ICenterProgramManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterOutputManager;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 
@@ -39,8 +39,8 @@ public class EditOutputInterceptor extends AbstractInterceptor implements Serial
 
   private static final long serialVersionUID = 8386352290491092445L;
 
-  private ICenterOutputService outputService;
-  private ICenterProgramService programService;
+  private ICenterOutputManager outputService;
+  private ICenterProgramManager programService;
 
   private Map<String, Object> parameters;
   private Map<String, Object> session;
@@ -51,7 +51,7 @@ public class EditOutputInterceptor extends AbstractInterceptor implements Serial
   private long programID = -1;
 
   @Inject
-  public EditOutputInterceptor(ICenterProgramService programService, ICenterOutputService outputService) {
+  public EditOutputInterceptor(ICenterProgramManager programService, ICenterOutputManager outputService) {
     this.programService = programService;
     this.outputService = outputService;
   }

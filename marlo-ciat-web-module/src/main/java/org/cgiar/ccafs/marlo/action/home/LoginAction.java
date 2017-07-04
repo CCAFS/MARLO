@@ -21,9 +21,9 @@ import org.cgiar.ccafs.marlo.data.model.ADLoginMessages;
 import org.cgiar.ccafs.marlo.data.model.CenterCustomParameter;
 import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.User;
-import org.cgiar.ccafs.marlo.data.service.ICenterService;
-import org.cgiar.ccafs.marlo.data.service.ICenterUserService;
-import org.cgiar.ccafs.marlo.data.service.impl.UserService;
+import org.cgiar.ccafs.marlo.data.service.ICenterManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterUserManager;
+import org.cgiar.ccafs.marlo.data.service.impl.UserManager;
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 
@@ -59,15 +59,15 @@ public class LoginAction extends BaseAction {
   private String center;
 
   // Managers
-  private UserService userManager;
+  private UserManager userManager;
 
-  private ICenterService crpManager;
+  private ICenterManager crpManager;
 
-  private ICenterUserService crpUserManager;
+  private ICenterUserManager crpUserManager;
 
   @Inject
-  public LoginAction(APConfig config, UserService userManager, ICenterService crpManager,
-    ICenterUserService crpUserManager) {
+  public LoginAction(APConfig config, UserManager userManager, ICenterManager crpManager,
+    ICenterUserManager crpUserManager) {
     super(config);
     this.userManager = userManager;
     this.crpManager = crpManager;
@@ -124,7 +124,7 @@ public class LoginAction extends BaseAction {
     return user;
   }
 
-  public UserService getUserManager() {
+  public UserManager getUserManager() {
     return userManager;
   }
 
@@ -248,7 +248,7 @@ public class LoginAction extends BaseAction {
     this.user = user;
   }
 
-  public void setUserManager(UserService userManager) {
+  public void setUserManager(UserManager userManager) {
     this.userManager = userManager;
   }
 

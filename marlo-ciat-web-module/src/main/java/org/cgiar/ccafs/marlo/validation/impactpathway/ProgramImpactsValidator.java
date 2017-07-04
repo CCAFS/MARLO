@@ -21,7 +21,7 @@ import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterImpact;
 import org.cgiar.ccafs.marlo.data.model.CenterImpactBeneficiary;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
-import org.cgiar.ccafs.marlo.data.service.ICenterService;
+import org.cgiar.ccafs.marlo.data.service.ICenterManager;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
@@ -38,10 +38,10 @@ import com.google.inject.Inject;
  */
 public class ProgramImpactsValidator extends BaseValidator {
 
-  ICenterService centerService;
+  ICenterManager centerService;
 
   @Inject
-  public ProgramImpactsValidator(ICenterService centerService) {
+  public ProgramImpactsValidator(ICenterManager centerService) {
     this.centerService = centerService;
   }
 

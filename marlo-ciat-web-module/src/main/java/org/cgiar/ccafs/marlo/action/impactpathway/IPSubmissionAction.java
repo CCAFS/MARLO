@@ -25,10 +25,10 @@ import org.cgiar.ccafs.marlo.data.model.CenterCycle;
 import org.cgiar.ccafs.marlo.data.model.CenterLeader;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterSubmission;
-import org.cgiar.ccafs.marlo.data.service.ICenterService;
-import org.cgiar.ccafs.marlo.data.service.ICenterProgramService;
-import org.cgiar.ccafs.marlo.data.service.ICenterCycleService;
-import org.cgiar.ccafs.marlo.data.service.ICenterSubmissionService;
+import org.cgiar.ccafs.marlo.data.service.ICenterManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterProgramManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterCycleManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterSubmissionManager;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 import org.cgiar.ccafs.marlo.utils.SendMail;
@@ -57,10 +57,10 @@ public class IPSubmissionAction extends BaseAction {
 
   // LOG
   private static Logger LOG = LoggerFactory.getLogger(IPSubmissionAction.class);
-  private ICenterSubmissionService submissionService;
-  private ICenterProgramService programService;
-  private ICenterCycleService cycleService;
-  private ICenterService centerService;
+  private ICenterSubmissionManager submissionService;
+  private ICenterProgramManager programService;
+  private ICenterCycleManager cycleService;
+  private ICenterManager centerService;
 
 
   private SendMail sendMail;
@@ -74,8 +74,8 @@ public class IPSubmissionAction extends BaseAction {
   ImpactSubmissionSummaryAction impactSubmissionSummaryAction;
 
   @Inject
-  public IPSubmissionAction(APConfig config, ICenterSubmissionService submissionService, ICenterProgramService programService,
-    ICenterCycleService cycleService, ICenterService centerService, SendMail sendMail) {
+  public IPSubmissionAction(APConfig config, ICenterSubmissionManager submissionService, ICenterProgramManager programService,
+    ICenterCycleManager cycleService, ICenterManager centerService, SendMail sendMail) {
     super(config);
     this.programService = programService;
     this.submissionService = submissionService;

@@ -20,7 +20,7 @@ import org.cgiar.ccafs.marlo.config.PentahoListener;
 import org.cgiar.ccafs.marlo.data.model.CenterImpact;
 import org.cgiar.ccafs.marlo.data.model.CenterImpactObjective;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
-import org.cgiar.ccafs.marlo.data.service.ICenterProgramService;
+import org.cgiar.ccafs.marlo.data.service.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 
 import java.io.ByteArrayInputStream;
@@ -65,13 +65,13 @@ public class ImpactPathwayOutcomesSummaryAction extends BaseAction implements Su
   // PDF bytes
   private byte[] bytesPDF;
   // Services
-  private ICenterProgramService programService;
+  private ICenterProgramManager programService;
   // Params
   private CenterProgram researchProgram;
   private long startTime;
 
   @Inject
-  public ImpactPathwayOutcomesSummaryAction(APConfig config, ICenterProgramService programService) {
+  public ImpactPathwayOutcomesSummaryAction(APConfig config, ICenterProgramManager programService) {
     super(config);
     this.programService = programService;
   }

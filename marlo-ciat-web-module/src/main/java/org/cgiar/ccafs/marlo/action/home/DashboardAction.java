@@ -18,7 +18,7 @@ package org.cgiar.ccafs.marlo.action.home;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConfig;
 import org.cgiar.ccafs.marlo.data.model.Center;
-import org.cgiar.ccafs.marlo.data.service.ICenterService;
+import org.cgiar.ccafs.marlo.data.service.ICenterManager;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 
 import com.google.inject.Inject;
@@ -30,7 +30,7 @@ public class DashboardAction extends BaseAction {
 
   private static final long serialVersionUID = -4006598729888638344L;
   private Center loggedCrp;
-  private ICenterService crpManager;
+  private ICenterManager crpManager;
 
   /**
    * @param config
@@ -38,7 +38,7 @@ public class DashboardAction extends BaseAction {
    * @param crpManager
    */
   @Inject
-  public DashboardAction(APConfig config, ICenterService crpManager) {
+  public DashboardAction(APConfig config, ICenterManager crpManager) {
     super(config);
     this.crpManager = crpManager;
   }

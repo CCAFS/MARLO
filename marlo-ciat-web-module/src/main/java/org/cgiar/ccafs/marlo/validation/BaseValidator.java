@@ -8,7 +8,7 @@ import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterSectionStatus;
-import org.cgiar.ccafs.marlo.data.service.ICenterSectionStatusService;
+import org.cgiar.ccafs.marlo.data.service.ICenterSectionStatusManager;
 
 import java.util.Calendar;
 
@@ -29,7 +29,7 @@ public class BaseValidator {
   protected StringBuilder missingFields;
 
   @Inject
-  ICenterSectionStatusService sectionStatusService;
+  ICenterSectionStatusManager sectionStatusService;
 
   @Inject
   public BaseValidator() {

@@ -28,17 +28,17 @@ import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterTargetUnit;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
-import org.cgiar.ccafs.marlo.data.service.IAuditLogService;
-import org.cgiar.ccafs.marlo.data.service.ICenterImpactService;
-import org.cgiar.ccafs.marlo.data.service.ICenterMilestoneService;
-import org.cgiar.ccafs.marlo.data.service.ICenterMonitoringMilestoneService;
-import org.cgiar.ccafs.marlo.data.service.ICenterMonitoringOutcomeEvidenceService;
-import org.cgiar.ccafs.marlo.data.service.ICenterMonitoringOutcomeService;
-import org.cgiar.ccafs.marlo.data.service.ICenterOutcomeService;
-import org.cgiar.ccafs.marlo.data.service.ICenterProgramService;
-import org.cgiar.ccafs.marlo.data.service.ICenterService;
-import org.cgiar.ccafs.marlo.data.service.ICenterTargetUnitService;
-import org.cgiar.ccafs.marlo.data.service.ICenterTopicService;
+import org.cgiar.ccafs.marlo.data.service.IAuditLogManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterImpactManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterMilestoneManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterMonitoringMilestoneManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterMonitoringOutcomeEvidenceManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterMonitoringOutcomeManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterOutcomeManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterProgramManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterTargetUnitManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterTopicManager;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -75,20 +75,20 @@ public class MonitoringOutcomeAction extends BaseAction {
   private static final long serialVersionUID = 8641483319512138926L;
 
 
-  private ICenterService centerService;
+  private ICenterManager centerService;
 
-  private ICenterOutcomeService outcomeService;
+  private ICenterOutcomeManager outcomeService;
 
 
-  private IAuditLogService auditLogService;
-  private ICenterTargetUnitService targetUnitService;
-  private ICenterTopicService researchTopicService;
-  private ICenterProgramService programService;
-  private ICenterImpactService impactService;
-  private ICenterMilestoneService milestoneService;
-  private ICenterMonitoringOutcomeService monitoringOutcomeService;
-  private ICenterMonitoringMilestoneService monitoringMilestoneService;
-  private ICenterMonitoringOutcomeEvidenceService evidenceService;
+  private IAuditLogManager auditLogService;
+  private ICenterTargetUnitManager targetUnitService;
+  private ICenterTopicManager researchTopicService;
+  private ICenterProgramManager programService;
+  private ICenterImpactManager impactService;
+  private ICenterMilestoneManager milestoneService;
+  private ICenterMonitoringOutcomeManager monitoringOutcomeService;
+  private ICenterMonitoringMilestoneManager monitoringMilestoneService;
+  private ICenterMonitoringOutcomeEvidenceManager evidenceService;
   private Center loggedCenter;
   private List<CenterArea> researchAreas;
   private CenterArea selectedResearchArea;
@@ -108,12 +108,12 @@ public class MonitoringOutcomeAction extends BaseAction {
   private String transaction;
 
   @Inject
-  public MonitoringOutcomeAction(APConfig config, ICenterService centerService, ICenterOutcomeService outcomeService,
-    ICenterTargetUnitService targetUnitService, ICenterTopicService researchTopicService,
-    ICenterProgramService programService, ICenterImpactService impactService, ICenterMilestoneService milestoneService,
-    IAuditLogService auditLogService, ICenterMonitoringOutcomeService monitoringOutcomeService,
-    ICenterMonitoringMilestoneService monitoringMilestoneService,
-    ICenterMonitoringOutcomeEvidenceService evidenceService) {
+  public MonitoringOutcomeAction(APConfig config, ICenterManager centerService, ICenterOutcomeManager outcomeService,
+    ICenterTargetUnitManager targetUnitService, ICenterTopicManager researchTopicService,
+    ICenterProgramManager programService, ICenterImpactManager impactService, ICenterMilestoneManager milestoneService,
+    IAuditLogManager auditLogService, ICenterMonitoringOutcomeManager monitoringOutcomeService,
+    ICenterMonitoringMilestoneManager monitoringMilestoneService,
+    ICenterMonitoringOutcomeEvidenceManager evidenceService) {
     super(config);
     this.centerService = centerService;
     this.outcomeService = outcomeService;

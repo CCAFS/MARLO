@@ -26,8 +26,8 @@ import org.cgiar.ccafs.marlo.data.model.CenterOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
 import org.cgiar.ccafs.marlo.data.model.CenterSubmission;
-import org.cgiar.ccafs.marlo.data.service.ICenterProgramService;
-import org.cgiar.ccafs.marlo.data.service.ICenterCycleService;
+import org.cgiar.ccafs.marlo.data.service.ICenterProgramManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterCycleManager;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 
 import java.io.ByteArrayInputStream;
@@ -74,16 +74,16 @@ public class ImpactSubmissionSummaryAction extends BaseAction implements Summary
   // PDF bytes
   private byte[] bytesPDF;
   // Services
-  private ICenterProgramService programService;
-  private ICenterCycleService cycleService;
+  private ICenterProgramManager programService;
+  private ICenterCycleManager cycleService;
   // Params
   private CenterProgram researchProgram;
   private CenterCycle researchCycle;
   private long startTime;
 
   @Inject
-  public ImpactSubmissionSummaryAction(APConfig config, ICenterProgramService programService,
-    ICenterCycleService cycleService) {
+  public ImpactSubmissionSummaryAction(APConfig config, ICenterProgramManager programService,
+    ICenterCycleManager cycleService) {
     super(config);
     this.programService = programService;
     this.cycleService = cycleService;

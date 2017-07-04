@@ -24,9 +24,9 @@ import org.cgiar.ccafs.marlo.data.model.CenterProjectCrosscutingTheme;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.CenterSectionStatus;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionsEnum;
-import org.cgiar.ccafs.marlo.data.service.ICenterProjectCrosscutingThemeService;
-import org.cgiar.ccafs.marlo.data.service.ICenterProjectService;
-import org.cgiar.ccafs.marlo.data.service.ICenterSectionStatusService;
+import org.cgiar.ccafs.marlo.data.service.ICenterProjectCrosscutingThemeManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterProjectManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterSectionStatusManager;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 import org.cgiar.ccafs.marlo.validation.monitoring.project.DeliverableValidator;
 import org.cgiar.ccafs.marlo.validation.monitoring.project.ProjectDescriptionValidator;
@@ -56,11 +56,11 @@ public class ValidateProjectSectionAction extends BaseAction {
   private static final Logger LOG = LoggerFactory.getLogger(ValidateProjectSectionAction.class);
 
   // Managers
-  private ICenterProjectService projectService;
+  private ICenterProjectManager projectService;
 
-  private ICenterProjectCrosscutingThemeService projectCrosscutingThemeService;
+  private ICenterProjectCrosscutingThemeManager projectCrosscutingThemeService;
 
-  private ICenterSectionStatusService sectionStatusService;
+  private ICenterSectionStatusManager sectionStatusService;
   // Parameters
   private boolean existProject;
   private boolean validSection;
@@ -78,10 +78,10 @@ public class ValidateProjectSectionAction extends BaseAction {
   private DeliverableValidator deliverableValidator;
 
   @Inject
-  public ValidateProjectSectionAction(APConfig config, ICenterProjectService projectService,
-    ICenterSectionStatusService sectionStatusService, ProjectDescriptionValidator descriptionValidator,
+  public ValidateProjectSectionAction(APConfig config, ICenterProjectManager projectService,
+    ICenterSectionStatusManager sectionStatusService, ProjectDescriptionValidator descriptionValidator,
     ProjectPartnerValidator partnerValidator, DeliverableValidator deliverableValidator,
-    ICenterProjectCrosscutingThemeService projectCrosscutingThemeService) {
+    ICenterProjectCrosscutingThemeManager projectCrosscutingThemeService) {
     super(config);
     this.projectService = projectService;
     this.projectCrosscutingThemeService = projectCrosscutingThemeService;

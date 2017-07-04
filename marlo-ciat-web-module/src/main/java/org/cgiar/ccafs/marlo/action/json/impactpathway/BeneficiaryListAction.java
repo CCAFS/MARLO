@@ -19,7 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConfig;
 import org.cgiar.ccafs.marlo.data.model.CenterBeneficiary;
 import org.cgiar.ccafs.marlo.data.model.CenterBeneficiaryType;
-import org.cgiar.ccafs.marlo.data.service.ICenterBeneficiaryTypeService;
+import org.cgiar.ccafs.marlo.data.service.ICenterBeneficiaryTypeManager;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 
 import java.util.ArrayList;
@@ -45,10 +45,10 @@ public class BeneficiaryListAction extends BaseAction {
 
   private long beneficiaryTypeID;
 
-  private ICenterBeneficiaryTypeService beneficiaryTypeService;
+  private ICenterBeneficiaryTypeManager beneficiaryTypeService;
 
   @Inject
-  public BeneficiaryListAction(APConfig config, ICenterBeneficiaryTypeService beneficiaryTypeService) {
+  public BeneficiaryListAction(APConfig config, ICenterBeneficiaryTypeManager beneficiaryTypeService) {
     super(config);
     this.beneficiaryTypeService = beneficiaryTypeService;
   }

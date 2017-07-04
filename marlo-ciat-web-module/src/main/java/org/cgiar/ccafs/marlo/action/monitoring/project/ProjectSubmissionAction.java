@@ -26,11 +26,11 @@ import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.CenterSubmission;
 import org.cgiar.ccafs.marlo.data.model.ImpactPathwayCyclesEnum;
-import org.cgiar.ccafs.marlo.data.service.ICenterCycleService;
-import org.cgiar.ccafs.marlo.data.service.ICenterProjectService;
-import org.cgiar.ccafs.marlo.data.service.ICenterSectionStatusService;
-import org.cgiar.ccafs.marlo.data.service.ICenterService;
-import org.cgiar.ccafs.marlo.data.service.ICenterSubmissionService;
+import org.cgiar.ccafs.marlo.data.service.ICenterCycleManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterProjectManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterSectionStatusManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterSubmissionManager;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 import org.cgiar.ccafs.marlo.utils.SendMail;
@@ -57,11 +57,11 @@ public class ProjectSubmissionAction extends BaseAction {
   private static Logger LOG = LoggerFactory.getLogger(IPSubmissionAction.class);
 
   // Managers
-  private ICenterSubmissionService submissionService;
-  private ICenterProjectService projectService;
-  private ICenterSectionStatusService sectionStatusService;
-  private ICenterCycleService cycleService;
-  private ICenterService centerService;
+  private ICenterSubmissionManager submissionService;
+  private ICenterProjectManager projectService;
+  private ICenterSectionStatusManager sectionStatusService;
+  private ICenterCycleManager cycleService;
+  private ICenterManager centerService;
 
   // Parameters
   private SendMail sendMail;
@@ -73,9 +73,9 @@ public class ProjectSubmissionAction extends BaseAction {
   private boolean isSubmited = false;
 
   @Inject
-  public ProjectSubmissionAction(APConfig config, ICenterSubmissionService submissionService,
-    ICenterProjectService projectService, ICenterSectionStatusService sectionStatusService,
-    ICenterCycleService cycleService, ICenterService centerService, SendMail sendMail) {
+  public ProjectSubmissionAction(APConfig config, ICenterSubmissionManager submissionService,
+    ICenterProjectManager projectService, ICenterSectionStatusManager sectionStatusService,
+    ICenterCycleManager cycleService, ICenterManager centerService, SendMail sendMail) {
     super(config);
     this.submissionService = submissionService;
     this.projectService = projectService;

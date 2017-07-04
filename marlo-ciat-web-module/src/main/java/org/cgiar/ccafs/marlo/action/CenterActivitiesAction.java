@@ -23,12 +23,12 @@ import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterRole;
 import org.cgiar.ccafs.marlo.data.model.User;
-import org.cgiar.ccafs.marlo.data.service.IAuditLogService;
-import org.cgiar.ccafs.marlo.data.service.ICenterService;
-import org.cgiar.ccafs.marlo.data.service.ICenterProgramService;
-import org.cgiar.ccafs.marlo.data.service.ICenterRoleService;
-import org.cgiar.ccafs.marlo.data.service.ICenterUserRoleService;
-import org.cgiar.ccafs.marlo.data.service.IUserService;
+import org.cgiar.ccafs.marlo.data.service.IAuditLogManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterProgramManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterRoleManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterUserRoleManager;
+import org.cgiar.ccafs.marlo.data.service.IUserManager;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 import org.cgiar.ccafs.marlo.utils.SendMail;
 
@@ -50,15 +50,15 @@ public class CenterActivitiesAction extends BaseAction {
 
   private static final long serialVersionUID = 486231648621207806L;
 
-  private ICenterRoleService roleService;
-  private ICenterUserRoleService userRoleService;
-  private ICenterService crpService;
-  private IUserService userService;
-  private ICenterProgramService programService;
+  private ICenterRoleManager roleService;
+  private ICenterUserRoleManager userRoleService;
+  private ICenterManager crpService;
+  private IUserManager userService;
+  private ICenterProgramManager programService;
   private CenterRole role;
   private long clRol;
   private CenterProgram selectedProgram;
-  private IAuditLogService auditLogService;
+  private IAuditLogManager auditLogService;
   private Center loggedCrp;
   private CenterRole roleCl;
   private List<CenterProgram> programs;
@@ -70,9 +70,9 @@ public class CenterActivitiesAction extends BaseAction {
 
 
   @Inject
-  public CenterActivitiesAction(APConfig config, ICenterRoleService roleManager, ICenterUserRoleService userRoleManager,
-    ICenterService crpManager, IUserService userManager, ICenterProgramService crpProgramService,
-    IAuditLogService auditLogManager, SendMail sendMail) {
+  public CenterActivitiesAction(APConfig config, ICenterRoleManager roleManager, ICenterUserRoleManager userRoleManager,
+    ICenterManager crpManager, IUserManager userManager, ICenterProgramManager crpProgramService,
+    IAuditLogManager auditLogManager, SendMail sendMail) {
     super(config);
     this.roleService = roleManager;
     this.userRoleService = userRoleManager;

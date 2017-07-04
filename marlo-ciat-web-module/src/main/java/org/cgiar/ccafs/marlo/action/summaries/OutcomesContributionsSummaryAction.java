@@ -24,7 +24,7 @@ import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
-import org.cgiar.ccafs.marlo.data.service.ICenterProgramService;
+import org.cgiar.ccafs.marlo.data.service.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 
 import java.io.ByteArrayInputStream;
@@ -77,7 +77,7 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
   // PDF bytes
   private byte[] bytesExcel;
   // Services
-  private ICenterProgramService programService;
+  private ICenterProgramManager programService;
   // Params
   private CenterProgram researchProgram;
   private long startTime;
@@ -85,7 +85,7 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
   HashMap<CenterOutcome, Integer> allOutcomesProjects = new HashMap<CenterOutcome, Integer>();
 
   @Inject
-  public OutcomesContributionsSummaryAction(APConfig config, ICenterProgramService programService) {
+  public OutcomesContributionsSummaryAction(APConfig config, ICenterProgramManager programService) {
     super(config);
     this.programService = programService;
   }

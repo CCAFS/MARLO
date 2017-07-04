@@ -19,8 +19,8 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
-import org.cgiar.ccafs.marlo.data.service.ICenterProgramService;
-import org.cgiar.ccafs.marlo.data.service.ICenterProjectService;
+import org.cgiar.ccafs.marlo.data.service.ICenterProgramManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterProjectManager;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 
@@ -40,8 +40,8 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
 
   private Map<String, Object> parameters;
-  private ICenterProjectService projectService;
-  private ICenterProgramService programService;
+  private ICenterProjectManager projectService;
+  private ICenterProgramManager programService;
   private Map<String, Object> session;
 
   private Center researchCenter;
@@ -50,7 +50,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
   private long projectID = -1;
 
   @Inject
-  public EditProjectInterceptor(ICenterProjectService projectService, ICenterProgramService programService) {
+  public EditProjectInterceptor(ICenterProjectManager projectService, ICenterProgramManager programService) {
     this.projectService = projectService;
     this.programService = programService;
   }

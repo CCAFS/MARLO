@@ -22,7 +22,7 @@ import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
-import org.cgiar.ccafs.marlo.data.service.ICenterOutcomeService;
+import org.cgiar.ccafs.marlo.data.service.ICenterOutcomeManager;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 
 import java.util.ArrayList;
@@ -47,13 +47,13 @@ public class OutcomeTreeAction extends BaseAction {
   private long outcomeID;
 
 
-  private ICenterOutcomeService outcomeService;
+  private ICenterOutcomeManager outcomeService;
 
 
   private List<Map<String, Object>> dataProjects;
 
   @Inject
-  public OutcomeTreeAction(APConfig config, ICenterOutcomeService outcomeService) {
+  public OutcomeTreeAction(APConfig config, ICenterOutcomeManager outcomeService) {
     super(config);
     this.outcomeService = outcomeService;
   }

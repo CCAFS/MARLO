@@ -34,20 +34,20 @@ import org.cgiar.ccafs.marlo.data.model.CenterObjective;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterRegion;
 import org.cgiar.ccafs.marlo.data.model.User;
-import org.cgiar.ccafs.marlo.data.service.IAuditLogService;
-import org.cgiar.ccafs.marlo.data.service.ICenterBeneficiaryService;
-import org.cgiar.ccafs.marlo.data.service.ICenterBeneficiaryTypeService;
-import org.cgiar.ccafs.marlo.data.service.ICenterService;
-import org.cgiar.ccafs.marlo.data.service.ICenterProgramService;
-import org.cgiar.ccafs.marlo.data.service.ICenterAreaService;
-import org.cgiar.ccafs.marlo.data.service.ICenterImpactBeneficiaryService;
-import org.cgiar.ccafs.marlo.data.service.ICenterImpactObjectiveService;
-import org.cgiar.ccafs.marlo.data.service.ICenterImpactService;
-import org.cgiar.ccafs.marlo.data.service.ICenterImpactStatementService;
-import org.cgiar.ccafs.marlo.data.service.ICenterLeaderService;
-import org.cgiar.ccafs.marlo.data.service.ICenterObjectiveService;
-import org.cgiar.ccafs.marlo.data.service.ICenterRegionService;
-import org.cgiar.ccafs.marlo.data.service.IUserService;
+import org.cgiar.ccafs.marlo.data.service.IAuditLogManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterBeneficiaryManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterBeneficiaryTypeManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterProgramManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterAreaManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterImpactBeneficiaryManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterImpactObjectiveManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterImpactManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterImpactStatementManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterLeaderManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterObjectiveManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterRegionManager;
+import org.cgiar.ccafs.marlo.data.service.IUserManager;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -81,23 +81,23 @@ public class ProgramImpactsAction extends BaseAction {
   private static final long serialVersionUID = -2261790056574973080L;
 
 
-  private ICenterService centerService;
+  private ICenterManager centerService;
 
-  private ICenterProgramService programService;
+  private ICenterProgramManager programService;
 
 
-  private ICenterRegionService regionService;
+  private ICenterRegionManager regionService;
 
-  private ICenterImpactStatementService statementService;
-  private ICenterBeneficiaryTypeService beneficiaryTypeService;
-  private ICenterImpactBeneficiaryService impactBeneficiaryService;
-  private ICenterAreaService researchAreaService;
-  private IUserService userService;
-  private ICenterObjectiveService objectiveService;
-  private ICenterImpactService impactService;
-  private ICenterImpactObjectiveService impactObjectiveService;
-  private IAuditLogService auditLogService;
-  private ICenterBeneficiaryService beneficiaryService;
+  private ICenterImpactStatementManager statementService;
+  private ICenterBeneficiaryTypeManager beneficiaryTypeService;
+  private ICenterImpactBeneficiaryManager impactBeneficiaryService;
+  private ICenterAreaManager researchAreaService;
+  private IUserManager userService;
+  private ICenterObjectiveManager objectiveService;
+  private ICenterImpactManager impactService;
+  private ICenterImpactObjectiveManager impactObjectiveService;
+  private IAuditLogManager auditLogService;
+  private ICenterBeneficiaryManager beneficiaryService;
   private Center loggedCenter;
   private List<CenterArea> researchAreas;
   private List<CenterImpactStatement> idos;
@@ -115,13 +115,13 @@ public class ProgramImpactsAction extends BaseAction {
   private ProgramImpactsValidator validator;
 
   @Inject
-  public ProgramImpactsAction(APConfig config, ICenterService centerService, ICenterProgramService programService,
-    ICenterAreaService researchAreaService, ICenterLeaderService researchLeaderService, IUserService userService,
-    ICenterObjectiveService objectiveService, ICenterImpactService impactService,
-    ICenterImpactObjectiveService impactObjectiveService, ProgramImpactsValidator validator,
-    IAuditLogService auditLogService, ICenterRegionService regionService,
-    ICenterBeneficiaryTypeService beneficiaryTypeService, ICenterImpactBeneficiaryService impactBeneficiaryService,
-    ICenterBeneficiaryService beneficiaryService, ICenterImpactStatementService statementService) {
+  public ProgramImpactsAction(APConfig config, ICenterManager centerService, ICenterProgramManager programService,
+    ICenterAreaManager researchAreaService, ICenterLeaderManager researchLeaderService, IUserManager userService,
+    ICenterObjectiveManager objectiveService, ICenterImpactManager impactService,
+    ICenterImpactObjectiveManager impactObjectiveService, ProgramImpactsValidator validator,
+    IAuditLogManager auditLogService, ICenterRegionManager regionService,
+    ICenterBeneficiaryTypeManager beneficiaryTypeService, ICenterImpactBeneficiaryManager impactBeneficiaryService,
+    ICenterBeneficiaryManager beneficiaryService, ICenterImpactStatementManager statementService) {
     super(config);
     this.centerService = centerService;
     this.programService = programService;

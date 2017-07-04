@@ -26,8 +26,8 @@ import org.cgiar.ccafs.marlo.data.model.CenterProjectFundingSource;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectPartner;
-import org.cgiar.ccafs.marlo.data.service.ICenterProjectService;
-import org.cgiar.ccafs.marlo.data.service.ICenterService;
+import org.cgiar.ccafs.marlo.data.service.ICenterProjectManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterManager;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 
 import java.io.ByteArrayInputStream;
@@ -78,11 +78,11 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
   // Front-end
   private long projectID;
   // Services
-  private ICenterService centerService;
-  private ICenterProjectService projectService;
+  private ICenterManager centerService;
+  private ICenterProjectManager projectService;
 
   @Inject
-  public ProjectSummaryAction(APConfig config, ICenterService centerService, ICenterProjectService projectService) {
+  public ProjectSummaryAction(APConfig config, ICenterManager centerService, ICenterProjectManager projectService) {
     super(config);
     this.centerService = centerService;
     this.projectService = projectService;

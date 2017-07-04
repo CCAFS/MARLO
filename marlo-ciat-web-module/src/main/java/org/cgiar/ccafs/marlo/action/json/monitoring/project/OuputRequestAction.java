@@ -20,8 +20,8 @@ import org.cgiar.ccafs.marlo.config.APConfig;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.TopicOutcomes;
-import org.cgiar.ccafs.marlo.data.service.ICenterOutcomeService;
-import org.cgiar.ccafs.marlo.data.service.ICenterProjectService;
+import org.cgiar.ccafs.marlo.data.service.ICenterOutcomeManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterProjectManager;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 import org.cgiar.ccafs.marlo.utils.SendMail;
 
@@ -47,8 +47,8 @@ public class OuputRequestAction extends BaseAction {
 
 
   private SendMail sendMail;
-  private ICenterOutcomeService outcomeService;
-  private ICenterProjectService projectService;
+  private ICenterOutcomeManager outcomeService;
+  private ICenterProjectManager projectService;
   private List<TopicOutcomes> outcomes;
   private boolean messageSent;
   private Long outcomeID;
@@ -56,7 +56,7 @@ public class OuputRequestAction extends BaseAction {
   private Long projectID;
 
   @Inject
-  public OuputRequestAction(APConfig config, ICenterOutcomeService outcomeService, ICenterProjectService projectService,
+  public OuputRequestAction(APConfig config, ICenterOutcomeManager outcomeService, ICenterProjectManager projectService,
     SendMail sendMail) {
     super(config);
     this.outcomeService = outcomeService;

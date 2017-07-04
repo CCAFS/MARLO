@@ -21,7 +21,7 @@ import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterMilestone;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
-import org.cgiar.ccafs.marlo.data.service.ICenterService;
+import org.cgiar.ccafs.marlo.data.service.ICenterManager;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
@@ -38,11 +38,11 @@ import com.google.inject.Inject;
  */
 public class OutcomesValidator extends BaseValidator {
 
-  ICenterService centerService;
+  ICenterManager centerService;
 
 
   @Inject
-  public OutcomesValidator(ICenterService centerService) {
+  public OutcomesValidator(ICenterManager centerService) {
     this.centerService = centerService;
   }
 

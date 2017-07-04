@@ -25,8 +25,8 @@ import org.cgiar.ccafs.marlo.data.model.CenterOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
 import org.cgiar.ccafs.marlo.data.model.CenterSectionStatus;
-import org.cgiar.ccafs.marlo.data.service.ICenterProgramService;
-import org.cgiar.ccafs.marlo.data.service.ICenterSectionStatusService;
+import org.cgiar.ccafs.marlo.data.service.ICenterProgramManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterSectionStatusManager;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 import org.cgiar.ccafs.marlo.validation.impactpathway.OutcomesValidator;
 import org.cgiar.ccafs.marlo.validation.impactpathway.OutputsValidator;
@@ -54,8 +54,8 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
   // Logger
   private static final Logger LOG = LoggerFactory.getLogger(ValidateImpactPathwaySectionAction.class);
   // Managers
-  private ICenterProgramService programServcie;
-  private ICenterSectionStatusService sectionStatusService;
+  private ICenterProgramManager programServcie;
+  private ICenterSectionStatusManager sectionStatusService;
   // Parameters
   private boolean existProgram;
   private boolean validSection;
@@ -72,8 +72,8 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
   private ResearchTopicsValidator topicValidator;
 
   @Inject
-  public ValidateImpactPathwaySectionAction(APConfig config, ICenterProgramService programServcie,
-    ICenterSectionStatusService sectionStatusService, OutcomesValidator outcomeValidator, OutputsValidator outputValidator,
+  public ValidateImpactPathwaySectionAction(APConfig config, ICenterProgramManager programServcie,
+    ICenterSectionStatusManager sectionStatusService, OutcomesValidator outcomeValidator, OutputsValidator outputValidator,
     ProgramImpactsValidator impactValidator, ResearchTopicsValidator topicValidator) {
     super(config);
     this.programServcie = programServcie;

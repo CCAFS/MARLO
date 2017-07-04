@@ -21,7 +21,7 @@ import org.cgiar.ccafs.marlo.data.model.CenterProjectFundingSource;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionsEnum;
 import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
-import org.cgiar.ccafs.marlo.data.service.ICenterService;
+import org.cgiar.ccafs.marlo.data.service.ICenterManager;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
@@ -36,10 +36,10 @@ import com.google.inject.Inject;
  */
 public class ProjectDescriptionValidator extends BaseValidator {
 
-  private ICenterService centerService;
+  private ICenterManager centerService;
 
   @Inject
-  public ProjectDescriptionValidator(ICenterService centerService) {
+  public ProjectDescriptionValidator(ICenterManager centerService) {
     this.centerService = centerService;
   }
 

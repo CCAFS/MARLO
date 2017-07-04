@@ -26,12 +26,12 @@ import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectCrosscutingTheme;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectStatus;
 import org.cgiar.ccafs.marlo.data.model.User;
-import org.cgiar.ccafs.marlo.data.service.ICenterAreaService;
-import org.cgiar.ccafs.marlo.data.service.ICenterProgramService;
-import org.cgiar.ccafs.marlo.data.service.ICenterProjectCrosscutingThemeService;
-import org.cgiar.ccafs.marlo.data.service.ICenterService;
-import org.cgiar.ccafs.marlo.data.service.IUserService;
-import org.cgiar.ccafs.marlo.data.service.impl.CenterProjectService;
+import org.cgiar.ccafs.marlo.data.service.ICenterAreaManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterProgramManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterProjectCrosscutingThemeManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterManager;
+import org.cgiar.ccafs.marlo.data.service.IUserManager;
+import org.cgiar.ccafs.marlo.data.service.impl.CenterProjectManager;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 
@@ -56,30 +56,30 @@ public class ProjectListAction extends BaseAction {
 
   private long areaID;
 
-  private ICenterService centerService;
+  private ICenterManager centerService;
 
 
-  private ICenterProjectCrosscutingThemeService projectCrosscutingService;
+  private ICenterProjectCrosscutingThemeManager projectCrosscutingService;
 
   private Center loggedCenter;
   private long programID;
-  private ICenterProgramService programService;
+  private ICenterProgramManager programService;
   private long projectID;
   private List<CenterProject> projects;
-  private CenterProjectService projectService;
+  private CenterProjectManager projectService;
   private List<CenterArea> researchAreas;
 
-  private ICenterAreaService researchAreaService;
+  private ICenterAreaManager researchAreaService;
   private List<CenterProgram> researchPrograms;
   private CenterProgram selectedProgram;
   private CenterArea selectedResearchArea;
-  private IUserService userService;
+  private IUserManager userService;
   private String justification;
 
   @Inject
-  public ProjectListAction(APConfig config, ICenterService centerService, ICenterProgramService programService,
-    CenterProjectService projectService, IUserService userService, ICenterAreaService researchAreaService,
-    ICenterProjectCrosscutingThemeService projectCrosscutingService) {
+  public ProjectListAction(APConfig config, ICenterManager centerService, ICenterProgramManager programService,
+    CenterProjectManager projectService, IUserManager userService, ICenterAreaManager researchAreaService,
+    ICenterProjectCrosscutingThemeManager projectCrosscutingService) {
     super(config);
     this.centerService = centerService;
     this.programService = programService;

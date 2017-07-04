@@ -76,7 +76,7 @@ public class Clones {
   public static void generateManager(String nome) {
     File target = new File(pathmanager + "\\I" + nome + "Service.java");
     try {
-      copy(new File(pathmanager + "\\ICenterProjectService.java"), target);
+      copy(new File(pathmanager + "\\ICenterProjectManager.java"), target);
       String content = IOUtils.toString(new FileInputStream(target));
       content = content.replaceAll("CenterProject", nome);
       content = content.replaceAll("project", miniscula(nome));
@@ -93,7 +93,7 @@ public class Clones {
   public static void generateManagerImpl(String nome) {
     File target = new File(pathmanagerimpl + "\\" + nome + "Service.java");
     try {
-      copy(new File(pathmanagerimpl + "\\CenterProjectService.java"), target);
+      copy(new File(pathmanagerimpl + "\\CenterProjectManager.java"), target);
       String content = IOUtils.toString(new FileInputStream(target));
       content = content.replaceAll("CenterProject", nome);
       content = content.replaceAll("project", miniscula(nome));

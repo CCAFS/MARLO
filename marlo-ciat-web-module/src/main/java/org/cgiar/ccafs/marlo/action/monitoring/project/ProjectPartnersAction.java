@@ -25,13 +25,13 @@ import org.cgiar.ccafs.marlo.data.model.CenterProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.User;
-import org.cgiar.ccafs.marlo.data.service.IAuditLogService;
-import org.cgiar.ccafs.marlo.data.service.ICenterProjectPartnerPersonService;
-import org.cgiar.ccafs.marlo.data.service.ICenterProjectPartnerService;
-import org.cgiar.ccafs.marlo.data.service.ICenterProjectService;
-import org.cgiar.ccafs.marlo.data.service.ICenterService;
-import org.cgiar.ccafs.marlo.data.service.IInstitutionService;
-import org.cgiar.ccafs.marlo.data.service.IUserService;
+import org.cgiar.ccafs.marlo.data.service.IAuditLogManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterProjectPartnerPersonManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterProjectPartnerManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterProjectManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterManager;
+import org.cgiar.ccafs.marlo.data.service.IInstitutionManager;
+import org.cgiar.ccafs.marlo.data.service.IUserManager;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -69,15 +69,15 @@ public class ProjectPartnersAction extends BaseAction {
 
 
   // Services - Managers
-  private ICenterService centerService;
+  private ICenterManager centerService;
 
 
-  private ICenterProjectService projectService;
-  private IAuditLogService auditLogService;
-  private ICenterProjectPartnerService partnerService;
-  private ICenterProjectPartnerPersonService partnerPersonService;
-  private IInstitutionService institutionService;
-  private IUserService userService;
+  private ICenterProjectManager projectService;
+  private IAuditLogManager auditLogService;
+  private ICenterProjectPartnerManager partnerService;
+  private ICenterProjectPartnerPersonManager partnerPersonService;
+  private IInstitutionManager institutionService;
+  private IUserManager userService;
 
   // Front Variables
   private Center loggedCenter;
@@ -100,10 +100,10 @@ public class ProjectPartnersAction extends BaseAction {
   private ProjectPartnerValidator validator;
 
   @Inject
-  public ProjectPartnersAction(APConfig config, ICenterService centerService, ICenterProjectService projectService,
-    ICenterProjectPartnerService partnerService, ICenterProjectPartnerPersonService partnerPersonService,
-    IInstitutionService institutionService, IUserService userService, ProjectPartnerValidator validator,
-    IAuditLogService auditLogService) {
+  public ProjectPartnersAction(APConfig config, ICenterManager centerService, ICenterProjectManager projectService,
+    ICenterProjectPartnerManager partnerService, ICenterProjectPartnerPersonManager partnerPersonService,
+    IInstitutionManager institutionService, IUserManager userService, ProjectPartnerValidator validator,
+    IAuditLogManager auditLogService) {
     super(config);
     this.centerService = centerService;
     this.projectService = projectService;

@@ -18,7 +18,7 @@ package org.cgiar.ccafs.marlo.action.json.global;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConfig;
 import org.cgiar.ccafs.marlo.data.model.User;
-import org.cgiar.ccafs.marlo.data.service.impl.UserService;
+import org.cgiar.ccafs.marlo.data.service.impl.UserManager;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 import org.cgiar.ccafs.marlo.utils.SendMail;
 
@@ -56,7 +56,7 @@ public class ManageUsersAction extends BaseAction {
 
   private static String PARAM_EMAIL = "email";
   private static String PARAM_IS_ACTIVE = "isActive";
-  private UserService userManager;
+  private UserManager userManager;
   private SendMail sendMail;
   private String actionName;
 
@@ -67,7 +67,7 @@ public class ManageUsersAction extends BaseAction {
   private String message;
 
   @Inject
-  public ManageUsersAction(APConfig config, UserService userManager, SendMail sendMail) {
+  public ManageUsersAction(APConfig config, UserManager userManager, SendMail sendMail) {
     super(config);
     this.userManager = userManager;
     this.sendMail = sendMail;

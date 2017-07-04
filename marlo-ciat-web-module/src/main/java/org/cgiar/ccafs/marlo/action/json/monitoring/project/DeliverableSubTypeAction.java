@@ -18,7 +18,7 @@ package org.cgiar.ccafs.marlo.action.json.monitoring.project;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConfig;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverableType;
-import org.cgiar.ccafs.marlo.data.service.ICenterDeliverableTypeService;
+import org.cgiar.ccafs.marlo.data.service.ICenterDeliverableTypeManager;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 
 import java.util.ArrayList;
@@ -37,14 +37,14 @@ public class DeliverableSubTypeAction extends BaseAction {
 
   private static final long serialVersionUID = -4481506940773334182L;
 
-  private ICenterDeliverableTypeService deliverableTypeService;
+  private ICenterDeliverableTypeManager deliverableTypeService;
 
   private Long deliverableTypeId;
 
   private List<Map<String, Object>> deliverableSubTypes;
 
   @Inject
-  public DeliverableSubTypeAction(APConfig config, ICenterDeliverableTypeService deliverableTypeService) {
+  public DeliverableSubTypeAction(APConfig config, ICenterDeliverableTypeManager deliverableTypeService) {
     super(config);
     this.deliverableTypeService = deliverableTypeService;
   }

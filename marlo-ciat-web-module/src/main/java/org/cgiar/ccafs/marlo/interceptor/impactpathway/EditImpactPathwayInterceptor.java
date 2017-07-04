@@ -22,10 +22,10 @@ import org.cgiar.ccafs.marlo.data.model.CenterLeader;
 import org.cgiar.ccafs.marlo.data.model.CenterLeaderTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.User;
-import org.cgiar.ccafs.marlo.data.service.ICenterService;
-import org.cgiar.ccafs.marlo.data.service.ICenterProgramService;
-import org.cgiar.ccafs.marlo.data.service.ICenterAreaService;
-import org.cgiar.ccafs.marlo.data.service.IUserService;
+import org.cgiar.ccafs.marlo.data.service.ICenterManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterProgramManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterAreaManager;
+import org.cgiar.ccafs.marlo.data.service.IUserManager;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 
@@ -46,10 +46,10 @@ import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 public class EditImpactPathwayInterceptor extends AbstractInterceptor implements Serializable {
 
   private static final long serialVersionUID = 1217563340228252130L;
-  private ICenterService centerService;
-  private IUserService userService;
-  private ICenterProgramService programService;
-  private ICenterAreaService areaServcie;
+  private ICenterManager centerService;
+  private IUserManager userService;
+  private ICenterProgramManager programService;
+  private ICenterAreaManager areaServcie;
 
   private Map<String, Object> parameters;
   private Map<String, Object> session;
@@ -58,8 +58,8 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
   private long areaID = -1;
 
   @Inject
-  public EditImpactPathwayInterceptor(ICenterService centerService, IUserService userService,
-    ICenterProgramService programService, ICenterAreaService areaServcie) {
+  public EditImpactPathwayInterceptor(ICenterManager centerService, IUserManager userService,
+    ICenterProgramManager programService, ICenterAreaManager areaServcie) {
     this.centerService = centerService;
     this.userService = userService;
     this.programService = programService;

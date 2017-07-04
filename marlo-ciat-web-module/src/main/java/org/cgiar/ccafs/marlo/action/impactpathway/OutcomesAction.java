@@ -25,14 +25,14 @@ import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterTargetUnit;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
-import org.cgiar.ccafs.marlo.data.service.IAuditLogService;
-import org.cgiar.ccafs.marlo.data.service.ICenterImpactService;
-import org.cgiar.ccafs.marlo.data.service.ICenterMilestoneService;
-import org.cgiar.ccafs.marlo.data.service.ICenterOutcomeService;
-import org.cgiar.ccafs.marlo.data.service.ICenterProgramService;
-import org.cgiar.ccafs.marlo.data.service.ICenterService;
-import org.cgiar.ccafs.marlo.data.service.ICenterTargetUnitService;
-import org.cgiar.ccafs.marlo.data.service.ICenterTopicService;
+import org.cgiar.ccafs.marlo.data.service.IAuditLogManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterImpactManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterMilestoneManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterOutcomeManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterProgramManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterTargetUnitManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterTopicManager;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -70,14 +70,14 @@ public class OutcomesAction extends BaseAction {
 
 
   // Services - Managers
-  private ICenterService centerService;
-  private ICenterOutcomeService outcomeService;
-  private IAuditLogService auditLogService;
-  private ICenterTargetUnitService targetUnitService;
-  private ICenterTopicService researchTopicService;
-  private ICenterProgramService programService;
-  private ICenterImpactService impactService;
-  private ICenterMilestoneService milestoneService;
+  private ICenterManager centerService;
+  private ICenterOutcomeManager outcomeService;
+  private IAuditLogManager auditLogService;
+  private ICenterTargetUnitManager targetUnitService;
+  private ICenterTopicManager researchTopicService;
+  private ICenterProgramManager programService;
+  private ICenterImpactManager impactService;
+  private ICenterMilestoneManager milestoneService;
 
   // Front Variables
   private Center loggedCenter;
@@ -102,10 +102,10 @@ public class OutcomesAction extends BaseAction {
   private OutcomesValidator validator;
 
   @Inject
-  public OutcomesAction(APConfig config, ICenterService centerService, ICenterOutcomeService outcomeService,
-    ICenterTargetUnitService targetUnitService, ICenterTopicService researchTopicService,
-    ICenterProgramService programService, ICenterImpactService impactService, ICenterMilestoneService milestoneService,
-    OutcomesValidator validator, IAuditLogService auditLogService) {
+  public OutcomesAction(APConfig config, ICenterManager centerService, ICenterOutcomeManager outcomeService,
+    ICenterTargetUnitManager targetUnitService, ICenterTopicManager researchTopicService,
+    ICenterProgramManager programService, ICenterImpactManager impactService, ICenterMilestoneManager milestoneService,
+    OutcomesValidator validator, IAuditLogManager auditLogService) {
     super(config);
     this.centerService = centerService;
     this.outcomeService = outcomeService;

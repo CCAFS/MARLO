@@ -18,7 +18,7 @@ package org.cgiar.ccafs.marlo.action.json.monitoring.project;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConfig;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
-import org.cgiar.ccafs.marlo.data.service.ICenterOutputService;
+import org.cgiar.ccafs.marlo.data.service.ICenterOutputManager;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 
 import java.util.HashMap;
@@ -36,7 +36,7 @@ public class OutputInfoAction extends BaseAction {
   private static final long serialVersionUID = 6056401366531194841L;
 
 
-  private ICenterOutputService outputService;
+  private ICenterOutputManager outputService;
 
 
   private long outputID;
@@ -44,7 +44,7 @@ public class OutputInfoAction extends BaseAction {
   private Map<String, Object> outputInfo;
 
   @Inject
-  public OutputInfoAction(APConfig config, ICenterOutputService outputService) {
+  public OutputInfoAction(APConfig config, ICenterOutputManager outputService) {
     super(config);
     this.outputService = outputService;
   }

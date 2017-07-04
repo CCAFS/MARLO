@@ -20,7 +20,7 @@ import org.cgiar.ccafs.marlo.data.model.ImpactPathwaySectionsEnum;
 import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
-import org.cgiar.ccafs.marlo.data.service.ICenterService;
+import org.cgiar.ccafs.marlo.data.service.ICenterManager;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
@@ -37,10 +37,10 @@ import com.google.inject.Inject;
  */
 public class ResearchTopicsValidator extends BaseValidator {
 
-  ICenterService centerService;
+  ICenterManager centerService;
 
   @Inject
-  public ResearchTopicsValidator(ICenterService centerService) {
+  public ResearchTopicsValidator(ICenterManager centerService) {
     this.centerService = centerService;
   }
 

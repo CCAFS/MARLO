@@ -19,8 +19,8 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConfig;
 import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterObjective;
-import org.cgiar.ccafs.marlo.data.service.ICenterService;
-import org.cgiar.ccafs.marlo.data.service.ICenterObjectiveService;
+import org.cgiar.ccafs.marlo.data.service.ICenterManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterObjectiveManager;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 
@@ -40,10 +40,10 @@ public class StrategicObjectivesAction extends BaseAction {
   private static final long serialVersionUID = 4240576135659881112L;
 
 
-  private ICenterObjectiveService objectiveService;
+  private ICenterObjectiveManager objectiveService;
 
 
-  private ICenterService centerService;
+  private ICenterManager centerService;
 
 
   private Center loggedCenter;
@@ -51,8 +51,8 @@ public class StrategicObjectivesAction extends BaseAction {
   private List<CenterObjective> objectives;
 
   @Inject
-  public StrategicObjectivesAction(APConfig config, ICenterObjectiveService objectiveService,
-    ICenterService centerService) {
+  public StrategicObjectivesAction(APConfig config, ICenterObjectiveManager objectiveService,
+    ICenterManager centerService) {
     super(config);
     this.objectiveService = objectiveService;
     this.centerService = centerService;

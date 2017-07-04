@@ -27,12 +27,12 @@ import org.cgiar.ccafs.marlo.data.model.CenterLeaderTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
 import org.cgiar.ccafs.marlo.data.model.User;
-import org.cgiar.ccafs.marlo.data.service.IAuditLogService;
-import org.cgiar.ccafs.marlo.data.service.ICenterService;
-import org.cgiar.ccafs.marlo.data.service.ICenterProgramService;
-import org.cgiar.ccafs.marlo.data.service.ICenterAreaService;
-import org.cgiar.ccafs.marlo.data.service.ICenterTopicService;
-import org.cgiar.ccafs.marlo.data.service.IUserService;
+import org.cgiar.ccafs.marlo.data.service.IAuditLogManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterProgramManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterAreaManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterTopicManager;
+import org.cgiar.ccafs.marlo.data.service.IUserManager;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -67,14 +67,14 @@ public class ResearchTopicsAction extends BaseAction {
 
 
   // Services (Managers)
-  private ICenterService centerService;
+  private ICenterManager centerService;
 
-  private ICenterProgramService programService;
+  private ICenterProgramManager programService;
 
-  private ICenterAreaService researchAreaService;
-  private ICenterTopicService researchTopicService;
-  private IAuditLogService auditLogService;
-  private IUserService userService;
+  private ICenterAreaManager researchAreaService;
+  private ICenterTopicManager researchTopicService;
+  private IAuditLogManager auditLogService;
+  private IUserManager userService;
   private ResearchTopicsValidator validator;
   // Local Variables
   private Center loggedCenter;
@@ -90,9 +90,9 @@ public class ResearchTopicsAction extends BaseAction {
 
 
   @Inject
-  public ResearchTopicsAction(APConfig config, ICenterService centerService, ICenterProgramService programService,
-    ICenterAreaService researchAreaService, ICenterTopicService researchTopicService, IUserService userService,
-    ResearchTopicsValidator validator, IAuditLogService auditLogService) {
+  public ResearchTopicsAction(APConfig config, ICenterManager centerService, ICenterProgramManager programService,
+    ICenterAreaManager researchAreaService, ICenterTopicManager researchTopicService, IUserManager userService,
+    ResearchTopicsValidator validator, IAuditLogManager auditLogService) {
     super(config);
     this.centerService = centerService;
     this.programService = programService;

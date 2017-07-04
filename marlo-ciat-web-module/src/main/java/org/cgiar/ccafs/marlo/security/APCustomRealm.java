@@ -20,8 +20,8 @@ import org.cgiar.ccafs.marlo.data.model.ADLoginMessages;
 import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.CenterUserRole;
-import org.cgiar.ccafs.marlo.data.service.impl.CenterRoleService;
-import org.cgiar.ccafs.marlo.data.service.impl.UserService;
+import org.cgiar.ccafs.marlo.data.service.impl.CenterRoleManager;
+import org.cgiar.ccafs.marlo.data.service.impl.UserManager;
 import org.cgiar.ccafs.marlo.security.authentication.Authenticator;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 
@@ -71,8 +71,8 @@ public class APCustomRealm extends AuthorizingRealm {
 
 
   // Managers
-  private UserService userManager;
-  private CenterRoleService userRoleManager;
+  private UserManager userManager;
+  private CenterRoleManager userRoleManager;
 
 
   @Named("DB")
@@ -82,7 +82,7 @@ public class APCustomRealm extends AuthorizingRealm {
   private Authenticator ldapAuthenticator;
 
   @Inject
-  public APCustomRealm(UserService userManager, CenterRoleService userRoleManager,
+  public APCustomRealm(UserManager userManager, CenterRoleManager userRoleManager,
     @Named("DB") Authenticator dbAuthenticator, @Named("LDAP") Authenticator ldapAuthenticator) {
     super(new MemoryConstrainedCacheManager());
     this.userManager = userManager;

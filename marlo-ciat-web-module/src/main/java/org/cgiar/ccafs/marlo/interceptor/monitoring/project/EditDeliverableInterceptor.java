@@ -20,9 +20,9 @@ import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
-import org.cgiar.ccafs.marlo.data.service.ICenterDeliverableService;
-import org.cgiar.ccafs.marlo.data.service.ICenterProgramService;
-import org.cgiar.ccafs.marlo.data.service.ICenterProjectService;
+import org.cgiar.ccafs.marlo.data.service.ICenterDeliverableManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterProgramManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterProjectManager;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 
@@ -40,9 +40,9 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
 
   private static final long serialVersionUID = 1L;
 
-  private ICenterDeliverableService deliverableService;
-  private ICenterProjectService projectService;
-  private ICenterProgramService programService;
+  private ICenterDeliverableManager deliverableService;
+  private ICenterProjectManager projectService;
+  private ICenterProgramManager programService;
 
   private Map<String, Object> parameters;
   private Map<String, Object> session;
@@ -53,8 +53,8 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
   private long deliverableID = -1;
 
   @Inject
-  public EditDeliverableInterceptor(ICenterDeliverableService deliverableService, ICenterProjectService projectService,
-    ICenterProgramService programService) {
+  public EditDeliverableInterceptor(ICenterDeliverableManager deliverableService, ICenterProjectManager projectService,
+    ICenterProgramManager programService) {
     this.deliverableService = deliverableService;
     this.programService = programService;
     this.projectService = projectService;

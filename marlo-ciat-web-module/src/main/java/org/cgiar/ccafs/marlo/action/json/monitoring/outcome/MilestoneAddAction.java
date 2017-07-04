@@ -22,10 +22,10 @@ import org.cgiar.ccafs.marlo.data.model.CenterMonitoringMilestone;
 import org.cgiar.ccafs.marlo.data.model.CenterMonitoringOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterTargetUnit;
-import org.cgiar.ccafs.marlo.data.service.ICenterMilestoneService;
-import org.cgiar.ccafs.marlo.data.service.ICenterMonitoringMilestoneService;
-import org.cgiar.ccafs.marlo.data.service.ICenterOutcomeService;
-import org.cgiar.ccafs.marlo.data.service.ICenterTargetUnitService;
+import org.cgiar.ccafs.marlo.data.service.ICenterMilestoneManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterMonitoringMilestoneManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterOutcomeManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterTargetUnitManager;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -55,17 +55,17 @@ public class MilestoneAddAction extends BaseAction {
   private static String OUTCOME_ID = "outcomeID";
 
   private long outcomeID;
-  private ICenterMonitoringMilestoneService monitoringMilestoneService;
+  private ICenterMonitoringMilestoneManager monitoringMilestoneService;
 
-  private ICenterMilestoneService milestoneService;
-  private ICenterOutcomeService outcomeService;
-  private ICenterTargetUnitService targetUnitService;
+  private ICenterMilestoneManager milestoneService;
+  private ICenterOutcomeManager outcomeService;
+  private ICenterTargetUnitManager targetUnitService;
   private List<Map<String, Object>> newMilestone;
 
   @Inject
-  public MilestoneAddAction(APConfig config, ICenterMonitoringMilestoneService monitoringMilestoneService,
-    ICenterMilestoneService milestoneService, ICenterTargetUnitService targetUnitService,
-    ICenterOutcomeService outcomeService) {
+  public MilestoneAddAction(APConfig config, ICenterMonitoringMilestoneManager monitoringMilestoneService,
+    ICenterMilestoneManager milestoneService, ICenterTargetUnitManager targetUnitService,
+    ICenterOutcomeManager outcomeService) {
     super(config);
     this.monitoringMilestoneService = monitoringMilestoneService;
     this.milestoneService = milestoneService;

@@ -18,8 +18,8 @@ package org.cgiar.ccafs.marlo.interceptor;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.User;
-import org.cgiar.ccafs.marlo.data.service.ICenterService;
-import org.cgiar.ccafs.marlo.data.service.ICenterUserService;
+import org.cgiar.ccafs.marlo.data.service.ICenterManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterUserManager;
 import org.cgiar.ccafs.marlo.security.UserToken;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 
@@ -39,13 +39,13 @@ public class ValidSessionInterceptor extends AbstractInterceptor {
 
   private static final long serialVersionUID = -3706764472200123669L;
 
-  private ICenterService centerService;
-  private ICenterUserService userService;
+  private ICenterManager centerService;
+  private ICenterUserManager userService;
   private Center looggedCenter;
 
 
   @Inject
-  public ValidSessionInterceptor(ICenterService centerService, ICenterUserService userService) {
+  public ValidSessionInterceptor(ICenterManager centerService, ICenterUserManager userService) {
     this.centerService = centerService;
     this.userService = userService;
   }

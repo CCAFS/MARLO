@@ -21,10 +21,10 @@ import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterRole;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.CenterUserRole;
-import org.cgiar.ccafs.marlo.data.service.ICenterService;
-import org.cgiar.ccafs.marlo.data.service.ICenterRoleService;
-import org.cgiar.ccafs.marlo.data.service.ICenterUserRoleService;
-import org.cgiar.ccafs.marlo.data.service.IUserService;
+import org.cgiar.ccafs.marlo.data.service.ICenterManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterRoleManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterUserRoleManager;
+import org.cgiar.ccafs.marlo.data.service.IUserManager;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 
@@ -41,16 +41,16 @@ public class ProgramCoordinatorAction extends BaseAction {
 
   private static final long serialVersionUID = 1843943617459402461L;
 
-  private IUserService userService;
-  private ICenterUserRoleService userRoleService;
-  private ICenterRoleService roleService;
-  private ICenterService centerService;
+  private IUserManager userService;
+  private ICenterUserRoleManager userRoleService;
+  private ICenterRoleManager roleService;
+  private ICenterManager centerService;
   private Center loggedCenter;
   private List<CenterUserRole> userRoles;
 
   @Inject
-  public ProgramCoordinatorAction(APConfig config, IUserService userService, ICenterService centerService,
-    ICenterRoleService roleService, ICenterUserRoleService userRoleService) {
+  public ProgramCoordinatorAction(APConfig config, IUserManager userService, ICenterManager centerService,
+    ICenterRoleManager roleService, ICenterUserRoleManager userRoleService) {
     super(config);
     this.userService = userService;
     this.roleService = roleService;

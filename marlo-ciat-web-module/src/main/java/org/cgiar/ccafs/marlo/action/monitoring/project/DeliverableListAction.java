@@ -24,9 +24,9 @@ import org.cgiar.ccafs.marlo.data.model.CenterDeliverableCrosscutingTheme;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectStatus;
-import org.cgiar.ccafs.marlo.data.service.ICenterDeliverableService;
-import org.cgiar.ccafs.marlo.data.service.ICenterProjectService;
-import org.cgiar.ccafs.marlo.data.service.ICenterService;
+import org.cgiar.ccafs.marlo.data.service.ICenterDeliverableManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterProjectManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterManager;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 
@@ -45,9 +45,9 @@ public class DeliverableListAction extends BaseAction {
 
   private static final long serialVersionUID = 2828289817791232470L;
 
-  private ICenterService centerService;
-  private ICenterProjectService projectService;
-  private ICenterDeliverableService deliverableService;
+  private ICenterManager centerService;
+  private ICenterProjectManager projectService;
+  private ICenterDeliverableManager deliverableService;
 
 
   private CenterArea selectedResearchArea;
@@ -63,8 +63,8 @@ public class DeliverableListAction extends BaseAction {
   private long deliverableID;
 
   @Inject
-  public DeliverableListAction(APConfig config, ICenterService centerService, ICenterProjectService projectService,
-    ICenterDeliverableService deliverableService) {
+  public DeliverableListAction(APConfig config, ICenterManager centerService, ICenterProjectManager projectService,
+    ICenterDeliverableManager deliverableService) {
     super(config);
     this.centerService = centerService;
     this.projectService = projectService;

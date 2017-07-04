@@ -17,7 +17,7 @@ package org.cgiar.ccafs.marlo.interceptor;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.model.Center;
-import org.cgiar.ccafs.marlo.data.service.ICenterService;
+import org.cgiar.ccafs.marlo.data.service.ICenterManager;
 
 import com.google.inject.Inject;
 import com.opensymphony.xwork2.ActionContext;
@@ -34,10 +34,10 @@ public class ValidCrpActionInterceptor extends AbstractInterceptor {
   private static final long serialVersionUID = 2239276003694732851L;
 
   // managers
-  private ICenterService crpManager;
+  private ICenterManager crpManager;
 
   @Inject
-  public ValidCrpActionInterceptor(ICenterService crpManager) {
+  public ValidCrpActionInterceptor(ICenterManager crpManager) {
     this.crpManager = crpManager;
   }
 

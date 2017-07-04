@@ -29,12 +29,12 @@ import org.cgiar.ccafs.marlo.data.model.CenterOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterOutputsNextUser;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
-import org.cgiar.ccafs.marlo.data.service.IAuditLogService;
-import org.cgiar.ccafs.marlo.data.service.ICenterService;
-import org.cgiar.ccafs.marlo.data.service.ICenterNextuserTypeService;
-import org.cgiar.ccafs.marlo.data.service.ICenterProgramService;
-import org.cgiar.ccafs.marlo.data.service.ICenterOutputService;
-import org.cgiar.ccafs.marlo.data.service.ICenterOutputsNextUserService;
+import org.cgiar.ccafs.marlo.data.service.IAuditLogManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterNextuserTypeManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterProgramManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterOutputManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterOutputsNextUserManager;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -69,16 +69,16 @@ public class OutputsAction extends BaseAction {
 
 
   // Services - Managers
-  private ICenterService centerService;
+  private ICenterManager centerService;
 
 
-  private IAuditLogService auditLogService;
+  private IAuditLogManager auditLogService;
 
 
-  private ICenterProgramService programService;
-  private ICenterOutputService outputService;
-  private ICenterNextuserTypeService nextUserService;
-  private ICenterOutputsNextUserService outputNextUserService;
+  private ICenterProgramManager programService;
+  private ICenterOutputManager outputService;
+  private ICenterNextuserTypeManager nextUserService;
+  private ICenterOutputsNextUserManager outputNextUserService;
   // Front Variables
   private Center loggedCenter;
   private List<CenterArea> researchAreas;
@@ -105,9 +105,9 @@ public class OutputsAction extends BaseAction {
    * @param config
    */
   @Inject
-  public OutputsAction(APConfig config, ICenterService centerService, IAuditLogService auditLogService,
-    ICenterProgramService programService, ICenterOutputService outputService, OutputsValidator validator,
-    ICenterNextuserTypeService nextUserService, ICenterOutputsNextUserService outputNextUserService) {
+  public OutputsAction(APConfig config, ICenterManager centerService, IAuditLogManager auditLogService,
+    ICenterProgramManager programService, ICenterOutputManager outputService, OutputsValidator validator,
+    ICenterNextuserTypeManager nextUserService, ICenterOutputsNextUserManager outputNextUserService) {
     super(config);
     this.centerService = centerService;
     this.auditLogService = auditLogService;

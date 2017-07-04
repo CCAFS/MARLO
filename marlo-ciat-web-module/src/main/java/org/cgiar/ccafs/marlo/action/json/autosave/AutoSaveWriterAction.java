@@ -21,7 +21,7 @@ import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
-import org.cgiar.ccafs.marlo.data.service.IUserService;
+import org.cgiar.ccafs.marlo.data.service.IUserManager;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 
 import java.io.BufferedWriter;
@@ -61,10 +61,10 @@ public class AutoSaveWriterAction extends BaseAction {
 
   private Map<String, Object> status;
 
-  private IUserService userService;
+  private IUserManager userService;
 
   @Inject
-  public AutoSaveWriterAction(APConfig config, IUserService userService) {
+  public AutoSaveWriterAction(APConfig config, IUserManager userService) {
 
     super(config);
     this.userService = userService;

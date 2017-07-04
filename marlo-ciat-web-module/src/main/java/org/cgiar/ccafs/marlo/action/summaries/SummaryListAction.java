@@ -22,8 +22,8 @@ import org.cgiar.ccafs.marlo.config.APConfig;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
-import org.cgiar.ccafs.marlo.data.service.ICenterService;
-import org.cgiar.ccafs.marlo.data.service.ICenterProgramService;
+import org.cgiar.ccafs.marlo.data.service.ICenterManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 
 import java.util.ArrayList;
@@ -46,12 +46,12 @@ public class SummaryListAction extends BaseAction {
   private List<CenterProgram> programs;
 
   private Center loggedCenter;
-  private ICenterService centerService;
+  private ICenterManager centerService;
 
-  private ICenterProgramService programService;
+  private ICenterProgramManager programService;
 
   @Inject
-  public SummaryListAction(APConfig config, ICenterService centerService, ICenterProgramService programService) {
+  public SummaryListAction(APConfig config, ICenterManager centerService, ICenterProgramManager programService) {
     super(config);
     this.centerService = centerService;
     this.programService = programService;

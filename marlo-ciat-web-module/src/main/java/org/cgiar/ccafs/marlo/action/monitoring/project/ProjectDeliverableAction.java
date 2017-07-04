@@ -28,15 +28,15 @@ import org.cgiar.ccafs.marlo.data.model.CenterOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectOutput;
-import org.cgiar.ccafs.marlo.data.service.IAuditLogService;
-import org.cgiar.ccafs.marlo.data.service.ICenterDeliverableCrosscutingThemeService;
-import org.cgiar.ccafs.marlo.data.service.ICenterDeliverableDocumentService;
-import org.cgiar.ccafs.marlo.data.service.ICenterDeliverableOutputService;
-import org.cgiar.ccafs.marlo.data.service.ICenterDeliverableService;
-import org.cgiar.ccafs.marlo.data.service.ICenterDeliverableTypeService;
-import org.cgiar.ccafs.marlo.data.service.ICenterOutputService;
-import org.cgiar.ccafs.marlo.data.service.ICenterProjectService;
-import org.cgiar.ccafs.marlo.data.service.ICenterService;
+import org.cgiar.ccafs.marlo.data.service.IAuditLogManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterDeliverableCrosscutingThemeManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterDeliverableDocumentManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterDeliverableOutputManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterDeliverableManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterDeliverableTypeManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterOutputManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterProjectManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterManager;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -67,27 +67,27 @@ public class ProjectDeliverableAction extends BaseAction {
   private static final long serialVersionUID = 6553033204498654741L;
 
 
-  private ICenterDeliverableService deliverableService;
+  private ICenterDeliverableManager deliverableService;
 
 
-  private ICenterDeliverableTypeService deliverableTypeService;
+  private ICenterDeliverableTypeManager deliverableTypeService;
 
 
-  private ICenterDeliverableCrosscutingThemeService deliverableCrosscutingService;
+  private ICenterDeliverableCrosscutingThemeManager deliverableCrosscutingService;
 
-  private ICenterDeliverableOutputService deliverableOutputService;
-
-
-  private ICenterOutputService outputService;
-
-  private ICenterDeliverableDocumentService deliverableDocumentService;
+  private ICenterDeliverableOutputManager deliverableOutputService;
 
 
-  private ICenterService centerService;
+  private ICenterOutputManager outputService;
 
-  private ICenterProjectService projectService;
+  private ICenterDeliverableDocumentManager deliverableDocumentService;
 
-  private IAuditLogService auditLogService;
+
+  private ICenterManager centerService;
+
+  private ICenterProjectManager projectService;
+
+  private IAuditLogManager auditLogService;
   private DeliverableValidator validator;
   private long deliverableID;
   private long projectID;
@@ -107,12 +107,12 @@ public class ProjectDeliverableAction extends BaseAction {
   private String transaction;
 
   @Inject
-  public ProjectDeliverableAction(APConfig config, ICenterService centerService,
-    ICenterDeliverableTypeService deliverableTypeService, ICenterDeliverableService deliverableService,
-    ICenterProjectService projectService, ICenterDeliverableDocumentService deliverableDocumentService,
-    DeliverableValidator validator, ICenterDeliverableCrosscutingThemeService deliverableCrosscutingService,
-    ICenterDeliverableOutputService deliverableOutputService, ICenterOutputService outputService,
-    IAuditLogService auditLogService) {
+  public ProjectDeliverableAction(APConfig config, ICenterManager centerService,
+    ICenterDeliverableTypeManager deliverableTypeService, ICenterDeliverableManager deliverableService,
+    ICenterProjectManager projectService, ICenterDeliverableDocumentManager deliverableDocumentService,
+    DeliverableValidator validator, ICenterDeliverableCrosscutingThemeManager deliverableCrosscutingService,
+    ICenterDeliverableOutputManager deliverableOutputService, ICenterOutputManager outputService,
+    IAuditLogManager auditLogService) {
     super(config);
     this.centerService = centerService;
     this.deliverableTypeService = deliverableTypeService;

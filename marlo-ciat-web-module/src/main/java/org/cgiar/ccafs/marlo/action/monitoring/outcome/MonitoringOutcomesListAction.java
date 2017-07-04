@@ -25,12 +25,12 @@ import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
 import org.cgiar.ccafs.marlo.data.model.User;
-import org.cgiar.ccafs.marlo.data.service.ICenterService;
-import org.cgiar.ccafs.marlo.data.service.ICenterProgramService;
-import org.cgiar.ccafs.marlo.data.service.ICenterAreaService;
-import org.cgiar.ccafs.marlo.data.service.ICenterOutcomeService;
-import org.cgiar.ccafs.marlo.data.service.ICenterTopicService;
-import org.cgiar.ccafs.marlo.data.service.IUserService;
+import org.cgiar.ccafs.marlo.data.service.ICenterManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterProgramManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterAreaManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterOutcomeManager;
+import org.cgiar.ccafs.marlo.data.service.ICenterTopicManager;
+import org.cgiar.ccafs.marlo.data.service.IUserManager;
 import org.cgiar.ccafs.marlo.utils.APConstants;
 
 import java.util.ArrayList;
@@ -50,19 +50,19 @@ public class MonitoringOutcomesListAction extends BaseAction {
   private static final long serialVersionUID = 131978907868869233L;
 
 
-  private ICenterService centerService;
+  private ICenterManager centerService;
   private Center loggedCenter;
   private List<CenterOutcome> outcomes;
-  private ICenterProgramService programService;
+  private ICenterProgramManager programService;
   private List<CenterArea> researchAreas;
-  private ICenterAreaService researchAreaService;
+  private ICenterAreaManager researchAreaService;
   private List<CenterProgram> researchPrograms;
   private List<CenterTopic> researchTopics;
-  private ICenterTopicService researchTopicService;
+  private ICenterTopicManager researchTopicService;
   private CenterProgram selectedProgram;
   private CenterArea selectedResearchArea;
   private CenterTopic selectedResearchTopic;
-  private IUserService userService;
+  private IUserManager userService;
   private long topicID;
   private long programID;
   private long outcomeID;
@@ -70,9 +70,9 @@ public class MonitoringOutcomesListAction extends BaseAction {
 
 
   @Inject
-  public MonitoringOutcomesListAction(APConfig config, ICenterService centerService, ICenterProgramService programService,
-    ICenterAreaService researchAreaService, IUserService userService, ICenterTopicService researchTopicService,
-    ICenterOutcomeService outcomeService) {
+  public MonitoringOutcomesListAction(APConfig config, ICenterManager centerService, ICenterProgramManager programService,
+    ICenterAreaManager researchAreaService, IUserManager userService, ICenterTopicManager researchTopicService,
+    ICenterOutcomeManager outcomeService) {
     super(config);
     this.centerService = centerService;
     this.programService = programService;
