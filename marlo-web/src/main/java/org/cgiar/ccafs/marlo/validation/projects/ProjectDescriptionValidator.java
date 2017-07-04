@@ -133,15 +133,14 @@ public class ProjectDescriptionValidator extends BaseValidator
 
       if (project.getFlagships() != null) {
         if (project.getFlagships().size() == 0) {
-          if (project.getProjecInfoPhase(action.getActualPhase()).getFlagshipValue() == null
-            || project.getProjecInfoPhase(action.getActualPhase()).getFlagshipValue().length() == 0) {
+          if (project.getFlagshipValue() == null || project.getFlagshipValue().length() == 0) {
             this.addMessage(action.getText("projectDescription.flagships"));
             action.getInvalidFields().put("input-project.flagshipValue", InvalidFieldsMessages.EMPTYFIELD);
           }
 
         }
       } else {
-        if (project.getProjecInfoPhase(action.getActualPhase()).getFlagshipValue().length() == 0) {
+        if (project.getFlagshipValue().length() == 0) {
           this.addMessage(action.getText("projectDescription.flagships"));
           action.getInvalidFields().put("input-project.flagshipValue", InvalidFieldsMessages.EMPTYFIELD);
         }
@@ -154,8 +153,7 @@ public class ProjectDescriptionValidator extends BaseValidator
 
       if (action.getSession().containsKey(APConstants.CRP_HAS_REGIONS)
         && action.getSession().get(APConstants.CRP_HAS_REGIONS).toString().equals("true")) {
-        if ((project.getProjecInfoPhase(action.getActualPhase()).getRegionsValue() == null
-          || project.getProjecInfoPhase(action.getActualPhase()).getRegionsValue().length() == 0)
+        if ((project.getRegionsValue() == null || project.getRegionsValue().length() == 0)
           && (project.getProjecInfoPhase(action.getActualPhase()).getNoRegional() == null
             || project.getProjecInfoPhase(action.getActualPhase()).getNoRegional().booleanValue() == false)) {
           this.addMessage(action.getText("projectDescription.regions"));

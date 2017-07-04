@@ -923,12 +923,11 @@ public class ValidateProjectSectionAction extends BaseAction {
       .collect(Collectors.toList())) {
       programs.add(projectFocuses.getCrpProgram());
 
-      if (projectInfo.getFlagshipValue() == null) {
-        projectInfo.setFlagshipValue(projectFocuses.getCrpProgram().getId().toString());
+      if (project.getFlagshipValue() == null) {
+        project.setFlagshipValue(projectFocuses.getCrpProgram().getId().toString());
 
       } else {
-        projectInfo
-          .setFlagshipValue(projectInfo.getFlagshipValue() + "," + projectFocuses.getCrpProgram().getId().toString());
+        project.setFlagshipValue(project.getFlagshipValue() + "," + projectFocuses.getCrpProgram().getId().toString());
       }
     }
 
@@ -938,12 +937,11 @@ public class ValidateProjectSectionAction extends BaseAction {
         && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
       .collect(Collectors.toList())) {
       regions.add(projectFocuses.getCrpProgram());
-      if (projectInfo.getRegionsValue() == null) {
-        projectInfo.setRegionsValue(projectFocuses.getCrpProgram().getId().toString());
+      if (project.getRegionsValue() == null) {
+        project.setRegionsValue(projectFocuses.getCrpProgram().getId().toString());
 
       } else {
-        projectInfo
-          .setRegionsValue(projectInfo.getRegionsValue() + "," + projectFocuses.getCrpProgram().getId().toString());
+        project.setRegionsValue(project.getRegionsValue() + "," + projectFocuses.getCrpProgram().getId().toString());
       }
     }
 

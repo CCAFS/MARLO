@@ -236,7 +236,8 @@ public class ProjectDescriptionAction extends BaseAction {
     // get the action name and replace / for _
     String actionFile = this.getActionName().replace("/", "_");
     // concatane name and add the .json extension
-    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + this.getActualPhase().getDescription() + "_"
+      + this.getActualPhase().getYear() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
@@ -499,9 +500,8 @@ public class ProjectDescriptionAction extends BaseAction {
 
         // load fps value
         List<CrpProgram> programs = new ArrayList<>();
-        if (project.getProjectInfo().getFlagshipValue() != null) {
-          for (String programID : project.getProjectInfo().getFlagshipValue().trim().replace("[", "").replace("]", "")
-            .split(",")) {
+        if (project.getFlagshipValue() != null) {
+          for (String programID : project.getFlagshipValue().trim().replace("[", "").replace("]", "").split(",")) {
             try {
               CrpProgram program = programManager.getCrpProgramById(Long.parseLong(programID.trim()));
               programs.add(program);
@@ -513,9 +513,8 @@ public class ProjectDescriptionAction extends BaseAction {
 
         // load regions value
         List<CrpProgram> regions = new ArrayList<>();
-        if (project.getProjectInfo().getRegionsValue() != null) {
-          for (String programID : project.getProjectInfo().getRegionsValue().trim().replace("[", "").replace("]", "")
-            .split(",")) {
+        if (project.getRegionsValue() != null) {
+          for (String programID : project.getRegionsValue().trim().replace("[", "").replace("]", "").split(",")) {
             try {
               CrpProgram program = programManager.getCrpProgramById(Long.parseLong(programID.trim()));
               regions.add(program);
@@ -537,19 +536,19 @@ public class ProjectDescriptionAction extends BaseAction {
 
         // Load the DB information and adjust it to the structures with which the front end
         project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
-        project.getProjectInfo().setFlagshipValue("");
-        project.getProjectInfo().setRegionsValue("");
+        project.setFlagshipValue("");
+        project.setRegionsValue("");
         List<CrpProgram> programs = new ArrayList<>();
         for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
           .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
             && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
           .collect(Collectors.toList())) {
           programs.add(projectFocuses.getCrpProgram());
-          if (project.getProjectInfo().getFlagshipValue().isEmpty()) {
-            project.getProjectInfo().setFlagshipValue(projectFocuses.getCrpProgram().getId().toString());
+          if (project.getFlagshipValue().isEmpty()) {
+            project.setFlagshipValue(projectFocuses.getCrpProgram().getId().toString());
           } else {
-            project.getProjectInfo().setFlagshipValue(
-              project.getProjectInfo().getFlagshipValue() + "," + projectFocuses.getCrpProgram().getId().toString());
+            project
+              .setFlagshipValue(project.getFlagshipValue() + "," + projectFocuses.getCrpProgram().getId().toString());
           }
         }
 
@@ -560,12 +559,11 @@ public class ProjectDescriptionAction extends BaseAction {
             && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
           .collect(Collectors.toList())) {
           regions.add(projectFocuses.getCrpProgram());
-          if (project.getProjectInfo().getRegionsValue() != null
-            && project.getProjectInfo().getRegionsValue().isEmpty()) {
-            project.getProjectInfo().setRegionsValue(projectFocuses.getCrpProgram().getId().toString());
+          if (project.getRegionsValue() != null && project.getRegionsValue().isEmpty()) {
+            project.setRegionsValue(projectFocuses.getCrpProgram().getId().toString());
           } else {
-            project.getProjectInfo().setRegionsValue(
-              project.getProjectInfo().getRegionsValue() + "," + projectFocuses.getCrpProgram().getId().toString());
+            project
+              .setRegionsValue(project.getRegionsValue() + "," + projectFocuses.getCrpProgram().getId().toString());
           }
         }
         // load the info for Cluster of activities
@@ -733,20 +731,19 @@ public class ProjectDescriptionAction extends BaseAction {
       }
       // Saving the flaghsips
 
-      if (project.getProjectInfo().getFlagshipValue() != null
-        && project.getProjectInfo().getFlagshipValue().length() > 0) {
+      if (project.getFlagshipValue() != null && project.getFlagshipValue().length() > 0) {
 
         for (ProjectFocus projectFocus : projectDB.getProjectFocuses().stream()
           .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
             && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
           .collect(Collectors.toList())) {
 
-          if (!project.getProjectInfo().getFlagshipValue().contains(projectFocus.getCrpProgram().getId().toString())) {
+          if (!project.getFlagshipValue().contains(projectFocus.getCrpProgram().getId().toString())) {
             projectFocusManager.deleteProjectFocus(projectFocus.getId());
 
           }
         }
-        for (String programID : project.getProjectInfo().getFlagshipValue().trim().split(",")) {
+        for (String programID : project.getFlagshipValue().trim().split(",")) {
           if (programID.length() > 0) {
             CrpProgram program = programManager.getCrpProgramById(Long.parseLong(programID.trim()));
             ProjectFocus projectFocus = new ProjectFocus();
@@ -775,13 +772,12 @@ public class ProjectDescriptionAction extends BaseAction {
           && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
         .collect(Collectors.toList());
       for (ProjectFocus projectFocus : regionsPreview) {
-        if (!project.getProjectInfo().getRegionsValue().contains(projectFocus.getCrpProgram().getId().toString())) {
+        if (!project.getRegionsValue().contains(projectFocus.getCrpProgram().getId().toString())) {
           projectFocusManager.deleteProjectFocus(projectFocus.getId());
         }
       }
-      if (project.getProjectInfo().getRegionsValue() != null
-        && project.getProjectInfo().getRegionsValue().length() > 0) {
-        for (String programID : project.getProjectInfo().getRegionsValue().trim().split(",")) {
+      if (project.getRegionsValue() != null && project.getRegionsValue().length() > 0) {
+        for (String programID : project.getRegionsValue().trim().split(",")) {
           if (programID.length() > 0) {
             CrpProgram program = programManager.getCrpProgramById(Long.parseLong(programID.trim()));
             ProjectFocus projectFocus = new ProjectFocus();

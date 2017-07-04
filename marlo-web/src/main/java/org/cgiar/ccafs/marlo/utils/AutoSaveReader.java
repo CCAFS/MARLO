@@ -173,12 +173,16 @@ public class AutoSaveReader {
     HashMap<String, Object> onetoMany = new HashMap<>();
     for (Map.Entry<String, Object> entry : result.entrySet()) {
       String key = entry.getKey();
+
       String keys[] = key.split("\\.");
       String keyList = keys[0];
 
       listNames.add(keyList);
     }
     for (String name : listNames) {
+      if (name.contains("flagshipValue")) {
+        System.out.println("a");
+      }
       HashMap<String, Object> relation = new HashMap<>();
       for (Map.Entry<String, Object> entry : result.entrySet()) {
         String key = entry.getKey();
@@ -213,14 +217,15 @@ public class AutoSaveReader {
       .registerTypeAdapter(Float.class, new FloatTypeAdapter())
       .registerTypeAdapter(Number.class, new IntegerTypeAdapter())
       .registerTypeAdapter(BigDecimal.class, new BigDecimalTypeAdapter())
-      .registerTypeAdapter(Date.class, new DateTypeAdapter()).create();
+      .registerTypeAdapter(Date.class, new DateTypeAdapter()).registerTypeAdapter(String.class, new StringTypeAdapter())
+      .create();
     HashMap<String, Object> jsonNew = this.convertJSONFormat(gson.toJson(jobj));
 
     jobj = gson.fromJson(gson.toJson(jsonNew), JsonObject.class);
 
     String className = jobj.get("className").getAsString();
-
     jobj.remove("className");
+
     try {
       Object obj = gson.fromJson(jobj, Class.forName(className));
       return obj;

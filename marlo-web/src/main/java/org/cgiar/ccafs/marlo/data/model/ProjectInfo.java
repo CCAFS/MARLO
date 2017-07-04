@@ -74,9 +74,6 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
   @Expose
   private Boolean reporting;
 
-  private String flagshipValue;
-  private String regionsValue;
-
 
   public ProjectInfo() {
   }
@@ -184,11 +181,6 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
   }
 
 
-  public String getFlagshipValue() {
-    return flagshipValue;
-  }
-
-
   public String getGenderAnalysis() {
     return genderAnalysis;
   }
@@ -256,11 +248,6 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
 
   public Project getProject() {
     return project;
-  }
-
-
-  public String getRegionsValue() {
-    return regionsValue;
   }
 
 
@@ -360,11 +347,6 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
   }
 
 
-  public void setFlagshipValue(String flagshipValue) {
-    this.flagshipValue = flagshipValue;
-  }
-
-
   public void setGenderAnalysis(String genderAnalysis) {
     this.genderAnalysis = genderAnalysis;
   }
@@ -427,11 +409,6 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
 
   public void setProjectEditLeader(Boolean projectEditLeader) {
     this.projectEditLeader = projectEditLeader;
-  }
-
-
-  public void setRegionsValue(String regionsValue) {
-    this.regionsValue = regionsValue;
   }
 
 
