@@ -188,9 +188,6 @@ public class Project implements java.io.Serializable, IAuditLog {
   private List<OtherContribution> otherContributionsList;
 
 
-  private String regionsValue;
-
-
   private List<ProjectScope> scopes;
 
 
@@ -770,11 +767,6 @@ public class Project implements java.io.Serializable, IAuditLog {
   }
 
 
-  public String getRegionsValue() {
-    return regionsValue;
-  }
-
-
   public List<ProjectScope> getScopes() {
     return scopes;
   }
@@ -1106,11 +1098,6 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   public void setRegions(List<CrpProgram> regions) {
     this.regions = regions;
-  }
-
-
-  public void setRegionsValue(String regionsValue) {
-    this.regionsValue = regionsValue;
   }
 
 

@@ -918,7 +918,8 @@ public class ValidateProjectSectionAction extends BaseAction {
 
     List<CrpProgram> programs = new ArrayList<>();
     for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-      .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+      .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
+        && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
       .collect(Collectors.toList())) {
       programs.add(projectFocuses.getCrpProgram());
 
@@ -933,20 +934,23 @@ public class ValidateProjectSectionAction extends BaseAction {
 
     List<CrpProgram> regions = new ArrayList<>();
     for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-      .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+      .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
+        && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
       .collect(Collectors.toList())) {
       regions.add(projectFocuses.getCrpProgram());
-      if (project.getRegionsValue() == null) {
-        project.setRegionsValue(projectFocuses.getCrpProgram().getId().toString());
+      if (projectInfo.getRegionsValue() == null) {
+        projectInfo.setRegionsValue(projectFocuses.getCrpProgram().getId().toString());
 
       } else {
-        project.setRegionsValue(project.getRegionsValue() + "," + projectFocuses.getCrpProgram().getId().toString());
+        projectInfo
+          .setRegionsValue(projectInfo.getRegionsValue() + "," + projectFocuses.getCrpProgram().getId().toString());
       }
     }
 
     List<ProjectClusterActivity> projectClusterActivities = new ArrayList<>();
     for (ProjectClusterActivity projectClusterActivity : project.getProjectClusterActivities().stream()
-      .filter(c -> c.isActive()).collect(Collectors.toList())) {
+      .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+      .collect(Collectors.toList())) {
 
       projectClusterActivity.getCrpClusterOfActivity().setLeaders(projectClusterActivity.getCrpClusterOfActivity()
         .getCrpClusterActivityLeaders().stream().filter(c -> c.isActive()).collect(Collectors.toList()));

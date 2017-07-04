@@ -513,8 +513,9 @@ public class ProjectDescriptionAction extends BaseAction {
 
         // load regions value
         List<CrpProgram> regions = new ArrayList<>();
-        if (project.getRegionsValue() != null) {
-          for (String programID : project.getRegionsValue().trim().replace("[", "").replace("]", "").split(",")) {
+        if (project.getProjectInfo().getRegionsValue() != null) {
+          for (String programID : project.getProjectInfo().getRegionsValue().trim().replace("[", "").replace("]", "")
+            .split(",")) {
             try {
               CrpProgram program = programManager.getCrpProgramById(Long.parseLong(programID.trim()));
               regions.add(program);
@@ -537,11 +538,11 @@ public class ProjectDescriptionAction extends BaseAction {
         // Load the DB information and adjust it to the structures with which the front end
         project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
         project.getProjectInfo().setFlagshipValue("");
-        project.setRegionsValue("");
+        project.getProjectInfo().setRegionsValue("");
         List<CrpProgram> programs = new ArrayList<>();
         for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-          .filter(
-            c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
+            && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
           .collect(Collectors.toList())) {
           programs.add(projectFocuses.getCrpProgram());
           if (project.getProjectInfo().getFlagshipValue().isEmpty()) {
@@ -553,23 +554,25 @@ public class ProjectDescriptionAction extends BaseAction {
         }
 
         List<CrpProgram> regions = new ArrayList<>();
+
         for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-          .filter(
-            c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
+            && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
           .collect(Collectors.toList())) {
           regions.add(projectFocuses.getCrpProgram());
           if (project.getProjectInfo().getRegionsValue() != null
             && project.getProjectInfo().getRegionsValue().isEmpty()) {
             project.getProjectInfo().setRegionsValue(projectFocuses.getCrpProgram().getId().toString());
           } else {
-            project.getProjectInfo()
-              .setRegionsValue(project.getRegionsValue() + "," + projectFocuses.getCrpProgram().getId().toString());
+            project.getProjectInfo().setRegionsValue(
+              project.getProjectInfo().getRegionsValue() + "," + projectFocuses.getCrpProgram().getId().toString());
           }
         }
         // load the info for Cluster of activities
         List<ProjectClusterActivity> projectClusterActivities = new ArrayList<>();
         for (ProjectClusterActivity projectClusterActivity : project.getProjectClusterActivities().stream()
-          .filter(c -> c.isActive()).collect(Collectors.toList())) {
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList())) {
 
           projectClusterActivity.getCrpClusterOfActivity().setLeaders(projectClusterActivity.getCrpClusterOfActivity()
             .getCrpClusterActivityLeaders().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
@@ -734,8 +737,8 @@ public class ProjectDescriptionAction extends BaseAction {
         && project.getProjectInfo().getFlagshipValue().length() > 0) {
 
         for (ProjectFocus projectFocus : projectDB.getProjectFocuses().stream()
-          .filter(
-            c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
+            && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
           .collect(Collectors.toList())) {
 
           if (!project.getProjectInfo().getFlagshipValue().contains(projectFocus.getCrpProgram().getId().toString())) {
@@ -749,6 +752,7 @@ public class ProjectDescriptionAction extends BaseAction {
             ProjectFocus projectFocus = new ProjectFocus();
             projectFocus.setCrpProgram(program);
             projectFocus.setProject(project);
+            projectFocus.setPhase(this.getActualPhase());
             if (projectDB.getProjectFocuses().stream()
               .filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == program.getId().longValue())
               .collect(Collectors.toList()).isEmpty()) {
@@ -757,6 +761,7 @@ public class ProjectDescriptionAction extends BaseAction {
               projectFocus.setCreatedBy(this.getCurrentUser());
               projectFocus.setModifiedBy(this.getCurrentUser());
               projectFocus.setModificationJustification("");
+              projectFocus.setPhase(this.getActualPhase());
               projectFocusManager.saveProjectFocus(projectFocus);
             }
           }
@@ -766,29 +771,33 @@ public class ProjectDescriptionAction extends BaseAction {
 
       // Saving the regions
       List<ProjectFocus> regionsPreview = projectDB.getProjectFocuses().stream()
-        .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
+          && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
         .collect(Collectors.toList());
       for (ProjectFocus projectFocus : regionsPreview) {
-        if (!project.getRegionsValue().contains(projectFocus.getCrpProgram().getId().toString())) {
+        if (!project.getProjectInfo().getRegionsValue().contains(projectFocus.getCrpProgram().getId().toString())) {
           projectFocusManager.deleteProjectFocus(projectFocus.getId());
         }
       }
-      if (project.getRegionsValue() != null && project.getRegionsValue().length() > 0) {
-        for (String programID : project.getRegionsValue().trim().split(",")) {
+      if (project.getProjectInfo().getRegionsValue() != null
+        && project.getProjectInfo().getRegionsValue().length() > 0) {
+        for (String programID : project.getProjectInfo().getRegionsValue().trim().split(",")) {
           if (programID.length() > 0) {
             CrpProgram program = programManager.getCrpProgramById(Long.parseLong(programID.trim()));
             ProjectFocus projectFocus = new ProjectFocus();
             projectFocus.setCrpProgram(program);
             projectFocus.setProject(project);
-
+            projectFocus.setPhase(this.getActualPhase());
             if (projectDB.getProjectFocuses().stream()
-              .filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == program.getId().longValue())
+              .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
+                && c.getCrpProgram().getId().longValue() == program.getId().longValue())
               .collect(Collectors.toList()).isEmpty()) {
               projectFocus.setActive(true);
               projectFocus.setActiveSince(new Date());
               projectFocus.setCreatedBy(this.getCurrentUser());
               projectFocus.setModifiedBy(this.getCurrentUser());
               projectFocus.setModificationJustification("");
+              projectFocus.setPhase(this.getActualPhase());
               projectFocusManager.saveProjectFocus(projectFocus);
             }
           }
@@ -802,7 +811,8 @@ public class ProjectDescriptionAction extends BaseAction {
 
         // Removing Project Cluster Activities
         for (ProjectClusterActivity projectClusterActivity : projectDB.getProjectClusterActivities().stream()
-          .filter(c -> c.isActive()).collect(Collectors.toList())) {
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList())) {
 
           if (project.getClusterActivities() == null) {
             project.setClusterActivities(new ArrayList<>());
@@ -824,6 +834,7 @@ public class ProjectDescriptionAction extends BaseAction {
               projectClusterActivity.setProject(project);
               projectClusterActivity.setModifiedBy(this.getCurrentUser());
               projectClusterActivity.setModificationJustification("");
+              projectClusterActivity.setPhase(this.getActualPhase());
               projectClusterActivityManager.saveProjectClusterActivity(projectClusterActivity);
             }
 

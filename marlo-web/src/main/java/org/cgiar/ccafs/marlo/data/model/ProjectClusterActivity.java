@@ -26,9 +26,15 @@ public class ProjectClusterActivity implements java.io.Serializable, IAuditLog {
   @Expose
   private Project project;
   @Expose
+  private Phase phase;
+
+  @Expose
   private User createdBy;
+
+
   @Expose
   private User modifiedBy;
+
   @Expose
   private boolean active;
   @Expose
@@ -80,7 +86,6 @@ public class ProjectClusterActivity implements java.io.Serializable, IAuditLog {
     return createdBy;
   }
 
-
   public CrpClusterOfActivity getCrpClusterOfActivity() {
     return crpClusterOfActivity;
   }
@@ -101,7 +106,7 @@ public class ProjectClusterActivity implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
-
+  @Override
   public String getModificationJustification() {
     return this.modificationJustification;
   }
@@ -110,6 +115,11 @@ public class ProjectClusterActivity implements java.io.Serializable, IAuditLog {
   @Override
   public User getModifiedBy() {
     return modifiedBy;
+  }
+
+
+  public Phase getPhase() {
+    return phase;
   }
 
 
@@ -152,10 +162,10 @@ public class ProjectClusterActivity implements java.io.Serializable, IAuditLog {
     this.crpClusterOfActivity = crpClusterOfActivity;
   }
 
+
   public void setId(Long id) {
     this.id = id;
   }
-
 
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
@@ -164,6 +174,11 @@ public class ProjectClusterActivity implements java.io.Serializable, IAuditLog {
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
+  }
+
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
   public void setProject(Project project) {

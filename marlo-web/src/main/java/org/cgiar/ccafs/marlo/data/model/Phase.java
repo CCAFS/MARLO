@@ -48,19 +48,17 @@ public class Phase implements java.io.Serializable, IAuditLog {
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
+
     if (obj == null) {
       return false;
     }
 
     Phase other = (Phase) obj;
-    if (id == null) {
-      if (other.id != null) {
+    if (this.getId() == null) {
+      if (other.getId() != null) {
         return false;
       }
-    } else if (!id.equals(other.getId())) {
+    } else if (!this.getId().equals(other.getId())) {
       return false;
     }
     return true;

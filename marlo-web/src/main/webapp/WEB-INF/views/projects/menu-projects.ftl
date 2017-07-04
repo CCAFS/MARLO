@@ -1,5 +1,5 @@
 [#ftl]
-[@customForm.select name="actualPhase" className="phaseSelect" value="actualPhase.id"   i18nkey="project.title" disabled=!editable  listName="phases" keyFieldName="id"  displayFieldName="composedName" /]
+[@customForm.select name="actualPhase" className="phaseSelect" value="actualPhase.id"   i18nkey="project.title"   listName="phases" keyFieldName="id"  displayFieldName="composedName" /]
 
 [#if !((project.projectInfo.isProjectEditLeader())!false)]
   [#assign menus= [

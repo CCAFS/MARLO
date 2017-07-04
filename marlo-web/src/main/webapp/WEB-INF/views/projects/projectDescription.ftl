@@ -151,13 +151,13 @@
                       [@s.fielderror cssClass="fieldError" fieldName="project.regionsValue"/]
                       <input type="checkbox" name="project.noRegional" value="true" id="projectNoRegional" class="checkboxInput" [#if (project.isNoRegional())!false ]checked="checked"[/#if] />
                       <label for="projectNoRegional" class="checkboxLabel"> <i>[@s.text name="project.noRegional" /]</i> </label>
-                      [@s.checkboxlist name="project.regionsValue" list="regionFlagships" listKey="id" listValue="composedName" cssClass="checkboxInput rpInput" value="regionsIds" /]
+                      [@s.checkboxlist name="project.projectInfo.regionsValue" list="regionFlagships" listKey="id" listValue="composedName" cssClass="checkboxInput rpInput" value="regionsIds" /]
                     [#else]
                       [#if (project.isNoRegional())!false ]
                         <input type="hidden" name="project.noRegional" value="true" />
-                        <p class="checked"> [@s.text name="project.noRegional" /]</p>
+                        <p class="checked"> [@s.text name="project.projectInfo.noRegional" /]</p>
                       [/#if]
-                      <input type="hidden" name="project.regionsValue" value="${(project.regionsValue)!}"/>
+                      <input type="hidden" name="project.projectInfo.regionsValue" value="${(project.regionsValue)!}"/>
                       [#if project.regions?has_content]
                         [#list project.regions as element]<p class="checked">${element.composedName}</p>[/#list]
                       [#else]
