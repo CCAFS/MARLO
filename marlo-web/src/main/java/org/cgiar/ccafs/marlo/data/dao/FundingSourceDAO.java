@@ -92,4 +92,25 @@ public interface FundingSourceDAO {
    * @return the list of FundingSource
    */
   public List<FundingSource> searchFundingSourcesByInstitution(String query, long institutionID, int year, long crpID);
+
+  /**
+   * This method get the list of FundingSource that like a specifics parameters.
+   * 
+   * @param projectId - project id
+   * @param locElementId - the loc element ID
+   * @param year - the year
+   * @return the list of FundingSource
+   */
+  public List<FundingSource> searchFundingSourcesByLocElement(long projectId, long locElementId, int year, long crpID);
+
+  /**
+   * This method get the list of FundingSource that like a specifics parameters.
+   * 
+   * @param projectId - project id
+   * @param locElementTypeId - the loc element type ID
+   * @param year - the year
+   * @return the list of FundingSource
+   */
+  public List<FundingSource> searchFundingSourcesByLocElementType(long projectId, long locElementTypeId, int year,
+    long crpID);
 }

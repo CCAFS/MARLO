@@ -271,11 +271,11 @@ public class ProjectLocationAction extends BaseAction {
 
           countryLocationLevel.setList(true);
           if (locationElementType != null) {
-            countryLocationLevel.setAllCountries(locationElementType.getIsGlobal());
+            // countryLocationLevel.setAllCountries(locationElementType.getIsGlobal());
           }
         } else {
           countryLocationLevel.setList(false);
-          countryLocationLevel.setAllCountries(false);
+          // countryLocationLevel.setAllCountries(false);
         }
 
         locationLevels.add(countryLocationLevel);
@@ -483,49 +483,49 @@ public class ProjectLocationAction extends BaseAction {
 
               newProjectLocationElementType.setProject(project);
 
-              newProjectLocationElementType.setIsGlobal(locationData.isAllCountries());
+              // newProjectLocationElementType.setIsGlobal(locationData.isAllCountries());
 
               projectLocationElementTypeManager.saveProjectLocationElementType(newProjectLocationElementType);
 
             } else {
-              projectLocationElementType.setIsGlobal(locationData.isAllCountries());
+              // projectLocationElementType.setIsGlobal(locationData.isAllCountries());
 
               projectLocationElementTypeManager.saveProjectLocationElementType(projectLocationElementType);
             }
 
           } else {
-            if (locationData.isAllCountries()) {
+            // if (locationData.isAllCountries()) {
 
-              ProjectLocationElementType projectLocationElementType =
-                projectLocationElementTypeManager.getByProjectAndElementType(project.getId(), locationData.getId());
+            ProjectLocationElementType projectLocationElementType =
+              projectLocationElementTypeManager.getByProjectAndElementType(project.getId(), locationData.getId());
 
-              if (projectLocationElementType == null) {
-                ProjectLocationElementType newProjectLocationElementType = new ProjectLocationElementType();
+            if (projectLocationElementType == null) {
+              ProjectLocationElementType newProjectLocationElementType = new ProjectLocationElementType();
 
-                LocElementType locElementType = locElementTypeManager.getLocElementTypeById(locationData.getId());
+              LocElementType locElementType = locElementTypeManager.getLocElementTypeById(locationData.getId());
 
-                newProjectLocationElementType.setLocElementType(locElementType);
+              newProjectLocationElementType.setLocElementType(locElementType);
 
-                Project project = projectManager.getProjectById(this.project.getId());
+              Project project = projectManager.getProjectById(this.project.getId());
 
-                newProjectLocationElementType.setProject(project);
+              newProjectLocationElementType.setProject(project);
 
-                newProjectLocationElementType.setIsGlobal(locationData.isAllCountries());
+              // newProjectLocationElementType.setIsGlobal(locationData.isAllCountries());
 
-                projectLocationElementTypeManager.saveProjectLocationElementType(newProjectLocationElementType);
+              projectLocationElementTypeManager.saveProjectLocationElementType(newProjectLocationElementType);
 
-              } else {
-                projectLocationElementType.setIsGlobal(locationData.isAllCountries());
+            } else {
+              // projectLocationElementType.setIsGlobal(locationData.isAllCountries());
 
-                projectLocationElementTypeManager.saveProjectLocationElementType(projectLocationElementType);
-              }
+              projectLocationElementTypeManager.saveProjectLocationElementType(projectLocationElementType);
             }
+            // }
           }
         } else {
 
           ProjectLocationElementType projectLocationElementType =
             projectLocationElementTypeManager.getByProjectAndElementType(project.getId(), locationData.getId());
-          projectLocationElementType.setIsGlobal(locationData.isAllCountries());
+          // projectLocationElementType.setIsGlobal(locationData.isAllCountries());
           projectLocationElementTypeManager.saveProjectLocationElementType(projectLocationElementType);
 
           if (locationData.getLocElements() != null) {
@@ -549,7 +549,7 @@ public class ProjectLocationAction extends BaseAction {
                     ProjectLocation projectLocation = new ProjectLocation();
                     projectLocation.setProject(project);
                     projectLocation.setLocElement(element);
-                    projectLocation.setActive(!locationData.isAllCountries());
+                    // projectLocation.setActive(!locationData.isAllCountries());
                     projectLocation.setActiveSince(new Date());
                     projectLocation.setCreatedBy(this.getCurrentUser());
                     projectLocation.setModificationJustification("");
@@ -557,7 +557,7 @@ public class ProjectLocationAction extends BaseAction {
 
                     projectLocationManager.saveProjectLocation(projectLocation);
                   } else {
-                    if (!locationData.isAllCountries()) {
+                    if (true) {
                       if (!existProjectLocation.isActive()) {
                         existProjectLocation.setActive(true);
                         existProjectLocation.setActiveSince(new Date());

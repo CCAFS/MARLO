@@ -38,19 +38,19 @@ public final class APConstants {
   public static final String CRP_ADMIN_ROLE = "crp_admin_rol";
   public static final String CRP_BUDGET_GENDER = "crp_budget_gender";
   public static final String CRP_CL_ROLE = "crp_cl_rol";
-  public static final String CRP_CLOSED = "crp_closed";
 
+  public static final String CRP_CLOSED = "crp_closed";
   public static final String CRP_CLUSTER_ACTIVITY_ID = "clusterActivityID";
   public static final String CRP_CU = "crp_cu";
-  public static final String CRP_CUSTOM_FILE = "crp_custom_file";
 
+  public static final String CRP_CUSTOM_FILE = "crp_custom_file";
   public static final String CRP_CUSTOM_GENDER = "crp_custom_gender";
   public static final String CRP_DIVISION_FS = "crp_division_fs";
   public static final String CRP_EMAIL_FUNDING_SOURCE = "crp_email_funding_source";
   public static final String CRP_FPL_ROLE = "crp_fpl_rol";
   public static final String CRP_FPM_ROLE = "crp_fpm_rol";
-  public static final String CRP_HAS_REGIONS = "crp_has_regions";
 
+  public static final String CRP_HAS_REGIONS = "crp_has_regions";
   public static final String CRP_ID = "crpID";
   public static final String CRP_IMPACT_PATHWAY_ACTIVE = "crp_impPath_active";
   public static final String CRP_LANGUAGE = "crp_language";
@@ -63,8 +63,13 @@ public final class APConstants {
   // Crp Parameters
   public static final String CRP_PARAMETERS = "crp_parameters";
   public static final String CRP_PARTNER_CONTRIBUTIONS = "crp_partner_contribution";
+
+
   public static final String CRP_PC_ROLE = "crp_pc_rol";
+
+
   public static final String CRP_FS_W1W2_COFINANCING = "crp_fs_w1w2_cofinancing";
+
   public static final String CRP_PL_ROLE = "crp_pl_rol";
   public static final String CRP_PLANNING_ACTIVE = "crp_planning_active";
   public static final String CRP_PLANNING_YEAR = "crp_planning_year";
@@ -81,6 +86,8 @@ public final class APConstants {
   public static final String CRP_RPM_ROLE = "crp_rpm_rol";
   public static final String CRP_SL_ROLE = "crp_sl_rol";
   public static final String CUSTOM_FILE = "global";
+  public static final String CRP_OTHER_LOCATIONS = "crp_other_locations";
+
   public static final String CUSTOM_LAGUAGE = "en";
   public static final String CRP_CLUSTER_LEADER = "crp_cluster_leader";
   public static final String CRP_NEXT_USERS = "crp_next_users";
@@ -94,18 +101,20 @@ public final class APConstants {
   public static final String DELIVERABLE_FILE_EXTERNALLY_HOSTED_STR = "Externally";
   public static final String DELIVERABLE_FILE_LOCALLY_HOSTED = "1";
   public static final String DELIVERABLE_FILE_LOCALLY_HOSTED_STR = "Locally";
+
   public static final String DELIVERABLE_ID = "deliverableId";
   public static final int DELIVERABLE_QUALITY_ANSWER_NO = 3;
   public static final int DELIVERABLE_QUALITY_ANSWER_YES = 2;
   public static final int DELIVERABLE_QUALITY_ANSWER_YES_BUT_NO = 1;
+
   public static final String DELIVERABLE_TYPE_ID = "deliverableTypeId";
   // Request variables
   public static final String EDITABLE_REQUEST = "edit";
-
   public static final int ELEMENT_RELATION_CONTRIBUTION = 1;
   public static final int ELEMENT_RELATION_TRANSLATION = 2;
   public static final String ELEMENT_TYPE_ID = "parentId";
   public static final int ELEMENT_TYPE_OUTCOME2019 = 3;
+
   // end year
   public static Integer END_YEAR = 2022;
   public static final String ERROR_ACCOUNT_DISABLED = "ERROR_ACCOUNT_DISABLED";
@@ -125,12 +134,15 @@ public final class APConstants {
   public static final String FUNDING_SOURCES_BUDGETS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.FundingSource.fundingSourceBudgets)";
 
+
   public static final String FUNDING_SOURCES_INSTITUTIONS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.FundingSource.fundingInstitutions)";
+
+
+  public static final String FUNDING_SOURCES_LOCATIONS_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.FundingSource.fundingSourceLocations)";
   public static final int GLOBAL_PROGRAM = 11;
   public static final String HIGHLIGHT_REQUEST_ID = "highlightID";
-
-
   public static final String ID = "id";
   public static final String IDO_ID = "idoID";
   public static final long IFPRI_ID = 89;
@@ -168,28 +180,32 @@ public final class APConstants {
   public static final String ONLY_PPA_PARAMETER = "onlyPPA";
   public static final String OTHER_CONTRIBUTIONS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.otherContributions)";
+
   public static final String OUTCOME_REQUEST_ID = "outcomeID";
   // Outlook institutional email
   public static final String OUTLOOK_EMAIL = "cgiar.org";
-  public static final String PAGE_ID = "pageID";
 
+  public static final String PAGE_ID = "pageID";
   public static final String PATH_CUSTOM_FILES = "custom/";
   public static final String PLANNING = "Planning";
 
   public static final String PPA_PARAMETER = "isPPA";
   public static final String PROGRAM_ACTIVITIES_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.CrpProgram.crpClusterOfActivities)";
+
+
   // Relations Name
   public static final String PROGRAM_OUTCOMES_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.CrpProgram.crpProgramOutcomes)";
 
   public static final String PROJECT_ACTIVITIES_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.activities)";
+
   public static final String PROJECT_BILATERAL = "BILATERAL";
   // public static final String PROJECT_CORE_TYPE = "CORE";
-
   public static final String PROJECT_BUDGETS_ACTVITIES_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectBudgetsCluserActvities)";
+
   public static final String PROJECT_BUDGETS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectBudgets)";
   public static final String PROJECT_CASE_STUDIES_INDICATORS_RELATION =
@@ -209,17 +225,16 @@ public final class APConstants {
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableCrps)";
   public static final String PROJECT_DELIVERABLE_DATA_SHARING =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableDataSharings)";
-
   public static final String PROJECT_DELIVERABLE_DATA_SHARING_FILES =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableDataSharingFiles)";
+
   public static final String PROJECT_DELIVERABLE_DISEMINATIONS =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableDisseminations)";
-
   public static final String PROJECT_DELIVERABLE_FUNDING_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableFundingSources)";
+
   public static final String PROJECT_DELIVERABLE_GENDER_LEVELS =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableGenderLevels)";
-
   public static final String PROJECT_DELIVERABLE_LEADERS =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableLeaders)";
 
@@ -229,7 +244,6 @@ public final class APConstants {
   public static final String PROJECT_DELIVERABLE_PARTNERSHIPS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverablePartnerships)";
 
-
   public static final String PROJECT_DELIVERABLE_PROGRAMS =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverablePrograms)";
 
@@ -237,10 +251,11 @@ public final class APConstants {
   public static final String PROJECT_DELIVERABLE_PUBLICATION_METADATA =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverablePublicationMetadatas)";
 
+
   public static final String PROJECT_DELIVERABLE_QUALITY_CHECK =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableQualityChecks)";
-  public static final String PROJECT_DELIVERABLE_REQUEST_ID = "deliverableID";
 
+  public static final String PROJECT_DELIVERABLE_REQUEST_ID = "deliverableID";
   public static final String PROJECT_DELIVERABLE_USERS =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableUsers)";
 
@@ -249,6 +264,7 @@ public final class APConstants {
 
   public static final String PROJECT_FOCUSES_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectFocuses)";
+
   public static final String PROJECT_LESSONS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectComponentLessons)";
 

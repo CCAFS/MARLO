@@ -115,6 +115,53 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
     this.programManager = programManager;
   }
 
+  /**
+   * Method to add i8n parameters to masterReport in Pentaho
+   * 
+   * @param masterReport
+   * @return masterReport with i8n parameters added
+   */
+  private MasterReport addi8nParameters(MasterReport masterReport) {
+    masterReport.getParameterValues().put("i8nSearchTermsProjectID", this.getText("searchTerms.projectId"));
+    masterReport.getParameterValues().put("i8nSearchTermsProjectTitle", this.getText("project.title.readText"));
+    masterReport.getParameterValues().put("i8nSearchTermsSummary", this.getText("project.summary.readText"));
+    masterReport.getParameterValues().put("i8nSearchTermsStartDate", this.getText("project.startDate"));
+    masterReport.getParameterValues().put("i8nSearchTermsEndDate", this.getText("project.endDate"));
+    masterReport.getParameterValues().put("i8nSearchTermsFlagships", this.getText("project.Flagships"));
+    masterReport.getParameterValues().put("i8nSearchTermsRegions", this.getText("project.Regions"));
+    masterReport.getParameterValues().put("i8nSearchTermsLeadOrg", this.getText("project.leadOrg"));
+    masterReport.getParameterValues().put("i8nSearchTermsPL", this.getText("projectPartners.types.PL"));
+    masterReport.getParameterValues().put("i8nSearchTermsTotalW1W2",
+      this.getText("searchTerms.totalBudget") + this.getText("projectsList.W1W2projectBudget"));
+    masterReport.getParameterValues().put("i8nSearchTermsTotalW1W2Cofinancing",
+      this.getText("searchTerms.totalBudget") + this.getText("budget.w1w2cofinancing"));
+    masterReport.getParameterValues().put("i8nSearchTermsTotalW3",
+      this.getText("searchTerms.totalBudget") + this.getText("projectsList.W3projectBudget"));
+    masterReport.getParameterValues().put("i8nSearchTermsTotalBilateral",
+      this.getText("searchTerms.totalBudget") + this.getText("projectsList.BILATERALprojectBudget"));
+    masterReport.getParameterValues().put("i8nSearchTermsTotalCenter",
+      this.getText("searchTerms.totalBudget") + this.getText("budget.centerFunds"));
+    masterReport.getParameterValues().put("i8nSearchTermsActivityID", this.getText("searchTerms.activityId"));
+    masterReport.getParameterValues().put("i8nSearchTermsInputTitle", this.getText("project.activities.inputTitle"));
+    masterReport.getParameterValues().put("i8nSearchTermsInputDescription",
+      this.getText("project.activities.inputDescription.readText"));
+    masterReport.getParameterValues().put("i8nSearchTermsInputStartDate",
+      this.getText("project.activities.inputStartDate"));
+    masterReport.getParameterValues().put("i8nSearchTermsInputEndDate",
+      this.getText("project.activities.inputEndDate"));
+    masterReport.getParameterValues().put("i8nSearchTermsInputLeader", this.getText("project.activities.inputLeader"));
+    masterReport.getParameterValues().put("i8nSearchTermsDeliverableID", this.getText("searchTerms.deliverableId"));
+    masterReport.getParameterValues().put("i8nSearchTermsTitle",
+      this.getText("project.deliverable.generalInformation.title"));
+    masterReport.getParameterValues().put("i8nSearchTermsType",
+      this.getText("project.deliverable.generalInformation.type"));
+    masterReport.getParameterValues().put("i8nSearchTermsSubType",
+      this.getText("project.deliverable.generalInformation.subType"));
+
+
+    return masterReport;
+  }
+
   @Override
   public String execute() throws Exception {
     ClassicEngineBoot.getInstance().start();
@@ -149,6 +196,8 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
       TypedTableModel model = this.getMasterTableModel(center, currentDate);
       sdf.addTable(masterQueryName, model);
       masterReport.setDataFactory(cdf);
+      // Set i8n for pentaho
+      masterReport = this.addi8nParameters(masterReport);
       // Get details band
       ItemBand masteritemBand = masterReport.getItemBand();
       // Create new empty subreport hash map

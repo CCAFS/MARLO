@@ -98,6 +98,30 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
     this.srfTargetUnitManager = srfTargetUnitManager;
   }
 
+  /**
+   * Method to add i8n parameters to masterReport in Pentaho
+   * 
+   * @param masterReport
+   * @return masterReport with i8n parameters added
+   */
+  private MasterReport addi8nParameters(MasterReport masterReport) {
+    masterReport.getParameterValues().put("i8nProjectId", this.getText("searchTerms.projectId"));
+    masterReport.getParameterValues().put("i8nTitle", this.getText("project.title.readText"));
+    masterReport.getParameterValues().put("i8nFlagship", this.getText("projectOtherContributions.flagship"));
+    masterReport.getParameterValues().put("i8nOutcomeStatement", this.getText("outcome.Statement"));
+    masterReport.getParameterValues().put("i8nExpectedValue", this.getText("projectOutcome.expectedValue"));
+    masterReport.getParameterValues().put("i8nTargetUnit", this.getText("outcome.targetUnit"));
+    masterReport.getParameterValues().put("i8nNarrativeTarget",
+      this.getText("projectOutcome.narrativeTarget.readText"));
+    masterReport.getParameterValues().put("i8nMilestoneStatement",
+      this.getText("outcome.milestone.statement.readText"));
+    masterReport.getParameterValues().put("i8nMilestoneExpectedValue",
+      this.getText("projectOutcomeMilestone.expectedValue"));
+    masterReport.getParameterValues().put("i8nMilestoneExpectedNarrative",
+      this.getText("projectOutcomeMilestone.expectedNarrative.readText"));
+    return masterReport;
+  }
+
   @Override
   public String execute() throws Exception {
     ClassicEngineBoot.getInstance().start();
@@ -124,6 +148,8 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
       TypedTableModel model = this.getMasterTableModel(center, currentDate);
       sdf.addTable(masterQueryName, model);
       masterReport.setDataFactory(cdf);
+      // Set i8n for pentaho
+      masterReport = this.addi8nParameters(masterReport);
       // Get details band
       ItemBand masteritemBand = masterReport.getItemBand();
       // Create new empty subreport hash map

@@ -307,10 +307,9 @@ public class ProjectSubmissionAction extends BaseAction {
     String fileName = null;
     String contentType = null;
     try {
-
+      // Set the parameters that are assigned in the prepare by reportingSummaryAction
       reportingSummaryAction.setSession(this.getSession());
       reportingSummaryAction.setYear(this.getCurrentCycleYear());
-      //
       reportingSummaryAction.setLoggedCrp(loggedCrp);
       reportingSummaryAction.setCycle(this.getCurrentCycle());
       reportingSummaryAction.setProjectID(projectID);
