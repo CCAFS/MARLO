@@ -536,14 +536,14 @@ public class FundingSourceAction extends BaseAction {
           List<FundingSourceLocation> countries =
             new ArrayList<>(fundingSource.getFundingSourceLocations().stream().filter(fl -> fl.isActive()
               && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 2)
-              .collect(Collectors.toList()));
+            .collect(Collectors.toList()));
 
           fundingSource.setFundingCountry(new ArrayList<>(countries));
 
           List<FundingSourceLocation> regions =
             new ArrayList<>(fundingSource.getFundingSourceLocations().stream().filter(fl -> fl.isActive()
               && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 1)
-              .collect(Collectors.toList()));
+            .collect(Collectors.toList()));
 
           List<FundingSourceLocation> regionsWScope = new ArrayList<>();
           if (regions.size() > 0) {
@@ -708,6 +708,9 @@ public class FundingSourceAction extends BaseAction {
         fundingSourceDB.setInstitution(null);
       }
 
+      fundingSourceDB.setExtendedDate(fundingSource.getExtendedDate());
+      fundingSourceDB.setSync(fundingSource.getSync());
+      fundingSourceDB.setSyncDate(fundingSource.getSyncDate());
 
       fundingSourceDB.setTitle(fundingSource.getTitle());
       fundingSourceDB.setStatus(fundingSource.getStatus());

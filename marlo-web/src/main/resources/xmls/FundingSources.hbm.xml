@@ -46,6 +46,12 @@
 		<property name="endDate" type="date">
 			<column name="end_date" length="10" />
 		</property>
+		<property name="extendedDate" type="date">
+      <column name="extended_date" length="10" />
+    </property>
+    <property name="syncDate" type="date">
+      <column name="syn_date" length="10" />
+    </property>
 		<property name="financeCode" type="string">
 			<column name="finance_code" length="65535" />
 		</property>
@@ -69,6 +75,9 @@
 		</property>
 		<property name="w1w2" type="java.lang.Boolean">
       <column name="w1w2"  default="0"/>
+    </property>
+      <property name="sync" type="java.lang.Boolean">
+      <column name="sync"  default="0"/>
     </property>
 		<property name="global" type="boolean">
       <column name="global" not-null="true" />
