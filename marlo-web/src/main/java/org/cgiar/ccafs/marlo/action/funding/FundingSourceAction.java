@@ -708,9 +708,9 @@ public class FundingSourceAction extends BaseAction {
         fundingSourceDB.setInstitution(null);
       }
 
-      fundingSourceDB.setExtendedDate(fundingSource.getExtendedDate());
-      fundingSourceDB.setSync(fundingSource.getSync());
-      fundingSourceDB.setSyncDate(fundingSource.getSyncDate());
+      fundingSourceDB.setExtensionDate(fundingSource.getExtensionDate());
+      fundingSourceDB.setSynced(fundingSource.getSynced());
+      fundingSourceDB.setSyncedDate(fundingSource.getSyncedDate());
 
       fundingSourceDB.setTitle(fundingSource.getTitle());
       fundingSourceDB.setStatus(fundingSource.getStatus());
