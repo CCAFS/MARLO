@@ -10,6 +10,7 @@
   {"label":"fundingSourcesList", "nameSpace":"/fundingSources", "action":""}
 ]/]
 
+[#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
@@ -76,7 +77,7 @@
         <div class="row">
            <div class="col-md-4 metadataElement-startDate">[@customForm.input name="fundingSource.startDate" i18nkey="projectCofunded.startDate" className="metadataValue startDateInput" required=true  readOnly=isSynced editable=editable && action.canEditFundingSourceBudget() /] </div>
            <div class="col-md-4 metadataElement-endDate">[@customForm.input name="fundingSource.endDate" i18nkey="projectCofunded.endDate" className="metadataValue endDateInput" required=true  readOnly=isSynced editable=editable && action.canEditFundingSourceBudget() /] </div>
-           <div class="col-md-4 metadataElement-extensionDate">[@customForm.input name="fundingSource.extensionDate" i18nkey="projectCofunded.extensionDate" className="metadataValue extensionDateInput" required=true  readOnly=isSynced editable=editable && action.canEditFundingSourceBudget() /] </div>
+           <div class="col-md-4 metadataElement-extensionDate">[@customForm.input name="fundingSource.extensionDate" i18nkey="projectCofunded.extensionDate" className="metadataValue extensionDateInput" required=false  readOnly=isSynced editable=editable && action.canEditFundingSourceBudget() /] </div>
         </div>
       </div>
       
@@ -288,13 +289,13 @@
             <ul class="list">
             [#if fundingSource.fundingCountry?has_content]
               [#list fundingSource.fundingCountry as country]
-                  <li id="" class="country clearfix col-md-2">
+                  <li id="" class="country clearfix col-md-3">
                   [#if editable ]
                     <div class="removeCountry removeIcon" title="Remove country"></div>
                   [/#if]
                     <input class="id" type="hidden" name="fundingSource.fundingCountry[${country_index}].id" value="${(country.id)!-1}" />
                     <input class="cId" type="hidden" name="fundingSource.fundingCountry[${country_index}].locElement.isoAlpha2" value="${(country.locElement.isoAlpha2)!}" />
-                    <span class="name"><span> <i class="flag-sm flag-sm-${(country.locElement.isoAlpha2)!}"></i> ${(country.locElement.name)!} </span></span>
+                    <span class="name"><span> <i class="flag-sm flag-sm-${(country.locElement.isoAlpha2)!}"></i> [@utils.wordCutter string=(country.locElement.name)!'' maxPos=15 /] </span></span>
                     <div class="clearfix"></div>
                   </li>
               [/#list]
@@ -432,7 +433,7 @@
 
 [#-- Country element template --]
 <ul style="display:none">
-  <li id="countryTemplate" class="country clearfix col-md-2">
+  <li id="countryTemplate" class="country clearfix col-md-3">
       <div class="removeCountry removeIcon" title="Remove country"></div>
       <input class="id" type="hidden" name="fundingSource.fundingCountry[-1].id" value="" />
       <input class="cId" type="hidden" name="fundingSource.fundingCountry[-1].locElement.isoAlpha2" value="" />
