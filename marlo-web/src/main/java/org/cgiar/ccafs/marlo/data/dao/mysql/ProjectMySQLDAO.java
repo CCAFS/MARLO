@@ -17,6 +17,7 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectDAO;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.PropertiesManager;
@@ -175,6 +176,18 @@ public class ProjectMySQLDAO implements ProjectDAO {
       dao.save(project, sectionName, relationsName);
     } else {
       dao.update(project, sectionName, relationsName);
+    }
+
+
+    return project.getId();
+  }
+
+  @Override
+  public long save(Project project, String sectionName, List<String> relationsName, Phase phase) {
+    if (project.getId() == null) {
+      dao.save(project, sectionName, relationsName, phase);
+    } else {
+      dao.update(project, sectionName, relationsName, phase);
     }
 
 

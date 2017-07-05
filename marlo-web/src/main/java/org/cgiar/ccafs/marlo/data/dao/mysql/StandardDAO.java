@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.AuditLogInterceptor;
 import org.cgiar.ccafs.marlo.data.CloseSession;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 import org.cgiar.ccafs.marlo.data.model.Auditlog;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -305,7 +306,7 @@ public class StandardDAO {
 
 
   public void logIt(String action, IAuditLog entity, String json, long userId, String transactionId, Long principal,
-    String relationName, String actionName) {
+    String relationName, String actionName, Phase phase) {
 
 
     String detail = "";
@@ -318,6 +319,9 @@ public class StandardDAO {
     Auditlog auditRecord =
       new Auditlog(action, detail, new Date(), entity.getId().toString(), entity.getClass().toString(), json, userId,
         transactionId, principal, relationName, entity.getModificationJustification());
+    if (phase != null) {
+      auditRecord.setPhase(phase.getId());
+    }
 
     Session session = null;
     Transaction tx = null;
@@ -467,6 +471,42 @@ public class StandardDAO {
     }
   }
 
+  /**
+   * This method saves or update a record into the database.
+   * 
+   * @param obj is the Object to be saved/updated.
+   * @param actionName the action that called the save
+   * @return true if the the save/updated was successfully made, false otherwhise.
+   */
+  protected boolean save(Object obj, String actionName, List<String> relationsName, Phase phase) {
+    Session session = null;
+    Transaction tx = null;
+    try {
+      session = this.openSession(interceptor);
+      interceptor.setSession(session);
+      interceptor.setActionName(actionName);
+      interceptor.setRelationsName(relationsName);
+      interceptor.setPhase(phase);
+      tx = this.initTransaction(session);
+      session.save(obj);
+      this.commitTransaction(tx);
+
+
+      return true;
+    } catch (Exception e) {
+      e.printStackTrace();
+      if (tx != null) {
+        this.rollBackTransaction(tx);
+      }
+      session.clear();
+      if (e instanceof org.hibernate.exception.ConstraintViolationException) {
+        Transaction tx1 = session.beginTransaction();
+        tx1.commit();
+      }
+      return false;
+    }
+  }
+
 
   /**
    * This method saves or update a record into the database.
@@ -520,6 +560,46 @@ public class StandardDAO {
       interceptor.setSession(session);
       interceptor.setActionName(actionName);
       interceptor.setRelationsName(relationsName);
+      tx = this.initTransaction(session);
+
+
+      obj = session.merge(obj);
+      session.saveOrUpdate(obj);
+
+      this.commitTransaction(tx);
+
+
+      return true;
+    } catch (Exception e) {
+      e.printStackTrace();
+      if (tx != null) {
+        this.rollBackTransaction(tx);
+      }
+      session.clear();
+      if (e instanceof org.hibernate.exception.ConstraintViolationException) {
+        Transaction tx1 = session.beginTransaction();
+        tx1.commit();
+      }
+      return false;
+    }
+  }
+
+  /**
+   * This method saves or update a record into the database.
+   * 
+   * @param obj is the Object to be saved/updated.
+   * @param actionName the action that called the save
+   * @return true if the the save/updated was successfully made, false otherwhise.
+   */
+  protected boolean update(Object obj, String actionName, List<String> relationsName, Phase phase) {
+    Session session = null;
+    Transaction tx = null;
+    try {
+      session = this.openSession(interceptor);
+      interceptor.setSession(session);
+      interceptor.setActionName(actionName);
+      interceptor.setRelationsName(relationsName);
+      interceptor.setPhase(phase);
       tx = this.initTransaction(session);
 
 

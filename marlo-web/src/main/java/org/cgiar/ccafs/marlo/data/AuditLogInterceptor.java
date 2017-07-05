@@ -17,6 +17,7 @@
 package org.cgiar.ccafs.marlo.data;
 
 import org.cgiar.ccafs.marlo.data.dao.mysql.StandardDAO;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -63,6 +64,8 @@ public class AuditLogInterceptor extends EmptyInterceptor {
   private final String RELATION_NAME = "relationName";
   private String transactionId;
   private String actionName;
+  private Phase phase;
+
   private List<String> relationsName;
 
 
@@ -78,6 +81,11 @@ public class AuditLogInterceptor extends EmptyInterceptor {
 
   public String getActionName() {
     return actionName;
+  }
+
+
+  public Phase getPhase() {
+    return phase;
   }
 
 
@@ -183,7 +191,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
         String json = gson.toJson(entity);
 
         dao.logIt(function, entity, json, entity.getModifiedBy().getId(), this.transactionId,
-          new Long(map.get(PRINCIPAL).toString()), null, actionName);
+          new Long(map.get(PRINCIPAL).toString()), null, actionName, phase);
 
       } else {
         Set<IAuditLog> set = (Set<IAuditLog>) map.get(ENTITY);
@@ -193,7 +201,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
             String json = gson.toJson(iAuditLog);
 
             dao.logIt("Updated", iAuditLog, json, iAuditLog.getModifiedBy().getId(), this.transactionId,
-              new Long(map.get(PRINCIPAL).toString()), map.get(RELATION_NAME).toString(), actionName);
+              new Long(map.get(PRINCIPAL).toString()), map.get(RELATION_NAME).toString(), actionName, phase);
 
           }
 
@@ -249,6 +257,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
     return false;
 
   }
+
 
   /**
    * this method triggered when save an object, the object is not save into database yet.
@@ -377,6 +386,10 @@ public class AuditLogInterceptor extends EmptyInterceptor {
 
   public void setActionName(String actionName) {
     this.actionName = actionName;
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
 

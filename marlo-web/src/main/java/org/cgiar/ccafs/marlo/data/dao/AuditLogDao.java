@@ -56,4 +56,7 @@ public interface AuditLogDao {
    */
 
   public List<Auditlog> listLogs(Class<?> classAudit, long id, String actionName);
+
+  public List<Auditlog> listLogs(Class<?> classAudit, long id, String actionName, Long phaseID);
+
 }

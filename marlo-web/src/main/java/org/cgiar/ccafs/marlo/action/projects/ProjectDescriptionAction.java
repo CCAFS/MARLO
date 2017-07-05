@@ -904,7 +904,7 @@ public class ProjectDescriptionAction extends BaseAction {
       project.getProjectInfo().setModificationJustification(this.getJustification());
       projectInfoManagerManager.saveProjectInfo(project.getProjectInfo());
       project.setModifiedBy(this.getCurrentUser());
-      projectManager.saveProject(project, this.getActionName(), relationsName);
+      projectManager.saveProject(project, this.getActionName(), relationsName, this.getActualPhase());
 
       Path path = this.getAutoSaveFilePath();
       // delete the draft file if exists

@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager;
 
 import org.cgiar.ccafs.marlo.data.manager.impl.ProjectManagerImpl;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 
 import java.util.List;
@@ -86,5 +87,6 @@ public interface ProjectManager {
 
   public long saveProject(Project project, String section, List<String> relationsName);
 
+  public long saveProject(Project project, String sectionName, List<String> relationsName, Phase phase);
 
 }

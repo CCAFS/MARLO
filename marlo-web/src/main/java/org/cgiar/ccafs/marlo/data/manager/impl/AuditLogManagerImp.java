@@ -72,4 +72,10 @@ public class AuditLogManagerImp implements AuditLogManager {
     return auditLogDao.listLogs(classAudit, id, actionName);
 
   }
+
+  @Override
+  public List<Auditlog> listLogs(Class<?> classAudit, long id, String actionName, Long phaseID) {
+    return auditLogDao.listLogs(classAudit, id, actionName);
+
+  }
 }

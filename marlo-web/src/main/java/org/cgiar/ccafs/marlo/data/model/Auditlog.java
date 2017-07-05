@@ -38,6 +38,7 @@ public class Auditlog implements java.io.Serializable {
   private String relationName;
   private User user;
   private String modificationJustification;
+  private Long phase;
 
 
   public Auditlog() {
@@ -104,10 +105,15 @@ public class Auditlog implements java.io.Serializable {
     return modificationJustification;
   }
 
+
+  public Long getPhase() {
+    return phase;
+  }
+
+
   public String getRelationName() {
     return relationName;
   }
-
 
   public String getTransactionId() {
     return transactionId;
@@ -117,6 +123,7 @@ public class Auditlog implements java.io.Serializable {
   public User getUser() {
     return user;
   }
+
 
   public Long getUserId() {
     return userId;
@@ -156,6 +163,10 @@ public class Auditlog implements java.io.Serializable {
 
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
+  }
+
+  public void setPhase(Long phase) {
+    this.phase = phase;
   }
 
   public void setRelationName(String relationName) {

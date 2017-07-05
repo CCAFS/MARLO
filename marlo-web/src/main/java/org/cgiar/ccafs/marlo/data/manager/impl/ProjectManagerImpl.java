@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 
 import java.util.ArrayList;
@@ -111,5 +112,12 @@ public class ProjectManagerImpl implements ProjectManager {
 
     return projectDAO.save(project, sectionName, relationsName);
   }
+
+  @Override
+  public long saveProject(Project project, String sectionName, List<String> relationsName, Phase phase) {
+
+    return projectDAO.save(project, sectionName, relationsName, phase);
+  }
+
 
 }

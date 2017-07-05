@@ -17,6 +17,7 @@
 package org.cgiar.ccafs.marlo.data.dao;
 
 import org.cgiar.ccafs.marlo.data.dao.mysql.ProjectMySQLDAO;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 
 import java.util.List;
@@ -80,4 +81,7 @@ public interface ProjectDAO {
   public long save(Project project);
 
   public long save(Project project, String section, List<String> relationsName);
+
+  public long save(Project project, String section, List<String> relationsName, Phase phase);
+
 }
