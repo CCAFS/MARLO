@@ -701,13 +701,19 @@ public class FundingSourceAction extends BaseAction {
       fundingSourceDB.setModificationJustification("");
       fundingSourceDB.setActiveSince(fundingSourceDB.getActiveSince());
 
-      // if donor has a select option, no option put donor null
+      // if Original donor has a select option, no option put donor null
       if (fundingSource.getInstitution().getId().longValue() != -1) {
         fundingSourceDB.setInstitution(fundingSource.getInstitution());
       } else {
         fundingSourceDB.setInstitution(null);
       }
 
+      // if Direct donor has a select option, no option put donor null
+      if (fundingSource.getDirectDonor().getId().longValue() != -1) {
+        fundingSourceDB.setDirectDonor(fundingSource.getDirectDonor());
+      } else {
+        fundingSourceDB.setDirectDonor(null);
+      }
 
       fundingSourceDB.setTitle(fundingSource.getTitle());
       fundingSourceDB.setStatus(fundingSource.getStatus());

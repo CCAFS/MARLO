@@ -148,14 +148,23 @@
           <div class="col-md-6" style="display:${canSeePIEmail?string('block','none')}">[@customForm.input name="fundingSource.contactPersonEmail" i18nkey="projectCofunded.contactEmail" className="contactEmail" required=true editable=editable /]</div>
       </div>
 
-      [#-- Donor --]
+      [#-- Original Donor --]
       <div class="form-group">
         <div class="row">
           <div class="col-md-12">
             [@customForm.select name="fundingSource.institution.id" i18nkey="projectCofunded.donor" className="donor"  listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" required=true editable=editable /]
           </div>
-        </div>
-        
+        </div> 
+      </div>      
+        [#-- End Original Donor --]     
+      
+      [#-- Direct Donor --]
+      <div class="form-group">
+        <div class="row">
+          <div class="col-md-12">
+            [@customForm.select name="fundingSource.directDonor.id" i18nkey="projectCofunded.directDonor" className="donor"  listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" required=false editable=editable /]
+          </div>
+        </div> 
         [#-- Request partner adition --]
         [#if editable]
         <p id="addPartnerText" class="helpMessage">
@@ -166,6 +175,7 @@
         </p> 
         [/#if]
       </div>
+      [#-- End Direct Donor --]
       
     </div>
     
