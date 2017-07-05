@@ -149,10 +149,13 @@
       </div>
 
       [#-- Original Donor --]
+      <div class="form-group-donor">
       <div class="form-group">
         <div class="row">
           <div class="col-md-12">
-            [@customForm.select name="fundingSource.institution.id" i18nkey="projectCofunded.donor" className="donor"  listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" required=true editable=editable /]
+            <label for="">[@s.text name="projectCofunded.donor" /] </label>
+            <span class="description col-md-12">[@s.text name="projectCofunded.donor.helpText" /]</span>
+            [@customForm.select name="fundingSource.institution.id" i18nkey="projectCofunded.donor" className="donor" showTitle=false  listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" required=true editable=editable /]
           </div>
         </div> 
       </div>      
@@ -162,9 +165,12 @@
       <div class="form-group">
         <div class="row">
           <div class="col-md-12">
-            [@customForm.select name="fundingSource.directDonor.id" i18nkey="projectCofunded.directDonor" className="donor"  listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" required=false editable=editable /]
+            <label for="">[@s.text name="projectCofunded.directDonor" /] </label>
+            <span class="description col-md-12"><i>[@s.text name="projectCofunded.directDonor.helpText" /]</i></span><br>
+            [@customForm.select name="fundingSource.directDonor.id" i18nkey="projectCofunded.directDonor" className="donor" showTitle=false listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" required=false editable=editable /]
           </div>
         </div> 
+        <br>
         [#-- Request partner adition --]
         [#if editable]
         <p id="addPartnerText" class="helpMessage">
@@ -176,9 +182,8 @@
         [/#if]
       </div>
       [#-- End Direct Donor --]
-      
+          </div>
     </div>
-    
     <h4 class="headTitle">Location information</h4> 
     <div class="borderBox informationWrapper">
     [#-- GLOBAL DIMENSION --]

@@ -1,19 +1,30 @@
 $(document).ready(init);
 
 function init() {
-  
+
   /** Check region option * */
-  $("#regionList").find(".region").each(function(i,e){
-    var option=$("#regionSelect").find("option[value='"+$(e).find("input.rId").val()+"-"+$(e).find("input.regionScope").val()+"']");
-    option.prop('disabled', true);
-    // option.hide();
+  $("#regionList").find(".region").each(
+      function(i,e) {
+        var option =
+            $("#regionSelect").find(
+                "option[value='" + $(e).find("input.rId").val() + "-" + $(e).find("input.regionScope").val() + "']");
+        option.prop('disabled', true);
+        // option.hide();
+      });
+
+// Original Donor
+  $(".donor").on("change", function() {
+    var option = $(this).find("option:selected");
+    console.log(option.val());
+    console.log("Existe?");
+    console.log($(".form-group-donor").find("select option:selected['value=" + option.val() + "']").exists());
   });
-  
+
   // Agreement status & Donor
   $('form select').select2({
     width: "100%"
   });
-  
+
   // Popup
   popups();
 
@@ -32,7 +43,7 @@ function init() {
   });
 
   $(".removeLeadPartner").on("click", removeLeadPartner);
-  
+
 // Country item
   $(".countriesSelect").on("change", function() {
     var option = $(this).find("option:selected");
@@ -44,7 +55,7 @@ function init() {
     $(this).trigger("change.select2");
   });
   $(".removeCountry").on("click", removeCountry);
-  
+
 // REGION item
 // $("#regionSelect").select2('destroy');
   $("#regionSelect").on("change", function() {
@@ -53,8 +64,8 @@ function init() {
       addRegion(option);
       // Remove option from select
       // option.remove();
-       option.prop('disabled', true);
-       $('#regionSelect').select2();
+      option.prop('disabled', true);
+      $('#regionSelect').select2();
       // $(this).trigger("change");
     }
   });
@@ -64,7 +75,6 @@ function init() {
   $('.currencyInput').currencyInput();
   date("form #fundingSource\\.startDate", "form #fundingSource\\.endDate");
 
-  
   /* Select2 multiple for country and region select */
   $('.countriesSelect').select2({
       placeholder: "Select a country(ies)...",
@@ -72,27 +82,26 @@ function init() {
       templateSelection: formatState,
       width: '100%'
   });
-  
+
   changeDonorByFundingType($(".type").val(), $(".donor"))
-  
+
   // Check Funding type
   onChangeFundingType($(".type").val());
-  
+
   // Funding Window / Budget type
   $("select.type").select2({
-      templateResult: function(state) {
-        var name = state.text;
-        var desc = $('li.budgetTypeDescription-' + state.id).text();
-        var $state = $("<span><b>" + name + "</b><br><small class='selectDesc'>" + desc + "</small></span>");
-        return $state;
-      }
+    templateResult: function(state) {
+      var name = state.text;
+      var desc = $('li.budgetTypeDescription-' + state.id).text();
+      var $state = $("<span><b>" + name + "</b><br><small class='selectDesc'>" + desc + "</small></span>");
+      return $state;
+    }
   });
-  
 
   // When select center as Funding Window
   var lastDonor = -1;
   $("select.type").on("change", function() {
-    
+
     var option = $(this).find("option:selected");
     var url = baseURL + "/institutionsByBudgetType.do";
     var data = {
@@ -100,10 +109,10 @@ function init() {
     };
     // Change Donor list
     ajaxService(url, data);
-    
+
     // Event on change
     onChangeFundingType(option.val());
-     
+
   });
 
   // Set file upload (blueimp-tmpl)
@@ -142,14 +151,13 @@ function init() {
 
   // Principal investigator auto-complete
   addContactAutoComplete();
-  
-  
+
   // Disabled Auto save AJAX if click Save
   $('[name=save]').on('click', function(e) {
     // Cancel Auto Save
     autoSaveActive = false;
   });
-  
+
   $(".button-label").on("click", function() {
     var valueSelected = $(this).hasClass('yes-button-label');
     var $input = $(this).parent().find('input');
@@ -157,7 +165,7 @@ function init() {
     $(this).parent().find("label").removeClass("radio-checked");
     $(this).addClass("radio-checked");
   });
-  
+
 // Is this deliverable Open Access
   $(".isRegional .button-label").on("click", function() {
     var valueSelected = $(this).hasClass('yes-button-label');
@@ -174,33 +182,32 @@ function init() {
  * 
  * @param {number} typeID - Funding budget type
  */
-function onChangeFundingType(typeID){
+function onChangeFundingType(typeID) {
   var W1W2 = 1;
   var ON_GOING = 2;
-  
+
   // Change Agreement Status when is (W1W2 Type => 1)
   var $agreementStatus = $('select.agreementStatus');
   // 3 => Concept Note/Pipeline
   // 4 => Informally Confirmed
   var $options = $agreementStatus.find("option[value='3'], option[value='4']");
-  if(typeID == W1W2){
+  if(typeID == W1W2) {
     $agreementStatus.val(ON_GOING); // On-going
     $options.remove();
-  }else{
-    if($options.length==0){
+  } else {
+    if($options.length == 0) {
       $agreementStatus.addOption("3", "Concept Note/Pipeline");
       $agreementStatus.addOption("4", "Informally Confirmed");
     }
   }
   $agreementStatus.select2("destroy");
   $agreementStatus.select2();
-  
-  
+
   // Check W1/W2 - Tag
-  if(typeID == W1W2){
+  if(typeID == W1W2) {
     $('.w1w2-tag').show();
-  }else{
-    $('.w1w2-tag').hide(); 
+  } else {
+    $('.w1w2-tag').hide();
   }
 }
 
@@ -300,7 +307,7 @@ function updateLeadPartner($list) {
   $($list).find('.leadPartners').each(function(i,e) {
     // Show division block
     var institutionID = $(e).find('.fId').val();
-    $('.division-'+institutionID).show();
+    $('.division-' + institutionID).show();
     // Set funding sources indexes
     $(e).setNameIndexes(1, i);
   });
@@ -341,8 +348,7 @@ function addCountry(option) {
 
   // Set country parameters
   $item.find(".name").attr("title", $(option).text());
-  var $state =
-    $('<span> <i class="flag-sm flag-sm-' + option.val() + '"></i>  ' + v + '</span>');
+  var $state = $('<span> <i class="flag-sm flag-sm-' + option.val() + '"></i>  ' + v + '</span>');
   $item.find(".name").html($state);
   $item.find(".cId").val(option.val());
   $item.find(".id").val(-1);
@@ -394,38 +400,38 @@ function checkCountryList(block) {
 /** REGIONS SELECT FUNCTIONS * */
 // Add a new region element
 function addRegion(option) {
-var canAdd = true;
-if(option.val() == "-1") {
- canAdd = false;
-}
-var optionValue=option.val().split("-")[0];
-var optionScope=option.val().split("-")[1];
+  var canAdd = true;
+  if(option.val() == "-1") {
+    canAdd = false;
+  }
+  var optionValue = option.val().split("-")[0];
+  var optionScope = option.val().split("-")[1];
 
-var $list = $(option).parents("#regionList").find(".list");
-var $item = $("#regionTemplate").clone(true).removeAttr("id");
-var v = $(option).text().length > 20 ? $(option).text().substr(0, 20) + ' ... ' : $(option).text();
+  var $list = $(option).parents("#regionList").find(".list");
+  var $item = $("#regionTemplate").clone(true).removeAttr("id");
+  var v = $(option).text().length > 20 ? $(option).text().substr(0, 20) + ' ... ' : $(option).text();
 
 // Check if is already selected
-$list.find('.region').each(function(i,e) {
- if($(e).find('input.rId').val() == optionValue) {
-   canAdd = false;
-   return;
- }
-});
-if(!canAdd) {
- return;
-}
+  $list.find('.region').each(function(i,e) {
+    if($(e).find('input.rId').val() == optionValue) {
+      canAdd = false;
+      return;
+    }
+  });
+  if(!canAdd) {
+    return;
+  }
 
 // Set region parameters
-$item.find(".name").attr("title", $(option).text());
-$item.find(".name").html($(option).text());
-$item.find(".rId").val(optionValue);
-$item.find(".regionScope").val(optionScope);
-$item.find(".id").val(-1);
-$list.append($item);
-$item.show('slow');
-updateRegionList($list);
-checkRegionList($list);
+  $item.find(".name").attr("title", $(option).text());
+  $item.find(".name").html($(option).text());
+  $item.find(".rId").val(optionValue);
+  $item.find(".regionScope").val(optionScope);
+  $item.find(".id").val(-1);
+  $list.append($item);
+  $item.show('slow');
+  updateRegionList($list);
+  checkRegionList($list);
 
 // Reset select
 // $(option).val("-1");
@@ -434,22 +440,22 @@ checkRegionList($list);
 }
 
 function removeRegion() {
-var $list = $(this).parents('.list');
-var $item = $(this).parents('.region');
-var value = $item.find(".rId").val();
-var scope = $item.find(".regionScope").val();
-var name = $item.find(".name").attr("title");
+  var $list = $(this).parents('.list');
+  var $item = $(this).parents('.region');
+  var value = $item.find(".rId").val();
+  var scope = $item.find(".regionScope").val();
+  var name = $item.find(".name").attr("title");
 
-var $select = $(".regionsSelect");
-$item.hide(300, function() {
- $item.remove();
- checkRegionList($list);
- updateRegionList($list);
-});
-var option= $select.find("option[value='"+value+"-"+scope+"']");
-console.log(option);
-option.prop('disabled', false);
-$('#regionSelect').select2();
+  var $select = $(".regionsSelect");
+  $item.hide(300, function() {
+    $item.remove();
+    checkRegionList($list);
+    updateRegionList($list);
+  });
+  var option = $select.find("option[value='" + value + "-" + scope + "']");
+  console.log(option);
+  option.prop('disabled', false);
+  $('#regionSelect').select2();
 // Add region option again
 // $select.addOption(value, name);
 // $select.trigger("change.select2");
@@ -457,19 +463,19 @@ $('#regionSelect').select2();
 
 function updateRegionList($list) {
 
-$($list).find('.region').each(function(i,e) {
- // Set regions indexes
- $(e).setNameIndexes(1, i);
-});
+  $($list).find('.region').each(function(i,e) {
+    // Set regions indexes
+    $(e).setNameIndexes(1, i);
+  });
 }
 
 function checkRegionList(block) {
-var items = $(block).find('.region').length;
-if(items == 0) {
- $(block).parent().find('p.emptyText').fadeIn();
-} else {
- $(block).parent().find('p.emptyText').fadeOut();
-}
+  var items = $(block).find('.region').length;
+  if(items == 0) {
+    $(block).parent().find('p.emptyText').fadeIn();
+  } else {
+    $(block).parent().find('p.emptyText').fadeOut();
+  }
 }
 
 function date(start,end) {
@@ -483,9 +489,12 @@ function date(start,end) {
       changeYear: true,
       onChangeMonthYear: function(year,month,inst) {
         var selectedDate = new Date(inst.selectedYear, inst.selectedMonth, 1);
-        if (budgetsConflicts(from.val().split('-')[0], inst.selectedYear - 1)){
+        if(budgetsConflicts(from.val().split('-')[0], inst.selectedYear - 1)) {
           $(this).datepicker("hide");
           return
+
+          
+
         }
         $(this).datepicker('setDate', selectedDate);
         if(selectedDate != "") {
@@ -511,9 +520,12 @@ function date(start,end) {
       changeYear: true,
       onChangeMonthYear: function(year,month,inst) {
         var selectedDate = new Date(inst.selectedYear, inst.selectedMonth + 1, 0);
-        if (budgetsConflicts(inst.selectedYear + 1, to.val().split('-')[0])){
+        if(budgetsConflicts(inst.selectedYear + 1, to.val().split('-')[0])) {
           $(this).datepicker("hide");
           return
+
+          
+
         }
         $(this).datepicker('setDate', selectedDate);
         if(selectedDate != "") {
@@ -545,20 +557,23 @@ function date(start,end) {
         yearConflicts.push(i);
       }
     }
-    
+
     if(yearConflicts.length > 0) {
       // Noty Message
-      var message = "Date cannot be changed as this funding source has at least one budget allocation in <b>" + yearConflicts.join(', ') +"</b>";
+      var message =
+          "Date cannot be changed as this funding source has at least one budget allocation in <b>"
+              + yearConflicts.join(', ') + "</b>";
       var notyOptions = jQuery.extend({}, notyDefaultOptions);
       notyOptions.text = message;
       notyOptions.animation = {
-        open: 'animated bounceInLeft', // Animate.css class names
-        close: 'animated bounceOutLeft', // Animate.css class names
-        easing: 'swing', // unavailable - no need
-        speed: 500 // unavailable - no need
+          open: 'animated bounceInLeft', // Animate.css class names
+          close: 'animated bounceOutLeft', // Animate.css class names
+          easing: 'swing', // unavailable - no need
+          speed: 500
+      // unavailable - no need
       };
       $('.dateErrorBox').noty(notyOptions);
-      
+
       return true;
     }
     return false;
@@ -572,7 +587,7 @@ function date(start,end) {
     // Clear tabs & content
     $('.budgetByYears .nav-tabs').empty();
     $('.budgetByYears .tab-content .tab-pane').removeClass('active going');
-    
+
     var index = 0;
     while(startYear <= endYear) {
 
@@ -600,7 +615,7 @@ function date(start,end) {
 
         // Set currency format
         $content.find('input.currencyInput').currencyInput();
-      }else{
+      } else {
         // Set indexes
         $('#fundingYear-' + startYear).setNameIndexes(1, index);
         $('#fundingYear-' + startYear).addClass('going')
@@ -609,13 +624,12 @@ function date(start,end) {
       index++;
       years.push(startYear++);
     }
-    
+
     // Clear unused content names
-    $('.budgetByYears .tab-content .tab-pane').not('.going').each(function(i,content){
-      $(content).setNameIndexes(1, index+i);
+    $('.budgetByYears .tab-content .tab-pane').not('.going').each(function(i,content) {
+      $(content).setNameIndexes(1, index + i);
     });
-    
-    
+
     // Set active tab & content
     if(years.indexOf(parseInt(currentCycleYear)) == -1) {
       $('.budgetByYears .nav-tabs li').last().addClass('active');
@@ -678,7 +692,7 @@ function ajaxService(url,data) {
           $select.addOption(e.id, e.name);
         });
         changeDonorByFundingType(data.budgetTypeID, $select)
-        
+
       },
       error: function(e) {
         console.log(e);
@@ -702,13 +716,12 @@ function formatState(state) {
   if(!state.id) {
     return state.text;
   }
-  var $state="";
-  if(state.element.value!="-1"){
-   $state =
-      $('<span> <i class="flag-sm flag-sm-' + state.element.value.toUpperCase() + '"></i>  ' + state.text + '</span>');
-  }else{
+  var $state = "";
+  if(state.element.value != "-1") {
     $state =
-      $('<span>' + state.text + '</span>');
+        $('<span> <i class="flag-sm flag-sm-' + state.element.value.toUpperCase() + '"></i>  ' + state.text + '</span>');
+  } else {
+    $state = $('<span>' + state.text + '</span>');
   }
   return $state;
 };
