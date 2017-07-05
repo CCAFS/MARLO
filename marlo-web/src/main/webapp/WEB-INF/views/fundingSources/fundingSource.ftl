@@ -38,7 +38,7 @@
           </div>
           <div class="buttons-field">
             [#if editable]
-              [#assign isSynced = false ]
+              [#assign isSynced = (fundingSource.synced)!false ]
               <div id="fillMetadata">
                 <input type="hidden" name="fundingSource.synced" value="${isSynced?string}" />
                 [#-- Sync Button --]
@@ -53,7 +53,8 @@
             [/#if]
           </div>
         </div>
-        <div id="metadata-output"></div>
+        <div id="metadata-output">${(fundingSource.syncedDate)!}</div>
+        <input type="hidden" name="fundingSource.syncedDate" value="${(fundingSource.syncedDate)!}" />
       </div>
 
       [#-- Loading --]
