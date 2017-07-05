@@ -293,6 +293,10 @@ public class CrpLocationsAction extends BaseAction {
           elementType.setName(locElementType.getName());
           locElementTypeManager.saveLocElementType(elementType);
         } else {
+          LocElementType elementTypeDB = locElementTypeManager.getLocElementTypeById(locElementType.getId());
+          elementTypeDB.setHasCoordinates(true);
+          elementTypeDB.setName(locElementType.getName());
+          locElementTypeManager.saveLocElementType(elementTypeDB);
           if (locElementType.getLocationElements() != null) {
             for (LocElement locElement : locElementType.getLocationElements()) {
               if (locElement.getId() == null) {
@@ -327,6 +331,11 @@ public class CrpLocationsAction extends BaseAction {
                 elementType.setHasCoordinates(true);
                 elementType.setName(locElementType.getName());
                 locElementTypeManager.saveLocElementType(elementType);
+              } else {
+                LocElement elementDB = locElementManager.getLocElementById(locElement.getId());
+                elementDB.setName(locElement.getName());
+                locElementManager.saveLocElement(elementDB);
+
               }
             }
           } else {
