@@ -75,7 +75,7 @@ public class AuditLogManagerImp implements AuditLogManager {
 
   @Override
   public List<Auditlog> listLogs(Class<?> classAudit, long id, String actionName, Long phaseID) {
-    return auditLogDao.listLogs(classAudit, id, actionName);
+    return auditLogDao.listLogs(classAudit, id, actionName, phaseID);
 
   }
 }
