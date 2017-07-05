@@ -15,6 +15,7 @@
 
 [#assign startYear = ((fundingSource.startDate?string.yyyy)?number)!currentCycleYear /]
 [#assign endYear = ((fundingSource.endDate?string.yyyy)?number)!startYear /]
+[#assign extensionYear = ((fundingSource.extensionDate?string.yyyy)?number)!endYear /]
     
 <section class="container">
   <article class="" id="mainInformation">
@@ -31,16 +32,16 @@
 
       [#-- Finance code --]
       <div class="form-group row">
+        [#assign isSynced = (fundingSource.synced)!false ]
         <div class="col-md-offset-6 col-md-6">
           <div class="url-field">
-            [@customForm.input name="fundingSource.financeCode"  i18nkey="projectCofunded.financeCode" className="financeCode" placeholder="projectCofunded.financeCode.placeholder" editable=editable/]
+            [@customForm.input name="fundingSource.financeCode"  i18nkey="projectCofunded.financeCode" className="financeCode" placeholder="projectCofunded.financeCode.placeholder" readOnly=isSynced editable=editable/]
             <span class="financeCode-message"></span>
           </div>
           <div class="buttons-field">
             [#if editable]
-              [#assign isSynced = (fundingSource.synced)!false ]
               <div id="fillMetadata">
-                <input type="hidden" name="fundingSource.synced" value="${isSynced?string}" />
+                <input type="hidden" id="isSynced" name="fundingSource.synced" value="${isSynced?string}" />
                 [#-- Sync Button --]
                 <div class="checkButton" style="display:${isSynced?string('none','block')};">[@s.text name="project.deliverable.dissemination.sync" /]</div>
                 <div class="unSyncBlock" style="display:${isSynced?string('block','none')};">
@@ -53,8 +54,8 @@
             [/#if]
           </div>
         </div>
-        <div id="metadata-output">${(fundingSource.syncedDate)!}</div>
-        <input type="hidden" name="fundingSource.syncedDate" value="${(fundingSource.syncedDate)!}" />
+        <div id="metadata-output"></div>
+        <input type="hidden" name="fundingSource.syncedDate" value="${(fundingSource.syncedDate?date)!'2017-06-30'}" />
       </div>
 
       [#-- Loading --]
@@ -62,19 +63,20 @@
 
       [#-- Project title --]
       <div class="form-group metadataElement-description">
-        [@customForm.input name="fundingSource.title" i18nkey="projectCofunded.title" className="limitWords-40 metadataValue" required=true editable=editable /] 
+        [@customForm.input name="fundingSource.title" i18nkey="projectCofunded.title" className="limitWords-40 metadataValue" required=true readOnly=isSynced editable=editable /] 
       </div>
       [#-- Project summary --]
       <div class="form-group metadataElement-objectives">
         [@customForm.textArea name="fundingSource.description" i18nkey="projectCofunded.description" className="limitWords-150 metadataValue" required=false editable=editable /]
       </div>
+      
       [#-- Start date, End date and finance code --]
       <div class="form-group">
         <div class="dateErrorBox"></div>
         <div class="row">
-           <div class="col-md-4 metadataElement-startDate">[@customForm.input name="fundingSource.startDate" i18nkey="projectCofunded.startDate" className="metadataValue" required=true  editable=editable && action.canEditFundingSourceBudget() /] </div>
-           <div class="col-md-4 metadataElement-endDate">[@customForm.input name="fundingSource.endDate" i18nkey="projectCofunded.endDate" className="metadataValue" required=true  editable=editable && action.canEditFundingSourceBudget() /] </div>
-           <div class="col-md-4 metadataElement-extensionDate">[@customForm.input name="fundingSource.extensionDate" i18nkey="projectCofunded.extensionDate" className="metadataValue" required=true  editable=editable && action.canEditFundingSourceBudget() /] </div>
+           <div class="col-md-4 metadataElement-startDate">[@customForm.input name="fundingSource.startDate" i18nkey="projectCofunded.startDate" className="metadataValue startDateInput" required=true  readOnly=isSynced editable=editable && action.canEditFundingSourceBudget() /] </div>
+           <div class="col-md-4 metadataElement-endDate">[@customForm.input name="fundingSource.endDate" i18nkey="projectCofunded.endDate" className="metadataValue endDateInput" required=true  readOnly=isSynced editable=editable && action.canEditFundingSourceBudget() /] </div>
+           <div class="col-md-4 metadataElement-extensionDate">[@customForm.input name="fundingSource.extensionDate" i18nkey="projectCofunded.extensionDate" className="metadataValue extensionDateInput" required=true  readOnly=isSynced editable=editable && action.canEditFundingSourceBudget() /] </div>
         </div>
       </div>
       
@@ -100,7 +102,7 @@
           <div class="col-md-6">[@customForm.select name="fundingSource.status" i18nkey="projectCofunded.agreementStatus" className="agreementStatus"  listName="status" keyFieldName=""  displayFieldName="" header=false editable=editable /] </div>
           <div class="col-md-6 metadataElement-fundingType">
             [@customForm.select name="fundingSource.budgetType.id" i18nkey="projectCofunded.type" className="type" listName="budgetTypes" header=false required=true editable=editable && action.canEditType() /]
-            <span class="text-warning metadataSuggested"></span>
+             
             [#-- W1W2 Tag --]
             [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')]
               [#assign isW1W2 = (fundingSource.budgetType.id == 1)!false /]
@@ -169,7 +171,7 @@
       [#-- Contact person name and email --]
       [#assign canSeePIEmail = action.hasSpecificities('crp_email_funding_source')]
       <div class="form-group row">
-          <div class="col-md-6 metadataElement-pInvestigator">[@customForm.input name="fundingSource.contactPersonName" i18nkey="projectCofunded.contactName" className="contactName metadataValue" required=true editable=editable /]</div>
+          <div class="col-md-6 metadataElement-pInvestigator">[@customForm.input name="fundingSource.contactPersonName" i18nkey="projectCofunded.contactName" className="contactName metadataValue" required=true readOnly=isSynced editable=editable /]</div>
           <div class="col-md-6" style="display:${canSeePIEmail?string('block','none')}">[@customForm.input name="fundingSource.contactPersonEmail" i18nkey="projectCofunded.contactEmail" className="contactEmail" required=true editable=editable /]</div>
       </div>
 
@@ -313,13 +315,13 @@
     <div class="contributionWrapper budgetByYears">
       [#-- Year Tabs --]
       <ul class="nav nav-tabs budget-tabs" role="tablist">
-        [#list startYear .. endYear as year]
+        [#list startYear .. extensionYear as year]
           <li class="[#if year == currentCycleYear]active[/#if]"><a href="#fundingYear-${year}" role="tab" data-toggle="tab">${year} </a></li>
         [/#list]
       </ul>
       [#-- Years Content --]
       <div class="tab-content col-md-12 contributionContent">
-        [#list startYear .. endYear as year]
+        [#list startYear .. extensionYear as year]
           <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="fundingYear-${year}">
           
           

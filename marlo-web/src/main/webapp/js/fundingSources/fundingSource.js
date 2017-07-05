@@ -1,26 +1,28 @@
 $(document).ready(init);
 
 function init() {
-  
+
   /** Check region option * */
-  $("#regionList").find(".region").each(function(i,e){
-    var option=$("#regionSelect").find("option[value='"+$(e).find("input.rId").val()+"-"+$(e).find("input.regionScope").val()+"']");
-    option.prop('disabled', true);
-    // option.hide();
-  });
-  
+  $("#regionList").find(".region").each(
+      function(i,e) {
+        var option =
+            $("#regionSelect").find(
+                "option[value='" + $(e).find("input.rId").val() + "-" + $(e).find("input.regionScope").val() + "']");
+        option.prop('disabled', true);
+        // option.hide();
+      });
+
   // Agreement status & Donor
   $('form select').select2({
     width: "100%"
   });
-  
+
   // Popup
   popups();
 
   // Add Data Table
   addDataTable();
-  
-  
+
   // Harvest metadata from URL
   $("#fillMetadata .checkButton, #fillMetadata .updateButton").on("click", syncMetadata);
 
@@ -39,39 +41,43 @@ function init() {
   });
 
   $(".removeLeadPartner").on("click", removeLeadPartner);
-  
-// Country item
+
+  // Country item
   $(".countriesSelect").on("change", function() {
-    var option = $(this).find("option:selected");
-    if(option.val() != "-1") {
-      addCountry(option);
+    var $option = $(this).find("option:selected");
+    if($option.val() != "-1") {
+      var countryISO = $option.val();
+      var countryName = $option.text();
+      // Add Country
+      addCountry(countryISO, countryName);
+      // Reset select
+      $option.val("-1");
+      $option.trigger('change.select2');
     }
     // Remove option from select
-    option.remove();
+    $option.remove();
     $(this).trigger("change.select2");
   });
   $(".removeCountry").on("click", removeCountry);
-  
-// REGION item
-// $("#regionSelect").select2('destroy');
+
+  // REGION item
   $("#regionSelect").on("change", function() {
     var option = $(this).find("option:selected");
     if(option.val() != "-1") {
       addRegion(option);
       // Remove option from select
-      // option.remove();
-       option.prop('disabled', true);
-       $('#regionSelect').select2();
-      // $(this).trigger("change");
+      option.prop('disabled', true);
+      $('#regionSelect').select2();
     }
   });
   $(".removeRegion").on("click", removeRegion);
 
   // Setting Currency Inputs
   $('.currencyInput').currencyInput();
-  date("form #fundingSource\\.startDate", "form #fundingSource\\.endDate");
+  if($('#isSynced').val() === "false") {
+    settingDate(".startDateInput", ".endDateInput", ".extensionDateInput");
+  }
 
-  
   /* Select2 multiple for country and region select */
   $('.countriesSelect').select2({
       placeholder: "Select a country(ies)...",
@@ -79,29 +85,22 @@ function init() {
       templateSelection: formatState,
       width: '100%'
   });
-  
+
   changeDonorByFundingType($(".type").val(), $(".donor"))
-  
+
   // Check Funding type
   onChangeFundingType($(".type").val());
-  
+
   // Funding Window / Budget type
   $("select.type").select2({
-      templateResult: function(state) {
-        var name = state.text;
-        var desc = $('li.budgetTypeDescription-' + state.id).text();
-        var $state = $("<span><b>" + name + "</b><br><small class='selectDesc'>" + desc + "</small></span>");
-        return $state;
-      }
+    templateResult: budgetTypeTemplate
   });
-
+  
   $(".removeLeadPartner").on("click", removeLeadPartner);
-
 
   // When select center as Funding Window
   var lastDonor = -1;
   $("select.type").on("change", function() {
-    
     var option = $(this).find("option:selected");
     var url = baseURL + "/institutionsByBudgetType.do";
     var data = {
@@ -109,10 +108,8 @@ function init() {
     };
     // Change Donor list
     ajaxService(url, data);
-    
     // Event on change
     onChangeFundingType(option.val());
-     
   });
 
   // Set file upload (blueimp-tmpl)
@@ -151,14 +148,13 @@ function init() {
 
   // Principal investigator auto-complete
   addContactAutoComplete();
-  
-  
+
   // Disabled Auto save AJAX if click Save
   $('[name=save]').on('click', function(e) {
     // Cancel Auto Save
     autoSaveActive = false;
   });
-  
+
   $(".button-label").on("click", function() {
     var valueSelected = $(this).hasClass('yes-button-label');
     var $input = $(this).parent().find('input');
@@ -166,8 +162,8 @@ function init() {
     $(this).parent().find("label").removeClass("radio-checked");
     $(this).addClass("radio-checked");
   });
-  
-// Is this deliverable Open Access
+
+  // Is this deliverable Open Access
   $(".isRegional .button-label").on("click", function() {
     var valueSelected = $(this).hasClass('yes-button-label');
     if(!valueSelected) {
@@ -197,7 +193,7 @@ function setMetadata(data) {
     var $hide = $parent.find('.hide');
     if(value) {
       $input.val(value);
-      $spanSuggested.text("Suggested: "+value).animateCss("flipInY");
+      $spanSuggested.text("Suggested: " + value).animateCss("flipInY");
       $parent.find('textarea').autoGrow();
       $input.attr('readOnly', true);
       $hide.val("true");
@@ -206,11 +202,11 @@ function setMetadata(data) {
       $spanSuggested.text("");
       $hide.val("false");
     }
-    
+
     // Date picker
-    if($input.hasClass('hasDatepicker')){
-      console.log(key+" in date");
-      $input.datepicker( "destroy" );
+    if($input.hasClass('hasDatepicker')) {
+      console.log(key + " in date");
+      $input.datepicker("destroy");
     }
   });
 
@@ -251,12 +247,14 @@ function unSyncDeliverable() {
   $('#fillMetadata input:hidden').val(false);
   // Dissemination URL
   $('.financeCode').attr('readOnly', false);
+  // Set datepicker
+  settingDate(".startDateInput", ".endDateInput", ".extensionDateInput");
 
   // Update component
   $(document).trigger('updateComponent');
 }
 
-function getOCSMetadata(){
+function getOCSMetadata() {
   var currentCode = $('input.financeCode').val();
   // Ajax to service
   $.ajax({
@@ -269,16 +267,38 @@ function getOCSMetadata(){
         $('.financeCode-message').text("");
       },
       success: function(data) {
-        if (data.json){
+        if(data.json) {
           var agreement = data.json;
           // Principal Investigator
           agreement.pInvestigator = agreement.researcher.name;
           // Donor
           agreement.donorName = agreement.donor.name;
-          // Setting Metadata
+          // Set Metadata
           setMetadata(agreement);
-        }else{
-          $('.financeCode-message').text("Agreement "+ currentCode +" not found");
+          // Set Countries
+          $.each(agreement.countries, function(i,e) {
+            addCountry(e.code, e.description);
+          });
+          // Set Budget type
+          var marloBudgetType;
+          if(agreement.fundingType == "BLR") {
+            marloBudgetType = 3;
+          }else if(agreement.fundingType == "W1/W2")
+          {
+            marloBudgetType = 1;
+          }else if((agreement.fundingType == "W3R") || (agreement.fundingType == "W3U"))
+          {
+            marloBudgetType = 2;
+          }
+          onChangeFundingType(2);
+          $("select.type").val(marloBudgetType);
+          // Reload select2
+          $("select.type").select2("destroy");
+          $("select.type").select2({
+            templateResult: budgetTypeTemplate
+          });
+        } else {
+          $('.financeCode-message').text("Agreement " + currentCode + " not found");
         }
       },
       complete: function() {
@@ -290,39 +310,37 @@ function getOCSMetadata(){
   });
 }
 
-
 /**
  * Check Agreement status
  * 
  * @param {number} typeID - Funding budget type
  */
-function onChangeFundingType(typeID){
+function onChangeFundingType(typeID) {
   var W1W2 = 1;
   var ON_GOING = 2;
-  
+
   // Change Agreement Status when is (W1W2 Type => 1)
   var $agreementStatus = $('select.agreementStatus');
   // 3 => Concept Note/Pipeline
   // 4 => Informally Confirmed
   var $options = $agreementStatus.find("option[value='3'], option[value='4']");
-  if(typeID == W1W2){
+  if(typeID == W1W2) {
     $agreementStatus.val(ON_GOING); // On-going
     $options.remove();
-  }else{
-    if($options.length==0){
+  } else {
+    if($options.length == 0) {
       $agreementStatus.addOption("3", "Concept Note/Pipeline");
       $agreementStatus.addOption("4", "Informally Confirmed");
     }
   }
   $agreementStatus.select2("destroy");
   $agreementStatus.select2();
-  
-  
+
   // Check W1/W2 - Tag
-  if(typeID == W1W2){
+  if(typeID == W1W2) {
     $('.w1w2-tag').show();
-  }else{
-    $('.w1w2-tag').hide(); 
+  } else {
+    $('.w1w2-tag').hide();
   }
 }
 
@@ -422,7 +440,7 @@ function updateLeadPartner($list) {
   $($list).find('.leadPartners').each(function(i,e) {
     // Show division block
     var institutionID = $(e).find('.fId').val();
-    $('.division-'+institutionID).show();
+    $('.division-' + institutionID).show();
     // Set funding sources indexes
     $(e).setNameIndexes(1, i);
   });
@@ -439,20 +457,20 @@ function checkLeadPartnerItems(block) {
 
 /** COUNTRIES SELECT FUNCTIONS * */
 // Add a new country element
-function addCountry(option) {
+function addCountry(countryISO,countryName) {
   var canAdd = true;
-  console.log(option.val());
-  if(option.val() == "-1") {
+
+  if(countryISO == "-1") {
     canAdd = false;
   }
 
-  var $list = $(option).parents(".select").parents("#countryList").find(".list");
+  var $list = $("#countryList").find(".list");
   var $item = $("#countryTemplate").clone(true).removeAttr("id");
-  var v = $(option).text().length > 12 ? $(option).text().substr(0, 12) + ' ... ' : $(option).text();
+  var v = countryName.length > 12 ? countryName.substr(0, 12) + ' ... ' : countryName;
 
   // Check if is already selected
   $list.find('.country').each(function(i,e) {
-    if($(e).find('input.cId').val() == option.val()) {
+    if($(e).find('input.cId').val() == countryISO) {
       canAdd = false;
       return;
     }
@@ -462,21 +480,15 @@ function addCountry(option) {
   }
 
   // Set country parameters
-  $item.find(".name").attr("title", $(option).text());
-  var $state =
-    $('<span> <i class="flag-sm flag-sm-' + option.val() + '"></i>  ' + v + '</span>');
+  $item.find(".name").attr("title", countryName);
+  var $state = $('<span> <i class="flag-sm flag-sm-' + countryISO + '"></i>  ' + v + '</span>');
   $item.find(".name").html($state);
-  $item.find(".cId").val(option.val());
+  $item.find(".cId").val(countryISO);
   $item.find(".id").val(-1);
   $list.append($item);
   $item.show('slow');
   updateCountryList($list);
   checkCountryList($list);
-
-  // Reset select
-  $(option).val("-1");
-  $(option).trigger('change.select2');
-
 }
 
 function removeCountry() {
@@ -516,85 +528,84 @@ function checkCountryList(block) {
 /** REGIONS SELECT FUNCTIONS * */
 // Add a new region element
 function addRegion(option) {
-var canAdd = true;
-if(option.val() == "-1") {
- canAdd = false;
-}
-var optionValue=option.val().split("-")[0];
-var optionScope=option.val().split("-")[1];
+  var canAdd = true;
+  if(option.val() == "-1") {
+    canAdd = false;
+  }
+  var optionValue = option.val().split("-")[0];
+  var optionScope = option.val().split("-")[1];
 
-var $list = $(option).parents("#regionList").find(".list");
-var $item = $("#regionTemplate").clone(true).removeAttr("id");
-var v = $(option).text().length > 20 ? $(option).text().substr(0, 20) + ' ... ' : $(option).text();
+  var $list = $(option).parents("#regionList").find(".list");
+  var $item = $("#regionTemplate").clone(true).removeAttr("id");
+  var v = $(option).text().length > 20 ? $(option).text().substr(0, 20) + ' ... ' : $(option).text();
 
-// Check if is already selected
-$list.find('.region').each(function(i,e) {
- if($(e).find('input.rId').val() == optionValue) {
-   canAdd = false;
-   return;
- }
-});
-if(!canAdd) {
- return;
-}
+  // Check if is already selected
+  $list.find('.region').each(function(i,e) {
+    if($(e).find('input.rId').val() == optionValue) {
+      canAdd = false;
+      return;
+    }
+  });
+  if(!canAdd) {
+    return;
+  }
 
-// Set region parameters
-$item.find(".name").attr("title", $(option).text());
-$item.find(".name").html($(option).text());
-$item.find(".rId").val(optionValue);
-$item.find(".regionScope").val(optionScope);
-$item.find(".id").val(-1);
-$list.append($item);
-$item.show('slow');
-updateRegionList($list);
-checkRegionList($list);
+  // Set region parameters
+  $item.find(".name").attr("title", $(option).text());
+  $item.find(".name").html($(option).text());
+  $item.find(".rId").val(optionValue);
+  $item.find(".regionScope").val(optionScope);
+  $item.find(".id").val(-1);
+  $list.append($item);
+  $item.show('slow');
+  updateRegionList($list);
+  checkRegionList($list);
 
-// Reset select
-// $(option).val("-1");
-// $(option).trigger('change.select2');
+  // Reset select
+  // $(option).val("-1");
+  // $(option).trigger('change.select2');
 
 }
 
 function removeRegion() {
-var $list = $(this).parents('.list');
-var $item = $(this).parents('.region');
-var value = $item.find(".rId").val();
-var scope = $item.find(".regionScope").val();
-var name = $item.find(".name").attr("title");
+  var $list = $(this).parents('.list');
+  var $item = $(this).parents('.region');
+  var value = $item.find(".rId").val();
+  var scope = $item.find(".regionScope").val();
+  var name = $item.find(".name").attr("title");
 
-var $select = $(".regionsSelect");
-$item.hide(300, function() {
- $item.remove();
- checkRegionList($list);
- updateRegionList($list);
-});
-var option= $select.find("option[value='"+value+"-"+scope+"']");
-console.log(option);
-option.prop('disabled', false);
-$('#regionSelect').select2();
-// Add region option again
-// $select.addOption(value, name);
-// $select.trigger("change.select2");
+  var $select = $(".regionsSelect");
+  $item.hide(300, function() {
+    $item.remove();
+    checkRegionList($list);
+    updateRegionList($list);
+  });
+  var option = $select.find("option[value='" + value + "-" + scope + "']");
+  console.log(option);
+  option.prop('disabled', false);
+  $('#regionSelect').select2();
+  // Add region option again
+  // $select.addOption(value, name);
+  // $select.trigger("change.select2");
 }
 
 function updateRegionList($list) {
-
-$($list).find('.region').each(function(i,e) {
- // Set regions indexes
- $(e).setNameIndexes(1, i);
-});
+  $($list).find('.region').each(function(i,e) {
+    // Set regions indexes
+    $(e).setNameIndexes(1, i);
+  });
 }
 
 function checkRegionList(block) {
-var items = $(block).find('.region').length;
-if(items == 0) {
- $(block).parent().find('p.emptyText').fadeIn();
-} else {
- $(block).parent().find('p.emptyText').fadeOut();
-}
+  var items = $(block).find('.region').length;
+  if(items == 0) {
+    $(block).parent().find('p.emptyText').fadeIn();
+  } else {
+    $(block).parent().find('p.emptyText').fadeOut();
+  }
 }
 
-function date(start,end) {
+function settingDate(start,end,extensionDate) {
   var dateFormat = "yy-mm-dd";
   var from = $(start).datepicker({
       dateFormat: dateFormat,
@@ -605,9 +616,11 @@ function date(start,end) {
       changeYear: true,
       onChangeMonthYear: function(year,month,inst) {
         var selectedDate = new Date(inst.selectedYear, inst.selectedMonth, 1);
-        if (budgetsConflicts(from.val().split('-')[0], inst.selectedYear - 1)){
+        if(budgetsConflicts(from.val().split('-')[0], inst.selectedYear - 1)) {
           $(this).datepicker("hide");
-          return
+          return
+          
+
         }
         $(this).datepicker('setDate', selectedDate);
         if(selectedDate != "") {
@@ -633,13 +646,45 @@ function date(start,end) {
       changeYear: true,
       onChangeMonthYear: function(year,month,inst) {
         var selectedDate = new Date(inst.selectedYear, inst.selectedMonth + 1, 0);
-        if (budgetsConflicts(inst.selectedYear + 1, to.val().split('-')[0])){
+        if(budgetsConflicts(inst.selectedYear + 1, to.val().split('-')[0])) {
           $(this).datepicker("hide");
-          return
+          return
+          
+
         }
         $(this).datepicker('setDate', selectedDate);
         if(selectedDate != "") {
           $(start).datepicker("option", "maxDate", selectedDate);
+        }
+        getYears();
+      }
+  }).on("change", function() {
+    getYears();
+  }).on("click", function() {
+    if(!$(this).val()) {
+      $(this).datepicker('setDate', new Date());
+      getYears();
+    }
+  });
+
+  var extension = $(extensionDate).datepicker({
+      dateFormat: dateFormat,
+      minDate: $(to).val() || MIN_DATE,
+      maxDate: MAX_DATE,
+      changeMonth: true,
+      numberOfMonths: 1,
+      changeYear: true,
+      onChangeMonthYear: function(year,month,inst) {
+        var selectedDate = new Date(inst.selectedYear, inst.selectedMonth + 1, 0);
+        if(budgetsConflicts(inst.selectedYear + 1, extension.val().split('-')[0])) {
+          $(this).datepicker("hide");
+          return
+          
+
+        }
+        $(this).datepicker('setDate', selectedDate);
+        if(selectedDate != "") {
+          $(to).datepicker("option", "maxDate", selectedDate);
         }
         getYears();
       }
@@ -667,20 +712,23 @@ function date(start,end) {
         yearConflicts.push(i);
       }
     }
-    
+
     if(yearConflicts.length > 0) {
       // Noty Message
-      var message = "Date cannot be changed as this funding source has at least one budget allocation in <b>" + yearConflicts.join(', ') +"</b>";
+      var message =
+          "Date cannot be changed as this funding source has at least one budget allocation in <b>"
+              + yearConflicts.join(', ') + "</b>";
       var notyOptions = jQuery.extend({}, notyDefaultOptions);
       notyOptions.text = message;
       notyOptions.animation = {
-        open: 'animated bounceInLeft', // Animate.css class names
-        close: 'animated bounceOutLeft', // Animate.css class names
-        easing: 'swing', // unavailable - no need
-        speed: 500 // unavailable - no need
+          open: 'animated bounceInLeft', // Animate.css class names
+          close: 'animated bounceOutLeft', // Animate.css class names
+          easing: 'swing', // unavailable - no need
+          speed: 500
+      // unavailable - no need
       };
       $('.dateErrorBox').noty(notyOptions);
-      
+
       return true;
     }
     return false;
@@ -688,13 +736,13 @@ function date(start,end) {
 
   function getYears() {
     var startYear = (from.val().split('-')[0]) || currentCycleYear;
-    var endYear = (to.val().split('-')[0]) || startYear;
+    var endYear = (extension.val().split('-')[0]) || (to.val().split('-')[0]) || startYear;
     var years = [];
 
     // Clear tabs & content
     $('.budgetByYears .nav-tabs').empty();
     $('.budgetByYears .tab-content .tab-pane').removeClass('active going');
-    
+
     var index = 0;
     while(startYear <= endYear) {
 
@@ -722,7 +770,7 @@ function date(start,end) {
 
         // Set currency format
         $content.find('input.currencyInput').currencyInput();
-      }else{
+      } else {
         // Set indexes
         $('#fundingYear-' + startYear).setNameIndexes(1, index);
         $('#fundingYear-' + startYear).addClass('going')
@@ -731,13 +779,12 @@ function date(start,end) {
       index++;
       years.push(startYear++);
     }
-    
+
     // Clear unused content names
-    $('.budgetByYears .tab-content .tab-pane').not('.going').each(function(i,content){
-      $(content).setNameIndexes(1, index+i);
+    $('.budgetByYears .tab-content .tab-pane').not('.going').each(function(i,content) {
+      $(content).setNameIndexes(1, index + i);
     });
-    
-    
+
     // Set active tab & content
     if(years.indexOf(parseInt(currentCycleYear)) == -1) {
       $('.budgetByYears .nav-tabs li').last().addClass('active');
@@ -800,7 +847,7 @@ function ajaxService(url,data) {
           $select.addOption(e.id, e.name);
         });
         changeDonorByFundingType(data.budgetTypeID, $select)
-        
+
       },
       error: function(e) {
         console.log(e);
@@ -824,13 +871,19 @@ function formatState(state) {
   if(!state.id) {
     return state.text;
   }
-  var $state="";
-  if(state.element.value!="-1"){
-   $state =
-      $('<span> <i class="flag-sm flag-sm-' + state.element.value.toUpperCase() + '"></i>  ' + state.text + '</span>');
-  }else{
+  var $state = "";
+  if(state.element.value != "-1") {
     $state =
-      $('<span>' + state.text + '</span>');
+        $('<span> <i class="flag-sm flag-sm-' + state.element.value.toUpperCase() + '"></i>  ' + state.text + '</span>');
+  } else {
+    $state = $('<span>' + state.text + '</span>');
   }
   return $state;
 };
+
+function budgetTypeTemplate(state) {
+  var name = state.text;
+  var desc = $('li.budgetTypeDescription-' + state.id).text();
+  var $state = $("<span><b>" + name + "</b><br><small class='selectDesc'>" + desc + "</small></span>");
+  return $state;
+}
