@@ -273,16 +273,16 @@
             <div class="form-group">
               <label for="">[@customForm.text name="projectDescription.crossCuttingDimensions" readText=!editable/] [@customForm.req required=editable/]</label>
                 [#assign crossCutingName = "project.projectCrosscutingTheme" /]
-                <div class="checkbox">
+                <div class="checkbox crossCutting">
                 [#if editable]
-                  <label class="col-md-3"><input type="checkbox" name="${crossCutingName}.climateChange"         id="climate"   value="true" [#if (project.projectCrosscutingTheme.climateChange)!false ]checked="checked"[/#if] > Climate Change</label>
-                  <label class="col-md-3"><input type="checkbox" name="${crossCutingName}.gender"                id="gender"    value="true" [#if (project.projectCrosscutingTheme.gender)!false ]checked="checked"[/#if] > Gender</label>
-                  <label class="col-md-3"><input type="checkbox" name="${crossCutingName}.youth"                 id="youth"    value="true" [#if (project.projectCrosscutingTheme.youth)!false ]checked="checked"[/#if] > Youth</label>
-                  <label class="col-md-3"><input type="checkbox" name="${crossCutingName}.policiesInstitutions"  id="policies"    value="true" [#if (project.projectCrosscutingTheme.policiesInstitutions)!false ]checked="checked"[/#if] > Policies and Institutions</label>
-                  <label class="col-md-3"><input type="checkbox" name="${crossCutingName}.capacityDevelopment"   id="capacity" value="true" [#if (project.projectCrosscutingTheme.capacityDevelopment)!false ]checked="checked"[/#if] > Capacity Development</label>
-                  <label class="col-md-3"><input type="checkbox" name="${crossCutingName}.bigData"               id="bigData" value="true" [#if (project.projectCrosscutingTheme.bigData)!false ]checked="checked"[/#if] > Big Data</label>
-                  <label class="col-md-3"><input type="checkbox" name="${crossCutingName}.impactAssessment"      id="impactAssessment" value="true" [#if (project.projectCrosscutingTheme.impactAssessment)!false ]checked="checked"[/#if] > Impact Assessment</label>
-                  <label class="col-md-3"><input type="checkbox" name="${crossCutingName}.na"                    id="na"       value="true" [#if (project.projectCrosscutingTheme.na)!false ]checked="checked"[/#if] > N/A</label>
+                  <label class="col-md-3"><input type="checkbox" name="${crossCutingName}.climateChange"          class="optionable"  value="true" [#if (project.projectCrosscutingTheme.climateChange)!false ]checked="checked"[/#if] > Climate Change</label>
+                  <label class="col-md-3"><input type="checkbox" name="${crossCutingName}.gender"                 class="optionable"  value="true" [#if (project.projectCrosscutingTheme.gender)!false ]checked="checked"[/#if] > Gender</label>
+                  <label class="col-md-3"><input type="checkbox" name="${crossCutingName}.youth"                  class="optionable"  value="true" [#if (project.projectCrosscutingTheme.youth)!false ]checked="checked"[/#if] > Youth</label>
+                  <label class="col-md-3"><input type="checkbox" name="${crossCutingName}.policiesInstitutions"   class="optionable"  value="true" [#if (project.projectCrosscutingTheme.policiesInstitutions)!false ]checked="checked"[/#if] > Policies and Institutions</label>
+                  <label class="col-md-3"><input type="checkbox" name="${crossCutingName}.capacityDevelopment"    class="optionable"  value="true" [#if (project.projectCrosscutingTheme.capacityDevelopment)!false ]checked="checked"[/#if] > Capacity Development</label>
+                  <label class="col-md-3"><input type="checkbox" name="${crossCutingName}.bigData"                class="optionable"  value="true" [#if (project.projectCrosscutingTheme.bigData)!false ]checked="checked"[/#if] > Big Data</label>
+                  <label class="col-md-3"><input type="checkbox" name="${crossCutingName}.impactAssessment"       class="optionable"  value="true" [#if (project.projectCrosscutingTheme.impactAssessment)!false ]checked="checked"[/#if] > Impact Assessment</label>
+                  <label class="col-md-3"><input type="checkbox" name="${crossCutingName}.na"                     class="na"          value="true" [#if (project.projectCrosscutingTheme.na)!false ]checked="checked"[/#if] > N/A</label>
                   <div class="clearfix"></div>
                 [#else]
                   [#if (project.projectCrosscutingTheme.climateChange)!false ]<p class="checked"> Climate Change</p>[/#if]

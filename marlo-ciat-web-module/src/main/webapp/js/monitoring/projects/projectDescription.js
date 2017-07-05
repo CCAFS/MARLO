@@ -91,7 +91,7 @@ function init() {
   });
   $(".removeCountry").on("click", removeCountry);
 
-// REGION item
+  // REGION item
   $(".regionSelect").on("change", function() {
     var option = $(this).find("option:selected");
     if(option.val() != "-1") {
@@ -123,7 +123,7 @@ function init() {
     }
   });
   
-// Is this project has a global dimension
+  // Is this project has a global dimension
   $(".isGlobal .button-label").on("click", function() {
     var valueSelected = $(this).hasClass('yes-button-label');
     var isChecekd = $(this).hasClass('radio-checked');
@@ -134,7 +134,7 @@ function init() {
     }
   });
 
-// Is this project has a regional dimension
+  // Is this project has a regional dimension
   $(".isRegional .button-label").on("click", function() {
     var valueSelected = $(this).hasClass('yes-button-label');
     var isChecekd = $(this).hasClass('radio-checked');
@@ -160,6 +160,24 @@ function init() {
       $(this).find(".errorTag").fadeIn(2000);
     });
   });
+  
+  
+  
+  // Cross cutting checkbox
+  $('.crossCutting input.optionable').on('click', function(){
+    var checkedOptions = $('.crossCutting input.optionable:checked').length;
+    console.log(checkedOptions);
+    if (checkedOptions > 0){
+      $('.crossCutting input.na').prop('checked', false);
+    }else{
+      $('.crossCutting input.na').prop('checked', true);
+    }
+  })
+  
+  $('.crossCutting input.na').on('click', function(){
+    $('.crossCutting input.optionable').prop('checked', false);
+  });
+  
 }
 
 /** FUNCTIONS Funding Sources * */
