@@ -154,7 +154,7 @@
         <div class="row">
           <div class="col-md-12">
             <label for="">[@s.text name="projectCofunded.donor" /] </label>
-            <span class="description col-md-12">[@s.text name="projectCofunded.donor.helpText" /]</span>
+            <span class="description"><i>([@s.text name="projectCofunded.donor.helpText" /])</i></span>
             [@customForm.select name="fundingSource.institution.id" i18nkey="projectCofunded.donor" className="donor" showTitle=false  listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" required=true editable=editable /]
           </div>
         </div> 
@@ -166,7 +166,7 @@
         <div class="row">
           <div class="col-md-12">
             <label for="">[@s.text name="projectCofunded.directDonor" /] </label>
-            <span class="description col-md-12"><i>[@s.text name="projectCofunded.directDonor.helpText" /]</i></span><br>
+            <span class="description"><i>([@s.text name="projectCofunded.directDonor.helpText" /])</i></span><br>
             [@customForm.select name="fundingSource.directDonor.id" i18nkey="projectCofunded.directDonor" className="donor" showTitle=false listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" required=false editable=editable /]
           </div>
         </div> 

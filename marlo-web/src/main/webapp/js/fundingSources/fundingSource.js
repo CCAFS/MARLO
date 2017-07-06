@@ -12,12 +12,28 @@ function init() {
         // option.hide();
       });
 
-// Original Donor
+  // Original Donor
   $(".donor").on("change", function() {
-    var option = $(this).find("option:selected");
-    console.log(option.val());
-    console.log("Existe?");
-    console.log($(".form-group-donor").find("select option:selected['value=" + option.val() + "']").exists());
+    var $option = $(this).find("option:selected");
+    var selectedValue = $option.val();
+    var count = 0;
+    // Count repeated donors
+    $('select.donor').each(function(i, e){
+      if (e.value == selectedValue) {
+        count++;
+      }
+    });
+    // Check if the donor is already selected
+    if (count > 1){
+      // Reset Select
+      $(this).val(-1);
+      $(this).trigger('select2:change');
+      // Noty Message
+      var message ="Donors must be different";
+      var notyOptions = jQuery.extend({}, notyDefaultOptions);
+      notyOptions.text = message;
+      noty(notyOptions);
+    }
   });
 
   // Agreement status & Donor
