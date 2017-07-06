@@ -384,6 +384,9 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
         totalBudget = projectBudget.getAmount();
 
         String directDonor = "";
+        if (fundingSource.getDirectDonor() != null) {
+          directDonor = fundingSource.getDirectDonor().getComposedName();
+        }
 
         model.addRow(new Object[] {fsTitle, fsId, financeCode, leadPartner, fsWindow, projectId, totalBudget, flagships,
           coas, donor, directDonor});
@@ -575,6 +578,9 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
         deliverables = null;
       }
       String directDonor = "";
+      if (fundingSource.getDirectDonor() != null) {
+        directDonor = fundingSource.getDirectDonor().getComposedName();
+      }
       model.addRow(new Object[] {fsTitle, fsId, financeCode, leadPartner, fsWindow, projectId, totalBudget, summary,
         starDate, endDate, contract, status, piName, piEmail, donor, totalBudgetProjects, contractName, flagships, coas,
         deliverables, directDonor});
