@@ -314,9 +314,9 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
   private TypedTableModel getFundingSourcesProjectsTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"fs_title", "fs_id", "finance_code", "lead_partner", "fs_window", "project_id", "total_budget",
-        "flagships", "coas", "donor"},
+        "flagships", "coas", "donor", "directDonor"},
       new Class[] {String.class, Long.class, String.class, String.class, String.class, String.class, Double.class,
-        String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class},
       0);
 
     for (FundingSource fundingSource : loggedCrp.getFundingSources().stream()
@@ -383,8 +383,10 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
 
         totalBudget = projectBudget.getAmount();
 
+        String directDonor = "";
+
         model.addRow(new Object[] {fsTitle, fsId, financeCode, leadPartner, fsWindow, projectId, totalBudget, flagships,
-          coas, donor});
+          coas, donor, directDonor});
       }
 
     }
@@ -395,10 +397,10 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
     TypedTableModel model = new TypedTableModel(
       new String[] {"fs_title", "fs_id", "finance_code", "lead_partner", "fs_window", "project_id", "total_budget",
         "summary", "start_date", "end_date", "contract", "status", "pi_name", "pi_email", "donor",
-        "total_budget_projects", "contract_name", "flagships", "coas", "deliverables"},
+        "total_budget_projects", "contract_name", "flagships", "coas", "deliverables", "directDonor"},
       new Class[] {String.class, Long.class, String.class, String.class, String.class, String.class, Double.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        Double.class, String.class, String.class, String.class, String.class},
+        Double.class, String.class, String.class, String.class, String.class, String.class},
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
 
@@ -572,9 +574,10 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
       if (deliverables.isEmpty()) {
         deliverables = null;
       }
+      String directDonor = "";
       model.addRow(new Object[] {fsTitle, fsId, financeCode, leadPartner, fsWindow, projectId, totalBudget, summary,
         starDate, endDate, contract, status, piName, piEmail, donor, totalBudgetProjects, contractName, flagships, coas,
-        deliverables});
+        deliverables, directDonor});
     }
     return model;
   }
