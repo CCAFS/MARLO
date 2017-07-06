@@ -26,17 +26,30 @@ public class Phase implements java.io.Serializable, IAuditLog {
   private String description;
   @Expose
   private int year;
+  @Expose
+  private Boolean editable;
+  @Expose
+  private Boolean visible;
+  @Expose
+  private Phase next;
+
+
   private Set<ProjectPhase> projectPhases = new HashSet<ProjectPhase>(0);
+
+  private Set<ProjectInfo> projectInfos = new HashSet<ProjectInfo>(0);
+  private Set<ProjectFocus> projectFocuses = new HashSet<ProjectFocus>(0);
 
 
   public Phase() {
   }
+
 
   public Phase(Crp crp, String description, int year) {
     this.crp = crp;
     this.description = description;
     this.year = year;
   }
+
 
   public Phase(Crp crp, String description, int year, Set<ProjectPhase> projectPhases) {
     this.crp = crp;
@@ -72,9 +85,15 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return this.crp;
   }
 
+
   public String getDescription() {
     return this.description;
   }
+
+  public Boolean getEditable() {
+    return editable;
+  }
+
 
   @Override
   public Long getId() {
@@ -87,6 +106,7 @@ public class Phase implements java.io.Serializable, IAuditLog {
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
+
 
   @Override
   public String getModificationJustification() {
@@ -101,8 +121,25 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return u;
   }
 
+  public Phase getNext() {
+    return next;
+  }
+
+
+  public Set<ProjectFocus> getProjectFocuses() {
+    return projectFocuses;
+  }
+
+  public Set<ProjectInfo> getProjectInfos() {
+    return projectInfos;
+  }
+
   public Set<ProjectPhase> getProjectPhases() {
     return this.projectPhases;
+  }
+
+  public Boolean getVisible() {
+    return visible;
   }
 
   public int getYear() {
@@ -131,12 +168,32 @@ public class Phase implements java.io.Serializable, IAuditLog {
     this.description = description;
   }
 
+  public void setEditable(Boolean editable) {
+    this.editable = editable;
+  }
+
   public void setId(Long id) {
     this.id = id;
   }
 
+  public void setNext(Phase next) {
+    this.next = next;
+  }
+
+  public void setProjectFocuses(Set<ProjectFocus> projectFocuses) {
+    this.projectFocuses = projectFocuses;
+  }
+
+  public void setProjectInfos(Set<ProjectInfo> projectInfos) {
+    this.projectInfos = projectInfos;
+  }
+
   public void setProjectPhases(Set<ProjectPhase> projectPhases) {
     this.projectPhases = projectPhases;
+  }
+
+  public void setVisible(Boolean visible) {
+    this.visible = visible;
   }
 
   public void setYear(int year) {

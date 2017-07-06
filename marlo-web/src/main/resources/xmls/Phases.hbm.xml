@@ -17,11 +17,32 @@
         <property name="year" type="int">
             <column name="year" not-null="true" />
         </property>
+        <property name="editable" type="java.lang.Boolean">
+            <column name="editable" />
+        </property>
+        <property name="visible" type="java.lang.Boolean">
+            <column name="visible" />
+        </property>
+        <many-to-one name="next" class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
+            <column name="next_phase" />
+        </many-to-one>
         <set name="projectPhases" table="project_phases" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="id_phase" not-null="true" />
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectPhase" />
+        </set>
+        <set name="projectInfos" table="projects_info" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="id_phase" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectInfo" />
+        </set>
+         <set name="projectFocuses" table="project_focuses" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="id_phase" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectFocus" />
         </set>
     </class>
 </hibernate-mapping>

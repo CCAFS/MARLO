@@ -131,6 +131,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
         }
 
+
         if (!project.getProjecInfoPhase(baseAction.getActualPhase()).isProjectEditLeader()
           && !baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
           canEdit = false;
@@ -159,6 +160,9 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
         }
 
 
+      }
+      if (!baseAction.getActualPhase().getEditable()) {
+        canEdit = false;
       }
       String actionName = baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "");
       if (baseAction.isReportingActive() && actionName.equalsIgnoreCase(ProjectSectionStatusEnum.BUDGET.getStatus())) {

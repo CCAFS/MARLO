@@ -78,6 +78,7 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
   public ProjectInfo() {
   }
 
+
   public ProjectInfo(LiaisonInstitution liaisonInstitution, LiaisonUser liaisonUser, Phase phase, Project project,
     User user, String title, String summary, Date startDate, Date endDate, String type, boolean isCofinancing,
     String leaderResponsabilities, String modificationJustification, Boolean isProjectLeaderEdit, int scale,
@@ -121,7 +122,6 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
     this.scale = scale;
   }
 
-
   public Boolean getAdministrative() {
     return administrative;
   }
@@ -161,10 +161,10 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
     return crossCuttingGender;
   }
 
+
   public Boolean getCrossCuttingNa() {
     return crossCuttingNa;
   }
-
 
   public Boolean getCrossCuttingYouth() {
     return crossCuttingYouth;
@@ -449,6 +449,35 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
 
   public void setType(String type) {
     this.type = type;
+  }
+
+
+  public void updateProjectInfo(ProjectInfo update) {
+    this.setAdministrative(update.getAdministrative());
+    this.setCofinancing(update.isCofinancing());
+    this.setCrossCuttingCapacity(update.getCrossCuttingCapacity());
+    this.setCrossCuttingGender(update.getCrossCuttingGender());
+    this.setCrossCuttingNa(update.getCrossCuttingNa());
+    this.setCrossCuttingYouth(update.getCrossCuttingYouth());
+    this.setDimension(update.getDimension());
+    this.setEndDate(update.getEndDate());
+    this.setGenderAnalysis(update.getGenderAnalysis());
+    this.setLeaderResponsabilities(update.getLeaderResponsabilities());
+    this.setLiaisonInstitution(update.getLiaisonInstitution());
+    this.setLiaisonUser(update.getLiaisonUser());
+    this.setLocationGlobal(update.getLocationGlobal());
+    this.setModificationJustification(update.getModificationJustification());
+    this.setModifiedBy(update.getModifiedBy());
+    this.setNoRegional(update.getNoRegional());
+    this.setPresetDate(update.getPresetDate());
+    this.setReporting(update.getReporting());
+    this.setScale(update.getScale());
+    this.setStartDate(update.getStartDate());
+    this.setStatus(update.getStatus());
+    this.setStatusJustification(update.getStatusJustification());
+    this.setSummary(update.getSummary());
+    this.setTitle(update.getTitle());
+    this.setType(update.getType());
   }
 
 

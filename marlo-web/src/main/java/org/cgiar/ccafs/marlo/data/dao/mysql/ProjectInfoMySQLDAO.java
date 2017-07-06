@@ -17,9 +17,11 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectInfoDAO;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 
@@ -73,8 +75,30 @@ public class ProjectInfoMySQLDAO implements ProjectInfoDAO {
       dao.update(projectInfo);
     }
 
+    if (projectInfo.getPhase().getNext() != null) {
+      this.saveInfoPhase(projectInfo.getPhase().getNext(), projectInfo.getProject().getId(), projectInfo);
+    }
+
 
     return projectInfo.getId();
+  }
+
+  public void saveInfoPhase(Phase next, long projecID, ProjectInfo projectInfo) {
+    Phase phase = dao.find(Phase.class, next.getId());
+    if (phase.getEditable() != null && phase.getEditable()) {
+      List<ProjectInfo> projectInfos = phase.getProjectInfos().stream()
+        .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID).collect(Collectors.toList());
+      for (ProjectInfo projectInfoPhase : projectInfos) {
+        projectInfoPhase.updateProjectInfo(projectInfo);
+        this.save(projectInfoPhase);
+      }
+    } else {
+      if (phase.getNext() != null) {
+        this.saveInfoPhase(phase.getNext(), projecID, projectInfo);
+      }
+    }
+
+
   }
 
 

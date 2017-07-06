@@ -987,8 +987,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     if (this.getSession().containsKey(APConstants.PHASES)) {
       return (List<Phase>) this.getSession().get(APConstants.PHASES);
     } else {
-      List<Phase> phases = phaseManager.findAll().stream()
-        .filter(c -> c.getCrp().getId().longValue() == this.getCrpID().longValue()).collect(Collectors.toList());
+      List<Phase> phases = phaseManager.findAll().stream().filter(
+        c -> c.getCrp().getId().longValue() == this.getCrpID().longValue() && c.getVisible() != null && c.getVisible())
+        .collect(Collectors.toList());
+      phases.sort((p1, p2) -> new Integer(p1.getYear()).compareTo(new Integer(p2.getYear())));
       this.getSession().put(APConstants.PHASES, phases);
       return phases;
     }
