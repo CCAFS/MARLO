@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,9 +17,12 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectClusterActivityDAO;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
+import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 
@@ -38,6 +41,26 @@ public class ProjectClusterActivityMySQLDAO implements ProjectClusterActivityDAO
     projectClusterActivity.setActive(false);
     return this.save(projectClusterActivity) > 0;
   }
+
+  public void deletProjectClusterPhase(Phase next, long projecID, ProjectClusterActivity projectClusterActivity) {
+    Phase phase = dao.find(Phase.class, next.getId());
+    if (phase.getEditable() != null && phase.getEditable()) {
+      List<ProjectFocus> projectFocuses = phase.getProjectFocuses().stream()
+        .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
+          && projectFocus.getCrpProgram().getId().longValue() == c.getCrpProgram().getId().longValue())
+        .collect(Collectors.toList());
+      for (ProjectFocus projectFocusDB : projectFocuses) {
+        this.deleteProjectFocus(projectFocusDB.getId());
+      }
+    } else {
+      if (phase.getNext() != null) {
+        this.deletProjectFocusPhase(phase.getNext(), projecID, projectFocus);
+      }
+    }
+
+
+  }
+
 
   @Override
   public boolean existProjectClusterActivity(long projectClusterActivityID) {
