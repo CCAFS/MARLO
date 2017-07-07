@@ -19,7 +19,6 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.ProjectClusterActivityDAO;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
-import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,26 +34,60 @@ public class ProjectClusterActivityMySQLDAO implements ProjectClusterActivityDAO
     this.dao = dao;
   }
 
+  public void addProjectClusterPhase(Phase next, long projecID, ProjectClusterActivity projectCluster) {
+    Phase phase = dao.find(Phase.class, next.getId());
+    List<ProjectClusterActivity> clusters = phase.getProjectClusters().stream()
+      .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID && projectCluster
+        .getCrpClusterOfActivity().getId().longValue() == c.getCrpClusterOfActivity().getId().longValue())
+      .collect(Collectors.toList());
+    if (phase.getEditable() != null && phase.getEditable() && clusters.isEmpty()) {
+
+      ProjectClusterActivity projectClusterAdd = new ProjectClusterActivity();
+      projectClusterAdd.setActive(true);
+      projectClusterAdd.setActiveSince(projectCluster.getActiveSince());
+      projectClusterAdd.setCreatedBy(projectCluster.getCreatedBy());
+      projectClusterAdd.setCrpClusterOfActivity(projectCluster.getCrpClusterOfActivity());
+      projectClusterAdd.setModificationJustification(projectCluster.getModificationJustification());
+      projectClusterAdd.setModifiedBy(projectCluster.getModifiedBy());
+      projectClusterAdd.setPhase(phase);
+      projectClusterAdd.setProject(projectCluster.getProject());
+      this.save(projectClusterAdd);
+    } else {
+      if (phase.getNext() != null) {
+        this.addProjectClusterPhase(phase.getNext(), projecID, projectCluster);
+      }
+    }
+
+
+  }
+
   @Override
   public boolean deleteProjectClusterActivity(long projectClusterActivityId) {
     ProjectClusterActivity projectClusterActivity = this.find(projectClusterActivityId);
     projectClusterActivity.setActive(false);
-    return this.save(projectClusterActivity) > 0;
+    long result = this.save(projectClusterActivity);
+
+    if (projectClusterActivity.getPhase().getNext() != null) {
+      this.deletProjectClusterPhase(projectClusterActivity.getPhase().getNext(),
+        projectClusterActivity.getProject().getId(), projectClusterActivity);
+    }
+    return result > 0;
+
   }
 
   public void deletProjectClusterPhase(Phase next, long projecID, ProjectClusterActivity projectClusterActivity) {
     Phase phase = dao.find(Phase.class, next.getId());
     if (phase.getEditable() != null && phase.getEditable()) {
-      List<ProjectFocus> projectFocuses = phase.getProjectFocuses().stream()
-        .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
-          && projectFocus.getCrpProgram().getId().longValue() == c.getCrpProgram().getId().longValue())
+      List<ProjectClusterActivity> clusters = phase.getProjectClusters().stream()
+        .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID && projectClusterActivity
+          .getCrpClusterOfActivity().getId().longValue() == c.getCrpClusterOfActivity().getId().longValue())
         .collect(Collectors.toList());
-      for (ProjectFocus projectFocusDB : projectFocuses) {
-        this.deleteProjectFocus(projectFocusDB.getId());
+      for (ProjectClusterActivity clusterActivity : clusters) {
+        this.deleteProjectClusterActivity(clusterActivity.getId());
       }
     } else {
       if (phase.getNext() != null) {
-        this.deletProjectFocusPhase(phase.getNext(), projecID, projectFocus);
+        this.deletProjectClusterPhase(phase.getNext(), projecID, projectClusterActivity);
       }
     }
 
@@ -97,6 +130,10 @@ public class ProjectClusterActivityMySQLDAO implements ProjectClusterActivityDAO
       dao.update(projectClusterActivity);
     }
 
+    if (projectClusterActivity.getPhase().getNext() != null) {
+      this.addProjectClusterPhase(projectClusterActivity.getPhase().getNext(),
+        projectClusterActivity.getProject().getId(), projectClusterActivity);
+    }
 
     return projectClusterActivity.getId();
   }

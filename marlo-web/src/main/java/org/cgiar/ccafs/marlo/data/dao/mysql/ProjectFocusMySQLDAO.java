@@ -34,7 +34,7 @@ public class ProjectFocusMySQLDAO implements ProjectFocusDAO {
     this.dao = dao;
   }
 
-  public void AddProjectFocusPhase(Phase next, long projecID, ProjectFocus projectFocus) {
+  public void addProjectFocusPhase(Phase next, long projecID, ProjectFocus projectFocus) {
     Phase phase = dao.find(Phase.class, next.getId());
     List<ProjectFocus> projectFocuses = phase.getProjectFocuses().stream()
       .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
@@ -54,7 +54,7 @@ public class ProjectFocusMySQLDAO implements ProjectFocusDAO {
       this.save(projectFocusAdd);
     } else {
       if (phase.getNext() != null) {
-        this.AddProjectFocusPhase(phase.getNext(), projecID, projectFocus);
+        this.addProjectFocusPhase(phase.getNext(), projecID, projectFocus);
       }
     }
 
@@ -128,7 +128,7 @@ public class ProjectFocusMySQLDAO implements ProjectFocusDAO {
       dao.update(projectFocus);
     }
     if (projectFocus.getPhase().getNext() != null) {
-      this.AddProjectFocusPhase(projectFocus.getPhase().getNext(), projectFocus.getProject().getId(), projectFocus);
+      this.addProjectFocusPhase(projectFocus.getPhase().getNext(), projectFocus.getProject().getId(), projectFocus);
     }
 
     return projectFocus.getId();

@@ -44,5 +44,11 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectFocus" />
         </set>
+        <set name="projectClusters" table="project_cluster_activities" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="id_phase" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity" />
+        </set>
     </class>
 </hibernate-mapping>
