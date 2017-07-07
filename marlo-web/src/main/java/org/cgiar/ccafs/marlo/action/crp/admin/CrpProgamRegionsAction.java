@@ -474,6 +474,7 @@ public class CrpProgamRegionsAction extends BaseAction {
     message.append(this.getText("email.region.assigned",
       new String[] {crpProgram.getAcronym(), crpProgram.getName(), loggedCrp.getName()}));
     message.append(this.getText("email.support", new String[] {crpAdmins}));
+    message.append(this.getText("email.getStarted"));
     message.append(this.getText("email.bye"));
 
     sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
@@ -491,6 +492,7 @@ public class CrpProgamRegionsAction extends BaseAction {
     message.append(this.getText("email.region.unassigned",
       new String[] {regionRole, crpProgram.getName(), crpProgram.getAcronym()}));
     message.append(this.getText("email.support"));
+    message.append(this.getText("email.getStarted"));
     message.append(this.getText("email.bye"));
     String toEmail = null;
     String ccEmail = null;

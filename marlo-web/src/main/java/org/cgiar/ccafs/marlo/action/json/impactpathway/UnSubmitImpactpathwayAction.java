@@ -200,6 +200,7 @@ public class UnSubmitImpactpathwayAction extends BaseAction {
 
     message.append(this.getText("impact.unsubmit.email.message", values));
     message.append(this.getText("email.support", new String[] {crpAdmins}));
+    message.append(this.getText("email.getStarted"));
     message.append(this.getText("email.bye"));
 
     sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
