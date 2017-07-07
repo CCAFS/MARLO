@@ -1491,7 +1491,7 @@ a#userLogOut {
  text-decoration: none;
  padding: 0px 18px;
  color: #fff;
- z-index: 1;
+ /* z-index: 1; */
 } 
 #mainMenu .menuContent ul a p{
  font-size: 0.7em;
@@ -1504,7 +1504,6 @@ a#userLogOut {
   color: #FFFFFF;
   display: inline-block;
   font-size: 0.95em;
-  z-index: 999;
 }
 
 #mainMenu .menuContent ul li:hover {
@@ -6670,10 +6669,15 @@ img.removeInput {
 
 
 .dropdownPhases a{
-  font-size:1em
+  font-size: 1em;
+  float: left;
+  padding: 6px 20px;
 }
 
 .dropdownPhases ul{
   font-size: 0.9em;
-  z-index: 1023;
 }
+
+.dropdownPhases ul li{}
+
+.dropdownPhases .dropdown-menu {position: relative;}

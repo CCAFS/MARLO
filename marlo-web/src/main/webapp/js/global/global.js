@@ -26,14 +26,19 @@ $(document).ready(function() {
   showNotificationMessages();
   showHelpText();
 
-  // Dropdown change phases
-  // $('.dropdown-toggle').dropdown();
-  // Change CRP Phase
-  $('.phaseSelect').on('change', function() {
-    var phaseID = $(this).val();
-    if(phaseID == -1) {
-      return
-    }
+  // Change CRP Phase event
+  $('.changePhase').on('click', function(){
+    var phaseID = $(this).classParam('phase');
+    changePhase(phaseID);
+  });
+ 
+  /**
+   * Execute an AJAX thar change the phase in the session
+   * 
+   * @param phaseID
+   * @returns
+   */
+  function changePhase(phaseID){
     // Execute a change of phase
     $.ajax({
         url: baseURL + '/changePhase.do',
@@ -49,7 +54,7 @@ $(document).ready(function() {
           location.reload();
         }
     });
-  });
+  }
   
   // Changes detected
   $('p.changesDetected strong').text($('.changedField').length);

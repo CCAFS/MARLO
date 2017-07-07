@@ -82,14 +82,14 @@
             
             [#-- Phases dropdown --]
             [#if logged]
-            <div class="dropdown dropdownPhases animated fadeIn">
+            <div id="changePhase" class="dropdown dropdownPhases animated fadeIn">
               <a id="dLabel" class="label label-${(reportingActive)?string('default','primary')}" data-target="#" href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                 ${(actualPhase.description)!} ${(actualPhase.year)!}
                 <span class="caret"></span>
               </a>
               <ul class="dropdown-menu" aria-labelledby="dLabel">
                 [#list phases as phase]
-                  <li> <a href="#changePhase" class="phase-${phase.id}">  ${(phase.description)!} ${(phase.year)!} </a> </li>
+                  [#if !(actualPhase.id == phase.id)]<li> <a href="#" class="changePhase phase-${phase.id}">  ${(phase.description)!} ${(phase.year)!} </a> </li>[/#if]
                 [/#list]
               </ul>
             </div>

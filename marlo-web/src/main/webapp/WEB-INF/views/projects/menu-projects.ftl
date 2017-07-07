@@ -59,10 +59,12 @@
 
 [#assign sectionsForChecking = [] /]
 
-[#-- Phase Select --]
+[#-- Phase Select 
 <div class="form-group">
   [@customForm.select name="actualPhase" className="phaseSelect" value="actualPhase.id"   i18nkey="actual.cycle"   listName="phases" keyFieldName="id"  displayFieldName="composedName" /]
 </div>
+--]
+
 [#-- Menu--]
 <nav id="secondaryMenu" class="">
   <p>Project Menu <br /><small> [#if project.projectInfo.administrative]Program Management [#else] Research Project [/#if]</small> </p> 
