@@ -43,8 +43,7 @@
           <td class="left">
             [#if isProjectNew]<span class="label label-info">New</span>[/#if]
             [#if project.projectInfo.title?has_content]
-              <a href="${projectUrl}" title="${project.projectInfo.title}">
-              [#if project.projectInfo.title?length < 120] ${project.projectInfo.title}</a> [#else] [@utilities.wordCutter string=project.projectInfo.title maxPos=120 /]...</a> [/#if]
+              <a href="${projectUrl}" title="${(project.projectInfo.title)!}">[@utilities.wordCutter string=(project.projectInfo.title)!'' maxPos=120 /]</a>
             [#else]
               <a href="${projectUrl}">
                 [@s.text name="projectsList.title.none" /]
@@ -238,7 +237,7 @@
         </td>
           [#-- Project Title --]
           <td class="left"> 
-            [#if project.projectInfo.title?has_content]
+            [#if (project.projectInfo.title?has_content)!false]
               <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='edit' value="true" /][/@s.url]" >
               [#if project.projectInfo.title?length < 120] ${project.projectInfo.title}</a> [#else] [@utilities.wordCutter string=project.projectInfo.title maxPos=120 /]...</a> [/#if]
             [#else]

@@ -69,20 +69,35 @@
         <div class="container">
           <div id="marlo-logo" class="animated fadeIn">
             <a href="${baseUrl}">
-            <div id="title" >MARLO</div>    
-            <div id="subTitle" class="visible-md-block visible-lg-block">Managing Agricultural Research for Learning & Outcomes</div>
-            <div class="clearfix"></div>
-            [#if !config.production] <h4 class="testEnvironment"><span class="label label-danger text-left">Testing Environment</span> </h4>[/#if]
-            <h4 class="">
-              [#-- Planning / Reporting tag --]
-              [#if reportingActive??]
-                <span class="label label-primary text-left">${(actualPhase.description)!} ${(actualPhase.year)!}</span> 
-              [/#if]
-              [#if crpClosed] <span class="label label-default text-left">Closed</span> [/#if]
-            </h4>
+              <div id="title" >MARLO</div>    
+              <div id="subTitle" class="visible-md-block visible-lg-block">Managing Agricultural Research for Learning & Outcomes</div>
+              <div class="clearfix"></div>
             </a>
+            
+            [#-- Testing Environment --]
+            [#if !config.production] <h4 class="testEnvironment"><span class="label label-danger text-left">Testing Environment</span> </h4>[/#if]
+            
+            [#-- Is Closed--]
+            <h4 class="">[#if crpClosed] <span class="label label-default text-left">Closed</span> [/#if]</h4>
+            
+            [#-- Phases dropdown --]
+            [#if logged]
+            <div class="dropdown dropdownPhases animated fadeIn">
+              <a id="dLabel" class="label label-${(reportingActive)?string('default','primary')}" data-target="#" href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                ${(actualPhase.description)!} ${(actualPhase.year)!}
+                <span class="caret"></span>
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="dLabel">
+                [#list phases as phase]
+                  <li> <a href="#changePhase" class="phase-${phase.id}">  ${(phase.description)!} ${(phase.year)!} </a> </li>
+                [/#list]
+              </ul>
+            </div>
+            [/#if]
+            
           </div>
           
+          [#-- Superadmin Menu --]
           [#if namespace?contains('superadmin')]
             <img id="crp-image" src="${baseUrl}/images/global/cgiar.png" alt="" />
           [#else]

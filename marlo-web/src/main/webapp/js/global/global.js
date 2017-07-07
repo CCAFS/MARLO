@@ -26,6 +26,31 @@ $(document).ready(function() {
   showNotificationMessages();
   showHelpText();
 
+  // Dropdown change phases
+  // $('.dropdown-toggle').dropdown();
+  // Change CRP Phase
+  $('.phaseSelect').on('change', function() {
+    var phaseID = $(this).val();
+    if(phaseID == -1) {
+      return
+    }
+    // Execute a change of phase
+    $.ajax({
+        url: baseURL + '/changePhase.do',
+        method: 'POST',
+        data: {
+          phaseID: phaseID
+        },
+        beforeSend: function() {
+        },
+        success: function(data) {
+        },
+        complete: function(){
+          location.reload();
+        }
+    });
+  });
+  
   // Changes detected
   $('p.changesDetected strong').text($('.changedField').length);
 

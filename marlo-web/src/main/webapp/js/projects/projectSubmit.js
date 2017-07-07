@@ -24,34 +24,6 @@ $(document).ready(function() {
     });
   });
 
-  $('.phaseSelect').on('change', function() {
-    var phaseID = $(this).val();
-
-    if(phaseID == -1) {
-      return
-    }
-
-
-
-    // Getting users
-    $.ajax({
-        url: baseURL + '/changePhase.do',
-        method: 'POST',
-        data: {
-          phaseID: phaseID
-        },
-        beforeSend: function() {
-        },
-        success: function(data) {
-
-
-        },
-        complete: function(){
-          location.reload();
-        }
-    });
-  });
-
   /* Change Pre-setting state */
   $('.projectEditLeader .button-label').on('click', function() {
     var $t = $(this).parent().find('input.onoffswitch-radio');

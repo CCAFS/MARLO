@@ -495,7 +495,7 @@ select{
   width: auto !important;
 }
 
-input[type="submit"], button, .addButton, a.form-button {
+input[type="submit"], .addButton, a.form-button {
   background-color: #2BA6CB;
   color: #fff;
   border: 0;
@@ -1434,6 +1434,7 @@ a#userLogOut {
 /************* 3. MAIN MENU ***************/
 #mainMenu{
   height: 65px;
+  z-index: 999;
 }
 
 #mainMenu .menuContent{
@@ -1444,7 +1445,7 @@ a#userLogOut {
 }
 
 #mainMenu .container{
-  position: relative;
+  /* position: relative; */
 }
 
 #mainMenu .menuContent.positionFixedTop {
@@ -1483,12 +1484,14 @@ a#userLogOut {
   list-style-type: none;
   padding: 0px 0px;
   margin: 0;
+  z-index: 1001;
 }
 
 #mainMenu .menuContent ul a{
  text-decoration: none;
  padding: 0px 18px;
  color: #fff;
+ z-index: 1;
 } 
 #mainMenu .menuContent ul a p{
  font-size: 0.7em;
@@ -1499,13 +1502,14 @@ a#userLogOut {
 #mainMenu .menuContent ul li{
   padding: 20px 0px 20px 0px;
   color: #FFFFFF;
-  position: relative;
   display: inline-block;
   font-size: 0.95em;
+  z-index: 999;
 }
 
 #mainMenu .menuContent ul li:hover {
   background: rgba(0, 0, 0, 0.05);
+  position: relative;
 }
 
 #mainMenu .menuContent ul li.currentSection {
@@ -6662,4 +6666,14 @@ img.removeInput {
   right:1%; 
   bottom:10%; 
   cursor:pointer;
+}
+
+
+.dropdownPhases a{
+  font-size:1em
+}
+
+.dropdownPhases ul{
+  font-size: 0.9em;
+  z-index: 1023;
 }
