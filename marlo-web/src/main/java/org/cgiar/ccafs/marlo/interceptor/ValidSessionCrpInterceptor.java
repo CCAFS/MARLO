@@ -62,8 +62,6 @@ public class ValidSessionCrpInterceptor extends AbstractInterceptor {
     } else {
       session.put(APConstants.USER_TOKEN, userToken);
     }
-    session.remove(APConstants.CURRENT_PHASE);
-    session.remove(APConstants.PHASES);
 
   }
 
@@ -90,6 +88,9 @@ public class ValidSessionCrpInterceptor extends AbstractInterceptor {
                 session.remove(parameter.getParameter().getKey());
               }
             }
+            session.remove(APConstants.CURRENT_PHASE);
+            session.remove(APConstants.PHASES);
+
             session.replace(APConstants.SESSION_CRP, crp);
             // put the crp parameters in the session
             for (CustomParameter parameter : crp.getCustomParameters()) {

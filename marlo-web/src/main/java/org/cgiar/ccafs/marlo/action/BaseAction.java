@@ -613,7 +613,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       if (this.getSession().containsKey(APConstants.CURRENT_PHASE)) {
         return (Phase) this.getSession().get(APConstants.CURRENT_PHASE);
       } else {
-        Phase phase = phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), this.getCrpID());
+        Phase phase =
+          phaseManager.findCycle(this.getCurrentCycleParam(), this.getCurrentCycleYearParam(), this.getCrpID());
         this.getSession().put(APConstants.CURRENT_PHASE, phase);
         return phase;
       }
@@ -738,8 +739,32 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+  public String getCurrentCycleParam() {
+    try {
+      if (this.isReportingActiveParam()) {
+        return APConstants.REPORTING;
+      } else {
+        return APConstants.PLANNING;
+      }
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
   public int getCurrentCycleYear() {
     return this.getActualPhase().getYear();
+  }
+
+  public int getCurrentCycleYearParam() {
+    try {
+      if (this.isReportingActiveParam()) {
+        return Integer.parseInt(this.getSession().get(APConstants.CRP_REPORTING_YEAR).toString());
+      } else {
+        return Integer.parseInt(this.getSession().get(APConstants.CRP_PLANNING_YEAR).toString());
+      }
+    } catch (Exception e) {
+      return 0;
+    }
   }
 
   /**
@@ -2027,6 +2052,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.getActualPhase().getDescription().equals(APConstants.PLANNING);
   }
 
+  public boolean isPlanningActiveParam() {
+    return Boolean.parseBoolean(this.getSession().get(APConstants.CRP_PLANNING_ACTIVE).toString());
+  }
+
   public boolean isPMU() {
     String roles = this.getRoles();
     if (roles.contains("PMU")) {
@@ -2141,6 +2170,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean isReportingActive() {
 
     return this.getActualPhase().getDescription().equals(APConstants.REPORTING);
+
+  }
+
+  public boolean isReportingActiveParam() {
+
+    return Boolean.parseBoolean(this.getSession().get(APConstants.CRP_REPORTING_ACTIVE).toString());
 
   }
 
