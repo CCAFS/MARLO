@@ -102,16 +102,14 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
   HashMap<Institution, List<Double>> allPartnersBudgets = new HashMap<Institution, List<Double>>();
   // Store projects budgets HashMap<Project, List<totalw1w2, totalw3bilateralcenter, totalw1w2Gender, totalw3Gender>>
   HashMap<Project, List<Double>> allProjectsBudgets = new HashMap<Project, List<Double>>();
-
-
   private CrpManager crpManager;
+
+
   private ProjectBudgetManager projectBudgetManager;
   private CrpProgramManager programManager;
   private InstitutionManager institutionManager;
-
   // XLSX bytes
   private byte[] bytesXLSX;
-
 
   // Streams
   InputStream inputStream;
@@ -127,6 +125,75 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     this.programManager = programManager;
     this.institutionManager = institutionManager;
     this.phaseManager = phaseManager;
+  }
+
+
+  /**
+   * Method to add i8n parameters to masterReport in Pentaho
+   * 
+   * @param masterReport
+   * @return masterReport with i8n parameters added
+   */
+  private MasterReport addi8nParameters(MasterReport masterReport) {
+
+    masterReport.getParameterValues().put("i8nProjectID", this.getText("searchTerms.projectId"));
+    masterReport.getParameterValues().put("i8nProjectTitle", this.getText("project.title.readText"));
+    masterReport.getParameterValues().put("i8nPpaPartnersTitle", this.getText("ppaPartners.title"));
+    masterReport.getParameterValues().put("i8nFlagships", this.getText("project.Flagships"));
+    masterReport.getParameterValues().put("i8nCoas", this.getText("deliverable.coas"));
+    masterReport.getParameterValues().put("i8nRegions", this.getText("project.Regions"));
+    masterReport.getParameterValues().put("i8nTotalW1W2",
+      this.getText("searchTerms.totalBudget") + this.getText("projectsList.W1W2projectBudget"));
+    masterReport.getParameterValues().put("i8nPercentajeW1W2",
+      this.getText("projectsList.W1W2projectBudget") + " " + this.getText("budgetPartner.percentaje"));
+    masterReport.getParameterValues().put("i8nGenderW1W2",
+      this.getText("budgetPartner.gender") + " " + this.getText("projectsList.W1W2projectBudget"));
+    masterReport.getParameterValues().put("i8nTotalW1W2Co",
+      this.getText("searchTerms.totalBudget") + this.getText("budget.w1w2cofinancing"));
+    masterReport.getParameterValues().put("i8nPercentajeW1W2Co",
+      this.getText("budget.w1w2cofinancing") + " " + this.getText("budgetPartner.percentaje"));
+    masterReport.getParameterValues().put("i8nGenderW1W2Co",
+      this.getText("budgetPartner.gender") + " " + this.getText("budget.w1w2cofinancing"));
+    masterReport.getParameterValues().put("i8nGrandTotalW1W2", this.getText("budgetPartner.totalW1W2"));
+    masterReport.getParameterValues().put("i8nTotalW3",
+      this.getText("searchTerms.totalBudget") + this.getText("projectsList.W3projectBudget"));
+    masterReport.getParameterValues().put("i8nPercentajeW3",
+      this.getText("projectsList.W3projectBudget") + " " + this.getText("budgetPartner.percentaje"));
+    masterReport.getParameterValues().put("i8nGenderW3",
+      this.getText("budgetPartner.gender") + " " + this.getText("projectsList.W3projectBudget"));
+    masterReport.getParameterValues().put("i8nTotalBilateral",
+      this.getText("searchTerms.totalBudget") + this.getText("projectsList.BILATERALprojectBudget"));
+    masterReport.getParameterValues().put("i8nPercentajeBilateral",
+      this.getText("projectsList.BILATERALprojectBudget") + " " + this.getText("budgetPartner.percentaje"));
+    masterReport.getParameterValues().put("i8nGenderBilateral",
+      this.getText("budgetPartner.gender") + " " + this.getText("projectsList.BILATERALprojectBudget"));
+    masterReport.getParameterValues().put("i8nTotalCenter",
+      this.getText("searchTerms.totalBudget") + this.getText("budget.centerFunds"));
+    masterReport.getParameterValues().put("i8nPercentajeCenter",
+      this.getText("budget.centerFunds") + " " + this.getText("budgetPartner.percentaje"));
+    masterReport.getParameterValues().put("i8nGenderCenter",
+      this.getText("budgetPartner.gender") + " " + this.getText("budget.centerFunds"));
+
+    masterReport.getParameterValues().put("i8nGrandTotalW3BilateralCenter",
+      this.getText("budgetPartner.grandTotalW3BilateralCenter"));
+    masterReport.getParameterValues().put("i8nGrandTotalGenderW3BilateralCenter",
+      this.getText("budgetPartner.grandTotalGenderW3BilateralCenter"));
+    masterReport.getParameterValues().put("i8nGrandTotalGenderFundingSoucres",
+      this.getText("budgetPartner.grandTotalGenderFundingSoucres"));
+    masterReport.getParameterValues().put("i8nGrandTotalBudget", this.getText("budgetPartner.grandTotalBudget"));
+    masterReport.getParameterValues().put("i8nSharePercentaje", this.getText("budgetPartner.sharePercentaje"));
+    masterReport.getParameterValues().put("i8nFundingSourcesTotal", this.getText("budgetPartner.fundingSourcesTotal"));
+    masterReport.getParameterValues().put("i8nW3BilateralCenterW1W2ratio",
+      this.getText("budgetPartner.W3BilateralCenterW1W2ratio"));
+    masterReport.getParameterValues().put("i8nGenderPercentage", this.getText("budget.genderPercentage"));
+    masterReport.getParameterValues().put("i8nW1W2", this.getText("projectsList.W1W2projectBudget"));
+    masterReport.getParameterValues().put("i8nW3BilateralCenter", this.getText("budgetPartner.W3BilateralCenter"));
+    masterReport.getParameterValues().put("i8nAllFundingSources", this.getText("budgetPartner.allFundingSources"));
+    masterReport.getParameterValues().put("i8nGrandTotalGenderW1W2",
+      this.getText("budgetPartner.grandTotalGenderW1W2"));
+    masterReport.getParameterValues().put("i8nGrandTotal", this.getText("budgetPartner.grandTotal"));
+
+    return masterReport;
   }
 
 
@@ -150,6 +217,8 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
       TypedTableModel model = this.getMasterTableModel();
       sdf.addTable(masterQueryName, model);
       masterReport.setDataFactory(cdf);
+      // Set i8n for pentaho
+      masterReport = this.addi8nParameters(masterReport);
 
       // Get details band
       ItemBand masteritemBand = masterReport.getItemBand();
@@ -698,6 +767,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
    * @param institution
    * @return boolean with true if is ppa and false if not
    */
+  @Override
   public boolean isPPA(Institution institution) {
     if (institution == null) {
       return false;
