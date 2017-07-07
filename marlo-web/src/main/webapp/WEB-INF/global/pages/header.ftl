@@ -76,7 +76,7 @@
             <h4 class="">
               [#-- Planning / Reporting tag --]
               [#if reportingActive??]
-                <span class="label label-${(reportingActive)?string('default','primary')} text-left">${(reportingActive)?string('Reporting','Planning')} ${(currentCycleYear)!}</span> 
+                <span class="label label-primary text-left">${(actualPhase.description)!} ${(actualPhase.year)!}</span> 
               [/#if]
               [#if crpClosed] <span class="label label-default text-left">Closed</span> [/#if]
             </h4>
