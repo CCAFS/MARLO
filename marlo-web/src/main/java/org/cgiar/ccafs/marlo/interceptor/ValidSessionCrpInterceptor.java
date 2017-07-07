@@ -62,6 +62,9 @@ public class ValidSessionCrpInterceptor extends AbstractInterceptor {
     } else {
       session.put(APConstants.USER_TOKEN, userToken);
     }
+    session.remove(APConstants.CURRENT_PHASE);
+    session.remove(APConstants.PHASES);
+
   }
 
   @Override

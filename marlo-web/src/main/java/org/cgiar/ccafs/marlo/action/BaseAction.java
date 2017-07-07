@@ -739,15 +739,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public int getCurrentCycleYear() {
-    try {
-      if (this.isReportingActive()) {
-        return Integer.parseInt(this.getSession().get(APConstants.CRP_REPORTING_YEAR).toString());
-      } else {
-        return Integer.parseInt(this.getSession().get(APConstants.CRP_PLANNING_YEAR).toString());
-      }
-    } catch (Exception e) {
-      return 0;
-    }
+    return this.getActualPhase().getYear();
   }
 
   /**
@@ -2032,7 +2024,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean isPlanningActive() {
-    return Boolean.parseBoolean(this.getSession().get(APConstants.CRP_PLANNING_ACTIVE).toString());
+    return this.getActualPhase().getDescription().equals(APConstants.PLANNING);
   }
 
   public boolean isPMU() {
@@ -2148,7 +2140,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public boolean isReportingActive() {
 
-    return Boolean.parseBoolean(this.getSession().get(APConstants.CRP_REPORTING_ACTIVE).toString());
+    return this.getActualPhase().getDescription().equals(APConstants.REPORTING);
 
   }
 
