@@ -146,28 +146,24 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     masterReport.getParameterValues().put("i8nPercentajeW1W2",
       this.getText("budgetPartner.w1w2Percentage") + " " + this.getText("budgetPartner.percentaje"));
     masterReport.getParameterValues().put("i8nGenderW1W2",
-      this.getText("budgetPartner.gender") + " " + this.getText("projectsList.W1W2projectBudget"));
-    masterReport.getParameterValues().put("i8nTotalW1W2Co",
-      this.getText("searchTerms.totalBudget") + this.getText("budget.w1w2cofinancing"));
+      this.getText("budgetPartner.gender") + " " + this.getText("budgetPartner.w1w2"));
+    masterReport.getParameterValues().put("i8nTotalW1W2Co", this.getText("budgetPartner.w1w2Cofinancing"));
     masterReport.getParameterValues().put("i8nPercentajeW1W2Co",
       this.getText("budget.w1w2cofinancing") + " " + this.getText("budgetPartner.percentaje"));
     masterReport.getParameterValues().put("i8nGenderW1W2Co",
-      this.getText("budgetPartner.gender") + " " + this.getText("budget.w1w2cofinancing"));
-    masterReport.getParameterValues().put("i8nGrandTotalW1W2", this.getText("budgetPartner.totalW1W2"));
-    masterReport.getParameterValues().put("i8nTotalW3",
-      this.getText("searchTerms.totalBudget") + this.getText("projectsList.W3projectBudget"));
+      this.getText("budgetPartner.gender") + " " + this.getText("budgetPartner.w1w2Cofinancing"));
+    masterReport.getParameterValues().put("i8nGrandTotalW1W2", this.getText("budgetPartner.w1w2grandTotal"));
+    masterReport.getParameterValues().put("i8nTotalW3", this.getText("projectsList.W3projectBudget"));
     masterReport.getParameterValues().put("i8nPercentajeW3",
       this.getText("projectsList.W3projectBudget") + " " + this.getText("budgetPartner.percentaje"));
     masterReport.getParameterValues().put("i8nGenderW3",
       this.getText("budgetPartner.gender") + " " + this.getText("projectsList.W3projectBudget"));
-    masterReport.getParameterValues().put("i8nTotalBilateral",
-      this.getText("searchTerms.totalBudget") + this.getText("projectsList.BILATERALprojectBudget"));
+    masterReport.getParameterValues().put("i8nTotalBilateral", this.getText("projectsList.BILATERALprojectBudget"));
     masterReport.getParameterValues().put("i8nPercentajeBilateral",
       this.getText("projectsList.BILATERALprojectBudget") + " " + this.getText("budgetPartner.percentaje"));
     masterReport.getParameterValues().put("i8nGenderBilateral",
       this.getText("budgetPartner.gender") + " " + this.getText("projectsList.BILATERALprojectBudget"));
-    masterReport.getParameterValues().put("i8nTotalCenter",
-      this.getText("searchTerms.totalBudget") + this.getText("budget.centerFunds"));
+    masterReport.getParameterValues().put("i8nTotalCenter", this.getText("budget.centerFunds"));
     masterReport.getParameterValues().put("i8nPercentajeCenter",
       this.getText("budget.centerFunds") + " " + this.getText("budgetPartner.percentaje"));
     masterReport.getParameterValues().put("i8nGenderCenter",
