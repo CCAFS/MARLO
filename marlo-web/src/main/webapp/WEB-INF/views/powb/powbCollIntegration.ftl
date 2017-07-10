@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "POWB Report" /]
 [#assign currentSectionString = "powb-${actionName?replace('/','-')}-${liaisonInstitutionID}" /]
-[#assign pageLibs = [ ] /]
+[#assign pageLibs = [ "flat-flags" ] /]
 [#assign customJS = [ ] /]
 [#assign customCSS = ["${baseUrl}/css/powb/powbGlobal.css"] /]
 [#assign currentSection = "synthesis" /]
@@ -38,17 +38,20 @@
         [#-- Title --]
         <h3 class="headTitle">[@s.text name="powbCollIntegration.title" /]</h3>
         <div class="borderBox">
-          [#-- A.2.1 Contribution to and from Platforms --] 
+          [#-- A.2.1 Contribution to and from Platforms --]
+          [#if PMU]
           <div class="form-group">
             [@customForm.textArea name="liaisonInstitution.powb.contributionTo" help="liaisonInstitution.powb.contributionTo.help" required=true className="limitWords-100" editable=editable /]
           </div>
-        
+          [/#if]
+          
           [#-- A.2.2 Cross-CRP interactions --] 
           <div class="form-group">
             [@customForm.textArea name="liaisonInstitution.powb.crossCrpInteractions" help="liaisonInstitution.powb.crossCrpInteractions.help" required=true className="limitWords-100" editable=editable /]
           </div>
           
           [#-- Flagships Cross CRP interactions --]
+          [#if PMU]
           <div class="form-group">
             <h5 class="sectionSubTitle">[@s.text name="powbCollIntegration.flagshipsCrossInteractions" /]</h5>
             <table class="">
@@ -68,13 +71,17 @@
               </tbody>
             </table>
           </div>
+          [/#if]
           
-          [#-- A.2.3 Expected Efforts on Country Coordination --] 
+          [#-- A.2.3 Expected Efforts on Country Coordination --]
+          [#if PMU]
           <div class="form-group">
             [@customForm.textArea name="liaisonInstitution.powb.expectedEfforts" help="liaisonInstitution.powb.expectedEfforts.help" required=true className="limitWords-100" editable=editable /]
           </div>
+          [/#if]
           
           [#-- Countries contribuions --]
+          [#if PMU]
           <div class="form-group">
             <h5 class="sectionSubTitle">[@s.text name="powbCollIntegration.countriesContributions" /]</h5>
             <table class="">
@@ -86,18 +93,26 @@
                 </tr>
               </thead>
               <tbody>
-                [#list 1..4 as flagship]
+                [#list 1..4 as country]
                 <tr>
-                  <td>Vietnam</td>
+                  <td><i class="flag-sm flag-sm-VN"></i> Vietnam</td>
                   <td>
-                    <a href=""></a>
+                    [#list 100..103 as p]
+                    <a href="">P${p}</a>
+                    [/#list]
+                  </td>
+                  <td>
+                    [#list 50..53 as fs]
+                    <a href="">P${fs}</a>
+                    [/#list]
                   </td>
                 </tr>
                 [/#list]
               </tbody>
             </table>
           </div>
-        
+          [/#if]
+          
         </div>
         
         [#-- Section Buttons & hidden inputs--]
