@@ -35,10 +35,10 @@ public class Phase implements java.io.Serializable, IAuditLog {
 
 
   private Set<ProjectPhase> projectPhases = new HashSet<ProjectPhase>(0);
-
   private Set<ProjectInfo> projectInfos = new HashSet<ProjectInfo>(0);
   private Set<ProjectFocus> projectFocuses = new HashSet<ProjectFocus>(0);
   private Set<ProjectClusterActivity> projectClusters = new HashSet<ProjectClusterActivity>(0);
+  private Set<ProjectPartner> partners = new HashSet<ProjectPartner>(0);
 
 
   public Phase() {
@@ -88,14 +88,15 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return this.crp;
   }
 
+
   public String getDescription() {
     return this.description;
   }
 
+
   public Boolean getEditable() {
     return editable;
   }
-
 
   @Override
   public Long getId() {
@@ -128,6 +129,11 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return next;
   }
 
+  public Set<ProjectPartner> getPartners() {
+    return partners;
+  }
+
+
   public Set<ProjectClusterActivity> getProjectClusters() {
     return projectClusters;
   }
@@ -136,10 +142,10 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return projectFocuses;
   }
 
-
   public Set<ProjectInfo> getProjectInfos() {
     return projectInfos;
   }
+
 
   public Set<ProjectPhase> getProjectPhases() {
     return this.projectPhases;
@@ -185,6 +191,10 @@ public class Phase implements java.io.Serializable, IAuditLog {
 
   public void setNext(Phase next) {
     this.next = next;
+  }
+
+  public void setPartners(Set<ProjectPartner> partners) {
+    this.partners = partners;
   }
 
   public void setProjectClusters(Set<ProjectClusterActivity> projectClusters) {
