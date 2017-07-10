@@ -82,6 +82,30 @@ public class LeveragesReportingSummaryAction extends BaseAction implements Summa
     this.projectLeverageManager = projectLeverageManager;
   }
 
+  /**
+   * Method to add i8n parameters to masterReport in Pentaho
+   * 
+   * @param masterReport
+   * @return masterReport with i8n parameters added
+   */
+  private MasterReport addi8nParameters(MasterReport masterReport) {
+    /*
+     * Reporting
+     * Project leverages
+     */
+    masterReport.getParameterValues().put("i8nleverageId", this.getText("leverage.leverageId"));
+    masterReport.getParameterValues().put("i8nLeverages", this.getText("projectLeverages.leverages"));
+    masterReport.getParameterValues().put("i8nTitle", this.getText("leverage.title"));
+    masterReport.getParameterValues().put("i8nPartnerName", this.getText("projectLeverage.partnerName"));
+    masterReport.getParameterValues().put("i8nYear", this.getText("reporting.projectLeverages.year"));
+    masterReport.getParameterValues().put("i8nFlagship", this.getText("projectLeverage.flagship"));
+    masterReport.getParameterValues().put("i8nBudget", this.getText("projectLeverage.budget"));
+    masterReport.getParameterValues().put("i8nProjectID", this.getText("searchTerms.projectId"));
+
+    return masterReport;
+  }
+
+
   @Override
   public String execute() throws Exception {
     ClassicEngineBoot.getInstance().start();
@@ -108,6 +132,8 @@ public class LeveragesReportingSummaryAction extends BaseAction implements Summa
       TypedTableModel model = this.getMasterTableModel(center, date, String.valueOf(year));
       sdf.addTable(masterQueryName, model);
       masterReport.setDataFactory(cdf);
+      // Set i8n for pentaho
+      masterReport = this.addi8nParameters(masterReport);
       // Get details band
       ItemBand masteritemBand = masterReport.getItemBand();
       // Create new empty subreport hash map
@@ -300,8 +326,8 @@ public class LeveragesReportingSummaryAction extends BaseAction implements Summa
       if (projectLeverage.getProject() != null) {
         projectID = projectLeverage.getProject().getId();
       }
-      model.addRow(
-        new Object[] {projectLeverage.getId(), title, partnerName, leverageYear, flagship, budget, projectID});
+      model
+        .addRow(new Object[] {projectLeverage.getId(), title, partnerName, leverageYear, flagship, budget, projectID});
     }
     return model;
   }
