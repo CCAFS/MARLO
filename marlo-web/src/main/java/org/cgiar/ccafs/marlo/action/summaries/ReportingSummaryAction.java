@@ -2332,9 +2332,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     }
     String leader = null;
     // Check if project leader is assigned
-    if (project.getLeaderPerson() != null && project.getLeaderPerson().getUser() != null) {
-      leader = project.getLeaderPerson().getUser().getComposedName() + "\n&lt;"
-        + project.getLeaderPerson().getUser().getEmail() + "&gt;";
+    if (project.getLeaderPerson(this.getActualPhase()) != null
+      && project.getLeaderPerson(this.getActualPhase()).getUser() != null) {
+      leader = project.getLeaderPerson(this.getActualPhase()).getUser().getComposedName() + "\n&lt;"
+        + project.getLeaderPerson(this.getActualPhase()).getUser().getEmail() + "&gt;";
     }
     String summary = project.getProjecInfoPhase(this.getActualPhase()).getSummary();
     if (summary != null) {

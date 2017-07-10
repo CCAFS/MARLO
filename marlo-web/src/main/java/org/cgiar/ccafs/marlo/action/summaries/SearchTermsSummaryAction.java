@@ -743,11 +743,11 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
             insLeader += "</font>";
           }
           // Set leader
-          if (project.getLeaderPerson() != null) {
+          if (project.getLeaderPerson(this.getActualPhase()) != null) {
             leader = "<font size=2 face='Segoe UI' color='#000000'>";
-            leader =
-              "<font size=2 face='Segoe UI' color='#000000'>" + project.getLeaderPerson().getUser().getComposedName()
-                + "\n&lt;" + project.getLeaderPerson().getUser().getEmail() + "&gt;</font>";
+            leader = "<font size=2 face='Segoe UI' color='#000000'>"
+              + project.getLeaderPerson(this.getActualPhase()).getUser().getComposedName() + "\n&lt;"
+              + project.getLeaderPerson(this.getActualPhase()).getUser().getEmail() + "&gt;</font>";
           }
           if (leader.isEmpty()) {
             leader = "<font size=2 face='Segoe UI' color='#000000'></font>";

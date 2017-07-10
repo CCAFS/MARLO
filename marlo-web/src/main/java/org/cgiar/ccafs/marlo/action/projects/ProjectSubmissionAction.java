@@ -237,13 +237,13 @@ public class ProjectSubmissionAction extends BaseAction {
 
 
     // Add project leader
-    if (project.getLeaderPerson() != null
-      && project.getLeaderPerson().getUser().getId().longValue() != this.getCurrentUser().getId().longValue()) {
-      ccEmails.append(project.getLeaderPerson().getUser().getEmail());
+    if (project.getLeaderPerson(this.getActualPhase()) != null && project.getLeaderPerson(this.getActualPhase())
+      .getUser().getId().longValue() != this.getCurrentUser().getId().longValue()) {
+      ccEmails.append(project.getLeaderPerson(this.getActualPhase()).getUser().getEmail());
       ccEmails.append(", ");
     }
     // Add project coordinator(s)
-    for (ProjectPartnerPerson projectPartnerPerson : project.getCoordinatorPersons()) {
+    for (ProjectPartnerPerson projectPartnerPerson : project.getCoordinatorPersons(this.getActualPhase())) {
       if (projectPartnerPerson.getUser().getId() != this.getCurrentUser().getId()) {
         ccEmails.append(projectPartnerPerson.getUser().getEmail());
         ccEmails.append(", ");

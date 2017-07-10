@@ -50,7 +50,7 @@
               [#if reportingActive]
               <br />
               <div class="fullBlock">
-                [@customForm.textArea name="project.projectInfooverall" i18nkey="projectPartners.partnershipsOverall" className="limitWords-100" editable=editable /]
+                [@customForm.textArea name="project.overall" i18nkey="projectPartners.partnershipsOverall" className="limitWords-100" editable=editable /]
               </div>
               [/#if]
               
@@ -263,6 +263,7 @@
     <div class="blockContent" style="display:none">
       <hr />
       <input id="id" class="partnerId" type="hidden" name="${name}.id" value="${(element.id)!}" />
+       <input id="id" class="phaseId" type="hidden" name="${name}.phase.id" value="${(element.phase.id)!}" />
       
       [#-- Filters  
       [#if ((editable && isTemplate) || (editable && !element.institution??) || (editable && element.institution.id?number == -1))]

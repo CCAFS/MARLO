@@ -136,9 +136,9 @@ public class UnsubmitProjectAction extends BaseAction {
 
     String toEmail = "";
     // Add project leader
-    if (project.getLeaderPerson() != null
-      && project.getLeaderPerson().getUser().getId() != this.getCurrentUser().getId()) {
-      toEmail = project.getLeaderPerson().getUser().getEmail();
+    if (project.getLeaderPerson(this.getActualPhase()) != null
+      && project.getLeaderPerson(this.getActualPhase()).getUser().getId() != this.getCurrentUser().getId()) {
+      toEmail = project.getLeaderPerson(this.getActualPhase()).getUser().getEmail();
     }
 
     // CC Emails
@@ -181,7 +181,7 @@ public class UnsubmitProjectAction extends BaseAction {
     }
 
     // Add project coordinator(s)
-    for (ProjectPartnerPerson projectPartnerPerson : project.getCoordinatorPersons()) {
+    for (ProjectPartnerPerson projectPartnerPerson : project.getCoordinatorPersons(this.getActualPhase())) {
       if (projectPartnerPerson.getUser().getId() != this.getCurrentUser().getId()) {
         ccEmails.append(projectPartnerPerson.getUser().getEmail());
         ccEmails.append(", ");
@@ -221,9 +221,9 @@ public class UnsubmitProjectAction extends BaseAction {
     StringBuilder message = new StringBuilder();
     String[] values = new String[8];
     String plName = "";
-    if (project.getLeaderPerson() != null
-      && project.getLeaderPerson().getUser().getId() != this.getCurrentUser().getId()) {
-      plName = project.getLeaderPerson().getUser().getFirstName();
+    if (project.getLeaderPerson(this.getActualPhase()) != null
+      && project.getLeaderPerson(this.getActualPhase()).getUser().getId() != this.getCurrentUser().getId()) {
+      plName = project.getLeaderPerson(this.getActualPhase()).getUser().getFirstName();
     }
     values[0] = plName;
     values[1] = this.getCurrentUser().getFirstName();

@@ -347,7 +347,7 @@ public class Project implements java.io.Serializable, IAuditLog {
    * 
    * @return a list of PartnerPerson with the information requested.
    */
-  public List<ProjectPartnerPerson> getCoordinatorPersons() {
+  public List<ProjectPartnerPerson> getCoordinatorPersons(Phase phase) {
     List<ProjectPartnerPerson> projectCoordinators = new ArrayList<>();
     if (partners != null) {
       for (ProjectPartner partner : partners) {
@@ -361,7 +361,8 @@ public class Project implements java.io.Serializable, IAuditLog {
 
       }
     } else {
-      for (ProjectPartner partner : projectPartners.stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
+      for (ProjectPartner partner : projectPartners.stream().filter(c -> c.isActive() && c.getPhase().equals(phase))
+        .collect(Collectors.toList())) {
         if (partner.getProjectPartnerPersons() != null) {
           for (ProjectPartnerPerson person : partner.getProjectPartnerPersons()) {
 
@@ -503,7 +504,7 @@ public class Project implements java.io.Serializable, IAuditLog {
    * 
    * @return a PartnerPerson object with the information requested. Or null if the project doesn't have a leader.
    */
-  public ProjectPartnerPerson getLeaderPerson() {
+  public ProjectPartnerPerson getLeaderPerson(Phase phase) {
 
     if (partners != null) {
       for (ProjectPartner partner : partners) {
@@ -517,7 +518,8 @@ public class Project implements java.io.Serializable, IAuditLog {
         }
       }
     } else {
-      for (ProjectPartner partner : projectPartners.stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
+      for (ProjectPartner partner : projectPartners.stream().filter(c -> c.isActive() && c.getPhase().equals(phase))
+        .collect(Collectors.toList())) {
         for (ProjectPartnerPerson person : partner.getProjectPartnerPersons()) {
           if (person.isActive()) {
             if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL)) {

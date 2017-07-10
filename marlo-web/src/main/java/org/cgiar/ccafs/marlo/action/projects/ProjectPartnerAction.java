@@ -299,9 +299,13 @@ public class ProjectPartnerAction extends BaseAction {
 
 
   private Path getAutoSaveFilePath() {
+    // get the class simple name
     String composedClassName = project.getClass().getSimpleName();
+    // get the action name and replace / for _
     String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+    // concatane name and add the .json extension
+    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + this.getActualPhase().getDescription() + "_"
+      + this.getActualPhase().getYear() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
@@ -1257,19 +1261,22 @@ public class ProjectPartnerAction extends BaseAction {
         this.saveLessons(loggedCrp, project);
       }
 
-      ProjectPartnerPerson leader = project.getLeaderPerson();
+      ProjectPartnerPerson leader = project.getLeaderPerson(this.getActualPhase());
       // Notify user if the project leader was created.
 
-      this.updateRoles(previousProject.getLeaderPerson(), leader, plRole);
+      this.updateRoles(previousProject.getLeaderPerson((this.getActualPhase())), leader, plRole);
 
 
-      this.updateRoles(previousProject.getCoordinatorPersons(), project.getCoordinatorPersons(), pcRole);
+      this.updateRoles(previousProject.getCoordinatorPersons(this.getActualPhase()),
+        project.getCoordinatorPersons(this.getActualPhase()), pcRole);
       project = projectManager.getProjectById(projectID);
       project.setActiveSince(new Date());
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_PARTNERS_RELATION);
       relationsName.add(APConstants.PROJECT_LESSONS_RELATION);
-      projectManager.saveProject(project, this.getActionName(), relationsName);
+      relationsName.add(APConstants.PROJECT_INFO_RELATION);
+
+      projectManager.saveProject(project, this.getActionName(), relationsName, this.getActualPhase());
       Path path = this.getAutoSaveFilePath();
       if (path.toFile().exists()) {
         path.toFile().delete();
