@@ -20,7 +20,7 @@
 <div class="container helpText viewMore-block">
   <div style="display:none" class="helpMessage infoText">
     <img class="col-md-2" src="${baseUrl}/images/global/icon-help.jpg" />
-    <p class="col-md-10">[#if project.projectEditLeader] [#if reportingActive] [@s.text name="projectPartners.help3" /] [#else] [@s.text name="projectPartners.help2" ] [@s.param][@s.text name="global.managementLiaison" /][/@s.param] [/@s.text] [/#if]  [#else] [@s.text name="projectPartners.help1" /] [/#if]</p>
+    <p class="col-md-10">[#if project.projectInfo.isProjectEditLeader()] [#if reportingActive] [@s.text name="projectPartners.help3" /] [#else] [@s.text name="projectPartners.help2" ] [@s.param][@s.text name="global.managementLiaison" /][/@s.param] [/@s.text] [/#if]  [#else] [@s.text name="projectPartners.help1" /] [/#if]</p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
 </div>
@@ -44,13 +44,13 @@
           <div class="loadingBlock"></div>
           <div style="display:none">
             [#-- Other fields --]
-            [#if project.projectEditLeader]
+            [#if project.projectInfo.isProjectEditLeader()]
             <div class="${(!action.isProjectNew(project.id) || reportingActive)?string('simpleBox','')} ${reportingActive?string('fieldFocus','')}">
               [#-- -- -- REPORTING BLOCK -- -- --]
               [#if reportingActive]
               <br />
               <div class="fullBlock">
-                [@customForm.textArea name="project.overall" i18nkey="projectPartners.partnershipsOverall" className="limitWords-100" required=!project.bilateralProject editable=editable /]
+                [@customForm.textArea name="project.projectInfooverall" i18nkey="projectPartners.partnershipsOverall" className="limitWords-100" editable=editable /]
               </div>
               [/#if]
               
@@ -69,7 +69,7 @@
                     <input type="hidden" name="project.projectComponentLesson.id" value=${(project.projectComponentLesson.id)!"-1"} />
                     <input type="hidden" name="project.projectComponentLesson.year" value=${reportingActive?string(reportingYear,planningYear)} />
                     <input type="hidden" name="project.projectComponentLesson.componentName" value="${actionName}">
-                    [@customForm.textArea name="project.projectComponentLesson.lessons" i18nkey="projectPartners.lessons.${reportingActive?string('reporting','planning')}" className="limitWords-100" required=!project.bilateralProject editable=editable /]
+                    [@customForm.textArea name="project.projectComponentLesson.lessons" i18nkey="projectPartners.lessons.${reportingActive?string('reporting','planning')}" className="limitWords-100" editable=editable /]
                   </div>
                 </div>
               [/#if]
@@ -96,7 +96,7 @@
             </div> 
             
             [#-- Request partner adition --]
-            [#if editable && project.projectEditLeader]
+            [#if editable && project.projectInfo.isProjectEditLeader()]
             <p id="addPartnerText" class="helpMessage">
               [@s.text name="projectPartners.addPartnerMessage.first" /]
               <a class="popup" href="[@s.url action='${crpSession}/partnerSave'][@s.param name='projectID']${project.id?c}[/@s.param][/@s.url]">
@@ -143,7 +143,7 @@
 
 
 [#-- Can update PPA Partners --]
-<input type="hidden" id="canUpdatePPAPartners" value="${(action.hasPermission("ppa") || !project.projectEditLeader)?string}"/>
+<input type="hidden" id="canUpdatePPAPartners" value="${(action.hasPermission("ppa") || !project.projectInfo.isProjectEditLeader())?string}"/>
 
 [#-- Project PPA Partners --]
 <select id="projectPPAPartners" style="display:none">
@@ -296,7 +296,7 @@
       [/#if]
       
       [#-- Responsibilities --]
-      [#if project.projectEditLeader]
+      [#if project.projectInfo.isProjectEditLeader()]
       <div class="form-group partnerResponsabilities chosen"> 
         [@customForm.textArea name="${name}.responsibilities" className="resp limitWords-100" i18nkey="projectPartners.responsabilities" required=true editable=editable /]
         <div class="clearfix"></div>

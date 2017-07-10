@@ -1,3 +1,5 @@
+
+SET FOREIGN_KEY_CHECKS = 0;
 CREATE TEMPORARY TABLE
 IF NOT EXISTS table2 AS (SELECT * FROM project_cluster_activities);
 

@@ -894,15 +894,15 @@ public class ProjectPartnerAction extends BaseAction {
 
         this.setDraft(false);
 
-
+        project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
         if (project.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader()) {
-          project
-            .setPartners(project.getProjectPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+          project.setPartners(project.getProjectPartners().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
 
         } else {
           List<ProjectPartner> partnes = new ArrayList<>();
-          for (ProjectPartner projectPartner : project.getProjectPartners().stream().filter(c -> c.isActive())
-            .collect(Collectors.toList())) {
+          for (ProjectPartner projectPartner : project.getProjectPartners().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
             Institution inst = institutionManager.getInstitutionById(projectPartner.getInstitution().getId());
             if (!inst.getCrpPpaPartners().stream()
               .filter(insti -> insti.isActive() && insti.getCrp().getId().longValue() == this.getCrpID().longValue())
@@ -1060,8 +1060,8 @@ public class ProjectPartnerAction extends BaseAction {
 
       previousProject = projectManager.getProjectById(projectID);
 
-      for (ProjectPartner previousPartner : previousProject.getProjectPartners().stream().filter(c -> c.isActive())
-        .collect(Collectors.toList())) {
+      for (ProjectPartner previousPartner : previousProject.getProjectPartners().stream()
+        .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
 
 
         if (project.getPartners() == null || !project.getPartners().contains(previousPartner)) {
@@ -1100,7 +1100,7 @@ public class ProjectPartnerAction extends BaseAction {
             projectPartner.setModificationJustification("");
             projectPartner.setActiveSince(new Date());
             projectPartner.setProject(project);
-
+            projectPartner.setPhase(this.getActualPhase());
             projectPartnerManager.saveProjectPartner(projectPartner);
           } else {
             ProjectPartner projectPartnerDB = projectPartnerManager.getProjectPartnerById(projectPartner.getId());
@@ -1109,6 +1109,7 @@ public class ProjectPartnerAction extends BaseAction {
             projectPartner.setCreatedBy(projectPartnerDB.getCreatedBy());
             projectPartner.setModifiedBy(this.getCurrentUser());
             projectPartner.setModificationJustification("");
+            projectPartner.setPhase(projectPartnerDB.getPhase());
             projectPartner.setActiveSince(projectPartnerDB.getActiveSince());
             projectPartnerManager.saveProjectPartner(projectPartner);
           }
