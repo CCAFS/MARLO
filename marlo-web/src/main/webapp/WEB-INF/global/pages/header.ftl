@@ -85,13 +85,15 @@
             <div id="changePhase" class="dropdown dropdownPhases animated fadeIn">
               <a id="dLabel" class="label label-${(reportingActive)?string('default','primary')}" data-target="#" href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                 ${(actualPhase.description)!} ${(actualPhase.year)!}
-                <span class="caret"></span>
+                [#if phases?size > 1]<span class="caret"></span>[/#if]
               </a>
+              [#if phases?size > 1]
               <ul class="dropdown-menu" aria-labelledby="dLabel">
                 [#list phases as phase]
                   [#if !(actualPhase.id == phase.id)]<li> <a href="#" class="changePhase phase-${phase.id}">  ${(phase.description)!} ${(phase.year)!} </a> </li>[/#if]
                 [/#list]
               </ul>
+              [/#if]
             </div>
             [/#if]
             

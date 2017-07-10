@@ -495,7 +495,7 @@ select{
   width: auto !important;
 }
 
-input[type="submit"], .addButton, a.form-button {
+input[type="submit"], button, .addButton, a.form-button {
   background-color: #2BA6CB;
   color: #fff;
   border: 0;
