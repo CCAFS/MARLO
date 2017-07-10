@@ -5,10 +5,10 @@
     [@customForm.input name="deliverable.title" value="${(deliverable.title)!}" type="text" i18nkey="project.deliverable.generalInformation.title"  placeholder="" className="limitWords-25" required=true editable=editable /]
   </div>
   
-  [#-- Description input
+  [#-- Description input --]
   <div class="form-group">
     [@customForm.textArea name="deliverable.description" value="${(deliverable.description)!}" i18nkey="project.deliverable.generalInformation.description"  placeholder="" className="limitWords-150" required=true editable=editable /]
-  </div> --]
+  </div> 
   
   [#-- Type and subtype inputs --] 
   <div class="form-group row">
