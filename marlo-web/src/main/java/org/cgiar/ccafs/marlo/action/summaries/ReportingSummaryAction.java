@@ -213,7 +213,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       "Expected " + this.getText("projects.menu.deliverables"));
     masterReport.getParameterValues().put("i8nBudgetMenu", "Project " + this.getText("projects.menu.budget"));
     masterReport.getParameterValues().put("i8nBudgetPartnerMenu", this.getText("projects.menu.budgetByPartners"));
-    masterReport.getParameterValues().put("i8nBudgetCoAsMenu", this.getText("projects.menu.budgetByCoAs"));
+    masterReport.getParameterValues().put("i8nBudgetCoAsMenu", this.getText("planning.cluster"));
 
     /**
      * Menus Reporting
@@ -244,7 +244,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     masterReport.getParameterValues().put("i8nProjectDescFLRP", this.getText("project.menuFLRP"));
     masterReport.getParameterValues().put("i8nProjectFL", this.getText("project.Flagships"));
     masterReport.getParameterValues().put("i8nProjectRP", this.getText("project.Regions"));
-    masterReport.getParameterValues().put("i8nProjectCluster", this.getText("global.clusterOfActivities"));
+    masterReport.getParameterValues().put("i8nProjectCluster", this.getText("project.clusterDesc"));
     masterReport.getParameterValues().put("i8nProjectSummary", this.getText("project.summary"));
     masterReport.getParameterValues().put("i8nProjectGenderDesc", this.getText("project.GenderDesc"));
     masterReport.getParameterValues().put("i8nProjectCrossCutting",
