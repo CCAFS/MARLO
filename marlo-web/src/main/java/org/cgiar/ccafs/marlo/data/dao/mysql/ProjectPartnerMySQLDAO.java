@@ -260,13 +260,16 @@ public class ProjectPartnerMySQLDAO implements ProjectPartnerDAO {
           .isEmpty()) {
 
           ProjectPartnerPerson partnerPersonAdd = new ProjectPartnerPerson();
-          partnerPersonAdd.setProjectPartner(projectPartnerPrev);
+          ProjectPartner partner = new ProjectPartner();
+          partner.setId(projectPartnerPrev.getId());
+          partnerPersonAdd.setProjectPartner(partner);
           partnerPersonAdd.setModifiedBy(projectPartnerPrev.getModifiedBy());
           partnerPersonAdd.setActive(true);
           partnerPersonAdd.setActiveSince(projectPartnerPrev.getActiveSince());
           partnerPersonAdd.setContactType(partnerPerson.getContactType());
           partnerPersonAdd.setModificationJustification(projectPartnerPrev.getModificationJustification());
           partnerPersonAdd.setUser(partnerPerson.getUser());
+          partnerPersonAdd.setCreatedBy(projectPartnerPrev.getCreatedBy());
           dao.save(partnerPersonAdd);
 
         }
