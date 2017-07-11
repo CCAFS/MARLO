@@ -33,10 +33,30 @@
         [@s.form action=actionName enctype="multipart/form-data"]
         
         <h4 class="sectionTitle">[@s.text name="crpLocations.title" /]</h4>
-        <div class="defaultLocations simpleBox">
-          [#list defaultLocationTypes as elementType]
-            <p><span class="glyphicon glyphicon-ok-circle"></span> ${elementType.name}</p>
+        [#-- Default locations --]
+        <div class="defaultLocations items-list simpleBox">
+          <ul>
+          [#list loggedCrp.customLevels as elementType]
+            [#assign customLocName = "loggedCrp.customLevels[${elementType_index}]"]
+            <li class="li-item defaultLocation">
+              <input type="hidden" name="${customLocName}.locElementType.id" value="${elementType.locElementType.id}" />
+              [#if action.canBeSelected(elementType.locElementType.id)]
+                <input type="checkbox" [#if action.canBeDeleted(elementType.locElementType.id,elementType.class.name)][#else]style="opacity:0.5; cursor: not-allowed;" onclick="return false;" onkeydown="e = e || window.event; if(e.keyCode !== 9) return false;"[/#if]  name="${customLocName}.check" value="${elementType.check?string}" [#if elementType.check]checked[/#if] id="${customLocName}"  class="elementTypeCheck pull-right" />  
+              [#else]
+                <input type="hidden" name="${customLocName}.check" value="${elementType.check?string}"/>
+              [/#if]
+              <label for="${customLocName}"><span class="glyphicon glyphicon-map-marker"></span> <span>${elementType.locElementType.name}</span></label>
+              [#-- CRPs that allow this location --]
+              <div class="crps" style="color: #9c9c9c; margin-left: 0px; font-size: 0.75em;" title="CRPs ">
+                [#if elementType.locElementType?? && elementType.locElementType.crpLocElementTypes?has_content]
+                  [#list elementType.locElementType.crpLocElementTypes as crpLocElementType]
+                    [#if crpLocElementType.active][${crpLocElementType.crp.name}] [/#if]
+                  [/#list] 
+                [/#if]
+              </div>
+            </li>
           [/#list]
+          </ul>
           <div class="clearfix"></div>
         </div>
         
@@ -57,6 +77,18 @@
         </div>
         
         <h4 class="sectionTitle">[@s.text name="crpLocations.customizeScopes"] [@s.param]${(crpSession?upper_case)!}[/@s.param] [/@s.text]</h4>
+        <div class="simpleBox col-md-12 col-sm-12">
+        [#list regions as region]
+          <span class="col-lg-3 col-md-4 col-sm-4" style="padding:5px 3px; cursor:pointer;" title="${(region.name)!}">
+          <img src="${baseUrl}/images/global/icon-check.png" alt="" />
+           [@utilities.wordCutter string=(region.name) maxPos=20 substr=" "/]
+          </span>
+          [/#list]
+        </div>
+        <span class="note info col-md-12">
+          These default common regions follows the <b>World Bank</b> standard defined by the World Bank. Please <a href="https://datahelpdesk.worldbank.org/knowledgebase/articles/906519-world-bank-country-and-lending-groups" target="_blank">click here </a> for more information.
+        </span>
+        <div class="clearfix"></div>
         <div class="scopesBlock" listname="loggedCrp.locationElementTypes">
           [#-- Scopes/Regions List --]
           <div class="scopes-list">
@@ -71,7 +103,7 @@
             <div class="addLocationLevel type-scope bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>[@s.text name="form.buttons.addScopeLevel"/]</div>
           [/#if]
         </div>
-        
+        <div class="clearfix"></div>
         [#-- Section Buttons--]
         <div class="buttons">
           <div class="buttons-content">

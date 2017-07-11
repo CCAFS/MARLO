@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.validation.BaseValidator;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 
@@ -82,13 +83,93 @@ public class ProjectLocationValidator extends BaseValidator {
 
   public void validateLocation(BaseAction action, Project project) {
 
-    if (project.getLocationsData() == null || project.getLocationsData().isEmpty()) {
+
+    if (!action.hasSpecificities(APConstants.CRP_OTHER_LOCATIONS)) {
+
+
       if (!project.isLocationGlobal()) {
-        action.getInvalidFields().put("list-project.locationsData",
-          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Locations"}));
-        this.addMessage(action.getText("project.locationsData"));
+        if (project.getCountryFS() != null) {
+
+          if (project.getCountryFS().stream().filter(c -> c.isSelected()).collect(Collectors.toList()).isEmpty()) {
+            action.getInvalidFields().put("list-project.locationsData",
+              action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Locations"}));
+            this.addMessage(action.getText("project.countries"));
+          }
+        } else {
+          action.getInvalidFields().put("list-project.locationsData",
+            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Locations"}));
+          this.addMessage(action.getText("project.countries"));
+        }
       }
+
+      if (project.getLocationRegional() != null && project.getLocationRegional()) {
+        if (project.getRegionFS() != null) {
+          if (project.getRegionFS().stream().filter(c -> c.isSelected()).collect(Collectors.toList()).isEmpty()) {
+            action.getInvalidFields().put("list-project.locationsData",
+              action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Locations"}));
+            this.addMessage(action.getText("project.regions"));
+          } else {
+            this.validationMessage = new StringBuilder();
+            this.missingFields.setLength(0);
+            action.getInvalidFields().clear();
+          }
+        } else {
+          action.getInvalidFields().put("list-project.locationsData",
+            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Locations"}));
+          this.addMessage(action.getText("project.regions"));
+        }
+      }
+
+
+    } else
+
+    {
+      if (project.getLocationsData() == null || project.getLocationsData().isEmpty()) {
+        if (!project.isLocationGlobal()) {
+          action.getInvalidFields().put("list-project.locationsData",
+            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Locations"}));
+          this.addMessage(action.getText("project.locationsData"));
+          if (!project.isLocationGlobal()) {
+            if (project.getCountryFS() != null) {
+
+              if (project.getCountryFS().stream().filter(c -> c.isSelected()).collect(Collectors.toList()).isEmpty()) {
+                action.getInvalidFields().put("list-project.locationsData",
+                  action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Locations"}));
+                this.addMessage(action.getText("project.countries"));
+              } else {
+                this.validationMessage = new StringBuilder();
+                action.getInvalidFields().clear();
+                this.missingFields.setLength(0);
+              }
+            } else {
+              action.getInvalidFields().put("list-project.locationsData",
+                action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Locations"}));
+              this.addMessage(action.getText("project.countries"));
+            }
+          }
+          if (project.getLocationRegional() != null && project.getLocationRegional()) {
+            if (project.getRegionFS() != null) {
+              if (project.getRegionFS().stream().filter(c -> c.isSelected()).collect(Collectors.toList()).isEmpty()) {
+                action.getInvalidFields().put("list-project.locationsData",
+                  action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Locations"}));
+                this.addMessage(action.getText("project.regions"));
+              } else {
+                this.validationMessage = new StringBuilder();
+                action.getInvalidFields().clear();
+                this.missingFields.setLength(0);
+              }
+            } else {
+              action.getInvalidFields().put("list-project.locationsData",
+                action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Locations"}));
+              this.addMessage(action.getText("project.regions"));
+            }
+          }
+        }
+      }
+
+
     }
+
 
   }
 

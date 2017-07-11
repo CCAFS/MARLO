@@ -50,7 +50,12 @@ $(document).ready(
           budgetTypeID: option.val()
         };
         ajaxService(url, data);
+
+        // Check Agreement status
+        onChangeFundingType(option.val());
       });
+
+      onChangeFundingType($(".type").val());
 
       // Event for manage the accordion function
       $('#create-user').on('click', function() {
@@ -90,6 +95,7 @@ $(document).ready(
             budget: $parent.find(".budget").text(),
             type: $parent.find(".budgetTypeName").text(),
             typeId: $parent.find(".budgetTypeId").text(),
+            w1w2: $parent.find(".budgetTypeName .coFinancing:visible"),
             institutionSelected: institutionSelected,
             selectedYear: selectedYear
         });
@@ -133,6 +139,7 @@ $(document).ready(
         project.endDate = $dialogContent.find("#endDate").val().trim();
         project.financeCode = $dialogContent.find("#financeCode").val().trim();
         project.status = $dialogContent.find("#status").val().trim();
+        project.w1w2 = $dialogContent.find("#w1w2-tag-input:checked").length > 0;
         project.budgetType = $dialogContent.find("#budgetType").val().trim();
         project.fileName = $dialogContent.find('input[name="file"]').val();
         project.liaisonInstitution = institutionSelected;
@@ -204,6 +211,7 @@ $(document).ready(
                       budget: data.ammount,
                       type: data.type,
                       typeId: data.typeID,
+                      w1w2: data.w1w2,
                       institutionSelected: institutionSelected,
                       selectedYear: selectedYear
                   });
@@ -360,7 +368,13 @@ $(document).ready(
                     $item.find('.noBudgetMessage').attr('title', 'Insufficient funds for ' + selectedYear);
                     // $item.find('.listButton.select').hide();
                   }
-                  $item.find('.name').html('<strong>' + source.type + '</strong> - ' + source.name);
+                  if(source.w1w2) {
+                    $item.find('.name').html(
+                        '<strong>' + source.type + ' <small class="text-primary"> (Co-Financing)</small> </strong> - '
+                            + source.name);
+                  } else {
+                    $item.find('.name').html('<strong>' + source.type + '</strong> - ' + source.name);
+                  }
                   $item.find(".currentBudget").html(
                       "<br> <strong> Current Budget</strong> - $" + setCurrencyFormat(source.amount));
                   $item.find('.contactId').html(source.id);
@@ -413,10 +427,43 @@ $(document).ready(
 
     });// End document ready event
 
+/**
+ * Check Agreement status
+ * 
+ * @param {number} typeID - Funding budget type
+ */
+function onChangeFundingType(typeID) {
+  var W1W2 = 1;
+  var ON_GOING = 2;
+  // Change Agreement Status when is (W1W2 Type => 1)
+  var $agreementStatus = $('select#status');
+  // 3 => Concept Note/Pipeline
+  // 4 => Informally Confirmed
+  var $options = $agreementStatus.find("option[value='3'], option[value='4']");
+  if(typeID == W1W2) {
+    $agreementStatus.val(ON_GOING); // On-going
+    $options.remove();
+  } else {
+    if($options.length == 0) {
+      $agreementStatus.addOption("3", "Concept Note/Pipeline");
+      $agreementStatus.addOption("4", "Informally Confirmed");
+    }
+  }
+
+  // Check W1/W2 - Tag
+  if(typeID == W1W2) {
+    $('.w1w2-tag').show();
+  } else {
+    $('.w1w2-tag').hide();
+  }
+}
+
 function date(start,end) {
   var dateFormat = "yy-mm-dd";
   var from = $(start).datepicker({
       dateFormat: dateFormat,
+      minDate: MIN_DATE,
+      maxDate: $(end).val() || MAX_DATE,
       changeMonth: true,
       numberOfMonths: 1,
       changeYear: true,
@@ -439,6 +486,8 @@ function date(start,end) {
 
   var to = $(end).datepicker({
       dateFormat: dateFormat,
+      minDate: $(start).val() || MIN_DATE,
+      maxDate: MAX_DATE,
       changeMonth: true,
       numberOfMonths: 1,
       changeYear: true,

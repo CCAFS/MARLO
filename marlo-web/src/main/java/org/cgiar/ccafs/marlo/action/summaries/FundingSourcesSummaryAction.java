@@ -80,12 +80,14 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
    */
   private static final long serialVersionUID = 1L;
 
-  // Parameters
+  // Variables
   private Crp loggedCrp;
   private int year;
   private String cycle;
-  private long startTime;
   private Boolean showPIEmail;
+  private Boolean showIfpriDivision;
+  private long startTime;
+  private Boolean hasW1W2Co;
   // Managers
   private CrpManager crpManager;
   private CrpProgramManager programManager;
@@ -107,6 +109,43 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
     this.deliverableFundingSourceManager = deliverableFundingSourceManager;
   }
 
+  /**
+   * Method to add i8n parameters to masterReport in Pentaho
+   * 
+   * @param masterReport
+   * @return masterReport with i8n parameters added
+   */
+  private MasterReport addi8nParameters(MasterReport masterReport) {
+    // Master List
+    masterReport.getParameterValues().put("i8nFundingSources", this.getText("menu.fundingSources"));
+    masterReport.getParameterValues().put("i8nID", this.getText("fundingSource.fundingSourceID"));
+    masterReport.getParameterValues().put("i8nTitle", this.getText("projectCofunded.title.readText"));
+    masterReport.getParameterValues().put("i8nSummary", this.getText("projectCofunded.description.readText"));
+    masterReport.getParameterValues().put("i8nAgreementStatus", this.getText("projectCofunded.agreementStatus"));
+    masterReport.getParameterValues().put("i8nStartDate", this.getText("projectCofunded.startDate"));
+    masterReport.getParameterValues().put("i8nEndDate", this.getText("projectCofunded.endDate"));
+    masterReport.getParameterValues().put("i8nFinanceCode", this.getText("projectCofunded.financeCode"));
+    masterReport.getParameterValues().put("i8nContactName", this.getText("projectCofunded.contactName"));
+    masterReport.getParameterValues().put("i8nContactEmail", this.getText("projectCofunded.contactEmail"));
+    masterReport.getParameterValues().put("i8nFundingWindow", this.getText("projectCofunded.type"));
+    masterReport.getParameterValues().put("i8nDonor", this.getText("projectCofunded.donor"));
+    masterReport.getParameterValues().put("i8nBudgetYear",
+      this.getText("projectCofunded.budgetYear", new String[] {String.valueOf(year)}));
+    masterReport.getParameterValues().put("i8nBudgetYearProjects",
+      this.getText("fundingSource.budgetYearAllocated", new String[] {String.valueOf(year)}));
+    masterReport.getParameterValues().put("i8nDeliverableIDs",
+      this.getText("fundingSource.deliverableIDs", new String[] {String.valueOf(year)}));
+    masterReport.getParameterValues().put("i8nProjects", this.getText("caseStudy.projects"));
+    masterReport.getParameterValues().put("i8nCoas", this.getText("deliverable.coas"));
+    masterReport.getParameterValues().put("i8nFlagships", this.getText("project.Flagships"));
+    masterReport.getParameterValues().put("i8nContractProposal", this.getText("fundingSource.contractProposal"));
+
+    // Funding Sources by Projects
+    masterReport.getParameterValues().put("i8nProjectID", this.getText("searchTerms.projectId"));
+
+    return masterReport;
+  }
+
   @Override
   public String execute() throws Exception {
     ClassicEngineBoot.getInstance().start();
@@ -117,6 +156,7 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
     try {
       Resource reportResource =
         manager.createDirectly(this.getClass().getResource("/pentaho/FundingSourcesSummary.prpt"), MasterReport.class);
+
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       String center = loggedCrp.getName();
@@ -129,16 +169,17 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
       if (zone.equals("Z")) {
         zone = "+0";
       }
-      String currentDate = timezone.format(format) + "(GMT" + zone + ")";
+      String current_date = timezone.format(format) + "(GMT" + zone + ")";
 
       // Set Main_Query
       CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
       String masterQueryName = "main";
       TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
-      TypedTableModel model = this.getMasterTableModel(center, currentDate);
+      TypedTableModel model = this.getMasterTableModel(center, current_date);
       sdf.addTable(masterQueryName, model);
       masterReport.setDataFactory(cdf);
-
+      // Set i8n for pentaho
+      masterReport = this.addi8nParameters(masterReport);
 
       // Get details band
       ItemBand masteritemBand = masterReport.getItemBand();
@@ -151,7 +192,6 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
 
       this.fillSubreport((SubReport) hm.get("funding_sources"), "funding_sources");
       this.fillSubreport((SubReport) hm.get("funding_sources_projects"), "funding_sources_projects");
-
 
       ExcelReportUtil.createXLSX(masterReport, os);
       bytesXLSX = os.toByteArray();
@@ -167,6 +207,7 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
       "Downloaded successfully: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
         + ". CRP: " + this.loggedCrp.getAcronym() + ". Cycle: " + cycle + ". Time to generate: " + stopTime + "ms.");
     return SUCCESS;
+
   }
 
 
@@ -311,9 +352,9 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
   private TypedTableModel getFundingSourcesProjectsTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"fs_title", "fs_id", "finance_code", "lead_partner", "fs_window", "project_id", "total_budget",
-        "flagships", "coas", "donor"},
+        "flagships", "coas", "donor", "directDonor"},
       new Class[] {String.class, Long.class, String.class, String.class, String.class, String.class, Double.class,
-        String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class},
       0);
 
     for (FundingSource fundingSource : loggedCrp.getFundingSources().stream()
@@ -326,6 +367,9 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
 
 
       String fsWindow = fundingSource.getBudgetType().getName();
+      if (hasW1W2Co && fundingSource.getW1w2() != null && fundingSource.getW1w2()) {
+        fsWindow = "W1/W2 Co-Financing";
+      }
       if (fundingSource.getInstitution() != null) {
         donor = fundingSource.getInstitution().getComposedName();
       }
@@ -377,8 +421,10 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
 
         totalBudget = projectBudget.getAmount();
 
+        String directDonor = "";
+
         model.addRow(new Object[] {fsTitle, fsId, financeCode, leadPartner, fsWindow, projectId, totalBudget, flagships,
-          coas, donor});
+          coas, donor, directDonor});
       }
 
     }
@@ -389,10 +435,10 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
     TypedTableModel model = new TypedTableModel(
       new String[] {"fs_title", "fs_id", "finance_code", "lead_partner", "fs_window", "project_id", "total_budget",
         "summary", "start_date", "end_date", "contract", "status", "pi_name", "pi_email", "donor",
-        "total_budget_projects", "contract_name", "flagships", "coas", "deliverables"},
+        "total_budget_projects", "contract_name", "flagships", "coas", "deliverables", "directDonor"},
       new Class[] {String.class, Long.class, String.class, String.class, String.class, String.class, Double.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        Double.class, String.class, String.class, String.class, String.class},
+        Double.class, String.class, String.class, String.class, String.class, String.class},
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
 
@@ -443,12 +489,32 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
         .filter(fsi -> fsi.isActive()).collect(Collectors.toList())) {
         if (leadPartner.isEmpty()) {
           leadPartner = fsIns.getInstitution().getComposedName();
+          // Check IFPRI Division
+          if (this.showIfpriDivision) {
+
+
+            if (fsIns.getInstitution().getAcronym().equals("IFPRI") && fundingSource.getPartnerDivision() != null
+              && fundingSource.getPartnerDivision().getName() != null
+              && !fundingSource.getPartnerDivision().getName().trim().isEmpty()) {
+              leadPartner += " (" + fundingSource.getPartnerDivision().getName() + ")";
+            }
+          }
         } else {
           leadPartner += ", \n" + fsIns.getInstitution().getComposedName();
+          // Check IFPRI Division
+          if (this.showIfpriDivision) {
+            if (fsIns.getInstitution().getAcronym().equals("IFPRI")
+              && fundingSource.getPartnerDivision().getName() != null
+              && !fundingSource.getPartnerDivision().getName().trim().isEmpty()) {
+              leadPartner += " (" + fundingSource.getPartnerDivision().getName() + ")";
+            }
+          }
         }
-
       }
       String fsWindow = fundingSource.getBudgetType().getName();
+      if (hasW1W2Co && fundingSource.getW1w2() != null && fundingSource.getW1w2()) {
+        fsWindow = "W1/W2 Co-Financing";
+      }
 
 
       String projectId = "";
@@ -546,9 +612,10 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
       if (deliverables.isEmpty()) {
         deliverables = null;
       }
+      String directDonor = "";
       model.addRow(new Object[] {fsTitle, fsId, financeCode, leadPartner, fsWindow, projectId, totalBudget, summary,
         starDate, endDate, contract, status, piName, piEmail, donor, totalBudgetProjects, contractName, flagships, coas,
-        deliverables});
+        deliverables, directDonor});
     }
     return model;
   }
@@ -619,7 +686,15 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
         + " parameter. Parameter will be set false. Exception: " + e.getMessage());
       this.showPIEmail = false;
     }
-
+    // Get IfpriDivision crp_parameter
+    try {
+      this.showIfpriDivision = this.hasSpecificities(this.getText(APConstants.CRP_DIVISION_FS));
+    } catch (Exception e) {
+      LOG.warn("Failed to get " + APConstants.CRP_DIVISION_FS + " parameter. Parameter will be set false. Exception: "
+        + e.getMessage());
+      this.showIfpriDivision = false;
+    }
+    hasW1W2Co = this.hasSpecificities(APConstants.CRP_FS_W1W2_COFINANCING);
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
     LOG.info(

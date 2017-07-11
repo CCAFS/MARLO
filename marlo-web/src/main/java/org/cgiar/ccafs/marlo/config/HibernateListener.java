@@ -30,7 +30,7 @@ import org.hibernate.cfg.Configuration;
 
 public class HibernateListener implements ServletContextListener {
 
-  private static Class clazz = HibernateListener.class;
+  private static Class<?> clazz = HibernateListener.class;
   public static final String KEY_NAME = clazz.getName();
   private Configuration config;
   private SessionFactory factory;
@@ -59,7 +59,7 @@ public class HibernateListener implements ServletContextListener {
       config.setProperty("hibernate.connection.password", manager.getPropertiesAsString(APConfig.MYSQL_PASSWORD));
       String urlMysql = "jdbc:mysql://" + manager.getPropertiesAsString(APConfig.MYSQL_HOST) + ":"
         + manager.getPropertiesAsString(APConfig.MYSQL_PORT) + "/"
-        + manager.getPropertiesAsString(APConfig.MYSQL_DATABASE) + "?autoReconnect=true";
+        + manager.getPropertiesAsString(APConfig.MYSQL_DATABASE) + "?autoReconnect=true&&useSSL=false";
       config.setProperty("hibernate.connection.url", urlMysql);
       config.setProperty("hibernate.current_session_context_class", "thread");
       // config.setProperty("hibernate.c3p0.min_size", "5");

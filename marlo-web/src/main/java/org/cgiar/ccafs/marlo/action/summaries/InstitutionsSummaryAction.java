@@ -71,6 +71,23 @@ public class InstitutionsSummaryAction extends BaseAction implements Summary {
     this.crpManager = crpManager;
   }
 
+  /**
+   * Method to add i8n parameters to masterReport in Pentaho
+   * 
+   * @param masterReport
+   * @return masterReport with i8n parameters added
+   */
+  private MasterReport addi8nParameters(MasterReport masterReport) {
+    masterReport.getParameterValues().put("i8nName", this.getText("leadPartner.name"));
+    masterReport.getParameterValues().put("i8nAcronym", this.getText("leadPartner.acronym"));
+    masterReport.getParameterValues().put("i8nWebSite", this.getText("leadPartner.webSite"));
+    masterReport.getParameterValues().put("i8nType", this.getText("leadPartner.type"));
+    masterReport.getParameterValues().put("i8nCountry", this.getText("projectPartners.country"));
+    masterReport.getParameterValues().put("i8nProjects", this.getText("caseStudy.projects"));
+
+    return masterReport;
+  }
+
   @Override
   public String execute() throws Exception {
     ClassicEngineBoot.getInstance().start();
@@ -93,6 +110,8 @@ public class InstitutionsSummaryAction extends BaseAction implements Summary {
       masterReport.getParameterValues().put("crp_id", idParam);
       masterReport.getParameterValues().put("date", currentDate);
       masterReport.getParameterValues().put("cycle", cycle);
+      // Set i8n for pentaho
+      masterReport = this.addi8nParameters(masterReport);
       ExcelReportUtil.createXLSX(masterReport, os);
       bytesXLSX = os.toByteArray();
       os.close();

@@ -1,6 +1,4 @@
 // Limits for textarea input
-var lWordsElemetTitle = 20;
-var lWordsElemetDesc = 150;
 
 var $statuses, $statusDescription;
 var flagshipsIds;
@@ -32,10 +30,6 @@ $(document).ready(function() {
       templateSelection: formatState,
       width: '100%'
   });
-
-  applyWordCounter($("textarea.project-title"), lWordsElemetTitle);
-  applyWordCounter($("textarea.project-description"), lWordsElemetDesc);
-
 
   /**
    * Liaison institution selection
@@ -88,7 +82,9 @@ $(document).ready(function() {
         }
     });
   });
-  $('.liaisonInstitutionSelect').trigger('change');
+  if(editable){
+    $('.liaisonInstitutionSelect').trigger('change');
+  }
 
   /**
    * Upload files functions

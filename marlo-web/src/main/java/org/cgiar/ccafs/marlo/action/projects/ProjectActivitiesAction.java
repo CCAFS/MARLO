@@ -36,6 +36,8 @@ import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.utils.HistoryComparator;
+import org.cgiar.ccafs.marlo.utils.HistoryDifference;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectActivitiesValidator;
 
 import java.io.BufferedReader;
@@ -78,6 +80,8 @@ public class ProjectActivitiesAction extends BaseAction {
 
   private DeliverableActivityManager deliverableActivityManager;
 
+  private HistoryComparator historyComparator;
+
   private DeliverableManager deliverableManager;
 
   private ProjectPartnerManager projectPartnerManager;
@@ -103,7 +107,7 @@ public class ProjectActivitiesAction extends BaseAction {
     ProjectPartnerPersonManager projectPartnerPersonManager, ActivityManager activityManager,
     DeliverableActivityManager deliverableActivityManager, DeliverableManager deliverableManager,
     AuditLogManager auditLogManager, ProjectActivitiesValidator activitiesValidator,
-    ProjectPartnerManager projectPartnerManager) {
+    HistoryComparator historyComparator, ProjectPartnerManager projectPartnerManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -112,6 +116,7 @@ public class ProjectActivitiesAction extends BaseAction {
     this.deliverableActivityManager = deliverableActivityManager;
     this.deliverableManager = deliverableManager;
     this.auditLogManager = auditLogManager;
+    this.historyComparator = historyComparator;
     this.activitiesValidator = activitiesValidator;
     this.projectPartnerManager = projectPartnerManager;
   }
@@ -376,6 +381,21 @@ public class ProjectActivitiesAction extends BaseAction {
 
       if (history != null) {
         project = history;
+
+        List<HistoryDifference> differences = new ArrayList<>();
+        Map<String, String> specialList = new HashMap<>();
+        int i = 0;
+        project.setProjectActivities(
+          project.getActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        for (Activity activity : project.getProjectActivities()) {
+          int[] index = new int[1];
+          index[0] = i;
+          differences.addAll(historyComparator.getDifferencesList(activity, transaction, specialList,
+            "project.projectActivities[" + i + "]", "project", 1));
+          i++;
+        }
+
+        this.setDifferences(differences);
       } else {
         this.transaction = null;
 

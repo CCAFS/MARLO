@@ -47,8 +47,13 @@
           <h3 class="headTitle"> Project Contribution </h3>
           [#-- Outcomen name --]
           [#assign showOutcomeValue = projectOutcome.crpProgramOutcome.srfTargetUnit??  && projectOutcome.crpProgramOutcome.srfTargetUnit.id?? && (projectOutcome.crpProgramOutcome.srfTargetUnit.id != -1) /]
-          
+          [#assign pimText][@s.text name="contribution.message" /][/#assign]
+          [#if editable && pimText?has_content]
+           <div class="note">${pimText}</div>
+          [/#if]
           <div class="grayBox">
+          
+          
             <div class="col-md-12">
               <strong>${(projectOutcome.crpProgramOutcome.crpProgram.acronym)!} - Outcome ${(projectOutcome.crpProgramOutcome.year)!}</strong>: ${projectOutcome.crpProgramOutcome.description}
             </div>
@@ -71,7 +76,7 @@
           <div class="borderBox">
             [#-- Project Outcome expected target (AT THE BEGINNING) --]
             [#if showExpectedTarget]
-            <h5 class="sectionSubTitle">Expected contribution to this outcome</h5>
+            <h5 class="sectionSubTitle">[@s.text name="projectOutcome.contributionToThisOutcome" /]</h5>
             <div class="form-group">
               <div class="row form-group" style="display:${showOutcomeValue?string('block', 'none')}">
                 <div class="col-md-5">
@@ -133,12 +138,12 @@
             <div class="form-group">
               [#if (project.crossCuttingGender)!false]
                 <div class="form-group">
-                  [@customForm.textArea name="projectOutcome.genderDimenssion" required=true className="limitWords-50" editable=editable /]
+                  [@customForm.textArea name="projectOutcome.genderDimenssion" required=true className="limitWords-100" editable=editable /]
                 </div>
               [/#if]
               [#if (project.crossCuttingYouth)!false]
                 <div class="form-group">
-                  [@customForm.textArea name="projectOutcome.youthComponent" required=true className="limitWords-50" editable=editable /]
+                  [@customForm.textArea name="projectOutcome.youthComponent" required=true className="limitWords-100" editable=editable /]
                 </div> 
               [/#if]
             </div>
@@ -146,7 +151,7 @@
           </div>
           
           [#-- Project Milestones and Communications contributions per year--]
-          <h4 class="headTitle">Milestones/ progress towards your outcome target contribution </h4>
+          <h4 class="headTitle"> [@s.text name="projectOutcome.contributionToMilestones" /]</h4>
           
           [#-- List milestones  --]
           <div class="milestonesYearBlock borderBox" listname="milestonesProject">
@@ -213,7 +218,7 @@
           
           [#-- Next Users --]
           [#-- For A4NH CRP, nextusers aren't required --]
-          [#if !(crpSession == "a4nh")]
+          [#if action.hasSpecificities('crp_next_users')]
           <h4 class="headTitle">(Next) Users </h4>
           <div class="nextUsersBlock borderBox">
             <div class="nextUsersList">
@@ -337,7 +342,7 @@
         </div>
         
         <div class="form-group">
-          [@customForm.textArea name="${customName}.narrativeTarget" i18nkey="projectOutcomeMilestone.expectedNarrative" required=isYearRequired(year) className="limitWords-50" editable=editable && !reportingActive /]
+          [@customForm.textArea name="${customName}.narrativeTarget" i18nkey="projectOutcomeMilestone.expectedNarrative" required=isYearRequired(year) className="limitWords-100" editable=editable && !reportingActive /]
         </div>
         [#-- REPORTING BLOCK --]
         [#if reportingActive]
@@ -370,11 +375,11 @@
       </div>
       [#-- Knowledge, attitude, skills and practice changes expected in this next user --]
       <div class="form-group">
-        [@customForm.textArea name="${customName}.knowledge" i18nkey="projectOutcomeNextUser.knowledge" help="projectOutcomeNextUser.knowledge.help" required=true className="limitWords-50" editable=editable && !reportingActive /]
+        [@customForm.textArea name="${customName}.knowledge" i18nkey="projectOutcomeNextUser.knowledge" help="projectOutcomeNextUser.knowledge.help" required=true className="limitWords-100" editable=editable && !reportingActive /]
       </div>
       [#-- Strategies will be used to encourage and enable this next user to utilize deliverables and adopt changes --]
       <div class="form-group">
-        [@customForm.textArea name="${customName}.strategies" i18nkey="projectOutcomeNextUser.strategies" help="projectOutcomeNextUser.strategies.help" required=true className="limitWords-50" editable=editable && !reportingActive /]
+        [@customForm.textArea name="${customName}.strategies" i18nkey="projectOutcomeNextUser.strategies" help="projectOutcomeNextUser.strategies.help" required=true className="limitWords-100" editable=editable && !reportingActive /]
       </div>
       [#-- Status (Active, Inactive) --]
      

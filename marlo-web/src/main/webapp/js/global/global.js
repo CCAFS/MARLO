@@ -16,6 +16,9 @@ var notyDefaultOptions = {
     ]
 };
 
+
+
+
 /**
  * Global javascript must be here.
  */
@@ -71,6 +74,20 @@ $(document).ready(function() {
     }
     $dragButton.fadeIn();
   }
+
+  // Save Button click (Loading state)
+  $('.button-save, .button-save span').on('click', function(e) {
+    // Validate if there ia a justification
+    var justification = $("form:first").find("textarea.justification");
+    if(justification.exists() && justification.val().trim().length == 0) {
+      e.preventDefault();
+      return
+    }
+    // Turn save button in saving button
+    $(this).addClass('disabled animated flipInY');
+    $(this).find('.glyphicon').hide();
+    $(this).find('.saveText').html('Saving ... <img src="' + baseURL + '/images/global/loading_3.gif" />');
+  });
 
   // Yes / No Event
   $('input.onoffswitch-radio').on('change', function(e) {
@@ -151,8 +168,8 @@ $(document).ready(function() {
       } else if(messageSelector.length >= 1 && messageSelector.html().split(":")[0] != "message") {
         // WARNING MESSAGE
         var message = ""
-        message += "Information was correctly saved. <br> ";
-        message += "Please keep in mind the highlighted fields below are missing or incorrect.";
+        message += "The Information was correctly saved. <br> ";
+        message += "Please keep in mind that the fields highlighted below are missing or incorrect.";
         var messageType = "warning";
         notifyErrorMessage(messageType, message);
       }
@@ -262,7 +279,16 @@ $(document).ready(function() {
     });
 
   });
-
+  
+  // Datatables language
+  if($.fn.dataTable) {
+    $.extend( true, $.fn.dataTable.defaults, {
+      "language": {
+        "infoFiltered": "(filtered from a total of _MAX_ entries)"
+      }
+    });
+  }
+  
   // Cancel button
   $('#cancelButton').on('click', function() {
     $('button[name="cancel"]').trigger('click');
@@ -376,6 +402,13 @@ function isStatusOnGoing(statusId) {
 
 var placeholderText = 'Search the organization here...'
 var searchInstitutionsOptions = function(includePPA) {
+  return searchInstitutionsOptionsData({
+    includePPA: includePPA,
+    projectPreSetting: projectPreSetting
+  });
+}
+
+var searchInstitutionsOptionsData = function(optionsData) {
   return {
       ajax: {
           url: baseURL + '/searchInstitutions.do',
@@ -384,8 +417,8 @@ var searchInstitutionsOptions = function(includePPA) {
           data: function(params) {
             return {
                 q: params.term || '', // search term
-                withPPA: includePPA ? 1 : 0,
-                onlyPPA: projectPreSetting
+                withPPA: optionsData.includePPA ? 1 : 0,
+                onlyPPA: optionsData.projectPreSetting
             };
           },
           processResults: function(data,params) {
@@ -426,7 +459,7 @@ function formatRepo(repo) {
   } else {
     markup += "<strong>" + repo.name + "</strong>";
   }
-  markup += " <span class='grayColor'>(" + repo.location + ")</span> ";
+
   // Partner type
   markup += "<br>";
   markup += "<small> <i>" + repo.type + " </i></small> ";

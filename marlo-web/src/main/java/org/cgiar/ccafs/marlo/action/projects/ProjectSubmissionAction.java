@@ -24,6 +24,8 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.SubmissionManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrpClusterActivityLeader;
+import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
@@ -31,6 +33,7 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.Submission;
+import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
@@ -50,6 +53,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  * @author Andrés Valencia - CIAT/CCAFS
+ * @author Christian Garcia - CIAT/CCAFS
  */
 public class ProjectSubmissionAction extends BaseAction {
 
@@ -180,34 +184,11 @@ public class ProjectSubmissionAction extends BaseAction {
   }
 
   private void sendNotficationEmail() {
-    // Building the email message
-    StringBuilder message = new StringBuilder();
-    String[] values = new String[6];
-    values[0] = this.getCurrentUser().getComposedCompleteName();
-    values[1] = loggedCrp.getName();
-    values[2] = project.getTitle();
-    values[3] = String.valueOf(this.getCurrentCycleYear());
-    values[4] = this.getCurrentCycle().toLowerCase();
-    // Message to download the pdf
-    values[5] = config.getBaseUrl() + "/projects/" + this.getCurrentCrp().getAcronym() + "/reportingSummary.do?"
-      + APConstants.PROJECT_REQUEST_ID + "=" + projectID + "&" + APConstants.YEAR_REQUEST + "="
-      + this.getCurrentCycleYear() + "&" + APConstants.CYCLE + "=" + this.getCurrentCycle();
-
-
-    String subject = null;
-    message.append(this.getText("submit.email.message", values));
-    message.append(this.getText("email.support"));
-    message.append(this.getText("email.bye"));
-    subject = this.getText("submit.email.subject", new String[] {loggedCrp.getName(),
-      String.valueOf(project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER))});
-
-
-    String toEmail = null;
-    String ccEmail = null;
-
     // Send email to the user that is submitting the project.
     // TO
-    toEmail = this.getCurrentUser().getEmail();
+    String toEmail = this.getCurrentUser().getEmail();
+    String ccEmail = "";
+
 
     StringBuilder ccEmails = new StringBuilder();
 
@@ -233,6 +214,15 @@ public class ProjectSubmissionAction extends BaseAction {
           ccEmails.append(crpProgramLeader.getUser().getEmail());
           ccEmails.append(", ");
         }
+        // CC will be also other Cluster Leaders
+        for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
+          .filter(cl -> cl.isActive()).collect(Collectors.toList())) {
+          for (CrpClusterActivityLeader crpClusterActivityLeader : crpClusterOfActivity.getCrpClusterActivityLeaders()
+            .stream().filter(cl -> cl.isActive()).collect(Collectors.toList())) {
+            ccEmails.append(crpClusterActivityLeader.getUser().getEmail());
+            ccEmails.append(", ");
+          }
+        }
       }
     } else {
       for (LiaisonUser liaisonUser : project.getLiaisonInstitution().getLiaisonUsers()) {
@@ -256,16 +246,57 @@ public class ProjectSubmissionAction extends BaseAction {
       }
     }
 
-    // CC will be the other MLs.
+
+    // CC will be also the CRP Admins
+    String crpAdmins = "";
+    long adminRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_ADMIN_ROLE));
+    Role roleAdmin = roleManager.getRoleById(adminRol);
+    List<UserRole> userRoles = roleAdmin.getUserRoles().stream()
+      .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
+    for (UserRole userRole : userRoles) {
+      ccEmails.append(userRole.getUser().getEmail());
+      ccEmails.append(", ");
+      if (crpAdmins.isEmpty()) {
+        crpAdmins += userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+      } else {
+        crpAdmins += ", " + userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+      }
+    }
+
+
     ccEmail = ccEmails.toString().isEmpty() ? null : ccEmails.toString();
     // Detect if a last ; was added to CC and remove it
     if (ccEmail != null && ccEmail.length() > 0 && ccEmail.charAt(ccEmail.length() - 2) == ',') {
       ccEmail = ccEmail.substring(0, ccEmail.length() - 2);
     }
-
-
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
+
+    // subject
+    String subject = null;
+    subject = this.getText("submit.email.subject", new String[] {loggedCrp.getName(),
+      String.valueOf(project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER))});
+
+    // Building the email message
+    StringBuilder message = new StringBuilder();
+    String[] values = new String[6];
+    values[0] = this.getCurrentUser().getFirstName();
+    values[1] = loggedCrp.getName();
+    values[2] = project.getTitle();
+    values[3] = String.valueOf(project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER));
+    values[4] = String.valueOf(this.getCurrentCycleYear());
+    values[5] = this.getCurrentCycle().toLowerCase();
+    // Message to download the pdf
+    /*
+     * values[6] = config.getBaseUrl() + "/projects/" + this.getCurrentCrp().getAcronym() + "/reportingSummary.do?"
+     * + APConstants.PROJECT_REQUEST_ID + "=" + projectID + "&" + APConstants.YEAR_REQUEST + "="
+     * + this.getCurrentCycleYear() + "&" + APConstants.CYCLE + "=" + this.getCurrentCycle();
+     */
+
+    message.append(this.getText("submit.email.message", values));
+    message.append(this.getText("email.support", new String[] {crpAdmins}));
+    message.append(this.getText("email.getStarted"));
+    message.append(this.getText("email.bye"));
 
     // Send pdf
     // Get the PDF from the Project report url.
@@ -273,12 +304,14 @@ public class ProjectSubmissionAction extends BaseAction {
     String fileName = null;
     String contentType = null;
     try {
-
+      // Set the parameters that are assigned in the prepare by reportingSummaryAction
       reportingSummaryAction.setSession(this.getSession());
       reportingSummaryAction.setYear(this.getCurrentCycleYear());
-      //
+      reportingSummaryAction.setLoggedCrp(loggedCrp);
       reportingSummaryAction.setCycle(this.getCurrentCycle());
       reportingSummaryAction.setProjectID(projectID);
+      reportingSummaryAction.setProject(projectManager.getProjectById(projectID));
+      reportingSummaryAction.setCrpSession(loggedCrp.getAcronym());
       reportingSummaryAction.execute();
       // Getting the file data.
       //
@@ -293,16 +326,11 @@ public class ProjectSubmissionAction extends BaseAction {
 
 
     if (buffer != null && fileName != null && contentType != null) {
-
       sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer.array(), contentType, fileName,
         true);
-      // } else {
-
     } else {
       sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
     }
-
-
   }
 
 

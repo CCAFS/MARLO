@@ -19,18 +19,21 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
+import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
-import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.ByteArrayInputStream;
@@ -87,12 +90,15 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
   private long startTime;
   private String cycle;
   private int year;
+  private Boolean hasW1W2Co;
+  private Boolean hasRegions;
   // Keys to be searched
   List<String> keys = new ArrayList<String>();
 
   // Managers
   private CrpManager crpManager;
   private CrpProgramManager programManager;
+  private PhaseManager phaseManager;
 
   // XLSX bytes
   private byte[] bytesXLSX;
@@ -101,10 +107,59 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
   InputStream inputStream;
 
   @Inject
-  public SearchTermsSummaryAction(APConfig config, CrpManager crpManager, CrpProgramManager programManager) {
+  public SearchTermsSummaryAction(APConfig config, CrpManager crpManager, CrpProgramManager programManager,
+    PhaseManager phaseManager) {
     super(config);
     this.crpManager = crpManager;
+    this.phaseManager = phaseManager;
     this.programManager = programManager;
+  }
+
+  /**
+   * Method to add i8n parameters to masterReport in Pentaho
+   * 
+   * @param masterReport
+   * @return masterReport with i8n parameters added
+   */
+  private MasterReport addi8nParameters(MasterReport masterReport) {
+    masterReport.getParameterValues().put("i8nSearchTermsProjectID", this.getText("searchTerms.projectId"));
+    masterReport.getParameterValues().put("i8nSearchTermsProjectTitle", this.getText("project.title.readText"));
+    masterReport.getParameterValues().put("i8nSearchTermsSummary", this.getText("project.summary.readText"));
+    masterReport.getParameterValues().put("i8nSearchTermsStartDate", this.getText("project.startDate"));
+    masterReport.getParameterValues().put("i8nSearchTermsEndDate", this.getText("project.endDate"));
+    masterReport.getParameterValues().put("i8nSearchTermsFlagships", this.getText("project.Flagships"));
+    masterReport.getParameterValues().put("i8nSearchTermsRegions", this.getText("project.Regions"));
+    masterReport.getParameterValues().put("i8nSearchTermsLeadOrg", this.getText("project.leadOrg"));
+    masterReport.getParameterValues().put("i8nSearchTermsPL", this.getText("projectPartners.types.PL"));
+    masterReport.getParameterValues().put("i8nSearchTermsTotalW1W2",
+      this.getText("searchTerms.totalBudget") + this.getText("projectsList.W1W2projectBudget"));
+    masterReport.getParameterValues().put("i8nSearchTermsTotalW1W2Cofinancing",
+      this.getText("searchTerms.totalBudget") + this.getText("budget.w1w2cofinancing"));
+    masterReport.getParameterValues().put("i8nSearchTermsTotalW3",
+      this.getText("searchTerms.totalBudget") + this.getText("projectsList.W3projectBudget"));
+    masterReport.getParameterValues().put("i8nSearchTermsTotalBilateral",
+      this.getText("searchTerms.totalBudget") + this.getText("projectsList.BILATERALprojectBudget"));
+    masterReport.getParameterValues().put("i8nSearchTermsTotalCenter",
+      this.getText("searchTerms.totalBudget") + this.getText("budget.centerFunds"));
+    masterReport.getParameterValues().put("i8nSearchTermsActivityID", this.getText("searchTerms.activityId"));
+    masterReport.getParameterValues().put("i8nSearchTermsInputTitle", this.getText("project.activities.inputTitle"));
+    masterReport.getParameterValues().put("i8nSearchTermsInputDescription",
+      this.getText("project.activities.inputDescription.readText"));
+    masterReport.getParameterValues().put("i8nSearchTermsInputStartDate",
+      this.getText("project.activities.inputStartDate"));
+    masterReport.getParameterValues().put("i8nSearchTermsInputEndDate",
+      this.getText("project.activities.inputEndDate"));
+    masterReport.getParameterValues().put("i8nSearchTermsInputLeader", this.getText("project.activities.inputLeader"));
+    masterReport.getParameterValues().put("i8nSearchTermsDeliverableID", this.getText("searchTerms.deliverableId"));
+    masterReport.getParameterValues().put("i8nSearchTermsTitle",
+      this.getText("project.deliverable.generalInformation.title"));
+    masterReport.getParameterValues().put("i8nSearchTermsType",
+      this.getText("project.deliverable.generalInformation.type"));
+    masterReport.getParameterValues().put("i8nSearchTermsSubType",
+      this.getText("project.deliverable.generalInformation.subType"));
+
+
+    return masterReport;
   }
 
   @Override
@@ -141,6 +196,8 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
       TypedTableModel model = this.getMasterTableModel(center, currentDate);
       sdf.addTable(masterQueryName, model);
       masterReport.setDataFactory(cdf);
+      // Set i8n for pentaho
+      masterReport = this.addi8nParameters(masterReport);
       // Get details band
       ItemBand masteritemBand = masterReport.getItemBand();
       // Create new empty subreport hash map
@@ -203,16 +260,9 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
       SimpleDateFormat dateFormatter = new SimpleDateFormat("MMM yyyy");
       // Search projects with activities
       List<Project> projects = new ArrayList<>();
-      if (!cycle.equals(APConstants.REPORTING)) {
-        projects = loggedCrp.getProjects().stream()
-          .filter(p -> p.isActive() && p.getStatus() != null
-            && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-            && p.getActivities().size() > 0)
-          .collect(Collectors.toList());
-      } else {
-        projects =
-          loggedCrp.getProjects().stream().filter(p -> p.isActive() && p.getStatus() != null && p.getReporting() != null
-            && p.getReporting().booleanValue() && p.getActivities().size() > 0).collect(Collectors.toList());
+      Phase phase = phaseManager.findCycle(cycle, year, loggedCrp.getId().longValue());
+      for (ProjectPhase projectPhase : phase.getProjectPhases()) {
+        projects.add((projectPhase.getProject()));
       }
       for (Project project : projects) {
         // Get active activities
@@ -302,10 +352,6 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
                   insLeader = "<font size=2 face='Segoe UI' color='#000000'>";
                   insLeader +=
                     activity.getProjectPartnerPerson().getProjectPartner().getInstitution().getComposedName();
-                  if (activity.getProjectPartnerPerson().getProjectPartner().getInstitution().getLocElement() != null) {
-                    insLeader += " - " + activity.getProjectPartnerPerson().getProjectPartner().getInstitution()
-                      .getLocElement().getName();
-                  }
                 }
               }
             }
@@ -314,8 +360,8 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
             } else {
               insLeader += "</font>";
             }
-            model.addRow(new Object[] {projectId, projectTitle, actId, actTit, actDesc, startDate, endDate,
-              insLeader, leader, projectU});
+            model.addRow(new Object[] {projectId, projectTitle, actId, actTit, actDesc, startDate, endDate, insLeader,
+              leader, projectU});
           }
         }
       }
@@ -395,16 +441,9 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
       0);
     if (!keys.isEmpty()) {
       List<Project> projects = new ArrayList<>();
-      if (!cycle.equals(APConstants.REPORTING)) {
-        projects = loggedCrp.getProjects().stream()
-          .filter(p -> p.isActive() && p.getStatus() != null
-            && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-            && p.getDeliverables().size() > 0)
-          .collect(Collectors.toList());
-      } else {
-        projects =
-          loggedCrp.getProjects().stream().filter(p -> p.isActive() && p.getStatus() != null && p.getReporting() != null
-            && p.getReporting().booleanValue() && p.getDeliverables().size() > 0).collect(Collectors.toList());
+      Phase phase = phaseManager.findCycle(cycle, year, loggedCrp.getId().longValue());
+      for (ProjectPhase projectPhase : phase.getProjectPhases()) {
+        projects.add((projectPhase.getProject()));
       }
       for (Project project : projects) {
         for (Deliverable deliverable : project.getDeliverables().stream().filter(d -> d.isActive())
@@ -468,9 +507,11 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
                 ProjectPartnerPerson responsibleppp = responisble.getProjectPartnerPerson();
                 leader = "<font size=2 face='Segoe UI' color='#000000'>" + responsibleppp.getUser().getComposedName()
                   + "\n&lt;" + responsibleppp.getUser().getEmail() + "&gt;</font>";
-                if (responsibleppp.getInstitution() != null) {
-                  leadIns = "<font size=2 face='Segoe UI' color='#000000'>"
-                    + responsibleppp.getInstitution().getComposedName() + "</font>";
+                if (responsibleppp.getProjectPartner() != null) {
+                  if (responsibleppp.getProjectPartner().getInstitution() != null) {
+                    leadIns = "<font size=2 face='Segoe UI' color='#000000'>"
+                      + responsibleppp.getProjectPartner().getInstitution().getComposedName() + "</font>";
+                  }
                 }
               }
             }
@@ -531,8 +572,9 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
 
   private TypedTableModel getMasterTableModel(String center, String date) {
     // Initialization of Model
-    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "keys", "regionalAvailable"},
-      new Class[] {String.class, String.class, String.class, Boolean.class});
+    TypedTableModel model =
+      new TypedTableModel(new String[] {"center", "date", "keys", "regionalAvailable", "hasW1W2Co"},
+        new Class[] {String.class, String.class, String.class, Boolean.class, Boolean.class});
     String keysString = "";
     int countKeys = 0;
     for (String key : keys) {
@@ -544,16 +586,16 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
         countKeys++;
       }
     }
-    model.addRow(new Object[] {center, date, keysString, this.hasProgramnsRegions()});
+    model.addRow(new Object[] {center, date, keysString, hasRegions, hasW1W2Co});
     return model;
   }
 
   private TypedTableModel getProjectsTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"project_id", "title", "summary", "start_date", "end_date", "flagships", "regions", "lead_ins",
-        "leader", "w1w2_budget", "w3_budget", "bilateral_budget", "center_budget", "project_url"},
+        "leader", "w1w2_budget", "w3_budget", "bilateral_budget", "center_budget", "project_url", "w1w2_Co_budget"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, Double.class, Double.class, Double.class, Double.class, String.class},
+        String.class, String.class, Double.class, Double.class, Double.class, Double.class, String.class, Double.class},
       0);
     if (!keys.isEmpty()) {
       // Pattern case insensitive
@@ -563,16 +605,9 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
       SimpleDateFormat dateFormatter = new SimpleDateFormat("MMM yyyy");
       // Decimal format for budgets
       List<Project> projects = new ArrayList<>();
-      if (!cycle.equals(APConstants.REPORTING)) {
-        projects = loggedCrp.getProjects().stream()
-          .filter(p -> p.isActive() && p.getStatus() != null
-            && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
-          .collect(Collectors.toList());
-      } else {
-        projects = loggedCrp.getProjects().stream()
-          .filter(
-            p -> p.isActive() && p.getStatus() != null && p.getReporting() != null && p.getReporting().booleanValue())
-          .collect(Collectors.toList());
+      Phase phase = phaseManager.findCycle(cycle, year, loggedCrp.getId().longValue());
+      for (ProjectPhase projectPhase : phase.getProjectPhases()) {
+        projects.add((projectPhase.getProject()));
       }
       for (Project project : projects) {
         String title = project.getTitle();
@@ -584,6 +619,7 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
         String insLeader = "";
         String leader = "";
         Double w1w2 = null;
+        Double w1w2Co = null;
         Double w3 = null;
         Double bilateral = null;
         Double center = null;
@@ -659,31 +695,34 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
           } else {
             flagships += "</font>";
           }
-          // If has regions, add the regions to regionsArrayList
-          if (project.getNoRegional() != null && project.getNoRegional()) {
-            regions = "<font size=2 face='Segoe UI' color='#000000'>Global";
-          } else {
-            // Get Regions related to the project sorted by acronym
-            int countRegions = 0;
-            for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-              .sorted((c1, c2) -> c1.getCrpProgram().getAcronym().compareTo(c2.getCrpProgram().getAcronym()))
-              .filter(
-                c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
-              .collect(Collectors.toList())) {
-              if (countRegions == 0) {
-                regions += "<font size=2 face='Segoe UI' color='#000000'>"
-                  + programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
-                countRegions++;
-              } else {
-                regions += ", " + programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
-                countRegions++;
+          // If has regions, add the regions to regionsArrayList, else do nothing
+          if (hasRegions) {
+            if (project.getNoRegional() != null && project.getNoRegional()) {
+              regions = "<font size=2 face='Segoe UI' color='#000000'>Global";
+            } else {
+              // Get Regions related to the project sorted by acronym
+              int countRegions = 0;
+              for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
+                .sorted((c1, c2) -> c1.getCrpProgram().getAcronym().compareTo(c2.getCrpProgram().getAcronym()))
+                .filter(c -> c.isActive()
+                  && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+                .collect(Collectors.toList())) {
+                if (countRegions == 0) {
+                  regions += "<font size=2 face='Segoe UI' color='#000000'>"
+                    + programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
+                  countRegions++;
+                } else {
+                  regions +=
+                    ", " + programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
+                  countRegions++;
+                }
               }
             }
-          }
-          if (regions.isEmpty()) {
-            regions = "<font size=2 face='Segoe UI' color='#000000'></font>";
-          } else {
-            regions += "</font>";
+            if (regions.isEmpty()) {
+              regions = "<font size=2 face='Segoe UI' color='#000000'></font>";
+            } else {
+              regions += "</font>";
+            }
           }
           // Set leader institution
           ProjectPartner projectLeader = project.getLeader();
@@ -691,9 +730,6 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
             if (projectLeader.getInstitution() != null) {
               insLeader = "<font size=2 face='Segoe UI' color='#000000'>";
               insLeader += projectLeader.getInstitution().getComposedName();
-              if (projectLeader.getInstitution().getLocElement() != null) {
-                insLeader += " - " + projectLeader.getInstitution().getLocElement().getName();
-              }
             }
           }
           if (insLeader.isEmpty()) {
@@ -712,23 +748,39 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
             leader = "<font size=2 face='Segoe UI' color='#000000'></font>";
           }
           // Set budgets
-          int year = this.getCurrentCycleYear();
-          if (this.getTotalYear(year, 1, project) != 0.0) {
-            w1w2 = this.getTotalYear(year, 1, project);
+          // coFinancing 1: cofinancing+no cofinancing, 2: cofinancing 3: no cofinancing
+          if (hasW1W2Co) {
+            w1w2 = this.getTotalYear(year, 1, project, 3);
+            w1w2Co = this.getTotalYear(year, 1, project, 2);
+          } else {
+            w1w2 = this.getTotalYear(year, 1, project, 1);
+            if (w1w2 == 0.0) {
+              w1w2 = null;
+            }
           }
-          if (this.getTotalYear(year, 2, project) != 0.0) {
-            w3 = this.getTotalYear(year, 2, project);
+          w3 = this.getTotalYear(year, 2, project, 1);
+          bilateral = this.getTotalYear(year, 3, project, 1);
+          center = this.getTotalYear(year, 4, project, 1);
+          if (w1w2 != null && w1w2 == 0.0) {
+            w1w2 = null;
           }
-          if (this.getTotalYear(year, 3, project) != 0.0) {
-            bilateral = this.getTotalYear(year, 3, project);
+          if (w1w2Co != null && w1w2Co == 0.0) {
+            w1w2Co = null;
           }
-          if (this.getTotalYear(year, 4, project) != 0.0) {
-            center = this.getTotalYear(year, 4, project);
+          if (w3 == 0.0) {
+            w3 = null;
           }
+          if (bilateral == 0.0) {
+            bilateral = null;
+          }
+          if (center == 0.0) {
+            center = null;
+          }
+
           String projectId = "<font size=2 face='Segoe UI' color='#0000ff'>P" + project.getId().toString() + "</font>";
           String projectUrl = project.getId().toString();
           model.addRow(new Object[] {projectId, title, summary, startDate, endDate, flagships, regions, insLeader,
-            leader, w1w2, w3, bilateral, center, projectUrl});
+            leader, w1w2, w3, bilateral, center, projectUrl, w1w2Co});
         }
       }
     }
@@ -740,16 +792,49 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
    * 
    * @param year current year in the platform
    * @param type budget type (W1W2/Bilateral/W3/Center funds)
+   * @param coFinancing coFinancing 1: cofinancing+no cofinancing, 2: cofinancing 3: no cofinancing
    * @return total budget in the year and type passed as parameters
    */
-  public double getTotalYear(int year, long type, Project project) {
+  public double getTotalYear(int year, long type, Project project, Integer coFinancing) {
     double total = 0;
-    for (ProjectBudget pb : project.getProjectBudgets().stream()
-      .filter(
-        pb -> pb.isActive() && pb.getYear() == year && pb.getBudgetType() != null && pb.getBudgetType().getId() == type)
-      .collect(Collectors.toList())) {
-      total = total + pb.getAmount();
+
+    switch (coFinancing) {
+      case 1:
+        for (ProjectBudget pb : project.getProjectBudgets().stream().filter(pb -> pb.isActive() && pb.getYear() == year
+          && pb.getBudgetType() != null && pb.getBudgetType().getId() == type).collect(Collectors.toList())) {
+          total = total + pb.getAmount();
+        }
+        break;
+      case 2:
+        for (ProjectBudget pb : project.getProjectBudgets().stream()
+          .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getBudgetType() != null
+            && pb.getBudgetType().getId() == type && pb.getFundingSource() != null
+            && pb.getFundingSource().getW1w2() != null && pb.getFundingSource().getW1w2().booleanValue() == true)
+          .collect(Collectors.toList())) {
+          FundingSource fsActual = pb.getFundingSource();
+          Boolean w1w2 = pb.getFundingSource().getW1w2();
+          total = total + pb.getAmount();
+        }
+        break;
+      case 3:
+        for (ProjectBudget pb : project.getProjectBudgets().stream()
+          .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getBudgetType() != null
+            && pb.getBudgetType().getId() == type && pb.getFundingSource() != null
+            && pb.getFundingSource().getW1w2() != null && pb.getFundingSource().getW1w2().booleanValue() == false)
+          .collect(Collectors.toList())) {
+          ProjectBudget pbActual = pb;
+          FundingSource fsActual = pbActual.getFundingSource();
+          Boolean w1w2 = pb.getFundingSource().getW1w2();
+          Boolean validation = pb.getFundingSource().getW1w2().booleanValue() == false;
+
+          total = total + pb.getAmount();
+        }
+        break;
+
+      default:
+        break;
     }
+
     return total;
   }
 
@@ -781,6 +866,8 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
         + e.getMessage());
       cycle = this.getCurrentCycle();
     }
+    hasW1W2Co = this.hasSpecificities(APConstants.CRP_FS_W1W2_COFINANCING);
+    hasRegions = this.hasSpecificities(APConstants.CRP_HAS_REGIONS);
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
     LOG.info(

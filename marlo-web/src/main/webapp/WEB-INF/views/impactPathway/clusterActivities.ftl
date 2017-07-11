@@ -129,7 +129,12 @@
         [@customForm.textArea name="${clusterCustomName}.description" i18nkey="cluster.title" required=true className="outcome-statement limitWords-20" editable=editable /]
       </div>
       [#-- Cluster Activity Leaders --]
-      <span class="subtitle cold-md-12"><label>[@s.text name="cluster.leaders.title"][@s.param][@s.text name="global.sClusterOfActivities" /][/@s.param] [/@s.text]<span class="red">*</span></label></span>
+      <span class="subtitle cold-md-12"><label>[@s.text name="cluster.leaders.title"][@s.param][@s.text name="global.sClusterOfActivities" /][/@s.param] [/@s.text]
+      [#if !action.hasSpecificities("crp_cluster_leader")]
+         <span class="red">*</span>
+      [/#if]
+       </label></span>
+      
       <div class="items-list form-group col-md-12 simpleBox" listname="${clusterCustomName}.leaders">
         <ul class="leaders">
         [#if cluster.leaders?has_content]
@@ -207,7 +212,7 @@
       <hr />
       [#-- Statement --]
       <div class="form-group col-md-9">
-        [@customForm.textArea  name="${customName}.keyOutput" i18nkey="cluster.keyOutput.statement" value="${(element.keyOutput)!}" required=true className="limitWords-30 keyOutputInput" editable=editable /]
+        [@customForm.textArea  name="${customName}.keyOutput" i18nkey="cluster.keyOutput.statement" value="${(element.keyOutput)!}" required=true className="limitWords-50 keyOutputInput" editable=editable /]
         <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
       </div>
       [#-- Contribution --]
@@ -238,7 +243,7 @@
 
 [#macro outcomeByCluster element index name  isTemplate=false]
   [#local customName = "${name}[${index}]" /]
-  <div id="outcomeByCluster-${isTemplate?string('template',(element.id)!)}" class="outcomeByClusterItem  borderBox"  style="display:${isTemplate?string('none','block')}">
+  <div id="outcomeByCluster-${isTemplate?string('template',(element.id)!)}" class="outcomeByClusterItem  borderBox ${customForm.changedField('${customName}.id')}"  style="display:${isTemplate?string('none','block')}">
     [#if editable] [#--&& (isTemplate) --]
       <div class="removeLink">
         <div id="removeActivity" class="removeOutcome removeElement removeLink" title="[@s.text name='cluster.removeOutcome' /]"></div>

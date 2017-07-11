@@ -50,5 +50,8 @@
     </div> 
   </div>
   
+  [#-- Draft Message --]
+  [#include "/WEB-INF/global/macros/draftMessage.ftl" /]
+  
 [/#if]
 

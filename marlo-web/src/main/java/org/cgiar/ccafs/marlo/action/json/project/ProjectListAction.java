@@ -19,16 +19,17 @@ package org.cgiar.ccafs.marlo.action.json.project;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
-import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
@@ -41,16 +42,20 @@ public class ProjectListAction extends BaseAction {
   private static final long serialVersionUID = -4335064142194555431L;
   private List<Map<String, String>> projects;
   private String cycle;
+  private int year;
+
   private Crp loggedCrp;
   private List<Project> allProjects;
 
 
   private CrpManager crpManager;
+  private PhaseManager phaseManager;
 
   @Inject
-  public ProjectListAction(APConfig config, CrpManager crpManager) {
+  public ProjectListAction(APConfig config, CrpManager crpManager, PhaseManager phaseManager) {
     super(config);
     this.crpManager = crpManager;
+    this.phaseManager = phaseManager;
 
   }
 
@@ -61,16 +66,11 @@ public class ProjectListAction extends BaseAction {
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
 
-    if (!cycle.equals(APConstants.REPORTING)) {
-      allProjects = loggedCrp.getProjects().stream()
-        .filter(p -> p.isActive() && p.getStatus() != null
-          && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
-        .collect(Collectors.toList());
-    } else {
-      allProjects = loggedCrp.getProjects().stream()
-        .filter(
-          p -> p.isActive() && p.getStatus() != null && p.getReporting() != null && p.getReporting().booleanValue())
-        .collect(Collectors.toList());
+
+    allProjects = new ArrayList<>();
+    Phase phase = phaseManager.findCycle(cycle, year, loggedCrp.getId().longValue());
+    for (ProjectPhase projectPhase : phase.getProjectPhases()) {
+      allProjects.add((projectPhase.getProject()));
     }
     for (Project project : allProjects) {
       Map<String, String> projectInfo = new HashMap<String, String>();
@@ -93,6 +93,7 @@ public class ProjectListAction extends BaseAction {
   public void prepare() throws Exception {
     Map<String, Object> parameters = this.getParameters();
     cycle = (StringUtils.trim(((String[]) parameters.get(APConstants.CYCLE))[0]));
+    year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
   }
 
 

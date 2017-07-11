@@ -44,25 +44,27 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
 
   private Set<SrfSloIndicatorTarget> srfSloIndicatorTargets = new HashSet<SrfSloIndicatorTarget>(0);
 
+
   private Set<CrpProgramOutcome> crpProgramOutcomes = new HashSet<CrpProgramOutcome>(0);
 
   private Set<CrpTargetUnit> crpTargetUnits = new HashSet<CrpTargetUnit>(0);
+
 
   private boolean active;
 
   private User createdBy;
 
-
   private Date activeSince;
 
   private User modifiedBy;
 
-
   private String modificationJustification;
+
+  private Boolean checkCrp;
+
 
   public SrfTargetUnit() {
   }
-
 
   public SrfTargetUnit(String name) {
     this.name = name;
@@ -112,6 +114,12 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
+
+  public Boolean getCheckCrp() {
+    return checkCrp;
+  }
+
+
   public User getCreatedBy() {
     return createdBy;
   }
@@ -119,7 +127,6 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
   public Set<CrpMilestone> getCrpMilestones() {
     return this.crpMilestones;
   }
-
 
   public Set<CrpProgramOutcome> getCrpProgramOutcomes() {
     return this.crpProgramOutcomes;
@@ -133,6 +140,7 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
   public Long getId() {
     return this.id;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -168,7 +176,6 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
     return result;
   }
 
-
   @Override
   public boolean isActive() {
     return active;
@@ -178,8 +185,13 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
     this.active = active;
   }
 
+
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
+  }
+
+  public void setCheckCrp(Boolean checkCrp) {
+    this.checkCrp = checkCrp;
   }
 
 

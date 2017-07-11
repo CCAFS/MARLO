@@ -1,63 +1,70 @@
 $(document).ready(init);
-var partnerSelect, partnerContent;
+var $partnerSelect, partnerContent;
 
 function init() {
-  partnerSelect = $("select");
-  partnerSelect.attr("data-live-search", "true")
+  $partnerSelect = $("form select");
   partnerContent = $("#partnerContent");
+
+  /* Select2 */
+  $partnerSelect.select2(searchInstitutionsOptionsData({
+      includePPA: true,
+      projectPreSetting: 0
+  }));
+  $partnerSelect.parent().find("span.select2-selection__placeholder").text(placeholderText);
+
   /* Declaring Events */
   attachEvents();
 }
 
 function attachEvents() {
-  updateIndex();
-  removePartner();
-  var partner = "";
+
+  // Remove partner item
+  $(".delete").on('click', removePartner);
+
+  
   // Getting event of Select
-  partnerSelect.on('changed.bs.select', function() {
-    partner = partnerSelect.find("option:selected");
-    if(partner[0].value != -1 && partner[0].value != null) {
-      differences();
+  $partnerSelect.on('change', function(e) {
+    var $partner = $(this); 
+
+    if($partner.val() == -1) {
+      return
     }
+    
+    // Check if already exist
+    if(partnerContent.find('input[value=' + $partner.val() + ']').exists()) {
+      var notyOptions = jQuery.extend({}, notyDefaultOptions);
+      notyOptions.text = $("#institutionArray-" + $partner.val()).text() + ' already exists in this list';
+      notyOptions.type = 'alert';
+      noty(notyOptions);
+    } else {
+      addPartner($partner);
+    }
+    
+    // Reset select
+    $partnerSelect.val('-1');
+    $partnerSelect.trigger('select2:change')
+    
   });
 
+  updateIndex();
 }
 
 // Add partner item
 function addPartner(partner) {
   var $item = $('#institution-template').clone(true).removeAttr('id');
-  $item.find('input.institutionId').val(partner.val());
-  $item.find('.title').html(partner.text());
+  $item.find('input.institutionId').val($(partner).val());
+  $item.find('.title').html($("#institutionArray-"+$(partner).val()).text());
   partnerContent.append($item);
   $item.show("slow");
   updateIndex();
 }
 
-// Remove partner item
 function removePartner() {
-  $(".delete").on('click', function() {
-    var institution = $(this).parents(".institution");
-    partnerSelect.find("option[value='" + institution.find("input").val() + "'] ").attr("disabled", false);
-    institution.hide(1000, function() {
-      institution.remove();
-      updateIndex();
-    });
+  var $institution = $(this).parents(".institution");
+  $institution.hide(500, function() {
+    $institution.remove();
+    updateIndex();
   });
-}
-
-// this function verify that the option selected don't exists in the parnerContent
-function differences() {
-  partner = partnerSelect.find("option:selected");
-  if(partnerContent.find('input[value=' + partner.val() + ']').exists()) {
-    var notyOptions = jQuery.extend({}, notyDefaultOptions);
-    notyOptions.text = partner.text() + ' already exists in this list';
-    notyOptions.type = 'alert';
-    noty(notyOptions);
-  } else {
-    addPartner(partner);
-  }
-  console.log(partnerSelect.find("option[value= '-1' ]").text());
-  partnerSelect.selectpicker('val', '-1');
 }
 
 // Update index and position of property name

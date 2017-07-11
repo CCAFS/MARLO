@@ -17,6 +17,7 @@
 package org.cgiar.ccafs.marlo.validation.impactpathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
@@ -81,7 +82,7 @@ public class ClusterActivitiesValidator extends BaseValidator {
   public void validateClusterOfActivity(BaseAction action, CrpClusterOfActivity activity, int i) {
     List<String> params = new ArrayList<String>();
     params.add(String.valueOf(i + 1));
-    if (!(this.isValidString(activity.getDescription()) && this.wordCount(activity.getDescription()) <= 100)) {
+    if (!(this.isValidString(activity.getDescription()) && this.wordCount(activity.getDescription()) <= 20)) {
       this.addMessage(action.getText("outcome.action.cluster.descritpion.required", params));
       action.getInvalidFields().put("input-clusterofActivities[" + i + "].description",
         InvalidFieldsMessages.EMPTYFIELD);
@@ -94,11 +95,15 @@ public class ClusterActivitiesValidator extends BaseValidator {
         InvalidFieldsMessages.EMPTYFIELD);
 
     }
-    if (activity.getLeaders() == null || activity.getLeaders().isEmpty()) {
-      this.addMessage(action.getText("outcome.action.cluster.leader.required", params));
-      action.getInvalidFields().put("list-clusterofActivities[" + i + "].leaders",
-        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Cluster of Activities Leaders"}));
+
+    if (!action.hasSpecificities(APConstants.CRP_CLUSTER_LEADER)) {
+      if (activity.getLeaders() == null || activity.getLeaders().isEmpty()) {
+        this.addMessage(action.getText("outcome.action.cluster.leader.required", params));
+        action.getInvalidFields().put("list-clusterofActivities[" + i + "].leaders",
+          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Cluster of Activities Leaders"}));
+      }
     }
+
     if (activity.getKeyOutputs() == null || activity.getKeyOutputs().isEmpty()) {
       this.addMessage(action.getText("outcome.action.cluster.key.required", params));
 

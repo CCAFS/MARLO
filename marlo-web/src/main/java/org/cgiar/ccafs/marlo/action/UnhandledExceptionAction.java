@@ -14,6 +14,7 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.action;
 
+import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 
@@ -64,11 +65,17 @@ public class UnhandledExceptionAction extends BaseAction {
     exception.printStackTrace(new PrintWriter(writer));
 
 
+    Crp crp = this.getCurrentCrp();
+
     subject = "Exception occurred in MARLO";
+
     message.append("The user " + this.getCurrentUser().getFirstName() + " " + this.getCurrentUser().getLastName() + " <"
       + this.getCurrentUser().getEmail() + "> ");
     message.append("has experienced an exception on the platform. </br>");
     message.append("This execption occurs in the server: " + config.getBaseUrl() + ".</br>");
+    if (crp != null) {
+      message.append("In the CRP : " + crp.getAcronym() + ".</br>");
+    }
     message.append("The exception message was: </br></br>");
     message.append(writer.toString());
 

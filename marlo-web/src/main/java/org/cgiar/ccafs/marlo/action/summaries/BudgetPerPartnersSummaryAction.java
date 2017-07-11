@@ -20,17 +20,19 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
-import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.ByteArrayInputStream;
@@ -89,7 +91,10 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
   private Crp loggedCrp;
   private int year;
   private String cycle;
+  private Boolean hasW1W2Co;
   private long startTime;
+
+  private PhaseManager phaseManager;
 
   // Store total projects
   Integer totalProjects = 0;
@@ -97,16 +102,14 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
   HashMap<Institution, List<Double>> allPartnersBudgets = new HashMap<Institution, List<Double>>();
   // Store projects budgets HashMap<Project, List<totalw1w2, totalw3bilateralcenter, totalw1w2Gender, totalw3Gender>>
   HashMap<Project, List<Double>> allProjectsBudgets = new HashMap<Project, List<Double>>();
-
-
   private CrpManager crpManager;
+
+
   private ProjectBudgetManager projectBudgetManager;
   private CrpProgramManager programManager;
   private InstitutionManager institutionManager;
-
   // XLSX bytes
   private byte[] bytesXLSX;
-
 
   // Streams
   InputStream inputStream;
@@ -114,13 +117,78 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
 
   @Inject
   public BudgetPerPartnersSummaryAction(APConfig config, CrpManager crpManager,
-    ProjectBudgetManager projectBudgetManager, CrpProgramManager programManager,
-    InstitutionManager institutionManager) {
+    ProjectBudgetManager projectBudgetManager, CrpProgramManager programManager, InstitutionManager institutionManager,
+    PhaseManager phaseManager) {
     super(config);
     this.crpManager = crpManager;
     this.projectBudgetManager = projectBudgetManager;
     this.programManager = programManager;
     this.institutionManager = institutionManager;
+    this.phaseManager = phaseManager;
+  }
+
+
+  /**
+   * Method to add i8n parameters to masterReport in Pentaho
+   * 
+   * @param masterReport
+   * @return masterReport with i8n parameters added
+   */
+  private MasterReport addi8nParameters(MasterReport masterReport) {
+
+    masterReport.getParameterValues().put("i8nProjectID", this.getText("searchTerms.projectId"));
+    masterReport.getParameterValues().put("i8nProjectTitle", this.getText("project.title.readText"));
+    masterReport.getParameterValues().put("i8nPpaPartnersTitle", this.getText("ppaPartners.title"));
+    masterReport.getParameterValues().put("i8nFlagships", this.getText("project.Flagships"));
+    masterReport.getParameterValues().put("i8nCoas", this.getText("deliverable.coas"));
+    masterReport.getParameterValues().put("i8nRegions", this.getText("project.Regions"));
+    masterReport.getParameterValues().put("i8nTotalW1W2", this.getText("budgetPartner.w1w2"));
+    masterReport.getParameterValues().put("i8nPercentajeW1W2",
+      this.getText("budgetPartner.w1w2Percentage") + " " + this.getText("budgetPartner.percentaje"));
+    masterReport.getParameterValues().put("i8nGenderW1W2",
+      this.getText("budgetPartner.gender") + " " + this.getText("budgetPartner.w1w2"));
+    masterReport.getParameterValues().put("i8nTotalW1W2Co", this.getText("budgetPartner.w1w2Cofinancing"));
+    masterReport.getParameterValues().put("i8nPercentajeW1W2Co",
+      this.getText("budget.w1w2cofinancing") + " " + this.getText("budgetPartner.percentaje"));
+    masterReport.getParameterValues().put("i8nGenderW1W2Co",
+      this.getText("budgetPartner.gender") + " " + this.getText("budgetPartner.w1w2Cofinancing"));
+    masterReport.getParameterValues().put("i8nGrandTotalW1W2", this.getText("budgetPartner.w1w2grandTotal"));
+    masterReport.getParameterValues().put("i8nTotalW3", this.getText("projectsList.W3projectBudget"));
+    masterReport.getParameterValues().put("i8nPercentajeW3",
+      this.getText("projectsList.W3projectBudget") + " " + this.getText("budgetPartner.percentaje"));
+    masterReport.getParameterValues().put("i8nGenderW3",
+      this.getText("budgetPartner.gender") + " " + this.getText("projectsList.W3projectBudget"));
+    masterReport.getParameterValues().put("i8nTotalBilateral", this.getText("projectsList.BILATERALprojectBudget"));
+    masterReport.getParameterValues().put("i8nPercentajeBilateral",
+      this.getText("projectsList.BILATERALprojectBudget") + " " + this.getText("budgetPartner.percentaje"));
+    masterReport.getParameterValues().put("i8nGenderBilateral",
+      this.getText("budgetPartner.gender") + " " + this.getText("projectsList.BILATERALprojectBudget"));
+    masterReport.getParameterValues().put("i8nTotalCenter", this.getText("budget.centerFunds"));
+    masterReport.getParameterValues().put("i8nPercentajeCenter",
+      this.getText("budget.centerFunds") + " " + this.getText("budgetPartner.percentaje"));
+    masterReport.getParameterValues().put("i8nGenderCenter",
+      this.getText("budgetPartner.gender") + " " + this.getText("budget.centerFunds"));
+
+    masterReport.getParameterValues().put("i8nGrandTotalW3BilateralCenter",
+      this.getText("budgetPartner.grandTotalW3BilateralCenter"));
+    masterReport.getParameterValues().put("i8nGrandTotalGenderW3BilateralCenter",
+      this.getText("budgetPartner.grandTotalGenderW3BilateralCenter"));
+    masterReport.getParameterValues().put("i8nGrandTotalGenderFundingSoucres",
+      this.getText("budgetPartner.grandTotalGenderFundingSoucres"));
+    masterReport.getParameterValues().put("i8nGrandTotalBudget", this.getText("budgetPartner.grandTotalBudget"));
+    masterReport.getParameterValues().put("i8nSharePercentaje", this.getText("budgetPartner.sharePercentaje"));
+    masterReport.getParameterValues().put("i8nFundingSourcesTotal", this.getText("budgetPartner.fundingSourcesTotal"));
+    masterReport.getParameterValues().put("i8nW3BilateralCenterW1W2ratio",
+      this.getText("budgetPartner.W3BilateralCenterW1W2ratio"));
+    masterReport.getParameterValues().put("i8nGenderPercentage", this.getText("budget.genderPercentage"));
+    masterReport.getParameterValues().put("i8nW1W2", this.getText("projectsList.W1W2projectBudget"));
+    masterReport.getParameterValues().put("i8nW3BilateralCenter", this.getText("budgetPartner.W3BilateralCenter"));
+    masterReport.getParameterValues().put("i8nAllFundingSources", this.getText("budgetPartner.allFundingSources"));
+    masterReport.getParameterValues().put("i8nGrandTotalGenderW1W2",
+      this.getText("budgetPartner.grandTotalGenderW1W2"));
+    masterReport.getParameterValues().put("i8nGrandTotal", this.getText("budgetPartner.grandTotal"));
+
+    return masterReport;
   }
 
 
@@ -144,6 +212,8 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
       TypedTableModel model = this.getMasterTableModel();
       sdf.addTable(masterQueryName, model);
       masterReport.setDataFactory(cdf);
+      // Set i8n for pentaho
+      masterReport = this.addi8nParameters(masterReport);
 
       // Get details band
       ItemBand masteritemBand = masterReport.getItemBand();
@@ -267,16 +337,19 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     TypedTableModel model = new TypedTableModel(
       new String[] {"projectId", "projectTitle", "ppaPartner", "flagships", "coas", "regions", "budgetW1W2",
         "genderPeW1W2", "genderW1W2", "budgetW3", "genderPeW3", "genderW3", "budgetBilateral", "genderPeBilateral",
-        "genderBilateral", "budgetCenter", "genderPeCenter", "genderCenter"},
+        "genderBilateral", "budgetCenter", "genderPeCenter", "genderCenter", "budgetW1W2Co", "genderPeW1W2Co",
+        "genderW1W2Co"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, Double.class,
         Double.class, Double.class, Double.class, Double.class, Double.class, Double.class, Double.class, Double.class,
-        Double.class, Double.class, Double.class},
+        Double.class, Double.class, Double.class, Double.class, Double.class, Double.class},
       0);
 
-    for (Project project : this.loggedCrp.getProjects().stream()
-      .filter(p -> p.isActive() && p.getStatus() != null
-        && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
-      .collect(Collectors.toList())) {
+    List<Project> projects = new ArrayList<>();
+    Phase phase = phaseManager.findCycle(APConstants.PLANNING, year, loggedCrp.getId().longValue());
+    for (ProjectPhase projectPhase : phase.getProjectPhases()) {
+      projects.add((projectPhase.getProject()));
+    }
+    for (Project project : projects) {
       // Get PPA institutions with budgets
       List<Institution> institutionsList = new ArrayList<>();
 
@@ -300,7 +373,8 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
           Long projectId = null;
           Double budgetW1W2 = null, genderPeW1W2 = null, genderW1W2 = null, budgetW3 = null, genderPeW3 = null,
             genderW3 = null, budgetBilateral = null, genderPeBilateral = null, genderBilateral = null,
-            budgetCenter = null, genderPeCenter = null, genderCenter = null;
+            budgetCenter = null, genderPeCenter = null, genderCenter = null, budgetW1W2Co = null, genderPeW1W2Co = null,
+            genderW1W2Co = null;
 
           projectId = project.getId();
           projectTitle = project.getTitle();
@@ -371,27 +445,45 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
             flagships = null;
           }
 
-          budgetW1W2 = Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 1, projectId));
-          budgetW3 = Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 2, projectId));
-          budgetBilateral = Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 3, projectId));
-          budgetCenter = Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 4, projectId));
+          if (hasW1W2Co) {
+            budgetW1W2 = Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 1, projectId, 3));
+            budgetW1W2Co = Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 1, projectId, 2));
 
-          genderPeW1W2 = this.getTotalGenderPer(pp.getInstitution().getId(), year, 1, projectId) / 100;
-          genderPeW3 = this.getTotalGenderPer(pp.getInstitution().getId(), year, 2, projectId) / 100;
-          genderPeBilateral = this.getTotalGenderPer(pp.getInstitution().getId(), year, 3, projectId) / 100;
-          genderPeCenter = this.getTotalGenderPer(pp.getInstitution().getId(), year, 4, projectId) / 100;
+            genderPeW1W2 = this.getTotalGenderPer(pp.getInstitution().getId(), year, 1, projectId, 3) / 100;
+            genderPeW1W2Co = this.getTotalGenderPer(pp.getInstitution().getId(), year, 1, projectId, 2) / 100;
 
-          genderW1W2 = this.getTotalGender(pp.getInstitution().getId(), year, 1, projectId);
-          genderW3 = this.getTotalGender(pp.getInstitution().getId(), year, 2, projectId);
-          genderBilateral = this.getTotalGender(pp.getInstitution().getId(), year, 3, projectId);
-          genderCenter = this.getTotalGender(pp.getInstitution().getId(), year, 4, projectId);
+            genderW1W2 = this.getTotalGender(pp.getInstitution().getId(), year, 1, projectId, 3);
+            genderW1W2Co = this.getTotalGender(pp.getInstitution().getId(), year, 1, projectId, 2);
+          } else {
+            budgetW1W2 = Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 1, projectId, 1));
+            genderPeW1W2 = this.getTotalGenderPer(pp.getInstitution().getId(), year, 1, projectId, 1) / 100;
+            genderW1W2 = this.getTotalGender(pp.getInstitution().getId(), year, 1, projectId, 1);
+            budgetW1W2Co = 0.0;
+            genderPeW1W2Co = 0.0;
+            genderW1W2Co = 0.0;
+          }
+
+
+          budgetW3 = Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 2, projectId, 1));
+          budgetBilateral = Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 3, projectId, 1));
+          budgetCenter = Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 4, projectId, 1));
+
+
+          genderPeW3 = this.getTotalGenderPer(pp.getInstitution().getId(), year, 2, projectId, 1) / 100;
+          genderPeBilateral = this.getTotalGenderPer(pp.getInstitution().getId(), year, 3, projectId, 1) / 100;
+          genderPeCenter = this.getTotalGenderPer(pp.getInstitution().getId(), year, 4, projectId, 1) / 100;
+
+
+          genderW3 = this.getTotalGender(pp.getInstitution().getId(), year, 2, projectId, 1);
+          genderBilateral = this.getTotalGender(pp.getInstitution().getId(), year, 3, projectId, 1);
+          genderCenter = this.getTotalGender(pp.getInstitution().getId(), year, 4, projectId, 1);
 
           // Fill institutions and their budgets
           List<Double> budgetList = new ArrayList<Double>();
           // Add institution w1w2 budget
           Double totalBudgetW1W2 =
             allPartnersBudgets.containsKey(institution) ? allPartnersBudgets.get(institution).get(0) : 0.0;
-          totalBudgetW1W2 += budgetW1W2;
+          totalBudgetW1W2 += budgetW1W2 + budgetW1W2Co;
           // Add institution w3bilateralcenter budget
           Double totalBudgetBilateralW3Center =
             allPartnersBudgets.containsKey(institution) ? allPartnersBudgets.get(institution).get(1) : 0.0;
@@ -406,7 +498,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
           // Add project w1w2 budget
           Double totalProjectBudgetW1W2 =
             allProjectsBudgets.containsKey(project) ? allProjectsBudgets.get(project).get(0) : 0.0;
-          totalProjectBudgetW1W2 += budgetW1W2;
+          totalProjectBudgetW1W2 += budgetW1W2 + budgetW1W2Co;
           projectBudgetList.add(totalProjectBudgetW1W2);
           // Add project w3bilateralcenter budget
           Double totalProjectBudgetBilateralW3Center =
@@ -416,7 +508,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
           // Add projects w1w2 gender
           Double totalProjectGenderW1W2 =
             allProjectsBudgets.containsKey(project) ? allProjectsBudgets.get(project).get(2) : 0.0;
-          totalProjectGenderW1W2 += genderW1W2;
+          totalProjectGenderW1W2 += genderW1W2 + genderW1W2Co;
           projectBudgetList.add(totalProjectGenderW1W2);
           // Add projects w3bilateralcenter gender
           Double totalProjectGenderW3BilateralCenter =
@@ -429,7 +521,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
 
           model.addRow(new Object[] {projectId, projectTitle, ppaPartner, flagships, coas, regions, budgetW1W2,
             genderPeW1W2, genderW1W2, budgetW3, genderPeW3, genderW3, budgetBilateral, genderPeBilateral,
-            genderBilateral, budgetCenter, genderPeCenter, genderCenter});
+            genderBilateral, budgetCenter, genderPeCenter, genderCenter, budgetW1W2Co, genderPeW1W2Co, genderW1W2Co});
         }
       }
     }
@@ -540,8 +632,9 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
 
   private TypedTableModel getMasterTableModel() {
     // Initialization of Model
-    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "year", "crp_id", "regionalAvalaible"},
-      new Class[] {String.class, String.class, Integer.class, Long.class, Boolean.class});
+    TypedTableModel model =
+      new TypedTableModel(new String[] {"center", "date", "year", "crp_id", "regionalAvalaible", "hasW1W2Co"},
+        new Class[] {String.class, String.class, Integer.class, Long.class, Boolean.class, Boolean.class});
 
     String center = loggedCrp.getName();
     // Get datetime
@@ -552,7 +645,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
       zone = "+0";
     }
     String date = timezone.format(format) + "(GMT" + zone + ")";
-    model.addRow(new Object[] {center, date, this.getYear(), loggedCrp.getId(), this.hasProgramnsRegions()});
+    model.addRow(new Object[] {center, date, this.getYear(), loggedCrp.getId(), this.hasProgramnsRegions(), hasW1W2Co});
     return model;
   }
 
@@ -603,8 +696,8 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
    * @param budgetType
    * @return String with the total amount.
    */
-  public String getTotalAmount(long institutionId, int year, long budgetType, Long projectId) {
-    return projectBudgetManager.amountByBudgetType(institutionId, year, budgetType, projectId);
+  public String getTotalAmount(long institutionId, int year, long budgetType, Long projectId, Integer coFinancing) {
+    return projectBudgetManager.amountByBudgetType(institutionId, year, budgetType, projectId, coFinancing);
   }
 
 
@@ -616,9 +709,10 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
    * @param budgetType
    * @return
    */
-  public double getTotalGender(long institutionId, int year, long budgetType, long projectID) {
+  public double getTotalGender(long institutionId, int year, long budgetType, long projectID, Integer coFinancing) {
 
-    List<ProjectBudget> budgets = projectBudgetManager.getByParameters(institutionId, year, budgetType, projectID);
+    List<ProjectBudget> budgets =
+      projectBudgetManager.getByParameters(institutionId, year, budgetType, projectID, coFinancing);
 
     double totalGender = 0;
     if (budgets != null) {
@@ -642,13 +736,13 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
    * @param budgetType
    * @return
    */
-  public double getTotalGenderPer(long institutionId, int year, long budgetType, long projectId) {
+  public double getTotalGenderPer(long institutionId, int year, long budgetType, long projectId, Integer coFinancing) {
 
-    String totalAmount = this.getTotalAmount(institutionId, year, budgetType, projectId);
+    String totalAmount = this.getTotalAmount(institutionId, year, budgetType, projectId, coFinancing);
 
     double dTotalAmount = Double.parseDouble(totalAmount);
 
-    double totalGender = this.getTotalGender(institutionId, year, budgetType, projectId);
+    double totalGender = this.getTotalGender(institutionId, year, budgetType, projectId, coFinancing);
 
     if (dTotalAmount != 0) {
       return (totalGender * 100) / dTotalAmount;
@@ -668,6 +762,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
    * @param institution
    * @return boolean with true if is ppa and false if not
    */
+  @Override
   public boolean isPPA(Institution institution) {
     if (institution == null) {
       return false;
@@ -713,6 +808,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
         + e.getMessage());
       cycle = this.getCurrentCycle();
     }
+    hasW1W2Co = this.hasSpecificities(APConstants.CRP_FS_W1W2_COFINANCING);
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
     LOG.info(

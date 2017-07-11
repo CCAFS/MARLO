@@ -29,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectClusterActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectScopeManager;
+import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
@@ -40,11 +41,12 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectScope;
+import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
-import org.cgiar.ccafs.marlo.utils.FileManager;
 import org.cgiar.ccafs.marlo.utils.HistoryComparator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectDescriptionValidator;
 
@@ -78,6 +80,8 @@ public class ProjectDescriptionAction extends BaseAction {
 
   // Managers
   private ProjectManager projectManager;
+  private SectionStatusManager sectionStatusManager;
+
   private ProjectFocusManager projectFocusManager;
   private FileDBManager fileDBManager;
   private CrpManager crpManager;
@@ -135,8 +139,9 @@ public class ProjectDescriptionAction extends BaseAction {
   public ProjectDescriptionAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
     CrpProgramManager programManager, LiaisonUserManager liaisonUserManager,
     LiaisonInstitutionManager liaisonInstitutionManager, UserManager userManager,
-    ProjectFocusManager projectFocusManager, FileDBManager fileDBManager, AuditLogManager auditLogManager,
-    ProjectDescriptionValidator validator, ProjectClusterActivityManager projectClusterActivityManager,
+    SectionStatusManager sectionStatusManager, ProjectFocusManager projectFocusManager, FileDBManager fileDBManager,
+    AuditLogManager auditLogManager, ProjectDescriptionValidator validator,
+    ProjectClusterActivityManager projectClusterActivityManager,
     CrpClusterOfActivityManager crpClusterOfActivityManager, LocElementTypeManager locationManager,
     ProjectScopeManager projectLocationManager, HistoryComparator historyComparator) {
     super(config);
@@ -148,6 +153,7 @@ public class ProjectDescriptionAction extends BaseAction {
     this.projectManager = projectManager;
     this.projectFocusManager = projectFocusManager;
     this.validator = validator;
+    this.sectionStatusManager = sectionStatusManager;
     this.crpClusterOfActivityManager = crpClusterOfActivityManager;
     this.auditLogManager = auditLogManager;
     this.projectClusterActivityManager = projectClusterActivityManager;
@@ -159,17 +165,26 @@ public class ProjectDescriptionAction extends BaseAction {
     this.locationTypeManager = locationManager;
   }
 
+  /**
+   * In this method it is checked if there is a draft file and it is eliminated
+   * 
+   * @return Sucess always
+   */
   @Override
   public String cancel() {
 
+    // get the path auto save
     Path path = this.getAutoSaveFilePath();
-
+    // if file exist
     if (path.toFile().exists()) {
-
+      // delete the file
       boolean fileDeleted = path.toFile().delete();
     }
 
+    // Set the action No draft
     this.setDraft(false);
+
+    // Put succes message to front
     Collection<String> messages = this.getActionMessages();
     if (!messages.isEmpty()) {
       String validationMessage = messages.iterator().next();
@@ -205,9 +220,17 @@ public class ProjectDescriptionAction extends BaseAction {
     return config.getDownloadURL() + "/" + this.getAnualReportRelativePath().replace('\\', '/');
   }
 
+  /**
+   * The name of the autosave file is constructed and the path is searched
+   * 
+   * @return Auto save file path
+   */
   private Path getAutoSaveFilePath() {
+    // get the class simple name
     String composedClassName = project.getClass().getSimpleName();
+    // get the action name and replace / for _
     String actionFile = this.getActionName().replace("/", "_");
+    // concatane name and add the .json extension
     String autoSaveFile = project.getId() + "_" + composedClassName + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
@@ -376,22 +399,30 @@ public class ProjectDescriptionAction extends BaseAction {
     } catch (Exception e) {
 
     }
-    // SendMailGun s = new SendMailGun();
-    // s.SendSimple();
+
+    // We check that you have a TRANSACTION_ID to know if it is history version
 
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
 
 
       transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
+      // auditLogManager.getHistory Bring us the history with the transaction id
       Project history = (Project) auditLogManager.getHistory(transaction);
+
+
+      // In case there are some relationships that are displayed on the front in a particular field, add to this list by
+      // passing the name of the relationship and the name of the attribute with which it is displayed on the front
       Map<String, String> specialList = new HashMap<>();
       specialList.put(APConstants.PROJECT_FOCUSES_RELATION, "flagshipValue");
+
+      // We load the differences of this version with the previous version
 
       this.setDifferences(historyComparator.getDifferences(transaction, specialList, "project"));
 
 
       if (history != null) {
         project = history;
+        // we load the all information form the files related to the project
         if (project.getWorkplan() != null) {
           project.setWorkplan(fileDBManager.getFileDBById(project.getWorkplan().getId()));
         }
@@ -404,35 +435,44 @@ public class ProjectDescriptionAction extends BaseAction {
 
 
       } else {
+        // not a valid transatacion
         this.transaction = null;
 
         this.setTransaction("-1");
       }
 
     } else {
+      // get project info for DB
       project = projectManager.getProjectById(projectID);
     }
 
     if (project != null) {
-      Path path = this.getAutoSaveFilePath();
 
+      // We validate if there is a draft version
+      // Get the path
+      Path path = this.getAutoSaveFilePath();
+      // validate if file exist and user has enabled auto-save funcionallity
       if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
 
         BufferedReader reader = null;
-
+        // instace de buffer from file
         reader = new BufferedReader(new FileReader(path.toFile()));
 
         Gson gson = new GsonBuilder().create();
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
-
+        // instance class AutoSaveReader (made by US)
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
+        // We read the JSON serialized by the front-end and cast it to the object
+
         project = (Project) autoSaveReader.readFromJson(jReader);
+        // We load some BD objects, since the draft only keeps IDs and some data is shown with a different labe
         Project projectDb = projectManager.getProjectById(project.getId());
         project.setProjectEditLeader(projectDb.isProjectEditLeader());
         project.setAdministrative(projectDb.getAdministrative());
+        // load Cluster of activites info
         if (project.getClusterActivities() != null) {
           for (ProjectClusterActivity projectClusterActivity : project.getClusterActivities()) {
             projectClusterActivity.setCrpClusterOfActivity(crpClusterOfActivityManager
@@ -442,7 +482,7 @@ public class ProjectDescriptionAction extends BaseAction {
 
           }
         }
-
+        // load scope info
         if (project.getScopes() != null) {
           for (ProjectScope projectScope : project.getScopes()) {
             projectScope
@@ -450,15 +490,17 @@ public class ProjectDescriptionAction extends BaseAction {
           }
         }
 
+        // load LiaisonUser info
         if (project.getLiaisonUser() != null) {
           project.setLiaisonUser(liaisonUserManager.getLiaisonUserById(project.getLiaisonUser().getId()));
         }
+        // load LiaisonUser info
         if (project.getLiaisonInstitution() != null) {
           project.setLiaisonInstitution(
             liaisonInstitutionManager.getLiaisonInstitutionById(project.getLiaisonInstitution().getId()));
         }
 
-
+        // load fps value
         List<CrpProgram> programs = new ArrayList<>();
         if (project.getFlagshipValue() != null) {
           for (String programID : project.getFlagshipValue().trim().replace("[", "").replace("]", "").split(",")) {
@@ -471,7 +513,7 @@ public class ProjectDescriptionAction extends BaseAction {
           }
         }
 
-
+        // load regions value
         List<CrpProgram> regions = new ArrayList<>();
         if (project.getRegionsValue() != null) {
           for (String programID : project.getRegionsValue().trim().replace("[", "").replace("]", "").split(",")) {
@@ -486,9 +528,16 @@ public class ProjectDescriptionAction extends BaseAction {
         project.setFlagships(programs);
         project.setRegions(regions);
         reader.close();
+
+        // We change this variable so that the user knows that he is working on a draft version
+
         this.setDraft(true);
       } else {
+        // DB version
         this.setDraft(false);
+
+        // Load the DB information and adjust it to the structures with which the front end
+
         project.setFlagshipValue("");
         project.setRegionsValue("");
         List<CrpProgram> programs = new ArrayList<>();
@@ -518,7 +567,7 @@ public class ProjectDescriptionAction extends BaseAction {
               .setRegionsValue(project.getRegionsValue() + "," + projectFocuses.getCrpProgram().getId().toString());
           }
         }
-
+        // load the info for Cluster of activities
         List<ProjectClusterActivity> projectClusterActivities = new ArrayList<>();
         for (ProjectClusterActivity projectClusterActivity : project.getProjectClusterActivities().stream()
           .filter(c -> c.isActive()).collect(Collectors.toList())) {
@@ -527,7 +576,7 @@ public class ProjectDescriptionAction extends BaseAction {
             .getCrpClusterActivityLeaders().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
           projectClusterActivities.add(projectClusterActivity);
         }
-
+        // load the scopes
         List<ProjectScope> projectLocations = new ArrayList<>();
         for (ProjectScope projectLocation : project.getProjectScopes().stream().filter(c -> c.isActive())
           .collect(Collectors.toList())) {
@@ -542,13 +591,17 @@ public class ProjectDescriptionAction extends BaseAction {
     }
 
     allOwners = new ArrayList<LiaisonUser>();
+    // load the liason users for the crp
     allOwners.addAll(loggedCrp.getLiasonUsers());
-    liaisonInstitutions = new ArrayList<LiaisonInstitution>();
 
+    liaisonInstitutions = new ArrayList<LiaisonInstitution>();
+    // load the liasons intitutions for the crp
     liaisonInstitutions
       .addAll(loggedCrp.getLiaisonInstitutions().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
     liaisonInstitutions.addAll(
       liaisonInstitutionManager.findAll().stream().filter(c -> c.getCrp() == null).collect(Collectors.toList()));
+
+    // load the flaghsips an regions
     programFlagships = new ArrayList<>();
     regionFlagships = new ArrayList<>();
     programFlagships.addAll(loggedCrp.getCrpPrograms().stream()
@@ -563,17 +616,14 @@ public class ProjectDescriptionAction extends BaseAction {
       clusterofActivites
         .addAll(crpProgram.getCrpClusterOfActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
     }
+    // sort the clusterr of activites by identfier
     try {
       clusterofActivites.sort((p1, p2) -> p1.getIdentifier().compareTo(p2.getIdentifier()));
-    } catch (Exception e) {
+    } catch (NullPointerException e) {
+      // if throws null pointer sort by id
       clusterofActivites.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
     }
-    /*
-     * clusterofActivites = crpClusterOfActivityManager.findAll().stream()
-     * .filter(c -> c.isActive() && c.getCrpProgram().getCrp().getId().equals(loggedCrp.getId()))
-     * .collect(Collectors.toList());
-     */
-
+    // add regions programs
 
     regionFlagships.addAll(loggedCrp.getCrpPrograms().stream()
       .filter(c -> c.isActive() && c.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
@@ -587,11 +637,7 @@ public class ProjectDescriptionAction extends BaseAction {
 
       projectStatuses.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
     }
-
-    projectTypes = new HashMap<>();
-    projectTypes.put(APConstants.PROJECT_CORE, this.getText("project.projectType.core"));
-    projectTypes.put(APConstants.PROJECT_BILATERAL, this.getText("project.projectType.bilateral"));
-    projectTypes.put(APConstants.PROJECT_CCAFS_COFUNDED, this.getText("project.projectType.cofounded"));
+    // add project scales
 
     projectScales = new HashMap<>();
     projectScales.put(APConstants.PROJECT_SCAPE_NATIONAL, this.getText("project.projectScape.national"));
@@ -599,8 +645,15 @@ public class ProjectDescriptionAction extends BaseAction {
     projectScales.put(APConstants.PROJECT_SCAPE_GLOBAL, this.getText("project.projectType.global"));
 
 
+    // The base permission is established for the current section
+
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_DESCRIPTION_BASE_PERMISSION, params));
+
+    /*
+     * If it is post, the lists are cleaned, this is done because there is a bug of struts, if this is not done it does
+     * not delete the items deleted by the user
+     */
     if (this.isHttpPost()) {
       if (project.getClusterActivities() != null) {
         project.getClusterActivities().clear();
@@ -622,6 +675,8 @@ public class ProjectDescriptionAction extends BaseAction {
     if (this.hasPermission("canEdit")) {
 
       Project projectDB = projectManager.getProjectById(project.getId());
+      // Load basic info project to be saved
+
       project.setActive(true);
       project.setCreatedBy(projectDB.getCreatedBy());
       project.setModifiedBy(this.getCurrentUser());
@@ -630,11 +685,11 @@ public class ProjectDescriptionAction extends BaseAction {
       project.setCreateDate(projectDB.getCreateDate());
       project.setPresetDate(projectDB.getPresetDate());
 
+      // Validations to fill the checkbox fields
+
       if (project.isNoRegional() == null) {
         project.setNoRegional(false);
       }
-
-
       if (project.getCrossCuttingCapacity() == null) {
         project.setCrossCuttingCapacity(false);
       }
@@ -658,49 +713,20 @@ public class ProjectDescriptionAction extends BaseAction {
 
       }
 
-      if (projectDB.isBilateralProject()) {
 
-        if (file != null) {
-
-
-          project.setBilateralContractName(this.getFileDB(projectDB.getBilateralContractName(), file, fileFileName,
-            this.getBilateralContractAbsolutePath()));
-          FileManager.copyFile(file,
-            this.getBilateralContractAbsolutePath() + project.getBilateralContractName().getFileName());
-        }
-
-
-        if (this.isReportingActive()) {
-          if (fileReporting != null) {
-            // FileManager.deleteFile(this.getAnnualReportAbsolutePath() + projectDB.getAnnualReportToDornor());
-
-
-            project.setAnnualReportToDonnor(this.getFileDB(projectDB.getAnnualReportToDonnor(), fileReporting,
-              fileReportingFileName, this.getAnnualReportAbsolutePath()));
-
-            FileManager.copyFile(fileReporting, this.getAnnualReportAbsolutePath() + fileReportingFileName);
-
-          }
-          /*
-           * if (project.getAnnualReportToDonnor().getFileName().isEmpty()) {
-           * project.setAnnualReportToDonnor(null);
-           * }
-           */
-        }
-
-      }
-
+      // no liaison institution selected
       if (project.getLiaisonInstitution() != null) {
         if (project.getLiaisonInstitution().getId() == -1) {
           project.setLiaisonInstitution(null);
         }
       }
-
+      // no liaison user selected
       if (project.getLiaisonUser() != null) {
         if (project.getLiaisonUser().getId() == -1) {
           project.setLiaisonUser(null);
         }
       }
+      // Saving the flaghsips
 
       if (project.getFlagshipValue() != null && project.getFlagshipValue().length() > 0) {
 
@@ -735,7 +761,7 @@ public class ProjectDescriptionAction extends BaseAction {
         }
       }
 
-
+      // Saving the regions
       List<ProjectFocus> regionsPreview = projectDB.getProjectFocuses().stream()
         .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
         .collect(Collectors.toList());
@@ -768,10 +794,10 @@ public class ProjectDescriptionAction extends BaseAction {
 
       }
 
-      // Removing Project Cluster Activities
+      // if the planning cycle is active
       if (this.isPlanningActive()) {
 
-
+        // Removing Project Cluster Activities
         for (ProjectClusterActivity projectClusterActivity : projectDB.getProjectClusterActivities().stream()
           .filter(c -> c.isActive()).collect(Collectors.toList())) {
 
@@ -798,6 +824,18 @@ public class ProjectDescriptionAction extends BaseAction {
               projectClusterActivityManager.saveProjectClusterActivity(projectClusterActivity);
             }
 
+          }
+        }
+
+        // delete the section stust for budgets by coA when there is one Coa selectd to the project
+        Project projectCluster = projectManager.getProjectById(projectID);
+        List<ProjectClusterActivity> currentClusters =
+          projectCluster.getProjectClusterActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+        if (currentClusters.isEmpty() || currentClusters.size() == 1) {
+          SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID,
+            this.getCurrentCycle(), this.getCurrentCycleYear(), ProjectSectionStatusEnum.BUDGETBYCOA.getStatus());
+          if (sectionStatus != null) {
+            sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
           }
         }
 
@@ -833,27 +871,14 @@ public class ProjectDescriptionAction extends BaseAction {
         }
       }
 
-
+      // load basic info to project
       project.setCrp(loggedCrp);
       project.setCofinancing(projectDB.isCofinancing());
       // project.setGlobal(projectDB.isGlobal());
-      project.setLeaderResponsabilities(projectDB.getLeaderResponsabilities());
-      if (project.getWorkplan() != null) {
-        if (project.getWorkplan().getId() == null) {
-          project.setWorkplan(null);
-        }
-      }
 
-      if (project.getBilateralContractName() != null) {
-        if (project.getBilateralContractName().getId() == null) {
-          project.setBilateralContractName(null);
-        }
-      }
-      if (project.getAnnualReportToDonnor() != null) {
-        if (project.getAnnualReportToDonnor().getId() == null) {
-          project.setAnnualReportToDonnor(null);
-        }
-      }
+
+      // Saving project and add relations we want to save on the history
+
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_FOCUSES_RELATION);
       relationsName.add(APConstants.PROJECT_CLUSTER_ACTIVITIES_RELATION);
@@ -864,12 +889,14 @@ public class ProjectDescriptionAction extends BaseAction {
       project.setModificationJustification(this.getJustification());
       projectManager.saveProject(project, this.getActionName(), relationsName);
       Path path = this.getAutoSaveFilePath();
-
+      // delete the draft file if exists
       if (path.toFile().exists()) {
         path.toFile().delete();
       }
 
+      // check if there is a url to redirect
       if (this.getUrl() == null || this.getUrl().isEmpty()) {
+        // check if there are missing field
         Collection<String> messages = this.getActionMessages();
         if (!this.getInvalidFields().isEmpty()) {
           this.setActionMessages(null);
@@ -884,15 +911,18 @@ public class ProjectDescriptionAction extends BaseAction {
         }
         return SUCCESS;
       } else {
+        // No messages to next page
+
         this.addActionMessage("");
         this.setActionMessages(null);
+        // redirect the url select by user
         return REDIRECT;
       }
 
     } else
 
     {
-
+      // no permissions to edit
       return NOT_AUTHORIZED;
     }
 
@@ -982,6 +1012,7 @@ public class ProjectDescriptionAction extends BaseAction {
 
   @Override
   public void validate() {
+    // if is saving call the validator to check for the missing fields
     if (save) {
       validator.validate(this, project, true);
     }

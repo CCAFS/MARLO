@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,33 +16,33 @@
 
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
-import org.cgiar.ccafs.marlo.data.dao.CrpParameterDAO;
-import org.cgiar.ccafs.marlo.data.model.CrpParameter;
+import org.cgiar.ccafs.marlo.data.dao.GenderTypeDAO;
+import org.cgiar.ccafs.marlo.data.model.GenderType;
 
 import java.util.List;
 
 import com.google.inject.Inject;
 
-public class CrpParameterMySQLDAO implements CrpParameterDAO {
+public class GenderTypeMySQLDAO implements GenderTypeDAO {
 
   private StandardDAO dao;
 
   @Inject
-  public CrpParameterMySQLDAO(StandardDAO dao) {
+  public GenderTypeMySQLDAO(StandardDAO dao) {
     this.dao = dao;
   }
 
   @Override
-  public boolean deleteCrpParameter(long crpParameterId) {
-    CrpParameter crpParameter = this.find(crpParameterId);
-    crpParameter.setActive(false);
-    return this.save(crpParameter) > 0;
+  public boolean deleteGenderType(long genderTypeId) {
+    GenderType genderType = this.find(genderTypeId);
+
+    return this.dao.delete(genderType);
   }
 
   @Override
-  public boolean existCrpParameter(long crpParameterID) {
-    CrpParameter crpParameter = this.find(crpParameterID);
-    if (crpParameter == null) {
+  public boolean existGenderType(long genderTypeID) {
+    GenderType genderType = this.find(genderTypeID);
+    if (genderType == null) {
       return false;
     }
     return true;
@@ -50,15 +50,15 @@ public class CrpParameterMySQLDAO implements CrpParameterDAO {
   }
 
   @Override
-  public CrpParameter find(long id) {
-    return dao.find(CrpParameter.class, id);
+  public GenderType find(long id) {
+    return dao.find(GenderType.class, id);
 
   }
 
   @Override
-  public List<CrpParameter> findAll() {
-    String query = "from " + CrpParameter.class.getName() + " where is_active=1";
-    List<CrpParameter> list = dao.findAll(query);
+  public List<GenderType> findAll() {
+    String query = "from " + GenderType.class.getName() + "";
+    List<GenderType> list = dao.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -67,13 +67,15 @@ public class CrpParameterMySQLDAO implements CrpParameterDAO {
   }
 
   @Override
-  public long save(CrpParameter crpParameter) {
-    if (crpParameter.getId() == null) {
-      dao.save(crpParameter);
+  public long save(GenderType genderType) {
+    if (genderType.getId() == null) {
+      dao.save(genderType);
     } else {
-      dao.update(crpParameter);
+      dao.update(genderType);
     }
-    return crpParameter.getId();
+
+
+    return genderType.getId();
   }
 
 

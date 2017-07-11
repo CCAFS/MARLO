@@ -19,6 +19,7 @@
     [#if deliverables?has_content]
       [#list deliverables as deliverable]
         [#assign isDeliverableNew = action.isDeliverableNew(deliverable.id) /]
+        [#assign hasDraft = (action.getAutoSaveFilePath(deliverable.class.simpleName, "deliverable", deliverable.id))!false /]
         
         [#-- isDeliverableComplete --]
         [#if action.getDeliverableStatus(deliverable.id)??]
@@ -32,15 +33,19 @@
         [/#if]
         
         <tr>
-        [#-- ID --]
-        <td class="deliverableId">
-          <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='deliverableID']${deliverable.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]">
-            D${deliverable.id}
-          </a>
-        </td>
+          [#-- ID --]
+          <td class="deliverableId">
+            <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='deliverableID']${deliverable.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]">
+              D${deliverable.id}
+            </a>
+          </td>
           [#-- Deliverable Title --]
           <td class="left">
+            [#-- New Tag --]
             [#if isDeliverableNew]<span class="label label-info">New</span>[/#if]
+            
+            [#-- Draft Tag --]
+            [#if hasDraft]<strong class="text-info">[DRAFT]</strong>[/#if]
 
             [#if deliverable.isRequieriedReporting(currentCycleYear) && reportingActive && !isDeliverableComplete]
               <span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>
@@ -124,36 +129,142 @@
 [/#macro]
 
 [#macro deliverablePartner dp={} dp_name="" dp_index="" isResponsable=false template=false editable=true]
-  <div id="deliverablePartner-${template?string('template', dp_index)}" class="${isResponsable?string('responsiblePartner','deliverablePartner')} ${isResponsable?string('simpleBox','borderBox')} row" style="display:${template?string('none','')}">
-    [#if editable && !isResponsable]
-      <div class="removeElement removeLink" title="[@s.text name="project.deliverable.removePartnerContribution" /]"></div> 
-    [/#if]
-    [#if !isResponsable]
-    <div class="leftHead">
-      <span class="index">${dp_index+1}</span>
-    </div> 
-    [/#if]
-    [#assign customName]${dp_name}[#if !isResponsable][${dp_index}].projectPartnerPerson[/#if][/#assign]
-    <input class="type" type="hidden" name="${customName}.type" value="${isResponsable?string('Resp','Other')}">
-    [#if !isResponsable]
-    <input class="element" type="hidden" name="${dp_name}[${dp_index}].id" value="${(dp.id)!-1}">
-    [/#if]
+  <div id="deliverablePartner-${template?string('template', dp_index)}" class="responsiblePartner projectPartnerPerson row" style="display:${template?string('none','')}">
+    [#-- Remove --]
+    [#if editable && !isResponsable]<div class="removeElement removeLink" title="[@s.text name="project.deliverable.removePartnerContribution" /]"></div> [/#if]
+    [#-- Hidden inputs --]
+    <input class="element" type="hidden" name="${dp_name}.id" value="${(dp.id)!}">
     [#if template]
       [#-- Partner Name --]
-      <div class="fullPartBlock partnerName chosen col-md-12"> 
-        [@customForm.select name="" value="-1"  i18nkey="${isResponsable?string('project.deliverable.indicateResponsablePartner','Partner')}" listName="partnerPersons" keyFieldName="id"  displayFieldName="composedName"   className="${isResponsable?string('responsible','partner')}  id" editable=editable required=isResponsable /]
+      <div class="fullPartBlock partnerName chosen"> 
+        [@customForm.select name="" value="-1"  i18nkey="" showTitle=false listName="partners" keyFieldName="id"  displayFieldName="composedName"   className="responsible id" editable=editable required=isResponsable /]
+        <div class="partnerPersons">
+        </div>
       </div>
     [#else]
       [#-- Partner Name --]
-      <div class="fullPartBlock partnerName chosen col-md-12"> 
+      <div class="form-group partnerName chosen"> 
       [#if editable]
-        [@customForm.select name="${customName}.id" value="${(dp.projectPartnerPerson.id)!-1}"  label="" i18nkey="${isResponsable?string('project.deliverable.indicateResponsablePartner','project.deliverable.partner')}" listName="partnerPersons" keyFieldName="id"  displayFieldName="composedName"     className="${isResponsable?string('responsible','partner')} id " editable=editable required=isResponsable/]
+        [@customForm.select name="" value="${(dp.projectPartnerPerson.projectPartner.id)!-1}"  label="" i18nkey="" showTitle=false listName="partners" keyFieldName="id"  displayFieldName="composedName" className="responsible id " editable=editable required=isResponsable/]
+        <div class="partnerPersons">
+          [#if (dp.projectPartnerPerson.projectPartner.id??)!false]
+            [#list action.getPersons(dp.projectPartnerPerson.projectPartner.id) as person]
+              [@deliverablePerson element=person name="${dp_name}" index=person_index checked=(dp.projectPartnerPerson.id == person.id)!false isResponsable=true /]
+            [/#list]
+          [/#if]
+        </div>
+        
+        [#-- Division --]
+        [#if action.hasSpecificities('crp_division_fs')]
+          [#local ifpriDivision = false /]
+          [#if (dp.projectPartnerPerson.projectPartner.institution.acronym == "IFPRI")!false ][#local ifpriDivision = true /][/#if]
+          <div class="form-group row divisionBlock division-IFPRI"  style="display:${ifpriDivision?string('block','none')}">
+            <div class="col-md-7">
+              [@customForm.select name="${dp_name}.partnerDivision.id" i18nkey="projectCofunded.division" className="divisionField" listName="divisions" keyFieldName="id" displayFieldName="composedName" required=true editable=editable /]
+            </div>
+          </div>
+        [/#if]
       [#else]
-      <label class="form-group" for="">[@customForm.text name="${isResponsable?string('project.deliverable.indicateResponsablePartner','project.deliverable.partner')}" readText=!editable/] :</label>
-      <div class="personRead-content"><span class="glyphicon glyphicon-user" ></span> <span>${((dp.projectPartnerPerson.composedName)!'Contact Person')?html}</span></div>
+        <div class="form-group partnerName chosen">
+          <strong class="text-muted">${(dp.projectPartnerPerson.projectPartner.composedName)!}</strong>
+          <div class="partnerPersons">
+          [#if (dp.projectPartnerPerson.projectPartner.id??)!false]
+            [#list action.getPersons(dp.projectPartnerPerson.projectPartner.id) as person]
+              [#if dp.projectPartnerPerson.id == person.id]
+                <p class="checked">${person.composedCompleteName}</p>
+                [#if (dp.partnerDivision??) && (dp.partnerDivision.id??) &&(dp.partnerDivision.id != -1)]
+                 <p><strong>[@s.text name="projectCofunded.division" /]:</strong> ${(dp.partnerDivision.name)!}</p>
+                [/#if]
+              [/#if]
+            [/#list]
+          [/#if]
+          </div>
+        </div>
       [/#if]
       </div>
-    [/#if] 
+    [/#if]
   </div> 
   <div class="clearfix"></div>
-[/#macro] 
+[/#macro]
+
+
+[#macro deliverablePartnerOther dp=[] dp_name="" dp_index="" isResponsable=false template=false editable=true]
+  [#assign personsIndex =  0 /]
+  [#list dp as projectPartner]
+    <div id="deliverablePartner-${template?string('template', projectPartner_index)}" class="deliverablePartner borderBox projectPartnerPerson row" style="display:${template?string('none','')}">
+      [#-- Remove --]
+      [#if editable && !isResponsable]<div class="removeElement removeLink" title="[@s.text name="project.deliverable.removePartnerContribution" /]"></div> [/#if]
+      [#-- Index --]
+      <div class="leftHead"><span class="index">${dp_index+1}</span></div>
+  
+      [#if template]
+        [#-- Partner Name --]
+        <div class="fullPartBlock partnerName chosen"> 
+          [@customForm.select name="" value="-1"  i18nkey="" showTitle=false listName="partners" keyFieldName="id"  displayFieldName="composedName"   className="partner id" editable=editable required=isResponsable /]
+          <div class="partnerPersons">
+          </div>
+        </div>
+      [#else]
+        [#-- Partner Name --]
+        <div class="form-group partnerName chosen"> 
+        [#if editable] 
+          [@customForm.select name="" value="${(projectPartner.id)!-1}"  label="" i18nkey="" showTitle=false listName="partners" keyFieldName="id"  displayFieldName="composedName" className="partner id " editable=editable required=isResponsable/]
+          <div class="partnerPersons">
+            [#if (projectPartner.id??)!false]
+              [#assign selectedPersons =  action.getSelectedPersons(projectPartner.id) /]
+              [#list action.getPersons(projectPartner.id) as person]
+                [@deliverablePerson element=person name="${dp_name}" index=personsIndex checked=(selectedPersons?seq_contains("${person.id}")) isResponsable=false /]
+                [#assign personsIndex =  personsIndex + 1 /]
+              [/#list]
+            [/#if]
+            <div class="clearfix"></div>
+          </div>
+        [#else]
+          <div class="form-group partnerName chosen">
+            <strong class="text-muted">${(projectPartner.composedName)!}</strong>
+            <div class="partnerPersons">
+            [#if (projectPartner.id??)!false]
+              [#assign selectedPersons =  action.getSelectedPersons(projectPartner.id) /]
+              [#list action.getPersons(projectPartner.id) as person]
+                [#if selectedPersons?seq_contains("${person.id}")]
+                  [#local deliverablePartnerShip =(action.getDeliverablePartnership((person.id)!-1))!{} /]
+                  <p class="checked">${person.composedCompleteName}</p>
+                  [#if (deliverablePartnerShip.partnerDivision??) && (deliverablePartnerShip.partnerDivision.id??) &&(deliverablePartnerShip.partnerDivision.id != -1)]
+                   <p><strong>[@s.text name="projectCofunded.division" /]:</strong> ${(deliverablePartnerShip.partnerDivision.name)!}</p>
+                  [/#if]
+                [/#if]
+              [/#list]
+            [/#if]
+            </div>
+          </div>
+        [/#if]
+        </div>
+      [/#if]
+    </div> 
+    <div class="clearfix"></div>
+  [/#list]
+[/#macro]
+
+
+[#macro deliverablePerson element name index checked isResponsable=false isTemplate=false]
+  [#local customName]${name}[#if !isResponsable][${index}][/#if][/#local] 
+  [#local type][#if isResponsable]radio[#else]checkbox[/#if][/#local]
+  [#local deliverablePartnerShip =(action.getDeliverablePartnership((element.id)!-1))!{} /]
+  
+  <div id="deliverablePerson-${isTemplate?string('template', index)}" class="${type} deliverablePerson ${isResponsable?string('resp','other')} inputsFlat" style="display:${isTemplate?string('none','')}">
+    [#if !isResponsable]<input class="element" type="hidden" name="${customName}.id" value="${(deliverablePartnerShip.id)!}">[/#if]
+    <input id="${type}-${index}-${(element.id)!}" type="${type}" name="${customName}.projectPartnerPerson.id" value="${(element.id)!}" [#if checked]checked[/#if]/>
+    <label for="${type}-${index}-${(element.id)!}" class="${type}-label [#if isResponsable]radio-label-yes[/#if]" >${(element.composedCompleteName)!}</label>
+
+    [#-- Division --]
+    [#if action.hasSpecificities('crp_division_fs') && !isResponsable]
+      [#local ifpriDivision = false /]
+      [#if (element.projectPartner.institution.acronym == "IFPRI")!false ][#local ifpriDivision = true /][/#if]
+      <div class="form-group row divisionBlock division-IFPRI"  style="display:${ifpriDivision?string('block','none')}">
+        <div class="col-md-7">
+          [@customForm.select name="${customName}.partnerDivision.id" value="${(deliverablePartnerShip.partnerDivision.id)!-1}" i18nkey="projectCofunded.division" className="divisionField" listName="divisions" keyFieldName="id" displayFieldName="composedName" required=true editable=editable /]
+        </div>
+      </div>
+    [/#if]
+  </div>
+[/#macro]

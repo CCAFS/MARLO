@@ -1,8 +1,8 @@
 [#ftl]
 [#assign title = "Project Partners" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
-[#assign pageLibs = ["select2"] /]
-[#assign customJS = ["${baseUrl}/js/global/fieldsValidation.js","${baseUrl}/js/projects/projectPartners.js", "${baseUrl}/js/global/usersManagement.js", "${baseUrl}/js/global/autoSave.js"] /]  
+[#assign pageLibs = ["select2", "flat-flags"] /]
+[#assign customJS = ["${baseUrl}/js/global/fieldsValidation.js", "${baseUrl}/js/global/usersManagement.js", "${baseUrl}/js/projects/projectPartners.js", "${baseUrl}/js/global/autoSave.js"] /]  
 [#assign customCSS = ["${baseUrl}/css/projects/projectPartners.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "partners" /]
@@ -124,6 +124,9 @@
 [#-- Contact person TEMPLATE from partnersTemplate.ftl --]
 [@contactPersonMacro element={} name="project.partners[-1].partnerPersons[-1]" isTemplate=true /]
 
+[#-- Country Element Template --]
+  [@locElementMacro element={} name="project.partners[-1].selectedLocations" index=-1 isTemplate=true /]
+
 [#-- PPA list Template --]
 <ul style="display:none">
   <li id="ppaListTemplate" class="clearfix">
@@ -167,7 +170,7 @@
 </div>
 
 [#-- Change partner person type dialog --]
-<div id="contactChangeType-dialog" title="Change person type" style="display:none">
+<div id="contactChangeType-dialog" title="Change contact person’s role" style="display:none">
   <ul class="messages"></ul>
 </div>
 
@@ -178,6 +181,46 @@
 [#-- Search users Interface --]
 [#import "/WEB-INF/global/macros/usersPopup.ftl" as usersForm/]
 [@usersForm.searchUsers/]
+
+[#-- Request partners --]
+<div class="modal fade" id="requestModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="loading" style="display:none"></div>
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="exampleModalLabel"></h4>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <input type="hidden" name="projectID" value="${(project.id)!}"/>
+            <input type="hidden" class="institution_id" name="institutionID" value="" />
+            [@customForm.select name="countriesID" i18nkey="location.select.country" listName="countries" header=true keyFieldName="isoAlpha2" displayFieldName="name" value="id" multiple=true placeholder="Select a country..." className="countriesRequest"/]
+          </div>
+        </form>
+        
+        <div class="messageBlock" style="display:none">
+          <div class="notyMessage">
+            <h1 class="text-center brand-success"><span class="glyphicon glyphicon-ok-sign"></span></h1>
+            <p  class="text-center col-md-12">
+              Your request was sent to the MARLO Support team <br />
+              You will receive a confirmation message as soon as it has been processed.
+            </p>
+            <br />
+            [#-- Buttons --]
+            <div class="text-center">
+              <button class="btn btn-danger" type="button" class="close" data-dismiss="modal" aria-label="Close">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer"> 
+        <button type="button" class="requestButton btn btn-primary"> <span class="glyphicon glyphicon-send"></span> Request</button>
+      </div>
+    </div>
+  </div>
+</div>
   
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
@@ -201,7 +244,7 @@
     [#-- Partner Title --]
     <div class="blockTitle closed">
       [#-- Title --]
-      <span class="${customForm.changedField('${name}.id')}"> <span class="index_number">${index+1}</span>. <span class="partnerTitle">${(element.institution.composedName)!'New Project Partner'}</span> </span>
+      <span class="${customForm.changedField('${name}.id')}"> <span class="index_number">${index+1}</span>. <span class="partnerTitle">${(element.institution.composedName)!'Project Partner'}</span> </span>
 
       [#-- Tags --]
       <div class="partnerTags pull-right">
@@ -242,17 +285,50 @@
       --]
       
       [#-- Institution / Organization --]
+      [#if ((editable && isTemplate) || (editable && !element.institution??) || (editable && element.institution.id?number == -1))]
       <div class="form-group partnerName">
         <p class="fieldErrorInstitutions"></p>
-        [#if ((editable && isTemplate) || (editable && !element.institution??) || (editable && element.institution.id?number == -1))]
           [#-- list=allInstitutions --]
           [@customForm.select name="${name}.institution.id" value="${(element.institution.id)!}" className="institutionsList" required=true header=false i18nkey="projectPartners.partner.name" listName="" keyFieldName="id"  displayFieldName="composedName"  /]
-        [#else]
-          <input type="hidden" name="${name}.institution.id" class="institutionsList" value="${(element.institution.id)!}"/>
-        [/#if]
-        <br />
       </div>
+      [#else]
+        <input type="hidden" name="${name}.institution.id" class="institutionsList" value="${(element.institution.id)!}"/>
+      [/#if]
       
+      [#-- Responsibilities --]
+      [#if project.projectEditLeader]
+      <div class="form-group partnerResponsabilities chosen"> 
+        [@customForm.textArea name="${name}.responsibilities" className="resp limitWords-100" i18nkey="projectPartners.responsabilities" required=true editable=editable /]
+        <div class="clearfix"></div>
+      </div>
+      [/#if]
+      
+      [#--Select country office  (if applicable)  --] 
+      <h5 class="sectionSubTitle">[@s.text name="projectPartners.countryOffices${action.hasSpecificities('crp_partners_office')?string('.required','')}" /] <small>[@customForm.req required=action.hasSpecificities('crp_partners_office') /]</small></h5>
+      <div class="countries-list items-list simpleBox" listname="${name}.selectedLocations">
+        <ul class="">
+          [#if (element.selectedLocations?has_content)!false]
+            [#list element.selectedLocations as locElement]
+              [@locElementMacro element=locElement name="${name}.selectedLocations" index=locElement_index /]
+            [/#list]
+          [#else] 
+            <p class="message text-center">No country office added</p>
+          [/#if]
+        </ul>
+        <div class="clearfix"></div> 
+        [#-- Add Location Element --]
+        [#if editable]
+          <hr />
+          <div class="form-group">
+            [@customForm.select name="" showTitle=false i18nkey="location.select.country" listName="${name}.institution.locations" header=true keyFieldName="locElement.isoAlpha2" displayFieldName="composedName" value="id" placeholder="Select a country..." className="countriesList"/]
+            <div class="note">
+              If you don't find the country office you are looking for, request to have it added by
+              <a href="#" class="" data-toggle="modal" data-target="#requestModal">clicking here</a>
+            </div>
+          </div>
+        [/#if]
+      </div>
+     
       
       [#-- Indicate which PPA Partners for second level partners --]
       [#if (editable || ((!editable && element.partnerContributors?has_content)!false))]
@@ -285,7 +361,7 @@
       
       [#-- Contacts person(s)  --]
       <div class="contactsPerson panel tertiary">
-        <h5 class="sectionSubTitle">[@s.text name="projectPartners.projectPartnerContacts" /]</h5>
+        <h5 class="sectionSubTitle">[@s.text name="projectPartners.projectPartnerContacts" /] <small>[@customForm.req required=isPPA /]</small></h5>
         <div class="fullPartBlock" listname="${name}.partnerPersons">
         [#if element.partnerPersons?has_content]
           [#list element.partnerPersons as partnerPerson]
@@ -306,7 +382,7 @@
 [/#macro]
 
 [#macro contactPersonMacro element name index=-1 partnerIndex=-1 isTemplate=false]
-  <div id="contactPerson-${isTemplate?string('template',(element.id)!)}" class="contactPerson simpleBox ${(element.contactType)!}" style="display:${isTemplate?string('none','block')}">
+  <div id="contactPerson-${isTemplate?string('template',(element.id)!)}" class="contactPerson simpleBox ${(element.contactType)!}" style="display:${isTemplate?string('none','block')}" listname="partner-${partnerIndex}-person-${index}">
     [#-- Remove link for all partners --]
     [#if editable]
       <div class="removePerson removeElement" title="[@s.text name="projectPartners.removePerson" /]"></div>
@@ -331,8 +407,18 @@
     [/#if]
     <div class="form-group">
     	<div class="row">
+          [#-- Contact type --]
+          <div class="col-md-4 partnerPerson-type ${customForm.changedField('${name}.contactType')}">
+            [#if canEditContactType]
+              [@customForm.select name="${name}.contactType" className="partnerPersonType" disabled=!canEdit i18nkey="projectPartners.personType" stringKey=true header=false listName="partnerPersonTypes" value="'${(element.contactType)!'CP'}'" required=true /]
+            [#else]
+              <label class="readOnly">[@s.text name="projectPartners.personType" /]:</label>
+              <div class="select"><p>[@s.text name="projectPartners.types.${(element.contactType)!'none'}"/]</p></div>
+              <input type="hidden" name="${name}.contactType" class="partnerPersonType" value="${(element.contactType)!}" />
+            [/#if]
+          </div>
     	    [#-- Contact Email --]
-          <div class="col-md-12 partnerPerson-email userField">
+          <div class="col-md-8 partnerPerson-email userField" >
             [#attempt]
               [#assign canEditEmail=!((action.getActivitiesLedByUser((element.id)!-1)!false)?has_content) && canEditContactType/]
             [#recover]
@@ -348,39 +434,6 @@
           </div>
     	</div>
     </div> 
-    <div class="form-group">
-      <div class="row">
-        [#-- Contact type --]
-        <div class="col-md-6 partnerPerson-type ${customForm.changedField('${name}.contactType')}">
-          [#if canEditContactType]
-            [@customForm.select name="${name}.contactType" className="partnerPersonType" disabled=!canEdit i18nkey="projectPartners.personType" stringKey=true header=false listName="partnerPersonTypes" value="'${(element.contactType)!'CP'}'" required=true /]
-          [#else]
-            <label class="readOnly">[@s.text name="projectPartners.personType" /]:</label>
-            <div class="select"><p>[@s.text name="projectPartners.types.${(element.contactType)!'none'}"/]</p></div>
-            <input type="hidden" name="${name}.contactType" class="partnerPersonType" value="${(element.contactType)!}" />
-          [/#if]
-        </div>
-        
-        [#-- Contact Branch --]
-        <div class="col-md-6 partnerPerson-branch ${customForm.changedField('${name}.institution.id')}">
-          [#if canEditContactType]
-            [@customForm.select name="${name}.institution.id" className="partnerPersonBranch" disabled=!canEdit i18nkey="projectPartners.personBranch" header=false listName="project.partners[${partnerIndex}].institution.institutuionsBranches" keyFieldName="id"  displayFieldName="branchName" required=true /]
-          [#else]
-            <label class="readOnly">[@s.text name="projectPartners.personBranch" /]:</label>
-            <div class="select"><p>${(element.institution.branchName)!}</p></div>
-            <input type="hidden" name="${name}.institution.id" class="partnerPersonBranch" value="${(element.institution.id)!}" />
-          [/#if]
-        </div>
-      </div>
-    </div>
-    
-    [#-- Responsibilities --]
-    [#if project.projectEditLeader]
-    <div class="form-group partnerResponsabilities chosen"> 
-      [@customForm.textArea name="${name}.responsibilities" className="resp limitWords-100" i18nkey="projectPartners.responsabilities" required=true editable=editable /]
-      <div class="clearfix"></div>
-    </div>
-    [/#if]
     
     [#if !isTemplate]
       [#-- Activities leading and Deliverables with responsibilities --]
@@ -415,5 +468,16 @@
   </div>
 [/#macro]
 
-
-
+[#macro locElementMacro element name index isTemplate=false ]
+  <li id="locElement-${isTemplate?string('template', index)}" class="locElement userItem" style="display:${isTemplate?string('none','block')}">
+    [#assign locElementName = "${name}[${index}]" ]
+    [#-- Remove Button --]
+    [#if editable]<div class="removeLocElement removeIcon" title="Remove Location"></div>[/#if] 
+    
+    [#-- Location Name --]
+    <span class="flag-icon"><i class="flag-sm flag-sm-${(element.locElement.isoAlpha2?upper_case)!}"></i></span> <span class="name">${(element.composedName)!'{name}'}</span><br />
+    
+    [#-- Hidden inputs --]
+    <input type="hidden" class="locElementCountry" name="${locElementName}.locElement.isoAlpha2" value="${(element.locElement.isoAlpha2)!}" /> 
+  </li>
+[/#macro]

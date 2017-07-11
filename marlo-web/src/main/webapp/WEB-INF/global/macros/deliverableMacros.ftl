@@ -151,9 +151,10 @@
 [/#macro]
 
 [#macro findableOptions ]
-[#-- Note --]
-<div class="note">[@s.text name="project.deliverable.dissemination.channelInfo" /]</div>
-<div class="form-group row">
+[#local isSynced = (deliverable.dissemination.synced)!false ]
+<div class="form-group row disseminationChannelBlock" style="display:${isSynced?string('none','block')};">
+  [#-- Note --]
+  <div class="note">[@s.text name="project.deliverable.dissemination.channelInfo" /]</div>
   <div class="col-md-4">
     [#if editable]
       [@customForm.select name="deliverable.dissemination.disseminationChannel" value="'${(deliverable.dissemination.disseminationChannel)!}'"  stringKey=true label=""  i18nkey="project.deliverable.dissemination.selectChannelLabel" listName="channels" className="disseminationChannel"   multiple=false required=true   editable=editable/]
@@ -168,40 +169,50 @@
     [#if editable]
       [#-- CGSpace examples & instructions --]
       [@channelExampleMacro name="cgspace" url="https://cgspace.cgiar.org/handle/10568/79435" /]
-       
       [#-- Dataverse examples & instructions --]
       [@channelExampleMacro name="dataverse" url="https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/0ZEXKC" /]
-  
       [#-- IFPRI examples & instructions --]
       [@channelExampleMacro name="ifpri" url="http://ebrary.ifpri.org/cdm/singleitem/collection/p15738coll5/id/5388/rec/1" /]
-      
       [#-- ILRI examples & instructions --]
       [@channelExampleMacro name="ilri" url="http://data.ilri.org/portal/dataset/ccafsnyando" /]
-    
     [/#if]
   </div>
 </div>
 
 [#assign channelsArray = ["cgspace","dataverse","other","ifpri","ilri"] /] 
 <div id="disseminationUrl" style="display:[#if (channelsArray?seq_contains(deliverable.dissemination.disseminationChannel))!false ]block[#else]none[/#if];">
-  <div class="form-group row"> 
-    <div class="col-md-10">
-      [@customForm.input name="deliverable.dissemination.disseminationUrl" type="text" i18nkey="project.deliverable.dissemination.disseminationUrl"  placeholder="" className="deliverableDisseminationUrl" required=true editable=editable /]
+  <div class="form-group" > 
+    <div class="url-field">
+      [@customForm.input name="deliverable.dissemination.disseminationUrl" type="text" i18nkey="project.deliverable.dissemination.disseminationUrl"  placeholder="" className="deliverableDisseminationUrl" required=true readOnly=isSynced editable=editable /]
     </div>
-    <div class="col-md-2">
-      <br />
-      [#if editable]<div id="fillMetadata" class="checkButton" style="display:[#if (channelsArray?seq_contains(deliverable.dissemination.disseminationChannel))!false ]block[#else]none[/#if];">[@s.text name="project.deliverable.dissemination.sync" /]</div>[/#if]
+    <div class="buttons-field">
+      
+      [#if editable]
+        [#local showSync = (channelsArray?seq_contains(deliverable.dissemination.disseminationChannel))!false ]
+        <div id="fillMetadata" style="display:${showSync?string('block','none')};">
+          <input type="hidden" name="deliverable.dissemination.synced" value="${isSynced?string}" />
+          [#-- Sync Button --]
+          <div class="checkButton" style="display:${isSynced?string('none','block')};">[@s.text name="project.deliverable.dissemination.sync" /]</div>
+          <div class="unSyncBlock" style="display:${isSynced?string('block','none')};">
+            [#-- Update Button --]
+            <div class="updateButton">[@s.text name="project.deliverable.dissemination.update" /]</div>
+            [#-- Unsync Button --]
+            <div class="uncheckButton">[@s.text name="project.deliverable.dissemination.unsync" /]</div>
+          </div>
+        </div>
+      [/#if]
     </div>
   </div>
+  <div class="clearfix"></div>
 </div>
 <div id="metadata-output"></div>
 [/#macro]
 
 [#macro channelExampleMacro name="" url="" ]
   <div class="exampleUrl-block channel-${name}" style="display:[#if (deliverable.dissemination.disseminationChannel==name)!false]block[#else]none[/#if];">
-      <label for="">[@s.text name="project.deliverable.dissemination.exampleUrl" /]:</label>
-      <p><small>${url}</small></p>
-    </div>
+    <label for="">[@s.text name="project.deliverable.dissemination.exampleUrl" /]:</label>
+    <p><small>${url}</small></p>
+  </div>
 [/#macro]
 
 [#macro deliverableMetadataMacro ]
@@ -232,10 +243,10 @@
 </div>
 <div class="form-group row">
   <div class="col-md-6">
-    [@deliverableMacros.metadataField title="Handle" encodedName="marlo.handle" type="input" require=false/]
+    [@deliverableMacros.metadataField title="handle" encodedName="marlo.handle" type="input" require=false/]
   </div>
   <div class="col-md-6">
-    [@deliverableMacros.metadataField title="DOI" encodedName="marlo.doi" type="input" require=false/]
+    [@deliverableMacros.metadataField title="doi" encodedName="marlo.doi" type="input" require=false/]
   </div>
 </div>
  
@@ -244,9 +255,16 @@
 [#-- Creator/Authors --]
 <div class="form-group">
   <label for="">[@s.text name="metadata.creator" /]:  </label>
-  [#if editable]<div class="note">[@s.text name = "project.deliverable.dissemination.authorsInfo" /]</div>[/#if]
+  [#-- Hidden input --]
+  [@deliverableMacros.metadataField title="authors" encodedName="marlo.authors" type="hidden" require=false/]
+  [#-- Some Instructions  --]
+  [#if editable]
+    <div class="note authorVisibles" style="display:${isMetadataHide("marlo.authors")?string('none','block')}">
+    [@s.text name = "project.deliverable.dissemination.authorsInfo" /]
+    </div>
+  [/#if]
+  [#-- Authors List --]
   <div class="authorsList simpleBox row" >
- 
     [#if deliverable.users?has_content]
       [#list deliverable.users as author]
         [@deliverableMacros.authorMacro element=author index=author_index name="deliverable.users"  /]
@@ -255,14 +273,19 @@
       <p class="emptyText text-center "> [@s.text name="project.deliverable.dissemination.notCreators" /]</p>
     [/#if]
   </div>
+  [#-- Add an author --]
   [#if editable]
-  <div class="form-group row">
-    <div class="col-md-3"><input class="form-control input-sm lName" placeholder="Last Name" type="text" /> </div>
-    <div class="col-md-3"><input class="form-control input-sm fName" placeholder="First Name" type="text" /> </div>
-    <div class="col-md-3"><input class="form-control input-sm oId" placeholder="Orcid Id" type="text" /> </div>
-    <div class="col-md-3">
+  <div class="dottedBox authorVisibles" style="display:${isMetadataHide("marlo.authors")?string('none','block')}">
+  <label for="">Add an Author:</label>
+  <div class="form-group">
+    <div class="pull-left" style="width:25%"><input class="form-control input-sm lName"  placeholder="Last Name" type="text" /> </div>
+    <div class="pull-left" style="width:25%"><input class="form-control input-sm fName"  placeholder="First Name" type="text" /> </div>
+    <div class="pull-left" style="width:36%"><input class="form-control input-sm oId"    placeholder="ORCID (e.g. orcid.org/0000-0002-6066...)" type="text" title="ORCID is a nonprofit helping create a world in which all who participate in research, scholarship and innovation are uniquely identified and connected to their contributions and affiliations, across disciplines, borders, and time."/> </div>
+    <div class="pull-right" style="width:14%">
       <div id="" class="addAuthor text-right"><div class="button-blue "><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="project.deliverable.dissemination.addAuthor" /]</div></div>
     </div>
+  </div>
+  <div class="clearfix"></div>
   </div>
   [/#if] 
 </div>
@@ -545,37 +568,51 @@
 [#-- Metadata Macro --]
 [#macro metadataField title="" encodedName="" type="input" list="" require=false]
   [#local metadataID = (deliverable.getMetadataID(encodedName))!-1 /]
+  [#local mElementID = (deliverable.getMElementID(metadataID))!'' /]
   [#local metadataIndex = (deliverable.getMetadataIndex(encodedName))!-1 /]
-  [#local ID = (deliverable.getID(metadataID))!'' /]
   [#local metadataValue = (deliverable.getMetadataValue(metadataID))!'' /]
-  [#local customName = 'deliverable' /]
-  <input type="hidden" name="${customName}.metadataElements[${metadataIndex}].id" value="${ID}" />
-  <input type="hidden" name="${customName}.metadataElements[${metadataIndex}].metadataElement.id" value="${metadataID}" />
-  [#if type == "input"]
-    [@customForm.input name="${customName}.metadataElements[${metadataIndex}].elementValue" required=require value="${metadataValue}" className="${title}Metadata"  type="text" i18nkey="metadata.${title}" help="metadata.${title}.help" editable=editable/]
-  [#elseif type == "textArea"]
-    [@customForm.textArea name="${customName}.metadataElements[${metadataIndex}].elementValue" required=require value="${metadataValue}" className="${title}Metadata" i18nkey="metadata.${title}" help="metadata.${title}.help" editable=editable/]
-  [#elseif type == "select"]
-    [@customForm.select name="${customName}.metadataElements[${metadataIndex}].elementValue" required=require value="${metadataValue}" className="${title}Metadata" i18nkey="metadata.${title}" listName=list  editable=editable /]
-  [/#if]
+  [#local mElementHide = isMetadataHide(encodedName) /]
+  
+  [#local customName = 'deliverable.metadataElements[${metadataIndex}]' /]
+
+  <div class="metadataElement metadataElement-${title?lower_case}">
+    <input type="hidden" name="${customName}.id" value="${mElementID}" />
+    <input type="hidden" class="hide" name="${customName}.hide" value="${mElementHide?string}" />
+    <input type="hidden" name="${customName}.metadataElement.id" value="${metadataID}" />
+    [#if type == "input"]
+      [@customForm.input name="${customName}.elementValue" required=require value="${metadataValue}" className="metadataValue"  type="text" i18nkey="metadata.${title}" help="metadata.${title}.help" readOnly=mElementHide editable=editable/]
+    [#elseif type == "textArea"]
+      [@customForm.textArea name="${customName}.elementValue" required=require value="${metadataValue}" className="metadataValue" i18nkey="metadata.${title}" help="metadata.${title}.help" readOnly=mElementHide editable=editable/]
+    [#elseif type == "select"]
+      [@customForm.select name="${customName}.elementValue" required=require value="${metadataValue}" className="metadataValue" i18nkey="metadata.${title}" listName=list disabled=mElementHide editable=editable /]
+    [#elseif type == "hidden"]
+      <input type="hidden" name="${customName}.elementValue" value="${metadataValue}" class="metadataValue"/>
+    [/#if]
+  </div>
 [/#macro]
+
+[#function isMetadataHide encodedName]
+  [#local metadataID = (deliverable.getMetadataID(encodedName))!-1 /]
+  [#local mElement = (deliverable.getMetadata(metadataID))!{} /]
+  [#return (mElement.hide)!false]
+[/#function]
 
 
 [#macro authorMacro element index name  isTemplate=false]
-  [#assign customName = "${name}[${index}]" /]
-  <div id="author-${isTemplate?string('template',(element.id)!)}" class="author  simpleBox col-md-4"  style="display:${isTemplate?string('none','block')}">
-    [#if editable] [#--&& (isTemplate) --]
-      <div class="removeLink">
-        <div class="removeAuthor removeIcon" title="Remove author/creator"></div>
-      </div>
+  [#local customName = "${name}[${index}]" /]
+  [#local displayVisible = "display:${isMetadataHide('marlo.authors')?string('none','block')};" /]
+  <div id="author-${isTemplate?string('template',(element.id)!)}" class="author simpleBox col-md-4 ${isMetadataHide("marlo.authors")?string('hideAuthor','')}"  style="display:${isTemplate?string('none','block')}">
+    [#if editable]
+      <div class="removeLink authorVisibles" style="${displayVisible}"><div class="removeAuthor removeIcon" title="Remove author/creator"></div></div>
     [/#if]
-    <div class="row">
-      <div class="col-md-12"><span class="lastName">${(element.lastName)!} </span> <span class="firstName">${(element.firstName)!} </span></div>
-    </div>
-    <span><small class="orcidId">[#if element.elementId?has_content][#else]<b>orcid id:</b>[/#if] ${(element.elementId)!'not filled'}</small></span>
+    [#-- Last name & First name --]
+    <span class="lastName">${(element.lastName?replace(',',''))!}</span>, <span class="firstName">${(element.firstName?replace(',',''))!} </span><br />
+    [#-- ORCID --]
+    <span><small class="orcidId"><strong>[#if (element.elementId?has_content)!false]${(element.elementId?replace('https://|http://','','r'))!}[#else]<i class="authorVisibles" style="${displayVisible}">No ORCID</i>[/#if]</strong></small></span>
+    [#-- Hidden inputs --]
     <input type="hidden" name="${customName}.id" class="id" value="${(element.id)!}" />
-    <input type="hidden" name="${customName}.lastName"  class="lastNameInput" value="${(element.lastName)!}" />
-    <input type="hidden" name="${customName}.firstName"  class="firstNameInput" value="${(element.firstName)!}" />
+    <input type="hidden" name="${customName}.lastName"  class="lastNameInput" value="${(element.lastName?replace(',',''))!}" />
+    <input type="hidden" name="${customName}.firstName"  class="firstNameInput" value="${(element.firstName?replace(',',''))!}" />
     <input type="hidden"name="${customName}.elementId"   class="orcidIdInput" value="${(element.elementId)!}" />
     <div class="clearfix"></div>
   </div>

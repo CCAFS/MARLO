@@ -144,6 +144,11 @@ function checkInteroperable() {
       // If other
 
     }
+
+    // If is Synced
+    if($('#fillMetadata input:hidden').val() === "true") {
+      $fairCompliant.addClass('achieved');
+    }
   }
 }
 

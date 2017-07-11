@@ -66,6 +66,9 @@
       </div> 
     </div>
   [/#if]
+  
+  [#-- Draft Message --]
+  [#include "/WEB-INF/global/macros/draftMessage.ftl" /]
 
 [/#if]
 

@@ -40,8 +40,6 @@ public class CountryLocationLevel implements Serializable {
 
   private boolean isList;
 
-  private boolean allCountries;
-
 
   public CountryLocationLevel() {
 
@@ -61,9 +59,7 @@ public class CountryLocationLevel implements Serializable {
     if (obj == null) {
       return false;
     }
-    if (this.getClass() != obj.getClass()) {
-      return false;
-    }
+
     CountryLocationLevel other = (CountryLocationLevel) obj;
     if (id != other.id) {
       return false;
@@ -87,17 +83,11 @@ public class CountryLocationLevel implements Serializable {
     return name;
   }
 
-  public boolean isAllCountries() {
-    return allCountries;
-  }
 
   public boolean isList() {
     return isList;
   }
 
-  public void setAllCountries(boolean allCountries) {
-    this.allCountries = allCountries;
-  }
 
   public void setAllElements(List<LocElement> allElements) {
     this.allElements = allElements;

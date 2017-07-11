@@ -52,5 +52,5 @@ public interface AuditLogManager {
    * @param id the entity id
    */
 
-  public List<Auditlog> listLogs(Class classAudit, long id, String actionName);
+  public List<Auditlog> listLogs(Class<?> classAudit, long id, String actionName);
 }

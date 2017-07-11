@@ -25,7 +25,7 @@ function isChanged() {
       getFormHash: getFormHash(),
       forceChange: forceChange,
       itChange: itChange
-  })
+  });
   return itChange;
 }
 

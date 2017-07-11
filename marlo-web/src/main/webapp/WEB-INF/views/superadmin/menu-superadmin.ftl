@@ -9,12 +9,12 @@
 [#assign standards= [
   { 'slug': 'marloBoard',   'name': 'menu.superadmin.board', 'action': 'marloBoard',   'active': true },
   { 'slug': 'users.types',            'name': 'Partner Types', 'action': 'marloUsers',   'active': false },
-  { 'slug': 'permissions',    'name': 'Locations', 'action': 'marloPermissions',   'active': false }
+  { 'slug': 'customLocations',    'name': 'menu.superadmin.customLocations', 'action': 'customLocations',   'active': true }
 ]/]
 
 [#assign toolItems= [
   { 'slug': 'notifications',    'name': 'menu.superadmin.notifications', 'action': 'notifications',   'active': true },
-  { 'slug': 'users',            'name': 'menu.superadmin.users', 'action': 'guestUser',   'active': true },
+  { 'slug': 'users',            'name': 'menu.superadmin.users', 'action': 'guestUser',   'active': false },
   { 'slug': 'permissions',    'name': 'menu.superadmin.permissions', 'action': 'marloPermissions',   'active': false }
   { 'slug': 'parameters',    'name': 'menu.superadmin.parameters', 'action': 'marloParameters',   'active': true },
   { 'slug': 'institutions',    'name': 'menu.superadmin.institutions', 'action': 'marloInstitutions',   'active': true }

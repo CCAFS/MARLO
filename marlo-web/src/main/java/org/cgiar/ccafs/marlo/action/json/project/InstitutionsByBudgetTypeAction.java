@@ -63,18 +63,31 @@ public class InstitutionsByBudgetTypeAction extends BaseAction {
 
     institutions = new ArrayList<>();
     Map<String, Object> institution;
-    List<Institution> institutionsType = null;
+    List<Institution> institutionsType = new ArrayList<>();
+    List<Institution> allInstitutions = null;
 
 
-    if (budgetTypeID == 1) {
-      institutionsType = institutionManager.findAll().stream()
-        .filter(i -> i.isActive() && i.getHeadquarter() == null && i.getInstitutionType().getId().intValue() == 3)
-        .collect(Collectors.toList());
+    if (budgetTypeID == 4) {
+      allInstitutions = institutionManager.findAll();
+      for (Institution institutionObject : allInstitutions) {
+        // validate if the institutions is PPA
+        if (this.isPPA(institutionObject)) {
+          institutionsType.add(institutionObject);
+        }
+
+      }
+
 
     } else {
-      institutionsType = institutionManager.findAll().stream()
-        .filter(i -> i.isActive() && i.getHeadquarter() == null && i.getInstitutionType().getId().intValue() != 3)
-        .collect(Collectors.toList());
+
+      if (budgetTypeID == 1) {
+        institutionsType = institutionManager.findAll().stream()
+          .filter(i -> i.isActive() && i.getInstitutionType().getId().intValue() == 3).collect(Collectors.toList());
+      } else {
+        institutionsType = institutionManager.findAll().stream()
+          .filter(i -> i.isActive() && i.getInstitutionType().getId().intValue() != 3).collect(Collectors.toList());
+      }
+
 
     }
 

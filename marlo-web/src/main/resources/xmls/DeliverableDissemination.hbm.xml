@@ -46,6 +46,10 @@
         </property>
         <property name="disseminationChannelName" type="string">
             <column name="dissemination_channel_name" length="50" />
+            
+        </property>
+         <property name="synced" type="java.lang.Boolean">
+            <column name="synced" />
         </property>
     </class>
 </hibernate-mapping>

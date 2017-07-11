@@ -30,6 +30,8 @@ import org.cgiar.ccafs.marlo.data.model.ProjectLeverage;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.utils.HistoryComparator;
+import org.cgiar.ccafs.marlo.utils.HistoryDifference;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectLeverageValidator;
 
 import java.io.BufferedReader;
@@ -69,7 +71,7 @@ public class ProjectLeveragesAction extends BaseAction {
   private List<ProjectLeverage> leveragesPreview;
   private CrpManager crpManager;
   private ProjectLeverageValidator projectLeverageValidator;
-
+  private HistoryComparator historyComparator;
   private Crp loggedCrp;
 
 
@@ -80,7 +82,8 @@ public class ProjectLeveragesAction extends BaseAction {
   @Inject
   public ProjectLeveragesAction(APConfig config, ProjectManager projectManager, InstitutionManager institutionManager,
     IpProgramManager crpProgrammManager, AuditLogManager auditLogManager, CrpManager crpManager,
-    ProjectLeverageManager projectLeverageManager, ProjectLeverageValidator projectLeverageValidator) {
+    ProjectLeverageManager projectLeverageManager, ProjectLeverageValidator projectLeverageValidator,
+    HistoryComparator historyComparator) {
     super(config);
     this.projectManager = projectManager;
     this.institutionManager = institutionManager;
@@ -88,6 +91,7 @@ public class ProjectLeveragesAction extends BaseAction {
     this.projectLeverageManager = projectLeverageManager;
     this.crpManager = crpManager;
     this.auditLogManager = auditLogManager;
+    this.historyComparator = historyComparator;
     this.projectLeverageValidator = projectLeverageValidator;
   }
 
@@ -244,6 +248,22 @@ public class ProjectLeveragesAction extends BaseAction {
 
       if (history != null) {
         project = history;
+
+        List<HistoryDifference> differences = new ArrayList<>();
+        Map<String, String> specialList = new HashMap<>();
+        int i = 0;
+        project
+          .setLeverages(project.getProjectLeverages().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        for (ProjectLeverage leverage : project.getLeverages()) {
+          int[] index = new int[1];
+          index[0] = i;
+          differences.addAll(historyComparator.getDifferencesList(leverage, transaction, specialList,
+            "project.leverages[" + i + "]", "project", 1));
+          i++;
+        }
+
+        this.setDifferences(differences);
+
       } else {
         this.transaction = null;
 
@@ -304,8 +324,8 @@ public class ProjectLeveragesAction extends BaseAction {
 
     // Getting the list of all institutions
     this.allInstitutions = new HashMap<>();
-    List<Institution> allInstitutions = institutionManager.findAll().stream()
-      .filter(c -> c.isActive() && c.getHeadquarter() == null).collect(Collectors.toList());
+    List<Institution> allInstitutions =
+      institutionManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
     for (Institution institution : allInstitutions) {
       this.allInstitutions.put(String.valueOf(institution.getId()), institution.getComposedName());
     }

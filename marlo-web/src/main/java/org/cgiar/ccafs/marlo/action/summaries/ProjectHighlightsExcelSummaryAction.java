@@ -84,6 +84,38 @@ public class ProjectHighlightsExcelSummaryAction extends BaseAction implements S
     this.projectHighLightManager = projectHighLightManager;
   }
 
+  /**
+   * Method to add i8n parameters to masterReport in Pentaho
+   * 
+   * @param masterReport
+   * @return masterReport with i8n parameters added
+   */
+  private MasterReport addi8nParameters(MasterReport masterReport) {
+    masterReport.getParameterValues().put("i8nMainTitle", this.getText("projectHighlights.title"));
+    masterReport.getParameterValues().put("i8nProjectHighlightsId",
+      this.getText("projectHighlights.projectHighlightsId"));
+    masterReport.getParameterValues().put("i8nTitle", this.getText("highlight.title"));
+    masterReport.getParameterValues().put("i8nAuthor", this.getText("highlight.author"));
+    masterReport.getParameterValues().put("i8nSubject", this.getText("highlight.subject"));
+    masterReport.getParameterValues().put("i8nPublisher", this.getText("highlight.publisher"));
+    masterReport.getParameterValues().put("i8nYear", this.getText("highlight.year"));
+    masterReport.getParameterValues().put("i8nTypes", this.getText("highlight.types"));
+    masterReport.getParameterValues().put("i8nIsGlobal", this.getText("highlight.isGlobal.readText"));
+    masterReport.getParameterValues().put("i8nStartDate", this.getText("highlight.startDate"));
+    masterReport.getParameterValues().put("i8nEndDate", this.getText("highlight.endDate"));
+    masterReport.getParameterValues().put("i8nImage", this.getText("highlight.image.readText"));
+    masterReport.getParameterValues().put("i8nKeywords", this.getText("highlight.keywords"));
+    masterReport.getParameterValues().put("i8nCountries", this.getText("highlight.countries"));
+    masterReport.getParameterValues().put("i8nDescripition", this.getText("highlight.descripition.readText"));
+    masterReport.getParameterValues().put("i8nObjectives", this.getText("highlight.objectives.readText"));
+    masterReport.getParameterValues().put("i8nResults", this.getText("highlight.results.readText"));
+    masterReport.getParameterValues().put("i8nPartners", this.getText("highlight.partners.readText"));
+    masterReport.getParameterValues().put("i8nLinks", this.getText("highlight.links.readText"));
+    masterReport.getParameterValues().put("i8nProjectId", this.getText("searchTerms.projectId"));
+
+    return masterReport;
+  }
+
   @Override
   public String execute() throws Exception {
     ClassicEngineBoot.getInstance().start();
@@ -110,6 +142,8 @@ public class ProjectHighlightsExcelSummaryAction extends BaseAction implements S
       TypedTableModel model = this.getMasterTableModel(center, date, String.valueOf(year));
       sdf.addTable(masterQueryName, model);
       masterReport.setDataFactory(cdf);
+      // Set i8n for pentaho
+      masterReport = this.addi8nParameters(masterReport);
       // Get details band
       ItemBand masteritemBand = masterReport.getItemBand();
       // Create new empty subreport hash map
@@ -294,7 +328,7 @@ public class ProjectHighlightsExcelSummaryAction extends BaseAction implements S
       .sorted((h1, h2) -> Long.compare(h1.getId(), h2.getId()))
       .filter(ph -> ph.isActive() && ph.getProject() != null && ph.getYear() == year
         && ph.getProject().getCrp().getId().longValue() == loggedCrp.getId().longValue() && ph.getProject().isActive()
-        && ph.getProject().getReporting())
+        && ph.getProject().getReporting() && ph.getProject().getId() == 2)
       .collect(Collectors.toList())) {
       String title = null, author = null, subject = null, publisher = null, highlightsTypes = "",
         highlightsIsGlobal = null, startDate = null, endDate = null, keywords = null, countries = "",

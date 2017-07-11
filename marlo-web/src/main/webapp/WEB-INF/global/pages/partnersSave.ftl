@@ -30,37 +30,32 @@
       [@s.form action="${crpSession}/partnerSave" cssClass="pure-form "]
       <div class="clearfix"></div>
       <hr  />
-      <div class="col-md-12">
-        <div class="col-xs-12 form-group">
-          [@customForm.yesNoInput name="isBranch" label="Is this institution a national/regional office or branch of an institution?"  inverse=false value="" cssClass="text-left " value="false" /]
-        </div>
-        <div class="selectHeadquater panel tertiary col-xs-12"  style="display:none">
-            <div class="panel-body">
-              [@customForm.select name="activityPartner.partner.headquarter.id" label="" required=true  i18nkey="Select institution headquarter" listName="institutions" keyFieldName="id"  displayFieldName="composedName" className="" value="" /]
-            </div>
-          </div>
-          [#-- Partner Acronym --]
-        <div id="partnerAcronym" class="col-xs-6 form-group">
+      <div class="col-md-12"> 
+        [#-- Partner Acronym --]
+        <div id="partnerAcronym" class="col-xs-3 form-group">
           [@customForm.input name="activityPartner.partner.acronym"  type="text" i18nkey="Acronym" /]
         </div>
         [#-- Partner Name --]
-        <div id="partnerName" class="col-xs-6 form-group">
+        <div id="partnerName" class="col-xs-9 form-group">
           [@customForm.input name="activityPartner.partner.name" required=true className="col-md-6" type="text" i18nkey="Name" /]
         </div> 
         
         [#-- Partner types list --]
         <div id="partnerTypes" class="col-xs-6 form-group">
-          [@customForm.select name="activityPartner.partner.institutionType.id" required=true label="" i18nkey="Type" listName="institutionTypesList" keyFieldName="id"  displayFieldName="name" /]
+          [@customForm.select name="activityPartner.partner.institutionType.id" className="institutionTypes" required=true label="" i18nkey="Type" listName="institutionTypesList" keyFieldName="id"  displayFieldName="name" /]
+          <div style="display:none">
+            [#list institutionTypesList as type]
+              <div id="institutionType-${type.id}">
+                <strong>${(type.acronym)!} ${(type.name)!'No Name'}</strong><br />
+                <i>${(type.description)!'No description'}</i>
+              </div>
+            [/#list]
+          </div>
         </div>
         
         [#-- Countries list --]
         <div id="partnerCountry" class="col-xs-6 form-group">
           [@customForm.select name="activityPartner.partner.locElement.id" required=true label="" i18nkey="Country" listName="countriesList" keyFieldName="id"  displayFieldName="name" /]        
-        </div>
-        
-        [#-- City of location --]
-        <div id="partnerCity" class="col-xs-6 form-group">
-          [@customForm.input name="activityPartner.partner.city" required=true type="text" i18nkey="City" /]
         </div>
         
         [#-- Web page link --]
@@ -87,7 +82,7 @@
           <h1 class="text-center brand-success"><span class="glyphicon glyphicon-ok-sign"></span></h1>
           <p  class="text-center col-md-12"> 
             The new partner request was sent succesfully. <br />
-            You will recive a confirmation message as soon as it has been processed.
+            You will receive a confirmation message as soon as it has been processed.
           </p>
           <br />
           <br />

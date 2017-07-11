@@ -71,8 +71,8 @@
                 <div class="fairCompliant mini reusable [#attempt][#if action.isR(deliverable.id)??][#if action.isR(deliverable.id)] achieved [#else] not-achieved [/#if][/#if][#recover][/#attempt]"><div class="sign">R</div></div> 
               </div>
             </div>
-          </div>
-             
+          </div> 
+          
            <input id="indexTab" name="indexTab" type="hidden" value="${(indexTab)!0}">
           <div class="deliverableTabs">
             [#--  Deliverable Menu  --] 
@@ -168,8 +168,15 @@
 [#-- Remove deliverable files modal  template --]
 <div id="removeDeliverableFiles" style="display:none" title="Modal title"></div> 
 
-[#-- deliverable Partner Template --]
-[@deliverableList.deliverablePartner dp={} dp_name="" template=true dp_index=0 editable=editable /]
+[#-- Deliverable Partner Template --]
+[@deliverableList.deliverablePartnerOther dp=[{}] dp_name="" template=true dp_index=0 editable=editable /]
+
+[#-- Deliverable person template --]
+[@deliverableList.deliverablePerson element={} name="deliverable.otherPartners" index=-1 checked=false isTemplate=true/]
+
+[#-- Deliverable person template --]
+[@deliverableList.deliverablePerson element={} name="deliverable.responsiblePartner" index=-1 isResponsable=true checked=false isTemplate=true/]
+
 [@deliverableMacros.authorMacro element={} index=-1 name="deliverable.users"  isTemplate=true /]
 [@deliverableMacros.flagshipMacro element={} index=-1 name="deliverable.crps"  isTemplate=true /]
 

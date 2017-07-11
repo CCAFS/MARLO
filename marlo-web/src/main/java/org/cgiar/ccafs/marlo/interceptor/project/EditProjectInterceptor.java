@@ -18,8 +18,10 @@ package org.cgiar.ccafs.marlo.interceptor.project;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -29,6 +31,7 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import com.opensymphony.xwork2.ActionInvocation;
@@ -49,12 +52,14 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
   private CrpManager crpManager;
   private ProjectManager projectManager;
-
+  private Phase phase;
+  private PhaseManager phaseManager;
 
   @Inject
-  public EditProjectInterceptor(ProjectManager projectManager, CrpManager crpManager) {
+  public EditProjectInterceptor(ProjectManager projectManager, CrpManager crpManager, PhaseManager phaseManager) {
     this.projectManager = projectManager;
     this.crpManager = crpManager;
+    this.phaseManager = phaseManager;
   }
 
   @Override
@@ -67,6 +72,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
       this.setPermissionParameters(invocation);
       return invocation.invoke();
     } catch (Exception e) {
+      e.printStackTrace();
       return BaseAction.NOT_FOUND;
     }
   }
@@ -79,6 +85,8 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
     User user = (User) session.get(APConstants.SESSION_USER);
     baseAction.setSession(session);
+    phase = phaseManager.findCycle(baseAction.getCurrentCycle(), baseAction.getCurrentCycleYear(),
+      loggedCrp.getId().longValue());
 
     boolean canEdit = false;
     boolean hasPermissionToEdit = false;
@@ -99,7 +107,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
       String params[] =
         {crp.getAcronym(), project.getId() + "", baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "")};
 
-      if (baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin()) {
+      if (baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin()) {
         if (!baseAction.isSubmit(projectId)) {
 
           canSwitchProject = true;
@@ -126,6 +134,12 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
           && !baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
           canEdit = false;
         }
+        if (phase.getProjectPhases().stream()
+          .filter(c -> c.isActive() && c.getProject().getId().longValue() == projectId).collect(Collectors.toList())
+          .isEmpty()) {
+          canEdit = false;
+        }
+
 
         if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
           canSwitchProject = true;
@@ -136,12 +150,12 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
         }
 
+
         if (baseAction.isCrpClosed()) {
           if (!(baseAction.hasSpecificities(APConstants.CRP_PMU) && baseAction.isPMU())) {
             canEdit = false;
           }
         }
-
 
 
       }
@@ -161,7 +175,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
       // Check the permission if user want to edit or save the form
       if (editParameter || parameters.get("save") != null) {
-        hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin())) ? true
+        hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin())) ? true
           : baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__PERMISSION, params));
       }
 

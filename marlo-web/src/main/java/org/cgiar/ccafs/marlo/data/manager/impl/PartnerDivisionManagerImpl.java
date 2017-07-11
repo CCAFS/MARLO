@@ -15,9 +15,9 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
-import org.cgiar.ccafs.marlo.data.dao.CrpParameterDAO;
-import org.cgiar.ccafs.marlo.data.manager.CrpParameterManager;
-import org.cgiar.ccafs.marlo.data.model.CrpParameter;
+import org.cgiar.ccafs.marlo.data.dao.PartnerDivisionDAO;
+import org.cgiar.ccafs.marlo.data.manager.PartnerDivisionManager;
+import org.cgiar.ccafs.marlo.data.model.PartnerDivision;
 
 import java.util.List;
 
@@ -26,49 +26,49 @@ import com.google.inject.Inject;
 /**
  * @author Christian Garcia
  */
-public class CrpParameterManagerImpl implements CrpParameterManager {
+public class PartnerDivisionManagerImpl implements PartnerDivisionManager {
 
 
-  private CrpParameterDAO crpParameterDAO;
+  private PartnerDivisionDAO partnerDivisionDAO;
   // Managers
 
 
   @Inject
-  public CrpParameterManagerImpl(CrpParameterDAO crpParameterDAO) {
-    this.crpParameterDAO = crpParameterDAO;
+  public PartnerDivisionManagerImpl(PartnerDivisionDAO partnerDivisionDAO) {
+    this.partnerDivisionDAO = partnerDivisionDAO;
 
 
   }
 
   @Override
-  public boolean deleteCrpParameter(long crpParameterId) {
+  public boolean deletePartnerDivision(long partnerDivisionId) {
 
-    return crpParameterDAO.deleteCrpParameter(crpParameterId);
+    return partnerDivisionDAO.deletePartnerDivision(partnerDivisionId);
   }
 
   @Override
-  public boolean existCrpParameter(long crpParameterID) {
+  public boolean existPartnerDivision(long partnerDivisionID) {
 
-    return crpParameterDAO.existCrpParameter(crpParameterID);
+    return partnerDivisionDAO.existPartnerDivision(partnerDivisionID);
   }
 
   @Override
-  public List<CrpParameter> findAll() {
+  public List<PartnerDivision> findAll() {
 
-    return crpParameterDAO.findAll();
+    return partnerDivisionDAO.findAll();
 
   }
 
   @Override
-  public CrpParameter getCrpParameterById(long crpParameterID) {
+  public PartnerDivision getPartnerDivisionById(long partnerDivisionID) {
 
-    return crpParameterDAO.find(crpParameterID);
+    return partnerDivisionDAO.find(partnerDivisionID);
   }
 
   @Override
-  public long saveCrpParameter(CrpParameter crpParameter) {
+  public long savePartnerDivision(PartnerDivision partnerDivision) {
 
-    return crpParameterDAO.save(crpParameter);
+    return partnerDivisionDAO.save(partnerDivision);
   }
 
 

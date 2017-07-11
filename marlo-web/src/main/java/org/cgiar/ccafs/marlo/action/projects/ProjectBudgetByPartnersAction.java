@@ -38,6 +38,8 @@ import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.utils.HistoryComparator;
+import org.cgiar.ccafs.marlo.utils.HistoryDifference;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectBudgetsValidator;
 
 import java.io.BufferedReader;
@@ -68,6 +70,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
 
   private BudgetTypeManager budgetTypeManager;
+  private HistoryComparator historyComparator;
 
 
   private ProjectManager projectManager;
@@ -105,7 +108,8 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   public ProjectBudgetByPartnersAction(APConfig config, InstitutionManager institutionManager,
     ProjectManager projectManager, CrpManager crpManager, ProjectBudgetManager projectBudgetManager,
     AuditLogManager auditLogManager, BudgetTypeManager budgetTypeManager, FundingSourceManager fundingSourceManager,
-    LiaisonInstitutionManager liaisonInstitutionManager, ProjectBudgetsValidator projectBudgetsValidator) {
+    HistoryComparator historyComparator, LiaisonInstitutionManager liaisonInstitutionManager,
+    ProjectBudgetsValidator projectBudgetsValidator) {
     super(config);
 
     this.institutionManager = institutionManager;
@@ -117,6 +121,8 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     this.fundingSourceManager = fundingSourceManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.projectBudgetsValidator = projectBudgetsValidator;
+    this.historyComparator = historyComparator;
+
   }
 
   public boolean canAddFunding(long institutionID) {
@@ -364,13 +370,14 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return status;
   }
 
-  public String getTotalAmount(long institutionId, int year, long budgetType) {
-    return projectBudgetManager.amountByBudgetType(institutionId, year, budgetType, projectID);
+  public String getTotalAmount(long institutionId, int year, long budgetType, Integer coFinancing) {
+    return projectBudgetManager.amountByBudgetType(institutionId, year, budgetType, projectID, coFinancing);
   }
 
-  public double getTotalGender(long institutionId, int year, long budgetType) {
+  public double getTotalGender(long institutionId, int year, long budgetType, Integer coFinancing) {
 
-    List<ProjectBudget> budgets = projectBudgetManager.getByParameters(institutionId, year, budgetType, projectID);
+    List<ProjectBudget> budgets =
+      projectBudgetManager.getByParameters(institutionId, year, budgetType, projectID, coFinancing);
 
     double totalGender = 0;
     if (budgets != null) {
@@ -386,13 +393,13 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   }
 
 
-  public double getTotalGenderPer(long institutionId, int year, long budgetType) {
+  public double getTotalGenderPer(long institutionId, int year, long budgetType, Integer coFinancing) {
 
-    String totalAmount = this.getTotalAmount(institutionId, year, budgetType);
+    String totalAmount = this.getTotalAmount(institutionId, year, budgetType, coFinancing);
 
     double dTotalAmount = Double.parseDouble(totalAmount);
 
-    double totalGender = this.getTotalGender(institutionId, year, budgetType);
+    double totalGender = this.getTotalGender(institutionId, year, budgetType, coFinancing);
 
     if (dTotalAmount != 0) {
       return (totalGender * 100) / dTotalAmount;
@@ -513,6 +520,22 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
       if (history != null) {
         project = history;
+
+        List<HistoryDifference> differences = new ArrayList<>();
+        Map<String, String> specialList = new HashMap<>();
+        int i = 0;
+        project.setBudgets(project.getProjectBudgets().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        for (ProjectBudget budget : project.getBudgets()) {
+          int[] index = new int[1];
+          index[0] = i;
+          differences.addAll(historyComparator.getDifferencesList(budget, transaction, specialList,
+            "project.budgets[" + i + "]", "project", 1));
+          i++;
+        }
+
+        this.setDifferences(differences);
+
+
       } else {
         this.transaction = null;
 
