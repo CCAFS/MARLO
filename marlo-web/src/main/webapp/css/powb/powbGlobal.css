@@ -30,3 +30,5 @@ table {
     border: 1px solid #e6e6e6;
     font-size: 0.95em;
 }
+
+.outcomeStatement {float: left;}

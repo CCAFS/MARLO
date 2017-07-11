@@ -38,8 +38,45 @@
         [#-- Title --]
         <h3 class="headTitle">[@s.text name="powbExpectedMilestones.title" /]</h3>
         <div class="borderBox">
-        
-        
+          <h5 class="sectionSubTitle">[@s.text name="powbExpectedMilestones.flagshipOutcomes"][@s.param]${liaisonInstitution.acronym}[/@s.param][/@s.text]</h5>
+          [#list 1..3 as outcome]
+            <div class="form-group outcomeBlock simpleBox">
+              <div class="form-group grayBox outcomeStatement">
+                [#-- Popup button --]
+                <button type="button" class="btn btn-default btn-xs pull-right outcomeProjects-" data-toggle="modal" data-target="#outcomeProjectsModal">
+                  <span class="glyphicon glyphicon-pushpin"></span> Contributions to the Outcome
+                </button>
+                [#-- Outcome Statement --]
+                <strong>Outcome 2022:</strong> # of policy decisions taken (in part) based on engagement and information dissemination by CCAFS
+              </div>
+              
+              <div class="form-group">
+                [@customForm.textArea name="liaisonInstitution.powb.expAnualMilestones" help="liaisonInstitution.powb.expAnualMilestones.help" required=true className="limitWords-100" editable=editable /]
+              </div>
+              
+              [#-- SRF Sub-IDO --]
+              <div class="form-group">
+                <h5 class="sectionSubTitle">[@s.text name="powbExpectedMilestones.srfSubIdo" /]</h5>
+                <table class="">
+                  <thead>
+                    <tr>
+                      <th>SRF Sub-IDO</th>
+                      <th>2017 Target</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    [#list 1..2 as country]
+                    <tr>
+                      <td>Increased capacity for innovation in partner development organizations and in poor and vulnerable communities</td>
+                      <td>[@customForm.input name="" showTitle=false editable=editable /]</td> 
+                    </tr>
+                    [/#list]
+                  </tbody>
+                </table>
+              </div>
+              
+            </div>
+          [/#list]  
         </div>
         
         [#-- Section Buttons & hidden inputs--]
