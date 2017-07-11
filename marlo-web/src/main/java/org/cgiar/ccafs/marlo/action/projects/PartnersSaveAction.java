@@ -67,14 +67,14 @@ public class PartnersSaveAction extends BaseAction {
   private List<LocElement> countriesList;
   private List<InstitutionType> institutionTypesList;
   private List<Institution> institutions;
+  private long locationId;
 
   // private ActivityPartner activityPartner;
   private boolean messageSent;
 
 
-  private String partnerWebPage;
-
   private int projectID;
+
 
   private int activityID;
 
@@ -103,7 +103,6 @@ public class PartnersSaveAction extends BaseAction {
     return countriesList;
   }
 
-
   public List<Institution> getInstitutions() {
     return institutions;
   }
@@ -112,13 +111,15 @@ public class PartnersSaveAction extends BaseAction {
     return institutionTypesList;
   }
 
-  public String getPartnerWebPage() {
-    return partnerWebPage;
+
+  public long getLocationId() {
+    return locationId;
   }
 
   public int getProjectID() {
     return projectID;
   }
+
 
   public boolean isMessageSent() {
     return messageSent;
@@ -145,34 +146,20 @@ public class PartnersSaveAction extends BaseAction {
     countriesList.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
   }
 
-
   @Override
   public String save() {
-    String institutionName, institutionAcronym, institutionTypeName, countryId, countryName, city, headQuaterName,
-      website;
+    String institutionName, institutionAcronym, institutionTypeName, countryId, countryName, partnerWebPage;
     String subject;
     StringBuilder message = new StringBuilder();
 
     long partnerTypeId;
-    long headQuater = -1;
     // Take the values to create the message
     institutionName = activityPartner.getPartner().getName();
     institutionAcronym = activityPartner.getPartner().getAcronym();
     partnerTypeId = activityPartner.getPartner().getInstitutionType().getId();
-    countryId = String.valueOf(activityPartner.getPartner().getLocElement().getId());
-    // city = activityPartner.getPartner().getCity();
-    website = activityPartner.getPartner().getWebsiteLink();
-    headQuaterName = "";
-    /*
-     * try {
-     * headQuater = activityPartner.getPartner().getHeadquarter().getId();
-     * headQuaterName = institutionsManager.getInstitutionById(headQuater).getComposedName();
-     * } catch (Exception e) {
-     * headQuater = -1;
-     * }
-     * // Get the country name
-     * countryName = locationManager.getLocElementById(Long.parseLong(countryId)).getName();
-     */
+    countryId = String.valueOf(locationId);
+    partnerWebPage = activityPartner.getPartner().getWebsiteLink();
+
     // Get the partner type name
     countryName = locationManager.getLocElementById(Long.parseLong(countryId)).getName();
 
@@ -194,16 +181,13 @@ public class PartnersSaveAction extends BaseAction {
 
     partnerRequest.setPartnerName(institutionName);
     partnerRequest.setAcronym(institutionAcronym);
-    partnerRequest.setCity(city);
+
     partnerRequest.setLocElement(locationManager.getLocElementById(Long.parseLong(countryId)));
     partnerRequest.setInstitutionType(institutionManager.getInstitutionTypeById(partnerTypeId));
 
-    if (this.partnerWebPage != null && !this.partnerWebPage.isEmpty()) {
-      partnerRequest.setWebPage(partnerWebPage);
-    }
 
-    if (headQuater != -1) {
-      partnerRequest.setInstitution(institutionsManager.getInstitutionById(headQuater));
+    if (partnerWebPage != null && !partnerWebPage.isEmpty()) {
+      partnerRequest.setWebPage(partnerWebPage);
     }
 
     partnerRequestManager.savePartnerRequest(partnerRequest);
@@ -226,22 +210,12 @@ public class PartnersSaveAction extends BaseAction {
     message.append(institutionTypeName);
     message.append(" </br>");
 
-    if (headQuater != -1) {
-      message.append("HeadQuater: ");
-      message.append(headQuaterName);
-      message.append(" </br>");
-    }
-
-    // message.append("City: ");
-    // message.append(city);
-    // message.append(" </br>");
-
     message.append("Country: ");
     message.append(countryName);
     message.append(" </br>");
 
     // Is there a web page?
-    if (this.partnerWebPage != null && !this.partnerWebPage.isEmpty()) {
+    if (partnerWebPage != null && !partnerWebPage.isEmpty()) {
       message.append("Web Page: ");
       message.append(partnerWebPage);
       message.append(" </br>");
@@ -286,22 +260,24 @@ public class PartnersSaveAction extends BaseAction {
     this.activityID = activityID;
   }
 
+
   public void setActivityPartner(ActivityPartner activityPartner) {
     this.activityPartner = activityPartner;
   }
 
-
   public void setInstitutions(List<Institution> institutions) {
     this.institutions = institutions;
+  }
+
+
+  public void setLocationId(long locationId) {
+    this.locationId = locationId;
   }
 
   public void setMessageSent(boolean messageSent) {
     this.messageSent = messageSent;
   }
 
-  public void setPartnerWebPage(String partnerWebPage) {
-    this.partnerWebPage = partnerWebPage;
-  }
 
   public void setProjectID(int projectID) {
     this.projectID = projectID;

@@ -27,9 +27,6 @@ public class PartnerRequest implements java.io.Serializable {
   private User createdBy;
 
   @Expose
-  private Institution institution;
-
-  @Expose
   private InstitutionType institutionType;
 
   @Expose
@@ -38,8 +35,6 @@ public class PartnerRequest implements java.io.Serializable {
   @Expose
   private String acronym;
 
-  @Expose
-  private String city;
 
   @Expose
   private String webPage;
@@ -63,18 +58,15 @@ public class PartnerRequest implements java.io.Serializable {
     this.active = active;
   }
 
-
-  public PartnerRequest(LocElement locElement, User modifiedBy, User createdBy, Institution institution,
-    InstitutionType institutionType, String partnerName, String acronym, String city, String webPage, Boolean acepted,
-    boolean active, String modificationJustification) {
+  public PartnerRequest(LocElement locElement, User modifiedBy, User createdBy, InstitutionType institutionType,
+    String partnerName, String acronym, String webPage, Boolean acepted, boolean active,
+    String modificationJustification) {
     this.locElement = locElement;
     this.modifiedBy = modifiedBy;
     this.createdBy = createdBy;
-    this.institution = institution;
     this.institutionType = institutionType;
     this.partnerName = partnerName;
     this.acronym = acronym;
-    this.city = city;
     this.webPage = webPage;
     this.acepted = acepted;
     this.active = active;
@@ -96,14 +88,8 @@ public class PartnerRequest implements java.io.Serializable {
     return activeSince;
   }
 
-
-  public String getCity() {
-    return city;
-  }
-
-
   public String getCountryInfo() {
-    return this.city + " - " + this.locElement.getName();
+    return this.locElement.getName();
   }
 
 
@@ -117,15 +103,9 @@ public class PartnerRequest implements java.io.Serializable {
   }
 
 
-  public Institution getInstitution() {
-    return institution;
-  }
-
-
   public InstitutionType getInstitutionType() {
     return institutionType;
   }
-
 
   public LocElement getLocElement() {
     return locElement;
@@ -145,6 +125,7 @@ public class PartnerRequest implements java.io.Serializable {
     return this.acronym + " - " + this.partnerName;
   }
 
+
   public String getPartnerName() {
     return partnerName;
   }
@@ -156,6 +137,7 @@ public class PartnerRequest implements java.io.Serializable {
   public boolean isActive() {
     return active;
   }
+
 
   public void setAcepted(Boolean acepted) {
     this.acepted = acepted;
@@ -173,20 +155,12 @@ public class PartnerRequest implements java.io.Serializable {
     this.activeSince = activeSince;
   }
 
-  public void setCity(String city) {
-    this.city = city;
-  }
-
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
 
   public void setId(Long id) {
     this.id = id;
-  }
-
-  public void setInstitution(Institution institution) {
-    this.institution = institution;
   }
 
   public void setInstitutionType(InstitutionType institutionType) {

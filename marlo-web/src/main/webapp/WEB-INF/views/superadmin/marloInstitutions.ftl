@@ -52,7 +52,6 @@
       <tr class="subHeader">
         <th id="partnerName">[@s.text name="Partner Name" /]</th>
         <th id="partnerType" >[@s.text name="Type" /]</th>
-        <th id="isHqPartner">[@s.text name="Is HQ?" /]</th>
         <th id="partnerCountry">[@s.text name="Country" /]</th>
         <th id="requestedBy" >[@s.text name="Requested By" /]</th>
         <th id="action">[@s.text name="Action" /]</th>
@@ -70,14 +69,6 @@
           [#-- partner type --]
           <td class="left">
             ${partner.institutionType.name}
-          </td>
-          [#-- is HQ? --]
-          <td class="text-center">
-            [#if partner.institution?has_content]
-              <span class="icon-20 icon-check" title="${partner.institution.name}"></span>
-            [#else]
-              <span class="icon-20 icon-uncheck" title=""></span> 
-            [/#if]
           </td>
           [#-- Country --]
           <td class="text-center">

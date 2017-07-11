@@ -55,12 +55,12 @@
         
         [#-- Countries list --]
         <div id="partnerCountry" class="col-xs-6 form-group">
-          [@customForm.select name="activityPartner.partner.locElement.id" required=true label="" i18nkey="Country" listName="countriesList" keyFieldName="id"  displayFieldName="name" /]        
+          [@customForm.select name="locationId" required=true label="" i18nkey="Country" listName="countriesList" keyFieldName="id"  displayFieldName="name" /]        
         </div>
         
         [#-- Web page link --]
         <div id="partnerPage" class="col-xs-12 form-group">
-          [@customForm.input name="partnerWebPage" type="text"  i18nkey="If you know the partner website please paste the link below" value="http://" /]
+          [@customForm.input name="activityPartner.partner.websiteLink" type="text"  i18nkey="If you know the partner website please paste the link below" value="http://" /]
         </div>
         
         [#-- Hidden input with message of success --]
