@@ -420,6 +420,7 @@ public class ClusterActivitiesAction extends BaseAction {
     message.append(this.getText("email.cluster.assigned", new String[] {crpClusterPreview.getIdentifier(),
       crpClusterPreview.getDescription(), loggedCrp.getName(), this.getText("email.cluster.responsabilities")}));
     message.append(this.getText("email.support", new String[] {crpAdmins}));
+    message.append(this.getText("email.getStarted"));
     message.append(this.getText("email.bye"));
 
     sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);

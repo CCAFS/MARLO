@@ -110,6 +110,116 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
     this.deliverableManager = deliverableManager;
   }
 
+  /**
+   * Method to add i8n parameters to masterReport in Pentaho
+   * 
+   * @param masterReport
+   * @return masterReport with i8n parameters added
+   */
+  private MasterReport addi8nParameters(MasterReport masterReport) {
+    /*
+     * Reporting
+     * Deliverables
+     */
+    masterReport.getParameterValues().put("i8nProjectID", this.getText("searchTerms.projectId"));
+    masterReport.getParameterValues().put("i8nProjectTitle", this.getText("project.title.readText"));
+    masterReport.getParameterValues().put("i8nProjectFlagships", this.getText("project.Flagships"));
+    masterReport.getParameterValues().put("i8nProjectRegions", this.getText("project.Regions"));
+    masterReport.getParameterValues().put("i8nDeliverableId", this.getText("searchTerms.deliverableId"));
+    masterReport.getParameterValues().put("i8nDeliverableTitle",
+      this.getText("project.deliverable.generalInformation.title"));
+    masterReport.getParameterValues().put("i8nMainInfo",
+      this.getText("project.deliverable.generalInformation.titleTab"));
+    masterReport.getParameterValues().put("i8nType", this.getText("project.deliverable.generalInformation.type"));
+    masterReport.getParameterValues().put("i8nSubType", this.getText("project.deliverable.generalInformation.subType"));
+    masterReport.getParameterValues().put("i8nStatus", this.getText("project.deliverable.generalInformation.status"));
+    masterReport.getParameterValues().put("i8nYearExpectedCompletion",
+      this.getText("project.deliverable.generalInformation.year"));
+    masterReport.getParameterValues().put("i8nNewExpectedYear", this.getText("deliverable.newExpectedYear"));
+    masterReport.getParameterValues().put("i8nResponsible", this.getText("leadPartner.responsible"));
+    masterReport.getParameterValues().put("i8nCrossCuttingDimensions",
+      this.getText("deliverable.crossCuttingDimensions.readText"));
+    masterReport.getParameterValues().put("i8nAlreadyDisseminatedQuestion",
+      this.getText("project.deliverable.dissemination.alreadyDisseminatedQuestion"));
+    masterReport.getParameterValues().put("i8nDisseminationChanel",
+      this.getText("project.deliverable.dissemination.v.DisseminationChanel"));
+    masterReport.getParameterValues().put("i8nDiseminationTitle", this.getText("deliverable.diseminationTitle"));
+    masterReport.getParameterValues().put("i8nDisseminationUrl",
+      this.getText("project.deliverable.dissemination.disseminationUrl"));
+    masterReport.getParameterValues().put("i8nIsOpenAccess",
+      this.getText("project.deliverable.dissemination.v.isOpenAccess"));
+    masterReport.getParameterValues().put("i8nOpenAccessRestriction",
+      this.getText("project.deliverable.dissemination.v.openAccessRestriction"));
+    masterReport.getParameterValues().put("i8nALicense", this.getText("project.deliverable.v.ALicense"));
+    masterReport.getParameterValues().put("i8nMetadataSubtitle",
+      this.getText("project.deliverable.dissemination.metadataSubtitle"));
+    masterReport.getParameterValues().put("i8nPublicationAllowModifications",
+      this.getText("publication.publicationAllowModifications"));
+    masterReport.getParameterValues().put("i8nMetadataTitle", this.getText("metadata.title"));
+    masterReport.getParameterValues().put("i8nMetadataDescription", this.getText("metadata.description.readText"));
+    masterReport.getParameterValues().put("i8nMetadataDate", this.getText("metadata.date"));
+    masterReport.getParameterValues().put("i8nLanguage", this.getText("metadata.language"));
+    masterReport.getParameterValues().put("i8nCountry", this.getText("metadata.country"));
+    masterReport.getParameterValues().put("i8nKeywords", this.getText("metadata.keywords.help"));
+    masterReport.getParameterValues().put("i8nCitation", this.getText("metadata.citation.readText"));
+    masterReport.getParameterValues().put("i8nHandle", this.getText("metadata.handle"));
+    masterReport.getParameterValues().put("i8nDoi", this.getText("metadata.doi"));
+    masterReport.getParameterValues().put("i8nPublicationTitle",
+      this.getText("project.deliverable.dissemination.publicationTitle"));
+    masterReport.getParameterValues().put("i8nCreator", this.getText("metadata.creator"));
+    masterReport.getParameterValues().put("i8nVolume", this.getText("project.deliverable.dissemination.volume"));
+    masterReport.getParameterValues().put("i8nIssue", this.getText("project.deliverable.dissemination.issue"));
+    masterReport.getParameterValues().put("i8nPages", this.getText("project.deliverable.dissemination.pages"));
+    masterReport.getParameterValues().put("i8nJournalName",
+      this.getText("project.deliverable.dissemination.journalName"));
+    masterReport.getParameterValues().put("i8nIndicatorsJournal",
+      this.getText("project.deliverable.dissemination.indicatorsJournal"));
+    masterReport.getParameterValues().put("i8nPublicationAcknowledge",
+      this.getText("deliverable.publicationAcknowledge"));
+    masterReport.getParameterValues().put("i8nPublicationFLContribution",
+      this.getText("deliverable.publicationFLContribution"));
+    masterReport.getParameterValues().put("i8nQualityCheckTitle", this.getText("deliverable.qualityCheckTitle"));
+    masterReport.getParameterValues().put("i8nFindable", this.getText("project.deliverable.quality.FLabel"));
+    masterReport.getParameterValues().put("i8nAccessible", this.getText("project.deliverable.quality.ALabel"));
+    masterReport.getParameterValues().put("i8nInteroperable", this.getText("project.deliverable.quality.ILabel"));
+    masterReport.getParameterValues().put("i8nReusable", this.getText("project.deliverable.quality.RLabel"));
+    masterReport.getParameterValues().put("i8nQualityCheckAssurance",
+      this.getText("deliverable.qualityCheckAssurance"));
+    masterReport.getParameterValues().put("i8nQualityCheckDataDictionary",
+      this.getText("deliverable.qualityCheckDataDictionary"));
+    masterReport.getParameterValues().put("i8nQualityCheckQuestion3",
+      this.getText("project.deliverable.quality.question3"));
+    masterReport.getParameterValues().put("i8nDataSharingTitle", this.getText("projectDeliverable.dataSharingTitle"));
+    masterReport.getParameterValues().put("i8nDeliverableFiles",
+      this.getText("projectDeliverable.dataSharing.deliverableFiles"));
+
+    /*
+     * Reporting
+     * Publications
+     */
+    masterReport.getParameterValues().put("i8nPublicationMainTitle", this.getText("publication.publicationMainTitle"));
+    masterReport.getParameterValues().put("i8nPublicationID", this.getText("publication.publicationId"));
+    masterReport.getParameterValues().put("i8nPublicationTitle", this.getText("publication.title"));
+    masterReport.getParameterValues().put("i8nPublicationAddedBy", this.getText("publicationsList.column.addedBy"));
+    masterReport.getParameterValues().put("i8nPublicationSubType", this.getText("publication.subType"));
+    masterReport.getParameterValues().put("i8nPublicationYear", this.getText("publication.year"));
+    masterReport.getParameterValues().put("i8nPublicationLeadPartners", this.getText("publication.leadPartners"));
+    masterReport.getParameterValues().put("i8nPublicationDissemination",
+      this.getText("publication.publicationDissemination"));
+    masterReport.getParameterValues().put("i8nPublicationCrossCuttingDimensions",
+      this.getText("project.crossCuttingDimensions.readText"));
+    masterReport.getParameterValues().put("i8nPublicationDisseminationChannel",
+      this.getText("publication.dissemination.disseminationChannel"));
+    masterReport.getParameterValues().put("i8nPublicationDisseminationUrl",
+      this.getText("project.deliverable.dissemination.disseminationUrl"));
+    masterReport.getParameterValues().put("i8nPublicationAllowPublication",
+      this.getText("project.deliverable.publication.v.allowPublication"));
+    masterReport.getParameterValues().put("i8nPublicationQualityCheck",
+      this.getText("project.deliverable.v.qualityCheck"));
+
+    return masterReport;
+  }
+
   @Override
   public String execute() throws Exception {
 
@@ -139,7 +249,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
       TypedTableModel model = this.getMasterTableModel(center, date, String.valueOf(year));
       sdf.addTable(masterQueryName, model);
       masterReport.setDataFactory(cdf);
-
+      // Set i8n for pentaho
+      masterReport = this.addi8nParameters(masterReport);
       // Get details band
       ItemBand masteritemBand = masterReport.getItemBand();
       // Create new empty subreport hash map
@@ -238,21 +349,21 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
     }
   }
 
+
   public byte[] getBytesXLSX() {
     return bytesXLSX;
   }
-
 
   @Override
   public int getContentLength() {
     return bytesXLSX.length;
   }
 
+
   @Override
   public String getContentType() {
     return "application/xlsx";
   }
-
 
   private String getDeliverableDataSharingFilePath(String projectID) {
     String upload = config.getDownloadURL();
@@ -1554,6 +1665,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
     }
   }
 
+
   public String getHighlightsImagesUrl(String projectId) {
     return config.getDownloadURL() + "/" + this.getHighlightsImagesUrlPath(projectId).replace('\\', '/');
   }
@@ -1563,7 +1675,6 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + projectId + File.separator
       + "hightlightsImage" + File.separator;
   }
-
 
   @Override
   public InputStream getInputStream() {

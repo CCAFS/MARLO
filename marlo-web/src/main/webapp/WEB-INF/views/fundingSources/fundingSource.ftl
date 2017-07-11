@@ -236,7 +236,7 @@
          <div class="panel-head">
            <label for=""> [@customForm.text name="projectCofunded.selectRegions" readText=!editable /]:[@customForm.req required=editable /]</label>
            <br />
-           <small style="color: #337ab7;">(Standart regions are defined by World Bank)</small>
+           <small style="color: #337ab7;">([@s.text name="projectLocations.standardLocations" /])</small>
          </div>
          
           <div id="regionList" class="panel-body" listname="fundingSource.fundingRegions"> 

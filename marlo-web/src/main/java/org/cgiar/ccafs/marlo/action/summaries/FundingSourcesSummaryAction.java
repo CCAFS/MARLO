@@ -109,6 +109,43 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
     this.deliverableFundingSourceManager = deliverableFundingSourceManager;
   }
 
+  /**
+   * Method to add i8n parameters to masterReport in Pentaho
+   * 
+   * @param masterReport
+   * @return masterReport with i8n parameters added
+   */
+  private MasterReport addi8nParameters(MasterReport masterReport) {
+    // Master List
+    masterReport.getParameterValues().put("i8nFundingSources", this.getText("menu.fundingSources"));
+    masterReport.getParameterValues().put("i8nID", this.getText("fundingSource.fundingSourceID"));
+    masterReport.getParameterValues().put("i8nTitle", this.getText("projectCofunded.title.readText"));
+    masterReport.getParameterValues().put("i8nSummary", this.getText("projectCofunded.description.readText"));
+    masterReport.getParameterValues().put("i8nAgreementStatus", this.getText("projectCofunded.agreementStatus"));
+    masterReport.getParameterValues().put("i8nStartDate", this.getText("projectCofunded.startDate"));
+    masterReport.getParameterValues().put("i8nEndDate", this.getText("projectCofunded.endDate"));
+    masterReport.getParameterValues().put("i8nFinanceCode", this.getText("projectCofunded.financeCode"));
+    masterReport.getParameterValues().put("i8nContactName", this.getText("projectCofunded.contactName"));
+    masterReport.getParameterValues().put("i8nContactEmail", this.getText("projectCofunded.contactEmail"));
+    masterReport.getParameterValues().put("i8nFundingWindow", this.getText("projectCofunded.type"));
+    masterReport.getParameterValues().put("i8nDonor", this.getText("projectCofunded.donor"));
+    masterReport.getParameterValues().put("i8nBudgetYear",
+      this.getText("projectCofunded.budgetYear", new String[] {String.valueOf(year)}));
+    masterReport.getParameterValues().put("i8nBudgetYearProjects",
+      this.getText("fundingSource.budgetYearAllocated", new String[] {String.valueOf(year)}));
+    masterReport.getParameterValues().put("i8nDeliverableIDs",
+      this.getText("fundingSource.deliverableIDs", new String[] {String.valueOf(year)}));
+    masterReport.getParameterValues().put("i8nProjects", this.getText("caseStudy.projects"));
+    masterReport.getParameterValues().put("i8nCoas", this.getText("deliverable.coas"));
+    masterReport.getParameterValues().put("i8nFlagships", this.getText("project.Flagships"));
+    masterReport.getParameterValues().put("i8nContractProposal", this.getText("fundingSource.contractProposal"));
+
+    // Funding Sources by Projects
+    masterReport.getParameterValues().put("i8nProjectID", this.getText("searchTerms.projectId"));
+
+    return masterReport;
+  }
+
   @Override
   public String execute() throws Exception {
     ClassicEngineBoot.getInstance().start();
@@ -141,7 +178,8 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
       TypedTableModel model = this.getMasterTableModel(center, current_date);
       sdf.addTable(masterQueryName, model);
       masterReport.setDataFactory(cdf);
-
+      // Set i8n for pentaho
+      masterReport = this.addi8nParameters(masterReport);
 
       // Get details band
       ItemBand masteritemBand = masterReport.getItemBand();
@@ -314,9 +352,9 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
   private TypedTableModel getFundingSourcesProjectsTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"fs_title", "fs_id", "finance_code", "lead_partner", "fs_window", "project_id", "total_budget",
-        "flagships", "coas", "donor"},
+        "flagships", "coas", "donor", "directDonor"},
       new Class[] {String.class, Long.class, String.class, String.class, String.class, String.class, Double.class,
-        String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class},
       0);
 
     for (FundingSource fundingSource : loggedCrp.getFundingSources().stream()
@@ -383,8 +421,10 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
 
         totalBudget = projectBudget.getAmount();
 
+        String directDonor = "";
+
         model.addRow(new Object[] {fsTitle, fsId, financeCode, leadPartner, fsWindow, projectId, totalBudget, flagships,
-          coas, donor});
+          coas, donor, directDonor});
       }
 
     }
@@ -395,10 +435,10 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
     TypedTableModel model = new TypedTableModel(
       new String[] {"fs_title", "fs_id", "finance_code", "lead_partner", "fs_window", "project_id", "total_budget",
         "summary", "start_date", "end_date", "contract", "status", "pi_name", "pi_email", "donor",
-        "total_budget_projects", "contract_name", "flagships", "coas", "deliverables"},
+        "total_budget_projects", "contract_name", "flagships", "coas", "deliverables", "directDonor"},
       new Class[] {String.class, Long.class, String.class, String.class, String.class, String.class, Double.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        Double.class, String.class, String.class, String.class, String.class},
+        Double.class, String.class, String.class, String.class, String.class, String.class},
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
 
@@ -572,9 +612,10 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
       if (deliverables.isEmpty()) {
         deliverables = null;
       }
+      String directDonor = "";
       model.addRow(new Object[] {fsTitle, fsId, financeCode, leadPartner, fsWindow, projectId, totalBudget, summary,
         starDate, endDate, contract, status, piName, piEmail, donor, totalBudgetProjects, contractName, flagships, coas,
-        deliverables});
+        deliverables, directDonor});
     }
     return model;
   }

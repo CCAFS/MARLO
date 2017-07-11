@@ -291,6 +291,7 @@ public class CrpSiteIntegrationAction extends BaseAction {
     message.append(this.getText("email.siteIntegration.assigned", new String[] {siteRole,
       crpsSiteIntegration.getLocElement().getName(), crpsSiteIntegration.getLocElement().getIsoAlpha2()}));
     message.append(this.getText("email.support"));
+    message.append(this.getText("email.getStarted"));
     message.append(this.getText("email.bye"));
 
     String toEmail = null;
