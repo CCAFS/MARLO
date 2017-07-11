@@ -493,7 +493,6 @@ public class ClusterActivitiesAction extends BaseAction {
     message.append(this.getText("email.cluster.unassigned",
       new String[] {crpClusterOfActivity.getIdentifier(), crpClusterOfActivity.getDescription(), loggedCrp.getName()}));
     message.append(this.getText("email.support", new String[] {crpAdmins}));
-    message.append(this.getText("email.getStarted"));
     message.append(this.getText("email.bye"));
 
     sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);

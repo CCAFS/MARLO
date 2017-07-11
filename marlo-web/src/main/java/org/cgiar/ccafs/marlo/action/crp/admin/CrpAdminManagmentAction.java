@@ -514,7 +514,6 @@ public class CrpAdminManagmentAction extends BaseAction {
 
 
     message.append(this.getText("email.support", new String[] {crpAdmins}));
-    message.append(this.getText("email.getStarted"));
     message.append(this.getText("email.bye"));
 
     if (role.equals(fplRole)) {
@@ -582,7 +581,6 @@ public class CrpAdminManagmentAction extends BaseAction {
       .append(this.getText("email.flagship.unassigned", new String[] {this.getText("programManagement.flagship.role"),
         crpProgram.getAcronym(), crpProgram.getName(), loggedCrp.getName()}));
     message.append(this.getText("email.support", new String[] {crpAdmins}));
-    message.append(this.getText("email.getStarted"));
     message.append(this.getText("email.bye"));
 
     if (role.equals(fplRole)) {
@@ -690,7 +688,6 @@ public class CrpAdminManagmentAction extends BaseAction {
     message.append(this.getText("email.programManagement.unassigned",
       new String[] {this.getText("programManagement.role"), loggedCrp.getName()}));
     message.append(this.getText("email.support", new String[] {crpAdmins}));
-    message.append(this.getText("email.getStarted"));
     message.append(this.getText("email.bye"));
 
     sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
