@@ -281,7 +281,6 @@ public class GuestUsersAction extends BaseAction {
     message.append(this.getText("email.newUser.part2",
       new String[] {this.getText("global.sClusterOfActivities").toLowerCase(), config.getBaseUrl(), crp.getName(),
         user.getEmail(), password, this.getText("email.support", new String[] {crpAdmins})}));
-    message.append(this.getText("email.getStarted"));
     message.append(this.getText("email.bye"));
 
     // Send pdf
