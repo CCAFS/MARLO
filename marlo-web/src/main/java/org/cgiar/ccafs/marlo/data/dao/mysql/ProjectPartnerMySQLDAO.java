@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectPartnerDAO;
 import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
+import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
@@ -117,9 +118,14 @@ public class ProjectPartnerMySQLDAO implements ProjectPartnerDAO {
     } else {
       if (phase.getEditable() != null) {
         for (ProjectPartner projectPartnerPrev : partners) {
-
+          this.updateUsers(projectPartnerPrev, projectPartner);
+          this.updateLocations(projectPartnerPrev, projectPartner);
         }
       }
+    }
+
+    if (phase.getNext() != null) {
+      this.addProjectPartnerDAO(phase.getNext(), projecID, projectPartner);
     }
 
 
@@ -167,8 +173,105 @@ public class ProjectPartnerMySQLDAO implements ProjectPartnerDAO {
       dao.update(projectPartner);
     }
 
-
+    if (projectPartner.getPhase().getNext() != null) {
+      this.addProjectPartnerDAO(projectPartner.getPhase().getNext(), projectPartner.getProject().getId(),
+        projectPartner);
+    }
     return projectPartner.getId();
+  }
+
+
+  /**
+   * check the offices and updated
+   * 
+   * @param projectPartnerPrev partern to update
+   * @param projectPartner partner modified
+   */
+  private void updateLocations(ProjectPartner projectPartnerPrev, ProjectPartner projectPartner) {
+    for (ProjectPartnerLocation projectPartnerLocation : projectPartnerPrev.getProjectPartnerLocations().stream()
+      .filter(c -> c.isActive()).collect(Collectors.toList())) {
+
+      if (projectPartner.getSelectedLocations() == null || projectPartner.getSelectedLocations().stream()
+        .filter(c -> c.getLocElement().getIsoAlpha2()
+          .equals(projectPartnerLocation.getInstitutionLocation().getLocElement().getIsoAlpha2()))
+        .collect(Collectors.toList()).isEmpty()) {
+
+        ProjectPartnerLocation projectPartnerLocationDB =
+          dao.find(ProjectPartnerLocation.class, projectPartnerLocation.getId());
+        projectPartnerLocationDB.setActive(false);
+        dao.update(projectPartnerLocationDB);
+      }
+    }
+    if (projectPartner.getSelectedLocations() != null) {
+      for (InstitutionLocation institutionLocation : projectPartner.getSelectedLocations()) {
+        LocElement locElement = null;
+        String queryLoc = "from " + LocElement.class.getName() + " where iso_alpha_2='"
+          + institutionLocation.getLocElement().getIsoAlpha2() + "'";
+        List<LocElement> listLoc = dao.findAll(queryLoc);
+        if (listLoc.size() > 0) {
+          locElement = listLoc.get(0);
+        }
+        if (projectPartnerPrev.getProjectPartnerLocations().stream()
+          .filter(
+            c -> c.isActive() && c.getInstitutionLocation().getLocElement().getId().equals(listLoc.get(0).getId()))
+          .collect(Collectors.toList()).isEmpty()) {
+          ProjectPartnerLocation partnerLocation = new ProjectPartnerLocation();
+
+
+          String query = "from " + InstitutionLocation.class.getName() + "  where institution_id="
+            + projectPartner.getInstitution().getId() + " and loc_element_id= " + locElement.getId();
+          List<InstitutionLocation> list = dao.findAll(query);
+          if (list.size() > 0) {
+            partnerLocation.setInstitutionLocation(list.get(0));
+          }
+          partnerLocation.setActive(true);
+          partnerLocation.setActiveSince(new Date());
+          partnerLocation.setCreatedBy(projectPartner.getCreatedBy());
+          partnerLocation.setModificationJustification("");
+          partnerLocation.setModifiedBy(projectPartner.getModifiedBy());
+          partnerLocation.setProjectPartner(projectPartnerPrev);
+          dao.save(partnerLocation);
+        }
+      }
+    }
+  }
+
+  /**
+   * check the partners persons and updated
+   * 
+   * @param projectPartnerPrev partern to update
+   * @param projectPartner partner modified
+   */
+  private void updateUsers(ProjectPartner projectPartnerPrev, ProjectPartner projectPartner) {
+    for (ProjectPartnerPerson partnerPerson : projectPartnerPrev.getProjectPartnerPersons().stream()
+      .filter(c -> c.isActive()).collect(Collectors.toList())) {
+      if (projectPartner.getPartnerPersons() == null || projectPartner.getPartnerPersons().stream()
+        .filter(c -> c.getUser().getId().equals(partnerPerson.getUser().getId())
+          && c.getContactType().equals(partnerPerson.getContactType()))
+        .collect(Collectors.toList()).isEmpty()) {
+        partnerPerson.setActive(false);
+        dao.update(partnerPerson);
+      }
+    }
+    if (projectPartner.getPartnerPersons() != null) {
+      for (ProjectPartnerPerson partnerPerson : projectPartner.getPartnerPersons()) {
+        if (projectPartnerPrev.getProjectPartnerPersons().stream()
+          .filter(c -> c.isActive() && c.getUser().equals(partnerPerson.getUser())).collect(Collectors.toList())
+          .isEmpty()) {
+
+          ProjectPartnerPerson partnerPersonAdd = new ProjectPartnerPerson();
+          partnerPersonAdd.setProjectPartner(projectPartnerPrev);
+          partnerPersonAdd.setModifiedBy(projectPartnerPrev.getModifiedBy());
+          partnerPersonAdd.setActive(true);
+          partnerPersonAdd.setActiveSince(projectPartnerPrev.getActiveSince());
+          partnerPersonAdd.setContactType(partnerPerson.getContactType());
+          partnerPersonAdd.setModificationJustification(projectPartnerPrev.getModificationJustification());
+          partnerPersonAdd.setUser(partnerPerson.getUser());
+          dao.save(partnerPersonAdd);
+
+        }
+      }
+    }
   }
 
 
