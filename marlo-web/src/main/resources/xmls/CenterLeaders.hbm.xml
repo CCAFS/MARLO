@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated May 26, 2016 9:42:29 AM by Hibernate Tools 4.3.1.Final -->
+<hibernate-mapping>
+	<class name="org.cgiar.ccafs.marlo.data.model.CenterLeader"
+		table="center_leaders" optimistic-lock="version">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<property name="active" type="boolean">
+      <column name="is_active" not-null="true" />
+    </property>
+    <property name="activeSince" type="timestamp">
+      <column name="active_since" length="19" not-null="true" />
+    </property>
+    <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
+      fetch="select">
+      <column name="created_by" not-null="false" />
+    </many-to-one>
+    <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
+      fetch="select">
+      <column name="modified_by" not-null="false" />
+    </many-to-one>
+    <property name="modificationJustification" type="string">
+      <column name="modification_justification" length="65535"
+        not-null="false" />
+    </property>
+		<many-to-one name="researchProgram"
+			class="org.cgiar.ccafs.marlo.data.model.CenterProgram" fetch="select">
+			<column name="research_program_id" not-null="true" />
+		</many-to-one>
+		<many-to-one name="researchArea"
+      class="org.cgiar.ccafs.marlo.data.model.CenterArea" fetch="select">
+      <column name="research_area_id" not-null="true" />
+    </many-to-one>
+    <many-to-one name="researchCenter"
+      class="org.cgiar.ccafs.marlo.data.model.Center" fetch="select">
+      <column name="research_center_id" not-null="true" />
+    </many-to-one>
+		<many-to-one name="user" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select">
+			<column name="user_id" not-null="true" />
+		</many-to-one>
+		<many-to-one name="type" class="org.cgiar.ccafs.marlo.data.model.CenterAllTypes"
+      fetch="select">
+      <column name="type_id" not-null="true" />
+    </many-to-one>
+	</class>
+</hibernate-mapping>

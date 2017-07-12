@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jan 3, 2017 1:26:43 PM by Hibernate Tools 4.3.1.Final -->
+<hibernate-mapping>
+	<class name="org.cgiar.ccafs.marlo.data.model.IpProgram" table="ip_programs"
+		optimistic-lock="version">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<many-to-one name="ipProgramType"
+			class="org.cgiar.ccafs.marlo.data.model.IpProgramType" fetch="select">
+			<column name="type_id" not-null="true" />
+		</many-to-one>
+		<many-to-one name="crpProgram"
+			class="org.cgiar.ccafs.marlo.data.model.CrpProgram" fetch="select">
+			<column name="crp_program_id" />
+		</many-to-one>
+		<property name="name" type="string">
+			<column name="name" length="65535" />
+		</property>
+		<property name="acronym" type="string">
+			<column name="acronym" length="45" />
+		</property>
+		<property name="regionId" type="java.lang.Long">
+			<column name="region_id" />
+		</property>
+		<property name="activeSince" type="timestamp">
+      <column name="active_since" length="19"/>
+    </property>
+    <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
+      fetch="select">
+      <column name="modified_by" not-null="true" />
+    </many-to-one>
+		<set name="ipElements" table="ip_elements" inverse="true" lazy="true"
+			fetch="select">
+			<key>
+				<column name="ip_program_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.IpElement" />
+		</set>
+		<set name="outcomeSynthesis" table="outcome_synthesis" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="ip_progam_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.OutcomeSynthesy" />
+		</set>
+		<set name="ipProgramElements" table="ip_program_elements" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="program_id" not-null="true">
+					<comment>Foreign key to the table ip_programs</comment>
+				</column>
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.IpProgramElement" />
+		</set>
+		<set name="mogSynthesis" table="mog_synthesis" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="program_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.MogSynthesy" />
+		</set>
+		<set name="projectComponentLessons" order-by="id"
+			table="project_component_lessons" inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="ip_program_id" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson" />
+		</set>
+		<set name="sectionStatuses" order-by="id"
+      table="section_statuses" inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="ip_program_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.SectionStatus" />
+    </set>
+	</class>
+</hibernate-mapping>

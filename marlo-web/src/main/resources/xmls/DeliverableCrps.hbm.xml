@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jan 26, 2017 10:35:02 AM by Hibernate Tools 4.3.1.Final -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.DeliverableCrp" table="deliverable_crps"  optimistic-lock="version">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="ipProgram" class="org.cgiar.ccafs.marlo.data.model.IpProgram" fetch="select">
+            <column name="crp_program"/>
+        </many-to-one>
+        <many-to-one name="crpPandr" class="org.cgiar.ccafs.marlo.data.model.CrpPandr" fetch="select">
+            <column name="crp_id" not-null="true" />
+        </many-to-one>
+        <many-to-one name="deliverable" class="org.cgiar.ccafs.marlo.data.model.Deliverable" fetch="select">
+            <column name="deliverable_id" not-null="true"/>
+        </many-to-one>
+    </class>
+</hibernate-mapping>

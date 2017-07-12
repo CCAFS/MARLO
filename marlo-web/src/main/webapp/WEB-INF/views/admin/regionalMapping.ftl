@@ -2,7 +2,7 @@
 [#assign title = "Regional Mapping" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["select2", "flat-flags", "vanilla-color-picker"] /]
-[#assign customJS = ["${baseUrl}/js/global/usersManagement.js", "${baseUrl}/js/admin/regionalMapping.js","${baseUrl}/js/global/fieldsValidation.js" ] /]
+[#assign customJS = ["${baseUrlMedia}/js/global/usersManagement.js", "${baseUrlMedia}/js/admin/regionalMapping.js","${baseUrlMedia}/js/global/fieldsValidation.js" ] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "regionalMapping" /]
 
@@ -16,7 +16,7 @@
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrl}/images/global/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.jpg" />
     <p class="col-md-10"> [@s.text name="regionalMapping.help" /] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>

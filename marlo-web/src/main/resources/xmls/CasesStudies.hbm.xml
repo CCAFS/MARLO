@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Dec 12, 2016 3:55:59 PM by Hibernate Tools 4.3.1.Final -->
+<hibernate-mapping>
+	<class name="org.cgiar.ccafs.marlo.data.model.CaseStudy" table="cases_studies"
+		optimistic-lock="version">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<many-to-one name="file"
+			class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">
+			<column name="file_id" />
+		</many-to-one>
+		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select">
+			<column name="created_by" />
+		</many-to-one>
+		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select">
+			<column name="modified_by" />
+		</many-to-one>
+		<property name="comment" type="string">
+			<column name="comment" length="65535" />
+		</property>
+		<property name="title" type="string">
+			<column name="title" length="65535" />
+		</property>
+		<property name="outcomeStatement" type="string">
+			<column name="outcomeStatement" length="65535" />
+		</property>
+		<property name="researchOutputs" type="string">
+			<column name="researchOutputs" length="65535" />
+		</property>
+		<property name="researchPatern" type="string">
+			<column name="researchPatern" length="65535" />
+		</property>
+		<property name="activities" type="string">
+			<column name="activities" length="65535" />
+		</property>
+		<property name="nonResearchPartneres" type="string">
+			<column name="nonResearchPartneres" length="65535" />
+		</property>
+		<property name="outputUsers" type="string">
+			<column name="outputUsers" length="65535" />
+		</property>
+		<property name="evidenceOutcome" type="string">
+			<column name="evidenceOutcome" length="65535" />
+		</property>
+		<property name="referencesCase" type="string">
+			<column name="references_case" length="65535" />
+		</property>
+		<property name="outputUsed" type="string">
+			<column name="outputUsed" length="65535" />
+		</property>
+		<property name="researchPartners" type="string">
+			<column name="researchPartners" length="65535" />
+		</property>
+		<property name="explainIndicatorRelation" type="string">
+			<column name="explainIndicatorRelation" length="65535" />
+		</property>
+		<property name="year" type="java.lang.Integer">
+			<column name="year" />
+		</property>
+		<property name="active" type="boolean">
+			<column name="is_active" not-null="true" />
+		</property>
+		<property name="activeSince" type="timestamp">
+			<column name="active_since" length="19" not-null="true" />
+		</property>
+		<property name="modificationJustification" type="string">
+			<column name="modification_justification" length="65535" />
+		</property>
+		<set name="caseStudyProjects" table="case_study_projects"
+			order-by="id" inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="case_study_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CaseStudyProject" />
+		</set>
+		<set name="sectionStatuses" table="section_statuses" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="case_study_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.SectionStatus" />
+		</set>
+		 <set name="caseStudyIndicators" order-by="id" table="case_studie_indicators" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="id_case_studie" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CaseStudyIndicator" />
+        </set>
+	</class>
+</hibernate-mapping>

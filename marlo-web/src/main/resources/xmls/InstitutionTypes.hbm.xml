@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Jun 15, 2016 9:17:09 AM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+	<class name="org.cgiar.ccafs.marlo.data.model.InstitutionType"
+		table="institution_types" optimistic-lock="version">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<property name="name" type="string">
+			<column name="name" not-null="true" />
+		</property>
+		<property name="acronym" type="string">
+			<column name="acronym" length="200" />
+		</property>
+		 <property name="old" type="java.lang.Boolean">
+            <column name="old" />
+        </property>
+        <property name="description" type="string">
+            <column name="description" length="65535" />
+        </property>
+		<set name="institutions" table="institutions" inverse="true" lazy="true"
+			fetch="select">
+			<key>
+				<column name="institution_type_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.Institution" />
+		</set>
+	</class>
+</hibernate-mapping>

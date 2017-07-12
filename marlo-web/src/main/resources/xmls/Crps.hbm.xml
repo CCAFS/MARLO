@@ -1,0 +1,167 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated May 17, 2016 9:53:47 AM by Hibernate Tools 4.3.1.Final -->
+<hibernate-mapping>
+	<class name="org.cgiar.ccafs.marlo.data.model.Crp" table="crps"
+		optimistic-lock="version">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<property name="name" type="string">
+			<column name="name" length="65535" not-null="true" />
+		</property>
+		<property name="acronym" type="string">
+			<column name="acronym" length="50" not-null="true" />
+		</property>
+		<property name="modificationJustification" type="string">
+			<column name="modification_justification" length="65535"
+				not-null="true" />
+		</property>
+		 <property name="category" type="java.lang.Integer">
+       <column name="category" />
+     </property>
+     <property name="login" type="java.lang.Boolean">
+       <column name="login" />
+     </property>
+		<property name="activeSince" type="timestamp">
+			<column name="active_since" length="19" not-null="true" />
+		</property>
+		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select">
+			<column name="created_by" not-null="false" />
+		</many-to-one>
+		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select">
+			<column name="modified_by" not-null="true" />
+		</many-to-one>
+		<set lazy="true" name="crpPrograms" table="crp_programs" order-by="id"
+			cascade="save-update" fetch="select">
+			<key>
+				<column name="crp_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpProgram" />
+		</set>
+		<set lazy="true" name="crpUsers" table="crp_users" inverse="true"
+			fetch="select">
+			<key>
+				<column name="crp_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpUser" />
+		</set>
+		<set lazy="true" name="roles" table="roles" inverse="true" fetch="select">
+			<key>
+				<column name="crp_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.Role" />
+		</set>
+	
+		<set name="crpPpaPartners" table="crp_ppa_partners" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="crp_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpPpaPartner" />
+		</set>
+		<set name="locElements" table="loc_elements" inverse="true" lazy="true"
+			fetch="select">
+			<key>
+				<column name="crp_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.LocElement" />
+		</set>
+		<set name="crpsSitesIntegrations" table="crps_sites_integration"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="crp_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpsSiteIntegration" />
+		</set>
+		<set name="locElementTypes" table="loc_element_types" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="crp_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.LocElementType" />
+		</set>
+
+		
+
+		<set name="projects" table="projects" inverse="true" lazy="true"
+			fetch="select">
+			<key>
+				<column name="crp_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.Project" />
+		</set>
+
+
+		<set name="liaisonInstitutions" table="liaison_institutions"
+			order-by="id" inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="crp_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.LiaisonInstitution" />
+		</set>
+
+
+
+		<set name="liasonUsers" table="liaison_users" inverse="true"
+			order-by="id" lazy="true" fetch="select">
+			<key>
+				<column name="crp_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.LiaisonUser" />
+		</set>
+		
+		<set name="fundingSources" table="funding_sources" inverse="true"
+      order-by="id" lazy="true" fetch="select">
+      <key>
+        <column name="crp_id" not-null="true" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.FundingSource" />
+    </set>
+    
+    <set name="crpTargetUnits" table="crp_target_units" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="crp_id" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpTargetUnit" />
+        </set>
+
+
+<set name="deliverables" table="deliverables" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="crp_id" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.Deliverable" />
+        </set>
+		<property name="active" type="boolean">
+			<column name="is_active" not-null="true" />
+		</property>
+
+		<property name="marlo" type="boolean">
+			<column name="is_marlo" not-null="true" />
+		</property>
+		 <set name="genderTypes" table="gender_types" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="crp_id" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.GenderType" />
+        </set>
+        
+         <set name="crpLocElementTypes" table="crp_loc_element_types" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="crp_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpLocElementType" />
+        </set>
+        <set name="customParameters" table="custom_parameters" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="crp_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CustomParameter" />
+        </set>
+	</class>
+</hibernate-mapping>

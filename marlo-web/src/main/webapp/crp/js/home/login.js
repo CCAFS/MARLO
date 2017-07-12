@@ -5,7 +5,7 @@ function init() {
   initJreject();
 
   cookieTime = 10;
-  var crpInput = $('input#crp').val();
+  var crpInput = $('input#crp-input').val();
 
   if(verifyCookie("CRP") && (getCookie("CRP") != "undefined") && (!crpInput)) {
 
@@ -41,17 +41,20 @@ function init() {
 
 function setCRP(crpSelected) {
   var $li = $("li#crp-" + crpSelected);
-
+  var type = $('.nav-tabs li.active').attr('id');
   // Removing class selected
   $(".loginOption").removeClass('selected');
 
   // Add 'selected' class and removing sibling's class if any
   $li.addClass('selected');
 
-  // Setting up the CRP value into a hidden input
-  $('#crp').val(crpSelected);
+  console.log(crpSelected);
+  // Setting up the CRP-CENTER-PLATFORM value into a hidden input
+  $('#crp-input').val(crpSelected);
+  // Setting up the type value to log (CRP-CENTER-PALTFORM)
+  $('#type-input').val(type);
 
-  $("#crpSelectedImage").attr("src", baseURL + "/images/global/crps/" + crpSelected + ".png");
+  $("#crpSelectedImage").attr("src", baseUrlMedia + "/images/global/crps/" + crpSelected + ".png");
 
   // Show Second Form (Email, password & login button)
   $li.parents('.loginForm').find('.secondForm').slideDown();

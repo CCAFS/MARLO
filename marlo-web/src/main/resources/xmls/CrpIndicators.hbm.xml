@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jan 3, 2017 1:26:43 PM by Hibernate Tools 4.3.1.Final -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.CrpIndicator" table="crp_indicators"  optimistic-lock="version">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="crpIndicatorType" class="org.cgiar.ccafs.marlo.data.model.CrpIndicatorType" fetch="select">
+            <column name="indicator_type_id" not-null="true" />
+        </many-to-one>
+        <property name="serial" type="string">
+            <column name="serial" length="5" not-null="true" />
+        </property>
+        <property name="name" type="string">
+            <column name="name" length="65535" not-null="true" />
+        </property>
+        <property name="description" type="string">
+            <column name="description" length="65535" not-null="true" />
+        </property>
+        <property name="active" type="boolean">
+            <column name="is_active" not-null="true" />
+        </property>
+        <property name="dateAdded" type="timestamp">
+            <column name="date_added" length="19" not-null="true" />
+        </property>
+        <set name="crpIndicatorReports" table="crp_indicator_reports" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="indicator_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpIndicatorReport" />
+        </set>
+    </class>
+</hibernate-mapping>

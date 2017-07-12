@@ -142,10 +142,7 @@
       </license>
    </licenses>
    <modules>
-    <module>marlo-data</module> 
-    <module>marlo-utils</module>
-      	
-   	<module>marlo-web</module>
-   	<module>marlo-ciat-web-module</module>   	
+    <module>marlo-utils</module>	
+   	<module>marlo-web</module>	
    </modules>
 </project>

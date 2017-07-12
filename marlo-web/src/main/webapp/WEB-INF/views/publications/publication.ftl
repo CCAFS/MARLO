@@ -3,14 +3,14 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-${(deliverable.id)!}" /]
 [#assign pageLibs = ["select2","font-awesome","blueimp-file-upload","jsUri"] /]
 [#assign customJS = [
-  "${baseUrl}/js/publications/publication.js",
-  "${baseUrl}/js/projects/deliverables/deliverableQualityCheck.js", 
-  "${baseUrl}/js/projects/deliverables/deliverableInfo.js",
-  "${baseUrl}/js/projects/deliverables/deliverableDissemination.js", 
-  "${baseUrl}/js/global/autoSave.js",
-  "${baseUrl}/js/global/fieldsValidation.js"
+  "${baseUrlMedia}/js/publications/publication.js",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js", 
+  "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js", 
+  "${baseUrlMedia}/js/global/autoSave.js",
+  "${baseUrlMedia}/js/global/fieldsValidation.js"
 ] /]
-[#assign customCSS = [ "${baseUrl}/css/publications/publication.css", "${baseUrl}/css/projects/projectDeliverable.css" ] /]
+[#assign customCSS = [ "${baseUrlMedia}/css/publications/publication.css", "${baseUrlMedia}/css/projects/projectDeliverable.css" ] /]
 [#assign currentSection = "publications" /]
 
 [#assign breadCrumb = [

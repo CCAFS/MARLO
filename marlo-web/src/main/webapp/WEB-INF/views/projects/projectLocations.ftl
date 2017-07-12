@@ -2,8 +2,8 @@
 [#assign title = "Project Locations" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = ["${baseUrl}/js/projects/projectLocations.js", "${baseUrl}/js/global/autoSave.js","${baseUrl}/js/global/fieldsValidation.js"] /] [#-- "${baseUrl}/js/global/autoSave.js" --]
-[#assign customCSS = ["${baseUrl}/css/projects/projectLocations.css" ] /]
+[#assign customJS = ["${baseUrlMedia}/js/projects/projectLocations.js", "${baseUrlMedia}/js/global/autoSave.js","${baseUrlMedia}/js/global/fieldsValidation.js"] /] [#-- "${baseUrl}/js/global/autoSave.js" --]
+[#assign customCSS = ["${baseUrlMedia}/css/projects/projectLocations.css" ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "locations" /]
 [#assign hideJustification = false /]
@@ -22,7 +22,7 @@
 
 <div class="container helpText viewMore-block">
   <div  class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrl}/images/global/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.jpg" />
     <p class="col-md-10">[#if reportingActive] [@s.text name="projectLocations.help2" /] [#else] [@s.text name="projectLocations.help1" /] [/#if] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
@@ -73,10 +73,10 @@
                 <div class="col-md-12">
                 <b>NOTE: </b>
                 <br />
-                <span><span><img style="width: 3%;" src="${baseUrl}/images/global/left-click.jpg" alt="" /></span>Left click to get detailed information of a specific location.</span>
+                <span><span><img style="width: 3%;" src="${baseUrlMedia}/images/global/left-click.jpg" alt="" /></span>Left click to get detailed information of a specific location.</span>
                 <br />
                 <br />
-                <span><span><img style="width: 3%;" src="${baseUrl}/images/global/right-click.jpg" alt="" /></span>Right click in the map to add a new location.</span>
+                <span><span><img style="width: 3%;" src="${baseUrlMedia}/images/global/right-click.jpg" alt="" /></span>Right click in the map to add a new location.</span>
                 </div>
                 <div  class="col-md-12 map">
                   <div id="map" class="col-md-12"></div>

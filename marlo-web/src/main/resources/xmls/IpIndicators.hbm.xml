@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jan 3, 2017 1:26:43 PM by Hibernate Tools 4.3.1.Final -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.IpIndicator" table="ip_indicators"  optimistic-lock="version">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="ipElement" class="org.cgiar.ccafs.marlo.data.model.IpElement" fetch="select">
+            <column name="ip_element_id" not-null="true" />
+        </many-to-one>
+        <many-to-one name="ipIndicator" class="org.cgiar.ccafs.marlo.data.model.IpIndicator" fetch="select">
+            <column name="parent_id">
+                <comment>Foreign key to ip_indicators table. This field shows if the indicator contributes to another indicator</comment>
+            </column>
+        </many-to-one>
+        <many-to-one name="ipProgramElement" class="org.cgiar.ccafs.marlo.data.model.IpProgramElement" fetch="select">
+            <column name="program_element_id" />
+        </many-to-one>
+        <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="modified_by" not-null="true" />
+        </many-to-one>
+        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="created_by" not-null="true" />
+        </many-to-one>
+        <property name="description" type="string">
+            <column name="description" length="65535" />
+        </property>
+        <property name="target" type="string">
+            <column name="target" length="65535" />
+        </property>
+        <property name="active" type="boolean">
+            <column name="is_active" not-null="true" />
+        </property>
+        <property name="activeSince" type="timestamp">
+            <column name="active_since" length="19" not-null="true" />
+        </property>
+        <property name="modificationJustification" type="string">
+            <column name="modification_justification" length="65535" not-null="true" />
+        </property>
+        <set name="outcomeSynthesis" table="outcome_synthesis" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="indicador_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.OutcomeSynthesy" />
+        </set>
+        <set name="ipIndicators" table="ip_indicators" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="parent_id">
+                    <comment>Foreign key to ip_indicators table. This field shows if the indicator contributes to another indicator</comment>
+                </column>
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.IpIndicator" />
+        </set>
+        <set name="ipProjectIndicators" table="ip_project_indicators" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="parent_id" not-null="true">
+                    <comment>This column is a foreign key that references to the table ip_indicators.</comment>
+                </column>
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.IpProjectIndicator" />
+        </set>
+    </class>
+</hibernate-mapping>

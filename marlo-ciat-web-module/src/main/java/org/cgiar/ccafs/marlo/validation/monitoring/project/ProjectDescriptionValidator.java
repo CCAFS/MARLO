@@ -101,24 +101,42 @@ public class ProjectDescriptionValidator extends BaseValidator {
   }
 
   public void validateProjectDescription(BaseAction baseAction, CenterProject project) {
-
-    if (!this.isValidString(project.getOcsCode()) && this.wordCount(project.getOcsCode()) <= 15) {
+    if (project.getOcsCode() != null) {
+      if (!this.isValidString(project.getOcsCode()) && this.wordCount(project.getOcsCode()) <= 15) {
+        this.addMessage(baseAction.getText("projectDescription.action.ocsCode"));
+        baseAction.getInvalidFields().put("input-project.ocsCode", InvalidFieldsMessages.EMPTYFIELD);
+      }
+    } else {
       this.addMessage(baseAction.getText("projectDescription.action.ocsCode"));
       baseAction.getInvalidFields().put("input-project.ocsCode", InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    if (!this.isValidString(project.getName()) && this.wordCount(project.getName()) <= 50) {
+    if (project.getName() != null) {
+      if (!this.isValidString(project.getName()) && this.wordCount(project.getName()) <= 50) {
+        this.addMessage(baseAction.getText("projectDescription.action.title"));
+        baseAction.getInvalidFields().put("input-project.name", InvalidFieldsMessages.EMPTYFIELD);
+      }
+    } else {
       this.addMessage(baseAction.getText("projectDescription.action.title"));
       baseAction.getInvalidFields().put("input-project.name", InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    if (!this.isValidString(project.getDescription()) && this.wordCount(project.getDescription()) <= 50) {
+    if (project.getDescription() != null) {
+      if (!this.isValidString(project.getDescription()) && this.wordCount(project.getDescription()) <= 50) {
+        this.addMessage(baseAction.getText("projectDescription.action.description"));
+        baseAction.getInvalidFields().put("input-project.description", InvalidFieldsMessages.EMPTYFIELD);
+      }
+    } else {
       this.addMessage(baseAction.getText("projectDescription.action.description"));
       baseAction.getInvalidFields().put("input-project.description", InvalidFieldsMessages.EMPTYFIELD);
     }
 
-
-    if (!this.isValidString(project.getOriginalDonor()) && this.wordCount(project.getOriginalDonor()) <= 100) {
+    if (project.getOriginalDonor() != null) {
+      if (!this.isValidString(project.getOriginalDonor()) && this.wordCount(project.getOriginalDonor()) <= 100) {
+        this.addMessage(baseAction.getText("projectDescription.action.originalDonor"));
+        baseAction.getInvalidFields().put("input-project.originalDonor", InvalidFieldsMessages.EMPTYFIELD);
+      }
+    } else {
       this.addMessage(baseAction.getText("projectDescription.action.originalDonor"));
       baseAction.getInvalidFields().put("input-project.originalDonor", InvalidFieldsMessages.EMPTYFIELD);
     }

@@ -29,7 +29,7 @@ import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
  * 
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class ValidCrpActionInterceptor extends AbstractInterceptor {
+public class ValidCenterActionInterceptor extends AbstractInterceptor {
 
   private static final long serialVersionUID = 2239276003694732851L;
 
@@ -37,7 +37,7 @@ public class ValidCrpActionInterceptor extends AbstractInterceptor {
   private ICenterManager crpManager;
 
   @Inject
-  public ValidCrpActionInterceptor(ICenterManager crpManager) {
+  public ValidCenterActionInterceptor(ICenterManager crpManager) {
     this.crpManager = crpManager;
   }
 

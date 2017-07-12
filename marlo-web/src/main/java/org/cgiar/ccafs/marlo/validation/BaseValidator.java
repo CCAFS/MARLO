@@ -2,8 +2,15 @@ package org.cgiar.ccafs.marlo.validation;
 
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.data.manager.ICenterSectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.CaseStudy;
+import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
+import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
+import org.cgiar.ccafs.marlo.data.model.CenterOutput;
+import org.cgiar.ccafs.marlo.data.model.CenterProgram;
+import org.cgiar.ccafs.marlo.data.model.CenterProject;
+import org.cgiar.ccafs.marlo.data.model.CenterSectionStatus;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
@@ -15,6 +22,8 @@ import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+
+import java.util.Calendar;
 
 import javax.mail.internet.InternetAddress;
 
@@ -34,6 +43,8 @@ public class BaseValidator {
 
   @Inject
   private SectionStatusManager sectionStatusManager;
+  @Inject
+  private ICenterSectionStatusManager centerSectionStatusManager;
 
 
   @Inject
@@ -105,6 +116,165 @@ public class BaseValidator {
   }
 
   /**
+   * * ******************************************************************************************
+   * ************************* CENTER METHOD **************************************************
+   * *******************************************************************************************
+   * This method saves the missing fields into the database for a section at Project - Deliverable.
+   * 
+   * @param program is a CenterProgram.
+   * @param project is a CenterProject.
+   * @param sectionName is the name of the section (researchImpact, researchTopics, etc.).
+   */
+  protected void saveMissingFields(CenterDeliverable deliverable, CenterProject project, String sectionName) {
+    int year = Calendar.getInstance().get(Calendar.YEAR);
+
+    CenterSectionStatus status =
+      centerSectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(), project.getId(), sectionName, year);
+    if (status == null) {
+
+      status = new CenterSectionStatus();
+      status.setSectionName(sectionName);
+      status.setDeliverable(deliverable);
+      status.setProject(project);
+      status.setYear(year);
+    }
+    if (this.missingFields.length() > 0) {
+      status.setMissingFields(this.missingFields.toString());
+    } else {
+      status.setMissingFields("");
+    }
+
+    centerSectionStatusManager.saveSectionStatus(status);
+  }
+
+  /**
+   * * ******************************************************************************************
+   * ************************* CENTER METHOD **************************************************
+   * *******************************************************************************************
+   * This method saves the missing fields into the database for a section at ImpactPathway - Outcome.
+   * 
+   * @param program is a CenterProgram.
+   * @param outcome is a CenterOutcome.
+   * @param sectionName is the name of the section (researchImpact, researchTopics, etc.).
+   */
+  protected void saveMissingFields(CenterProgram program, CenterOutcome outcome, String sectionName) {
+    int year = Calendar.getInstance().get(Calendar.YEAR);
+
+    CenterSectionStatus status =
+      centerSectionStatusManager.getSectionStatusByOutcome(program.getId(), outcome.getId(), sectionName, year);
+    if (status == null) {
+
+      status = new CenterSectionStatus();
+      status.setSectionName(sectionName);
+      status.setResearchProgram(program);
+      status.setResearchOutcome(outcome);
+      status.setYear(year);
+    }
+    if (this.missingFields.length() > 0) {
+      status.setMissingFields(this.missingFields.toString());
+    } else {
+      status.setMissingFields("");
+    }
+
+    centerSectionStatusManager.saveSectionStatus(status);
+  }
+
+  /**
+   * * ******************************************************************************************
+   * ************************* CENTER METHOD **************************************************
+   * *******************************************************************************************
+   * This method saves the missing fields into the database for a section at ImpactPathway - Output.
+   * 
+   * @param program is a CenterProgram.
+   * @param output is a CenterOutput.
+   * @param sectionName is the name of the section (researchImpact, researchTopics, etc.).
+   */
+  protected void saveMissingFields(CenterProgram program, CenterOutput output, String sectionName) {
+    int year = Calendar.getInstance().get(Calendar.YEAR);
+
+    CenterSectionStatus status =
+      centerSectionStatusManager.getSectionStatusByOutput(program.getId(), output.getId(), sectionName, year);
+    if (status == null) {
+
+      status = new CenterSectionStatus();
+      status.setSectionName(sectionName);
+      status.setResearchProgram(program);
+      status.setResearchOutput(output);
+      status.setYear(year);
+    }
+    if (this.missingFields.length() > 0) {
+      status.setMissingFields(this.missingFields.toString());
+    } else {
+      status.setMissingFields("");
+    }
+
+    centerSectionStatusManager.saveSectionStatus(status);
+  }
+
+  /**
+   * * ******************************************************************************************
+   * ************************* CENTER METHOD **************************************************
+   * *******************************************************************************************
+   * This method saves the missing fields into the database for a section at ImpactPathway - project.
+   * 
+   * @param program is a CenterProgram.
+   * @param project is a CenterProject.
+   * @param sectionName is the name of the section (researchImpact, researchTopics, etc.).
+   */
+  protected void saveMissingFields(CenterProgram program, CenterProject project, String sectionName) {
+    int year = Calendar.getInstance().get(Calendar.YEAR);
+
+    CenterSectionStatus status =
+      centerSectionStatusManager.getSectionStatusByProject(program.getId(), project.getId(), sectionName, year);
+    if (status == null) {
+
+      status = new CenterSectionStatus();
+      status.setSectionName(sectionName);
+      status.setProject(project);
+      status.setYear(year);
+    }
+    if (this.missingFields.length() > 0) {
+      status.setMissingFields(this.missingFields.toString());
+    } else {
+      status.setMissingFields("");
+    }
+
+    centerSectionStatusManager.saveSectionStatus(status);
+  }
+
+  /**
+   * ******************************************************************************************
+   * ************************* CENTER METHOD **************************************************
+   * *******************************************************************************************
+   * This method saves the missing fields into the database for a section at ImpactPathway.
+   * 
+   * @param program is a CenterProgram.
+   * @param sectionName is the name of the section (researchImpact, researchTopics, etc.).
+   */
+  protected void saveMissingFields(CenterProgram program, String sectionName) {
+
+    int year = Calendar.getInstance().get(Calendar.YEAR);
+
+    CenterSectionStatus status =
+      centerSectionStatusManager.getSectionStatusByProgram(program.getId(), sectionName, year);
+    if (status == null) {
+
+      status = new CenterSectionStatus();
+      status.setSectionName(sectionName);
+      status.setResearchProgram(program);
+      status.setYear(year);
+    }
+    if (this.missingFields.length() > 0) {
+      status.setMissingFields(this.missingFields.toString());
+    } else {
+      status.setMissingFields("");
+    }
+
+    centerSectionStatusManager.saveSectionStatus(status);
+  }
+
+
+  /**
    * This method saves the missing fields into the database for a section at deliverable level.
    * 
    * @param deliverable is a deliverable.
@@ -161,6 +331,7 @@ public class BaseValidator {
     this.missingFields.setLength(0);
   }
 
+
   /**
    * This method saves the missing fields into the database for a section at deliverable level.
    * 
@@ -189,6 +360,7 @@ public class BaseValidator {
 
 
   }
+
 
   /**
    * This method saves the missing fields into the database for a section at deliverable level.
@@ -242,7 +414,6 @@ public class BaseValidator {
     sectionStatusManager.saveSectionStatus(status);
     this.missingFields.setLength(0);
   }
-
 
   /**
    * This method saves the missing fields into the database for a section at project Case Study level.
@@ -406,7 +577,6 @@ public class BaseValidator {
     }
 
   }
-
 
   protected void validateLessonsLearnOutcome(BaseAction action, ProjectOutcome project) {
     if (project.getProjectComponentLesson() != null) {

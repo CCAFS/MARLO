@@ -11,9 +11,9 @@
     [@s.fielderror cssClass="fieldError" fieldName="loginMessage"/]
     <div class="firstForm  form-group row" style="display:${(crpSession?has_content)?string('none', 'block')}">
       <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" class="active"><a href="#crps" aria-controls="home" role="tab" data-toggle="tab">CRPs</a></li>
-        <li role="presentation"><a href="#centers" aria-controls="messages" role="tab" data-toggle="tab">Centers</a></li> 
-        <li role="presentation"><a href="#platforms" aria-controls="profile" role="tab" data-toggle="tab">Platforms</a></li>
+        <li id="crp" role="presentation" class="active"><a href="#crps" aria-controls="home" role="tab" data-toggle="tab">CRPs</a></li>
+        <li id="center" role="presentation"><a href="#centers" aria-controls="messages" role="tab" data-toggle="tab">Centers</a></li> 
+        <li id="platform" role="presentation"><a href="#platforms" aria-controls="profile" role="tab" data-toggle="tab">Platforms</a></li>
       </ul>
       
       <div class="crpGroup tab-content">
@@ -68,10 +68,11 @@
         <div class="col-sm-12">
           [#-- Image --]
           <div class="form-group text-center">
-            <img id="crpSelectedImage"  width="300px" src="${baseUrl}/images/global/crps/${(crpSession)!'default'}.png" alt="${(crpSession)!}" />
+            <img id="crpSelectedImage"  width="300px" src="${baseUrlMedia}/images/global/crps/${(crpSession)!'default'}.png" alt="${(crpSession)!}" />
           </div>
           [#-- CRP Session --]
-          <input type="hidden" id="crp" name="crp" value="${(crpSession)!}" />
+          <input type="hidden" id="crp-input" name="crp" value="${(crpSession)!}" />
+          <input type="hidden" id="type-input" name="type" value="${(typeSession)!}" />
           [#-- Email --]
           <div class="form-group text-left">
             [@customForm.input name="user.email" i18nkey="login.email" required=true /]
@@ -102,6 +103,6 @@
 
 [#macro crpItem element]
   <li id="crp-${element.acronym}" class="loginOption ${element.login?string('enabled', 'disabled')} [#if crpSession?? && (element.acronym == crpSession)]selected[/#if]" title="${element.login?string('', 'Coming soon...')}">
-    <img class="${element.login?string('animated bounceIn', '')} " src="${baseUrl}/images/global/crps/${element.acronym}.png" alt="${element.name}" />
+    <img class="${element.login?string('animated bounceIn', '')} " src="${baseUrlMedia}/images/global/crps/${element.acronym}.png" alt="${element.name}" />
   </li>
 [/#macro]

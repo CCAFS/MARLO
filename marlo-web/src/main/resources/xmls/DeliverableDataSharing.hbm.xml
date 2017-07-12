@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Jan 5, 2017 7:38:48 AM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.DeliverableDataSharing" table="deliverable_data_sharing" optimistic-lock="version">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="deliverable" class="org.cgiar.ccafs.marlo.data.model.Deliverable" fetch="select">
+            <column name="deliverable_id" not-null="true" />
+        </many-to-one>
+        <property name="institutionalRepository" type="java.lang.Boolean">
+            <column name="institutional_repository" />
+        </property>
+        <property name="linkInstitutionalRepository" type="string">
+            <column name="link_institutional_repository" length="500" />
+        </property>
+        <property name="ccfasHostGreater" type="java.lang.Boolean">
+            <column name="ccfas_host_greater" />
+        </property>
+        <property name="linkCcfasHostGreater" type="string">
+            <column name="link_ccfas_host_greater" length="500" />
+        </property>
+        <property name="ccfasHostSmaller" type="java.lang.Boolean">
+            <column name="ccfas_host_smaller" />
+        </property>
+    </class>
+</hibernate-mapping>

@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Aug 4, 2016 11:18:24 AM by Hibernate Tools 4.3.1.Final -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson" table="project_component_lessons"  optimistic-lock="version">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="project" class="org.cgiar.ccafs.marlo.data.model.Project" fetch="select">
+            <column name="project_id" />
+        </many-to-one>
+        <many-to-one name="ipProgram" class="org.cgiar.ccafs.marlo.data.model.IpProgram" fetch="select">
+            <column name="ip_program_id" />
+        </many-to-one>
+        <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="modified_by" not-null="true" />
+        </many-to-one>
+        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="created_by" not-null="true" />
+        </many-to-one>
+        <property name="componentName" type="string">
+            <column name="component_name" not-null="true" />
+        </property>
+        <property name="lessons" type="string">
+            <column name="lessons" length="65535" />
+        </property>
+        <property name="year" type="int">
+            <column name="year" not-null="true" />
+        </property>
+        <property name="active" type="boolean">
+            <column name="is_active" not-null="true" />
+        </property>
+        <property name="activeSince" type="timestamp">
+            <column name="active_since" length="19" not-null="true" />
+        </property>
+        <property name="modificationJustification" type="string">
+            <column name="modification_justification" length="65535" not-null="true" />
+        </property>
+        <property name="cycle" type="string">
+            <column name="cycle" />
+        </property>
+         <many-to-one name="projectOutcome" class="org.cgiar.ccafs.marlo.data.model.ProjectOutcome" fetch="select">
+            <column name="project_outcome_id" />
+        </many-to-one>
+    </class>
+</hibernate-mapping>

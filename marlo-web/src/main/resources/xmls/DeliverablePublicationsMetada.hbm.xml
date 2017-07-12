@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jan 26, 2017 10:35:02 AM by Hibernate Tools 4.3.1.Final -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata" table="deliverable_publications_metada" optimistic-lock="version">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="deliverable" class="org.cgiar.ccafs.marlo.data.model.Deliverable" fetch="select">
+            <column name="deliverable_id" not-null="true" />
+        </many-to-one>
+        <property name="volume" type="string">
+            <column name="volume" length="65535" />
+        </property>
+        <property name="issue" type="string">
+            <column name="issue" length="65535" />
+        </property>
+        <property name="pages" type="string">
+            <column name="pages" length="65535" />
+        </property>
+        <property name="journal" type="string">
+            <column name="journal" length="65535" />
+        </property>
+        <property name="isiPublication" type="java.lang.Boolean">
+            <column name="isi_publication" />
+        </property>
+        <property name="nasr" type="java.lang.Boolean">
+            <column name="nasr" />
+        </property>
+        <property name="coAuthor" type="java.lang.Boolean">
+            <column name="co_author" />
+        </property>
+        <property name="publicationAcknowledge" type="java.lang.Boolean">
+            <column name="publication_acknowledge" />
+        </property>
+    </class>
+</hibernate-mapping>

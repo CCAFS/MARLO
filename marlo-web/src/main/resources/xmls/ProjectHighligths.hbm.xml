@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Dec 5, 2016 8:43:31 AM by Hibernate Tools 4.3.1.Final -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.ProjectHighlight" table="project_highlights"  optimistic-lock="version">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="file" class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">
+            <column name="file_id" />
+        </many-to-one>
+        <many-to-one name="project" class="org.cgiar.ccafs.marlo.data.model.Project" fetch="select">
+            <column name="project_id" not-null="true" />
+        </many-to-one>
+        <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="modified_by" not-null="true" />
+        </many-to-one>
+        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="created_by" not-null="true" />
+        </many-to-one>
+        <property name="title" type="string">
+            <column name="title" length="65535" not-null="true" />
+        </property>
+        <property name="author" type="string">
+            <column name="author" length="65535" not-null="true" />
+        </property>
+        <property name="startDate" type="date">
+            <column name="start_date" length="10" />
+        </property>
+        <property name="endDate" type="date">
+            <column name="end_date" length="10" />
+        </property>
+        <property name="description" type="string">
+            <column name="description" length="65535" />
+        </property>
+        <property name="results" type="string">
+            <column name="results" length="65535" />
+        </property>
+        <property name="global" type="boolean">
+            <column name="is_global" not-null="true" />
+        </property>
+        <property name="publisher" type="string">
+            <column name="publisher" length="65535" />
+        </property>
+        <property name="objectives" type="string">
+            <column name="objectives" length="65535" />
+        </property>
+        <property name="partners" type="string">
+            <column name="partners" length="65535" />
+        </property>
+        <property name="links" type="string">
+            <column name="links" length="65535" />
+        </property>
+        <property name="keywords" type="string">
+            <column name="keywords" length="65535" />
+        </property>
+        <property name="subject" type="string">
+            <column name="subject" length="65535" />
+        </property>
+        <property name="year" type="java.lang.Long">
+            <column name="year" />
+        </property>
+        <property name="active" type="boolean">
+            <column name="is_active" not-null="true" />
+        </property>
+        <property name="status" type="java.lang.Long">
+            <column name="status" />
+        </property>
+        <property name="activeSince" type="timestamp">
+            <column name="active_since" length="19" not-null="true" />
+        </property>
+        <property name="modificationJustification" type="string">
+            <column name="modification_justification" length="65535" not-null="true" />
+        </property>
+        <set name="projectHighligthsTypes" table="project_highligths_types" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="project_highlights_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectHighlightType" />
+        </set>
+        <set name="projectHighligthCountries" table="project_highligths_country" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="project_highlights_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectHighlightCountry" />
+        </set>
+        <set name="sectionStatuses" table="section_statuses" inverse="true"
+      lazy="true" fetch="select">
+      <key>
+        <column name="highlight_id" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.SectionStatus" />
+    </set>
+    </class>
+</hibernate-mapping>

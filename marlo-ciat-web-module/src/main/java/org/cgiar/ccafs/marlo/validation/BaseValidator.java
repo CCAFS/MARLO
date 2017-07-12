@@ -100,7 +100,7 @@ public class BaseValidator {
   }
 
   /**
-   * This method saves the missing fields into the database for a section at ImpactPathway - Outcome.
+   * This method saves the missing fields into the database for a section at Project - Deliverable.
    * 
    * @param program is a CenterProgram.
    * @param project is a CenterProject.
@@ -158,7 +158,7 @@ public class BaseValidator {
   }
 
   /**
-   * This method saves the missing fields into the database for a section at ImpactPathway - Outcome.
+   * This method saves the missing fields into the database for a section at ImpactPathway - Output.
    * 
    * @param program is a CenterProgram.
    * @param output is a CenterOutput.
@@ -187,7 +187,7 @@ public class BaseValidator {
   }
 
   /**
-   * This method saves the missing fields into the database for a section at ImpactPathway - Outcome.
+   * This method saves the missing fields into the database for a section at ImpactPathway - project.
    * 
    * @param program is a CenterProgram.
    * @param project is a CenterProject.

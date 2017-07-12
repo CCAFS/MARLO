@@ -17,7 +17,7 @@
           <div class="search-content clearfix">
             <div class="search-input">
               [@customForm.input name="" showTitle=false type="text" i18nkey="form.buttons.searchUser" placeholder="First name, last name or email"/]
-              <div class="search-loader" style="display:none"><img src="${baseUrl}/images/global/loading_2.gif"></div>
+              <div class="search-loader" style="display:none"><img src="${baseUrlMedia}/images/global/loading_2.gif"></div>
             </div>  
             <div class="search-button">[@s.text name="form.buttons.search" /]</div>
           </div> 

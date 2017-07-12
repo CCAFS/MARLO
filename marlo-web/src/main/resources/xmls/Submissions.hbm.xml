@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jul 7, 2016 11:23:47 AM by Hibernate Tools 4.3.1.Final -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.Submission" table="submissions" optimistic-lock="version">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="crpProgram" class="org.cgiar.ccafs.marlo.data.model.CrpProgram" fetch="select">
+            <column name="crp_program_id"  />
+        </many-to-one>
+        <many-to-one name="project" class="org.cgiar.ccafs.marlo.data.model.Project" fetch="select">
+            <column name="project_id" />
+        </many-to-one>
+        <many-to-one name="user" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="user_id" not-null="true" />
+        </many-to-one>
+                <many-to-one name="unSubmitUser" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="unsubmit_user_id" />
+        </many-to-one>
+        
+        <property name="dateTime" type="timestamp">
+            <column name="date_time" length="19" not-null="true">
+                <comment>The date time when the report was made.</comment>
+            </column>
+        </property>
+        <property name="modificationJustification" type="string">
+            <column name="modification_justification" length="16777215" />
+        </property>
+            <property name="unSubmitJustification" type="string">
+            <column name="unsubmit_justification" length="16777215" />
+        </property>
+        
+            <property name="unSubmit" type="java.lang.Boolean">
+      <column name="unsubmit" />
+    </property>
+        <property name="cycle" type="string">
+            <column name="cycle" length="100">
+                <comment>Cycling period type.</comment>
+            </column>
+        </property>
+        <property name="year" type="java.lang.Short">
+            <column name="year">
+                <comment>Year to which the report is happening.</comment>
+            </column>
+        </property>
+    </class>
+</hibernate-mapping>
