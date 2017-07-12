@@ -110,14 +110,7 @@
         <param name="edit">true</param>
       </result>
 		</action>
-		<action name="customLocations" class="org.cgiar.ccafs.marlo.action.superadmin.CustomLocationsAdminAction">
-      <interceptor-ref name="superAdminStack" />   
-      <result name="input">/WEB-INF/views/superadmin/marloLocations.ftl</result>
-      <result name="success" type="redirectAction">
-        <param name="actionName">customLocations</param>
-        <param name="edit">true</param>
-      </result>
-    </action>
+		
 		<action name="removePartner" method="removePartner"
       class="org.cgiar.ccafs.marlo.action.superadmin.PartnerRequestAction">
       <interceptor-ref name="superAdminStack" />
@@ -128,6 +121,15 @@
         <param name="edit">true</param>
       </result>
     </action>
+    
+		<action name="customLocations" class="org.cgiar.ccafs.marlo.action.superadmin.CustomLocationsAdminAction">
+      <interceptor-ref name="superAdminStack" />   
+      <result name="input">/WEB-INF/views/superadmin/marloLocations.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">customLocations</param>
+        <param name="edit">true</param>
+      </result>
+    </action>		
 
 	</package>
 </struts>

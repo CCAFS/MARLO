@@ -122,7 +122,10 @@ public class PartnerRequest implements java.io.Serializable {
   }
 
   public String getPartnerInfo() {
-    return this.acronym + " - " + this.partnerName;
+    if (this.acronym != null && !this.acronym.isEmpty()) {
+      return this.acronym + " - " + this.partnerName;
+    }
+    return this.partnerName;
   }
 
 

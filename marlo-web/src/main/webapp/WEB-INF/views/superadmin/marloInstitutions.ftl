@@ -83,7 +83,7 @@
             <a href="[@s.url namespace="" action="superadmin/addPartner"][@s.param name='requestID']${partner.id?c}[/@s.param][/@s.url]">
               <span class="text-center col-md-6 glyphicon glyphicon-ok" style="cursor:pointer;"> Accept</span>
             </a>
-            <a href="[@s.url namespace="superadmin" action="superadmin/removePartner"][@s.param name='requestID']${partner.id?c}[/@s.param][/@s.url]">
+            <a href="[@s.url namespace="" action="superadmin/removePartner"][@s.param name='requestID']${partner.id?c}[/@s.param][/@s.url]">
               <span class="text-center col-md-6 glyphicon glyphicon-remove" style="cursor:pointer;"> Reject</span>
             </a>
           </td>
