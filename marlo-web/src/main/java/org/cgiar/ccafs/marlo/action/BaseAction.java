@@ -2213,31 +2213,21 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public void loadLessons(Crp crp, Project project) {
 
     Project projectDB = projectManager.getProjectById(project.getId());
+    List<ProjectComponentLesson> lessons = projectDB.getProjectComponentLessons().stream()
+      .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())
+        && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
+      .collect(Collectors.toList());
+    if (!lessons.isEmpty()) {
+      project.setProjectComponentLesson(lessons.get(0));
+    }
     if (this.isReportingActive()) {
-
-      List<ProjectComponentLesson> lessons = projectDB.getProjectComponentLessons().stream()
-        .filter(
-          c -> c.isActive() && c.getYear() == this.getReportingYear() && c.getCycle().equals(APConstants.REPORTING)
-            && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
-        .collect(Collectors.toList());
-      if (!lessons.isEmpty()) {
-        project.setProjectComponentLesson(lessons.get(0));
-      }
       List<ProjectComponentLesson> lessonsPreview = projectDB.getProjectComponentLessons().stream()
-        .filter(c -> c.isActive() && c.getYear() == this.getReportingYear() && c.getCycle().equals(APConstants.PLANNING)
+        .filter(c -> c.isActive() && c.getYear() == this.getActualPhase().getYear()
+          && c.getCycle().equals(APConstants.PLANNING)
           && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
         .collect(Collectors.toList());
       if (!lessonsPreview.isEmpty()) {
         project.setProjectComponentLessonPreview(lessonsPreview.get(0));
-      }
-    } else {
-
-      List<ProjectComponentLesson> lessons = projectDB.getProjectComponentLessons().stream()
-        .filter(c -> c.isActive() && c.getYear() == this.getPlanningYear() && c.getCycle().equals(APConstants.PLANNING)
-          && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
-        .collect(Collectors.toList());
-      if (!lessons.isEmpty()) {
-        project.setProjectComponentLesson(lessons.get(0));
       }
     }
   }
@@ -2380,14 +2370,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       project.getProjectComponentLesson().setModifiedBy(this.getCurrentUser());
       project.getProjectComponentLesson().setModificationJustification("");
       project.getProjectComponentLesson().setProject(project);
-      if (this.isReportingActive()) {
-        project.getProjectComponentLesson().setCycle(APConstants.REPORTING);
-        project.getProjectComponentLesson().setYear(this.getReportingYear());
 
-      } else {
-        project.getProjectComponentLesson().setCycle(APConstants.PLANNING);
-        project.getProjectComponentLesson().setYear(this.getPlanningYear());
-      }
+      project.getProjectComponentLesson().setCycle(this.getActualPhase().getDescription());
+      project.getProjectComponentLesson().setYear(this.getActualPhase().getYear());
+      project.getProjectComponentLesson().setPhase(this.getActualPhase());
       projectComponentLessonManager.saveProjectComponentLesson(project.getProjectComponentLesson());
     }
 

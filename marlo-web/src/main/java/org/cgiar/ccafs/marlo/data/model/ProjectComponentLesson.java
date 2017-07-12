@@ -39,19 +39,23 @@ public class ProjectComponentLesson implements java.io.Serializable, IAuditLog {
   private boolean active;
   @Expose
   private Date activeSince;
+
   @Expose
   private IpProgram ipProgram;
+
+
   @Expose
   private String modificationJustification;
+
   @Expose
   private String cycle;
-
+  @Expose
+  private Phase phase;
   @Expose
   private ProjectOutcome projectOutcome;
 
   public ProjectComponentLesson() {
   }
-
 
   public ProjectComponentLesson(Project project, User usersByModifiedBy, User usersByCreatedBy, String componentName,
     String lessons, int year, boolean isActive, Date activeSince, String modificationJustification, String cycle) {
@@ -67,7 +71,6 @@ public class ProjectComponentLesson implements java.io.Serializable, IAuditLog {
     this.cycle = cycle;
   }
 
-
   public ProjectComponentLesson(User usersByModifiedBy, User usersByCreatedBy, String componentName, int year,
     boolean isActive, Date activeSince, String modificationJustification) {
     this.modifiedBy = usersByModifiedBy;
@@ -79,9 +82,11 @@ public class ProjectComponentLesson implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
+
   public Date getActiveSince() {
     return this.activeSince;
   }
+
 
   public String getComponentName() {
     return this.componentName;
@@ -104,7 +109,6 @@ public class ProjectComponentLesson implements java.io.Serializable, IAuditLog {
     return ipProgram;
   }
 
-
   public String getLessons() {
     return this.lessons;
   }
@@ -119,6 +123,7 @@ public class ProjectComponentLesson implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+
   @Override
   public String getModificationJustification() {
     return this.modificationJustification;
@@ -127,6 +132,10 @@ public class ProjectComponentLesson implements java.io.Serializable, IAuditLog {
   @Override
   public User getModifiedBy() {
     return this.modifiedBy;
+  }
+
+  public Phase getPhase() {
+    return phase;
   }
 
   public Project getProject() {
@@ -154,10 +163,10 @@ public class ProjectComponentLesson implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
   }
 
-
   public void setComponentName(String componentName) {
     this.componentName = componentName;
   }
+
 
   public void setCreatedBy(User usersByCreatedBy) {
     this.createdBy = usersByCreatedBy;
@@ -179,13 +188,17 @@ public class ProjectComponentLesson implements java.io.Serializable, IAuditLog {
     this.lessons = lessons;
   }
 
-
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
 
+
   public void setModifiedBy(User usersByModifiedBy) {
     this.modifiedBy = usersByModifiedBy;
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
   public void setProject(Project project) {
