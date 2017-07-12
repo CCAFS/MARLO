@@ -84,7 +84,7 @@
 }
 
 .map {
-    height: 400px;
+    height: 500px;
     margin-bottom: 30px;
     margin-top: 15px;
 }
@@ -248,5 +248,93 @@ span.allCountriesQuestion {
 }
 
 li.select2-search.select2-search--inline{
-	width:100%;
-}]
+  width:100%;
+}
+
+.cancelButton{
+    padding: 4px 25px 4px 28px;
+    margin: 5px 0;
+    text-decoration: none;
+    cursor: pointer;
+    background-color: #2BA6CB;
+    color: #fff;
+    border: 0;
+    border-bottom: 3px solid #1E94B8;
+    border-radius: 2px;
+    text-decoration: none;
+}
+
+
+.acceptLocation{
+  position:absolute;
+  right: 0px;
+  top: 4px;
+  width:20px;
+  height:20px;
+  cursor:pointer;
+  background-image:url(../../images/global/icon-check.png);
+  background-repeat: no-repeat;
+}
+
+.notAcceptLocation{
+  position:absolute;
+  right: 0px;
+  top: 4px;
+  width:20px;
+  height:20px;
+  cursor:pointer;
+  background-image:url(../../images/global/icon-check.png);
+  background-repeat: no-repeat;
+  opacity:0.2;
+}
+
+.recommendedLocName{
+  cursor:pointer;
+}
+
+.fundingContent{
+  border:1px dashed #ccc; 
+  margin:-7px 0 10px 0;
+  min-height:90px;
+  max-height:90px;
+  overflow: auto;
+}
+}
+
+.nameWrapper-locLevel {}
+
+.nameWrapper-locLevel {
+    width: 40%;
+    float: left;
+}
+
+.latitudeWrapper-locLevel {
+    width: 20%;
+    float: left;
+    margin-left: 10px;
+}
+
+.longitudeWrapper-locLevel {
+    width: 20%;
+    float: left;
+    margin-left: 10px;
+}
+
+.addLoc-locLevel{
+    background-color: #668fda;
+    color: white;
+    text-align: center;
+    padding-left: 5px;
+    padding-right: 5px;
+    cursor:pointer;
+    line-height: 25px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.3);
+    border-radius: 3px;
+    border: 1px solid #668fda;
+    font-size: 12px;
+    margin-top:8px;
+}
+
+.addLoc-locLevel b{
+  font-family: Roboto,Arial,sans-sefif;
+}

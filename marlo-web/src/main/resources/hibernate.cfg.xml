@@ -137,6 +137,7 @@
 	  <mapping resource="xmls/GenderTypes.hbm.xml" />
 	  <mapping resource="xmls/PartnerDivisions.hbm.xml" />	  
 	  <mapping resource="xmls/CrpLocElementTypes.hbm.xml" />   
+	  <mapping resource="xmls/FundingSourceLocations.hbm.xml" /> 
     <mapping resource="xmls/Parameters.hbm.xml" />   
     <mapping resource="xmls/CustomParameters.hbm.xml" />   	  
 	  <mapping resource="xmls/InstitutionsLocations.hbm.xml"/>

@@ -25,6 +25,7 @@
 			fetch="select">
 			<column name="crp_id" />
 		</many-to-one>
+<<<<<<< HEAD
 		  <many-to-one name="file"
       class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">
       <column name="file" not-null="false" />
@@ -114,3 +115,106 @@
     </set>
 	</class>
 </hibernate-mapping>
+=======
+		<many-to-one name="file"
+			class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">
+			<column name="file" not-null="false" />
+		</many-to-one>
+		<many-to-one name="budgetType"
+			class="org.cgiar.ccafs.marlo.data.model.BudgetType" fetch="select">
+			<column name="type" />
+		</many-to-one>
+
+		<property name="description" type="string">
+			<column name="description" length="65535" />
+		</property>
+		<property name="title" type="string">
+			<column name="title" length="65535" />
+		</property>
+		<property name="startDate" type="date">
+			<column name="start_date" length="10" />
+		</property>
+		<property name="endDate" type="date">
+			<column name="end_date" length="10" />
+		</property>
+		<property name="financeCode" type="string">
+			<column name="finance_code" length="65535" />
+		</property>
+		<property name="contactPersonName" type="string">
+			<column name="contact_person_name" length="65535" />
+		</property>
+		<property name="contactPersonEmail" type="string">
+			<column name="contact_person_email" length="65535" />
+		</property>
+
+		<many-to-one name="partnerDivision"
+			class="org.cgiar.ccafs.marlo.data.model.PartnerDivision" fetch="select">
+			<column name="division_id" />
+		</many-to-one>
+
+		<property name="status" type="java.lang.Integer">
+			<column name="status" />
+		</property>
+		<property name="active" type="boolean">
+			<column name="is_active" not-null="true" />
+		</property>
+		<property name="w1w2" type="java.lang.Boolean">
+      <column name="w1w2"  default="0"/>
+    </property>
+		<property name="global" type="boolean">
+      <column name="global" not-null="true" />
+    </property>
+		<property name="activeSince" type="timestamp">
+			<column name="active_since" length="19" not-null="true" />
+		</property>
+		<property name="modificationJustification" type="string">
+			<column name="modification_justification" length="65535"
+				not-null="true" />
+		</property>
+		<set name="fundingSourceBudgets" table="funding_source_budgets"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="funding_source_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.FundingSourceBudget" />
+		</set>
+		<set name="projectBudgets" table="project_budgets" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="funding_source_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectBudget" />
+		</set>
+		<set name="fundingSources" table="funding_sources" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="funding_source_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.FundingSource" />
+		</set>
+		<set name="fundingSourceInstitutions" table="funding_source_institutions"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="funding_source_id" not-null="true" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution" />
+		</set>
+		<set name="fundingSourceLocations" table="funding_source_locations"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="funding_source_id" not-null="true" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.FundingSourceLocation" />
+		</set>
+		<set name="sectionStatuses" table="section_statuses" inverse="true"
+      lazy="true" fetch="select">
+      <key>
+        <column name="funding_source_id" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.SectionStatus" />
+    </set>
+	</class>
+</hibernate-mapping>
+>>>>>>> refs/remotes/origin/staging

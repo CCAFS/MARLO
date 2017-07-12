@@ -88,6 +88,38 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
     this.crpManager = crpManager;
   }
 
+  /**
+   * Method to add i8n parameters to masterReport in Pentaho
+   * 
+   * @param masterReport
+   * @return masterReport with i8n parameters added
+   */
+  private MasterReport addi8nParameters(MasterReport masterReport) {
+    masterReport.getParameterValues().put("i8nCaseStudies", this.getText("breadCrumb.menu.caseStudies"));
+    masterReport.getParameterValues().put("i8nNoData", this.getText("caseStudy.noData"));
+    masterReport.getParameterValues().put("i8nCaseStudies", this.getText("projects.menu.caseStudies"));
+    masterReport.getParameterValues().put("i8nProjects", this.getText("caseStudy.projects"));
+    masterReport.getParameterValues().put("i8nOutcomeStatement", this.getText("caseStudy.outcomeStatement.readText"));
+    masterReport.getParameterValues().put("i8nResearchOutput", this.getText("caseStudy.researchOutput.readText"));
+    masterReport.getParameterValues().put("i8nResearchPartners", this.getText("caseStudy.researchPartners.readText"));
+    masterReport.getParameterValues().put("i8nActivitiesContributed",
+      this.getText("caseStudy.activitiesContributed.readText"));
+    masterReport.getParameterValues().put("i8nNonResearchPartners",
+      this.getText("caseStudy.nonResearchPartners.readText"));
+    masterReport.getParameterValues().put("i8nOutputUsers", this.getText("caseStudy.outputUsers.readText"));
+    masterReport.getParameterValues().put("i8nEvidence", this.getText("caseStudy.evidence.readText"));
+    masterReport.getParameterValues().put("i8nOutputUsed", this.getText("caseStudy.outputUsed.readText"));
+    masterReport.getParameterValues().put("i8nReferences", this.getText("caseStudy.references.readText"));
+    masterReport.getParameterValues().put("i8nCaseStudyIndicators",
+      this.getText("caseStudy.caseStudyIndicators.readText"));
+    masterReport.getParameterValues().put("i8nExplainIndicatorRelation",
+      this.getText("caseStudy.explainIndicatorRelation.readText"));
+    masterReport.getParameterValues().put("i8nUploadAnnexes", this.getText("caseStudy.uploadAnnexes.readText"));
+
+
+    return masterReport;
+  }
+
   @Override
   public String execute() throws Exception {
 
@@ -120,7 +152,8 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
       TypedTableModel model = this.getMasterTableModel(center, date, String.valueOf(year));
       sdf.addTable(masterQueryName, model);
       masterReport.setDataFactory(cdf);
-
+      // Set i8n for pentaho
+      masterReport = this.addi8nParameters(masterReport);
       // Get details band
       ItemBand masteritemBand = masterReport.getItemBand();
       // Create new empty subreport hash map

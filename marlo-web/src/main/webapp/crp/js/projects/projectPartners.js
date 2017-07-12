@@ -477,7 +477,7 @@ function removePartnerEvent(e) {
   };
   // The budget related with this partner will be deleted
   if(partner.id != -1) {
-    messages += '<li>Note that the budget affected to this partner will also be deleted.</li>';
+    // messages += '<li>Note that the budget affected to this partner will also be deleted.</li>';
     removeDialogOptions.buttons = {
         "Remove partner": function() {
           partner.remove();
