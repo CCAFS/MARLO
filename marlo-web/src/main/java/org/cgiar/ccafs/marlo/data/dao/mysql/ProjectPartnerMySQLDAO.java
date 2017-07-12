@@ -270,7 +270,7 @@ public class ProjectPartnerMySQLDAO implements ProjectPartnerDAO {
           partnerPersonAdd.setModificationJustification(projectPartnerPrev.getModificationJustification());
           partnerPersonAdd.setUser(partnerPerson.getUser());
           partnerPersonAdd.setCreatedBy(projectPartnerPrev.getCreatedBy());
-          dao.save(partnerPersonAdd);
+          dao.update(partnerPersonAdd);
 
         }
       }
