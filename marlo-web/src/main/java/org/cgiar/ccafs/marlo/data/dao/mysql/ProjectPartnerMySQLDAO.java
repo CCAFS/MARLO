@@ -135,7 +135,32 @@ public class ProjectPartnerMySQLDAO implements ProjectPartnerDAO {
   public boolean deleteProjectPartner(long projectPartnerId) {
     ProjectPartner projectPartner = this.find(projectPartnerId);
     projectPartner.setActive(false);
-    return this.save(projectPartner) > 0;
+    long result = this.save(projectPartner);
+
+    if (projectPartner.getPhase().getNext() != null) {
+      this.deletProjectPartnerPhase(projectPartner.getPhase().getNext(), projectPartner.getProject().getId(),
+        projectPartner);
+    }
+    return result > 0;
+  }
+
+  public void deletProjectPartnerPhase(Phase next, long projecID, ProjectPartner projectPartner) {
+    Phase phase = dao.find(Phase.class, next.getId());
+    if (phase.getEditable() != null && phase.getEditable()) {
+      List<ProjectPartner> partners = phase.getPartners().stream()
+        .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
+          && projectPartner.getInstitution().getId().longValue() == c.getInstitution().getId().longValue())
+        .collect(Collectors.toList());
+      for (ProjectPartner partner : partners) {
+        this.deleteProjectPartner(partner.getId());
+      }
+    } else {
+      if (phase.getNext() != null) {
+        this.deletProjectPartnerPhase(phase.getNext(), projecID, projectPartner);
+      }
+    }
+
+
   }
 
   @Override
@@ -165,6 +190,7 @@ public class ProjectPartnerMySQLDAO implements ProjectPartnerDAO {
 
   }
 
+
   @Override
   public long save(ProjectPartner projectPartner) {
     if (projectPartner.getId() == null) {
@@ -179,7 +205,6 @@ public class ProjectPartnerMySQLDAO implements ProjectPartnerDAO {
     }
     return projectPartner.getId();
   }
-
 
   /**
    * check the offices and updated
@@ -235,6 +260,7 @@ public class ProjectPartnerMySQLDAO implements ProjectPartnerDAO {
       }
     }
   }
+
 
   /**
    * check the partners persons and updated
