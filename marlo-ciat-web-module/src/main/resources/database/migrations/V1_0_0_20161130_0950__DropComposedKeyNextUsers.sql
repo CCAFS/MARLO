@@ -1,3 +1,0 @@
-ALTER TABLE `nextuser_types`
-DROP PRIMARY KEY,
-ADD PRIMARY KEY (`id`);

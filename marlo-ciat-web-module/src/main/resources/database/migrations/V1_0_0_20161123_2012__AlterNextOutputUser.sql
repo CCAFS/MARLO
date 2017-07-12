@@ -1,1 +1,0 @@
-ALTER TABLE `nextoutput_user` RENAME TO  `output_nextsubuser` ;

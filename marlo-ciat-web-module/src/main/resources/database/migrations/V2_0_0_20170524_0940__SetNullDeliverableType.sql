@@ -1,1 +1,0 @@
-UPDATE deliverables set type_id = NULL;

@@ -1,4 +1,0 @@
-INSERT INTO `research_leaders` (`id`, `user_id`, `research_area_id`, `research_program_id`, `research_center_id`, `type_id`, `is_active`) VALUES (1, 1108, 1, null, 1, 5, 1);
-INSERT INTO `research_leaders` (`id`, `user_id`, `research_area_id`, `research_program_id`, `research_center_id`, `type_id`, `is_active`) VALUES (2, 1108, null, 2, 1, 6, 1);
-INSERT INTO `research_leaders` (`id`, `user_id`, `research_area_id`, `research_program_id`, `research_center_id`, `type_id`, `is_active`) VALUES (3, 1108, null, 1, 1, 5, 1);
-INSERT INTO `research_leaders` (`id`, `user_id`, `research_area_id`, `research_program_id`, `research_center_id`, `type_id`, `is_active`) VALUES (4, 1108, null, 3, 1, 4, 1);

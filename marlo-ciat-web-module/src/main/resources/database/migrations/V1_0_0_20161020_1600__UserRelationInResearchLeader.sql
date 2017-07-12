@@ -1,1 +1,0 @@
-ALTER TABLE `research_leaders` ADD CONSTRAINT `fk_leader_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
