@@ -12,8 +12,8 @@
     <div class="firstForm  form-group row" style="display:${(crpSession?has_content)?string('none', 'block')}">
       <ul class="nav nav-tabs" role="tablist">
         <li id="crp" role="presentation" class="type-crp [#if (typeSession == "crp")!false]active[/#if]"><a href="#crps" aria-controls="home" role="tab" data-toggle="tab">CRPs</a></li>
-        <li id="center" role="presentation class="type-center [#if (typeSession == "center")!false]active[/#if]"><a href="#centers" aria-controls="messages" role="tab" data-toggle="tab">Centers</a></li> 
-        <li id="platform" role="presentation class="type-platform [#if (typeSession == "platform")!false]active[/#if]"><a href="#platforms" aria-controls="profile" role="tab" data-toggle="tab">Platforms</a></li>
+        <li id="center" role="presentation" class="type-center [#if (typeSession == "center")!false]active[/#if]"><a href="#centers" aria-controls="messages" role="tab" data-toggle="tab">Centers</a></li> 
+        <li id="platform" role="presentation" class="type-platform [#if (typeSession == "platform")!false]active[/#if]"><a href="#platforms" aria-controls="profile" role="tab" data-toggle="tab">Platforms</a></li>
       </ul>
       
       <div class="crpGroup tab-content">

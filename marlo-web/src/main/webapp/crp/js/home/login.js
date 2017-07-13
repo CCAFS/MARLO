@@ -4,7 +4,7 @@ var username = $("input[name='user.email']");
 function init() {
   initJreject();
 
-  cookieTime = 10;
+  cookieTime = 100;
   var crpInput = $('input#crp-input').val();
   var typeInput = $('input#type-input').val();
 
@@ -18,6 +18,8 @@ function init() {
   if(verifyCookie("TYPE") && (getCookie("TYPE") != "undefined") && (!typeInput)) {
     var typeSelected = getCookie("TYPE");
     setType(typeSelected);
+  } else if(!typeInput) {
+    setType('crp');
   }
 
   // Verify user email session
@@ -31,6 +33,14 @@ function init() {
   $('.crpGroup ul li.enabled').on('click', function() {
     var crpSelected = $(this).attr('id').split('-')[1];
     setCRP(crpSelected);
+  });
+
+  // On select a Type
+  $('.nav-tabs> li').on('click', function() {
+    var typeSelected = $(this).attr('id');
+    // Set Type
+    setType(typeSelected);
+    console.log(typeSelected);
   });
 
   $("a.goBackToSelect").on('click', function() {
@@ -50,10 +60,8 @@ function init() {
 
 function setCRP(crpSelected) {
   var $li = $("li#crp-" + crpSelected);
-  var type = $('.nav-tabs li.active').attr('id');
 
-  // Set Type
-  setType(type);
+  console.log()
 
   // Removing class selected
   $(".loginOption").removeClass('selected');
@@ -77,8 +85,8 @@ function setCRP(crpSelected) {
 }
 
 function setType(typeSelected) {
-  // Add 'active' class and removing sibling's class if any
-  $('.type' + typeSelected).addClass('active');
+  // Enable tabbable tabs
+  $('li.type-' + typeSelected + ' a').tab('show');
   // Setting up the type value to log (CRP-CENTER-PALTFORM)
   $('#type-input').val(typeSelected);
   // Create type cookie
