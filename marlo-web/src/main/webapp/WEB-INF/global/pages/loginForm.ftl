@@ -11,9 +11,9 @@
     [@s.fielderror cssClass="fieldError" fieldName="loginMessage"/]
     <div class="firstForm  form-group row" style="display:${(crpSession?has_content)?string('none', 'block')}">
       <ul class="nav nav-tabs" role="tablist">
-        <li id="crp" role="presentation" class="active"><a href="#crps" aria-controls="home" role="tab" data-toggle="tab">CRPs</a></li>
-        <li id="center" role="presentation"><a href="#centers" aria-controls="messages" role="tab" data-toggle="tab">Centers</a></li> 
-        <li id="platform" role="presentation"><a href="#platforms" aria-controls="profile" role="tab" data-toggle="tab">Platforms</a></li>
+        <li id="crp" role="presentation" [#if (typeSession == "crp")!false]class="active"[/#if]><a href="#crps" aria-controls="home" role="tab" data-toggle="tab">CRPs</a></li>
+        <li id="center" role="presentation [#if (typeSession == "center")!false]class="active"[/#if]"><a href="#centers" aria-controls="messages" role="tab" data-toggle="tab">Centers</a></li> 
+        <li id="platform" role="presentation [#if (typeSession == "platform")!false]class="active"[/#if]"><a href="#platforms" aria-controls="profile" role="tab" data-toggle="tab">Platforms</a></li>
       </ul>
       
       <div class="crpGroup tab-content">
