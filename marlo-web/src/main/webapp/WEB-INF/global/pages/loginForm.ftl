@@ -11,17 +11,17 @@
     [@s.fielderror cssClass="fieldError" fieldName="loginMessage"/]
     <div class="firstForm  form-group row" style="display:${(crpSession?has_content)?string('none', 'block')}">
       <ul class="nav nav-tabs" role="tablist">
-        <li id="crp" role="presentation" [#if (typeSession == "crp")!false]class="active"[/#if]><a href="#crps" aria-controls="home" role="tab" data-toggle="tab">CRPs</a></li>
-        <li id="center" role="presentation [#if (typeSession == "center")!false]class="active"[/#if]"><a href="#centers" aria-controls="messages" role="tab" data-toggle="tab">Centers</a></li> 
-        <li id="platform" role="presentation [#if (typeSession == "platform")!false]class="active"[/#if]"><a href="#platforms" aria-controls="profile" role="tab" data-toggle="tab">Platforms</a></li>
+        <li id="crp" role="presentation" class="type-crp [#if (typeSession == "crp")!false]active[/#if]"><a href="#crps" aria-controls="home" role="tab" data-toggle="tab">CRPs</a></li>
+        <li id="center" role="presentation class="type-center [#if (typeSession == "center")!false]active[/#if]"><a href="#centers" aria-controls="messages" role="tab" data-toggle="tab">Centers</a></li> 
+        <li id="platform" role="presentation class="type-platform [#if (typeSession == "platform")!false]active[/#if]"><a href="#platforms" aria-controls="profile" role="tab" data-toggle="tab">Platforms</a></li>
       </ul>
       
       <div class="crpGroup tab-content">
       
         [#-- CRPs --]
-        <div role="tabpanel" id="crps" class="tab-pane active col-sm-12">
+        <div role="tabpanel" id="crps" class="tab-pane type-crp [#if (typeSession == "crp")!false]class="active"[/#if] col-sm-12">
           <ul>
-          [#assign crpList = action.getCrpCategoryList("1") /]
+          [#assign crpList = (action.getCrpCategoryList("1"))![] /]
           [#if crpList?has_content]
             [#list crpList as crp]
               [@crpItem element=crp /]
@@ -32,7 +32,7 @@
           </ul>
         </div>
         [#-- Centers --]
-        <div id="centers" class="tab-pane col-sm-12">
+        <div id="centers" class="tab-pane type-center [#if (typeSession == "center")!false]class="active"[/#if] col-sm-12">
           <ul>
           [#if centersList?has_content]
             [#list centersList as center]
@@ -45,9 +45,9 @@
         </div>
         
         [#-- Platforms --]
-        <div id="platforms" class="tab-pane col-sm-12">
+        <div id="platforms" class="tab-pane type-platform [#if (typeSession == "platform")!false]class="active"[/#if] col-sm-12">
           <ul>
-          [#assign platformsList = action.getCrpCategoryList("3") /]
+          [#assign platformsList = (action.getCrpCategoryList("3"))![] /]
           [#if platformsList?has_content]
             [#list platformsList as platform]
               [@crpItem element=platform /]
@@ -70,6 +70,7 @@
           </div>
           [#-- CRP Session --]
           <input type="hidden" id="crp-input" name="crp" value="${(crpSession)!}" />
+          [#-- Type Session --]
           <input type="hidden" id="type-input" name="type" value="${(typeSession)!}" />
           [#-- Email --]
           <div class="form-group text-left">

@@ -6,19 +6,28 @@ function init() {
 
   cookieTime = 10;
   var crpInput = $('input#crp-input').val();
+  var typeInput = $('input#type-input').val();
 
+  // Verify "crp"
   if(verifyCookie("CRP") && (getCookie("CRP") != "undefined") && (!crpInput)) {
-
     var crpSelected = getCookie("CRP");
     setCRP(crpSelected);
-
-    if(verifyCookie("username.email")) {
-      username.val(getCookie("username.email"));
-    } else {
-      username.val(getCookie(""));
-    }
   }
 
+  // Verify "type" (CRP, Center, Platform)
+  if(verifyCookie("TYPE") && (getCookie("TYPE") != "undefined") && (!typeInput)) {
+    var typeSelected = getCookie("TYPE");
+    setType(typeSelected);
+  }
+
+  // Verify user email session
+  if(verifyCookie("username.email")) {
+    username.val(getCookie("username.email"));
+  } else {
+    username.val(getCookie(""));
+  }
+
+  // On select a CRP. Center, Platform
   $('.crpGroup ul li.enabled').on('click', function() {
     var crpSelected = $(this).attr('id').split('-')[1];
     setCRP(crpSelected);
@@ -42,17 +51,18 @@ function init() {
 function setCRP(crpSelected) {
   var $li = $("li#crp-" + crpSelected);
   var type = $('.nav-tabs li.active').attr('id');
+
+  // Set Type
+  setType(type);
+
   // Removing class selected
   $(".loginOption").removeClass('selected');
 
   // Add 'selected' class and removing sibling's class if any
   $li.addClass('selected');
 
-  console.log(crpSelected);
   // Setting up the CRP-CENTER-PLATFORM value into a hidden input
   $('#crp-input').val(crpSelected);
-  // Setting up the type value to log (CRP-CENTER-PALTFORM)
-  $('#type-input').val(type);
 
   $("#crpSelectedImage").attr("src", baseUrlMedia + "/images/global/crps/" + crpSelected + ".png");
 
@@ -64,6 +74,15 @@ function setCRP(crpSelected) {
 
   // Create crp cookie
   setCookie("CRP", crpSelected, cookieTime);
+}
+
+function setType(typeSelected) {
+  // Add 'active' class and removing sibling's class if any
+  $('.type' + typeSelected).addClass('active');
+  // Setting up the type value to log (CRP-CENTER-PALTFORM)
+  $('#type-input').val(typeSelected);
+  // Create type cookie
+  setCookie("TYPE", typeSelected, cookieTime);
 }
 
 function initJreject() {
