@@ -31,8 +31,11 @@ import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import org.apache.shiro.SecurityUtils;
@@ -61,17 +64,17 @@ public class LoginAction extends BaseAction {
 
   private String url;
 
-
   private String crp;
+
+
   private String type;
+
   // Managers
   private UserManager userManager;
+
   private CrpManager crpManager;
   private ICenterManager centerManager;
-
-
   private CrpUserManager crpUserManager;
-
 
   @Inject
   public LoginAction(APConfig config, UserManager userManager, CrpManager crpManager, CrpUserManager crpUserManager,
@@ -83,9 +86,16 @@ public class LoginAction extends BaseAction {
     this.centerManager = centerManager;
   }
 
+
   @Override
   public String execute() throws Exception {
     return SUCCESS;
+  }
+
+
+  @Override
+  public List<Center> getCentersList() {
+    return new ArrayList<>(centerManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
   }
 
   public String getCrp() {
@@ -136,11 +146,11 @@ public class LoginAction extends BaseAction {
     return type;
   }
 
-
   @Override
   public String getUrl() {
     return url;
   }
+
 
   public User getUser() {
     return user;
@@ -150,8 +160,9 @@ public class LoginAction extends BaseAction {
     return userManager;
   }
 
-
   public String login() {
+
+
     if (user != null) {
 
       System.out.println(this.crp);
@@ -200,6 +211,7 @@ public class LoginAction extends BaseAction {
     }
 
   }
+
 
   public String loginCenter(User loggedUser) {
     // Obtain the center selected
@@ -354,6 +366,7 @@ public class LoginAction extends BaseAction {
     String hex = "#" + Integer.toHexString(color.getRGB()).substring(2);
     return hex;
   }
+
 
   public void setCrp(String crp) {
     this.crp = crp;

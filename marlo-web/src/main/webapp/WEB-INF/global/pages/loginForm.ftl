@@ -31,11 +31,9 @@
           [/#if]
           </ul>
         </div>
-        
         [#-- Centers --]
         <div id="centers" class="tab-pane col-sm-12">
           <ul>
-          [#assign centersList = action.getCrpCategoryList("2") /]
           [#if centersList?has_content]
             [#list centersList as center]
               [@crpItem element=center /]

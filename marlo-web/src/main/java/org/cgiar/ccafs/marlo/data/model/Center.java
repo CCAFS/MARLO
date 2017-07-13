@@ -39,6 +39,7 @@ public class Center implements Serializable, IAuditLog {
   @Expose
   private Long id;
 
+
   @Expose
   private String name;
 
@@ -60,6 +61,12 @@ public class Center implements Serializable, IAuditLog {
   @Expose
   private User modifiedBy;
 
+  @Expose
+  private Boolean login;
+
+
+  @Expose
+  private boolean marlo;
 
   @Expose
   private String modificationJustification;
@@ -67,9 +74,7 @@ public class Center implements Serializable, IAuditLog {
 
   private Set<CenterUser> centerUsers = new HashSet<CenterUser>(0);
 
-
   private Set<CenterArea> researchAreas = new HashSet<CenterArea>(0);
-
 
   private Set<CenterObjective> researchObjectives = new HashSet<CenterObjective>(0);
 
@@ -79,6 +84,7 @@ public class Center implements Serializable, IAuditLog {
 
   public Center() {
   }
+
 
   public Center(String name) {
     this.name = name;
@@ -95,6 +101,7 @@ public class Center implements Serializable, IAuditLog {
     this.name = name;
     this.acronym = acronym;
   }
+
 
   /**
    * @param name
@@ -135,6 +142,7 @@ public class Center implements Serializable, IAuditLog {
     return acronym;
   }
 
+
   public Date getActiveSince() {
     return activeSince;
   }
@@ -142,6 +150,7 @@ public class Center implements Serializable, IAuditLog {
   public Set<CenterCustomParameter> getCenterCustomParameters() {
     return centerCustomParameters;
   }
+
 
   /**
    * @return the centerUsers
@@ -159,7 +168,6 @@ public class Center implements Serializable, IAuditLog {
     return this.id;
   }
 
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -167,11 +175,14 @@ public class Center implements Serializable, IAuditLog {
     return sb.toString();
   }
 
+  public Boolean getLogin() {
+    return login;
+  }
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
-
 
   @Override
   public User getModifiedBy() {
@@ -183,13 +194,16 @@ public class Center implements Serializable, IAuditLog {
     return this.name;
   }
 
+
   public Set<CenterArea> getResearchAreas() {
     return researchAreas;
   }
 
+
   public Set<CenterObjective> getResearchObjectives() {
     return researchObjectives;
   }
+
 
   @Override
   public int hashCode() {
@@ -199,15 +213,19 @@ public class Center implements Serializable, IAuditLog {
     return result;
   }
 
-
   @Override
   public boolean isActive() {
     return active;
   }
 
+  public boolean isMarlo() {
+    return marlo;
+  }
+
   public void setAcronym(String acronym) {
     this.acronym = acronym;
   }
+
 
   public void setActive(boolean active) {
     this.active = active;
@@ -217,11 +235,9 @@ public class Center implements Serializable, IAuditLog {
     this.activeSince = activeSince;
   }
 
-
   public void setCenterCustomParameters(Set<CenterCustomParameter> centerCustomParameters) {
     this.centerCustomParameters = centerCustomParameters;
   }
-
 
   /**
    * @param centerUsers the centerUsers to set
@@ -238,6 +254,16 @@ public class Center implements Serializable, IAuditLog {
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+
+  public void setLogin(Boolean login) {
+    this.login = login;
+  }
+
+
+  public void setMarlo(boolean marlo) {
+    this.marlo = marlo;
   }
 
 
