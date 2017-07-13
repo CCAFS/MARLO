@@ -925,7 +925,7 @@ public class ProjectPartnerAction extends BaseAction {
               project.getProjectPartners().stream().filter(pp -> pp.isActive()).collect(Collectors.toList()).get(0);
 
             List<ProjectPartnerOverall> overalls = partner.getProjectPartnerOveralls().stream()
-              .filter(c -> c.isActive() && c.getYear() == this.getReportingYear()).collect(Collectors.toList());
+              .filter(c -> c.isActive() && c.getYear() == this.getActualPhase().getYear()).collect(Collectors.toList());
             if (!overalls.isEmpty()) {
               project.setOverall(overalls.get(0).getOverall());
               partnerOverall = overalls.get(0);
@@ -1237,12 +1237,13 @@ public class ProjectPartnerAction extends BaseAction {
         if (!partnersReporting.isEmpty()) {
           for (ProjectPartner partner : partnersReporting) {
             List<ProjectPartnerOverall> overalls = new ArrayList<>(partner.getProjectPartnerOveralls().stream()
-              .filter(ppo -> ppo.isActive() && ppo.getYear() == this.getReportingYear()).collect(Collectors.toList()));
+              .filter(ppo -> ppo.isActive() && ppo.getYear() == this.getActualPhase().getYear())
+              .collect(Collectors.toList()));
 
             ProjectPartnerOverall overall = new ProjectPartnerOverall();
             if (overalls.isEmpty()) {
               overall.setProjectPartner(partner);
-              overall.setYear(this.getReportingYear());
+              overall.setYear(this.getActualPhase().getYear());
             } else {
               overall = overalls.get(0);
             }
