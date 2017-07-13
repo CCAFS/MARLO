@@ -81,6 +81,7 @@ public final class APConstants {
   public static final String CRP_REPORTING_YEAR = "crp_reporting_year";
   public static final String CURRENT_PHASE = "crp_current_phase";
   public static final String PHASES = "crp_phases";
+  public static final String PHASES_IMPACT = "crp_phases_impact";
   public static final String CRP_REQUEST = "crp";
   public static final String CRP_RPL_ROLE = "crp_rpl_rol";
   public static final String CRP_RPM_ROLE = "crp_rpm_rol";
