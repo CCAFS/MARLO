@@ -2,9 +2,17 @@
 [#assign title = "Unauthorized Access!" /]
 [#assign customJS = ["${baseUrlMedia}/js/home/login.js" ] /]
 
+[#if crpSession?has_content]
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/global/macros/forms.ftl" as customForm /]
+[/#if]
+
+[#if centerSession?has_content]
+[#include "/WEB-INF/center/global/pages/header.ftl" /]
+[#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
+[#import "/WEB-INF/center/global/macros/forms.ftl" as customForm /]
+[/#if]
 
 <section class="content">
     <div class="container"> 
@@ -17,4 +25,11 @@
       </div>
     </div>
 </section>
+
+[#if crpSession?has_content]
 [#include "/WEB-INF/global/pages/footer.ftl"]
+[/#if]
+
+[#if centerSession?has_content]
+[#include "/WEB-INF/center/global/pages/footer.ftl"]
+[/#if]

@@ -97,7 +97,7 @@
     [#-- Research Topic Name --]
     <div class="form-group"> 
       <div class="row">
-        <div class="col-sm-12">[@customForm.input name="${customName}.researchTopic" type="text"  i18nkey="researchTopic.name" className="researchTopicInput limitWords-10" required=true editable=editable /]</div>
+        <div class="col-sm-12">[@customForm.input name="${customName}.researchTopic" type="text"  i18nkey="researchTopic.name" className="researchTopicInput limitWords-15" required=true editable=editable /]</div>
       </div>  
       
       <div class="row">

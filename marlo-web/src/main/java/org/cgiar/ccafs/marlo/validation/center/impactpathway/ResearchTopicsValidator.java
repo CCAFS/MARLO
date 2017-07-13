@@ -93,7 +93,7 @@ public class ResearchTopicsValidator extends BaseValidator {
 
     if (researchTopic.getResearchTopic() != null) {
       if (!this.isValidString(researchTopic.getResearchTopic())
-        && this.wordCount(researchTopic.getResearchTopic()) <= 10) {
+        && this.wordCount(researchTopic.getResearchTopic()) <= 15) {
         this.addMessage(baseAction.getText("researchTopic.action.description.required", params));
         baseAction.getInvalidFields().put("input-topics[" + i + "].researchTopic", InvalidFieldsMessages.EMPTYFIELD);
       }

@@ -1,5 +1,5 @@
 [#ftl]
-[#assign title = "MiLE outcome information" /]
+[#assign title = "MARLO - ${(centerSession)!} outcome information" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["select2","jsUri"] /]
 [#assign customJS = ["${baseUrlMedia}/js/monitoring/outcomes/outcomeInfo.js","${baseUrlMedia}/js/global/autoSave.js" ] /]
@@ -13,16 +13,16 @@
 
 
 
-[#include "/WEB-INF/center//global/pages/header.ftl" /]
-[#include "/WEB-INF/center//global/pages/main-menu.ftl" /]
-[#import "/WEB-INF/center//global/macros/forms.ftl" as customForm /]
+[#include "/WEB-INF/center/global/pages/header.ftl" /]
+[#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
+[#import "/WEB-INF/center/global/macros/forms.ftl" as customForm /]
 <span id="programSelected" class="hidden">${selectedProgram.id}</span>
 
 <section class="container">
   
   <article class="row" id="mainInformation">
     <div class="col-md-offset-1 col-md-10">
-      [#include "/WEB-INF/center//views/monitoring/outcomes/submenu-outcomes.ftl" /]
+      [#include "/WEB-INF/center/views/monitoring/outcomes/submenu-outcomes.ftl" /]
 
       [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
       [#-- Back --]
@@ -56,7 +56,7 @@
       [#-- Year Tabs --]
       <ul class="nav nav-tabs" role="tablist">
         [#list outcome.monitorings as year]
-          <li class="[#if year.year == action.getYear()]active[/#if]"><a href="#outcomeYear-${year.year}" role="tab" data-toggle="tab">${year.year}[#if year.year == action.getYear()] <span class="red">*</span> [/#if] </a></li>
+          <li class="[#if year.year == action.getCenterYear()]active[/#if]"><a href="#outcomeYear-${year.year}" role="tab" data-toggle="tab">${year.year}[#if year.year == action.getCenterYear()] <span class="red">*</span> [/#if] </a></li>
         [/#list]
       </ul>
       [#-- Years Content --]
@@ -64,7 +64,7 @@
       <br />
         [#list outcome.monitorings as outcome]
         
-          <div role="tabpanel" class="outcomeTab tab-pane [#if outcome.year == action.getYear()]active[/#if]" id="outcomeYear-${outcome.year}">
+          <div role="tabpanel" class="outcomeTab tab-pane [#if outcome.year == action.getCenterYear()]active[/#if]" id="outcomeYear-${outcome.year}">
           [#-- element id --]
           <input type="hidden" name="outcome.monitorings[${outcome_index}].id" value="${(outcome.id)!}" />
           [#if outcome_index==0]
@@ -135,17 +135,17 @@
          
       <div class="clearfix"></div>
       [#-- Section Buttons & hidden inputs--]
-      [#include "/WEB-INF/center//views/impactPathway/buttons-impactPathway-outcome.ftl" /]
+      [#include "/WEB-INF/center/views/impactPathway/buttons-impactPathway-outcome.ftl" /]
     </div>
     [/@s.form] 
   </article>
 </section>
 
 [#-- Outcome Projects Popup --]
-[#include "/WEB-INF/center//global/macros/outcomeProjectsPopup.ftl" /]
+[#include "/WEB-INF/center/global/macros/outcomeProjectsPopup.ftl" /]
 
 [#-- Bilateral Co-Funded Project Popup --]
-[#include "/WEB-INF/center//global/macros/milestonePopup.ftl"]
+[#include "/WEB-INF/center/global/macros/milestonePopup.ftl"]
 
 [#-- Milestone macro --]
 [@milestoneMacro milestone={} name="outcome.monitorings[-1].milestones" index=-1 isTemplate=true /]
@@ -153,7 +153,7 @@
 [#-- Evidence macro --]
 [@evidenceMacro evidence={} name="outcome.monitorings[-1].evidences" index=-1 isTemplate=true /]
 
-[#include "/WEB-INF/center//global/pages/footer.ftl"]
+[#include "/WEB-INF/center/global/pages/footer.ftl"]
 
 [#macro milestoneMacro milestone name index isTemplate=false]
   [#local editable = ((editable) && (milestone.researchMilestone.active))!true /]
@@ -166,6 +166,7 @@
     [#-- element id --]
      <input type="hidden" class="elementId" name="${milestoneCustomName}.id" value="${(milestone.id)!}" />
      <input type="hidden" class="mileStoneId" name="${milestoneCustomName}.researchMilestone.id" value="${(milestone.researchMilestone.id)!}"/>
+     <input type="hidden" class="activeId" name="${milestoneCustomName}.researchMilestone.active" value="${(milestone.researchMilestone.active)!}"/>
     [#-- Remove Button --]
     [#if editable=!editable]
       <div class="removeMilestone removeElement sm" title="Remove Milestone"></div>

@@ -31,8 +31,11 @@
       <p>[@s.text name="dashboard.decisionTree.startMonitoring" /]</p>
   [/#if]        
       </div>
-    
-      <div id="finalDes" class="option disabled" title="This link is disabled"><p>[@s.text name="dashboard.decisionTree.finishDes" /]</p></div>
+      <div id="finalDes" class="option" title="dashboard.decisionTree.finishDes">`
+        <a href="[@s.url action="summaries/${centerSession}/summaries"][@s.param name="edit" value="true"/][/@s.url]">
+          <p>[@s.text name="dashboard.decisionTree.finishDes" /]</p>
+        </a>  
+      </div>
       <div class="clearfix"></div>
     </div>
 </section>
