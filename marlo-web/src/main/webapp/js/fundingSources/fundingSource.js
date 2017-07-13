@@ -224,8 +224,8 @@ function addContactAutoComplete() {
   }
 
   function selectUser(event,ui) {
-    $("input.contactName").val(ui.item.name);
-    $("input.contactEmail").val(ui.item.email);
+    $("input.contactName:not([readonly])").val(ui.item.name);
+    $("input.contactEmail:not([readonly])").val(ui.item.email);
     return false;
   }
 

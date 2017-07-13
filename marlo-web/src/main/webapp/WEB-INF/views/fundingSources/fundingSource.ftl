@@ -158,10 +158,12 @@
       [#-- Agreement status and total budget --]
       <div class="form-group">
         <div class="row">
-          <div class="col-md-6 metadataElement-contractStatusId">[@customForm.select name="fundingSource.status" i18nkey="projectCofunded.agreementStatus" className="agreementStatus metadataValue"  listName="status" keyFieldName=""  displayFieldName="" header=false editable=editable /] </div>
+          <div class="col-md-6 metadataElement-contractStatusId">
+            [@customForm.select name="fundingSource.status" i18nkey="projectCofunded.agreementStatus" className="agreementStatus metadataValue"  listName="status" keyFieldName=""  displayFieldName="" header=false disabled=isSynced editable=editable /] </div>
+            [#if isSynced]<input type="hidden" class="selectHiddenInput" name="fundingSource.status" value="${(fundingSource.status)!}" />[/#if]
           <div class="col-md-6 metadataElement-fundingTypeId">
-            [@customForm.select name="fundingSource.budgetType.id" i18nkey="projectCofunded.type" className="type metadataValue" listName="budgetTypes" header=false required=true editable=editable && action.canEditType() /]
-             
+            [@customForm.select name="fundingSource.budgetType.id" i18nkey="projectCofunded.type" className="type metadataValue" listName="budgetTypes" header=false required=true disabled=isSynced editable=editable && action.canEditType() /]
+            [#if isSynced]<input type="hidden" class="selectHiddenInput" name="fundingSource.budgetType.id" value="${(fundingSource.budgetType.id)!}" />[/#if]
             [#-- W1W2 Tag --]
             [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')]
               [#assign isW1W2 = (fundingSource.budgetType.id == 1)!false /]

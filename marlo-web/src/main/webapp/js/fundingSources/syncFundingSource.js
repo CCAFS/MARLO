@@ -53,13 +53,16 @@ function setMetadata(data) {
       $input.datepicker("destroy");
     }
 
-    // Select2 picker
+    // Select2
     if($input.hasClass('select2-hidden-accessible')) {
-      console.log(key + " is select --- Value:" + value);
-      console.log($input.val());
+      var inputValue = $input.val();
+      var inputName = $input.attr("name");
+      var $hiddenInput =
+          "<input type='hidden' class='selectHiddenInput' name='" + inputName + "' value='" + inputValue + "'>"
+
+      $input.prop('disabled', true);
       $input.trigger('change');
-      $input.find('option:not(:selected)').attr('disabled', true);
-      $input.trigger('change');
+      $input.parent().append($hiddenInput);
     }
 
   });
@@ -97,12 +100,12 @@ function unSyncFundingSource() {
       console.log(key + " is date");
     }
 
-    // Select2 picker
+    // Select2
     if($input.hasClass('select2-hidden-accessible')) {
-      $input.trigger('select2:change');
-      $input.find('option').attr('disabled', false);
-      $input.trigger('select2:change');
+      $input.prop('disabled', false);
+      $input.trigger('change');
     }
+    $('input.selectHiddenInput').remove();
 
   });
 
