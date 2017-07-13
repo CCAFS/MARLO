@@ -199,6 +199,11 @@ function onChangeFundingType(typeID) {
   }
 }
 
+/**
+ * This function initialize the contact person auto complete
+ * 
+ * @returns
+ */
 function addContactAutoComplete() {
   var autocompleteOptions = {
       source: searchSource,
@@ -232,7 +237,12 @@ function addContactAutoComplete() {
   $("input.contactEmail").autocomplete(autocompleteOptions).autocomplete("instance")._renderItem = renderItem;
 }
 
-// Add a new lead partner element
+/**
+ * Add a new lead partner element function
+ * 
+ * @param option means an option tag from the select
+ * @returns
+ */
 function addLeadPartner(option) {
   var canAdd = true;
   console.log(option.val());
@@ -271,6 +281,11 @@ function addLeadPartner(option) {
 
 }
 
+/**
+ * Remove lead partner function
+ * 
+ * @returns
+ */
 function removeLeadPartner() {
   var $list = $(this).parents('.list');
   var $item = $(this).parents('.leadPartners');
@@ -288,6 +303,12 @@ function removeLeadPartner() {
   $select.trigger("change.select2");
 }
 
+/**
+ * Update indexes for "Managing partners" of funding source
+ * 
+ * @param $list List of lead partners
+ * @returns
+ */
 function updateLeadPartner($list) {
   // Hide All divisions block
   $('.divisionBlock').hide();
@@ -301,6 +322,12 @@ function updateLeadPartner($list) {
   });
 }
 
+/**
+ * Check if there is any lead partners and show a text message
+ * 
+ * @param block Container with lead partners elements
+ * @returns
+ */
 function checkLeadPartnerItems(block) {
   var items = $(block).find('.leadPartners').length;
   if(items == 0) {
