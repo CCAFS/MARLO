@@ -38,22 +38,23 @@ function setMetadata(data) {
     var $input = $parent.find(".metadataValue");
     var $spanSuggested = $parent.find(".metadataSuggested");
     var $hide = $parent.find('.hide');
-    if(value) {
-      $input.val(value);
-      $spanSuggested.text("Suggested: " + value).animateCss("flipInY");
-      $parent.find('textarea').autoGrow();
-      $input.attr('readOnly', true);
-      $hide.val("true");
-    } else {
-      $input.attr('readOnly', false);
-      $spanSuggested.text("");
-      $hide.val("false");
-    }
+
+    $input.val(value);
+    $spanSuggested.text("Suggested: " + value).animateCss("flipInY");
+    $parent.find('textarea').autoGrow();
+    $input.attr('readOnly', true);
+    $hide.val("true");
+
+    // $input.attr('readOnly', false);
+    // $spanSuggested.text("");
+    // $hide.val("false");
 
     // Date picker
     if($input.hasClass('hasDatepicker')) {
       console.log(key + " is date");
+      $input.trigger('change');
       $input.datepicker("destroy");
+
     }
 
     // Select2
@@ -62,7 +63,6 @@ function setMetadata(data) {
       var inputName = $input.attr("name");
       var $hiddenInput =
           "<input type='hidden' class='selectHiddenInput' name='" + inputName + "' value='" + inputValue + "'>"
-
       $input.prop('disabled', true);
       $input.trigger('change');
       $input.parent().append($hiddenInput);
@@ -150,6 +150,10 @@ function getOCSMetadata() {
           agreement.pInvestigator = agreement.researcher.name;
           // Donor
           agreement.donorName = agreement.donor.name;
+          // Validate extension date
+          if(agreement.extensionDate == "1900-01-01") {
+            agreement.extensionDate = "";
+          }
           // Set Budget type
           if(agreement.fundingType == "BLR") {
             agreement.fundingTypeId = 3;
@@ -167,6 +171,7 @@ function getOCSMetadata() {
             agreement.contractStatusId = 2;
           }
           // Set Countries
+          $('#countryList ul').empty();
           $.each(agreement.countries, function(i,e) {
             addCountry(e.code, e.description);
           });
