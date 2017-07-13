@@ -36,7 +36,7 @@
     <div class="borderBox">
       
       <div class="form-group row">
-        <div class="col-md-6">
+        <div class="col-md-7 managingPartners">
           [#-- CGIAR lead center --]
           [#assign ifpriDivision = false /]
           [#assign hasCIAT = false /]
@@ -87,12 +87,12 @@
         
         [#-- Finance code --]
         [#assign isSynced = (fundingSource.synced)!false ]
-        <div class="col-md-6">
+        <div class="col-md-5">
           <div class="url-field">
             [@customForm.input name="fundingSource.financeCode"  i18nkey="projectCofunded.financeCode" className="financeCode" placeholder="projectCofunded.financeCode.placeholder" readOnly=isSynced editable=editable/]
             <span class="financeCode-message"></span>
           </div>
-          <div class="buttons-field">
+          <div class="buttons-field" style="display:${hasCIAT?string('block', 'none')}">
             [#if editable]
               <div id="fillMetadata">
                 <input type="hidden" id="isSynced" name="fundingSource.synced" value="${isSynced?string}" />
@@ -160,10 +160,10 @@
         <div class="row">
           <div class="col-md-6 metadataElement-contractStatusId">
             [@customForm.select name="fundingSource.status" i18nkey="projectCofunded.agreementStatus" className="agreementStatus metadataValue"  listName="status" keyFieldName=""  displayFieldName="" header=false disabled=isSynced editable=editable /] </div>
-            [#if isSynced]<input type="hidden" class="selectHiddenInput" name="fundingSource.status" value="${(fundingSource.status)!}" />[/#if]
+            [#if isSynced && editable]<input type="hidden" class="selectHiddenInput" name="fundingSource.status" value="${(fundingSource.status)!}" />[/#if]
           <div class="col-md-6 metadataElement-fundingTypeId">
             [@customForm.select name="fundingSource.budgetType.id" i18nkey="projectCofunded.type" className="type metadataValue" listName="budgetTypes" header=false required=true disabled=isSynced editable=editable && action.canEditType() /]
-            [#if isSynced]<input type="hidden" class="selectHiddenInput" name="fundingSource.budgetType.id" value="${(fundingSource.budgetType.id)!}" />[/#if]
+            [#if isSynced && editable && action.canEditType()]<input type="hidden" class="selectHiddenInput" name="fundingSource.budgetType.id" value="${(fundingSource.budgetType.id)!}" />[/#if]
             [#-- W1W2 Tag --]
             [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')]
               [#assign isW1W2 = (fundingSource.budgetType.id == 1)!false /]
@@ -305,8 +305,8 @@
             [#if fundingSource.fundingCountry?has_content]
               [#list fundingSource.fundingCountry as country]
                   <li id="" class="country clearfix col-md-3">
-                  [#if editable && !isSynced ]
-                    <div class="removeCountry removeIcon" title="Remove country"></div>
+                  [#if editable ]
+                    <div class="removeCountry syncVisibles removeIcon" style="display:${isSynced?string('none', 'block')}" title="Remove country"></div>
                   [/#if]
                     <input class="id" type="hidden" name="fundingSource.fundingCountry[${country_index}].id" value="${(country.id)!-1}" />
                     <input class="cId" type="hidden" name="fundingSource.fundingCountry[${country_index}].locElement.isoAlpha2" value="${(country.locElement.isoAlpha2)!}" />
@@ -318,8 +318,10 @@
               <p class="emptyText"> [@s.text name="No countries added yet." /]</p> 
             [/#if]
             </ul>
-            [#if editable && !isSynced ]
-              [@customForm.select name="" label=""  showTitle=false  i18nkey="" listName="countryLists" keyFieldName="isoAlpha2"  displayFieldName="name"  multiple=false required=true  className="countriesSelect" editable=editable /]
+            [#if editable ]
+              <div class="syncVisibles" style="display:${isSynced?string('none', 'block')}">
+                [@customForm.select name="" label=""  showTitle=false  i18nkey="" listName="countryLists" keyFieldName="isoAlpha2"  displayFieldName="name"  multiple=false required=true  className="countriesSelect" editable=editable /]
+              </div>
             [/#if] 
           </div>
         </div>
@@ -449,7 +451,7 @@
 [#-- Country element template --]
 <ul style="display:none">
   <li id="countryTemplate" class="country clearfix col-md-3">
-      <div class="removeCountry removeIcon" title="Remove country"></div>
+      <div class="removeCountry syncVisibles removeIcon" style="display:${isSynced?string('none', 'block')}" title="Remove country"></div>
       <input class="id" type="hidden" name="fundingSource.fundingCountry[-1].id" value="" />
       <input class="cId" type="hidden" name="fundingSource.fundingCountry[-1].locElement.isoAlpha2" value="" />
       <span class="name"></span>

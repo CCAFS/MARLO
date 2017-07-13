@@ -29,6 +29,9 @@ function syncMetadata() {
 function setMetadata(data) {
   console.log(data);
 
+  // Clear inputs hidden from selects disabled
+  $('input.selectHiddenInput').remove();
+
   // Text area & Inputs fields
   $.each(data, function(key,value) {
     var $parent = $('.metadataElement-' + key);
@@ -76,6 +79,8 @@ function syncFundingSource() {
   $('#fillMetadata .checkButton, .disseminationChannelBlock').hide('slow');
   // Show UnSync & Update Button
   $('#fillMetadata .unSyncBlock').show();
+  // Hide some components
+  $('.syncVisibles').hide();
   // Set hidden inputs
   $('#fillMetadata input:hidden').val(true);
   // Dissemination URL
@@ -113,6 +118,8 @@ function unSyncFundingSource() {
   $('#fillMetadata .checkButton, .disseminationChannelBlock').show('slow');
   // Hide UnSync & Update Button
   $('#fillMetadata .unSyncBlock').hide();
+  // Show some components
+  $('.syncVisibles').show();
   // Set hidden inputs
   $('#fillMetadata input:hidden').val(false);
   // Dissemination URL

@@ -52,12 +52,12 @@ table {
 
 /* Metadata */
 .url-field{
-  width: 65%;
+  width: 59%;
   float:left;
 }
 
 .buttons-field{
-  width: 35%;
+  width: 40%;
   float:right;
   margin-top: 22px;
   text-align: center;
@@ -71,3 +71,8 @@ table {
 	color:#2ECC71;
 }
 
+
+
+.managingPartners {
+  border-right: dashed 2px #e6e6e6;
+}

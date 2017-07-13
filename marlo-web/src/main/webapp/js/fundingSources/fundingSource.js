@@ -329,6 +329,18 @@ function updateLeadPartner($list) {
  * @returns
  */
 function checkLeadPartnerItems(block) {
+  
+  // Check if CIAT is in the partners list
+  var CIAT_ID = 46;
+  console.log(">> "+$('input.fId').val());
+  if($('input.fId[value="'+CIAT_ID+'"]').exists()){
+    $('.buttons-field').show();
+  }else{
+    $('.buttons-field').hide();
+    unSyncFundingSource();
+  }
+  
+  
   var items = $(block).find('.leadPartners').length;
   if(items == 0) {
     $(block).parent().find('p.emptyText').fadeIn();
