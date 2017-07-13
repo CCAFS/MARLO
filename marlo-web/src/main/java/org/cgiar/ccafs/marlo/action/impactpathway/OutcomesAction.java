@@ -397,8 +397,8 @@ public class OutcomesAction extends BaseAction {
 
       if (crpProgramID != -1) {
         selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
-        outcomes.addAll(
-          selectedProgram.getCrpProgramOutcomes().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        outcomes.addAll(selectedProgram.getCrpProgramOutcomes().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
 
       }
 
@@ -594,7 +594,7 @@ public class OutcomesAction extends BaseAction {
         crpProgramOutcome.setModifiedBy(this.getCurrentUser());
         crpProgramOutcome.setModificationJustification("");
         crpProgramOutcome.setActiveSince(new Date());
-
+        crpProgramOutcome.setPhase(this.getActualPhase());
       } else {
         CrpProgramOutcome db = crpProgramOutcomeManager.getCrpProgramOutcomeById(crpProgramOutcome.getId());
         crpProgramOutcome.setActive(true);
@@ -602,6 +602,7 @@ public class OutcomesAction extends BaseAction {
         crpProgramOutcome.setModifiedBy(this.getCurrentUser());
         crpProgramOutcome.setModificationJustification("");
         crpProgramOutcome.setActiveSince(db.getActiveSince());
+        crpProgramOutcome.setPhase(this.getActualPhase());
       }
 
 

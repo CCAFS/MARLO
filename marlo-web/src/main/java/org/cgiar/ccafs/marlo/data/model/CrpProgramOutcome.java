@@ -72,6 +72,8 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
   private boolean active;
   @Expose
   private User createdBy;
+  @Expose
+  private Phase phase;
 
 
   @Expose
@@ -83,13 +85,14 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
 
   @Expose
   private String modificationJustification;
+
+
   private List<CrpMilestone> milestones;
 
   private List<CrpOutcomeSubIdo> subIdos;
 
   public CrpProgramOutcome() {
   }
-
 
   public CrpProgramOutcome(CrpProgram crpProgram, SrfTargetUnit srfTargetUnit, String description, Integer year,
     BigDecimal value) {
@@ -138,6 +141,7 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
+
   public String getComposedName() {
     return this.getCrpProgram().getAcronym() + " Outcome :  " + description;
   }
@@ -162,11 +166,9 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
     return this.crpProgram;
   }
 
-
   public Set<Deliverable> getDeliverables() {
     return deliverables;
   }
-
 
   public String getDescription() {
     return this.description;
@@ -186,9 +188,11 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+
   public List<CrpMilestone> getMilestones() {
     return milestones;
   }
+
 
   @Override
   public String getModificationJustification() {
@@ -198,6 +202,10 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
   @Override
   public User getModifiedBy() {
     return modifiedBy;
+  }
+
+  public Phase getPhase() {
+    return phase;
   }
 
   public Set<ProjectFurtherContribution> getProjectFurtherContributions() {
@@ -237,7 +245,6 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
   }
 
-
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
@@ -246,6 +253,7 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
   public void setCrpClusterKeyOutputOutcomes(Set<CrpClusterKeyOutputOutcome> crpClusterKeyOutputOutcomes) {
     this.crpClusterKeyOutputOutcomes = crpClusterKeyOutputOutcomes;
   }
+
 
   public void setCrpMilestones(Set<CrpMilestone> crpMilestones) {
     this.crpMilestones = crpMilestones;
@@ -281,6 +289,10 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
   public void setProjectFurtherContributions(Set<ProjectFurtherContribution> projectFurtherContributions) {
