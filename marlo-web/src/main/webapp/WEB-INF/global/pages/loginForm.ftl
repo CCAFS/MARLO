@@ -21,7 +21,11 @@
         [#-- CRPs --]
         <div role="tabpanel" id="crps" class="tab-pane type-crp [#if (typeSession == "crp")!false]class="active"[/#if] col-sm-12">
           <ul>
-          [#assign crpList = (action.getCrpCategoryList("1"))![] /]
+          [#attempt] 
+            [#assign crpList = action.getCrpCategoryList("1") /]
+          [#recover]
+            [#assign crpList = [] /]
+          [/#attempt]
           [#if crpList?has_content]
             [#list crpList as crp]
               [@crpItem element=crp /]
@@ -47,7 +51,11 @@
         [#-- Platforms --]
         <div id="platforms" class="tab-pane type-platform [#if (typeSession == "platform")!false]class="active"[/#if] col-sm-12">
           <ul>
-          [#assign platformsList = (action.getCrpCategoryList("3"))![] /]
+          [#attempt] 
+            [#assign platformsList = action.getCrpCategoryList("3") /]
+          [#recover]
+            [#assign platformsList = [] /]
+          [/#attempt]
           [#if platformsList?has_content]
             [#list platformsList as platform]
               [@crpItem element=platform /]
