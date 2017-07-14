@@ -86,7 +86,7 @@ $(document).ready(function() {
     // Turn save button in saving button
     $(this).addClass('disabled animated flipInY');
     $(this).find('.glyphicon').hide();
-    $(this).find('.saveText').html('Saving ... <img src="' + baseURL + '/images/global/loading_3.gif" />');
+    $(this).find('.saveText').html('Saving ... <img src="' + baseUrlMedia + '/images/global/loading_3.gif" />');
   });
 
   // Yes / No Event
