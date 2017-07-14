@@ -262,7 +262,7 @@ function isProjectSection() {
 
 function isImpactPathwaySection() {
   var url = window.location.href;
-  return url.includes("/impactPathway/");
+  return url.includes("/centerImpactPathway/");
 }
 
 function isMonitoringSection() {
