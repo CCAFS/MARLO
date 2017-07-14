@@ -97,6 +97,7 @@ public class WsThread implements Runnable {
       if (agrees != null && agrees.size() > 0) {
         TWsMarloAgree myAgree = agrees.get(0);
         agreementOCS.setId(myAgree.getAgreementId());
+        agreementOCS.setObjectives(myAgree.getObjectives());
         agreementOCS.setDescription(myAgree.getDescription());
         DonorOCS donorOCS = new DonorOCS();
         donorOCS.setId(myAgree.getDonor());

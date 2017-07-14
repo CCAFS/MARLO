@@ -356,7 +356,7 @@ function checkLeadPartnerItems(block) {
  * @param countryName e.g Colombia
  * @returns
  */
-function addCountry(countryISO,countryName) {
+function addCountry(countryISO,countryName, percentage) {
   var canAdd = true;
 
   if(countryISO == "-1") {

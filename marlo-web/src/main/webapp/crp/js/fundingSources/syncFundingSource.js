@@ -50,7 +50,6 @@ function setMetadata(data) {
       console.log(key + " is date");
       $input.trigger('change');
       $input.datepicker("destroy");
-
     }
 
     // Select2
@@ -92,6 +91,7 @@ function unSyncFundingSource() {
     var $input = $parent.find('.metadataValue');
     var $spanSuggested = $parent.find(".metadataSuggested");
     var $hide = $parent.find('.hide');
+
     $spanSuggested.text("");
     $input.attr('readOnly', false);
     $hide.val("false");
@@ -169,7 +169,7 @@ function getOCSMetadata() {
           // Set Countries
           $('#countryList ul').empty();
           $.each(agreement.countries, function(i,e) {
-            addCountry(e.code, e.description);
+            addCountry(e.code, e.description, e.percentage);
           });
           // Set Metadata
           setMetadata(agreement);

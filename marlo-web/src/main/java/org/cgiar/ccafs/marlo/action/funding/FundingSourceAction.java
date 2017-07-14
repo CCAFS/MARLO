@@ -533,15 +533,15 @@ public class FundingSourceAction extends BaseAction {
          */
         if (fundingSource.getFundingSourceLocations() != null) {
 
-          List<FundingSourceLocation> countries =
-            new ArrayList<>(fundingSource.getFundingSourceLocations().stream().filter(fl -> fl.isActive()
-              && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 2)
+          List<FundingSourceLocation> countries = new ArrayList<>(fundingSource
+            .getFundingSourceLocations().stream().filter(fl -> fl.isActive() && fl.getLocElementType() == null
+              && fl.getLocElement() != null && fl.getLocElement().getLocElementType().getId() == 2)
             .collect(Collectors.toList()));
 
           fundingSource.setFundingCountry(new ArrayList<>(countries));
 
-          List<FundingSourceLocation> regions =
-            new ArrayList<>(fundingSource.getFundingSourceLocations().stream().filter(fl -> fl.isActive()
+          List<FundingSourceLocation> regions = new ArrayList<>(fundingSource
+            .getFundingSourceLocations().stream().filter(fl -> fl.isActive() && fl.getLocElement() != null
               && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 1)
             .collect(Collectors.toList()));
 

@@ -309,6 +309,8 @@
                   [/#if]
                     <input class="id" type="hidden" name="fundingSource.fundingCountry[${country_index}].id" value="${(country.id)!-1}" />
                     <input class="cId" type="hidden" name="fundingSource.fundingCountry[${country_index}].locElement.isoAlpha2" value="${(country.locElement.isoAlpha2)!}" />
+                    <input class="cPercentage" type="hidden" name="fundingSource.fundingCountry[${country_index}].percentage" value="${(country.percentage)!}" />
+                    
                     <span class="name"><span> <i class="flag-sm flag-sm-${(country.locElement.isoAlpha2)!}"></i> [@utils.wordCutter string=(country.locElement.name)!'' maxPos=15 /] </span></span>
                     <div class="clearfix"></div>
                   </li>
@@ -337,7 +339,7 @@
         [/#list]
       </ul>
       [#-- Years Content --]
-      <div class="tab-content col-md-12 contributionContent">
+      <div class="tab-content contributionContent">
         [#list startYear .. extensionYear as year]
           <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="fundingYear-${year}">
           
@@ -453,6 +455,8 @@
       <div class="removeCountry syncVisibles removeIcon" style="display:${isSynced?string('none', 'block')}" title="Remove country"></div>
       <input class="id" type="hidden" name="fundingSource.fundingCountry[-1].id" value="" />
       <input class="cId" type="hidden" name="fundingSource.fundingCountry[-1].locElement.isoAlpha2" value="" />
+      <input class="cPercentage" type="hidden" name="fundingSource.fundingCountry[-1].percentage" value="" />
+      
       <span class="name"></span>
       <div class="clearfix"></div>
     </li>
