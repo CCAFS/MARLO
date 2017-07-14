@@ -88,8 +88,10 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
         canEdit = true;
       } else {
         List<FundingSource> projects = fundingSourceManager.getFundingSource(user.getId(), crp.getAcronym());
-        if (projects.contains(project) && baseAction
-          .hasPermission(baseAction.generatePermission(Permission.PROJECT_FUNDING_SOURCE_BASE_PERMISSION, params))) {
+        if (projects.contains(project) && (baseAction
+          .hasPermission(baseAction.generatePermission(Permission.PROJECT_FUNDING_SOURCE_BASE_PERMISSION, params))
+          || baseAction
+            .hasPermission(baseAction.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, params)))) {
           canEdit = true;
 
         }
@@ -112,8 +114,11 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
 
       // Check the permission if user want to edit or save the form
       if (editParameter || parameters.get("save") != null) {
-        hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin())) ? true : baseAction
-          .hasPermission(baseAction.generatePermission(Permission.PROJECT_FUNDING_SOURCE_BASE_PERMISSION, params));
+        hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin())) ? true
+          : (baseAction
+            .hasPermission(baseAction.generatePermission(Permission.PROJECT_FUNDING_SOURCE_BASE_PERMISSION, params))
+            || baseAction
+              .hasPermission(baseAction.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, params)));
       }
 
 

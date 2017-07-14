@@ -5,9 +5,9 @@
 [#assign customJS = [ "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
                       "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
                       "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
-                      "${baseUrl}/js/admin/crpUsers.js" 
+                      "${baseUrlMedia}/js/admin/crpUsers.js" 
                     ] /]
-[#assign customCSS = [ "${baseUrl}/css/admin/crpUsers.css" ] /]
+[#assign customCSS = [ "${baseUrlMedia}/css/admin/crpUsers.css" ] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "users" /]
 
@@ -21,7 +21,7 @@
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrl}/images/global/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.jpg" />
     <p class="col-md-10"> [@s.text name="crpUsers.help" /] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>

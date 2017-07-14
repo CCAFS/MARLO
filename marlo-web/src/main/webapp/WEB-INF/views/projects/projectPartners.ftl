@@ -2,8 +2,8 @@
 [#assign title = "Project Partners" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = ["select2", "flat-flags"] /]
-[#assign customJS = ["${baseUrl}/js/global/fieldsValidation.js", "${baseUrl}/js/global/usersManagement.js", "${baseUrl}/js/projects/projectPartners.js", "${baseUrl}/js/global/autoSave.js"] /]  
-[#assign customCSS = ["${baseUrl}/css/projects/projectPartners.css"] /]
+[#assign customJS = ["${baseUrlMedia}/js/global/fieldsValidation.js", "${baseUrlMedia}/js/global/usersManagement.js", "${baseUrlMedia}/js/projects/projectPartners.js", "${baseUrlMedia}/js/global/autoSave.js"] /]  
+[#assign customCSS = ["${baseUrlMedia}/css/projects/projectPartners.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "partners" /]
 [#assign hideJustification = true /]
@@ -19,7 +19,7 @@
 
 <div class="container helpText viewMore-block">
   <div style="display:none" class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrl}/images/global/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.jpg" />
     <p class="col-md-10">[#if project.projectEditLeader] [#if reportingActive] [@s.text name="projectPartners.help3" /] [#else] [@s.text name="projectPartners.help2" ] [@s.param][@s.text name="global.managementLiaison" /][/@s.param] [/@s.text] [/#if]  [#else] [@s.text name="projectPartners.help1" /] [/#if]</p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
@@ -445,7 +445,7 @@
               <h3>Activities</h3>
               <ul>
               [#list action.getActivitiesLedByUser(element.id) as activity]
-                <li>${activity.title}  <a target="_blank" href="[@s.url namespace=namespace action='${crpSession}/activities' ][@s.param name='projectID']${project.id?c}[/@s.param][/@s.url]#projectActivity-${activity.id}"><img class="external-link" src="${baseUrl}/images/global/external-link.png" /></a></li>
+                <li>${activity.title}  <a target="_blank" href="[@s.url namespace=namespace action='${crpSession}/activities' ][@s.param name='projectID']${project.id?c}[/@s.param][/@s.url]#projectActivity-${activity.id}"><img class="external-link" src="${baseUrlMedia}/images/global/external-link.png" /></a></li>
               [/#list]
               </ul>
             </div>
@@ -456,7 +456,7 @@
               <h3>Deliverables</h3>
               <ul>
               [#list action.getDeliverablesLedByUser(element.id) as deliverable]
-                <li>${deliverable.title}  <a target="_blank" href="[@s.url namespace=namespace action='${crpSession}/deliverable' ][@s.param name='deliverableID']${deliverable.id}[/@s.param][/@s.url]"><img class="external-link" src="${baseUrl}/images/global/external-link.png" /></a></li>
+                <li>${deliverable.title}  <a target="_blank" href="[@s.url namespace=namespace action='${crpSession}/deliverable' ][@s.param name='deliverableID']${deliverable.id}[/@s.param][/@s.url]"><img class="external-link" src="${baseUrlMedia}/images/global/external-link.png" /></a></li>
               [/#list]
               </ul>
             </div>

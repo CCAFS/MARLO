@@ -3,13 +3,12 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-${fundingSource.id}" /]
 [#assign pageLibs = ["select2", "blueimp-file-upload", "datatables.net", "datatables.net-bs","flat-flags"] /]
 [#assign customJS = [
-  "${baseUrl}/js/global/fieldsValidation.js",
-  "${baseUrl}/js/fundingSources/fundingSource.js",
-  "${baseUrl}/js/fundingSources/syncFundingSource.js",
-  "${baseUrl}/js/global/autoSave.js" ] /]
-[#assign customCSS = ["${baseUrl}/css/fundingSources/fundingSource.css"] /]
+  "${baseUrlMedia}/js/global/fieldsValidation.js",
+  "${baseUrlMedia}/js/fundingSources/fundingSource.js",
+  "${baseUrlMedia}/js/fundingSources/syncFundingSource.js",
+  "${baseUrlMedia}/js/global/autoSave.js" ] /]
+[#assign customCSS = ["${baseUrlMedia}/css/fundingSources/fundingSource.css"] /]
 [#assign currentSection = "fundingSources" /]
-
 [#assign breadCrumb = [
   {"label":"fundingSourcesList", "nameSpace":"/fundingSources", "action":""}
 ]/]
@@ -174,7 +173,7 @@
                     [#if editable]
                     <input type="checkbox" name="fundingSource.w1w2" value="true" id="w1w2-tag-input" [#if w1w2TagValue]checked[/#if]/>
                     [#else]
-                       <img src="${baseUrl}/images/global/checked-${w1w2TagValue?string}.png" /> 
+                       <img src="${baseUrlMedia}/images/global/checked-${w1w2TagValue?string}.png" /> 
                     [/#if]
                     <small>[@customForm.text name="fundingSource.w1w2Tag" readText=!editable /]</small></label>
                 </div>
@@ -466,6 +465,6 @@
   [/#list]
 </ul>
 
-<span class="hidden cgiarConsortium">${action.getCGIARInsitution()}</span>
+<span class="hidden cgiarConsortium">${action.getCGIARInstitution()}</span>
 
 [#include "/WEB-INF/global/pages/footer.ftl"]

@@ -2,8 +2,8 @@
 [#assign title = "MARLO Funding sources" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
-[#assign customJS = ["${baseUrl}/js/fundingSources/fundingSourcesList.js" ] /]
-[#assign customCSS = ["${baseUrl}/css/global/customDataTable.css"] /]
+[#assign customJS = ["${baseUrlMedia}/js/fundingSources/fundingSourcesList.js" ] /]
+[#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css"] /]
 [#assign currentSection = "fundingSources" /] 
 
 [#assign breadCrumb = [
