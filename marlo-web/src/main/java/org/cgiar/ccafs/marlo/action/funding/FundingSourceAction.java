@@ -900,7 +900,7 @@ public class FundingSourceAction extends BaseAction {
           fundingSourceLocationSave.setModifiedBy(this.getCurrentUser());
           fundingSourceLocationSave.setModificationJustification("");
           fundingSourceLocationSave.setFundingSource(fundingSourceDB);
-
+          fundingSourceLocationSave.setPercentage(fundingSourceLocation.getPercentage());
           if (!fundingSourceLocation.isScope()) {
             LocElement locElement = locElementManager.getLocElementById(fundingSourceLocation.getLocElement().getId());
 
