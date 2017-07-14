@@ -16,7 +16,7 @@
     <action name="sendMailTest" class="org.cgiar.ccafs.marlo.SendMailTest"
      >
      <result name="success" type="redirectAction">
-        <param name="actionName">${crpSession}/dashboard</param>
+        <param name="actionName">${crpSession}/crpDashboard</param>
       </result>
     </action>
 
