@@ -349,8 +349,13 @@ function checkLeadPartnerItems(block) {
   }
 }
 
-/** COUNTRIES SELECT FUNCTIONS * */
-// Add a new country element
+/**
+ * Add a new country to the Funding source locations
+ * 
+ * @param countryISO e.g CO
+ * @param countryName e.g Colombia
+ * @returns
+ */
 function addCountry(countryISO,countryName) {
   var canAdd = true;
 
