@@ -614,7 +614,8 @@ public class ProjectOutcomeAction extends BaseAction {
           }
 
           if (projectMilestone.getExpectedUnit() != null) {
-            if (projectMilestone.getExpectedUnit().getId().longValue() == -1) {
+            if (projectMilestone.getExpectedUnit().getId() == null
+              || projectMilestone.getExpectedUnit().getId().longValue() == -1) {
               projectMilestone.setExpectedUnit(null);
             }
           }
