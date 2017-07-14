@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Dec 2, 2016 11:02:01 AM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.CenterCycle" table="center_cycles" optimistic-lock="version">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="modified_by" />
+        </many-to-one>
+        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="created_by" />
+        </many-to-one>
+        <property name="name" type="string">
+            <column name="name" length="65535" />
+        </property>
+        <property name="acronym" type="string">
+            <column name="acronym" length="65535" />
+        </property>
+        <property name="active" type="boolean">
+            <column name="is_active" not-null="true" />
+        </property>
+        <property name="modificationJustification" type="string">
+            <column name="modification_justification" length="65535" />
+        </property>
+        <property name="activeSince" type="timestamp">
+            <column name="active_since" length="19" />
+        </property>
+        <set name="submissions" table="center_submissions" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="cycle_id">
+                    <comment>Cycling period type.</comment>
+                </column>
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterSubmission" />
+        </set>
+    </class>
+</hibernate-mapping>

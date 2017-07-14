@@ -2,8 +2,8 @@
 [#assign title = "MARLO Projects" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs","font-awesome"] /]
-[#assign customJS = ["${baseUrl}/js/projects/projectsList.js" ] /]
-[#assign customCSS = ["${baseUrl}/css/global/customDataTable.css"] /]
+[#assign customJS = ["${baseUrlMedia}/js/projects/projectsList.js" ] /]
+[#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = (filterBy)!"all" /]
 
@@ -19,7 +19,7 @@
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrl}/images/global/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.jpg" />
     <p class="col-md-10"> [@s.text name="projectsList.help"][@s.param]${currentCycle}[/@s.param][/@s.text] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>

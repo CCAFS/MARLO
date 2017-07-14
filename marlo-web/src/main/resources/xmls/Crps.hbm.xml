@@ -19,6 +19,12 @@
 			<column name="modification_justification" length="65535"
 				not-null="true" />
 		</property>
+		 <property name="category" type="java.lang.Integer">
+       <column name="category" />
+     </property>
+     <property name="login" type="java.lang.Boolean">
+       <column name="login" />
+     </property>
 		<property name="activeSince" type="timestamp">
 			<column name="active_since" length="19" not-null="true" />
 		</property>

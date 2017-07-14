@@ -1,8 +1,16 @@
 [#ftl]
 [#assign title = "Permission denied!" /]
-[#assign customCSS = [ "${baseUrl}/css/global/403.css" ] /]
+[#assign customCSS = [ "${baseUrlMedia}/css/global/403.css" ] /]
+
+[#if crpSession?has_content]
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
+[/#if]
+
+[#if centerSession?has_content]
+[#include "/WEB-INF/center/global/pages/header.ftl" /]
+[#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
+[/#if]
 
 <section class="content">
   <br />
@@ -28,4 +36,10 @@
   </article>
 </section>
 
+[#if crpSession?has_content]
 [#include "/WEB-INF/global/pages/footer.ftl"]
+[/#if]
+
+[#if centerSession?has_content]
+[#include "/WEB-INF/center/global/pages/footer.ftl"]
+[/#if]
