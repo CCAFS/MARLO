@@ -45,10 +45,6 @@ function setMetadata(data) {
     $input.attr('readOnly', true);
     $hide.val("true");
 
-    // $input.attr('readOnly', false);
-    // $spanSuggested.text("");
-    // $hide.val("false");
-
     // Date picker
     if($input.hasClass('hasDatepicker')) {
       console.log(key + " is date");
