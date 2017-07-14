@@ -125,7 +125,7 @@
       </div>
       [#-- Project summary --]
       <div class="form-group metadataElement-objectives">
-        [@customForm.textArea name="fundingSource.description" i18nkey="projectCofunded.description" className="limitWords-150 metadataValue" required=false editable=editable /]
+        [@customForm.textArea name="fundingSource.description" i18nkey="projectCofunded.description" className="limitWords-150 metadataValue" required=false readOnly=isSynced editable=editable /]
       </div>
       
       [#-- Start date, End date and finance code --]
