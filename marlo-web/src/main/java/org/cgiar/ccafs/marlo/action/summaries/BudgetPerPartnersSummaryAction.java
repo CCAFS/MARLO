@@ -188,6 +188,14 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
       this.getText("budgetPartner.grandTotalGenderW1W2"));
     masterReport.getParameterValues().put("i8nGrandTotal", this.getText("budgetPartner.grandTotal"));
 
+    masterReport.getParameterValues().put("i8nGrandTotalW1W2Percentage",
+      this.getText("budgetPartner.w1w2grandTotalPercentage") + " " + this.getText("budgetPartner.percentaje"));
+    masterReport.getParameterValues().put("i8nGrandTotalGenderW1W2",
+      this.getText("budgetPartner.w1w2grandTotalGender"));
+    masterReport.getParameterValues().put("i8nW3BilateralCenterPercentage",
+      this.getText("budgetPartner.w3BilateralCenterPercentage") + " " + this.getText("budgetPartner.percentaje"));
+
+
     return masterReport;
   }
 
