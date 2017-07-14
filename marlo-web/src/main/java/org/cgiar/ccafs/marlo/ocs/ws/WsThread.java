@@ -106,7 +106,7 @@ public class WsThread implements Runnable {
         agreementOCS.setStartDate(formatter.parse(myAgree.getStartDate().split("\\+")[0]));
         agreementOCS.setExtensionDate(formatter.parse(myAgree.getExtentionDate().split("\\+")[0]));
         agreementOCS.setFundingType(myAgree.getFundingType());
-        agreementOCS.setGrantAmount(agreementOCS.getGrantAmount());
+        agreementOCS.setGrantAmount(myAgree.getGrantAmount().toString());
         ResearcherOCS researcherOCS = new ResearcherOCS();
         researcherOCS.setId(myAgree.getResearcher());
         researcherOCS.setName(myAgree.getResearcherText());
