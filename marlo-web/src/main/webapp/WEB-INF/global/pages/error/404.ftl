@@ -2,14 +2,21 @@
 [#assign title = "Page you requested was not found!" /]
 [#assign customCSS = [ "${baseUrlMedia}/css/global/404.css" ] /]
 
-[#if crpSession?has_content]
-[#include "/WEB-INF/global/pages/header.ftl" /]
-[#include "/WEB-INF/global/pages/main-menu.ftl" /]
-[/#if]
-
-[#if centerSession?has_content]
-[#include "/WEB-INF/center/global/pages/header.ftl" /]
-[#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
+[#if !errorPage??]
+  [#if crpSession??]
+    [#include "/WEB-INF/global/pages/header.ftl" /]
+    [#include "/WEB-INF/global/pages/main-menu.ftl" /]
+  [/#if]
+  
+  [#if centerSession??]
+    [#include "/WEB-INF/center/global/pages/header.ftl" /]
+    [#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
+  [/#if]
+  
+[#else]
+  [#include "/WEB-INF/global/pages/header.ftl" /]
+  [#include "/WEB-INF/global/pages/main-menu.ftl" /]
+ 
 [/#if]
 
 <section class="content">
@@ -32,10 +39,14 @@
   </article>
 </section>
 
-[#if crpSession?has_content]
-[#include "/WEB-INF/global/pages/footer.ftl"]
-[/#if]
-
-[#if centerSession?has_content]
-[#include "/WEB-INF/center/global/pages/footer.ftl"]
+[#if !errorPage??]
+  [#if crpSession??]
+    [#include "/WEB-INF/global/pages/footer.ftl"]
+  [/#if]
+  
+  [#if centerSession??]
+    [#include "/WEB-INF/center/global/pages/footer.ftl"]
+  [/#if]
+[#else]
+  [#include "/WEB-INF/global/pages/footer.ftl"]
 [/#if]
