@@ -334,7 +334,9 @@ public class AuditLogInterceptor extends EmptyInterceptor {
           if (set != null) {
             for (Object iAuditLog : set) {
               if (iAuditLog instanceof IAuditLog) {
+
                 IAuditLog audit = (IAuditLog) iAuditLog;
+
                 if (audit.isActive()) {
                   try {
                     String name = audit.getClass().getName();
@@ -342,20 +344,45 @@ public class AuditLogInterceptor extends EmptyInterceptor {
 
                     Object obj = dao.find(className, (Serializable) audit.getId());
 
-
-                    listRelation.add((IAuditLog) obj);
-                    Set<HashMap<String, Object>> loadList = this.loadList((IAuditLog) obj);
-                    for (HashMap<String, Object> hashMap : loadList) {
-                      HashSet<IAuditLog> relationAudit = (HashSet<IAuditLog>) hashMap.get(ENTITY);
-                      for (IAuditLog iAuditLog2 : relationAudit) {
-                        Set<HashMap<String, Object>> loadListRelations = this.loadList(iAuditLog2);
-
-                        relations.addAll(loadListRelations);
+                    ClassMetadata classMetadata = session.getSessionFactory().getClassMetadata(obj.getClass());
+                    String[] propertyNamesRelation = classMetadata.getPropertyNames();
+                    Phase phaseObject = null;
+                    boolean hasPhase = false;
+                    for (String nameAtrribute : propertyNamesRelation) {
+                      if (nameAtrribute.equals("phase")) {
+                        phaseObject = (Phase) classMetadata.getPropertyValue(obj, nameAtrribute, EntityMode.POJO);
+                        phaseObject = dao.find(Phase.class, (Serializable) phaseObject.getId());
+                        hasPhase = true;
                       }
+                    }
+                    if (hasPhase) {
+                      if (phase.equals(phaseObject)) {
+                        listRelation.add((IAuditLog) obj);
+                        Set<HashMap<String, Object>> loadList = this.loadList((IAuditLog) obj);
+                        for (HashMap<String, Object> hashMap : loadList) {
+                          HashSet<IAuditLog> relationAudit = (HashSet<IAuditLog>) hashMap.get(ENTITY);
+                          for (IAuditLog iAuditLog2 : relationAudit) {
+                            Set<HashMap<String, Object>> loadListRelations = this.loadList(iAuditLog2);
+                            relations.addAll(loadListRelations);
+                          }
+                        }
+                        relations.addAll(loadList);
+                      }
+
+                    } else {
+                      listRelation.add((IAuditLog) obj);
+                      Set<HashMap<String, Object>> loadList = this.loadList((IAuditLog) obj);
+                      for (HashMap<String, Object> hashMap : loadList) {
+                        HashSet<IAuditLog> relationAudit = (HashSet<IAuditLog>) hashMap.get(ENTITY);
+                        for (IAuditLog iAuditLog2 : relationAudit) {
+                          Set<HashMap<String, Object>> loadListRelations = this.loadList(iAuditLog2);
+                          relations.addAll(loadListRelations);
+                        }
+                      }
+                      relations.addAll(loadList);
                     }
 
 
-                    relations.addAll(loadList);
                   } catch (ClassNotFoundException e) {
 
                     LOG.error(e.getLocalizedMessage());
