@@ -19,10 +19,12 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -46,7 +48,8 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
   private UserManager userManager;
   private CrpProgramManager crpProgramManager;
 
-
+  private Phase phase;
+  private PhaseManager phaseManager;
   private Map<String, Object> parameters;
   private Map<String, Object> session;
   private Crp crp;
@@ -54,10 +57,11 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
 
   @Inject
   public EditImpactPathwayInterceptor(CrpManager crpManager, UserManager userManager,
-    CrpProgramManager crpProgramManager) {
+    CrpProgramManager crpProgramManager, PhaseManager phaseManager) {
     this.crpManager = crpManager;
     this.userManager = userManager;
     this.crpProgramManager = crpProgramManager;
+    this.phaseManager = phaseManager;
   }
 
   long getCrpProgramId() {
@@ -112,6 +116,7 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
       this.setPermissionParameters(invocation);
       return invocation.invoke();
     } catch (Exception e) {
+      e.printStackTrace();
       return BaseAction.NOT_FOUND;
     }
   }
@@ -121,7 +126,8 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
     boolean canEdit = false;
     boolean hasPermissionToEdit = false;
     boolean editParameter = false;
-
+    phase = baseAction.getActualPhase(session, crp.getId());
+    phase = phaseManager.getPhaseById(phase.getId());
 
     CrpProgram crpProgram = crpProgramManager.getCrpProgramById(crpProgramID);
 
@@ -141,6 +147,13 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
           if (baseAction.isCrpClosed()) {
             canEdit = false;
           }
+        }
+
+        if (!phase.getEditable()) {
+          canEdit = false;
+        }
+        if (phase.getDescription().equals(APConstants.REPORTING)) {
+          canEdit = false;
         }
 
         if (parameters.get(APConstants.EDITABLE_REQUEST) != null) {

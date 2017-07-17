@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.CrpProgramDAO;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -107,6 +108,16 @@ public class CrpProgramMySQLDAO implements CrpProgramDAO {
       dao.save(crpProgram, actionName, relationsName);
     } else {
       dao.update(crpProgram, actionName, relationsName);
+    }
+    return crpProgram.getId();
+  }
+
+  @Override
+  public long save(CrpProgram crpProgram, String actionName, List<String> relationsName, Phase phase) {
+    if (crpProgram.getId() == null) {
+      dao.save(crpProgram, actionName, relationsName, phase);
+    } else {
+      dao.update(crpProgram, actionName, relationsName, phase);
     }
     return crpProgram.getId();
   }

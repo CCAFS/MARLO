@@ -625,6 +625,32 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
+  public Phase getActualPhase(Map<String, Object> session, long crpID) {
+    try {
+      if (session.containsKey(APConstants.CURRENT_PHASE)) {
+        return (Phase) session.get(APConstants.CURRENT_PHASE);
+      } else {
+        String cyle = "";
+        int year = 0;
+        if (Boolean.parseBoolean(session.get(APConstants.CRP_REPORTING_ACTIVE).toString())) {
+          cyle = APConstants.REPORTING;
+          year = Integer.parseInt(session.get(APConstants.CRP_REPORTING_YEAR).toString());
+        } else {
+          cyle = APConstants.PLANNING;
+          year = Integer.parseInt(session.get(APConstants.CRP_PLANNING_YEAR).toString());
+        }
+        Phase phase = phaseManager.findCycle(cyle, year, crpID);
+        session.put(APConstants.CURRENT_PHASE, phase);
+        return phase;
+      }
+    } catch (Exception e) {
+      return new Phase(null, "", -1);
+    }
+
+
+  }
+
   public Boolean getAutoSaveFilePath(String simpleName, String actionName, long id) {
     String composedClassName = simpleName;
     String actionFile = this.getCrpSession() + "_" + actionName;

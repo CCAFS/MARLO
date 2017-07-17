@@ -160,7 +160,8 @@ public class OutcomesAction extends BaseAction {
   private Path getAutoSaveFilePath() {
     String composedClassName = selectedProgram.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile = selectedProgram.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+    String autoSaveFile = selectedProgram.getId() + "_" + composedClassName + "_"
+      + this.getActualPhase().getDescription() + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
@@ -308,7 +309,8 @@ public class OutcomesAction extends BaseAction {
       if (history != null) {
         crpProgramID = history.getId();
         selectedProgram = history;
-        outcomes.addAll(history.getCrpProgramOutcomes());
+        outcomes.addAll(history.getCrpProgramOutcomes().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) ;
 
         this.setEditable(false);
         this.setCanEdit(false);
@@ -495,7 +497,7 @@ public class OutcomesAction extends BaseAction {
       List<String> relationsName = new ArrayList<>();
       selectedProgram.setModificationJustification(this.getJustification());
       relationsName.add(APConstants.PROGRAM_OUTCOMES_RELATION);
-      crpProgramManager.saveCrpProgram(selectedProgram, this.getActionName(), relationsName);
+      crpProgramManager.saveCrpProgram(selectedProgram, this.getActionName(), relationsName, this.getActualPhase());
 
       Path path = this.getAutoSaveFilePath();
 
@@ -614,7 +616,7 @@ public class OutcomesAction extends BaseAction {
 
     }
     for (CrpProgramOutcome crpProgramOutcome : selectedProgram.getCrpProgramOutcomes().stream()
-      .filter(c -> c.isActive()).collect(Collectors.toList())) {
+      .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
       if (!outcomes.contains(crpProgramOutcome)) {
         // if (crpProgramOutcome.getCrpMilestones().isEmpty() && crpProgramOutcome.getCrpOutcomeSubIdos().isEmpty()) {
         crpProgramOutcomeManager.deleteCrpProgramOutcome(crpProgramOutcome.getId());

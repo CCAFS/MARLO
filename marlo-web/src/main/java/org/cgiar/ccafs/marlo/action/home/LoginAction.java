@@ -202,6 +202,7 @@ public class LoginAction extends BaseAction {
          */
         if (urlAction.contains(".do") && !urlAction.contains("logout")) {
           this.url = urlAction;
+
           return LOGIN;
         } else {
           return SUCCESS;
