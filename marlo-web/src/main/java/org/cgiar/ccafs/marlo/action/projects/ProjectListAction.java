@@ -430,13 +430,15 @@ public class ProjectListAction extends BaseAction {
         List<CrpProgram> regions = new ArrayList<>();
         for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
           .filter(
-            c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+            c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+              && c.getPhase().equals(this.getActualPhase()))
           .collect(Collectors.toList())) {
           programs.add(projectFocuses.getCrpProgram());
         }
         for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
           .filter(
-            c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+            c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()
+              && c.getPhase().equals(this.getActualPhase()))
           .collect(Collectors.toList())) {
           regions.add(projectFocuses.getCrpProgram());
         }
@@ -450,13 +452,15 @@ public class ProjectListAction extends BaseAction {
           List<CrpProgram> regions = new ArrayList<>();
           for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
             .filter(
-              c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+              c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+                && c.getPhase().equals(this.getActualPhase()))
             .collect(Collectors.toList())) {
             programs.add(projectFocuses.getCrpProgram());
           }
           for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
             .filter(
-              c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+              c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()
+                && c.getPhase().equals(this.getActualPhase()))
             .collect(Collectors.toList())) {
             regions.add(projectFocuses.getCrpProgram());
           }

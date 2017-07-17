@@ -751,7 +751,8 @@ public class ProjectDescriptionAction extends BaseAction {
             projectFocus.setProject(project);
             projectFocus.setPhase(this.getActualPhase());
             if (projectDB.getProjectFocuses().stream()
-              .filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == program.getId().longValue())
+              .filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == program.getId().longValue()
+                && c.getPhase().equals(this.getActualPhase()))
               .collect(Collectors.toList()).isEmpty()) {
               projectFocus.setActive(true);
               projectFocus.setActiveSince(new Date());

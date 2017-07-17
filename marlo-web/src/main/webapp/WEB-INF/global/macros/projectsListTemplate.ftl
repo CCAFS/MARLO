@@ -52,7 +52,7 @@
           </td>
           [#-- Project Leader --]
           <td class=""> 
-            [#if project.leader?has_content]${(project.leader.institution.acronym)!project.leader.institution.name}[#else][@s.text name="projectsList.title.none" /][/#if]
+            [#if project.getLeader(action.getActualPhase())?has_content]${(project.getLeader(action.getActualPhase()).institution.acronym)!project.getLeader(action.getActualPhase()).institution.name}[#else][@s.text name="projectsList.title.none" /][/#if]
           </td>
           [#-- Project Type 
           <td>

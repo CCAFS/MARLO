@@ -344,6 +344,9 @@ public class AuditLogInterceptor extends EmptyInterceptor {
 
                     Object obj = dao.find(className, (Serializable) audit.getId());
 
+                    /*
+                     * Validate if the object we are checking has a phase attribute, and Load the info
+                     */
                     ClassMetadata classMetadata = session.getSessionFactory().getClassMetadata(obj.getClass());
                     String[] propertyNamesRelation = classMetadata.getPropertyNames();
                     Phase phaseObject = null;
@@ -355,6 +358,9 @@ public class AuditLogInterceptor extends EmptyInterceptor {
                         hasPhase = true;
                       }
                     }
+                    /*
+                     * if have phase and the phase is the current we are checking , we load the info
+                     */
                     if (hasPhase) {
                       if (phase.equals(phaseObject)) {
                         listRelation.add((IAuditLog) obj);
@@ -370,6 +376,9 @@ public class AuditLogInterceptor extends EmptyInterceptor {
                       }
 
                     } else {
+                      /*
+                       * If doesn't have phase we alway load the info
+                       */
                       listRelation.add((IAuditLog) obj);
                       Set<HashMap<String, Object>> loadList = this.loadList((IAuditLog) obj);
                       for (HashMap<String, Object> hashMap : loadList) {
