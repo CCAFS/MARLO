@@ -61,6 +61,9 @@
 		<property name="contactPersonEmail" type="string">
 			<column name="contact_person_email" length="65535" />
 		</property>
+    <property name="grantAmount" type="java.lang.Double">
+      <column name="grantAmount" precision="20" scale="5" />
+    </property>
 
 		<many-to-one name="partnerDivision"
 			class="org.cgiar.ccafs.marlo.data.model.PartnerDivision" fetch="select">

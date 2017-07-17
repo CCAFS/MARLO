@@ -74,3 +74,8 @@ table {
 .managingPartners {
   border-right: dashed 2px #e6e6e6;
 }
+
+#grantTotalAmount {
+  font-size: 1.3em;
+  float: right;
+}

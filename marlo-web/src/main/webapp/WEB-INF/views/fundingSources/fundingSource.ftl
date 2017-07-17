@@ -329,11 +329,14 @@
       </div>
     </div>
     
+    [#-- Annual funding source contribution and Grand Amount --]
+    <h4 class="headTitle" >Annual funding source contribution</h4>
+    [#-- Grant total amount --]
+    <div id="grantTotalAmount" class="metadataElement-grantAmount" style="display:${isSynced?string('block', 'none')}">
+      <small><strong>Total Grant Amount:</strong> $US <span class="amount">${((fundingSource.grantAmount)!0)?number?string(",##0.00")}</span></small>
+      <input type="hidden" class="metadataValue" name="fundingSource.grantAmount" value="${(fundingSource.grantAmount)!0}" />
+    </div>
     
-    <h4 class="headTitle">Annual funding source contribution
-      <br />  
-      <small> <strong>Total Grand Amount:</strong> $US <span id="totalGrandAmount">0.00</span></small>
-    </h4>
     <div class="contributionWrapper budgetByYears">
       [#-- Year Tabs --]
       <ul class="nav nav-tabs budget-tabs" role="tablist">
@@ -345,7 +348,6 @@
       <div class="tab-content contributionContent">
         [#list startYear .. extensionYear as year]
           <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="fundingYear-${year}">
-          
           
           [#attempt]
             [#assign budget = (action.getBudget(year))!{} /]

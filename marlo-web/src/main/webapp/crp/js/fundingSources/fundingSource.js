@@ -154,7 +154,7 @@ function init() {
     $(this).addClass("radio-checked");
   });
 
-  // Is this deliverable Open Access
+  // Is this funding source has regional dimension
   $(".isRegional .button-label").on("click", function() {
     var valueSelected = $(this).hasClass('yes-button-label');
     if(!valueSelected) {
@@ -162,6 +162,11 @@ function init() {
     } else {
       $(".regionsBox").show("slow");
     }
+  });
+  
+  // Check total grant amount
+  $('.currencyInput').on('keyup', function(){
+    console.log(this.value);
   });
 }
 

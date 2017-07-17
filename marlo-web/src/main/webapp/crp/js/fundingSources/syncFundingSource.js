@@ -114,6 +114,8 @@ function unSyncFundingSource() {
   $('#fillMetadata .checkButton, .disseminationChannelBlock').show('slow');
   // Hide UnSync & Update Button
   $('#fillMetadata .unSyncBlock').hide();
+  // Hide grand amount
+  $('#grantTotalAmount').hide();
   // Show some components
   $('.syncVisibles').show();
   // Set hidden inputs
@@ -173,7 +175,8 @@ function getOCSMetadata() {
           });
 
           // Set Grand Amount
-          $('#totalGrandAmount').text(setCurrencyFormat(agreement.grantAmount));
+          $('#grantTotalAmount .amount').text(setCurrencyFormat(agreement.grantAmount));
+          $('#grantTotalAmount').show();
 
           // Set Metadata
           setMetadata(agreement);
