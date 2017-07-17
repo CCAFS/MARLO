@@ -13,19 +13,42 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
+package org.cgiar.ccafs.marlo.action.center.capdev;
 
-package org.cgiar.ccafs.marlo.utils;
+import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.data.model.CapacityDevelopment;
+import org.cgiar.ccafs.marlo.utils.APConfig;
+
+import com.google.inject.Inject;
+
+public class CapdevSupportingDocsAction extends BaseAction {
 
 
-public class InvalidFieldsMessages {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
 
-  public static String EMPTYLIST = "{0} are required";
-  public static String EMPTYFIELD = "Required Field";
-  public static String EMPTYUSERLIST = "There must be at least one person here.";
-  public static String INVALID_NUMBER = "Invalid Number";
-  public static String CHECKBOX = "Select an option";
-  public static String INVALID_FORMAT = "Only excel files(.xls, xlsx) are allowed.";
-  public static String FILE_SIZE = "The maximun size allowed is 30MB";
+  private CapacityDevelopment capdev;
 
+  @Inject
+  public CapdevSupportingDocsAction(APConfig config) {
+    super(config);
+  }
+
+  public CapacityDevelopment getCapdev() {
+    return capdev;
+  }
+
+
+  @Override
+  public void prepare() throws Exception {
+    capdev = new CapacityDevelopment();
+  }
+
+
+  public void setCapdev(CapacityDevelopment capdev) {
+    this.capdev = capdev;
+  }
 
 }

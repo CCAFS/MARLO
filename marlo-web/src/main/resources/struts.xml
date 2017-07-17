@@ -325,6 +325,13 @@
         <interceptor-ref name="keepRedirectMessages" />
         <interceptor-ref name="defaultStack" />
       </interceptor-stack>
+      
+      <interceptor-stack name="centerCapdevStack">
+        <interceptor-ref name="i18nFile" />
+        <interceptor-ref name="requireUser" />
+        <interceptor-ref name="keepRedirectMessages" />
+        <interceptor-ref name="defaultStack" />
+      </interceptor-stack>
        <!-- 
        ******************************************************************************************* -->  
 
@@ -385,6 +392,6 @@
 	<include file="struts-center-monitoring.xml" />
 	<include file="struts-center-admin.xml" />
 	<include file="struts-center-summaries.xml" />
-
+	<include file="struts-center-capDev.xml" />
 
 </struts>

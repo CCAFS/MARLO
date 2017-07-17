@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Jun 9, 2017 3:40:30 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+	<class name="org.cgiar.ccafs.marlo.data.model.Participant" table="participant"
+		optimistic-lock="version">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<many-to-one name="usersByModifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select">
+			<column name="modified_by" />
+		</many-to-one>
+		<many-to-one name="usersByCreatedBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select">
+			<column name="created_by" not-null="true" />
+		</many-to-one>
+		<property name="code" type="long">
+			<column name="code" not-null="true" />
+		</property>
+		<property name="name" type="string">
+			<column name="name" length="200" not-null="true" />
+		</property>
+		<property name="lastName" type="string">
+			<column name="last_name" length="200" not-null="true" />
+		</property>
+		<property name="gender" type="string">
+			<column name="gender" not-null="true" />
+		</property>
+		<property name="citizenship" type="string">
+			<column name="citizenship" length="200" not-null="true" />
+		</property>
+		<property name="countryOfInstitucion" type="string">
+			<column name="country_of_institucion" length="200" />
+		</property>
+		<property name="highestDegree" type="string">
+			<column name="highest_degree" length="200" />
+		</property>
+		<property name="institution" type="string">
+			<column name="institution" length="200" />
+		</property>
+		<property name="email" type="string">
+			<column name="email" length="200" not-null="true" />
+		</property>
+		<property name="reference" type="string">
+			<column name="reference" length="200" />
+		</property>
+		<property name="supervisor" type="string">
+			<column name="supervisor" length="200" />
+		</property>
+		<property name="fellowship" type="string">
+			<column name="fellowship" length="200" />
+		</property>
+		<property name="active" type="boolean">
+			<column name="is_active" not-null="true" />
+		</property>
+		<property name="aciveSince" type="timestamp">
+			<column name="acive_since" length="19" />
+		</property>
+		<property name="modificationJustification" type="string">
+			<column name="modification_justification" length="65535" />
+		</property>
+		<set name="capdevParticipants" table="capdev_participant" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="participant_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CapdevParticipant" />
+		</set>
+	</class>
+</hibernate-mapping>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN" "http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+
+	<package name="capDev" namespace="/capdev" extends="marlo-default">
+
+		<action name="{center}/capdev"
+			class="org.cgiar.ccafs.marlo.action.center.capdev.CapacityDevelopmentAction"
+			method="list">
+			<result type="freemarker" name="success">/WEB-INF/center/views/capDev/capdevList.ftl
+			</result>
+		</action>
+
+		<action name="{center}/addCapdev"
+			class="org.cgiar.ccafs.marlo.action.center.capdev.CapacityDevelopmentAction"
+			method="add">
+			<result name="input">/WEB-INF/center/views/capDev/capdevList.ftl
+			</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">${centerSession}/detailCapdev</param>
+				<param name="capdevID">${capdevID}</param>
+			</result>
+		</action>
+
+		<action name="{center}/detailCapdev"
+			class="org.cgiar.ccafs.marlo.action.center.capdev.CapacityDevelopmentDetailAction">
+			<interceptor-ref name="centerCapdevStack" />
+			<result name="input">/WEB-INF/center/views/capDev/detailCapdev.ftl
+			</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">${centerSession}/detailCapdev</param>
+				<param name="capdevID">${capdevID}</param>
+				<param name="capdevCategory">${capdevCategory}</param>
+			</result>
+		</action>
+
+		<action name="{center}/downloadFile"
+			class="org.cgiar.ccafs.marlo.action.center.capdev.ParticipantsAction"
+			method="dowmloadTemplate">
+			<result name="success" type="stream">
+				<param name="contentType">application/vnd.ms-excel</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="participants.xlsx"</param>
+				<param name="bufferSize">4096</param>
+			</result>
+		</action>
+
+		<action name="{center}/descriptionCapdev"
+			class="org.cgiar.ccafs.marlo.action.center.capdev.CapdevDescriptionAction">
+			<interceptor-ref name="centerCapdevStack" />
+			<result name="input">/WEB-INF/center/views/capDev/capdevDescription.ftl
+			</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">${centerSession}/descriptionCapdev</param>
+				<param name="capdevID">${capdevID}</param>
+			</result>
+		</action>
+
+		<action name="{center}/supportingDocs"
+			class="org.cgiar.ccafs.marlo.action.center.capdev.CapdevSupportingDocsAction">
+			<result name="input">/WEB-INF/center/views/capDev/supportingDocs.ftl
+			</result>
+		</action>
+
+	</package>
+
+</struts>

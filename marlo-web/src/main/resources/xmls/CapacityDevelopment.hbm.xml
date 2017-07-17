@@ -1,0 +1,120 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated May 30, 2017 3:06:49 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+	<class name="org.cgiar.ccafs.marlo.data.model.CapacityDevelopment"
+		table="capacity_development" optimistic-lock="version">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<many-to-one name="capdevType"
+			class="org.cgiar.ccafs.marlo.data.model.CapacityDevelopmentType"
+			fetch="select">
+			<column name="capdev_type" />
+		</many-to-one>
+		<many-to-one name="project"
+			class="org.cgiar.ccafs.marlo.data.model.CenterProject" fetch="select">
+			<column name="project" not-null="false" />
+		</many-to-one>
+		<many-to-one name="usersByModifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select">
+			<column name="modified_by" />
+		</many-to-one>
+		<many-to-one name="usersByCreatedBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select">
+			<column name="created_by" />
+		</many-to-one>
+		<many-to-one name="researchArea"
+			class="org.cgiar.ccafs.marlo.data.model.CenterArea" fetch="select">
+			<column name="research_area" />
+		</many-to-one>
+		<many-to-one name="crp" class="org.cgiar.ccafs.marlo.data.model.Crp"
+			fetch="select">
+			<column name="crp" />
+		</many-to-one>
+		<many-to-one name="researchProgram"
+			class="org.cgiar.ccafs.marlo.data.model.CenterProgram" fetch="select">
+			<column name="research_program" />
+		</many-to-one>
+		<property name="title" type="string">
+			<column name="title" length="500" />
+		</property>
+		<property name="category" type="int">
+			<column name="category" />
+		</property>
+		<property name="active" type="boolean">
+			<column name="is_active" not-null="true" />
+		</property>
+		<property name="modificationJustification" type="string">
+			<column name="modification_justification" length="65535" />
+		</property>
+		<property name="ctFirstName" type="string">
+			<column name="ct_firstName" length="45" />
+		</property>
+		<property name="ctLastName" type="string">
+			<column name="ct_lastName" length="45" />
+		</property>
+		<property name="ctEmail" type="string">
+			<column name="ct_email" length="200" />
+		</property>
+		<property name="startDate" type="date">
+			<column name="start_date" length="10" />
+		</property>
+		<property name="endDate" type="date">
+			<column name="end_date" length="10" />
+		</property>
+		<property name="numParticipants" type="java.lang.Integer">
+			<column name="num_participants" />
+		</property>
+		<property name="numMen" type="java.lang.Integer">
+			<column name="num_men" />
+		</property>
+		<property name="numWomen" type="java.lang.Integer">
+			<column name="num_women" />
+		</property>
+		<set name="capdevLocations" table="capdev_locations" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="capdev_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CapdevLocations" />
+		</set>
+		<set name="capdevDisciplines" table="capdev_discipline" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="capdev_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CapdevDiscipline" />
+		</set>
+		<set name="capdevTargetgroups" table="capdev_targetgroup" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="capdev_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CapdevTargetgroup" />
+		</set>
+		<set name="capdevParticipants" table="capdev_participant" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="capdev_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CapdevParticipant" />
+		</set>
+		<set name="capdevOutputses" table="capdev_outputs" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="capdev_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CapdevOutputs" />
+		</set>
+		<set name="capdevPartnerses" table="capdev_partners" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="capdev_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CapdevPartners" />
+		</set>
+	</class>
+</hibernate-mapping>
