@@ -171,6 +171,10 @@ function getOCSMetadata() {
           $.each(agreement.countries, function(i,e) {
             addCountry(e.code, e.description, e.percentage);
           });
+
+          // Set Grand Amount
+          $('#totalGrandAmount').text(setCurrencyFormat(agreement.grantAmount));
+
           // Set Metadata
           setMetadata(agreement);
 

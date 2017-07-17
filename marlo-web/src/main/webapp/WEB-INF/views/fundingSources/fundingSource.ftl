@@ -59,7 +59,7 @@
                         
                         [#-- Check IFPRI Division --]
                         [#if institutionLead.institution.id == action.getIFPRIId() ] [#assign ifpriDivision = true /] [/#if]
-                        [#-- Check IFPRI Division --]
+                        [#-- Check CIAT Division --]
                         [#if institutionLead.institution.acronym == "CIAT" ] [#assign hasCIAT = true /] [/#if]
                       </li>
                     [/#if]
@@ -330,7 +330,10 @@
     </div>
     
     
-    <h4 class="headTitle">Annual funding source contribution</h4>
+    <h4 class="headTitle">Annual funding source contribution
+      <br />  
+      <small> <strong>Total Grand Amount:</strong> $US <span id="totalGrandAmount">0.00</span></small>
+    </h4>
     <div class="contributionWrapper budgetByYears">
       [#-- Year Tabs --]
       <ul class="nav nav-tabs budget-tabs" role="tablist">
