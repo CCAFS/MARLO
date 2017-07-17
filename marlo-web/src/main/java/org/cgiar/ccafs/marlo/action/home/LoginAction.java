@@ -196,7 +196,7 @@ public class LoginAction extends BaseAction {
       // Check if the user exists in the session
       if (this.getCurrentUser() != null) {
         if (this.getCrpSession() != null) {
-          return INPUT;
+          return SUCCESS;
         }
 
         if (this.getCenterSession() != null) {
