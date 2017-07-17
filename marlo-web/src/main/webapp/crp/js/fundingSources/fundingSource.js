@@ -166,8 +166,16 @@ function init() {
   
   // Check total grant amount
   $('.currencyInput').on('keyup', function(){
-    console.log(this.value);
-  });
+    var total = 0
+    $('.currencyInput').each(function(i,e) {
+      total = total + removeCurrencyFormat(e.value || "0");
+    });
+    if ($('#grantTotalAmount input').val() < total){
+      $('#grantTotalAmount').addClass('fieldError').animateCss('shake');
+    }else{
+      $('#grantTotalAmount').removeClass('fieldError');
+    }
+  }).trigger('keyup');
 }
 
 /**
