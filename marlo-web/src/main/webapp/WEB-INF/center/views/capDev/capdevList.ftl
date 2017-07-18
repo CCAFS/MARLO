@@ -38,27 +38,30 @@
 	  				<img src="${baseUrlMedia}/images/global/search.png" class="searchIcon" />
 				</div>
 				<div class="pull-right ">
-						<input id="capdevSearchInput" type="text" name="search" class="searchInput"><br>
+						<input id="capdevSearchInput" type="search" name="search" class="form-control input-sm searchInput" aria-controls="projects"><br>
 				</div> 
 			</div>
 		</div>
 		<div class="row">
 			<div class="col-md-12">
-				<table class="table table-bordered">
-				  <tr>
-				    <th style="width: 3%">ID</th>
-				    <th style="width: 15%">Title</th> 
-				    <th style="width: 7%">Type</th>
-				    <th style="width: 7%">Start date</th>
-				    <th style="width: 7%">End date</th>
-				    <th style="width: 7%">Research Area</th>
-				    <th style="width: 7%">Research Program</th>
-				    <th style="width: 7%">Annexes</th>
-				  </tr>
-				  
-				  [#if capDevs?has_content]
-				  [#list capDevs as i]
+				<table id="capdevs" class="table table-bordered capdevTable">
+					<thead>
 					  <tr>
+					    <th style="width: 3%">ID</th>
+					    <th style="width: 15%">Title</th> 
+					    <th style="width: 7%">Type</th>
+					    <th style="width: 7%">Start date</th>
+					    <th style="width: 7%">End date</th>
+					    <th style="width: 7%">Research Area</th>
+					    <th style="width: 7%">Research Program</th>
+					    <th style="width: 7%">Annexes</th>
+					  </tr>
+				  	</thead>
+				  	<tbody id="capdevTbody">
+					  [#if capDevs?has_content]
+					  [#list capDevs as i]
+
+					  <tr >
 					    <td>C${i.id}</td>
 					    [#if i.title??]
 					    <td>
@@ -110,9 +113,10 @@
 				    		</div>
 					    </td>
 					  </tr>
-				  [/#list]
+					  [/#list]
 
-				  [/#if]
+					  [/#if]
+				  	</tbody>
 				</table>
 			</div>
 		</div>

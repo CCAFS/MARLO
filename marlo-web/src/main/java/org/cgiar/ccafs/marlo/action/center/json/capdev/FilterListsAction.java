@@ -24,7 +24,6 @@ import org.cgiar.ccafs.marlo.data.manager.ICenterProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
-import org.cgiar.ccafs.marlo.data.model.CapacityDevelopment;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
@@ -83,48 +82,6 @@ public class FilterListsAction extends BaseAction {
     return SUCCESS;
   }
 
-  public String filterCapDevList() throws Exception {
-    final Map<String, Object> parameters = this.getParameters();
-    final String query = StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]);
-
-    final CharSequence secuence = query.toLowerCase();
-
-    jsonCapdevList = new ArrayList<>();
-    final List<CapacityDevelopment> capdevList = new ArrayList<>(capdevService.findAll());
-    System.out.println("capdevList.size() --> " + capdevList.size());
-
-    for (final CapacityDevelopment capdev : capdevList) {
-      final Map<String, Object> capdevMap = new HashMap<>();
-      if (capdev.getTitle() != null) {
-        if (capdev.getTitle().toLowerCase().contains(secuence)) {
-          capdevMap.put("id", capdev.getId());
-          capdevMap.put("title", capdev.getTitle());
-          capdevMap.put("type", capdev.getCapdevType().getName());
-          capdevMap.put("startDate", capdev.getStartDate());
-          if (capdev.getEndDate() != null) {
-            capdevMap.put("endDate", capdev.getEndDate());
-          } else {
-            capdevMap.put("endDate", "Not defined");
-          }
-          if (capdev.getResearchArea() != null) {
-            capdevMap.put("researchArea", capdev.getResearchArea().getName());
-          } else {
-            capdevMap.put("researchArea", "Not defined");
-          }
-          if (capdev.getResearchProgram() != null) {
-            capdevMap.put("researchProgram", capdev.getResearchProgram().getName());
-          } else {
-            capdevMap.put("researchProgram", "Not defined");
-          }
-
-          jsonCapdevList.add(capdevMap);
-        }
-      }
-
-    }
-
-    return SUCCESS;
-  }
 
   public String filterPartners_Outputs() throws Exception {
     final Map<String, Object> parameters = this.getParameters();

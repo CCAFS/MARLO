@@ -414,42 +414,48 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
     final User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
 
+    final CapacityDevelopment capdevDB = capdevService.getCapacityDevelopmentById(capdevID);
 
-    capdev.setUsersByCreatedBy(currentUser);
+    capdevDB.setUsersByCreatedBy(currentUser);
+    capdevDB.setCapdevType(capdev.getCapdevType());
+    capdevDB.setStartDate(capdev.getStartDate());
+    capdevDB.setEndDate(capdev.getEndDate());
 
     // if capdev is individual
-    if (capdev.getCategory() == 1) {
+    if (capdevDB.getCategory() == 1) {
       capdev.setTitle(participant.getName() + " " + participant.getLastName());
-      capdevService.saveCapacityDevelopment(capdev);
+      capdevDB.setTitle(capdev.getTitle());
+      capdevService.saveCapacityDevelopment(capdevDB);
       this.saveParticipant(participant);
-      if (capdev.getCapdevParticipants().isEmpty()) {
-        this.saveCapDevParticipan(participant, capdev);
+      if (capdevDB.getCapdevParticipants().isEmpty()) {
+        this.saveCapDevParticipan(participant, capdevDB);
       }
     }
 
     // if capdec is group
-    if (capdev.getCategory() == 2) {
+    if (capdevDB.getCategory() == 2) {
+      capdevDB.setTitle(capdev.getTitle());
       if (uploadFile != null) {
         final Object[][] data = reader.readExcelFile(uploadFile);
         this.loadParticipantsList(data);
-        capdev.setNumParticipants(participantList.size());
+        capdevDB.setNumParticipants(participantList.size());
         final int numMen = this.getNumMenParticipants(data);
         final int numWomen = this.getNumWomenParticipants(data);
-        capdev.setNumMen(numMen);
-        capdev.setNumWomen(numWomen);
+        capdevDB.setNumMen(numMen);
+        capdevDB.setNumWomen(numWomen);
 
       }
-      capdevService.saveCapacityDevelopment(capdev);
+      capdevService.saveCapacityDevelopment(capdevDB);
       for (final Participant participant : participantList) {
         this.saveParticipant(participant);
-        this.saveCapDevParticipan(participant, capdev);
+        this.saveCapDevParticipan(participant, capdevDB);
       }
 
     }
 
 
-    this.saveCapDevRegions(capdevRegions, capdev);
-    this.saveCapDevCountries(capdevCountries, capdev);
+    this.saveCapDevRegions(capdevRegions, capdevDB);
+    this.saveCapDevCountries(capdevCountries, capdevDB);
 
     this.addActionMessage("message: Information was correctly saved.</br>");
 
