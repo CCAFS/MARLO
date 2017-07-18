@@ -301,7 +301,7 @@ public class ImpactPathwayOutcomesSummaryAction extends BaseAction implements Su
     currentDate = timezone.format(format) + this.getTimeZone();
 
     // Get CIAT imgage URL from repo
-    String imageUrl = this.getBaseUrl() + "/images/global/centers/CIAT.png";
+    String imageUrl = this.getBaseUrl() + "center/images/global/centers/CIAT.png";
 
 
     model.addRow(new Object[] {title, currentDate, imageUrl, researchProgram.getId()});
