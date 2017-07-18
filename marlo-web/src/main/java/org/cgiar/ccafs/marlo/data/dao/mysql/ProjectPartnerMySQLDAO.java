@@ -56,7 +56,7 @@ public class ProjectPartnerMySQLDAO implements ProjectPartnerDAO {
         partnerLocation.setActiveSince(new Date());
         partnerLocation.setCreatedBy(projectPartner.getCreatedBy());
         partnerLocation.setModificationJustification(projectPartner.getModificationJustification());
-        partnerLocation.setModifiedBy(projectPartner.getModifiedBy());
+        partnerLocation.setModifiedBy(projectPartner.getCreatedBy());
         partnerLocation.setProjectPartner(projectPartner);
         dao.save(partnerLocation);
       }
@@ -79,7 +79,7 @@ public class ProjectPartnerMySQLDAO implements ProjectPartnerDAO {
         projectPartnerPersonAdd.setActiveSince(projectPartnerPerson.getActiveSince());
         projectPartnerPersonAdd.setCreatedBy(projectPartnerPerson.getCreatedBy());
         projectPartnerPersonAdd.setModificationJustification(projectPartnerPerson.getModificationJustification());
-        projectPartnerPersonAdd.setModifiedBy(projectPartnerPerson.getModifiedBy());
+        projectPartnerPersonAdd.setModifiedBy(projectPartnerPerson.getCreatedBy());
         projectPartnerPersonAdd.setProjectPartner(projectPartnerAdd);
         projectPartnerPersonAdd.setContactType(projectPartnerPersonAdd.getContactType());
         projectPartnerPersonAdd.setUser(projectPartnerPersonAdd.getUser());
@@ -111,6 +111,7 @@ public class ProjectPartnerMySQLDAO implements ProjectPartnerDAO {
       projectPartnerAdd.setModificationJustification(projectPartner.getModificationJustification());
       projectPartnerAdd.setModifiedBy(projectPartner.getModifiedBy());
       projectPartnerAdd.setPhase(phase);
+      projectPartnerAdd.setResponsibilities(projectPartner.getResponsibilities());
       projectPartnerAdd.setProject(projectPartner.getProject());
       dao.save(projectPartnerAdd);
       this.addPersons(projectPartner, projectPartnerAdd);
