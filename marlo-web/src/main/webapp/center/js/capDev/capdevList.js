@@ -26,7 +26,16 @@ function getCapdevListFiltered(query){
         $dialogContent.find(".panel-body ul").empty();*/
       },
       success: function(data) {
+        console.log(data[0]);
+        var table = $(".capdevTable");
+        $(".capdevTable tbody>tr.capdevTbody").remove();
 
+        
+
+         for (var i = 0; i  < = data.length; i++) {
+          var row = $('<tr></tr>').appendTo(table);
+          $('<td></td>').text(data[0].['id']).appendTo(row); 
+         }
         /*var usersFound = (data.users).length;
         if(usersFound > 0) {
 

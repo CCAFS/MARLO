@@ -87,13 +87,42 @@ public class FilterListsAction extends BaseAction {
     final Map<String, Object> parameters = this.getParameters();
     final String query = StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]);
 
-    final String cadena = "sdg asdf";
+    final CharSequence secuence = query.toLowerCase();
 
-    final CharSequence secuence = "df";
-
-    System.out.println("Conteniene ---> " + cadena.contains(secuence));
+    jsonCapdevList = new ArrayList<>();
     final List<CapacityDevelopment> capdevList = new ArrayList<>(capdevService.findAll());
     System.out.println("capdevList.size() --> " + capdevList.size());
+
+    for (final CapacityDevelopment capdev : capdevList) {
+      final Map<String, Object> capdevMap = new HashMap<>();
+      if (capdev.getTitle() != null) {
+        if (capdev.getTitle().toLowerCase().contains(secuence)) {
+          capdevMap.put("id", capdev.getId());
+          capdevMap.put("title", capdev.getTitle());
+          capdevMap.put("type", capdev.getCapdevType().getName());
+          capdevMap.put("startDate", capdev.getStartDate());
+          if (capdev.getEndDate() != null) {
+            capdevMap.put("endDate", capdev.getEndDate());
+          } else {
+            capdevMap.put("endDate", "Not defined");
+          }
+          if (capdev.getResearchArea() != null) {
+            capdevMap.put("researchArea", capdev.getResearchArea().getName());
+          } else {
+            capdevMap.put("researchArea", "Not defined");
+          }
+          if (capdev.getResearchProgram() != null) {
+            capdevMap.put("researchProgram", capdev.getResearchProgram().getName());
+          } else {
+            capdevMap.put("researchProgram", "Not defined");
+          }
+
+          jsonCapdevList.add(capdevMap);
+        }
+      }
+
+    }
+
     return SUCCESS;
   }
 

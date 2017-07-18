@@ -188,7 +188,18 @@
     <mapping resource="xmls/CenterProjectTypes.hbm.xml" />
     <mapping resource="xmls/CenterParameters.hbm.xml" />
     <mapping resource="xmls/CenterCustomParameters.hbm.xml" />
-    <mapping resource="xmls/CenterImpactStatement.hbm.xml" />   
+    <mapping resource="xmls/CenterImpactStatement.hbm.xml" /> 
+    <mapping resource="xmls/CapacityDevelopment.hbm.xml" />
+		<mapping resource="xmls/CapacityDevelopmentTypes.hbm.xml" />
+		<mapping resource="xmls/CapDevLocations.hbm.xml" />
+		<mapping resource="xmls/Disciplines.hbm.xml" />
+		<mapping resource="xmls/CapdevDiscipline.hbm.xml" />
+		<mapping resource="xmls/TargetGroups.hbm.xml" />
+		<mapping resource="xmls/CapdevTargetgroup.hbm.xml" />
+		<mapping resource="xmls/CapdevParticipant.hbm.xml" />
+		<mapping resource="xmls/Participant.hbm.xml" />
+		<mapping resource="xmls/CapdevOutputs.hbm.xml" />
+		<mapping resource="xmls/CapdevPartners.hbm.xml" />  
 	</session-factory>
 </hibernate-configuration>
 

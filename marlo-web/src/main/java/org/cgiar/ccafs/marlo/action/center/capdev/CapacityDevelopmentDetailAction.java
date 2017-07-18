@@ -414,6 +414,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
     final User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
 
+
     capdev.setUsersByCreatedBy(currentUser);
 
     // if capdev is individual
