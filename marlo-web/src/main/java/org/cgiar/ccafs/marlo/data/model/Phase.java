@@ -39,6 +39,7 @@ public class Phase implements java.io.Serializable, IAuditLog {
   private Set<ProjectFocus> projectFocuses = new HashSet<ProjectFocus>(0);
   private Set<ProjectClusterActivity> projectClusters = new HashSet<ProjectClusterActivity>(0);
   private Set<ProjectPartner> partners = new HashSet<ProjectPartner>(0);
+  private Set<CrpProgramOutcome> outcomes = new HashSet<CrpProgramOutcome>(0);
 
 
   public Phase() {
@@ -98,10 +99,12 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return editable;
   }
 
+
   @Override
   public Long getId() {
     return this.id;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -109,7 +112,6 @@ public class Phase implements java.io.Serializable, IAuditLog {
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
-
 
   @Override
   public String getModificationJustification() {
@@ -129,14 +131,19 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return next;
   }
 
+  public Set<CrpProgramOutcome> getOutcomes() {
+    return outcomes;
+  }
+
+
   public Set<ProjectPartner> getPartners() {
     return partners;
   }
 
-
   public Set<ProjectClusterActivity> getProjectClusters() {
     return projectClusters;
   }
+
 
   public Set<ProjectFocus> getProjectFocuses() {
     return projectFocuses;
@@ -146,10 +153,10 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return projectInfos;
   }
 
-
   public Set<ProjectPhase> getProjectPhases() {
     return this.projectPhases;
   }
+
 
   public Boolean getVisible() {
     return visible;
@@ -191,6 +198,10 @@ public class Phase implements java.io.Serializable, IAuditLog {
 
   public void setNext(Phase next) {
     this.next = next;
+  }
+
+  public void setOutcomes(Set<CrpProgramOutcome> otucomes) {
+    this.outcomes = otucomes;
   }
 
   public void setPartners(Set<ProjectPartner> partners) {

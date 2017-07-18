@@ -56,5 +56,11 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectPartner" />
         </set>
+        <set name="outcomes" table="crp_program_outcomes" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="id_phase" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome" />
+        </set>
     </class>
 </hibernate-mapping>

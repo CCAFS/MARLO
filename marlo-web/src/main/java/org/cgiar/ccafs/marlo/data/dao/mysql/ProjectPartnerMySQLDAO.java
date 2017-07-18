@@ -117,7 +117,7 @@ public class ProjectPartnerMySQLDAO implements ProjectPartnerDAO {
       this.addPersons(projectPartner, projectPartnerAdd);
       this.addOffices(projectPartner, projectPartnerAdd);
     } else {
-      if (phase.getEditable() != null) {
+      if (phase.getEditable() != null && phase.getEditable()) {
         for (ProjectPartner projectPartnerPrev : partners) {
           this.updateUsers(projectPartnerPrev, projectPartner);
           this.updateLocations(projectPartnerPrev, projectPartner);
