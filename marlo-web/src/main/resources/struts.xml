@@ -107,6 +107,32 @@
 			<!-- Security (Json) interceptors -->
 			<interceptor name="SecurityControl"
 				class="org.cgiar.ccafs.marlo.interceptor.json.SecurityJsonInterceptor" />
+				
+			<!-- 
+			 *********************************** CENTER INTERCEPTORS ***********************************-->	
+			 <!-- validating if the center is valid in the open session -->
+      <interceptor name="validCenter"
+        class="org.cgiar.ccafs.marlo.interceptor.center.ValidCenterActionInterceptor" />
+      <!-- validating if the url is valid in the open session -->
+      <interceptor name="validCenterSession"
+        class="org.cgiar.ccafs.marlo.interceptor.center.ValidSessionInterceptor" />
+      <!-- validating if the user have edit privileges to impact pathway -->
+      <interceptor name="editCenterImpactPathway"
+        class="org.cgiar.ccafs.marlo.interceptor.center.impactpathway.EditImpactPathwayInterceptor" />
+      <!-- validating if the user have edit privileges to impact pathway - outcomes -->
+      <interceptor name="editCenterOutcome"
+        class="org.cgiar.ccafs.marlo.interceptor.center.impactpathway.EditOutcomeInterceptor" />
+      <!-- validating if the user have edit privileges to impact pathway - outputs -->
+      <interceptor name="editCenterOutput"
+        class="org.cgiar.ccafs.marlo.interceptor.center.impactpathway.EditOutputInterceptor" />
+      <!-- validating if the user have edit privileges to impact pathway -->
+      <interceptor name="editCenterProject"
+        class="org.cgiar.ccafs.marlo.interceptor.center.monitoring.project.EditProjectInterceptor" />
+        <interceptor name="editCenterDeliverable"
+        class="org.cgiar.ccafs.marlo.interceptor.center.monitoring.project.EditDeliverableInterceptor" />
+			 
+			 <!-- 
+       ******************************************************************************************* -->  
 
 			<!-- stack from home packgae -->
 			<interceptor-stack name="homeStack">
@@ -230,6 +256,77 @@
 				<interceptor-ref name="trimInputs" />
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
+			
+			<!-- 
+       *********************************** CENTER INTERCEPTORS STACKS ***********************************--> 
+       <interceptor-stack name="centerHomeStack">
+        <interceptor-ref name="i18nFile" />
+        <interceptor-ref name="validCenter" />
+        <interceptor-ref name="requireUser" />
+        <interceptor-ref name="validCenterSession" />
+        <interceptor-ref name="defaultStack" />
+      </interceptor-stack>
+       
+      <interceptor-stack name="centerSectionStack">
+        <interceptor-ref name="i18nFile" />
+        <interceptor-ref name="validCenter" />
+        <interceptor-ref name="requireUser" />
+        <interceptor-ref name="validCenterSession" />
+        <interceptor-ref name="keepRedirectMessages" />
+        <interceptor-ref name="defaultStack" />
+      </interceptor-stack>
+
+      <interceptor-stack name="centerImpactPathwayStack">
+        <interceptor-ref name="i18nFile" />
+        <interceptor-ref name="validCenter" />
+        <interceptor-ref name="requireUser" />
+        <interceptor-ref name="validCenterSession" />
+        <interceptor-ref name="editCenterImpactPathway" />
+        <interceptor-ref name="keepRedirectMessages" />
+        <interceptor-ref name="defaultStack" />
+      </interceptor-stack>
+
+      <interceptor-stack name="centerProjectStack">
+        <interceptor-ref name="i18nFile" />
+        <interceptor-ref name="validCenter" />
+        <interceptor-ref name="requireUser" />
+        <interceptor-ref name="validCenterSession" />
+        <interceptor-ref name="editCenterProject" />
+        <interceptor-ref name="keepRedirectMessages" />
+        <interceptor-ref name="defaultStack" />
+      </interceptor-stack>
+      
+      <interceptor-stack name="centerDeliverableStack">
+        <interceptor-ref name="i18nFile" />
+        <interceptor-ref name="validCenter" />
+        <interceptor-ref name="requireUser" />
+        <interceptor-ref name="validCenterSession" />
+        <interceptor-ref name="editCenterDeliverable" />
+        <interceptor-ref name="keepRedirectMessages" />
+        <interceptor-ref name="defaultStack" />
+      </interceptor-stack>
+
+      <interceptor-stack name="centerOutcomeStack">
+        <interceptor-ref name="i18nFile" />
+        <interceptor-ref name="validCenter" />
+        <interceptor-ref name="requireUser" />
+        <interceptor-ref name="validCenterSession" />
+        <interceptor-ref name="editCenterOutcome" />
+        <interceptor-ref name="keepRedirectMessages" />
+        <interceptor-ref name="defaultStack" />
+      </interceptor-stack>
+
+      <interceptor-stack name="centerOutputStack">
+        <interceptor-ref name="i18nFile" />
+        <interceptor-ref name="validCenter" />
+        <interceptor-ref name="requireUser" />
+        <interceptor-ref name="validCenterSession" />
+        <interceptor-ref name="editCenterOutput" />
+        <interceptor-ref name="keepRedirectMessages" />
+        <interceptor-ref name="defaultStack" />
+      </interceptor-stack>
+       <!-- 
+       ******************************************************************************************* -->  
 
 		</interceptors>
 
@@ -283,6 +380,12 @@
 	<include file="struts-powb.xml" />
 	<include file="struts-publications.xml" />
 	<include file="struts-rest.xml" />
+	
+	<include file="struts-center-home.xml" />
+	<include file="struts-center-impactPathway.xml" />
+	<include file="struts-center-monitoring.xml" />
+	<include file="struts-center-admin.xml" />
+	<include file="struts-center-summaries.xml" />
 
 
 </struts>

@@ -9,8 +9,8 @@ import java.util.Map;
 import com.google.inject.ImplementedBy;
 
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -33,6 +33,15 @@ import com.google.inject.ImplementedBy;
 public interface UserDAO {
 
   /**
+   * This method gets the data of a Permissions identified with a given id.
+   * 
+   * @param userId: the user id to search permissions
+   * @param crp: the crp acronym that user is loggin
+   * @return a List with the select of the view user_permissions
+   */
+  public List<Map<String, Object>> getCenterPermission(int userId, String crpId);
+
+  /**
    * Get the user's email that relates with the given user name.
    * 
    * @param username is the user nickname.
@@ -44,11 +53,11 @@ public interface UserDAO {
    * This method gets the data of a Permissions identified with a given id.
    * 
    * @param userId: the user id to search permissions
-   * @param crp: the crp acronym that user is loggin
+   * @param center: the center acronym that user is loggin
    * @return a List with the select of the view user_permissions
    */
 
-  public List<Map<String, Object>> getPermission(int userId, String crp);
+  public List<Map<String, Object>> getPermission(int userId, String center);
 
   /**
    * This method gets the data of a User identified with a given id.

@@ -53,6 +53,9 @@ public class APConfig {
   private static final String DEBUG_MODE = "marlo.debug";
   private static final String ADMIN_ACTIVE = "marlo.admin.active";
   private static final String IMPACT_PATHWAY_ACTIVE = "marlo.impactPathway.active";
+  private static final String OCS_LINK = "ocs.link";
+  private static final String OCS_PASSWORD = "ocs.password";
+  private static final String OCS_USER = "ocs.user";
 
   private static final String AUTOSAVE_FOLDER = "autosave.folder";
 
@@ -212,6 +215,37 @@ public class APConfig {
   }
 
   /**
+   * Get the OCS ws link
+   * 
+   * @return a string with the ocs link
+   */
+  public String getOcsLink() {
+    String ocsLink = properties.getPropertiesAsString(OCS_LINK);
+    return ocsLink;
+  }
+
+
+  /**
+   * Get the OCS ws password
+   * 
+   * @return a string with the ocs password
+   */
+  public String getOcsPassword() {
+    String ocsPass = properties.getPropertiesAsString(OCS_PASSWORD);
+    return ocsPass;
+  }
+
+  /**
+   * Get the OCS ws user
+   * 
+   * @return a string with the ocs user
+   */
+  public String getOcsUser() {
+    String ocsUser = properties.getPropertiesAsString(OCS_USER);
+    return ocsUser;
+  }
+
+  /**
    * Get the folder that contains all the files related to a project
    * 
    * @return a string with the path
@@ -224,7 +258,6 @@ public class APConfig {
     }
     return null;
   }
-
 
   /**
    * Get the folder where the project work plan should be uploaded
@@ -239,6 +272,7 @@ public class APConfig {
     }
     return null;
   }
+
 
   public String getPushApiKey() {
     try {
@@ -305,7 +339,6 @@ public class APConfig {
     }
     return adminActive.equals("true");
   }
-
 
   /**
    * If we are activate the Marlo debug mode.

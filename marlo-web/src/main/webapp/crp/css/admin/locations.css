@@ -1,0 +1,79 @@
+.locationLevel {
+  padding-top: 16px;
+}
+
+.latitudeBlock {
+  width: 17%;
+  float: left;
+  padding-right: 1%;
+}
+
+.longitudeBlock {
+  width: 17%;
+  float: left;
+  padding-right: 1%;
+}
+
+
+.nameBlock {
+  width: 48%;
+  float: left;
+  padding-right: 1%;
+}
+
+.buttonBlock {
+  width: 17%;
+  float: right;
+}
+
+.locElement {
+  width: 32.3%;
+  float: left;
+  margin-right: 1%;
+}
+
+span.coordinates {
+  font-size: 0.75em;
+  color: #9c9c9c;
+  margin-left: 16px;
+}
+
+.locElement {
+  line-height: 16px;
+}
+
+.infoContent {
+    float: left;
+    color: #999;
+}
+
+.info-icon {
+    width: 3%;
+    float: left;
+    text-align: center;
+}
+
+.info-text {
+    width: 97%;
+    float: left;
+}
+
+.defaultLocations p {
+  float: left;
+  width: 33%;
+}
+
+.defaultLocations label {
+font-weight: normal;
+}
+
+.defaultLocation {
+    float: left;
+    width: 49%;
+    margin-left: 1%;
+    height: 51px;
+}
+
+.defaultLocation {
+    background: #fff !important;
+}
