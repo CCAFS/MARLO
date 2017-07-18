@@ -166,11 +166,14 @@ function init() {
   
   // Check total grant amount
   $('.currencyInput').on('keyup', function(){
+    var grantAmount = $('#grantTotalAmount input').val();
     var total = 0
     $('.currencyInput').each(function(i,e) {
       total = total + removeCurrencyFormat(e.value || "0");
     });
-    if ($('#grantTotalAmount input').val() < total){
+    $('#grantTotalAmount .remaining').text(setCurrencyFormat(grantAmount - total));
+    
+    if (grantAmount < total){
       $('#grantTotalAmount').addClass('fieldError').animateCss('shake');
     }else{
       $('#grantTotalAmount').removeClass('fieldError');
@@ -396,6 +399,7 @@ function addCountry(countryISO,countryName, percentage) {
   var $state = $('<span> <i class="flag-sm flag-sm-' + countryISO + '"></i>  ' + v + '</span>');
   $item.find(".name").html($state);
   $item.find(".cId").val(countryISO);
+  $item.find(".cPercentage").val(percentage);
   $item.find(".id").val(-1);
   $list.append($item);
   $item.show('slow');

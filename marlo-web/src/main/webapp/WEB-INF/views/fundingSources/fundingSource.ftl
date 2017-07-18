@@ -333,7 +333,10 @@
     <h4 class="headTitle" >Annual funding source contribution</h4>
     [#-- Grant total amount --]
     <div id="grantTotalAmount" class="metadataElement-grantAmount" style="display:${isSynced?string('block', 'none')}">
-      <small><strong>Total Grant Amount:</strong> $US <span class="amount">${((fundingSource.grantAmount)!0)?number?string(",##0.00")}</span></small>
+      <p><strong>Total Grant Amount:</strong> US$ <span class="amount">${((fundingSource.grantAmount)!0)?number?string(",##0.00")}</span></p>
+      [#-- Remainig budget --]
+      <small class="grayLabel"> <i>Total remaining budget: US$ <span class="remaining">0.00</span> </i></small>
+
       <input type="hidden" class="metadataValue" name="fundingSource.grantAmount" value="${(fundingSource.grantAmount)!0}" />
     </div>
     
@@ -357,8 +360,6 @@
             [#assign budgetIndex = '-1' /]
           [/#attempt]
           
-          <small class="grayLabel pull-right"> (Remaining budget US$ <span class="projectAmount">${((fundingSource.getRemaining(year))!0)?number?string(",##0.00")}</span>) </small>
-          
           <h5 class="sectionSubTitle">Budget Amount</h5>
           <div class="budgetsYear">
             <div class="col-md-4">
@@ -377,45 +378,45 @@
             <div class="clearfix"></div>
           </div>
           <br />
+          
+          [#-- Remainig budget --]
+          <small class="grayLabel pull-right"> (${year} Remaining budget: US$ <span class="projectAmount">${((fundingSource.getRemaining(year))!0)?number?string(",##0.00")}</span>) </small>
+
+          [#-- Projects that this funding source is assigned to --]
           <h5 class="sectionSubTitle">[@s.text name="fundingSource.projectsAssigned" /]:</h5>
-          
           <table class="table">
-          <thead>
-           <tr>
-            <th>Project ID</th>
-            <th>Project title</th>
-            <th>Lead partner</th>
-            <th>Budget type</th>
-            <th>Budget amount</th>
-           </tr>
-          </thead>
-          
-         <tbody>
-          
-          [#assign counter = 0 /]
-          [#list fundingSource.projectBudgetsList as projectBudget]
-            [#if projectBudget.year == year]
-             <tr class="projectBudgetItem">
-              <td>
-                <a href="[@s.url action="${crpSession}/budgetByPartners" namespace="/projects"] [@s.param name="projectID" value="${(projectBudget.project.id)!}"/] [@s.param name='edit']true[/@s.param][/@s.url]">
-                  P${(projectBudget.project.id)!}              
-                </a>
-              </td>
-              <td class="col-md-5">
-                <a href="[@s.url action="${crpSession}/budgetByPartners" namespace="/projects"] [@s.param name="projectID" value="${(projectBudget.project.id)!}"/] [@s.param name='edit']true[/@s.param][/@s.url]">
-                  ${(projectBudget.project.title)!}
-                </a>
-              </td>
-              <td> ${(projectBudget.institution.acronym)!(projectBudget.institution.name)} </td>
-              <td>${(projectBudget.budgetType.name)!}</td>
-              <td>US$ <span>${((projectBudget.amount)!0)?number?string(",##0.00")}</td>
+            <thead>
+             <tr>
+              <th>Project ID</th>
+              <th>Project title</th>
+              <th>Lead partner</th>
+              <th>Budget type</th>
+              <th>Budget amount</th>
              </tr>
-            [#assign counter = counter + 1 /]
-            [/#if]
-          [/#list]
-          
-          </tbody>
-          
+            </thead>
+            <tbody>
+            [#assign counter = 0 /]
+            [#list fundingSource.projectBudgetsList as projectBudget]
+              [#if projectBudget.year == year]
+               <tr class="projectBudgetItem">
+                <td>
+                  <a href="[@s.url action="${crpSession}/budgetByPartners" namespace="/projects"] [@s.param name="projectID" value="${(projectBudget.project.id)!}"/] [@s.param name='edit']true[/@s.param][/@s.url]">
+                    P${(projectBudget.project.id)!}              
+                  </a>
+                </td>
+                <td class="col-md-5">
+                  <a href="[@s.url action="${crpSession}/budgetByPartners" namespace="/projects"] [@s.param name="projectID" value="${(projectBudget.project.id)!}"/] [@s.param name='edit']true[/@s.param][/@s.url]">
+                    ${(projectBudget.project.title)!}
+                  </a>
+                </td>
+                <td> ${(projectBudget.institution.acronym)!(projectBudget.institution.name)} </td>
+                <td>${(projectBudget.budgetType.name)!}</td>
+                <td>US$ <span>${((projectBudget.amount)!0)?number?string(",##0.00")}</td>
+               </tr>
+              [#assign counter = counter + 1 /]
+              [/#if]
+            [/#list]
+            </tbody>
           </table>
           
           </div>

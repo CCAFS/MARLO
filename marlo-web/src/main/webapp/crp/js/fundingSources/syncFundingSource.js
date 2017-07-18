@@ -80,6 +80,8 @@ function syncFundingSource() {
   $('#fillMetadata input:hidden').val(true);
   // Dissemination URL
   $('.financeCode').attr('readOnly', true);
+  // Update Grant total amount triggering the currency inputs
+  $('.currencyInput').trigger('keyup');
   // Update component
   $(document).trigger('updateComponent');
 }

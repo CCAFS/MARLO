@@ -76,6 +76,15 @@ table {
 }
 
 #grantTotalAmount {
-  font-size: 1.3em;
+  font-size: 1.2em;
   float: right;
+  text-align: right;
+  margin-top: -14px;
+}
+
+#grantTotalAmount p{margin: 0;}
+
+small.grayLabel {
+  color: #888;
+  /* padding-right: 6px; */
 }
