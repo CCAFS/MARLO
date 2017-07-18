@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterUserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.ADLoginMessages;
 import org.cgiar.ccafs.marlo.data.model.Center;
@@ -74,16 +75,18 @@ public class LoginAction extends BaseAction {
 
   private CrpManager crpManager;
   private ICenterManager centerManager;
+  private ICenterUserManager centerUsermanager;
   private CrpUserManager crpUserManager;
 
   @Inject
   public LoginAction(APConfig config, UserManager userManager, CrpManager crpManager, CrpUserManager crpUserManager,
-    ICenterManager centerManager) {
+    ICenterManager centerManager, ICenterUserManager centerUsermanager) {
     super(config);
     this.userManager = userManager;
     this.crpManager = crpManager;
     this.crpUserManager = crpUserManager;
     this.centerManager = centerManager;
+    this.centerUsermanager = centerUsermanager;
   }
 
 
@@ -226,7 +229,7 @@ public class LoginAction extends BaseAction {
       // TODO: Assumed there is only one CRP/Center
       // TODO: Should the logged in user be subjected to another check for the CIAT crp?
       // TODO: Assume the login is enough
-      if (crpUserManager.existCrpUser(loggedUser.getId(), loggedCenter.getId())) {
+      if (centerUsermanager.existCrpUser(loggedUser.getId(), loggedCenter.getId())) {
 
         loggedUser.setLastLogin(new Date());
         userManager.saveLastLogin(loggedUser);
