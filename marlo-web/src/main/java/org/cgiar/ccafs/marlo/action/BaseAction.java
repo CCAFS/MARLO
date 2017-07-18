@@ -1314,6 +1314,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+  /**
+   * Get the folder path according if the user navigate in center,crp or platform sections.
+   * 
+   * @return the String folder path.
+   */
   public String getHeaderPath() {
     if (this.getCurrentCrp() != null) {
       return "";
