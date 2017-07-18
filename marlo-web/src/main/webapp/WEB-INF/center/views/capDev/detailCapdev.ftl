@@ -122,60 +122,66 @@
 
 				<!-- groups participants-->
 				<div class="row grupsParticipantsForm">
-					<div class="col-md-12 newCapdevField participantsheader">
-						<div class="col-md-6  participantsTitle">
-							[@s.label key="capdev.form.participants" /]
+					[#if capdev.capdevParticipants?has_content && capdev.capdevParticipants?size > 1] 
+						<div>
+							[@capdevList capdev.capdevParticipants /]
 						</div>
-						<div class="col-md-6 ">
-							<div class="pull-right">
-								<button type="button" class="capdevButtons" aria-label="Left Align" >
-									<a class="downloadButton" href="[@s.url action='${centerSession}/downloadFile' /] ">[@s.text name="capdev.downloadTemplate" /]</a> 
-								</button>
+					[#else]
+						<div class="col-md-12 newCapdevField participantsheader">
+							<div class="col-md-6  participantsTitle">
+								[@s.label key="capdev.form.participants" /]
 							</div>
-						</div>
-					</div>
-
-					<div class="row newCapdevField">
-						<div class="col-md-12 newCapdevField participantsBox">
-							<div class="col-md-12">
-								[@s.file id="uploadFile" name="uploadFile" label="Select a File to upload" size="40" class="uploadParticipants"/]
-							</div>
-							
-
-							<div class="col-md-12" style="margin-top: 10px;">
-							<div class="btnPreview">
-								<button type="button"  id="btnDisplay" class="capdevButtons" aria-label="Left Align" data-toggle="modal" data-target="#myModa">
-									preview
-								</button>
-							</div>
-							
-
-							<div id="filewarning" class="warning" style="display: none; margin-top: 10px;">
-							</div>
-							<div class="loader" style="display:none;"><img src="${baseUrlMedia}/images/global/loading_2.gif" width="80" height="30"></div>
-
-							<div class="modal fade bd-example-modal-lg" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-							  <div class="modal-dialog modal-lg" role="document">
-							    <div class="modal-content highlight">
-							      <div class="modal-header">
-							      	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-							          <span aria-hidden="true">&times;</span>
-							        </button>
-							        <h5 class="modal-title" id="exampleModalLabel">Preview participants file</h5>
-							        
-							      </div>
-							      <div id="participantsTable"  class="modal-body">
-							        
-							      </div>
-							     
-							    </div>
-							  </div>
+							<div class="col-md-6 ">
+								<div class="pull-right">
+									<button type="button" class="capdevButtons" aria-label="Left Align" >
+										<a class="downloadButton" href="[@s.url action='${centerSession}/downloadFile' /] ">[@s.text name="capdev.downloadTemplate" /]</a> 
+									</button>
+								</div>
 							</div>
 						</div>
-						</div>
-						
-					</div>
 
+						<div class="row newCapdevField">
+							<div class="col-md-12 newCapdevField participantsBox">
+								<div class="col-md-12">
+									[@s.file id="uploadFile" name="uploadFile" label="Select a File to upload" size="40" class="uploadParticipants"/]
+								</div>
+								
+
+								<div class="col-md-12" style="margin-top: 10px;">
+								<div class="btnPreview">
+									<button type="button"  id="btnDisplay" class="capdevButtons" aria-label="Left Align" data-toggle="modal" data-target="#myModa">
+										preview
+									</button>
+								</div>
+								
+
+								<div id="filewarning" class="warning" style="display: none; margin-top: 10px;">
+								</div>
+								<div class="loader" style="display:none;"><img src="${baseUrlMedia}/images/global/loading_2.gif" width="80" height="30"></div>
+
+								<div class="modal fade bd-example-modal-lg" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+								  <div class="modal-dialog modal-lg" role="document">
+								    <div class="modal-content highlight">
+								      <div class="modal-header">
+								      	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								          <span aria-hidden="true">&times;</span>
+								        </button>
+								        <h5 class="modal-title" id="exampleModalLabel">Preview participants file</h5>
+								        
+								      </div>
+								      <div id="participantsTable"  class="modal-body">
+								        
+								      </div>
+								     
+								    </div>
+								  </div>
+								</div>
+							</div>
+							</div>
+						</div>
+
+					[/#if]
+					
 					<div class="note participantMessage">
 						<p>If you don’t have a participants list please enter the number of participants, number of men and number of women</p>
 					</div>
@@ -373,15 +379,43 @@
 
 
 
-[#macro objectiveMacro element index=0 isTemplate=false]
+[#macro capdevList element={} ]
 	
-	<div id="objective-${isTemplate?string('template',(element.id)!)}" class="objective  borderBox row"  style="display:${isTemplate?string('none','block')}">
-		<div class="removeObjective removeIcon" title="Remove objective"></div>
-		<div class="col-md-12">
-			 [@customForm.input name="objectiveBody" i18nkey="Objective # ${index + 1}" type="text" /]
-		</div>
-
-	</div>
+	<table class="table thead-default">
+    <thead>
+      <tr class="header">
+        <th>Code</th>
+        <th>Name</th>
+        <th>Last Name</th>
+        <th>Gender</th>
+        <th>Citizenship</th>
+        <th>Highest degree</th>
+        <th>Institution</th>
+        <th>Country of institucion</th>
+        <th>Email</th>
+        <th>Reference</th>
+        <th>Fellowship</th>
+      </tr>
+    </thead>
+    <tbody>
+    	[#list element as i]
+    		<tr>
+    			<td>${i.participant.code}</td>
+    			<td>${i.participant.name}</td>
+    			<td>${i.participant.lastName}</td>
+    			<td>${i.participant.gender}</td>
+    			<td>${i.participant.citizenship}</td>
+    			<td>${i.participant.highestDegree}</td>
+    			<td>${i.participant.institution}</td>
+    			<td>${i.participant.countryOfInstitucion}</td>
+    			<td>${i.participant.email}</td>
+    			<td>${i.participant.reference}</td>
+    			<td>${i.participant.fellowship}</td>
+    		</tr>
+    	[/#list]
+   
+    </tbody>
+  </table>
 	
 [/#macro]
 

@@ -13,9 +13,6 @@
       "endDate": "#capdev\\.endDate"
     });
 
-    console.log("capdev.startDate")
-    console.log($(".capdevstartDate").val())
-
 
     $dialogContent = $("#dialog-searchContactPerson");
     var dialogOptions = {
