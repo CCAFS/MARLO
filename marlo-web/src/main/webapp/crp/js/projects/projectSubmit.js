@@ -276,7 +276,7 @@ function unSubmitButtonEvent(e) {
           Cancel: function() {
             $(this).dialog("close");
           },
-          unSubmit: function() {
+          "Request changes": function() {
             var $justification = $dialogContent.find("#justification-unSubmit");
             if($justification.val().length > 0 && $justification.val().trim().length != 0) {
               var url = baseURL + "/unsubmitProject.do";
