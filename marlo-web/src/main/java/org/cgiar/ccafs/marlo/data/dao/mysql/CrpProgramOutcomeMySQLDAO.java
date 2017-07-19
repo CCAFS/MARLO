@@ -73,7 +73,7 @@ public class CrpProgramOutcomeMySQLDAO implements CrpProgramOutcomeDAO {
 
 
   /**
-   * clone or update the otucome for next phases
+   * clone or update the outcome for next phases
    * 
    * @param next the next phase to clone
    * @param crpProgramID the program id we are working
@@ -295,6 +295,15 @@ public class CrpProgramOutcomeMySQLDAO implements CrpProgramOutcomeDAO {
             dao.update(crpMilestoneAdd);
           }
 
+        } else {
+          CrpMilestone milestonetoUpdate = programOutcomePrev.getCrpMilestones().stream()
+            .filter(c -> c.isActive() && c.getComposeID().equals(crpMilestone.getComposeID()))
+            .collect(Collectors.toList()).get(0);
+          milestonetoUpdate.setTitle(crpMilestone.getTitle());
+          milestonetoUpdate.setSrfTargetUnit(crpMilestone.getSrfTargetUnit());
+          milestonetoUpdate.setYear(crpMilestone.getYear());
+          milestonetoUpdate.setValue(crpMilestone.getValue());
+          dao.update(milestonetoUpdate);
         }
       }
     }
