@@ -1,0 +1,117 @@
+#mini-graphic {
+    width: 85%;
+    height: 150px;
+    border: 2px solid #d1d1d1;
+    margin: auto auto;
+    position: absolute;
+    margin-left: 8%;
+}
+
+#graphicWrapper {
+    margin-top: 15%;
+    width: 100%;
+    position: relative;
+    height: 200px;
+}
+
+#overlay {
+    z-index: 100;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(51, 51, 51, 0.6);
+    /* color: white; */
+    text-align: center;
+    line-height: 155px;
+    display: none;
+}
+
+#overlay span {
+    cursor: pointer;
+}
+
+#infoRelations {
+    position: absolute;
+    width: 25%;
+    z-index: 99;
+}
+
+#impactGraphic {
+    width: 100%;
+    height: 100%;
+}
+
+#infoContent {
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: 300px;
+}
+
+#overlay a {
+    color: white;
+    cursor: pointer;
+}
+
+#changeGraph {
+    position: absolute;
+    right: 7%;
+    top: 2%;
+    z-index: 100;
+}
+
+#buttonDownload {
+    position: absolute;
+    right: 2%;
+    top: 2%;
+    z-index: 100;
+    text-align: center;
+    width: 3%;
+    background-color: #2BA6CB;
+    color: #fff;
+    border: 0;
+    padding: 3px 5px;
+    font-weight: bold;
+    border-bottom: 3px solid #1E94B8;
+    border-radius: 6px;
+}
+
+#buttonDownload a {
+    text-decoration: none;
+}
+
+span.btn {
+    background-color: #2BA6CB;
+    color: #fff;
+    border: 0;
+    padding: 3px 7px;
+    font-weight: bold;
+    border-bottom: 3px solid #1E94B8;
+    border-radius: 2px;
+}
+
+#controls {
+    border: 1px solid #ddd;
+    position: absolute;
+    top: 28%;
+    width: 3%;
+    z-index: 999;
+    right: 0%;
+    background-color: whitesmoke;
+    /* padding: 5px; */
+}
+
+.tool {cursor: pointer;padding: 20%;text-align: center;font-size: 1.6em;width: 100%;padding-top: 40%;}
+
+.tool:hover {
+    color: #2ba6cb;
+}
+
+#loader{
+	z-index: 999;
+	height: 100%;
+	width: 100%;
+	position:absolute;
+	background-image: url("./../../images/global/loading.gif");
+	background-repeat: no-repeat;
+	background-position: center;
+}

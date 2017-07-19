@@ -19,6 +19,7 @@ package org.cgiar.ccafs.marlo.interceptor;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CustomParameter;
@@ -47,15 +48,18 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
 
   private CrpManager crpManager;
 
+  private ICenterManager centerManager;
+
 
   private CustomParameterManager crpParameterManager;
 
   @Inject
   public InternationalitazionFileInterceptor(UserManager userManager, CrpManager crpManager,
-    CustomParameterManager crpParameterManager) {
+    CustomParameterManager crpParameterManager, ICenterManager centerManager) {
     this.userManager = userManager;
     this.crpManager = crpManager;
     this.crpParameterManager = crpParameterManager;
+    this.centerManager = centerManager;
 
   }
 
@@ -75,13 +79,28 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
     LocalizedTextUtil.reset();
     LocalizedTextUtil.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
     ServletActionContext.getContext().setLocale(locale);
-    if (session.containsKey(APConstants.CRP_CUSTOM_FILE)) {
-      pathFile = pathFile + session.get(APConstants.CRP_CUSTOM_FILE);
 
-      LocalizedTextUtil.addDefaultResourceBundle(pathFile);
-    } else {
+    if (session.containsKey(APConstants.SESSION_CRP)) {
 
-      LocalizedTextUtil.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
+      if (session.containsKey(APConstants.CRP_CUSTOM_FILE)) {
+        pathFile = pathFile + session.get(APConstants.CRP_CUSTOM_FILE);
+
+        LocalizedTextUtil.addDefaultResourceBundle(pathFile);
+      } else {
+
+        LocalizedTextUtil.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
+      }
+    }
+
+    if (session.containsKey(APConstants.SESSION_CENTER)) {
+      if (session.containsKey(APConstants.CENTER_CUSTOM_FILE)) {
+        pathFile = pathFile + session.get(APConstants.CENTER_CUSTOM_FILE);
+
+        LocalizedTextUtil.addDefaultResourceBundle(pathFile);
+      } else {
+
+        LocalizedTextUtil.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
+      }
     }
 
 

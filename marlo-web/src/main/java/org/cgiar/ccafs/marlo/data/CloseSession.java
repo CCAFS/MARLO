@@ -35,7 +35,7 @@ public class CloseSession extends Thread {
   public void run() {
     try {
 
-      Thread.sleep(20000);
+      Thread.sleep(30000);
       session.disconnect();
       if (!session.isOpen()) {
         session.close();

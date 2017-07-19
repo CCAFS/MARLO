@@ -1,0 +1,70 @@
+/* Main Menu */
+
+nav#mainMenu ul a li {
+  *display: inline;
+}
+
+#generalMessages {
+  *margin-top: 50px;
+}
+
+footer .container {
+ position: static;
+}
+
+/*************** BODY ****************/
+
+.thirdPartBlock {
+  zomm: 1;
+  *display: inline;
+  padding: 5px;
+  width: 30%;  
+}
+
+.halfPartBlock {
+  zomm: 1;
+  *display: inline;
+  padding: 5px;
+  width: 45%;
+}
+
+table.dataTable thead tr th{
+  background-color: #F1D023;
+}
+
+/*------- Reporting section -------*/
+
+#stageMenu a {
+  zomm: 1;
+  *display: inline;
+}
+
+ /*-- Deliverables subSection -- */
+ 
+.checkboxGroup input {
+  margin-left: 0px;
+}
+
+.checkboxGroup .checkboxLabel {
+  *display: inline;
+}
+
+
+/* Switch  */
+
+.onoffswitch-checkbox {
+    display: block;
+}
+.onoffswitch-label {
+    display: none;
+}
+
+/* Switch Radio */
+
+.onoffswitch-radio.hidden {
+    display: block !important;
+}
+.onoffswitch-label {
+    display: none;
+}
+

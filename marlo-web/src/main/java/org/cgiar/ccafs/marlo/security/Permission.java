@@ -110,5 +110,32 @@ public class Permission {
   public static final String PROJECT_CORE_ADD = "crp:{0}:project:projectsList:addCoreProject";
   public static final String PROJECT_BILATERAL_ADD = "crp:{0}:project:projectsList:addBilateralProject";
 
+  /**
+   * ---------------------------------------------------------------------------------------------------------
+   * *********************************************************************************************************
+   * CENTER PERMISSIONS
+   * *********************************************************************************************************
+   * ----------------------------------------------------------------------------------------------------------
+   */
+
+  public static final String RESEARCH_AREA_FULL_PRIVILEGES = "center:{0}:area:{1}:*";
+  public static final String RESEARCH_PROGRAM_FULL_PRIVILEGES = "center:{0}:area:{1}:program:{2}:*";
+  public static final String RESEARCH_AREA_BASE_PERMISSION = "center:{0}:area:{1}";
+  public static final String RESEARCH_PROGRAM_BASE_PERMISSION = "center:{0}:area:{1}:program:{2}";
+  public static final String CENTER_ADMIN_BASE_PERMISSION = "center:{0}:admin:";
+
+
+  public static final String RESEARCH_PROGRAM_SUBMISSION_PERMISSION = "center:{0}:area:{1}:program:{2}:submitIP";
+
+  // Monitoring
+  public static final String PROJECT_BASE_PERMISSION = "center:{0}:area:{1}:program:{2}:project:{3}";
+  public static final String CENTER_PROJECT_DESCRIPTION_BASE_PERMISSION =
+    "center:{0}:area:{1}:program:{2}:project:{3}:projectDescription";
+  public static final String CENTER_PROJECT_PARTNERS_BASE_PERMISSION =
+    "center:{0}:area:{1}:program:{2}:project:{3}:projectPartners";
+  public static final String CENTER_PROJECT_DEIVERABLE_BASE_PERMISSION =
+    "center:{0}:area:{1}:program:{2}:project:{3}:deliverable:{4}";
+  public static final String CENTER_PROJECT_SUBMISSION_PERMISSION =
+    "center:{0}:area:{1}:program:{2}:project:{3}:submitProject";
 
 }

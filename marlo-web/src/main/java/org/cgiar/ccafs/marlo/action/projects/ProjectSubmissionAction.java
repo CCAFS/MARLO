@@ -295,6 +295,7 @@ public class ProjectSubmissionAction extends BaseAction {
 
     message.append(this.getText("submit.email.message", values));
     message.append(this.getText("email.support", new String[] {crpAdmins}));
+    message.append(this.getText("email.getStarted"));
     message.append(this.getText("email.bye"));
 
     // Send pdf

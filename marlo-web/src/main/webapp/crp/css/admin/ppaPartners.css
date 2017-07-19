@@ -1,0 +1,10 @@
+.formWrapper{}
+
+.form-group{width:100%;}
+
+#partnerContent .institution {border: 1px dashed rgba(150, 150, 150, 0.7);margin-bottom: 8px;padding: 3px 3px 3px 15px;}
+
+.delete {
+    padding-left: 3%;
+    cursor: pointer;
+}
