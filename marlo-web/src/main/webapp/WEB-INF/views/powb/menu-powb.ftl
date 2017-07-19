@@ -111,4 +111,4 @@
 [#include "/WEB-INF/global/macros/discardChangesPopup.ftl"]
 
 [#-- Project Submit JS --]
-[#assign customJS = [ "${baseUrl}/js/powb/powbSubmit.js" ] + customJS  /]
+[#assign customJS = [ "${baseUrlMedia}/js/powb/powbSubmit.js" ] + customJS  /]

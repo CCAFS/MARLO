@@ -3,7 +3,7 @@
 [#assign currentSectionString = "powb-${actionName?replace('/','-')}-${liaisonInstitutionID}" /]
 [#assign pageLibs = [ ] /]
 [#assign customJS = [ ] /]
-[#assign customCSS = ["${baseUrl}/css/powb/powbGlobal.css"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/powb/powbGlobal.css"] /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = "contSubIDOs" /]
 
