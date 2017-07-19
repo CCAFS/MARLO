@@ -63,7 +63,12 @@ public class CrpMilestone implements java.io.Serializable, IAuditLog {
   @Expose
   private User modifiedBy;
 
+  @Expose
+  private String composeID;
+
+
   private String modificationJustification;
+
 
   private Set<ProjectMilestone> projectMilestones = new HashSet<ProjectMilestone>(0);
 
@@ -78,7 +83,6 @@ public class CrpMilestone implements java.io.Serializable, IAuditLog {
     this.year = year;
     this.value = value;
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -102,19 +106,24 @@ public class CrpMilestone implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
   public Date getActiveSince() {
     return activeSince;
   }
+
 
   public String getComposedName() {
     return this.year + " - " + this.title;
   }
 
 
+  public String getComposeID() {
+    return composeID;
+  }
+
   public User getCreatedBy() {
     return createdBy;
   }
+
 
   public CrpProgramOutcome getCrpProgramOutcome() {
     return this.crpProgramOutcome;
@@ -136,6 +145,7 @@ public class CrpMilestone implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -166,7 +176,6 @@ public class CrpMilestone implements java.io.Serializable, IAuditLog {
     return this.year;
   }
 
-
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -174,6 +183,7 @@ public class CrpMilestone implements java.io.Serializable, IAuditLog {
     result = prime * result + ((id == null) ? 0 : id.hashCode());
     return result;
   }
+
 
   @Override
   public boolean isActive() {
@@ -186,6 +196,10 @@ public class CrpMilestone implements java.io.Serializable, IAuditLog {
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
+  }
+
+  public void setComposeID(String composeID) {
+    this.composeID = composeID;
   }
 
 

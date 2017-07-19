@@ -144,6 +144,7 @@
     </div>
     [#-- Outcome ID Parameter --]
     <input type="hidden" class="outcomeId" name="${outcomeCustomName}.id" value="${(outcome.id)!}"/>
+    <input type="hidden" class="outcomeComposeId" name="${outcomeCustomName}.composeID" value="${(outcome.composeID)!}"/>
     [#-- Remove Button --]
     [#if editable]
       <div class="removeOutcome removeElement" title="Remove Outcome"></div>
@@ -227,6 +228,8 @@
       <span class="elementId">[@s.text name="outcome.milestone.index.title"/]</span>
     </div>
      <input type="hidden" class="mileStoneId" name="${milestoneCustomName}.id" value="${(milestone.id)!}"/>
+     <input type="hidden" class="mileStoneComposeId" name="${milestoneCustomName}.composeID" value="${(milestone.composeID)!}"/>
+     
     [#-- Remove Button --]
     [#if editable]
       <div class="removeMilestone removeElement sm" title="Remove Milestone"></div>

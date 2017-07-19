@@ -38,6 +38,9 @@
 		<property name="year" type="java.lang.Integer">
 			<column name="`year`" not-null="false" />
 		</property>
+		<property name="composeID" type="string">
+      <column name="composed_id" length="20" />
+    </property>
 		<property name="value" type="java.math.BigDecimal">
 			<column name="`value`" precision="20" not-null="false" />
 		</property>

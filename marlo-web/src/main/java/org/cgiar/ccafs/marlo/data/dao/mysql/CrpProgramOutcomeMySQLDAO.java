@@ -44,6 +44,7 @@ public class CrpProgramOutcomeMySQLDAO implements CrpProgramOutcomeDAO {
    * @param crpProgramOutcomeAdd outcome new
    */
 
+
   private void addCrpMilestones(CrpProgramOutcome crpProgramOutcome, CrpProgramOutcome crpProgramOutcomeAdd) {
 
     if (crpProgramOutcome.getMilestones() != null) {
@@ -59,10 +60,17 @@ public class CrpProgramOutcomeMySQLDAO implements CrpProgramOutcomeDAO {
         crpMilestoneAdd.setTitle(crpMilestone.getTitle());
         crpMilestoneAdd.setValue(crpMilestone.getValue());
         crpMilestoneAdd.setYear(crpMilestone.getYear());
+        crpMilestoneAdd.setComposeID(crpMilestone.getComposeID());
         dao.save(crpMilestoneAdd);
+        if (crpMilestone.getComposeID() == null) {
+          crpMilestone.setComposeID(crpProgramOutcomeAdd.getComposeID() + "-" + crpMilestoneAdd.getId());
+          crpMilestoneAdd.setComposeID(crpProgramOutcomeAdd.getComposeID() + "-" + crpMilestoneAdd.getId());
+          dao.update(crpMilestoneAdd);
+        }
       }
     }
   }
+
 
   /**
    * clone or update the otucome for next phases
@@ -71,12 +79,11 @@ public class CrpProgramOutcomeMySQLDAO implements CrpProgramOutcomeDAO {
    * @param crpProgramID the program id we are working
    * @param otucome the outcome to clone
    */
-  private void addCrpPorgramOutcomePhase(Phase next, long crpProgramID, CrpProgramOutcome outcome,
-    String previousTitle) {
+  private void addCrpPorgramOutcomePhase(Phase next, long crpProgramID, CrpProgramOutcome outcome) {
     Phase phase = dao.find(Phase.class, next.getId());
     List<CrpProgramOutcome> outcomes =
       phase.getOutcomes().stream().filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == crpProgramID
-        && c.getDescription().equals(previousTitle)).collect(Collectors.toList());
+        && c.getComposeID().equals(outcome.getComposeID())).collect(Collectors.toList());
     if (phase.getEditable() != null && phase.getEditable() && outcomes.isEmpty()) {
       CrpProgramOutcome outcomeAdd = new CrpProgramOutcome();
       outcomeAdd.setActive(true);
@@ -90,10 +97,12 @@ public class CrpProgramOutcomeMySQLDAO implements CrpProgramOutcomeDAO {
       outcomeAdd.setValue(outcome.getValue());
       outcomeAdd.setYear(outcome.getYear());
       outcomeAdd.setDescription(outcome.getDescription());
+      outcomeAdd.setComposeID(outcome.getComposeID());
       dao.save(outcomeAdd);
 
       this.addCrpSubIdos(outcome, outcomeAdd);
       this.addCrpMilestones(outcome, outcomeAdd);
+
     } else {
       if (phase.getEditable() != null && phase.getEditable()) {
         for (CrpProgramOutcome outcomePrev : outcomes) {
@@ -103,17 +112,17 @@ public class CrpProgramOutcomeMySQLDAO implements CrpProgramOutcomeDAO {
           outcomePrev.setDescription(outcome.getDescription());
           dao.update(outcomePrev);
           this.updateCrpSubIdos(outcomePrev, outcome);
+          this.updateMilestones(outcomePrev, outcome);
         }
       }
     }
 
     if (phase.getNext() != null) {
-      this.addCrpPorgramOutcomePhase(phase.getNext(), crpProgramID, outcome, previousTitle);
+      this.addCrpPorgramOutcomePhase(phase.getNext(), crpProgramID, outcome);
     }
 
 
   }
-
 
   /**
    * clone the outcomes Sub idos
@@ -135,7 +144,7 @@ public class CrpProgramOutcomeMySQLDAO implements CrpProgramOutcomeDAO {
         crpOutcomeSubIdoAdd.setContribution(crpOutcomeSubIdo.getContribution());
         crpOutcomeSubIdoAdd.setSrfSubIdo(crpOutcomeSubIdo.getSrfSubIdo());
         crpOutcomeSubIdoAdd.setCrpProgramOutcome(crpProgramOutcomeAdd);
-        dao.update(crpOutcomeSubIdoAdd);
+        dao.save(crpOutcomeSubIdoAdd);
         for (CrpAssumption crpAssumption : crpOutcomeSubIdo.getCrpAssumptions().stream().filter(c -> c.isActive())
           .collect(Collectors.toList())) {
           CrpAssumption crpAssumptionAdd = new CrpAssumption();
@@ -176,6 +185,7 @@ public class CrpProgramOutcomeMySQLDAO implements CrpProgramOutcomeDAO {
 
   }
 
+
   @Override
   public List<CrpProgramOutcome> findAll() {
     String query = "from " + CrpProgramOutcome.class.getName() + " where is_active=1";
@@ -190,20 +200,15 @@ public class CrpProgramOutcomeMySQLDAO implements CrpProgramOutcomeDAO {
 
   @Override
   public long save(CrpProgramOutcome crpProgramOutcome) {
-    String title = "";
-    if (crpProgramOutcome.getId() != null) {
-      title = this.find(crpProgramOutcome.getId()).getDescription();
-    } else {
-      title = crpProgramOutcome.getDescription();
-    }
     if (crpProgramOutcome.getId() == null) {
       dao.save(crpProgramOutcome);
     } else {
       dao.update(crpProgramOutcome);
     }
+
     if (crpProgramOutcome.getPhase().getNext() != null) {
       this.addCrpPorgramOutcomePhase(crpProgramOutcome.getPhase().getNext(), crpProgramOutcome.getCrpProgram().getId(),
-        crpProgramOutcome, title);
+        crpProgramOutcome);
     }
     return crpProgramOutcome.getId();
   }
@@ -218,7 +223,8 @@ public class CrpProgramOutcomeMySQLDAO implements CrpProgramOutcomeDAO {
     for (CrpOutcomeSubIdo outcomeSubIdo : programOutcomePrev.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive())
       .collect(Collectors.toList())) {
       if (programOutcome.getSubIdos() == null || programOutcome.getSubIdos().stream()
-        .filter(c -> c.getSrfSubIdo().equals(outcomeSubIdo.getSrfSubIdo())).collect(Collectors.toList()).isEmpty()) {
+        .filter(c -> c.getSrfSubIdo() != null && c.getSrfSubIdo().equals(outcomeSubIdo.getSrfSubIdo()))
+        .collect(Collectors.toList()).isEmpty()) {
         outcomeSubIdo.setActive(false);
         dao.update(outcomeSubIdo);
       }
@@ -231,7 +237,7 @@ public class CrpProgramOutcomeMySQLDAO implements CrpProgramOutcomeDAO {
 
           CrpOutcomeSubIdo outcomeSubIdoAdd = new CrpOutcomeSubIdo();
 
-          outcomeSubIdoAdd.setCrpProgramOutcome(programOutcome);
+          outcomeSubIdoAdd.setCrpProgramOutcome(programOutcomePrev);
           outcomeSubIdoAdd.setModifiedBy(programOutcomePrev.getModifiedBy());
           outcomeSubIdoAdd.setActive(true);
           outcomeSubIdoAdd.setActiveSince(programOutcomePrev.getActiveSince());
@@ -240,6 +246,54 @@ public class CrpProgramOutcomeMySQLDAO implements CrpProgramOutcomeDAO {
           outcomeSubIdoAdd.setContribution(outcomeSubIdo.getContribution());
           outcomeSubIdoAdd.setSrfSubIdo(outcomeSubIdo.getSrfSubIdo());
           dao.update(outcomeSubIdoAdd);
+
+        }
+      }
+    }
+  }
+
+
+  /**
+   * check the milesotnes and updated
+   * 
+   * @param programOutcomePrev outcome to update
+   * @param programOutcome outcome modified
+   */
+  private void updateMilestones(CrpProgramOutcome programOutcomePrev, CrpProgramOutcome programOutcome) {
+    for (CrpMilestone crpMilestone : programOutcomePrev.getCrpMilestones().stream().filter(c -> c.isActive())
+      .collect(Collectors.toList())) {
+      if (programOutcome.getMilestones() == null || programOutcome.getMilestones().stream()
+        .filter(c -> c.getComposeID().equals(crpMilestone.getComposeID())).collect(Collectors.toList()).isEmpty()) {
+        crpMilestone.setActive(false);
+        dao.update(crpMilestone);
+      }
+    }
+    if (programOutcome.getMilestones() != null) {
+      for (CrpMilestone crpMilestone : programOutcome.getMilestones()) {
+        if (programOutcomePrev.getCrpMilestones().stream()
+          .filter(c -> c.isActive() && c.getComposeID().equals(crpMilestone.getComposeID()))
+          .collect(Collectors.toList()).isEmpty()) {
+
+          CrpMilestone crpMilestoneAdd = new CrpMilestone();
+
+          crpMilestoneAdd.setCrpProgramOutcome(programOutcomePrev);
+          crpMilestoneAdd.setModifiedBy(programOutcomePrev.getModifiedBy());
+          crpMilestoneAdd.setActive(true);
+          crpMilestoneAdd.setActiveSince(programOutcomePrev.getActiveSince());
+          crpMilestoneAdd.setModificationJustification(programOutcomePrev.getModificationJustification());
+          crpMilestoneAdd.setCreatedBy(programOutcomePrev.getCreatedBy());
+          crpMilestoneAdd.setComposeID(crpMilestone.getComposeID());
+          crpMilestoneAdd.setSrfTargetUnit(crpMilestone.getSrfTargetUnit());
+          crpMilestoneAdd.setTitle(crpMilestone.getTitle());
+          crpMilestoneAdd.setValue(crpMilestone.getValue());
+          crpMilestoneAdd.setYear(crpMilestone.getYear());
+          crpMilestoneAdd.setComposeID(crpMilestone.getComposeID());
+          dao.save(crpMilestoneAdd);
+          if (crpMilestone.getComposeID() == null) {
+            crpMilestone.setComposeID(programOutcomePrev.getComposeID() + "-" + crpMilestoneAdd.getId());
+            crpMilestoneAdd.setComposeID(programOutcomePrev.getComposeID() + "-" + crpMilestoneAdd.getId());
+            dao.update(crpMilestoneAdd);
+          }
 
         }
       }

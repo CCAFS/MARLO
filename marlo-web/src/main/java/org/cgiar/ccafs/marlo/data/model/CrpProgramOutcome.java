@@ -74,6 +74,8 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
   private User createdBy;
   @Expose
   private Phase phase;
+  @Expose
+  private String composeID;
 
 
   @Expose
@@ -90,6 +92,7 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
   private List<CrpMilestone> milestones;
 
   private List<CrpOutcomeSubIdo> subIdos;
+
 
   public CrpProgramOutcome() {
   }
@@ -115,7 +118,6 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
     this.crpMilestones = crpMilestones;
     this.deliverables = deliverables;
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -146,6 +148,18 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
     return this.getCrpProgram().getAcronym() + " Outcome :  " + description;
   }
 
+  public String getComposeID() {
+    if (composeID != null) {
+      return composeID;
+    } else {
+      if (id != null) {
+        return id + "-" + this.getCrpProgram().getId();
+      }
+    }
+    return null;
+  }
+
+
   public User getCreatedBy() {
     return createdBy;
   }
@@ -174,7 +188,6 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
     return this.description;
   }
 
-
   @Override
   public Long getId() {
     return this.id;
@@ -198,6 +211,7 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
   public String getModificationJustification() {
     return modificationJustification;
   }
+
 
   @Override
   public User getModifiedBy() {
@@ -243,6 +257,10 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
+  }
+
+  public void setComposeID(String composeID) {
+    this.composeID = composeID;
   }
 
   public void setCreatedBy(User createdBy) {

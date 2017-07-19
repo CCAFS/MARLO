@@ -1,5 +1,17 @@
 SET FOREIGN_KEY_CHECKS = 0;
 
+ALTER TABLE `crp_program_outcomes`
+ADD COLUMN `composed_id`  varchar(20)  NULL AFTER `modification_justification`;
+
+ALTER TABLE `crp_milestones`
+ADD COLUMN `composed_id`  varchar(20)  NULL AFTER `modification_justification`;
+
+update  crp_program_outcomes set composed_id=CONCAT(id,'-',crp_program_id);
+
+update  crp_milestones ml INNER JOIN crp_program_outcomes po 
+on po.id=ml.crp_program_outcome_id
+set ml.composed_id=CONCAT(po.composed_id,'-',ml.id) ;
+
 CREATE TEMPORARY TABLE
 IF NOT EXISTS table2 AS (SELECT * FROM crp_program_outcomes);
 
@@ -8,7 +20,7 @@ IF NOT EXISTS table2 AS (SELECT * FROM crp_program_outcomes);
 CREATE TEMPORARY TABLE
 IF NOT EXISTS table_temp_crp_cluster_key_outputs_outcome AS (
 SELECT
-  pp.*,ppp.description,ppp.crp_program_id
+  pp.*,ppp.composed_id,ppp.crp_program_id
 FROM
   crp_cluster_key_outputs_outcome pp
 INNER JOIN crp_program_outcomes ppp ON pp.outcome_id = ppp.id)
@@ -18,7 +30,7 @@ CREATE TEMPORARY TABLE
 IF NOT EXISTS table_temp_crp_outcome_sub_idos AS (
 
 SELECT
- pp.*,ppp.description,ppp.crp_program_id
+ pp.*,ppp.composed_id,ppp.crp_program_id
 FROM
   crp_outcome_sub_idos pp
 INNER JOIN crp_program_outcomes ppp ON pp.crp_program_outcome_id=ppp.id
@@ -29,7 +41,7 @@ CREATE TEMPORARY TABLE
 IF NOT EXISTS table_temp_crp_milestones AS (
 
 SELECT
- pp.*,ppp.description,ppp.crp_program_id
+ pp.*,ppp.composed_id 'composed_id_outcome',ppp.crp_program_id
 FROM
   crp_milestones pp
 INNER JOIN crp_program_outcomes ppp ON pp.crp_program_outcome_id=ppp.id
@@ -41,7 +53,7 @@ CREATE TEMPORARY TABLE
 IF NOT EXISTS table_temp_crp_assumptions AS (
 
 SELECT
- pp1.*,ppp.description 'adescription',ppp.crp_program_id,pp.srf_sub_ido_id
+ pp1.*,ppp.composed_id,ppp.crp_program_id,pp.srf_sub_ido_id
 FROM
   crp_assumptions pp1
 inner join crp_outcome_sub_idos pp on pp.id=pp1.crp_outcome_sub_idos_id
@@ -73,6 +85,7 @@ created_by,
 active_since,
 modified_by,
 modification_justification,
+composed_id,
 id_phase
 ) SELECT 
 
@@ -86,6 +99,7 @@ t2.created_by,
 t2.active_since,
 t2.modified_by,
 t2.modification_justification,
+t2.composed_id,
   ph.id
 FROM
   table2 t2
@@ -117,7 +131,7 @@ temp.modification_justification
 
 from table_temp_crp_cluster_key_outputs_outcome temp 
 INNER JOIN crp_program_outcomes pp on pp.crp_program_id=temp.crp_program_id
-and pp.description =temp.description
+and pp.composed_id =temp.composed_id
 ;
 
 
@@ -144,7 +158,7 @@ temp.modified_by,
 temp.modification_justification
 from table_temp_crp_outcome_sub_idos temp 
 INNER JOIN crp_program_outcomes pp on pp.crp_program_id=temp.crp_program_id
-and pp.description =temp.description
+and pp.composed_id =temp.composed_id
 ;
 
 
@@ -157,7 +171,8 @@ is_active,
 created_by,
 active_since,
 modified_by,
-modification_justification
+modification_justification,
+composed_id
 
 
 )
@@ -171,10 +186,11 @@ temp.is_active,
 temp.created_by,
 temp.active_since,
 temp.modified_by,
-temp.modification_justification
+temp.modification_justification,
+temp.composed_id
 from table_temp_crp_milestones temp 
 INNER JOIN crp_program_outcomes pp on pp.crp_program_id=temp.crp_program_id
-and pp.description =temp.description
+and pp.composed_id =temp.composed_id_outcome
 ;
 
 
@@ -199,6 +215,6 @@ temp.modified_by,
 temp.modification_justification
 from table_temp_crp_assumptions temp 
 INNER JOIN crp_program_outcomes pp on pp.crp_program_id=temp.crp_program_id
-and pp.description =temp.adescription
+and pp.composed_id =temp.composed_id
 inner join  crp_outcome_sub_idos asp on asp.srf_sub_ido_id=temp.srf_sub_ido_id
 ;

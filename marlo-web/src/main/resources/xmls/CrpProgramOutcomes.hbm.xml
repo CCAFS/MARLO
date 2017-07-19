@@ -16,6 +16,9 @@
 		<property name="activeSince" type="timestamp">
 			<column name="active_since" length="19" not-null="true" />
 		</property>
+		<property name="composeID" type="string">
+      <column name="composed_id" length="20" />
+    </property>
 		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
 			fetch="select">
 			<column name="created_by" not-null="false" />
