@@ -2,8 +2,8 @@
 [#assign title = "MARLO Funding Sources" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-${fundingSource.id}" /]
 [#assign pageLibs = ["select2", "blueimp-file-upload", "datatables.net", "datatables.net-bs","flat-flags"] /]
-[#assign customJS = ["${baseUrl}/js/global/fieldsValidation.js","${baseUrl}/js/fundingSources/fundingSource.js", "${baseUrl}/js/global/autoSave.js" ] /]
-[#assign customCSS = ["${baseUrl}/css/fundingSources/fundingSource.css"] /]
+[#assign customJS = ["${baseUrlMedia}/js/global/fieldsValidation.js","${baseUrlMedia}/js/fundingSources/fundingSource.js", "${baseUrlMedia}/js/global/autoSave.js" ] /]
+[#assign customCSS = ["${baseUrlMedia}/css/fundingSources/fundingSource.css"] /]
 [#assign currentSection = "fundingSources" /]
 
 [#assign breadCrumb = [
@@ -86,7 +86,7 @@
                     [#if editable]
                     <input type="checkbox" name="fundingSource.w1w2" value="true" id="w1w2-tag-input" [#if w1w2TagValue]checked[/#if]/>
                     [#else]
-                       <img src="${baseUrl}/images/global/checked-${w1w2TagValue?string}.png" /> 
+                       <img src="${baseUrlMedia}/images/global/checked-${w1w2TagValue?string}.png" /> 
                     [/#if]
                     <small>[@customForm.text name="fundingSource.w1w2Tag" readText=!editable /]</small></label>
                 </div>
@@ -153,7 +153,7 @@
       <div class="form-group">
         <div class="row">
           <div class="col-md-12">
-            <label for="">[@s.text name="projectCofunded.donor" /] </label>
+            <label for="">[@s.text name="projectCofunded.donor" /]:[@customForm.req required=editable /]</label>
             <span class="description"><i>([@s.text name="projectCofunded.donor.helpText" /])</i></span>
             [@customForm.select name="fundingSource.institution.id" i18nkey="projectCofunded.donor" className="donor" showTitle=false  listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" required=true editable=editable /]
           </div>
@@ -165,7 +165,7 @@
       <div class="form-group">
         <div class="row">
           <div class="col-md-12">
-            <label for="">[@s.text name="projectCofunded.directDonor" /] </label>
+            <label for="">[@s.text name="projectCofunded.directDonor" /]: </label>
             <span class="description"><i>([@s.text name="projectCofunded.directDonor.helpText" /])</i></span><br>
             [@customForm.select name="fundingSource.directDonor.id" i18nkey="projectCofunded.directDonor" className="donor" showTitle=false listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" required=false editable=editable /]
           </div>
@@ -435,6 +435,6 @@
   [/#list]
 </ul>
 
-<span class="hidden cgiarConsortium">${action.getCGIARInsitution()}</span>
+<span class="hidden cgiarConsortium">${action.getCGIARInstitution()}</span>
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
