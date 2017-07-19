@@ -14,7 +14,7 @@
 
 <script src="${baseUrl}/bower_components/jquery/dist/jquery.min.js"></script>
 <script src="${baseUrlMedia}/js/capDev/capacityDevelopment.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.7.7/xlsx.core.min.js"></script>
+
 
 
 <div class="container"> 
@@ -91,7 +91,7 @@
 							<li id="" class="targetGroup clearfix col-md-3">
 								<div class="removeTargetGroup removeIcon" title="Remove targetGroup"></div>
 								<input class="id" type="hidden" name="" value="" />
-								<input class="tgId" type="hidden" name="capdevTargetGroups[-1]" value="" />
+								<input class="tgId" type="hidden" name="capdevTargetGroup[-1]" value="" />
 								<span class="name">${targetGroup.targetGroups.name}</span>
 								<div class="clearfix"></div>
 							</li>
@@ -243,7 +243,7 @@
   <li id="targetGroupTemplate" class="targetGroup clearfix col-md-4">
       <div class="removetargetGroup removeIcon" title="Remove targetGroup"></div>
       <input class="id" type="hidden" name="" value="" />
-      <input class="tgId" type="hidden" name="capdevTargetGroups[-1]" value="" />
+      <input class="tgId" type="hidden" name="capdevTargetGroup[-1]" value="" />
       <span class="name"></span>
       <div class="clearfix"></div>
     </li>

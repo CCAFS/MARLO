@@ -3,31 +3,36 @@
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <!-- Generated Jul 12, 2017 2:20:41 PM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
-    <class name="org.cgiar.ccafs.marlo.data.model.CapdevPartners" table="capdev_partners" catalog="ccafs_marlo">
-        <id name="id" type="java.lang.Long">
-            <column name="id" />
-            <generator class="identity" />
-        </id>
-        <many-to-one name="usersByModifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
-            <column name="modified_by" />
-        </many-to-one>
-        <many-to-one name="usersByCreatedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
-            <column name="created_by" />
-        </many-to-one>
-        <many-to-one name="institutions" class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
-            <column name="institution_id" />
-        </many-to-one>
-        <many-to-one name="capacityDevelopment" class="org.cgiar.ccafs.marlo.data.model.CapacityDevelopment" fetch="select">
-            <column name="capdev_id" not-null="true" />
-        </many-to-one>
-        <property name="active" type="boolean">
-            <column name="is_active" not-null="true" />
-        </property>
-        <property name="activeSince" type="timestamp">
-            <column name="active_since" length="19" />
-        </property>
-        <property name="modificationJustification" type="string">
-            <column name="modification_justification" length="65535" />
-        </property>
-    </class>
+	<class name="org.cgiar.ccafs.marlo.data.model.CapdevPartners"
+		table="capdev_partners" optimistic-lock="version">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<many-to-one name="usersByModifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select">
+			<column name="modified_by" />
+		</many-to-one>
+		<many-to-one name="usersByCreatedBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select">
+			<column name="created_by" />
+		</many-to-one>
+		<many-to-one name="institutions"
+			class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
+			<column name="institution_id" />
+		</many-to-one>
+		<many-to-one name="capacityDevelopment"
+			class="org.cgiar.ccafs.marlo.data.model.CapacityDevelopment" fetch="select">
+			<column name="capdev_id" not-null="true" />
+		</many-to-one>
+		<property name="active" type="boolean">
+			<column name="is_active" not-null="true" />
+		</property>
+		<property name="activeSince" type="timestamp">
+			<column name="active_since" length="19" />
+		</property>
+		<property name="modificationJustification" type="string">
+			<column name="modification_justification" length="65535" />
+		</property>
+	</class>
 </hibernate-mapping>

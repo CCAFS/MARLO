@@ -226,14 +226,31 @@ public class CapdevDescriptionAction extends BaseAction {
   @Override
   public String save() {
 
-    capdevService.saveCapacityDevelopment(capdev);
-    this.saveCapDevDisciplines(capdevDisciplines, capdev);
-    this.saveCapdevTargetGroups(capdevTargetGroup, capdev);
-    this.saveCapdevPartners(capdevPartners, capdev);
-    this.saveCapdevOutputs(capdevOutputs, capdev);
+    System.out.println("capdev.getResearchArea() " + capdev.getResearchArea().getId());
+    final CapacityDevelopment capdevDB = capdevService.getCapacityDevelopmentById(capdevID);
 
+    if (capdev.getResearchArea().getId() > -1) {
+      capdevDB.setResearchArea(capdev.getResearchArea());
+    }
+    if (capdev.getResearchProgram().getId() > -1) {
+      capdevDB.setResearchProgram(capdev.getResearchProgram());
+    }
+    if (capdev.getProject().getId() > -1) {
+      capdevDB.setProject(capdev.getProject());
+    }
+    if (capdev.getCrp().getId() > -1) {
+      capdevDB.setCrp(capdev.getCrp());
+    }
+
+
+    capdevService.saveCapacityDevelopment(capdevDB);
+    this.saveCapDevDisciplines(capdevDisciplines, capdevDB);
+    this.saveCapdevTargetGroups(capdevTargetGroup, capdevDB);
     System.out.println("capdevPartners.size() " + capdevPartners.size());
     System.out.println("capdevOutputs.size() " + capdevOutputs.size());
+    this.saveCapdevPartners(capdevPartners, capdevDB);
+    this.saveCapdevOutputs(capdevOutputs, capdevDB);
+
 
     this.addActionMessage("message: Information was correctly saved.</br>");
 
@@ -286,6 +303,7 @@ public class CapdevDescriptionAction extends BaseAction {
 
   public void saveCapdevPartners(List<Long> partners, CapacityDevelopment capdev) {
     CapdevPartners capdevPartner = null;
+    System.out.println(capdev);
     final Session session = SecurityUtils.getSubject().getSession();
     final User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
     if (!partners.isEmpty()) {

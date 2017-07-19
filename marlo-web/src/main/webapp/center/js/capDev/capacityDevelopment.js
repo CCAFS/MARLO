@@ -8,6 +8,7 @@
   $(document).ready(init);
 
   function init(){
+
     datePickerConfig({
       "startDate": "#capdev\\.startDate",
       "endDate": "#capdev\\.endDate"
@@ -49,7 +50,8 @@
 
 
     // Event when the user select the contact person from AD
-  $dialogContent.find("span.select, span.firstname").on("click", function() {
+  $(".selectADUser").on("click", function() {
+    console.log("span.select")
     var firstName = $(this).parent().find(".firstname").text();
     var lastName = $(this).parent().find(".lastname").text();
     var email = $(this).parent().find(".email").text();
@@ -61,6 +63,7 @@
     addUser(composedName, firstName, lastName, email);
   });
 
+  
   //event when the user add a new contact person
   $dialogContent.find(".addContactPerson").on("click", function(){
      var firstName = $(".ct_FirstName").val();
@@ -72,41 +75,23 @@
       console.log(composedName)
       // Add user
       addUser(composedName, firstName, lastName, email);
-  })
-
-
-    // capdev category dialog
-
-    $dialogCapDevCategory = $("#dialog-capdevCategory");
-    var dialogCapDevOptions = {
-      autoOpen: false,
-      height: 400,
-      width: 480,
-      modal: true,
-      dialogClass: 'dialog-searchUsers',
-      open: function(event,ui) {
-
-      }
-
-    };
-
-    capDevDialog = $dialogCapDevCategory.dialog(dialogCapDevOptions);
-
-    //event capdev Category dialog
-    $(".addCapDevButton").on("click", function(e) {
-      console.log("hola")
-      e.preventDefault();
-      openCapDevDialog($(this));
-    });
-
-    $('.close-dialog').on('click', function() {
-    capDevDialog.dialog("close");
-
   });
 
 
+   //set contact person 
+   (function(){
+    var ctFirsName = $(".ctFirsName").val();
+    var ctLastName = $(".ctLastName").val();
+    var ctEmail  = $(".ctEmail").val();
+    var composedName = ctFirsName+" "+ctLastName+" "+ctEmail;
+    $(".contact").val(composedName);
+  
+   })();
+
+   
+
   //display individual or group intervention form
-  (function () {
+  (function() {
     var value = $(".radioButton").val();
     
     if (value == 1) {
@@ -127,7 +112,6 @@
 
     
     //set value to gender field
-
     (function(){
       var gender = $(".genderInput").val();
      $(".genderSelect select option").each(function() {
@@ -359,31 +343,6 @@
   });
 
 
-  //add outCome
-  $( ".outComes" ).change(function() {
-    var $list = $(".outComesList");
-    var $item = $("#outcome-template").clone(true).removeAttr("id");
-    $list.append($item);
-    $item.show('slow', function() {
-     width: "50%"
-   });
-
-    updateOutComesList($list);
-
-  });
-
-
-  //remove outCome
-  $(".removeOutCome").on("click", function () {
-    var $list = $(this).parents('.outComesList');
-    var $item = $(this).parents('.outcome');
-    $item.hide(1000, function() {
-      $item.remove();
-      updateOutComesList($list);
-      //updateFundingSource();
-    });
-
-  });
 
 
  //add country
@@ -418,43 +377,17 @@
     });
 
 
-
   //remove region
-  
   $(".removeRegion").on("click", removeRegion);
 
 
-  //event add discipline
-  $(".disciplinesSelect").on("change", function() {
-      var option = $(this).find("option:selected");
-      if(option.val() != "-1") {
-        addDiscipline(option);
-       
-      }
 
-       option.remove();
-      $(this).trigger("change.select2");
-    });
 
-  //event remove discipline
-  $(".removeDiscipline").on("click", removeDiscipline);
+ 
 
 
 
-  // Event add target group
-    $(".targetGroupsSelect").on("change", function() {
-      var option = $(this).find("option:selected");
-      if(option.val() != "-1") {
-        addTargetGroup(option);
-       
-      }
-
-       option.remove();
-      $(this).trigger("change.select2");
-    });
-
-    //event remove target group
-    $(".removetargetGroup").on("click", removeTargetGroup);
+  
 
 
 
@@ -572,11 +505,7 @@
   }
 
 
-  openCapDevDialog = function(target) {
-    $elementSelected = $(target);
-    capDevDialog.dialog("open");
-    
-        }
+  
 
   openSearchDialog = function(target) {
     $elementSelected = $(target);
@@ -586,6 +515,7 @@
 
 
   function searchUsersEvent(e) {
+    console.log("buscando")
     var query = $(this).val();
     if(query.length > 1) {
       if(timeoutID) {
@@ -604,6 +534,7 @@
 
 
   function getData(query) {
+    console.log("preparando el ajax call")
     $.ajax({
       'url': baseURL + '/searchContact.do',
       'data': {
@@ -611,20 +542,20 @@
       },
       'dataType': "json",
       beforeSend: function() {
-
+        console.log("antes de enviar el ajax")
         $dialogContent.find(".search-loader").show();
         $dialogContent.find(".panel-body ul").empty();
       },
       success: function(data) {
-
+        console.log(data)
         var usersFound = (data.users).length;
         if(usersFound > 0) {
 
           $dialogContent.find(".panel-body .userMessage").hide();
           $.each(data.users, function(i,user) {
-
+            console.log("en el for each")
             if(user.firstName){
-              var $item = $dialogContent.find("li#userTemplate").clone(true).removeAttr("id");
+              var $item = $("#userTemplate").clone(true).removeAttr("id");
 
               $item.find('.idUser').html(user.idUser);
               $item.find('.firstname').html(user.firstName);
@@ -644,10 +575,12 @@
 
       },
       error: function() {
+        console.log("algun error")
         $dialogContent.find(".panel-body .userMessage").show();
       },
 
       complete: function() {
+        console.log("terminado todo")
         $dialogContent.find(".search-loader").fadeOut("slow");
       }
     });
@@ -656,10 +589,10 @@
 
 
   addUser = function(composedName, firstName, lastName, email) {
-    $elementSelected.parents('.contactField ').find("input.contact").val(composedName).addClass('animated flash');
-    $elementSelected.parents('.contactField ').find("input.ctFirsName").val(firstName);
-    $elementSelected.parents('.contactField ').find("input.ctLastName").val(lastName);
-    $elementSelected.parents('.contactField ').find("input.ctEmail").val(email);
+    $(".contact").val(composedName).addClass('animated flash');
+    $(".ctFirsName").val(firstName);
+    $(".ctLastName").val(lastName);
+    $(".ctEmail").val(email);
     dialog.dialog("close");
   }
 
@@ -829,155 +762,6 @@
   }
 
 
-  // DISCIPLINE FUNCTIONS
-  function addDiscipline(option){
+  
 
-    var canAdd = true;
-    console.log(option);
-    if(option.val() == "-1") {
-      canAdd = false;
-    }
-
-    var $list = $("#disciplinesList").find(".list");
-    var $item = $("#disciplineTemplate").clone(true).removeAttr("id");
-    var v = $(option).text().length > 30 ? $(option).text().substr(0, 20) + ' ... ' : $(option).text();
-
-    
-
-  // Check if is already selected
-    $list.find('.discipline').each(function(i,e) {
-      if($(e).find('input.disciplineId').val() == option.val()) {
-        canAdd = false;
-        return;
-      }
-    });
-    if(!canAdd) {
-      return;
-    }
-
-  // Set discipline parameters
-    $item.find(".name").attr("title", $(option).text());
-    $item.find(".name").html(v);
-    $item.find(".disciplineId").val(option.val());
-    $item.find(".id").val(-1);
-    $list.append($item);
-    $item.show('slow');
-    updateDisciplineList($list);
-    checkDisciplineList($list);
-
-  // Reset select
-    $(option).val("-1");
-    $(option).trigger('change.select2');
-   }
-
-
-   function removeDiscipline() {
-    var $list = $(this).parents('.list');
-    var $item = $(this).parents('.discipline');
-    var value = $item.find(".disciplineId").val();
-    var name = $item.find(".name").attr("title");
-
-    var $select = $(".disciplinesSelect");
-    $item.hide(300, function() {
-      $item.remove();
-      checkDisciplineList($list);
-      updateDisciplineList($list);
-    });
-  // Add country option again
-    $select.addOption(value, name);
-    $select.trigger("change.select2");
-  }
-
-  function updateDisciplineList($list) {
-
-    $($list).find('.discipline').each(function(i,e) {
-      // Set country indexes
-      $(e).setNameIndexes(1, i);
-    });
-  }
-
-  function checkDisciplineList(block) {
-    var items = $(block).find('.discipline').length;
-    if(items == 0) {
-      $(block).parent().find('p.emptyText').fadeIn();
-    } else {
-      $(block).parent().find('p.emptyText').fadeOut();
-    }
-  }
-
-
-  // TARGET GROUPS FUNCTIONS
-   function addTargetGroup(option){
-
-    var canAdd = true;
-    console.log(option);
-    if(option.val() == "-1") {
-      canAdd = false;
-    }
-
-    var $list = $("#targetGroupsList").find(".list");
-    var $item = $("#targetGroupTemplate").clone(true).removeAttr("id");
-    var v = $(option).text().length > 20 ? $(option).text().substr(0, 20) + ' ... ' : $(option).text();
-
-    
-
-  // Check if is already selected
-    $list.find('.targetGroup').each(function(i,e) {
-      if($(e).find('input.tgId').val() == option.val()) {
-        canAdd = false;
-        return;
-      }
-    });
-    if(!canAdd) {
-      return;
-    }
-
-  // Set target group parameters
-    $item.find(".name").attr("title", $(option).text());
-    $item.find(".name").html(v);
-    $item.find(".tgId").val(option.val());
-    $item.find(".id").val(-1);
-    $list.append($item);
-    $item.show('slow');
-    updateTargetGroupList($list);
-    checkTargetGroupList($list);
-
-  // Reset select
-    $(option).val("-1");
-    $(option).trigger('change.select2');
-   }
-
-
-   function removeTargetGroup() {
-    var $list = $(this).parents('.list');
-    var $item = $(this).parents('.targetGroup');
-    var value = $item.find(".tgId").val();
-    var name = $item.find(".name").attr("title");
-
-    var $select = $(".targetGroupsSelect");
-    $item.hide(300, function() {
-      $item.remove();
-      checkTargetGroupList($list);
-      updateTargetGroupList($list);
-    });
-  // Add country option again
-    $select.addOption(value, name);
-    $select.trigger("change.select2");
-  }
-
-  function updateTargetGroupList($list) {
-
-    $($list).find('.targetGroup').each(function(i,e) {
-      // Set country indexes
-      $(e).setNameIndexes(1, i);
-    });
-  }
-
-  function checkTargetGroupList(block) {
-    var items = $(block).find('.targetGroup').length;
-    if(items == 0) {
-      $(block).parent().find('p.emptyText').fadeIn();
-    } else {
-      $(block).parent().find('p.emptyText').fadeOut();
-    }
-  }
+  

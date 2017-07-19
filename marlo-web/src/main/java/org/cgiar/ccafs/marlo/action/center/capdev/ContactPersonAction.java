@@ -80,11 +80,15 @@ public class ContactPersonAction extends BaseAction {
 
 
   public String searchADUser() throws Exception {
+    System.out.println("searchADUser");
     final Map<String, Object> parameters = this.getParameters();
     final LDAPService service = new LDAPService();
     final String queryParameter = StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]);
+    System.out.println("antes de la consulta");
     final List<LDAPUser> users = service.searchUsers(queryParameter);
     this.users = new ArrayList<>();
+
+    System.out.println("users.size() " + users.size());
 
     int idUser = 0;
     for (final LDAPUser user : users) {

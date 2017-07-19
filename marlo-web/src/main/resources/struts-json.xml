@@ -471,6 +471,25 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		
+		<action name="searchContact"
+			class="org.cgiar.ccafs.marlo.action.center.capdev.ContactPersonAction"
+			method="searchADUser">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+		<action name="previewParticipants"
+			class="org.cgiar.ccafs.marlo.action.center.capdev.CapacityDevelopmentDetailAction"
+			method="previewExcelFile">
+			<result type="json">
+				<param name="root">previewList</param>
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
 
 		<action name="filterReasearchProgram"
 			class="org.cgiar.ccafs.marlo.action.center.json.capdev.FilterListsAction"

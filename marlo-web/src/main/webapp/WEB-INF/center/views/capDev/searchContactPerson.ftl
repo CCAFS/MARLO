@@ -85,7 +85,7 @@
 			<span class="contact firstname">{firstName}</span>  
 			<span class="contact lastname">{lastName}</span>  
 			<span class="contact email">  {email} </span>  
-			<span class="listButton select">[@s.text name="form.buttons.select" /]</span>
+			<span class="listButton select selectADUser">[@s.text name="form.buttons.select" /]</span>
 		</li> 
 	</ul> 
 	

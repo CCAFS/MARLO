@@ -74,8 +74,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   private File uploadFile;
   private String uploadFileName;
   private String uploadFileContentType;
-  private boolean hasParticipantList = false;
-  private boolean hasSupportingDocs = false;
   private final ICapacityDevelopmentService capdevService;
   private final ICapacityDevelopmentTypeDAO capdevTypeService;
   private final LocElementManager locElementService;
@@ -245,15 +243,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   }
 
 
-  public boolean isHasParticipantList() {
-    return hasParticipantList;
-  }
-
-
-  public boolean isHasSupportingDocs() {
-    return hasSupportingDocs;
-  }
-
   /*
    * This method create a participant list from data got from excel file
    * @param data an object array that contain data from excel file
@@ -343,7 +332,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     if (capdev != null) {
       capdevTypes = new ArrayList<>(capdevTypeService.findAll().stream()
         .filter(le -> le.getCategory().equals("" + capdev.getCategory())).collect(Collectors.toList()));
-      System.out.println("capdev.getStartDate() -->" + capdev.getStartDate());
 
       final List<CapdevParticipant> participants = new ArrayList<>(capdev.getCapdevParticipants());
       if (capdev.getCategory() == 1) {
@@ -352,11 +340,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
         }
 
       }
-
-      if (participants.size() > 1) {
-        hasParticipantList = true;
-      }
-      hasSupportingDocs = true;
 
 
       if (!capdev.getCapdevLocations().isEmpty()) {
@@ -407,8 +390,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
   @Override
   public String save() {
-    System.out.println("en el save");
-
 
     final Session session = SecurityUtils.getSubject().getSession();
 
@@ -435,6 +416,9 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     // if capdec is group
     if (capdevDB.getCategory() == 2) {
       capdevDB.setTitle(capdev.getTitle());
+      capdevDB.setCtFirstName(capdev.getCtFirstName());
+      capdevDB.setCtLastName(capdev.getCtLastName());
+      capdevDB.setCtEmail(capdev.getCtEmail());
       if (uploadFile != null) {
         final Object[][] data = reader.readExcelFile(uploadFile);
         this.loadParticipantsList(data);
@@ -444,6 +428,10 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
         capdevDB.setNumMen(numMen);
         capdevDB.setNumWomen(numWomen);
 
+      } else {
+        capdevDB.setNumParticipants(capdev.getNumParticipants());
+        capdevDB.setNumMen(capdev.getNumMen());
+        capdevDB.setNumWomen(capdev.getNumWomen());
       }
       capdevService.saveCapacityDevelopment(capdevDB);
       for (final Participant participant : participantList) {
@@ -587,15 +575,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   }
 
 
-  public void setHasParticipantList(boolean hasParticipantList) {
-    this.hasParticipantList = hasParticipantList;
-  }
-
-  public void setHasSupportingDocs(boolean hasSupportingDocs) {
-    this.hasSupportingDocs = hasSupportingDocs;
-  }
-
-
   public void setParticipant(Participant participant) {
     this.participant = participant;
   }
@@ -643,11 +622,9 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
   @Override
   public void validate() {
-    System.out.println(" Validate");
     this.setInvalidFields(new HashMap<>());
 
     if (save) {
-      System.out.println("entro al if save");
       // validator.validateCapDevDetail(this, capdev, participant, uploadFile, uploadFileContentType);
       if (capdev.getCapdevType().getId() == -1) {
         this.addFieldError("capdev.capdevType.id", "Type is required.");
