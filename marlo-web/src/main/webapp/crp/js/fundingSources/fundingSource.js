@@ -353,7 +353,9 @@ function checkLeadPartnerItems(block) {
     $('.buttons-field').show();
   }else{
     $('.buttons-field').hide();
-    unSyncFundingSource();
+    if(isSynced){
+      unSyncFundingSource();
+    }
   }
   
   

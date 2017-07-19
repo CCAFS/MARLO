@@ -88,3 +88,8 @@ small.grayLabel {
   color: #888;
   /* padding-right: 6px; */
 }
+
+.button-disabled {
+  opacity: 0.6;
+  cursor: progress;
+}

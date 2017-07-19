@@ -1,21 +1,27 @@
+var isSynced, $syncButtons, $unSyncButtons, syncing;
 $(document).ready(initSync);
 
 function initSync() {
   console.log('Sync FS started');
-  var isSynced = $('#isSynced').val() === "false";
+  syncing = false;
+  isSynced = $('#isSynced').val() === "false";
+  $syncButtons = $("#fillMetadata .checkButton, #fillMetadata .updateButton");
+  $unSyncButtons = $("#fillMetadata .uncheckButton");
 
   if(isSynced) {
     // Set Datepicker
     settingDate(".startDateInput", ".endDateInput", ".extensionDateInput");
-
-    //
   }
+  
+  
+  
+  
 
   // Harvest metadata from URL
-  $("#fillMetadata .checkButton, #fillMetadata .updateButton").on("click", syncMetadata);
+  $syncButtons.on("click", syncMetadata);
 
   // Unsync metadata
-  $("#fillMetadata .uncheckButton").on("click", unSyncFundingSource);
+  $unSyncButtons.on("click", unSyncFundingSource);
 }
 
 /**
@@ -84,6 +90,9 @@ function syncFundingSource() {
   $('.currencyInput').trigger('keyup');
   // Update component
   $(document).trigger('updateComponent');
+  
+  // Set isSynced parameter
+  isSynced = true;
 }
 
 function unSyncFundingSource() {
@@ -100,7 +109,7 @@ function unSyncFundingSource() {
 
     // Date picker
     if($input.hasClass('hasDatepicker')) {
-      console.log(key + " is date");
+      // console.log(key + " is date");
     }
 
     // Select2
@@ -129,10 +138,17 @@ function unSyncFundingSource() {
 
   // Update component
   $(document).trigger('updateComponent');
+  
+  // Set isSynced parameter
+  isSynced = false;
 }
 
 function getOCSMetadata() {
   var currentCode = $('input.financeCode').val();
+  if(!currentCode || syncing){
+    return
+  }
+  
   // Ajax to service
   $.ajax({
       'url': baseURL + '/ocsService.do',
@@ -142,6 +158,8 @@ function getOCSMetadata() {
       beforeSend: function() {
         $(".financeCode").addClass('input-loading');
         $('.financeCode-message').text("");
+        $syncButtons.addClass('button-disabled');
+        syncing = true;
       },
       success: function(data) {
         if(data.json) {
@@ -189,6 +207,8 @@ function getOCSMetadata() {
       },
       complete: function() {
         $(".financeCode").removeClass('input-loading');
+        $syncButtons.removeClass('button-disabled');
+        syncing = false;
       },
       error: function() {
         $('#metadata-output').empty().append("Invalid URL for searching metadata");
