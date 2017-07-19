@@ -1,0 +1,13 @@
+.outcomeListTitle{
+	margin-top:30px;
+	margin-bottom:15px;
+  text-align:center;
+}
+
+table tr{
+  height: 30px;
+}
+
+.milestone.simpleBox {
+  padding-top: 20px;
+}

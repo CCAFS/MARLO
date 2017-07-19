@@ -2,8 +2,8 @@
 [#assign title = "MARLO Admin" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = [] /]
-[#assign customJS = [ "${baseUrl}/js/superadmin/marloLocations.js" ] /]
-[#assign customCSS = [ "${baseUrl}/css/superadmin/superadmin.css" ] /]
+[#assign customJS = [ "${baseUrlMedia}/js/superadmin/marloLocations.js" ] /]
+[#assign customCSS = [ "${baseUrlMedia}/css/superadmin/superadmin.css" ] /]
 [#assign currentSection = "superadmin" /]
 [#assign currentStage = "customLocations" /]
 

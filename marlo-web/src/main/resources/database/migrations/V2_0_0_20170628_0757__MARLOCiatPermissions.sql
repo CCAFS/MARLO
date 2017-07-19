@@ -1,0 +1,10 @@
+INSERT INTO `permissions` VALUES ('471', 'center:{0}:*', 'Full privileges on the Center', '0');
+INSERT INTO `permissions` VALUES ('472', 'center:{0}:area:{1}:*', 'Full privileges on the Center Area', '0');
+INSERT INTO `permissions` VALUES ('473', 'center:{0}:area:{1}:program:{2}:*', 'Full privileges on the Center Program', '0');
+INSERT INTO `permissions` VALUES ('474', 'center:{0}:area:{1}:program:{2}:addProject', 'Can Add new Program Project', '0');
+INSERT INTO `permissions` VALUES ('475', 'center:{0}:area:{1}:program:{2}:project:{3}:*', 'Full privileges on the Project', '0');
+INSERT INTO `permissions` VALUES ('476', 'center:{0}:area:{1}:program:{2}:project:{3}:addDeliverable', 'Can Add new Project Deliverable', '0');
+INSERT INTO `permissions` VALUES ('477', 'center:{0}:area:{1}:program:{2}:project:{3}:projectDescription:*', 'Full privileges on the Project Description Section', '0');
+INSERT INTO `permissions` VALUES ('478', 'center:{0}:area:{1}:program:{2}:project:{3}:projectPartners:*', 'Full privileges on the Project Partners Section', '0');
+INSERT INTO `permissions` VALUES ('479', 'center:{0}:area:{1}:program:{2}:project:{3}:deliverable:{4}:*', 'Full privileges on the Project Deliverables Section', '0');
+INSERT INTO `permissions` VALUES ('480', 'center:{0}:admin:*', 'Full privileges on the center admin section', '0');

@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Nov 1, 2016 8:40:22 AM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.CenterSectionStatus" table="center_section_statuses" optimistic-lock="version">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="researchProgram" class="org.cgiar.ccafs.marlo.data.model.CenterProgram" fetch="select">
+            <column name="research_program_id" />
+        </many-to-one>
+        <many-to-one name="researchOutcome" class="org.cgiar.ccafs.marlo.data.model.CenterOutcome" fetch="select">
+            <column name="research_outcome_id" />
+        </many-to-one>
+        <many-to-one name="researchOutput" class="org.cgiar.ccafs.marlo.data.model.CenterOutput" fetch="select">
+            <column name="research_output_id" />
+        </many-to-one>
+        <many-to-one name="project" class="org.cgiar.ccafs.marlo.data.model.CenterProject" fetch="select">
+            <column name="project_id" />
+        </many-to-one>
+        <many-to-one name="deliverable" class="org.cgiar.ccafs.marlo.data.model.CenterDeliverable" fetch="select">
+            <column name="deliverable_id" />
+        </many-to-one>
+        <property name="sectionName" type="string">
+            <column name="section_name" not-null="true">
+                <comment>Some section name (would be the action name)</comment>
+            </column>
+        </property>
+        <property name="missingFields" type="string">
+            <column name="missing_fields" length="16777215">
+                <comment>The list of missing fields per section</comment>
+            </column>
+        </property>
+        <property name="cycle" type="string">
+            <column name="cycle" length="100" />
+        </property>
+        <property name="year" type="java.lang.Integer">
+            <column name="year" />
+        </property>
+    </class>
+</hibernate-mapping>

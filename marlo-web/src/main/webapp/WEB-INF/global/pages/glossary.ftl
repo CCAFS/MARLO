@@ -2,8 +2,8 @@
 
 [#assign title = "Glossary" /]
 [#assign globalLibs = ["jquery", "noty"] /]
-[#assign customJS = ["${baseUrl}/js/global/glossary.js"] /]
-[#assign customCSS = ["${baseUrl}/css/global/glossary.css"] /]
+[#assign customJS = ["${baseUrlMedia}/js/global/glossary.js"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/global/glossary.css"] /]
 [#assign currentSection = "home" /]
 [#assign currentCycleSection = "glossary" /]
 [#assign currentStage = "glossary" /]

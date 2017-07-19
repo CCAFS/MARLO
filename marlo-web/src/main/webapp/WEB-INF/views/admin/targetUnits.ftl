@@ -2,8 +2,8 @@
 [#assign title = "Target units" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = [] /]
-[#assign customJS = [ "${baseUrl}/js/superadmin/marloBoard.js","${baseUrl}/js/admin/targetUnits.js" ] /]
-[#assign customCSS = [ "${baseUrl}/css/superadmin/superadmin.css" ] /]
+[#assign customJS = [ "${baseUrlMedia}/js/superadmin/marloBoard.js","${baseUrlMedia}/js/admin/targetUnits.js" ] /]
+[#assign customCSS = [ "${baseUrlMedia}/css/superadmin/superadmin.css" ] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "targetUnits" /]
 
@@ -17,7 +17,7 @@
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrl}/images/global/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.jpg" />
     <p class="col-md-10"> [@s.text name="targetUnits.help" /] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>

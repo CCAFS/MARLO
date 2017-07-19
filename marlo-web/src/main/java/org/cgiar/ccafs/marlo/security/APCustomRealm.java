@@ -20,6 +20,8 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.ADLoginMessages;
+import org.cgiar.ccafs.marlo.data.model.Center;
+import org.cgiar.ccafs.marlo.data.model.CenterUserRole;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
@@ -175,14 +177,33 @@ public class APCustomRealm extends AuthorizingRealm {
     Session session = SecurityUtils.getSubject().getSession();
 
     User user = userManager.getUser((Long) principals.getPrimaryPrincipal());
-    Crp crp = (Crp) session.getAttribute(APConstants.SESSION_CRP);
 
-    for (UserRole userRole : user.getUserRoles()) {
-      authorizationInfo.addRole(userRole.getRole().getAcronym());
+    Crp crp = (Crp) session.getAttribute(APConstants.SESSION_CRP);
+    Center center = (Center) session.getAttribute(APConstants.SESSION_CENTER);
+
+    /*
+     * Check
+     */
+    if (crp != null) {
+      for (UserRole userRole : user.getUserRoles()) {
+        authorizationInfo.addRole(userRole.getRole().getAcronym());
+      }
+      authorizationInfo.addStringPermissions(userManager.getPermission(user.getId().intValue(), crp.getAcronym()));
+      return authorizationInfo;
     }
 
-    authorizationInfo.addStringPermissions(userManager.getPermission(user.getId().intValue(), crp.getAcronym()));
-    return authorizationInfo;
+    if (center != null) {
+      for (CenterUserRole userRole : user.getCenterUserRoles()) {
+        authorizationInfo.addRole(userRole.getRole().getAcronym());
+      }
+      authorizationInfo
+        .addStringPermissions(userManager.getCenterPermission(user.getId().intValue(), center.getAcronym()));
+      return authorizationInfo;
+    }
+
+    return null;
+
+
   }
 
   boolean getCgiarNickname(User user) {

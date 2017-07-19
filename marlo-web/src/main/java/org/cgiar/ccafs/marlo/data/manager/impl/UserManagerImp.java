@@ -53,6 +53,23 @@ public class UserManagerImp implements UserManager {
   }
 
   @Override
+  public List<String> getCenterPermission(int userId, String centerId) {
+    List<String> permissions = new ArrayList<String>();
+
+    List<Map<String, Object>> view = userDAO.getCenterPermission(userId, centerId);
+    if (view != null) {
+      for (Map<String, Object> map : view) {
+        if (map.get("permission") != null) {
+          permissions.add(map.get("permission").toString());
+        }
+
+      }
+    }
+
+    return permissions;
+  }
+
+  @Override
   public List<String> getPermission(int userId, String crpId) {
     List<String> permissions = new ArrayList<String>();
 
@@ -92,7 +109,11 @@ public class UserManagerImp implements UserManager {
   @Override
   public User getUserByUsername(String username) {
     String email = userDAO.getEmailByUsername(username);
-    return this.getUserByEmail(email);
+    if (email != null) {
+      return this.getUserByEmail(email);
+    }
+    LOG.warn("Information related to the user {} wasn't found.", username);
+    return null;
   }
 
   @Override

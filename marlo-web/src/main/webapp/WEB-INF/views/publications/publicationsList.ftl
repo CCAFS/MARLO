@@ -2,8 +2,8 @@
 [#assign title = "MARLO Publications" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
-[#assign customJS = ["${baseUrl}/js/publications/publicationsList.js" ] /]
-[#assign customCSS = ["${baseUrl}/css/global/customDataTable.css", "${baseUrl}/css/projects/projectDeliverable.css"] /]
+[#assign customJS = ["${baseUrlMedia}/js/publications/publicationsList.js" ] /]
+[#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css", "${baseUrlMedia}/css/projects/projectDeliverable.css"] /]
 [#assign currentSection = "publications" /]
 [#assign currentStage = (filterBy)!"all" /]
 

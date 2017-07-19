@@ -17,26 +17,26 @@
 
 		<default-interceptor-ref name="jsonStack"></default-interceptor-ref>
 
-  <action name="deliverableStatus"
-      class="org.cgiar.ccafs.marlo.action.json.global.DeliverableStatusAction">
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
-    
-    <action name="uploadFundingSource" 
-    class="org.cgiar.ccafs.marlo.action.json.project.UploadFundingSourceFileAction">
-      <interceptor-ref name="defaultStack" />
-      <interceptor-ref name="fileUpload">
-        <param name="maximumSize">314572900</param>
-      </interceptor-ref> 
-        <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
-    
+		<action name="deliverableStatus"
+			class="org.cgiar.ccafs.marlo.action.json.global.DeliverableStatusAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+		<action name="uploadFundingSource"
+			class="org.cgiar.ccafs.marlo.action.json.project.UploadFundingSourceFileAction">
+			<interceptor-ref name="defaultStack" />
+			<interceptor-ref name="fileUpload">
+				<param name="maximumSize">314572900</param>
+			</interceptor-ref>
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
 		<action name="searchUsers"
 			class="org.cgiar.ccafs.marlo.action.json.global.ManageUsersAction"
 			method="search">
@@ -45,15 +45,15 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
-		
+
 		<action name="searchInstitutions"
-      class="org.cgiar.ccafs.marlo.action.json.global.SearchInstitutionsAction"
-      method="search">
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
+			class="org.cgiar.ccafs.marlo.action.json.global.SearchInstitutionsAction"
+			method="search">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
 
 
 		<action name="institutionsByTypeAndCountry"
@@ -80,14 +80,14 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
-		
-		  <action name="requestCountryOffice"
-      class="org.cgiar.ccafs.marlo.action.json.project.RequestCountryOfficeAction">
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
+
+		<action name="requestCountryOffice"
+			class="org.cgiar.ccafs.marlo.action.json.project.RequestCountryOfficeAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
 
 
 
@@ -174,14 +174,14 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
-		
-    <action name="searchUserByEmail"
-      class="org.cgiar.ccafs.marlo.action.json.global.SearchUserAction">
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
+
+		<action name="searchUserByEmail"
+			class="org.cgiar.ccafs.marlo.action.json.global.SearchUserAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
 
 		<action name="autosaveWriter"
 			class="org.cgiar.ccafs.marlo.action.json.autosave.AutoSaveWriterAction">
@@ -202,10 +202,10 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
-		
-		
-		
-  
+
+
+
+
 
 		<action name="programOutcomeList"
 			class="org.cgiar.ccafs.marlo.action.json.project.ProgramOutcomeListAction">
@@ -223,21 +223,21 @@
 			</result>
 		</action>
 
-<action name="personByParnters"
-      class="org.cgiar.ccafs.marlo.action.json.project.PersonsbyPartnerAction">
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
+		<action name="personByParnters"
+			class="org.cgiar.ccafs.marlo.action.json.project.PersonsbyPartnerAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
 
-    <action name="keyOutputList"
-      class="org.cgiar.ccafs.marlo.action.json.project.KeyOutputListAction">
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
+		<action name="keyOutputList"
+			class="org.cgiar.ccafs.marlo.action.json.project.KeyOutputListAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
 		<action name="projectList"
 			class="org.cgiar.ccafs.marlo.action.json.project.ProjectListAction">
 			<result type="json">
@@ -260,34 +260,35 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
-		
-		<action name="flaghshipsByCrpAction"
-      class="org.cgiar.ccafs.marlo.action.json.project.FlaghshipsByCrpAction">
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
-    
-      <action name="clusterByFPsAction"
-      class="org.cgiar.ccafs.marlo.action.json.project.ClusterByFPsAction">
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
 
-   <action name="uploadDeliverable" class="org.cgiar.ccafs.marlo.action.json.project.UploadDeliverableAction">
-      <interceptor-ref name="defaultStack" />
-      <interceptor-ref name="fileUpload">
-        <param name="maximumSize">314572900</param>
-      </interceptor-ref> 
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
-    
+		<action name="flaghshipsByCrpAction"
+			class="org.cgiar.ccafs.marlo.action.json.project.FlaghshipsByCrpAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+		<action name="clusterByFPsAction"
+			class="org.cgiar.ccafs.marlo.action.json.project.ClusterByFPsAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+		<action name="uploadDeliverable"
+			class="org.cgiar.ccafs.marlo.action.json.project.UploadDeliverableAction">
+			<interceptor-ref name="defaultStack" />
+			<interceptor-ref name="fileUpload">
+				<param name="maximumSize">314572900</param>
+			</interceptor-ref>
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
 		<action name="institutionBranchList"
 			class="org.cgiar.ccafs.marlo.action.json.project.ProjectBranchesListAction">
 			<result type="json">
@@ -295,72 +296,184 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
-		
-		<action name="institutionsByTypeAndCountry"
-      class="org.cgiar.ccafs.marlo.action.json.project.InstitutionsByTypeAndCountryAction">
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
-    
-        <action name="institutionsByBudgetType"
-      class="org.cgiar.ccafs.marlo.action.json.project.InstitutionsByBudgetTypeAction">
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
-    
-    
-    <action name="geopositionByElement"
-      class="org.cgiar.ccafs.marlo.action.json.project.GeopositionByLocElementAction">
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
-    
-    <action name="unsubmitProject"
-      class="org.cgiar.ccafs.marlo.action.json.project.UnsubmitProjectAction">
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
-        
-    <action name="deliverableUploadFile" class="org.cgiar.ccafs.marlo.action.json.project.DeliverableUploadFileAction">
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
 
-    <action name="unsubmitImpactpathway" class="org.cgiar.ccafs.marlo.action.json.impactpathway.UnSubmitImpactpathwayAction">
-      <interceptor-ref name="defaultStack" />
-      <interceptor-ref name="fileUpload">
-        <param name="maximumSize">314572900</param>
-      </interceptor-ref> 
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
-    
-    <action name="metadataByLink" class="org.cgiar.ccafs.marlo.action.json.project.MetadataByLink">
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
-    
-    <action name="targetUnitRequest" class="org.cgiar.ccafs.marlo.action.json.crpadmin.RequestTargetUnitAction">
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
-    
+		<action name="institutionsByTypeAndCountry"
+			class="org.cgiar.ccafs.marlo.action.json.project.InstitutionsByTypeAndCountryAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+		<action name="institutionsByBudgetType"
+			class="org.cgiar.ccafs.marlo.action.json.project.InstitutionsByBudgetTypeAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+
+		<action name="geopositionByElement"
+			class="org.cgiar.ccafs.marlo.action.json.project.GeopositionByLocElementAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+		<action name="unsubmitProject"
+			class="org.cgiar.ccafs.marlo.action.json.project.UnsubmitProjectAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+		<action name="deliverableUploadFile"
+			class="org.cgiar.ccafs.marlo.action.json.project.DeliverableUploadFileAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+		<action name="unsubmitImpactpathway"
+			class="org.cgiar.ccafs.marlo.action.json.impactpathway.UnSubmitImpactpathwayAction">
+			<interceptor-ref name="defaultStack" />
+			<interceptor-ref name="fileUpload">
+				<param name="maximumSize">314572900</param>
+			</interceptor-ref>
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+		<action name="metadataByLink"
+			class="org.cgiar.ccafs.marlo.action.json.project.MetadataByLink">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+		<action name="targetUnitRequest"
+			class="org.cgiar.ccafs.marlo.action.json.crpadmin.RequestTargetUnitAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+		<!-- **************************************** JSON CENTER ACTIONS ************************************************** -->
+
+		<action name="beneficiaryByType"
+			class="org.cgiar.ccafs.marlo.action.center.json.impactpathway.BeneficiaryListAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+		<action name="nextUserByType"
+			class="org.cgiar.ccafs.marlo.action.center.json.impactpathway.NextUserListAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+		<action name="validateCenterImpactPathway"
+			class="org.cgiar.ccafs.marlo.action.center.json.impactpathway.ValidateImpactPathwaySectionAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+		<action name="impactPathwayGraphByProgram"
+			class="org.cgiar.ccafs.marlo.action.center.json.impactpathway.graph.GraphByProgramAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+		<action name="impactPathwayGraphByArea"
+			class="org.cgiar.ccafs.marlo.action.center.json.impactpathway.graph.GraphByAreaAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+		<action name="impactPathwayGraphByCenter"
+			class="org.cgiar.ccafs.marlo.action.center.json.impactpathway.graph.GraphByCenterAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+		<action name="outputInfo"
+			class="org.cgiar.ccafs.marlo.action.center.json.monitoring.project.OutputInfoAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+		<action name="addMilestone"
+			class="org.cgiar.ccafs.marlo.action.center.json.monitoring.outcome.MilestoneAddAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+		<action name="validateProject"
+			class="org.cgiar.ccafs.marlo.action.center.json.monitoring.project.ValidateProjectSectionAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+		<action name="centerDeliverableSubType"
+			class="org.cgiar.ccafs.marlo.action.center.json.monitoring.project.DeliverableSubTypeAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+		<action name="outputRequest"
+			class="org.cgiar.ccafs.marlo.action.center.json.monitoring.project.OuputRequestAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+		<action name="outcomeTree"
+			class="org.cgiar.ccafs.marlo.action.center.json.monitoring.outcome.OutcomeTreeAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+		<action name="ocsService"
+			class="org.cgiar.ccafs.marlo.action.center.json.global.OcsServiceAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+		<!-- ************************************************************************************************************** -->
+
 	</package>
 
 	<package name="json-planning" namespace="/impactPathway"
@@ -389,13 +502,13 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
-		
+
 		<action name="relationsimpactPathway"
-      class="org.cgiar.ccafs.marlo.action.json.impactpathway.ImpactRelationAction">
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
+			class="org.cgiar.ccafs.marlo.action.json.impactpathway.ImpactRelationAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
 	</package>
 </struts>

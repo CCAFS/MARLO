@@ -2,8 +2,8 @@
 [#assign title = "MARLO Admin" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
-[#assign customJS = [ "${baseUrl}/js/superadmin/marloInstitutions.js" ] /]
-[#assign customCSS = [ "${baseUrl}/css/superadmin/superadmin.css","${baseUrl}/css/global/customDataTable.css" ] /]
+[#assign customJS = [ "${baseUrlMedia}/js/superadmin/marloInstitutions.js" ] /]
+[#assign customCSS = [ "${baseUrlMedia}/css/superadmin/superadmin.css","${baseUrlMedia}/css/global/customDataTable.css" ] /]
 [#assign currentSection = "superadmin" /]
 [#assign currentStage = "institutions" /]
 
@@ -93,4 +93,5 @@
     </tbody>
   </table>
 [/#macro]
+
 

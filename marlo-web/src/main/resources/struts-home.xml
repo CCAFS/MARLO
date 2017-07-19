@@ -8,7 +8,7 @@
 			method="login">
 			<result name="input">/WEB-INF/views/home/login.ftl</result>
 			<result name="success" type="redirectAction">
-				<param name="actionName">${crpSession}/dashboard</param>
+				<param name="actionName">${crpSession}/crpDashboard</param>
 			</result>
 			<result name="login" type="redirect">${url}</result>
 		</action>
@@ -16,7 +16,7 @@
     <action name="sendMailTest" class="org.cgiar.ccafs.marlo.SendMailTest"
      >
      <result name="success" type="redirectAction">
-        <param name="actionName">${crpSession}/dashboard</param>
+        <param name="actionName">${crpSession}/crpDashboard</param>
       </result>
     </action>
 
@@ -25,7 +25,7 @@
 			<result name="success">/WEB-INF/views/home/login.ftl</result>
 		</action>
 
-		<action name="{*}/dashboard"
+		<action name="{*}/crpDashboard"
 			class="org.cgiar.ccafs.marlo.action.home.DashboardAction">
 			<!-- interceptor-ref name="autoLogin" / -->
 			<interceptor-ref name="homeStack" />

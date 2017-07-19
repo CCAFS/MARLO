@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN" "http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<!-- Add addition packages and configuration here. -->
+	<package name="centerHome" namespace="/" extends="marlo-default">
+
+		<action name="{*}/centerDashboard"
+			class="org.cgiar.ccafs.marlo.action.center.home.DashboardAction">
+			<interceptor-ref name="centerHomeStack" />
+			<result name="input">/WEB-INF/center/views/home/dashboard.ftl</result>
+		</action>
+	</package>
+
+</struts>

@@ -20,13 +20,14 @@ import org.cgiar.ccafs.marlo.data.dao.FundingSourceDAO;
 import org.cgiar.ccafs.marlo.data.model.BudgetType;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
-import com.ibm.icu.text.SimpleDateFormat;
+
 
 public class FundingSourceMySQLDAO implements FundingSourceDAO {
 

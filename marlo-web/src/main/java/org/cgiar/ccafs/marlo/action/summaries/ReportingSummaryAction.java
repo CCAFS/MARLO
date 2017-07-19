@@ -2301,8 +2301,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     if (project.getEndDate() != null) {
       endDate = formatter.format(project.getEndDate());
     }
+    if (project.getLiaisonInstitution() != null) {
+      ml = project.getLiaisonInstitution().getAcronym();
+    }
     if (project.getLiaisonUser() != null) {
-      ml = project.getLiaisonUser().getLiaisonInstitution().getAcronym();
       mlContact =
         project.getLiaisonUser().getComposedName() + "\n&lt;" + project.getLiaisonUser().getUser().getEmail() + "&gt;";
     }
