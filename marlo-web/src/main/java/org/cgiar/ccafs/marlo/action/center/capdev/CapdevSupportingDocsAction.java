@@ -30,6 +30,7 @@ public class CapdevSupportingDocsAction extends BaseAction {
   private static final long serialVersionUID = 1L;
 
   private CapacityDevelopment capdev;
+  private long capdevID;
 
   @Inject
   public CapdevSupportingDocsAction(APConfig config) {
@@ -41,6 +42,11 @@ public class CapdevSupportingDocsAction extends BaseAction {
   }
 
 
+  public long getCapdevID() {
+    return capdevID;
+  }
+
+
   @Override
   public void prepare() throws Exception {
     capdev = new CapacityDevelopment();
@@ -49,6 +55,11 @@ public class CapdevSupportingDocsAction extends BaseAction {
 
   public void setCapdev(CapacityDevelopment capdev) {
     this.capdev = capdev;
+  }
+
+
+  public void setCapdevID(long capdevID) {
+    this.capdevID = capdevID;
   }
 
 }

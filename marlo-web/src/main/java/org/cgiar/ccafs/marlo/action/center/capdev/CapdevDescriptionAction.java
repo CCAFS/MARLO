@@ -72,6 +72,7 @@ public class CapdevDescriptionAction extends BaseAction {
   private List<CenterProgram> researchPrograms;
   private List<CenterProject> projects;
   private List<Map<String, Object>> jsonProjects;
+  private List<Map<String, Object>> json;
   private List<Crp> crps;
   private List<Institution> partners;
   private List<CenterOutput> outputs;
@@ -118,6 +119,54 @@ public class CapdevDescriptionAction extends BaseAction {
   }
 
 
+  public String deleteDiscipline() {
+    System.out.println("delete discipline");
+    final Map<String, Object> parameters = this.getParameters();
+    final long capdevDisciplineID =
+      Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
+    System.out.println(capdevDisciplineID);
+    final CapdevDiscipline capdev_discipline = capdevDisciplineService.getCapdevDisciplineById(capdevDisciplineID);
+    capdev_discipline.setActive(false);
+    capdevDisciplineService.saveCapdevDiscipline(capdev_discipline);
+    return SUCCESS;
+  }
+
+  public String deleteOutput() {
+    System.out.println("delete outputs");
+    final Map<String, Object> parameters = this.getParameters();
+    final long capdevoutputID =
+      Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
+    System.out.println(capdevoutputID);
+    final CapdevOutputs capdev_output = capdevOutputService.getCapdevOutputsById(capdevoutputID);
+    capdev_output.setActive(false);
+    capdevOutputService.saveCapdevOutputs(capdev_output);
+    return SUCCESS;
+  }
+
+  public String deletePartnert() {
+    System.out.println("delete partner");
+    final Map<String, Object> parameters = this.getParameters();
+    final long capdevpartnerID =
+      Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
+    System.out.println(capdevpartnerID);
+    final CapdevPartners capdev_partner = capdevPartnerService.getCapdevPartnersById(capdevpartnerID);
+    capdev_partner.setActive(false);
+    capdevPartnerService.saveCapdevPartners(capdev_partner);
+    return SUCCESS;
+  }
+
+  public String deleteTargetGroup() {
+    System.out.println("delete target groups");
+    final Map<String, Object> parameters = this.getParameters();
+    final long capdevtargetgroupID =
+      Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
+    System.out.println(capdevtargetgroupID);
+    final CapdevTargetgroup capdev_targetgroup = capdevTargetgroupService.getCapdevTargetgroupById(capdevtargetgroupID);
+    capdev_targetgroup.setActive(false);
+    capdevTargetgroupService.saveCapdevTargetgroup(capdev_targetgroup);
+    return SUCCESS;
+  }
+
   public CapacityDevelopment getCapdev() {
     return capdev;
   }
@@ -158,14 +207,19 @@ public class CapdevDescriptionAction extends BaseAction {
   }
 
 
+  public List<Map<String, Object>> getJson() {
+    return json;
+  }
+
+
   public List<Map<String, Object>> getJsonProjects() {
     return jsonProjects;
   }
 
-
   public List<CenterOutput> getOutputs() {
     return outputs;
   }
+
 
   public List<Institution> getPartners() {
     return partners;
@@ -176,10 +230,10 @@ public class CapdevDescriptionAction extends BaseAction {
     return projects;
   }
 
-
   public List<CenterArea> getResearchAreas() {
     return researchAreas;
   }
+
 
   public List<CenterProgram> getResearchPrograms() {
     return researchPrograms;
@@ -221,7 +275,6 @@ public class CapdevDescriptionAction extends BaseAction {
 
 
   }
-
 
   @Override
   public String save() {
@@ -280,6 +333,7 @@ public class CapdevDescriptionAction extends BaseAction {
     }
   }
 
+
   public void saveCapdevOutputs(List<Long> outputs, CapacityDevelopment capdev) {
     CapdevOutputs capdevOutput = null;
     final Session session = SecurityUtils.getSubject().getSession();
@@ -299,7 +353,6 @@ public class CapdevDescriptionAction extends BaseAction {
       }
     }
   }
-
 
   public void saveCapdevPartners(List<Long> partners, CapacityDevelopment capdev) {
     CapdevPartners capdevPartner = null;
@@ -344,6 +397,7 @@ public class CapdevDescriptionAction extends BaseAction {
     }
   }
 
+
   public void setCapdev(CapacityDevelopment capdev) {
     this.capdev = capdev;
   }
@@ -381,6 +435,11 @@ public class CapdevDescriptionAction extends BaseAction {
 
   public void setDisciplines(List<Discipline> disciplines) {
     this.disciplines = disciplines;
+  }
+
+
+  public void setJson(List<Map<String, Object>> json) {
+    this.json = json;
   }
 
 

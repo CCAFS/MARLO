@@ -70,6 +70,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   private Participant participant;
   private List<Participant> participantList;
   private List<Map<String, Object>> genders;
+  private List<Map<String, Object>> json;
   private String contact;
   private File uploadFile;
   private String uploadFileName;
@@ -109,6 +110,31 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   public String cancel() {
     System.out.println("Se cancelo la operacion");
     return super.cancel();
+  }
+
+
+  public String deleteCountry() {
+    System.out.println("delete country");
+    final Map<String, Object> parameters = this.getParameters();
+    final long capDevCountryID =
+      Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
+    System.out.println(capDevCountryID);
+    final CapdevLocations capdev_country = capdevLocationService.getCapdevLocationsById(capDevCountryID);
+    capdev_country.setActive(false);
+    capdevLocationService.saveCapdevLocations(capdev_country);
+    return SUCCESS;
+  }
+
+  public String deleteRegion() {
+    System.out.println("delete");
+    final Map<String, Object> parameters = this.getParameters();
+    final long capDevRegionID =
+      Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
+    System.out.println(capDevRegionID);
+    final CapdevLocations capdev_region = capdevLocationService.getCapdevLocationsById(capDevRegionID);
+    capdev_region.setActive(false);
+    capdevLocationService.saveCapdevLocations(capdev_region);
+    return SUCCESS;
   }
 
 
@@ -159,6 +185,11 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
   public List<Map<String, Object>> getGenders() {
     return genders;
+  }
+
+
+  public List<Map<String, Object>> getJson() {
+    return json;
   }
 
 
@@ -218,7 +249,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     return previewListContent;
   }
 
-
   public List<String> getPreviewListHeader() {
     return previewListHeader;
   }
@@ -227,6 +257,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   public List<LocElement> getRegionsList() {
     return regionsList;
   }
+
 
   public File getUploadFile() {
     return uploadFile;
@@ -280,7 +311,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-
+    System.out.println("prepare");
 
     // genders
     genders = new ArrayList<>();
@@ -575,6 +606,11 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   }
 
 
+  public void setJson(List<Map<String, Object>> json) {
+    this.json = json;
+  }
+
+
   public void setParticipant(Participant participant) {
     this.participant = participant;
   }
@@ -643,14 +679,23 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
         if (participant.getName().equalsIgnoreCase("")) {
           this.addFieldError("participant.name", "First name is required.");
         }
+        if (participant.getName().length() > 100) {
+          this.addFieldError("participant.name", "First name is very length.");
+        }
         if (participant.getLastName().equalsIgnoreCase("")) {
           this.addFieldError("participant.lastName", "Last name is required.");
+        }
+        if (participant.getLastName().length() > 100) {
+          this.addFieldError("participant.lastName", "Last name is very length.");
         }
         if (participant.getGender().equalsIgnoreCase("-1")) {
           this.addFieldError("participant.gender", "Gender is required.");
         }
         if (participant.getCitizenship().equalsIgnoreCase("-1")) {
           this.addFieldError("participant.citizenship", "Citizenship is required.");
+        }
+        if (participant.getHighestDegree().length() > 100) {
+          this.addFieldError("participant.highestDegree", "Highest degree is very length.");
         }
         if (participant.getEmail().equalsIgnoreCase("")) {
           this.addFieldError("participant.email", "Email is required.");
@@ -665,21 +710,41 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
         if (participant.getInstitution().equalsIgnoreCase("")) {
           this.addFieldError("participant.institution", "institution required.");
         }
+        if (participant.getInstitution().length() > 100) {
+          this.addFieldError("participant.institution", "institution is very length.");
+        }
         if (participant.getCountryOfInstitucion().equalsIgnoreCase("-1")) {
           this.addFieldError("participant.countryOfInstitucion", "Country of institution is required.");
         }
         if (participant.getSupervisor().equalsIgnoreCase("")) {
           this.addFieldError("participant.supervisor", "Supervisor is required.");
         }
+        if (participant.getSupervisor().length() > 100) {
+          this.addFieldError("participant.supervisor", "Supervisor is very length.");
+        }
+        if (participant.getFellowship().length() > 100) {
+          this.addFieldError("participant.fellowship", "Fellowship is very length.");
+        }
+
 
       }
       if (capdev.getCategory() == 2) {
         if (capdev.getTitle().equalsIgnoreCase("")) {
           this.addFieldError("capdev.title", "Title is required.");
         }
+        if (capdev.getTitle().length() > 500) {
+          this.addFieldError("capdev.title", "Title is very length.");
+        }
         if (capdev.getCtFirstName().equalsIgnoreCase("") || capdev.getCtLastName().equalsIgnoreCase("")
           || capdev.getCtEmail().equalsIgnoreCase("")) {
           this.addFieldError("contact", "Contact person is required.");
+        }
+        if (!capdev.getCtEmail().equalsIgnoreCase("")) {
+          final boolean validEmail = validator.validateEmail(capdev.getCtEmail());
+          if (!validEmail) {
+            System.out.println("Email no valido");
+            this.addFieldError("contact", "enter a valid email address.");
+          }
         }
         if ((uploadFile == null) && (capdev.getNumParticipants() == null)) {
           this.addFieldError("capdev.numParticipants", "Num participants is required.");

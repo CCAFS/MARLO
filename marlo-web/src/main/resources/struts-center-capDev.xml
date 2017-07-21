@@ -61,7 +61,12 @@
 			class="org.cgiar.ccafs.marlo.action.center.capdev.CapdevSupportingDocsAction">
 			<result name="input">/WEB-INF/center/views/capDev/supportingDocs.ftl
 			</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">${centerSession}/supportingDocs</param>
+				<param name="capdevID">${capdevID}</param>
+			</result>
 		</action>
+
 
 	</package>
 

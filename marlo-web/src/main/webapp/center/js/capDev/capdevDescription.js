@@ -49,9 +49,12 @@ function init(){
   //event remove discipline
   $(".removeDiscipline").on("click", removeDiscipline);
 
+  //remove discipline action
+  $(".removeDiscipline-action").on("click", removeDisciplineAction);
+
 
   // Event add target group
-    $(".targetGroupsSelect").on("change", function() {
+$(".targetGroupsSelect").on("change", function() {
       console.log("cambio");
       var option = $(this).find("option:selected");
       if(option.val() != "-1") {
@@ -64,7 +67,11 @@ function init(){
     });
 
     //event remove target group
-    $(".removetargetGroup").on("click", removeTargetGroup);
+$(".removeTargetGroup").on("click", removeTargetGroup);
+
+
+// remove target group action
+$(".removeTargetGroup-action").on("click", removeTargetGroupAction);
 
 
 
@@ -215,6 +222,9 @@ $(".capdevPartnerSelect").change(function() {
 //event remove partner
 $(".removepartner").on("click", removePartner);
 
+//remove partner action
+$(".removepartner-action").on("click", removePartnerAction);
+
 
 //event add output
 $(".capdevOutputSelect").change(function() {
@@ -230,6 +240,10 @@ $(".capdevOutputSelect").change(function() {
 
 //event remove output
 $(".removeOutput").on("click", removeOutput);
+
+
+//remove output action
+$(".removeOutput-action").on("click", removeOutputAction);
 
 
 //function add partner
@@ -284,6 +298,31 @@ function removePartner() {
 	$select.addOption(value, name);
 	$select.trigger("change.select2");
 }
+
+
+function removePartnerAction(){
+    console.log("removePartnerAction");
+    var $item = $(this).parents('.capdevPartner');
+    var value = $item.find(".id").val();
+    $.ajax({
+      'url': baseURL + '/deletePartner.do',
+      'data': {
+        q: value
+      },
+      beforeSend: function() {
+        console.log("antes de enviar el ajax")
+      },
+      success: function(data) {
+      },
+      error: function() {
+        console.log("algun error")
+      },
+      complete: function() {
+        console.log("terminado todo")
+      }
+    });
+
+  }
 
 
 function updatePartnerList($list) {
@@ -356,6 +395,31 @@ function removeOutput() {
 	$select.addOption(value, name);
 	$select.trigger("change.select2");
 }
+
+
+function removeOutputAction(){
+    console.log("removeOutputAction");
+    var $item = $(this).parents('.capdevOutput');
+    var value = $item.find(".id").val();
+    $.ajax({
+      'url': baseURL + '/deleteOutput.do',
+      'data': {
+        q: value
+      },
+      beforeSend: function() {
+        console.log("antes de enviar el ajax")
+      },
+      success: function(data) {
+      },
+      error: function() {
+        console.log("algun error")
+      },
+      complete: function() {
+        console.log("terminado todo")
+      }
+    });
+
+  }
 
 
 function updateOutputList($list) {
@@ -453,6 +517,31 @@ function checkOutputList(block) {
   }
 
 
+  function removeDisciplineAction(){
+    console.log("removeDisciplineAction");
+    var $item = $(this).parents('.discipline');
+    var value = $item.find(".id").val();
+    $.ajax({
+      'url': baseURL + '/deleteDiscipline.do',
+      'data': {
+        q: value
+      },
+      beforeSend: function() {
+        console.log("antes de enviar el ajax")
+      },
+      success: function(data) {
+      },
+      error: function() {
+        console.log("algun error")
+      },
+      complete: function() {
+        console.log("terminado todo")
+      }
+    });
+
+  }
+
+
   // TARGET GROUPS FUNCTIONS
    function addTargetGroup(option){
 
@@ -528,3 +617,27 @@ function checkOutputList(block) {
       $(block).parent().find('p.emptyText').fadeOut();
     }
   }
+
+
+function removeTargetGroupAction(){
+   console.log("removeTargetGroupAction");
+    var $item = $(this).parents('.targetGroup');
+    var value = $item.find(".id").val();
+    $.ajax({
+      'url': baseURL + '/deletetargetGroup.do',
+      'data': {
+        q: value
+      },
+      beforeSend: function() {
+        console.log("antes de enviar el ajax")
+      },
+      success: function(data) {
+      },
+      error: function() {
+        console.log("algun error")
+      },
+      complete: function() {
+        console.log("terminado todo")
+      }
+    });
+}

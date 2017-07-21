@@ -83,8 +83,11 @@
     var ctFirsName = $(".ctFirsName").val();
     var ctLastName = $(".ctLastName").val();
     var ctEmail  = $(".ctEmail").val();
-    var composedName = ctFirsName+" "+ctLastName+" "+ctEmail;
-    $(".contact").val(composedName);
+    if( ctFirsName === null || ctLastName === null || ctEmail === null){
+      var composedName = ctFirsName+" "+ctLastName+" <"+ctEmail+" >";
+      $(".contact").val(composedName);  
+    }
+    
   
    })();
 
@@ -360,6 +363,9 @@
   //remove country
   $(".removeCountry").on("click", removeCountry);
 
+  //remove country action
+   $(".removeCountry-action").on("click", removeCountryAction);
+
 
   
   //add region
@@ -379,6 +385,9 @@
 
   //remove region
   $(".removeRegion").on("click", removeRegion);
+
+  //remove region action
+  $(".removeRegion-action").on("click", removeRegionAction);
 
 
 
@@ -692,8 +701,6 @@
       canAdd = false;
     }
     var optionValue = option.val().split("-")[0];
-    console.log("holaaaa");
-    console.log(optionValue);
     var optionScope = option.val().split("-")[1];
 
     var $list = $("#capdevRegionsList").find(".list");
@@ -726,6 +733,7 @@
   }
 
   function removeRegion() {
+    console.log("removeRegion")
     var $list = $(this).parents('.list');
     var $item = $(this).parents('.capdevRegion');
     var value = $item.find(".rId").val();
@@ -740,7 +748,7 @@
     var option = $select.find("option[value='" + value + "']");
     console.log(option);
     option.prop('disabled', false);
-    $('.capdevRegionsSelect').select2();
+    //$('.capdevRegionsSelect').select2();
 
   }
 
@@ -759,6 +767,55 @@
     } else {
       $(block).parent().find('p.emptyText').fadeOut();
     }
+  }
+
+
+  function removeRegionAction(){
+    console.log("removeRegionAction");
+    var $item = $(this).parents('.capdevRegion');
+    var value = $item.find(".id").val();
+    $.ajax({
+      'url': baseURL + '/deleteRegion.do',
+      'data': {
+        q: value
+      },
+      beforeSend: function() {
+        console.log("antes de enviar el ajax")
+      },
+      success: function(data) {
+      },
+      error: function() {
+        console.log("algun error")
+      },
+      complete: function() {
+        console.log("terminado todo")
+      }
+    });
+
+  }
+
+  function removeCountryAction(){
+    console.log("removeCountryAction");
+    var $item = $(this).parents('.capdevCountry');
+    var value = $item.find(".id").val();
+    $.ajax({
+      'url': baseURL + '/deleteCountry.do',
+      'data': {
+        q: value
+      },
+      beforeSend: function() {
+        console.log("antes de enviar el ajax")
+      },
+      success: function(data) {
+      },
+      error: function() {
+        console.log("algun error")
+      },
+      complete: function() {
+        console.log("terminado todo")
+      }
+    });
+
   }
 
 

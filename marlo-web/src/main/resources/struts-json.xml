@@ -530,6 +530,66 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		
+		<action name="deleteRegion"
+			class="org.cgiar.ccafs.marlo.action.center.capdev.CapacityDevelopmentDetailAction"
+			method="deleteRegion">
+			<result type="json">
+				<param name="root">json</param>
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+		
+		<action name="deleteCountry"
+			class="org.cgiar.ccafs.marlo.action.center.capdev.CapacityDevelopmentDetailAction"
+			method="deleteCountry">
+			<result type="json">
+				<param name="root">json</param>
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+		
+		<action name="deleteDiscipline"
+			class="org.cgiar.ccafs.marlo.action.center.capdev.CapdevDescriptionAction"
+			method="deleteDiscipline">
+			<result type="json">
+				<param name="root">json</param>
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+		
+		<action name="deletetargetGroup"
+			class="org.cgiar.ccafs.marlo.action.center.capdev.CapdevDescriptionAction"
+			method="deleteTargetGroup">
+			<result type="json">
+				<param name="root">json</param>
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+		
+		<action name="deletePartner"
+			class="org.cgiar.ccafs.marlo.action.center.capdev.CapdevDescriptionAction"
+			method="deletePartnert">
+			<result type="json">
+				<param name="root">json</param>
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+		
+		<action name="deleteOutput"
+			class="org.cgiar.ccafs.marlo.action.center.capdev.CapdevDescriptionAction"
+			method="deleteOutput">
+			<result type="json">
+				<param name="root">json</param>
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
 
 		<!-- ************************************************************************************************************** -->
 

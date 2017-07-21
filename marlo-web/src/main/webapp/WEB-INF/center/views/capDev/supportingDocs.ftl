@@ -101,29 +101,10 @@
 
 
 
-[#macro objectiveMacro element index=0 isTemplate=false]
-	
-	<div id="objective-${isTemplate?string('template',(element.id)!)}" class="objective  borderBox row"  style="display:${isTemplate?string('none','block')}">
-		<div class="removeObjective removeIcon" title="Remove objective"></div>
-		<div class="col-md-12">
-			 [@customForm.input name="objectiveBody" i18nkey="Objective # ${index + 1}" type="text" /]
-		</div>
-
-	</div>
-	
-[/#macro]
 
 
 
 
-[#macro outComeMacro element isTemplate=false]
-	<div id="outcome-${isTemplate?string('template',(element)!)}" class="outcome  borderBox col-md-4 " style="display:${isTemplate?string('none','block')}" >
-		<div class="removeOutCome removeIcon" title="Remove outcome"></div>
-		<div class="col-md-4">
-			 [@s.text name="element" /]
-		</div>
-	</div>
-[/#macro]
 
 
 

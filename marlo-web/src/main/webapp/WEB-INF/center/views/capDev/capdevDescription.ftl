@@ -58,13 +58,16 @@
 						<ul class="list">
 							[#if capdev.capdevDisciplines?has_content]
 							[#list capdev.capdevDisciplines as discipline]
+							[#if discipline.active]
 							<li id="" class="discipline clearfix col-md-3">
-								<div class="removeDiscipline removeIcon" title="Remove discipline"></div>
-								<input class="id" type="hidden" name="" value="" />
-								<input class="disciplineId" type="hidden" name="capdevDisciplines[-1]" value="" />
+								<div class="removeDiscipline-action removeDiscipline removeIcon" title="Remove discipline"></div>
+								<input class="id" type="hidden" name="" value="${(discipline.id)!-1}" />
+								<input class="disciplineId" type="hidden" name="capdevDisciplines[-1]" value="${(discipline.disciplines.id)!}" />
 								<span class="name"> ${discipline.disciplines.name}</span>
 								<div class="clearfix"></div>
 							</li>
+							[#else]
+							[/#if]
 							[/#list]
 							[#else]
 							<p class="emptyText"> [@s.text name="capdev.notDisciplines" /]</p> 
@@ -88,13 +91,16 @@
 						<ul class="list">
 							[#if capdev.capdevTargetgroups?has_content]
 							[#list capdev.capdevTargetgroups as targetGroup]
-							<li id="" class="targetGroup clearfix col-md-3">
-								<div class="removeTargetGroup removeIcon" title="Remove targetGroup"></div>
-								<input class="id" type="hidden" name="" value="" />
-								<input class="tgId" type="hidden" name="capdevTargetGroup[-1]" value="" />
-								<span class="name">${targetGroup.targetGroups.name}</span>
-								<div class="clearfix"></div>
-							</li>
+							[#if targetGroup.active]
+								<li id="" class="targetGroup clearfix col-md-3">
+									<div class="removeTargetGroup-action removeTargetGroup removeIcon" title="Remove targetGroup"></div>
+									<input class="id" type="hidden" name="" value="${(targetGroup.id)!-1}" />
+									<input class="tgId" type="hidden" name="capdevTargetGroup[-1]" value="${(targetGroup.targetGroups.id)!-1}" />
+									<span class="name">${targetGroup.targetGroups.name}</span>
+									<div class="clearfix"></div>
+								</li>
+							[#else]
+							[/#if]
 							[/#list]
 							[#else]
 							<p class="emptyText"> [@s.text name="capdev.notTargetGroups" /]</p> 
@@ -150,16 +156,19 @@
 						<ul class="list">
 							[#if capdev.capdevPartnerses?has_content]
 							[#list capdev.capdevPartnerses as partner]
+							[#if partner.active]
 								<li id="" class="capdevPartner clearfix col-md-12">
-									<div class="removepartner removeIcon" title="Remove partner"></div>
+									<div class="removepartner-action removepartner removeIcon" title="Remove partner"></div>
 									<input class="id" type="hidden" name="capdev.capdevPartnerses[${partner_index}].id" value="${(partner.id)!-1}" />
 									<input class="partnerId" type="hidden" name="capdev.capdevPartnerses[${partner_index}].id" value="${(partner.id)!}" />
 									${(partner.institutions.name)!}
 									<div class="clearfix"></div>
 								</li>
-								[/#list] 
-								[#else]
-								<p class="emptyText"> [@s.text name="capdev.notPartners" /]</p> 
+							[#else]
+							[/#if]
+							[/#list] 
+							[#else]
+							<p class="emptyText"> [@s.text name="capdev.notPartners" /]</p> 
 							[/#if]
 						</ul>
 					</div>
@@ -180,16 +189,19 @@
 						<ul class="list">
 							[#if capdev.capdevOutputses?has_content]
 							[#list capdev.capdevOutputses as output]
+							[#if output.active]
 								<li id="" class="capdevOutput clearfix col-md-12">
-									<div class="removeOutput removeIcon" title="Remove output"></div>
+									<div class="removeOutput-action removeOutput removeIcon" title="Remove output"></div>
 									<input class="id" type="hidden" name="capdev.capdevOutputses[${output_index}].id" value="${(output.id)!-1}" />
 									<input class="outputId" type="hidden" name="capdev.capdevOutputses[${output_index}].id" value="${(output.id)!}" />
 									${(output.researchOutputs.title)!}
 									<div class="clearfix"></div>
 								</li>
-								[/#list] 
-								[#else]
-								<p class="emptyText"> [@s.text name="capdev.notOutput" /]</p> 
+							[#else]
+							[/#if]
+							[/#list] 
+							[#else]
+							<p class="emptyText"> [@s.text name="capdev.notOutput" /]</p> 
 							[/#if]
 						</ul>
 					</div>
@@ -241,7 +253,7 @@
 <!-- target group template-->
 <ul style="display:none">
   <li id="targetGroupTemplate" class="targetGroup clearfix col-md-4">
-      <div class="removetargetGroup removeIcon" title="Remove targetGroup"></div>
+      <div class="removeTargetGroup removeIcon" title="Remove targetGroup"></div>
       <input class="id" type="hidden" name="" value="" />
       <input class="tgId" type="hidden" name="capdevTargetGroup[-1]" value="" />
       <span class="name"></span>

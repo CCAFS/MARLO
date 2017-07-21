@@ -301,6 +301,8 @@
 	margin: 5px auto;
 }
 
-
+.capdevParticipantsTable{
+	overflow-x: scroll;
+}
 
 

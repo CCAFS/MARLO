@@ -123,8 +123,13 @@
 				<!-- groups participants-->
 				<div class="row grupsParticipantsForm">
 					[#if capdev.capdevParticipants?has_content && capdev.capdevParticipants?size > 1] 
-						<div>
+						<div class="capdevParticipantsTable">
 							[@capdevList capdev.capdevParticipants /]
+							<!-- <div class="col-md-12">
+								<div class="pull-right">	
+						        	<button type="button" class="btn btn-primary" title="Delete list of participants">Clear</button>
+			    				</div>
+							</div> -->
 						</div>
 					[#else]
 						<div class="col-md-12 newCapdevField participantsheader">
@@ -183,7 +188,7 @@
 					[/#if]
 					
 					<div class="note participantMessage">
-						<p>If you don’t have a participants list please enter the number of participants, number of men and number of women</p>
+						<p>If you don’t have a list of participants, please enter the number of participants, number of men and number of women</p>
 					</div>
 				</div>
 
@@ -263,9 +268,9 @@
 											[#if capdev.capDevRegions?has_content]
 											[#list capdev.capDevRegions as region]
 												<li id="" class="capdevRegion  clearfix col-md-3">
-													<div class="removeRegion removeIcon" title="Remove region"></div>
+													<div class="removeRegion-action removeRegion removeIcon" title="Remove region"></div>
 													<input class="id" type="hidden" name="capdev.capDevRegions[${region_index}].id" value="${(region.id)!-1}" />
-													<input class="cId" type="hidden" name="capdev.capDevRegions[${region_index}].locElement.id" value="${(region.locElement.id)!}" />
+													<input class="rId" type="hidden" name="capdev.capDevRegions[${region_index}].locElement.id" value="${(region.locElement.id)!}" />
 													${region.locElement.name}
 													<div class="clearfix"></div>
 												</li>
@@ -293,7 +298,7 @@
 											[#if capdev.capDevCountries?has_content]
 											[#list capdev.capDevCountries as country]
 											<li id="" class="capdevCountry clearfix col-md-3">
-												<div class="removeCountry removeIcon" title="Remove country"></div>
+												<div class="removeCountry-action removeCountry removeIcon" title="Remove country"></div>
 												<input class="id" type="hidden" name="capdev.capDevCountries[${country_index}].id" value="${(country.id)!-1}" />
 												<input class="cId" type="hidden" name="capdev.capDevCountries[${country_index}].locElement.id" value="${(country.locElement.id)!}" />
 												${country.locElement.name}
@@ -381,8 +386,8 @@
 
 [#macro capdevList element={} ]
 	
-	<table class="table thead-default">
-    <thead>
+	<table class="table table-bordered ">
+    <thead class="thead-default">
       <tr class="header">
         <th>Code</th>
         <th>Name</th>
