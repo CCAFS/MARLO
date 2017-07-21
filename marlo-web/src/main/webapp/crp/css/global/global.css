@@ -4412,6 +4412,10 @@ li.fileUploaded span {
   background: url('../../images/global/sprite-icons-activities.png') 0 -150px;
 }
 
+.icon-neutral{
+  background: url('../../images/global/sprite-icons-activities.png') 0 -88px;
+}
+
 /*** Project next users  ***/
 
 #nextUsersBlock .nextUser {
