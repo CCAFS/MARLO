@@ -211,9 +211,11 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     masterReport.getParameterValues().put("i8nOutcomesMenu", this.getText("projects.menu.contributionsCrpList"));
     masterReport.getParameterValues().put("i8nDeliverablesMenu",
       "Expected " + this.getText("projects.menu.deliverables"));
-    masterReport.getParameterValues().put("i8nBudgetMenu", "Project " + this.getText("projects.menu.budget"));
-    masterReport.getParameterValues().put("i8nBudgetPartnerMenu", this.getText("projects.menu.budgetByPartners"));
-    masterReport.getParameterValues().put("i8nBudgetCoAsMenu", this.getText("planning.cluster"));
+    masterReport.getParameterValues().put("i8nBudgetMenu",
+      "Project " + this.getText("projects.menu.budget") + " (USD)");
+    masterReport.getParameterValues().put("i8nBudgetPartnerMenu",
+      this.getText("projects.menu.budgetByPartners") + "(USD)");
+    masterReport.getParameterValues().put("i8nBudgetCoAsMenu", this.getText("planning.cluster") + " (USD)");
 
     /**
      * Menus Reporting
@@ -1129,15 +1131,41 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     DecimalFormat df = new DecimalFormat("###,###.00");
     TypedTableModel model = new TypedTableModel(
       new String[] {"description", "year", "w1w2", "w3", "bilateral", "center", "w1w2GenderPer", "w3GenderPer",
-        "bilateralGenderPer", "centerGenderPer", "w1w2CoFinancing", "w1w2CoFinancingGenderPer", "hasW1W2Co"},
+        "bilateralGenderPer", "centerGenderPer", "w1w2CoFinancing", "w1w2CoFinancingGenderPer", "hasW1W2Co",
+        "totalW1w2", "totalW3", "totalBilateral", "totalCenter", "totalW1w2Gender", "totalW3Gender",
+        "totalBilateralGender", "totalCenterGender"},
       new Class[] {String.class, Integer.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, Boolean.class},
+        String.class, String.class, String.class, String.class, String.class, Boolean.class, String.class, String.class,
+        String.class, String.class, String.class, String.class, String.class, String.class},
       0);
     Boolean hasW1W2CoTemp = false;
     List<ProjectClusterActivity> coAs = new ArrayList<>();
     coAs = project.getProjectClusterActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+    /*     */
+    Double totalW1w2 = 0.0, totalW3 = 0.0, totalBilateral = 0.0, totalCenter = 0.0, totalW1w2Gender = 0.0,
+      totalW3Gender = 0.0, totalBilateralGender = 0.0, totalCenterGender = 0.0;
+
+    // get total budget per year
+    totalW1w2 = this.getTotalYear(year, 1, project);
+    totalW3 = this.getTotalYear(year, 2, project);
+    totalBilateral = this.getTotalYear(year, 3, project);
+    totalCenter = this.getTotalYear(year, 4, project);
+
+    // get total gender per year
+    for (ProjectPartner pp : project.getProjectPartners().stream().filter(pp -> pp.isActive())
+      .collect(Collectors.toList())) {
+      // System.out.println(pp.getInstitution().getComposedName());
+      if (this.isPPA(pp.getInstitution())) {
+        totalW1w2Gender += this.getTotalGender(pp.getInstitution().getId(), year, 1, project, 1);
+        totalW3Gender += this.getTotalGender(pp.getInstitution().getId(), year, 2, project, 1);
+        totalBilateralGender += this.getTotalGender(pp.getInstitution().getId(), year, 3, project, 1);
+        totalCenterGender += this.getTotalGender(pp.getInstitution().getId(), year, 4, project, 1);
+      }
+    }
+    /**/
     if (coAs.size() == 1) {
-      String description = coAs.get(0).getCrpClusterOfActivity().getComposedName();
+      ProjectClusterActivity projectClusterActivity = coAs.get(0);
+      String description = projectClusterActivity.getCrpClusterOfActivity().getComposedName();
       String w1w2 = null;
       String w1w2GenderPer = null;
       String w3 = null;
@@ -1148,6 +1176,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       String centerGenderPer = null;
       String w1w2CoFinancing = null;
       String w1w2CoFinancingGenderPer = null;
+
       // Get types of funding sources
       for (ProjectBudget pb : project.getProjectBudgets().stream()
         .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getBudgetType() != null)
@@ -1170,35 +1199,45 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           centerGenderPer = "100";
         }
       }
-      model.addRow(new Object[] {description, year, w1w2, w3, bilateral, center, w1w2GenderPer, w3GenderPer,
-        bilateralGenderPer, centerGenderPer, w1w2CoFinancing, w1w2CoFinancingGenderPer, hasW1W2CoTemp});
+      model.addRow(
+        new Object[] {description, year, w1w2, w3, bilateral, center, w1w2GenderPer, w3GenderPer, bilateralGenderPer,
+          centerGenderPer, w1w2CoFinancing, w1w2CoFinancingGenderPer, hasW1W2CoTemp, df.format(totalW1w2),
+          df.format(totalW3), df.format(totalBilateral), df.format(totalCenter), df.format(totalW1w2Gender),
+          df.format(totalW3Gender), df.format(totalBilateralGender), df.format(totalCenterGender)});
     } else {
       for (ProjectClusterActivity clusterActivity : coAs) {
         String description = clusterActivity.getCrpClusterOfActivity().getComposedName();
-        String w1w2 = null;
+        String w1w2Percentage = null;
         String w1w2GenderPer = null;
-        String w3 = null;
+        String w3Percentage = null;
         String w3GenderPer = null;
-        String bilateral = null;
+        String bilateralPercentage = null;
         String bilateralGenderPer = null;
-        String center = null;
+        String centerPercentage = null;
         String centerGenderPer = null;
-        String w1w2CoFinancing = null;
+        String w1w2CoFinancingPercentage = null;
         String w1w2CoFinancingGenderPer = null;
+        // budget
+        Double w1w2 = 0.0;
+        Double w3 = 0.0;
+        Double bilateral = 0.0;
+        Double center = 0.0;
+        Double w1w2Gender = 0.0;
+        Double w3Gender = 0.0;
+        Double bilateralGender = 0.0;
+        Double centerGender = 0.0;
 
-        if (hasW1W2Co) {
 
-        } else {
-          ProjectBudgetsCluserActvity w1w2pb =
-            this.getBudgetbyCoa(clusterActivity.getCrpClusterOfActivity().getId(), year, 1);
-          if (w1w2pb != null) {
-            w1w2 = df.format(w1w2pb.getAmount());
-            if (w1w2pb.getGenderPercentage() != null) {
-              w1w2GenderPer = df.format(w1w2pb.getGenderPercentage());
-            }
+        ProjectBudgetsCluserActvity w1w2pb =
+          this.getBudgetbyCoa(clusterActivity.getCrpClusterOfActivity().getId(), year, 1);
+        if (w1w2pb != null) {
+          w1w2Percentage = df.format(w1w2pb.getAmount());
+          if (w1w2pb.getGenderPercentage() != null) {
+            w1w2GenderPer = df.format(w1w2pb.getGenderPercentage());
+            w1w2Gender = (w1w2pb.getGenderPercentage() * totalW1w2Gender) / 100;
           }
+          w1w2 = (w1w2pb.getAmount() * totalW1w2) / 100;
         }
-
 
         ProjectBudgetsCluserActvity w3pb =
           this.getBudgetbyCoa(clusterActivity.getCrpClusterOfActivity().getId(), year, 2);
@@ -1208,26 +1247,34 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           this.getBudgetbyCoa(clusterActivity.getCrpClusterOfActivity().getId(), year, 4);
 
         if (w3pb != null) {
-          w3 = df.format(w3pb.getAmount());
+          w3Percentage = df.format(w3pb.getAmount());
           if (w3pb.getGenderPercentage() != null) {
             w3GenderPer = df.format(w3pb.getGenderPercentage());
+            w3Gender = (w3pb.getGenderPercentage() * totalW3Gender) / 100;
           }
+          w3 = (w3pb.getAmount() * totalW3) / 100;
         }
         if (bilateralpb != null) {
-          bilateral = df.format(bilateralpb.getAmount());
+          bilateralPercentage = df.format(bilateralpb.getAmount());
           if (bilateralpb.getGenderPercentage() != null) {
             bilateralGenderPer = df.format(bilateralpb.getGenderPercentage());
+            bilateralGender = (bilateralpb.getGenderPercentage() * totalBilateralGender) / 100;
           }
-
+          bilateral = (bilateralpb.getAmount() * totalBilateral) / 100;
         }
         if (centerpb != null) {
-          center = df.format(centerpb.getAmount());
+          centerPercentage = df.format(centerpb.getAmount());
           if (centerpb.getGenderPercentage() != null) {
             centerGenderPer = df.format(centerpb.getGenderPercentage());
+            centerGender = (centerpb.getGenderPercentage() * totalCenterGender) / 100;
           }
+          center = (centerpb.getAmount() * totalCenter) / 100;
         }
-        model.addRow(new Object[] {description, year, w1w2, w3, bilateral, center, w1w2GenderPer, w3GenderPer,
-          bilateralGenderPer, centerGenderPer, w1w2CoFinancing, w1w2CoFinancingGenderPer, hasW1W2CoTemp});
+        model.addRow(new Object[] {description, year, w1w2Percentage, w3Percentage, bilateralPercentage,
+          centerPercentage, w1w2GenderPer, w3GenderPer, bilateralGenderPer, centerGenderPer, w1w2CoFinancingPercentage,
+          w1w2CoFinancingGenderPer, hasW1W2CoTemp, df.format(w1w2), df.format(w3), df.format(bilateral),
+          df.format(center), df.format(w1w2Gender), df.format(w3Gender), df.format(bilateralGender),
+          df.format(centerGender)});
       }
     }
     return model;
@@ -2426,7 +2473,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
-
   private void getFooterSubreports(HashMap<String, Element> hm, ReportFooter reportFooter) {
 
     int elementCount = reportFooter.getElementCount();
@@ -2447,6 +2493,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   public String getHighlightsImagesUrl() {
     return config.getDownloadURL() + "/" + this.getHighlightsImagesUrlPath().replace('\\', '/');
   }
+
 
   public String getHighlightsImagesUrlPath() {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project.getId() + File.separator
@@ -2557,9 +2604,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     // Initialization of Model
     TypedTableModel model = new TypedTableModel(
       new String[] {"title", "center", "current_date", "project_submission", "cycle", "isNew", "isAdministrative",
-        "type", "isGlobal", "isPhaseOne", "budget_gender", "hasTargetUnit", "hasW1W2Co"},
+        "type", "isGlobal", "isPhaseOne", "budget_gender", "hasTargetUnit", "hasW1W2Co", "hasActivities"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, Boolean.class, Boolean.class,
-        String.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class});
+        String.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class});
     // Filling title
     String title = "";
     if (projectLeader != null) {
@@ -2654,8 +2701,17 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       hasTargetUnit = true;
     }
 
+    Boolean hasActivities = false;
+    try {
+      hasActivities = this.hasSpecificities(APConstants.CRP_ACTIVITES_MODULE);
+    } catch (Exception e) {
+      LOG.warn("Failed to get " + APConstants.CRP_ACTIVITES_MODULE
+        + " parameter. Parameter will be set as false. Exception: " + e.getMessage());
+      hasActivities = false;
+    }
+
     model.addRow(new Object[] {title, centerURL, currentDate, submission, cycle, isNew, isAdministrative, type,
-      project.isLocationGlobal(), this.isPhaseOne(), hasGender, hasTargetUnit, hasW1W2Co});
+      project.isLocationGlobal(), this.isPhaseOne(), hasGender, hasTargetUnit, hasW1W2Co, hasActivities});
     return model;
   }
 
@@ -3168,7 +3224,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
@@ -3187,6 +3242,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     }
     return model;
   }
+
 
   private TypedTableModel getProjectOutcomesTableModel() {
     TypedTableModel model = new TypedTableModel(
@@ -3314,6 +3370,32 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   }
 
   /**
+   * Get gender amount per institution, year and budet type
+   * 
+   * @param institutionId
+   * @param year
+   * @param budgetType
+   * @return
+   */
+  public double getTotalGender(long institutionId, int year, long budgetType, Project project, Integer coFinancing) {
+
+    List<ProjectBudget> budgets =
+      projectBudgetManager.getByParameters(institutionId, year, budgetType, project.getId(), coFinancing);
+
+    double totalGender = 0;
+    if (budgets != null) {
+      for (ProjectBudget projectBudget : budgets) {
+        double amount = projectBudget.getAmount() != null ? projectBudget.getAmount() : 0;
+        double gender = projectBudget.getGenderPercentage() != null ? projectBudget.getGenderPercentage() : 0;
+
+        totalGender = totalGender + (amount * (gender / 100));
+      }
+    }
+
+    return totalGender;
+  }
+
+  /**
    * Get total gender percentaje per institution, year and type
    * 
    * @param institutionId
@@ -3334,6 +3416,18 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     } else {
       return 0.0;
     }
+  }
+
+  public double getTotalYear(int year, long type, Project project) {
+    double total = 0;
+
+    for (ProjectBudget pb : project.getProjectBudgets().stream()
+      .filter(
+        pb -> pb.isActive() && pb.getYear() == year && pb.getBudgetType() != null && pb.getBudgetType().getId() == type)
+      .collect(Collectors.toList())) {
+      total = total + pb.getAmount();
+    }
+    return total;
   }
 
   /**
