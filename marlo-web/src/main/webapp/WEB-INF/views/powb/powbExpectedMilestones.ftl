@@ -86,4 +86,78 @@
     </div> 
   </div> 
 </section>
+
+[#-- Contributions Modal --]
+<!-- Modal -->
+<div class="modal fade" id="outcomeProjectsModal" tabindex="-1" role="dialog" aria-labelledby="outcomeProjectsModal">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Outcome and Milestone Contributions</h4>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <div class="grayBox">
+            <strong>Outcome 2022:</strong> # of policy decisions taken (in part) based on engagement and information dissemination by CCAFS
+          </div>
+        </div>
+      
+        [#-- Project contribution to this outcome --]
+        <div class="form-group">
+          <h5 class="sectionSubTitle">[@s.text name="powbExpectedMilestones.outcomeContributions" /]</h5>
+          <table class="">
+            <thead>
+              <tr>
+                <th>Project ID</th>
+                <th>Project Title</th>
+                <th>Target Value and Unit</th>
+                <th>Expected Narrative</th>
+              </tr>
+            </thead>
+            <tbody>
+              [#list 1..2 as contribution]
+              <tr>
+                <td>P1</td>
+                <td>(ICRISAT WA) Capacitating science-policy exchange platforms to mainstream climate change...</td>
+                <td>3 - Policy decisions taken</td>
+                <td>Outcome and knowledge produced through the CCAFS network will be used to inform policy actors, including Parliament Members on...</td>
+              </tr>
+              [/#list]
+            </tbody>
+          </table>
+        </div>
+        [#-- Project contribution to the milestones --]
+        <div class="form-group">
+          <h5 class="sectionSubTitle">[@s.text name="powbExpectedMilestones.milestoneContributions" /]</h5>
+          <table class="">
+            <thead>
+              <tr>
+                <th>Project ID</th>
+                <th>Project Title</th>
+                <th>Milestone</th>
+                <th>Target Value and Unit</th>
+                <th>Expected Narrative</th>
+              </tr>
+            </thead>
+            <tbody>
+              [#list 1..2 as contribution]
+              <tr>
+                <td>P269</td>
+                <td>[Gender and Social Inclusion] GSI: Engagement, synthesis and support in Gender</td>
+                <td>2017 - Training materials developed and workshops held to strengthen partner capacity...</td>
+                <td>N/A</td>
+                <td>3 Briefing note and advocacy strategy developed for policy makers (one in each country) and Workshops...</td>
+              </tr>
+              [/#list]
+            </tbody>
+          </table>
+        </div>
+      </div> 
+    </div>
+  </div>
+</div>
+
 [#include "/WEB-INF/global/pages/footer.ftl"]
+
+
