@@ -69,7 +69,9 @@
               [@s.text name="projectsList.none" /]
             [/#if]
           [#else]
-            <span class="programTag" style="border-color:#444">PMU</span>
+               
+                <span class="programTag" style="border-color:#444">${(project.liaisonInstitution.crpProgram.acronym)!}</span>
+                  
           [/#if]
           </td>
           [#if !reportingActive]
