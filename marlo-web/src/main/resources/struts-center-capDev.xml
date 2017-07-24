@@ -23,6 +23,15 @@
 			</result>
 		</action>
 
+		<action name="{center}/deleteCapdev"
+			class="org.cgiar.ccafs.marlo.action.center.capdev.CapacityDevelopmentAction"
+			method="delete">
+			<result name="success" type="redirectAction">
+				<param name="actionName">${centerSession}/capdev</param>
+				<param name="capdevID">${capdevID}</param>
+			</result>
+		</action>
+
 		<action name="{center}/detailCapdev"
 			class="org.cgiar.ccafs.marlo.action.center.capdev.CapacityDevelopmentDetailAction">
 			<interceptor-ref name="centerCapdevStack" />
@@ -46,6 +55,16 @@
 			</result>
 		</action>
 
+		<action name="{center}/delete_list_of_participants"
+			class="org.cgiar.ccafs.marlo.action.center.capdev.CapacityDevelopmentDetailAction"
+			method="deleteListOfParticipants">
+			<result name="success" type="redirectAction">
+				<param name="actionName">${centerSession}/detailCapdev</param>
+				<param name="capdevID">${capdevID}</param>
+				<param name="capdevCategory">${capdevCategory}</param>
+			</result>
+		</action>
+
 		<action name="{center}/descriptionCapdev"
 			class="org.cgiar.ccafs.marlo.action.center.capdev.CapdevDescriptionAction">
 			<interceptor-ref name="centerCapdevStack" />
@@ -56,6 +75,7 @@
 				<param name="capdevID">${capdevID}</param>
 			</result>
 		</action>
+		
 
 		<action name="{center}/supportingDocs"
 			class="org.cgiar.ccafs.marlo.action.center.capdev.CapdevSupportingDocsAction">

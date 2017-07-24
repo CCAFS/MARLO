@@ -71,6 +71,18 @@ public class CapacityDevelopmentAction extends BaseAction {
   }
 
 
+  @Override
+  public String delete() {
+    System.out.println("delete capdev intervention --> " + capdevID);
+    capdev = capdevService.getCapacityDevelopmentById(capdevID);
+    capdev.setActive(false);
+    capdev.setUsersByModifiedBy(this.getCurrentUser());
+    capdevService.saveCapacityDevelopment(capdev);
+
+    return SUCCESS;
+  }
+
+
   public CapacityDevelopment getCapdev() {
     return capdev;
   }

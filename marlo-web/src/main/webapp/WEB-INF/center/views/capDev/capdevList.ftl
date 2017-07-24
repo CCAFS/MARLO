@@ -55,11 +55,14 @@
 					    <th style="width: 7%">Research Area</th>
 					    <th style="width: 7%">Research Program</th>
 					    <th style="width: 7%">Annexes</th>
+					    <th style="width: 7%">Remove</th>
 					  </tr>
 				  	</thead>
 				  	<tbody id="capdevTbody">
 					  [#if capDevs?has_content]
 					  [#list capDevs as i]
+					  [#if i.active]
+
 
 					  <tr >
 					    <td>C${i.id}</td>
@@ -112,7 +115,14 @@
 				    			<img src="${baseUrlMedia}/images/global/deliverable.png" class="capDevIcon" title="Supporting documents" />
 				    		</div>
 					    </td>
+					    <td>
+					    	<a id="removeCapdev-${i.id}" class="removeCapdev" href="[@s.url action='${centerSession}/deleteCapdev'][@s.param name='capdevID']${i.id}[/@s.param] [/@s.url]" title="" >
+				               <img src="${baseUrlMedia}/images/global/trash.png" title="[@s.text name="capdev.removeCapdev" /]" /> 
+				             </a>
+					    </td>
 					  </tr>
+					  [#else]
+					  [/#if]
 					  [/#list]
 
 					  [/#if]

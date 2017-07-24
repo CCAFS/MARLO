@@ -125,11 +125,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   }
 
   public String deleteListOfParticipants() throws Exception {
-    System.out.println("deleteListOfParticipants");
-    final Map<String, Object> parameters = this.getParameters();
-    final long capDevID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
-    System.out.println(capDevID);
-    capdev = capdevService.getCapacityDevelopmentById(capDevID);
+    capdev = capdevService.getCapacityDevelopmentById(capdevID);
     final List<CapdevParticipant> listOfParticipants = new ArrayList<>(capdev.getCapdevParticipants());
     for (final CapdevParticipant obj : listOfParticipants) {
       obj.setActive(false);
@@ -773,22 +769,25 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
             this.addFieldError("contact", "enter a valid email address.");
           }
         }
-        if ((uploadFile == null) && (capdev.getNumParticipants() == null)) {
-          this.addFieldError("capdev.numParticipants", "Num participants is required.");
+        if (capdev.getNumParticipants() == null) {
+          this.addFieldError("capdev.numParticipants", "Num participants or a file are required.");
+        }
+        if (uploadFile == null) {
+          this.addFieldError("upload_File", "File or number of participants are required.");
         }
         if (uploadFile != null) {
           if (!uploadFileContentType.equals("application/vnd.ms-excel")
             && !uploadFileContentType.equals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")) {
             System.out.println("formato incorrecto");
-            this.addFieldError("uploadFile", "Only excel files(.xls, xlsx) are allowed.");
+            this.addFieldError("upload_File", "Only excel files(.xls, xlsx) are allowed.");
           }
           if (uploadFile.length() > 31457280) {
             System.out.println("file muy pesado");
-            this.addFieldError("uploadFile", "capdev.fileSize");
+            this.addFieldError("upload_File", "capdev.fileSize");
           }
           if (!reader.validarExcelFile(uploadFile)) {
             System.out.println("el archivo no coincide con la plantilla");
-            this.addFieldError("uploadFile", "file wrong");
+            this.addFieldError("upload_File", "file wrong");
           }
         }
       }

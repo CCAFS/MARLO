@@ -128,7 +128,10 @@
 							[@capdevList capdev.capdevParticipants /]
 							<div class="col-md-12">
 								<div class="pull-right">	
-						        	<button type="button" class="btn btn-primary deleteparticipants" title="Delete list of participants">Clear</button>
+						        	<button type="button" class="" title="Delete list of participants">
+						        		<a id="" class="removeCapdev" href="[@s.url action='${centerSession}/delete_list_of_participants'][@s.param name='capdevID']${capdevID}[/@s.param][@s.param name='capdevCategory']${capdevCategory}[/@s.param] [/@s.url]" title="" > Clear
+							            </a>
+						        	</button>
 			    				</div>
 							</div>
 						</div>
@@ -148,6 +151,7 @@
 
 						<div class="row newCapdevField">
 							<div class="col-md-12 newCapdevField participantsBox">
+								[@s.fielderror fieldName="upload_File" class="fileError" /]
 								<div class="col-md-12">
 									[@s.file id="uploadFile" name="uploadFile" label="Select a File to upload" size="40" class="uploadParticipants"/]
 								</div>

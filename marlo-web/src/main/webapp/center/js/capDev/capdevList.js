@@ -36,3 +36,9 @@ $("#capdevSearchInput").keyup(function () {
     "color": "#C0C0C0"
 });
 
+
+
+$(".removeCapdev").click(function(){
+    console.log("capdev.removeCapdev")
+})
+

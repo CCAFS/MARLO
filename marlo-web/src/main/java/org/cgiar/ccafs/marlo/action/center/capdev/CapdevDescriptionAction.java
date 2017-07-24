@@ -139,6 +139,7 @@ public class CapdevDescriptionAction extends BaseAction {
     System.out.println(capdevoutputID);
     final CapdevOutputs capdev_output = capdevOutputService.getCapdevOutputsById(capdevoutputID);
     capdev_output.setActive(false);
+    capdev_output.setUsersByModifiedBy(this.getCurrentUser());
     capdevOutputService.saveCapdevOutputs(capdev_output);
     return SUCCESS;
   }
@@ -211,10 +212,10 @@ public class CapdevDescriptionAction extends BaseAction {
     return json;
   }
 
-
   public List<Map<String, Object>> getJsonProjects() {
     return jsonProjects;
   }
+
 
   public List<CenterOutput> getOutputs() {
     return outputs;
@@ -225,10 +226,10 @@ public class CapdevDescriptionAction extends BaseAction {
     return partners;
   }
 
-
   public List<CenterProject> getProjects() {
     return projects;
   }
+
 
   public List<CenterArea> getResearchAreas() {
     return researchAreas;
@@ -243,7 +244,6 @@ public class CapdevDescriptionAction extends BaseAction {
   public List<TargetGroup> getTargetGroups() {
     return targetGroups;
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -299,8 +299,8 @@ public class CapdevDescriptionAction extends BaseAction {
     capdevService.saveCapacityDevelopment(capdevDB);
     this.saveCapDevDisciplines(capdevDisciplines, capdevDB);
     this.saveCapdevTargetGroups(capdevTargetGroup, capdevDB);
-    System.out.println("capdevPartners.size() " + capdevPartners.size());
-    System.out.println("capdevOutputs.size() " + capdevOutputs.size());
+    // System.out.println("capdevPartners.size() " + capdevPartners.size());
+    // System.out.println("capdevOutputs.size() " + capdevOutputs.size());
     this.saveCapdevPartners(capdevPartners, capdevDB);
     this.saveCapdevOutputs(capdevOutputs, capdevDB);
 
@@ -310,6 +310,7 @@ public class CapdevDescriptionAction extends BaseAction {
 
     return SUCCESS;
   }
+
 
   public void saveCapDevDisciplines(List<Long> disciplines, CapacityDevelopment capdev) {
     CapdevDiscipline capdevDiscipline = null;
@@ -332,7 +333,6 @@ public class CapdevDescriptionAction extends BaseAction {
       }
     }
   }
-
 
   public void saveCapdevOutputs(List<Long> outputs, CapacityDevelopment capdev) {
     CapdevOutputs capdevOutput = null;
@@ -374,6 +374,7 @@ public class CapdevDescriptionAction extends BaseAction {
       }
     }
   }
+
 
   public void saveCapdevTargetGroups(List<Long> targetGroups, CapacityDevelopment capdev) {
     CapdevTargetgroup capdevTargetgroup = null;
