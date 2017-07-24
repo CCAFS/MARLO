@@ -69,19 +69,19 @@
                     <tr>
                       <td>
                         [@customForm.input name="" showTitle=false editable=editable /]
-                        <i>Suggested US$ 163,000.00</i>
+                        <i>Suggested <br /> US$ 163,000.00</i>
                       </td>
                       <td>
                         [@customForm.input name="" showTitle=false editable=editable /]
-                        <i>Suggested US$ 149,000.00</i>
+                        <i>Suggested <br /> US$ 149,000.00</i>
                       </td>
                       <td>
                         [@customForm.input name="" showTitle=false editable=editable /]
-                        <i>Suggested US$ 83,000.00</i>
+                        <i>Suggested <br /> US$ 83,000.00</i>
                       </td>
                       <td>
                         [@customForm.input name="" showTitle=false editable=editable /]
-                        <i>Suggested US$ 0.00</i>
+                        <i>Suggested <br /> US$ 0.00</i>
                       </td>
                       <td>
                         US$ 233,000.00

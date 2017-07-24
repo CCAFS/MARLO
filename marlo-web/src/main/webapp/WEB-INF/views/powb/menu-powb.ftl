@@ -16,7 +16,7 @@
     { 'slug': 'contFunds',  'name': 'powb.menu.contFunds',  'action': 'contFunds',  'active': true  }
     ]
   },
-  { 'title': 'Tables', 'show': PMU,
+  { 'title': 'Tables', 'show': false,
     'items': [
     { 'slug': 'plannedBudget',  'name': 'powb.menu.plannedBudget',  'action': 'plannedBudget',  'active': true  },
     { 'slug': 'contSubIDOs',  'name': 'powb.menu.contSubIDOs',  'action': 'contSubIDOs',  'active': true  },

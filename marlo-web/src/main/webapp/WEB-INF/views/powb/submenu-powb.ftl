@@ -1,4 +1,11 @@
 [#ftl]
+
+ <p class="bg-primary" style="padding: 18px; display:none;">
+  <span class="glyphicon glyphicon-flash"></span>
+  This section is currently being developed by the technical team.</br>
+  The idea here is that Flagship Leaders and Program Management Unit can be able to report the POWB.
+</p>
+
 <ul id="liaisonInstitutions" class="horizontalSubMenu text-center">
   [#list liaisonInstitutions as institution]
     [#assign isActive = (institution.id == liaisonInstitutionID)/]
