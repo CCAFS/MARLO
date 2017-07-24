@@ -12,4 +12,27 @@ $(document).ready(function() {
     $modal.modal('show');
   });
 
+  $modal.find('.rejectButton').on('click', function() {
+
+    $.ajax({
+        url: baseURL + '/rejectPartnerRequest.do',
+        data: {
+            requestID: '',
+            justification: '',
+        },
+        beforeSend: function() {
+          $modal.find('.loading').fadeIn();
+        },
+        success: function(data) {
+        },
+        complete: function(data) {
+          $modal.find('.loading').fadeOut();
+        },
+        error: function(error) {
+          console.log(error)
+        }
+    });
+
+  });
+
 });
