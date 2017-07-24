@@ -1,4 +1,11 @@
 [#ftl]
+
+<p class="bg-primary" style="padding: 18px;">
+  <span class="glyphicon glyphicon-flash"></span>
+  This section is currently being developed by the technical team.</br>
+  The idea here is that Flagship Leaders and Program Management Unit can be able to report the POWB.
+</p>
+
 [#-- History Message --]
 [#if transaction??]
   <div class="history-mode text-center animated flipInX">
