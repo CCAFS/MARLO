@@ -64,6 +64,9 @@
         <property name="locationGlobal" type="java.lang.Boolean">
             <column name="is_location_global" />
         </property>
+         <property name="locationRegional" type="java.lang.Boolean">
+            <column name="is_location_regional" />
+        </property>
         <property name="status" type="java.lang.Long">
             <column name="status" />
         </property>

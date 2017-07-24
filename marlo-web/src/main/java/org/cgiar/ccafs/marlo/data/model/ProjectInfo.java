@@ -73,6 +73,8 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
   private Boolean administrative;
   @Expose
   private Boolean reporting;
+  @Expose
+  private Boolean locationRegional;
 
 
   public ProjectInfo() {
@@ -115,12 +117,14 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
     this.reporting = reporting;
   }
 
+
   public ProjectInfo(User user, boolean isCofinancing, String modificationJustification, int scale) {
     this.modifiedBy = user;
     this.cofinancing = isCofinancing;
     this.modificationJustification = modificationJustification;
     this.scale = scale;
   }
+
 
   public Boolean getAdministrative() {
     return administrative;
@@ -151,11 +155,9 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
     return allYears;
   }
 
-
   public Boolean getCrossCuttingCapacity() {
     return crossCuttingCapacity;
   }
-
 
   public Boolean getCrossCuttingGender() {
     return crossCuttingGender;
@@ -165,6 +167,7 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
   public Boolean getCrossCuttingNa() {
     return crossCuttingNa;
   }
+
 
   public Boolean getCrossCuttingYouth() {
     return crossCuttingYouth;
@@ -179,7 +182,6 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
   public Date getEndDate() {
     return endDate;
   }
-
 
   public String getGenderAnalysis() {
     return genderAnalysis;
@@ -209,6 +211,11 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
 
   public Boolean getLocationGlobal() {
     return locationGlobal;
+  }
+
+
+  public Boolean getLocationRegional() {
+    return locationRegional;
   }
 
 
@@ -248,6 +255,11 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
 
   public Project getProject() {
     return project;
+  }
+
+
+  public Boolean getProjectEditLeader() {
+    return projectEditLeader;
   }
 
 
@@ -374,6 +386,11 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
 
   public void setLocationGlobal(Boolean locationGlobal) {
     this.locationGlobal = locationGlobal;
+  }
+
+
+  public void setLocationRegional(Boolean locationRegional) {
+    this.locationRegional = locationRegional;
   }
 
 

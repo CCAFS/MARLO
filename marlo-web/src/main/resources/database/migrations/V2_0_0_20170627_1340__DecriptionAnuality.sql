@@ -37,6 +37,7 @@ CREATE TABLE `projects_info` (
   `dimension` text,
   `administrative` TINYINT (1) DEFAULT NULL,
   `reporting` TINYINT (1) DEFAULT '0',
+  is_location_regional TINYINT (1) DEFAULT '0',
   
   PRIMARY KEY (`id`),
   KEY `FK_projectsinfo_liaison_liaison_users_idx` (`liaison_user_id`) USING BTREE,
@@ -110,6 +111,7 @@ INSERT INTO projects_info (
   dimension,
   administrative,
   reporting,
+  is_location_regional,
   ph.id
 FROM
   projects p INNER JOIN project_phases pp on pp.project_id=p.id
@@ -162,4 +164,6 @@ DROP COLUMN `cross_cutting_na`,
 DROP COLUMN `dimension`,
 DROP COLUMN `administrative`,
 DROP COLUMN `reporting`;
+DROP COLUMN `is_location_regional`;
+
 
