@@ -5,8 +5,8 @@
 [#assign title = "Outcome Synthesis" /]
 [#assign currentSectionString = "synthesis-${actionName?replace('/','-')}-${liaisonInstitutionID}" /]
 [#assign pageLibs = [ "datatables.net", "datatables.net-bs" ] /]
-[#assign customJS = ["${baseUrl}/js/synthesis/outcomeSynthesis.js"] /]
-[#assign customCSS = ["${baseUrl}/css/synthesis/synthesisGlobal.css"] /]
+[#assign customJS = ["${baseUrlMedia}/js/synthesis/outcomeSynthesis.js"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/synthesis/synthesisGlobal.css"] /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = "outcomeSynthesis" /]
 
@@ -35,7 +35,7 @@
           [#assign hasPermission = (action.hasSynthesisPermission('update', institution.id))!false/]
           <li class="${isActive?string('active','')} ${hasPermission?string('canEdit','')}">
             <a href="[@s.url][@s.param name ="liaisonInstitutionID"]${institution.id}[/@s.param][@s.param name ="edit"]true[/@s.param][/@s.url]">${institution.acronym}: ${institution.name}</a>
-            [#if isCompleted] <p class="synthesisCompleted"> <img src="${baseUrl}/images/global/icon-check-tiny${isActive?string('-white','')}.png" /> </p> [/#if]
+            [#if isCompleted] <p class="synthesisCompleted"> <img src="${baseUrlMedia}/images/global/icon-check-tiny${isActive?string('-white','')}.png" /> </p> [/#if]
           </li>
         [/#list]
       </ul>

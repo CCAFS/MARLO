@@ -18,6 +18,10 @@ package org.cgiar.ccafs.marlo.action.json.autosave;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
+import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
+import org.cgiar.ccafs.marlo.data.model.CenterOutput;
+import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
@@ -163,6 +167,23 @@ public class AutoSaveWriterAction extends BaseAction {
       if (nameClass.equals(FundingSource.class.getName())) {
         jSon = jSon.replaceAll("fundingSource\\.", "");
       }
+
+      /****************************************************
+       ******************** CENTER SECTIONS*****************
+       ****************************************************/
+      if (nameClass.equals(CenterOutcome.class.getName())) {
+        jSon = jSon.replaceAll("outcome\\.", "");
+      }
+      if (nameClass.equals(CenterOutput.class.getName())) {
+        jSon = jSon.replaceAll("output\\.", "");
+      }
+      if (nameClass.equals(CenterProject.class.getName())) {
+        jSon = jSon.replaceAll("project\\.", "");
+      }
+      if (nameClass.equals(CenterDeliverable.class.getName())) {
+        jSon = jSon.replaceAll("deliverable\\.", "");
+      }
+
       try {
         Phase phase = this.getActualPhase();
         String fileName =

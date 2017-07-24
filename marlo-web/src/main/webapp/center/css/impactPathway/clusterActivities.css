@@ -1,0 +1,121 @@
+.delete {
+    padding-left: 3%;
+    cursor: pointer;
+}
+
+.personContent {
+    border: 1px dashed #ccc;
+    width: 95%;
+    padding: 3px 3px;
+}
+
+.person {
+    /* width: 96%; */
+    /* display: inline-block; */
+}
+
+.removePerson {
+    width: 3%;
+    cursor: pointer;
+}
+
+
+.removePerson:hover {
+    color: rgba(255, 0, 0, 0.8);
+}
+
+.addPerson {
+    float: left;
+    width: 100%;
+}
+
+.addPersonBtn {
+    color: white;
+    width: 16%;
+    background-color: rgb(46, 204, 113);
+    text-align: center;
+    border-radius: 50px;
+    cursor: pointer;
+    display: inline-block;
+}
+
+
+
+.AddPersonTitle {
+    display: inline-block;
+    color: #2ecc71;
+}
+
+.userItem {
+}
+
+.remove-userItem {
+    cursor: pointer;
+    color: red;
+}
+
+.remove-userItem:hover {
+    font-weight: bold;
+}
+
+span.glyphicon.glyphicon-user {
+    margin-right: 1%;
+}
+
+.cluster-title {
+    margin-top: 20px;
+}
+
+.subtitle {
+    float: left;
+}
+
+.button-remove {
+    background: #E3685A;
+    border-bottom: 3px solid #DD5B4C;
+    cursor: pointer;
+    color: white;
+    text-align: center;
+}
+
+.keyOutputInput {
+    height: 28px;
+}
+
+.keyOutput {
+    margin-bottom: 15px;
+    background-color: whitesmoke;
+    margin-top: 15px;
+    border-radius: 8px;
+}
+
+.button-remove:hover {}
+
+.button-remove:hover {
+    background: #DB6052;
+}
+
+.keyOutputDescription {
+    border: 1px solid #e7e7e7;
+    border-radius: 8px;
+    height: 30px;
+    line-height: 30px;
+    padding: 0 15px;
+}
+
+.removeKeyOutput {
+    right: 0%;
+}
+
+.keyOutputsItems-list {
+    padding-left: 0;
+    margin-left: 0;
+}
+
+ul.keyOutputs {
+    padding-left: 15px;
+}
+
+.koContribution-title {
+    margin-right: 6%;
+}

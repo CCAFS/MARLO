@@ -359,6 +359,78 @@ public final class APConstants {
 
   public static final String YEAR_REQUEST = "year";
 
+  /**
+   * -------------------------------------------------------------------------------
+   * *******************************************************************************
+   * Constants For Centers
+   * *******************************************************************************
+   * -------------------------------------------------------------------------------
+   */
+
+  // end year
+  public static Integer CENTER_END_YEAR = 2022;
+
+
+  public static final String SESSION_CENTER = "current_center";
+  public static final String SESSION_RESEARCH_AREA = "current_research_area";
+  public static final String SESSION_RESEARCH_PROGRAM = "current_research_program";
+
+  // Center Parameters
+  public static final String CRP_CENTER = "CIAT";
+  public static final String CENTER_PARAMETERS = "center_parameters";
+  public static final String CENTER_LANGUAGE = "center_language";
+  public static final String CENTER_CUSTOM_FILE = "center_custom_file";
+  public static final String CENTER_COORD_ROLE = "center_coord_role";
+
+  public static final String CENTER_PROGRAM_ID = "programID";
+  public static final String CENTER_REQUEST = "center";
+  public static final String CENTER_AREA_ID = "areaID";
+  public static final String RESEARCH_TOPIC_ID = "topicID";
+  public static final String OUTCOME_ID = "outcomeID";
+  public static final String OUTPUT_ID = "outputID";
+  public static final String BENEFICIARY_TYPE_ID = "beneficiaryTypeID";
+  public static final String NEXT_USER_ID = "nextUserID";
+  public static final String PROJECT_ID = "projectID";
+  public static final String OUTPUT_NAME = "outputName";
+  public static final String OCS_CODE_REQUEST_ID = "ocsCode";
+
+  // Relations Name
+  public static final String RESEARCH_PROGRAM_IMPACT_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CenterProgram.researchImpacts)";
+
+  public static final String RESEARCH_PROGRAM_TOPIC_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CenterProgram.researchTopics)";
+
+  public static final String RESEARCH_OUTCOME_MILESTONE_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CenterOutcome.researchMilestones)";
+
+  public static final String OUTCOME_MONITORING_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CenterOutcome.monitoringOutcomes)";
+
+  public static final String RESEARCH_OUTPUT_NEXTUSER_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CenterOutput.researchOutputsNextUsers)";
+
+  public static final String RESEARCH_OUTPUT_PARTNER_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CenterOutput.researchOutputPartners)";
+
+  public static final String PROJECT_FUNDING_SOURCE_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CenterProject.projectFundingSources)";
+
+  public static final String PROJECT_OUTPUT_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CenterProject.projectOutputs)";
+
+  public static final String PROJECT_LOCATION_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CenterProject.projectLocations)";
+
+  public static final String PROJECT_PARTNERS_CENTER_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CenterProject.projectPartners)";
+
+  public static final String DELIVERABLE_DOCUMENT_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CenterDeliverable.deliverableDocuments)";
+
+  public static final String DELIVERABLE_OUTPUTS_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CenterDeliverable.deliverableOutputs)";
+
   public static String getFilterBy() {
     return FILTER_BY;
   }

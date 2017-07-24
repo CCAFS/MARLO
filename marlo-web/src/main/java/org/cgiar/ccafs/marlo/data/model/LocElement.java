@@ -125,7 +125,7 @@ public class LocElement implements java.io.Serializable, IAuditLog {
     if (obj == null) {
       return false;
     }
-   
+
     LocElement other = (LocElement) obj;
     if (id == null) {
       if (other.id != null) {

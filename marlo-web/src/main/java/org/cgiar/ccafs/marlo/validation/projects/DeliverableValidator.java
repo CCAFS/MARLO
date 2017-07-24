@@ -40,11 +40,15 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 public class DeliverableValidator extends BaseValidator {
+
+  private static final Logger LOG = LoggerFactory.getLogger(DeliverableValidator.class);
 
   BaseAction action;
 
@@ -225,35 +229,39 @@ public class DeliverableValidator extends BaseValidator {
         if (deliverable.getOtherPartners() != null) {
           int i = 0;
           for (DeliverablePartnership deliverablePartnership : deliverable.getOtherPartners()) {
-            if (deliverablePartnership != null && deliverablePartnership.getProjectPartnerPerson() != null
-              && deliverablePartnership.getProjectPartnerPerson().getId() != null) {
-              if (projectPartnerPersonManager
-                .getProjectPartnerPersonById(deliverablePartnership.getProjectPartnerPerson().getId())
-                .getProjectPartner().getInstitution().getAcronym().equalsIgnoreCase("IFPRI")) {
-                if (action.hasSpecificities(APConstants.CRP_DIVISION_FS)) {
-                  if (deliverablePartnership.getPartnerDivision() == null) {
-                    this.addMessage(action.getText("deliverable.division"));
-                    action.getInvalidFields().put("input-deliverable.otherPartners[" + i + "].partnerDivision.id",
-                      InvalidFieldsMessages.EMPTYFIELD);
-                  }
-                  if (deliverablePartnership.getPartnerDivision() != null) {
-                    if (deliverablePartnership.getPartnerDivision().getId() == null) {
+            try {
+              if (deliverablePartnership != null && deliverablePartnership.getProjectPartnerPerson() != null
+                && deliverablePartnership.getProjectPartnerPerson().getId() != null) {
+                if (projectPartnerPersonManager
+                  .getProjectPartnerPersonById(deliverablePartnership.getProjectPartnerPerson().getId())
+                  .getProjectPartner().getInstitution().getAcronym().equalsIgnoreCase("IFPRI")) {
+                  if (action.hasSpecificities(APConstants.CRP_DIVISION_FS)) {
+                    if (deliverablePartnership.getPartnerDivision() == null) {
                       this.addMessage(action.getText("deliverable.division"));
                       action.getInvalidFields().put("input-deliverable.otherPartners[" + i + "].partnerDivision.id",
                         InvalidFieldsMessages.EMPTYFIELD);
-                    } else {
-                      if (deliverablePartnership.getPartnerDivision().getId().longValue() == -1) {
+                    }
+                    if (deliverablePartnership.getPartnerDivision() != null) {
+                      if (deliverablePartnership.getPartnerDivision().getId() == null) {
                         this.addMessage(action.getText("deliverable.division"));
                         action.getInvalidFields().put("input-deliverable.otherPartners[" + i + "].partnerDivision.id",
                           InvalidFieldsMessages.EMPTYFIELD);
+                      } else {
+                        if (deliverablePartnership.getPartnerDivision().getId().longValue() == -1) {
+                          this.addMessage(action.getText("deliverable.division"));
+                          action.getInvalidFields().put("input-deliverable.otherPartners[" + i + "].partnerDivision.id",
+                            InvalidFieldsMessages.EMPTYFIELD);
+                        }
                       }
+
                     }
 
                   }
 
                 }
-
               }
+            } catch (NullPointerException e) {
+              LOG.error("No comple Deliverable Partner " + e.getLocalizedMessage());
             }
 
             i++;

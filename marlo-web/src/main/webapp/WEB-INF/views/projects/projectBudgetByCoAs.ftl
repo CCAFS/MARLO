@@ -2,8 +2,8 @@
 [#assign title = "Project Budget By Cluster of activities" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = ["${baseUrl}/js/projects/projectBudgetByCoAs.js", "${baseUrl}/js/global/autoSave.js","${baseUrl}/js/global/fieldsValidation.js"] /]
-[#assign customCSS = ["${baseUrl}/css/projects/projectBudgetByCoAs.css"] /]
+[#assign customJS = ["${baseUrlMedia}/js/projects/projectBudgetByCoAs.js", "${baseUrlMedia}/js/global/autoSave.js","${baseUrlMedia}/js/global/fieldsValidation.js"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/projects/projectBudgetByCoAs.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "budgetByCoAs" /]
 

@@ -26,6 +26,16 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterCycleManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterImpactManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterOutputManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterSectionStatusManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterTopicManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpLiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
@@ -43,7 +53,18 @@ import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Auditlog;
 import org.cgiar.ccafs.marlo.data.model.CaseStudy;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
+import org.cgiar.ccafs.marlo.data.model.Center;
+import org.cgiar.ccafs.marlo.data.model.CenterCycle;
+import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
+import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
+import org.cgiar.ccafs.marlo.data.model.CenterOutput;
+import org.cgiar.ccafs.marlo.data.model.CenterProgram;
+import org.cgiar.ccafs.marlo.data.model.CenterProject;
+import org.cgiar.ccafs.marlo.data.model.CenterSectionStatus;
+import org.cgiar.ccafs.marlo.data.model.CenterSubmission;
+import org.cgiar.ccafs.marlo.data.model.CenterTopic;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrpCategoryEnum;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
@@ -54,6 +75,8 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.ImpactPathwayCyclesEnum;
+import org.cgiar.ccafs.marlo.data.model.ImpactPathwaySectionsEnum;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
@@ -68,6 +91,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.ProjectSectionsEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
@@ -95,6 +119,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -131,34 +156,36 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public static final String CANCEL = "cancel";
 
+
   // Loggin
   private static final Logger LOG = LoggerFactory.getLogger(BaseAction.class);
 
   public static final String NEXT = "next";
 
-
   public static final String NOT_AUTHORIZED = "403";
 
 
   public static final String NOT_FOUND = "404";
+
   public static final String NOT_LOGGED = "401";
+
   public static final String REDIRECT = "redirect";
 
   public static final String SAVED_STATUS = "savedStatus";
+
   private static final long serialVersionUID = -740360140511380630L;
+
 
   private List<HistoryDifference> differences;
 
-  protected boolean add;
 
+  protected boolean add;
   @Inject
   private AuditLogManager auditLogManager;
-
   @Inject
   private InstitutionManager institutionManager;
 
   private String basePermission;
-
   protected boolean cancel;
 
   private boolean canEdit; // If user is able to edit the form.
@@ -171,79 +198,120 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private PhaseManager phaseManager;
   @Inject
   private CrpClusterKeyOutputManager crpClusterKeyOutputManager;
+
   private Long crpID;
+
   // Managers
   @Inject
   private CrpManager crpManager;
 
   @Inject
   private CrpPpaPartnerManager crpPpaPartnerManager;
+
+
   @Inject
   private CrpProgramLeaderManager crpProgramLeaderManager;
+
   @Inject
   private CrpProgramManager crpProgramManager;
+
+
   // Variables
   private String crpSession;
-
   private Crp currentCrp;
   protected boolean dataSaved;
+
   protected boolean delete;
   @Inject
   private DeliverableManager deliverableManager;
   private boolean draft;
-
   @Inject
   private SrfTargetUnitManager targetUnitManager;
+
   @Inject
   private LocElementTypeManager locElementTypeManager;
-
   @Inject
   private CrpLocElementTypeManager crpLocElementTypeManager;
-
   @Inject
   private UserManager userManager;
-
-
   @Inject
   private FileDBManager fileDBManager;
-
   private boolean fullEditable; // If user is able to edit all the form.
+
   @Inject
   private FundingSourceManager fundingSourceManager;
-
   @Inject
   private FundingSourceValidator fundingSourceValidator;
-  private HashMap<String, String> invalidFields;
 
+  private HashMap<String, String> invalidFields;
 
   // User actions
   private boolean isEditable; // If user is able to edit the form.
 
+
   // Justification of the changes
   private String justification;
+
   private boolean lessonsActive;
   @Inject
   private LiaisonUserManager liaisonUserManager;
 
   protected boolean next;
-
   private Map<String, Object> parameters;
-  private boolean planningActive;
-  private int planningYear;
 
+
+  private boolean planningActive;
+
+  private int planningYear;
   @Inject
   private ProjectComponentLessonManager projectComponentLessonManager;
-
   @Inject
   private ProjectManager projectManager;
+
   @Inject
   private ProjectOutcomeManager projectOutcomeManager;
 
-
   private boolean reportingActive;
-
   private int reportingYear;
   private HttpServletRequest request;
+
+  /*********************************************************
+   * CENTER VARIABLES
+   * *******************************************************
+   */
+  @Inject
+  private ICenterTopicManager topicService;
+
+  @Inject
+  private ICenterImpactManager impactService;
+  @Inject
+  private ICenterOutcomeManager outcomeService;
+
+
+  @Inject
+  private ICenterOutputManager outputService;
+
+  @Inject
+  private ICenterSectionStatusManager secctionStatusService;
+  @Inject
+  private ICenterCycleManager cycleService;
+  @Inject
+  private ICenterManager centerService;
+
+  @Inject
+  private ICenterProgramManager programService;
+  @Inject
+  private ICenterProjectManager projectService;
+  @Inject
+  private ICenterDeliverableManager deliverableService;
+  @Inject
+  private ICenterSectionStatusManager sectionStatusService;
+  private String centerSession;
+  private Long centerID;
+  private Center currentCenter;
+  private CenterSubmission centerSubmission;
+  /*********************************************************/
+
   // button actions
   protected boolean save;
   private boolean saveable; // If user is able to see the save, cancel, delete buttons
@@ -253,15 +321,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   // Config Variables
   @Inject
   protected BaseSecurityContext securityContext;
-
   private Map<String, Object> session;
 
   private Submission submission;
-  protected boolean submit;
 
+  protected boolean submit;
   private String url;
   @Inject
   private UserRoleManager userRoleManager;
+
   @Inject
   private IpProgramManager ipProgramManager;
 
@@ -295,6 +363,21 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.securityContext.hasAllPermissions(Permission.FULL_PRIVILEGES);
   }
 
+  /**
+   * ***********************CENTER METHOD*********************
+   * return true if the user can view the impactPathway
+   * *********************************************************
+   * 
+   * @return true if the user is super admin.
+   */
+  public boolean canAcessCenterImpactPathway() {
+
+    String permission = this.generatePermission(Permission.RESEARCH_AREA_FULL_PRIVILEGES, this.getCenterSession());
+    LOG.debug(permission);
+    LOG.debug(String.valueOf(securityContext.hasPermission(permission)));
+    return securityContext.hasPermission(permission);
+  }
+
   public boolean canAcessCrp() {
     return this.canAcessPublications() || this.canAcessSynthesisMog();
   }
@@ -313,6 +396,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return permission;
 
   }
+
 
   public boolean canAcessImpactPathway() {
     String permission = this.generatePermission(Permission.IMPACT_PATHWAY_VISIBLE_PRIVILEGES, this.getCrpSession());
@@ -334,6 +418,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     String permission = this.generatePermission(Permission.PROJECT_BILATERAL_ADD, this.getCrpSession());
     return securityContext.hasPermission(permission);
   }
+
 
   public boolean canAddCoreProject() {
     String permission = this.generatePermission(Permission.PROJECT_CORE_ADD, this.getCrpSession());
@@ -522,6 +607,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+
   public boolean canEditCenterType() {
     return this.hasPermissionNoBase(
       this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, this.getCrpSession()));
@@ -553,6 +639,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   /**
    * This method clears the cache and re-load the user permissions in the next iteration.
    */
@@ -569,7 +656,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public String delete() {
     return SUCCESS;
   }
-
 
   @Override
   public String execute() throws Exception {
@@ -589,6 +675,31 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return INPUT;
   }
 
+
+  /**
+   * ***********************CENTER METHOD********************
+   * This method calculates all the years between the start date and the end date.
+   * ************************************************************
+   * 
+   * @return a List of numbers representing all the years, or an empty list if nothing found.
+   */
+  public List<Integer> geCentertOutcomeYears(int outcomeYear) {
+    List<Integer> allYears = new ArrayList<>();
+
+    Calendar calendarStart = Calendar.getInstance();
+    calendarStart.set(Calendar.YEAR, 2017);
+    Calendar calendarEnd = Calendar.getInstance();
+    calendarEnd.set(Calendar.YEAR, outcomeYear);
+
+    while (calendarStart.get(Calendar.YEAR) <= calendarEnd.get(Calendar.YEAR)) {
+      // Adding the year to the list.
+      allYears.add(calendarStart.get(Calendar.YEAR));
+      // Adding a year (365 days) to the start date.
+      calendarStart.add(Calendar.YEAR, 1);
+    }
+
+    return allYears;
+  }
 
   public String generatePermission(String permission, String... params) {
     Phase phase = this.getActualPhase();
@@ -651,6 +762,31 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+  /**
+   * ************************ CENTER METHOD ******************************
+   * This method calculates all the years between the start date and the end date.
+   * ********************************************************************
+   * 
+   * @return a List of numbers representing all the years, or an empty list if nothing found.
+   */
+  public List<Integer> getAllYears() {
+    List<Integer> allYears = new ArrayList<>();
+
+    Calendar calendarStart = Calendar.getInstance();
+    calendarStart.set(Calendar.YEAR, 2014);
+    Calendar calendarEnd = Calendar.getInstance();
+    calendarEnd.set(Calendar.YEAR, 2050);
+
+    while (calendarStart.get(Calendar.YEAR) <= calendarEnd.get(Calendar.YEAR)) {
+      // Adding the year to the list.
+      allYears.add(calendarStart.get(Calendar.YEAR));
+      // Adding a year (365 days) to the start date.
+      calendarStart.add(Calendar.YEAR, 1);
+    }
+
+    return allYears;
+  }
+
   public Boolean getAutoSaveFilePath(String simpleName, String actionName, long id) {
     String composedClassName = simpleName;
     String actionFile = this.getCrpSession() + "_" + actionName;
@@ -668,12 +804,243 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return config.getBaseUrl();
   }
 
-  public long getCGIARInsitution() {
+  public String getBaseUrlMedia() {
+    if (this.getCurrentCrp() != null) {
+      return config.getBaseUrl() + "/crp";
+    }
+
+    if (this.getCurrentCenter() != null) {
+      return config.getBaseUrl() + "/center";
+    }
+
+    return config.getBaseUrl() + "/crp";
+  }
+
+
+  public List<CrpCategoryEnum> getCategories() {
+
+    return Arrays.asList(CrpCategoryEnum.values());
+  }
+
+  /**
+   * ***********************CENTER METHOD***************************************************************
+   * This method gets the specific section status from the sectionStatuses array for a CenterDeliverable.
+   * ***************************************************************************************************
+   * 
+   * @param deliverableID is the deliverable ID to be identified.
+   * @param section is the name of some section.
+   * @return a CenterSectionStatus object with the information requested.
+   */
+  public CenterSectionStatus getCenterDeliverableStatus(long deliverableID) {
+
+    CenterDeliverable deliverable = deliverableService.getDeliverableById(deliverableID);
+    List<CenterSectionStatus> sectionStatuses;
+
+    if (deliverable.getSectionStatuses() != null) {
+      sectionStatuses = new ArrayList<>(deliverable.getSectionStatuses().stream()
+        .filter(c -> c.getYear() == this.getCenterYear()).collect(Collectors.toList()));
+    } else {
+      return null;
+    }
+
+    if (!sectionStatuses.isEmpty()) {
+      return sectionStatuses.get(0);
+    }
+    return null;
+  }
+
+
+  /**
+   * ************************ CENTER METHOD *********************
+   * Get the center that is currently save in the session, if the user access to
+   * the platform whit a diferent url, get the current action to catch the center
+   * 
+   * @return the center session
+   */
+  public Long getCenterID() {
+    if (session != null && !session.isEmpty()) {
+      try {
+        Center center = (Center) session.get(APConstants.SESSION_CENTER) != null
+          ? (Center) session.get(APConstants.SESSION_CENTER) : null;
+        this.centerID = center.getId();
+      } catch (Exception e) {
+        LOG.warn("There was a problem trying to find the user center in the session.");
+      }
+    } else {
+
+      this.centerID = null;
+
+    }
+    return this.centerID;
+  }
+
+  /**
+   * ***********************CENTER METHOD********************
+   * This method gets the specific section status from the sectionStatuses array for a Outcome.
+   * ********************************************************
+   * 
+   * @param deliverableID is the deliverable ID to be identified.
+   * @param section is the name of some section.
+   * @return a CenterSectionStatus object with the information requested.
+   */
+  public CenterSectionStatus getCenterOutcomeStatus(long outcomeID) {
+
+    CenterOutcome outcome = outcomeService.getResearchOutcomeById(outcomeID);
+    List<CenterSectionStatus> sectionStatuses;
+    if (outcome.getSectionStatuses() != null) {
+      sectionStatuses = new ArrayList<>(outcome.getSectionStatuses().stream()
+        .filter(c -> c.getYear() == this.getCenterYear()).collect(Collectors.toList()));
+    } else {
+      return null;
+    }
+
+    if (!sectionStatuses.isEmpty()) {
+      return sectionStatuses.get(0);
+    }
+    return null;
+  }
+
+  /**
+   * ***********************CENTER METHOD********************
+   * This method gets the specific section status from the sectionStatuses array for a Output.
+   * ************************************************************
+   * 
+   * @param deliverableID is the deliverable ID to be identified.
+   * @param section is the name of some section.
+   * @return a CenterSectionStatus object with the information requested.
+   */
+  public CenterSectionStatus getCenterOutputStatus(long outputID) {
+
+    CenterOutput output = outputService.getResearchOutputById(outputID);
+    List<CenterSectionStatus> sectionStatuses;
+
+    if (output.getSectionStatuses() != null) {
+      sectionStatuses = new ArrayList<>(output.getSectionStatuses().stream()
+        .filter(c -> c.getYear() == this.getCenterYear()).collect(Collectors.toList()));
+    } else {
+      return null;
+    }
+
+    if (!sectionStatuses.isEmpty()) {
+      return sectionStatuses.get(0);
+    }
+    return null;
+  }
+
+  /**
+   * ************************ CENTER METHOD *********************
+   * Validate the sections of the Impact Pathway *
+   * ***************************************************************
+   * 
+   * @return true if the IP is complete
+   */
+  public boolean getCenterSectionStatusIP(String section, long programID) {
+    CenterProgram program = programService.getProgramById(programID);
+
+    if (ImpactPathwaySectionsEnum.getValue(section) == null) {
+      return false;
+    }
+
+    switch (ImpactPathwaySectionsEnum.getValue(section)) {
+      case PROGRAM_IMPACT:
+        return this.validateCenterImpact(program, section);
+      case TOPIC:
+        return this.validateCenterTopic(program, section);
+      case OUTCOME:
+        return this.validateCenterOutcome(program);
+      case OUTPUT:
+        return this.validateCenterOutput(program);
+    }
+
+    return true;
+  }
+
+  /**
+   * ************************ CENTER METHOD *********************
+   * validate the sections of the project
+   * ***************************************************************
+   * 
+   * @return true if the Project is complete
+   */
+  public boolean getCenterSectionStatusProject(String section, long projectID) {
+
+    CenterProject project = projectService.getCenterProjectById(projectID);
+
+    if (ProjectSectionsEnum.getValue(section) == null) {
+      return false;
+    }
+
+    switch (ProjectSectionsEnum.getValue(section)) {
+      case DESCRIPTION:
+        return this.validateCenterProject(project, section);
+      case PARTNERS:
+        return this.validateCenterProject(project, section);
+      case DELIVERABLES:
+        return this.validateCenterDeliverable(project);
+    }
+
+    return true;
+  }
+
+  /**
+   * ************************ CENTER METHOD *********************
+   * Get the center that is currently save in the session, if the user access to
+   * the platform whit a diferent url, get the current action to catch the center
+   * ***************************************************************
+   * 
+   * @return the center that the user has log in
+   */
+  public String getCenterSession() {
+    if (session != null && !session.isEmpty()) {
+      try {
+        Center center = (Center) session.get(APConstants.SESSION_CENTER) != null
+          ? (Center) session.get(APConstants.SESSION_CENTER) : null;
+        // Assumed there is only one center in the system, the default one.
+        this.centerSession = center.getAcronym();
+      } catch (Exception e) {
+        LOG.warn("There was a problem trying to find the user's center in the session.");
+      }
+    } else {
+      String actionName = this.getActionName();
+      if (actionName.split("/").length > 1) {
+        this.centerSession = actionName.split("/")[0];
+      }
+    }
+    return this.centerSession;
+  }
+
+
+  public List<Center> getCentersList() {
+    return centerService.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+  }
+
+  public CenterSubmission getCenterSubmission() {
+    return centerSubmission;
+  }
+
+  /**
+   * ************************ CENTER METHOD *********************
+   * return the actual center year
+   * ***************************************************************
+   * 
+   * @return the actual year
+   */
+  public int getCenterYear() {
+    return Calendar.getInstance().get(Calendar.YEAR);
+  }
+
+  public long getCGIARInstitution() {
     return APConstants.INSTITUTION_CGIAR;
   }
 
   public APConfig getConfig() {
     return config;
+  }
+
+  public List<Crp> getCrpCategoryList(String category) {
+    return crpManager.findAll().stream()
+      .filter(c -> c.isMarlo() && c.getCategory().intValue() == Integer.parseInt(category))
+      .collect(Collectors.toList());
   }
 
   /**
@@ -702,6 +1069,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return this.crpID;
   }
+
 
   /**
    * Get the Crp List
@@ -734,6 +1102,30 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
     }
     return this.crpSession;
+  }
+
+  /**
+   * ************************ CENTER METHOD *********************
+   * Get the center that is currently save in the session
+   * ***************************************************************
+   * 
+   * @return the center that the user has log in
+   */
+  public Center getCurrentCenter() {
+    if (session != null && !session.isEmpty()) {
+      try {
+        Center center = (Center) session.get(APConstants.SESSION_CENTER) != null
+          ? (Center) session.get(APConstants.SESSION_CENTER) : null;
+        this.currentCenter = center;
+      } catch (Exception e) {
+        LOG.warn("There was a problem trying to find the user center in the session.");
+      }
+    } else {
+
+      this.currentCenter = null;
+
+    }
+    return this.currentCenter;
   }
 
   public Crp getCurrentCrp() {
@@ -810,7 +1202,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return u;
   }
 
-
   /**
    * This method gets the specific section status from the sectionStatuses array for a Deliverable.
    * 
@@ -830,7 +1221,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return null;
   }
-
 
   public List<HistoryDifference> getDifferences() {
     return differences;
@@ -920,9 +1310,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return invalidFields;
   }
 
+
   public String getJustification() {
     return justification;
   }
+
 
   public String getLiasons() {
     String liasonsUsers = "";
@@ -938,6 +1330,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return liasonsUsers;
   }
+
 
   public List<Auditlog> getListLog(IAuditLog object) {
     try {
@@ -1315,6 +1708,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   public List<Submission> getProjectSubmissions(long projectID) {
     Project project = projectManager.getProjectById(projectID);
     List<Submission> submissions = project.getSubmissions()
@@ -1331,10 +1725,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return Integer.parseInt(this.getSession().get(APConstants.CRP_REPORTING_YEAR).toString());
   }
 
+
   public HttpServletRequest getRequest() {
     return request;
   }
-
 
   public String getRoles() {
     String roles = "";
@@ -1377,6 +1771,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return SessionCounter.users;
   }
 
+
   /**
    * Return the artifact version of the Marlo project pom.xml
    * 
@@ -1395,7 +1790,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return version;
   }
-
 
   public int goldDataValue(long deliverableID) {
     Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
@@ -1478,7 +1872,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return permission;
   }
 
-
   public boolean hasPermissionNoBase(String fieldName) {
 
     return securityContext.hasPermission(fieldName);
@@ -1504,12 +1897,47 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.hasPermission("submit");
   }
 
+
+  /**
+   * ************************ CENTER METHOD *********************
+   * validate if the user can submit the impact pathway
+   * ***************************************************************
+   * 
+   * @return true if the user have the permission
+   */
+  public boolean hasPersmissionSubmitIP(long programID) {
+    CenterProgram program = programService.getProgramById(programID);
+    String permission =
+      this.generatePermission(Permission.RESEARCH_PROGRAM_SUBMISSION_PERMISSION, this.getCurrentCenter().getAcronym(),
+        String.valueOf(program.getResearchArea().getId()), String.valueOf(programID));
+    boolean permissions = this.securityContext.hasPermission(permission);
+    return permissions;
+  }
+
+  /**
+   * ************************ CENTER METHOD *********************
+   * validate if the user can submit the project
+   * ***************************************************************
+   * 
+   * @return true if the user have the permission
+   */
+  public boolean hasPersmissionSubmitProject(long projectID) {
+    CenterProject project = projectService.getCenterProjectById(projectID);
+    CenterProgram program = project.getResearchProgram();;
+    String permission =
+      this.generatePermission(Permission.PROJECT_SUBMISSION_PERMISSION, this.getCurrentCenter().getAcronym(),
+        String.valueOf(program.getResearchArea().getId()), String.valueOf(program.getId()), String.valueOf(projectID));
+    boolean permissions = this.securityContext.hasPermission(permission);
+    return permissions;
+  }
+
   public boolean hasPersmissionUnSubmit(long projectId) {
     String permission = this.generatePermission(Permission.PROJECT_UNSUBMISSION_PERMISSION,
       this.getCurrentCrp().getAcronym(), String.valueOf(projectId));
     boolean permissions = this.securityContext.hasPermission(permission);
     return permissions;
   }
+
 
   public boolean hasPersmissionUnSubmitImpact(long programID) {
     String permission = this.generatePermission(Permission.IMPACT_PATHWAY_UNSUBMISSION_PERMISSION,
@@ -1526,7 +1954,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   public boolean hasSpecificities(String specificity) {
     try {
       boolean param = Boolean.parseBoolean(this.getSession().get(specificity).toString());
@@ -1536,7 +1963,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
 
   }
-
 
   public Boolean isA(long deliverableID) {
     try {
@@ -1565,7 +1991,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return securityContext.hasRole("Admin");
   }
 
-
   public boolean isCanEdit() {
     return canEdit;
   }
@@ -1573,6 +1998,45 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean isCanSwitchProject() {
     return canSwitchProject;
   }
+
+
+  /**
+   * ************************ CENTER METHOD *********************
+   * verify if the project is complete
+   * ***************************************************************
+   * 
+   * @return true if the project is complete
+   */
+  public boolean isCompleteCenterProject(long projectID) {
+
+    if (sectionStatusService.findAll() == null) {
+      return false;
+    }
+
+    CenterProject project = projectService.getCenterProjectById(projectID);
+
+    List<String> statuses = secctionStatusService.distinctSectionStatusProject(projectID);
+
+    if (statuses.size() != 3) {
+      return false;
+    }
+
+    List<CenterSectionStatus> sectionStatuses = new ArrayList<>(project.getSectionStatuses().stream()
+      .filter(ss -> ss.getYear() == (short) this.getCenterYear()).collect(Collectors.toList()));
+
+    if (sectionStatuses != null && sectionStatuses.size() > 0) {
+      for (CenterSectionStatus sectionStatus : sectionStatuses) {
+        if (sectionStatus.getMissingFields().length() > 0) {
+          return false;
+        }
+      }
+    } else {
+      return false;
+    }
+
+    return true;
+  }
+
 
   public boolean isCompleteCrpIndicator(long liaisonIntitution) {
     List<SectionStatus> sectionStatus = null;
@@ -1618,6 +2082,52 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
+
+  /**
+   * ************************ CENTER METHOD *********************
+   * verify if the impact pathway is complete
+   * ***************************************************************
+   * 
+   * @return true if the IP is complete
+   */
+  public boolean isCompleteIP(long programID) {
+
+    if (sectionStatusService.findAll() == null) {
+      return false;
+    }
+
+    CenterProgram researchProgram = programService.getProgramById(programID);
+
+    List<String> statuses = secctionStatusService.distinctSectionStatus(programID);
+
+    if (statuses.size() != 4) {
+      return false;
+    }
+
+
+    if (!this.validateCenterOutcome(researchProgram)) {
+      return false;
+    }
+
+    if (!this.validateCenterOutput(researchProgram)) {
+      return false;
+    }
+
+    List<CenterSectionStatus> sectionStatuses = new ArrayList<>(researchProgram.getSectionStatuses().stream()
+      .filter(ss -> ss.getYear() == (short) this.getCenterYear()).collect(Collectors.toList()));
+
+    if (sectionStatuses != null && sectionStatuses.size() > 0) {
+      for (CenterSectionStatus sectionStatus : sectionStatuses) {
+        if (sectionStatus.getMissingFields().length() > 0) {
+          return false;
+        }
+      }
+    } else {
+      return false;
+    }
+    return true;
+  }
+
   public boolean isCompletePreProject(long projectID) {
 
     Project project = projectManager.getProjectById(projectID);
@@ -1658,7 +2168,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return true;
   }
-
 
   public boolean isCompleteProject(long projectID) {
 
@@ -1964,6 +2473,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return isEditable;
   }
 
+  public boolean isErrorPage() {
+
+    if (this.getCurrentCrp() != null) {
+      return false;
+    }
+
+    if (this.getCurrentCenter() != null) {
+      return false;
+    }
+
+    return true;
+
+  }
 
   public Boolean isF(long deliverableID) {
 
@@ -1997,7 +2519,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return false;
   }
-
 
   public Boolean isI(long deliverableID) {
     try {
@@ -2061,9 +2582,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   public boolean isLessonsActive() {
     return Boolean.parseBoolean(this.getSession().get(APConstants.CRP_LESSONS_ACTIVE).toString());
   }
+
 
   /**
    * Validate if the user is already logged in or not.
@@ -2238,6 +2761,60 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
+
+  /**
+   * ************************ CENTER METHOD *********************
+   * Check if the project is submitted
+   * ***************************************************************
+   * 
+   * @return true if the project is submitted
+   */
+  public boolean isSubmitCenterProject(long projectID) {
+
+    CenterProject project = projectService.getCenterProjectById(projectID);
+    if (project != null) {
+
+      CenterCycle cycle = cycleService.getResearchCycleById(ImpactPathwayCyclesEnum.MONITORING.getId());
+
+      List<CenterSubmission> submissions = new ArrayList<>(project.getSubmissions().stream()
+        .filter(s -> s.getResearchCycle().equals(cycle) && s.getYear().intValue() == this.getCenterYear())
+        .collect(Collectors.toList()));
+
+      if (submissions != null && submissions.size() > 0) {
+        this.setCenterSubmission(submissions.get(0));
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * ************************ CENTER METHOD *********************
+   * Check if the impact pathway is submitted
+   * ***************************************************************
+   * 
+   * @return true if the impact pathway is submitted
+   */
+  public boolean isSubmitIP(long programID) {
+
+    CenterProgram program = programService.getProgramById(programID);
+    if (program != null) {
+
+      CenterCycle cycle = cycleService.getResearchCycleById(ImpactPathwayCyclesEnum.IMPACT_PATHWAY.getId());
+
+      List<CenterSubmission> submissions = new ArrayList<>(program.getSubmissions().stream()
+        .filter(s -> s.getResearchCycle().equals(cycle) && s.getYear().intValue() == this.getCenterYear())
+        .collect(Collectors.toList()));
+
+      if (submissions != null && submissions.size() > 0) {
+        this.setCenterSubmission(submissions.get(0));
+        return true;
+      }
+    }
+    return false;
+  }
+
   public void loadDissemination(Deliverable deliverableBD) {
 
     if (deliverableBD.getDeliverableDisseminations() != null) {
@@ -2384,12 +2961,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return NEXT;
   }
 
-
   @Override
   public void prepare() throws Exception {
     // So far, do nothing here!
   }
-
 
   /* Override this method depending of the save action. */
   public String save() {
@@ -2421,6 +2996,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   public void saveLessonsOutcome(Crp crp, ProjectOutcome projectOutcome) {
 
     Project project = projectManager.getProjectById(projectOutcome.getProject().getId());
@@ -2450,6 +3026,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+
   public void saveLessonsSynthesis(Crp crp, IpProgram ipProgram) {
 
     String actionName = this.getActionName().replaceAll(crp.getAcronym() + "/", "");
@@ -2478,7 +3055,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public void setAdd(boolean add) {
     this.add = true;
   }
@@ -2486,6 +3062,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public void setBasePermission(String basePermission) {
     this.basePermission = basePermission;
   }
+
 
   public void setCancel(boolean cancel) {
     this.cancel = true;
@@ -2495,18 +3072,35 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.canEdit = canEdit;
   }
 
-
   public void setCanSwitchProject(boolean canSwitchProject) {
     this.canSwitchProject = canSwitchProject;
   }
 
+  public void setCenterID(Long centerID) {
+    this.centerID = centerID;
+  }
+
+
+  public void setCenterSession(String centerSession) {
+    this.centerSession = centerSession;
+  }
+
+
+  public void setCenterSubmission(CenterSubmission centerSubmission) {
+    this.centerSubmission = centerSubmission;
+  }
 
   public void setCrpID(Long crpID) {
     this.crpID = crpID;
   }
 
+
   public void setCrpSession(String crpSession) {
     this.crpSession = crpSession;
+  }
+
+  public void setCurrentCenter(Center currentCenter) {
+    this.currentCenter = currentCenter;
   }
 
 
@@ -2523,10 +3117,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.differences = differences;
   }
 
+
   public void setDraft(boolean draft) {
     this.draft = draft;
   }
-
 
   public void setEditable(boolean isEditable) {
     this.isEditable = isEditable;
@@ -2546,15 +3140,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.invalidFields = invalidFields;
   }
 
+
   public void setJustification(String justification) {
     this.justification = justification;
   }
 
-
   public void setLessonsActive(boolean lessonsActive) {
     this.lessonsActive = lessonsActive;
   }
-
 
   public void setNext(boolean next) {
     this.next = true;
@@ -2568,6 +3161,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.planningYear = planningYear;
   }
 
+
   public void setReportingActive(boolean reportingActive) {
     this.reportingActive = reportingActive;
   }
@@ -2575,7 +3169,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public void setReportingYear(int reportingYear) {
     this.reportingYear = reportingYear;
   }
-
 
   public void setSave(boolean save) {
     this.save = true;
@@ -2613,6 +3206,195 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public String submit() {
     return SUCCESS;
+  }
+
+  /**
+   * ************************ CENTER METHOD *********************
+   * Validate the missing fields in the deliverables section
+   * ***************************************************************
+   * 
+   * @return false if has missing fields.
+   */
+  public boolean validateCenterDeliverable(CenterProject project) {
+    if (project != null) {
+      List<CenterDeliverable> deliverables =
+        new ArrayList<>(project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList()));
+
+      if (deliverables != null && !deliverables.isEmpty()) {
+        for (CenterDeliverable deliverable : deliverables) {
+          CenterSectionStatus sectionStatus = this.getCenterDeliverableStatus(deliverable.getId());
+          if (sectionStatus == null) {
+            return false;
+          } else {
+            if (sectionStatus.getMissingFields().length() != 0) {
+              return false;
+            }
+          }
+        }
+      } else {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * ************************ CENTER METHOD *********************
+   * Validate the missing fields in the program impacts section
+   * ***************************************************************
+   * 
+   * @return false if has missing fields.
+   */
+  public boolean validateCenterImpact(CenterProgram program, String sectionName) {
+
+    CenterSectionStatus sectionStatus =
+      secctionStatusService.getSectionStatusByProgram(program.getId(), sectionName, this.getCenterYear());
+
+    if (sectionStatus == null) {
+      return false;
+    }
+    if (sectionStatus.getMissingFields().length() != 0) {
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * ************************ CENTER METHOD *********************
+   * Validate the missing fields in the outcome section
+   * ***************************************************************
+   * 
+   * @return false if has missing fields.
+   */
+  public boolean validateCenterOutcome(CenterProgram program) {
+    if (program != null) {
+      List<CenterTopic> topics =
+        new ArrayList<>(program.getResearchTopics().stream().filter(rt -> rt.isActive()).collect(Collectors.toList()));
+      if (topics != null && !topics.isEmpty()) {
+        for (CenterTopic researchTopic : topics) {
+          List<CenterOutcome> outcomes = new ArrayList<>(
+            researchTopic.getResearchOutcomes().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
+          if (outcomes != null && !outcomes.isEmpty()) {
+            for (CenterOutcome researchOutcome : outcomes) {
+              CenterSectionStatus sectionStatus = this.getCenterOutcomeStatus(researchOutcome.getId());
+              if (sectionStatus == null) {
+                return false;
+              } else {
+                if (sectionStatus.getMissingFields().length() != 0) {
+                  return false;
+                }
+              }
+            }
+          } else {
+            return false;
+          }
+        }
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * ************************ CENTER METHOD *********************
+   * Validate the missing fields in the output section
+   * ***************************************************************
+   * 
+   * @return false if has missing fields.
+   */
+  public boolean validateCenterOutput(CenterProgram program) {
+
+    if (program != null) {
+      List<CenterTopic> topics =
+        new ArrayList<>(program.getResearchTopics().stream().filter(rt -> rt.isActive()).collect(Collectors.toList()));
+      if (topics != null && !topics.isEmpty()) {
+        for (CenterTopic researchTopic : topics) {
+          List<CenterOutcome> outcomes = new ArrayList<>(
+            researchTopic.getResearchOutcomes().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
+          if (outcomes != null && !outcomes.isEmpty()) {
+            for (CenterOutcome researchOutcome : outcomes) {
+              researchOutcome.setMilestones(new ArrayList<>(researchOutcome.getResearchMilestones().stream()
+                .filter(rm -> rm.isActive()).collect(Collectors.toList())));
+
+              List<CenterOutput> outputs = new ArrayList<>(
+                researchOutcome.getResearchOutputs().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
+              if (outputs != null && !outputs.isEmpty()) {
+                for (CenterOutput researchOutput : outputs) {
+                  CenterSectionStatus sectionStatus = this.getCenterOutputStatus(researchOutput.getId());
+                  if (sectionStatus == null) {
+                    return false;
+                  } else {
+                    if (sectionStatus.getMissingFields().length() != 0) {
+                      return false;
+                    }
+                  }
+                }
+              } else {
+                return false;
+              }
+            }
+          } else {
+            return false;
+          }
+        }
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+
+    return true;
+
+  }
+
+  /**
+   * ************************ CENTER METHOD *********************
+   * Validate the missing fields in the project section
+   * ***************************************************************
+   * 
+   * @return false if has missing fields.
+   */
+  public boolean validateCenterProject(CenterProject project, String sectionName) {
+    CenterSectionStatus sectionStatus = secctionStatusService.getSectionStatusByProject(
+      project.getResearchProgram().getId(), project.getId(), sectionName, this.getCenterYear());
+
+    if (sectionStatus == null) {
+      return false;
+    }
+    if (sectionStatus.getMissingFields().length() != 0) {
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * ************************ CENTER METHOD *********************
+   * Validate the missing fields in the research topic section
+   * ***************************************************************
+   * 
+   * @return false if has missing fields.
+   */
+  public boolean validateCenterTopic(CenterProgram program, String sectionName) {
+
+    CenterSectionStatus sectionStatus =
+      secctionStatusService.getSectionStatusByProgram(program.getId(), sectionName, this.getCenterYear());
+
+    if (sectionStatus == null) {
+      return false;
+    }
+    if (sectionStatus.getMissingFields().length() != 0) {
+      return false;
+    }
+
+    return true;
   }
 
   public boolean validURL(String URL) {

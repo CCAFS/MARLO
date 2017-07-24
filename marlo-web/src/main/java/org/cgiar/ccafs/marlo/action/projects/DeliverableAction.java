@@ -1275,6 +1275,8 @@ public class DeliverableAction extends BaseAction {
       Deliverable deliverablePrew = deliverableManager.getDeliverableById(deliverableID);
 
       deliverablePrew.setTitle(deliverable.getTitle());
+      deliverablePrew.setDescription(deliverable.getDescription());
+
       deliverablePrew.setYear(deliverable.getYear());
 
       if (deliverable.getNewExpectedYear() != null) {
@@ -1400,10 +1402,9 @@ public class DeliverableAction extends BaseAction {
         && deliverablePrew.getDeliverablePartnerships().size() > 0) {
 
         try {
-          partnershipResponsible =
-            deliverablePrew.getDeliverablePartnerships().stream()
-              .filter(dp -> dp.isActive()
-                && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
+          partnershipResponsible = deliverablePrew.getDeliverablePartnerships().stream()
+            .filter(
+              dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
             .collect(Collectors.toList()).get(0);
         } catch (Exception e) {
           partnershipResponsible = null;

@@ -3,14 +3,14 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${deliverableID}" /]
 [#assign pageLibs = ["select2","font-awesome","dropzone","blueimp-file-upload","jsUri"] /]
 [#assign customJS = [
-  "${baseUrl}/js/projects/deliverables/deliverableQualityCheck.js",
-  "${baseUrl}/js/projects/deliverables/deliverableDataSharing.js",
-  "${baseUrl}/js/projects/deliverables/deliverableInfo.js",
-  "${baseUrl}/js/projects/deliverables/deliverableDissemination.js", 
-  "${baseUrl}/js/global/autoSave.js",
-  "${baseUrl}/js/global/fieldsValidation.js"
+  "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableDataSharing.js",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js", 
+  "${baseUrlMedia}/js/global/autoSave.js",
+  "${baseUrlMedia}/js/global/fieldsValidation.js"
 ] /]
-[#assign customCSS = ["${baseUrl}/css/projects/projectDeliverable.css"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/projects/projectDeliverable.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "deliverableList" /]
 [#assign hideJustification = true /]
@@ -30,7 +30,7 @@
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrl}/images/global/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.jpg" />
     <p class="col-md-10">[#if reportingActive] [@s.text name="project.deliverable.help2" /] [#else] [@s.text name="project.deliverable.help1" /] [/#if] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
@@ -148,7 +148,7 @@
 
 [#-- File Input template --]
 <div id="fileInputTemplate" class="fileInput" style="display:none">
-  <img class="removeInput" src="${baseUrl}/images/global/icon-remove.png" alt="Remove"> 
+  <img class="removeInput" src="${baseUrlMedia}/images/global/icon-remove.png" alt="Remove"> 
   <input name="filesUploaded" type="file" />
 </div>
  
@@ -161,7 +161,7 @@
     <div class="fileName">filename</div>
     <div class="fileFormat">- -</div>
     <div class="fileSize">- -</div>
-    <img class="removeInput" src="${baseUrl}/images/global/icon-remove.png" alt="Remove"/>
+    <img class="removeInput" src="${baseUrlMedia}/images/global/icon-remove.png" alt="Remove"/>
   </li>
 </ul>
 

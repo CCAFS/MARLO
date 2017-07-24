@@ -19,8 +19,12 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterUserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.ADLoginMessages;
+import org.cgiar.ccafs.marlo.data.model.Center;
+import org.cgiar.ccafs.marlo.data.model.CenterCustomParameter;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -28,8 +32,11 @@ import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import org.apache.shiro.SecurityUtils;
@@ -52,30 +59,46 @@ public class LoginAction extends BaseAction {
   // Logging
   private static final Logger LOG = LoggerFactory.getLogger(LoginAction.class);
 
-
   // Variables
   private User user;
+
+
   private String url;
+
   private String crp;
 
 
+  private String type;
+
   // Managers
   private UserManager userManager;
+
   private CrpManager crpManager;
+  private ICenterManager centerManager;
+  private ICenterUserManager centerUsermanager;
   private CrpUserManager crpUserManager;
 
   @Inject
-  public LoginAction(APConfig config, UserManager userManager, CrpManager crpManager, CrpUserManager crpUserManager) {
+  public LoginAction(APConfig config, UserManager userManager, CrpManager crpManager, CrpUserManager crpUserManager,
+    ICenterManager centerManager, ICenterUserManager centerUsermanager) {
     super(config);
     this.userManager = userManager;
     this.crpManager = crpManager;
     this.crpUserManager = crpUserManager;
+    this.centerManager = centerManager;
+    this.centerUsermanager = centerUsermanager;
   }
 
 
   @Override
   public String execute() throws Exception {
     return SUCCESS;
+  }
+
+
+  @Override
+  public List<Center> getCentersList() {
+    return new ArrayList<>(centerManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
   }
 
   public String getCrp() {
@@ -122,6 +145,10 @@ public class LoginAction extends BaseAction {
     }
   }
 
+  public String getType() {
+    return type;
+  }
+
   @Override
   public String getUrl() {
     return url;
@@ -137,75 +164,25 @@ public class LoginAction extends BaseAction {
   }
 
   public String login() {
+
+
     if (user != null) {
 
+      System.out.println(this.crp);
       // Check if is a valid user
       String userEmail = user.getEmail().trim().toLowerCase();
       User loggedUser = userManager.login(userEmail, user.getPassword());
       this.getLoginMessages();
       if (loggedUser != null) {
-
-        // Obtain the crp selected
-        Crp loggedCrp = crpManager.findCrpByAcronym(this.crp);
-
-        // Validate if the user belongs to the selected crp
-        if (loggedCrp != null) {
-          if (crpUserManager.existCrpUser(loggedUser.getId(), loggedCrp.getId())) {
-            loggedUser.setLastLogin(new Date());
-            userManager.saveLastLogin(loggedUser);
-            this.getSession().put(APConstants.SESSION_USER, loggedUser);
-            this.getSession().put(APConstants.SESSION_CRP, loggedCrp);
-            // put the crp parameters in the session
-            for (CustomParameter parameter : loggedCrp.getCustomParameters()) {
-              if (parameter.isActive()) {
-                this.getSession().put(parameter.getParameter().getKey(), parameter.getValue());
-              }
-            }
-            this.getSession().put("color", this.randomColor());
-            // Validate if the user already logged in other session.
-            /*
-             * if (((User) this.getSession().get(APConstants.SESSION_USER)).getId() == -1) {
-             * this.addFieldError("loginMessage", this.getText("login.error.duplicated"));
-             * this.getSession().clear();
-             * SecurityUtils.getSubject().logout();
-             * user.setPassword(null);
-             * return BaseAction.INPUT;
-             * }
-             */
-          } else {
-            this.addFieldError("loginMessage", this.getText("login.error.invalidUserCrp"));
-            this.setCrpSession(loggedCrp.getAcronym());
-            this.getSession().clear();
-            SecurityUtils.getSubject().logout();
-            user.setPassword(null);
-            user.setPassword(null);
+        switch (this.type) {
+          case "crp":
+            return this.loginCrp(loggedUser);
+          case "center":
+            return this.loginCenter(loggedUser);
+          default:
             return BaseAction.INPUT;
-          }
-        } else {
-          this.addFieldError("loginMessage", this.getText("login.error.selectCrp"));
-          user.setPassword(null);
-          this.getSession().clear();
-          SecurityUtils.getSubject().logout();
-          user.setPassword(null);
-          return BaseAction.INPUT;
-        }
 
-        LOG.info("User " + user.getEmail() + " logged in successfully.");
-        /*
-         * Save the user url with trying to enter the system to redirect after
-         * loged.
-         */
-        String urlAction = ServletActionContext.getRequest().getHeader("Referer");
-        /*
-         * take the ".do" pattern in the url to differentiate the main page.
-         * also discard the "logout" url beacause this action close the user session.
-         */
-        if (urlAction.contains(".do") && !urlAction.contains("logout")) {
-          this.url = urlAction;
 
-          return LOGIN;
-        } else {
-          return SUCCESS;
         }
       } else {
         LOG.info("User " + user.getEmail() + " tried to log-in but failed. Message : "
@@ -220,7 +197,146 @@ public class LoginAction extends BaseAction {
       }
     } else {
       // Check if the user exists in the session
-      return (this.getCurrentUser() == null) ? INPUT : SUCCESS;
+      if (this.getCurrentUser() != null) {
+        if (this.getCrpSession() != null) {
+          return SUCCESS;
+        }
+
+        if (this.getCenterSession() != null) {
+          this.url = this.getBaseUrl() + "/" + this.getCenterSession() + "/centerDashboard.do";
+          return LOGIN;
+        }
+      } else {
+        return INPUT;
+      }
+      return INPUT;
+      // return (this.getCurrentUser() == null) ? INPUT : SUCCESS;
+    }
+
+  }
+
+
+  public String loginCenter(User loggedUser) {
+    // Obtain the center selected
+    // Obtain the only CRP Center CIAT
+    // TODO: Modify CRP to represent Center
+    // Crp loggedCrp = crpManager.findCrpByAcronym(this.crp);
+    Center loggedCenter = centerManager.findCrpByAcronym(this.crp);
+
+    // Validate if the user belongs to the selected crp
+    if (loggedCenter != null) {
+
+      // TODO: Assumed there is only one CRP/Center
+      // TODO: Should the logged in user be subjected to another check for the CIAT crp?
+      // TODO: Assume the login is enough
+      if (centerUsermanager.existCrpUser(loggedUser.getId(), loggedCenter.getId())) {
+
+        loggedUser.setLastLogin(new Date());
+        userManager.saveLastLogin(loggedUser);
+        this.getSession().put(APConstants.SESSION_USER, loggedUser);
+        this.getSession().put(APConstants.SESSION_CENTER, loggedCenter);
+
+        // put the crp parameters in the session
+        for (CenterCustomParameter parameter : loggedCenter.getCenterCustomParameters()) {
+          if (parameter.isActive()) {
+            this.getSession().put(parameter.getCenterParameter().getKey(), parameter.getValue());
+          }
+        }
+
+        this.getSession().put("color", this.randomColor());
+      } else {
+
+        this.addFieldError("loginMessage", this.getText("login.error.invalidUserCrp"));
+        this.setCenterSession(loggedCenter.getAcronym());
+        this.getSession().clear();
+        SecurityUtils.getSubject().logout();
+        user.setPassword(null);
+        user.setPassword(null);
+        return BaseAction.INPUT;
+      }
+    }
+
+    LOG.info("User " + user.getEmail() + " logged in successfully.");
+    /*
+     * Save the user url with trying to enter the system to redirect after
+     * loged.
+     */
+    String urlAction = ServletActionContext.getRequest().getHeader("Referer");
+    /*
+     * take the ".do" pattern in the url to differentiate the main page.
+     * also discard the "logout" url beacause this action close the user session.
+     */
+    if (urlAction.contains(".do") && !urlAction.contains("logout")) {
+      this.url = urlAction;
+      return LOGIN;
+    } else {
+      this.url = this.getBaseUrl() + "/" + loggedCenter.getAcronym() + "/centerDashboard.do";
+      return LOGIN;
+    }
+  }
+
+  public String loginCrp(User loggedUser) {
+
+    // Obtain the crp selected
+    Crp loggedCrp = crpManager.findCrpByAcronym(this.crp);
+
+    // Validate if the user belongs to the selected crp
+    if (loggedCrp != null) {
+      if (crpUserManager.existCrpUser(loggedUser.getId(), loggedCrp.getId())) {
+        loggedUser.setLastLogin(new Date());
+        userManager.saveLastLogin(loggedUser);
+        this.getSession().put(APConstants.SESSION_USER, loggedUser);
+        this.getSession().put(APConstants.SESSION_CRP, loggedCrp);
+        // put the crp parameters in the session
+        for (CustomParameter parameter : loggedCrp.getCustomParameters()) {
+          if (parameter.isActive()) {
+            this.getSession().put(parameter.getParameter().getKey(), parameter.getValue());
+          }
+        }
+        this.getSession().put("color", this.randomColor());
+        // Validate if the user already logged in other session.
+        /*
+         * if (((User) this.getSession().get(APConstants.SESSION_USER)).getId() == -1) {
+         * this.addFieldError("loginMessage", this.getText("login.error.duplicated"));
+         * this.getSession().clear();
+         * SecurityUtils.getSubject().logout();
+         * user.setPassword(null);
+         * return BaseAction.INPUT;
+         * }
+         */
+      } else {
+        this.addFieldError("loginMessage", this.getText("login.error.invalidUserCrp"));
+        this.setCrpSession(loggedCrp.getAcronym());
+        this.getSession().clear();
+        SecurityUtils.getSubject().logout();
+        user.setPassword(null);
+        user.setPassword(null);
+        return BaseAction.INPUT;
+      }
+    } else {
+      this.addFieldError("loginMessage", this.getText("login.error.selectCrp"));
+      user.setPassword(null);
+      this.getSession().clear();
+      SecurityUtils.getSubject().logout();
+      user.setPassword(null);
+      return BaseAction.INPUT;
+    }
+
+    LOG.info("User " + user.getEmail() + " logged in successfully.");
+    /*
+     * Save the user url with trying to enter the system to redirect after
+     * loged.
+     */
+    String urlAction = ServletActionContext.getRequest().getHeader("Referer");
+    /*
+     * take the ".do" pattern in the url to differentiate the main page.
+     * also discard the "logout" url beacause this action close the user session.
+     */
+    if (urlAction.contains(".do") && !urlAction.contains("logout")) {
+      this.url = urlAction;
+      return LOGIN;
+    } else {
+      return SUCCESS;
     }
   }
 
@@ -254,8 +370,14 @@ public class LoginAction extends BaseAction {
     return hex;
   }
 
+
   public void setCrp(String crp) {
     this.crp = crp;
+  }
+
+
+  public void setType(String type) {
+    this.type = type;
   }
 
   @Override
@@ -282,3 +404,4 @@ public class LoginAction extends BaseAction {
     }
   }
 }
+

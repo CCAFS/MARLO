@@ -249,5 +249,6 @@ public class AuditLogMySQLDao implements AuditLogDao {
     } catch (JsonSyntaxException e) {
       e.printStackTrace();
     }
+
   }
 }

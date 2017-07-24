@@ -1,0 +1,49 @@
+ul.projectsList{
+  padding: 0;
+  margin: 0;
+}
+
+ul.projectsList p{font-weight: bold;cursor: pointer;}
+
+ul.projectsList > li {
+  list-style: none;
+  margin-bottom: 2em;
+}
+
+ul.projectsList > li > p{
+  background:#319967;
+  color: #fff;
+  padding: 5px 12px;
+  border-radius: 2px;
+}
+
+ul.projectsList > li > p a{ 
+  color: #fff; 
+}
+
+ul.projectsList > li > ul > li {
+  list-style: none;
+}
+
+
+ul.projectsList > li > ul > li p{
+  background:#f1f1f1;
+  padding: 1px 11px;
+  border-radius: 2px;
+  margin: 5px 0px;
+}
+
+ul.projectsList > li > strong{
+  margin-left: 1.5em;
+}
+
+
+ul.projectsList > li ul{
+  margin-bottom: 1em;
+  padding-left: 19px;
+}
+
+.modal-body {
+  overflow-y: scroll;
+  max-height: 500px;
+}

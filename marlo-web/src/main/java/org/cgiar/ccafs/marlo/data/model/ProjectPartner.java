@@ -2,7 +2,6 @@ package org.cgiar.ccafs.marlo.data.model;
 // Generated Jul 29, 2016 8:50:03 AM by Hibernate Tools 4.3.1.Final
 
 
-import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.Date;
@@ -276,7 +275,7 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
   public boolean isCoordinator() {
     try {
       for (ProjectPartnerPerson person : partnerPersons) {
-        if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PC)) {
+        if (person.getContactType().equals("PC")) {
           return true;
         }
       }
@@ -294,7 +293,7 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
   public boolean isLeader() {
     try {
       for (ProjectPartnerPerson person : partnerPersons) {
-        if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL)) {
+        if (person.getContactType().equals("PL")) {
           return true;
         }
       }

@@ -1,0 +1,340 @@
+#globalProject {
+    float: left;
+    margin-right: 5%;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+#content {
+    border: 1px dashed #d1d1d1;
+    padding: 10px;
+    margin-bottom: 25px;
+    margin-top: 12px;
+}
+
+.locationLevel-option {
+    float: left;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.locations span {
+}
+
+.locations {
+    border: 1px solid #d1d1d1;
+    /* background-color: #f4f4f4; */
+    margin-bottom: 6px;
+    border-radius: 4px;
+    height: 26px;
+    line-height: 26px;
+}
+
+.checkBox {
+    text-align: center;
+    font-size: 0.94em;
+    /* margin-bottom: 15px; */
+}
+
+.optionContent {
+    margin-bottom: 25px;
+}
+
+
+.locationLevel-option span {
+    float: right;
+}
+
+.locationLevel {
+    margin-bottom: 25px;
+}
+
+.locationName-content {
+    background-color: #f4f4f4;
+    font-size: 1em;
+    margin-bottom: 0;
+}
+
+.locationLevel-optionContent {
+    /* border-top: none; */
+    margin-top: 0;
+    /* border: 1px solid #D1D1D1; */
+    /* padding: 9px 22px 9px 22px; */
+    /* border-radius: 4px; */
+    position: relative;
+    /* min-height: 100px; */
+}
+
+.collapsible {
+    padding-top: 2px;
+    float: left;
+    margin-right: 2px;
+}
+
+.selectWrapper {
+    overflow-x: hidden;
+    overflow-y: auto;
+    /* max-height: 300px; */
+}
+
+#map {
+    padding: 0;
+    height: 100%;
+    border: 2px solid #aaa;
+}
+
+.map {
+    height: 500px;
+    margin-bottom: 30px;
+    margin-top: 15px;
+}
+
+.selectLocationLevel {
+    height: 30px;
+}
+
+.latitude {
+    margin-right: 10px;
+}
+
+.coordinates-inputs input {
+    border-radius: 8px;
+    height: 25px;
+}
+
+.latitudeWrapper {
+    width: 24%;
+    float: left;
+    margin-left: 1%;
+}
+
+.longitudeWrapper {
+    width: 24%;
+    float: left;
+    margin-left: 1%;
+}
+
+.nameWrapper {
+    width: 50%;
+    float: left;
+}
+
+.nameMap {
+    width: 80%;
+    display: inline-block;
+}
+
+span.lPos {
+    color: darkgray;
+    font-size: 0.8em;
+}
+
+.locations.selected {
+    background-color: #ccc;
+    border: 1px dashed #777;
+}
+
+.locationName {
+    cursor: pointer;
+}
+
+.selectWrapper-horizontal {
+    overflow-x: auto;
+    overflow-y: hidden;
+    max-height: 400px;
+    max-width: 100%;
+}
+
+.select-horizontal {
+    width: 2000px;
+}
+
+.locationLevel-horizontal {
+    width: 365px;
+    float: left;
+    margin-right: 20px;
+}
+
+span.select2.select2-container.select2-container--default {
+}
+
+.onoffswitch {
+    /* margin-bottom: 20px; */
+}
+
+.view {
+    margin: auto 15px 10px 0px;
+    border-radius: 6px;
+    cursor: pointer;
+    float: right;
+    padding: 2px 3px;
+}
+
+.isGlobal {
+    text-align: right;
+}
+
+div#selectsContent {
+    margin-bottom: 25px;
+}
+
+.locationLevel-optionSelect {
+    cursor: pointer;
+}
+
+.addLocation {
+    height: 25px;
+}
+
+.coordinates-inputs {
+    margin-top: 10px;
+}
+
+.checkboxFour {
+  width: 26px;
+  height: 26px;
+  background: #ddd;
+  /* margin: 20px 90px; */
+  border-radius: 100%;
+  position: relative;
+  box-shadow: 0px 1px 3px rgba(0,0,0,0.5);
+}
+
+.checkboxFour label {
+  display: block;
+  width: 16px;
+  height: 16px;
+  border-radius: 100px;
+  transition: all .5s ease;
+  cursor: pointer;
+  position: absolute;
+  top: 5px;
+  left: 7px;
+  z-index: 1;
+  background: #333;
+  box-shadow:inset 0px 1px 3px rgba(0,0,0,0.5);
+}
+
+.checkboxFour input[type=checkbox]:checked + label {
+  background: #26ca28;
+}
+
+span#globalText {
+    display: block;
+    text-align: center;
+}
+
+span#globalHelp {
+    font-size: 0.7em;
+}
+
+span.allCountriesQuestion {
+    position: relative;
+    top: 0px;
+    font-size: 0.85em;
+    margin-bottom: 10px;
+}
+
+.allCountries {
+    display: inline-block;
+}
+
+.allCountriesQuestion span {
+    display: inline-block;
+}
+
+.selectLocations {
+    max-width: 450px;
+}
+
+li.select2-search.select2-search--inline{
+  width:100%;
+}
+
+.cancelButton{
+    padding: 4px 25px 4px 28px;
+    margin: 5px 0;
+    text-decoration: none;
+    cursor: pointer;
+    background-color: #2BA6CB;
+    color: #fff;
+    border: 0;
+    border-bottom: 3px solid #1E94B8;
+    border-radius: 2px;
+    text-decoration: none;
+}
+
+
+.acceptLocation{
+  position:absolute;
+  right: 0px;
+  top: 4px;
+  width:20px;
+  height:20px;
+  cursor:pointer;
+  background-image:url(../../images/global/icon-check.png);
+  background-repeat: no-repeat;
+}
+
+.notAcceptLocation{
+  position:absolute;
+  right: 0px;
+  top: 4px;
+  width:20px;
+  height:20px;
+  cursor:pointer;
+  background-image:url(../../images/global/icon-check.png);
+  background-repeat: no-repeat;
+  opacity:0.2;
+}
+
+.recommendedLocName{
+  cursor:pointer;
+}
+
+.fundingContent{
+  border:1px dashed #ccc; 
+  margin:-7px 0 10px 0;
+  min-height:90px;
+  max-height:90px;
+  overflow: auto;
+}
+}
+
+.nameWrapper-locLevel {}
+
+.nameWrapper-locLevel {
+    width: 40%;
+    float: left;
+}
+
+.latitudeWrapper-locLevel {
+    width: 20%;
+    float: left;
+    margin-left: 10px;
+}
+
+.longitudeWrapper-locLevel {
+    width: 20%;
+    float: left;
+    margin-left: 10px;
+}
+
+.addLoc-locLevel{
+    background-color: #668fda;
+    color: white;
+    text-align: center;
+    padding-left: 5px;
+    padding-right: 5px;
+    cursor:pointer;
+    line-height: 25px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.3);
+    border-radius: 3px;
+    border: 1px solid #668fda;
+    font-size: 12px;
+    margin-top:8px;
+}
+
+.addLoc-locLevel b{
+  font-family: Roboto,Arial,sans-sefif;
+}

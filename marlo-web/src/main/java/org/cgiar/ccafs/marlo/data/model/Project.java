@@ -353,7 +353,7 @@ public class Project implements java.io.Serializable, IAuditLog {
       for (ProjectPartner partner : partners) {
         if (partner.getPartnerPersons() != null) {
           for (ProjectPartnerPerson person : partner.getPartnerPersons()) {
-            if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PC)) {
+            if (person.getContactType().equals("PC")) {
               projectCoordinators.add(person);
             }
           }
@@ -366,7 +366,7 @@ public class Project implements java.io.Serializable, IAuditLog {
         if (partner.getProjectPartnerPersons() != null) {
           for (ProjectPartnerPerson person : partner.getProjectPartnerPersons()) {
 
-            if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PC) && person.isActive()) {
+            if (person.getContactType().equals("PC") && person.isActive()) {
               projectCoordinators.add(person);
             }
           }
@@ -470,7 +470,7 @@ public class Project implements java.io.Serializable, IAuditLog {
 
         if (partner.getPartnerPersons() != null) {
           for (ProjectPartnerPerson person : partner.getPartnerPersons()) {
-            if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL)) {
+            if (person.getContactType().equals("PL")) {
               return partner;
             }
           }
@@ -484,7 +484,7 @@ public class Project implements java.io.Serializable, IAuditLog {
 
           for (ProjectPartnerPerson person : partner.getProjectPartnerPersons()) {
             if (person.isActive()) {
-              if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL) && person.isActive()) {
+              if (person.getContactType().equals("PL") && person.isActive()) {
                 return partner;
               }
             }
@@ -546,7 +546,7 @@ public class Project implements java.io.Serializable, IAuditLog {
       for (ProjectPartner partner : partners) {
         for (ProjectPartnerPerson person : partner.getPartnerPersons()) {
 
-          if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL)) {
+          if (person.getContactType().equals("PL")) {
             return person;
 
           }
@@ -558,7 +558,7 @@ public class Project implements java.io.Serializable, IAuditLog {
         .collect(Collectors.toList())) {
         for (ProjectPartnerPerson person : partner.getProjectPartnerPersons()) {
           if (person.isActive()) {
-            if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL)) {
+            if (person.getContactType().equals("PL")) {
               return person;
             }
           }
@@ -880,11 +880,6 @@ public class Project implements java.io.Serializable, IAuditLog {
   @Override
   public boolean isActive() {
     return isActive;
-  }
-
-
-  public void setActive(boolean isActive) {
-    this.isActive = isActive;
   }
 
 
