@@ -44,7 +44,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public class PartnersSaveAction extends BaseAction {
 
   /**
@@ -74,10 +73,9 @@ public class PartnersSaveAction extends BaseAction {
   // private ActivityPartner activityPartner;
   private boolean messageSent;
 
-
+  private String partnerWebPage;
   private int projectID;
   private int fundingSourceID;
-
 
   private int activityID;
 
@@ -143,6 +141,14 @@ public class PartnersSaveAction extends BaseAction {
       projectID = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
       LOG.info("The user {} load the request partner section related to the project {}.",
         this.getCurrentUser().getEmail(), projectID);
+    }
+    // Take the fundingSource id only the first time the page loads
+    if (this.getRequest().getParameter(APConstants.FUNDING_SOURCE_REQUEST_ID) != null
+      && Integer.parseInt(this.getRequest().getParameter(APConstants.FUNDING_SOURCE_REQUEST_ID)) != 0) {
+      fundingSourceID =
+        Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.FUNDING_SOURCE_REQUEST_ID)));
+      LOG.info("The user {} load the request partner section related to the funding source {}.",
+        this.getCurrentUser().getEmail(), fundingSourceID);
     }
 
     // Take the fundingSource id only the first time the page loads
@@ -278,13 +284,11 @@ public class PartnersSaveAction extends BaseAction {
         this.getCurrentUser().getEmail(), fundingSourceID);
     }
 
-
     Collection<String> messages = this.getActionMessages();
     this.addActionMessage("message:" + this.getText("saving.saved"));
     messages = this.getActionMessages();
     return SUCCESS;
   }
-
 
   public void setActivityID(int activityID) {
     this.activityID = activityID;
@@ -293,7 +297,6 @@ public class PartnersSaveAction extends BaseAction {
   public void setActivityPartner(ActivityPartner activityPartner) {
     this.activityPartner = activityPartner;
   }
-
 
   public void setFundingSourceID(int fundingSourceID) {
     this.fundingSourceID = fundingSourceID;

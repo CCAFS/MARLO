@@ -67,7 +67,7 @@
         <input type="hidden" id="message.success" value="[@s.text name="partnersSave.successMessage" /]"/>
         <input type="hidden" name="projectID" value="${projectID}"/>
         <input type="hidden" name="fundingSourceID" value="${fundingSourceID}"/>
-        
+
         <div class="clearfix"></div>
         <br />
         <div class="form-group text-center">
