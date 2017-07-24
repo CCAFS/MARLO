@@ -92,6 +92,9 @@ public class PartnerRequest implements java.io.Serializable {
     return this.locElement.getName();
   }
 
+  public String getCountryISO() {
+    return this.locElement.getIsoAlpha2();
+  }
 
   public User getCreatedBy() {
     return createdBy;

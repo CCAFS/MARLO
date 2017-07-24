@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "MARLO Admin" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
-[#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
+[#assign pageLibs = ["datatables.net", "datatables.net-bs", "flat-flags"] /]
 [#assign customJS = [ "${baseUrlMedia}/js/superadmin/marloInstitutions.js" ] /]
 [#assign customCSS = [ "${baseUrlMedia}/css/superadmin/superadmin.css","${baseUrlMedia}/css/global/customDataTable.css" ] /]
 [#assign currentSection = "superadmin" /]
@@ -32,7 +32,6 @@
         
           [#-- Requested Institutions--]
           <h4 class="sectionTitle">[@s.text name="marloRequestInstitution.title" /]</h4>  
-                 
           [@partnersList partners=partners  canEdit=editable namespace="/marloInstitutions" defaultAction="${(crpSession)!}/marloInstitutions"/]
           
         [/@s.form]
@@ -41,57 +40,81 @@
   </div>
 </section>
 
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Reject the request</h4>
+      </div>
+      <div class="modal-body">
+        <div class="requestInfo">
+        
+        </div>
+        
+        <div class="form-group">
+          [@customForm.textArea name="marloRequestInstitution.justification" required=true className="limitWords-30" /]
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger"> <span class="glyphicon glyphicon-remove"></span> Reject</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]
 
 
 [#macro partnersList partners={} canEdit=false  namespace="/" defaultAction=""]
-  <table class="partnerList" id="partners">
-    <thead>
-      <tr class="subHeader">
-        <th id="partnerName">[@s.text name="Partner Name" /]</th>
-        <th id="partnerType" >[@s.text name="Type" /]</th>
-        <th id="partnerCountry">[@s.text name="Country" /]</th>
-        <th id="requestedBy" >[@s.text name="Requested By" /]</th>
-        <th id="action">[@s.text name="Action" /]</th>
-      </tr>
-    </thead>
-    <tbody>
+  <ul class="list-group">
     [#if partners?has_content]
       [#list partners as partner]
-        
-        <tr>
-          [#-- partner name --]
-          <td class="deliverableId">
-              ${partner.partnerInfo}
-          </td>
-          [#-- partner type --]
-          <td class="left">
-            ${partner.institutionType.name}
-          </td>
-          [#-- Country --]
-          <td class="text-center">
-            ${partner.countryInfo}
-          </td>
-          [#-- Requested by --]
-          <td class="text-center">
-          ${(partner.createdBy.composedName)!'none'}
-          </td>
+        <li class="list-group-item partnerRequestItem">
+          [#-- Partner name --]
+          <div class="requestInfo">
+            <div class="form-group">
+               <h4 style="font-family: 'Open Sans';">${partner.partnerInfo}</h4>
+               [#if partner.webPage??]
+                <i>(<a href="${partner.webPage}">${partner.webPage}</a>)</i>
+               [/#if]
+               <hr />
+            </div>
+            
+            <div class="form-group">
+              [#-- Partner type --]
+              <p><strong>[@s.text name="Type" /]:</strong> <i>${partner.institutionType.name}</i></p>
+              [#-- Country --]
+              <p><strong>[@s.text name="Country" /]:</strong> <i class="flag-sm flag-sm-${(partner.countryISO?upper_case)!}"></i> <i>${partner.countryInfo}</i></p>
+              [#-- Requested by --]
+              <p><strong>[@s.text name="Requested By" /]:</strong> <i>${(partner.createdBy.composedName?html)!'none'}</i></p>
+            </div>
+          </div>
+          
           [#-- Action --]
-          <td class="">
-            <a href="[@s.url namespace="" action="superadmin/addPartner"][@s.param name='requestID']${partner.id?c}[/@s.param][/@s.url]">
-              <span class="text-center col-md-6 glyphicon glyphicon-ok" style="cursor:pointer;"> Accept</span>
+          <div class="btn-group pull-right" role="group" aria-label="..."">
+            [#-- Accept --]
+            <a class="btn btn-success btn-sm" href="[@s.url namespace="" action="superadmin/addPartner"][@s.param name='requestID']${partner.id?c}[/@s.param][/@s.url]">
+              <span class="glyphicon glyphicon-ok"></span> Accept
             </a>
-            <a href="[@s.url namespace="" action="superadmin/removePartner"][@s.param name='requestID']${partner.id?c}[/@s.param][/@s.url]">
-              <span class="text-center col-md-6 glyphicon glyphicon-remove" style="cursor:pointer;"> Reject</span>
+            [#-- Reject --]
+            <a class="btn btn-danger btn-sm rejectRequest partnerRequestId-${partner.id}" href="[@s.url namespace="" action="superadmin/removePartner"][@s.param name='requestID']${partner.id?c}[/@s.param][/@s.url]">
+               <span class="glyphicon glyphicon-remove"></span> Reject
             </a>
-          </td>
-        </tr>  
+          </div>
+          <div class="clearfix"></div>
+        </li>
       [/#list]
-      [/#if]
-    </tbody>
-  </table>
+    [#else]
+      <div class="text-center">
+        No partner requested yet.
+      </div>
+    [/#if]
+  </ul>
+  
 [/#macro]
 
 

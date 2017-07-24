@@ -1,8 +1,21 @@
-.acronymBlock {float: left;width: 18%;padding-left: 0;padding-right: 1%;}
+.acronymBlock {
+  float: left;
+  width: 18%;
+  padding-left: 0;
+  padding-right: 1%;
+}
 
-.nameBlock {padding: 0;width: 60%;float: left;}
+.nameBlock {
+  padding: 0;
+  width: 60%;
+  float: left;
+}
 
-.buttonBlock {width: 20%;padding-right: 0;float: right;}
+.buttonBlock {
+  width: 20%;
+  padding-right: 0;
+  float: right;
+}
 
 li.targetUnit {
   float: left;
@@ -10,11 +23,11 @@ li.targetUnit {
   margin-left: 1%;
 }
 
-.srfIdo {/* padding: 5px; */}
-
+.srfIdo {
+  /* padding: 5px; */
+}
 
 /** SLOs **/
-
 .srfSlo .blockTitle, .crpParameters .blockTitle {
   cursor: pointer;
   padding-left: 20px;
@@ -31,16 +44,15 @@ li.targetUnit {
   background-image: url(../../images/global/arrow-down.png);
 }
 
-.srfSlo .blockTitle small, .crpParameters .blockTitle small{
+.srfSlo .blockTitle small, .crpParameters .blockTitle small {
   color: #389b98;
 }
 
-.srfSlo .blockContent, .crpParameters .blockContent{
+.srfSlo .blockContent, .crpParameters .blockContent {
   padding: 0 15px 20px 15px;
 }
 
 /** IDOs **/
-
 .srfIdo .blockTitle {
   cursor: pointer;
   padding-left: 20px;
@@ -57,74 +69,73 @@ li.targetUnit {
   background-image: url(../../images/global/arrow-down.png);
 }
 
-.srfIdo .blockTitle small{
+.srfIdo .blockTitle small {
   color: #389b98;
 }
 
-.srfIdo .blockContent{
+.srfIdo .blockContent {
   padding: 0 15px 20px 15px;
 }
 
 .targetsContent h6 {
-    display: inline-block;
-    margin-top: 11px;
+  display: inline-block;
+  margin-top: 11px;
 }
 
 .targetsList {
-    margin-top: 15px;
+  margin-top: 15px;
 }
 
 .targetRemove {
-    margin-left: 2%;
-    cursor: pointer;
+  margin-left: 2%;
+  cursor: pointer;
 }
 
 .targetsContent input {
-    width: 17%;
-    margin-right: 2%;
-    display: inline-block;
+  width: 17%;
+  margin-right: 2%;
+  display: inline-block;
 }
 
 .targetsContent {
-    margin: 0px 4%;
-    padding: 0 5%;
-    border: 1px dashed #ccc;
-    margin-bottom: 5px;
-    border-radius: 2px;
-    background-color: #f5f5f5;
+  margin: 0px 4%;
+  padding: 0 5%;
+  border: 1px dashed #ccc;
+  margin-bottom: 5px;
+  border-radius: 2px;
+  background-color: #f5f5f5;
 }
 
-.roleSpan{
-    list-style: none;
-    padding: 1px 4px 0px 6px;
-    background-color: #F7F7F7;
-    border: 1px solid #E0E0E0 !important;
-    box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
-    margin-bottom: 5px;
-    position: relative;
-    display: block;
+.roleSpan {
+  list-style: none;
+  padding: 1px 4px 0px 6px;
+  background-color: #F7F7F7;
+  border: 1px solid #E0E0E0 !important;
+  box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  margin-bottom: 5px;
+  position: relative;
+  display: block;
 }
 
 table#marloUsersTable {
-    font-size: 0.9em;
+  font-size: 0.9em;
 }
 
-table#marloUsersTable i { 
-    color: #a9a9a9;
+table#marloUsersTable i {
+  color: #a9a9a9;
 }
 
 table#marloUsersTable tr {
-  cursor:pointer;
+  cursor: pointer;
 }
 
-
 /* Radio */
-
 .radioFlat input[type="radio"] {
   position: absolute;
   opacity: 0;
 }
+
 .radioFlat input[type="radio"] + .radio-label:before {
   content: '';
   background: #f4f4f4;
@@ -142,10 +153,12 @@ table#marloUsersTable tr {
   -webkit-transition: all 250ms ease;
   transition: all 250ms ease;
 }
+
 .radioFlat input[type="radio"]:checked + .radio-label:before {
   background-color: #3197EE;
   box-shadow: inset 0 0 0 4px #f4f4f4;
 }
+
 .radioFlat input[type="radio"]:focus + .radio-label:before {
   outline: none;
   border-color: #3197EE;
@@ -156,6 +169,7 @@ table#marloUsersTable tr {
   background-color: #4CAF50;
   box-shadow: inset 0 0 0 4px #f4f4f4;
 }
+
 .radioFlat input[type="radio"]:focus + .radio-label.radio-label-yes:before {
   outline: none;
   border-color: #4CAF50;
@@ -166,25 +180,26 @@ table#marloUsersTable tr {
   background-color: #F44336;
   box-shadow: inset 0 0 0 4px #f4f4f4;
 }
+
 .radioFlat input[type="radio"]:focus + .radio-label.radio-label-no:before {
   outline: none;
   border-color: #F44336;
 }
-
 
 .radio input[type="radio"]:disabled + .radio-label:before {
   box-shadow: inset 0 0 0 4px #f4f4f4;
   border-color: #b4b4b4;
   background: #b4b4b4;
 }
+
 .radio input[type="radio"] + .radio-label:empty:before {
   margin-right: 0;
 }
 
 .locElementType {
-    width: 49%;
-    margin-left: 1%;
-    float: left;
+  width: 49%;
+  margin-left: 1%;
+  float: left;
 }
 
 table.ui-datepicker-calendar {
@@ -193,4 +208,12 @@ table.ui-datepicker-calendar {
 
 td {
   vertical-align: middle;
+}
+
+.partnerRequestItem p {
+  line-height: 0.5em;
+}
+
+.partnerRequestItem .flag-sm{
+  vertical-align: sub;
 }
