@@ -265,7 +265,7 @@
 
 .participantMessage{
 	text-align: center;
-	margin: 0 3%;
+	margin: 0 3%  2%;
 }
 
 .warning{
@@ -303,6 +303,12 @@
 
 .capdevParticipantsTable{
 	overflow-x: scroll;
+	margin: 2% 1% 2%;
+}
+
+.capdev-participantslist-title{
+	border-bottom: 3px solid #2e874f;
+	margin: 0 0 2% 0;
 }
 
 

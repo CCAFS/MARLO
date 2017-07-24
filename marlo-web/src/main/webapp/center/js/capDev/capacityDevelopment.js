@@ -392,16 +392,6 @@
 
 
 
- 
-
-
-
-  
-
-
-
-    
-
 
 
   function checkItems(block) {
@@ -817,6 +807,33 @@
     });
 
   }
+
+
+
+  //event to delete list of participants
+  $(".deleteparticipants").click(function(){
+    console.log("deleteparticipants");
+    var capdevID = $(".capdev-id").val();
+    $.ajax({
+      'url': baseURL + '/delete_list_of_participants.do',
+      'data': {
+        q: capdevID
+      },
+      beforeSend: function() {
+        console.log("antes de enviar el ajax")
+      },
+      success: function(data) {
+      },
+      error: function() {
+        console.log("algun error")
+      },
+      complete: function() {
+        console.log("terminado todo")
+        location.reload();
+      }
+    });
+
+  })
 
 
   

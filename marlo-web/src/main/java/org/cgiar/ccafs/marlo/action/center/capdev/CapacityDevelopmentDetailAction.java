@@ -112,7 +112,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     return super.cancel();
   }
 
-
   public String deleteCountry() {
     System.out.println("delete country");
     final Map<String, Object> parameters = this.getParameters();
@@ -122,6 +121,27 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     final CapdevLocations capdev_country = capdevLocationService.getCapdevLocationsById(capDevCountryID);
     capdev_country.setActive(false);
     capdevLocationService.saveCapdevLocations(capdev_country);
+    return SUCCESS;
+  }
+
+  public String deleteListOfParticipants() throws Exception {
+    System.out.println("deleteListOfParticipants");
+    final Map<String, Object> parameters = this.getParameters();
+    final long capDevID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
+    System.out.println(capDevID);
+    capdev = capdevService.getCapacityDevelopmentById(capDevID);
+    final List<CapdevParticipant> listOfParticipants = new ArrayList<>(capdev.getCapdevParticipants());
+    for (final CapdevParticipant obj : listOfParticipants) {
+      obj.setActive(false);
+      obj.setUsersByModifiedBy(this.getCurrentUser());
+      capdevParicipantService.saveCapdevParticipant(obj);
+    }
+    capdev.setNumParticipants(null);
+    capdev.setNumMen(null);
+    capdev.setNumWomen(null);
+    capdevService.saveCapacityDevelopment(capdev);
+
+
     return SUCCESS;
   }
 
@@ -371,6 +391,14 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
         }
 
       }
+      if (capdev.getCategory() == 2) {
+        if (!participants.isEmpty()) {
+          if (!participants.get(0).isActive()) {
+            capdev.setCapdevParticipants(null);
+          }
+        }
+
+      }
 
 
       if (!capdev.getCapdevLocations().isEmpty()) {
@@ -429,14 +457,13 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     final CapacityDevelopment capdevDB = capdevService.getCapacityDevelopmentById(capdevID);
 
     capdevDB.setUsersByCreatedBy(currentUser);
+    capdevDB.setTitle(capdev.getTitle());
     capdevDB.setCapdevType(capdev.getCapdevType());
     capdevDB.setStartDate(capdev.getStartDate());
     capdevDB.setEndDate(capdev.getEndDate());
 
     // if capdev is individual
     if (capdevDB.getCategory() == 1) {
-      capdev.setTitle(participant.getName() + " " + participant.getLastName());
-      capdevDB.setTitle(capdev.getTitle());
       capdevService.saveCapacityDevelopment(capdevDB);
       this.saveParticipant(participant);
       if (capdevDB.getCapdevParticipants().isEmpty()) {
@@ -662,6 +689,12 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
     if (save) {
       // validator.validateCapDevDetail(this, capdev, participant, uploadFile, uploadFileContentType);
+      if (capdev.getTitle().equalsIgnoreCase("")) {
+        this.addFieldError("capdev.title", "Title is required.");
+      }
+      if (capdev.getTitle().length() > 500) {
+        this.addFieldError("capdev.title", "Title is very length.");
+      }
       if (capdev.getCapdevType().getId() == -1) {
         this.addFieldError("capdev.capdevType.id", "Type is required.");
         this.getInvalidFields().put("capdev.capdevType.id", InvalidFieldsMessages.EMPTYFIELD);
@@ -700,11 +733,11 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
         if (participant.getEmail().equalsIgnoreCase("")) {
           this.addFieldError("participant.email", "Email is required.");
         }
-        if (!participant.getEmail().equalsIgnoreCase("")) {
-          final boolean validEmail = validator.validateEmail(participant.getEmail());
+        if (!participant.getPersonalEmail().equalsIgnoreCase("")) {
+          final boolean validEmail = validator.validateEmail(participant.getPersonalEmail());
           if (!validEmail) {
             System.out.println("Email no valido");
-            this.addFieldError("participant.email", "enter a valid email address.");
+            this.addFieldError("participant.personalEmail", "enter a valid email address.");
           }
         }
         if (participant.getInstitution().equalsIgnoreCase("")) {
@@ -726,15 +759,9 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
           this.addFieldError("participant.fellowship", "Fellowship is very length.");
         }
 
-
       }
+
       if (capdev.getCategory() == 2) {
-        if (capdev.getTitle().equalsIgnoreCase("")) {
-          this.addFieldError("capdev.title", "Title is required.");
-        }
-        if (capdev.getTitle().length() > 500) {
-          this.addFieldError("capdev.title", "Title is very length.");
-        }
         if (capdev.getCtFirstName().equalsIgnoreCase("") || capdev.getCtLastName().equalsIgnoreCase("")
           || capdev.getCtEmail().equalsIgnoreCase("")) {
           this.addFieldError("contact", "Contact person is required.");

@@ -64,7 +64,7 @@
 
 			<div  class="fullForm" >
 				<!-- Title-->
-				<div class="row newCapdevField group individual" style="display:${(capdev.category == 1)?string('none','block')}">
+				<div class="row newCapdevField" >
 					<div class="col-md-12 "> 
 						<div class="" > 
 							[@customForm.input name="capdev.title" type="text" help="capdev.help.title" i18nkey="capdev.form.title"  required=true  /]
@@ -124,12 +124,13 @@
 				<div class="row grupsParticipantsForm">
 					[#if capdev.capdevParticipants?has_content && capdev.capdevParticipants?size > 1] 
 						<div class="capdevParticipantsTable">
+							<div class="capdev-participantslist-title">List of participants</div>
 							[@capdevList capdev.capdevParticipants /]
-							<!-- <div class="col-md-12">
+							<div class="col-md-12">
 								<div class="pull-right">	
-						        	<button type="button" class="btn btn-primary" title="Delete list of participants">Clear</button>
+						        	<button type="button" class="btn btn-primary deleteparticipants" title="Delete list of participants">Clear</button>
 			    				</div>
-							</div> -->
+							</div>
 						</div>
 					[#else]
 						<div class="col-md-12 newCapdevField participantsheader">
@@ -211,22 +212,33 @@
 						</div>
 					</div>
 					<div class="col-md-12 newCapdevField">
+						<div class="col-md-6">
+							[@customForm.input name="participant.middleName" i18nkey="capdev.participant.middleName" type="text"  /]
+						</div>
 						<div class="col-md-6 genderSelect">
 							<input type="hidden" name="" value="${(participant.gender)!}" class="genderInput"/>
 							[@customForm.select name="participant.gender" listName="genders" keyFieldName="value" displayFieldName="displayName" help="" i18nkey="capdev.participant.gender"  placeholder="capdev.select" required=true editable=true className=""/]
 						</div>
+						
+					</div>
+					<div class="col-md-12 newCapdevField">
+						
 						<div class="col-md-6 pCitizenshipcountriesList">
 							<!-- [@customForm.input name="participant.citizenship" i18nkey="capdev.participant.citizenship" type="text" required=true /] -->
 							<input type="hidden" name="" value="${(participant.citizenship)!}" class="citizenshipInput"/>
 							[@customForm.select name="participant.citizenship" listName="countriesList" keyFieldName="value" displayFieldName="displayName" help="" i18nkey="capdev.participant.citizenship" className="" multiple=false placeholder="capdev.select" required=true /]
 						</div>
-					</div>
-					<div class="col-md-12 newCapdevField">
 						<div class="col-md-6">
 							[@customForm.input name="participant.highestDegree" i18nkey="capdev.participant.Highestdegree" type="text" /]
 						</div>
+					</div>
+					<div class="col-md-12 newCapdevField">
+						
 						<div class="col-md-6">
-							[@customForm.input name="participant.email" i18nkey="capdev.participant.Email" type="text" required=true /]
+							[@customForm.input name="participant.personalEmail" i18nkey="capdev.participant.personalEmail" type="text" required=true /]
+						</div>
+						<div class="col-md-6">
+							[@customForm.input name="participant.email" i18nkey="capdev.participant.Email" type="text"  /]
 						</div>
 					</div>
 					<div class="col-md-12 newCapdevField">
@@ -247,6 +259,7 @@
 							[@customForm.input name="participant.fellowship" i18nkey="capdev.participant.Fellowship" type="text" /]
 						</div>
 					</div>
+					
 				</div>
 
 				
@@ -320,7 +333,7 @@
 
 
 				<div style="display: none;">
-					[@customForm.input name="capdevID" i18nkey="capdev.id" value="${capdev.id}"  type="text"  /]
+					[@customForm.input name="capdevID" i18nkey="capdev.id" value="${capdev.id}"  type="text" className="capdev-id" /]
 					[@customForm.input name="capdevCategory" i18nkey="capdev.category" value="${capdev.category}"  type="text"  /]
 				</div>
 

@@ -23,6 +23,9 @@
 		<property name="name" type="string">
 			<column name="name" length="200" not-null="true" />
 		</property>
+		<property name="middleName" type="string">
+			<column name="middle_name" length="200" not-null="true" />
+		</property>
 		<property name="lastName" type="string">
 			<column name="last_name" length="200" not-null="true" />
 		</property>
@@ -43,6 +46,9 @@
 		</property>
 		<property name="email" type="string">
 			<column name="email" length="200" not-null="true" />
+		</property>
+		<property name="personalEmail" type="string">
+			<column name="personal_email" length="200" not-null="true" />
 		</property>
 		<property name="reference" type="string">
 			<column name="reference" length="200" />

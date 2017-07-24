@@ -22,6 +22,7 @@ public class Participant implements java.io.Serializable {
   private User usersByCreatedBy;
   private long code;
   private String name;
+  private String middleName;
   private String lastName;
   private String gender;
   private String citizenship;
@@ -29,6 +30,7 @@ public class Participant implements java.io.Serializable {
   private String highestDegree;
   private String institution;
   private String email;
+  private String personalEmail;
   private String reference;
   private String supervisor;
   private String fellowship;
@@ -41,26 +43,29 @@ public class Participant implements java.io.Serializable {
   }
 
 
-  public Participant(User usersByCreatedBy, long code, String name, String lastName, String gender, String citizenship,
-    String email, boolean active) {
+  public Participant(User usersByCreatedBy, long code, String name, String middleName, String lastName, String gender,
+    String citizenship, String email, String personalEmail, boolean active) {
     this.usersByCreatedBy = usersByCreatedBy;
     this.code = code;
     this.name = name;
+    this.middleName = middleName;
     this.lastName = lastName;
     this.gender = gender;
     this.citizenship = citizenship;
     this.email = email;
+    this.personalEmail = personalEmail;
     this.active = active;
   }
 
-  public Participant(User usersByModifiedBy, User usersByCreatedBy, long code, String name, String lastName,
-    String gender, String citizenship, String countryOfInstitucion, String highestDegree, String institution,
-    String email, String reference, String supervisor, String fellowship, boolean active, Date aciveSince,
-    String modificationJustification, Set<CapdevParticipant> capdevParticipants) {
+  public Participant(User usersByModifiedBy, User usersByCreatedBy, long code, String name, String middleName,
+    String lastName, String gender, String citizenship, String countryOfInstitucion, String highestDegree,
+    String institution, String email, String personalEmail, String reference, String supervisor, String fellowship,
+    boolean active, Date aciveSince, String modificationJustification, Set<CapdevParticipant> capdevParticipants) {
     this.usersByModifiedBy = usersByModifiedBy;
     this.usersByCreatedBy = usersByCreatedBy;
     this.code = code;
     this.name = name;
+    this.middleName = middleName;
     this.lastName = lastName;
     this.gender = gender;
     this.citizenship = citizenship;
@@ -68,6 +73,7 @@ public class Participant implements java.io.Serializable {
     this.highestDegree = highestDegree;
     this.institution = institution;
     this.email = email;
+    this.personalEmail = personalEmail;
     this.reference = reference;
     this.supervisor = supervisor;
     this.fellowship = fellowship;
@@ -126,12 +132,20 @@ public class Participant implements java.io.Serializable {
     return this.lastName;
   }
 
+  public String getMiddleName() {
+    return middleName;
+  }
+
   public String getModificationJustification() {
     return this.modificationJustification;
   }
 
   public String getName() {
     return this.name;
+  }
+
+  public String getPersonalEmail() {
+    return personalEmail;
   }
 
   public String getReference() {
@@ -162,9 +176,11 @@ public class Participant implements java.io.Serializable {
     this.active = active;
   }
 
+
   public void setCapdevParticipants(Set<CapdevParticipant> capdevParticipants) {
     this.capdevParticipants = capdevParticipants;
   }
+
 
   public void setCitizenship(String citizenship) {
     this.citizenship = citizenship;
@@ -175,11 +191,9 @@ public class Participant implements java.io.Serializable {
     this.code = code;
   }
 
-
   public void setCountryOfInstitucion(String countryOfInstitucion) {
     this.countryOfInstitucion = countryOfInstitucion;
   }
-
 
   public void setEmail(String email) {
     this.email = email;
@@ -209,6 +223,10 @@ public class Participant implements java.io.Serializable {
     this.lastName = lastName;
   }
 
+  public void setMiddleName(String middleName) {
+    this.middleName = middleName;
+  }
+
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
@@ -217,17 +235,25 @@ public class Participant implements java.io.Serializable {
     this.name = name;
   }
 
+  public void setPersonalEmail(String personalEmail) {
+    this.personalEmail = personalEmail;
+  }
+
+
   public void setReference(String reference) {
     this.reference = reference;
   }
+
 
   public void setSupervisor(String supervisor) {
     this.supervisor = supervisor;
   }
 
+
   public void setUsersByCreatedBy(User usersByCreatedBy) {
     this.usersByCreatedBy = usersByCreatedBy;
   }
+
 
   public void setUsersByModifiedBy(User usersByModifiedBy) {
     this.usersByModifiedBy = usersByModifiedBy;
