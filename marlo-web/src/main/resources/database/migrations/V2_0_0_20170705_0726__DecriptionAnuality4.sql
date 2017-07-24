@@ -1,5 +1,5 @@
 CREATE TEMPORARY TABLE
-IF NOT EXISTS table2 AS (SELECT * FROM auditlog);
+IF NOT EXISTS table_audt AS (SELECT * FROM auditlog);
 
 TRUNCATE TABLE auditlog;
 
@@ -39,7 +39,7 @@ relation_name,
 t2.modification_justification,
   ph.id
 FROM
-  table2 t2
+  table_audt t2
 INNER JOIN crps cp on  t2.DETAIL like  CONCAT('Action: ',cp.acronym ,'%')
 INNER JOIN phases ph ON ph.crp_id = cp.id
 ;

@@ -47,11 +47,12 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   private static final long serialVersionUID = -5737088425960023585L;
 
-  public static final int STANDAR_IDENTIFIER = 1;
 
+  public static final int STANDAR_IDENTIFIER = 1;
 
   @Expose
   private Long id;
+
 
   @Expose
   private Crp crp;
@@ -61,13 +62,12 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   @Expose
   private boolean isActive;
+
   @Expose
   private User modifiedBy;
-
   private String flagshipValue;
+
   private String regionsValue;
-
-
   @Expose
   private Date activeSince;
 
@@ -90,10 +90,10 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   private List<CrpProgram> flagships;
 
+
   private Set<Deliverable> deliverables = new HashSet<Deliverable>(0);
+
   private List<ProjectLocation> locations;
-
-
   private List<CountryLocationLevel> locationsData;
 
 
@@ -101,11 +101,11 @@ public class Project implements java.io.Serializable, IAuditLog {
 
 
   private String overall;
+
+
   private List<ProjectPartner> partners;
   private List<Activity> projectActivities;
   private Set<ProjectBudget> projectBudgetCofinances = new HashSet<ProjectBudget>(0);
-
-
   private Set<ProjectPhase> projectPhases = new HashSet<ProjectPhase>(0);
 
 
@@ -123,12 +123,12 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   private List<ProjectHighlight> highligths;
 
+
   private ProjectComponentLesson projectComponentLesson;
 
   private Set<Activity> activities = new HashSet<Activity>(0);
 
   private List<ProjectBudget> budgets;
-
 
   private List<ProjectBudgetsCluserActvity> budgetsCluserActvities;
 
@@ -159,20 +159,20 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   private List<Deliverable> projectDeliverables;
 
+
   private Set<ProjectFocus> projectFocuses = new HashSet<ProjectFocus>(0);
 
   private Set<ProjectLocationElementType> projectLocationElementTypes = new HashSet<ProjectLocationElementType>(0);
 
   private Set<ProjectLocation> projectLocations = new HashSet<ProjectLocation>(0);
 
-
   private Set<ProjectOutcome> projectOutcomes = new HashSet<ProjectOutcome>(0);
 
 
   private Set<ProjectLeverage> projectLeverages = new HashSet<ProjectLeverage>(0);
 
-  private List<ProjectLeverage> leverages;
 
+  private List<ProjectLeverage> leverages;
 
   private List<ProjectLeverage> leveragesClosed;
 
@@ -407,6 +407,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     return crp;
   }
 
+
   public List<CrpClusterOfActivity> getCrpActivities() {
     return crpActivities;
   }
@@ -418,7 +419,6 @@ public class Project implements java.io.Serializable, IAuditLog {
   public String getCustomID() {
     return customID;
   }
-
 
   public Set<Deliverable> getDeliverables() {
     return deliverables;
@@ -454,6 +454,7 @@ public class Project implements java.io.Serializable, IAuditLog {
   public Set<IpProjectContributionOverview> getIpProjectContributionOverviews() {
     return ipProjectContributionOverviews;
   }
+
 
   public Set<IpProjectContribution> getIpProjectContributions() {
     return ipProjectContributions;
@@ -534,7 +535,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     return null;
   }
 
-
   /**
    * This method returns the project partner person who is leading the project.
    * 
@@ -571,6 +571,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     return null;
   }
 
+
   public List<ProjectLeverage> getLeverages() {
     return leverages;
   }
@@ -586,7 +587,6 @@ public class Project implements java.io.Serializable, IAuditLog {
   public List<CountryLocationLevel> getLocationsData() {
     return locationsData;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -690,10 +690,10 @@ public class Project implements java.io.Serializable, IAuditLog {
     return projectBudgetsCluserActvities;
   }
 
+
   public Set<ProjectClusterActivity> getProjectClusterActivities() {
     return projectClusterActivities;
   }
-
 
   public ProjectComponentLesson getProjectComponentLesson() {
     return projectComponentLesson;
@@ -709,10 +709,10 @@ public class Project implements java.io.Serializable, IAuditLog {
     return projectComponentLessons;
   }
 
+
   public Set<ProjectCrpContribution> getProjectCrpContributions() {
     return projectCrpContributions;
   }
-
 
   public List<Deliverable> getProjectDeliverables() {
     return projectDeliverables;
@@ -880,6 +880,11 @@ public class Project implements java.io.Serializable, IAuditLog {
   @Override
   public boolean isActive() {
     return isActive;
+  }
+
+
+  public void setActive(boolean isActive) {
+    this.isActive = isActive;
   }
 
 

@@ -1,7 +1,7 @@
 
 SET FOREIGN_KEY_CHECKS = 0;
 CREATE TEMPORARY TABLE
-IF NOT EXISTS table2 AS (SELECT * FROM project_component_lessons);
+IF NOT EXISTS tablelessons AS (SELECT * FROM project_component_lessons);
 
 CREATE TEMPORARY TABLE
 IF NOT EXISTS table3 AS (SELECT * FROM project_component_lessons);
@@ -44,7 +44,7 @@ t2.ip_program_id,
 t2.project_outcome_id,
   ph.id
 FROM
-  table2 t2
+  tablelessons t2
 inner join projects p on p.id=t2.project_id 
 inner join  phases ph ON ph.description = t2.cycle and  t2.year=ph.year and ph.crp_id=p.crp_id
 WHERE t2.project_id is not null 

@@ -596,8 +596,9 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     for (Project project : allProjectsBudgets.keySet()) {
       String projectID = project.getId().toString();
       String projectTitle = null;
-      if (project.getTitle() != null && !project.getTitle().trim().isEmpty()) {
-        projectTitle = project.getTitle();
+      if (project.getProjecInfoPhase(this.getActualPhase()).getTitle() != null
+        && !project.getProjecInfoPhase(this.getActualPhase()).getTitle().trim().isEmpty()) {
+        projectTitle = project.getProjecInfoPhase(this.getActualPhase()).getTitle();
       }
 
       Double budgetw1w2 = allProjectsBudgets.get(project).get(0);

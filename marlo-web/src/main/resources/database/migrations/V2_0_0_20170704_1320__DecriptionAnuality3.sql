@@ -1,7 +1,7 @@
 
 SET FOREIGN_KEY_CHECKS = 0;
 CREATE TEMPORARY TABLE
-IF NOT EXISTS table2 AS (SELECT * FROM project_cluster_activities);
+IF NOT EXISTS table_c2 AS (SELECT * FROM project_cluster_activities);
 
 TRUNCATE TABLE project_cluster_activities;
 
@@ -34,7 +34,7 @@ modification_justification,
  t2.modification_justification,
   ph.id
 FROM
-  table2 t2
+  table_c2 t2
 left JOIN project_phases pp ON pp.project_id = t2.project_id
 left JOIN phases ph ON ph.id = pp.id_phase
 ;

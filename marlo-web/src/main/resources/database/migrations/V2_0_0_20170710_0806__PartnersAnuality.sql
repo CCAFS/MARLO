@@ -4,7 +4,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 
 
 CREATE TEMPORARY TABLE
-IF NOT EXISTS table2 AS (SELECT * FROM project_partners);
+IF NOT EXISTS tablepartners AS (SELECT * FROM project_partners);
 
 
 
@@ -64,7 +64,7 @@ t2.responsibilities,
 
   ph.id
 FROM
-  table2 t2
+  tablepartners t2
 left JOIN project_phases pp ON pp.project_id = t2.project_id
 left JOIN phases ph ON ph.id = pp.id_phase
 ;

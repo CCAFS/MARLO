@@ -13,7 +13,7 @@ on po.id=ml.crp_program_outcome_id
 set ml.composed_id=CONCAT(po.composed_id,'-',ml.id) ;
 
 CREATE TEMPORARY TABLE
-IF NOT EXISTS table2 AS (SELECT * FROM crp_program_outcomes);
+IF NOT EXISTS tableoutcomes AS (SELECT * FROM crp_program_outcomes);
 
 
 
@@ -102,7 +102,7 @@ t2.modification_justification,
 t2.composed_id,
   ph.id
 FROM
-  table2 t2
+  tableoutcomes t2
   inner join crp_programs pr on pr.id=t2.crp_program_id
 inner JOIN phases ph ON ph.crp_id=pr.crp_id
 ;

@@ -2370,99 +2370,100 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     if (project.getProjecInfoPhase(this.getActualPhase()).getEndDate() != null) {
       endDate = formatter.format(project.getProjecInfoPhase(this.getActualPhase()).getEndDate());
     }
-    if (project.getLiaisonInstitution() != null) {
-      ml = project.getLiaisonInstitution().getAcronym();
+    if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution() != null) {
+      ml = project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getAcronym();
     }
     if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonUser() != null) {
       ml = project.getProjecInfoPhase(this.getActualPhase()).getLiaisonUser().getLiaisonInstitution().getAcronym();
       mlContact = project.getProjecInfoPhase(this.getActualPhase()).getLiaisonUser().getComposedName() + "\n&lt;"
         + project.getProjecInfoPhase(this.getActualPhase()).getLiaisonUser().getUser().getEmail() + "&gt;";
-    if (project.getLiaisonUser() != null) {
-      mlContact =
-        project.getLiaisonUser().getComposedName() + "\n&lt;" + project.getLiaisonUser().getUser().getEmail() + "&gt;";
-    }
-    // Get type from funding sources
-    String type = "";
-    List<String> typeList = new ArrayList<String>();
-    for (ProjectBudget projectBudget : project.getProjectBudgets().stream()
-      .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getFundingSource() != null)
-      .collect(Collectors.toList())) {
-      typeList.add(projectBudget.getFundingSource().getBudgetType().getName());
-    }
-    // Remove duplicates
-    Set<String> s = new LinkedHashSet<String>(typeList);
-    for (String typeString : s.stream().collect(Collectors.toList())) {
-      if (type.isEmpty()) {
-        type = typeString;
-      } else {
-        type += ", " + typeString;
+      if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonUser() != null) {
+        mlContact = project.getProjecInfoPhase(this.getActualPhase()).getLiaisonUser().getComposedName() + "\n&lt;"
+          + project.getProjecInfoPhase(this.getActualPhase()).getLiaisonUser().getUser().getEmail() + "&gt;";
       }
-    }
-    String status =
-      ProjectStatusEnum.getValue(project.getProjecInfoPhase(this.getActualPhase()).getStatus().intValue()).getStatus();
-    if (projectLeader.getInstitution() != null) {
-      orgLeader = projectLeader.getInstitution().getComposedName();
-
-    }
-    String leader = null;
-    // Check if project leader is assigned
-    if (project.getLeaderPerson(this.getActualPhase()) != null
-      && project.getLeaderPerson(this.getActualPhase()).getUser() != null) {
-      leader = project.getLeaderPerson(this.getActualPhase()).getUser().getComposedName() + "\n&lt;"
-        + project.getLeaderPerson(this.getActualPhase()).getUser().getEmail() + "&gt;";
-    }
-    String summary = project.getProjecInfoPhase(this.getActualPhase()).getSummary();
-    if (summary != null) {
-      if (summary.equals("")) {
-        summary = null;
+      // Get type from funding sources
+      String type = "";
+      List<String> typeList = new ArrayList<String>();
+      for (ProjectBudget projectBudget : project.getProjectBudgets().stream()
+        .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getFundingSource() != null)
+        .collect(Collectors.toList())) {
+        typeList.add(projectBudget.getFundingSource().getBudgetType().getName());
       }
-    }
-    String analysis = project.getProjecInfoPhase(this.getActualPhase()).getGenderAnalysis();
-    if (analysis != null) {
-      if (analysis.equals("")) {
-        analysis = null;
-      }
-    }
-    String crossCutting = "";
-    if (project.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingNa() != null) {
-      if (project.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingNa() == true) {
-        crossCutting += "● N/A <br>";
-      }
-    }
-    if (project.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingGender() != null) {
-      if (project.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingGender() == true) {
-        crossCutting += "● Gender <br>";
-      }
-    }
-    if (project.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingYouth() != null) {
-      if (project.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingYouth() == true) {
-        crossCutting += "● Youth <br>";
-      }
-    }
-    if (project.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingCapacity() != null) {
-      if (project.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingCapacity() == true) {
-        crossCutting += "● Capacity Development <br>";
-      }
-    }
-    if (project.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingGender() != null) {
-      if (project.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingGender() == false) {
-        if (project.getProjecInfoPhase(this.getActualPhase()).getDimension() == null
-          || project.getProjecInfoPhase(this.getActualPhase()).getDimension().isEmpty()) {
-          crossCutting += "<br><br>" + "<b>Reason for not addressing gender dimension: </b> &lt;Not Defined&gt;";
+      // Remove duplicates
+      Set<String> s = new LinkedHashSet<String>(typeList);
+      for (String typeString : s.stream().collect(Collectors.toList())) {
+        if (type.isEmpty()) {
+          type = typeString;
         } else {
-          crossCutting += "<br><br>" + "<b>Reason for not addressing gender dimension: </b>"
-            + project.getProjecInfoPhase(this.getActualPhase()).getDimension();
+          type += ", " + typeString;
         }
       }
+      String status = ProjectStatusEnum
+        .getValue(project.getProjecInfoPhase(this.getActualPhase()).getStatus().intValue()).getStatus();
+      if (projectLeader.getInstitution() != null) {
+        orgLeader = projectLeader.getInstitution().getComposedName();
+
+      }
+      String leader = null;
+      // Check if project leader is assigned
+      if (project.getLeaderPerson(this.getActualPhase()) != null
+        && project.getLeaderPerson(this.getActualPhase()).getUser() != null) {
+        leader = project.getLeaderPerson(this.getActualPhase()).getUser().getComposedName() + "\n&lt;"
+          + project.getLeaderPerson(this.getActualPhase()).getUser().getEmail() + "&gt;";
+      }
+      String summary = project.getProjecInfoPhase(this.getActualPhase()).getSummary();
+      if (summary != null) {
+        if (summary.equals("")) {
+          summary = null;
+        }
+      }
+      String analysis = project.getProjecInfoPhase(this.getActualPhase()).getGenderAnalysis();
+      if (analysis != null) {
+        if (analysis.equals("")) {
+          analysis = null;
+        }
+      }
+      String crossCutting = "";
+      if (project.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingNa() != null) {
+        if (project.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingNa() == true) {
+          crossCutting += "● N/A <br>";
+        }
+      }
+      if (project.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingGender() != null) {
+        if (project.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingGender() == true) {
+          crossCutting += "● Gender <br>";
+        }
+      }
+      if (project.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingYouth() != null) {
+        if (project.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingYouth() == true) {
+          crossCutting += "● Youth <br>";
+        }
+      }
+      if (project.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingCapacity() != null) {
+        if (project.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingCapacity() == true) {
+          crossCutting += "● Capacity Development <br>";
+        }
+      }
+      if (project.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingGender() != null) {
+        if (project.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingGender() == false) {
+          if (project.getProjecInfoPhase(this.getActualPhase()).getDimension() == null
+            || project.getProjecInfoPhase(this.getActualPhase()).getDimension().isEmpty()) {
+            crossCutting += "<br><br>" + "<b>Reason for not addressing gender dimension: </b> &lt;Not Defined&gt;";
+          } else {
+            crossCutting += "<br><br>" + "<b>Reason for not addressing gender dimension: </b>"
+              + project.getProjecInfoPhase(this.getActualPhase()).getDimension();
+          }
+        }
+      }
+      if (crossCutting.isEmpty()) {
+        crossCutting = null;
+      }
+      String mlText = null, mlContactText = null;
+      mlText = this.getText("project.liaisonInstitution");
+      mlContactText = this.getText("project.liaisonUser");
+      model.addRow(new Object[] {title, startDate, endDate, ml, mlContact, type, status, orgLeader, leader, summary,
+        cycle, analysis, crossCutting, hasRegions, mlText, mlContactText});
     }
-    if (crossCutting.isEmpty()) {
-      crossCutting = null;
-    }
-    String mlText = null, mlContactText = null;
-    mlText = this.getText("project.liaisonInstitution");
-    mlContactText = this.getText("project.liaisonUser");
-    model.addRow(new Object[] {title, startDate, endDate, ml, mlContact, type, status, orgLeader, leader, summary,
-      cycle, analysis, crossCutting, hasRegions, mlText, mlContactText});
     return model;
   }
 
@@ -2744,8 +2745,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
     model.addRow(new Object[] {title, centerURL, currentDate, submission, cycle, isNew, isAdministrative, type,
       project.getProjecInfoPhase(this.getActualPhase()).getLocationGlobal(), this.isPhaseOne(), hasGender,
-      hasTargetUnit, hasW1W2Co});
-      project.isLocationGlobal(), this.isPhaseOne(), hasGender, hasTargetUnit, hasW1W2Co, hasActivities});
+      hasTargetUnit, hasW1W2Co, project.getProjecInfoPhase(this.getActualPhase()).getLocationGlobal(),
+      this.isPhaseOne(), hasGender, hasTargetUnit, hasW1W2Co, hasActivities});
     return model;
   }
 
