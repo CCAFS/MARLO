@@ -122,7 +122,7 @@
                 [/#if]
               [/#list]
               [#else]
-              <p class="emptyText"> [@s.text name="No lead partner added yet." /]</p> 
+              <p class="emptyText"> [@s.text name="fundingSource.noPartnerAdded" /]</p> 
             [/#if]
             </ul>
             [#if editable ]
@@ -150,39 +150,39 @@
 
       [#-- Original Donor --]
       <div class="form-group-donor">
-      <div class="form-group">
-        <div class="row">
-          <div class="col-md-12">
-            <label for="">[@s.text name="projectCofunded.donor" /]:[@customForm.req required=editable /]</label>
-            <span class="description"><i>([@s.text name="projectCofunded.donor.helpText" /])</i></span>
-            [@customForm.select name="fundingSource.institution.id" i18nkey="projectCofunded.donor" className="donor" showTitle=false  listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" required=true editable=editable /]
-          </div>
-        </div> 
-      </div>      
+        <div class="form-group">
+          <div class="row">
+            <div class="col-md-12">
+              <label for="">[@s.text name="projectCofunded.donor" /]:[@customForm.req required=editable /]</label>
+              <span class="description"><i>([@s.text name="projectCofunded.donor.helpText" /])</i></span>
+              [@customForm.select name="fundingSource.institution.id" i18nkey="projectCofunded.donor" className="donor" showTitle=false  listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" required=true editable=editable /]
+            </div>
+          </div> 
+        </div>      
         [#-- End Original Donor --]     
-      
-      [#-- Direct Donor --]
-      <div class="form-group">
-        <div class="row">
-          <div class="col-md-12">
-            <label for="">[@s.text name="projectCofunded.directDonor" /]: </label>
-            <span class="description"><i>([@s.text name="projectCofunded.directDonor.helpText" /])</i></span><br>
-            [@customForm.select name="fundingSource.directDonor.id" i18nkey="projectCofunded.directDonor" className="donor" showTitle=false listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" required=false editable=editable /]
-          </div>
-        </div> 
-        <br>
-        [#-- Request partner adition --]
-        [#if editable]
-        <p id="addPartnerText" class="helpMessage">
-          [@s.text name="projectPartners.addPartnerMessage.first" /]
-          <a class="popup" href="[@s.url action='${crpSession}/partnerSave' namespace="/projects"][@s.param name='fundingSourceID']${fundingSource.id?c}[/@s.param][/@s.url]">
-            [@s.text name="projectPartners.addPartnerMessage.second" /]
-          </a>
-        </p> 
-        [/#if]
+        
+        [#-- Direct Donor --]
+        <div class="form-group">
+          <div class="row">
+            <div class="col-md-12">
+              <label for="">[@s.text name="projectCofunded.directDonor" /]: </label>
+              <span class="description"><i>([@s.text name="projectCofunded.directDonor.helpText" /])</i></span><br>
+              [@customForm.select name="fundingSource.directDonor.id" i18nkey="projectCofunded.directDonor" className="donor" showTitle=false listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" required=false editable=editable /]
+            </div>
+          </div> 
+          <br>
+          [#-- Request partner adition --]
+          [#if editable]
+          <p id="addPartnerText" class="helpMessage">
+            [@s.text name="fundingSource.addDonorMessage.first" /]
+            <a class="popup" href="[@s.url action='${crpSession}/partnerSave' namespace="/projects"][@s.param name='fundingSourceID']${fundingSource.id?c}[/@s.param][/@s.url]">
+              [@s.text name="projectPartners.addPartnerMessage.second" /]
+            </a>
+          </p> 
+          [/#if]
+        </div>
+        [#-- End Direct Donor --]
       </div>
-      [#-- End Direct Donor --]
-          </div>
     </div>
     <h4 class="headTitle">Location information</h4> 
     <div class="borderBox informationWrapper">
