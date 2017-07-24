@@ -82,6 +82,7 @@ INSERT INTO projects_info (
   dimension,
   administrative,
   reporting,
+  is_location_regional,
   id_phase
 ) SELECT
   p.id,
