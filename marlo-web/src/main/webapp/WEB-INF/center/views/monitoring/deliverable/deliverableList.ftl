@@ -1,5 +1,5 @@
 [#ftl]
-[#assign title = "MiLE Deliverables" /]
+[#assign title = "MARLO Deliverables" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
 [#assign customJS = ["${baseUrlMedia}/js/monitoring/deliverable/deliverableList.js" ] /]

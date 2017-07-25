@@ -74,7 +74,7 @@
           <div class="clearfix"></div>
           [/#if]
           <div class="col-md-12">
-            <h5 class="sectionSubTitle">Milestones/ progress towards your outcome target contribution:</h5>
+            <h5 class="sectionSubTitle">Progress Towards Outcome Milestones:</h5>
             <div class="note left">
               When writing your narrative, please consider if you have achieved changes in Attitudes, Skills, and Knowledge. Key words to express progress  measurement that may apply to your outcome may include: Change of Practice→ Use, Adaptation, Adoption → Sustainable use, Scaling out / Scaling up
             </div>
@@ -100,7 +100,7 @@
           </div>
             [#-- Outcome narrative --]
             <div class="col-md-12 form-group">
-            <h5 class="sectionSubTitle">Progress towards your long-term outcome target contribution:</h5>
+            <h5 class="sectionSubTitle">Progress Towards Long-Term Overall Outcome:</h5>
             <div class="form-group" style="margin-top: 15px;">
               [@customForm.textArea name="outcome.monitorings[${outcome_index}].narrative" i18nkey="outcome.narrative.longTerm" help="outcome.tooltip" required=true className="outcome-narrative limitWords-100" editable=editable /]
             </div> 
