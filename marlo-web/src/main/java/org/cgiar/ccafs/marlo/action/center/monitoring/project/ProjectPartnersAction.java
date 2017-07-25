@@ -406,8 +406,6 @@ public class ProjectPartnersAction extends BaseAction {
           partnerNew.setCreatedBy(this.getCurrentUser());
           partnerNew.setModifiedBy(this.getCurrentUser());
           partnerNew.setModificationJustification("");
-
-          partnerNew.setInternal(projectPartner.isInternal());
           partnerNew.setProject(projectSave);
 
           Institution institution = institutionService.getInstitutionById(projectPartner.getInstitution().getId());
@@ -439,11 +437,6 @@ public class ProjectPartnersAction extends BaseAction {
         } else {
 
           CenterProjectPartner partnerNew = partnerService.getProjectPartnerById(projectPartner.getId());
-
-          if (partnerNew.isInternal() != projectPartner.isInternal()) {
-            partnerNew.setInternal(projectPartner.isInternal());
-            partnerService.saveProjectPartner(projectPartner);
-          }
 
           if (projectPartner.getUsers() != null) {
             for (CenterProjectPartnerPerson partnerPerson : projectPartner.getUsers()) {
