@@ -40,6 +40,7 @@ public class Phase implements java.io.Serializable, IAuditLog {
   private Set<ProjectClusterActivity> projectClusters = new HashSet<ProjectClusterActivity>(0);
   private Set<ProjectPartner> partners = new HashSet<ProjectPartner>(0);
   private Set<CrpProgramOutcome> outcomes = new HashSet<CrpProgramOutcome>(0);
+  private Set<CrpClusterOfActivity> clusters = new HashSet<CrpClusterOfActivity>(0);
 
 
   public Phase() {
@@ -80,6 +81,11 @@ public class Phase implements java.io.Serializable, IAuditLog {
   }
 
 
+  public Set<CrpClusterOfActivity> getClusters() {
+    return clusters;
+  }
+
+
   public String getComposedName() {
     return this.description + " - " + year;
   }
@@ -113,6 +119,7 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+
   @Override
   public String getModificationJustification() {
 
@@ -126,28 +133,28 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return u;
   }
 
-
   public Phase getNext() {
     return next;
   }
+
 
   public Set<CrpProgramOutcome> getOutcomes() {
     return outcomes;
   }
 
-
   public Set<ProjectPartner> getPartners() {
     return partners;
   }
+
 
   public Set<ProjectClusterActivity> getProjectClusters() {
     return projectClusters;
   }
 
-
   public Set<ProjectFocus> getProjectFocuses() {
     return projectFocuses;
   }
+
 
   public Set<ProjectInfo> getProjectInfos() {
     return projectInfos;
@@ -157,10 +164,10 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return this.projectPhases;
   }
 
-
   public Boolean getVisible() {
     return visible;
   }
+
 
   public int getYear() {
     return this.year;
@@ -178,6 +185,10 @@ public class Phase implements java.io.Serializable, IAuditLog {
   public boolean isActive() {
 
     return true;
+  }
+
+  public void setClusters(Set<CrpClusterOfActivity> clusters) {
+    this.clusters = clusters;
   }
 
   public void setCrp(Crp crp) {

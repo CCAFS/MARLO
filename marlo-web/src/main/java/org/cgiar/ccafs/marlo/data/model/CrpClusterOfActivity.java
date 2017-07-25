@@ -57,9 +57,12 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
   @Expose
   private Long id;
 
+  @Expose
+  private Phase phase;
 
   @Expose
   private String identifier;
+
 
   private List<CrpClusterKeyOutput> keyOutputs;
 
@@ -112,7 +115,6 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
     return clusterActivities;
   }
 
-
   public String getComposedName() {
     if (this.getIdentifier() != null && !this.getIdentifier().isEmpty()) {
       return this.getIdentifier() + " : " + this.description;
@@ -120,7 +122,6 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
       return description;
     }
   }
-
 
   public User getCreatedBy() {
     return createdBy;
@@ -141,9 +142,11 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
     return this.crpProgram;
   }
 
+
   public String getDescription() {
     return description;
   }
+
 
   @Override
   public Long getId() {
@@ -162,7 +165,6 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
     return leaders;
   }
 
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -170,6 +172,7 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -180,10 +183,15 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
     return modifiedBy;
   }
 
+  public Phase getPhase() {
+    return phase;
+  }
+
 
   public Set<ProjectClusterActivity> getProjectClusterActivities() {
     return projectClusterActivities;
   }
+
 
   @Override
   public int hashCode() {
@@ -252,6 +260,10 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
   public void setProjectClusterActivities(Set<ProjectClusterActivity> projectClusterActivities) {

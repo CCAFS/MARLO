@@ -219,7 +219,8 @@ public class ClusterActivitiesAction extends BaseAction {
   private Path getAutoSaveFilePath() {
     String composedClassName = selectedProgram.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile = selectedProgram.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+    String autoSaveFile = selectedProgram.getId() + "_" + composedClassName + "_"
+      + this.getActualPhase().getDescription() + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
@@ -515,7 +516,8 @@ public class ClusterActivitiesAction extends BaseAction {
       if (history != null) {
         crpProgramID = history.getId();
         selectedProgram = history;
-        clusterofActivities.addAll(history.getCrpClusterOfActivities());
+        clusterofActivities.addAll(history.getCrpClusterOfActivities().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
 
         this.setEditable(false);
         this.setCanEdit(false);
@@ -617,8 +619,8 @@ public class ClusterActivitiesAction extends BaseAction {
       if (crpProgramID != -1) {
         selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
 
-        clusterofActivities.addAll(
-          selectedProgram.getCrpClusterOfActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        clusterofActivities.addAll(selectedProgram.getCrpClusterOfActivities().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
         for (CrpClusterOfActivity crpClusterOfActivity : clusterofActivities) {
 
           crpClusterOfActivity.setLeaders(crpClusterOfActivity.getCrpClusterActivityLeaders().stream()
@@ -728,7 +730,7 @@ public class ClusterActivitiesAction extends BaseAction {
        */
       selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
       for (CrpClusterOfActivity crpClusterOfActivity : selectedProgram.getCrpClusterOfActivities().stream()
-        .filter(c -> c.isActive()).collect(Collectors.toList())) {
+        .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
         if (!clusterofActivities.contains(crpClusterOfActivity)) {
           // if (crpClusterOfActivity.getCrpMilestones().isEmpty() &&
           // crpProgramOutcome.getCrpOutcomeSubIdos().isEmpty()) {
@@ -758,6 +760,7 @@ public class ClusterActivitiesAction extends BaseAction {
           crpClusterOfActivity.setModificationJustification("");
           crpClusterOfActivity.setActiveSince(db.getActiveSince());
         }
+        crpClusterOfActivity.setPhase(this.getActualPhase());
         crpClusterOfActivity.setCrpProgram(selectedProgram);
         crpClusterOfActivityManager.saveCrpClusterOfActivity(crpClusterOfActivity);
 

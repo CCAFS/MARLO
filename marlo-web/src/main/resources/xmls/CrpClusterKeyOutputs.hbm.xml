@@ -20,6 +20,9 @@
         <property name="keyOutput" type="string">
             <column name="key_output" length="65535" not-null="true" />
         </property>
+        <property name="composeID" type="string">
+         <column name="composed_id" length="20" />
+         </property>
         <property name="contribution" type="java.lang.Double">
             <column name="contribution" precision="22" scale="0" />
         </property>

@@ -164,7 +164,7 @@ DROP COLUMN `cross_cutting_capacity`,
 DROP COLUMN `cross_cutting_na`,
 DROP COLUMN `dimension`,
 DROP COLUMN `administrative`,
-DROP COLUMN `reporting`;
+DROP COLUMN `reporting`,
 DROP COLUMN `is_location_regional`;
 
 

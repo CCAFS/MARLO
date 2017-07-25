@@ -39,19 +39,22 @@ public class CrpClusterKeyOutput implements java.io.Serializable, IAuditLog {
 
   private Set<Deliverable> deliverables = new HashSet<Deliverable>(0);
 
+  @Expose
+  private String composeID;
 
   @Expose
   private Long id;
 
+
   @Expose
   private String keyOutput;
+
   private List<CrpClusterKeyOutputOutcome> keyOutputOutcomes;
+
   @Expose
   private String modificationJustification;
-
   @Expose
   private User modifiedBy;
-
 
   public CrpClusterKeyOutput() {
   }
@@ -79,7 +82,6 @@ public class CrpClusterKeyOutput implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
-
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
@@ -100,9 +102,11 @@ public class CrpClusterKeyOutput implements java.io.Serializable, IAuditLog {
     return true;
   }
 
+
   public Date getActiveSince() {
     return this.activeSince;
   }
+
 
   public String getComposedName() {
     if (this.keyOutput.isEmpty()) {
@@ -111,6 +115,10 @@ public class CrpClusterKeyOutput implements java.io.Serializable, IAuditLog {
       return this.keyOutput;
     }
 
+  }
+
+  public String getComposeID() {
+    return composeID;
   }
 
   public Double getContribution() {
@@ -138,10 +146,10 @@ public class CrpClusterKeyOutput implements java.io.Serializable, IAuditLog {
     return this.id;
   }
 
-
   public String getKeyOutput() {
     return this.keyOutput;
   }
+
 
   public List<CrpClusterKeyOutputOutcome> getKeyOutputOutcomes() {
     return keyOutputOutcomes;
@@ -183,6 +191,10 @@ public class CrpClusterKeyOutput implements java.io.Serializable, IAuditLog {
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
+  }
+
+  public void setComposeID(String composeID) {
+    this.composeID = composeID;
   }
 
   public void setContribution(Double contribution) {
