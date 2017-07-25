@@ -20,7 +20,7 @@ IF NOT EXISTS tableoutcomes AS (SELECT * FROM crp_program_outcomes);
 CREATE TEMPORARY TABLE
 IF NOT EXISTS table_temp_crp_cluster_key_outputs_outcome AS (
 SELECT
-  pp.*,ppp.composed_id,ppp.crp_program_id
+  pp.*,ppp.composed_id
 FROM
   crp_cluster_key_outputs_outcome pp
 INNER JOIN crp_program_outcomes ppp ON pp.outcome_id = ppp.id)
@@ -130,8 +130,7 @@ temp.modified_by,
 temp.modification_justification
 
 from table_temp_crp_cluster_key_outputs_outcome temp 
-INNER JOIN crp_program_outcomes pp on pp.crp_program_id=temp.crp_program_id
-and pp.composed_id =temp.composed_id
+INNER JOIN crp_program_outcomes pp on pp.composed_id =temp.composed_id
 ;
 
 

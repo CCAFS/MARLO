@@ -37,7 +37,7 @@ INNER JOIN crp_cluster_of_activities ppp ON pp.cluster_activity_id=ppp.id
 CREATE TEMPORARY TABLE
 IF NOT EXISTS table_temp_crp_cluster_key_outputs_outcome_cl AS (
 SELECT
-  pp.*,ppp.composed_id
+  pp.*,ppp.composed_id,pp.id 'keyoutput'
 FROM
   crp_cluster_key_outputs_outcome pp
 INNER JOIN crp_cluster_key_outputs ppp ON pp.key_output_id = ppp.id)
@@ -163,6 +163,10 @@ temp.modification_justification
 
 from table_temp_crp_cluster_key_outputs_outcome_cl temp 
 INNER JOIN crp_cluster_key_outputs pp on 
- pp.composed_id =temp.composed_id
+ pp.composed_id =temp.composed_id 
+ inner join crp_cluster_of_activities coa on coa.id=pp.cluster_activity_id
+ inner join crp_program_outcomes ot on ot.id=temp.outcome_id
+ where ot.id_phase=coa.id_phase
+
 ;
 
