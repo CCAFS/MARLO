@@ -37,7 +37,7 @@
       [#if project.projectEditLeader]
         <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
       [#else]
-        <p class="readPrivileges">This project is being preset by [@s.text name="global.managementLiaison" /], it will be able for editing by the project leader soon...</p>
+        <p class="readPrivileges">This project is being preset by [#if crpSession == "pim"]PMU[#else][@s.text name="global.managementLiaison" /][/#if], it will be able for editing by the project leader soon...</p>
       [/#if]    
     [/#if]
   [/#if]

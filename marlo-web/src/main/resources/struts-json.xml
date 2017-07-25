@@ -56,6 +56,16 @@
 		</action>
 
 
+    <action name="searchInstitutionsName"
+      class="org.cgiar.ccafs.marlo.action.json.global.SearchInstitutionsNameAction"
+      method="search">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="searchInstitutionsNameAction">true</param>
+      </result>
+    </action>
+
+
 		<action name="institutionsByTypeAndCountry"
 			class="org.cgiar.ccafs.marlo.action.json.global.InstitutionsByFilterAction">
 			<result type="json">
