@@ -35,9 +35,6 @@ public class CenterProjectPartner implements java.io.Serializable, IAuditLog {
   private CenterProject project;
 
   @Expose
-  private boolean internal;
-
-  @Expose
   private boolean active;
 
   @Expose
@@ -59,14 +56,13 @@ public class CenterProjectPartner implements java.io.Serializable, IAuditLog {
     this.active = active;
   }
 
-  public CenterProjectPartner(User modifiedBy, User createdBy, Institution institution, CenterProject project, boolean internal,
+  public CenterProjectPartner(User modifiedBy, User createdBy, Institution institution, CenterProject project,
     boolean active, Date activeSince, String modificationJustification,
     Set<CenterProjectPartnerPerson> projectPartnerPersons) {
     this.modifiedBy = modifiedBy;
     this.createdBy = createdBy;
     this.institution = institution;
     this.project = project;
-    this.internal = internal;
     this.active = active;
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
@@ -125,6 +121,7 @@ public class CenterProjectPartner implements java.io.Serializable, IAuditLog {
   }
 
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -163,10 +160,6 @@ public class CenterProjectPartner implements java.io.Serializable, IAuditLog {
     return active;
   }
 
-  public boolean isInternal() {
-    return internal;
-  }
-
   public void setActive(boolean active) {
     this.active = active;
   }
@@ -185,10 +178,6 @@ public class CenterProjectPartner implements java.io.Serializable, IAuditLog {
 
   public void setInstitution(Institution institution) {
     this.institution = institution;
-  }
-
-  public void setInternal(boolean internal) {
-    this.internal = internal;
   }
 
   public void setModificationJustification(String modificationJustification) {

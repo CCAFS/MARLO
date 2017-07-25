@@ -98,11 +98,11 @@
             </div>
             [/#if]
           </div>
-            [#-- Milestone narrative --]
+            [#-- Outcome narrative --]
             <div class="col-md-12 form-group">
             <h5 class="sectionSubTitle">Progress towards your long-term outcome target contribution:</h5>
             <div class="form-group" style="margin-top: 15px;">
-              [@customForm.textArea name="outcome.monitorings[${outcome_index}].narrative" i18nkey="outcome.narrative.longTerm" required=true className="outcome-narrative limitWords-100" editable=editable /]
+              [@customForm.textArea name="outcome.monitorings[${outcome_index}].narrative" i18nkey="outcome.narrative.longTerm" help="outcome.tooltip" required=true className="outcome-narrative limitWords-100" editable=editable /]
             </div> 
             </div>
             <br />
@@ -166,7 +166,6 @@
     [#-- element id --]
      <input type="hidden" class="elementId" name="${milestoneCustomName}.id" value="${(milestone.id)!}" />
      <input type="hidden" class="mileStoneId" name="${milestoneCustomName}.researchMilestone.id" value="${(milestone.researchMilestone.id)!}"/>
-     <input type="hidden" class="activeId" name="${milestoneCustomName}.researchMilestone.active" value="${(milestone.researchMilestone.active)!}"/>
     [#-- Remove Button --]
     [#if editable=!editable]
       <div class="removeMilestone removeElement sm" title="Remove Milestone"></div>
@@ -174,7 +173,7 @@
     
     [#-- Milestone Statement --]
     <div class="form-group" style="margin-top: 15px;">
-      [@customForm.textArea name="${milestoneCustomName}.researchMilestone.title" i18nkey="outcome.milestone.index.statement" required=true className="milestone-statement limitWords-50" editable=false /]
+      [@customForm.textArea name="${milestoneCustomName}.researchMilestone.title" i18nkey="outcome.milestone.index.statement"  required=true className="milestone-statement limitWords-50" editable=false /]
     </div>
     
     <div class="row form-group target-block">   
@@ -183,7 +182,7 @@
       </div> 
       <div class="col-md-3 col-md-offset-3">
       [#if ((milestone.researchMilestone??) && !(milestone.researchMilestone.targetUnit.id == -1))!false]
-        [@customForm.input name="${milestoneCustomName}.researchMilestone.value" i18nkey="Expected Value" className="milestone-targetYear" required=false editable=false /]
+        [@customForm.input name="${milestoneCustomName}.researchMilestone.value" i18nkey="Expected Value"  className="milestone-targetYear" required=false editable=false /]
       [/#if]
       </div>
     </div>
@@ -205,7 +204,7 @@
     
     [#-- Milestone narrative --]
     <div class="form-group" style="margin-top: 15px;">
-      [@customForm.textArea name="${milestoneCustomName}.narrative" i18nkey="outcome.milestone.index.narrative" required=true className="milestone-narrative limitWords-100" editable=editable /]
+      [@customForm.textArea name="${milestoneCustomName}.narrative" i18nkey="outcome.milestone.index.narrative" help="outcome.tooltip" required=true className="milestone-narrative limitWords-100" editable=editable /]
     </div> 
     
   </div>

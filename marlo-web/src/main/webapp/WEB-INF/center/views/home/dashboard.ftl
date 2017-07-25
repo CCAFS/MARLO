@@ -17,7 +17,7 @@
     <div class="homeTitle"><b>[@s.text name="dashboard.decisionTree.title" /]</b></div>
     <div id="decisionTree" class="borderBox">
       <div id="newImpactPathway" class="option">
-        <a href="[@s.url action="impactPathway/${centerSession}/programimpacts"][@s.param name="edit" value="true"/][/@s.url]">
+        <a href="[@s.url action="centerImpactPathway/${centerSession}/programimpacts"][@s.param name="edit" value="true"/][/@s.url]">
           <p>[@s.text name="dashboard.decisionTree.defineImpact" /]</p>
         </a>
       </div>

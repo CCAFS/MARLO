@@ -32,8 +32,8 @@
     [#assign customLabel][#if !editable]${customName}.readText[#else]${customName}[/#if][/#assign]
     [#assign customValue][#if value=="-NULL"][@s.property value="${name}"/][#else]${value}[/#if][/#assign]
     [#if showTitle]
-      <label for="${name}" class="${editable?string('editable', 'readOnly')}"> [@s.text name="${customLabel}"][@s.param]${paramText}[/@s.param][/@s.text]:[#if required && editable]<span class="red">*</span>[/#if]</label>
-      [#if help != ""]<img src="${baseUrlMedia}/images/global/icon-help2.png" title="[@s.text name="${help}"/]" />[/#if]
+      <label for="${name}" class="${editable?string('editable', 'readOnly')}"> [@s.text name="${customLabel}"][@s.param]${paramText}[/@s.param][/@s.text]:[#if required && editable]<span class="red">*</span>[/#if][#if help != ""]<img src="${baseUrlMedia}/images/global/icon-help2.png" title="[@s.text name="${help}"/]" />[/#if]</label>
+      
     [/#if]
     [#if errorfield==""][@s.fielderror cssClass="fieldError" fieldName="${name}"/][#else][@s.fielderror cssClass="fieldError" fieldName="${errorfield}"/][/#if]
     [#if editable]

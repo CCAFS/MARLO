@@ -623,7 +623,7 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
     String projectSubmission = "";
 
     // set CIAT imgage URL from repo
-    String imageUrl = this.getBaseUrl() + "/images/global/centers/CIAT.png";
+    String imageUrl = this.getBaseUrl() + "center/images/global/centers/CIAT.png";
 
     model.addRow(new Object[] {shortTitle, currentDate, projectSubmission, imageUrl});
     return model;
@@ -639,12 +639,12 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
       String partnerName = projectPartner.getInstitution().getComposedName();
       Long institution_id = projectPartner.getInstitution().getId();
       String partnerType = null;
-      if (projectPartner.isInternal()) {
-        partnerType = "Internal";
-      }
-      if (!projectPartner.isInternal()) {
-        partnerType = "External";
-      }
+      // if (projectPartner.isInternal()) {
+      // partnerType = "Internal";
+      // }
+      // if (!projectPartner.isInternal()) {
+      // partnerType = "External";
+      // }
       model.addRow(new Object[] {partnerName, partnerType, institution_id, project.getId()});
     }
     return model;
