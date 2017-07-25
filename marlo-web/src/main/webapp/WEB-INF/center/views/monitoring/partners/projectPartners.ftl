@@ -110,7 +110,6 @@
     
     [#-- Partner Title --]    
     <div class="form-group">
-      <div class="pull-right">[#if editable][@s.radio label="projectPartner.mode" name="${customName}.internal" list="partnerModes" value="${(element.internal?c)!}" /][#else]${(element.internal?string("Internal","External"))!} Partner[/#if]</div>
       <h5 class="sectionSubTitle title">${(element.institution.composedName)!'Undefined'}</h5> 
       <div class="clearfix"></div>
     </div>
