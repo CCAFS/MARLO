@@ -214,7 +214,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     masterReport.getParameterValues().put("i8nBudgetMenu",
       "Project " + this.getText("projects.menu.budget") + " (USD)");
     masterReport.getParameterValues().put("i8nBudgetPartnerMenu",
-      this.getText("projects.menu.budgetByPartners") + "(USD)");
+      this.getText("projects.menu.budgetByPartners") + " (USD)");
     masterReport.getParameterValues().put("i8nBudgetCoAsMenu", this.getText("planning.cluster") + " (USD)");
 
     /**
