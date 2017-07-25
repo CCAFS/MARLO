@@ -243,7 +243,8 @@ public class ProjectDeliverableAction extends BaseAction {
       loggedCenter.getResearchAreas().stream().filter(ra -> ra.isActive()).collect(Collectors.toList()));
 
     try {
-      deliverableID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.DELIVERABLE_ID)));
+      deliverableID =
+        Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CENTER_DELIVERABLE_ID)));
     } catch (Exception e) {
       deliverableID = -1;
       projectID = -1;
@@ -336,18 +337,20 @@ public class ProjectDeliverableAction extends BaseAction {
         deliverable.setOutputs(
           deliverable.getDeliverableOutputs().stream().filter(o -> o.isActive()).collect(Collectors.toList()));
       }
+
+
+      if (deliverable.getDeliverableType() != null) {
+        Long deliverableTypeParentId = deliverable.getDeliverableType().getDeliverableType().getId();
+
+        deliverableSubTypes = new ArrayList<>(deliverableTypeService.findAll().stream()
+          .filter(dt -> dt.getDeliverableType() != null && dt.getDeliverableType().getId() == deliverableTypeParentId)
+          .collect(Collectors.toList()));
+      }
     }
 
     deliverableTypeParent = new ArrayList<>(deliverableTypeService.findAll().stream()
       .filter(dt -> dt.isActive() && dt.getDeliverableType() == null).collect(Collectors.toList()));
 
-    if (deliverable.getDeliverableType() != null) {
-      Long deliverableTypeParentId = deliverable.getDeliverableType().getDeliverableType().getId();
-
-      deliverableSubTypes = new ArrayList<>(deliverableTypeService.findAll().stream()
-        .filter(dt -> dt.getDeliverableType() != null && dt.getDeliverableType().getId() == deliverableTypeParentId)
-        .collect(Collectors.toList()));
-    }
 
     this.getProgramOutputs();
 
