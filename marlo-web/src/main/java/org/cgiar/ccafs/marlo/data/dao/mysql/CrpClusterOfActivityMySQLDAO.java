@@ -21,7 +21,8 @@ import org.cgiar.ccafs.marlo.data.model.CrpClusterActivityLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
-import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
+import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
@@ -70,7 +71,7 @@ public class CrpClusterOfActivityMySQLDAO implements CrpClusterOfActivityDAO {
           clusterPrev.setDescription(crpCluster.getDescription());
           clusterPrev.setIdentifier(crpCluster.getIdentifier());
           dao.update(clusterPrev);
-          this.updateCrpSubIdos(outcomePrev, outcome);
+          this.updateClusterLeaders(clusterPrev, crpCluster);
           this.updateMilestones(outcomePrev, outcome);
         }
       }
@@ -205,33 +206,87 @@ public class CrpClusterOfActivityMySQLDAO implements CrpClusterOfActivityDAO {
    */
   private void updateClusterLeaders(CrpClusterOfActivity crpClusterOfActivityPrev,
     CrpClusterOfActivity crpClusterOfActivity) {
-    for (CrpOutcomeSubIdo outcomeSubIdo : programOutcomePrev.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive())
-      .collect(Collectors.toList())) {
-      if (programOutcome.getSubIdos() == null || programOutcome.getSubIdos().stream()
-        .filter(c -> c.getSrfSubIdo() != null && c.getSrfSubIdo().equals(outcomeSubIdo.getSrfSubIdo()))
-        .collect(Collectors.toList()).isEmpty()) {
-        outcomeSubIdo.setActive(false);
-        dao.update(outcomeSubIdo);
+    for (CrpClusterActivityLeader leader : crpClusterOfActivityPrev.getCrpClusterActivityLeaders().stream()
+      .filter(c -> c.isActive()).collect(Collectors.toList())) {
+      if (crpClusterOfActivity.getLeaders() == null || crpClusterOfActivity.getCrpClusterActivityLeaders().stream()
+        .filter(c -> c.getUser() != null && c.getUser().equals(leader.getUser())).collect(Collectors.toList())
+        .isEmpty()) {
+        leader.setActive(false);
+        dao.update(leader);
       }
     }
-    if (programOutcome.getSubIdos() != null) {
-      for (CrpOutcomeSubIdo outcomeSubIdo : programOutcome.getSubIdos()) {
-        if (programOutcomePrev.getCrpOutcomeSubIdos().stream()
-          .filter(c -> c.isActive() && c.getSrfSubIdo().equals(outcomeSubIdo.getSrfSubIdo()))
+    if (crpClusterOfActivity.getLeaders() != null) {
+      for (CrpClusterActivityLeader leader : crpClusterOfActivity.getLeaders()) {
+        if (crpClusterOfActivityPrev.getCrpClusterActivityLeaders().stream()
+          .filter(c -> c.isActive() && c.getUser().equals(leader.getUser())).collect(Collectors.toList()).isEmpty()) {
+
+          CrpClusterActivityLeader leaderAdd = new CrpClusterActivityLeader();
+
+          leaderAdd.setCrpClusterOfActivity(leader.getCrpClusterOfActivity());
+          leaderAdd.setUser(leader.getUser());
+          leaderAdd.setModifiedBy(leader.getModifiedBy());
+          leaderAdd.setActive(true);
+          leaderAdd.setActiveSince(leader.getActiveSince());
+          leaderAdd.setModificationJustification(leader.getModificationJustification());
+          leaderAdd.setCreatedBy(leader.getCreatedBy());
+          dao.update(leaderAdd);
+
+        }
+      }
+    }
+  }
+
+  /**
+   * check the keyouputs and updated
+   * 
+   * @param programOutcomePrev outcome to update
+   * @param programOutcome outcome modified
+   */
+  private void updateKeyOutputs(CrpProgramOutcome programOutcomePrev, CrpProgramOutcome programOutcome) {
+    for (CrpMilestone crpMilestone : programOutcomePrev.getCrpMilestones().stream().filter(c -> c.isActive())
+      .collect(Collectors.toList())) {
+      if (programOutcome.getMilestones() == null || programOutcome.getMilestones().stream()
+        .filter(c -> c.getComposeID().equals(crpMilestone.getComposeID())).collect(Collectors.toList()).isEmpty()) {
+        crpMilestone.setActive(false);
+        dao.update(crpMilestone);
+      }
+    }
+    if (programOutcome.getMilestones() != null) {
+      for (CrpMilestone crpMilestone : programOutcome.getMilestones()) {
+        if (programOutcomePrev.getCrpMilestones().stream()
+          .filter(c -> c.isActive() && c.getComposeID().equals(crpMilestone.getComposeID()))
           .collect(Collectors.toList()).isEmpty()) {
 
-          CrpOutcomeSubIdo outcomeSubIdoAdd = new CrpOutcomeSubIdo();
+          CrpMilestone crpMilestoneAdd = new CrpMilestone();
 
-          outcomeSubIdoAdd.setCrpProgramOutcome(programOutcomePrev);
-          outcomeSubIdoAdd.setModifiedBy(programOutcomePrev.getModifiedBy());
-          outcomeSubIdoAdd.setActive(true);
-          outcomeSubIdoAdd.setActiveSince(programOutcomePrev.getActiveSince());
-          outcomeSubIdoAdd.setModificationJustification(programOutcomePrev.getModificationJustification());
-          outcomeSubIdoAdd.setCreatedBy(programOutcomePrev.getCreatedBy());
-          outcomeSubIdoAdd.setContribution(outcomeSubIdo.getContribution());
-          outcomeSubIdoAdd.setSrfSubIdo(outcomeSubIdo.getSrfSubIdo());
-          dao.update(outcomeSubIdoAdd);
+          crpMilestoneAdd.setCrpProgramOutcome(programOutcomePrev);
+          crpMilestoneAdd.setModifiedBy(programOutcomePrev.getModifiedBy());
+          crpMilestoneAdd.setActive(true);
+          crpMilestoneAdd.setActiveSince(programOutcomePrev.getActiveSince());
+          crpMilestoneAdd.setModificationJustification(programOutcomePrev.getModificationJustification());
+          crpMilestoneAdd.setCreatedBy(programOutcomePrev.getCreatedBy());
+          crpMilestoneAdd.setComposeID(crpMilestone.getComposeID());
+          crpMilestoneAdd.setSrfTargetUnit(crpMilestone.getSrfTargetUnit());
+          crpMilestoneAdd.setTitle(crpMilestone.getTitle());
+          crpMilestoneAdd.setValue(crpMilestone.getValue());
+          crpMilestoneAdd.setYear(crpMilestone.getYear());
+          crpMilestoneAdd.setComposeID(crpMilestone.getComposeID());
+          dao.save(crpMilestoneAdd);
+          if (crpMilestone.getComposeID() == null) {
+            crpMilestone.setComposeID(programOutcomePrev.getComposeID() + "-" + crpMilestoneAdd.getId());
+            crpMilestoneAdd.setComposeID(programOutcomePrev.getComposeID() + "-" + crpMilestoneAdd.getId());
+            dao.update(crpMilestoneAdd);
+          }
 
+        } else {
+          CrpMilestone milestonetoUpdate = programOutcomePrev.getCrpMilestones().stream()
+            .filter(c -> c.isActive() && c.getComposeID().equals(crpMilestone.getComposeID()))
+            .collect(Collectors.toList()).get(0);
+          milestonetoUpdate.setTitle(crpMilestone.getTitle());
+          milestonetoUpdate.setSrfTargetUnit(crpMilestone.getSrfTargetUnit());
+          milestonetoUpdate.setYear(crpMilestone.getYear());
+          milestonetoUpdate.setValue(crpMilestone.getValue());
+          dao.update(milestonetoUpdate);
         }
       }
     }
