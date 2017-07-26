@@ -90,7 +90,7 @@
               [#if phases?size > 1]
               <ul class="dropdown-menu" aria-labelledby="dLabel">
                 [#list phases as phase]
-                  [#if !(actualPhase.id == phase.id)]<li> <a href="#" class="changePhase phase-${phase.id}">  ${(phase.description)!} ${(phase.year)!} </a> </li>[/#if]
+                  <li> <a href="#" class="changePhase phase-${phase.id} [#if (actualPhase.id == phase.id)]disabled[/#if]"> <span class="glyphicon glyphicon-menu-right text-${(phase.isReporting())?string('muted','primary')}"></span> ${(phase.description)!} ${(phase.year)!} </a> </li>
                 [/#list]
               </ul>
               [/#if]

@@ -25,6 +25,36 @@ var notyDefaultOptions = {
 $(document).ready(function() {
   showNotificationMessages();
   showHelpText();
+  
+  // Change CRP Phase event
+  $('.changePhase').on('click', function(){
+    var phaseID = $(this).classParam('phase');
+    changePhase(phaseID);
+  });
+ 
+  /**
+   * Execute an AJAX thar change the phase in the session
+   * 
+   * @param phaseID
+   * @returns
+   */
+  function changePhase(phaseID){
+    // Execute a change of phase
+    $.ajax({
+        url: baseURL + '/changePhase.do',
+        method: 'POST',
+        data: {
+          phaseID: phaseID
+        },
+        beforeSend: function() {
+        },
+        success: function(data) {
+        },
+        complete: function(){
+          location.reload();
+        }
+    });
+  }
 
   // Changes detected
   $('p.changesDetected strong').text($('.changedField').length);

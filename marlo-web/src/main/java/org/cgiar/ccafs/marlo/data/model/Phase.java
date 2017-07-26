@@ -2,6 +2,7 @@ package org.cgiar.ccafs.marlo.data.model;
 // Generated Apr 11, 2017 9:08:14 AM by Hibernate Tools 4.3.1.Final
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.HashSet;
@@ -90,11 +91,9 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return this.description + " - " + year;
   }
 
-
   public Crp getCrp() {
     return this.crp;
   }
-
 
   public String getDescription() {
     return this.description;
@@ -126,6 +125,7 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return "";
   }
 
+
   @Override
   public User getModifiedBy() {
     User u = new User();
@@ -137,28 +137,28 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return next;
   }
 
-
   public Set<CrpProgramOutcome> getOutcomes() {
     return outcomes;
   }
+
 
   public Set<ProjectPartner> getPartners() {
     return partners;
   }
 
-
   public Set<ProjectClusterActivity> getProjectClusters() {
     return projectClusters;
   }
+
 
   public Set<ProjectFocus> getProjectFocuses() {
     return projectFocuses;
   }
 
-
   public Set<ProjectInfo> getProjectInfos() {
     return projectInfos;
   }
+
 
   public Set<ProjectPhase> getProjectPhases() {
     return this.projectPhases;
@@ -168,10 +168,10 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return visible;
   }
 
-
   public int getYear() {
     return this.year;
   }
+
 
   @Override
   public int hashCode() {
@@ -185,6 +185,10 @@ public class Phase implements java.io.Serializable, IAuditLog {
   public boolean isActive() {
 
     return true;
+  }
+
+  public Boolean isReporting() {
+    return description.equals(APConstants.REPORTING);
   }
 
   public void setClusters(Set<CrpClusterOfActivity> clusters) {
