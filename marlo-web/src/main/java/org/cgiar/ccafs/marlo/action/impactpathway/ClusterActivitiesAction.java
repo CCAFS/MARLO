@@ -698,8 +698,8 @@ public class ClusterActivitiesAction extends BaseAction {
         String params[] = {loggedCrp.getAcronym(), selectedProgram.getId().toString()};
         this.setBasePermission(this.getText(Permission.IMPACT_PATHWAY_BASE_PERMISSION, params));
         selectedProgram = crpProgramManager.getCrpProgramById(selectedProgram.getId());
-        outcomes =
-          selectedProgram.getCrpProgramOutcomes().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+        outcomes = selectedProgram.getCrpProgramOutcomes().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
         if (!selectedProgram.getSubmissions().stream().filter(c -> (c.isUnSubmit() == null || !c.isUnSubmit()))
           .collect(Collectors.toList()).isEmpty()) {
 
