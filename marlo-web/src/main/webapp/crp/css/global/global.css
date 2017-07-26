@@ -6707,3 +6707,15 @@ img#crpSelectedImage {
   max-width: 300px;
   width: 100%;
 }
+
+/* Phases dropdown */
+.dropdownPhases a{
+  font-size:1em;
+  float: left;
+}
+ 
+.dropdownPhases ul{
+  font-size: 0.9em;
+  z-index: 1023;
+  position: relative;
+}
