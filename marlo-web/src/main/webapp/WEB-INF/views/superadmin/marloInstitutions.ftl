@@ -96,13 +96,15 @@
               <p><strong>[@s.text name="Requested By" /]:</strong> <i>${(partner.createdBy.composedName?html)!'none'}</i></p>
             </div>
             
-            <div class="form-group sameness" style="display:none">
-              <strong>Similar institutions in MARLO:</strong>
-              <ul>
-              </ul>
-            </div>
           </div>
           
+          <div class="form-group col-md-8 sameness" style="display:none">
+            <br />
+            <div class="grayBox">
+              <strong>Similar institutions in MARLO:</strong>
+              <ul></ul>
+            </div>
+          </div>
           [#-- Action --]
           <div class="btn-group pull-right" role="group" aria-label="..."">
             [#-- Accept --]
