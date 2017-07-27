@@ -155,24 +155,26 @@ public class ProjectOutcomeListAction extends BaseAction {
 
     }
     project = projectManager.getProjectById(projectID);
-
-    List<ProjectOutcome> projectOutcomes =
-      project.getProjectOutcomes().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+    project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
+    List<ProjectOutcome> projectOutcomes = project.getProjectOutcomes().stream()
+      .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
 
 
     project.setOutcomes(projectOutcomes);
     outcomes = new ArrayList<CrpProgramOutcome>();
     for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-      .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+      .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())
+        && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
       .collect(Collectors.toList())) {
 
-      outcomes.addAll(projectFocuses.getCrpProgram().getCrpProgramOutcomes().stream().filter(c -> c.isActive())
-        .collect(Collectors.toList()));
+      outcomes.addAll(projectFocuses.getCrpProgram().getCrpProgramOutcomes().stream()
+        .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
     }
 
     List<CrpProgram> programs = new ArrayList<>();
     for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-      .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+      .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+        && c.getPhase().equals(this.getActualPhase()))
       .collect(Collectors.toList())) {
       programs.add(projectFocuses.getCrpProgram());
     }
