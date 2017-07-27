@@ -613,8 +613,8 @@ public class ProjectDescriptionAction extends BaseAction {
 
     for (CrpProgram crpProgram : project.getFlagships()) {
       crpProgram = programManager.getCrpProgramById(crpProgram.getId());
-      clusterofActivites
-        .addAll(crpProgram.getCrpClusterOfActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+      clusterofActivites.addAll(crpProgram.getCrpClusterOfActivities().stream()
+        .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
     }
     // sort the clusterr of activites by identfier
     try {
