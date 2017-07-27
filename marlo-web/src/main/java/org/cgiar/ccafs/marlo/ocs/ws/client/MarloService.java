@@ -17,7 +17,7 @@ import javax.xml.ws.WebServiceFeature;
  * Generated source version: 2.2
  * 
  */
-@WebServiceClient(name = "MarloService", targetNamespace = "http://logic.control.abw.ciat.cgiar.org/", wsdlLocation = "http://beta.ciat.cgiar.org:80/abwinterface/MarloPort?WSDL")
+@WebServiceClient(name = "MarloService", targetNamespace = "http://logic.control.abw.ciat.cgiar.org/", wsdlLocation = "file:/C:/Users/cdgarcia/Documents/NetBeansProjects/WebApplication1/src/conf/xml-resources/web-services/NewWebServiceFromWSDL/wsdl/beta.ciat.cgiar.org_80/abwinterface/MarloPort.wsdl")
 public class MarloService
     extends Service
 {
@@ -30,7 +30,7 @@ public class MarloService
         URL url = null;
         WebServiceException e = null;
         try {
-            url = new URL("http://beta.ciat.cgiar.org:80/abwinterface/MarloPort?WSDL");
+            url = new URL("file:/C:/Users/cdgarcia/Documents/NetBeansProjects/WebApplication1/src/conf/xml-resources/web-services/NewWebServiceFromWSDL/wsdl/beta.ciat.cgiar.org_80/abwinterface/MarloPort.wsdl");
         } catch (MalformedURLException ex) {
             e = new WebServiceException(ex);
         }
