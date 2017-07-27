@@ -47,7 +47,7 @@
         </td>
           [#-- Project Title --]
           <td class="left">
-            [#if isProjectNew]<span class="label label-info">[@s.text name="project.new" /]</span>[/#if]
+            [#if isProjectNew]<span class="label label-info">[@s.text name="global.new" /]</span>[/#if]
             [#if project.projectInfo.administrative]<span class="label label-primary">[@s.text name="project.management" /]</span>[/#if]
             [#if project.projectInfo.title?has_content]
               <a href="${projectUrl}" title="${(project.projectInfo.title)!}">[@utilities.wordCutter string=(project.projectInfo.title)!'' maxPos=120 /]</a>

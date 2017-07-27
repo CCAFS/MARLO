@@ -333,6 +333,7 @@ public final class APConstants {
   public static final String SCOPE_TYPE = "Region";
 
   public static final String SECTION_NAME = "sectionName";
+  public static final String INSTITUTION_NAME = "institutionName";
 
   public static final String SESSION_CRP = "current_crp";
 
