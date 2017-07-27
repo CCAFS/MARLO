@@ -16,6 +16,16 @@
 [#include "/WEB-INF/center/global/pages/header.ftl" /]
 [#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/center/global/macros/forms.ftl" as customForm /]
+
+[#-- Help text --]
+<div class="container helpText viewMore-block">
+  <div class="helpMessage infoText">
+    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.png" />
+    <p class="col-md-10"> [@s.text name="monitoring.outcome.help"][/@s.text] </p>
+  </div> 
+  <div style="display:none" class="viewMore closed"></div>
+</div>
+
 <span id="programSelected" class="hidden">${selectedProgram.id}</span>
 
 <section class="container">

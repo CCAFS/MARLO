@@ -101,7 +101,7 @@
             </div>
             [#-- Project Suggested Title --]
             <div class="form-group">
-              [@customForm.textArea name="project.suggestedName" i18nkey="projectDescription.suggestedName" required=false className="project-title" editable=editable && action.hasPermission("title") /]
+              [@customForm.textArea name="project.suggestedName" i18nkey="projectDescription.suggestedName" required=false className="project-title" required=true editable=editable && action.hasPermission("title") /]
             </div>
             [#-- Project Description --]
             <div class="form-group">

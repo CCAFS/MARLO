@@ -15,6 +15,16 @@
 
 [#include "/WEB-INF/center//global/pages/header.ftl" /]
 [#include "/WEB-INF/center//global/pages/main-menu.ftl" /]
+
+[#-- Help text --]
+<div class="container helpText viewMore-block">
+  <div class="helpMessage infoText">
+    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.png" />
+    <p class="col-md-10"> [@s.text name="deliverable.help"][/@s.text] </p>
+  </div> 
+  <div style="display:none" class="viewMore closed"></div>
+</div>
+
 <section class="container">
     <div class="row">
       [#-- Project Menu --]
