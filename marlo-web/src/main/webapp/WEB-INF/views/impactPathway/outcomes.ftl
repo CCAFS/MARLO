@@ -177,42 +177,58 @@
     [#if editable && targetUnitList?has_content]<div class="col-md-12 note">[@s.text name = "outcomes.addNewTargetUnit" /]</div> <br /> <br />[/#if]
     
     
-    [#-- Outcome Sub-IDOs List --]
-    <h5 class="sectionSubTitle">[@s.text name="outcome.subIDOs.sectionTitle"/] <p class="contributioRem pull-right">Contribution <span class="value">0%</span></p></h5>
-    <div class="subIdos-list" listname="${outcomeCustomName}.subIdos">
-    [#if outcome.subIdos?has_content]
-      [#list outcome.subIdos as subIdo]
-        [@subIDOMacro subIdo=subIdo name="${outcomeCustomName}.subIdos" index=subIdo_index /]
-      [/#list]
-    [#else]
-      [@subIDOMacro subIdo={} name="${outcomeCustomName}.subIdos" index=0 /]
-      [#-- <p class="message text-center">[@s.text name="outcome.subIDOs.section.notSubIDOs.span"/]</p> --]
-    [/#if]
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+      <li role="presentation" class="active"><a href="#subIdos-tab" aria-controls="home" role="tab" data-toggle="tab">Sub-IDOs</a></li>
+      <li role="presentation"><a href="#baseline-tab" aria-controls="profile" role="tab" data-toggle="tab">Baseline</a></li>
+      <li role="presentation"><a href="#milestones-tab" aria-controls="messages" role="tab" data-toggle="tab">Milestones</a></li>
+    </ul>
+  
+    <!-- Tab panes -->
+    <div class="tab-content">
+      <div role="tabpanel" class="tab-pane fade in active" id="subIdos-tab">
+        [#-- Outcome Sub-IDOs List --]
+        <h5 class="sectionSubTitle">[@s.text name="outcome.subIDOs.sectionTitle"/] <p class="contributioRem pull-right">Contribution <span class="value">0%</span></p></h5>
+        <div class="subIdos-list" listname="${outcomeCustomName}.subIdos">
+        [#if outcome.subIdos?has_content]
+          [#list outcome.subIdos as subIdo]
+            [@subIDOMacro subIdo=subIdo name="${outcomeCustomName}.subIdos" index=subIdo_index /]
+          [/#list]
+        [#else]
+          [@subIDOMacro subIdo={} name="${outcomeCustomName}.subIdos" index=0 /]
+          [#-- <p class="message text-center">[@s.text name="outcome.subIDOs.section.notSubIDOs.span"/]</p> --]
+        [/#if]
+        </div>
+        [#-- Add Sub-IDO Button --]
+        [#if editable]
+        <div class="text-right">
+          <div class="addSubIdo button-blue text-right"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addSubIDO"/]</div>
+        </div>
+        [/#if]
+      </div> 
+      <div role="tabpanel" class="tab-pane fade" id="baseline-tab">
+      
+      </div>
+      <div role="tabpanel" class="tab-pane fade" id="milestones-tab">
+        [#-- Outcome Milestones List --]
+        <h5 class="sectionSubTitle">[@s.text name="outcome.milestone.sectionTitle"/]</h5>
+        <div class="milestones-list" listname="${outcomeCustomName}.milestones">
+        [#if outcome.milestones?has_content]
+          [#list outcome.milestones as milestone]
+            [@milestoneMacro milestone=milestone name="${outcomeCustomName}.milestones" index=milestone_index /]
+          [/#list]
+        [#else]
+          <p class="message text-center">[@s.text name="outcome.milestone.section.notMilestones.span"/]</p>
+        [/#if]
+        </div>
+        [#-- Add Milestone Button --]
+        [#if editable]
+        <div class="text-right">
+          <div class="addMilestone button-blue"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addMilestone"/]</div>
+        </div>
+        [/#if]
+      </div>
     </div>
-    [#-- Add Sub-IDO Button --]
-    [#if editable]
-    <div class="text-right">
-      <div class="addSubIdo button-blue text-right"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addSubIDO"/]</div>
-    </div>
-    [/#if]
-    
-    [#-- Outcome Milestones List --]
-    <h5 class="sectionSubTitle">[@s.text name="outcome.milestone.sectionTitle"/]</h5>
-    <div class="milestones-list" listname="${outcomeCustomName}.milestones">
-    [#if outcome.milestones?has_content]
-      [#list outcome.milestones as milestone]
-        [@milestoneMacro milestone=milestone name="${outcomeCustomName}.milestones" index=milestone_index /]
-      [/#list]
-    [#else]
-      <p class="message text-center">[@s.text name="outcome.milestone.section.notMilestones.span"/]</p>
-    [/#if]
-    </div>
-    [#-- Add Milestone Button --]
-    [#if editable]
-    <div class="text-right">
-      <div class="addMilestone button-blue"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addMilestone"/]</div>
-    </div>
-    [/#if]
     
     <br />
   </div>
