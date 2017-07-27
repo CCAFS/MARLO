@@ -256,8 +256,8 @@
         <span title="${(element.crpProgramOutcome.composedName)!}" class="outcomeStatement">[@utils.wordCutter string=(element.crpProgramOutcome.composedName)!"undefined" maxPos=160 substr=" "/]</span>
         <input class="outcomeContributionId" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
         <input class="outcomeId" type="hidden" name="${customName}.crpProgramOutcome.id" value="${(element.crpProgramOutcome.id)!}"/>
-        
-      </div>
+        <input class="outcomeComposeID" type="hidden" name="${customName}.crpProgramOutcome.composeID" value="${(element.crpProgramOutcome.composeID)!}"/>
+        </div>
       [#-- Contribution --]
       <div class="hidden">
           [@customForm.input name="${customName}.contribution" i18nkey="Contribution" value="${(element.contribution)!}" className="outcomeContribution" type="text" disabled=!editable  required=true editable=editable /]

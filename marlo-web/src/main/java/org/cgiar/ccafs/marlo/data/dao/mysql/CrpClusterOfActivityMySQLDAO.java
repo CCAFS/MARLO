@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpClusterActivityLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.ArrayList;
@@ -213,9 +214,9 @@ public class CrpClusterOfActivityMySQLDAO implements CrpClusterOfActivityDAO {
     CrpClusterOfActivity crpClusterOfActivity) {
     for (CrpClusterActivityLeader leader : crpClusterOfActivityPrev.getCrpClusterActivityLeaders().stream()
       .filter(c -> c.isActive()).collect(Collectors.toList())) {
-      if (crpClusterOfActivity.getLeaders() == null || crpClusterOfActivity.getCrpClusterActivityLeaders().stream()
-        .filter(c -> c.getUser() != null && c.getUser().equals(leader.getUser())).collect(Collectors.toList())
-        .isEmpty()) {
+      if (crpClusterOfActivity.getLeaders() == null || crpClusterOfActivity.getLeaders().stream()
+        .filter(c -> c.getUser() != null && c.getUser().getId().equals(leader.getUser().getId()))
+        .collect(Collectors.toList()).isEmpty()) {
         leader.setActive(false);
         dao.update(leader);
       }
@@ -227,13 +228,13 @@ public class CrpClusterOfActivityMySQLDAO implements CrpClusterOfActivityDAO {
 
           CrpClusterActivityLeader leaderAdd = new CrpClusterActivityLeader();
 
-          leaderAdd.setCrpClusterOfActivity(leader.getCrpClusterOfActivity());
+          leaderAdd.setCrpClusterOfActivity(crpClusterOfActivityPrev);
           leaderAdd.setUser(leader.getUser());
-          leaderAdd.setModifiedBy(leader.getModifiedBy());
+          leaderAdd.setModifiedBy(crpClusterOfActivityPrev.getModifiedBy());
           leaderAdd.setActive(true);
-          leaderAdd.setActiveSince(leader.getActiveSince());
-          leaderAdd.setModificationJustification(leader.getModificationJustification());
-          leaderAdd.setCreatedBy(leader.getCreatedBy());
+          leaderAdd.setActiveSince(crpClusterOfActivityPrev.getActiveSince());
+          leaderAdd.setModificationJustification(crpClusterOfActivityPrev.getModificationJustification());
+          leaderAdd.setCreatedBy(crpClusterOfActivityPrev.getCreatedBy());
           dao.update(leaderAdd);
 
         }
@@ -244,35 +245,31 @@ public class CrpClusterOfActivityMySQLDAO implements CrpClusterOfActivityDAO {
   /**
    * check the keyouputs and updated
    * 
-   * @param crpClusterOfActivityPrev outcome to update
-   * @param crpClusterOfActivity outcome modified
+   * @param crpClusterOfActivityPrev cluster to update
+   * @param crpClusterOfActivity cluster modified
    */
   private void updateKeyOutputs(CrpClusterOfActivity crpClusterOfActivityPrev,
     CrpClusterOfActivity crpClusterOfActivity) {
     for (CrpClusterKeyOutput crpClusterKeyOutput : crpClusterOfActivityPrev.getCrpClusterKeyOutputs().stream()
       .filter(c -> c.isActive()).collect(Collectors.toList())) {
       if (crpClusterOfActivity.getKeyOutputs() == null || crpClusterOfActivity.getKeyOutputs().stream()
-        .filter(c -> c.getComposeID().equals(crpClusterKeyOutput.getComposeID())).collect(Collectors.toList())
-        .isEmpty()) {
+        .filter(c -> c.getComposeID() != null && c.getComposeID().equals(crpClusterKeyOutput.getComposeID()))
+        .collect(Collectors.toList()).isEmpty()) {
         crpClusterKeyOutput.setActive(false);
         dao.update(crpClusterKeyOutput);
       }
     }
     if (crpClusterOfActivity.getKeyOutputs() != null) {
-
-
       for (CrpClusterKeyOutput crpClusterKeyOutput : crpClusterOfActivity.getKeyOutputs()) {
         if (crpClusterOfActivityPrev.getCrpClusterKeyOutputs().stream()
           .filter(c -> c.isActive() && c.getComposeID().equals(crpClusterKeyOutput.getComposeID()))
           .collect(Collectors.toList()).isEmpty()) {
-
           CrpClusterKeyOutput crpClusterKeyOutputAdd = new CrpClusterKeyOutput();
-
-          crpClusterKeyOutputAdd.setModifiedBy(crpClusterOfActivityPrev.getModifiedBy());
+          crpClusterKeyOutputAdd.setModifiedBy(crpClusterOfActivity.getModifiedBy());
           crpClusterKeyOutputAdd.setActive(true);
-          crpClusterKeyOutputAdd.setActiveSince(crpClusterOfActivityPrev.getActiveSince());
-          crpClusterKeyOutputAdd.setModificationJustification(crpClusterOfActivityPrev.getModificationJustification());
-          crpClusterKeyOutputAdd.setCreatedBy(crpClusterOfActivityPrev.getCreatedBy());
+          crpClusterKeyOutputAdd.setActiveSince(crpClusterOfActivity.getActiveSince());
+          crpClusterKeyOutputAdd.setModificationJustification(crpClusterOfActivity.getModificationJustification());
+          crpClusterKeyOutputAdd.setCreatedBy(crpClusterOfActivity.getModifiedBy());
           crpClusterKeyOutputAdd.setComposeID(crpClusterKeyOutput.getComposeID());
           crpClusterKeyOutputAdd.setContribution(crpClusterKeyOutput.getContribution());
           crpClusterKeyOutputAdd.setCrpClusterOfActivity(crpClusterOfActivityPrev);
@@ -280,8 +277,7 @@ public class CrpClusterOfActivityMySQLDAO implements CrpClusterOfActivityDAO {
           dao.save(crpClusterKeyOutputAdd);
           if (crpClusterKeyOutput.getComposeID() == null) {
             crpClusterKeyOutput.setComposeID(crpClusterKeyOutput.getComposeID() + "-" + crpClusterKeyOutputAdd.getId());
-            crpClusterKeyOutputAdd
-              .setComposeID(crpClusterKeyOutput.getComposeID() + "-" + crpClusterKeyOutputAdd.getId());
+            crpClusterKeyOutputAdd.setComposeID(crpClusterKeyOutput.getComposeID());
             dao.update(crpClusterKeyOutputAdd);
           }
 
@@ -310,17 +306,24 @@ public class CrpClusterOfActivityMySQLDAO implements CrpClusterOfActivityDAO {
           if (crpClusterKeyOutput.getKeyOutputOutcomes() == null) {
             crpClusterKeyOutput.setKeyOutputOutcomes(new ArrayList<CrpClusterKeyOutputOutcome>());
           }
+
+          for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome : crpClusterKeyOutput.getKeyOutputOutcomes()) {
+            crpClusterKeyOutputOutcome.setCrpProgramOutcome(
+              dao.find(CrpProgramOutcome.class, crpClusterKeyOutputOutcome.getCrpProgramOutcome().getId()));
+          }
           for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome : crpClusterKeyOutputtoUpdate
             .getCrpClusterKeyOutputOutcomes().stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
             if (crpClusterKeyOutput.getKeyOutputOutcomes().stream()
-              .filter(c -> c.getCrpProgramOutcome().getComposeID()
-                .equals(crpClusterKeyOutputOutcome.getCrpProgramOutcome().getComposeID()))
+              .filter(c -> c.getCrpProgramOutcome() != null && c.getCrpProgramOutcome().getComposeID() != null
+                && c.getCrpProgramOutcome().getComposeID()
+                  .equals(crpClusterKeyOutputOutcome.getCrpProgramOutcome().getComposeID()))
               .collect(Collectors.toList()).isEmpty()) {
               crpClusterKeyOutputOutcome.setActive(false);
               dao.save(crpClusterKeyOutputOutcome);
             }
           }
           for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome : crpClusterKeyOutput.getKeyOutputOutcomes()) {
+
             if (crpClusterKeyOutputtoUpdate.getCrpClusterKeyOutputOutcomes().stream()
               .filter(c -> c.isActive() && c.getCrpProgramOutcome().getComposeID()
                 .equals(crpClusterKeyOutputOutcome.getCrpProgramOutcome().getComposeID()))
