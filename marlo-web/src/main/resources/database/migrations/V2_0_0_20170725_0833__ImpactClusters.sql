@@ -43,10 +43,24 @@ FROM
 INNER JOIN crp_cluster_key_outputs ppp ON pp.key_output_id = ppp.id)
 ;
 
+CREATE TEMPORARY TABLE
+IF NOT EXISTS table_temp_project_clusters AS (
+
+SELECT
+ pp.*,ppp.identifier
+FROM
+  project_cluster_activities pp
+INNER JOIN crp_cluster_of_activities ppp ON pp.cluster_activity_id=ppp.id
+)
+;
+
+
 TRUNCATE TABLE crp_cluster_of_activities;
 TRUNCATE TABLE crp_cluster_activity_leaders ;
 TRUNCATE TABLE crp_cluster_key_outputs ;
 TRUNCATE TABLE crp_cluster_key_outputs_outcome ;
+TRUNCATE TABLE project_cluster_activities ;
+
 
 
 ALTER TABLE `crp_cluster_of_activities`
@@ -170,3 +184,32 @@ INNER JOIN crp_cluster_key_outputs pp on
 
 ;
 
+
+insert into project_cluster_activities (
+project_id,
+cluster_activity_id,
+is_active,
+active_since,
+created_by,
+modified_by,
+modification_justification,
+id_phase
+
+
+
+)
+select distinct 
+temp.project_id,
+pp.id,
+temp.is_active,
+temp.active_since,
+temp.created_by,
+temp.modified_by,
+temp.modification_justification,
+temp.id_phase
+
+
+from table_temp_project_clusters temp 
+INNER JOIN crp_cluster_of_activities pp on pp.id_phase=temp.id_phase
+and pp.identifier =temp.identifier
+;
