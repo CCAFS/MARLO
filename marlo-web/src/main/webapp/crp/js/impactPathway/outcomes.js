@@ -83,6 +83,11 @@ function attachEvents() {
   // Remove assumption
   $('.removeAssumption').on('click', removeAssumption);
 
+// Add an assumption
+  $('.addBaselineIndicator').on('click', addAssumption);
+  // Remove assumption
+  $('.removeBaselineIndicator').on('click', removeAssumption);
+
   // PopUp Select SubIdos (Graphic)
   $(".selectSubIDO").on("click", function() {
     currentSubIdo = $(this).parents(".subIdo");
@@ -286,13 +291,37 @@ function addAssumption() {
   var $item = $('#assumption-template').clone(true).removeAttr("id");
   $assumptionsList.append($item);
   updateAllIndexes();
-// Hide empty message
+  // Hide empty message
   $(this).parents('.subIdo').find('.assumptions-list p.message').hide();
   $item.show('slow');
 
 }
 
 function removeAssumption() {
+  var $assumptionsList = $(this).parents('.subIdo').find('.assumptions-list');
+  var $item = $(this).parents('.assumption');
+  $item.hide(function() {
+    $item.remove();
+    updateAllIndexes();
+  });
+}
+
+/**
+ * Baseline Indicator Functions
+ */
+
+function addBaselineIndicator() {
+  var $assumptionsList = $(this).parents('.subIdo').find('.assumptions-list');
+  var $item = $('#assumption-template').clone(true).removeAttr("id");
+  $assumptionsList.append($item);
+  updateAllIndexes();
+  // Hide empty message
+  $(this).parents('.subIdo').find('.assumptions-list p.message').hide();
+  $item.show('slow');
+
+}
+
+function removeBaselineIndicator() {
   var $assumptionsList = $(this).parents('.subIdo').find('.assumptions-list');
   var $item = $(this).parents('.assumption');
   $item.hide(function() {
@@ -349,77 +378,4 @@ function updateAllIndexes() {
   // Update component event
   $(document).trigger('updateComponent');
 
-  // JUST FOR TESTING
-  // setCurrentObject();
-}
-
-function setCurrentObject() {
-  saveObj = {}
-
-  // Outcomes
-  var outcomesArray = []
-  $('.outcomes-list').find('.outcome').each(function(i,outcome) {
-    var outcomeObj = {
-        description: $(outcome).find('.outcome-statement').val(),
-        value: $(outcome).find('.targetValue').val(),
-        year: $(outcome).find('.targetYear').val(),
-        srfTargetUnit: {
-          id: $(outcome).find('.targetUnit').val()
-        },
-        id: $(outcome).find('.outcomeId').val()
-    }
-
-    // Milestones
-    var milestonesArray = [];
-    $(outcome).find('.milestone').each(function(i,milestone) {
-      var milestonObj = {
-          title: $(milestone).find('.milestone-statement').val(),
-          value: $(milestone).find('.targetValue').val(),
-          year: $(milestone).find('.targetYear').val(),
-          srfTargetUnit: {
-            id: $(milestone).find('.targetUnit').val()
-          },
-          id: $(milestone).find('.mileStoneId')
-      }
-      milestonesArray.push(milestonObj);
-    });
-
-    // SubIdos
-    var subIdosArray = []
-    $(outcome).find('.subIdo').each(function(i,subIdo) {
-      var subIdoObj = {
-          srfSubIdo: {
-              id: $(subIdo).find('.subIdoId').val(),
-              srfIdo: {
-                id: $(subIdo).find('.idoId').val()
-              }
-          },
-          contribution: $(subIdo).find('.contribution').val(),
-          id: $(subIdo).find('.programSubIDOId').val()
-      }
-
-      // Assumptions
-      var assumptionsArray = [];
-      $(subIdo).find('.assumption').each(function(i,assumption) {
-        var assumptionObj = {
-            id: $(assumption).find('.assumptionId').val(),
-            name: $(assumption).find('.statement').val()
-        }
-        assumptionsArray.push(assumptionObj);
-      });
-
-      subIdoObj.assumptions = assumptionsArray;
-      subIdosArray.push(subIdoObj);
-    });
-
-    outcomeObj.subIdos = subIdosArray;
-    outcomeObj.milestones = milestonesArray;
-    outcomesArray.push(outcomeObj);
-  });
-
-  saveObj.outcomes = outcomesArray;
-  saveObj.crpProgramID = $('#crpProgramID').val();
-
-  console.log(saveObj);
-  console.log(JSON.stringify(saveObj));
 }

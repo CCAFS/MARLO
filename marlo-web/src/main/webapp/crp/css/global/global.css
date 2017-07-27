@@ -5084,6 +5084,10 @@ ul#deliverablesFilesMessages > li {
   background: #81af81;
 }
 
+.leftHead.gray span.index{
+  background: #ababab;
+}
+
 span.index{
   background: #b0b99d;
   color: #FFF;

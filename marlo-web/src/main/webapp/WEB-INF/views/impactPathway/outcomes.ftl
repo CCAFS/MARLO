@@ -232,7 +232,7 @@
         </div>
         
         [#-- Baseline indicators list --]
-        <label for="">[@s.text name="outcome.baselineIndicators" /]:</label>
+        <h5 class="sectionSubTitle">[@s.text name="outcome.baselineIndicators" /]:</h5>
         <div class="baselineIndicators-list"">
         [#if outcome.baselineIndicators?has_content]
           [#list outcome.baselineIndicators as baselineIndicator]
@@ -398,8 +398,12 @@
 [#macro baselineIndicatorMacro indicator name index isTemplate=false]
   [#local customName = "${name}[${index}]" /]
   <div id="baselineIndicator-${isTemplate?string('template', index)}" class="baselineIndicator simpleBox form-group" style="position:relative; display:${isTemplate?string('none','block')}">
+    [#-- Index --]
+    <div class="leftHead gray sm">
+      <span class="index">${index+1}</span>
+    </div>
     [#-- Remove Button --]
-    [#if editable]<div class="removeBaselineIndicator removeIcon" title="Remove Indicators"></div>[/#if]
+    [#if editable]<div class="removeBaselineIndicator removeElement sm" title="Remove Indicators"></div>[/#if]
     [#-- Hidden inputs --]
     <input type="hidden" class="baselineIndicatorId" name="${customName}.id" value="${(indicator.id)!}"/>
     [#if !editable] 
@@ -407,7 +411,7 @@
         <div class="input"><p> <strong>${index+1}.</strong> ${(indicator.description)!}</p></div>
       [/#if] 
     [#else]
-      [@customForm.input name="${customName}.description" i18nkey="baselineIndicator.title" type="text" showTitle=true placeholder="" className="statement limitWords-100" required=true editable=editable /]
+      [@customForm.input name="${customName}.description" i18nkey="baselineIndicator.title" type="text" showTitle=true placeholder="" className="statement limitWords-50" required=true editable=editable /]
     [/#if]
     <div class="clearfix"></div>
   </div>
