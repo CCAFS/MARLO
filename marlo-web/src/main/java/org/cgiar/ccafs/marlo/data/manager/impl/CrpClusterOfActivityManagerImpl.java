@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,6 +18,8 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 import org.cgiar.ccafs.marlo.data.dao.CrpClusterOfActivityDAO;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterOfActivityManager;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -57,6 +59,11 @@ public class CrpClusterOfActivityManagerImpl implements CrpClusterOfActivityMana
 
     return crpClusterOfActivityDAO.findAll();
 
+  }
+
+  @Override
+  public List<CrpClusterOfActivity> findClusterProgramPhase(CrpProgram crpProgram, Phase phase) {
+    return crpClusterOfActivityDAO.findClusterProgramPhase(crpProgram.getId(), phase.getId());
   }
 
   @Override

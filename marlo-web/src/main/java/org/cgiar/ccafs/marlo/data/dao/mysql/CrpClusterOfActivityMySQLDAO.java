@@ -130,7 +130,6 @@ public class CrpClusterOfActivityMySQLDAO implements CrpClusterOfActivityDAO {
     }
   }
 
-
   /**
    * clone the cluster leaders
    * 
@@ -153,6 +152,7 @@ public class CrpClusterOfActivityMySQLDAO implements CrpClusterOfActivityDAO {
       }
     }
   }
+
 
   @Override
   public boolean deleteCrpClusterOfActivity(long crpClusterOfActivityId) {
@@ -186,6 +186,23 @@ public class CrpClusterOfActivityMySQLDAO implements CrpClusterOfActivityDAO {
     }
     return null;
 
+  }
+
+  @Override
+  public List<CrpClusterOfActivity> findClusterProgramPhase(long crpProgramID, long phaseID) {
+    StringBuilder query = new StringBuilder();
+    query.append("from ");
+    query.append(CrpClusterOfActivity.class.getName());
+    query.append(" where is_active=1 and crp_program_id=");
+    query.append(crpProgramID);
+    query.append(" and id_phase=");
+    query.append(phaseID);
+    query.append(" order by identifier asc");
+    List<CrpClusterOfActivity> list = dao.findAll(query.toString());
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
   }
 
   @Override

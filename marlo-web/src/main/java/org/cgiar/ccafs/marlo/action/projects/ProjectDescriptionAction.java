@@ -613,16 +613,19 @@ public class ProjectDescriptionAction extends BaseAction {
 
     for (CrpProgram crpProgram : project.getFlagships()) {
       crpProgram = programManager.getCrpProgramById(crpProgram.getId());
-      clusterofActivites.addAll(crpProgram.getCrpClusterOfActivities().stream()
-        .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+      clusterofActivites.addAll(crpClusterOfActivityManager.findClusterProgramPhase(crpProgram, this.getActualPhase()));
     }
     // sort the clusterr of activites by identfier
-    try {
-      clusterofActivites.sort((p1, p2) -> p1.getIdentifier().compareTo(p2.getIdentifier()));
-    } catch (NullPointerException e) {
-      // if throws null pointer sort by id
-      clusterofActivites.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
-    }
+
+    /*
+     * try {
+     * clusterofActivites.sort((p1, p2) -> p1.getIdentifier().compareTo(p2.getIdentifier()));
+     * } catch (NullPointerException e) {
+     * // if throws null pointer sort by id
+     * clusterofActivites.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
+     * }
+     */
+
     // add regions programs
 
     regionFlagships.addAll(loggedCrp.getCrpPrograms().stream()
