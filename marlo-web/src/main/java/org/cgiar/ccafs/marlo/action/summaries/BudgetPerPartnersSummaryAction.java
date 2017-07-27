@@ -404,8 +404,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
             if (flagships == null || flagships.isEmpty()) {
               flagships = programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
             } else {
-              flagships +=
-                "\n " + programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
+              flagships += ", " + programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
             }
           }
           // get CoAs related to the project sorted by acronym
