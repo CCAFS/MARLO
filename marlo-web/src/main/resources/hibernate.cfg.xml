@@ -209,6 +209,8 @@
 		<mapping resource="xmls/Participant.hbm.xml" />
 		<mapping resource="xmls/CapdevOutputs.hbm.xml" />
 		<mapping resource="xmls/CapdevPartners.hbm.xml" />  
+		<mapping resource="xmls/CapdevSupportingDocs.hbm.xml" />  
+		<mapping resource="xmls/CapdevSuppDocsDocuments.hbm.xml" />  
 	</session-factory>
 </hibernate-configuration>
 

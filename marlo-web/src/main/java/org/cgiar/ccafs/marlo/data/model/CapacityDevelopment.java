@@ -47,6 +47,7 @@ public class CapacityDevelopment implements java.io.Serializable {
   private Set<CapdevParticipant> capdevParticipants = new HashSet<CapdevParticipant>(0);
   private Set<CapdevOutputs> capdevOutputses = new HashSet<CapdevOutputs>(0);
   private Set<CapdevPartners> capdevPartnerses = new HashSet<CapdevPartners>(0);
+  private Set<CapdevSupportingDocs> capdevSupportingDocses = new HashSet<CapdevSupportingDocs>(0);
 
 
   public CapacityDevelopment() {
@@ -59,7 +60,8 @@ public class CapacityDevelopment implements java.io.Serializable {
     String ctEmail, Date startDate, Date endDate, Integer numParticipants, Integer numMen, Integer numWomen,
     Set<CapdevLocations> capdevLocations, Set<CapdevDiscipline> capdevDisciplines,
     Set<CapdevTargetgroup> capdevTargetgroups, Set<CapdevParticipant> capdevParticipants,
-    Set<CapdevOutputs> capdevOutputses, Set<CapdevPartners> capdevPartnerses) {
+    Set<CapdevOutputs> capdevOutputses, Set<CapdevPartners> capdevPartnerses,
+    Set<CapdevSupportingDocs> capdevSupportingDocses) {
     this.project = project;
     this.usersByModifiedBy = usersByModifiedBy;
     this.usersByCreatedBy = usersByCreatedBy;
@@ -85,6 +87,7 @@ public class CapacityDevelopment implements java.io.Serializable {
     this.numWomen = numWomen;
     this.capdevOutputses = capdevOutputses;
     this.capdevPartnerses = capdevPartnerses;
+    this.capdevSupportingDocses = capdevSupportingDocses;
   }
 
   public CapacityDevelopment(String title, CapacityDevelopmentType capdevType, int category, boolean active,
@@ -128,9 +131,16 @@ public class CapacityDevelopment implements java.io.Serializable {
     return capDevRegions;
   }
 
+
+  public Set<CapdevSupportingDocs> getCapdevSupportingDocses() {
+    return capdevSupportingDocses;
+  }
+
+
   public Set<CapdevTargetgroup> getCapdevTargetgroups() {
     return capdevTargetgroups;
   }
+
 
   public CapacityDevelopmentType getCapdevType() {
     return this.capdevType;
@@ -269,6 +279,11 @@ public class CapacityDevelopment implements java.io.Serializable {
   }
 
 
+  public void setCapdevSupportingDocses(Set<CapdevSupportingDocs> capdevSupportingDocses) {
+    this.capdevSupportingDocses = capdevSupportingDocses;
+  }
+
+
   public void setCapdevTargetgroups(Set<CapdevTargetgroup> capdevTargetgroups) {
     this.capdevTargetgroups = capdevTargetgroups;
   }
@@ -353,7 +368,6 @@ public class CapacityDevelopment implements java.io.Serializable {
     this.startDate = startDate;
   }
 
-
   public void setTitle(String title) {
     this.title = title;
   }
@@ -362,6 +376,7 @@ public class CapacityDevelopment implements java.io.Serializable {
   public void setUsersByCreatedBy(User usersByCreatedBy) {
     this.usersByCreatedBy = usersByCreatedBy;
   }
+
 
   public void setUsersByModifiedBy(User usersByModifiedBy) {
     this.usersByModifiedBy = usersByModifiedBy;

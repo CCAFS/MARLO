@@ -120,6 +120,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     System.out.println(capDevCountryID);
     final CapdevLocations capdev_country = capdevLocationService.getCapdevLocationsById(capDevCountryID);
     capdev_country.setActive(false);
+    capdev_country.setUsersByModifiedBy(this.getCurrentUser());
     capdevLocationService.saveCapdevLocations(capdev_country);
     return SUCCESS;
   }
@@ -149,6 +150,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     System.out.println(capDevRegionID);
     final CapdevLocations capdev_region = capdevLocationService.getCapdevLocationsById(capDevRegionID);
     capdev_region.setActive(false);
+    capdev_region.setUsersByModifiedBy(this.getCurrentUser());
     capdevLocationService.saveCapdevLocations(capdev_region);
     return SUCCESS;
   }

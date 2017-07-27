@@ -116,5 +116,11 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CapdevPartners" />
 		</set>
+		<set name="capdevSupportingDocses" table="capdev_supporting_docs" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="capdev_id" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CapdevSupportingDocs" />
+        </set>
 	</class>
 </hibernate-mapping>

@@ -16,10 +16,17 @@
 package org.cgiar.ccafs.marlo.action.center.capdev;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CapdevSupportingDocsManager;
+import org.cgiar.ccafs.marlo.data.manager.ICapacityDevelopmentService;
 import org.cgiar.ccafs.marlo.data.model.CapacityDevelopment;
+import org.cgiar.ccafs.marlo.data.model.CapdevSupportingDocs;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.Date;
+
 import com.google.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
 
 public class CapdevSupportingDocsAction extends BaseAction {
 
@@ -31,11 +38,45 @@ public class CapdevSupportingDocsAction extends BaseAction {
 
   private CapacityDevelopment capdev;
   private long capdevID;
+  private long supportingDocID;
+  private final CapdevSupportingDocsManager capdevsupportingDocsService;
+  private final ICapacityDevelopmentService capdevService;
 
   @Inject
-  public CapdevSupportingDocsAction(APConfig config) {
+  public CapdevSupportingDocsAction(APConfig config, CapdevSupportingDocsManager capdevsupportingDocsService,
+    ICapacityDevelopmentService capdevService) {
     super(config);
+    this.capdevsupportingDocsService = capdevsupportingDocsService;
+    this.capdevService = capdevService;
   }
+
+  @Override
+  public String add() {
+    final CapdevSupportingDocs capdevSupportingDocs = new CapdevSupportingDocs();
+    capdev = capdevService.getCapacityDevelopmentById(capdevID);
+    capdevSupportingDocs.setCapacityDevelopment(capdev);
+    capdevSupportingDocs.setActive(true);
+    capdevSupportingDocs.setActiveSince(new Date());
+    capdevSupportingDocs.setUsersByCreatedBy(this.getCurrentUser());
+    supportingDocID = capdevsupportingDocsService.saveCapdevSupportingDocs(capdevSupportingDocs);
+
+    return SUCCESS;
+  }
+
+
+  @Override
+  public String delete() {
+    System.out.println("deleted");
+    final long supportingDocID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter("supportingDocID")));
+    System.out.println(supportingDocID);
+    final CapdevSupportingDocs capdevSupportingDocs =
+      capdevsupportingDocsService.getCapdevSupportingDocsById(supportingDocID);
+    capdevSupportingDocs.setActive(false);
+    capdevSupportingDocs.setUsersByModifiedBy(this.getCurrentUser());
+    capdevsupportingDocsService.saveCapdevSupportingDocs(capdevSupportingDocs);
+    return SUCCESS;
+  }
+
 
   public CapacityDevelopment getCapdev() {
     return capdev;
@@ -47,9 +88,20 @@ public class CapdevSupportingDocsAction extends BaseAction {
   }
 
 
+  public long getSupportingDocID() {
+    return supportingDocID;
+  }
+
   @Override
   public void prepare() throws Exception {
-    capdev = new CapacityDevelopment();
+    try {
+      capdevID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CAPDEV_ID)));
+    } catch (final Exception e) {
+      capdevID = -1;
+    }
+    capdev = capdevService.getCapacityDevelopmentById(capdevID);
+    System.out.println("capdevID " + capdevID);
+    System.out.println("capdev.getCapdevSupportingDocses " + capdev.getCapdevSupportingDocses().size());
   }
 
 
@@ -61,5 +113,10 @@ public class CapdevSupportingDocsAction extends BaseAction {
   public void setCapdevID(long capdevID) {
     this.capdevID = capdevID;
   }
+
+  public void setSupportingDocID(long supportingDocID) {
+    this.supportingDocID = supportingDocID;
+  }
+
 
 }

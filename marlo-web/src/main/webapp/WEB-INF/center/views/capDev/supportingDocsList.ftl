@@ -1,0 +1,177 @@
+[#ftl]
+
+[#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/capDev/capacityDevelopment.css"] /]
+[#assign customJS = ["${baseUrlMedia}/js/capDev/capacityDevelopment.js"] /]
+
+[#include "/WEB-INF/center/global/pages/header.ftl" /]
+[#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
+
+
+
+
+
+<script src="${baseUrl}/bower_components/jquery/dist/jquery.min.js"></script>
+<script src="${baseUrlMedia}/js/capDev/capacityDevelopment.js"></script>
+<script src="${baseUrlMedia}/js/capDev/supportingDocuments.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.7.7/xlsx.core.min.js"></script>
+
+
+
+<div class="container"> 
+	<div class="col-md-3 capDevMenu">
+		[#include "/WEB-INF/center/views/capDev/menu-capdev.ftl" /]
+	</div>
+	
+	
+	
+	
+	
+	<div class="col-md-9 ">
+
+	<div class="col-md-12">
+			<div class="pull-right">
+				<a class="" href="[@s.url action='${centerSession}/capdev' /] "><span class="glyphicon glyphicon-circle-arrow-left"></span>[@s.text name="capdev.gotoBack" /]</a> 
+			</div>
+		</div>
+	
+	<div class="col-md-12">
+			Supporting Documents		
+	</div>
+	
+	<div class="col-md-12 form-group newCapdevForm"> 
+
+		[@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
+		
+
+		<div  class="fullForm" >
+			
+			<!-- supporting documents -->
+			<div class="row">
+				<div class="col-md-12 newCapdevField deliverablesTitle">
+					Supporting Documents
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12 newCapdevField ">
+				
+				[#if capdev.capdevSupportingDocses?has_content]
+					<table class="table table-bordered ">
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>Title</th>
+								<th>Type</th>
+								<th>Publication date</th>
+								<th>Remove</th>
+							</tr>
+						</thead>
+						<tbody>
+							[#list capdev.capdevSupportingDocses as supportDocs]
+								[#if supportDocs.active]
+									<tr>
+										<td>${supportDocs.id}</td>
+										[#if supportDocs.title??]
+											<td><a href="[@s.url action='${centerSession}/detailSupportingDoc'][@s.param name='capdevID']${supportDocs.capacityDevelopment.id?c}[/@s.param][@s.param name='supportingDocID']${supportDocs.id?c}[/@s.param][/@s.url]">${supportDocs.title}</a></td>
+											<td>${supportDocs.centerDeliverableTypes.name}</td>
+											<td>${supportDocs.publicationDate}</td>
+											
+										[#else]
+											<td><a href="[@s.url action='${centerSession}/detailSupportingDoc'][@s.param name='capdevID']${supportDocs.capacityDevelopment.id?c}[/@s.param][@s.param name='supportingDocID']${supportDocs.id?c}[/@s.param][/@s.url]">Not defined</a></td>
+											<td>Not defined</td>
+											<td>Not defined</td>
+										[/#if]
+										<td>
+								             <a  href="[@s.url action='${centerSession}/deleteSupportingDoc'][@s.param name='capdevID']${capdev.id}[/@s.param] [@s.param name='supportingDocID']${supportDocs.id?c}[/@s.param] [/@s.url]" >
+								               <img src="${baseUrlMedia}/images/global/trash.png" title="[@s.text name="capdev.removeCapdev" /]" /> 
+								             </a>
+
+
+
+
+
+							            </td>
+
+
+							            
+									</tr>
+								[/#if]
+
+							[/#list]
+
+							
+						</tbody>
+					</table>
+				[/#if]
+				<p class="text-center inf" style="display:${(capdev.capdevSupportingDocses?has_content)?string('none','block')}">[@s.text name="capdev.notSupportDocuments" /]</p>	
+
+				</div>
+				<div class="col-md-12 newCapdevField">
+					<div class="pull-right">
+						<div class="buttons-content">        
+							<a class="addButton" href="[@s.url action='${centerSession}/addSupportingDoc'][@s.param name='supportingDocID']${supportingDocID}[/@s.param] [@s.param name='capdevID']${capdevID}[/@s.param][/@s.url]">[@s.text name="capdev.addSupportingDoc" /]</a>
+							<div class="clearfix"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+<div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal-dialog">
+    <div class="modal-content">
+    
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id="myModalLabel">Confirm Delete</h4>
+        </div>
+    
+        <div class="modal-body">
+            <p>You are about to delete one track, this procedure is irreversible.</p>
+            <p>Do you want to proceed?</p>
+            <p class="debug-url"></p>
+        </div>
+        
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <a class="btn btn-danger btn-ok" href="[@s.url action='${centerSession}/deleteSupportingDoc'][@s.param name='capdevID']${capdev.id}[/@s.param]  [/@s.url]">Delete</a>
+        </div>
+    </div>
+</div>
+</div>
+			
+
+			
+
+
+
+
+			
+
+		</div>
+
+	</div>
+	
+	[/@s.form]
+
+	</div>
+	
+
+</div>
+
+
+[#include "/WEB-INF/center/global/pages/footer.ftl"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+

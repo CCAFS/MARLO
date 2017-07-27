@@ -237,8 +237,6 @@
 
 
 
-
-
 <!-- disciplines template-->
 <ul style="display:none">
   <li id="disciplineTemplate" class="discipline clearfix col-md-4">
