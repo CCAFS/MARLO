@@ -931,7 +931,7 @@ public class ClusterActivitiesAction extends BaseAction {
       selectedProgram.setAction(this.getActionName());
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROGRAM_ACTIVITIES_RELATION);
-      crpProgramManager.saveCrpProgram(selectedProgram, this.getActionName(), relationsName);
+      crpProgramManager.saveCrpProgram(selectedProgram, this.getActionName(), relationsName, this.getActualPhase());
 
 
       Path path = this.getAutoSaveFilePath();

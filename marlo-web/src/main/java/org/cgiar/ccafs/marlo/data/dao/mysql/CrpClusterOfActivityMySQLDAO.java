@@ -71,7 +71,7 @@ public class CrpClusterOfActivityMySQLDAO implements CrpClusterOfActivityDAO {
           clusterPrev.setIdentifier(crpCluster.getIdentifier());
           dao.update(clusterPrev);
           this.updateClusterLeaders(clusterPrev, crpCluster);
-          // this.updateMilestones(outcomePrev, outcome);
+          this.updateKeyOutputs(clusterPrev, crpCluster);
         }
       }
     }
@@ -259,6 +259,8 @@ public class CrpClusterOfActivityMySQLDAO implements CrpClusterOfActivityDAO {
       }
     }
     if (crpClusterOfActivity.getKeyOutputs() != null) {
+
+
       for (CrpClusterKeyOutput crpClusterKeyOutput : crpClusterOfActivity.getKeyOutputs()) {
         if (crpClusterOfActivityPrev.getCrpClusterKeyOutputs().stream()
           .filter(c -> c.isActive() && c.getComposeID().equals(crpClusterKeyOutput.getComposeID()))
