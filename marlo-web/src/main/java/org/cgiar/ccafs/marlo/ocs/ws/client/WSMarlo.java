@@ -28,12 +28,12 @@ public interface WSMarlo {
      * 
      * @param agreementId
      * @return
-     *     returns java.util.List<org.cgiar.ciat.abw.control.logic.TWsMarloAgree>
+     *     returns java.util.List<org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloAgree>
      */
     @WebMethod
     @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "getMarloAgreements", targetNamespace = "http://logic.control.abw.ciat.cgiar.org/", className = "org.cgiar.ciat.abw.control.logic.GetMarloAgreements")
-    @ResponseWrapper(localName = "getMarloAgreementsResponse", targetNamespace = "http://logic.control.abw.ciat.cgiar.org/", className = "org.cgiar.ciat.abw.control.logic.GetMarloAgreementsResponse")
+    @RequestWrapper(localName = "getMarloAgreements", targetNamespace = "http://logic.control.abw.ciat.cgiar.org/", className = "org.cgiar.ccafs.marlo.ocs.ws.client.GetMarloAgreements")
+    @ResponseWrapper(localName = "getMarloAgreementsResponse", targetNamespace = "http://logic.control.abw.ciat.cgiar.org/", className = "org.cgiar.ccafs.marlo.ocs.ws.client.GetMarloAgreementsResponse")
     public List<TWsMarloAgree> getMarloAgreements(
         @WebParam(name = "agreementId", targetNamespace = "")
         String agreementId);
@@ -42,12 +42,12 @@ public interface WSMarlo {
      * 
      * @param agreementId
      * @return
-     *     returns java.util.List<org.cgiar.ciat.abw.control.logic.TWsMarloAgreeCrp>
+     *     returns java.util.List<org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloAgreeCrp>
      */
     @WebMethod
     @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "getMarloAgreeCrp", targetNamespace = "http://logic.control.abw.ciat.cgiar.org/", className = "org.cgiar.ciat.abw.control.logic.GetMarloAgreeCrp")
-    @ResponseWrapper(localName = "getMarloAgreeCrpResponse", targetNamespace = "http://logic.control.abw.ciat.cgiar.org/", className = "org.cgiar.ciat.abw.control.logic.GetMarloAgreeCrpResponse")
+    @RequestWrapper(localName = "getMarloAgreeCrp", targetNamespace = "http://logic.control.abw.ciat.cgiar.org/", className = "org.cgiar.ccafs.marlo.ocs.ws.client.GetMarloAgreeCrp")
+    @ResponseWrapper(localName = "getMarloAgreeCrpResponse", targetNamespace = "http://logic.control.abw.ciat.cgiar.org/", className = "org.cgiar.ccafs.marlo.ocs.ws.client.GetMarloAgreeCrpResponse")
     public List<TWsMarloAgreeCrp> getMarloAgreeCrp(
         @WebParam(name = "agreementId", targetNamespace = "")
         String agreementId);
@@ -56,12 +56,12 @@ public interface WSMarlo {
      * 
      * @param agreementId
      * @return
-     *     returns java.util.List<org.cgiar.ciat.abw.control.logic.TWsMarloAgreeCountry>
+     *     returns java.util.List<org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloAgreeCountry>
      */
     @WebMethod
     @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "getMarloAgreeCountry", targetNamespace = "http://logic.control.abw.ciat.cgiar.org/", className = "org.cgiar.ciat.abw.control.logic.GetMarloAgreeCountry")
-    @ResponseWrapper(localName = "getMarloAgreeCountryResponse", targetNamespace = "http://logic.control.abw.ciat.cgiar.org/", className = "org.cgiar.ciat.abw.control.logic.GetMarloAgreeCountryResponse")
+    @RequestWrapper(localName = "getMarloAgreeCountry", targetNamespace = "http://logic.control.abw.ciat.cgiar.org/", className = "org.cgiar.ccafs.marlo.ocs.ws.client.GetMarloAgreeCountry")
+    @ResponseWrapper(localName = "getMarloAgreeCountryResponse", targetNamespace = "http://logic.control.abw.ciat.cgiar.org/", className = "org.cgiar.ccafs.marlo.ocs.ws.client.GetMarloAgreeCountryResponse")
     public List<TWsMarloAgreeCountry> getMarloAgreeCountry(
         @WebParam(name = "agreementId", targetNamespace = "")
         String agreementId);
@@ -70,12 +70,12 @@ public interface WSMarlo {
      * 
      * @param agreementId
      * @return
-     *     returns java.util.List<org.cgiar.ciat.abw.control.logic.TWsMarloPla>
+     *     returns java.util.List<org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloPla>
      */
     @WebMethod
     @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "getMarloPla", targetNamespace = "http://logic.control.abw.ciat.cgiar.org/", className = "org.cgiar.ciat.abw.control.logic.GetMarloPla")
-    @ResponseWrapper(localName = "getMarloPlaResponse", targetNamespace = "http://logic.control.abw.ciat.cgiar.org/", className = "org.cgiar.ciat.abw.control.logic.GetMarloPlaResponse")
+    @RequestWrapper(localName = "getMarloPla", targetNamespace = "http://logic.control.abw.ciat.cgiar.org/", className = "org.cgiar.ccafs.marlo.ocs.ws.client.GetMarloPla")
+    @ResponseWrapper(localName = "getMarloPlaResponse", targetNamespace = "http://logic.control.abw.ciat.cgiar.org/", className = "org.cgiar.ccafs.marlo.ocs.ws.client.GetMarloPlaResponse")
     public List<TWsMarloPla> getMarloPla(
         @WebParam(name = "agreementId", targetNamespace = "")
         String agreementId);
@@ -84,12 +84,12 @@ public interface WSMarlo {
      * 
      * @param plaId
      * @return
-     *     returns java.util.List<org.cgiar.ciat.abw.control.logic.TWsMarloPlaCountry>
+     *     returns java.util.List<org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloPlaCountry>
      */
     @WebMethod
     @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "getMarloPlaCountry", targetNamespace = "http://logic.control.abw.ciat.cgiar.org/", className = "org.cgiar.ciat.abw.control.logic.GetMarloPlaCountry")
-    @ResponseWrapper(localName = "getMarloPlaCountryResponse", targetNamespace = "http://logic.control.abw.ciat.cgiar.org/", className = "org.cgiar.ciat.abw.control.logic.GetMarloPlaCountryResponse")
+    @RequestWrapper(localName = "getMarloPlaCountry", targetNamespace = "http://logic.control.abw.ciat.cgiar.org/", className = "org.cgiar.ccafs.marlo.ocs.ws.client.GetMarloPlaCountry")
+    @ResponseWrapper(localName = "getMarloPlaCountryResponse", targetNamespace = "http://logic.control.abw.ciat.cgiar.org/", className = "org.cgiar.ccafs.marlo.ocs.ws.client.GetMarloPlaCountryResponse")
     public List<TWsMarloPlaCountry> getMarloPlaCountry(
         @WebParam(name = "plaId", targetNamespace = "")
         String plaId);
