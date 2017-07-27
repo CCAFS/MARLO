@@ -61,11 +61,25 @@ INNER JOIN crp_program_outcomes ppp ON pp.crp_program_outcome_id=ppp.id
 );
 
 
+CREATE TEMPORARY TABLE
+IF NOT EXISTS table_temp_project_outcomes AS (
+
+SELECT
+ pp.*,ppp.composed_id
+FROM
+  project_outcomes pp
+INNER JOIN crp_program_outcomes ppp ON pp.outcome_id=ppp.id
+)
+;
+
+
 TRUNCATE TABLE crp_program_outcomes;
 TRUNCATE TABLE crp_cluster_key_outputs_outcome ;
 TRUNCATE TABLE crp_outcome_sub_idos ;
 TRUNCATE TABLE crp_milestones ;
 TRUNCATE TABLE crp_assumptions ;
+TRUNCATE TABLE project_outcomes ;
+
 
 
 ALTER TABLE `crp_program_outcomes`
@@ -216,4 +230,47 @@ from table_temp_crp_assumptions temp
 INNER JOIN crp_program_outcomes pp on pp.crp_program_id=temp.crp_program_id
 and pp.composed_id =temp.composed_id
 inner join  crp_outcome_sub_idos asp on asp.srf_sub_ido_id=temp.srf_sub_ido_id
+;
+
+insert into project_outcomes (
+project_id,
+outcome_id,
+expected_value,
+expected_unit,
+achieved_value,
+narrative_target,
+narrative_achieved,
+is_active,
+active_since,
+created_by,
+modified_by,
+modification_justification,
+achieved_unit,
+gender_dimenssion,
+youth_component,
+id_phase
+
+)
+select distinct 
+temp.project_id,
+outcome_id,
+temp.expected_value,
+temp.expected_unit,
+temp.achieved_value,
+temp.narrative_target,
+temp.narrative_achieved,
+temp.is_active,
+temp.active_since,
+temp.created_by,
+temp.modified_by,
+temp.modification_justification,
+temp.achieved_unit,
+temp.gender_dimenssion,
+temp.youth_component,
+temp.id_phase
+
+
+from table_temp_project_outcomes temp 
+INNER JOIN crp_program_outcomes pp on pp.id_phase=temp.id_phase
+and pp.composed_id =temp.composed_id
 ;

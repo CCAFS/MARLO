@@ -243,7 +243,7 @@ public class ImpactPathwayGraph extends BaseAction {
     int i1 = 1;
     int j = 1;
     for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
-      .filter(c -> c.isActive()).collect(Collectors.toList())) {
+      .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
       HashMap<String, Object> dataOutcome = new HashMap<>();
       HashMap<String, Object> dataDetailOutcome = new HashMap<>();
       dataDetailOutcome.put("id", "C" + crpClusterOfActivity.getId());
