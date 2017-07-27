@@ -8,7 +8,7 @@
 [#assign currentStage = "outputs" /]
 
 [#assign breadCrumb = [
-  {"label":"impactPathway", "nameSpace":"", "action":"topics"},
+  {"label":"centerImpactPathway", "nameSpace":"", "action":"topics"},
   {"label":"outputsList", "nameSpace":"", "action":""}
 ]/]
 [#assign leadersName = "leaders"/]
@@ -74,7 +74,7 @@
           [@s.form action=actionName enctype="multipart/form-data" ]
           [#-- Output Table --]
           [#if outputs?has_content]
-          <div style="">[@outputsList.outputsList outputs=outputs canValidate=true canEdit=canEdit namespace="/impactPathway" defaultAction="${(centerSession)!}/outputs"/]</div>
+          <div style="">[@outputsList.outputsList outputs=outputs canValidate=true canEdit=canEdit namespace="/centerImpactPathway" defaultAction="${(centerSession)!}/outputs"/]</div>
           [#else]
             [#if selectedResearchTopic?has_content]
             <div class="clearfix"></div>

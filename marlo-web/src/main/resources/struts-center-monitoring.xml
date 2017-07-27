@@ -106,6 +106,15 @@
       </result>     
     </action>
     
+    <action name="{center}/deleteDeliverable" method="delete"
+      class="org.cgiar.ccafs.marlo.action.center.monitoring.project.DeliverableListAction">
+      <interceptor-ref name="centerSectionStack" />
+      <result name="success" type="redirectAction">
+        <param name="actionName">${centerSession}/deliverableList</param>
+        <param name="projectID">${projectID}</param>
+      </result>
+    </action>
+    
     <action name="{center}/monitoringOutcomesList"
       class="org.cgiar.ccafs.marlo.action.center.monitoring.outcome.MonitoringOutcomesListAction">
       <interceptor-ref name="centerSectionStack" />

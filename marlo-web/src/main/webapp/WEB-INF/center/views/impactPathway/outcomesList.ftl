@@ -8,7 +8,7 @@
 [#assign currentStage = "outcomes" /]
 
 [#assign breadCrumb = [
-  {"label":"impactPathway", "nameSpace":"", "action":"topics"},
+  {"label":"centerImpactPathway", "nameSpace":"", "action":"topics"},
   {"label":"outcomesList", "nameSpace":"", "action":""}
 ]/]
 [#assign leadersName = "leaders"/]
@@ -65,7 +65,7 @@
           
           [#-- Outcomes Table --]
           [#if outcomes?has_content]
-          <div style="">[@outcomesList.outcomesList outcomes=outcomes canValidate=true canEdit=editable namespace="/impactPathway" defaultAction="${(centerSession)!}/outcomes"/]</div>
+          <div style="">[@outcomesList.outcomesList outcomes=outcomes canValidate=true canEdit=editable namespace="/centerImpactPathway" defaultAction="${(centerSession)!}/outcomes"/]</div>
           [#else]
             [#if selectedResearchTopic?has_content] 
             <div class="clearfix"></div>
