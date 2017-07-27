@@ -7,10 +7,9 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>
- * Java class for getMarloAgreeCountry complex type.
- * <p>
- * The following schema fragment specifies the expected content contained within this class.
+ * <p>Java class for getMarloAgreeCountry complex type.
+ * 
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="getMarloAgreeCountry">
@@ -23,33 +22,39 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
+ * 
+ * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "getMarloAgreeCountry", propOrder = {"agreementId"})
+@XmlType(name = "getMarloAgreeCountry", propOrder = {
+    "agreementId"
+})
 public class GetMarloAgreeCountry {
 
-  protected String agreementId;
+    protected String agreementId;
 
-  /**
-   * Gets the value of the agreementId property.
-   * 
-   * @return
-   *         possible object is
-   *         {@link String }
-   */
-  public String getAgreementId() {
-    return agreementId;
-  }
+    /**
+     * Gets the value of the agreementId property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getAgreementId() {
+        return agreementId;
+    }
 
-  /**
-   * Sets the value of the agreementId property.
-   * 
-   * @param value
-   *        allowed object is
-   *        {@link String }
-   */
-  public void setAgreementId(String value) {
-    this.agreementId = value;
-  }
+    /**
+     * Sets the value of the agreementId property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setAgreementId(String value) {
+        this.agreementId = value;
+    }
 
 }
