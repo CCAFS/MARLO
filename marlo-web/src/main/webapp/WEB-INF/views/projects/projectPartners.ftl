@@ -255,7 +255,11 @@
       
       [#-- Contacts --]
       [#if (element.partnerPersons)?? ] <br /> 
-        <small>[#list element.partnerPersons as partnerPerson][${(partnerPerson.user.composedCompleteName)!}] [/#list]</small> 
+        <small>[#list element.partnerPersons as partnerPerson]
+          [#if partnerPerson.user.firstName??]
+            [${(partnerPerson.user.composedCompleteName)!}]
+          [/#if]
+        [/#list]</small> 
       [/#if]
       <div class="clearfix"></div>
     </div>
