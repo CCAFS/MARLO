@@ -121,7 +121,6 @@ function attachEvents() {
         success: function(data) {
           partner.clearCountries();
           
-          
           $(partner.countriesSelect).empty();
           $(partner.countriesSelect).addOption(-1, "Select a country...");
           
@@ -622,6 +621,9 @@ function addContactEvent(e) {
   // Remove "No contact person added" message
   $(e.target).parents('.contactsPerson').find('.noContactMessage').hide();
 
+  // Update PPA partners requirements
+  updateProjectPPAPartnersLists();
+  
   // Update indexes
   setProjectPartnersIndexes();
 }
