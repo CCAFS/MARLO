@@ -201,6 +201,54 @@ public class StandardDAO {
   }
 
   /**
+   * This method make a query that returns a list of objects from the model.
+   * This method was implemented in a generic way, so, the list of objects to be returned will depend on how the method
+   * is being called.
+   * e.g:
+   * List<SomeObject> list = this.findAll("some hibernate query");
+   * or
+   * this.<SomeObject>findAll("some hibernate query");
+   * 
+   * @param hibernateQuery is a string representing an HQL query
+   * @param params array of params to run query
+   * @return a list of <T> objects.
+   */
+  protected <T> List<T> findAll(String hibernateQuery, Object... params) {
+    Session session = null;
+    Transaction tx = null;
+    try {
+      session = this.openSession();
+      tx = this.initTransaction(session);
+      session.clear();
+      session.flush();
+
+
+      Query query = session.createQuery(hibernateQuery);
+      int i = 0;
+      for (Object param : params) {
+        query.setParameter(i, param);
+        i++;
+      }
+      @SuppressWarnings("unchecked")
+      List<T> list = query.list();
+      this.commitTransaction(tx);
+
+      return list;
+    } catch (Exception e) {
+      if (tx != null) {
+        this.rollBackTransaction(tx);
+      }
+      e.printStackTrace();
+      return new ArrayList<T>();
+    } finally {
+      if (session.isOpen()) {
+        // Flushing the changes always.
+      }
+
+    }
+  }
+
+  /**
    * This method make a query that returns a not mapped object result from the model.
    * 
    * @param sqlQuery is a string representing an HQL query.

@@ -193,16 +193,12 @@ public class CrpClusterOfActivityMySQLDAO implements CrpClusterOfActivityDAO {
     StringBuilder query = new StringBuilder();
     query.append("from ");
     query.append(CrpClusterOfActivity.class.getName());
-    query.append(" where is_active=1 and crp_program_id=");
-    query.append(crpProgramID);
-    query.append(" and id_phase=");
-    query.append(phaseID);
+    query.append(" where is_active=1 and crp_program_id = ?");
+    query.append(" and id_phase= ? ");
     query.append(" order by identifier asc");
-    List<CrpClusterOfActivity> list = dao.findAll(query.toString());
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
+    List<CrpClusterOfActivity> list = dao.findAll(query.toString(), crpProgramID, phaseID);
+    return list;
+
   }
 
   @Override
