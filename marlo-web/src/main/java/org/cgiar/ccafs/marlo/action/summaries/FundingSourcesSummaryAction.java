@@ -130,7 +130,7 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
     masterReport.getParameterValues().put("i8nFundingWindow", this.getText("projectCofunded.type"));
     masterReport.getParameterValues().put("i8nDonor", this.getText("projectCofunded.donor"));
     masterReport.getParameterValues().put("i8nBudgetYear",
-      this.getText("projectCofunded.budgetYear", new String[] {String.valueOf(year)}));
+      this.getText("fundingSource.budget", new String[] {String.valueOf(year)}));
     masterReport.getParameterValues().put("i8nBudgetYearProjects",
       this.getText("fundingSource.budgetYearAllocated", new String[] {String.valueOf(year)}));
     masterReport.getParameterValues().put("i8nDeliverableIDs",

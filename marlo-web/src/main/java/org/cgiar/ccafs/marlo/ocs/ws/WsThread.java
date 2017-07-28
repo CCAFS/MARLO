@@ -14,8 +14,7 @@
  *****************************************************************/
 
 
-package org.cgiar.ccafs.marlo.ocs;
-
+package org.cgiar.ccafs.marlo.ocs.ws;
 
 import org.cgiar.ccafs.marlo.ocs.model.AgreementOCS;
 import org.cgiar.ccafs.marlo.ocs.model.CountryOCS;
@@ -44,40 +43,27 @@ import java.util.Map;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.handler.MessageContext;
 
-import com.google.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+public class WsThread implements Runnable {
 
-public class MarloOcsClient {
 
-  public static Logger LOG = LoggerFactory.getLogger(MarloOcsClient.class);
+  public static Logger LOG = LoggerFactory.getLogger(WsThread.class);
   private APConfig apConfig;
   private SimpleDateFormat formatter;
+  private int type;
+  private String agreementID;
+  private AgreementOCS agreementOCS;
 
-  @Inject
-  public MarloOcsClient(APConfig apConfig) {
+  public WsThread(APConfig apConfig, int type, String agreementID, AgreementOCS agreementOCS) {
     this.apConfig = apConfig;
     formatter = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss");
-  }
+    this.type = type;
+    this.agreementOCS = agreementOCS;
+    this.agreementID = agreementID;
 
-  /**
-   * @param agreementID the id to search
-   * @return AgreementOCS object with all the info
-   */
-  public AgreementOCS getagreement(String agreementID) {
-    AgreementOCS agreementOCS = new AgreementOCS();
-    this.loadBasicInfo(agreementID, agreementOCS);
-    this.loadCountries(agreementID, agreementOCS);
-    this.loadCrps(agreementID, agreementOCS);
-    this.loadPlas(agreementID, agreementOCS);
-    if (agreementOCS.getId() == null) {
-      return null;
-    } else {
-      return agreementOCS;
-    }
   }
-
 
   /**
    * Get the client for the ws and authenticated
@@ -93,10 +79,10 @@ public class MarloOcsClient {
     headers.put("username", Collections.singletonList(apConfig.getOcsUser()));
     headers.put("password", Collections.singletonList(apConfig.getOcsPassword()));
     reqCtx.put(MessageContext.HTTP_REQUEST_HEADERS, headers);
+
     return client;
 
   }
-
 
   /**
    * Load the basic info received from WS
@@ -111,6 +97,7 @@ public class MarloOcsClient {
       if (agrees != null && agrees.size() > 0) {
         TWsMarloAgree myAgree = agrees.get(0);
         agreementOCS.setId(myAgree.getAgreementId());
+        agreementOCS.setObjectives(myAgree.getObjectives());
         agreementOCS.setDescription(myAgree.getDescription());
         DonorOCS donorOCS = new DonorOCS();
         donorOCS.setId(myAgree.getDonor());
@@ -120,11 +107,12 @@ public class MarloOcsClient {
         agreementOCS.setStartDate(formatter.parse(myAgree.getStartDate().split("\\+")[0]));
         agreementOCS.setExtensionDate(formatter.parse(myAgree.getExtentionDate().split("\\+")[0]));
         agreementOCS.setFundingType(myAgree.getFundingType());
-        agreementOCS.setGrantAmount(agreementOCS.getGrantAmount());
+        agreementOCS.setGrantAmount(myAgree.getGrantAmount().toString());
         ResearcherOCS researcherOCS = new ResearcherOCS();
         researcherOCS.setId(myAgree.getResearcher());
         researcherOCS.setName(myAgree.getResearcherText());
         agreementOCS.setResearcher(researcherOCS);
+        agreementOCS.setContractStatus(myAgree.getStatus());
       }
     } catch (ParseException e) {
       e.printStackTrace();
@@ -207,4 +195,25 @@ public class MarloOcsClient {
     }
   }
 
+  @Override
+  public void run() {
+    switch (type) {
+      case 1:
+        this.loadBasicInfo(agreementID, agreementOCS);
+        break;
+      case 2:
+        this.loadCountries(agreementID, agreementOCS);
+        break;
+      case 3:
+        this.loadCrps(agreementID, agreementOCS);
+        break;
+      case 4:
+        this.loadPlas(agreementID, agreementOCS);
+        break;
+
+      default:
+        break;
+    }
+
+  }
 }

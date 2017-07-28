@@ -7,16 +7,16 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for tWsMarloAgreeCountry complex type.
+ * <p>Java class for getMarloPlaCountry complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="tWsMarloAgreeCountry">
+ * &lt;complexType name="getMarloPlaCountry">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="id" type="{http://logic.control.abw.ciat.cgiar.org/}tWsMarloAgreeCountryId" minOccurs="0"/>
+ *         &lt;element name="plaId" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -26,35 +26,35 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tWsMarloAgreeCountry", propOrder = {
-    "id"
+@XmlType(name = "getMarloPlaCountry", propOrder = {
+    "plaId"
 })
-public class TWsMarloAgreeCountry {
+public class GetMarloPlaCountry {
 
-    protected TWsMarloAgreeCountryId id;
+    protected String plaId;
 
     /**
-     * Gets the value of the id property.
+     * Gets the value of the plaId property.
      * 
      * @return
      *     possible object is
-     *     {@link TWsMarloAgreeCountryId }
+     *     {@link String }
      *     
      */
-    public TWsMarloAgreeCountryId getId() {
-        return id;
+    public String getPlaId() {
+        return plaId;
     }
 
     /**
-     * Sets the value of the id property.
+     * Sets the value of the plaId property.
      * 
      * @param value
      *     allowed object is
-     *     {@link TWsMarloAgreeCountryId }
+     *     {@link String }
      *     
      */
-    public void setId(TWsMarloAgreeCountryId value) {
-        this.id = value;
+    public void setPlaId(String value) {
+        this.plaId = value;
     }
 
 }
