@@ -939,12 +939,19 @@ function PartnerObject(partner) {
     $(this.ppaPartnersList).slideDown();
     $(partner).find('.partnerResponsabilities .requiredTag').hide();
     $(partner).find('.contactsPerson .requiredTag').hide();
-    // requiredTag
   };
   this.hidePPAs = function() {
     $(this.ppaPartnersList).slideUp();
+    
+    // Add a contact person by default
+    if($(this.persons).length <= 0){
+      console.log('asdfasdf');
+      $(partner).find('.addContact .addLink').trigger('click');
+    }
+    
     $(partner).find('.partnerResponsabilities .requiredTag').show();
     $(partner).find('.contactsPerson .requiredTag').show();
+    
   };
   this.startLoader = function() {
     $(partner).find('.loading').fadeIn();

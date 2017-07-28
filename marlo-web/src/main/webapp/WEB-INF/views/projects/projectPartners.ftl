@@ -256,7 +256,7 @@
       [#-- Contacts --]
       [#if (element.partnerPersons)?? ] <br /> 
         <small>[#list element.partnerPersons as partnerPerson]
-          [#if partnerPerson.user.firstName??]
+          [#if partnerPerson.user?? && partnerPerson.user.firstName??]
             [${(partnerPerson.user.composedCompleteName)!}]
           [/#if]
         [/#list]</small> 
@@ -375,7 +375,7 @@
           [#if isPPA]
            [@contactPersonMacro element={} name="${name}.partnerPersons[0]" index=0 partnerIndex=index /]
           [#else]
-            <p class="noContactMessage">No contact persons added yet.</p>
+            <p class="noContactMessage">[@s.text name="projectPartners.contactEmpty" /]</p>
           [/#if]
         [/#if]  
         [#if (editable && canEdit)]
