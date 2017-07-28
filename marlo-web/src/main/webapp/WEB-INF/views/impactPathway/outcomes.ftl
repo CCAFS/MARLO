@@ -120,19 +120,19 @@
 </div>
       
 [#-- Outcome Template --]
-[@outcomeMacro outcome={} name="" index=0 isTemplate=true /]
+[@outcomeMacro outcome={} name="outcome" index=-1 isTemplate=true /]
 
 [#-- Milestone Template --]
-[@milestoneMacro milestone={} name="" index=0 isTemplate=true /]
+[@milestoneMacro milestone={} name="outcomes[0].milestones" index=-1 isTemplate=true /]
 
 [#-- Sub-Ido Template --]
-[@subIDOMacro subIdo={} name="" index=0 isTemplate=true /]
+[@subIDOMacro subIdo={} name="outcomes[0].subIdos" index=-1 isTemplate=true /]
 
 [#-- Assumption Template --]
-[@assumptionMacro assumption={} name="" index=0 isTemplate=true /]
+[@assumptionMacro assumption={} name="outcomes[-1].subIdos[-1].assumptions" index=-1 isTemplate=true /]
 
 [#-- Baseline Indicator Template --]
-[@baselineIndicatorMacro indicator={} name="" index=0 isTemplate=true /]
+[@baselineIndicatorMacro indicator={} name="outcomes[-1].baselineIndicators" index=-1 isTemplate=true /]
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]
 
