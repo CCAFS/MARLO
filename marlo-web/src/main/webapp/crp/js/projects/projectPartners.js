@@ -18,8 +18,8 @@ function init() {
   partnerPersonTypes = [
       coordinatorType, leaderType, defaultType, '-1'
   ];
+  
   if(editable) {
-
     // Getting the actual project leader
     projectLeader = jQuery.extend({}, getProjectLeader());
     // Remove PPA institutions from partner institution list when there is not privileges to update PPA Partners
@@ -31,7 +31,6 @@ function init() {
 
     // Activate the chosen to the existing partners
     addSelect2();
-
   }
   
   addUser = function(composedName,userId) {
@@ -108,7 +107,9 @@ function attachEvents() {
     var partner = new PartnerObject($(this).parents('.projectPartner'));
     // Update Partner Title
     partner.updateBlockContent();
-
+    
+    
+    // Get Countries from Institution ID
     $.ajax({
         url: baseURL + "/institutionBranchList.do",
         data: {
@@ -119,20 +120,26 @@ function attachEvents() {
         },
         success: function(data) {
           partner.clearCountries();
+          
+          
           $(partner.countriesSelect).empty();
           $(partner.countriesSelect).addOption(-1, "Select a country...");
-          $.each(data.branches, function(index,branch) {
-            
-            if ((branch.name).indexOf("HQ") != "-1"){
-              partner.addCountry({
-                iso: branch.iso,
-                name: branch.name
-              });  
-            }else{
-              $(partner.countriesSelect).addOption(branch.iso, branch.name);
-            }
-            
-          });
+          
+          // Validate if the current partner is not selected, then add the countries
+          if (!($('input.institutionsList[value='+partner.institutionId+']').exists())){
+            $.each(data.branches, function(index,branch) {
+              
+              if ((branch.name).indexOf("HQ") != "-1"){
+                partner.addCountry({
+                  iso: branch.iso,
+                  name: branch.name
+                });  
+              }else{
+                $(partner.countriesSelect).addOption(branch.iso, branch.name);
+              }
+            });
+           }
+          
           $(partner.countriesSelect).trigger("change.select2");
         },
         complete: function() {
@@ -427,8 +434,9 @@ function updateProjectPPAPartnersLists(e) {
     // If there is one selected , show an error message
     if(count > 1) {
       var institutionName = $(e.target).find('option[value="' + e.target.value + '"]').text();
-      $fieldError.text(institutionName + ' is already selected').animateCss('flipInX');
-      e.target.value = -1;
+      var institutionName_saved = $('input.institutionsList[value='+e.target.value+']').parents('.projectPartner').find('.partnerTitle').text();
+      $fieldError.html('<i>"' +(institutionName || institutionName_saved) + '</i>" is already selected').animateCss('flipInX');
+      e.target.value = -1; 
     }
   }
 
@@ -605,12 +613,14 @@ function addContactEvent(e) {
   var partner = new PartnerObject($(this).parents('.projectPartner'));
   $(e.target).parent().before($newElement);
   $newElement.show("slow");
-  // applyWordCounter($newElement.find("textarea.resp"), lWordsResp);
   // Activate the select2 plugin for new partners created
   $newElement.find("select").select2({
       templateResult: formatState,
       width: '100%'
   });
+  
+  // Remove "No contact person added" message
+  $(e.target).parents('.contactsPerson').find('.noContactMessage').hide();
 
   // Update indexes
   setProjectPartnersIndexes();
@@ -925,10 +935,14 @@ function PartnerObject(partner) {
   };
   this.showPPAs = function() {
     $(this.ppaPartnersList).slideDown();
+    $(partner).find('.partnerResponsabilities .requiredTag').hide();
+    $(partner).find('.contactsPerson .requiredTag').hide();
+    // requiredTag
   };
   this.hidePPAs = function() {
-
     $(this.ppaPartnersList).slideUp();
+    $(partner).find('.partnerResponsabilities .requiredTag').show();
+    $(partner).find('.contactsPerson .requiredTag').show();
   };
   this.startLoader = function() {
     $(partner).find('.loading').fadeIn();

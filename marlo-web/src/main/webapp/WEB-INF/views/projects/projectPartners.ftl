@@ -368,7 +368,11 @@
             [@contactPersonMacro element=partnerPerson name="${name}.partnerPersons[${partnerPerson_index}]" index=partnerPerson_index partnerIndex=index /]
           [/#list]
         [#else]
+          [#if isPPA]
            [@contactPersonMacro element={} name="${name}.partnerPersons[0]" index=0 partnerIndex=index /]
+          [#else]
+            <p class="noContactMessage">No contact persons added yet.</p>
+          [/#if]
         [/#if]  
         [#if (editable && canEdit)]
           <div class="addContact"><a href="" class="addLink">[@s.text name="projectPartners.addContact"/]</a></div> 
