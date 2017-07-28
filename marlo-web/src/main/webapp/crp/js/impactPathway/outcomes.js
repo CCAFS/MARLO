@@ -88,6 +88,18 @@ function attachEvents() {
   // Remove baseline indicator
   $('.removeBaselineIndicator').on('click', removeBaselineIndicator);
 
+  $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+    // e.target // newly activated tab
+    // e.relatedTarget // previous active tab
+    var $parent = $(e.target).parents('.outcome');
+    var $selects = $parent.find('select');
+    var $textAreas = $parent.find('textarea');
+    $selects.select2({
+      width: '100%'
+    });
+    $textAreas.autoGrow();
+  })
+
   // PopUp Select SubIdos (Graphic)
   $(".selectSubIDO").on("click", function() {
     currentSubIdo = $(this).parents(".subIdo");
