@@ -298,7 +298,7 @@
       [#-- Responsibilities --]
       [#if project.projectEditLeader]
       <div class="form-group partnerResponsabilities chosen"> 
-        [@customForm.textArea name="${name}.responsibilities" className="resp limitWords-100" i18nkey="projectPartners.responsabilities" required=true editable=editable /]
+        [@customForm.textArea name="${name}.responsibilities" className="resp limitWords-100" i18nkey="projectPartners.responsabilities" required=isPPA editable=editable /]
         <div class="clearfix"></div>
       </div>
       [/#if]
@@ -393,7 +393,8 @@
     <input id="id" class="partnerPersonId" type="hidden" name="${name}.id" value="${(element.id)!}" />
     [#local canEditLeader=(editable && action.hasPermission("leader"))!false /]
     [#local canEditCoordinator=(editable && action.hasPermission("coordinator"))!false /]
-    
+   
+    [#local isPPA = (action.isPPA(element.projectPartner.institution))!false /]
     [#if (element.contactType == "PL")!false]
       [#local canEditContactType = (editable && action.hasPermission("leader"))!false /]
     [#elseif (element.contactType == "PC")!false]
@@ -410,7 +411,7 @@
           [#-- Contact type --]
           <div class="col-md-4 partnerPerson-type ${customForm.changedField('${name}.contactType')}">
             [#if canEditContactType]
-              [@customForm.select name="${name}.contactType" className="partnerPersonType" disabled=!canEdit i18nkey="projectPartners.personType" stringKey=true header=false listName="partnerPersonTypes" value="'${(element.contactType)!'CP'}'" required=true /]
+              [@customForm.select name="${name}.contactType" className="partnerPersonType" disabled=!canEdit i18nkey="projectPartners.personType" stringKey=true header=false listName="partnerPersonTypes" value="'${(element.contactType)!'CP'}'" required=isPPA /]
             [#else]
               <label class="readOnly">[@s.text name="projectPartners.personType" /]:</label>
               <div class="select"><p>[@s.text name="projectPartners.types.${(element.contactType)!'none'}"/]</p></div>
@@ -428,7 +429,7 @@
             [#-- Contact Person information is going to come from the users table, not from project_partner table (refer to the table project_partners in the database) --] 
             [#assign partnerClass = "${name}.user.id"?string?replace("\\W+", "", "r") /]
             [#assign changeFieldEmail = customForm.changedField('${name}.user.id') /]
-            [@customForm.input name="partner-${partnerIndex}-person-${index}" value="${(element.user.composedName?html)!}" className='userName ${partnerClass} ${changeFieldEmail}' type="text" disabled=!canEdit i18nkey="projectPartners.contactPersonEmail" required=true readOnly=true editable=editable && canEditEmail /]
+            [@customForm.input name="partner-${partnerIndex}-person-${index}" value="${(element.user.composedName?html)!}" className='userName ${partnerClass} ${changeFieldEmail}' type="text" disabled=!canEdit i18nkey="projectPartners.contactPersonEmail" required=isPPA readOnly=true editable=editable && canEditEmail /]
             <input class="userId" type="hidden" name="${name}.user.id" value="${(element.user.id)!}" />   
             [#if editable && canEditEmail]<div class="searchUser button-blue button-float">[@s.text name="form.buttons.searchUser" /]</div>[/#if]
           </div>
