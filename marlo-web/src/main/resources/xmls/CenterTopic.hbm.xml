@@ -33,6 +33,9 @@
     <property name="color" type="string">
       <column name="color" length="8" />
     </property>
+    <property name="order" type="int">
+      <column name="order" length="3" />
+    </property>
     <property name="shortName" type="string">
       <column name="short_name" />
     </property>

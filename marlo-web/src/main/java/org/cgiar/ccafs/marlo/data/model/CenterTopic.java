@@ -56,13 +56,12 @@ public class CenterTopic implements Serializable, IAuditLog {
   @Expose
   private boolean active;
 
+
   @Expose
   private Date activeSince;
 
-
   @Expose
   private User createdBy;
-
 
   @Expose
   private User modifiedBy;
@@ -78,6 +77,10 @@ public class CenterTopic implements Serializable, IAuditLog {
 
   @Expose
   private String shortName;
+
+
+  @Expose
+  private int order;
 
 
   private Set<CenterOutcome> researchOutcomes = new HashSet<>(0);
@@ -128,10 +131,10 @@ public class CenterTopic implements Serializable, IAuditLog {
     return activeSince;
   }
 
-
   public String getColor() {
     return color;
   }
+
 
   public User getCreatedBy() {
     return createdBy;
@@ -146,7 +149,6 @@ public class CenterTopic implements Serializable, IAuditLog {
     return id;
   }
 
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -155,6 +157,7 @@ public class CenterTopic implements Serializable, IAuditLog {
   }
 
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -164,6 +167,12 @@ public class CenterTopic implements Serializable, IAuditLog {
   public User getModifiedBy() {
     return modifiedBy;
   }
+
+
+  public int getOrder() {
+    return order;
+  }
+
 
   public Set<CenterOutcome> getResearchOutcomes() {
     return researchOutcomes;
@@ -186,7 +195,6 @@ public class CenterTopic implements Serializable, IAuditLog {
   public String getShortName() {
     return shortName;
   }
-
 
   @Override
   public int hashCode() {
@@ -212,6 +220,7 @@ public class CenterTopic implements Serializable, IAuditLog {
     this.activeSince = activeSince;
   }
 
+
   public void setColor(String color) {
     this.color = color;
   }
@@ -219,7 +228,6 @@ public class CenterTopic implements Serializable, IAuditLog {
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
-
 
   /**
    * @param id the id to set
@@ -236,6 +244,11 @@ public class CenterTopic implements Serializable, IAuditLog {
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
+  }
+
+
+  public void setOrder(int order) {
+    this.order = order;
   }
 
 
