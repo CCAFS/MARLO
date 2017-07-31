@@ -8,6 +8,10 @@
   $(document).ready(init);
 
   function init(){
+    $('.numParticipants').integerInput();
+    $('.numMen').integerInput();
+    $('.numMen').integerInput();
+    $('.participant-code').integerInput();
 
     datePickerConfig({
       "startDate": "#capdev\\.startDate",
