@@ -21,19 +21,19 @@
 			<column name="code" not-null="true" />
 		</property>
 		<property name="name" type="string">
-			<column name="name" length="200" not-null="true" />
+			<column name="name" length="200"  />
 		</property>
 		<property name="middleName" type="string">
-			<column name="middle_name" length="200" not-null="true" />
+			<column name="middle_name" length="200"  />
 		</property>
 		<property name="lastName" type="string">
-			<column name="last_name" length="200" not-null="true" />
+			<column name="last_name" length="200" />
 		</property>
 		<property name="gender" type="string">
 			<column name="gender" not-null="true" />
 		</property>
 		<property name="citizenship" type="string">
-			<column name="citizenship" length="200" not-null="true" />
+			<column name="citizenship" length="200" />
 		</property>
 		<property name="countryOfInstitucion" type="string">
 			<column name="country_of_institucion" length="200" />
@@ -45,10 +45,10 @@
 			<column name="institution" length="200" />
 		</property>
 		<property name="email" type="string">
-			<column name="email" length="200" not-null="true" />
+			<column name="email" length="200"  />
 		</property>
 		<property name="personalEmail" type="string">
-			<column name="personal_email" length="200" not-null="true" />
+			<column name="personal_email" length="200" />
 		</property>
 		<property name="reference" type="string">
 			<column name="reference" length="200" />
