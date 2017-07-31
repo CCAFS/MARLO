@@ -72,6 +72,37 @@ INNER JOIN crp_program_outcomes ppp ON pp.outcome_id=ppp.id
 )
 ;
 
+CREATE TEMPORARY TABLE
+IF NOT EXISTS table_temp_project_milestones AS (
+
+SELECT
+ pp.*,ppp.outcome_id,ppp.project_id
+FROM
+  project_milestones pp
+INNER JOIN project_outcomes ppp ON pp.project_outcome_id=ppp.id
+)
+;
+
+
+
+ALTER TABLE `project_nextusers`
+ADD COLUMN `composed_id`  varchar(20)  NULL AFTER `modification_justification`;
+
+update  project_nextusers ml INNER JOIN project_outcomes po 
+on po.id=ml.project_outcome_id
+set ml.composed_id=CONCAT(po.project_id,'-',po.outcomeid,'-',ml.id) ;
+
+
+CREATE TEMPORARY TABLE
+IF NOT EXISTS table_temp_project_nextusers AS (
+
+SELECT
+ pp.*,ppp.project_id,ppp.outcome_id
+FROM
+  project_nextusers pp
+INNER JOIN project_outcomes ppp ON pp.project_outcome_id=ppp.id
+)
+;
 
 TRUNCATE TABLE crp_program_outcomes;
 TRUNCATE TABLE crp_cluster_key_outputs_outcome ;
@@ -79,7 +110,8 @@ TRUNCATE TABLE crp_outcome_sub_idos ;
 TRUNCATE TABLE crp_milestones ;
 TRUNCATE TABLE crp_assumptions ;
 TRUNCATE TABLE project_outcomes ;
-
+TRUNCATE TABLE project_milestones ;
+TRUNCATE TABLE project_nextusers ;
 
 
 ALTER TABLE `crp_program_outcomes`
@@ -273,4 +305,73 @@ temp.id_phase
 from table_temp_project_outcomes temp 
 INNER JOIN crp_program_outcomes pp on pp.id_phase=temp.id_phase
 and pp.composed_id =temp.composed_id
+;
+
+
+insert into project_milestones (
+project_outcome_id,
+crp_milestone_id,
+is_active,
+active_since,
+created_by,
+modified_by,
+modification_justification,
+expected_value,
+expected_unit,
+achieved_value,
+narrative_target,
+narrative_achieved,
+year
+
+
+)
+select distinct 
+pp.id,
+temp.crp_milestone_id,
+temp.is_active,
+temp.active_since,
+temp.created_by,
+temp.modified_by,
+temp.modification_justification,
+temp.expected_value,
+temp.expected_unit,
+temp.achieved_value,
+temp.narrative_target,
+temp.narrative_achieved,
+temp.year
+
+from table_temp_project_milestones temp 
+INNER JOIN project_outcomes pp on pp.project_id=temp.project_id
+and pp.outcome_id =temp.outcome_id
+;
+
+insert into project_nextusers (
+project_outcome_id,
+next_user,
+knowledge,
+strategies,
+is_active,
+created_by,
+active_since,
+modified_by,
+modification_justification,
+composed_id
+
+
+
+)
+select distinct 
+pp.id,
+temp.next_user,
+temp.knowledge,
+temp.strategies,
+temp.is_active,
+temp.created_by,
+temp.active_since,
+temp.modified_by,
+temp.modification_justification,
+temp.composed_id
+from table_temp_project_nextusers temp 
+INNER JOIN project_outcomes pp on pp.project_id=temp.project_id
+and pp.outcome_id =temp.outcome_id
 ;
