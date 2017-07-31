@@ -5,7 +5,7 @@
   <div class="input ${changedField(name)}" style="display:${display?string('block','none')};">
     [#assign labelTitle][#if i18nkey==""][@s.text name="${name}"][@s.param]${paramText}[/@s.param][/@s.text][#else][@s.text name="${i18nkey}"][@s.param]${paramText}[/@s.param][/@s.text][/#if][/#assign]
     [#if showTitle]
-      <label for="${name}" class="${editable?string('editable', 'readOnly')}">${labelTitle}:[#if required && editable]<span class="red">*</span>[/#if]</label>
+      <label for="${name}" class="${editable?string('editable', 'readOnly')}">${labelTitle}:[@req required=required && editable /]</label>
       [#if help != ""]<img src="${baseUrlMedia}/images/global/icon-help2.png" title="[@s.text name="${help}"/]" />[/#if]
     [/#if]
     [#if errorField==""][@s.fielderror cssClass="fieldError" fieldName="${name}"/][#else][@s.fielderror cssClass="fieldError" fieldName="${errorfield}"/][/#if]
@@ -32,7 +32,7 @@
     [#assign customLabel][#if !editable]${customName}.readText[#else]${customName}[/#if][/#assign]
     [#assign customValue][#if value=="-NULL"][@s.property value="${name}"/][#else]${value}[/#if][/#assign]
   	[#if showTitle]
-      <label for="${name}" class="${editable?string('editable', 'readOnly')}"> [@s.text name="${customLabel}"][@s.param]${paramText}[/@s.param][/@s.text]:[#if required && editable]<span class="red">*</span>[/#if]</label>
+      <label for="${name}" class="${editable?string('editable', 'readOnly')}"> [@s.text name="${customLabel}"][@s.param]${paramText}[/@s.param][/@s.text]:[@req required=required && editable /]</label>
       [#if help != ""]<img src="${baseUrlMedia}/images/global/icon-help2.png" title="[@s.text name="${help}"/]" />[/#if]
     [/#if]
     [#if errorfield==""][@s.fielderror cssClass="fieldError" fieldName="${name}"/][#else][@s.fielderror cssClass="fieldError" fieldName="${errorfield}"/][/#if]
@@ -62,7 +62,7 @@
     [#if editable]
       <label for="${name}" class="${editable?string('editable', 'readOnly')}">
         <input type="checkbox" id="${name}" class="${className}" name="${name}" value="${value}" [#if checked]checked="checked"[/#if] [#if disabled]disabled="disabled[/#if] />
-        [#if i18nkey==""]${label}[#else][@s.text name="${i18nkey}" /][/#if][#if required && editable]<span class="red">*</span>[/#if] 
+        [#if i18nkey==""]${label}[#else][@s.text name="${i18nkey}" /][/#if] [@req required=required && editable /]
         <input type="hidden" id="__checkbox_${name}" name="__checkbox_${name}" value="${value}" />
         [#if help != ""]<img src="${baseUrlMedia}/images/global/icon-help2.png" title="[@s.text name="${help}"/]" />[/#if]
       </label>
@@ -74,7 +74,7 @@
 
 [#macro checkboxGroup label name listName displayFieldName="" keyFieldName="" value="-NULL" i18nkey="" disabled=false required=false errorField="" checked=false display=true editable=true]
   <div class="checkbox ${changedField(name)}" [#if !display]style="display: none;"[/#if]>
-     [#if i18nkey==""]${label}[#else][@s.text name="${i18nkey}" /][/#if]:[#if required && editable]<span class="red">*</span>[/#if] 
+    [#if i18nkey==""]${label}[#else][@s.text name="${i18nkey}" /][/#if]:[@req required=required && editable /]
     [#if errorField==""][@s.fielderror cssClass="fieldError" fieldName="${name}"/][#else][@s.fielderror cssClass="fieldError" fieldName="${errorfield}"/][/#if]
     <div class="checkboxList">
     [#if value=="-NULL"]
@@ -100,7 +100,7 @@
 
 [#macro radioButtonGroup label name listName class="" displayFieldName="" keyFieldName="" value="-NULL" i18nkey="" disabled=false required=false errorField="" checked=false help="" display=true editable=true]
   <div class="radioGroup ${changedField(name)}" [#if !display]style="display: none;"[/#if]>
-    [#if i18nkey==""]${label}[#else][@s.text name="${i18nkey}" /][/#if]:[#if required && editable]<span class="red">*</span>[/#if]
+    [#if i18nkey==""]${label}[#else][@s.text name="${i18nkey}" /][/#if]:[@req required=required && editable /]
     [#if errorField==""][@s.fielderror cssClass="fieldError" fieldName="${name}"/][#else][@s.fielderror cssClass="fieldError" fieldName="${errorfield}"/][/#if]
     <div class="radiosList">
       [#if editable]
@@ -227,7 +227,7 @@
   
 [/#macro] 
  
-[#macro req required=true ][#if required]<span class="red">*</span>[/#if][/#macro]
+[#macro req required=true ]<span class="red requiredTag" style="display:${required?string('inline','none')};">*</span>[/#macro]
 
 [#macro confirmJustification action="" namespace="/" nameId="" title="" projectID=""]
   <div id="dialog-justification" title="${title}" style="display:none"> 
