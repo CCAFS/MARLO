@@ -68,6 +68,27 @@ public class CenterOutcomeDAO implements ICenterOutcomeDAO {
   }
 
   @Override
+  public List<Map<String, Object>> getCountTargetUnit(long programID) {
+    StringBuilder query = new StringBuilder();
+
+    query.append("SELECT  ");
+    query.append("center_target_units.`name` AS targetUnit,  ");
+    query.append("Count(center_outcomes.id) AS count  ");
+    query.append("FROM  ");
+    query.append("center_outcomes  ");
+    query.append("INNER JOIN center_target_units ON center_outcomes.target_unit_id = center_target_units.id  ");
+    query.append("INNER JOIN center_topics ON center_outcomes.research_topic_id = center_topics.id  ");
+    query.append("WHERE  ");
+    query.append("center_outcomes.is_active = 1 AND  ");
+    query.append("center_target_units.is_active = 1 AND  ");
+    query.append("center_topics.research_program_id = " + programID);
+    query.append(" GROUP BY ");
+    query.append("center_target_units.`name`  ");
+
+    return dao.findCustomQuery(query.toString());
+  }
+
+  @Override
   public List<Map<String, Object>> getImpactPathwayOutcomes(long programID) {
     StringBuilder query = new StringBuilder();
 

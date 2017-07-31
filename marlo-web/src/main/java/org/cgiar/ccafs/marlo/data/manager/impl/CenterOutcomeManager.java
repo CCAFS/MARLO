@@ -62,6 +62,11 @@ public class CenterOutcomeManager implements ICenterOutcomeManager {
   }
 
   @Override
+  public List<Map<String, Object>> getCountTargetUnit(long programID) {
+    return researchOutcomeDAO.getCountTargetUnit(programID);
+  }
+
+  @Override
   public List<Map<String, Object>> getImpactPathwayOutcomes(long programID) {
     return researchOutcomeDAO.getImpactPathwayOutcomes(programID);
   }

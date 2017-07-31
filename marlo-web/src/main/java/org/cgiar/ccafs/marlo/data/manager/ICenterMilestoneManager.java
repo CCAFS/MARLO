@@ -18,6 +18,7 @@ import org.cgiar.ccafs.marlo.data.manager.impl.CenterMilestoneManager;
 import org.cgiar.ccafs.marlo.data.model.CenterMilestone;
 
 import java.util.List;
+import java.util.Map;
 
 import com.google.inject.ImplementedBy;
 
@@ -71,6 +72,13 @@ public interface ICenterMilestoneManager {
   public List<CenterMilestone> getCenterMilestonesByUserId(Long userId);
 
   /**
+   * This method gets a report of Impact Pathway Outcomes Target Unit count by program
+   * 
+   * @return a list of report of Impact Pathway Outcomes
+   */
+  public List<Map<String, Object>> getCountTargetUnit(long programID);
+
+  /**
    * This method saves the information of the given centerMilestone
    * 
    * @param centerMilestone - is the centerMilestone object with the new information to be added/updated.
@@ -89,6 +97,5 @@ public interface ICenterMilestoneManager {
    *         or -1 is some error occurred.
    */
   public long saveCenterMilestone(CenterMilestone centerMilestone, String actionName, List<String> relationsName);
-
 
 }

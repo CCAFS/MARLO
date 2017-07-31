@@ -59,6 +59,13 @@ public interface ICenterOutcomeDAO {
   public List<CenterOutcome> findAll();
 
   /**
+   * This method gets a report of Impact Pathway Outcomes Target Unit count by program
+   * 
+   * @return a list of report of Impact Pathway Outcomes
+   */
+  public List<Map<String, Object>> getCountTargetUnit(long programID);
+
+  /**
    * This method gets a report of Impact Pathway Outcomes by research program
    * 
    * @return a list of report of Impact Pathway Outcomes

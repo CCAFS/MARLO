@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.dao.ICenterMilestoneDAO;
 import org.cgiar.ccafs.marlo.data.model.CenterMilestone;
 
 import java.util.List;
+import java.util.Map;
 
 import com.google.inject.Inject;
 
@@ -70,6 +71,29 @@ public class CenterMilestoneDAO implements ICenterMilestoneDAO {
   public List<CenterMilestone> getCenterMilestonesByUserId(long userId) {
     String query = "from " + CenterMilestone.class.getName() + " where user_id=" + userId;
     return dao.findAll(query);
+  }
+
+  @Override
+  public List<Map<String, Object>> getCountTargetUnit(long programID) {
+    StringBuilder query = new StringBuilder();
+
+    query.append("SELECT  ");
+    query.append("center_target_units.`name` AS targetUnit,  ");
+    query.append("Count(center_milestones.id) AS count  ");
+    query.append("FROM  ");
+    query.append("center_milestones  ");
+    query.append("INNER JOIN center_target_units ON center_milestones.target_unit_id = center_target_units.id  ");
+    query.append("INNER JOIN center_outcomes ON center_milestones.impact_outcome_id = center_outcomes.id  ");
+    query.append("INNER JOIN center_topics ON center_outcomes.research_topic_id = center_topics.id  ");
+    query.append("WHERE  ");
+    query.append("center_topics.research_program_id = " + programID + " AND ");
+    query.append("center_milestones.is_active = 1 AND  ");
+    query.append("center_target_units.is_active = 1 AND ");
+    query.append("center_outcomes.is_active = 1 ");
+    query.append("GROUP BY ");
+    query.append("center_target_units.`name`  ");
+
+    return dao.findCustomQuery(query.toString());
   }
 
   @Override

@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.action.center.summaries;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.config.PentahoListener;
+import org.cgiar.ccafs.marlo.data.manager.ICenterMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
@@ -67,16 +68,18 @@ public class IPOutcomesSummaryAction extends BaseAction implements Summary {
   // Services
   private ICenterProgramManager programService;
   private ICenterOutcomeManager outcomeService;
+  private ICenterMilestoneManager milestoneService;
   // Params
   private CenterProgram researchProgram;
   private long startTime;
 
   @Inject
   public IPOutcomesSummaryAction(APConfig config, ICenterProgramManager programService,
-    ICenterOutcomeManager outcomeService) {
+    ICenterOutcomeManager outcomeService, ICenterMilestoneManager milestoneService) {
     super(config);
     this.programService = programService;
     this.outcomeService = outcomeService;
+    this.milestoneService = milestoneService;
   }
 
   /**
@@ -141,7 +144,9 @@ public class IPOutcomesSummaryAction extends BaseAction implements Summary {
       // Subreport Program Impacts
       this.fillSubreport((SubReport) hm.get("details"), "details");
 
-      this.fillSubreport((SubReport) hm.get("graph"), "Grafico");
+      this.fillSubreport((SubReport) hm.get("outcomeGraph"), "outcomeGraph");
+
+      this.fillSubreport((SubReport) hm.get("milestoneGraph"), "milestoneGraph");
 
 
       ExcelReportUtil.createXLSX(masterReport, os);
@@ -168,8 +173,12 @@ public class IPOutcomesSummaryAction extends BaseAction implements Summary {
       case "details":
         model = this.getOutcomeTableModel();
         break;
-      case "Grafico":
-        model = this.getOutcomeTableModel();
+      case "outcomeGraph":
+        model = this.getOutcomeTargetUnitModel();
+        break;
+
+      case "milestoneGraph":
+        model = this.getMilestoneTargetUnitModel();
         break;
 
     }
@@ -244,7 +253,6 @@ public class IPOutcomesSummaryAction extends BaseAction implements Summary {
     return "application/xlsx";
   }
 
-
   @SuppressWarnings("unused")
   private File getFile(String fileName) {
     // Get file from resources folder
@@ -252,6 +260,7 @@ public class IPOutcomesSummaryAction extends BaseAction implements Summary {
     File file = new File(classLoader.getResource(fileName).getFile());
     return file;
   }
+
 
   @Override
   public String getFileName() {
@@ -311,6 +320,26 @@ public class IPOutcomesSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
+  private TypedTableModel getMilestoneTargetUnitModel() {
+    // Initialization of Model
+    TypedTableModel model = new TypedTableModel(new String[] {"milestoneTargetUnitName", "milestoneNumber"},
+      new Class[] {String.class, Integer.class});
+
+    List<Map<String, Object>> reportOutcome = milestoneService.getCountTargetUnit(researchProgram.getId());
+
+    if (reportOutcome != null) {
+      for (Map<String, Object> map : reportOutcome) {
+
+
+        String milestoneTargetUnitName = map.get("targetUnit").toString();
+        Integer milestoneNumber = Integer.parseInt(map.get("count").toString());
+
+
+        model.addRow(new Object[] {milestoneTargetUnitName, milestoneNumber});
+      }
+    }
+    return model;
+  }
 
   private TypedTableModel getOutcomeTableModel() {
     // Initialization of Model
@@ -345,6 +374,28 @@ public class IPOutcomesSummaryAction extends BaseAction implements Summary {
         model.addRow(new Object[] {outcomeId, outcomeTitle, impactStatement, researchTopic, outcomeTargetUnit,
           outcomeTargetValue, outcomeTargetYear, milestoneId, milestoneTitle, milestoneTargetUnit, milestoneTargetValue,
           milestoneTargetYear, outcomeUrl});
+      }
+    }
+    return model;
+  }
+
+
+  private TypedTableModel getOutcomeTargetUnitModel() {
+    // Initialization of Model
+    TypedTableModel model = new TypedTableModel(new String[] {"outcomeTargetUnitName", "outcomeNumber"},
+      new Class[] {String.class, Integer.class});
+
+    List<Map<String, Object>> reportOutcome = outcomeService.getCountTargetUnit(researchProgram.getId());
+
+    if (reportOutcome != null) {
+      for (Map<String, Object> map : reportOutcome) {
+
+
+        String outcomeTargetUnitName = map.get("targetUnit").toString();
+        Integer outcomeNumber = Integer.parseInt(map.get("count").toString());
+
+
+        model.addRow(new Object[] {outcomeTargetUnitName, outcomeNumber});
       }
     }
     return model;
