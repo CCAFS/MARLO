@@ -63,13 +63,12 @@ public class CenterTopic implements Serializable, IAuditLog {
   @Expose
   private User createdBy;
 
+
   @Expose
   private User modifiedBy;
 
-
   @Expose
   private String modificationJustification;
-
 
   @Expose
   private String color;
@@ -80,10 +79,11 @@ public class CenterTopic implements Serializable, IAuditLog {
 
 
   @Expose
-  private int order;
+  private Integer order;
 
 
   private Set<CenterOutcome> researchOutcomes = new HashSet<>(0);
+
 
   /**
    * 
@@ -140,7 +140,6 @@ public class CenterTopic implements Serializable, IAuditLog {
     return createdBy;
   }
 
-
   /**
    * @return the id
    */
@@ -148,6 +147,7 @@ public class CenterTopic implements Serializable, IAuditLog {
   public Long getId() {
     return id;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -162,14 +162,13 @@ public class CenterTopic implements Serializable, IAuditLog {
     return modificationJustification;
   }
 
-
   @Override
   public User getModifiedBy() {
     return modifiedBy;
   }
 
 
-  public int getOrder() {
+  public Integer getOrder() {
     return order;
   }
 
@@ -177,6 +176,7 @@ public class CenterTopic implements Serializable, IAuditLog {
   public Set<CenterOutcome> getResearchOutcomes() {
     return researchOutcomes;
   }
+
 
   /**
    * @return the researchProgram
@@ -204,7 +204,6 @@ public class CenterTopic implements Serializable, IAuditLog {
     return result;
   }
 
-
   @Override
   public boolean isActive() {
     return active;
@@ -225,6 +224,7 @@ public class CenterTopic implements Serializable, IAuditLog {
     this.color = color;
   }
 
+
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
@@ -236,7 +236,6 @@ public class CenterTopic implements Serializable, IAuditLog {
     this.id = id;
   }
 
-
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
@@ -247,10 +246,9 @@ public class CenterTopic implements Serializable, IAuditLog {
   }
 
 
-  public void setOrder(int order) {
+  public void setOrder(Integer order) {
     this.order = order;
   }
-
 
   public void setResearchOutcomes(Set<CenterOutcome> researchOutcomes) {
     this.researchOutcomes = researchOutcomes;

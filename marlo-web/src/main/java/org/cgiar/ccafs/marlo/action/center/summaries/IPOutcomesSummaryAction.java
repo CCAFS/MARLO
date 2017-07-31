@@ -141,6 +141,8 @@ public class IPOutcomesSummaryAction extends BaseAction implements Summary {
       // Subreport Program Impacts
       this.fillSubreport((SubReport) hm.get("details"), "details");
 
+      this.fillSubreport((SubReport) hm.get("graph"), "Grafico");
+
 
       ExcelReportUtil.createXLSX(masterReport, os);
       bytesExcel = os.toByteArray();
@@ -164,7 +166,10 @@ public class IPOutcomesSummaryAction extends BaseAction implements Summary {
     TypedTableModel model = null;
     switch (query) {
       case "details":
-        model = this.getDeliverablesTableModel();
+        model = this.getOutcomeTableModel();
+        break;
+      case "Grafico":
+        model = this.getOutcomeTableModel();
         break;
 
     }
@@ -240,31 +245,6 @@ public class IPOutcomesSummaryAction extends BaseAction implements Summary {
   }
 
 
-  private TypedTableModel getDeliverablesTableModel() {
-    // Initialization of Model
-    TypedTableModel model = new TypedTableModel(
-      new String[] {"outcomeId", "outcomeTitle", "impactStatement", "researchTopic", "outcomeTargetUnit",
-        "outcomeTargetValue", "outcomeTargetYear", "milestonId", "milestoneTitle", "milestoneTargetUnit",
-        "milestoneTargetValue", "milestoneTargetYear"},
-      new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class});
-
-    List<Map<String, Object>> reportOutcome = outcomeService.getImpactPathwayOutcomes(researchProgram.getId());
-
-    if (reportOutcome != null) {
-      for (Map<String, Object> map : reportOutcome) {
-
-        String outcomeId = map.get("outcomeId").toString();
-
-
-      }
-    }
-
-    // model.addRow(new Object[] {deliverableId, title, type, subType, startDate, endDate, endDate, deliverableOutputs,
-    // supportingDocuments, projectId, projectTitle, endDate});
-    return model;
-  }
-
   @SuppressWarnings("unused")
   private File getFile(String fileName) {
     // Get file from resources folder
@@ -276,7 +256,7 @@ public class IPOutcomesSummaryAction extends BaseAction implements Summary {
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("Deliverables_report-");
+    fileName.append(researchProgram.getAcronym() + "_Outcomes_report-");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
     return fileName.toString();
@@ -328,6 +308,45 @@ public class IPOutcomesSummaryAction extends BaseAction implements Summary {
     String imageUrl = this.getBaseUrlMedia() + "/images/global/centers/CIAT.png";
 
     model.addRow(new Object[] {currentDate, imageUrl, researchProgram.getName()});
+    return model;
+  }
+
+
+  private TypedTableModel getOutcomeTableModel() {
+    // Initialization of Model
+    TypedTableModel model = new TypedTableModel(
+      new String[] {"outcomeId", "outcomeTitle", "impactStatement", "researchTopic", "outcomeTargetUnit",
+        "outcomeTargetValue", "outcomeTargetYear", "milestoneId", "milestoneTitle", "milestoneTargetUnit",
+        "milestoneTargetValue", "milestoneTargetYear", "outcomeUrl"},
+      new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class, String.class, String.class, String.class});
+
+    List<Map<String, Object>> reportOutcome = outcomeService.getImpactPathwayOutcomes(researchProgram.getId());
+
+    if (reportOutcome != null) {
+      for (Map<String, Object> map : reportOutcome) {
+
+
+        String outcomeId = map.get("outcomeId").toString();
+        String outcomeUrl =
+          this.getBaseUrl() + "/centerImpactPathway/" + this.getCenterSession() + "/outcomes.do?outcomeID=" + outcomeId;
+        String outcomeTitle = map.get("outcomeDesc").toString();
+        String impactStatement = map.get("outcomeDesc").toString();
+        String researchTopic = map.get("topic").toString();
+        String outcomeTargetUnit = map.get("outcomeTargetUnit").toString();
+        String outcomeTargetValue = map.get("outcomeValue").toString();
+        String outcomeTargetYear = map.get("outcomeYear").toString();
+        String milestoneId = map.get("milestoneId").toString();
+        String milestoneTitle = map.get("milestoneDesc").toString();
+        String milestoneTargetUnit = map.get("milestoneTargetUnit").toString();
+        String milestoneTargetValue = map.get("milestoneValue").toString();
+        String milestoneTargetYear = map.get("milestoneYear").toString();
+
+        model.addRow(new Object[] {outcomeId, outcomeTitle, impactStatement, researchTopic, outcomeTargetUnit,
+          outcomeTargetValue, outcomeTargetYear, milestoneId, milestoneTitle, milestoneTargetUnit, milestoneTargetValue,
+          milestoneTargetYear, outcomeUrl});
+      }
+    }
     return model;
   }
 
