@@ -64,6 +64,7 @@ function updateAllIndexes() {
   $('.outcomes-list').find('.researchTopic').each(function(i,outcome) {
     var outcomesName = 'researchTopics' + '[' + i + '].';
     $(outcome).find('span.index').html(i + 1);
+    $(outcome).find('input.order-index').val(i);
     $(outcome).setNameIndexes(1, i);
 
   });
