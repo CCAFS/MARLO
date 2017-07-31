@@ -403,11 +403,13 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
         final List<CapdevLocations> regions = new ArrayList<>(capdev.getCapdevLocations().stream()
           .filter(fl -> fl.isActive() && (fl.getLocElement().getLocElementType().getId() == 1))
           .collect(Collectors.toList()));
+        Collections.sort(regions, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
         capdev.setCapDevRegions(regions);
 
         final List<CapdevLocations> countries = new ArrayList<>(capdev.getCapdevLocations().stream()
           .filter(fl -> fl.isActive() && (fl.getLocElement().getLocElementType().getId() == 2))
           .collect(Collectors.toList()));
+        Collections.sort(countries, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
         capdev.setCapDevCountries(countries);
 
       }

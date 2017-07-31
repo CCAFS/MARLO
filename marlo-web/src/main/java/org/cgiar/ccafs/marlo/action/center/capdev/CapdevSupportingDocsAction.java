@@ -100,8 +100,6 @@ public class CapdevSupportingDocsAction extends BaseAction {
       capdevID = -1;
     }
     capdev = capdevService.getCapacityDevelopmentById(capdevID);
-    System.out.println("capdevID " + capdevID);
-    System.out.println("capdev.getCapdevSupportingDocses " + capdev.getCapdevSupportingDocses().size());
   }
 
 

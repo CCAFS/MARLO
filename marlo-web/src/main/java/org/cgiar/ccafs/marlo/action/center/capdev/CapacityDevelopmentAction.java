@@ -21,7 +21,9 @@ import org.cgiar.ccafs.marlo.data.model.CapacityDevelopment;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
@@ -110,7 +112,9 @@ public class CapacityDevelopmentAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    capDevs = capdevService.findAll();
+    capDevs = capdevService.findAll().stream().filter(cdl -> cdl.isActive()).collect(Collectors.toList());
+
+    Collections.sort(capDevs, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
   }
 
 

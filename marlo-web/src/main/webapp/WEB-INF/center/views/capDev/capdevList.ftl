@@ -2,7 +2,16 @@
 
 [#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css"] /]
 [#assign customCSS = ["${baseUrlMedia}/css/capDev/capacityDevelopment.css"] /]
-[#assign customJS = ["${baseUrlMedia}/js/capDev/capacityDevelopment.js", "${baseUrlMedia}/js/capDev/capdevList.js"] /]
+[#assign customJS = [
+	"${baseUrlMedia}/js/capDev/capacityDevelopment.js",
+ 	"${baseUrlMedia}/js/capDev/capdevList.js"] 
+/]
+
+
+[#assign breadCrumb = [
+  {"label":"capdevList", "nameSpace":"/capdev", "action":"${(centerSession)!}/capdev"}
+]/]
+
 
 [#include "/WEB-INF/center/global/pages/header.ftl" /]
 [#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
@@ -10,6 +19,7 @@
 
 <script src="${baseUrl}/bower_components/jquery/dist/jquery.min.js"></script>
 <script src="${baseUrlMedia}/js/capDev/capacityDevelopment.js"></script>
+<script src="${baseUrlMedia}/js/capDev/capdevList.js"></script>
 
 
 	<div class="container">
@@ -22,8 +32,9 @@
 		</div>
 
 		<div class="row">
-			<div class="col-md-12 capdevinfo">
-				introduction text
+			<div class="helpMessage infoText col-md-12 capdevinfo">
+				<img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.png" />
+   				 <p class="col-md-10"> [@s.text name="capdev.help.list"][/@s.text] </p>
 			</div>
 		</div>
 		<div class="row">
@@ -117,20 +128,14 @@
 				    		</div>
 					    </td>
 					    <td>
-					    	<a id="removeCapdev-${i.id}" class="removeCapdev" href="[@s.url action='${centerSession}/deleteCapdev'][@s.param name='capdevID']${i.id}[/@s.param] [/@s.url]" title="" >
+					    	<a id="removeCapdev-${i.id}" class="removeCapdev" href="#" data-href="[@s.url action='${centerSession}/deleteCapdev'][@s.param name='capdevID']${i.id}[/@s.param] [/@s.url]" data-toggle="modal" data-target="#confirm-delete-capdev">
 				               <img src="${baseUrlMedia}/images/global/trash.png" title="[@s.text name="capdev.removeCapdev" /]" /> 
 				             </a>
-
-				            <!-- <a   data-toggle="modal" data-target="#confirm-delete" >
-								<img src="${baseUrlMedia}/images/global/trash.png" title="[@s.text name="capdev.removeCapdev" /]" /> 
-							</a> -->
-
-							
 					    </td>
 
 					     
 					  </tr>
-					   <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+					   <div class="modal fade" id="confirm-delete-capdev" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 					        <div class="modal-dialog">
 					            <div class="modal-content">
 					            
@@ -147,7 +152,7 @@
 					                
 					                <div class="modal-footer">
 					                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-					                    <a class="btn btn-danger btn-ok" href="[@s.url action='${centerSession}/deleteCapdev'][@s.param name='capdevID']${i.id}[/@s.param] [/@s.url]"">Delete</a>
+					                    <a class="btn btn-danger btn-ok">Delete</a>
 					                </div>
 					            </div>
 					        </div>

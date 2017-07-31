@@ -3,6 +3,13 @@
 [#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css"] /]
 [#assign customCSS = ["${baseUrlMedia}/css/capDev/capacityDevelopment.css"] /]
 [#assign customJS = ["${baseUrlMedia}/js/capDev/capacityDevelopment.js"] /]
+[#assign customJS = ["${baseUrlMedia}/js/capDev/supportingDocuments.js"] /]
+
+
+[#assign breadCrumb = [
+  {"label":"capdevList", "nameSpace":"/capdev", "action":"${(centerSession)!}/capdev"},
+  {"label":"capdevSupportingDocs", "nameSpace":"/capdev", "action":""}
+]/]
 
 [#include "/WEB-INF/center/global/pages/header.ftl" /]
 [#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
@@ -19,6 +26,14 @@
 
 
 <div class="container"> 
+
+	<div class="row">
+		<div class="col-md-12 capdevinfo">
+			help text
+		</div>
+	</div>
+
+
 	<div class="col-md-3 capDevMenu">
 		[#include "/WEB-INF/center/views/capDev/menu-capdev.ftl" /]
 	</div>
@@ -54,6 +69,7 @@
 			</div>
 			<div class="row">
 				<div class="col-md-12 newCapdevField ">
+
 				
 				[#if capdev.capdevSupportingDocses?has_content]
 					<table class="table table-bordered ">
@@ -82,12 +98,9 @@
 											<td>Not defined</td>
 										[/#if]
 										<td>
-								             <a  href="[@s.url action='${centerSession}/deleteSupportingDoc'][@s.param name='capdevID']${capdev.id}[/@s.param] [@s.param name='supportingDocID']${supportDocs.id?c}[/@s.param] [/@s.url]" >
+								             <a  class="deleteDoc" href="#" data-href="[@s.url action='${centerSession}/deleteSupportingDoc'][@s.param name='capdevID']${capdev.id}[/@s.param] [@s.param name='supportingDocID']${supportDocs.id?c}[/@s.param] [/@s.url]" data-toggle="modal" data-target="#confirm-delete">
 								               <img src="${baseUrlMedia}/images/global/trash.png" title="[@s.text name="capdev.removeCapdev" /]" /> 
 								             </a>
-
-
-
 
 
 							            </td>
@@ -106,6 +119,7 @@
 				<p class="text-center inf" style="display:${(capdev.capdevSupportingDocses?has_content)?string('none','block')}">[@s.text name="capdev.notSupportDocuments" /]</p>	
 
 				</div>
+
 				<div class="col-md-12 newCapdevField">
 					<div class="pull-right">
 						<div class="buttons-content">        
@@ -134,7 +148,7 @@
         
         <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-            <a class="btn btn-danger btn-ok" href="[@s.url action='${centerSession}/deleteSupportingDoc'][@s.param name='capdevID']${capdev.id}[/@s.param]  [/@s.url]">Delete</a>
+            <a class="btn btn-danger btn-ok">Delete</a>
         </div>
     </div>
 </div>

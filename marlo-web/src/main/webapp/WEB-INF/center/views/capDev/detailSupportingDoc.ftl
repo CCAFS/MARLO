@@ -5,6 +5,12 @@
 [#assign customJS = ["${baseUrlMedia}/js/capDev/capacityDevelopment.js"] /]
 [#assign customJS = ["${baseUrlMedia}/js/capDev/supportingDocuments.js"] /]
 
+
+[#assign breadCrumb = [
+  {"label":"capdevList", "nameSpace":"/capdev", "action":"${(centerSession)!}/capdev"},
+  {"label":"capdevSupportingDocs", "nameSpace":"/capdev", "action":""}
+]/]
+
 [#include "/WEB-INF/center/global/pages/header.ftl" /]
 [#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
 
@@ -19,6 +25,13 @@
 
 
 <div class="container"> 
+
+	<div class="row">
+		<div class="col-md-12 capdevinfo">
+			help text
+		</div>
+	</div>
+	
 	<div class="col-md-3 capDevMenu">
 		[#include "/WEB-INF/center/views/capDev/menu-capdev.ftl" /]
 	</div>

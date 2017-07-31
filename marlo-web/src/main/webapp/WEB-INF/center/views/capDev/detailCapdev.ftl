@@ -5,6 +5,10 @@
 [#assign customJS = ["${baseUrlMedia}/js/capDev/capacityDevelopment.js"] /]
 
 
+[#assign breadCrumb = [
+  {"label":"capdevList", "nameSpace":"/capdev", "action":"${(centerSession)!}/capdev"},
+  {"label":"capdevDetail", "nameSpace":"/capdev", "action":""}
+]/]
 
 [#include "/WEB-INF/center/global/pages/header.ftl" /]
 [#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
@@ -23,9 +27,10 @@
 <div class="container"> 
 
 	<div class="row">
-		<div class="col-md-12 capdevinfo">
-			help text
-		</div>
+		<div class="helpMessage infoText col-md-12 capdevinfo">
+				<img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.png" />
+   				 <p class="col-md-10"> [@s.text name="capdev.help.detail"][/@s.text] </p>
+			</div>
 	</div> 
 
 	<div class="col-md-3 capDevMenu">
@@ -108,13 +113,13 @@
 				<div class="row">
 					<div class="col-md-12 newCapdevField">
 						<div class="col-md-6 group individual">
-							[@customForm.input name="capdev.numParticipants" i18nkey="capdev.form.numParticipants" type="text" help="capdev.help.numParticipants"  editable=true  /]
+							[@customForm.input name="capdev.numParticipants" i18nkey="capdev.form.numParticipants" type="text" help="capdev.help.numParticipants"  editable=true className="numParticipants" /]
 						</div>
 						<div class="col-md-3 group individual">
-							[@customForm.input name="capdev.numMen" i18nkey="capdev.form.numMen" help="capdev.help.numMen" type="text"  /]
+							[@customForm.input name="capdev.numMen" i18nkey="capdev.form.numMen" help="capdev.help.numMen" type="text" className="numMen" /]
 						</div>
 						<div class="col-md-3 group individual">
-							[@customForm.input name="capdev.numWomen" i18nkey="capdev.form.numWomen" help="capdev.help.numWomen" type="text"  /]
+							[@customForm.input name="capdev.numWomen" i18nkey="capdev.form.numWomen" help="capdev.help.numMen" type="text" className="numMen" /]
 						</div>
 					</div>
 				</div>
@@ -142,7 +147,7 @@
 							</div>
 							<div class="col-md-6 ">
 								<div class="pull-right">
-									<button type="button" class="capdevButtons" aria-label="Left Align" >
+									<button type="button" class="capdevButtons" aria-label="Left Align" title="Download template to upload the list of participants">
 										<a class="downloadButton" href="[@s.url action='${centerSession}/downloadFile' /] ">[@s.text name="capdev.downloadTemplate" /]</a> 
 									</button>
 								</div>
@@ -159,7 +164,7 @@
 
 								<div class="col-md-12" style="margin-top: 10px;">
 								<div class="btnPreview">
-									<button type="button"  id="btnDisplay" class="capdevButtons" aria-label="Left Align" data-toggle="modal" data-target="#myModa">
+									<button type="button"  id="btnDisplay" class="capdevButtons" aria-label="Left Align" data-toggle="modal" data-target="#myModa"       title="Take a look to list of participants uploaded">
 										preview
 									</button>
 								</div>
@@ -205,7 +210,7 @@
 						</div>
 					</div>
 					<div class="col-md-12 newCapdevField">
-						[@customForm.input name="participant.code" i18nkey="capdev.participant.code" type="text" required=true /]
+						[@customForm.input name="participant.code" i18nkey="capdev.participant.code" type="text" required=true className="participant-code" /]
 					</div>
 					<div class="col-md-12 newCapdevField">
 						<div class="col-md-6">

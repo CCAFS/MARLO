@@ -38,7 +38,9 @@ $("#capdevSearchInput").keyup(function () {
 
 
 
-$(".removeCapdev").click(function(){
-    console.log("capdev.removeCapdev")
-})
+//event to remove capdev
+$('#confirm-delete-capdev').on('show.bs.modal', function(e) {
+    $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+            
+});
 

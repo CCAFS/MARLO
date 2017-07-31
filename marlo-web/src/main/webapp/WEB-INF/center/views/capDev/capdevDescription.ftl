@@ -5,6 +5,13 @@
 [#assign customJS = ["${baseUrlMedia}/js/capDev/capacityDevelopment.js"] /]
 [#assign customJS = ["${baseUrlMedia}/js/capDev/capdevDescription.js"] /]
 
+
+[#assign breadCrumb = [
+  {"label":"capdevList", "nameSpace":"/capdev", "action":"${(centerSession)!}/capdev"},
+  {"label":"capdevDescription", "nameSpace":"/capdev", "action":""}
+]/]
+
+
 [#include "/WEB-INF/center/global/pages/header.ftl" /]
 [#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
 
@@ -20,8 +27,9 @@
 <div class="container"> 
 
 	<div class="row">
-		<div class="col-md-12 capdevinfo">
-			help text
+		<div class="helpMessage infoText col-md-12 capdevinfo">
+			<img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.png" />
+    		<p class="col-md-10"> [@s.text name="capdev.help.description"][/@s.text] </p>
 		</div>
 	</div> 
 
@@ -182,7 +190,7 @@
 				</div>
 				<div class="row outComesContainer">
 					<div class="col-md-12 newCapdevField">
-						[@customForm.select name="capdevOutputs" listName="outputs" keyFieldName="id" displayFieldName="title" i18nkey="capdev.form.selectOutcome" className="capdevOutputSelect" multiple=false placeholder="capdev.select" help="capdev.help.partner" /]
+						[@customForm.select name="capdevOutputs" listName="outputs" keyFieldName="id" displayFieldName="title" i18nkey="capdev.form.selectOutcome" className="capdevOutputSelect" multiple=false placeholder="capdev.select" help="capdev.help.output" /]
 					</div>
 
 					<div id="capdevOutputsList" class="outputsList">

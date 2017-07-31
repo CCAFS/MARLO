@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.model.CenterDeliverableType;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -107,8 +108,10 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
     links = new ArrayList<>();
+
     deliverablesList = new ArrayList<>(
       centerDeliverableManager.findAll().stream().filter(dl -> dl.isActive()).collect(Collectors.toList()));
+    Collections.sort(deliverablesList, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
 
     try {
       supportingDocID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter("supportingDocID")));

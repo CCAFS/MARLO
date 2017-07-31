@@ -71,6 +71,9 @@ $(".removeCapdevsupportDocument-action").click(function(){
 
 
 
-$(".deleteDoc").on("click", function () {
-  console.log("aglo")
-})
+
+//event to remove supporting document
+$('#confirm-delete').on('show.bs.modal', function(e) {
+     $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+            
+});
