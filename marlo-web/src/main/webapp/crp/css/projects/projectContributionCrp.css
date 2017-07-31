@@ -75,3 +75,20 @@ ul.nav.nav-tabs.projectOutcomeYear-tabs>li>a:hover {
 h4.headTitle {
     margin-top: 1.5em;
 }
+
+/* Tabs */
+
+.tab-content {
+    border: 1px solid #d1d1d1;
+    padding: 10px 1em;
+    border-radius: 0px 4px 4px 4px;
+    margin-bottom: 25px;
+    border-top: none;
+}
+
+.nav.nav-tabs a {
+  background-color: #f5f5f5;
+  height: 40px;
+  padding: 10px 33px;
+  border-color: #eee #eee #e8e8e8;
+}
