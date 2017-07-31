@@ -90,7 +90,7 @@ ADD COLUMN `composed_id`  varchar(20)  NULL AFTER `modification_justification`;
 
 update  project_nextusers ml INNER JOIN project_outcomes po 
 on po.id=ml.project_outcome_id
-set ml.composed_id=CONCAT(po.project_id,'-',po.outcomeid,'-',ml.id) ;
+set ml.composed_id=CONCAT(po.project_id,'-',po.outcome_id,'-',ml.id) ;
 
 
 CREATE TEMPORARY TABLE
@@ -264,6 +264,12 @@ and pp.composed_id =temp.composed_id
 inner join  crp_outcome_sub_idos asp on asp.srf_sub_ido_id=temp.srf_sub_ido_id
 ;
 
+ALTER TABLE `project_outcomes`
+ADD COLUMN `id_phase`  bigint(20) NULL AFTER `modification_justification`;
+
+ALTER TABLE `project_outcomes` ADD FOREIGN KEY (`id_phase`) REFERENCES `phases` (`id`);
+
+
 insert into project_outcomes (
 project_id,
 outcome_id,
@@ -299,12 +305,12 @@ temp.modification_justification,
 temp.achieved_unit,
 temp.gender_dimenssion,
 temp.youth_component,
-temp.id_phase
+pp.id_phase
 
 
 from table_temp_project_outcomes temp 
-INNER JOIN crp_program_outcomes pp on pp.id_phase=temp.id_phase
-and pp.composed_id =temp.composed_id
+INNER JOIN crp_program_outcomes pp on 
+ pp.composed_id =temp.composed_id
 ;
 
 

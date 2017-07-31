@@ -42,7 +42,11 @@ public class ProjectNextuser implements java.io.Serializable, IAuditLog {
   private String strategies;
 
   @Expose
+  private String composeID;
+
+  @Expose
   private boolean active;
+
 
   @Expose
   private Date activeSince;
@@ -75,7 +79,6 @@ public class ProjectNextuser implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
-
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
@@ -102,6 +105,10 @@ public class ProjectNextuser implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
+
+  public String getComposeID() {
+    return composeID;
+  }
 
   public User getCreatedBy() {
     return createdBy;
@@ -130,6 +137,7 @@ public class ProjectNextuser implements java.io.Serializable, IAuditLog {
   }
 
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -178,6 +186,11 @@ public class ProjectNextuser implements java.io.Serializable, IAuditLog {
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
+  }
+
+
+  public void setComposeID(String composeID) {
+    this.composeID = composeID;
   }
 
 

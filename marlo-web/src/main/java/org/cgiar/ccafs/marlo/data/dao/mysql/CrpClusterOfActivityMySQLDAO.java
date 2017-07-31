@@ -145,6 +145,7 @@ public class CrpClusterOfActivityMySQLDAO implements CrpClusterOfActivityDAO {
         crpClusterActivityLeaderAdd.setActive(true);
         crpClusterActivityLeaderAdd.setActiveSince(crpClusterOfActivity.getActiveSince());
         crpClusterActivityLeaderAdd.setCreatedBy(crpClusterOfActivity.getCreatedBy());
+        crpClusterActivityLeaderAdd.setModifiedBy(crpClusterOfActivity.getCreatedBy());
         crpClusterActivityLeaderAdd.setModificationJustification("");
         crpClusterActivityLeaderAdd.setUser(crpClusterActivityLeader.getUser());
         crpClusterActivityLeaderAdd.setCrpClusterOfActivity(crpClusterOfActivityAdd);

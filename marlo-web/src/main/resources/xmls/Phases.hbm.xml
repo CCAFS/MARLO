@@ -68,5 +68,11 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity" />
         </set>
+        <set name="projectOutcomes" table="project_outcomes" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="id_phase" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectOutcome" />
+        </set>
     </class>
 </hibernate-mapping>
