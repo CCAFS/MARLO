@@ -88,10 +88,9 @@ public class ProjectOutcomeListAction extends BaseAction {
       projectOutcome.setCreatedBy(this.getCurrentUser());
       projectOutcome.setModificationJustification("");
       projectOutcome.setActiveSince(new Date());
-
+      projectOutcome.setPhase(this.getActualPhase());
       projectOutcome.setModifiedBy(this.getCurrentUser());
       projectOutcome.setProject(project);
-
       projectOutcome.setCrpProgramOutcome(crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeId));
       projectOutcomeManager.saveProjectOutcome(projectOutcome);
       projectOutcomeID = projectOutcome.getId().longValue();

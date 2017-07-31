@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectOutcomeDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 
 import java.util.List;
@@ -73,9 +74,10 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
 
 
   @Override
-  public long saveProjectOutcome(ProjectOutcome projectOutcome, String section, List<String> relationsName) {
+  public long saveProjectOutcome(ProjectOutcome projectOutcome, String section, List<String> relationsName,
+    Phase phase) {
 
-    return projectOutcomeDAO.save(projectOutcome, section, relationsName);
+    return projectOutcomeDAO.save(projectOutcome, section, relationsName, phase);
   }
 
 

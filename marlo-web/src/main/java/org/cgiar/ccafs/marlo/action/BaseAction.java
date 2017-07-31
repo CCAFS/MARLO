@@ -3012,16 +3012,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       projectOutcome.getProjectComponentLesson().setModifiedBy(this.getCurrentUser());
       projectOutcome.getProjectComponentLesson().setModificationJustification("");
       projectOutcome.getProjectComponentLesson().setProjectOutcome(projectOutcome);
-
-
-      if (this.isReportingActive()) {
-        projectOutcome.getProjectComponentLesson().setCycle(APConstants.REPORTING);
-        projectOutcome.getProjectComponentLesson().setYear(this.getReportingYear());
-
-      } else {
-        projectOutcome.getProjectComponentLesson().setCycle(APConstants.PLANNING);
-        projectOutcome.getProjectComponentLesson().setYear(this.getPlanningYear());
-      }
+      projectOutcome.getProjectComponentLesson().setPhase(this.getActualPhase());
+      projectOutcome.getProjectComponentLesson().setCycle(this.getActualPhase().getDescription());
+      projectOutcome.getProjectComponentLesson().setYear(this.getActualPhase().getYear());
       projectComponentLessonManager.saveProjectComponentLesson(projectOutcome.getProjectComponentLesson());
     }
   }

@@ -382,7 +382,7 @@ public class ProjectOutcomeAction extends BaseAction {
         this.setDraft(false);
         project = projectManager.getProjectById(projectOutcome.getProject().getId());
         projectID = project.getId();
-
+        project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
 
         projectOutcome.setMilestones(
           projectOutcome.getProjectMilestones().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
@@ -462,13 +462,15 @@ public class ProjectOutcomeAction extends BaseAction {
       projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
       projectOutcome.setModifiedBy(this.getCurrentUser());
       projectOutcome.setActiveSince(new Date());
+      projectOutcome.setPhase(this.getActualPhase());
       projectOutcome.setModificationJustification(this.getJustification());
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_OUTCOMES_MILESTONE_RELATION);
       relationsName.add(APConstants.PROJECT_OUTCOMES_COMMUNICATION_RELATION);
       relationsName.add(APConstants.PROJECT_NEXT_USERS_RELATION);
       relationsName.add(APConstants.PROJECT_OUTCOME_LESSONS_RELATION);
-      projectOutcomeManager.saveProjectOutcome(projectOutcome, this.getActionName(), relationsName);
+      projectOutcomeManager.saveProjectOutcome(projectOutcome, this.getActionName(), relationsName,
+        this.getActualPhase());
 
       Path path = this.getAutoSaveFilePath();
 
@@ -692,6 +694,7 @@ public class ProjectOutcomeAction extends BaseAction {
       projectOutcome.setCrpProgramOutcome(crpProgramOutcome);
       projectOutcome.setProject(project);
       projectOutcome.setId(projectOutcomeID);
+      projectOutcome.setPhase(this.getActualPhase());
       projectOutcome.setModificationJustification("");
       projectOutcomeManager.saveProjectOutcome(projectOutcome);
 

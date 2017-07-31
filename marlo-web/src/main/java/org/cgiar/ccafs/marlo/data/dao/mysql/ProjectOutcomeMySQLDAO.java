@@ -17,6 +17,7 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectOutcomeDAO;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 
 import java.util.List;
@@ -79,11 +80,11 @@ public class ProjectOutcomeMySQLDAO implements ProjectOutcomeDAO {
   }
 
   @Override
-  public long save(ProjectOutcome projectOutcome, String section, List<String> relationsName) {
+  public long save(ProjectOutcome projectOutcome, String section, List<String> relationsName, Phase phase) {
     if (projectOutcome.getId() == null) {
-      dao.save(projectOutcome, section, relationsName);
+      dao.save(projectOutcome, section, relationsName, phase);
     } else {
-      dao.update(projectOutcome, section, relationsName);
+      dao.update(projectOutcome, section, relationsName, phase);
     }
 
 
