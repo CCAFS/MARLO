@@ -94,7 +94,7 @@
     <br />
     [#--  Hidden inputs --]
     <input type="hidden" name="${customName}.id" value="${(element.id)!}"/>
-    <input type="hidden" name="${customName}.order" value="${(element.order)!}" class="order-index"/>
+    <input type="hidden" name="${customName}.order" value="${(index)!}" class="order-index"/>
     [#-- Research Topic Name --]
     <div class="form-group"> 
       <div class="row">

@@ -128,9 +128,9 @@ function init() {
     var valueSelected = $(this).hasClass('yes-button-label');
     var isChecekd = $(this).hasClass('radio-checked');
     if(!valueSelected || !isChecekd) {
-      $(".countriesBox").show("slow");
+      // $(".countriesBox").show("slow");
     } else {
-      $(".countriesBox").hide("slow");
+      // $(".countriesBox").hide("slow");
     }
   });
 
