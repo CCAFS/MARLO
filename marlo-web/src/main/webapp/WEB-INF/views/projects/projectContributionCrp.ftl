@@ -154,31 +154,28 @@
                 <!-- Nav tabs -->
                 <ul class="nav nav-tabs" role="tablist">
                   [#list startYear .. endYear as year]
-                    <li role="presentation" class="[#if year == currentCycleYear]active[/#if]"><a href="#baseline-tab-${year}" aria-controls="home" role="tab" data-toggle="tab">${year}</a></li>
+                    <li role="presentation" class="[#if year == currentCycleYear]active[/#if]"><a href="#baseline-tab-${year}" aria-controls="home" role="tab" data-toggle="tab">${year} [@customForm.req required=isYearRequired(year) /]</a></li>
                   [/#list]
                 </ul>
                 <!-- Tab panes -->
                 <div class="tab-content">
                   [#list startYear .. endYear as year]
                     <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="baseline-tab-${year}"> 
-                    
-                    [#-- Indicators --]
-                    <div class="baselineIndicators"></div>
-                    <div class="form-group row">
-                      <div class="col-md-3">
-                        [@customForm.input name="projectOutcomeBaseline.expectedValue" i18nkey="projectOutcomeBaseline.expectedValue" className="" required=isYearRequired(year) editable=editable && !reportingActive /]
+                      
+                      <div class="form-group text-right">
+                        <a href="${baseUrl}" class="downloadBaseline"><img src="${baseUrlMedia}/images/global/pdf.png" width="20px" alt="" /> Download Baseline Instructions</a> 
                       </div>
-                      <div class="col-md-3"></div>
-                      <div class="col-md-3"></div>
-                    </div>
-                    <div class="form-group">
-                      [@customForm.textArea name="projectOutcomeBaseline.narrativeTarget" i18nkey="projectOutcomeBaseline.expectedNarrative" required=isYearRequired(year) className="limitWords-100" editable=editable && !reportingActive /]
-                    </div>
-                    [#if reportingActive]
-                      <div class="form-group">
-                        Achieved
-                      </div>
-                    [/#if]
+                      
+                      [#assign baselineIndicators = [
+                          {"title": "Total project area targeted (ha)."},
+                          {"title": "Numbers of heads of livestock per species in the project area. "}
+                        ] 
+                      /]
+                      [#-- Indicators --]
+                      [#list baselineIndicators as indicator]
+                        [@baselineIndicatorMacro element=indicator name="projectOutcome.baselines" index=indicator_index year=year /]
+                      [/#list]
+                      
                     </div>
                   [/#list]
                 </div>
@@ -443,6 +440,37 @@
             <div class="clearfix"></div>
           </div>
         [/#list]
+      </div>
+    [/#if]
+  </div>
+[/#macro]
+
+[#macro baselineIndicatorMacro element name index year isTemplate=false]
+  <div id="baselineIndicator-${isTemplate?string('template', index)}" class="baselineIndicator simpleBox" style="display:${isTemplate?string('none','block')}">
+    [#local customName = "${name}[${index}]" /]
+    <div class="leftHead gray sm">
+      <span class="index">${index+1}</span>
+    </div>
+    <div class="form-group grayBox">
+      <strong>${element.title}</strong>
+    </div>
+    <div class="form-group row">
+      <div class="col-md-3">
+        [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeBaseline.expectedValue" className="" required=isYearRequired(year) editable=editable && !reportingActive /]
+      </div>
+      <div class="col-md-3">
+        [#if reportingActive]
+          [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeBaseline.achievedValue" className="" required=isYearRequired(year) editable=editable /]
+        [/#if]
+      </div>
+      <div class="col-md-3"></div>
+    </div>
+    <div class="form-group">
+      [@customForm.textArea name="${customName}.expectedNarrative" i18nkey="projectOutcomeBaseline.expectedNarrative" required=isYearRequired(year) className="limitWords-100" editable=editable && !reportingActive /]
+    </div>
+    [#if reportingActive]
+      <div class="form-group">
+        [@customForm.textArea name="${customName}.achievedNarrative" i18nkey="projectOutcomeBaseline.achievedNarrative" required=isYearRequired(year) className="limitWords-100" editable=editable /]
       </div>
     [/#if]
   </div>
