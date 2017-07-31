@@ -10,6 +10,17 @@ function init() {
   /* Color picker widget */
   $('form .color-picker').colorPicker();
 
+  /* Draggable */
+  $("#researchTopics").sortable({
+      revert: true,
+      cursor: "move",
+      placeholder: "ui-state-highlight",
+      handle: ".invisibleDrag",
+      update: function(event,ui) {
+        updateAllIndexes();
+      }
+  });
+
 }
 
 function attachEvents() {
@@ -24,7 +35,6 @@ function attachEvents() {
 /**
  * Research Topic Functions
  */
-
 function addResearchTopic() {
   var $list = $('.outcomes-list');
   var $item = $('#researchTopic-template').clone(true).removeAttr("id");
