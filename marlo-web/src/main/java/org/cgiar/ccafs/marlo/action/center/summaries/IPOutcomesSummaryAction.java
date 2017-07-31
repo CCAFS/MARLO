@@ -17,12 +17,9 @@ package org.cgiar.ccafs.marlo.action.center.summaries;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.config.PentahoListener;
+import org.cgiar.ccafs.marlo.data.manager.ICenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
-import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
-import org.cgiar.ccafs.marlo.data.model.CenterDeliverableDocument;
-import org.cgiar.ccafs.marlo.data.model.CenterDeliverableOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
-import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.ByteArrayInputStream;
@@ -34,7 +31,8 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Map;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
@@ -68,14 +66,17 @@ public class IPOutcomesSummaryAction extends BaseAction implements Summary {
   private byte[] bytesExcel;
   // Services
   private ICenterProgramManager programService;
+  private ICenterOutcomeManager outcomeService;
   // Params
   private CenterProgram researchProgram;
   private long startTime;
 
   @Inject
-  public IPOutcomesSummaryAction(APConfig config, ICenterProgramManager programService) {
+  public IPOutcomesSummaryAction(APConfig config, ICenterProgramManager programService,
+    ICenterOutcomeManager outcomeService) {
     super(config);
     this.programService = programService;
+    this.outcomeService = outcomeService;
   }
 
   /**
@@ -248,73 +249,19 @@ public class IPOutcomesSummaryAction extends BaseAction implements Summary {
       new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class});
 
+    List<Map<String, Object>> reportOutcome = outcomeService.getImpactPathwayOutcomes(researchProgram.getId());
 
-    for (CenterProject centerProject : researchProgram.getProjects().stream().filter(p -> p.isActive())
-      .collect(Collectors.toList())) {
-      for (CenterDeliverable centerDeliverable : centerProject.getDeliverables().stream().filter(d -> d.isActive())
-        .collect(Collectors.toList())) {
-        String deliverableId = centerDeliverable.getId().toString();
-        String title = null;
-        if (centerDeliverable.getName() != null && !centerDeliverable.getName().trim().isEmpty()) {
-          title = centerDeliverable.getName();
-        }
-        String type = null;
-        String subType = null;
-        if (centerDeliverable.getDeliverableType() != null
-          && centerDeliverable.getDeliverableType().getName() != null) {
-          type = centerDeliverable.getDeliverableType().getName();
+    if (reportOutcome != null) {
+      for (Map<String, Object> map : reportOutcome) {
 
-          if (centerDeliverable.getDeliverableType().getDeliverableType() != null
-            && centerDeliverable.getDeliverableType().getDeliverableType().getName() != null) {
-            subType = centerDeliverable.getDeliverableType().getDeliverableType().getName();
-          }
-        }
+        String outcomeId = map.get("outcomeId").toString();
 
-        SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
-        String startDate = null;
-        if (centerDeliverable.getStartDate() != null) {
-          startDate = formatter.format(centerDeliverable.getStartDate());
-        }
 
-        String endDate = null;
-        if (centerDeliverable.getEndDate() != null) {
-          endDate = formatter.format(centerDeliverable.getEndDate());
-        }
-
-        String deliverableOutputs = "";
-        for (CenterDeliverableOutput centerDeliverableOutput : centerDeliverable.getDeliverableOutputs().stream()
-          .filter(devo -> devo.isActive()).collect(Collectors.toList())) {
-          deliverableOutputs += "●    " + centerDeliverableOutput.getResearchOutput().getComposedName() + "\n";
-        }
-
-        if (deliverableOutputs.trim().isEmpty()) {
-          deliverableOutputs = null;
-        }
-
-        String supportingDocuments = "";
-        for (CenterDeliverableDocument centerDeliverableDocument : centerDeliverable.getDeliverableDocuments().stream()
-          .filter(dd -> dd.isActive()).collect(Collectors.toList())) {
-          supportingDocuments += "●    " + centerDeliverableDocument.getLink() + "\n";
-        }
-        if (supportingDocuments.trim().isEmpty()) {
-          supportingDocuments = null;
-        }
-
-        String projectId = null;
-        if (centerDeliverable.getProject() != null && centerDeliverable.getProject().getId() != null) {
-          projectId = centerDeliverable.getProject().getId().toString();
-        }
-
-        String projectTitle = null;
-        if (centerDeliverable.getProject() != null && centerDeliverable.getProject().getName() != null
-          && !centerDeliverable.getProject().getName().trim().isEmpty()) {
-          projectTitle = centerDeliverable.getProject().getName();
-        }
-
-        model.addRow(new Object[] {deliverableId, title, type, subType, startDate, endDate, endDate, deliverableOutputs,
-          supportingDocuments, projectId, projectTitle, endDate});
       }
     }
+
+    // model.addRow(new Object[] {deliverableId, title, type, subType, startDate, endDate, endDate, deliverableOutputs,
+    // supportingDocuments, projectId, projectTitle, endDate});
     return model;
   }
 
@@ -378,7 +325,7 @@ public class IPOutcomesSummaryAction extends BaseAction implements Summary {
     currentDate = timezone.format(format) + this.getTimeZone();
 
     // Get CIAT imgage URL from repo
-    String imageUrl = this.getBaseUrl() + "/images/global/centers/CIAT.png";
+    String imageUrl = this.getBaseUrlMedia() + "/images/global/centers/CIAT.png";
 
     model.addRow(new Object[] {currentDate, imageUrl, researchProgram.getName()});
     return model;

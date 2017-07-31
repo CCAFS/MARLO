@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.dao.mysql.CenterOutcomeDAO;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 
 import java.util.List;
+import java.util.Map;
 
 import com.google.inject.ImplementedBy;
 
@@ -56,6 +57,13 @@ public interface ICenterOutcomeDAO {
    * @return a list from CenterOutcome null if no exist records
    */
   public List<CenterOutcome> findAll();
+
+  /**
+   * This method gets a report of Impact Pathway Outcomes by research program
+   * 
+   * @return a list of report of Impact Pathway Outcomes
+   */
+  public List<Map<String, Object>> getImpactPathwayOutcomes(long programID);
 
 
   /**

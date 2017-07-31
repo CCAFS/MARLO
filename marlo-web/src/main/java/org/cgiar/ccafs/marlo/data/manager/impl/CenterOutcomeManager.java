@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.manager.ICenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 
 import java.util.List;
+import java.util.Map;
 
 import com.google.inject.Inject;
 
@@ -58,6 +59,11 @@ public class CenterOutcomeManager implements ICenterOutcomeManager {
 
     return researchOutcomeDAO.findAll();
 
+  }
+
+  @Override
+  public List<Map<String, Object>> getImpactPathwayOutcomes(long programID) {
+    return researchOutcomeDAO.getImpactPathwayOutcomes(programID);
   }
 
   @Override

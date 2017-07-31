@@ -18,6 +18,7 @@ import org.cgiar.ccafs.marlo.data.manager.impl.CenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 
 import java.util.List;
+import java.util.Map;
 
 import com.google.inject.ImplementedBy;
 
@@ -53,6 +54,13 @@ public interface ICenterOutcomeManager {
    */
   public List<CenterOutcome> findAll();
 
+
+  /**
+   * This method gets a report of Impact Pathway Outcomes by research program
+   * 
+   * @return a list of report of Impact Pathway Outcomes
+   */
+  public List<Map<String, Object>> getImpactPathwayOutcomes(long programID);
 
   /**
    * This method gets a researchOutcome object by a given researchOutcome identifier.

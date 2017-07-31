@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.dao.ICenterOutcomeDAO;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 
 import java.util.List;
+import java.util.Map;
 
 import com.google.inject.Inject;
 
@@ -64,6 +65,44 @@ public class CenterOutcomeDAO implements ICenterOutcomeDAO {
     }
     return null;
 
+  }
+
+  @Override
+  public List<Map<String, Object>> getImpactPathwayOutcomes(long programID) {
+    StringBuilder query = new StringBuilder();
+
+    query.append("SELECT  ");
+    query.append("center_outcomes.id AS outcomeId,  ");
+    query.append("center_outcomes.description AS outcomeDesc,  ");
+    query.append("center_impacts.description AS impactStatement,  ");
+    query.append("center_topics.research_topic AS topic,  ");
+    query.append("t1.`name` AS outcomeTargetUnit,  ");
+    query.append("center_outcomes.`value` AS outcomeValue,  ");
+    query.append("center_outcomes.`year` AS outcomeYear,  ");
+    query.append("center_milestones.id AS milestoneId,  ");
+    query.append("center_milestones.title AS milestoneDesc,  ");
+    query.append("t2.`name` AS milestoneTargetUnit,  ");
+    query.append("center_milestones.`value` AS milestoneValue,  ");
+    query.append("center_milestones.target_year AS milestoneYear  ");
+    query.append("FROM  ");
+    query.append("center_outcomes  ");
+    query.append("INNER JOIN center_milestones ON center_milestones.impact_outcome_id = center_outcomes.id  ");
+    query.append("INNER JOIN center_impacts ON center_outcomes.research_impact_id = center_impacts.id  ");
+    query.append("INNER JOIN center_topics ON center_outcomes.research_topic_id = center_topics.id  ");
+    query.append("INNER JOIN center_target_units t1 ON center_outcomes.target_unit_id = t1.id  ");
+    query.append("INNER JOIN center_target_units t2 ON center_milestones.target_unit_id = t2.id  ");
+    query.append("WHERE  ");
+    query.append("center_topics.research_program_id = " + programID + " AND  ");
+    query.append("center_outcomes.is_active = 1 AND  ");
+    query.append("center_impacts.is_active = 1 AND  ");
+    query.append("center_topics.is_active = 1 AND  ");
+    query.append("t1.is_active = 1 AND  ");
+    query.append("t2.is_active = 1 AND  ");
+    query.append("center_milestones.is_active = 1  ");
+    query.append("ORDER BY  ");
+    query.append("outcomeId ASC  ");
+
+    return dao.findCustomQuery(query.toString());
   }
 
   @Override
