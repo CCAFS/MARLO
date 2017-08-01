@@ -38,6 +38,7 @@ import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -427,7 +428,11 @@ public class ImpactSubmissionSummaryAction extends BaseAction implements Summary
           targetValue = "&lt;Not Defined&gt;";
         }
         if (researchOutcome.getTargetYear() != null) {
-          targetYear = researchOutcome.getTargetYear().toString();
+          if (researchOutcome.getTargetYear() != -1) {
+            targetYear = researchOutcome.getTargetYear().toString();
+          } else {
+            targetYear = "&lt;Not Defined&gt;";
+          }
         }
         if (targetYear.isEmpty()) {
           targetYear = "&lt;Not Defined&gt;";
@@ -567,8 +572,12 @@ public class ImpactSubmissionSummaryAction extends BaseAction implements Summary
     String name = "";
     String id = "";
 
-    for (CenterTopic researchTopic : researchProgram.getResearchTopics().stream()
-      .filter(rt -> rt.isActive() && rt.getResearchTopic() != null).collect(Collectors.toList())) {
+    List<CenterTopic> researchTopics = researchProgram.getResearchTopics().stream()
+      .filter(rt -> rt.isActive() && rt.getResearchTopic() != null).collect(Collectors.toList());
+
+    Collections.sort(researchTopics, (ra1, ra2) -> ra1.getOrder().compareTo(ra2.getOrder()));
+
+    for (CenterTopic researchTopic : researchTopics) {
       name = researchTopic.getResearchTopic();
       id = researchTopic.getId().toString();
       model.addRow(new Object[] {name, id});
