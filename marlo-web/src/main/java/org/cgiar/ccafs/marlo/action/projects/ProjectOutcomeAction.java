@@ -402,7 +402,9 @@ public class ProjectOutcomeAction extends BaseAction {
 
 
     Set<CrpMilestone> crpMilestones = new HashSet<>();
-    if (projectOutcome.getMilestones() != null) {
+    if (projectOutcome.getMilestones() != null)
+
+    {
       for (ProjectMilestone crpMilestone : projectOutcome.getMilestones()) {
         CrpMilestone milestone = crpMilestoneManager.getCrpMilestoneById(crpMilestone.getCrpMilestone().getId());
 
@@ -415,7 +417,9 @@ public class ProjectOutcomeAction extends BaseAction {
     milestonesProject = new ArrayList<>();
     milestonesProject.addAll(crpMilestones);
     // Collections.sort(milestonesProject, (m1, m2) -> m1.getIndex().compareTo(m2.getIndex()));
-    if (projectOutcome != null) {
+    if (projectOutcome != null)
+
+    {
       crpProgramOutcome =
         crpProgramOutcomeManager.getCrpProgramOutcomeById(projectOutcome.getCrpProgramOutcome().getId());
 
@@ -431,7 +435,9 @@ public class ProjectOutcomeAction extends BaseAction {
 
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_CONTRIBRUTIONCRP_BASE_PERMISSION, params));
-    if (this.isHttpPost()) {
+    if (this.isHttpPost())
+
+    {
       if (projectOutcome.getMilestones() != null) {
         projectOutcome.getMilestones().clear();
       }
@@ -443,6 +449,7 @@ public class ProjectOutcomeAction extends BaseAction {
         projectOutcome.getNextUsers().clear();
       }
     }
+
   }
 
 

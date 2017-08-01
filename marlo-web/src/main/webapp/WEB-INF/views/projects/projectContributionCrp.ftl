@@ -365,8 +365,10 @@
       <span class="index">${index+1}</span>
       <span class="elementId"> Project Next User </span>
     </div>
+    
     [#-- Hidden inputs --]
     <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
+    <input type="hidden" name="${customName}.composeID" value="${(element.composeID)!}" />
      
     <div class="form-group">
       [#-- Title --]

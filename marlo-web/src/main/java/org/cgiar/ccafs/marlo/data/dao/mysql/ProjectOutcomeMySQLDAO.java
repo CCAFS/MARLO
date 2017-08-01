@@ -146,13 +146,14 @@ public class ProjectOutcomeMySQLDAO implements ProjectOutcomeDAO {
           projectOutcomeAdd.setYouthComponent(projectOutcome.getYouthComponent());
           dao.update(projectOutcomeAdd);
           this.updateProjectMilestones(projectOutcomeAdd, projectOutcome);
-          this.addProjectNextUsers(projectOutcomeAdd, projectOutcome);
+          this.updateProjectNextUsers(projectOutcomeAdd, projectOutcome);
         }
       }
     }
 
     if (phase.getNext() != null) {
       this.addProjectOutcomePhase(phase.getNext(), projectID, projectOutcome);
+
     }
 
 
@@ -300,7 +301,7 @@ public class ProjectOutcomeMySQLDAO implements ProjectOutcomeDAO {
     }
     if (projectOutcome.getNextUsers() != null) {
       for (ProjectNextuser projectNextuser : projectOutcome.getNextUsers()) {
-        if (projectOutcomePrev.getNextUsers().stream()
+        if (projectOutcomePrev.getProjectNextusers().stream()
           .filter(c -> c.isActive() && c.getComposeID().equals(projectNextuser.getComposeID()))
           .collect(Collectors.toList()).isEmpty()) {
 
@@ -324,7 +325,7 @@ public class ProjectOutcomeMySQLDAO implements ProjectOutcomeDAO {
           }
 
         } else {
-          ProjectNextuser projectNextusertoUpdate = projectOutcomePrev.getNextUsers().stream()
+          ProjectNextuser projectNextusertoUpdate = projectOutcomePrev.getProjectNextusers().stream()
             .filter(c -> c.isActive() && c.getComposeID().equals(projectNextuser.getComposeID()))
             .collect(Collectors.toList()).get(0);
           projectNextusertoUpdate.setKnowledge(projectNextuser.getKnowledge());
