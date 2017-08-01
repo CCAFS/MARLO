@@ -7,16 +7,16 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for tWsMarloAgreeCountry complex type.
+ * <p>Java class for getMarloAgreements complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="tWsMarloAgreeCountry">
+ * &lt;complexType name="getMarloAgreements">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="id" type="{http://logic.control.abw.ciat.cgiar.org/}tWsMarloAgreeCountryId" minOccurs="0"/>
+ *         &lt;element name="agreementId" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -26,35 +26,35 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tWsMarloAgreeCountry", propOrder = {
-    "id"
+@XmlType(name = "getMarloAgreements", propOrder = {
+    "agreementId"
 })
-public class TWsMarloAgreeCountry {
+public class GetMarloAgreements {
 
-    protected TWsMarloAgreeCountryId id;
+    protected String agreementId;
 
     /**
-     * Gets the value of the id property.
+     * Gets the value of the agreementId property.
      * 
      * @return
      *     possible object is
-     *     {@link TWsMarloAgreeCountryId }
+     *     {@link String }
      *     
      */
-    public TWsMarloAgreeCountryId getId() {
-        return id;
+    public String getAgreementId() {
+        return agreementId;
     }
 
     /**
-     * Sets the value of the id property.
+     * Sets the value of the agreementId property.
      * 
      * @param value
      *     allowed object is
-     *     {@link TWsMarloAgreeCountryId }
+     *     {@link String }
      *     
      */
-    public void setId(TWsMarloAgreeCountryId value) {
-        this.id = value;
+    public void setAgreementId(String value) {
+        this.agreementId = value;
     }
 
 }
