@@ -104,7 +104,7 @@ public class IPOutcomesSummaryAction extends BaseAction implements Summary {
     masterReport.getParameterValues().put("i8nMilestoneTargetUnit", this.getText("outcome.milestone.targetUnit"));
     masterReport.getParameterValues().put("i8nMilestoneTargetValue", this.getText("outcome.milestone.targetValue"));
     masterReport.getParameterValues().put("i8nMilestoneTargetYear", this.getText("outcome.milestone.targerYear"));
-    masterReport.getParameterValues().put("i8nCount", "Count");
+    masterReport.getParameterValues().put("i8nCount", this.getText("summary.count"));
 
 
     return masterReport;
