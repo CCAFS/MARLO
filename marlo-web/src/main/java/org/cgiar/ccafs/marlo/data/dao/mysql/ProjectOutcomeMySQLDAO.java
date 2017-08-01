@@ -230,7 +230,7 @@ public class ProjectOutcomeMySQLDAO implements ProjectOutcomeDAO {
     for (ProjectMilestone projectMilestone : projectOutcomePrev.getProjectMilestones().stream()
       .filter(c -> c.isActive()).collect(Collectors.toList())) {
       if (projectOutcome.getMilestones() == null || projectOutcome.getMilestones().stream()
-        .filter(c -> c.getCrpMilestone() != null
+        .filter(c -> c != null && c.getCrpMilestone() != null
           && c.getCrpMilestone().getId().equals(projectMilestone.getCrpMilestone().getId()))
         .collect(Collectors.toList()).isEmpty()) {
         projectMilestone.setActive(false);
@@ -239,41 +239,46 @@ public class ProjectOutcomeMySQLDAO implements ProjectOutcomeDAO {
     }
     if (projectOutcome.getMilestones() != null) {
       for (ProjectMilestone projectMilestone : projectOutcome.getMilestones()) {
-        if (projectOutcomePrev.getProjectMilestones().stream()
-          .filter(c -> c.isActive() && c.getCrpMilestone().equals(projectMilestone.getCrpMilestone()))
-          .collect(Collectors.toList()).isEmpty()) {
+        if (projectMilestone != null) {
+          if (projectOutcomePrev.getProjectMilestones().stream()
+            .filter(c -> c != null && c.isActive() && c.getCrpMilestone() != null
+              && projectMilestone.getCrpMilestone() != null
+              && c.getCrpMilestone().equals(projectMilestone.getCrpMilestone()))
+            .collect(Collectors.toList()).isEmpty()) {
 
-          ProjectMilestone projectMilestoneAdd = new ProjectMilestone();
-          projectMilestoneAdd.setActive(true);
-          projectMilestoneAdd.setActiveSince(projectOutcome.getActiveSince());
-          projectMilestoneAdd.setCreatedBy(projectOutcome.getCreatedBy());
-          projectMilestoneAdd.setModificationJustification("");
-          projectMilestoneAdd.setModifiedBy(projectOutcome.getCreatedBy());
-          projectMilestoneAdd.setCrpMilestone(projectMilestone.getCrpMilestone());
-          projectMilestoneAdd.setAchievedValue(projectMilestone.getAchievedValue());
-          projectMilestoneAdd.setExpectedUnit(projectMilestone.getExpectedUnit());
-          projectMilestoneAdd.setExpectedValue(projectMilestone.getExpectedValue());
-          projectMilestoneAdd.setAchievedValue(projectMilestone.getAchievedValue());
-          projectMilestoneAdd.setNarrativeAchieved(projectMilestone.getNarrativeAchieved());
-          projectMilestoneAdd.setNarrativeTarget(projectMilestone.getNarrativeTarget());
-          projectMilestoneAdd.setProjectOutcome(projectOutcomePrev);
-          projectMilestoneAdd.setYear(projectMilestone.getYear());
-          dao.update(projectMilestoneAdd);
+            ProjectMilestone projectMilestoneAdd = new ProjectMilestone();
+            projectMilestoneAdd.setActive(true);
+            projectMilestoneAdd.setActiveSince(projectOutcome.getActiveSince());
+            projectMilestoneAdd.setCreatedBy(projectOutcome.getCreatedBy());
+            projectMilestoneAdd.setModificationJustification("");
+            projectMilestoneAdd.setModifiedBy(projectOutcome.getCreatedBy());
+            projectMilestoneAdd.setCrpMilestone(projectMilestone.getCrpMilestone());
+            projectMilestoneAdd.setAchievedValue(projectMilestone.getAchievedValue());
+            projectMilestoneAdd.setExpectedUnit(projectMilestone.getExpectedUnit());
+            projectMilestoneAdd.setExpectedValue(projectMilestone.getExpectedValue());
+            projectMilestoneAdd.setAchievedValue(projectMilestone.getAchievedValue());
+            projectMilestoneAdd.setNarrativeAchieved(projectMilestone.getNarrativeAchieved());
+            projectMilestoneAdd.setNarrativeTarget(projectMilestone.getNarrativeTarget());
+            projectMilestoneAdd.setProjectOutcome(projectOutcomePrev);
+            projectMilestoneAdd.setYear(projectMilestone.getYear());
+            dao.update(projectMilestoneAdd);
 
-        } else {
-          ProjectMilestone milestone = projectOutcomePrev.getProjectMilestones().stream()
-            .filter(c -> c.isActive() && c.getCrpMilestone().equals(projectMilestone.getCrpMilestone()))
-            .collect(Collectors.toList()).get(0);
-          milestone.setAchievedValue(projectMilestone.getAchievedValue());
-          milestone.setExpectedUnit(projectMilestone.getExpectedUnit());
-          milestone.setExpectedValue(projectMilestone.getExpectedValue());
-          milestone.setAchievedValue(projectMilestone.getAchievedValue());
-          milestone.setNarrativeAchieved(projectMilestone.getNarrativeAchieved());
-          milestone.setNarrativeTarget(projectMilestone.getNarrativeTarget());
-          milestone.setYear(projectMilestone.getYear());
-          dao.update(milestone);
+          } else {
+            ProjectMilestone milestone = projectOutcomePrev.getProjectMilestones().stream()
+              .filter(c -> c.isActive() && c.getCrpMilestone().equals(projectMilestone.getCrpMilestone()))
+              .collect(Collectors.toList()).get(0);
+            milestone.setAchievedValue(projectMilestone.getAchievedValue());
+            milestone.setExpectedUnit(projectMilestone.getExpectedUnit());
+            milestone.setExpectedValue(projectMilestone.getExpectedValue());
+            milestone.setAchievedValue(projectMilestone.getAchievedValue());
+            milestone.setNarrativeAchieved(projectMilestone.getNarrativeAchieved());
+            milestone.setNarrativeTarget(projectMilestone.getNarrativeTarget());
+            milestone.setYear(projectMilestone.getYear());
+            dao.update(milestone);
 
+          }
         }
+
       }
     }
   }
