@@ -28,13 +28,9 @@
         [#include "/WEB-INF/views/superadmin/menu-superadmin.ftl" /]
       </div>
       <div class="col-md-9">
-        [@s.form action=actionName enctype="multipart/form-data" ]
-        
-          [#-- Requested Institutions--]
-          <h4 class="sectionTitle">[@s.text name="marloRequestInstitution.title" /]</h4>  
-          [@partnersList partners=partners  canEdit=editable namespace="/marloInstitutions" defaultAction="${(crpSession)!}/marloInstitutions"/]
-          
-        [/@s.form]
+        [#-- Requested Institutions--]
+        <h4 class="sectionTitle">[@s.text name="marloRequestInstitution.title" /]</h4>  
+        [@partnersList partners=partners  canEdit=editable namespace="/marloInstitutions" defaultAction="${(crpSession)!}/marloInstitutions"/]
       </div>
     </div>
   </div>
@@ -76,6 +72,7 @@
       [#list partners as partner]
         <li class="list-group-item partnerRequestItem">
           <div class="loading" style="display:none"></div>
+          
           [#-- Partner name --]
           <div class="requestInfo">
             <div class="form-group">
@@ -105,17 +102,56 @@
               <ul></ul>
             </div>
           </div>
+          
           [#-- Action --]
           <div class="btn-group pull-right" role="group" aria-label="..."">
+            [#-- Edit --]
+            <a class="btn btn-default btn-sm editRequest" href="#">
+              <span class="glyphicon glyphicon-pencil"></span> Edit Request
+            </a>
             [#-- Accept --]
             <a class="btn btn-success btn-sm" href="[@s.url namespace="" action="superadmin/addPartner"][@s.param name='requestID']${partner.id?c}[/@s.param][/@s.url]">
               <span class="glyphicon glyphicon-ok"></span> Accept
             </a>
             [#-- Reject --]
-            <a class="btn btn-danger btn-sm rejectRequest partnerRequestId-${partner.id}" href="[@s.url namespace="" action="superadmin/removePartner"][@s.param name='requestID']${partner.id?c}[/@s.param][/@s.url]">
+            <a class="btn btn-danger btn-sm rejectRequest partnerRequestId-${partner.id}" href="#">
                <span class="glyphicon glyphicon-remove"></span> Reject
             </a>
           </div>
+          
+          <div class="clearfix"></div>
+          
+          [#-- Edit Form --]
+          <form class="editForm editForm-${(partner.id)!} simpleBox" style="display:none">
+            <input type="hidden" name="id"  value="${(partner.id)!}"/>
+            <div class="form-group row">
+              <div class="col-md-3">
+                <label for="">Acronym</label>
+                <input type="text" class="form-control input-sm" name="acronym" value="${(partner.acronym)!}" />
+              </div>
+              <div class="col-md-9">
+                <label for="">Name</label>
+                <input type="text" class="form-control input-sm" name="partnerName" value="${(partner.partnerName)!}" />
+              </div>
+            </div>
+            <div class="form-group row">
+              <div class="col-md-6">
+                <label for="">Institution Type</label>
+                <input type="text" class="form-control input-sm" name="institutionType" value="${(partner.institutionType)!}" />
+              </div>
+              <div class="col-md-6">
+                <label for="">Country ISO Code</label>
+                <input type="text" class="form-control input-sm" name="locElement.isoAlpha2" value="${(partner.locElement.isoAlpha2)!}" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="">Web Page</label>
+              <input type="text" class="form-control input-sm" name="webPage" value="${(partner.webPage)!}" />
+            </div>
+            <button class="saveButton">Save</button>
+            <button class="cancelButton">Cancel</button>
+          </form>
+          
           <div class="clearfix"></div>
         </li>
       [/#list]

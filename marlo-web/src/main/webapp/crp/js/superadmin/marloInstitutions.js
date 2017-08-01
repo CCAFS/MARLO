@@ -32,6 +32,48 @@ $(document).ready(function() {
     });
   });
 
+  // Edit Request
+  $('a.editRequest').on('click', function(e) {
+    e.preventDefault();
+    var $request = $(this).parents('.partnerRequestItem');
+    console.log($request);
+    $request.find('.editForm').slideDown();
+    $request.find('.btn-group').slideUp();
+  });
+
+  // Save request edition
+  $('button.saveButton').on('click', function(e) {
+    e.preventDefault();
+    var $request = $(this).parents('.partnerRequestItem');
+
+    $.ajax({
+        url: baseURL + '/editPartnerRequest.do',
+        data: $request.find('.editForm').serializeObject(),
+        beforeSend: function() {
+          $modal.find('.loading').fadeIn();
+        },
+        success: function(data) {
+        },
+        complete: function(data) {
+          $modal.find('.loading').fadeOut();
+        },
+        error: function(error) {
+          console.log(error)
+        }
+    });
+
+    $request.find('.editForm').slideUp();
+    $request.find('.btn-group').slideDown();
+  });
+
+  // Cancel request edition
+  $('button.cancelButton').on('click', function(e) {
+    e.preventDefault();
+    var $request = $(this).parents('.partnerRequestItem');
+    $request.find('.editForm').slideUp();
+    $request.find('.btn-group').slideDown();
+  });
+
   findSameness();
 });
 
