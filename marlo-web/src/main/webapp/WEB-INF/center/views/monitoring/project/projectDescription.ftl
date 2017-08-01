@@ -147,20 +147,20 @@
               [@customForm.input name="project.totalAmount" className="amount" i18nkey="projectDescription.totalAmount" type="text" required=true  editable=editable/]
             </div>
            
-            [#-- Funding source --]
+            [#-- CRP Project Contributions --]
             <div class="form-group ">
-              <label>[@s.text name="projectDescription.fundingSource" /]<span class="red">*</span></label>
+              <label>[@s.text name="projectDescription.crpCont" /]<span class="red">*</span></label>
               <div class="borderBox fundingSourceList" listname="project.fundingSources">
                 [#if project.fundingSources?has_content]
                   [#list project.fundingSources as fundingSource]
                     [@fundingSourceMacro element=fundingSource name="project.fundingSources"  index=fundingSource_index /]
                   [/#list]
                 [/#if]
-                <p class="text-center inf" style="display:${(project.fundingSources?has_content)?string('none','block')}">[@s.text name="projectDescription.notFundingSource" /]</p>
+                <p class="text-center inf" style="display:${(project.fundingSources?has_content)?string('none','block')}">[@s.text name="projectDescription.notCrpCont" /]</p>
               </div>
               [#if editable]
               <div class="text-right">
-                <div class="button-green addFundingSource"><span class="glyphicon glyphicon-plus-sign"></span>[@s.text name="Add a funding source" /]</div>
+                <div class="button-green addFundingSource"><span class="glyphicon glyphicon-plus-sign"></span>[@s.text name="Add Contribution" /]</div>
               </div>
               [/#if]
             </div>  
@@ -419,7 +419,7 @@
       [@customForm.select name="${fundingSourceCustomName}.fundingSourceType.id" label=""  i18nkey="Funding source" listName="fundingSourceTypes" keyFieldName="id"  displayFieldName="name"  multiple=false required=true header=false className="" editable=editable/]
     </div>
     <div class="col-md-12">
-      [@customForm.input name="${fundingSourceCustomName}.title" i18nkey="Project Title" type="text" disabled=!editable required=false editable=editable /]
+      [@customForm.input name="${fundingSourceCustomName}.title" i18nkey="CRP Project Title" type="text" disabled=!editable required=false editable=editable /]
     </div>
     <div class="clearfix"></div>
   </div>
