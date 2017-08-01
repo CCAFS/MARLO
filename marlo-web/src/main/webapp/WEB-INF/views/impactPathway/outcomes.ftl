@@ -180,11 +180,17 @@
     [#if editable && targetUnitList?has_content]<div class="col-md-12 note">[@s.text name = "outcomes.addNewTargetUnit" /]</div> <br /> <br />[/#if]
     
     
+    [#assign baselineIndicators = [
+            {"title": "Total project area targeted (ha)."},
+            {"title": "Numbers of heads of livestock per species in the project area. "}
+          ] 
+        /]
+    
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" role="tablist">
       <li role="presentation" class="active"><a href="#subIdos-tab-${index}" aria-controls="home" role="tab" data-toggle="tab">Sub-IDOs <span class="badge">${(outcome.subIdos?size)!'0'}</span></a></li>
       [#if action.hasSpecificities('crp_baseline_indicators')]
-      <li role="presentation"><a href="#baseline-tab-${index}" aria-controls="profile" role="tab" data-toggle="tab">Baseline Indicators <span class="badge">${(outcome.baselineIndicators?size)!'0'}</span></a></li>
+      <li role="presentation"><a href="#baseline-tab-${index}" aria-controls="profile" role="tab" data-toggle="tab">Baseline Indicators <span class="badge">${(baselineIndicators?size)!'0'}</span></a></li>
       [/#if]
       <li role="presentation"><a href="#milestones-tab-${index}" aria-controls="messages" role="tab" data-toggle="tab">Milestones <span class="badge">${(outcome.milestones?size)!'0'}</span></a></li>
     </ul>
@@ -234,8 +240,9 @@
         [#-- Baseline indicators list --]
         <h5 class="sectionSubTitle">[@s.text name="outcome.baselineIndicators" /]:</h5>
         <div class="baselineIndicators-list"">
-        [#if outcome.baselineIndicators?has_content]
-          [#list outcome.baselineIndicators as baselineIndicator]
+        
+        [#if baselineIndicators?has_content]
+          [#list baselineIndicators as baselineIndicator]
             [@baselineIndicatorMacro indicator=baselineIndicator name="${outcomeCustomName}.baselineIndicators" index=baselineIndicator_index /]
           [/#list]
         [#else]
@@ -411,7 +418,7 @@
         <div class="input"><p> <strong>${index+1}.</strong> ${(indicator.description)!}</p></div>
       [/#if] 
     [#else]
-      [@customForm.input name="${customName}.description" i18nkey="baselineIndicator.title" type="text" showTitle=true placeholder="" className="statement limitWords-50" required=true editable=editable /]
+      [@customForm.input name="${customName}.title" value=indicator.title i18nkey="baselineIndicator.title" type="text" showTitle=true placeholder="" className="statement limitWords-50" required=true editable=editable /]
     [/#if]
     <div class="clearfix"></div>
   </div>
