@@ -105,6 +105,7 @@ public class IPOutcomesSummaryAction extends BaseAction implements Summary {
     masterReport.getParameterValues().put("i8nMilestoneTargetValue", this.getText("outcome.milestone.targetValue"));
     masterReport.getParameterValues().put("i8nMilestoneTargetYear", this.getText("outcome.milestone.targerYear"));
 
+
     return masterReport;
   }
 
@@ -304,7 +305,7 @@ public class IPOutcomesSummaryAction extends BaseAction implements Summary {
    */
   private TypedTableModel getMasterTableModel() {
     // Initialization of Model
-    TypedTableModel model = new TypedTableModel(new String[] {"currentDate", "imageUrl", "researchProgram"},
+    TypedTableModel model = new TypedTableModel(new String[] {"currentDate", "center", "researchProgram"},
       new Class[] {String.class, String.class, String.class});
     String currentDate = "";
 
@@ -314,9 +315,9 @@ public class IPOutcomesSummaryAction extends BaseAction implements Summary {
     currentDate = timezone.format(format) + this.getTimeZone();
 
     // Get CIAT imgage URL from repo
-    String imageUrl = this.getBaseUrlMedia() + "/images/global/centers/CIAT.png";
+    String center = this.getCenterSession();
 
-    model.addRow(new Object[] {currentDate, imageUrl, researchProgram.getName()});
+    model.addRow(new Object[] {currentDate, center, researchProgram.getName()});
     return model;
   }
 
@@ -370,6 +371,7 @@ public class IPOutcomesSummaryAction extends BaseAction implements Summary {
         String milestoneTargetUnit = map.get("milestoneTargetUnit").toString();
         String milestoneTargetValue = map.get("milestoneValue").toString();
         String milestoneTargetYear = map.get("milestoneYear").toString();
+
 
         model.addRow(new Object[] {outcomeId, outcomeTitle, impactStatement, researchTopic, outcomeTargetUnit,
           outcomeTargetValue, outcomeTargetYear, milestoneId, milestoneTitle, milestoneTargetUnit, milestoneTargetValue,

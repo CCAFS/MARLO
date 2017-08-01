@@ -329,6 +329,8 @@ public class ResearchTopicsAction extends BaseAction {
           }
         }
       }
+
+      Collections.sort(topics, (ra1, ra2) -> ra1.getOrder().compareTo(ra2.getOrder()));
     }
 
 
@@ -379,6 +381,7 @@ public class ResearchTopicsAction extends BaseAction {
           newResearchTopic.setColor("#ecf0f1");
           newResearchTopic.setResearchProgram(selectedProgram);
           newResearchTopic.setShortName(researchTopic.getShortName().trim());
+          newResearchTopic.setOrder(researchTopic.getOrder());
 
           researchTopicService.saveResearchTopic(newResearchTopic);
         } else {
@@ -395,6 +398,11 @@ public class ResearchTopicsAction extends BaseAction {
             || !researchTopicPrew.getShortName().equals(researchTopic.getShortName().trim())) {
             hasChanges = true;
             researchTopicPrew.setShortName(researchTopic.getShortName().trim());
+          }
+
+          if (researchTopicPrew.getOrder() == null || researchTopicPrew.getOrder() != researchTopic.getOrder()) {
+            hasChanges = true;
+            researchTopicPrew.setOrder(researchTopic.getOrder());
           }
 
           if (hasChanges) {

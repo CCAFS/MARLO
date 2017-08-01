@@ -4,7 +4,7 @@
 [#assign pageLibs = ["datatables.net", "datatables.net-bs","select2"] /]
 [#assign customJS = ["${baseUrlMedia}/js/global/usersManagement.js", "${baseUrlMedia}/js/impactPathway/outcomeList.js", "${baseUrlMedia}/js/global/fieldsValidation.js"] /]
 [#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css","${baseUrlMedia}/css/impactPathway/outcomeList.css"] /]
-[#assign currentSection = "impactPathway" /]
+[#assign currentSection = "centerImpactPathway" /]
 [#assign currentStage = "outcomes" /]
 
 [#assign breadCrumb = [

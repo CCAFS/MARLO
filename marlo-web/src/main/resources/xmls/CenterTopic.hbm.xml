@@ -34,7 +34,7 @@
       <column name="color" length="8" />
     </property>
     <property name="order" type="java.lang.Integer">
-      <column name="order" length="3" />
+      <column name="order_topic"/>
     </property>
     <property name="shortName" type="string">
       <column name="short_name" />
