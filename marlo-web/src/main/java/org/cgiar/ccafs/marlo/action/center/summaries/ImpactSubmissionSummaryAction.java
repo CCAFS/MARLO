@@ -359,9 +359,13 @@ public class ImpactSubmissionSummaryAction extends BaseAction implements Summary
         Boolean.class, Long.class});
 
 
+    List<CenterTopic> researchTopics = researchProgram.getResearchTopics().stream()
+      .filter(rt -> rt.isActive() && rt.getResearchOutcomes().size() > 0).collect(Collectors.toList());
+
+    Collections.sort(researchTopics, (ra1, ra2) -> ra1.getOrder().compareTo(ra2.getOrder()));
+
     // Get research topics and then outcomes
-    for (CenterTopic researchTopic : researchProgram.getResearchTopics().stream()
-      .filter(rt -> rt.isActive() && rt.getResearchOutcomes().size() > 0).collect(Collectors.toList())) {
+    for (CenterTopic researchTopic : researchTopics) {
       String researchTopicTitle = "";
       Boolean showResearchTopic;
       int countOutcome = 0;
@@ -564,25 +568,6 @@ public class ImpactSubmissionSummaryAction extends BaseAction implements Summary
 
   public CenterProgram getResearchProgram() {
     return researchProgram;
-  }
-
-  private TypedTableModel getResearchTopicsTableModel() {
-    // Initialization of Model
-    TypedTableModel model = new TypedTableModel(new String[] {"name", "id"}, new Class[] {String.class, String.class});
-    String name = "";
-    String id = "";
-
-    List<CenterTopic> researchTopics = researchProgram.getResearchTopics().stream()
-      .filter(rt -> rt.isActive() && rt.getResearchTopic() != null).collect(Collectors.toList());
-
-    Collections.sort(researchTopics, (ra1, ra2) -> ra1.getOrder().compareTo(ra2.getOrder()));
-
-    for (CenterTopic researchTopic : researchTopics) {
-      name = researchTopic.getResearchTopic();
-      id = researchTopic.getId().toString();
-      model.addRow(new Object[] {name, id});
-    }
-    return model;
   }
 
   @Override
