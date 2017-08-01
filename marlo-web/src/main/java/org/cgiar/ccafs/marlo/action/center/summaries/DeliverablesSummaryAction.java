@@ -34,6 +34,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
@@ -71,6 +72,10 @@ public class DeliverablesSummaryAction extends BaseAction implements Summary {
   // Params
   private CenterProgram researchProgram;
   private long startTime;
+  private HashSet<Long> centerDeliverablesSet = new HashSet<Long>();
+  private HashSet<Long> centerProjectsSet = new HashSet<Long>();
+  private HashMap<String, Integer> deliverablesCategory = new HashMap<String, Integer>();
+  private int deliverablesCategoryTotal = 0;
 
   @Inject
   public DeliverablesSummaryAction(APConfig config, ICenterProgramManager programService) {
@@ -139,7 +144,10 @@ public class DeliverablesSummaryAction extends BaseAction implements Summary {
 
       // Subreport Program Impacts
       this.fillSubreport((SubReport) hm.get("details"), "details");
+      this.fillSubreport((SubReport) hm.get("summary"), "summary");
 
+      masterReport.getParameterValues().put("count_deliverables", centerDeliverablesSet.size());
+      masterReport.getParameterValues().put("count_projects", centerProjectsSet.size());
 
       ExcelReportUtil.createXLSX(masterReport, os);
       bytesExcel = os.toByteArray();
@@ -165,7 +173,9 @@ public class DeliverablesSummaryAction extends BaseAction implements Summary {
       case "details":
         model = this.getDeliverablesTableModel();
         break;
-
+      case "summary":
+        model = this.getDeliverablesSummaryTableModel();
+        break;
     }
     sdf.addTable(query, model);
     subReport.setDataFactory(cdf);
@@ -292,6 +302,19 @@ public class DeliverablesSummaryAction extends BaseAction implements Summary {
     return crossCutting;
   }
 
+  private TypedTableModel getDeliverablesSummaryTableModel() {
+    // Initialization of Model
+    TypedTableModel model =
+      new TypedTableModel(new String[] {"namePercentage", "countCategory"}, new Class[] {String.class, Integer.class});
+
+    for (String deliverableType : deliverablesCategory.keySet()) {
+      model.addRow(new Object[] {deliverableType + " - "
+        + ((deliverablesCategory.get(deliverableType) * 100) / deliverablesCategoryTotal) + " %",
+        deliverablesCategory.get(deliverableType)});
+    }
+    return model;
+  }
+
   private TypedTableModel getDeliverablesTableModel() {
     // Initialization of Model
     TypedTableModel model = new TypedTableModel(
@@ -367,6 +390,14 @@ public class DeliverablesSummaryAction extends BaseAction implements Summary {
           && !centerDeliverable.getProject().getName().trim().isEmpty()) {
           projectTitle = centerDeliverable.getProject().getName();
         }
+        centerDeliverablesSet.add(centerDeliverable.getId());
+        centerProjectsSet.add(centerProject.getId());
+        if (type != null && !type.isEmpty()) {
+          Integer deliverablesCategoryCount =
+            deliverablesCategory.containsKey(type) ? deliverablesCategory.get(type) : 0;
+          deliverablesCategory.put(type, deliverablesCategoryCount + 1);
+          deliverablesCategoryTotal++;
+        }
 
         model.addRow(new Object[] {deliverableId, title, type, subType, startDate, endDate, crossCutting,
           deliverableOutputs, supportingDocuments, projectId, projectTitle});
@@ -401,7 +432,6 @@ public class DeliverablesSummaryAction extends BaseAction implements Summary {
         hm.put(e.getName(), e);
         if (((SubReport) e).getElementCount() != 0) {
           this.getAllSubreports(hm, ((SubReport) e).getItemBand());
-
         }
       }
       if (e instanceof Band) {
@@ -425,7 +455,7 @@ public class DeliverablesSummaryAction extends BaseAction implements Summary {
    */
   private TypedTableModel getMasterTableModel() {
     // Initialization of Model
-    TypedTableModel model = new TypedTableModel(new String[] {"currentDate", "imageUrl", "researchProgram"},
+    TypedTableModel model = new TypedTableModel(new String[] {"currentDate", "center", "researchProgram"},
       new Class[] {String.class, String.class, String.class});
     String currentDate = "";
 
@@ -433,11 +463,9 @@ public class DeliverablesSummaryAction extends BaseAction implements Summary {
     ZonedDateTime timezone = ZonedDateTime.now();
     DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
     currentDate = timezone.format(format) + this.getTimeZone();
+    String center = this.getCenterSession();
 
-    // Get CIAT imgage URL from repo
-    String imageUrl = this.getBaseUrl() + "/images/global/centers/CIAT.png";
-
-    model.addRow(new Object[] {currentDate, imageUrl, researchProgram.getName()});
+    model.addRow(new Object[] {currentDate, center, researchProgram.getName()});
     return model;
   }
 
