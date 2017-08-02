@@ -53,7 +53,7 @@
             <span class="glyphicon glyphicon-circle-arrow-left"></span> Back to the project list
           </a>
         </div>
-        <h3 class="headTitle"> Project Partners </h3>
+        <h3 class="headTitle">${selectedProgram.name} - Project Partners </h3>
         <div class="parntersBlock">
           <div class="partnersList" listname="partners">
             [#if project.partners?has_content]

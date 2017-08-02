@@ -72,7 +72,7 @@
               <input class="hidden" type="radio" name="formOptions" id="leadProjectInstitutionsSummary" value="centerOutcomes"/>
               <label for="">[@s.text name="summaries.board.report.outcome" /] </label>
             </div>
-            <span class="description col-md-12">[@s.text name="summaries.board.rerpot.outcome.description" /]</span>
+            <span class="description col-md-12">[@s.text name="summaries.board.report.outcome.description" /]</span>
             <div class="extraOptions col-md-12" style="display:none"> 
               <span class="hidden fileTypes excelType">leadProjectInstitutionsSummary-leadProjectInstitutionsSummary</span>
               [@customForm.select name="programID" header=false   label=""  i18nkey="Select a Research Program"  listName="programs"  keyFieldName="id"  displayFieldName="composedName" className="allPrograms"   multiple=false required=true   editable=true/]

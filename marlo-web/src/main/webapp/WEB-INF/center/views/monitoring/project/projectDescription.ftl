@@ -56,7 +56,7 @@
           </a>
         </div>
           
-          <h3 class="headTitle">[@s.text name="projectDescription.title" /]</h3>  
+          <h3 class="headTitle">${selectedProgram.name} - [@s.text name="projectDescription.title" /]</h3>  
           <div id="projectDescription" class="borderBox">
           
             [#-- Finance code --]
@@ -149,7 +149,7 @@
            
             [#-- CRP Project Contributions --]
             <div class="form-group ">
-              <label>[@s.text name="projectDescription.crpCont" /]<span class="red">*</span></label>
+              <label>[@s.text name="projectDescription.crpCont" /]</label>
               <div class="borderBox fundingSourceList" listname="project.fundingSources">
                 [#if project.fundingSources?has_content]
                   [#list project.fundingSources as fundingSource]

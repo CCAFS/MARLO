@@ -86,7 +86,7 @@
           <div class="col-md-12">
             <h5 class="sectionSubTitle">Progress Towards Outcome Milestones:</h5>
             <div class="note left">
-              When writing your narrative, please consider if you have achieved changes in Attitudes, Skills, and Knowledge. Key words to express progress  measurement that may apply to your outcome may include: Change of Practice→ Use, Adaptation, Adoption → Sustainable use, Scaling out / Scaling up
+              [@s.text name="outcome.milestones.emptyMessage"/]
             </div>
             <br />
             [#-- MILESTONE LIST --]
@@ -126,13 +126,13 @@
                   [@evidenceMacro evidence=evidence name="outcome.monitorings[${outcome_index}].evidences" index=evidence_index /]
                 [/#list]
               [#else]
-                <p class="message text-center">[@s.text name="There are not Evicences associated to this outcome as of yet"/]</p>
+                <p class="message text-center">[@s.text name="Evidence has not been provided"/]</p>
               [/#if]
               
               </div>
               [#if editable]
               <div class="text-center">
-                <div class="button-green addEvidence"><span class="glyphicon glyphicon-plus-sign"></span>[@s.text name="Add a evidence" /]</div>
+                <div class="button-green addEvidence"><span class="glyphicon glyphicon-plus-sign"></span>[@s.text name="Add Evidence" /]</div>
               </div>
               [/#if]
             </div>

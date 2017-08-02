@@ -35,13 +35,14 @@
       <div style="display:none">[@projectList.projectsList projects=projects canValidate=true canEdit=editable namespace="/monitoring" defaultAction="${(centerSession)!}/projectDescription" /]</div>
   
       [#-- Section Buttons --]
-
+      [#if canEdit]
       <div class="buttons">
         <div class="buttons-content">        
           <a class="addButton" href="[@s.url action='${(centerSession)!}/addNewProject'][@s.param name='programID']${selectedProgram.id?c}[/@s.param][/@s.url]">[@s.text name="Add project" /]</a>
           <div class="clearfix"></div>
         </div>
       </div>
+      [/#if]
 
 
       

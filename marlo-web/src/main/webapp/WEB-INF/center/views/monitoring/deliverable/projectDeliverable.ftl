@@ -47,7 +47,7 @@
                 <span class="glyphicon glyphicon-circle-arrow-left"></span> Back to the deliverables list
               </a>
             </small>  
-          <h3 class="headTitle">[@s.text name="Key deliverable information" /]</h3>
+          <h3 class="headTitle">${selectedProgram.name} - [@s.text name="Key deliverable information" /]</h3>
           <div id="projectDeliverable" class="borderBox">
             [#-- Deliverable title --]
             <div class="form-group ">  
