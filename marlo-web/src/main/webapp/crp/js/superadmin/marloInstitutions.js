@@ -1,3 +1,4 @@
+var requesIDSelected;
 $(document).ready(function() {
   var $modal = $('#myModal');
 
@@ -5,6 +6,7 @@ $(document).ready(function() {
   $('a.rejectRequest').on('click', function(e) {
     e.preventDefault();
     var requestID = $(this).classParam('partnerRequestId');
+    requesIDSelected = requestID;
     var $request = $(this).parents('.partnerRequestItem');
     $modal.find('.requestInfo').html($request.find('.requestInfo').clone(true).addClass('grayBox'));
     $modal.modal('show');
@@ -15,14 +17,17 @@ $(document).ready(function() {
     $.ajax({
         url: baseURL + '/rejectPartnerRequest.do',
         data: {
-            requestID: '',
-            justification: '',
+            requestID: requesIDSelected,
+            justification: $modal.find('textarea').val(),
         },
         beforeSend: function() {
           $modal.find('.loading').fadeIn();
         },
         success: function(data) {
           console.log(data);
+          if(data.success) {
+            $modal.modal('hide');
+          }
         },
         complete: function(data) {
           $modal.find('.loading').fadeOut();
