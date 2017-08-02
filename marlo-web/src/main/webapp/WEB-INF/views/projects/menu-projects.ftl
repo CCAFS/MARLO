@@ -147,7 +147,7 @@
 [/#if]
 
 [#-- Justification --]
-<div id="unSubmit-justification" title="Unsubmit justification" style="display:none"> 
+<div id="unSubmit-justification" title="[@s.text name="form.buttons.unsubmit" /] justification" style="display:none"> 
   <div class="dialog-content"> 
       [@customForm.textArea name="justification-unSubmit" i18nkey="saving.justification" required=true className="justification"/]
   </div>  
@@ -157,4 +157,4 @@
 [#include "/WEB-INF/global/macros/discardChangesPopup.ftl"]
 
 [#-- Project Submit JS --]
-[#assign customJS = [ "${baseUrl}/js/projects/projectSubmit.js" ] + customJS  /]
+[#assign customJS = [ "${baseUrlMedia}/js/projects/projectSubmit.js" ] + customJS  /]

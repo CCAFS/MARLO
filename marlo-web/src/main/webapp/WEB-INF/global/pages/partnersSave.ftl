@@ -1,8 +1,8 @@
 [#ftl]
 [#assign title = "Insert a partner" /]
 [#assign pageLibs = ["jquery", "noty","select2"] /]
-[#assign customJS = ["${baseUrl}/js/global/partnersSave.js"] /]
-[#assign customCSS = ["${baseUrl}/css/global/partnersSave.css"] /]
+[#assign customJS = ["${baseUrlMedia}/js/global/partnersSave.js"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/global/partnersSave.css"] /]
 [#import "/WEB-INF/global/macros/forms.ftl" as customForm /]
 [#assign includeHeader = "false" /]
 [#assign currentSection = "projects" /]
@@ -66,7 +66,7 @@
         [#-- Hidden input with message of success --]
         <input type="hidden" id="message.success" value="[@s.text name="partnersSave.successMessage" /]"/>
         <input type="hidden" name="projectID" value="${projectID}"/>
-        
+        <input type="hidden" name="fundingSourceID" value="${fundingSourceID}"/>
         <div class="clearfix"></div>
         <br />
         <div class="form-group text-center">

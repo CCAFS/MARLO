@@ -2,8 +2,8 @@
 [#assign title = "Project Budget By Partners" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = ["select2", "dropzone", "blueimp-file-upload"] /]
-[#assign customJS = ["${baseUrl}/js/projects/projectBudgetByPartners.js", "${baseUrl}/js/global/autoSave.js","${baseUrl}/js/global/fieldsValidation.js"] /]
-[#assign customCSS = ["${baseUrl}/css/projects/projectBudgetByPartners.css"] /]
+[#assign customJS = ["${baseUrlMedia}/js/projects/projectBudgetByPartners.js", "${baseUrlMedia}/js/global/autoSave.js","${baseUrlMedia}/js/global/fieldsValidation.js"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/projects/projectBudgetByPartners.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "budgetByPartners" /]
 
@@ -18,7 +18,7 @@
 [#if !reportingActive]
 <div class="container helpText viewMore-block">
   <div style="display:none" class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrl}/images/global/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.jpg" />
     <p class="col-md-10">
       [#if project.projectEditLeader] [@s.text name="projectBudgets.help2" /] [#else] [@s.text name="projectBudgets.help1" /] [/#if]
     </p>
@@ -84,7 +84,7 @@
                           <tr>
                           [#list budgetTypesList as budgetType]
                             [#-- Budget Type--]
-                            <td class=""><h5 class="subTitle"> ${budgetType.name} <img title="${budgetType.description}" src="${baseUrl}/images/global/icon-help2.png" alt="" /> <br /> <small>US$ <span class="totalByYear year-${year} totalByYear-${budgetType.id}">${action.getTotalYear(year,budgetType.id)?number?string(",##0.00")}</span></small></h5></td>
+                            <td class=""><h5 class="subTitle"> ${budgetType.name} <img title="${budgetType.description}" src="${baseUrlMedia}/images/global/icon-help2.png" alt="" /> <br /> <small>US$ <span class="totalByYear year-${year} totalByYear-${budgetType.id}">${action.getTotalYear(year,budgetType.id)?number?string(",##0.00")}</span></small></h5></td>
                           [/#list]
                           </tr>
                         </table>
@@ -109,7 +109,12 @@
             [#include "/WEB-INF/views/projects/buttons-projects.ftl" /]
             [/#if]
           [#else]
-            <div class="simpleBox emptyMessage text-center">Before entering this section, please fill project start & end date <a href="[@s.url action="${crpSession}/description"][@s.param name="projectID" value=projectID /][@s.param name="edit" value=true /][/@s.url]">description section </a>and click <span class="label label-success">save</span></div>  
+            <div class="simpleBox emptyMessage text-center">
+              [@s.text name="projectBudgetByPartners.beforeFillingSections"]
+                [@s.param]<a href="[@s.url action="${crpSession}/description"][@s.param name="projectID" value=projectID /][@s.param name="edit" value=true /][/@s.url]">description section </a>[/@s.param]
+                [@s.param]<span class="label label-success">save</span>[/@s.param]
+              [/@s.text]
+            </div>  
           [/#if]
          
         [/@s.form] 
@@ -183,7 +188,7 @@
             [#list budgetTypesList as budgetType]
               [#-- Budget Type--]
               <td class="budgetColumn">
-                <div class="input"><p>US$ <span class="currencyInput totalByPartner-${budgetType.id}">${((action.getTotalAmount(element.institution.id, selectedYear, budgetType.id))!0)?number?string(",##0.00")}</span></p></div>
+                <div class="input"><p>US$ <span class="currencyInput totalByPartner-${budgetType.id}">${((action.getTotalAmount(element.institution.id, selectedYear, budgetType.id,1))!0)?number?string(",##0.00")}</span></p></div>
               </td>
             [/#list]
           </tr>
@@ -194,9 +199,9 @@
             [#list budgetTypesList as budgetType]
               [#-- Budget Type--]
               <td class="budgetColumn">
-                <div class="input"><p><span class="percentageLabel type-${budgetType.id}">${((action.getTotalGenderPer(element.institution.id, selectedYear, budgetType.id))!0)}%</span></p></div>
+                <div class="input"><p><span class="percentageLabel type-${budgetType.id}">${((action.getTotalGenderPer(element.institution.id, selectedYear, budgetType.id,1))!0)}%</span></p></div>
                 <div class="row percentageAmount type-${budgetType.id} text-center">
-                  <small>US$ <span>${((action.getTotalGender(element.institution.id, selectedYear, budgetType.id))!0)?number?string(",##0.00")}</span></small>
+                  <small>US$ <span>${((action.getTotalGender(element.institution.id, selectedYear, budgetType.id,1))!0)?number?string(",##0.00")}</span></small>
                 </div>
               </td>
             [/#list]
@@ -222,9 +227,9 @@
           
           [#if fundingSources == 0]
             [#if editable && isYearEditable(selectedYear) && action.canSearchFunding(element.institution.id)]
-              <p class="emptyMessage text-center">Add a new one clicking on "[@s.text name="form.buttons.selectProject" /]" button below.</p>
+              <p class="emptyMessage text-center">[@s.text name="projectBudgetByPartners.assginFundingSourceClicking" /] "[@s.text name="form.buttons.selectProject" /]".</p>
             [#else]
-              <p class="emptyMessage text-center">Theres is not a funding source added.</p>
+              <p class="emptyMessage text-center">[@s.text name="projectBudgetByPartners.noFundingSourcesAdded" /].</p>
             [/#if]
           [/#if]
         </div>
@@ -272,7 +277,9 @@
       <div class="col-md-4">
         <div class="row col-md-6"> <strong>Type:</strong> </div>
         <div class="row col-md-8">
-          <span class="budgetTypeName">${(element.fundingSource.budgetType.name)!}</span> 
+          <span class="budgetTypeName">${(element.fundingSource.budgetType.name)!} 
+            [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')] ${(element.fundingSource.w1w2?string('<small class="text-primary">(Co-Financing)</small>',''))!} [/#if]
+          </span> 
           <input type="hidden" class="budgetTypeId" name="${customName}.budgetType.id" value="${(element.fundingSource.budgetType.id)!}" />
         </div>
       </div>

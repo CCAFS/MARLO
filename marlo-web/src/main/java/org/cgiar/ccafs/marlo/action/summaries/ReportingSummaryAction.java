@@ -156,20 +156,18 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   private HashMap<Long, String> targetUnitList;
   private SrfTargetUnitManager srfTargetUnitManager;
   private Project project;
-
+  private Boolean hasW1W2Co;
+  private Boolean hasGender;
   // Front-end
   private long projectID;
-
-
   private int year;
-
-
   private String cycle;
-  private GenderTypeManager genderTypeManager;
+
+
   // Managers
   private ProjectManager projectManager;
   private CrpProgramManager programManager;
-
+  private GenderTypeManager genderTypeManager;
   private InstitutionManager institutionManager;
   private ProjectBudgetManager projectBudgetManager;
   private LocElementManager locElementManager;
@@ -191,6 +189,462 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     this.ipElementManager = ipElementManager;
     this.genderTypeManager = genderTypeManager;
     this.srfTargetUnitManager = srfTargetUnitManager;
+  }
+
+  /**
+   * Add columns depending on specificity parameters
+   * 
+   * @param masterReport: used to update the parameters
+   * @return masterReport with the added parameters.
+   */
+  private MasterReport addColumnParameters(MasterReport masterReport) {
+    // Set columns for BudgetByPartners
+    int columnBudgetPartner = 4;
+    String paramName = "BudgetPartner";
+    // used to which index will be excluded
+    ArrayList<Integer> exludeIndex = new ArrayList<>();
+    if (this.hasGender) {
+      columnBudgetPartner++;
+    } else {
+      exludeIndex.add(0);
+    }
+    if (this.hasW1W2Co) {
+      columnBudgetPartner++;
+    } else {
+      exludeIndex.add(2);
+    }
+    // Calculate column width
+    long width = 471l / columnBudgetPartner;
+    HashMap<String, Long> hm = this.calculateWidth(width, columnBudgetPartner, paramName, exludeIndex, 0l);
+    // Add x parameters
+    for (HashMap.Entry<String, Long> entry : hm.entrySet()) {
+      String key = entry.getKey();
+      Object value = entry.getValue();
+      masterReport.getParameterValues().put(key, value);
+    }
+    // add width
+    masterReport.getParameterValues().put("BudgetPartnerWidth", width);
+    return masterReport;
+  }
+
+
+  /**
+   * Method to add i8n parameters to masterReport in Pentaho
+   * 
+   * @param masterReport
+   * @return masterReport with i8n parameters added
+   */
+  private MasterReport addi8nParameters(MasterReport masterReport) {
+    /**
+     * Menus Planning & Reporting
+     */
+    masterReport.getParameterValues().put("i8nProjectMenu", this.getText("projects.menu.description"));
+    masterReport.getParameterValues().put("i8nPartnersMenu", this.getText("projects.menu.partners"));
+    masterReport.getParameterValues().put("i8nLocationsMenu", this.getText("projects.menu.locations"));
+    masterReport.getParameterValues().put("i8nActivitiesMenu", this.getText("projects.menu.activities"));
+    /**
+     * Menus Planning
+     */
+    masterReport.getParameterValues().put("i8nOutcomesMenu", this.getText("projects.menu.contributionsCrpList"));
+    masterReport.getParameterValues().put("i8nDeliverablesMenu",
+      "Expected " + this.getText("projects.menu.deliverables"));
+    masterReport.getParameterValues().put("i8nBudgetMenu",
+      "Project " + this.getText("projects.menu.budget") + " (USD)");
+    masterReport.getParameterValues().put("i8nBudgetPartnerMenu",
+      this.getText("projects.menu.budgetByPartners") + " (USD)");
+    masterReport.getParameterValues().put("i8nBudgetCoAsMenu", this.getText("planning.cluster") + " (USD)");
+
+    /**
+     * Menus Reporting
+     */
+    masterReport.getParameterValues().put("i8nOutcomesRMenu", this.getText("breadCrumb.menu.outcomes"));
+    masterReport.getParameterValues().put("i8nProjectOutcomesRMenu", this.getText("projects.menu.projectOutcomes"));
+    masterReport.getParameterValues().put("i8nCCAFSOutcomesRMenu", this.getText("projects.menu.ccafsOutcomes"));
+    masterReport.getParameterValues().put("i8nOtherContributionsRMenu",
+      this.getText("projects.menu.otherContributions"));
+    masterReport.getParameterValues().put("i8nCaseStudiesRMenu", this.getText("projects.menu.caseStudies"));
+    masterReport.getParameterValues().put("i8nProjectOutputsRMenu", this.getText("projects.menu.projectOutputs"));
+    masterReport.getParameterValues().put("i8nOverviewByMOGsRMenu", this.getText("projects.menu.overviewByMogs"));
+    masterReport.getParameterValues().put("i8nDeliverablesRMenu", this.getText("projects.menu.deliverables"));
+    masterReport.getParameterValues().put("i8nProjectHighlightsRMenu",
+      this.getText("breadCrumb.menu.projectHighlights"));
+    masterReport.getParameterValues().put("i8nLeveragesRMenu", this.getText("breadCrumb.menu.leverage"));
+
+    /*
+     * Description
+     */
+    masterReport.getParameterValues().put("i8nProjectTitle", this.getText("project.title"));
+    masterReport.getParameterValues().put("i8nProjectStartDate", this.getText("project.startDate"));
+    masterReport.getParameterValues().put("i8nProjectEndDate", this.getText("project.endDate"));
+    masterReport.getParameterValues().put("i8nProjectFundingSourcesTypes", this.getText("project.fundingSourcesTypes"));
+    masterReport.getParameterValues().put("i8nProjectStatus", this.getText("projectsList.projectStatus"));
+    masterReport.getParameterValues().put("i8nProjectLeadOrg", this.getText("project.leadOrg"));
+    masterReport.getParameterValues().put("i8nProjectPL", this.getText("projectPartners.types.PL"));
+    masterReport.getParameterValues().put("i8nProjectDescFLRP", this.getText("project.menuFLRP"));
+    masterReport.getParameterValues().put("i8nProjectFL", this.getText("project.Flagships"));
+    masterReport.getParameterValues().put("i8nProjectRP", this.getText("project.Regions"));
+    masterReport.getParameterValues().put("i8nProjectCluster", this.getText("project.clusterDesc"));
+    masterReport.getParameterValues().put("i8nProjectSummary", this.getText("project.summary"));
+    masterReport.getParameterValues().put("i8nProjectGenderDesc", this.getText("project.GenderDesc"));
+    masterReport.getParameterValues().put("i8nProjectCrossCutting",
+      this.getText("project.crossCuttingDimensions.readText"));
+
+
+    /*
+     * Partners
+     */
+    masterReport.getParameterValues().put("i8nPartnerNoData", this.getText("partner.noData"));
+    masterReport.getParameterValues().put("i8nPartner", this.getText("partner.partnerSingular"));
+    masterReport.getParameterValues().put("i8nPartnerLeader", this.getText("projectsList.projectLeader"));
+    masterReport.getParameterValues().put("i8nPartnerInstitution", this.getText("partner.institution") + ":");
+    masterReport.getParameterValues().put("i8nPartnerResponsibilities", this.getText("partner.responsabilities") + ":");
+    masterReport.getParameterValues().put("i8nPartnerCountryOffices", this.getText("partner.countryOffices") + ":");
+    masterReport.getParameterValues().put("i8nPartnerContacts", this.getText("partner.contacts") + ":");
+    masterReport.getParameterValues().put("i8nPartnerType", this.getText("projectPartners.partnerType"));
+    masterReport.getParameterValues().put("i8nPartnerContact", this.getText("projectPartners.contactPersonEmail"));
+    masterReport.getParameterValues().put("i8nPartnerLessonsStatement",
+      this.getText("projectPartners.lessons.planning.readText"));
+    masterReport.getParameterValues().put("i8nPartnerYear", this.getText("partner.year"));
+    masterReport.getParameterValues().put("i8nPartnerLessons", this.getText("partner.lessons"));
+    /*
+     * Locations
+     */
+    masterReport.getParameterValues().put("i8nLocationNoData", this.getText("location.noData"));
+    masterReport.getParameterValues().put("i8nLocationProjectLevel", this.getText("location.projectLevel"));
+    masterReport.getParameterValues().put("i8nLocationLatitude", this.getText("location.inputLatitude.placeholder"));
+    masterReport.getParameterValues().put("i8nLocationLongitude", this.getText("location.inputLongitude.placeholder"));
+    masterReport.getParameterValues().put("i8nLocationName", this.getText("location.inputName.placeholder"));
+    masterReport.getParameterValues().put("i8nLocationGlobal", this.getText("projectLocations.isGlobalYes"));
+    masterReport.getParameterValues().put("i8nLocationNoGlobal", this.getText("projectLocations.isGlobalNo"));
+    /*
+     * Contribution to flagship outcomes
+     */
+    masterReport.getParameterValues().put("i8nOutcomeNoData", this.getText("outcome.noData"));
+    masterReport.getParameterValues().put("i8nOutcome", this.getText("outcome.statement.readText"));
+    masterReport.getParameterValues().put("i8nOutcomeTargetUnit", this.getText("outcome.targetUnit"));
+    masterReport.getParameterValues().put("i8nOutcomeTargetValue", this.getText("outcome.targetValue"));
+    masterReport.getParameterValues().put("i8nOutcomeExpectedContribution",
+      this.getText("outcome.expectedContribution"));
+    masterReport.getParameterValues().put("i8nOutcomeExpectedUnit", this.getText("projectOutcome.expectedUnit"));
+    masterReport.getParameterValues().put("i8nOutcomeExpectedValue", this.getText("outcome.expectedValue"));
+    masterReport.getParameterValues().put("i8nOutcomeExpectedNarrative", this.getText("outcome.expectedNarrative"));
+    masterReport.getParameterValues().put("i8nOutcomeCrossCutting", this.getText("outcome.crossCutting"));
+    masterReport.getParameterValues().put("i8nOutcomeMilestones", this.getText("outcome.milestone"));
+    masterReport.getParameterValues().put("i8nOutcomeNextUsers", this.getText("outcome.nextUsers"));
+    masterReport.getParameterValues().put("i8nOutcomeLesssonsStatement",
+      this.getText("projectOutcome.lessons.planning"));
+    masterReport.getParameterValues().put("i8nOutcomeYear", this.getText("outcome.inputTargetYear.placeholder"));
+    masterReport.getParameterValues().put("i8nOutcomeLessons", this.getText("outcome.lessons"));
+    /*
+     * Deliverables
+     */
+    masterReport.getParameterValues().put("i8nDeliverableNoData", this.getText("deliverable.NoData"));
+    masterReport.getParameterValues().put("i8nDeliverableType", this.getText("deliverable.type"));
+    masterReport.getParameterValues().put("i8nDeliverableSubType", this.getText("deliverable.subtype"));
+    masterReport.getParameterValues().put("i8nDeliverableStatus",
+      this.getText("project.deliverable.generalInformation.status"));
+    masterReport.getParameterValues().put("i8nDeliverableExpectedYear",
+      this.getText("project.deliverable.generalInformation.year"));
+    masterReport.getParameterValues().put("i8nDeliverableKeyOutput",
+      this.getText("project.deliverable.generalInformation.keyOutput"));
+    masterReport.getParameterValues().put("i8nDeliverableFundingSources", this.getText("deliverable.fundingSource"));
+    masterReport.getParameterValues().put("i8nDeliverableCrossCutting",
+      this.getText("project.crossCuttingDimensions.readText"));
+    masterReport.getParameterValues().put("i8nDeliverablePartnersStatement",
+      this.getText("project.deliverable.partnership"));
+    masterReport.getParameterValues().put("i8nDeliverableInstitution", this.getText("deliverable.institution"));
+    masterReport.getParameterValues().put("i8nDeliverablePartner", this.getText("project.deliverable.partner"));
+    masterReport.getParameterValues().put("i8nDeliverableType", this.getText("deliverable.type"));
+    /*
+     * Activities
+     */
+    masterReport.getParameterValues().put("i8nActivityNoData", this.getText("activity.noData"));
+    masterReport.getParameterValues().put("i8nActivityDescription",
+      this.getText("project.activities.inputDescription.readText"));
+    masterReport.getParameterValues().put("i8nActivityStartDate", this.getText("project.activities.inputStartDate"));
+    masterReport.getParameterValues().put("i8nActivityEndDate", this.getText("project.activities.inputEndDate"));
+    masterReport.getParameterValues().put("i8nActivityLeader", this.getText("project.activities.inputLeader"));
+    masterReport.getParameterValues().put("i8nActivityStatus", this.getText("project.activities.inputStatus"));
+    masterReport.getParameterValues().put("i8nActivityDeliverables",
+      this.getText("project.activities.deliverableList"));
+    /*
+     * Budget
+     */
+    masterReport.getParameterValues().put("i8nBudgetNoData", this.getText("budget.noData"));
+    masterReport.getParameterValues().put("i8nBudgetTotal", this.getText("budget.total"));
+    masterReport.getParameterValues().put("i8nBudget", this.getText("projects.menu.budget").toLowerCase());
+    masterReport.getParameterValues().put("i8nBudgetW1W2", this.getText("projectsList.W1W2projectBudget"));
+    masterReport.getParameterValues().put("i8nBudgetW1W2Cofinancing", this.getText("budget.w1w2cofinancing"));
+    masterReport.getParameterValues().put("i8nBudgetW3", this.getText("projectsList.W3projectBudget"));
+    masterReport.getParameterValues().put("i8nBudgetBilateral", this.getText("projectsList.BILATERALprojectBudget"));
+    masterReport.getParameterValues().put("i8nBudgetCenterFunds", this.getText("budget.centerFunds"));
+    /*
+     * Budget by Partners
+     */
+
+    masterReport.getParameterValues().put("i8nBudgetPartnerGender", this.getText("budgetPartner.gender"));
+    masterReport.getParameterValues().put("i8nBudgetPartnerType", this.getText("budgetPartner.type"));
+    masterReport.getParameterValues().put("i8nBudgetPartnerAmount", this.getText("budget.amount"));
+    masterReport.getParameterValues().put("i8nBudgetPartnerFundingSources",
+      this.getText("budgetPartner.fundingSource"));
+    masterReport.getParameterValues().put("i8nBudgetPartnerBudget", this.getText("projects.menu.budget"));
+
+    /*
+     * Reporting Only
+     */
+
+    /*
+     * Reporting
+     * Partners
+     */
+    masterReport.getParameterValues().put("i8nPartnerRLessonsStatement",
+      this.getText("projectPartners.lessons.reporting.readText"));
+    masterReport.getParameterValues().put("i8nPartnerROverall",
+      this.getText("projectPartners.partnershipsOverall.readText"));
+    /*
+     * Reporting
+     * Project Outcomes
+     */
+    masterReport.getParameterValues().put("i8nProjectOutcomesRNoData", this.getText("projectOutcomes.noData"));
+    masterReport.getParameterValues().put("i8nProjectOutcomesRStatement",
+      this.getText("projectOutcomes.statement.readText"));
+    masterReport.getParameterValues().put("i8nProjectOutcomesRAnnualProgress",
+      this.getText("projectOutcomes.annualProgress.readText", new String[] {String.valueOf(year)}));
+    masterReport.getParameterValues().put("i8nProjectOutcomesRAnnualProgressCurrent",
+      this.getText("projectOutcomes.annualProgressCurrentReporting.readText", new String[] {String.valueOf(year)}));
+    masterReport.getParameterValues().put("i8nProjectOutcomesRComunnicationCurrent",
+      this.getText("projectOutcomes.commEngagementOutcomes.readText"));
+    masterReport.getParameterValues().put("i8nProjectOutcomesREvidence",
+      this.getText("projectOutcomes.uploadSummary.readText"));
+    masterReport.getParameterValues().put("i8nProjectOutcomesRAnnualProgressOutcome",
+      this.getText("projectOutcomes.Annual"));
+    masterReport.getParameterValues().put("i8nProjectOutcomesRLessons",
+      this.getText("projectOutcomes.lessons.readText"));
+    /*
+     * Reporting
+     * CCAFS Outcomes
+     */
+    masterReport.getParameterValues().put("i8nCCAFSOutcomesRNoData", this.getText("ccafsOutcomes.noData"));
+    masterReport.getParameterValues().put("i8nCCAFSOutcomesRTargetValue",
+      this.getText("projectCcafsOutcomes.targetValue"));
+    masterReport.getParameterValues().put("i8nCCAFSOutcomesRCumulativeTarget",
+      this.getText("projectCcafsOutcomes.comulativeTarget"));
+    masterReport.getParameterValues().put("i8nCCAFSOutcomesRAchievedTarget",
+      this.getText("projectCcafsOutcomes.achievedTarget"));
+    masterReport.getParameterValues().put("i8nCCAFSOutcomesRTargetNarrative",
+      this.getText("projectCcafsOutcomes.targetNarrative"));
+    masterReport.getParameterValues().put("i8nCCAFSOutcomesRTargetNarrativeAchieved",
+      this.getText("projectCcafsOutcomes.targetNarrativeAchieved"));
+    masterReport.getParameterValues().put("i8nCCAFSOutcomesRTargetNarrativeGenderAchieved",
+      this.getText("projectCcafsOutcomes.targetNarrativeGenderAchieved"));
+    masterReport.getParameterValues().put("i8nCCAFSOutcomesRTargetGender",
+      this.getText("projectCcafsOutcomes.targetGender"));
+    masterReport.getParameterValues().put("i8nCCAFSOutcomesRMogs", this.getText("projectCcafsOutcomes.mogs"));
+    /*
+     * Reporting
+     * Other Contributions
+     */
+    masterReport.getParameterValues().put("i8nOtherContributionsRNoData", this.getText("otherContributions.noData"));
+    masterReport.getParameterValues().put("i8nOtherContributionsRStatement",
+      this.getText("projectOtherContributions.contribution.readText"));
+    masterReport.getParameterValues().put("i8nOtherContributionsRRegion",
+      this.getText("projectOtherContributions.region"));
+    masterReport.getParameterValues().put("i8nOtherContributionsRIndicator",
+      this.getText("projectOtherContributions.indicators"));
+    masterReport.getParameterValues().put("i8nOtherContributionsRContributionTarget",
+      this.getText("otherContributions.contributionTarget"));
+    masterReport.getParameterValues().put("i8nOtherContributionsRTargetValueContrib",
+      this.getText("projectOtherContributions.target.readText"));
+    masterReport.getParameterValues().put("i8nOtherContributionsRColaboratingCRPS",
+      this.getText("projectOtherContributions.collaboratingCRPs.readText"));
+    masterReport.getParameterValues().put("i8nOtherContributionsRCRPEmpty",
+      this.getText("projectOtherContributions.crpsEmpty"));
+    masterReport.getParameterValues().put("i8nOtherContributionsRColaboratingDescription",
+      this.getText("projectOtherContributions.collaborationNature.readText"));
+
+    /*
+     * Reporting
+     * Case Studies
+     */
+    masterReport.getParameterValues().put("i8nCaseStudiesRNoData", this.getText("caseStudy.noData"));
+    masterReport.getParameterValues().put("i8nCaseStudiesRCaseStudy", this.getText("breadCrumb.menu.caseStudy"));
+    masterReport.getParameterValues().put("i8nCaseStudiesRTitle", this.getText("caseStudy.title"));
+    masterReport.getParameterValues().put("i8nCaseStudiesRYear", this.getText("caseStudy.caseStudyYear"));
+    masterReport.getParameterValues().put("i8nCaseStudiesRProjects", this.getText("caseStudy.projects"));
+    masterReport.getParameterValues().put("i8nCaseStudiesRStatement",
+      this.getText("caseStudy.outcomeStatement.readText"));
+    masterReport.getParameterValues().put("i8nCaseStudiesRResearchOutputs",
+      this.getText("caseStudy.researchOutput.readText"));
+    masterReport.getParameterValues().put("i8nCaseStudiesRResearchPartners",
+      this.getText("caseStudy.researchPartners.readText"));
+    masterReport.getParameterValues().put("i8nCaseStudiesRActivities",
+      this.getText("caseStudy.activitiesContributed.readText"));
+    masterReport.getParameterValues().put("i8nCaseStudiesRNonResearchPartners",
+      this.getText("caseStudy.nonResearchPartners.readText"));
+    masterReport.getParameterValues().put("i8nCaseStudiesROutputUsers", this.getText("caseStudy.outputUsers.readText"));
+    masterReport.getParameterValues().put("i8nCaseStudiesREvidence", this.getText("caseStudy.evidence.readText"));
+    masterReport.getParameterValues().put("i8nCaseStudiesROutputUsers", this.getText("caseStudy.outputUsers.readText"));
+    masterReport.getParameterValues().put("i8nCaseStudiesRReferences", this.getText("caseStudy.references.readText"));
+    masterReport.getParameterValues().put("i8nCaseStudiesRIndicators",
+      this.getText("caseStudy.caseStudyIndicators.readText"));
+    masterReport.getParameterValues().put("i8nCaseStudiesRExplainIndicatorRelation",
+      this.getText("caseStudy.explainIndicatorRelation.readText"));
+    masterReport.getParameterValues().put("i8nCaseStudiesRUploadAnnexes",
+      this.getText("caseStudy.uploadAnnexes.readText"));
+    /*
+     * Reporting
+     * Overview By MOGs
+     */
+    masterReport.getParameterValues().put("i8nOverviewByMOGsRNoData", this.getText("overviewByMOGS.noData"));
+    masterReport.getParameterValues().put("i8nOverviewByMOGsRMogs", this.getText("projectCcafsOutcomes.mogs"));
+
+    /*
+     * Reporting
+     * Deliverables
+     */
+    masterReport.getParameterValues().put("i8nDeliverablesRMainInfo",
+      this.getText("project.deliverable.generalInformation.titleTab"));
+    masterReport.getParameterValues().put("i8nDeliverablesRType",
+      this.getText("project.deliverable.generalInformation.type"));
+    masterReport.getParameterValues().put("i8nDeliverablesRSubType",
+      this.getText("project.deliverable.generalInformation.subType"));
+    masterReport.getParameterValues().put("i8nDeliverablesRStatus",
+      this.getText("project.deliverable.generalInformation.status"));
+    masterReport.getParameterValues().put("i8nDeliverablesRYearExpectedCompletion",
+      this.getText("project.deliverable.generalInformation.year"));
+    masterReport.getParameterValues().put("i8nDeliverablesRNewExpectedYear",
+      this.getText("deliverable.newExpectedYear"));
+    masterReport.getParameterValues().put("i8nDeliverablesRJustificationNewExpectedDate",
+      this.getText("deliverable.justificationNewExpectedDate"));
+    masterReport.getParameterValues().put("i8nDeliverablesRKeyOutput",
+      this.getText("project.deliverable.generalInformation.keyOutput"));
+    masterReport.getParameterValues().put("i8nDeliverablesRFundingSource",
+      this.getText("project.deliverable.fundingSource.readText"));
+    masterReport.getParameterValues().put("i8nDeliverablesRCrossCuttingDimensions",
+      this.getText("deliverable.crossCuttingDimensions.readText"));
+    masterReport.getParameterValues().put("i8nDeliverablesRDiseminationTitle",
+      this.getText("deliverable.diseminationTitle"));
+    masterReport.getParameterValues().put("i8nDeliverablesRAlreadyDisseminatedQuestion",
+      this.getText("project.deliverable.dissemination.alreadyDisseminatedQuestion"));
+    masterReport.getParameterValues().put("i8nDeliverablesRDisseminationChanel",
+      this.getText("project.deliverable.dissemination.v.DisseminationChanel"));
+    masterReport.getParameterValues().put("i8nDeliverablesRDisseminationUrl",
+      this.getText("project.deliverable.dissemination.disseminationUrl"));
+    masterReport.getParameterValues().put("i8nDeliverablesRIsOpenAccess",
+      this.getText("project.deliverable.dissemination.v.isOpenAccess"));
+    masterReport.getParameterValues().put("i8nDeliverablesROpenAccessRestriction",
+      this.getText("project.deliverable.dissemination.v.openAccessRestriction"));
+    masterReport.getParameterValues().put("i8nDeliverablesRALicense", this.getText("project.deliverable.v.ALicense"));
+    masterReport.getParameterValues().put("i8nDeliverablesRPublicationAllowModifications",
+      this.getText("publication.publicationAllowModifications"));
+    masterReport.getParameterValues().put("i8nDeliverablesRMetadataSubtitle",
+      this.getText("project.deliverable.dissemination.metadataSubtitle"));
+    masterReport.getParameterValues().put("i8nDeliverablesRMetadataTitle", this.getText("metadata.title"));
+    masterReport.getParameterValues().put("i8nDeliverablesRMetadataDescription",
+      this.getText("metadata.description.readText"));
+    masterReport.getParameterValues().put("i8nDeliverablesRMetadataDate", this.getText("metadata.date"));
+    masterReport.getParameterValues().put("i8nDeliverablesRLanguage", this.getText("metadata.language"));
+    masterReport.getParameterValues().put("i8nDeliverablesRCountry", this.getText("metadata.country"));
+    masterReport.getParameterValues().put("i8nDeliverablesRKeywords", this.getText("metadata.keywords.help"));
+    masterReport.getParameterValues().put("i8nDeliverablesRCitation", this.getText("metadata.citation.readText"));
+    masterReport.getParameterValues().put("i8nDeliverablesRHandle", this.getText("metadata.handle"));
+    masterReport.getParameterValues().put("i8nDeliverablesRDoi", this.getText("metadata.doi"));
+    masterReport.getParameterValues().put("i8nDeliverablesRCreator", this.getText("metadata.creator"));
+    masterReport.getParameterValues().put("i8nDeliverablesRPublicationTitle",
+      this.getText("project.deliverable.dissemination.publicationTitle"));
+    masterReport.getParameterValues().put("i8nDeliverablesRVolume",
+      this.getText("project.deliverable.dissemination.volume"));
+    masterReport.getParameterValues().put("i8nDeliverablesRIssue",
+      this.getText("project.deliverable.dissemination.issue"));
+    masterReport.getParameterValues().put("i8nDeliverablesRPages",
+      this.getText("project.deliverable.dissemination.pages"));
+    masterReport.getParameterValues().put("i8nDeliverablesRJournalName",
+      this.getText("project.deliverable.dissemination.journalName"));
+    masterReport.getParameterValues().put("i8nDeliverablesRIndicatorsJournal",
+      this.getText("project.deliverable.dissemination.indicatorsJournal"));
+    masterReport.getParameterValues().put("i8nDeliverablesRPublicationAcknowledge",
+      this.getText("deliverable.publicationAcknowledge"));
+    masterReport.getParameterValues().put("i8nDeliverablesRPublicationFLContribution",
+      this.getText("deliverable.publicationFLContribution"));
+    masterReport.getParameterValues().put("i8nDeliverablesRQualityCheckTitle",
+      this.getText("deliverable.qualityCheckTitle"));
+    masterReport.getParameterValues().put("i8nDeliverablesRFairTitle",
+      this.getText("project.deliverable.quality.fairTitle"));
+    masterReport.getParameterValues().put("i8nDeliverablesRQualityCheckAssurance",
+      this.getText("deliverable.qualityCheckAssurance"));
+    masterReport.getParameterValues().put("i8nDeliverablesRQualityCheckDataDictionary",
+      this.getText("deliverable.qualityCheckDataDictionary"));
+    masterReport.getParameterValues().put("i8nDeliverablesRQualityCheckQuestion3",
+      this.getText("project.deliverable.quality.question3"));
+    masterReport.getParameterValues().put("i8nDeliverablesRDataSharingTitle",
+      this.getText("projectDeliverable.dataSharingTitle"));
+    masterReport.getParameterValues().put("i8nDeliverablesRDeliverableFiles",
+      this.getText("projectDeliverable.dataSharing.deliverableFiles"));
+    masterReport.getParameterValues().put("i8nDeliverablesRPartnership",
+      this.getText("project.deliverable.partnership"));
+    masterReport.getParameterValues().put("i8nDeliverablesRInstitution", this.getText("deliverable.institution"));
+    masterReport.getParameterValues().put("i8nDeliverablesRPartnerSingular", this.getText("partner.partnerSingular"));
+    masterReport.getParameterValues().put("i8nDeliverablesRType2", this.getText("deliverable.type"));
+
+    /*
+     * Reporting
+     * Project highlights
+     */
+    masterReport.getParameterValues().put("i8nProjectHighlightsRNoData", this.getText("projectHighlight.noData"));
+    masterReport.getParameterValues().put("i8nProjectHighlightsRSingular", this.getText("projectHighlight.singular"));
+    masterReport.getParameterValues().put("i8nProjectHighlightsRTitle", this.getText("highlight.title"));
+    masterReport.getParameterValues().put("i8nProjectHighlightsRAuthor", this.getText("highlight.author"));
+    masterReport.getParameterValues().put("i8nProjectHighlightsRSubject", this.getText("highlight.subject"));
+    masterReport.getParameterValues().put("i8nProjectHighlightsRPublisher", this.getText("highlight.publisher"));
+    masterReport.getParameterValues().put("i8nProjectHighlightsRYear", this.getText("highlight.year"));
+    masterReport.getParameterValues().put("i8nProjectHighlightsRTypes", this.getText("highlight.types"));
+    masterReport.getParameterValues().put("i8nProjectHighlightsRIsGlobal", this.getText("highlight.isGlobal.readText"));
+    masterReport.getParameterValues().put("i8nProjectHighlightsRStartDate", this.getText("highlight.startDate"));
+    masterReport.getParameterValues().put("i8nProjectHighlightsREndDate", this.getText("highlight.endDate"));
+    masterReport.getParameterValues().put("i8nProjectHighlightsRKeywords", this.getText("highlight.keywords"));
+    masterReport.getParameterValues().put("i8nProjectHighlightsRCountries", this.getText("highlight.countries"));
+    masterReport.getParameterValues().put("i8nProjectHighlightsRDescripition",
+      this.getText("highlight.descripition.readText"));
+    masterReport.getParameterValues().put("i8nProjectHighlightsRObjectives",
+      this.getText("highlight.objectives.readText"));
+    masterReport.getParameterValues().put("i8nProjectHighlightsRResults", this.getText("highlight.results.readText"));
+    masterReport.getParameterValues().put("i8nProjectHighlightsRPartners", this.getText("highlight.partners.readText"));
+    masterReport.getParameterValues().put("i8nProjectHighlightsRLinks", this.getText("highlight.links.readText"));
+
+    /*
+     * Reporting
+     * Project activities
+     */
+    masterReport.getParameterValues().put("i8nProjectActivityRNoData", this.getText("projectActivity.noData"));
+    masterReport.getParameterValues().put("i8nProjectActivityRInputDescription",
+      this.getText("project.activities.inputDescription.readText"));
+    masterReport.getParameterValues().put("i8nProjectActivityRInputStartDate",
+      this.getText("project.activities.inputStartDate"));
+    masterReport.getParameterValues().put("i8nProjectActivityRInputEndDate",
+      this.getText("project.activities.inputEndDate"));
+    masterReport.getParameterValues().put("i8nProjectActivityRInputLeader",
+      this.getText("project.activities.inputLeader"));
+    masterReport.getParameterValues().put("i8nProjectActivityRInputStatus",
+      this.getText("project.activities.inputStatus"));
+    masterReport.getParameterValues().put("i8nProjectActivityRStatusJustification",
+      this.getText("project.activities.statusJustification.status2.readText"));
+    masterReport.getParameterValues().put("i8nProjectActivityRDeliverableList",
+      this.getText("project.activities.deliverableList"));
+
+    /*
+     * Reporting
+     * Project leverages
+     */
+    masterReport.getParameterValues().put("i8nProjectLeverageRNoData", this.getText("projectLeverage.noData"));
+    masterReport.getParameterValues().put("i8nProjectLeverageRSingular", this.getText("projectLeverage.singular"));
+    masterReport.getParameterValues().put("i8nProjectLeverageRPartnerName",
+      this.getText("projectLeverage.partnerName"));
+    masterReport.getParameterValues().put("i8nProjectLeverageRYear", this.getText("reporting.projectLeverages.year"));
+    masterReport.getParameterValues().put("i8nProjectLeverageRFlagship", this.getText("projectLeverage.flagship"));
+    masterReport.getParameterValues().put("i8nProjectLeverageRBudget", this.getText("projectLeverage.budget"));
+
+
+    return masterReport;
   }
 
   public String calculateAcumulativeTarget(int yearCalculate, IpProjectIndicator id) {
@@ -245,6 +699,20 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   }
 
 
+  private HashMap<String, Long> calculateWidth(long width, int numColumns, String name, ArrayList<Integer> excludeIndex,
+    long xPosition) {
+    HashMap<String, Long> hm = new HashMap<String, Long>();
+    for (int i = 0; i <= numColumns; i++) {
+      if (!excludeIndex.contains(i)) {
+        hm.put("xPosition" + name + i, xPosition);
+        xPosition += width;
+      }
+    }
+
+    return hm;
+  }
+
+
   public boolean containsOutput(long outputID, long outcomeID) {
     if (project.getMogs() != null) {
       for (IpElement output : project.getMogs()) {
@@ -257,9 +725,23 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return false;
   }
 
-
   @Override
   public String execute() throws Exception {
+    try {
+      hasGender = this.hasSpecificities(APConstants.CRP_BUDGET_GENDER);
+    } catch (Exception e) {
+      LOG.warn("Failed to get " + APConstants.CYCLE + " parameter. Parameter will be set as false. Exception: "
+        + e.getMessage());
+      hasGender = false;
+    }
+    // get w1w2 co
+    try {
+      hasW1W2Co = this.hasSpecificities(APConstants.CRP_FS_W1W2_COFINANCING);
+    } catch (Exception e) {
+      LOG.warn("Failed to get " + APConstants.CYCLE + " parameter. Parameter will be set as false. Exception: "
+        + e.getMessage());
+      hasW1W2Co = false;
+    }
 
     // Fill target unit list
     targetUnitList = new HashMap<>();
@@ -339,6 +821,11 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         TypedTableModel model = this.getMasterTableModel(flagships, regions, projectLeader);
         sdf.addTable(masterQueryName, model);
         masterReport.setDataFactory(cdf);
+        // Set i8n for pentaho
+        masterReport = this.addi8nParameters(masterReport);
+        // Set columns parameters (x and width)
+        masterReport = this.addColumnParameters(masterReport);
+
         // Start Setting Planning Subreports
         // Subreport Description
         args.add(projectLeader);
@@ -696,14 +1183,56 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     DecimalFormat df = new DecimalFormat("###,###.00");
     TypedTableModel model = new TypedTableModel(
       new String[] {"description", "year", "w1w2", "w3", "bilateral", "center", "w1w2GenderPer", "w3GenderPer",
-        "bilateralGenderPer", "centerGenderPer"},
+        "bilateralGenderPer", "centerGenderPer", "w1w2CoFinancing", "w1w2CoFinancingGenderPer", "hasW1W2Co",
+        "totalW1w2", "totalW3", "totalBilateral", "totalCenter", "totalW1w2Gender", "totalW3Gender",
+        "totalBilateralGender", "totalCenterGender", "totalW1w2Co", "totalW1w2CoGender"},
       new Class[] {String.class, Integer.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, Boolean.class, String.class, String.class,
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class},
       0);
+    Boolean hasW1W2CoTemp = false;
     List<ProjectClusterActivity> coAs = new ArrayList<>();
     coAs = project.getProjectClusterActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+    /*     */
+    Double totalW1w2 = 0.0, totalW3 = 0.0, totalBilateral = 0.0, totalCenter = 0.0, totalW1w2Gender = 0.0,
+      totalW3Gender = 0.0, totalBilateralGender = 0.0, totalCenterGender = 0.0, totalW1w2Co = 0.0,
+      totalW1w2CoGender = 0.0;
+
+    // get total budget per year
+    if (coAs.size() == 1 && this.hasW1W2Co) {
+      hasW1W2CoTemp = true;
+      // W1W2 no including co
+      totalW1w2 = this.getTotalYear(year, 1, project, 3);
+      // W1W2 including co
+      totalW1w2Co = this.getTotalYear(year, 1, project, 2);
+
+    } else {
+      totalW1w2 = this.getTotalYear(year, 1, project, 1);
+    }
+
+    totalW3 = this.getTotalYear(year, 2, project, 1);
+    totalBilateral = this.getTotalYear(year, 3, project, 1);
+    totalCenter = this.getTotalYear(year, 4, project, 1);
+
+    // get total gender per year
+    for (ProjectPartner pp : project.getProjectPartners().stream().filter(pp -> pp.isActive())
+      .collect(Collectors.toList())) {
+      if (this.isPPA(pp.getInstitution())) {
+        if (coAs.size() == 1 && this.hasW1W2Co) {
+          totalW1w2CoGender += this.getTotalGender(pp.getInstitution().getId(), year, 1, project, 2);
+          totalW1w2Gender += this.getTotalGender(pp.getInstitution().getId(), year, 1, project, 3);
+        } else {
+          totalW1w2Gender += this.getTotalGender(pp.getInstitution().getId(), year, 1, project, 1);
+        }
+        totalW3Gender += this.getTotalGender(pp.getInstitution().getId(), year, 2, project, 1);
+        totalBilateralGender += this.getTotalGender(pp.getInstitution().getId(), year, 3, project, 1);
+        totalCenterGender += this.getTotalGender(pp.getInstitution().getId(), year, 4, project, 1);
+      }
+    }
+    /**/
     if (coAs.size() == 1) {
-      String description = coAs.get(0).getCrpClusterOfActivity().getComposedName();
+      ProjectClusterActivity projectClusterActivity = coAs.get(0);
+      String description = projectClusterActivity.getCrpClusterOfActivity().getComposedName();
       String w1w2 = null;
       String w1w2GenderPer = null;
       String w3 = null;
@@ -712,14 +1241,24 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       String bilateralGenderPer = null;
       String center = null;
       String centerGenderPer = null;
+      String w1w2CoFinancing = null;
+      String w1w2CoFinancingGenderPer = null;
+
       // Get types of funding sources
       for (ProjectBudget pb : project.getProjectBudgets().stream()
         .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getBudgetType() != null)
         .collect(Collectors.toList())) {
-        if (pb.getBudgetType().getId() == 1) {
+
+        if (pb.getBudgetType().getId() == 1 && pb.getFundingSource() != null && pb.getFundingSource().getW1w2() != null
+          && pb.getFundingSource().getW1w2()) {
+          w1w2CoFinancing = "100";
+          w1w2CoFinancingGenderPer = "100";
+        } else if (pb.getBudgetType().getId() == 1) {
           w1w2 = "100";
           w1w2GenderPer = "100";
         }
+
+
         if (pb.getBudgetType().getId() == 2) {
           w3 = "100";
           w3GenderPer = "100";
@@ -734,44 +1273,81 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         }
       }
       model.addRow(new Object[] {description, year, w1w2, w3, bilateral, center, w1w2GenderPer, w3GenderPer,
-        bilateralGenderPer, centerGenderPer});
+        bilateralGenderPer, centerGenderPer, w1w2CoFinancing, w1w2CoFinancingGenderPer, hasW1W2CoTemp,
+        df.format(totalW1w2), df.format(totalW3), df.format(totalBilateral), df.format(totalCenter),
+        df.format(totalW1w2Gender), df.format(totalW3Gender), df.format(totalBilateralGender),
+        df.format(totalCenterGender), df.format(totalW1w2Co), df.format(totalW1w2CoGender)});
     } else {
       for (ProjectClusterActivity clusterActivity : coAs) {
         String description = clusterActivity.getCrpClusterOfActivity().getComposedName();
-        String w1w2 = null;
+        String w1w2Percentage = null;
         String w1w2GenderPer = null;
-        String w3 = null;
+        String w3Percentage = null;
         String w3GenderPer = null;
-        String bilateral = null;
+        String bilateralPercentage = null;
         String bilateralGenderPer = null;
-        String center = null;
+        String centerPercentage = null;
         String centerGenderPer = null;
+        String w1w2CoFinancingPercentage = null;
+        String w1w2CoFinancingGenderPer = null;
+        // budget
+        Double w1w2 = 0.0;
+        Double w3 = 0.0;
+        Double bilateral = 0.0;
+        Double center = 0.0;
+        Double w1w2Gender = 0.0;
+        Double w3Gender = 0.0;
+        Double bilateralGender = 0.0;
+        Double centerGender = 0.0;
+
+
         ProjectBudgetsCluserActvity w1w2pb =
           this.getBudgetbyCoa(clusterActivity.getCrpClusterOfActivity().getId(), year, 1);
+        if (w1w2pb != null) {
+          w1w2Percentage = df.format(w1w2pb.getAmount());
+          if (w1w2pb.getGenderPercentage() != null) {
+            w1w2GenderPer = df.format(w1w2pb.getGenderPercentage());
+            w1w2Gender = (w1w2pb.getGenderPercentage() * totalW1w2Gender) / 100;
+          }
+          w1w2 = (w1w2pb.getAmount() * totalW1w2) / 100;
+        }
+
         ProjectBudgetsCluserActvity w3pb =
           this.getBudgetbyCoa(clusterActivity.getCrpClusterOfActivity().getId(), year, 2);
         ProjectBudgetsCluserActvity bilateralpb =
           this.getBudgetbyCoa(clusterActivity.getCrpClusterOfActivity().getId(), year, 3);
         ProjectBudgetsCluserActvity centerpb =
           this.getBudgetbyCoa(clusterActivity.getCrpClusterOfActivity().getId(), year, 4);
-        if (w1w2pb != null) {
-          w1w2 = df.format(w1w2pb.getAmount());
-          w1w2GenderPer = df.format(w1w2pb.getGenderPercentage());
-        }
+
         if (w3pb != null) {
-          w3 = df.format(w3pb.getAmount());
-          w3GenderPer = df.format(w3pb.getGenderPercentage());
+          w3Percentage = df.format(w3pb.getAmount());
+          if (w3pb.getGenderPercentage() != null) {
+            w3GenderPer = df.format(w3pb.getGenderPercentage());
+            w3Gender = (w3pb.getGenderPercentage() * totalW3Gender) / 100;
+          }
+          w3 = (w3pb.getAmount() * totalW3) / 100;
         }
         if (bilateralpb != null) {
-          bilateral = df.format(bilateralpb.getAmount());
-          bilateralGenderPer = df.format(bilateralpb.getGenderPercentage());
+          bilateralPercentage = df.format(bilateralpb.getAmount());
+          if (bilateralpb.getGenderPercentage() != null) {
+            bilateralGenderPer = df.format(bilateralpb.getGenderPercentage());
+            bilateralGender = (bilateralpb.getGenderPercentage() * totalBilateralGender) / 100;
+          }
+          bilateral = (bilateralpb.getAmount() * totalBilateral) / 100;
         }
         if (centerpb != null) {
-          center = df.format(centerpb.getAmount());
-          centerGenderPer = df.format(centerpb.getGenderPercentage());
+          centerPercentage = df.format(centerpb.getAmount());
+          if (centerpb.getGenderPercentage() != null) {
+            centerGenderPer = df.format(centerpb.getGenderPercentage());
+            centerGender = (centerpb.getGenderPercentage() * totalCenterGender) / 100;
+          }
+          center = (centerpb.getAmount() * totalCenter) / 100;
         }
-        model.addRow(new Object[] {description, year, w1w2, w3, bilateral, center, w1w2GenderPer, w3GenderPer,
-          bilateralGenderPer, centerGenderPer});
+        model.addRow(new Object[] {description, year, w1w2Percentage, w3Percentage, bilateralPercentage,
+          centerPercentage, w1w2GenderPer, w3GenderPer, bilateralGenderPer, centerGenderPer, w1w2CoFinancingPercentage,
+          w1w2CoFinancingGenderPer, hasW1W2CoTemp, df.format(w1w2), df.format(w3), df.format(bilateral),
+          df.format(center), df.format(w1w2Gender), df.format(w3Gender), df.format(bilateralGender),
+          df.format(centerGender), null, null});
       }
     }
     return model;
@@ -780,54 +1356,142 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   private TypedTableModel getBudgetsbyPartnersTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"year", "institution", "w1w2", "w3", "bilateral", "center", "institution_id", "p_id", "w1w2Gender",
-        "w3Gender", "bilateralGender", "centerGender", "w1w2GAmount", "w3GAmount", "bilateralGAmount", "centerGAmount"},
+        "w3Gender", "bilateralGender", "centerGender", "w1w2GAmount", "w3GAmount", "bilateralGAmount", "centerGAmount",
+        "w1w2CoFinancing", "w1w2CoFinancingGender", "w1w2CoFinancingGAmount", "partner_total"},
       new Class[] {Integer.class, String.class, String.class, String.class, String.class, String.class, Long.class,
         Long.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class},
+        String.class, String.class, String.class, String.class, String.class},
       0);
     // Get ppaPartners of project
     for (ProjectPartner pp : project.getProjectPartners().stream().filter(pp -> pp.isActive())
       .collect(Collectors.toList())) {
       if (this.isPPA(pp.getInstitution())) {
         DecimalFormat myFormatter = new DecimalFormat("###,###.00");
-        String w1w2Budget =
-          myFormatter.format(Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 1)));
-        String w3Budget =
-          myFormatter.format(Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 2)));
-        String bilateralBudget =
-          myFormatter.format(Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 3)));
-        String centerBudget =
-          myFormatter.format(Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 4)));
-        String w1w2Gender = myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 1));
-        String w3Gender = myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 2));
-        String bilateralGender = myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 3));
-        String centerGender = myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 4));
-        String w1w2GAmount = myFormatter.format(this.getTotalGender(pp.getInstitution().getId(), year, 1));
-        String w3GAmount = myFormatter.format(this.getTotalGender(pp.getInstitution().getId(), year, 2));
-        String bilateralGAmount = myFormatter.format(this.getTotalGender(pp.getInstitution().getId(), year, 3));
-        String centerGAmount = myFormatter.format(this.getTotalGender(pp.getInstitution().getId(), year, 4));
+        String w1w2Budget = null;
+        String w1w2CoBudget = null;
+        String w1w2Gender = null;
+        String w1w2CoGender = null;
+        String w1w2GAmount = null;
+        String w1w2CoGAmount = null;
+        // Partner Total
+        String partnerTotal = null;
+        double partnerTotald = 0.0;
+
+        if (hasW1W2Co) {
+          w1w2Budget = myFormatter
+            .format(Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 1, project.getId(), 3)));
+          w1w2CoBudget = myFormatter
+            .format(Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 1, project.getId(), 2)));
+
+          w1w2Gender =
+            myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 1, project.getId(), 3));
+          w1w2CoGender =
+            myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 1, project.getId(), 2));
+
+          w1w2GAmount =
+            myFormatter.format(this.getTotalGender(pp.getInstitution().getId(), year, 1, project.getId(), 3));
+          w1w2CoGAmount =
+            myFormatter.format(this.getTotalGender(pp.getInstitution().getId(), year, 1, project.getId(), 2));
+
+          // increment partner total
+          partnerTotald +=
+            Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 1, project.getId(), 3));
+          partnerTotald +=
+            Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 1, project.getId(), 2));
+        } else {
+          w1w2Budget = myFormatter
+            .format(Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 1, project.getId(), 1)));
+          w1w2Gender =
+            myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 1, project.getId(), 1));
+          w1w2GAmount =
+            myFormatter.format(this.getTotalGender(pp.getInstitution().getId(), year, 1, project.getId(), 1));
+          w1w2CoBudget = myFormatter.format(0.0);
+          w1w2CoGender = myFormatter.format(0.0);
+          w1w2CoGAmount = myFormatter.format(0.0);
+
+          // increment partner total
+          partnerTotald +=
+            Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 1, project.getId(), 1));
+        }
+
+        String w3Budget = myFormatter
+          .format(Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 2, project.getId(), 1)));
+        String bilateralBudget = myFormatter
+          .format(Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 3, project.getId(), 1)));
+        String centerBudget = myFormatter
+          .format(Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 4, project.getId(), 1)));
+
+
+        String w3Gender =
+          myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 2, project.getId(), 1));
+        String bilateralGender =
+          myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 3, project.getId(), 1));
+        String centerGender =
+          myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 4, project.getId(), 1));
+
+
+        String w3GAmount =
+          myFormatter.format(this.getTotalGender(pp.getInstitution().getId(), year, 2, project.getId(), 1));
+        String bilateralGAmount =
+          myFormatter.format(this.getTotalGender(pp.getInstitution().getId(), year, 3, project.getId(), 1));
+        String centerGAmount =
+          myFormatter.format(this.getTotalGender(pp.getInstitution().getId(), year, 4, project.getId(), 1));
+
+        // increment partner total
+        partnerTotald +=
+          Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 2, project.getId(), 1));
+        partnerTotald +=
+          Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 3, project.getId(), 1));
+        partnerTotald +=
+          Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 4, project.getId(), 1));
+
+        // set partner total
+        partnerTotal = "$" + myFormatter.format(partnerTotald);
+
         model.addRow(new Object[] {year, pp.getInstitution().getComposedName(), w1w2Budget, w3Budget, bilateralBudget,
           centerBudget, pp.getInstitution().getId(), projectID, w1w2Gender, w3Gender, bilateralGender, centerGender,
-          w1w2GAmount, w3GAmount, bilateralGAmount, centerGAmount});
+          w1w2GAmount, w3GAmount, bilateralGAmount, centerGAmount, w1w2CoBudget, w1w2CoGender, w1w2CoGAmount,
+          partnerTotal});
       }
     }
     return model;
   }
 
   private TypedTableModel getBudgetSummaryTableModel() {
-    TypedTableModel model = new TypedTableModel(new String[] {"year", "w1w2", "w3", "bilateral", "centerfunds"},
-      new Class[] {Integer.class, String.class, String.class, String.class, String.class}, 0);
+    TypedTableModel model = new TypedTableModel(
+      new String[] {"year", "w1w2", "w3", "bilateral", "centerfunds", "w1w2CoFinancing", "grand_total"},
+      new Class[] {Integer.class, String.class, String.class, String.class, String.class, String.class, String.class},
+      0);
     String w1w2 = null;
     String w3 = null;
     String bilateral = null;
     String centerfunds = null;
+    String w1w2CoFinancing = null;
+    // Budget Total
+    String grand_total = null;
+    double grand_totald = 0.0;
     // Decimal format
     DecimalFormat myFormatter = new DecimalFormat("###,###.00");
-    w1w2 = myFormatter.format(this.getTotalYear(year, 1));
-    w3 = myFormatter.format(this.getTotalYear(year, 2));
-    bilateral = myFormatter.format(this.getTotalYear(year, 3));
-    centerfunds = myFormatter.format(this.getTotalYear(year, 4));
-    model.addRow(new Object[] {year, w1w2, w3, bilateral, centerfunds});
+
+    if (hasW1W2Co) {
+      w1w2 = myFormatter.format(this.getTotalYear(year, 1, project, 3));
+      w1w2CoFinancing = myFormatter.format(this.getTotalYear(year, 1, project, 2));
+      // increment Budget Total with w1w2 cofinancing
+      grand_totald += this.getTotalYear(year, 1, project, 3) + this.getTotalYear(year, 1, project, 2);
+    } else {
+      w1w2 = myFormatter.format(this.getTotalYear(year, 1, project, 1));
+      // increment Budget Total with w1w2
+      grand_totald += this.getTotalYear(year, 1, project, 1);
+    }
+    w3 = myFormatter.format(this.getTotalYear(year, 2, project, 1));
+    bilateral = myFormatter.format(this.getTotalYear(year, 3, project, 1));
+    centerfunds = myFormatter.format(this.getTotalYear(year, 4, project, 1));
+    // increment Budget Total with w3,bilateral and centerfunds
+    grand_totald += this.getTotalYear(year, 2, project, 1) + this.getTotalYear(year, 3, project, 1)
+      + this.getTotalYear(year, 4, project, 1);
+    grand_total = "$" + myFormatter.format(grand_totald);
+
+    model.addRow(new Object[] {year, w1w2, w3, bilateral, centerfunds, w1w2CoFinancing, grand_total});
     return model;
   }
 
@@ -1757,8 +2421,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     if (project.getEndDate() != null) {
       endDate = formatter.format(project.getEndDate());
     }
+    if (project.getLiaisonInstitution() != null) {
+      ml = project.getLiaisonInstitution().getAcronym();
+    }
     if (project.getLiaisonUser() != null) {
-      ml = project.getLiaisonUser().getLiaisonInstitution().getAcronym();
       mlContact =
         project.getLiaisonUser().getComposedName() + "\n&lt;" + project.getLiaisonUser().getUser().getEmail() + "&gt;";
     }
@@ -1785,7 +2451,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
     }
     String leader = null;
-    if (project.getLeaderPerson() != null) {
+    // Check if project leader is assigned
+    if (project.getLeaderPerson() != null && project.getLeaderPerson().getUser() != null) {
       leader = project.getLeaderPerson().getUser().getComposedName() + "\n&lt;"
         + project.getLeaderPerson().getUser().getEmail() + "&gt;";
     }
@@ -1842,6 +2509,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
+  @SuppressWarnings("unused")
   private File getFile(String fileName) {
     // Get file from resources folder
     ClassLoader classLoader = this.getClass().getClassLoader();
@@ -1878,7 +2546,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
-
   private void getFooterSubreports(HashMap<String, Element> hm, ReportFooter reportFooter) {
 
     int elementCount = reportFooter.getElementCount();
@@ -1899,6 +2566,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   public String getHighlightsImagesUrl() {
     return config.getDownloadURL() + "/" + this.getHighlightsImagesUrlPath().replace('\\', '/');
   }
+
 
   public String getHighlightsImagesUrlPath() {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project.getId() + File.separator
@@ -2009,9 +2677,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     // Initialization of Model
     TypedTableModel model = new TypedTableModel(
       new String[] {"title", "center", "current_date", "project_submission", "cycle", "isNew", "isAdministrative",
-        "type", "isGlobal", "isPhaseOne", "budget_gender", "hasTargetUnit"},
+        "type", "isGlobal", "isPhaseOne", "budget_gender", "hasTargetUnit", "hasW1W2Co", "hasActivities"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, Boolean.class, Boolean.class,
-        String.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class});
+        String.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class});
     // Filling title
     String title = "";
     if (projectLeader != null) {
@@ -2075,8 +2743,13 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           + ": &lt;Not Defined&gt;";
       }
     }
-    String centerAcry = "";
-    centerAcry = project.getCrp().getName();
+    // TODO: Get image from repository
+    String centerURL = "";
+    // set CRP imgage URL from repo
+    // centerURL = this.getBaseUrl() + "/images/global/crps/" + project.getCrp().getAcronym() + ".png";
+    // Add center url to LOG
+    // LOG.info("Center URL is: " + centerURL);
+    centerURL = project.getCrp().getAcronym();
     Boolean isAdministrative = false;
     String type = "Research Project";
     if (project.getAdministrative() != null) {
@@ -2100,8 +2773,18 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     if (targetUnitList.size() > 0) {
       hasTargetUnit = true;
     }
-    model.addRow(new Object[] {title, centerAcry, currentDate, submission, cycle, isNew, isAdministrative, type,
-      project.isLocationGlobal(), this.isPhaseOne(), hasGender, hasTargetUnit});
+
+    Boolean hasActivities = false;
+    try {
+      hasActivities = this.hasSpecificities(APConstants.CRP_ACTIVITES_MODULE);
+    } catch (Exception e) {
+      LOG.warn("Failed to get " + APConstants.CRP_ACTIVITES_MODULE
+        + " parameter. Parameter will be set as false. Exception: " + e.getMessage());
+      hasActivities = false;
+    }
+
+    model.addRow(new Object[] {title, centerURL, currentDate, submission, cycle, isNew, isAdministrative, type,
+      project.isLocationGlobal(), this.isPhaseOne(), hasGender, hasTargetUnit, hasW1W2Co, hasActivities});
     return model;
   }
 
@@ -2614,7 +3297,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
@@ -2633,6 +3315,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     }
     return model;
   }
+
 
   private TypedTableModel getProjectOutcomesTableModel() {
     TypedTableModel model = new TypedTableModel(
@@ -2729,8 +3412,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
    * @param budgetType
    * @return String with the total amount.
    */
-  public String getTotalAmount(long institutionId, int year, long budgetType) {
-    return projectBudgetManager.amountByBudgetType(institutionId, year, budgetType, projectID);
+  public String getTotalAmount(long institutionId, int year, long budgetType, Long projectId, Integer coFinancing) {
+    return projectBudgetManager.amountByBudgetType(institutionId, year, budgetType, projectId, coFinancing);
   }
 
   /**
@@ -2741,16 +3424,47 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
    * @param budgetType
    * @return
    */
-  public double getTotalGender(long institutionId, int year, long budgetType) {
-    List<ProjectBudget> budgets = projectBudgetManager.getByParameters(institutionId, year, budgetType, projectID);
+  public double getTotalGender(long institutionId, int year, long budgetType, long projectID, Integer coFinancing) {
+
+    List<ProjectBudget> budgets =
+      projectBudgetManager.getByParameters(institutionId, year, budgetType, projectID, coFinancing);
+
+    double totalGender = 0;
+    if (budgets != null) {
+      for (ProjectBudget projectBudget : budgets) {
+        double amount = projectBudget.getAmount() != null ? projectBudget.getAmount() : 0.0;
+        double gender = projectBudget.getGenderPercentage() != null ? projectBudget.getGenderPercentage() : 0.0;
+
+        totalGender = totalGender + (amount * (gender / 100));
+      }
+    }
+
+    return totalGender;
+  }
+
+  /**
+   * Get gender amount per institution, year and budet type
+   * 
+   * @param institutionId
+   * @param year
+   * @param budgetType
+   * @return
+   */
+  public double getTotalGender(long institutionId, int year, long budgetType, Project project, Integer coFinancing) {
+
+    List<ProjectBudget> budgets =
+      projectBudgetManager.getByParameters(institutionId, year, budgetType, project.getId(), coFinancing);
+
     double totalGender = 0;
     if (budgets != null) {
       for (ProjectBudget projectBudget : budgets) {
         double amount = projectBudget.getAmount() != null ? projectBudget.getAmount() : 0;
         double gender = projectBudget.getGenderPercentage() != null ? projectBudget.getGenderPercentage() : 0;
+
         totalGender = totalGender + (amount * (gender / 100));
       }
     }
+
     return totalGender;
   }
 
@@ -2762,10 +3476,14 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
    * @param budgetType
    * @return
    */
-  public double getTotalGenderPer(long institutionId, int year, long budgetType) {
-    String totalAmount = this.getTotalAmount(institutionId, year, budgetType);
+  public double getTotalGenderPer(long institutionId, int year, long budgetType, long projectId, Integer coFinancing) {
+
+    String totalAmount = this.getTotalAmount(institutionId, year, budgetType, projectId, coFinancing);
+
     double dTotalAmount = Double.parseDouble(totalAmount);
-    double totalGender = this.getTotalGender(institutionId, year, budgetType);
+
+    double totalGender = this.getTotalGender(institutionId, year, budgetType, projectId, coFinancing);
+
     if (dTotalAmount != 0) {
       return (totalGender * 100) / dTotalAmount;
     } else {
@@ -2778,16 +3496,44 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
    * 
    * @param year current year in the platform
    * @param type budget type (W1W2/Bilateral/W3/Center funds)
+   * @param coFinancing coFinancing 1: cofinancing+no cofinancing, 2: cofinancing 3: no cofinancing
    * @return total budget in the year and type passed as parameters
    */
-  public double getTotalYear(int year, long type) {
+  public double getTotalYear(int year, long type, Project project, Integer coFinancing) {
     double total = 0;
-    for (ProjectBudget pb : project.getProjectBudgets().stream()
-      .filter(
-        pb -> pb.isActive() && pb.getYear() == year && pb.getBudgetType() != null && pb.getBudgetType().getId() == type)
-      .collect(Collectors.toList())) {
-      total = total + pb.getAmount();
+
+    switch (coFinancing) {
+      case 1:
+        for (ProjectBudget pb : project.getProjectBudgets().stream().filter(pb -> pb.isActive() && pb.getYear() == year
+          && pb.getBudgetType() != null && pb.getBudgetType().getId() == type).collect(Collectors.toList())) {
+          total = total + pb.getAmount();
+        }
+        break;
+      case 2:
+        for (ProjectBudget pb : project.getProjectBudgets().stream()
+          .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getBudgetType() != null
+            && pb.getBudgetType().getId() == type && pb.getFundingSource() != null
+            && pb.getFundingSource().getW1w2() != null && pb.getFundingSource().getW1w2().booleanValue() == true)
+          .collect(Collectors.toList())) {
+          total = total + pb.getAmount();
+        }
+        break;
+      case 3:
+        for (ProjectBudget pb : project.getProjectBudgets().stream()
+          .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getBudgetType() != null
+            && pb.getBudgetType().getId() == type && pb.getFundingSource() != null
+            && pb.getFundingSource().getW1w2() != null && pb.getFundingSource().getW1w2().booleanValue() == false)
+          .collect(Collectors.toList())) {
+          ProjectBudget pbActual = pb;
+
+          total = total + pb.getAmount();
+        }
+        break;
+
+      default:
+        break;
     }
+
     return total;
   }
 
@@ -2801,6 +3547,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
    * @param institution
    * @return boolean with true if is ppa and false if not
    */
+  @Override
   public boolean isPPA(Institution institution) {
     if (institution == null) {
       return false;
@@ -2824,12 +3571,12 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   }
 
   @Override
+  /**
+   * Prepare the parameters of the project.
+   * Note: If you add a parameter here, you must add it in the ProjectSubmissionAction class
+   */
   public void prepare() {
-    /*
-     * READ ME
-     * If you add a parameter you must add it in the ProjectSubmissionAction class
-     */
-    // Get loggerCrp
+    // Get loggedCrp
     try {
       loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
       loggedCrp = crpManager.getCrpById(loggedCrp.getId());
@@ -2890,6 +3637,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
   public void setCycle(String cycle) {
     this.cycle = cycle;
+  }
+
+  public void setHasW1W2Co(Boolean hasW1W2Co) {
+    this.hasW1W2Co = hasW1W2Co;
   }
 
   public void setLoggedCrp(Crp loggedCrp) {

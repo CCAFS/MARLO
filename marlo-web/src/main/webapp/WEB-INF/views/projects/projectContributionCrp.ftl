@@ -2,8 +2,8 @@
 [#assign title = "Project Outcome Contribution to CRP" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectOutcomeID}" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = ["${baseUrl}/js/projects/projectContributionCrp.js", "${baseUrl}/js/global/autoSave.js","${baseUrl}/js/global/fieldsValidation.js"] /] [#--  --]
-[#assign customCSS = ["${baseUrl}/css/projects/projectContributionCrp.css"] /]
+[#assign customJS = ["${baseUrlMedia}/js/projects/projectContributionCrp.js", "${baseUrlMedia}/js/global/autoSave.js","${baseUrlMedia}/js/global/fieldsValidation.js"] /] [#--  --]
+[#assign customCSS = ["${baseUrlMedia}/css/projects/projectContributionCrp.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "contributionsCrpList" /]
 
@@ -47,8 +47,13 @@
           <h3 class="headTitle"> Project Contribution </h3>
           [#-- Outcomen name --]
           [#assign showOutcomeValue = projectOutcome.crpProgramOutcome.srfTargetUnit??  && projectOutcome.crpProgramOutcome.srfTargetUnit.id?? && (projectOutcome.crpProgramOutcome.srfTargetUnit.id != -1) /]
-          
+          [#assign pimText][@s.text name="contribution.message" /][/#assign]
+          [#if editable && pimText?has_content]
+           <div class="note">${pimText}</div>
+          [/#if]
           <div class="grayBox">
+          
+          
             <div class="col-md-12">
               <strong>${(projectOutcome.crpProgramOutcome.crpProgram.acronym)!} - Outcome ${(projectOutcome.crpProgramOutcome.year)!}</strong>: ${projectOutcome.crpProgramOutcome.description}
             </div>
@@ -213,7 +218,7 @@
           
           [#-- Next Users --]
           [#-- For A4NH CRP, nextusers aren't required --]
-          [#if !(crpSession == "a4nh")]
+          [#if action.hasSpecificities('crp_next_users')]
           <h4 class="headTitle">(Next) Users </h4>
           <div class="nextUsersBlock borderBox">
             <div class="nextUsersList">

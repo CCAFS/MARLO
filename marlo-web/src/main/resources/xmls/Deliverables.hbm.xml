@@ -24,6 +24,9 @@
 		<property name="title" type="string">
 			<column name="title" length="65535" />
 		</property>
+		<property name="description" type="string">
+      <column name="description" length="65535" />
+    </property>
 		<property name="typeOther" type="string">
 			<column name="type_other" length="65535">
 				<comment>Other type defined by the user.</comment>

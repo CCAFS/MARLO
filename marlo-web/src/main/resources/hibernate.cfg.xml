@@ -20,16 +20,15 @@
 		<property name="show_sql">false</property>
 		<property name="use_sql_comments">false</property>
 		<property name="generate_statistics">false</property>
-
-
+		
 		<property name="hibernate.c3p0.idle_test_period">6</property>
-		<property name="hibernate.c3p0.timeout">6</property>
-		<property name="hibernate.c3p0.max_size">10000</property>
-		<property name="hibernate.c3p0.min_size">50</property>
-		<property name="hibernate.c3p0.max_statements">500</property>
-		<property name="hibernate.c3p0.preferredTestQuery">select 1;</property>
-		<property name="connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider</property>
-		<property name="hibernate.c3p0.validate">true</property>
+    <property name="hibernate.c3p0.timeout">6</property>
+    <property name="hibernate.c3p0.max_size">10000</property>
+    <property name="hibernate.c3p0.min_size">50</property>
+    <property name="hibernate.c3p0.max_statements">500</property>
+    <property name="hibernate.c3p0.preferredTestQuery">select 1;</property>
+    <property name="connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider</property>
+    <property name="hibernate.c3p0.validate">true</property>
 
 		<!-- Model Mappings -->
 		<mapping resource="xmls/DeliverableMetadataElements.hbm.xml" />
@@ -145,15 +144,63 @@
 		<mapping resource="xmls/IpLiaisonUsers.hbm.xml" />
 		<mapping resource="xmls/DeliverableLeaders.hbm.xml" />
 		<mapping resource="xmls/DeliverablePrograms.hbm.xml" />
-		<mapping resource="xmls/Phases.hbm.xml" />
-		<mapping resource="xmls/ProjectPhases.hbm.xml" />
-		<mapping resource="xmls/GenderTypes.hbm.xml" />
-		<mapping resource="xmls/PartnerDivisions.hbm.xml" />
-		<mapping resource="xmls/CrpLocElementTypes.hbm.xml" />
-		<mapping resource="xmls/Parameters.hbm.xml" />
-		<mapping resource="xmls/CustomParameters.hbm.xml" />
-		<mapping resource="xmls/InstitutionsLocations.hbm.xml" />
-		<mapping resource="xmls/ProjectPartnerLocations.hbm.xml" />
+    <mapping resource="xmls/Phases.hbm.xml" />
+    <mapping resource="xmls/ProjectPhases.hbm.xml" />		
+	  <mapping resource="xmls/GenderTypes.hbm.xml" />
+	  <mapping resource="xmls/PartnerDivisions.hbm.xml" />	  
+	  <mapping resource="xmls/CrpLocElementTypes.hbm.xml" />   
+	  <mapping resource="xmls/FundingSourceLocations.hbm.xml" /> 
+    <mapping resource="xmls/Parameters.hbm.xml" />   
+    <mapping resource="xmls/CustomParameters.hbm.xml" />   	  
+	  <mapping resource="xmls/InstitutionsLocations.hbm.xml"/>
+	  <mapping resource="xmls/ProjectPartnerLocations.hbm.xml"/>
+	  
+	  <mapping resource="xmls/CenterUsers.hbm.xml" />
+    <mapping resource="xmls/CenterAllTypes.hbm.xml" />
+	  <mapping resource="xmls/CenterMilestones.hbm.xml" />
+    <mapping resource="xmls/CenterAreas.hbm.xml" />
+    <mapping resource="xmls/Centers.hbm.xml" />
+    <mapping resource="xmls/CenterImpact.hbm.xml" />
+    <mapping resource="xmls/CenterLeaders.hbm.xml" />
+    <mapping resource="xmls/CenterObjective.hbm.xml" />
+    <mapping resource="xmls/CenterOutcome.hbm.xml" />
+    <mapping resource="xmls/CenterOutput.hbm.xml" />
+    <mapping resource="xmls/CenterPrograms.hbm.xml" />
+    <mapping resource="xmls/CenterTopic.hbm.xml" />
+    <mapping resource="xmls/CenterRoles.hbm.xml" />
+    <mapping resource="xmls/CenterUserRoles.hbm.xml" />
+    <mapping resource="xmls/CenterImpactObjectives.hbm.xml" />
+    <mapping resource="xmls/CenterSectionStatuses.hbm.xml" />
+    <mapping resource="xmls/CenterTargetUnits.hbm.xml" />
+    <mapping resource="xmls/CenterBeneficiaries.hbm.xml" />
+    <mapping resource="xmls/CenterBeneficiaryTypes.hbm.xml" />
+    <mapping resource="xmls/CenterImpactBeneficiaries.hbm.xml" />
+    <mapping resource="xmls/CenterRegions.hbm.xml" />
+    <mapping resource="xmls/CenterNextuserTypes.hbm.xml" />
+    <mapping resource="xmls/CenterOutputsNextUsers.hbm.xml" />
+    <mapping resource="xmls/CenterCycles.hbm.xml" />
+    <mapping resource="xmls/CenterSubmissions.hbm.xml" />
+    <mapping resource="xmls/CenterProjectOutputs.hbm.xml" />
+    <mapping resource="xmls/CenterProjects.hbm.xml" />
+    <mapping resource="xmls/CenterProjectStatus.hbm.xml" />
+    <mapping resource="xmls/CenterFundingSourceTypes.hbm.xml" />
+    <mapping resource="xmls/CenterProjectFundingSources.hbm.xml" />
+    <mapping resource="xmls/CenterProjectCrosscutingThemes.hbm.xml" />
+    <mapping resource="xmls/CenterDeliverables.hbm.xml" />
+    <mapping resource="xmls/CenterDeliverableTypes.hbm.xml" />
+    <mapping resource="xmls/CenterDeliverableDocuments.hbm.xml" />
+    <mapping resource="xmls/CenterMonitoringOutcomes.hbm.xml" />
+    <mapping resource="xmls/CenterMonitoringMilestones.hbm.xml" />
+    <mapping resource="xmls/CenterMonitoringOutcomeEvidences.hbm.xml" />
+    <mapping resource="xmls/CenterProjectPartnerPersons.hbm.xml" />
+    <mapping resource="xmls/CenterProjectPartners.hbm.xml" />
+    <mapping resource="xmls/CenterProjectLocations.hbm.xml" />
+    <mapping resource="xmls/CenterDeliverableCrosscutingThemes.hbm.xml" />
+    <mapping resource="xmls/CenterDeliverableOutputs.hbm.xml" />
+    <mapping resource="xmls/CenterProjectTypes.hbm.xml" />
+    <mapping resource="xmls/CenterParameters.hbm.xml" />
+    <mapping resource="xmls/CenterCustomParameters.hbm.xml" />
+    <mapping resource="xmls/CenterImpactStatement.hbm.xml" />   
 	</session-factory>
 </hibernate-configuration>
 

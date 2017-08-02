@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
+import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
@@ -87,6 +88,7 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
   private Boolean showPIEmail;
   private Boolean showIfpriDivision;
   private long startTime;
+  private Boolean hasW1W2Co;
   // Managers
   private CrpManager crpManager;
   private CrpProgramManager programManager;
@@ -106,6 +108,48 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
     this.programManager = programManager;
     this.projectManager = projectManager;
     this.deliverableFundingSourceManager = deliverableFundingSourceManager;
+  }
+
+  /**
+   * Method to add i8n parameters to masterReport in Pentaho
+   * 
+   * @param masterReport
+   * @return masterReport with i8n parameters added
+   */
+  private MasterReport addi8nParameters(MasterReport masterReport) {
+    // Master List
+    masterReport.getParameterValues().put("i8nFundingSources", this.getText("menu.fundingSources"));
+    masterReport.getParameterValues().put("i8nID", this.getText("fundingSource.fundingSourceID"));
+    masterReport.getParameterValues().put("i8nTitle", this.getText("projectCofunded.title.readText"));
+    masterReport.getParameterValues().put("i8nSummary", this.getText("projectCofunded.description.readText"));
+    masterReport.getParameterValues().put("i8nAgreementStatus", this.getText("projectCofunded.agreementStatus"));
+    masterReport.getParameterValues().put("i8nStartDate", this.getText("projectCofunded.startDate"));
+    masterReport.getParameterValues().put("i8nEndDate", this.getText("projectCofunded.endDate"));
+    masterReport.getParameterValues().put("i8nFinanceCode", this.getText("projectCofunded.financeCode"));
+    masterReport.getParameterValues().put("i8nContactName", this.getText("projectCofunded.contactName"));
+    masterReport.getParameterValues().put("i8nContactEmail", this.getText("projectCofunded.contactEmail"));
+    masterReport.getParameterValues().put("i8nFundingWindow", this.getText("projectCofunded.type"));
+    masterReport.getParameterValues().put("i8nDonor", this.getText("projectCofunded.donor"));
+    masterReport.getParameterValues().put("i8nBudgetYear",
+      this.getText("fundingSource.budget", new String[] {String.valueOf(year)}));
+    masterReport.getParameterValues().put("i8nBudgetYearProjects",
+      this.getText("fundingSource.budgetYearAllocated", new String[] {String.valueOf(year)}));
+    masterReport.getParameterValues().put("i8nDeliverableIDs",
+      this.getText("fundingSource.deliverableIDs", new String[] {String.valueOf(year)}));
+    masterReport.getParameterValues().put("i8nProjects", this.getText("caseStudy.projects"));
+    masterReport.getParameterValues().put("i8nCoas", this.getText("deliverable.coas"));
+    masterReport.getParameterValues().put("i8nFlagships", this.getText("project.Flagships"));
+    masterReport.getParameterValues().put("i8nContractProposal", this.getText("fundingSource.contractProposal"));
+    masterReport.getParameterValues().put("i8nGlobalDimension", this.getText("fundingSource.globalDimension"));
+    masterReport.getParameterValues().put("i8nRegionalDimension", this.getText("fundingSource.regionalDimension"));
+    masterReport.getParameterValues().put("i8nSpecificCountries",
+      this.getText("projectCofunded.listCountries.readText"));
+
+
+    // Funding Sources by Projects
+    masterReport.getParameterValues().put("i8nProjectID", this.getText("searchTerms.projectId"));
+
+    return masterReport;
   }
 
   @Override
@@ -140,7 +184,8 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
       TypedTableModel model = this.getMasterTableModel(center, current_date);
       sdf.addTable(masterQueryName, model);
       masterReport.setDataFactory(cdf);
-
+      // Set i8n for pentaho
+      masterReport = this.addi8nParameters(masterReport);
 
       // Get details band
       ItemBand masteritemBand = masterReport.getItemBand();
@@ -313,9 +358,9 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
   private TypedTableModel getFundingSourcesProjectsTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"fs_title", "fs_id", "finance_code", "lead_partner", "fs_window", "project_id", "total_budget",
-        "flagships", "coas", "donor"},
+        "flagships", "coas", "donor", "directDonor", "global_dimension", "regional_dimension", "specific_countries"},
       new Class[] {String.class, Long.class, String.class, String.class, String.class, String.class, Double.class,
-        String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class},
       0);
 
     for (FundingSource fundingSource : loggedCrp.getFundingSources().stream()
@@ -328,6 +373,9 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
 
 
       String fsWindow = fundingSource.getBudgetType().getName();
+      if (hasW1W2Co && fundingSource.getW1w2() != null && fundingSource.getW1w2()) {
+        fsWindow = "W1/W2 Co-Financing";
+      }
       if (fundingSource.getInstitution() != null) {
         donor = fundingSource.getInstitution().getComposedName();
       }
@@ -379,8 +427,55 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
 
         totalBudget = projectBudget.getAmount();
 
+        String directDonor = "";
+
+        // Funding sources locations
+        String globalDimension = null;
+        globalDimension = fundingSource.isGlobal() ? "Yes" : "No";
+
+        String regionalDimension = "";
+        // Regions
+        for (FundingSourceLocation fundingSourceLocation : fundingSource.getFundingSourceLocations().stream().filter(
+          fl -> fl.isActive() && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 1)
+          .collect(Collectors.toList())) {
+          if (regionalDimension.isEmpty()) {
+            regionalDimension += fundingSourceLocation.getLocElement().getName();
+          } else {
+            regionalDimension += ", " + fundingSourceLocation.getLocElement().getName();
+          }
+        }
+        // Scope Regions
+        for (FundingSourceLocation fundingSourceLocation : fundingSource.getFundingSourceLocations().stream()
+          .filter(fl -> fl.isActive() && fl.getLocElementType() != null && fl.getLocElement() == null)
+          .collect(Collectors.toList())) {
+          if (regionalDimension.isEmpty()) {
+            regionalDimension += fundingSourceLocation.getLocElementType().getName();
+          } else {
+            regionalDimension += ", " + fundingSourceLocation.getLocElementType().getName();
+          }
+        }
+
+        if (regionalDimension.isEmpty()) {
+          regionalDimension = null;
+        }
+
+        String specificCountries = "";
+        for (FundingSourceLocation fundingSourceLocation : fundingSource.getFundingSourceLocations().stream().filter(
+          fl -> fl.isActive() && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 2)
+          .collect(Collectors.toList())) {
+          if (specificCountries.isEmpty()) {
+            specificCountries += fundingSourceLocation.getLocElement().getName();
+          } else {
+            specificCountries += ", " + fundingSourceLocation.getLocElement().getName();
+          }
+        }
+
+        if (specificCountries.isEmpty()) {
+          specificCountries = null;
+        }
+
         model.addRow(new Object[] {fsTitle, fsId, financeCode, leadPartner, fsWindow, projectId, totalBudget, flagships,
-          coas, donor});
+          coas, donor, directDonor, globalDimension, regionalDimension, specificCountries});
       }
 
     }
@@ -391,10 +486,12 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
     TypedTableModel model = new TypedTableModel(
       new String[] {"fs_title", "fs_id", "finance_code", "lead_partner", "fs_window", "project_id", "total_budget",
         "summary", "start_date", "end_date", "contract", "status", "pi_name", "pi_email", "donor",
-        "total_budget_projects", "contract_name", "flagships", "coas", "deliverables"},
+        "total_budget_projects", "contract_name", "flagships", "coas", "deliverables", "directDonor",
+        "global_dimension", "regional_dimension", "specific_countries"},
       new Class[] {String.class, Long.class, String.class, String.class, String.class, String.class, Double.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        Double.class, String.class, String.class, String.class, String.class},
+        Double.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class},
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
 
@@ -468,6 +565,9 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
         }
       }
       String fsWindow = fundingSource.getBudgetType().getName();
+      if (hasW1W2Co && fundingSource.getW1w2() != null && fundingSource.getW1w2()) {
+        fsWindow = "W1/W2 Co-Financing";
+      }
 
 
       String projectId = "";
@@ -565,9 +665,59 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
       if (deliverables.isEmpty()) {
         deliverables = null;
       }
+
+      String directDonor = "";
+
+      // Funding sources locations
+      String globalDimension = null;
+      globalDimension = fundingSource.isGlobal() ? "Yes" : "No";
+
+      String regionalDimension = "";
+      // Regions
+      for (FundingSourceLocation fundingSourceLocation : fundingSource.getFundingSourceLocations().stream()
+        .filter(
+          fl -> fl.isActive() && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 1)
+        .collect(Collectors.toList())) {
+        if (regionalDimension.isEmpty()) {
+          regionalDimension += fundingSourceLocation.getLocElement().getName();
+        } else {
+          regionalDimension += ", " + fundingSourceLocation.getLocElement().getName();
+        }
+      }
+      // Scope Regions
+      for (FundingSourceLocation fundingSourceLocation : fundingSource.getFundingSourceLocations().stream()
+        .filter(fl -> fl.isActive() && fl.getLocElementType() != null && fl.getLocElement() == null)
+        .collect(Collectors.toList())) {
+        if (regionalDimension.isEmpty()) {
+          regionalDimension += fundingSourceLocation.getLocElementType().getName();
+        } else {
+          regionalDimension += ", " + fundingSourceLocation.getLocElementType().getName();
+        }
+      }
+
+      if (regionalDimension.isEmpty()) {
+        regionalDimension = null;
+      }
+
+      String specificCountries = "";
+      for (FundingSourceLocation fundingSourceLocation : fundingSource.getFundingSourceLocations().stream()
+        .filter(
+          fl -> fl.isActive() && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 2)
+        .collect(Collectors.toList())) {
+        if (specificCountries.isEmpty()) {
+          specificCountries += fundingSourceLocation.getLocElement().getName();
+        } else {
+          specificCountries += ", " + fundingSourceLocation.getLocElement().getName();
+        }
+      }
+
+      if (specificCountries.isEmpty()) {
+        specificCountries = null;
+      }
+
       model.addRow(new Object[] {fsTitle, fsId, financeCode, leadPartner, fsWindow, projectId, totalBudget, summary,
         starDate, endDate, contract, status, piName, piEmail, donor, totalBudgetProjects, contractName, flagships, coas,
-        deliverables});
+        deliverables, directDonor, globalDimension, regionalDimension, specificCountries});
     }
     return model;
   }
@@ -646,7 +796,7 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
         + e.getMessage());
       this.showIfpriDivision = false;
     }
-
+    hasW1W2Co = this.hasSpecificities(APConstants.CRP_FS_W1W2_COFINANCING);
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
     LOG.info(

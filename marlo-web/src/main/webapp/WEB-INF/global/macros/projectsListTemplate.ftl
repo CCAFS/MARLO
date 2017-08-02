@@ -15,7 +15,13 @@
         <th id="projectTitles" >[@s.text name="projectsList.projectTitles" /]</th>
         <th id="projectLeader" >[@s.text name="projectsList.projectLeader" /]</th>
         [#--  <th id="projectType">[@s.text name="projectsList.projectType" /]</th>--]
-        <th id="projectFlagships">[@s.text name="projectsList.projectFlagships" /]</th>
+        <th id="projectFlagships">
+          [#if action.hasProgramnsRegions()]
+            [@s.text name="projectsList.projectFlagshipsRegions" /] 
+          [#else]
+             [@s.text name="projectsList.projectFlagships" /]
+          [/#if]
+        </th>
         [#if !reportingActive]
           <th id="projectBudget">[@s.text name="projectsList.W1W2projectBudget" /]</th>
           <th id="projectBudget">[@s.text name="projectsList.W3projectBudget" /]</th>
@@ -41,7 +47,8 @@
         </td>
           [#-- Project Title --]
           <td class="left">
-            [#if isProjectNew]<span class="label label-info">New</span>[/#if]
+            [#if isProjectNew]<span class="label label-info">[@s.text name="global.new" /]</span>[/#if]
+            [#if project.administrative]<span class="label label-primary">[@s.text name="project.management" /]</span>[/#if]
             [#if project.title?has_content]
               <a href="${projectUrl}" title="${project.title}">
               [#if project.title?length < 120] ${project.title}</a> [#else] [@utilities.wordCutter string=project.title maxPos=120 /]...</a> [/#if]
@@ -68,8 +75,8 @@
             [#else]
               [@s.text name="projectsList.none" /]
             [/#if]
-          [#else]
-            <span class="programTag" style="border-color:#444">PMU</span>
+          [#else] 
+             <span class="programTag" style="border-color:#444">${(project.liaisonInstitution.crpProgram.acronym)!}</span>
           [/#if]
           </td>
           [#if !reportingActive]
@@ -143,20 +150,20 @@
             [#if true]
             
             <a href="[@s.url namespace="/projects" action='${(crpSession)!}/reportingSummary'][@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='cycle']${action.getCurrentCycle()}[/@s.param][@s.param name='year']${action.getCurrentCycleYear()}[/@s.param][/@s.url]" target="__BLANK">
-              <img src="${baseUrl}/images/global/pdf.png" height="25" title="[@s.text name="Download PDF" /]" />
+              <img src="${baseUrlMedia}/images/global/pdf.png" height="25" title="[@s.text name="Download PDF" /]" />
             </a>
             [#else]
-              <img src="${baseUrl}/images/global/download-summary-disabled.png" height="25" title="[@s.text name="global.comingSoon" /]" />
+              <img src="${baseUrlMedia}/images/global/download-summary-disabled.png" height="25" title="[@s.text name="global.comingSoon" /]" />
             [/#if]
           </td>
           [#-- Delete Project--]
           <td>
             [#if canEdit && isProjectNew && action.deletePermission(project.id) ]
               <a id="removeProject-${project.id}" class="removeProject" href="#" title="">
-                <img src="${baseUrl}/images/global/trash.png" title="[@s.text name="projectsList.deleteProject" /]" /> 
+                <img src="${baseUrlMedia}/images/global/trash.png" title="[@s.text name="projectsList.deleteProject" /]" /> 
               </a>
             [#else]
-              <img src="${baseUrl}/images/global/trash_disable.png" title="[@s.text name="projectsList.cantDeleteProject" /]" />
+              <img src="${baseUrlMedia}/images/global/trash_disable.png" title="[@s.text name="projectsList.cantDeleteProject" /]" />
             [/#if]
           </td>
         </tr>  

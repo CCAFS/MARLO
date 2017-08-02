@@ -2,8 +2,8 @@
 [#assign title = "Site Integration" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["select2", "flat-flags"] /]
-[#assign customJS = ["${baseUrl}/js/global/usersManagement.js", "${baseUrl}/js/admin/siteIntegration.js","${baseUrl}/js/global/fieldsValidation.js" ] /]
-[#assign customCSS = [ "${baseUrl}/css/admin/siteIntegration.css" ] /]
+[#assign customJS = ["${baseUrlMedia}/js/global/usersManagement.js", "${baseUrlMedia}/js/admin/siteIntegration.js","${baseUrlMedia}/js/global/fieldsValidation.js" ] /]
+[#assign customCSS = [ "${baseUrlMedia}/css/admin/siteIntegration.css" ] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "siteIntegration" /]
 
@@ -17,7 +17,7 @@
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrl}/images/global/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.jpg" />
     <p class="col-md-10"> [@s.text name="siteIntegration.help" /] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>

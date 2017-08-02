@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated May 17, 2016 9:53:47 AM by Hibernate Tools 4.3.1.Final -->
+<hibernate-mapping>
+	<class name="org.cgiar.ccafs.marlo.data.model.CenterUser" table="center_users"
+		optimistic-lock="version">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<property name="active" type="boolean">
+			<column name="is_active" not-null="true" />
+		</property>
+		<property name="activeSince" type="timestamp">
+			<column name="active_since" length="19" not-null="true" />
+		</property>
+		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select">
+			<column name="created_by" not-null="false" />
+		</many-to-one>
+		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select">
+			<column name="modified_by" not-null="true" />
+		</many-to-one>
+		 <many-to-one name="researchCenter" class="org.cgiar.ccafs.marlo.data.model.Center"
+			fetch="select">
+			<column name="center_id" not-null="true" />
+		</many-to-one>
+		<many-to-one name="user" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select">
+			<column name="user_id" not-null="true" />
+		</many-to-one>
+	</class>
+</hibernate-mapping>

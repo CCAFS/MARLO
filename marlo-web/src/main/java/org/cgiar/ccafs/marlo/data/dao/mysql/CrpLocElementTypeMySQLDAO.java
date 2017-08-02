@@ -58,6 +58,7 @@ public class CrpLocElementTypeMySQLDAO extends AbstractMarloDAO implements CrpLo
   @Override
   public List<CrpLocElementType> findAll() {
     String query = "from " + CrpLocElementType.class.getName() + " ";
+
     List<CrpLocElementType> list = super.findAll(query);
     if (list.size() > 0) {
       return list;

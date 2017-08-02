@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.dao.FundingSourceDAO;
 import org.cgiar.ccafs.marlo.data.model.BudgetType;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +28,6 @@ import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
-import com.ibm.icu.text.SimpleDateFormat;
 
 public class FundingSourceMySQLDAO extends AbstractMarloDAO implements FundingSourceDAO {
 
@@ -151,6 +151,71 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO implements FundingSo
     }
 
     return fundingSourcesReturn;
+  }
+
+  @Override
+  public List<FundingSource> searchFundingSourcesByLocElement(long projectId, long locElementId, int year, long crpID) {
+
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT DISTINCT  ");
+    query.append("funding_sources.id as id ");
+    query.append("FROM ");
+    query.append("funding_source_locations ");
+    query.append("INNER JOIN funding_sources ON funding_source_locations.funding_source_id = funding_sources.id ");
+    query.append("INNER JOIN project_budgets ON project_budgets.funding_source_id = funding_sources.id ");
+    query.append("WHERE ");
+    query.append("funding_source_locations.loc_element_id =" + locElementId + "   AND funding_sources.crp_id=" + crpID
+      + " AND project_budgets.project_id=" + projectId + "  AND  funding_source_locations.is_active=1 and ");
+    query.append("project_budgets.is_active = 1 AND  ");
+    query.append("project_budgets.`year` =" + year);
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+
+    List<FundingSource> fundingSources = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        FundingSource fundingSource = this.find(Long.parseLong(map.get("id").toString()));
+
+
+        fundingSources.add(fundingSource);
+      }
+    }
+
+    return fundingSources;
+
+  }
+
+  @Override
+  public List<FundingSource> searchFundingSourcesByLocElementType(long projectId, long locElementTypeId, int year,
+    long crpID) {
+
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT DISTINCT  ");
+    query.append("funding_sources.id as id ");
+    query.append("FROM ");
+    query.append("funding_source_locations ");
+    query.append("INNER JOIN funding_sources ON funding_source_locations.funding_source_id = funding_sources.id ");
+    query.append("INNER JOIN project_budgets ON project_budgets.funding_source_id = funding_sources.id ");
+    query.append("WHERE ");
+    query.append("funding_source_locations.loc_element_type_id =" + locElementTypeId + " AND funding_sources.crp_id="
+      + crpID + " AND project_budgets.project_id=" + projectId + "  AND  funding_source_locations.is_active=1 and ");
+    query.append("project_budgets.is_active = 1 AND  ");
+    query.append("project_budgets.`year` =" + year);
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+
+    List<FundingSource> fundingSources = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        FundingSource fundingSource = this.find(Long.parseLong(map.get("id").toString()));
+        fundingSources.add(fundingSource);
+      }
+    }
+
+    return fundingSources;
+
   }
 
 

@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Mar 16, 2017 10:28:46 AM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.CenterMonitoringMilestone" table="center_monitoring_milestones" optimistic-lock="version">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="monitoringOutcome" class="org.cgiar.ccafs.marlo.data.model.CenterMonitoringOutcome" fetch="select">
+            <column name="monitoring_outcome_id" not-null="true" />
+        </many-to-one>
+        <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="modified_by" />
+        </many-to-one>
+        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="created_by" />
+        </many-to-one>
+        <many-to-one name="researchMilestone" class="org.cgiar.ccafs.marlo.data.model.CenterMilestone" fetch="select">
+            <column name="milestone_id" not-null="true" />
+        </many-to-one>
+        <property name="achievedValue" type="big_decimal">
+            <column name="achieved_value" precision="10" />
+        </property>
+        <property name="narrative" type="string">
+            <column name="narrative" length="65535" />
+        </property>
+        <property name="active" type="boolean">
+            <column name="is_active" not-null="true" />
+        </property>
+        <property name="activeSince" type="timestamp">
+            <column name="active_since" length="19" />
+        </property>
+        <property name="modificationJustification" type="string">
+            <column name="modification_justification" length="65535" />
+        </property>
+    </class>
+</hibernate-mapping>

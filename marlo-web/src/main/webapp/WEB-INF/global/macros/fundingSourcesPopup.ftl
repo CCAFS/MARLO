@@ -19,7 +19,7 @@
         <div class="search-content clearfix">
           <div class="search-input">
             [@customForm.input name="" showTitle=false type="text" i18nkey="form.buttons.searchUser" placeholder="Search by funding source name or ID"/]
-            <div class="search-loader" style="display:none"><img src="${baseUrl}/images/global/loading_2.gif"></div>
+            <div class="search-loader" style="display:none"><img src="${baseUrlMedia}/images/global/loading_2.gif"></div>
           </div>  
           <div class="search-button">[@s.text name="form.buttons.search" /]</div>
         </div> 
@@ -60,14 +60,15 @@
           
            
           [#-- Upload bilateral contract --]
+          [#-- 
           <div class="form-group fileUploadContainer">
             <label>[@customForm.text name="fundingSource.uploadContract" readText=!editable /]:</label>
-            [#-- Input File --]
+            [#-- Input File  
             <div class="fileUpload"> <input class="upload" type="file" name="file" data-url="${baseUrl}/uploadFundingSource.do"></div>
-            [#-- Uploaded File --]
+            [#-- Uploaded File  
             <p class="fileUploaded textMessage checked" style="display:none"><span class="contentResult">{{contentResult}}</span> <span class="removeIcon"> </span> </p>
           </div>
-          
+          --]
           
           <div class="form-group">
             <div class="row">
@@ -80,8 +81,18 @@
           <div class="form-group">
             <div class="row">
               <div class="col-md-6">[@customForm.select name="status" i18nkey="projectCofunded.agreementStatus"  listName="status" header=false required=true /] </div>
-              <div class="col-md-6">[@customForm.select name="budgetType"   i18nkey="projectCofunded.type" className="type" listName="budgetTypes" header=false required=true /]</div>
+              <div class="col-md-6">
+                [@customForm.select name="budgetType"   i18nkey="projectCofunded.type" className="type" listName="budgetTypes" header=false required=true /]
+              </div>
             </div>
+            [#-- W1W2 Tag --]
+            [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')]
+            <div class="w1w2-tag">
+              <div class="checkbox dottedBox">
+                <label for="w1w2-tag-input"><input type="checkbox" name="w1w2" value="true" id="w1w2-tag-input"/> <small>[@customForm.text name="fundingSource.w1w2Tag" readText=!editable /]</small></label>
+              </div>
+            </div>
+            [/#if]
           </div>
           
           [#-- Budget Types Description --]
@@ -94,7 +105,7 @@
           <div class="form-group">
             <div class="row">
               <div class="col-md-12">
-                [@customForm.select name="institution" i18nkey="projectCofunded.donor" value="${action.getCGIARInsitution()}"  listName="institutions " keyFieldName="id"  displayFieldName="composedNameLoc" required=true /]
+                [@customForm.select name="institution" i18nkey="projectCofunded.donor" value="${action.getCGIARInstitution()}"  listName="institutions " keyFieldName="id"  displayFieldName="composedNameLoc" required=true /]
               </div>
             </div>
           </div>
@@ -135,7 +146,7 @@
     </form>
     
     
-    [#-- User Template --]
+    [#-- Funding Source item search Template --]
     <ul style="display:none"> 
       <li id="userTemplate">
         <div class="row">
@@ -163,8 +174,8 @@
     <input type="hidden" id="created-message" value="[@s.text name="users.createUser.message" /]" />
     <input type="hidden" id="actionName" value="${(actionName)!}" />
   </div>  
-<span class="hidden cgiarConsortium">${action.getCGIARInsitution()}</span>
+<span class="hidden cgiarConsortium">${action.getCGIARInstitution()}</span>
 </div>
 [#--  Funding Source Popup JS --]
-[#assign customJS =  [ "${baseUrl}/js/global/fundingSourcesPopup.js" ]  + customJS/]
+[#assign customJS =  [ "${baseUrlMedia}/js/global/fundingSourcesPopup.js" ]  + customJS/]
   

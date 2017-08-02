@@ -219,5 +219,6 @@ public class AuditLogMySQLDao extends AbstractMarloDAO implements AuditLogDao {
     } catch (JsonSyntaxException e) {
       e.printStackTrace();
     }
+
   }
 }

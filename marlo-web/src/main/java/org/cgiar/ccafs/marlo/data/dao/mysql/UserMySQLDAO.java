@@ -38,6 +38,13 @@ public class UserMySQLDAO extends AbstractMarloDAO implements UserDAO {
   }
 
   @Override
+  public List<Map<String, Object>> getCenterPermission(int userId, String centerId) {
+    String query =
+      "select * from center_user_permissions where id=" + userId + " and center_acronym='" + centerId + "'";
+    return super.findCustomQuery(query);
+  }
+
+  @Override
   public String getEmailByUsername(String username) {
     String query = "select email from " + User.class.getName() + " where username = '" + username + "'";
     String email = (String) super.findSingleResult(String.class, query);
@@ -49,6 +56,7 @@ public class UserMySQLDAO extends AbstractMarloDAO implements UserDAO {
     String query = "select * from user_permissions where id=" + userId + " and crp_acronym='" + crpId + "'";
     return super.findCustomQuery(query);
   }
+
 
   @Override
   public User getUser(Long id) {

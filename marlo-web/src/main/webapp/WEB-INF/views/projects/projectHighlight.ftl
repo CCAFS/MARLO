@@ -2,8 +2,8 @@
 [#assign title = "Project Highlight" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${highlight.id}" /]
 [#assign pageLibs = ["select2", "blueimp-file-upload"] /]
-[#assign customJS = ["${baseUrl}/js/projects/projectHighlight.js", "${baseUrl}/js/global/autoSave.js", "${baseUrl}/js/global/fieldsValidation.js"] /]
-[#assign customCSS = ["${baseUrl}/css/projects/projectHighlights.css"] /]
+[#assign customJS = ["${baseUrlMedia}/js/projects/projectHighlight.js", "${baseUrlMedia}/js/global/autoSave.js", "${baseUrlMedia}/js/global/fieldsValidation.js"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/projects/projectHighlights.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "highlights" /]
 [#assign hideJustification = true /]
@@ -22,7 +22,7 @@
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrl}/images/global/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.jpg" />
     <p class="col-md-10"> [@s.text name="projectHighlight.help" /] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
@@ -126,9 +126,9 @@
                 [#-- Show highlight image --]
                 <div id="highlight.image" class="image">
                  [#if hasFile]
-                   <img src="${(highlightsImagesUrl)!baseUrl}${(highlight.file.fileName)!'images/global/defaultImage.png'}" width="100%">
+                   <img src="${(highlightsImagesUrl)!baseUrlMedia}${(highlight.file.fileName)!'images/global/defaultImage.png'}" width="100%">
                  [#else]
-                   <img src="${baseUrl}/${(highlight.file.fileName)!'images/global/defaultImage.png'}" width="100%">
+                   <img src="${baseUrlMedia}/${(highlight.file.fileName)!'images/global/defaultImage.png'}" width="100%">
                  [/#if]
                 </div>
                 <div class="clear"></div>

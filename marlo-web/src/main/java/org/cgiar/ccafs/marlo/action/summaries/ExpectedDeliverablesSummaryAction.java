@@ -72,6 +72,42 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
   }
 
 
+  /**
+   * Method to add i8n parameters to masterReport in Pentaho
+   * 
+   * @param masterReport
+   * @return masterReport with i8n parameters added
+   */
+  private MasterReport addi8nParameters(MasterReport masterReport) {
+    /*
+     * Deliverables
+     */
+    masterReport.getParameterValues().put("i8nDeliverableID", this.getText("searchTerms.deliverableId"));
+    masterReport.getParameterValues().put("i8nDeliverableTitle",
+      this.getText("project.deliverable.generalInformation.title"));
+    masterReport.getParameterValues().put("i8nKeyOutput",
+      this.getText("project.deliverable.generalInformation.keyOutput"));
+    masterReport.getParameterValues().put("i8nExpectedYear",
+      this.getText("project.deliverable.generalInformation.year"));
+    masterReport.getParameterValues().put("i8nType", this.getText("deliverable.type"));
+    masterReport.getParameterValues().put("i8nSubType", this.getText("deliverable.subtype"));
+    masterReport.getParameterValues().put("i8nCrossCutting", this.getText("project.crossCuttingDimensions.readText"));
+    masterReport.getParameterValues().put("i8nGenderLevels", this.getText("deliverable.genderLevels.readText"));
+    masterReport.getParameterValues().put("i8nStatus", this.getText("project.deliverable.generalInformation.status"));
+    masterReport.getParameterValues().put("i8nProjectID", this.getText("searchTerms.projectId"));
+    masterReport.getParameterValues().put("i8nProjectTitle", this.getText("project.title.readText"));
+    masterReport.getParameterValues().put("i8nCoas", this.getText("deliverable.coas"));
+    masterReport.getParameterValues().put("i8nFlagships", this.getText("project.Flagships"));
+    masterReport.getParameterValues().put("i8nRegions", this.getText("project.Regions"));
+    masterReport.getParameterValues().put("i8nIndividual", this.getText("deliverable.individual"));
+    masterReport.getParameterValues().put("i8nManaging", this.getText("deliverable.managing"));
+    masterReport.getParameterValues().put("i8nShared", this.getText("deliverable.shared"));
+    masterReport.getParameterValues().put("i8nFundingSourcesID", this.getText("deliverable.fundingSourcesID"));
+    masterReport.getParameterValues().put("i8nFundingWindows", this.getText("deliverable.fundingWindows"));
+
+    return masterReport;
+  }
+
   @Override
   public String execute() throws Exception {
     ClassicEngineBoot.getInstance().start();
@@ -101,7 +137,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
       masterReport.getParameterValues().put("year", year);
       masterReport.getParameterValues().put("date", currentDate);
       masterReport.getParameterValues().put("regionalAvalaible", this.hasProgramnsRegions());
-
+      // Set i8n for pentaho
+      masterReport = this.addi8nParameters(masterReport);
       ExcelReportUtil.createXLSX(masterReport, os);
       bytesXLSX = os.toByteArray();
       os.close();

@@ -2,8 +2,8 @@
 [#assign title = "Project Activities" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = ["${baseUrl}/js/global/fieldsValidation.js","${baseUrl}/js/projects/projectActivities.js", "${baseUrl}/js/global/autoSave.js"] /]
-[#assign customCSS = ["${baseUrl}/css/projects/projectActivities.css"] /]
+[#assign customJS = ["${baseUrlMedia}/js/global/fieldsValidation.js","${baseUrlMedia}/js/projects/projectActivities.js", "${baseUrlMedia}/js/global/autoSave.js"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/projects/projectActivities.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "activities" /]
 [#assign hideJustification = true /]
@@ -19,7 +19,7 @@
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrl}/images/global/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.jpg" />
     <p class="col-md-10">[#if reportingActive] [@s.text name="project.activities.help2" /] [#else] [@s.text name="project.activities.help1" /] [/#if] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>

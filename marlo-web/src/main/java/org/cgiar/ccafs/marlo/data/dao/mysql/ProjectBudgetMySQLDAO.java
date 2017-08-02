@@ -19,6 +19,7 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.ProjectBudgetDAO;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -34,9 +35,32 @@ public class ProjectBudgetMySQLDAO extends AbstractMarloDAO implements ProjectBu
   }
 
   @Override
-  public String amountByBudgetType(long institutionId, int year, long budgetType, long projectId) {
-    String query = "select SUM(amount) as amount from project_budgets where institution_id= " + institutionId
-      + " and year= " + year + " and budget_type= " + budgetType + " and project_id= " + projectId + " and is_active=1";
+  public String amountByBudgetType(long institutionId, int year, long budgetType, long projectId, Integer coFinancing) {
+    String query = null;
+
+    switch (coFinancing) {
+      case 1:
+        query =
+          "select SUM(amount) as amount from project_budgets where institution_id= " + institutionId + " and year= "
+            + year + " and budget_type= " + budgetType + " and project_id= " + projectId + " and is_active=1";
+        break;
+      case 2:
+        query =
+          "select SUM(amount) as amount from project_budgets pb INNER JOIN funding_sources fs ON fs.id = pb.funding_source_id where pb.institution_id= "
+            + institutionId + " and pb.year= " + year + " and pb.budget_type= " + budgetType + " and pb.project_id= "
+            + projectId + " and pb.is_active=1 AND fs.w1w2";
+        break;
+      case 3:
+        query =
+          "select SUM(amount) as amount from project_budgets pb INNER JOIN funding_sources fs ON fs.id = pb.funding_source_id where pb.institution_id= "
+            + institutionId + " and pb.year= " + year + " and pb.budget_type= " + budgetType + " and pb.project_id= "
+            + projectId + " and pb.is_active=1 AND !fs.w1w2";
+        break;
+
+      default:
+        break;
+    }
+
     List<Map<String, Object>> list = super.findCustomQuery(query);
     if (list.size() > 0) {
       Map<String, Object> result = list.get(0);
@@ -99,13 +123,45 @@ public class ProjectBudgetMySQLDAO extends AbstractMarloDAO implements ProjectBu
 
   }
 
+
   @Override
-  public List<ProjectBudget> getByParameters(long institutionID, int year, long budgetTypeId, long projectId) {
-    String query = "from " + ProjectBudget.class.getName() + " where institution_id= " + institutionID + " and year= "
-      + year + " and budget_type= " + budgetTypeId + " and project_id= " + projectId + " and is_active=1";
-    List<ProjectBudget> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
+  public List<ProjectBudget> getByParameters(long institutionID, int year, long budgetTypeId, long projectId,
+    Integer coFinancing) {
+    String query = null;
+
+    switch (coFinancing) {
+      case 1:
+        query = "select id from project_budgets where institution_id= " + institutionID + " and year= " + year
+          + " and budget_type= " + budgetTypeId + " and project_id= " + projectId + " and is_active=1";
+        break;
+      case 2:
+        query =
+          "select pb.id from project_budgets pb INNER JOIN funding_sources fs ON fs.id = pb.funding_source_id where pb.institution_id= "
+            + institutionID + " and pb.year= " + year + " and pb.budget_type= " + budgetTypeId + " and pb.project_id= "
+            + projectId + " and pb.is_active=1 and fs.w1w2";
+        break;
+      case 3:
+        query =
+          "select pb.id from project_budgets pb INNER JOIN funding_sources fs ON fs.id = pb.funding_source_id where pb.institution_id= "
+            + institutionID + " and pb.year= " + year + " and pb.budget_type= " + budgetTypeId + " and pb.project_id= "
+            + projectId + " and pb.is_active=1 and !fs.w1w2";
+        break;
+
+      default:
+        break;
+    }
+
+
+    List<Map<String, Object>> pbList = super.findCustomQuery(query.toString());
+
+    List<ProjectBudget> projectBudgetList = new ArrayList<>();
+
+    if (pbList != null) {
+      for (Map<String, Object> map : pbList) {
+        ProjectBudget projectBudget = this.find(Long.parseLong(map.get("id").toString()));
+        projectBudgetList.add(projectBudget);
+      }
+      return projectBudgetList;
     }
     return null;
   }

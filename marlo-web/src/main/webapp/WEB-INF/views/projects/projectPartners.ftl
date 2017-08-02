@@ -2,8 +2,8 @@
 [#assign title = "Project Partners" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = ["select2", "flat-flags"] /]
-[#assign customJS = ["${baseUrl}/js/global/fieldsValidation.js", "${baseUrl}/js/global/usersManagement.js", "${baseUrl}/js/projects/projectPartners.js", "${baseUrl}/js/global/autoSave.js"] /]  
-[#assign customCSS = ["${baseUrl}/css/projects/projectPartners.css"] /]
+[#assign customJS = ["${baseUrlMedia}/js/global/fieldsValidation.js", "${baseUrlMedia}/js/global/usersManagement.js", "${baseUrlMedia}/js/projects/projectPartners.js", "${baseUrlMedia}/js/global/autoSave.js"] /]  
+[#assign customCSS = ["${baseUrlMedia}/css/projects/projectPartners.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "partners" /]
 [#assign hideJustification = true /]
@@ -19,7 +19,7 @@
 
 <div class="container helpText viewMore-block">
   <div style="display:none" class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrl}/images/global/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.jpg" />
     <p class="col-md-10">[#if project.projectEditLeader] [#if reportingActive] [@s.text name="projectPartners.help3" /] [#else] [@s.text name="projectPartners.help2" ] [@s.param][@s.text name="global.managementLiaison" /][/@s.param] [/@s.text] [/#if]  [#else] [@s.text name="projectPartners.help1" /] [/#if]</p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
@@ -170,7 +170,7 @@
 </div>
 
 [#-- Change partner person type dialog --]
-<div id="contactChangeType-dialog" title="Change person type" style="display:none">
+<div id="contactChangeType-dialog" title="Change contact person’s role" style="display:none">
   <ul class="messages"></ul>
 </div>
 
@@ -244,7 +244,7 @@
     [#-- Partner Title --]
     <div class="blockTitle closed">
       [#-- Title --]
-      <span class="${customForm.changedField('${name}.id')}"> <span class="index_number">${index+1}</span>. <span class="partnerTitle">${(element.institution.composedName)!'New Project Partner'}</span> </span>
+      <span class="${customForm.changedField('${name}.id')}"> <span class="index_number">${index+1}</span>. <span class="partnerTitle">${(element.institution.composedName)!'Project Partner'}</span> </span>
 
       [#-- Tags --]
       <div class="partnerTags pull-right">
@@ -255,7 +255,11 @@
       
       [#-- Contacts --]
       [#if (element.partnerPersons)?? ] <br /> 
-        <small>[#list element.partnerPersons as partnerPerson][${(partnerPerson.user.composedCompleteName)!}] [/#list]</small> 
+        <small>[#list element.partnerPersons as partnerPerson]
+          [#if partnerPerson.user?? && partnerPerson.user.firstName??]
+            [${(partnerPerson.user.composedCompleteName)!}]
+          [/#if]
+        [/#list]</small> 
       [/#if]
       <div class="clearfix"></div>
     </div>
@@ -298,7 +302,7 @@
       [#-- Responsibilities --]
       [#if project.projectEditLeader]
       <div class="form-group partnerResponsabilities chosen"> 
-        [@customForm.textArea name="${name}.responsibilities" className="resp limitWords-100" i18nkey="projectPartners.responsabilities" required=true editable=editable /]
+        [@customForm.textArea name="${name}.responsibilities" className="resp limitWords-100" i18nkey="projectPartners.responsabilities" required=isPPA editable=editable /]
         <div class="clearfix"></div>
       </div>
       [/#if]
@@ -368,7 +372,11 @@
             [@contactPersonMacro element=partnerPerson name="${name}.partnerPersons[${partnerPerson_index}]" index=partnerPerson_index partnerIndex=index /]
           [/#list]
         [#else]
+          [#if isPPA]
            [@contactPersonMacro element={} name="${name}.partnerPersons[0]" index=0 partnerIndex=index /]
+          [#else]
+            <p class="noContactMessage">[@s.text name="projectPartners.contactEmpty" /]</p>
+          [/#if]
         [/#if]  
         [#if (editable && canEdit)]
           <div class="addContact"><a href="" class="addLink">[@s.text name="projectPartners.addContact"/]</a></div> 
@@ -393,7 +401,8 @@
     <input id="id" class="partnerPersonId" type="hidden" name="${name}.id" value="${(element.id)!}" />
     [#local canEditLeader=(editable && action.hasPermission("leader"))!false /]
     [#local canEditCoordinator=(editable && action.hasPermission("coordinator"))!false /]
-    
+   
+    [#local isPPA = (action.isPPA(element.projectPartner.institution))!false /]
     [#if (element.contactType == "PL")!false]
       [#local canEditContactType = (editable && action.hasPermission("leader"))!false /]
     [#elseif (element.contactType == "PC")!false]
@@ -410,7 +419,7 @@
           [#-- Contact type --]
           <div class="col-md-4 partnerPerson-type ${customForm.changedField('${name}.contactType')}">
             [#if canEditContactType]
-              [@customForm.select name="${name}.contactType" className="partnerPersonType" disabled=!canEdit i18nkey="projectPartners.personType" stringKey=true header=false listName="partnerPersonTypes" value="'${(element.contactType)!'CP'}'" required=true /]
+              [@customForm.select name="${name}.contactType" className="partnerPersonType" disabled=!canEdit i18nkey="projectPartners.personType" stringKey=true header=false listName="partnerPersonTypes" value="'${(element.contactType)!'CP'}'" required=isPPA /]
             [#else]
               <label class="readOnly">[@s.text name="projectPartners.personType" /]:</label>
               <div class="select"><p>[@s.text name="projectPartners.types.${(element.contactType)!'none'}"/]</p></div>
@@ -428,7 +437,7 @@
             [#-- Contact Person information is going to come from the users table, not from project_partner table (refer to the table project_partners in the database) --] 
             [#assign partnerClass = "${name}.user.id"?string?replace("\\W+", "", "r") /]
             [#assign changeFieldEmail = customForm.changedField('${name}.user.id') /]
-            [@customForm.input name="partner-${partnerIndex}-person-${index}" value="${(element.user.composedName?html)!}" className='userName ${partnerClass} ${changeFieldEmail}' type="text" disabled=!canEdit i18nkey="projectPartners.contactPersonEmail" required=true readOnly=true editable=editable && canEditEmail /]
+            [@customForm.input name="partner-${partnerIndex}-person-${index}" value="${(element.user.composedName?html)!}" className='userName ${partnerClass} ${changeFieldEmail}' type="text" disabled=!canEdit i18nkey="projectPartners.contactPersonEmail" required=isPPA readOnly=true editable=editable && canEditEmail /]
             <input class="userId" type="hidden" name="${name}.user.id" value="${(element.user.id)!}" />   
             [#if editable && canEditEmail]<div class="searchUser button-blue button-float">[@s.text name="form.buttons.searchUser" /]</div>[/#if]
           </div>
@@ -445,7 +454,7 @@
               <h3>Activities</h3>
               <ul>
               [#list action.getActivitiesLedByUser(element.id) as activity]
-                <li>${activity.title}  <a target="_blank" href="[@s.url namespace=namespace action='${crpSession}/activities' ][@s.param name='projectID']${project.id?c}[/@s.param][/@s.url]#projectActivity-${activity.id}"><img class="external-link" src="${baseUrl}/images/global/external-link.png" /></a></li>
+                <li>${activity.title}  <a target="_blank" href="[@s.url namespace=namespace action='${crpSession}/activities' ][@s.param name='projectID']${project.id?c}[/@s.param][/@s.url]#projectActivity-${activity.id}"><img class="external-link" src="${baseUrlMedia}/images/global/external-link.png" /></a></li>
               [/#list]
               </ul>
             </div>
@@ -456,7 +465,7 @@
               <h3>Deliverables</h3>
               <ul>
               [#list action.getDeliverablesLedByUser(element.id) as deliverable]
-                <li>${deliverable.title}  <a target="_blank" href="[@s.url namespace=namespace action='${crpSession}/deliverable' ][@s.param name='deliverableID']${deliverable.id}[/@s.param][/@s.url]"><img class="external-link" src="${baseUrl}/images/global/external-link.png" /></a></li>
+                <li>${deliverable.title}  <a target="_blank" href="[@s.url namespace=namespace action='${crpSession}/deliverable' ][@s.param name='deliverableID']${deliverable.id}[/@s.param][/@s.url]"><img class="external-link" src="${baseUrlMedia}/images/global/external-link.png" /></a></li>
               [/#list]
               </ul>
             </div>

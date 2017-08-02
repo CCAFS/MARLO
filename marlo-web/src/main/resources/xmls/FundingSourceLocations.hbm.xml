@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated May 5, 2017 9:59:29 AM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.FundingSourceLocation" table="funding_source_locations" optimistic-lock="version">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="locElement" class="org.cgiar.ccafs.marlo.data.model.LocElement" fetch="select">
+            <column name="loc_element_id"/>
+        </many-to-one>
+        <many-to-one name="locElementType" class="org.cgiar.ccafs.marlo.data.model.LocElementType" fetch="select">
+            <column name="loc_element_type_id"/>
+        </many-to-one>
+        <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="modified_by" />
+        </many-to-one>
+        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="created_by" />
+        </many-to-one>
+        <many-to-one name="fundingSource" class="org.cgiar.ccafs.marlo.data.model.FundingSource" fetch="select">
+            <column name="funding_source_id" not-null="true" />
+        </many-to-one>
+        <property name="active" type="boolean">
+            <column name="is_active" not-null="true" />
+        </property>
+        <property name="activeSince" type="timestamp">
+            <column name="active_since" length="19" />
+        </property>
+        <property name="modificationJustification" type="string">
+            <column name="modification_justification" length="65535" />
+        </property>
+    </class>
+</hibernate-mapping>

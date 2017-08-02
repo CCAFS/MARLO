@@ -2,8 +2,8 @@
 [#assign title = "Project Other contributions" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = ["${baseUrl}/js/projects/projectOtherContributions.js", "${baseUrl}/js/global/autoSave.js","${baseUrl}/js/global/fieldsValidation.js"] /]
-[#assign customCSS = ["${baseUrl}/css/projects/projectOtherContributions.css"] /]
+[#assign customJS = ["${baseUrlMedia}/js/projects/projectOtherContributions.js", "${baseUrlMedia}/js/global/autoSave.js","${baseUrlMedia}/js/global/fieldsValidation.js"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/projects/projectOtherContributions.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "otherContributions" /]
 [#assign hideJustification = true /]
@@ -19,7 +19,7 @@
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrl}/images/global/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.jpg" />
     <p class="col-md-10"> [@s.text name="projectOtherContributions.help" ][/@s.text]</p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>

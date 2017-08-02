@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Mar 2, 2017 3:32:46 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.CenterProjectCrosscutingTheme" table="center_project_crosscuting_themes" optimistic-lock="version">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="foreign">
+                <param name="property">project</param>
+            </generator>
+        </id>
+        <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="modified_by" />
+        </many-to-one>
+        <one-to-one name="project" class="org.cgiar.ccafs.marlo.data.model.CenterProject" constrained="true"></one-to-one>
+        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="created_by" />
+        </many-to-one>
+        <property name="climateChange" type="java.lang.Boolean">
+            <column name="climate_change" />
+        </property>
+        <property name="gender" type="java.lang.Boolean">
+            <column name="gender" />
+        </property>
+        <property name="youth" type="java.lang.Boolean">
+            <column name="youth" />
+        </property>
+        <property name="policiesInstitutions" type="java.lang.Boolean">
+            <column name="policies_institutions" />
+        </property>
+        <property name="capacityDevelopment" type="java.lang.Boolean">
+            <column name="capacity_development" />
+        </property>
+        <property name="bigData" type="java.lang.Boolean">
+            <column name="big_data" />
+        </property>
+        <property name="impactAssessment" type="java.lang.Boolean">
+            <column name="impact_assessment" />
+        </property>
+        <property name="na" type="java.lang.Boolean">
+            <column name="n_a" />
+        </property>
+        <property name="active" type="boolean">
+            <column name="is_active" not-null="true" />
+        </property>
+        <property name="activeSince" type="timestamp">
+            <column name="active_since" length="8" />
+        </property>
+        <property name="modificationJustification" type="string">
+            <column name="modification_justification" length="65535" />
+        </property>
+    </class>
+</hibernate-mapping>

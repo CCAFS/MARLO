@@ -1,0 +1,141 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Feb 15, 2017 8:49:31 AM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+	<class name="org.cgiar.ccafs.marlo.data.model.CenterProject" table="center_projects"
+		optimistic-lock="version">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<many-to-one name="projectType"
+			class="org.cgiar.ccafs.marlo.data.model.CenterProjectType" fetch="select">
+			<column name="project_type_id" />
+		</many-to-one>
+		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select">
+			<column name="modified_by" />
+		</many-to-one>
+		<many-to-one name="contactPerson" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select">
+			<column name="contact_person_id" />
+		</many-to-one>
+		<many-to-one name="projectLeader" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select">
+			<column name="project_leader_id" />
+		</many-to-one>
+		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select">
+			<column name="created_by" />
+		</many-to-one>
+		<many-to-one name="projectStatus"
+			class="org.cgiar.ccafs.marlo.data.model.CenterProjectStatus" fetch="select">
+			<column name="status_id" />
+		</many-to-one>
+		<many-to-one name="researchProgram"
+			class="org.cgiar.ccafs.marlo.data.model.CenterProgram" fetch="select">
+			<column name="program_id" />
+		</many-to-one>
+		<property name="ocsCode" type="string">
+			<column name="ocs_code" length="65535" />
+		</property>
+		<property name="description" type="string">
+			<column name="description" length="65535" />
+		</property>
+		<property name="extensionDate" type="timestamp">
+			<column name="extension_date" length="19" />
+		</property>
+		<property name="originalDonor" type="string">
+			<column name="original_donor" length="65535" />
+		</property>
+		<property name="directDonor" type="string">
+			<column name="direct_donor" length="65535" />
+		</property>
+		<property name="totalAmount" type="java.lang.Double">
+			<column name="total_amount" precision="30" />
+		</property>
+		<property name="name" type="string">
+			<column name="name" length="65535" />
+		</property>
+		<property name="suggestedName" type="string">
+      <column name="suggested_name" length="65535" />
+    </property>
+		<property name="dateCreated" type="timestamp">
+			<column name="date_created" length="19" />
+		</property>
+		<property name="startDate" type="timestamp">
+			<column name="start_date" length="19" />
+		</property>
+		<property name="endDate" type="timestamp">
+			<column name="end_date" length="19" />
+		</property>
+		<property name="active" type="boolean">
+			<column name="is_active" not-null="true" />
+		</property>
+		<property name="global" type="java.lang.Boolean">
+			<column name="is_global" />
+		</property>
+		<property name="region" type="java.lang.Boolean">
+			<column name="is_region" />
+		</property>
+		<property name="activeSince" type="timestamp">
+			<column name="active_since" length="19" />
+		</property>
+		<property name="modificationJustification" type="string">
+			<column name="modification_justification" length="65535" />
+		</property>
+		<one-to-one name="projectCrosscutingTheme"
+			class="org.cgiar.ccafs.marlo.data.model.CenterProjectCrosscutingTheme"
+			cascade="save-update"></one-to-one>
+		<set name="projectOutputs" table="center_project_outputs" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="project_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterProjectOutput" />
+		</set>
+		<set name="projectFundingSources" table="center_project_funding_sources"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="project_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterProjectFundingSource" />
+		</set>
+		<set name="sectionStatuses" table="center_section_statuses" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="project_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterSectionStatus" />
+		</set>
+		<set name="deliverables" table="center_deliverables" inverse="true" lazy="true"
+			fetch="select">
+			<key>
+				<column name="project_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterDeliverable" />
+		</set>
+		<set name="projectPartners" table="center_project_partners" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="project_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterProjectPartner" />
+		</set>
+		<set name="submissions" table="center_submissions" inverse="true" lazy="true"
+			fetch="select">
+			<key>
+				<column name="project_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterSubmission" />
+		</set>
+		<set name="projectLocations" table="center_project_locations" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="project_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterProjectLocation" />
+		</set>
+	</class>
+</hibernate-mapping>

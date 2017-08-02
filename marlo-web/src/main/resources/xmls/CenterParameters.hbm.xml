@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated May 30, 2017 9:23:45 AM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.CenterParameter" table="center_parameters" optimistic-lock="version">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <property name="key" type="string">
+            <column name="key" length="500" />
+        </property>
+        <property name="description" type="string">
+            <column name="description" length="65535" />
+        </property>
+        <property name="format" type="java.lang.Integer">
+            <column name="format" />
+        </property>
+        <property name="defaultValue" type="string">
+            <column name="default_value" length="500" />
+        </property>
+        <property name="category" type="java.lang.Integer">
+            <column name="category" />
+        </property>
+        <set name="centerCustomParameters" table="center_custom_parameters" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="parameter_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterCustomParameter" />
+        </set>
+    </class>
+</hibernate-mapping>
