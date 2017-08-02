@@ -73,13 +73,25 @@
   <logger name="org.apache.shiro">
     <level value="WARN" />
   </logger>
-   <logger name="org.hibernate" level="ERROR" />
-  <logger name="org.hibernate.type" level="ERROR" />
- 
+  <logger name="org.hibernate">
+    <level value="INFO" />
+  </logger>
+  <logger name="org.hibernate.type">
+   <level value="INFO" />
+  </logger>
+  <logger name="org.flywaydb">
+    <level value="INFO" />
+  </logger>
+  <logger name="org.apache.tomcat">
+    <level value="WARN" />
+  </logger>
+  <logger name="org.apache.catalina">
+    <level value="WARN" />
+  </logger>
+  <logger name="org.apache.coyote">
+    <level value="WARN" />
+  </logger>
 
-
-  
- 
   <!-- ======= Attach the appenders according to the configuration properties 
     ======= -->
   <root level="ALL">
