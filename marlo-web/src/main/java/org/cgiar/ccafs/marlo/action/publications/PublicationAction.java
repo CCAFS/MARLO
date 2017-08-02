@@ -77,6 +77,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PublicationAction extends BaseAction {
 
@@ -84,6 +86,9 @@ public class PublicationAction extends BaseAction {
    * 
    */
   private static final long serialVersionUID = -5176367401132626314L;
+
+  private final Logger LOG = LoggerFactory.getLogger(PublicationAction.class);
+
   private Crp loggedCrp;
   private CrpManager crpManager;
   private long deliverableID;
@@ -471,7 +476,7 @@ public class PublicationAction extends BaseAction {
           deliverable.getDeliverableGenderLevels().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
 
-        System.out.println(deliverable.getGenderLevels().size());
+        LOG.debug("Deliverable.getGenderLevels size = " + deliverable.getGenderLevels().size());
         this.setDraft(false);
       }
 

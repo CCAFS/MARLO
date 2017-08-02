@@ -278,7 +278,7 @@ public class ProjectPartnerAction extends BaseAction {
       project.getActivities().stream().filter(c -> c.isActive() && c.getProjectPartnerPerson() != null
         && c.getProjectPartnerPerson().getId().longValue() == userID).collect(Collectors.toList());
 
-    System.out.println(activities);
+    LOG.debug("Activities: " + activities);
 
     return activities;
 
@@ -607,7 +607,7 @@ public class ProjectPartnerAction extends BaseAction {
       }
     }
 
- // Copy to FL, CL and FM depending on CRP_EMAIL_CC_FL_FM_CL specificity
+    // Copy to FL, CL and FM depending on CRP_EMAIL_CC_FL_FM_CL specificity
     if (this.hasSpecificities(APConstants.CRP_EMAIL_CC_FL_FM_CL)) {
       // CC for leaders and coordinators
       // CC will be also the Management Liaison associated with the flagship(s), if is PMU only the PMU contact

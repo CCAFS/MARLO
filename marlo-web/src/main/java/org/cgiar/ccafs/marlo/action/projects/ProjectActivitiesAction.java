@@ -511,9 +511,6 @@ public class ProjectActivitiesAction extends BaseAction {
           partnerPersons.add(partnerPerson);
         }
       }
-
-      System.out.println("");
-
     }
 
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};

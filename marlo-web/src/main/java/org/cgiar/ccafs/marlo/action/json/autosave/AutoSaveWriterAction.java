@@ -47,6 +47,8 @@ import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
 import com.google.inject.Inject;
 import com.opensymphony.xwork2.Action;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -58,6 +60,8 @@ public class AutoSaveWriterAction extends BaseAction {
 
 
   private static final long serialVersionUID = 2904862716714197942L;
+
+  private final Logger LOG = LoggerFactory.getLogger(AutoSaveWriterAction.class);
 
 
   private String autoSave[];
@@ -166,7 +170,7 @@ public class AutoSaveWriterAction extends BaseAction {
 
         String fileName = fileId + "_" + fileClass + "_" + fileAction + ".json";
         String pathFile = config.getAutoSaveFolder();
-        System.out.println(pathFile);
+        LOG.debug("PathFile: " + pathFile);
         Path path = Paths.get(pathFile);
 
         if (Files.exists(path, LinkOption.NOFOLLOW_LINKS)) {
