@@ -36,10 +36,11 @@
     <listener-class>org.cgiar.ccafs.marlo.config.HibernateListener</listener-class>
   </listener>
   
-  
+  <!--  
     <listener>
     <listener-class>org.cgiar.ccafs.marlo.config.PentahoListener</listener-class>
   </listener>
+  -->
   
   
   <filter>

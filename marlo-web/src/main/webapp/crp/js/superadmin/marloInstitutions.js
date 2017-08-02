@@ -22,6 +22,7 @@ $(document).ready(function() {
           $modal.find('.loading').fadeIn();
         },
         success: function(data) {
+          console.log(data);
         },
         complete: function(data) {
           $modal.find('.loading').fadeOut();
@@ -50,20 +51,22 @@ $(document).ready(function() {
         url: baseURL + '/editPartnerRequest.do',
         data: $request.find('.editForm').serializeObject(),
         beforeSend: function() {
-          $modal.find('.loading').fadeIn();
+          $request.find('.loading').fadeIn();
         },
         success: function(data) {
+          console.log(data);
         },
         complete: function(data) {
-          $modal.find('.loading').fadeOut();
+          $request.find('.loading').fadeOut();
+
+          $request.find('.editForm').slideUp();
+          $request.find('.btn-group').slideDown();
         },
         error: function(error) {
           console.log(error)
         }
     });
 
-    $request.find('.editForm').slideUp();
-    $request.find('.btn-group').slideDown();
   });
 
   // Cancel request edition
