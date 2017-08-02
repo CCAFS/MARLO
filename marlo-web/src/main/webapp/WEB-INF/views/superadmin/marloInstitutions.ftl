@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "MARLO Admin" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
-[#assign pageLibs = ["datatables.net", "datatables.net-bs", "flat-flags"] /]
+[#assign pageLibs = [ "flat-flags", "google-diff-match-patch", "jquery-pretty-text-diff"] /]
 [#assign customJS = [ "${baseUrlMedia}/js/superadmin/marloInstitutions.js" ] /]
 [#assign customCSS = [ "${baseUrlMedia}/css/superadmin/superadmin.css","${baseUrlMedia}/css/global/customDataTable.css" ] /]
 [#assign currentSection = "superadmin" /]

@@ -103,7 +103,13 @@ function findSameness() {
             $(e).find('.sameness').show();
 
             $.each(data.institutions, function(i,partner) {
-              $(e).find('.sameness ul').append('<li>' + partner.composedName + '</li>')
+              var $li = $('<li title="' + partner.composedName + '">' + partner.composedName + '</li>');
+              $(e).find('.sameness ul').append($li);
+
+              /*
+               * $li.prettyTextDiff({ cleanup: true, originalContent: $(e).find('h4').text(), changedContent:
+               * partner.composedName, diffContainer: $li });
+               */
             });
 
           }
