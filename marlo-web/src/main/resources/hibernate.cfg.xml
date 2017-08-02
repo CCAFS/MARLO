@@ -14,22 +14,22 @@
 		<property name="connection.autoReconnect">true</property>
 		<property name="connection.autoReconnectForPools">true</property>
 		<property name="connection.is-connection-validation-required">true</property>
+		<!-- The value below can now be overriden in your properties file. The MARLO 
+			team strongly recommends setting to true in your dev properties file so that 
+			you can gauge performance. -->
 		<property name="show_sql">false</property>
 		<property name="use_sql_comments">false</property>
 		<property name="generate_statistics">false</property>
 
 
-
-
-
-    <property name="hibernate.c3p0.idle_test_period">6</property>
-    <property name="hibernate.c3p0.timeout">6</property>
-    <property name="hibernate.c3p0.max_size">10000</property>
-    <property name="hibernate.c3p0.min_size">50</property>
-    <property name="hibernate.c3p0.max_statements">500</property>
-    <property name="hibernate.c3p0.preferredTestQuery">select 1;</property>
-    <property name="connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider</property>
-    <property name="hibernate.c3p0.validate">true</property>
+		<property name="hibernate.c3p0.idle_test_period">6</property>
+		<property name="hibernate.c3p0.timeout">6</property>
+		<property name="hibernate.c3p0.max_size">10000</property>
+		<property name="hibernate.c3p0.min_size">50</property>
+		<property name="hibernate.c3p0.max_statements">500</property>
+		<property name="hibernate.c3p0.preferredTestQuery">select 1;</property>
+		<property name="connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider</property>
+		<property name="hibernate.c3p0.validate">true</property>
 
 		<!-- Model Mappings -->
 		<mapping resource="xmls/DeliverableMetadataElements.hbm.xml" />
@@ -39,7 +39,7 @@
 		<mapping resource="xmls/CrpUsers.hbm.xml" />
 		<mapping resource="xmls/Roles.hbm.xml" />
 		<mapping resource="xmls/UserRoles.hbm.xml" />
-	
+
 		<mapping resource="xmls/SrfIdos.hbm.xml" />
 		<mapping resource="xmls/CrpsSitesIntegration.hbm.xml" />
 		<mapping resource="xmls/CrpProgramLeaders.hbm.xml" />
@@ -101,42 +101,42 @@
 		<mapping resource="xmls/FundingSourceBudgets.hbm.xml" />
 		<mapping resource="xmls/DeliverableFundingSources.hbm.xml" />
 		<mapping resource="xmls/DeliverableGenderLevels.hbm.xml" />
-		<mapping resource="xmls/CrpTargetUnits.hbm.xml"/>		
+		<mapping resource="xmls/CrpTargetUnits.hbm.xml" />
 		<mapping resource="xmls/ProjectHighligths.hbm.xml" />
-	  <mapping resource="xmls/ProjectHighligthsCountry.hbm.xml" />
-	  <mapping resource="xmls/ProjectHighligthsTypes.hbm.xml" />
-	  <mapping resource="xmls/ProjectLeverage.hbm.xml" /> 
-    <mapping resource="xmls/CasesStudies.hbm.xml" /> 
-    <mapping resource="xmls/CaseStudyProjects.hbm.xml" /> 
-		<mapping resource="xmls/CrpIndicatorReports.hbm.xml" /> 
-		<mapping resource="xmls/CrpIndicators.hbm.xml" /> 
-		<mapping resource="xmls/CrpIndicatorTypes.hbm.xml" /> 
-		<mapping resource="xmls/IpElements.hbm.xml" /> 
-		<mapping resource="xmls/IpElementTypes.hbm.xml" /> 
-		<mapping resource="xmls/IpIndicators.hbm.xml" /> 
-		<mapping resource="xmls/IpProgramElementRelationTypes.hbm.xml" /> 
-		<mapping resource="xmls/IpProgramElements.hbm.xml" /> 
-		<mapping resource="xmls/IpPrograms.hbm.xml" /> 
-		<mapping resource="xmls/IpProgramTypes.hbm.xml" /> 
-		<mapping resource="xmls/IpProjectContributionOverviews.hbm.xml" /> 
-		<mapping resource="xmls/IpProjectContributions.hbm.xml" /> 
-		<mapping resource="xmls/IpProjectIndicators.hbm.xml" /> 
-		<mapping resource="xmls/MogSynthesis.hbm.xml" /> 
-		<mapping resource="xmls/OutcomeSynthesis.hbm.xml" /> 
-		<mapping resource="xmls/ProjectOtherContributions.hbm.xml" /> 
-		<mapping resource="xmls/ProjectFocusesPrev.hbm.xml" /> 
+		<mapping resource="xmls/ProjectHighligthsCountry.hbm.xml" />
+		<mapping resource="xmls/ProjectHighligthsTypes.hbm.xml" />
+		<mapping resource="xmls/ProjectLeverage.hbm.xml" />
+		<mapping resource="xmls/CasesStudies.hbm.xml" />
+		<mapping resource="xmls/CaseStudyProjects.hbm.xml" />
+		<mapping resource="xmls/CrpIndicatorReports.hbm.xml" />
+		<mapping resource="xmls/CrpIndicators.hbm.xml" />
+		<mapping resource="xmls/CrpIndicatorTypes.hbm.xml" />
+		<mapping resource="xmls/IpElements.hbm.xml" />
+		<mapping resource="xmls/IpElementTypes.hbm.xml" />
+		<mapping resource="xmls/IpIndicators.hbm.xml" />
+		<mapping resource="xmls/IpProgramElementRelationTypes.hbm.xml" />
+		<mapping resource="xmls/IpProgramElements.hbm.xml" />
+		<mapping resource="xmls/IpPrograms.hbm.xml" />
+		<mapping resource="xmls/IpProgramTypes.hbm.xml" />
+		<mapping resource="xmls/IpProjectContributionOverviews.hbm.xml" />
+		<mapping resource="xmls/IpProjectContributions.hbm.xml" />
+		<mapping resource="xmls/IpProjectIndicators.hbm.xml" />
+		<mapping resource="xmls/MogSynthesis.hbm.xml" />
+		<mapping resource="xmls/OutcomeSynthesis.hbm.xml" />
+		<mapping resource="xmls/ProjectOtherContributions.hbm.xml" />
+		<mapping resource="xmls/ProjectFocusesPrev.hbm.xml" />
 		<mapping resource="xmls/ProjectFurtherContributions.hbm.xml" />
 		<mapping resource="xmls/DeliverableDataSharing.hbm.xml" />
 		<mapping resource="xmls/DeliverableDataSharingFile.hbm.xml" />
 		<mapping resource="xmls/DeliverableDissemination.hbm.xml" />
 		<mapping resource="xmls/IpRelationships.hbm.xml" />
-		<mapping resource="xmls/FundingSourceInstitutions.hbm.xml"/>
-		<mapping resource="xmls/DeliverableQualityAnswers.hbm.xml"/>
-		<mapping resource="xmls/DeliverableQualityChecks.hbm.xml"/>
+		<mapping resource="xmls/FundingSourceInstitutions.hbm.xml" />
+		<mapping resource="xmls/DeliverableQualityAnswers.hbm.xml" />
+		<mapping resource="xmls/DeliverableQualityChecks.hbm.xml" />
 		<mapping resource="xmls/ProjectOutcomesPandr.hbm.xml" />
 		<mapping resource="xmls/OtherContributions.hbm.xml" />
 		<mapping resource="xmls/CrpsPandr.hbm.xml" />
-		<mapping resource="xmls/CaseStudieIndicators.hbm.xml" />		
+		<mapping resource="xmls/CaseStudieIndicators.hbm.xml" />
 		<mapping resource="xmls/MetadataElements.hbm.xml" />
 		<mapping resource="xmls/DeliverablePublicationsMetada.hbm.xml" />
 		<mapping resource="xmls/DeliverableCrps.hbm.xml" />
@@ -145,15 +145,15 @@
 		<mapping resource="xmls/IpLiaisonUsers.hbm.xml" />
 		<mapping resource="xmls/DeliverableLeaders.hbm.xml" />
 		<mapping resource="xmls/DeliverablePrograms.hbm.xml" />
-    <mapping resource="xmls/Phases.hbm.xml" />
-    <mapping resource="xmls/ProjectPhases.hbm.xml" />		
-	  <mapping resource="xmls/GenderTypes.hbm.xml" />
-	  <mapping resource="xmls/PartnerDivisions.hbm.xml" />	  
-	  <mapping resource="xmls/CrpLocElementTypes.hbm.xml" />   
-    <mapping resource="xmls/Parameters.hbm.xml" />   
-    <mapping resource="xmls/CustomParameters.hbm.xml" />   	  
-	  <mapping resource="xmls/InstitutionsLocations.hbm.xml"/>
-	  <mapping resource="xmls/ProjectPartnerLocations.hbm.xml"/>
+		<mapping resource="xmls/Phases.hbm.xml" />
+		<mapping resource="xmls/ProjectPhases.hbm.xml" />
+		<mapping resource="xmls/GenderTypes.hbm.xml" />
+		<mapping resource="xmls/PartnerDivisions.hbm.xml" />
+		<mapping resource="xmls/CrpLocElementTypes.hbm.xml" />
+		<mapping resource="xmls/Parameters.hbm.xml" />
+		<mapping resource="xmls/CustomParameters.hbm.xml" />
+		<mapping resource="xmls/InstitutionsLocations.hbm.xml" />
+		<mapping resource="xmls/ProjectPartnerLocations.hbm.xml" />
 	</session-factory>
 </hibernate-configuration>
 
