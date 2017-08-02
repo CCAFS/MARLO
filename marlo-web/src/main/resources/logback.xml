@@ -65,22 +65,16 @@
     <level value="WARN" />
   </logger>
   <logger name="com.opensymphony.xwork2">
-    <level value="ERROR" />
-  </logger>
-  <logger name="com.opensymphony.xwork2.ognl.OgnlValueStack">
-    <level value="ERROR" />
+    <level value="WARN" />
   </logger>
   <logger name="org.apache.shiro">
     <level value="WARN" />
   </logger>
   <logger name="org.hibernate">
-    <level value="INFO" />
-  </logger>
-  <logger name="org.hibernate.type">
-   <level value="INFO" />
+    <level value="WARN" />
   </logger>
   <logger name="org.flywaydb">
-    <level value="INFO" />
+    <level value="WARN" />
   </logger>
   <logger name="org.apache.tomcat">
     <level value="WARN" />
@@ -91,6 +85,10 @@
   <logger name="org.apache.coyote">
     <level value="WARN" />
   </logger>
+  <logger name="org.pentaho">
+    <level value="WARN" />
+  </logger>
+  
 
   <!-- ======= Attach the appenders according to the configuration properties 
     ======= -->
