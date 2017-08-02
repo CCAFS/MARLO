@@ -22,14 +22,14 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class LiaisonInstitutionMySQLDAO implements LiaisonInstitutionDAO {
+public class LiaisonInstitutionMySQLDAO extends AbstractMarloDAO implements LiaisonInstitutionDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public LiaisonInstitutionMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public LiaisonInstitutionMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
@@ -53,14 +53,14 @@ public class LiaisonInstitutionMySQLDAO implements LiaisonInstitutionDAO {
 
   @Override
   public LiaisonInstitution find(long id) {
-    return dao.find(LiaisonInstitution.class, id);
+    return super.find(LiaisonInstitution.class, id);
 
   }
 
   @Override
   public List<LiaisonInstitution> findAll() {
     String query = "from " + LiaisonInstitution.class.getName();
-    List<LiaisonInstitution> list = dao.findAll(query);
+    List<LiaisonInstitution> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -71,7 +71,7 @@ public class LiaisonInstitutionMySQLDAO implements LiaisonInstitutionDAO {
   @Override
   public LiaisonInstitution findByAcronym(String acronym) {
     String query = "from " + LiaisonInstitution.class.getName() + " where acronym='" + acronym + "'";
-    List<LiaisonInstitution> list = dao.findAll(query);
+    List<LiaisonInstitution> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
     }
@@ -83,9 +83,9 @@ public class LiaisonInstitutionMySQLDAO implements LiaisonInstitutionDAO {
   public long save(LiaisonInstitution liaisonInstitution) {
     if (liaisonInstitution.getId() == null) {
       liaisonInstitution.setActive(true);
-      dao.save(liaisonInstitution);
+      super.save(liaisonInstitution);
     } else {
-      dao.update(liaisonInstitution);
+      super.update(liaisonInstitution);
     }
 
 

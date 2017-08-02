@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.GenderType;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class GenderTypeMySQLDAO implements GenderTypeDAO {
+public class GenderTypeMySQLDAO extends AbstractMarloDAO implements GenderTypeDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public GenderTypeMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public GenderTypeMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
   public boolean deleteGenderType(long genderTypeId) {
     GenderType genderType = this.find(genderTypeId);
 
-    return this.dao.delete(genderType);
+    return super.delete(genderType);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class GenderTypeMySQLDAO implements GenderTypeDAO {
 
   @Override
   public GenderType find(long id) {
-    return dao.find(GenderType.class, id);
+    return super.find(GenderType.class, id);
 
   }
 
   @Override
   public List<GenderType> findAll() {
     String query = "from " + GenderType.class.getName() + "";
-    List<GenderType> list = dao.findAll(query);
+    List<GenderType> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,9 +69,9 @@ public class GenderTypeMySQLDAO implements GenderTypeDAO {
   @Override
   public long save(GenderType genderType) {
     if (genderType.getId() == null) {
-      dao.save(genderType);
+      super.save(genderType);
     } else {
-      dao.update(genderType);
+      super.update(genderType);
     }
 
 

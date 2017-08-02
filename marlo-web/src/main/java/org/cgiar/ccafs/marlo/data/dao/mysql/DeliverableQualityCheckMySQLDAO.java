@@ -22,14 +22,14 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class DeliverableQualityCheckMySQLDAO implements DeliverableQualityCheckDAO {
+public class DeliverableQualityCheckMySQLDAO extends AbstractMarloDAO implements DeliverableQualityCheckDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public DeliverableQualityCheckMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public DeliverableQualityCheckMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class DeliverableQualityCheckMySQLDAO implements DeliverableQualityCheckD
 
   @Override
   public DeliverableQualityCheck find(long id) {
-    return dao.find(DeliverableQualityCheck.class, id);
+    return super.find(DeliverableQualityCheck.class, id);
 
   }
 
   @Override
   public List<DeliverableQualityCheck> findAll() {
     String query = "from " + DeliverableQualityCheck.class.getName() + " where is_active=1";
-    List<DeliverableQualityCheck> list = dao.findAll(query);
+    List<DeliverableQualityCheck> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -70,7 +70,7 @@ public class DeliverableQualityCheckMySQLDAO implements DeliverableQualityCheckD
   public DeliverableQualityCheck findByDeliverable(long id) {
     String query =
       "from " + DeliverableQualityCheck.class.getName() + " where deliverable_id=" + id + " and is_active=1";
-    List<DeliverableQualityCheck> list = dao.findAll(query);
+    List<DeliverableQualityCheck> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
     }
@@ -80,9 +80,9 @@ public class DeliverableQualityCheckMySQLDAO implements DeliverableQualityCheckD
   @Override
   public long save(DeliverableQualityCheck deliverableQualityCheck) {
     if (deliverableQualityCheck.getId() == null) {
-      dao.save(deliverableQualityCheck);
+      super.save(deliverableQualityCheck);
     } else {
-      dao.update(deliverableQualityCheck);
+      super.update(deliverableQualityCheck);
     }
 
 

@@ -22,20 +22,20 @@ import org.cgiar.ccafs.marlo.data.model.UserRole;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class UserRoleMySQLDAO implements UserRoleDAO {
+public class UserRoleMySQLDAO extends AbstractMarloDAO implements UserRoleDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public UserRoleMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public UserRoleMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
   public boolean deleteUserRole(long userRoleId) {
     UserRole userRole = this.find(userRoleId);
-    return dao.delete(userRole);
+    return super.delete(userRole);
   }
 
   @Override
@@ -50,14 +50,14 @@ public class UserRoleMySQLDAO implements UserRoleDAO {
 
   @Override
   public UserRole find(long id) {
-    return dao.find(UserRole.class, id);
+    return super.find(UserRole.class, id);
 
   }
 
   @Override
   public List<UserRole> findAll() {
     String query = "from " + UserRole.class.getName();
-    List<UserRole> list = dao.findAll(query);
+    List<UserRole> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -68,21 +68,21 @@ public class UserRoleMySQLDAO implements UserRoleDAO {
   @Override
   public List<UserRole> getUserRolesByRoleId(Long roleID) {
     String query = "from " + UserRole.class.getName() + " where role_id=" + roleID;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
   public List<UserRole> getUserRolesByUserId(long userId) {
     String query = "from " + UserRole.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
   public long save(UserRole userRole) {
     if (userRole.getId() == null) {
-      dao.save(userRole);
+      super.save(userRole);
     } else {
-      dao.update(userRole);
+      super.update(userRole);
     }
     return userRole.getId();
   }

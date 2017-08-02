@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,14 +22,14 @@ import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsCluserActvity;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class ProjectBudgetsCluserActvityMySQLDAO implements ProjectBudgetsCluserActvityDAO {
+public class ProjectBudgetsCluserActvityMySQLDAO extends AbstractMarloDAO implements ProjectBudgetsCluserActvityDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public ProjectBudgetsCluserActvityMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public ProjectBudgetsCluserActvityMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class ProjectBudgetsCluserActvityMySQLDAO implements ProjectBudgetsCluser
 
   @Override
   public ProjectBudgetsCluserActvity find(long id) {
-    return dao.find(ProjectBudgetsCluserActvity.class, id);
+    return super.find(ProjectBudgetsCluserActvity.class, id);
 
   }
 
   @Override
   public List<ProjectBudgetsCluserActvity> findAll() {
     String query = "from " + ProjectBudgetsCluserActvity.class.getName() + " where is_active=1";
-    List<ProjectBudgetsCluserActvity> list = dao.findAll(query);
+    List<ProjectBudgetsCluserActvity> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,9 +69,9 @@ public class ProjectBudgetsCluserActvityMySQLDAO implements ProjectBudgetsCluser
   @Override
   public long save(ProjectBudgetsCluserActvity projectBudgetsCluserActvity) {
     if (projectBudgetsCluserActvity.getId() == null) {
-      dao.save(projectBudgetsCluserActvity);
+      super.save(projectBudgetsCluserActvity);
     } else {
-      dao.update(projectBudgetsCluserActvity);
+      super.update(projectBudgetsCluserActvity);
     }
 
 

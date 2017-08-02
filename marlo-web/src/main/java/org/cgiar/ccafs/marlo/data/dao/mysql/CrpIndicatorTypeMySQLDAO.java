@@ -22,20 +22,20 @@ import org.cgiar.ccafs.marlo.data.model.CrpIndicatorType;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CrpIndicatorTypeMySQLDAO implements CrpIndicatorTypeDAO {
+public class CrpIndicatorTypeMySQLDAO extends AbstractMarloDAO implements CrpIndicatorTypeDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CrpIndicatorTypeMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CrpIndicatorTypeMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
   public boolean deleteCrpIndicatorType(long crpIndicatorTypeId) {
     CrpIndicatorType crpIndicatorType = this.find(crpIndicatorTypeId);
-    return dao.delete(crpIndicatorType);
+    return super.delete(crpIndicatorType);
   }
 
   @Override
@@ -50,14 +50,14 @@ public class CrpIndicatorTypeMySQLDAO implements CrpIndicatorTypeDAO {
 
   @Override
   public CrpIndicatorType find(long id) {
-    return dao.find(CrpIndicatorType.class, id);
+    return super.find(CrpIndicatorType.class, id);
 
   }
 
   @Override
   public List<CrpIndicatorType> findAll() {
     String query = "from " + CrpIndicatorType.class.getName();
-    List<CrpIndicatorType> list = dao.findAll(query);
+    List<CrpIndicatorType> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -68,9 +68,9 @@ public class CrpIndicatorTypeMySQLDAO implements CrpIndicatorTypeDAO {
   @Override
   public long save(CrpIndicatorType crpIndicatorType) {
     if (crpIndicatorType.getId() == null) {
-      dao.save(crpIndicatorType);
+      super.save(crpIndicatorType);
     } else {
-      dao.update(crpIndicatorType);
+      super.update(crpIndicatorType);
     }
 
 

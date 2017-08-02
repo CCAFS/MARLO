@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,14 +22,14 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class DeliverableFundingSourceMySQLDAO implements DeliverableFundingSourceDAO {
+public class DeliverableFundingSourceMySQLDAO extends AbstractMarloDAO implements DeliverableFundingSourceDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public DeliverableFundingSourceMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public DeliverableFundingSourceMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class DeliverableFundingSourceMySQLDAO implements DeliverableFundingSourc
 
   @Override
   public DeliverableFundingSource find(long id) {
-    return dao.find(DeliverableFundingSource.class, id);
+    return super.find(DeliverableFundingSource.class, id);
 
   }
 
   @Override
   public List<DeliverableFundingSource> findAll() {
     String query = "from " + DeliverableFundingSource.class.getName() + " where is_active=1";
-    List<DeliverableFundingSource> list = dao.findAll(query);
+    List<DeliverableFundingSource> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,9 +69,9 @@ public class DeliverableFundingSourceMySQLDAO implements DeliverableFundingSourc
   @Override
   public long save(DeliverableFundingSource deliverableFundingSource) {
     if (deliverableFundingSource.getId() == null) {
-      dao.save(deliverableFundingSource);
+      super.save(deliverableFundingSource);
     } else {
-      dao.update(deliverableFundingSource);
+      super.update(deliverableFundingSource);
     }
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,14 +22,14 @@ import org.cgiar.ccafs.marlo.data.model.OtherContribution;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class OtherContributionMySQLDAO implements OtherContributionDAO {
+public class OtherContributionMySQLDAO extends AbstractMarloDAO implements OtherContributionDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public OtherContributionMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public OtherContributionMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class OtherContributionMySQLDAO implements OtherContributionDAO {
 
   @Override
   public OtherContribution find(long id) {
-    return dao.find(OtherContribution.class, id);
+    return super.find(OtherContribution.class, id);
 
   }
 
   @Override
   public List<OtherContribution> findAll() {
     String query = "from " + OtherContribution.class.getName() + " where is_active=1";
-    List<OtherContribution> list = dao.findAll(query);
+    List<OtherContribution> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,9 +69,9 @@ public class OtherContributionMySQLDAO implements OtherContributionDAO {
   @Override
   public long save(OtherContribution otherContribution) {
     if (otherContribution.getId() == null) {
-      dao.save(otherContribution);
+      super.save(otherContribution);
     } else {
-      dao.update(otherContribution);
+      super.update(otherContribution);
     }
 
 

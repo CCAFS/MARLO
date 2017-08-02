@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,14 +22,14 @@ import org.cgiar.ccafs.marlo.data.model.PartnerDivision;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class PartnerDivisionMySQLDAO implements PartnerDivisionDAO {
+public class PartnerDivisionMySQLDAO extends AbstractMarloDAO implements PartnerDivisionDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public PartnerDivisionMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public PartnerDivisionMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class PartnerDivisionMySQLDAO implements PartnerDivisionDAO {
 
   @Override
   public PartnerDivision find(long id) {
-    return dao.find(PartnerDivision.class, id);
+    return super.find(PartnerDivision.class, id);
 
   }
 
   @Override
   public List<PartnerDivision> findAll() {
     String query = "from " + PartnerDivision.class.getName() + " where is_active=1";
-    List<PartnerDivision> list = dao.findAll(query);
+    List<PartnerDivision> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,9 +69,9 @@ public class PartnerDivisionMySQLDAO implements PartnerDivisionDAO {
   @Override
   public long save(PartnerDivision partnerDivision) {
     if (partnerDivision.getId() == null) {
-      dao.save(partnerDivision);
+      super.save(partnerDivision);
     } else {
-      dao.update(partnerDivision);
+      super.update(partnerDivision);
     }
 
 

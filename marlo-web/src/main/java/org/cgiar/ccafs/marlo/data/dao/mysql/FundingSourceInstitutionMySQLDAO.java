@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class FundingSourceInstitutionMySQLDAO implements FundingSourceInstitutionDAO {
+public class FundingSourceInstitutionMySQLDAO extends AbstractMarloDAO implements FundingSourceInstitutionDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public FundingSourceInstitutionMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public FundingSourceInstitutionMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
   public boolean deleteFundingSourceInstitution(long fundingSourceInstitutionId) {
     FundingSourceInstitution fundingSourceInstitution = this.find(fundingSourceInstitutionId);
 
-    return dao.delete(fundingSourceInstitution);
+    return super.delete(fundingSourceInstitution);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class FundingSourceInstitutionMySQLDAO implements FundingSourceInstitutio
 
   @Override
   public FundingSourceInstitution find(long id) {
-    return dao.find(FundingSourceInstitution.class, id);
+    return super.find(FundingSourceInstitution.class, id);
 
   }
 
   @Override
   public List<FundingSourceInstitution> findAll() {
     String query = "from " + FundingSourceInstitution.class.getName() + " where is_active=1";
-    List<FundingSourceInstitution> list = dao.findAll(query);
+    List<FundingSourceInstitution> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,9 +69,9 @@ public class FundingSourceInstitutionMySQLDAO implements FundingSourceInstitutio
   @Override
   public long save(FundingSourceInstitution fundingSourceInstitution) {
     if (fundingSourceInstitution.getId() == null) {
-      dao.save(fundingSourceInstitution);
+      super.save(fundingSourceInstitution);
     } else {
-      dao.update(fundingSourceInstitution);
+      super.update(fundingSourceInstitution);
     }
 
 

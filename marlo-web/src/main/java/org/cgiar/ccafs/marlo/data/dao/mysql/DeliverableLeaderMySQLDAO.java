@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableLeader;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class DeliverableLeaderMySQLDAO implements DeliverableLeaderDAO {
+public class DeliverableLeaderMySQLDAO extends AbstractMarloDAO implements DeliverableLeaderDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public DeliverableLeaderMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public DeliverableLeaderMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
   public boolean deleteDeliverableLeader(long deliverableLeaderId) {
     DeliverableLeader deliverableLeader = this.find(deliverableLeaderId);
 
-    return dao.delete(deliverableLeader);
+    return super.delete(deliverableLeader);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class DeliverableLeaderMySQLDAO implements DeliverableLeaderDAO {
 
   @Override
   public DeliverableLeader find(long id) {
-    return dao.find(DeliverableLeader.class, id);
+    return super.find(DeliverableLeader.class, id);
 
   }
 
   @Override
   public List<DeliverableLeader> findAll() {
     String query = "from " + DeliverableLeader.class.getName() + " where is_active=1";
-    List<DeliverableLeader> list = dao.findAll(query);
+    List<DeliverableLeader> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,9 +69,9 @@ public class DeliverableLeaderMySQLDAO implements DeliverableLeaderDAO {
   @Override
   public long save(DeliverableLeader deliverableLeader) {
     if (deliverableLeader.getId() == null) {
-      dao.save(deliverableLeader);
+      super.save(deliverableLeader);
     } else {
-      dao.update(deliverableLeader);
+      super.update(deliverableLeader);
     }
 
 

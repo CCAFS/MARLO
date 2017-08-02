@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,14 +22,14 @@ import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CrpMilestoneMySQLDAO implements CrpMilestoneDAO {
+public class CrpMilestoneMySQLDAO extends AbstractMarloDAO implements CrpMilestoneDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CrpMilestoneMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CrpMilestoneMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class CrpMilestoneMySQLDAO implements CrpMilestoneDAO {
 
   @Override
   public CrpMilestone find(long id) {
-    return dao.find(CrpMilestone.class, id);
+    return super.find(CrpMilestone.class, id);
 
   }
 
   @Override
   public List<CrpMilestone> findAll() {
     String query = "from " + CrpMilestone.class.getName() + " where is_active=1";
-    List<CrpMilestone> list = dao.findAll(query);
+    List<CrpMilestone> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,9 +69,9 @@ public class CrpMilestoneMySQLDAO implements CrpMilestoneDAO {
   @Override
   public long save(CrpMilestone crpMilestone) {
     if (crpMilestone.getId() == null) {
-      dao.save(crpMilestone);
+      super.save(crpMilestone);
     } else {
-      dao.update(crpMilestone);
+      super.update(crpMilestone);
     }
     return crpMilestone.getId();
   }

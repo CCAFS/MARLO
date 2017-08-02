@@ -22,44 +22,44 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  * @author Christian Garcia - CIAT/CCAFS
  */
-public class UserMySQLDAO implements UserDAO {
+public class UserMySQLDAO extends AbstractMarloDAO implements UserDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public UserMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public UserMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
   public String getEmailByUsername(String username) {
     String query = "select email from " + User.class.getName() + " where username = '" + username + "'";
-    String email = (String) dao.findSingleResult(String.class, query);
+    String email = (String) super.findSingleResult(String.class, query);
     return email;
   }
 
   @Override
   public List<Map<String, Object>> getPermission(int userId, String crpId) {
     String query = "select * from user_permissions where id=" + userId + " and crp_acronym='" + crpId + "'";
-    return dao.findCustomQuery(query);
+    return super.findCustomQuery(query);
   }
 
   @Override
   public User getUser(Long id) {
-    return dao.find(User.class, id);
+    return super.find(User.class, id);
   }
 
   @Override
   public User getUser(String email) {
     // validate the email on lower charters
     String query = "select * from users where LOWER(email)= '" + email.toLowerCase() + "'";
-    List<Map<String, Object>> users = dao.findCustomQuery(query);
+    List<Map<String, Object>> users = super.findCustomQuery(query);
     if (users.size() > 0) {
       return this.getUser(Long.parseLong(users.get(0).get("id").toString()));
     }
@@ -69,9 +69,9 @@ public class UserMySQLDAO implements UserDAO {
   @Override
   public boolean saveLastLogin(User user) {
     if (user.getId() == null) {
-      dao.save(user);
+      super.save(user);
     } else {
-      dao.update(user);
+      super.update(user);
     }
     return true;
   }
@@ -79,9 +79,9 @@ public class UserMySQLDAO implements UserDAO {
   @Override
   public Long saveUser(User user) {
     if (user.getId() == null) {
-      dao.save(user);
+      super.save(user);
     } else {
-      dao.update(user);
+      super.update(user);
     }
     return user.getId();
   }
@@ -109,7 +109,7 @@ public class UserMySQLDAO implements UserDAO {
     query.append("ELSE 9 ");
     query.append("END, email, last_name, first_name ");
 
-    return dao.findAll(query.toString());
+    return super.findAll(query.toString());
   }
 
 }

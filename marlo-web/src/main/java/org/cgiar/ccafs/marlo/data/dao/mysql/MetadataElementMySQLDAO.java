@@ -22,14 +22,14 @@ import org.cgiar.ccafs.marlo.data.model.MetadataElement;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class MetadataElementMySQLDAO implements MetadataElementDAO {
+public class MetadataElementMySQLDAO extends AbstractMarloDAO implements MetadataElementDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public MetadataElementMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public MetadataElementMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
@@ -50,14 +50,14 @@ public class MetadataElementMySQLDAO implements MetadataElementDAO {
 
   @Override
   public MetadataElement find(long id) {
-    return dao.find(MetadataElement.class, id);
+    return super.find(MetadataElement.class, id);
 
   }
 
   @Override
   public List<MetadataElement> findAll() {
     String query = "from " + MetadataElement.class.getName();
-    List<MetadataElement> list = dao.findAll(query);
+    List<MetadataElement> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -68,9 +68,9 @@ public class MetadataElementMySQLDAO implements MetadataElementDAO {
   @Override
   public long save(MetadataElement metadataElement) {
     if (metadataElement.getId() == null) {
-      dao.save(metadataElement);
+      super.save(metadataElement);
     } else {
-      dao.update(metadataElement);
+      super.update(metadataElement);
     }
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,14 +22,14 @@ import org.cgiar.ccafs.marlo.data.model.IpProjectIndicator;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class IpProjectIndicatorMySQLDAO implements IpProjectIndicatorDAO {
+public class IpProjectIndicatorMySQLDAO extends AbstractMarloDAO implements IpProjectIndicatorDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public IpProjectIndicatorMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public IpProjectIndicatorMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class IpProjectIndicatorMySQLDAO implements IpProjectIndicatorDAO {
 
   @Override
   public IpProjectIndicator find(long id) {
-    return dao.find(IpProjectIndicator.class, id);
+    return super.find(IpProjectIndicator.class, id);
 
   }
 
   @Override
   public List<IpProjectIndicator> findAll() {
     String query = "from " + IpProjectIndicator.class.getName() + " where is_active=1";
-    List<IpProjectIndicator> list = dao.findAll(query);
+    List<IpProjectIndicator> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,9 +69,9 @@ public class IpProjectIndicatorMySQLDAO implements IpProjectIndicatorDAO {
   @Override
   public long save(IpProjectIndicator ipProjectIndicator) {
     if (ipProjectIndicator.getId() == null) {
-      dao.save(ipProjectIndicator);
+      super.save(ipProjectIndicator);
     } else {
-      dao.update(ipProjectIndicator);
+      super.update(ipProjectIndicator);
     }
 
 

@@ -22,20 +22,20 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class DeliverableUserMySQLDAO implements DeliverableUserDAO {
+public class DeliverableUserMySQLDAO extends AbstractMarloDAO implements DeliverableUserDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public DeliverableUserMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public DeliverableUserMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
   public boolean deleteDeliverableUser(long deliverableUserId) {
     DeliverableUser deliverableUser = this.find(deliverableUserId);
-    return dao.delete(deliverableUser);
+    return super.delete(deliverableUser);
   }
 
   @Override
@@ -50,14 +50,14 @@ public class DeliverableUserMySQLDAO implements DeliverableUserDAO {
 
   @Override
   public DeliverableUser find(long id) {
-    return dao.find(DeliverableUser.class, id);
+    return super.find(DeliverableUser.class, id);
 
   }
 
   @Override
   public List<DeliverableUser> findAll() {
     String query = "from " + DeliverableUser.class.getName() + " where is_active=1";
-    List<DeliverableUser> list = dao.findAll(query);
+    List<DeliverableUser> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -68,9 +68,9 @@ public class DeliverableUserMySQLDAO implements DeliverableUserDAO {
   @Override
   public long save(DeliverableUser deliverableUser) {
     if (deliverableUser.getId() == null) {
-      dao.save(deliverableUser);
+      super.save(deliverableUser);
     } else {
-      dao.update(deliverableUser);
+      super.update(deliverableUser);
     }
 
 

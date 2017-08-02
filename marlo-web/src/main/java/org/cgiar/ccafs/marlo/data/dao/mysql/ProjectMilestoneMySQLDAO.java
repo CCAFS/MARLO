@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,14 +22,14 @@ import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class ProjectMilestoneMySQLDAO implements ProjectMilestoneDAO {
+public class ProjectMilestoneMySQLDAO extends AbstractMarloDAO implements ProjectMilestoneDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public ProjectMilestoneMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public ProjectMilestoneMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class ProjectMilestoneMySQLDAO implements ProjectMilestoneDAO {
 
   @Override
   public ProjectMilestone find(long id) {
-    return dao.find(ProjectMilestone.class, id);
+    return super.find(ProjectMilestone.class, id);
 
   }
 
   @Override
   public List<ProjectMilestone> findAll() {
     String query = "from " + ProjectMilestone.class.getName() + " where is_active=1";
-    List<ProjectMilestone> list = dao.findAll(query);
+    List<ProjectMilestone> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,9 +69,9 @@ public class ProjectMilestoneMySQLDAO implements ProjectMilestoneDAO {
   @Override
   public long save(ProjectMilestone projectMilestone) {
     if (projectMilestone.getId() == null) {
-      dao.save(projectMilestone);
+      super.save(projectMilestone);
     } else {
-      dao.update(projectMilestone);
+      super.update(projectMilestone);
     }
 
 

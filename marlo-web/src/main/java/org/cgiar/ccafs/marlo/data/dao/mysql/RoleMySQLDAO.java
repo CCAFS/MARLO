@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.Role;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class RoleMySQLDAO implements RoleDAO {
+public class RoleMySQLDAO extends AbstractMarloDAO implements RoleDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public RoleMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public RoleMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
   public boolean deleteRole(long roleId) {
     Role role = this.find(roleId);
 
-    return dao.delete(role);
+    return super.delete(role);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class RoleMySQLDAO implements RoleDAO {
 
   @Override
   public Role find(long id) {
-    return dao.find(Role.class, id);
+    return super.find(Role.class, id);
 
   }
 
   @Override
   public List<Role> findAll() {
     String query = "from " + Role.class.getName();
-    List<Role> list = dao.findAll(query);
+    List<Role> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,9 +69,9 @@ public class RoleMySQLDAO implements RoleDAO {
   @Override
   public long save(Role role) {
     if (role.getId() == null) {
-      dao.save(role);
+      super.save(role);
     } else {
-      dao.update(role);
+      super.update(role);
     }
     return role.getId();
   }

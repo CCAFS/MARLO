@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,14 +22,14 @@ import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CrpOutcomeSubIdoMySQLDAO implements CrpOutcomeSubIdoDAO {
+public class CrpOutcomeSubIdoMySQLDAO extends AbstractMarloDAO implements CrpOutcomeSubIdoDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CrpOutcomeSubIdoMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CrpOutcomeSubIdoMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class CrpOutcomeSubIdoMySQLDAO implements CrpOutcomeSubIdoDAO {
 
   @Override
   public CrpOutcomeSubIdo find(long id) {
-    return dao.find(CrpOutcomeSubIdo.class, id);
+    return super.find(CrpOutcomeSubIdo.class, id);
 
   }
 
   @Override
   public List<CrpOutcomeSubIdo> findAll() {
     String query = "from " + CrpOutcomeSubIdo.class.getName() + " where is_active=1";
-    List<CrpOutcomeSubIdo> list = dao.findAll(query);
+    List<CrpOutcomeSubIdo> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,9 +69,9 @@ public class CrpOutcomeSubIdoMySQLDAO implements CrpOutcomeSubIdoDAO {
   @Override
   public long save(CrpOutcomeSubIdo crpOutcomeSubIdo) {
     if (crpOutcomeSubIdo.getId() == null) {
-      dao.save(crpOutcomeSubIdo);
+      super.save(crpOutcomeSubIdo);
     } else {
-      dao.update(crpOutcomeSubIdo);
+      super.update(crpOutcomeSubIdo);
     }
     return crpOutcomeSubIdo.getId();
   }

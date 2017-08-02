@@ -22,20 +22,20 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class DeliverableDataSharingFileMySQLDAO implements DeliverableDataSharingFileDAO {
+public class DeliverableDataSharingFileMySQLDAO extends AbstractMarloDAO implements DeliverableDataSharingFileDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public DeliverableDataSharingFileMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public DeliverableDataSharingFileMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
   public boolean deleteDeliverableDataSharingFile(long deliverableDataSharingFileId) {
     DeliverableDataSharingFile deliverableDataSharingFile = this.find(deliverableDataSharingFileId);
-    return dao.delete(deliverableDataSharingFile);
+    return super.delete(deliverableDataSharingFile);
   }
 
   @Override
@@ -50,14 +50,14 @@ public class DeliverableDataSharingFileMySQLDAO implements DeliverableDataSharin
 
   @Override
   public DeliverableDataSharingFile find(long id) {
-    return dao.find(DeliverableDataSharingFile.class, id);
+    return super.find(DeliverableDataSharingFile.class, id);
 
   }
 
   @Override
   public List<DeliverableDataSharingFile> findAll() {
     String query = "from " + DeliverableDataSharingFile.class.getName() + " where is_active=1";
-    List<DeliverableDataSharingFile> list = dao.findAll(query);
+    List<DeliverableDataSharingFile> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -68,9 +68,9 @@ public class DeliverableDataSharingFileMySQLDAO implements DeliverableDataSharin
   @Override
   public long save(DeliverableDataSharingFile deliverableDataSharingFile) {
     if (deliverableDataSharingFile.getId() == null) {
-      dao.save(deliverableDataSharingFile);
+      super.save(deliverableDataSharingFile);
     } else {
-      dao.update(deliverableDataSharingFile);
+      super.update(deliverableDataSharingFile);
     }
 
 

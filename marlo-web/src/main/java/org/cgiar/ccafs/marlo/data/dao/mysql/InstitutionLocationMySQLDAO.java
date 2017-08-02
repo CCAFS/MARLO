@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class InstitutionLocationMySQLDAO implements InstitutionLocationDAO {
+public class InstitutionLocationMySQLDAO extends AbstractMarloDAO implements InstitutionLocationDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public InstitutionLocationMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public InstitutionLocationMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
   public boolean deleteInstitutionLocation(long institutionLocationId) {
     InstitutionLocation institutionLocation = this.find(institutionLocationId);
 
-    return this.dao.delete(institutionLocation);
+    return super.delete(institutionLocation);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class InstitutionLocationMySQLDAO implements InstitutionLocationDAO {
 
   @Override
   public InstitutionLocation find(long id) {
-    return dao.find(InstitutionLocation.class, id);
+    return super.find(InstitutionLocation.class, id);
 
   }
 
   @Override
   public List<InstitutionLocation> findAll() {
     String query = "from " + InstitutionLocation.class.getName() + " ";
-    List<InstitutionLocation> list = dao.findAll(query);
+    List<InstitutionLocation> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -70,7 +70,7 @@ public class InstitutionLocationMySQLDAO implements InstitutionLocationDAO {
   public InstitutionLocation findByLocation(long locationID, long institutionID) {
     String query = "from " + InstitutionLocation.class.getName() + "  where institution_id=" + institutionID
       + " and loc_element_id= " + locationID;
-    List<InstitutionLocation> list = dao.findAll(query);
+    List<InstitutionLocation> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
     }
@@ -81,9 +81,9 @@ public class InstitutionLocationMySQLDAO implements InstitutionLocationDAO {
   @Override
   public long save(InstitutionLocation institutionLocation) {
     if (institutionLocation.getId() == null) {
-      dao.save(institutionLocation);
+      super.save(institutionLocation);
     } else {
-      dao.update(institutionLocation);
+      super.update(institutionLocation);
     }
 
 

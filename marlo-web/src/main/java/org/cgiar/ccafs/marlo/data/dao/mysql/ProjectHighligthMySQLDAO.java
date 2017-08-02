@@ -22,14 +22,14 @@ import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class ProjectHighligthMySQLDAO implements ProjectHighligthDAO {
+public class ProjectHighligthMySQLDAO extends AbstractMarloDAO implements ProjectHighligthDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public ProjectHighligthMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public ProjectHighligthMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class ProjectHighligthMySQLDAO implements ProjectHighligthDAO {
 
   @Override
   public ProjectHighlight find(long id) {
-    return dao.find(ProjectHighlight.class, id);
+    return super.find(ProjectHighlight.class, id);
 
   }
 
   @Override
   public List<ProjectHighlight> findAll() {
     String query = "from " + ProjectHighlight.class.getName() + " where is_active=1";
-    List<ProjectHighlight> list = dao.findAll(query);
+    List<ProjectHighlight> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,9 +69,9 @@ public class ProjectHighligthMySQLDAO implements ProjectHighligthDAO {
   @Override
   public long save(ProjectHighlight projectHighlight) {
     if (projectHighlight.getId() == null) {
-      dao.save(projectHighlight);
+      super.save(projectHighlight);
     } else {
-      dao.update(projectHighlight);
+      super.update(projectHighlight);
     }
 
 
@@ -81,9 +81,9 @@ public class ProjectHighligthMySQLDAO implements ProjectHighligthDAO {
   @Override
   public long save(ProjectHighlight projectHighlight, String section, List<String> relationsName) {
     if (projectHighlight.getId() == null) {
-      dao.save(projectHighlight, section, relationsName);
+      super.save(projectHighlight, section, relationsName);
     } else {
-      dao.update(projectHighlight, section, relationsName);
+      super.update(projectHighlight, section, relationsName);
     }
     return projectHighlight.getId();
   }

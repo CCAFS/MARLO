@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,14 +22,14 @@ import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class ProjectClusterActivityMySQLDAO implements ProjectClusterActivityDAO {
+public class ProjectClusterActivityMySQLDAO extends AbstractMarloDAO implements ProjectClusterActivityDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public ProjectClusterActivityMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public ProjectClusterActivityMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class ProjectClusterActivityMySQLDAO implements ProjectClusterActivityDAO
 
   @Override
   public ProjectClusterActivity find(long id) {
-    return dao.find(ProjectClusterActivity.class, id);
+    return super.find(ProjectClusterActivity.class, id);
 
   }
 
   @Override
   public List<ProjectClusterActivity> findAll() {
     String query = "from " + ProjectClusterActivity.class.getName() + " where is_active=1";
-    List<ProjectClusterActivity> list = dao.findAll(query);
+    List<ProjectClusterActivity> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,9 +69,9 @@ public class ProjectClusterActivityMySQLDAO implements ProjectClusterActivityDAO
   @Override
   public long save(ProjectClusterActivity projectClusterActivity) {
     if (projectClusterActivity.getId() == null) {
-      dao.save(projectClusterActivity);
+      super.save(projectClusterActivity);
     } else {
-      dao.update(projectClusterActivity);
+      super.update(projectClusterActivity);
     }
 
 

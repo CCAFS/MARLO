@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,14 +22,14 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableQualityAnswer;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class DeliverableQualityAnswerMySQLDAO implements DeliverableQualityAnswerDAO {
+public class DeliverableQualityAnswerMySQLDAO extends AbstractMarloDAO implements DeliverableQualityAnswerDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public DeliverableQualityAnswerMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public DeliverableQualityAnswerMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class DeliverableQualityAnswerMySQLDAO implements DeliverableQualityAnswe
 
   @Override
   public DeliverableQualityAnswer find(long id) {
-    return dao.find(DeliverableQualityAnswer.class, id);
+    return super.find(DeliverableQualityAnswer.class, id);
 
   }
 
   @Override
   public List<DeliverableQualityAnswer> findAll() {
     String query = "from " + DeliverableQualityAnswer.class.getName() + " where is_active=1";
-    List<DeliverableQualityAnswer> list = dao.findAll(query);
+    List<DeliverableQualityAnswer> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,9 +69,9 @@ public class DeliverableQualityAnswerMySQLDAO implements DeliverableQualityAnswe
   @Override
   public long save(DeliverableQualityAnswer deliverableQualityAnswer) {
     if (deliverableQualityAnswer.getId() == null) {
-      dao.save(deliverableQualityAnswer);
+      super.save(deliverableQualityAnswer);
     } else {
-      dao.update(deliverableQualityAnswer);
+      super.update(deliverableQualityAnswer);
     }
 
 

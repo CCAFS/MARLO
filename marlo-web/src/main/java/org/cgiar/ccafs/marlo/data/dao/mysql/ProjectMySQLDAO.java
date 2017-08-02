@@ -25,14 +25,14 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class ProjectMySQLDAO implements ProjectDAO {
+public class ProjectMySQLDAO extends AbstractMarloDAO implements ProjectDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public ProjectMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public ProjectMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
 
@@ -58,7 +58,7 @@ public class ProjectMySQLDAO implements ProjectDAO {
       query.append("' ");
       //
 
-      List<Map<String, Object>> rsReferences = dao.findCustomQuery(query.toString());
+      List<Map<String, Object>> rsReferences = super.findCustomQuery(query.toString());
 
 
       String table, column;
@@ -76,7 +76,7 @@ public class ProjectMySQLDAO implements ProjectDAO {
         query.append(table);
         query.append("' ");
         query.append("AND COLUMN_NAME = 'is_active'");
-        List<Map<String, Object>> rsColumnExist = dao.findCustomQuery(query.toString());
+        List<Map<String, Object>> rsColumnExist = super.findCustomQuery(query.toString());
         if (!rsColumnExist.isEmpty()) {
           query.setLength(0);
           query.append("UPDATE ");
@@ -87,7 +87,7 @@ public class ProjectMySQLDAO implements ProjectDAO {
           query.append(column);
           query.append(" = '" + columnValue + "'");
 
-          dao.executeQuery(query.toString());
+          super.executeQuery(query.toString());
 
 
         }
@@ -128,14 +128,14 @@ public class ProjectMySQLDAO implements ProjectDAO {
 
   @Override
   public Project find(long id) {
-    return dao.find(Project.class, id);
+    return super.find(Project.class, id);
 
   }
 
   @Override
   public List<Project> findAll() {
     String query = "from " + Project.class.getName() + " where is_active=1";
-    List<Project> list = dao.findAll(query);
+    List<Project> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -147,22 +147,22 @@ public class ProjectMySQLDAO implements ProjectDAO {
   public List<Map<String, Object>> getUserProjects(long userId, String crp) {
     String query = "select DISTINCT project_id from user_permissions where id=" + userId + " and crp_acronym='" + crp
       + "' and project_id is not null and  permission_id not in (438,462)";
-    return dao.findCustomQuery(query);
+    return super.findCustomQuery(query);
   }
 
   @Override
   public List<Map<String, Object>> getUserProjectsReporting(long userId, String crp) {
     String query = "select DISTINCT project_id from user_permissions where id=" + userId + " and crp_acronym='" + crp
       + "' and project_id is not null and  permission_id  in (110,195)";
-    return dao.findCustomQuery(query);
+    return super.findCustomQuery(query);
   }
 
   @Override
   public long save(Project project) {
     if (project.getId() == null) {
-      dao.save(project);
+      super.save(project);
     } else {
-      dao.update(project);
+      super.update(project);
     }
 
 
@@ -172,9 +172,9 @@ public class ProjectMySQLDAO implements ProjectDAO {
   @Override
   public long save(Project project, String sectionName, List<String> relationsName) {
     if (project.getId() == null) {
-      dao.save(project, sectionName, relationsName);
+      super.save(project, sectionName, relationsName);
     } else {
-      dao.update(project, sectionName, relationsName);
+      super.update(project, sectionName, relationsName);
     }
 
 

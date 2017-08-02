@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,14 +22,14 @@ import org.cgiar.ccafs.marlo.data.model.ProjectNextuser;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class ProjectNextuserMySQLDAO implements ProjectNextuserDAO {
+public class ProjectNextuserMySQLDAO extends AbstractMarloDAO implements ProjectNextuserDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public ProjectNextuserMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public ProjectNextuserMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class ProjectNextuserMySQLDAO implements ProjectNextuserDAO {
 
   @Override
   public ProjectNextuser find(long id) {
-    return dao.find(ProjectNextuser.class, id);
+    return super.find(ProjectNextuser.class, id);
 
   }
 
   @Override
   public List<ProjectNextuser> findAll() {
     String query = "from " + ProjectNextuser.class.getName() + " where is_active=1";
-    List<ProjectNextuser> list = dao.findAll(query);
+    List<ProjectNextuser> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,9 +69,9 @@ public class ProjectNextuserMySQLDAO implements ProjectNextuserDAO {
   @Override
   public long save(ProjectNextuser projectNextuser) {
     if (projectNextuser.getId() == null) {
-      dao.save(projectNextuser);
+      super.save(projectNextuser);
     } else {
-      dao.update(projectNextuser);
+      super.update(projectNextuser);
     }
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,14 +22,14 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class ProjectPartnerPersonMySQLDAO implements ProjectPartnerPersonDAO {
+public class ProjectPartnerPersonMySQLDAO extends AbstractMarloDAO implements ProjectPartnerPersonDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public ProjectPartnerPersonMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public ProjectPartnerPersonMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class ProjectPartnerPersonMySQLDAO implements ProjectPartnerPersonDAO {
 
   @Override
   public ProjectPartnerPerson find(long id) {
-    return dao.find(ProjectPartnerPerson.class, id);
+    return super.find(ProjectPartnerPerson.class, id);
 
   }
 
   @Override
   public List<ProjectPartnerPerson> findAll() {
     String query = "from " + ProjectPartnerPerson.class.getName() + " where is_active=1";
-    List<ProjectPartnerPerson> list = dao.findAll(query);
+    List<ProjectPartnerPerson> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,9 +69,9 @@ public class ProjectPartnerPersonMySQLDAO implements ProjectPartnerPersonDAO {
   @Override
   public long save(ProjectPartnerPerson projectPartnerPerson) {
     if (projectPartnerPerson.getId() == null) {
-      dao.save(projectPartnerPerson);
+      super.save(projectPartnerPerson);
     } else {
-      dao.update(projectPartnerPerson);
+      super.update(projectPartnerPerson);
     }
 
 

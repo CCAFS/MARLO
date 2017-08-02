@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,22 +29,21 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class CredentialsMySQLDAO implements CredentialsDAO {
+public class CredentialsMySQLDAO extends AbstractMarloDAO implements CredentialsDAO {
 
   public static Logger LOG = LoggerFactory.getLogger(CredentialsMySQLDAO.class);
 
-  private StandardDAO dao;
 
   @Inject
-  public CredentialsMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CredentialsMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
   public boolean verifiyCredentials(String email, String password) {
     String query = "from " + User.class.getName() + " where email= '" + email + "' and password= '" + password
       + "' and is_active = 1";
-    List<User> users = dao.findAll(query);
+    List<User> users = super.findAll(query);
     if (users.size() > 0) {
       return true;
     }

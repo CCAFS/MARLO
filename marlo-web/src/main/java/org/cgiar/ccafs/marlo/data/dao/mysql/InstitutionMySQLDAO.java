@@ -23,24 +23,24 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class InstitutionMySQLDAO implements InstitutionDAO {
+public class InstitutionMySQLDAO extends AbstractMarloDAO implements InstitutionDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public InstitutionMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public InstitutionMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
   public boolean deleteInstitution(long institutionId) {
     Institution institution = this.find(institutionId);
-    return dao.delete(institution);
+    return super.delete(institution);
   }
 
   @Override
@@ -54,13 +54,13 @@ public class InstitutionMySQLDAO implements InstitutionDAO {
 
   @Override
   public Institution find(long id) {
-    return dao.find(Institution.class, id);
+    return super.find(Institution.class, id);
   }
 
   @Override
   public List<Institution> findAll() {
     String query = "from " + Institution.class.getName();
-    List<Institution> list = dao.findAll(query);
+    List<Institution> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -70,9 +70,9 @@ public class InstitutionMySQLDAO implements InstitutionDAO {
   @Override
   public long save(Institution institution) {
     if (institution.getId() == null) {
-      dao.save(institution);
+      super.save(institution);
     } else {
-      dao.update(institution);
+      super.update(institution);
     }
     return institution.getId();
   }
@@ -105,7 +105,7 @@ public class InstitutionMySQLDAO implements InstitutionDAO {
     query.append("END, name, acronym,website_link ");
 
 
-    List<Institution> institutions = dao.findAll(query.toString());
+    List<Institution> institutions = super.findAll(query.toString());
     List<Institution> institutionsAux = new ArrayList<Institution>();
 
     if (onlyPPA == 1) {

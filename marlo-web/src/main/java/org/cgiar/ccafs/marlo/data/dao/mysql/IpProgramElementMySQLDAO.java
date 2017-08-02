@@ -22,20 +22,20 @@ import org.cgiar.ccafs.marlo.data.model.IpProgramElement;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class IpProgramElementMySQLDAO implements IpProgramElementDAO {
+public class IpProgramElementMySQLDAO extends AbstractMarloDAO implements IpProgramElementDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public IpProgramElementMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public IpProgramElementMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
   public boolean deleteIpProgramElement(long ipProgramElementId) {
     IpProgramElement ipProgramElement = this.find(ipProgramElementId);
-    return dao.delete(ipProgramElement);
+    return super.delete(ipProgramElement);
   }
 
   @Override
@@ -50,14 +50,14 @@ public class IpProgramElementMySQLDAO implements IpProgramElementDAO {
 
   @Override
   public IpProgramElement find(long id) {
-    return dao.find(IpProgramElement.class, id);
+    return super.find(IpProgramElement.class, id);
 
   }
 
   @Override
   public List<IpProgramElement> findAll() {
     String query = "from " + IpProgramElement.class.getName() + " where is_active=1";
-    List<IpProgramElement> list = dao.findAll(query);
+    List<IpProgramElement> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -68,9 +68,9 @@ public class IpProgramElementMySQLDAO implements IpProgramElementDAO {
   @Override
   public long save(IpProgramElement ipProgramElement) {
     if (ipProgramElement.getId() == null) {
-      dao.save(ipProgramElement);
+      super.save(ipProgramElement);
     } else {
-      dao.update(ipProgramElement);
+      super.update(ipProgramElement);
     }
 
 

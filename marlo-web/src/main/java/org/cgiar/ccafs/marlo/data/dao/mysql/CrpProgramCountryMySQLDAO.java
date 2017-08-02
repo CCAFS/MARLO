@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,14 +22,14 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgramCountry;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CrpProgramCountryMySQLDAO implements CrpProgramCountryDAO {
+public class CrpProgramCountryMySQLDAO extends AbstractMarloDAO implements CrpProgramCountryDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CrpProgramCountryMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CrpProgramCountryMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class CrpProgramCountryMySQLDAO implements CrpProgramCountryDAO {
 
   @Override
   public CrpProgramCountry find(long id) {
-    return dao.find(CrpProgramCountry.class, id);
+    return super.find(CrpProgramCountry.class, id);
 
   }
 
   @Override
   public List<CrpProgramCountry> findAll() {
     String query = "from " + CrpProgramCountry.class.getName() + " where is_active=1";
-    List<CrpProgramCountry> list = dao.findAll(query);
+    List<CrpProgramCountry> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,9 +69,9 @@ public class CrpProgramCountryMySQLDAO implements CrpProgramCountryDAO {
   @Override
   public long save(CrpProgramCountry crpProgramCountry) {
     if (crpProgramCountry.getId() == null) {
-      dao.save(crpProgramCountry);
+      super.save(crpProgramCountry);
     } else {
-      dao.update(crpProgramCountry);
+      super.update(crpProgramCountry);
     }
 
 

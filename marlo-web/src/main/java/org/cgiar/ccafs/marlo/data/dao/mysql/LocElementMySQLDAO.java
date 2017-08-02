@@ -22,14 +22,14 @@ import org.cgiar.ccafs.marlo.data.model.LocElement;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class LocElementMySQLDAO implements LocElementDAO {
+public class LocElementMySQLDAO extends AbstractMarloDAO implements LocElementDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public LocElementMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public LocElementMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class LocElementMySQLDAO implements LocElementDAO {
 
   @Override
   public LocElement find(long id) {
-    return dao.find(LocElement.class, id);
+    return super.find(LocElement.class, id);
 
   }
 
   @Override
   public List<LocElement> findAll() {
     String query = "from " + LocElement.class.getName() + " where is_active=1";
-    List<LocElement> list = dao.findAll(query);
+    List<LocElement> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,7 +69,7 @@ public class LocElementMySQLDAO implements LocElementDAO {
   @Override
   public LocElement findISOCode(String ISOcode) {
     String query = "from " + LocElement.class.getName() + " where iso_alpha_2='" + ISOcode + "'";
-    List<LocElement> list = dao.findAll(query);
+    List<LocElement> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
     }
@@ -79,7 +79,7 @@ public class LocElementMySQLDAO implements LocElementDAO {
   @Override
   public List<LocElement> findLocElementByParent(Long parentId) {
     String query = "from " + LocElement.class.getName() + " where parent_id='" + parentId + "'";
-    List<LocElement> list = dao.findAll(query);
+    List<LocElement> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -89,9 +89,9 @@ public class LocElementMySQLDAO implements LocElementDAO {
   @Override
   public long save(LocElement locElement) {
     if (locElement.getId() == null) {
-      dao.save(locElement);
+      super.save(locElement);
     } else {
-      dao.update(locElement);
+      super.update(locElement);
     }
     return locElement.getId();
   }

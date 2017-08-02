@@ -22,14 +22,14 @@ import org.cgiar.ccafs.marlo.data.model.CaseStudy;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CaseStudyMySQLDAO implements CaseStudyDAO {
+public class CaseStudyMySQLDAO extends AbstractMarloDAO implements CaseStudyDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CaseStudyMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CaseStudyMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class CaseStudyMySQLDAO implements CaseStudyDAO {
 
   @Override
   public CaseStudy find(long id) {
-    return dao.find(CaseStudy.class, id);
+    return super.find(CaseStudy.class, id);
 
   }
 
   @Override
   public List<CaseStudy> findAll() {
     String query = "from " + CaseStudy.class.getName() + " where is_active=1";
-    List<CaseStudy> list = dao.findAll(query);
+    List<CaseStudy> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,9 +69,9 @@ public class CaseStudyMySQLDAO implements CaseStudyDAO {
   @Override
   public long save(CaseStudy caseStudy) {
     if (caseStudy.getId() == null) {
-      dao.save(caseStudy);
+      super.save(caseStudy);
     } else {
-      dao.update(caseStudy);
+      super.update(caseStudy);
     }
 
 
@@ -81,9 +81,9 @@ public class CaseStudyMySQLDAO implements CaseStudyDAO {
   @Override
   public long save(CaseStudy caseStudy, String section, List<String> relationsName) {
     if (caseStudy.getId() == null) {
-      dao.save(caseStudy, section, relationsName);
+      super.save(caseStudy, section, relationsName);
     } else {
-      dao.update(caseStudy, section, relationsName);
+      super.update(caseStudy, section, relationsName);
     }
 
 

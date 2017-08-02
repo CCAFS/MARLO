@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,14 +22,14 @@ import org.cgiar.ccafs.marlo.data.model.ProjectScope;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class ProjectScopeMySQLDAO implements ProjectScopeDAO {
+public class ProjectScopeMySQLDAO extends AbstractMarloDAO implements ProjectScopeDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public ProjectScopeMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public ProjectScopeMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class ProjectScopeMySQLDAO implements ProjectScopeDAO {
 
   @Override
   public ProjectScope find(long id) {
-    return dao.find(ProjectScope.class, id);
+    return super.find(ProjectScope.class, id);
 
   }
 
   @Override
   public List<ProjectScope> findAll() {
     String query = "from " + ProjectScope.class.getName() + " where is_active=1";
-    List<ProjectScope> list = dao.findAll(query);
+    List<ProjectScope> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,9 +69,9 @@ public class ProjectScopeMySQLDAO implements ProjectScopeDAO {
   @Override
   public long save(ProjectScope projectScope) {
     if (projectScope.getId() == null) {
-      dao.save(projectScope);
+      super.save(projectScope);
     } else {
-      dao.update(projectScope);
+      super.update(projectScope);
     }
 
 

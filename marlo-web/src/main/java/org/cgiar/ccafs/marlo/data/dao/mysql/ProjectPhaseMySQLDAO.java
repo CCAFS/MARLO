@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class ProjectPhaseMySQLDAO implements ProjectPhaseDAO {
+public class ProjectPhaseMySQLDAO extends AbstractMarloDAO implements ProjectPhaseDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public ProjectPhaseMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public ProjectPhaseMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
   public boolean deleteProjectPhase(long projectPhaseId) {
     ProjectPhase projectPhase = this.find(projectPhaseId);
 
-    return this.dao.delete(projectPhase);
+    return super.delete(projectPhase);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class ProjectPhaseMySQLDAO implements ProjectPhaseDAO {
 
   @Override
   public ProjectPhase find(long id) {
-    return dao.find(ProjectPhase.class, id);
+    return super.find(ProjectPhase.class, id);
 
   }
 
   @Override
   public List<ProjectPhase> findAll() {
     String query = "from " + ProjectPhase.class.getName() + " ";
-    List<ProjectPhase> list = dao.findAll(query);
+    List<ProjectPhase> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,9 +69,9 @@ public class ProjectPhaseMySQLDAO implements ProjectPhaseDAO {
   @Override
   public long save(ProjectPhase projectPhase) {
     if (projectPhase.getId() == null) {
-      dao.save(projectPhase);
+      super.save(projectPhase);
     } else {
-      dao.update(projectPhase);
+      super.update(projectPhase);
     }
 
 

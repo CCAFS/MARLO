@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,14 +22,14 @@ import org.cgiar.ccafs.marlo.data.model.CrpPandr;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CrpPandrMySQLDAO implements CrpPandrDAO {
+public class CrpPandrMySQLDAO extends AbstractMarloDAO implements CrpPandrDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CrpPandrMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CrpPandrMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class CrpPandrMySQLDAO implements CrpPandrDAO {
 
   @Override
   public CrpPandr find(long id) {
-    return dao.find(CrpPandr.class, id);
+    return super.find(CrpPandr.class, id);
 
   }
 
   @Override
   public List<CrpPandr> findAll() {
     String query = "from " + CrpPandr.class.getName() + " where is_active=1";
-    List<CrpPandr> list = dao.findAll(query);
+    List<CrpPandr> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,9 +69,9 @@ public class CrpPandrMySQLDAO implements CrpPandrDAO {
   @Override
   public long save(CrpPandr crpPandr) {
     if (crpPandr.getId() == null) {
-      dao.save(crpPandr);
+      super.save(crpPandr);
     } else {
-      dao.update(crpPandr);
+      super.update(crpPandr);
     }
 
 

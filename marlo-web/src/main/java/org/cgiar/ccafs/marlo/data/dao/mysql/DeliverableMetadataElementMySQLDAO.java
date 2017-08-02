@@ -22,14 +22,14 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class DeliverableMetadataElementMySQLDAO implements DeliverableMetadataElementDAO {
+public class DeliverableMetadataElementMySQLDAO extends AbstractMarloDAO implements DeliverableMetadataElementDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public DeliverableMetadataElementMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public DeliverableMetadataElementMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
@@ -50,14 +50,14 @@ public class DeliverableMetadataElementMySQLDAO implements DeliverableMetadataEl
 
   @Override
   public DeliverableMetadataElement find(long id) {
-    return dao.find(DeliverableMetadataElement.class, id);
+    return super.find(DeliverableMetadataElement.class, id);
 
   }
 
   @Override
   public List<DeliverableMetadataElement> findAll() {
     String query = "from " + DeliverableMetadataElement.class.getName();
-    List<DeliverableMetadataElement> list = dao.findAll(query);
+    List<DeliverableMetadataElement> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -68,9 +68,9 @@ public class DeliverableMetadataElementMySQLDAO implements DeliverableMetadataEl
   @Override
   public long save(DeliverableMetadataElement deliverableMetadataElement) {
     if (deliverableMetadataElement.getId() == null) {
-      dao.save(deliverableMetadataElement);
+      super.save(deliverableMetadataElement);
     } else {
-      dao.update(deliverableMetadataElement);
+      super.update(deliverableMetadataElement);
     }
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,14 +22,14 @@ import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class SrfTargetUnitMySQLDAO implements SrfTargetUnitDAO {
+public class SrfTargetUnitMySQLDAO extends AbstractMarloDAO implements SrfTargetUnitDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public SrfTargetUnitMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public SrfTargetUnitMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class SrfTargetUnitMySQLDAO implements SrfTargetUnitDAO {
 
   @Override
   public SrfTargetUnit find(long id) {
-    return dao.find(SrfTargetUnit.class, id);
+    return super.find(SrfTargetUnit.class, id);
 
   }
 
   @Override
   public List<SrfTargetUnit> findAll() {
     String query = "from " + SrfTargetUnit.class.getName() + " where is_active=1";
-    List<SrfTargetUnit> list = dao.findAll(query);
+    List<SrfTargetUnit> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,9 +69,9 @@ public class SrfTargetUnitMySQLDAO implements SrfTargetUnitDAO {
   @Override
   public long save(SrfTargetUnit srfTargetUnit) {
     if (srfTargetUnit.getId() == null) {
-      dao.save(srfTargetUnit);
+      super.save(srfTargetUnit);
     } else {
-      dao.update(srfTargetUnit);
+      super.update(srfTargetUnit);
     }
     return srfTargetUnit.getId();
   }

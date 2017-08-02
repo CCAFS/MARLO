@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,14 +22,14 @@ import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CrpClusterOfActivityMySQLDAO implements CrpClusterOfActivityDAO {
+public class CrpClusterOfActivityMySQLDAO extends AbstractMarloDAO implements CrpClusterOfActivityDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CrpClusterOfActivityMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CrpClusterOfActivityMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class CrpClusterOfActivityMySQLDAO implements CrpClusterOfActivityDAO {
 
   @Override
   public CrpClusterOfActivity find(long id) {
-    return dao.find(CrpClusterOfActivity.class, id);
+    return super.find(CrpClusterOfActivity.class, id);
 
   }
 
   @Override
   public List<CrpClusterOfActivity> findAll() {
     String query = "from " + CrpClusterOfActivity.class.getName() + " where is_active=1";
-    List<CrpClusterOfActivity> list = dao.findAll(query);
+    List<CrpClusterOfActivity> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,9 +69,9 @@ public class CrpClusterOfActivityMySQLDAO implements CrpClusterOfActivityDAO {
   @Override
   public Long save(CrpClusterOfActivity crpClusterOfActivity) {
     if (crpClusterOfActivity.getId() == null) {
-      dao.save(crpClusterOfActivity);
+      super.save(crpClusterOfActivity);
     } else {
-      dao.update(crpClusterOfActivity);
+      super.update(crpClusterOfActivity);
     }
     return crpClusterOfActivity.getId();
   }

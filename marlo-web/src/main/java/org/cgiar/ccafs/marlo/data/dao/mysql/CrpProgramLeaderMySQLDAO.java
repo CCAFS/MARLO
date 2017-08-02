@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,14 +22,14 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CrpProgramLeaderMySQLDAO implements CrpProgramLeaderDAO {
+public class CrpProgramLeaderMySQLDAO extends AbstractMarloDAO implements CrpProgramLeaderDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CrpProgramLeaderMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CrpProgramLeaderMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class CrpProgramLeaderMySQLDAO implements CrpProgramLeaderDAO {
 
   @Override
   public CrpProgramLeader find(long id) {
-    return dao.find(CrpProgramLeader.class, id);
+    return super.find(CrpProgramLeader.class, id);
 
   }
 
   @Override
   public List<CrpProgramLeader> findAll() {
     String query = "from " + CrpProgramLeader.class.getName() + " where is_active=1";
-    List<CrpProgramLeader> list = dao.findAll(query);
+    List<CrpProgramLeader> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,9 +69,9 @@ public class CrpProgramLeaderMySQLDAO implements CrpProgramLeaderDAO {
   @Override
   public long save(CrpProgramLeader crpProgramLeader) {
     if (crpProgramLeader.getId() == null) {
-      dao.save(crpProgramLeader);
+      super.save(crpProgramLeader);
     } else {
-      dao.update(crpProgramLeader);
+      super.update(crpProgramLeader);
     }
     return crpProgramLeader.getId();
   }

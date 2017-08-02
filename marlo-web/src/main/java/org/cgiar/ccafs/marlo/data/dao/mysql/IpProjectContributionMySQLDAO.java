@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,14 +22,14 @@ import org.cgiar.ccafs.marlo.data.model.IpProjectContribution;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class IpProjectContributionMySQLDAO implements IpProjectContributionDAO {
+public class IpProjectContributionMySQLDAO extends AbstractMarloDAO implements IpProjectContributionDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public IpProjectContributionMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public IpProjectContributionMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class IpProjectContributionMySQLDAO implements IpProjectContributionDAO {
 
   @Override
   public IpProjectContribution find(long id) {
-    return dao.find(IpProjectContribution.class, id);
+    return super.find(IpProjectContribution.class, id);
 
   }
 
   @Override
   public List<IpProjectContribution> findAll() {
     String query = "from " + IpProjectContribution.class.getName() + " where is_active=1";
-    List<IpProjectContribution> list = dao.findAll(query);
+    List<IpProjectContribution> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,9 +69,9 @@ public class IpProjectContributionMySQLDAO implements IpProjectContributionDAO {
   @Override
   public long save(IpProjectContribution ipProjectContribution) {
     if (ipProjectContribution.getId() == null) {
-      dao.save(ipProjectContribution);
+      super.save(ipProjectContribution);
     } else {
-      dao.update(ipProjectContribution);
+      super.update(ipProjectContribution);
     }
 
 

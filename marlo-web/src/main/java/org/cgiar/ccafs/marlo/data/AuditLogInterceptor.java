@@ -16,9 +16,11 @@
 
 package org.cgiar.ccafs.marlo.data;
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.StandardDAO;
+import org.cgiar.ccafs.marlo.data.dao.mysql.AuditLogMySQLDao;
+import org.cgiar.ccafs.marlo.data.model.Auditlog;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -34,6 +36,7 @@ import org.hibernate.CallbackException;
 import org.hibernate.EmptyInterceptor;
 import org.hibernate.EntityMode;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.ManyToOneType;
 import org.hibernate.type.OrderedSetType;
@@ -57,7 +60,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
   private Set<Map<String, Object>> inserts;
   private Set<Map<String, Object>> updates;
   private Set<Map<String, Object>> deletes;
-  private StandardDAO dao;
+  private AuditLogMySQLDao dao;
   private final String PRINCIPAL = "PRINCIPAL";
   private final String ENTITY = "entity";
   private final String RELATION_NAME = "relationName";
@@ -66,8 +69,9 @@ public class AuditLogInterceptor extends EmptyInterceptor {
   private List<String> relationsName;
 
 
-  public AuditLogInterceptor() {
-    this.dao = new StandardDAO();
+  public AuditLogInterceptor(SessionFactory sessionFactory) {
+    this.dao = new AuditLogMySQLDao(sessionFactory) {
+    };
     inserts = new HashSet<Map<String, Object>>();
     updates = new HashSet<Map<String, Object>>();
     deletes = new HashSet<Map<String, Object>>();
@@ -171,6 +175,21 @@ public class AuditLogInterceptor extends EmptyInterceptor {
   }
 
 
+  public void logIt(String action, IAuditLog entity, String json, long userId, String transactionId, Long principal,
+    String relationName, String actionName) {
+
+    String detail = "";
+    if (actionName == null) {
+      detail = entity.getLogDeatil();
+    } else {
+      detail = "Action: " + actionName + " " + entity.getLogDeatil();
+    }
+    Auditlog auditRecord =
+      new Auditlog(action, detail, new Date(), entity.getId().toString(), entity.getClass().toString(), json, userId,
+        transactionId, principal, relationName, entity.getModificationJustification());
+  }
+
+
   public void logSaveAndUpdate(String function, Set<Map<String, Object>> elements) {
     Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 
@@ -182,7 +201,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
         this.loadRelations(entity, true, 1);
         String json = gson.toJson(entity);
 
-        dao.logIt(function, entity, json, entity.getModifiedBy().getId(), this.transactionId,
+        this.logIt(function, entity, json, entity.getModifiedBy().getId(), this.transactionId,
           new Long(map.get(PRINCIPAL).toString()), null, actionName);
 
       } else {
@@ -192,7 +211,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
           if (iAuditLog.isActive()) {
             String json = gson.toJson(iAuditLog);
 
-            dao.logIt("Updated", iAuditLog, json, iAuditLog.getModifiedBy().getId(), this.transactionId,
+            this.logIt("Updated", iAuditLog, json, iAuditLog.getModifiedBy().getId(), this.transactionId,
               new Long(map.get(PRINCIPAL).toString()), map.get(RELATION_NAME).toString(), actionName);
 
           }
@@ -222,7 +241,6 @@ public class AuditLogInterceptor extends EmptyInterceptor {
     }
   }
 
-
   /**
    * this method triggered when update an object, the object is not update into database yet.
    */
@@ -236,13 +254,13 @@ public class AuditLogInterceptor extends EmptyInterceptor {
         objects.put("PRINCIPAL", new Long(1));
 
         deletes.add(objects);
-        deletes.addAll(this.relations(currentState, types, propertyNames, ((IAuditLog) entity).getId(), true));
+        deletes.addAll(this.relations(currentState, types, ((IAuditLog) entity).getId(), true));
       } else {
         objects.put(ENTITY, entity);
         objects.put(PRINCIPAL, new Long(1));
         updates.add(objects);
 
-        updates.addAll(this.relations(currentState, types, propertyNames, ((IAuditLog) entity).getId(), true));
+        updates.addAll(this.relations(currentState, types, ((IAuditLog) entity).getId(), true));
       }
 
     }
@@ -262,8 +280,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
       objects.put(PRINCIPAL, new Long(1));
       inserts.add(objects);
 
-
-      inserts.addAll(this.relations(state, types, propertyNames, ((IAuditLog) entity).getId(), true));
+      inserts.addAll(this.relations(state, types, ((IAuditLog) entity).getId(), true));
     }
     return false;
 
@@ -303,8 +320,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
 
   }
 
-  public Set<HashMap<String, Object>> relations(Object[] state, Type[] types, String[] propertyNames, Object id,
-    boolean firstRelations) {
+  public Set<HashMap<String, Object>> relations(Object[] state, Type[] types, Object id, boolean firstRelations) {
 
     Set<HashMap<String, Object>> relations = new HashSet<>();
     int i = 0;
@@ -375,10 +391,10 @@ public class AuditLogInterceptor extends EmptyInterceptor {
     return relations;
   }
 
+
   public void setActionName(String actionName) {
     this.actionName = actionName;
   }
-
 
   public void setRelationsName(List<String> relationName) {
     this.relationsName = relationName;

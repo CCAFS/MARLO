@@ -24,14 +24,14 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class IpElementMySQLDAO implements IpElementDAO {
+public class IpElementMySQLDAO extends AbstractMarloDAO implements IpElementDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public IpElementMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public IpElementMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
@@ -53,14 +53,14 @@ public class IpElementMySQLDAO implements IpElementDAO {
 
   @Override
   public IpElement find(long id) {
-    return dao.find(IpElement.class, id);
+    return super.find(IpElement.class, id);
 
   }
 
   @Override
   public List<IpElement> findAll() {
     String query = "from " + IpElement.class.getName() + " where is_active=1";
-    List<IpElement> list = dao.findAll(query);
+    List<IpElement> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -82,7 +82,7 @@ public class IpElementMySQLDAO implements IpElementDAO {
     query.append(" GROUP BY e.id");
     query.append(" ORDER BY et.id, pro.type_id ");
 
-    List<Map<String, Object>> rList = dao.findCustomQuery(query.toString());
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
 
     List<IpElement> ipElements = new ArrayList<>();
 
@@ -108,7 +108,7 @@ public class IpElementMySQLDAO implements IpElementDAO {
     query.append(programID);
     query.append(" AND et.id = ");
     query.append(type);
-    List<Map<String, Object>> rList = dao.findCustomQuery(query.toString());
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
 
     List<IpElement> ipElements = new ArrayList<>();
 
@@ -141,7 +141,7 @@ public class IpElementMySQLDAO implements IpElementDAO {
     query.append("GROUP BY id order by  pro.acronym  ");
 
 
-    List<Map<String, Object>> rList = dao.findCustomQuery(query.toString());
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
 
     List<IpElement> ipElements = new ArrayList<>();
 
@@ -171,7 +171,7 @@ public class IpElementMySQLDAO implements IpElementDAO {
     query.append(" GROUP BY e.id ");
 
 
-    List<Map<String, Object>> rList = dao.findCustomQuery(query.toString());
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
     List<IpElement> ipElements = new ArrayList<>();
     if (rList != null) {
       for (Map<String, Object> map : rList) {
@@ -197,7 +197,7 @@ public class IpElementMySQLDAO implements IpElementDAO {
     query.append(relationTypeID);
     query.append(" GROUP BY e.id ");
 
-    List<Map<String, Object>> rList = dao.findCustomQuery(query.toString());
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
     List<IpElement> ipElements = new ArrayList<>();
     if (rList != null) {
       for (Map<String, Object> map : rList) {
@@ -214,9 +214,9 @@ public class IpElementMySQLDAO implements IpElementDAO {
   @Override
   public long save(IpElement ipElement) {
     if (ipElement.getId() == null) {
-      dao.save(ipElement);
+      super.save(ipElement);
     } else {
-      dao.update(ipElement);
+      super.update(ipElement);
     }
 
 

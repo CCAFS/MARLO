@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,14 +22,14 @@ import org.cgiar.ccafs.marlo.data.model.SrfIdo;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class SrfIdoMySQLDAO implements SrfIdoDAO {
+public class SrfIdoMySQLDAO extends AbstractMarloDAO implements SrfIdoDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public SrfIdoMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public SrfIdoMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class SrfIdoMySQLDAO implements SrfIdoDAO {
 
   @Override
   public SrfIdo find(long id) {
-    return dao.find(SrfIdo.class, id);
+    return super.find(SrfIdo.class, id);
 
   }
 
   @Override
   public List<SrfIdo> findAll() {
     String query = "from " + SrfIdo.class.getName() + " where is_active=1";
-    List<SrfIdo> list = dao.findAll(query);
+    List<SrfIdo> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,9 +69,9 @@ public class SrfIdoMySQLDAO implements SrfIdoDAO {
   @Override
   public long save(SrfIdo srfIdo) {
     if (srfIdo.getId() == null) {
-      dao.save(srfIdo);
+      super.save(srfIdo);
     } else {
-      dao.update(srfIdo);
+      super.update(srfIdo);
     }
     return srfIdo.getId();
   }

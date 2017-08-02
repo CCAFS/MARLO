@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.CaseStudyIndicator;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CaseStudyIndicatorMySQLDAO implements CaseStudyIndicatorDAO {
+public class CaseStudyIndicatorMySQLDAO extends AbstractMarloDAO implements CaseStudyIndicatorDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CaseStudyIndicatorMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CaseStudyIndicatorMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
   public boolean deleteCaseStudyIndicator(long caseStudyIndicatorId) {
     CaseStudyIndicator caseStudyIndicator = this.find(caseStudyIndicatorId);
 
-    return dao.delete(caseStudyIndicator);
+    return super.delete(caseStudyIndicator);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class CaseStudyIndicatorMySQLDAO implements CaseStudyIndicatorDAO {
 
   @Override
   public CaseStudyIndicator find(long id) {
-    return dao.find(CaseStudyIndicator.class, id);
+    return super.find(CaseStudyIndicator.class, id);
 
   }
 
   @Override
   public List<CaseStudyIndicator> findAll() {
     String query = "from " + CaseStudyIndicator.class.getName() + " where is_active=1";
-    List<CaseStudyIndicator> list = dao.findAll(query);
+    List<CaseStudyIndicator> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,9 +69,9 @@ public class CaseStudyIndicatorMySQLDAO implements CaseStudyIndicatorDAO {
   @Override
   public long save(CaseStudyIndicator caseStudyIndicator) {
     if (caseStudyIndicator.getId() == null) {
-      dao.save(caseStudyIndicator);
+      super.save(caseStudyIndicator);
     } else {
-      dao.update(caseStudyIndicator);
+      super.update(caseStudyIndicator);
     }
 
 

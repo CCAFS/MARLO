@@ -23,21 +23,21 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class ProjectBudgetMySQLDAO implements ProjectBudgetDAO {
+public class ProjectBudgetMySQLDAO extends AbstractMarloDAO implements ProjectBudgetDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public ProjectBudgetMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public ProjectBudgetMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
   public String amountByBudgetType(long institutionId, int year, long budgetType, long projectId) {
     String query = "select SUM(amount) as amount from project_budgets where institution_id= " + institutionId
       + " and year= " + year + " and budget_type= " + budgetType + " and project_id= " + projectId + " and is_active=1";
-    List<Map<String, Object>> list = dao.findCustomQuery(query);
+    List<Map<String, Object>> list = super.findCustomQuery(query);
     if (list.size() > 0) {
       Map<String, Object> result = list.get(0);
       if (result.containsKey("amount")) {
@@ -53,7 +53,7 @@ public class ProjectBudgetMySQLDAO implements ProjectBudgetDAO {
   public String amountByFundingSource(long fundingSourceID, int year) {
     String query = "select SUM(amount) as amount from project_budgets where funding_source_id= " + fundingSourceID
       + " and year= " + year + " and is_active=1";
-    List<Map<String, Object>> list = dao.findCustomQuery(query);
+    List<Map<String, Object>> list = super.findCustomQuery(query);
     try {
       if (list.size() > 0) {
         Map<String, Object> result = list.get(0);
@@ -84,14 +84,14 @@ public class ProjectBudgetMySQLDAO implements ProjectBudgetDAO {
 
   @Override
   public ProjectBudget find(long id) {
-    return dao.find(ProjectBudget.class, id);
+    return super.find(ProjectBudget.class, id);
 
   }
 
   @Override
   public List<ProjectBudget> findAll() {
     String query = "from " + ProjectBudget.class.getName() + " where is_active=1";
-    List<ProjectBudget> list = dao.findAll(query);
+    List<ProjectBudget> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -103,7 +103,7 @@ public class ProjectBudgetMySQLDAO implements ProjectBudgetDAO {
   public List<ProjectBudget> getByParameters(long institutionID, int year, long budgetTypeId, long projectId) {
     String query = "from " + ProjectBudget.class.getName() + " where institution_id= " + institutionID + " and year= "
       + year + " and budget_type= " + budgetTypeId + " and project_id= " + projectId + " and is_active=1";
-    List<ProjectBudget> list = dao.findAll(query);
+    List<ProjectBudget> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -113,9 +113,9 @@ public class ProjectBudgetMySQLDAO implements ProjectBudgetDAO {
   @Override
   public long save(ProjectBudget projectBudget) {
     if (projectBudget.getId() == null) {
-      dao.save(projectBudget);
+      super.save(projectBudget);
     } else {
-      dao.update(projectBudget);
+      super.update(projectBudget);
     }
 
 

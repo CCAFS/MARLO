@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,14 +22,14 @@ import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CrpClusterKeyOutputMySQLDAO implements CrpClusterKeyOutputDAO {
+public class CrpClusterKeyOutputMySQLDAO extends AbstractMarloDAO implements CrpClusterKeyOutputDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CrpClusterKeyOutputMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CrpClusterKeyOutputMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class CrpClusterKeyOutputMySQLDAO implements CrpClusterKeyOutputDAO {
 
   @Override
   public CrpClusterKeyOutput find(long id) {
-    return dao.find(CrpClusterKeyOutput.class, id);
+    return super.find(CrpClusterKeyOutput.class, id);
 
   }
 
   @Override
   public List<CrpClusterKeyOutput> findAll() {
     String query = "from " + CrpClusterKeyOutput.class.getName() + " where is_active=1";
-    List<CrpClusterKeyOutput> list = dao.findAll(query);
+    List<CrpClusterKeyOutput> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,9 +69,9 @@ public class CrpClusterKeyOutputMySQLDAO implements CrpClusterKeyOutputDAO {
   @Override
   public long save(CrpClusterKeyOutput crpClusterKeyOutput) {
     if (crpClusterKeyOutput.getId() == null) {
-      dao.save(crpClusterKeyOutput);
+      super.save(crpClusterKeyOutput);
     } else {
-      dao.update(crpClusterKeyOutput);
+      super.update(crpClusterKeyOutput);
     }
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,14 +22,14 @@ import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class DeliverablePartnershipMySQLDAO implements DeliverablePartnershipDAO {
+public class DeliverablePartnershipMySQLDAO extends AbstractMarloDAO implements DeliverablePartnershipDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public DeliverablePartnershipMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public DeliverablePartnershipMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class DeliverablePartnershipMySQLDAO implements DeliverablePartnershipDAO
 
   @Override
   public DeliverablePartnership find(long id) {
-    return dao.find(DeliverablePartnership.class, id);
+    return super.find(DeliverablePartnership.class, id);
 
   }
 
   @Override
   public List<DeliverablePartnership> findAll() {
     String query = "from " + DeliverablePartnership.class.getName() + " where is_active=1";
-    List<DeliverablePartnership> list = dao.findAll(query);
+    List<DeliverablePartnership> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,9 +69,9 @@ public class DeliverablePartnershipMySQLDAO implements DeliverablePartnershipDAO
   @Override
   public long save(DeliverablePartnership deliverablePartnership) {
     if (deliverablePartnership.getId() == null) {
-      dao.save(deliverablePartnership);
+      super.save(deliverablePartnership);
     } else {
-      dao.update(deliverablePartnership);
+      super.update(deliverablePartnership);
     }
 
 

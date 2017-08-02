@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,14 +22,14 @@ import org.cgiar.ccafs.marlo.data.model.ProjectFurtherContribution;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class ProjectFurtherContributionMySQLDAO implements ProjectFurtherContributionDAO {
+public class ProjectFurtherContributionMySQLDAO extends AbstractMarloDAO implements ProjectFurtherContributionDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public ProjectFurtherContributionMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public ProjectFurtherContributionMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class ProjectFurtherContributionMySQLDAO implements ProjectFurtherContrib
 
   @Override
   public ProjectFurtherContribution find(long id) {
-    return dao.find(ProjectFurtherContribution.class, id);
+    return super.find(ProjectFurtherContribution.class, id);
 
   }
 
   @Override
   public List<ProjectFurtherContribution> findAll() {
     String query = "from " + ProjectFurtherContribution.class.getName() + " where is_active=1";
-    List<ProjectFurtherContribution> list = dao.findAll(query);
+    List<ProjectFurtherContribution> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,9 +69,9 @@ public class ProjectFurtherContributionMySQLDAO implements ProjectFurtherContrib
   @Override
   public long save(ProjectFurtherContribution projectFurtherContribution) {
     if (projectFurtherContribution.getId() == null) {
-      dao.save(projectFurtherContribution);
+      super.save(projectFurtherContribution);
     } else {
-      dao.update(projectFurtherContribution);
+      super.update(projectFurtherContribution);
     }
 
 

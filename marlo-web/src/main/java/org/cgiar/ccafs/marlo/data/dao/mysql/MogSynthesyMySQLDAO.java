@@ -22,20 +22,20 @@ import org.cgiar.ccafs.marlo.data.model.MogSynthesy;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class MogSynthesyMySQLDAO implements MogSynthesyDAO {
+public class MogSynthesyMySQLDAO extends AbstractMarloDAO implements MogSynthesyDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public MogSynthesyMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public MogSynthesyMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
   public boolean deleteMogSynthesy(long mogSynthesyId) {
     MogSynthesy mogSynthesy = this.find(mogSynthesyId);
-    return dao.delete(mogSynthesy);
+    return super.delete(mogSynthesy);
   }
 
   @Override
@@ -50,14 +50,14 @@ public class MogSynthesyMySQLDAO implements MogSynthesyDAO {
 
   @Override
   public MogSynthesy find(long id) {
-    return dao.find(MogSynthesy.class, id);
+    return super.find(MogSynthesy.class, id);
 
   }
 
   @Override
   public List<MogSynthesy> findAll() {
     String query = "from " + MogSynthesy.class.getName() + " where is_active=1";
-    List<MogSynthesy> list = dao.findAll(query);
+    List<MogSynthesy> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -68,7 +68,7 @@ public class MogSynthesyMySQLDAO implements MogSynthesyDAO {
   @Override
   public List<MogSynthesy> findMogSynthesis(long programId) {
     String sql = "from " + MogSynthesy.class.getName() + " where program_id=" + programId;
-    List<MogSynthesy> list = dao.findAll(sql);
+    List<MogSynthesy> list = super.findAll(sql);
     return list;
   }
 
@@ -76,16 +76,16 @@ public class MogSynthesyMySQLDAO implements MogSynthesyDAO {
   public List<MogSynthesy> findMogSynthesisRegion(long midoutcome, int year) {
     String sql = "from " + MogSynthesy.class.getName() + " where mog_id=" + midoutcome + " and year=" + year
       + " and program_id not in (1,2,3,4)";
-    List<MogSynthesy> list = dao.findAll(sql);
+    List<MogSynthesy> list = super.findAll(sql);
     return list;
   }
 
   @Override
   public long save(MogSynthesy mogSynthesy) {
     if (mogSynthesy.getId() == null) {
-      dao.save(mogSynthesy);
+      super.save(mogSynthesy);
     } else {
-      dao.update(mogSynthesy);
+      super.update(mogSynthesy);
     }
 
 

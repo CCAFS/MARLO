@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.FileDB;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class FileDBMySQLDAO implements FileDBDAO {
+public class FileDBMySQLDAO extends AbstractMarloDAO implements FileDBDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public FileDBMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public FileDBMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
   public boolean deleteFileDB(long fileDBId) {
     FileDB fileDB = this.find(fileDBId);
 
-    return dao.delete(fileDB);
+    return super.delete(fileDB);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class FileDBMySQLDAO implements FileDBDAO {
 
   @Override
   public FileDB find(long id) {
-    return dao.find(FileDB.class, id);
+    return super.find(FileDB.class, id);
 
   }
 
   @Override
   public List<FileDB> findAll() {
     String query = "from " + FileDB.class.getName() + " where is_active=1";
-    List<FileDB> list = dao.findAll(query);
+    List<FileDB> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,9 +69,9 @@ public class FileDBMySQLDAO implements FileDBDAO {
   @Override
   public long save(FileDB fileDB) {
     if (fileDB.getId() == null) {
-      dao.save(fileDB);
+      super.save(fileDB);
     } else {
-      dao.update(fileDB);
+      super.update(fileDB);
     }
 
 

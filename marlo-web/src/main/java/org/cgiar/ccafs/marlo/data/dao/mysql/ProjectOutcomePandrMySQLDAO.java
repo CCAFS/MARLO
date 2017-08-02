@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,14 +22,14 @@ import org.cgiar.ccafs.marlo.data.model.ProjectOutcomePandr;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class ProjectOutcomePandrMySQLDAO implements ProjectOutcomePandrDAO {
+public class ProjectOutcomePandrMySQLDAO extends AbstractMarloDAO implements ProjectOutcomePandrDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public ProjectOutcomePandrMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public ProjectOutcomePandrMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class ProjectOutcomePandrMySQLDAO implements ProjectOutcomePandrDAO {
 
   @Override
   public ProjectOutcomePandr find(long id) {
-    return dao.find(ProjectOutcomePandr.class, id);
+    return super.find(ProjectOutcomePandr.class, id);
 
   }
 
   @Override
   public List<ProjectOutcomePandr> findAll() {
     String query = "from " + ProjectOutcomePandr.class.getName() + " where is_active=1";
-    List<ProjectOutcomePandr> list = dao.findAll(query);
+    List<ProjectOutcomePandr> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,9 +69,9 @@ public class ProjectOutcomePandrMySQLDAO implements ProjectOutcomePandrDAO {
   @Override
   public long save(ProjectOutcomePandr projectOutcomePandr) {
     if (projectOutcomePandr.getId() == null) {
-      dao.save(projectOutcomePandr);
+      super.save(projectOutcomePandr);
     } else {
-      dao.update(projectOutcomePandr);
+      super.update(projectOutcomePandr);
     }
 
 

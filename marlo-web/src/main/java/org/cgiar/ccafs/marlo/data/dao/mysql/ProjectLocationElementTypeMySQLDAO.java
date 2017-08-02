@@ -22,20 +22,20 @@ import org.cgiar.ccafs.marlo.data.model.ProjectLocationElementType;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class ProjectLocationElementTypeMySQLDAO implements ProjectLocationElementTypeDAO {
+public class ProjectLocationElementTypeMySQLDAO extends AbstractMarloDAO implements ProjectLocationElementTypeDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public ProjectLocationElementTypeMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public ProjectLocationElementTypeMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
   public boolean deleteProjectLocationElementType(long projectLocationElementTypeId) {
     ProjectLocationElementType projectLocationElementType = this.find(projectLocationElementTypeId);
-    return dao.delete(projectLocationElementType);
+    return super.delete(projectLocationElementType);
   }
 
   @Override
@@ -50,14 +50,14 @@ public class ProjectLocationElementTypeMySQLDAO implements ProjectLocationElemen
 
   @Override
   public ProjectLocationElementType find(long id) {
-    return dao.find(ProjectLocationElementType.class, id);
+    return super.find(ProjectLocationElementType.class, id);
 
   }
 
   @Override
   public List<ProjectLocationElementType> findAll() {
     String query = "from " + ProjectLocationElementType.class.getName();
-    List<ProjectLocationElementType> list = dao.findAll(query);
+    List<ProjectLocationElementType> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,7 +69,7 @@ public class ProjectLocationElementTypeMySQLDAO implements ProjectLocationElemen
   public ProjectLocationElementType getByProjectAndElementType(long projectId, long elementTypeId) {
     String query = "from " + ProjectLocationElementType.class.getName() + " where project_id=" + projectId
       + " and loc_element_type_id=" + elementTypeId;
-    List<ProjectLocationElementType> list = dao.findAll(query);
+    List<ProjectLocationElementType> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
     }
@@ -79,9 +79,9 @@ public class ProjectLocationElementTypeMySQLDAO implements ProjectLocationElemen
   @Override
   public long save(ProjectLocationElementType projectLocationElementType) {
     if (projectLocationElementType.getId() == null) {
-      dao.save(projectLocationElementType);
+      super.save(projectLocationElementType);
     } else {
-      dao.update(projectLocationElementType);
+      super.update(projectLocationElementType);
     }
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,14 +22,14 @@ import org.cgiar.ccafs.marlo.data.model.CrpSubIdosContribution;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CrpSubIdosContributionMySQLDAO implements CrpSubIdosContributionDAO {
+public class CrpSubIdosContributionMySQLDAO extends AbstractMarloDAO implements CrpSubIdosContributionDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CrpSubIdosContributionMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CrpSubIdosContributionMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class CrpSubIdosContributionMySQLDAO implements CrpSubIdosContributionDAO
 
   @Override
   public CrpSubIdosContribution find(long id) {
-    return dao.find(CrpSubIdosContribution.class, id);
+    return super.find(CrpSubIdosContribution.class, id);
 
   }
 
   @Override
   public List<CrpSubIdosContribution> findAll() {
     String query = "from " + CrpSubIdosContribution.class.getName() + " where is_active=1";
-    List<CrpSubIdosContribution> list = dao.findAll(query);
+    List<CrpSubIdosContribution> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,9 +69,9 @@ public class CrpSubIdosContributionMySQLDAO implements CrpSubIdosContributionDAO
   @Override
   public long save(CrpSubIdosContribution crpSubIdosContribution) {
     if (crpSubIdosContribution.getId() == null) {
-      dao.save(crpSubIdosContribution);
+      super.save(crpSubIdosContribution);
     } else {
-      dao.update(crpSubIdosContribution);
+      super.update(crpSubIdosContribution);
     }
     return crpSubIdosContribution.getId();
   }

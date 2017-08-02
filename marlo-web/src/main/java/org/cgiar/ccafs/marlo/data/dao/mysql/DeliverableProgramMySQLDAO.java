@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableProgram;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class DeliverableProgramMySQLDAO implements DeliverableProgramDAO {
+public class DeliverableProgramMySQLDAO extends AbstractMarloDAO implements DeliverableProgramDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public DeliverableProgramMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public DeliverableProgramMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
   public boolean deleteDeliverableProgram(long deliverableProgramId) {
     DeliverableProgram deliverableProgram = this.find(deliverableProgramId);
 
-    return dao.delete(deliverableProgram);
+    return super.delete(deliverableProgram);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class DeliverableProgramMySQLDAO implements DeliverableProgramDAO {
 
   @Override
   public DeliverableProgram find(long id) {
-    return dao.find(DeliverableProgram.class, id);
+    return super.find(DeliverableProgram.class, id);
 
   }
 
   @Override
   public List<DeliverableProgram> findAll() {
     String query = "from " + DeliverableProgram.class.getName() + " where is_active=1";
-    List<DeliverableProgram> list = dao.findAll(query);
+    List<DeliverableProgram> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,9 +69,9 @@ public class DeliverableProgramMySQLDAO implements DeliverableProgramDAO {
   @Override
   public long save(DeliverableProgram deliverableProgram) {
     if (deliverableProgram.getId() == null) {
-      dao.save(deliverableProgram);
+      super.save(deliverableProgram);
     } else {
-      dao.update(deliverableProgram);
+      super.update(deliverableProgram);
     }
 
 

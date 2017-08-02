@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,14 +22,14 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPartnerContribution;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class ProjectPartnerContributionMySQLDAO implements ProjectPartnerContributionDAO {
+public class ProjectPartnerContributionMySQLDAO extends AbstractMarloDAO implements ProjectPartnerContributionDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public ProjectPartnerContributionMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public ProjectPartnerContributionMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class ProjectPartnerContributionMySQLDAO implements ProjectPartnerContrib
 
   @Override
   public ProjectPartnerContribution find(long id) {
-    return dao.find(ProjectPartnerContribution.class, id);
+    return super.find(ProjectPartnerContribution.class, id);
 
   }
 
   @Override
   public List<ProjectPartnerContribution> findAll() {
     String query = "from " + ProjectPartnerContribution.class.getName() + " where is_active=1";
-    List<ProjectPartnerContribution> list = dao.findAll(query);
+    List<ProjectPartnerContribution> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,9 +69,9 @@ public class ProjectPartnerContributionMySQLDAO implements ProjectPartnerContrib
   @Override
   public long save(ProjectPartnerContribution projectPartnerContribution) {
     if (projectPartnerContribution.getId() == null) {
-      dao.save(projectPartnerContribution);
+      super.save(projectPartnerContribution);
     } else {
-      dao.update(projectPartnerContribution);
+      super.update(projectPartnerContribution);
     }
 
 

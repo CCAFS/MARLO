@@ -22,20 +22,20 @@ import org.cgiar.ccafs.marlo.data.model.IpProgramElementRelationType;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class IpProgramElementRelationTypeMySQLDAO implements IpProgramElementRelationTypeDAO {
+public class IpProgramElementRelationTypeMySQLDAO extends AbstractMarloDAO implements IpProgramElementRelationTypeDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public IpProgramElementRelationTypeMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public IpProgramElementRelationTypeMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
   public boolean deleteIpProgramElementRelationType(long ipProgramElementRelationTypeId) {
     IpProgramElementRelationType ipProgramElementRelationType = this.find(ipProgramElementRelationTypeId);
-    return dao.delete(ipProgramElementRelationType);
+    return super.delete(ipProgramElementRelationType);
   }
 
   @Override
@@ -50,14 +50,14 @@ public class IpProgramElementRelationTypeMySQLDAO implements IpProgramElementRel
 
   @Override
   public IpProgramElementRelationType find(long id) {
-    return dao.find(IpProgramElementRelationType.class, id);
+    return super.find(IpProgramElementRelationType.class, id);
 
   }
 
   @Override
   public List<IpProgramElementRelationType> findAll() {
     String query = "from " + IpProgramElementRelationType.class.getName() + " where is_active=1";
-    List<IpProgramElementRelationType> list = dao.findAll(query);
+    List<IpProgramElementRelationType> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -68,9 +68,9 @@ public class IpProgramElementRelationTypeMySQLDAO implements IpProgramElementRel
   @Override
   public long save(IpProgramElementRelationType ipProgramElementRelationType) {
     if (ipProgramElementRelationType.getId() == null) {
-      dao.save(ipProgramElementRelationType);
+      super.save(ipProgramElementRelationType);
     } else {
-      dao.update(ipProgramElementRelationType);
+      super.update(ipProgramElementRelationType);
     }
 
 
