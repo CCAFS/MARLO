@@ -123,7 +123,7 @@
           
           [#-- Edit Form --]
           <form class="editForm editForm-${(partner.id)!} simpleBox" style="display:none">
-            <input type="hidden" name="id"  value="${(partner.id)!}"/>
+            <input type="hidden" name="requestID"  value="${(partner.id)!}"/>
             <div class="form-group row">
               <div class="col-md-3">
                 <label for="">Acronym</label>
@@ -131,17 +131,17 @@
               </div>
               <div class="col-md-9">
                 <label for="">Name</label>
-                <input type="text" class="form-control input-sm" name="partnerName" value="${(partner.partnerName)!}" />
+                <input type="text" class="form-control input-sm" name="name" value="${(partner.partnerName)!}" />
               </div>
             </div>
             <div class="form-group row">
               <div class="col-md-6">
                 <label for="">Institution Type</label>
-                <input type="text" class="form-control input-sm" name="institutionType" value="${(partner.institutionType)!}" />
+                <input type="text" class="form-control input-sm" name="type" value="${(partner.institutionType)!}" />
               </div>
               <div class="col-md-6">
                 <label for="">Country ISO Code</label>
-                <input type="text" class="form-control input-sm" name="locElement.isoAlpha2" value="${(partner.locElement.isoAlpha2)!}" />
+                <input type="text" class="form-control input-sm" name="country" value="${(partner.locElement.isoAlpha2)!}" />
               </div>
             </div>
             <div class="form-group">
