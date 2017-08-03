@@ -134,6 +134,7 @@ public class EditPartnerRequestAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
+    success = true;
     try {
       Map<String, Object> parameters = this.getParameters();
       requestID = StringUtils.trim(((String[]) parameters.get(APConstants.PARTNER_REQUEST_ID))[0]);
