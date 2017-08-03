@@ -24,16 +24,12 @@ $(document).ready(function() {
           $modal.find('.loading').fadeIn();
         },
         success: function(data) {
-          console.log(data);
           if(data.success) {
             $modal.modal('hide');
           }
         },
-        complete: function(data) {
+        complete: function() {
           $modal.find('.loading').fadeOut();
-        },
-        error: function(error) {
-          console.log(error)
         }
     });
   });
@@ -42,7 +38,6 @@ $(document).ready(function() {
   $('a.editRequest').on('click', function(e) {
     e.preventDefault();
     var $request = $(this).parents('.partnerRequestItem');
-    console.log($request);
     $request.find('.editForm').slideDown();
     $request.find('.btn-group').slideUp();
   });
@@ -59,18 +54,14 @@ $(document).ready(function() {
           $request.find('.loading').fadeIn();
         },
         success: function(data) {
-          console.log(data);
           if(data.success) {
             $request.find('.editForm').slideUp();
             $request.find('.btn-group').slideDown();
           }
         },
-        complete: function(data) {
+        complete: function() {
           $request.find('.loading').fadeOut();
 
-        },
-        error: function(error) {
-          console.log(error)
         }
     });
 
@@ -90,7 +81,6 @@ $(document).ready(function() {
 function findSameness() {
   $('.partnerRequestItem').each(function(i,e) {
     var institutionName = $(e).find('.hiddenTitle').text();
-    console.log(baseURL + '/searchInstitutionsName.do');
     $.ajax({
         url: baseURL + '/searchInstitutionsName.do',
         data: {
@@ -107,21 +97,18 @@ function findSameness() {
             $.each(data.institutions, function(i,partner) {
               var $li = $('<li title="' + partner.composedName + '">' + partner.composedName + '</li>');
               $(e).find('.sameness ul').append($li);
-
-              /*
-               * $li.prettyTextDiff({ cleanup: true, originalContent: $(e).find('h4').text(), changedContent:
-               * partner.composedName, diffContainer: $li });
-               */
+              // Text Difference
+              $li.prettyTextDiff({
+                  cleanup: false,
+                  originalContent: $(e).find('h4').text(),
+                  changedContent: partner.composedName,
+                  diffContainer: $li
+              });
             });
-
           }
-
         },
-        complete: function(data) {
+        complete: function() {
           $(e).find('.loading').fadeOut();
-        },
-        error: function(error) {
-          console.log(error)
         }
     });
   });
