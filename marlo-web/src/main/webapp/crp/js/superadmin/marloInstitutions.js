@@ -60,12 +60,14 @@ $(document).ready(function() {
         },
         success: function(data) {
           console.log(data);
+          if(data.success) {
+            $request.find('.editForm').slideUp();
+            $request.find('.btn-group').slideDown();
+          }
         },
         complete: function(data) {
           $request.find('.loading').fadeOut();
 
-          $request.find('.editForm').slideUp();
-          $request.find('.btn-group').slideDown();
         },
         error: function(error) {
           console.log(error)
