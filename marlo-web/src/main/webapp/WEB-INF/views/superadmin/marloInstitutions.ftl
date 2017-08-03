@@ -136,12 +136,10 @@
             </div>
             <div class="form-group row">
               <div class="col-md-6">
-                <label for="">Institution Type</label>
-                <input type="text" class="form-control input-sm" name="type" value="${(partner.institutionType)!}" />
+                [@customForm.select name="type" value=partner.institutionType required=true label="" i18nkey="Institution Type" listName="institutionTypesList" keyFieldName="id"  displayFieldName="name" /]
               </div>
               <div class="col-md-6">
-                <label for="">Country ISO Code</label>
-                <input type="text" class="form-control input-sm" name="country" value="${(partner.locElement.isoAlpha2)!}" />
+                [@customForm.select name="country" value=partner.locElement.isoAlpha2 label="" i18nkey="Country ISO Code" listName="countriesList" keyFieldName="id"  displayFieldName="name" /]
               </div>
             </div>
             <div class="form-group">
