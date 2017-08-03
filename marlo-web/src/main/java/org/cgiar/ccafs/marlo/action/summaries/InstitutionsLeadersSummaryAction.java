@@ -77,11 +77,11 @@ public class InstitutionsLeadersSummaryAction extends BaseAction implements Summ
    * @return masterReport with i8n parameters added
    */
   private MasterReport addi8nParameters(MasterReport masterReport) {
-    masterReport.getParameterValues().put("i8nName", this.getText("leadPartner.name"));
-    masterReport.getParameterValues().put("i8nAcronym", this.getText("leadPartner.acronym"));
-    masterReport.getParameterValues().put("i8nWebSite", this.getText("leadPartner.webSite"));
-    masterReport.getParameterValues().put("i8nType", this.getText("leadPartner.type"));
-    masterReport.getParameterValues().put("i8nCountry", this.getText("projectPartners.country"));
+    masterReport.getParameterValues().put("i8nName", this.getText("summaries.partners.name"));
+    masterReport.getParameterValues().put("i8nAcronym", this.getText("summaries.partners.acronym"));
+    masterReport.getParameterValues().put("i8nWebSite", this.getText("summaries.partners.website"));
+    masterReport.getParameterValues().put("i8nType", this.getText("summaries.partners.type"));
+    masterReport.getParameterValues().put("i8nCountry", this.getText("summaries.partners.country"));
     masterReport.getParameterValues().put("i8nProjects", this.getText("caseStudy.projects"));
 
     return masterReport;
