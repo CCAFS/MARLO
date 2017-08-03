@@ -1,121 +1,149 @@
 .delete {
-    padding-left: 3%;
-    cursor: pointer;
+  padding-left: 3%;
+  cursor: pointer;
 }
 
 .personContent {
-    border: 1px dashed #ccc;
-    width: 95%;
-    padding: 3px 3px;
+  border: 1px dashed #ccc;
+  width: 95%;
+  padding: 3px 3px;
 }
 
 .person {
-    /* width: 96%; */
-    /* display: inline-block; */
+  /* width: 96%; */
+  /* display: inline-block; */
 }
 
 .removePerson {
-    width: 3%;
-    cursor: pointer;
+  width: 3%;
+  cursor: pointer;
 }
 
-
 .removePerson:hover {
-    color: rgba(255, 0, 0, 0.8);
+  color: rgba(255, 0, 0, 0.8);
 }
 
 .addPerson {
-    float: left;
-    width: 100%;
+  float: left;
+  width: 100%;
 }
 
 .addPersonBtn {
-    color: white;
-    width: 16%;
-    background-color: rgb(46, 204, 113);
-    text-align: center;
-    border-radius: 50px;
-    cursor: pointer;
-    display: inline-block;
+  color: white;
+  width: 16%;
+  background-color: rgb(46, 204, 113);
+  text-align: center;
+  border-radius: 50px;
+  cursor: pointer;
+  display: inline-block;
 }
 
-
-
 .AddPersonTitle {
-    display: inline-block;
-    color: #2ecc71;
+  display: inline-block;
+  color: #2ecc71;
 }
 
 .userItem {
 }
 
 .remove-userItem {
-    cursor: pointer;
-    color: red;
+  cursor: pointer;
+  color: red;
 }
 
 .remove-userItem:hover {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 span.glyphicon.glyphicon-user {
-    margin-right: 1%;
+  margin-right: 1%;
 }
 
 .cluster-title {
-    margin-top: 20px;
+  margin-top: 20px;
 }
 
 .subtitle {
-    float: left;
+  float: left;
 }
 
 .button-remove {
-    background: #E3685A;
-    border-bottom: 3px solid #DD5B4C;
-    cursor: pointer;
-    color: white;
-    text-align: center;
+  background: #E3685A;
+  border-bottom: 3px solid #DD5B4C;
+  cursor: pointer;
+  color: white;
+  text-align: center;
 }
 
 .keyOutputInput {
-    height: 28px;
+  height: 28px;
 }
 
 .keyOutput {
-    margin-bottom: 15px;
-    background-color: whitesmoke;
-    margin-top: 15px;
-    border-radius: 8px;
+  margin-bottom: 15px;
+  background-color: whitesmoke;
+  margin-top: 15px;
+  border-radius: 8px;
 }
 
-.button-remove:hover {}
+.button-remove:hover {
+}
 
 .button-remove:hover {
-    background: #DB6052;
+  background: #DB6052;
 }
 
 .keyOutputDescription {
-    border: 1px solid #e7e7e7;
-    border-radius: 8px;
-    height: 30px;
-    line-height: 30px;
-    padding: 0 15px;
+  border: 1px solid #e7e7e7;
+  border-radius: 8px;
+  height: 30px;
+  line-height: 30px;
+  padding: 0 15px;
 }
 
 .removeKeyOutput {
-    right: 0%;
+  right: 0%;
 }
 
 .keyOutputsItems-list {
-    padding-left: 0;
-    margin-left: 0;
+  padding-left: 0;
+  margin-left: 0;
 }
 
 ul.keyOutputs {
-    padding-left: 15px;
+  padding-left: 15px;
 }
 
 .koContribution-title {
-    margin-right: 6%;
+  margin-right: 6%;
+}
+
+.removeResearchTopic {
+  cursor: pointer;
+}
+
+/* Sortable Jquery UI*/
+.ui-state-highlight {
+  height: 170px
+}
+
+.invisibleDrag {
+  cursor: move;
+  height: 22px;
+  position: absolute;
+  width: 100%;
+  top: 0;
+  left: 0;
+}
+
+.invisibleDrag:hover {
+  /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#e5e5e5+1,000000+100&0.65+0,0+100 */
+  background: -moz-linear-gradient(top, rgba(229,229,229,0.65) 0%, rgba(229,229,229,0.64) 1%, rgba(0,0,0,0) 100%);
+  /* FF3.6-15 */
+  background: -webkit-linear-gradient(top, rgba(229,229,229,0.65) 0%,rgba(229,229,229,0.64) 1%,rgba(0,0,0,0) 100%);
+  /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to bottom, rgba(229,229,229,0.65) 0%,rgba(229,229,229,0.64) 1%,rgba(0,0,0,0) 100%);
+  /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a6e5e5e5', endColorstr='#00000000',GradientType=0 );
+  /* IE6-9 */
 }

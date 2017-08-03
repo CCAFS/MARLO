@@ -6275,3 +6275,9 @@ p.title{
     border-radius: 4px;
     text-align:center;
 }
+
+span.hint{
+  color:#81af81;
+  font-style: italic;
+  letter-spacing: 1px;
+}

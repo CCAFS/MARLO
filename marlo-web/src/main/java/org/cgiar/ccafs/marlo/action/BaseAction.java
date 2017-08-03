@@ -55,6 +55,7 @@ import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
 import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterCycle;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
+import org.cgiar.ccafs.marlo.data.model.CenterDeliverableOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterImpact;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
@@ -295,7 +296,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private ICenterCycleManager cycleService;
   @Inject
   private ICenterManager centerService;
-
   @Inject
   private ICenterProgramManager programService;
   @Inject
@@ -692,7 +692,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
       }
 
-      // Verify Output Model
+      // Verify CenterOutput Model
       if (clazz == CenterOutput.class) {
 
         CenterOutput output = outputService.getResearchOutputById(id);
@@ -702,6 +702,21 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
         if (projectOutputs != null) {
           if (!projectOutputs.isEmpty()) {
+            return false;
+          }
+        }
+      }
+
+      // Verify CenterDeliverable Model
+      if (clazz == CenterDeliverable.class) {
+
+        CenterDeliverable deliverable = deliverableService.getDeliverableById(id);
+
+        List<CenterDeliverableOutput> deliverableOutputs = new ArrayList<>(
+          deliverable.getDeliverableOutputs().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
+
+        if (deliverableOutputs != null) {
+          if (!deliverableOutputs.isEmpty()) {
             return false;
           }
         }

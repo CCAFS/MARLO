@@ -93,27 +93,29 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
   private String cycle;
   private Boolean hasW1W2Co;
   private long startTime;
+  private Boolean hasGender;
+
 
   private PhaseManager phaseManager;
 
+
   // Store total projects
   Integer totalProjects = 0;
+
   // Store parters budgets HashMap<Institution, List<w1w2,w3bilateralcenter>>
   HashMap<Institution, List<Double>> allPartnersBudgets = new HashMap<Institution, List<Double>>();
+
   // Store projects budgets HashMap<Project, List<totalw1w2, totalw3bilateralcenter, totalw1w2Gender, totalw3Gender>>
   HashMap<Project, List<Double>> allProjectsBudgets = new HashMap<Project, List<Double>>();
   private CrpManager crpManager;
-
-
   private ProjectBudgetManager projectBudgetManager;
   private CrpProgramManager programManager;
+
   private InstitutionManager institutionManager;
   // XLSX bytes
   private byte[] bytesXLSX;
-
   // Streams
   InputStream inputStream;
-
 
   @Inject
   public BudgetPerPartnersSummaryAction(APConfig config, CrpManager crpManager,
@@ -127,6 +129,130 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     this.phaseManager = phaseManager;
   }
 
+  /**
+   * Add columns depending on specificity parameters
+   * 
+   * @param masterReport: used to update the parameters
+   * @return masterReport with the added parameters.
+   */
+  private MasterReport addColumnParameters(MasterReport masterReport) {
+    // Set columns for BudgetByPartners
+    int columnBudgetPartnerDetails = 8;
+    long xPositionBudgetPartnerDetails = 1175;
+    int totalColumnsBudgetPartnerDetails = 23;
+    String paramBudgetPartnerDetails = "BudgetPartnerDetails";
+    long widthBudgetPartnerDetails = 0l;
+
+    // Set columns for BudgetByProject
+    int columnBudgetPartnerProject = 8;
+    long xPositionBudgetPartnerProject = 310;
+    int totalColumnsBudgetPartnerProject = 22;
+    String paramBudgetPartnerProject = "BudgetPartnerProject";
+    long widthBudgetPartnerProject = 0l;
+    long widthBudgetPartnerProjectGender = 0l;
+
+    // used to decide which index will be excluded
+    ArrayList<Integer> exludeIndexBudgetPartnerDetails = new ArrayList<>();
+    ArrayList<Integer> exludeIndexBudgetPartnerProject = new ArrayList<>();
+    if (this.hasGender) {
+      columnBudgetPartnerDetails += 10;
+
+      columnBudgetPartnerProject += 6;
+    } else {
+      exludeIndexBudgetPartnerDetails.add(1);
+      exludeIndexBudgetPartnerDetails.add(2);
+      exludeIndexBudgetPartnerDetails.add(10);
+      exludeIndexBudgetPartnerDetails.add(11);
+      exludeIndexBudgetPartnerDetails.add(13);
+      exludeIndexBudgetPartnerDetails.add(14);
+      exludeIndexBudgetPartnerDetails.add(16);
+      exludeIndexBudgetPartnerDetails.add(17);
+      exludeIndexBudgetPartnerDetails.add(20);
+      exludeIndexBudgetPartnerDetails.add(22);
+
+      exludeIndexBudgetPartnerProject.add(12);
+      exludeIndexBudgetPartnerProject.add(15);
+      exludeIndexBudgetPartnerProject.add(16);
+      exludeIndexBudgetPartnerProject.add(17);
+      exludeIndexBudgetPartnerProject.add(20);
+      exludeIndexBudgetPartnerProject.add(21);
+    }
+    if (this.hasW1W2Co) {
+      columnBudgetPartnerDetails += 2;
+
+      columnBudgetPartnerProject += 4;
+    } else {
+      exludeIndexBudgetPartnerDetails.add(3);
+      exludeIndexBudgetPartnerDetails.add(6);
+
+      exludeIndexBudgetPartnerProject.add(2);
+      exludeIndexBudgetPartnerProject.add(3);
+      exludeIndexBudgetPartnerProject.add(4);
+      exludeIndexBudgetPartnerProject.add(5);
+    }
+    if (this.hasW1W2Co && this.hasGender) {
+      columnBudgetPartnerDetails += 3;
+
+      columnBudgetPartnerProject += 4;
+    } else {
+      exludeIndexBudgetPartnerDetails.add(4);
+      exludeIndexBudgetPartnerDetails.add(5);
+      exludeIndexBudgetPartnerDetails.add(8);
+
+      exludeIndexBudgetPartnerProject.add(13);
+      exludeIndexBudgetPartnerProject.add(14);
+      exludeIndexBudgetPartnerProject.add(18);
+      exludeIndexBudgetPartnerProject.add(19);
+    }
+
+    // Calculate column width
+    if (this.hasW1W2Co && this.hasGender) {
+      widthBudgetPartnerDetails = 4230l / columnBudgetPartnerDetails;
+
+      widthBudgetPartnerProject = 3677l / columnBudgetPartnerProject;
+      widthBudgetPartnerProjectGender = widthBudgetPartnerProject * 5;
+    } else if (this.hasW1W2Co && !this.hasGender) {
+      widthBudgetPartnerDetails = 1950l / columnBudgetPartnerDetails;
+
+      widthBudgetPartnerProject = 2070l / columnBudgetPartnerProject;
+    } else if (!this.hasW1W2Co && this.hasGender) {
+      widthBudgetPartnerDetails = 3265l / columnBudgetPartnerDetails;
+
+      widthBudgetPartnerProject = 2360l / columnBudgetPartnerProject;
+      widthBudgetPartnerProjectGender = widthBudgetPartnerProject * 3;
+    } else {
+      widthBudgetPartnerDetails = 1540l / columnBudgetPartnerDetails;
+
+      widthBudgetPartnerProject = 1355l / columnBudgetPartnerProject;
+    }
+
+    HashMap<String, Long> hmDetails = this.calculateWidth(widthBudgetPartnerDetails, totalColumnsBudgetPartnerDetails,
+      paramBudgetPartnerDetails, exludeIndexBudgetPartnerDetails, xPositionBudgetPartnerDetails);
+    // Add x parameters
+    for (HashMap.Entry<String, Long> entry : hmDetails.entrySet()) {
+      String key = entry.getKey();
+      Object value = entry.getValue();
+      masterReport.getParameterValues().put(key, value);
+    }
+
+    HashMap<String, Long> hmProjects = this.calculateWidth(widthBudgetPartnerProject, totalColumnsBudgetPartnerProject,
+      paramBudgetPartnerProject, exludeIndexBudgetPartnerProject, xPositionBudgetPartnerProject);
+    for (HashMap.Entry<String, Long> entry : hmProjects.entrySet()) {
+      String key = entry.getKey();
+      Object value = entry.getValue();
+      masterReport.getParameterValues().put(key, value);
+    }
+    // add width
+    masterReport.getParameterValues().put(paramBudgetPartnerDetails + "Width", widthBudgetPartnerDetails);
+    masterReport.getParameterValues().put(paramBudgetPartnerDetails + "TotalWidth",
+      (widthBudgetPartnerDetails * columnBudgetPartnerDetails) + xPositionBudgetPartnerDetails);
+
+    masterReport.getParameterValues().put(paramBudgetPartnerProject + "Width", widthBudgetPartnerProject);
+    masterReport.getParameterValues().put(paramBudgetPartnerProject + "TotalWidth",
+      (widthBudgetPartnerProject * columnBudgetPartnerProject) + xPositionBudgetPartnerProject);
+    masterReport.getParameterValues().put(paramBudgetPartnerProject + "GenderWidth", widthBudgetPartnerProjectGender);
+    return masterReport;
+  }
 
   /**
    * Method to add i8n parameters to masterReport in Pentaho
@@ -143,29 +269,29 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     masterReport.getParameterValues().put("i8nCoas", this.getText("deliverable.coas"));
     masterReport.getParameterValues().put("i8nRegions", this.getText("project.Regions"));
     masterReport.getParameterValues().put("i8nTotalW1W2", this.getText("budgetPartner.w1w2"));
-    masterReport.getParameterValues().put("i8nPercentajeW1W2",
-      this.getText("budgetPartner.w1w2Percentage") + " " + this.getText("budgetPartner.percentaje"));
+    masterReport.getParameterValues().put("i8nGenderPercentajeW1W2",
+      this.getText("budgetPartner.w1w2Percentage") + " " + this.getText("budgetCoa.percentajeGender"));
     masterReport.getParameterValues().put("i8nGenderW1W2",
       this.getText("budgetPartner.gender") + " " + this.getText("budgetPartner.w1w2"));
     masterReport.getParameterValues().put("i8nTotalW1W2Co", this.getText("budgetPartner.w1w2Cofinancing"));
-    masterReport.getParameterValues().put("i8nPercentajeW1W2Co",
-      this.getText("budget.w1w2cofinancing") + " " + this.getText("budgetPartner.percentaje"));
+    masterReport.getParameterValues().put("i8nGenderPercentajeW1W2Co",
+      this.getText("budget.w1w2cofinancing") + " " + this.getText("budgetCoa.percentajeGender"));
     masterReport.getParameterValues().put("i8nGenderW1W2Co",
       this.getText("budgetPartner.gender") + " " + this.getText("budgetPartner.w1w2Cofinancing"));
     masterReport.getParameterValues().put("i8nGrandTotalW1W2", this.getText("budgetPartner.w1w2grandTotal"));
     masterReport.getParameterValues().put("i8nTotalW3", this.getText("projectsList.W3projectBudget"));
-    masterReport.getParameterValues().put("i8nPercentajeW3",
-      this.getText("projectsList.W3projectBudget") + " " + this.getText("budgetPartner.percentaje"));
+    masterReport.getParameterValues().put("i8nGenderPercentajeW3",
+      this.getText("projectsList.W3projectBudget") + " " + this.getText("budgetCoa.percentajeGender"));
     masterReport.getParameterValues().put("i8nGenderW3",
       this.getText("budgetPartner.gender") + " " + this.getText("projectsList.W3projectBudget"));
     masterReport.getParameterValues().put("i8nTotalBilateral", this.getText("projectsList.BILATERALprojectBudget"));
-    masterReport.getParameterValues().put("i8nPercentajeBilateral",
-      this.getText("projectsList.BILATERALprojectBudget") + " " + this.getText("budgetPartner.percentaje"));
+    masterReport.getParameterValues().put("i8nGenderPercentajeBilateral",
+      this.getText("projectsList.BILATERALprojectBudget") + " " + this.getText("budgetCoa.percentajeGender"));
     masterReport.getParameterValues().put("i8nGenderBilateral",
       this.getText("budgetPartner.gender") + " " + this.getText("projectsList.BILATERALprojectBudget"));
     masterReport.getParameterValues().put("i8nTotalCenter", this.getText("budget.centerFunds"));
-    masterReport.getParameterValues().put("i8nPercentajeCenter",
-      this.getText("budget.centerFunds") + " " + this.getText("budgetPartner.percentaje"));
+    masterReport.getParameterValues().put("i8nGenderPercentajeCenter",
+      this.getText("budget.centerFunds") + " " + this.getText("budgetCoa.percentajeGender"));
     masterReport.getParameterValues().put("i8nGenderCenter",
       this.getText("budgetPartner.gender") + " " + this.getText("budget.centerFunds"));
 
@@ -176,7 +302,9 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     masterReport.getParameterValues().put("i8nGrandTotalGenderFundingSoucres",
       this.getText("budgetPartner.grandTotalGenderFundingSoucres"));
     masterReport.getParameterValues().put("i8nGrandTotalBudget", this.getText("budgetPartner.grandTotalBudget"));
-    masterReport.getParameterValues().put("i8nSharePercentaje", this.getText("budgetPartner.sharePercentaje"));
+    masterReport.getParameterValues().put("i8nSharePercentajeW1W2", this.getText("budgetPartner.sharePercentajeW1W2"));
+    masterReport.getParameterValues().put("i8nSharePercentajeW3BilateralCenter",
+      this.getText("budgetPartner.sharePercentajeW3BilateralCenter"));
     masterReport.getParameterValues().put("i8nFundingSourcesTotal", this.getText("budgetPartner.fundingSourcesTotal"));
     masterReport.getParameterValues().put("i8nW3BilateralCenterW1W2ratio",
       this.getText("budgetPartner.W3BilateralCenterW1W2ratio"));
@@ -191,16 +319,33 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     masterReport.getParameterValues().put("i8nGrandTotal", this.getText("budgetPartner.grandTotal"));
 
     masterReport.getParameterValues().put("i8nGrandTotalW1W2Percentage",
-      this.getText("budgetPartner.w1w2grandTotalPercentage") + " " + this.getText("budgetPartner.percentaje"));
+      this.getText("budgetPartner.w1w2grandTotalPercentage") + this.getText("budgetPartner.percentaje"));
     masterReport.getParameterValues().put("i8nGrandTotalGenderW1W2",
       this.getText("budgetPartner.w1w2grandTotalGender"));
     masterReport.getParameterValues().put("i8nW3BilateralCenterPercentage",
-      this.getText("budgetPartner.w3BilateralCenterPercentage") + " " + this.getText("budgetPartner.percentaje"));
+      this.getText("budgetPartner.w3BilateralCenterPercentage") + this.getText("budgetPartner.percentaje"));
+
+    masterReport.getParameterValues().put("i8nPercentajeW1W2",
+      this.getText("budgetPartner.w1w2Percentage") + this.getText("budgetPartner.percentaje"));
+    masterReport.getParameterValues().put("i8nPercentajeW1W2Co",
+      this.getText("budget.w1w2cofinancing") + this.getText("budgetPartner.percentaje"));
 
 
     return masterReport;
   }
 
+
+  private HashMap<String, Long> calculateWidth(long width, int numColumns, String name, ArrayList<Integer> excludeIndex,
+    long xPosition) {
+    HashMap<String, Long> hm = new HashMap<String, Long>();
+    for (int i = 0; i <= numColumns; i++) {
+      if (!excludeIndex.contains(i)) {
+        hm.put("xPosition" + name + i, xPosition);
+        xPosition += width;
+      }
+    }
+    return hm;
+  }
 
   @Override
   public String execute() throws Exception {
@@ -224,6 +369,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
       masterReport.setDataFactory(cdf);
       // Set i8n for pentaho
       masterReport = this.addi8nParameters(masterReport);
+      masterReport = this.addColumnParameters(masterReport);
 
       // Get details band
       ItemBand masteritemBand = masterReport.getItemBand();
@@ -281,6 +427,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     subReport.setDataFactory(cdf);
   }
 
+
   /**
    * Get all subreports and store then in a hash map.
    * If it encounters a band, search subreports in the band
@@ -313,7 +460,6 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
       }
     }
   }
-
 
   /**
    * Get all subreports in the band.
@@ -399,8 +545,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
             if (flagships == null || flagships.isEmpty()) {
               flagships = programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
             } else {
-              flagships +=
-                "\n " + programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
+              flagships += ", " + programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
             }
           }
           // get CoAs related to the project sorted by acronym
@@ -614,7 +759,6 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     return model;
   }
 
-
   @Override
   public int getContentLength() {
     return bytesXLSX.length;
@@ -631,6 +775,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     return cycle;
   }
 
+
   @SuppressWarnings("unused")
   private File getFile(String fileName) {
     // Get file from resources folder
@@ -638,6 +783,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     File file = new File(classLoader.getResource(fileName).getFile());
     return file;
   }
+
 
   @Override
   public String getFileName() {
@@ -666,6 +812,10 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
         this.getBandSubreports(hm, (Band) e);
       }
     }
+  }
+
+  public Boolean getHasGender() {
+    return hasGender;
   }
 
   private void getHeaderSubreports(HashMap<String, Element> hm, ReportHeader reportHeader) {
@@ -714,19 +864,8 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
       zone = "+0";
     }
     String date = timezone.format(format) + "(GMT" + zone + ")";
-    Boolean hasGender = false;
-    try {
-      hasGender = this.hasSpecificities(APConstants.CRP_BUDGET_GENDER);
-
-    } catch (Exception e) {
-      LOG.warn("Failed to get " + APConstants.CRP_BUDGET_GENDER + " parameter. Parameter was set null. Exception: "
-        + e.getMessage());
-      hasGender = false;
-    }
-
-
-    model.addRow(
-      new Object[] {center, date, this.getYear(), loggedCrp.getId(), this.hasProgramnsRegions(), hasW1W2Co, hasGender});
+    model.addRow(new Object[] {center, date, this.getYear(), loggedCrp.getId(), this.hasProgramnsRegions(), hasW1W2Co,
+      this.hasGender});
     return model;
   }
 
@@ -783,7 +922,6 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     }
     return model;
   }
-
 
   /**
    * Get total amount per institution year and type
@@ -853,6 +991,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     return year;
   }
 
+
   /**
    * Verify if an institution isPPA or not
    * 
@@ -906,6 +1045,15 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
       cycle = this.getCurrentCycle();
     }
     hasW1W2Co = this.hasSpecificities(APConstants.CRP_FS_W1W2_COFINANCING);
+
+    try {
+      hasGender = this.hasSpecificities(APConstants.CRP_BUDGET_GENDER);
+
+    } catch (Exception e) {
+      LOG.warn("Failed to get " + APConstants.CRP_BUDGET_GENDER + " parameter. Parameter was set null. Exception: "
+        + e.getMessage());
+      hasGender = false;
+    }
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
     LOG.info(
@@ -915,6 +1063,10 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
 
   public void setCycle(String cycle) {
     this.cycle = cycle;
+  }
+
+  public void setHasGender(Boolean hasGender) {
+    this.hasGender = hasGender;
   }
 
   public void setLoggedCrp(Crp loggedCrp) {

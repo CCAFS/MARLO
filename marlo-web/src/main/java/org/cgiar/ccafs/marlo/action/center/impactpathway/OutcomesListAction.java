@@ -310,6 +310,8 @@ public class OutcomesListAction extends BaseAction {
       if (selectedProgram.getResearchTopics() != null) {
         researchTopics = new ArrayList<>(selectedProgram.getResearchTopics().stream()
           .filter(rt -> rt.isActive() && rt.getResearchTopic().trim().length() > 0).collect(Collectors.toList()));
+
+        Collections.sort(researchTopics, (ra1, ra2) -> ra1.getOrder().compareTo(ra2.getOrder()));
         try {
           topicID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.RESEARCH_TOPIC_ID)));
           if (topicID == -1) {

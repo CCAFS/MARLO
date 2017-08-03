@@ -486,7 +486,9 @@ public class ProjectDescriptionAction extends BaseAction {
       fundingSourceTypes = new ArrayList<>(
         fundingSourceService.findAll().stream().filter(fst -> fst.isActive()).collect(Collectors.toList()));
 
-      crps = new ArrayList<>(crpService.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+      crps = new ArrayList<>(crpService.findAll().stream()
+        .filter(c -> c.isActive() && /* TODO temporally when the crp have category value */c.getCategory() == 1)
+        .collect(Collectors.toList()));
 
       projectTypes =
         new ArrayList<>(projectTypeService.findAll().stream().filter(pt -> pt.isActive()).collect(Collectors.toList()));

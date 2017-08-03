@@ -90,7 +90,7 @@ error
 <br />
 <div class="col-md-12">
 <p class="title">Download Impact Pathway</p>
-<a class="col-md-12" href="${baseUrl}/summaries/impactPathwaySubmissions.do?programID=${programID}" target="__BLANK" style="text-align:center;">
+<a class="col-md-12" href="${baseUrl}/centerSummaries/impactPathwaySubmissions.do?programID=${programID}" target="__BLANK" style="text-align:center;">
   <img src="${baseUrlMedia}/images/global/download-summary.png" width="40" height="50" title="Download" />
 </a>
 </div>

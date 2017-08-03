@@ -7,7 +7,7 @@
 		
 		<action name="{center}/projectList"
       class="org.cgiar.ccafs.marlo.action.center.monitoring.project.ProjectListAction">
-      <interceptor-ref name="centerSectionStack" />
+      <interceptor-ref name="centerImpactPathwayStack" />
       <result name="input">/WEB-INF/center/views/monitoring/project/projectList.ftl
       </result>
     </action>
@@ -50,7 +50,7 @@
     
     <action name="{center}/addNewProject" method="add"
       class="org.cgiar.ccafs.marlo.action.center.monitoring.project.ProjectListAction">
-      <interceptor-ref name="centerSectionStack" />
+      <interceptor-ref name="centerImpactPathwayStack" />
       <result name="input">/WEB-INF/center/views/monitoring/project/projectList.ftl
       </result>
       <result name="success" type="redirectAction">
@@ -62,7 +62,7 @@
     
     <action name="{center}/deleteProject" method="delete"
       class="org.cgiar.ccafs.marlo.action.center.monitoring.project.ProjectListAction">
-      <interceptor-ref name="centerSectionStack" />
+      <interceptor-ref name="centerImpactPathwayStack" />
       <result name="success" type="redirectAction">
         <param name="actionName">${centerSession}/projectList</param>
         <param name="programID">${programID}</param>
@@ -104,6 +104,15 @@
         <param name="deliverableID">${deliverableID}</param>
         <param name="edit">true</param>
       </result>     
+    </action>
+    
+    <action name="{center}/deleteDeliverable" method="delete"
+      class="org.cgiar.ccafs.marlo.action.center.monitoring.project.DeliverableListAction">
+      <interceptor-ref name="centerSectionStack" />
+      <result name="success" type="redirectAction">
+        <param name="actionName">${centerSession}/deliverableList</param>
+        <param name="projectID">${projectID}</param>
+      </result>
     </action>
     
     <action name="{center}/monitoringOutcomesList"

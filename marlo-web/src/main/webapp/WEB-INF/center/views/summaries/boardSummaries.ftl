@@ -21,7 +21,7 @@
     <br /> 
     <div class="summariesButtons clearfix">
       <div id="impactPathway" class="summariesSection current"><span></span><a href="">[@s.text name="summaries.board.options.impactPathway" /]</a></div>
-      <div id="projects" class="summariesSection" style="opacity:0.5;" ><span></span><a href="">[@s.text name="summaries.board.options.projects" /]</a> <div class="blockTab"></div> </div>
+      <div id="projects" class="summariesSection" style="opacity:0.5;" ><span></span><a href="">[@s.text name="summaries.board.options.projects" /]</a></div>
       <div id="monitoring" class="summariesSection" style="opacity:0.5;"><span></span><a href="">[@s.text name="summaries.board.options.monitoring" /]</a> </div>
     </div>
     <div class="summariesContent borderBox col-md-12">
@@ -42,8 +42,6 @@
             </div>
             <span class="description col-md-12">[@s.text name="summaries.board.report.ipFullReport.description" /]</span>
             <div class="extraOptions col-md-12" style="display:none"> 
-              <span class="hidden forPlanningCycle forCycle"></span>
-              <span class="hidden forReportingCycle forCycle"></span>
               <span class="hidden fileTypes excelType">leadProjectInstitutionsSummary-leadProjectInstitutionsSummary</span>
               [@customForm.select name="programID" header=false   label=""  i18nkey="Select a Research Program"  listName="programs"  keyFieldName="id"  displayFieldName="composedName" className="allPrograms"   multiple=false required=true   editable=true/]
               <div class="pull-right">
@@ -60,8 +58,22 @@
             </div>
             <span class="description col-md-12">[@s.text name="summaries.board.report.ipByProgram.description" /]</span>
             <div class="extraOptions col-md-12" style="display:none"> 
-              <span class="hidden forPlanningCycle forCycle"></span>
-              <span class="hidden forReportingCycle forCycle"></span>
+              <span class="hidden fileTypes excelType">leadProjectInstitutionsSummary-leadProjectInstitutionsSummary</span>
+              [@customForm.select name="programID" header=false   label=""  i18nkey="Select a Research Program"  listName="programs"  keyFieldName="id"  displayFieldName="composedName" className="allPrograms"   multiple=false required=true   editable=true/]
+              <div class="pull-right">
+                <a style="display:none;" target="_blank" class="generateReport addButton pull-right" href="#">[@s.text name="form.buttons.generate" /]</a>
+              </div>
+            </div>
+          </div>
+          
+          [#--outcomes by research program --]
+          <div class="summariesFiles borderBox col-md-12">
+            <div class="col-md-12 title-file">
+              <input class="hidden" type="radio" name="formOptions" id="leadProjectInstitutionsSummary" value="centerOutcomes"/>
+              <label for="">[@s.text name="summaries.board.report.outcome" /] </label>
+            </div>
+            <span class="description col-md-12">[@s.text name="summaries.board.report.outcome.description" /]</span>
+            <div class="extraOptions col-md-12" style="display:none"> 
               <span class="hidden fileTypes excelType">leadProjectInstitutionsSummary-leadProjectInstitutionsSummary</span>
               [@customForm.select name="programID" header=false   label=""  i18nkey="Select a Research Program"  listName="programs"  keyFieldName="id"  displayFieldName="composedName" className="allPrograms"   multiple=false required=true   editable=true/]
               <div class="pull-right">
@@ -75,84 +87,43 @@
         [#-- -- -- Projects reports -- -- --]
         <div id="projects-contentOptions" style="display:none">
         
+          [#--Deliverables report --]
+          <div class="summariesFiles borderBox col-md-12">
+            <div class="col-md-12 title-file">
+              <input class="hidden" type="radio" name="formOptions" id="leadProjectInstitutionsSummary" value="centerDeliverables"/>
+              <label for="">[@s.text name="summaries.board.report.deliverable" /] </label>
+            </div>
+            <span class="description col-md-12">[@s.text name="summaries.board.report.deliverable.description" /]</span>
+            <div class="extraOptions col-md-12" style="display:none"> 
+              [@customForm.select name="programID" header=false   label=""  i18nkey="Select a Research Program"  listName="programs"  keyFieldName="id"  displayFieldName="composedName" className="allPrograms"   multiple=false required=true   editable=true/]
+              <div class="pull-right">
+                <a style="display:none;" target="_blank" class="generateReport addButton pull-right" href="#">[@s.text name="form.buttons.generate" /]</a>
+              </div>
+            </div>
+          </div>
         
-        [#-- Full Project Report (PDF) --]
-          <div class="summariesFiles borderBox col-md-12">
-            <div class="col-md-12 title-file">
-              <input type="radio" name="formOptions" id="projectPortfolio" value="reportingSummary" class="hidden"/>
-              <label for="">[@s.text name="summaries.board.report.fullProjectReport" /] </label>
-            </div>
-            <span class="description col-md-12">[@s.text name="summaries.board.report.fullProjectReport.description" /]</span>
-            <div class="extraOptions col-md-12" style="display:none">
-              <span class="hidden fileTypes pdfType">reportingSummary</span>
-              <span class="hidden forPlanningCycle forCycle"></span>
-              <span class="hidden forReportingCycle forCycle"></span>
-              <input type="hidden" id="projectID" name="projectID" value="" />
-              <div class="row">                
-                <div class="col-md-12">
-                  <a id="generateProject" style="display:none;" target="_blank" class="generateReport addButton pull-right" style="" href="#">[@s.text name="form.buttons.generate" /]</a>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          [#-- Search terms summary --]
-          <div class="summariesFiles borderBox col-md-12">
-            <div class="col-md-12 title-file">
-              <input class="hidden" type="radio" name="formOptions" id="searchTermsSummary" value="searchTermsSummary"/>
-              <label for="">[@s.text name="summaries.board.report.searchTerms" /] </label>
-            </div>
-            <span class="description col-md-12">[@s.text name="summaries.board.report.searchTerms.description" /] You can to add terms and generate the report, or simply generate the report without add terms.</span>
-            <div class="extraOptions col-md-12" style="display:none">
-            <span class="hidden fileTypes excelType">searchTermsSummary-searchTermsSummary</span>
-            <span class="hidden forPlanningCycle forCycle"></span>
-            <span class="hidden forReportingCycle forCycle"></span>
-            [#-- predefined terms --]
-            <label for="">Predefined terms:</label>
-            <br />
-            <div class="col-md-12">
-              <label for="gender">Gender <input id="gender" type="checkbox" class="notview" /></label>
-            </div>
-            <div class="clearfix"></div>
-            <hr />
-            [#-- content --]
-            <div class="simpleBox wordContent">
-              
-            </div>
-            [#-- input --]
-            <label for="">Write the term:</label>
-            <div class="row">
-              <div class="col-md-9">
-                <input class="form-control inputTerm" type="text" placeholder="Press enter to add a new term " />
-              </div>
-              <div class="col-md-3 pull right">
-                <a  style="display:none;" target="_blank" class="generateReport addButton pull-right" style="" href="#">[@s.text name="form.buttons.generate" /]</a>
-              </div>
-              
-            </div>
-            </div>
-          </div>
-          
-          [#-- Outputs Contributions --] 
-          <div class="summariesFiles borderBox col-md-12">
-            <div class="col-md-12 title-file">
-              <input class="hidden" type="radio" name="formOptions" id="impactPathwayContributionsSummary" value="outputsContributionsSummary"/>
-              <label for="">[@s.text name="summaries.board.report.outputsContributionsSummary" /]</label>
-            </div>
-            <span class="description col-md-12">[@s.text name="summaries.board.report.outputsContributionsSummary.description" /]</span>
-            <div class="extraOptions" style="display:none"> 
-            <span class="hidden fileTypes excelType">OutcomesContributionsSummary-OutcomesContributionsSummary</span>
-            <span class="hidden forPlanningCycle forCycle"></span>
-            <div class="pull-right">
-              <a style="display:none;" target="_blank" class="generateReport addButton pull-right" style="" href="#">[@s.text name="form.buttons.generate" /]</a>
-            </div>
-            </div>
-          </div>
           
         </div>
         
         [#-- Monitoring reports --]
         <div id="monitoring-contentOptions" style="display:none">
+        
+        [#--Monitoring Outcomes--]
+          <div class="summariesFiles borderBox col-md-12">
+            <div class="col-md-12 title-file">
+              <input class="hidden" type="radio" name="formOptions" id="outcomesContributionSummary" value="centerMonitoringOutcomes"/>
+              <label for="">[@s.text name="summaries.board.report.monitoringOutcome" /] </label>
+            </div>
+            <span class="description col-md-12">[@s.text name="summaries.board.report.monitoringOutcome.description" /]</span>
+            <div class="extraOptions col-md-12" style="display:none"> 
+              <span class="hidden fileTypes excelType">leadProjectInstitutionsSummary-leadProjectInstitutionsSummary</span>
+              [@customForm.select name="programID" header=false   label=""  i18nkey="Select a Research Program"  listName="programs"  keyFieldName="id"  displayFieldName="composedName" className="allPrograms"   multiple=false required=true   editable=true/]
+              <div class="pull-right">
+                <a style="display:none;" target="_blank" class="generateReport addButton pull-right" href="#">[@s.text name="form.buttons.generate" /]</a>
+              </div>
+            </div>
+          </div>
+        
           [#--Outcomes Contribution --]
           <div class="summariesFiles borderBox col-md-12">
             <div class="col-md-12 title-file">
@@ -161,8 +132,6 @@
             </div>
             <span class="description col-md-12">[@s.text name="summaries.board.report.outcomeContribution.description" /]</span>
             <div class="extraOptions col-md-12" style="display:none"> 
-              <span class="hidden forPlanningCycle forCycle"></span>
-              <span class="hidden forReportingCycle forCycle"></span>
               <span class="hidden fileTypes excelType">leadProjectInstitutionsSummary-leadProjectInstitutionsSummary</span>
               [@customForm.select name="programID" header=false   label=""  i18nkey="Select a Research Program"  listName="programs"  keyFieldName="id"  displayFieldName="composedName" className="allPrograms"   multiple=false required=true   editable=true/]
               <div class="pull-right">

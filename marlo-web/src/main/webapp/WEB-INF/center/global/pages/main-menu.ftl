@@ -13,9 +13,8 @@
   [#list mainMenu as item]
    [#if item.visible]
     <li id="${item.slug}" class="[#if currentSection?? && currentSection == item.slug ]currentSection[/#if] ${(item.active)?string('enabled','disabled')}">
-      [#if item_index==3]
-        <span class="tagMainMenu">Monitoring Programs</span>
-      [/#if]
+      [#-- Monitoring Programs tag --]
+      [#if item_index==3]<span class="tagMainMenu visible-md-block visible-lg-block">Monitoring Programs</span>[/#if]
       <a href="[@s.url namespace=item.namespace action='${item.action}'][#if logged][@s.param name="edit" value="true"/][/#if][/@s.url]" onclick="return ${item.active?string}">
         [#if item.icon?has_content]<span class="glyphicon glyphicon-${item.icon}"></span> [/#if]
         [@s.text name=item.name ][@s.param]${(centerSession?upper_case)!'CENTER'}[/@s.param] [/@s.text]

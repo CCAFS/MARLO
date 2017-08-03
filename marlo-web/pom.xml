@@ -117,7 +117,82 @@
       <artifactId>adauth</artifactId>
       <version>1.8</version>
     </dependency>
+    <dependency> 
+      <groupId>org.pentaho</groupId>
+      <artifactId>core</artifactId>
+      <version>${pentaho-report.version}</version>
+     </dependency>
+     <dependency> 
+      <groupId>org.pentaho</groupId>
+      <artifactId>extensions</artifactId>
+      <version>${pentaho-report.version}</version>
+     </dependency>
+    <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>base</artifactId>
+      <version>${pentaho-report.version}</version>
+    </dependency>
     
+    <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>libdocbundle</artifactId>
+      <version>${pentaho-report.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>libfonts</artifactId>
+      <version>${pentaho-report.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>libformat</artifactId>
+      <version>${pentaho-report.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>libformula</artifactId>
+      <version>${pentaho-report.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>libloader</artifactId>
+      <version>${pentaho-report.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>librepository</artifactId>
+      <version>${pentaho-report.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>libserializer</artifactId>
+      <version>${pentaho-report.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>libxml</artifactId>
+      <version>${pentaho-report.version}</version>
+    </dependency>
+     <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>libswing</artifactId>
+      <version>${pentaho-report.version}</version>
+    </dependency>
+       <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>libsparkline</artifactId>
+      <version>${pentaho-report.version}</version>
+    </dependency>
+      <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>charts</artifactId>
+      <version>${pentaho-report.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>report-charts</artifactId>
+      <version>${pentaho-report.version}</version>
+    </dependency>
     <!--  Struts 2 Rest Plugin -->
   <dependency>
     <groupId>org.apache.struts</groupId>
@@ -321,68 +396,7 @@
     </dependency>
 
     <!-- Dependency for pentaho 
-    <dependency>
-      <groupId>pentaho-reporting-engine</groupId>
-      <artifactId>pentaho-reporting-engine-classic-core</artifactId>
-      <version>${pentaho-report.version}</version>
-      <type>jar</type>
-    </dependency>
-    <dependency>
-      <groupId>pentaho-reporting-engine</groupId>
-      <artifactId>pentaho-reporting-engine-classic-extensions</artifactId>
-      <version>${pentaho-report.version}</version>
-      <type>jar</type>
-    </dependency>
-    <dependency>
-      <groupId>pentaho-library</groupId>
-      <artifactId>libbase</artifactId>
-      <version>${pentaho-report.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>pentaho-library</groupId>
-      <artifactId>libdocbundle</artifactId>
-      <version>${pentaho-report.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>pentaho-library</groupId>
-      <artifactId>libfonts</artifactId>
-      <version>${pentaho-report.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>pentaho-library</groupId>
-      <artifactId>libformat</artifactId>
-      <version>${pentaho-report.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>pentaho-library</groupId>
-      <artifactId>libformula</artifactId>
-      <version>${pentaho-report.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>pentaho-library</groupId>
-      <artifactId>libloader</artifactId>
-      <version>${pentaho-report.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>pentaho-library</groupId>
-      <artifactId>librepository</artifactId>
-      <version>${pentaho-report.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>pentaho-library</groupId>
-      <artifactId>libserializer</artifactId>
-      <version>${pentaho-report.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>pentaho-library</groupId>
-      <artifactId>libxml</artifactId>
-      <version>${pentaho-report.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>pentaho-library</groupId>
-      <artifactId>libswing</artifactId>
-      <version>${pentaho-report.version}</version>
-    </dependency>
+   
     <dependency>
       <groupId>com.lowagie</groupId>
       <artifactId>itext</artifactId>
@@ -408,25 +422,12 @@
 </dependency>
 <!--  
     <dependency>
-      <groupId>pentaho-library</groupId>
-      <artifactId>libsparkline</artifactId>
-      <version>${pentaho-report.version}</version>
-    </dependency>
-    <dependency>
       <groupId>net.sourceforge.barbecue</groupId>
       <artifactId>barbecue</artifactId>
       <version>1.5-beta1</version>
     </dependency>
-    <dependency>
-      <groupId>pentaho-reporting-engine</groupId>
-      <artifactId>pentaho-reporting-engine-legacy-charts</artifactId>
-      <version>${pentaho-report.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>pentaho-report-designer</groupId>
-      <artifactId>report-designer-ext-legacy-charts</artifactId>
-      <version>${pentaho-report.version}</version>
-    </dependency>
+    
+     
 -->
 <dependency>
     <groupId>javax.ws.rs</groupId>
@@ -636,10 +637,7 @@
     </repository>
 
     <!-- Maven repo
-    <repository>
-      <id>pentaho-releases</id>
-      <url>http://repository.pentaho.org/artifactory/repo/</url>
-    </repository>
+    
      -->
   </repositories>
   <licenses>

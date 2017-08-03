@@ -672,14 +672,17 @@ public class Project implements java.io.Serializable, IAuditLog {
 
     if (partners != null) {
       for (ProjectPartner partner : partners) {
-        for (ProjectPartnerPerson person : partner.getPartnerPersons()) {
+        if (partner.getPartnerPersons() != null) {
+          for (ProjectPartnerPerson person : partner.getPartnerPersons()) {
 
-          if (person.getContactType().equals("PL")) {
-            return person;
+            if (person.getContactType().equals("PL")) {
+              return person;
+
+            }
 
           }
-
         }
+
       }
     } else {
       for (ProjectPartner partner : projectPartners.stream().filter(c -> c.isActive()).collect(Collectors.toList())) {

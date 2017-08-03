@@ -31,6 +31,8 @@ import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrpClusterActivityLeader;
+import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
@@ -400,7 +402,6 @@ public class CrpAdminManagmentAction extends BaseAction {
       }
     }
 
-
     // CC will be also the CRP Admins
     String crpAdmins = "";
     String crpAdminsEmail = "";
@@ -412,7 +413,6 @@ public class CrpAdminManagmentAction extends BaseAction {
       if (crpAdmins.isEmpty()) {
         crpAdmins += userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
         crpAdminsEmail += userRole.getUser().getEmail();
-
       } else {
         crpAdmins += ", " + userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
         crpAdminsEmail += ", " + userRole.getUser().getEmail();
@@ -423,6 +423,19 @@ public class CrpAdminManagmentAction extends BaseAction {
         ccEmail += crpAdminsEmail;
       } else {
         ccEmail += ", " + crpAdminsEmail;
+      }
+    }
+
+    // CC will be also other Cluster Leaders
+    for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
+      .filter(cl -> cl.isActive()).collect(Collectors.toList())) {
+      for (CrpClusterActivityLeader crpClusterActivityLeader : crpClusterOfActivity.getCrpClusterActivityLeaders()
+        .stream().filter(cl -> cl.isActive()).collect(Collectors.toList())) {
+        if (ccEmail.isEmpty()) {
+          ccEmail += crpClusterActivityLeader.getUser().getEmail();
+        } else {
+          ccEmail += ", " + crpClusterActivityLeader.getUser().getEmail();
+        }
       }
     }
 
@@ -497,6 +510,18 @@ public class CrpAdminManagmentAction extends BaseAction {
       }
     }
 
+    // CC will be also other Cluster Leaders
+    for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
+      .filter(cl -> cl.isActive()).collect(Collectors.toList())) {
+      for (CrpClusterActivityLeader crpClusterActivityLeader : crpClusterOfActivity.getCrpClusterActivityLeaders()
+        .stream().filter(cl -> cl.isActive()).collect(Collectors.toList())) {
+        if (ccEmail.isEmpty()) {
+          ccEmail += crpClusterActivityLeader.getUser().getEmail();
+        } else {
+          ccEmail += ", " + crpClusterActivityLeader.getUser().getEmail();
+        }
+      }
+    }
 
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
