@@ -63,6 +63,7 @@ public class EditPartnerRequestAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
+    success = true;
     try {
       PartnerRequest partnerRequest = partnerRequestManager.getPartnerRequestById(Long.parseLong(requestID));
       if (name != null && !name.isEmpty()) {

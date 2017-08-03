@@ -14,6 +14,7 @@ $(document).ready(function() {
 
   // Reject Request button Event
   $modal.find('.rejectButton').on('click', function() {
+    var $request = $('#partnerRequestItem-' + requesIDSelected);
     $.ajax({
         url: baseURL + '/rejectPartnerRequest.do',
         data: {
@@ -25,6 +26,7 @@ $(document).ready(function() {
         },
         success: function(data) {
           if(data.success) {
+            $request.slideUp();
             $modal.modal('hide');
           }
         },
@@ -55,6 +57,7 @@ $(document).ready(function() {
         },
         success: function(data) {
           if(data.success) {
+            location.reload();
             $request.find('.editForm').slideUp();
             $request.find('.btn-group').slideDown();
           }

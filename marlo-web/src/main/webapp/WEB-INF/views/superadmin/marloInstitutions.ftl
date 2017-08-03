@@ -70,7 +70,7 @@
   <ul class="list-group">
     [#if partners?has_content]
       [#list partners as partner]
-        <li class="list-group-item partnerRequestItem">
+        <li id="partnerRequestItem-${(partner.id)!}" class="list-group-item partnerRequestItem">
           <div class="loading" style="display:none"></div>
           
           [#-- Partner name --]
@@ -139,7 +139,7 @@
                 [@customForm.select name="type" value=partner.institutionType required=true label="" i18nkey="Institution Type" listName="institutionTypesList" keyFieldName="id"  displayFieldName="name" /]
               </div>
               <div class="col-md-6">
-                [@customForm.select name="country" value=partner.locElement.isoAlpha2 label="" i18nkey="Country ISO Code" listName="countriesList" keyFieldName="id"  displayFieldName="name" /]
+                [@customForm.select name="country" value="'${partner.locElement.isoAlpha2}'" label="" i18nkey="Country ISO Code" listName="countriesList" keyFieldName="isoAlpha2"  displayFieldName="name" /]
               </div>
             </div>
             <div class="form-group">
