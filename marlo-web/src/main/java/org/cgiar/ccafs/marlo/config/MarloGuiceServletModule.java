@@ -16,6 +16,7 @@
 package org.cgiar.ccafs.marlo.config;
 
 import org.cgiar.ccafs.marlo.web.filter.MARLOCustomPersistFilter;
+import org.cgiar.ccafs.marlo.web.filter.RemoveSessionFromUrlFilter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +41,9 @@ public class MarloGuiceServletModule extends ServletModule {
     this.binder().bind(ShiroFilter.class).in(Singleton.class);
     this.binder().bind(StrutsPrepareAndExecuteFilter.class).in(Singleton.class);
     this.binder().bind(MARLOCustomPersistFilter.class).in(Singleton.class);
+    this.binder().bind(RemoveSessionFromUrlFilter.class).in(Singleton.class);
+
+    this.filter("/*").through(RemoveSessionFromUrlFilter.class);
 
     this.filter("*.do").through(MARLOCustomPersistFilter.class);
     this.filter("*.json").through(MARLOCustomPersistFilter.class);
@@ -48,7 +52,7 @@ public class MarloGuiceServletModule extends ServletModule {
      * Need to find way to redirect the root path to use the login.do page or if user logged in to navigate them to
      * the home page. Enabling the filter on the root path breaks the filter mapping rules for other pages.
      */
-    // this.filter("/").through(MARLOCustomPersistFilter.class);
+    this.filter("/").through(MARLOCustomPersistFilter.class);
 
     /**
      * TODO
