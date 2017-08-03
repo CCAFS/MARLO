@@ -25,9 +25,7 @@ import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
@@ -49,8 +47,6 @@ public class EditPartnerRequestAction extends BaseAction {
   private String webPage;
   private String type;
   private String country;
-  private List<LocElement> countriesList;
-  private List<InstitutionType> institutionTypesList;
   private boolean success;
 
 
@@ -109,18 +105,8 @@ public class EditPartnerRequestAction extends BaseAction {
   }
 
 
-  public List<LocElement> getCountriesList() {
-    return countriesList;
-  }
-
-
   public String getCountry() {
     return country;
-  }
-
-
-  public List<InstitutionType> getInstitutionTypesList() {
-    return institutionTypesList;
   }
 
 
@@ -159,12 +145,6 @@ public class EditPartnerRequestAction extends BaseAction {
       webPage = StringUtils.trim(((String[]) parameters.get("institutionWebPage"))[0]);
       type = StringUtils.trim(((String[]) parameters.get(APConstants.INSTITUTION_TYPE_REQUEST_ID))[0]);
       country = StringUtils.trim(((String[]) parameters.get(APConstants.COUNTRY_REQUEST_ID))[0]);
-
-      this.countriesList = locElementManager.findAll().stream()
-        .filter(c -> c.isActive() && c.getLocElementType().getId().longValue() == 2).collect(Collectors.toList());
-      this.institutionTypesList =
-        institutionTypeManager.findAll().stream().filter(it -> it.isActive() && !it.getOld()).collect(Collectors.toList());
-      countriesList.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
     } catch (Exception e) {
       System.out.println(e.getMessage());
       success = false;

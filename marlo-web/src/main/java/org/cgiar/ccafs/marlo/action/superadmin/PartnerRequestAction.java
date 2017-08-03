@@ -49,6 +49,8 @@ public class PartnerRequestAction extends BaseAction {
   private InstitutionTypeManager institutionTypeManager;
   private InstitutionLocationManager institutionLocationManager;
   private LocElementManager locElementManager;
+  private List<LocElement> countriesList;
+  private List<InstitutionType> institutionTypesList;
 
 
   private List<PartnerRequest> partners;
@@ -105,6 +107,14 @@ public class PartnerRequestAction extends BaseAction {
 
   }
 
+  public List<LocElement> getCountriesList() {
+    return countriesList;
+  }
+
+  public List<InstitutionType> getInstitutionTypesList() {
+    return institutionTypesList;
+  }
+
   public List<PartnerRequest> getPartners() {
     return partners;
   }
@@ -122,6 +132,11 @@ public class PartnerRequestAction extends BaseAction {
     } else {
       partners = new ArrayList<>();
     }
+    this.countriesList = locElementManager.findAll().stream()
+      .filter(c -> c.isActive() && c.getLocElementType().getId().longValue() == 2).collect(Collectors.toList());
+    this.institutionTypesList = institutionTypeManager.findAll().stream().filter(it -> it.isActive() && !it.getOld())
+      .collect(Collectors.toList());
+    countriesList.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
   }
 
 
