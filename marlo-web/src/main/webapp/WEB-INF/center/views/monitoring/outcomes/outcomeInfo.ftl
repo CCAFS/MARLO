@@ -81,12 +81,17 @@
           <div class="col-md-2">
             [@customForm.input name="outcome.baseline" className="initialBaseLine" i18nkey="Initial Baseline" required=true editable=editable /]
           </div>
-          <div class="clearfix"></div>
+          
+          <div class="col-md-9 note center">
+            <span>[@s.text name="monitoring.outcome.help.baseline"/]</span>
+          </div>
+          
+          <div class="clearfix"></div>   
           [/#if]
           <div class="col-md-12">
             <h5 class="sectionSubTitle">Progress Towards Outcome Milestones:</h5>
             <div class="note left">
-              [@s.text name="outcome.milestones.emptyMessage"/]
+              [@s.text name="monitoring.outcome.help.yellow"/]
             </div>
             <br />
             [#-- MILESTONE LIST --]

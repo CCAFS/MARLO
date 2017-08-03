@@ -78,6 +78,11 @@ public class CenterMilestoneManager implements ICenterMilestoneManager {
   }
 
   @Override
+  public List<Map<String, Object>> getMonitoringMilestones(long programID) {
+    return centerMilestoneDAO.getMonitoringMilestones(programID);
+  }
+
+  @Override
   public long saveCenterMilestone(CenterMilestone centerMilestone) {
 
     return centerMilestoneDAO.save(centerMilestone);

@@ -107,6 +107,23 @@
         
         [#-- Monitoring reports --]
         <div id="monitoring-contentOptions" style="display:none">
+        
+        [#--Monitoring Outcomes--]
+          <div class="summariesFiles borderBox col-md-12">
+            <div class="col-md-12 title-file">
+              <input class="hidden" type="radio" name="formOptions" id="outcomesContributionSummary" value="centerMonitoringOutcomes"/>
+              <label for="">[@s.text name="summaries.board.report.monitoringOutcome" /] </label>
+            </div>
+            <span class="description col-md-12">[@s.text name="summaries.board.report.monitoringOutcome.description" /]</span>
+            <div class="extraOptions col-md-12" style="display:none"> 
+              <span class="hidden fileTypes excelType">leadProjectInstitutionsSummary-leadProjectInstitutionsSummary</span>
+              [@customForm.select name="programID" header=false   label=""  i18nkey="Select a Research Program"  listName="programs"  keyFieldName="id"  displayFieldName="composedName" className="allPrograms"   multiple=false required=true   editable=true/]
+              <div class="pull-right">
+                <a style="display:none;" target="_blank" class="generateReport addButton pull-right" href="#">[@s.text name="form.buttons.generate" /]</a>
+              </div>
+            </div>
+          </div>
+        
           [#--Outcomes Contribution --]
           <div class="summariesFiles borderBox col-md-12">
             <div class="col-md-12 title-file">
@@ -115,8 +132,6 @@
             </div>
             <span class="description col-md-12">[@s.text name="summaries.board.report.outcomeContribution.description" /]</span>
             <div class="extraOptions col-md-12" style="display:none"> 
-              <span class="hidden forPlanningCycle forCycle"></span>
-              <span class="hidden forReportingCycle forCycle"></span>
               <span class="hidden fileTypes excelType">leadProjectInstitutionsSummary-leadProjectInstitutionsSummary</span>
               [@customForm.select name="programID" header=false   label=""  i18nkey="Select a Research Program"  listName="programs"  keyFieldName="id"  displayFieldName="composedName" className="allPrograms"   multiple=false required=true   editable=true/]
               <div class="pull-right">

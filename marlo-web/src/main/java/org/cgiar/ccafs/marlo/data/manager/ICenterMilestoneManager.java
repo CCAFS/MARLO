@@ -46,7 +46,6 @@ public interface ICenterMilestoneManager {
    */
   public boolean existCenterMilestone(long centerMilestoneID);
 
-
   /**
    * This method gets a list of centerMilestone that are active
    * 
@@ -63,6 +62,7 @@ public interface ICenterMilestoneManager {
    */
   public CenterMilestone getCenterMilestoneById(long centerMilestoneID);
 
+
   /**
    * This method gets a list of centerMilestones belongs of the user
    * 
@@ -77,6 +77,13 @@ public interface ICenterMilestoneManager {
    * @return a list of report of Impact Pathway Outcomes
    */
   public List<Map<String, Object>> getCountTargetUnit(long programID);
+
+  /**
+   * This method gets a report of Monitoring Milestones by research program
+   * 
+   * @return a list of report of Monitoring Milestones
+   */
+  public List<Map<String, Object>> getMonitoringMilestones(long programID);
 
   /**
    * This method saves the information of the given centerMilestone

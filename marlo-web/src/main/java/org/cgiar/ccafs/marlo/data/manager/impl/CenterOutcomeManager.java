@@ -72,6 +72,11 @@ public class CenterOutcomeManager implements ICenterOutcomeManager {
   }
 
   @Override
+  public List<Map<String, Object>> getMonitoringOutcomes(long programID) {
+    return researchOutcomeDAO.getMonitoringOutcomes(programID);
+  }
+
+  @Override
   public CenterOutcome getResearchOutcomeById(long researchOutcomeID) {
 
     return researchOutcomeDAO.find(researchOutcomeID);

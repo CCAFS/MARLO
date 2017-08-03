@@ -72,6 +72,13 @@ public interface ICenterOutcomeDAO {
    */
   public List<Map<String, Object>> getImpactPathwayOutcomes(long programID);
 
+  /**
+   * This method gets a report of Monitoring Outcomes by research program
+   * 
+   * @return a list of report of Monitoring Outcomes
+   */
+  public List<Map<String, Object>> getMonitoringOutcomes(long programID);
+
 
   /**
    * This method gets a list of researchOutcomes belongs of the user

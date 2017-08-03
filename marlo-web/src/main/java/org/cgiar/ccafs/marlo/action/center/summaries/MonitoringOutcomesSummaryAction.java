@@ -56,10 +56,10 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Andrés Felipe Valencia Rivera. CCAFS
  */
-public class IPOutcomesSummaryAction extends BaseAction implements Summary {
+public class MonitoringOutcomesSummaryAction extends BaseAction implements Summary {
 
   private static final long serialVersionUID = -624982650510682813L;
-  private static Logger LOG = LoggerFactory.getLogger(IPOutcomesSummaryAction.class);
+  private static Logger LOG = LoggerFactory.getLogger(MonitoringOutcomesSummaryAction.class);
 
   // Streams
   InputStream inputStream;
@@ -74,7 +74,7 @@ public class IPOutcomesSummaryAction extends BaseAction implements Summary {
   private long startTime;
 
   @Inject
-  public IPOutcomesSummaryAction(APConfig config, ICenterProgramManager programService,
+  public MonitoringOutcomesSummaryAction(APConfig config, ICenterProgramManager programService,
     ICenterOutcomeManager outcomeService, ICenterMilestoneManager milestoneService) {
     super(config);
     this.programService = programService;
@@ -98,13 +98,11 @@ public class IPOutcomesSummaryAction extends BaseAction implements Summary {
     masterReport.getParameterValues().put("i8nTopic", this.getText("outcome.researchTopic"));
     masterReport.getParameterValues().put("i8nTargetUnit", this.getText("outcome.targetUnit"));
     masterReport.getParameterValues().put("i8nTargetValue", this.getText("outcome.targetValue"));
-    masterReport.getParameterValues().put("i8nTargetYear", this.getText("outcome.targetYear"));
+    masterReport.getParameterValues().put("i8nYear", this.getText("outcome.targetYear"));
+    masterReport.getParameterValues().put("i8nProgress", this.getText("outcome.progress"));
     masterReport.getParameterValues().put("i8nMilestoneId", this.getText("outcome.milestoneId"));
     masterReport.getParameterValues().put("i8nMilestoneTitle", this.getText("outcome.milestoneTitle"));
     masterReport.getParameterValues().put("i8nMilestoneTargetUnit", this.getText("outcome.milestone.targetUnit"));
-    masterReport.getParameterValues().put("i8nMilestoneTargetValue", this.getText("outcome.milestone.targetValue"));
-    masterReport.getParameterValues().put("i8nMilestoneTargetYear", this.getText("outcome.milestone.targerYear"));
-    masterReport.getParameterValues().put("i8nCount", this.getText("summary.count"));
 
 
     return masterReport;
@@ -118,8 +116,8 @@ public class IPOutcomesSummaryAction extends BaseAction implements Summary {
     // manager.registerDefaults();
     try {
 
-      Resource reportResource =
-        manager.createDirectly(this.getClass().getResource("/pentaho/centerOutcomes.prpt"), MasterReport.class);
+      Resource reportResource = manager
+        .createDirectly(this.getClass().getResource("/pentaho/centerOutcomeMonitoring.prpt"), MasterReport.class);
 
       // Get main report
       MasterReport masterReport = (MasterReport) reportResource.getResource();
@@ -146,10 +144,7 @@ public class IPOutcomesSummaryAction extends BaseAction implements Summary {
       // Subreport Program Impacts
       this.fillSubreport((SubReport) hm.get("details"), "details");
 
-      this.fillSubreport((SubReport) hm.get("outcomeGraph"), "outcomeGraph");
-
-      this.fillSubreport((SubReport) hm.get("milestoneGraph"), "milestoneGraph");
-
+      this.fillSubreport((SubReport) hm.get("detailsMil"), "detailsMil");
 
       ExcelReportUtil.createXLSX(masterReport, os);
       bytesExcel = os.toByteArray();
@@ -175,12 +170,9 @@ public class IPOutcomesSummaryAction extends BaseAction implements Summary {
       case "details":
         model = this.getOutcomeTableModel();
         break;
-      case "outcomeGraph":
-        model = this.getOutcomeTargetUnitModel();
-        break;
 
-      case "milestoneGraph":
-        model = this.getMilestoneTargetUnitModel();
+      case "detailsMil":
+        model = this.getMilestoneTableModel();
         break;
 
     }
@@ -322,22 +314,35 @@ public class IPOutcomesSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
-  private TypedTableModel getMilestoneTargetUnitModel() {
+
+  private TypedTableModel getMilestoneTableModel() {
     // Initialization of Model
-    TypedTableModel model = new TypedTableModel(new String[] {"milestoneTargetUnitName", "milestoneNumber"},
-      new Class[] {String.class, Integer.class});
+    TypedTableModel model = new TypedTableModel(
+      new String[] {"milestoneId", "milestoneTitle", "outcomeId", "outcomeTitle", "milestoneTargetUnit",
+        "monitoringYear", "monitoringProgress", "outcomeUrl"},
+      new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class});
 
-    List<Map<String, Object>> reportOutcome = milestoneService.getCountTargetUnit(researchProgram.getId());
+    List<Map<String, Object>> reportMilestone = milestoneService.getMonitoringMilestones(researchProgram.getId());
 
-    if (reportOutcome != null) {
-      for (Map<String, Object> map : reportOutcome) {
+    if (reportMilestone != null) {
+      for (Map<String, Object> map : reportMilestone) {
+
+        String milestoneId = map.get("milestoneId").toString();
+        String milestoneTitle = map.get("milestoneTitle").toString();
+
+        String outcomeId = map.get("outcomeId").toString();
+        String outcomeUrl =
+          this.getBaseUrl() + "/monitoring/" + this.getCenterSession() + "/monitoringOutcome.do?outcomeID=" + outcomeId;
+        String outcomeTitle = map.get("outcomeDesc").toString();
+
+        String milestoneTargetUnit = map.get("milestoneTargetUnit").toString();
+        String monitoringYear = map.get("monitoringYear").toString();
+        String monitoringProgress = map.get("monitoringProgress").toString();
 
 
-        String milestoneTargetUnitName = map.get("targetUnit").toString();
-        Integer milestoneNumber = Integer.parseInt(map.get("count").toString());
-
-
-        model.addRow(new Object[] {milestoneTargetUnitName, milestoneNumber});
+        model.addRow(new Object[] {milestoneId, milestoneTitle, outcomeId, outcomeTitle, milestoneTargetUnit,
+          monitoringYear, monitoringProgress, outcomeUrl});
       }
     }
     return model;
@@ -347,12 +352,11 @@ public class IPOutcomesSummaryAction extends BaseAction implements Summary {
     // Initialization of Model
     TypedTableModel model = new TypedTableModel(
       new String[] {"outcomeId", "outcomeTitle", "impactStatement", "researchTopic", "outcomeTargetUnit",
-        "outcomeTargetValue", "outcomeTargetYear", "milestoneId", "milestoneTitle", "milestoneTargetUnit",
-        "milestoneTargetValue", "milestoneTargetYear", "outcomeUrl"},
+        "monitoringYear", "monitoringProgress", "outcomeUrl"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, String.class});
+        String.class});
 
-    List<Map<String, Object>> reportOutcome = outcomeService.getImpactPathwayOutcomes(researchProgram.getId());
+    List<Map<String, Object>> reportOutcome = outcomeService.getMonitoringOutcomes(researchProgram.getId());
 
     if (reportOutcome != null) {
       for (Map<String, Object> map : reportOutcome) {
@@ -360,45 +364,17 @@ public class IPOutcomesSummaryAction extends BaseAction implements Summary {
 
         String outcomeId = map.get("outcomeId").toString();
         String outcomeUrl =
-          this.getBaseUrl() + "/centerImpactPathway/" + this.getCenterSession() + "/outcomes.do?outcomeID=" + outcomeId;
+          this.getBaseUrl() + "/monitoring/" + this.getCenterSession() + "/monitoringOutcome.do?outcomeID=" + outcomeId;
         String outcomeTitle = map.get("outcomeDesc").toString();
         String impactStatement = map.get("impactStatement").toString();
         String researchTopic = map.get("topic").toString();
         String outcomeTargetUnit = map.get("outcomeTargetUnit").toString();
-        String outcomeTargetValue = map.get("outcomeValue").toString();
-        String outcomeTargetYear = map.get("outcomeYear").toString();
-        String milestoneId = map.get("milestoneId").toString();
-        String milestoneTitle = map.get("milestoneDesc").toString();
-        String milestoneTargetUnit = map.get("milestoneTargetUnit").toString();
-        String milestoneTargetValue = map.get("milestoneValue").toString();
-        String milestoneTargetYear = map.get("milestoneYear").toString();
+        String monitoringYear = map.get("monitoringYear").toString();
+        String monitoringProgress = map.get("monitoringProgress").toString();
 
 
         model.addRow(new Object[] {outcomeId, outcomeTitle, impactStatement, researchTopic, outcomeTargetUnit,
-          outcomeTargetValue, outcomeTargetYear, milestoneId, milestoneTitle, milestoneTargetUnit, milestoneTargetValue,
-          milestoneTargetYear, outcomeUrl});
-      }
-    }
-    return model;
-  }
-
-
-  private TypedTableModel getOutcomeTargetUnitModel() {
-    // Initialization of Model
-    TypedTableModel model = new TypedTableModel(new String[] {"outcomeTargetUnitName", "outcomeNumber"},
-      new Class[] {String.class, Integer.class});
-
-    List<Map<String, Object>> reportOutcome = outcomeService.getCountTargetUnit(researchProgram.getId());
-
-    if (reportOutcome != null) {
-      for (Map<String, Object> map : reportOutcome) {
-
-
-        String outcomeTargetUnitName = map.get("targetUnit").toString();
-        Integer outcomeNumber = Integer.parseInt(map.get("count").toString());
-
-
-        model.addRow(new Object[] {outcomeTargetUnitName, outcomeNumber});
+          monitoringYear, monitoringProgress, outcomeUrl});
       }
     }
     return model;

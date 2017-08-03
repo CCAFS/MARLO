@@ -46,7 +46,6 @@ public interface ICenterOutcomeManager {
    */
   public boolean existResearchOutcome(long researchOutcomeID);
 
-
   /**
    * This method gets a list of researchOutcome that are active
    * 
@@ -62,12 +61,20 @@ public interface ICenterOutcomeManager {
    */
   public List<Map<String, Object>> getCountTargetUnit(long programID);
 
+
   /**
    * This method gets a report of Impact Pathway Outcomes by research program
    * 
    * @return a list of report of Impact Pathway Outcomes
    */
   public List<Map<String, Object>> getImpactPathwayOutcomes(long programID);
+
+  /**
+   * This method gets a report of Monitoring Outcomes by research program
+   * 
+   * @return a list of report of Monitoring Outcomes
+   */
+  public List<Map<String, Object>> getMonitoringOutcomes(long programID);
 
   /**
    * This method gets a researchOutcome object by a given researchOutcome identifier.
