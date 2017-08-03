@@ -110,6 +110,8 @@ public class InstitutionsLeadersSummaryAction extends BaseAction implements Summ
       masterReport.getParameterValues().put("crp_id", idParam);
       masterReport.getParameterValues().put("date", currentDate);
       masterReport.getParameterValues().put("cycle", cycle);
+      masterReport.getParameterValues().put("showDescription",
+        this.hasSpecificities(APConstants.CRP_REPORTS_DESCRIPTION));
       // Set i8n for pentaho
       masterReport = this.addi8nParameters(masterReport);
       ExcelReportUtil.createXLSX(masterReport, os);
