@@ -83,6 +83,7 @@ public class RejectPartnerRequestAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
+    success = true;
     try {
       Map<String, Object> parameters = this.getParameters();
       justification = StringUtils.trim(((String[]) parameters.get(APConstants.JUSTIFICATION_REQUEST))[0]);
