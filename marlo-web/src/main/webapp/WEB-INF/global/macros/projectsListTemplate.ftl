@@ -107,6 +107,8 @@
           [/#if]
           [#-- Project Action Status --]
           <td>
+            <strong>${(project.statusName)!}</strong>
+            <i>
             [#assign currentCycleYear= currentCycleYear /]
             [#assign submission = action.isProjectSubmitted(project.id) /] [#-- (project.isSubmitted(currentCycleYear, cycleName))! --]
             [#assign completed = (action.isCompleteProject(project.id))!false /]
@@ -138,6 +140,7 @@
                 <p title="Ready for project leader completion">Ready for PL</p>
               [/#if]
             [/#if]
+            </i>
             
             
           </td>
