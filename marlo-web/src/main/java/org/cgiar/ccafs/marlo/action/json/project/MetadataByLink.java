@@ -17,6 +17,8 @@ package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.rest.services.deliverables.MetadataApiFactory;
+import org.cgiar.ccafs.marlo.rest.services.deliverables.MetadataClientApi;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.ClientRepository;
 
@@ -54,7 +56,7 @@ public class MetadataByLink extends BaseAction {
   private ClientRepository clientRepository;
 
   // http://cdm15738.contentdm.oclc.org/oai/oai.php?verb=GetRecord&metadataPrefix=oai_dc&identifier=oai:cdm15738.contentdm.oclc.org:p15738coll2/541
-  private final String CGSPACE = "https://cgspace.cgiar.org/rest/items/{0}/metadata";
+
   private final String IFPRI = "https://server15738.contentdm.oclc.org/dmwebservices/index.php";
   private final String ILRI = "http://data.ilri.org/portal/api/3/action/package_show";
   private final String AGTRIALS = "http://oai2.agtrials.org/oai2.php";
@@ -78,25 +80,36 @@ public class MetadataByLink extends BaseAction {
       return NOT_FOUND;
     }
 
-    String linkRequest = "";
-    switch (page) {
-      case "cgspace":
-        linkRequest = CGSPACE;
-        JSONObject metadataObject = clientRepository.getMetadata(linkRequest, id);
-        metadata = metadataObject.toString();
-        break;
-      case "ifpri":
-        linkRequest = IFPRI;
-        metadata = clientRepository.getMetadataIFPRI(linkRequest, id);
-        break;
-      case "ilri":
-        linkRequest = ILRI;
-        metadata = clientRepository.getMetadataILRI(linkRequest, id);
-        break;
-      default:
-        break;
-    }
+    page = "dataverse";
+    MetadataClientApi metadataClientApi = MetadataApiFactory.getMetadataClientApi(page);
+    metadataClientApi.setId(id);
+    String handleUrl = metadataClientApi.parseLink();
+    JSONObject metadataObject = metadataClientApi.getMetadata(handleUrl);
+    metadata = metadataObject.toString();
 
+    /*
+     * switch (page) {
+     * case "cgspace":
+     * linkRequest = CGSPACE;
+     * MetadataClientApi metadataClientApi = new CGSPACEClientApi();
+     * metadataClientApi.setLink(linkRequest);
+     * metadataClientApi.setId(id);
+     * String handleUrl = metadataClientApi.parseLink();
+     * JSONObject metadataObject = metadataClientApi.getMetadata(handleUrl);
+     * metadata = metadataObject.toString();
+     * break;
+     * case "ifpri":
+     * linkRequest = IFPRI;
+     * metadata = clientRepository.getMetadataIFPRI(linkRequest, id);
+     * break;
+     * case "ilri":
+     * linkRequest = ILRI;
+     * metadata = clientRepository.getMetadataILRI(linkRequest, id);
+     * break;
+     * default:
+     * break;
+     * }
+     */
     return SUCCESS;
   }
 
