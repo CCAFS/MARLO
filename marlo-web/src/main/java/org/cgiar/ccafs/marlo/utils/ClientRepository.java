@@ -102,8 +102,10 @@ public class ClientRepository {
 
       String handleUrl = CGSPACEHANDLE.replace("{0}", id.replace("oai:cgspace.cgiar.org:", ""));
 
+      XMLReaderConnectionUtil connection = new XMLReaderConnectionUtil();
 
-      Element elementHandle = this.getXmlRestClient(handleUrl);
+      Element elementHandle = connection.getXmlRestClient(handleUrl);
+
       id = elementHandle.element("id").getStringValue();
 
       linkRequest = linkRequest.replace("{0}", id);
