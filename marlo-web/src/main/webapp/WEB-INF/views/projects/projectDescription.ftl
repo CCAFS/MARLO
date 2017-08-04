@@ -97,10 +97,10 @@
             <div class="form-group ${reportingActive?string('fieldFocus','')}">
               <div class="form-group row">
                 <div class="col-md-6">
-                  [@customForm.select name="project.status" value="${(project.status)!}" i18nkey="project.status" listName="projectStatuses" header=false editable=editable /]
+                  [@customForm.select name="project.status" value="${(project.status)!}" i18nkey="project.status" className="description_project_status" listName="projectStatuses" header=false editable=editable /]
                 </div>
               </div>
-              <div class="form-group" style="display:${project.statusJustificationRequired?string('block','none')}">
+              <div id="statusDescription" class="form-group" style="display:${project.statusJustificationRequired?string('block','none')}">
                 [@customForm.textArea name="project.statusJustification" required=!((project.bilateralProject)!false) className="project-statusJustification limitWords-100" editable=editable  /]
               </div>
             </div>

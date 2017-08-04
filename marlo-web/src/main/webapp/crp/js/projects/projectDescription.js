@@ -6,7 +6,7 @@ var liaisonInstitutionsPrograms, liaisonUserSelected;
 
 $(document).ready(function() {
 
-  $statuses = $('#description_project_status');
+  $statuses = $('.description_project_status');
   $statusDescription = $('#statusDescription');
   $endDate = $('#project\\.endDate');
   var implementationStatus = $statuses.find('option[value="2"]').text();
@@ -221,7 +221,8 @@ $(document).ready(function() {
   });
 
   $statuses.on('change', function(e) {
-    if(isStatusCancelled($(this).val())) {
+    var statusID= $(this).val();
+    if(isStatusCancelled(statusID) || isStatusComplete(statusID) || isStatusExtended(statusID)) {
       $statusDescription.show(400);
     } else {
       $statusDescription.hide(400);
@@ -237,11 +238,7 @@ $(document).ready(function() {
     var d = new Date($(this).val());
     checkImplementationStatus(d.getFullYear());
   }
-
-  function isStatusCancelled(statusId) {
-    return(statusId == "5")
-  }
-
+  
   function checkImplementationStatus(year) {
     if(year <= currentReportingYear) {
       $statuses.removeOption(2);
