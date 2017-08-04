@@ -32,15 +32,15 @@ import java.util.UUID;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.inject.Singleton;
+import org.apache.shiro.util.CollectionUtils;
 import org.hibernate.EntityMode;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 import org.hibernate.StatelessSession;
-import org.hibernate.event.FlushEntityEvent;
-import org.hibernate.event.FlushEntityEventListener;
+import org.hibernate.cfg.Configuration;
 import org.hibernate.event.FlushEvent;
 import org.hibernate.event.FlushEventListener;
+import org.hibernate.event.Initializable;
 import org.hibernate.event.PostCollectionRecreateEvent;
 import org.hibernate.event.PostCollectionRecreateEventListener;
 import org.hibernate.event.PostCollectionRemoveEvent;
@@ -53,6 +53,12 @@ import org.hibernate.event.PostInsertEvent;
 import org.hibernate.event.PostInsertEventListener;
 import org.hibernate.event.PostUpdateEvent;
 import org.hibernate.event.PostUpdateEventListener;
+import org.hibernate.event.PreDeleteEvent;
+import org.hibernate.event.PreDeleteEventListener;
+import org.hibernate.event.PreInsertEvent;
+import org.hibernate.event.PreInsertEventListener;
+import org.hibernate.event.PreUpdateEvent;
+import org.hibernate.event.PreUpdateEventListener;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.ManyToOneType;
 import org.hibernate.type.OrderedSetType;
@@ -68,10 +74,10 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Christian Garcia, Grant Lay
  */
-@Singleton
-public class HibernateAuditLogListener implements PostDeleteEventListener, PostUpdateEventListener,
-  PostInsertEventListener, FlushEventListener, FlushEntityEventListener, PostCollectionUpdateEventListener,
-  PostCollectionRemoveEventListener, PostCollectionRecreateEventListener {
+public class HibernateAuditLogListener
+  implements PreDeleteEventListener, PreUpdateEventListener, PreInsertEventListener, PostDeleteEventListener,
+  PostUpdateEventListener, PostInsertEventListener, FlushEventListener, PostCollectionUpdateEventListener,
+  PostCollectionRemoveEventListener, PostCollectionRecreateEventListener, Initializable {
 
   public static Logger LOG = LoggerFactory.getLogger(HibernateAuditLogListener.class);
   private static final long serialVersionUID = 1L;
@@ -148,6 +154,12 @@ public class HibernateAuditLogListener implements PostDeleteEventListener, PostU
     return allAuditlogsForTransaction;
   }
 
+
+  // @Override
+  // public void initialize(Configuration arg0) {
+  // LOG.debug("initializing HibernateAuditLogListener");
+  // }
+
   private Auditlog createAuditlog(String action, IAuditLog entity, String json, long userId, String transactionId,
     Long principal, String relationName, String actionName) {
     StringBuilder detailBuilder = new StringBuilder();
@@ -160,6 +172,12 @@ public class HibernateAuditLogListener implements PostDeleteEventListener, PostU
       entity.getClass().toString(), json, userId, transactionId, principal, relationName,
       entity.getModificationJustification());
     return auditRecord;
+  }
+
+  @Override
+  public void initialize(Configuration arg0) {
+    LOG.debug("Initializing HibernateAuditLogListener");
+
   }
 
 
@@ -260,22 +278,36 @@ public class HibernateAuditLogListener implements PostDeleteEventListener, PostU
 
   }
 
-
   @Override
   public void onFlush(FlushEvent flushEvent) throws HibernateException {
     LOG.debug("begin onFlush");
 
+    AuditLogContext auditLogContext = AuditLogContextProvider.getAuditLogContext();
+    /**
+     * This is because our save(entity), update(entity) and delete(entity) methods on our DAOs should not
+     * execute the listeners. There might be a better way to do this like conditionally active the listeners.
+     */
+    if (auditLogContext.getActionName() == null && CollectionUtils.isEmpty(auditLogContext.getRelationsNames())) {
+      return;
+    }
+
     SessionFactory sessionFactory = flushEvent.getSession().getSessionFactory();
 
     List<Auditlog> createAuditlogs = this.createAllAuditLogsForTransaction(sessionFactory);
+
+    if (CollectionUtils.isEmpty(createAuditlogs)) {
+      LOG.info("Audit logs are empty");
+      return;
+    }
+
     this.persistAuditLogs(sessionFactory, createAuditlogs);
   }
 
-  @Override
-  public void onFlushEntity(FlushEntityEvent flushEntityEvent) throws HibernateException {
-    LOG.info("onFlushEntity for Entity: " + flushEntityEvent.getEntity());
-
-  }
+  // @Override
+  // public void onFlushEntity(FlushEntityEvent flushEntityEvent) throws HibernateException {
+  // LOG.info("onFlushEntity");
+  //
+  // }
 
   @Override
   public void onPostDelete(PostDeleteEvent postDeleteEvent) {
@@ -285,17 +317,28 @@ public class HibernateAuditLogListener implements PostDeleteEventListener, PostU
 
     AuditLogContext auditLogContext = AuditLogContextProvider.getAuditLogContext();
 
+    /**
+     * This is because our save(entity), update(entity) and delete(entity) methods on our DAOs should not
+     * execute the listeners. There might be a better way to do this like conditionally active the listeners.
+     */
+    if (auditLogContext.getActionName() == null && CollectionUtils.isEmpty(auditLogContext.getRelationsNames())) {
+      return;
+    }
+
     HashMap<String, Object> deleteRecord = new HashMap<>();
     if (entity instanceof IAuditLog) {
       deleteRecord.put(ENTITY, entity);
       deleteRecord.put(PRINCIPAL, new Long(1));
       auditLogContext.getDeletes().add(deleteRecord);
 
-      Type[] types = {};
+      ClassMetadata classMetadata =
+        postDeleteEvent.getSession().getSessionFactory().getClassMetadata(entity.getClass());
+      Type[] types = classMetadata.getPropertyTypes();
       auditLogContext.getDeletes().addAll(this.relations(postDeleteEvent.getDeletedState(), types,
         ((IAuditLog) entity).getId(), true, postDeleteEvent.getSession().getSessionFactory()));
     }
   }
+
 
   @Override
   public void onPostInsert(PostInsertEvent postInsertEvent) {
@@ -305,13 +348,23 @@ public class HibernateAuditLogListener implements PostDeleteEventListener, PostU
 
     AuditLogContext auditLogContext = AuditLogContextProvider.getAuditLogContext();
 
+    /**
+     * This is because our save(entity), update(entity) and delete(entity) methods on our DAOs should not
+     * execute the listeners. There might be a better way to do this like conditionally active the listeners.
+     */
+    if (auditLogContext.getActionName() == null && CollectionUtils.isEmpty(auditLogContext.getRelationsNames())) {
+      return;
+    }
+
     HashMap<String, Object> insertRecord = new HashMap<>();
     if (entity instanceof IAuditLog) {
       insertRecord.put(ENTITY, entity);
       insertRecord.put(PRINCIPAL, new Long(1));
       auditLogContext.getInserts().add(insertRecord);
+      ClassMetadata classMetadata =
+        postInsertEvent.getSession().getSessionFactory().getClassMetadata(entity.getClass());
+      Type[] types = classMetadata.getPropertyTypes();
 
-      Type[] types = {};
       auditLogContext.getInserts().addAll(this.relations(postInsertEvent.getState(), types,
         ((IAuditLog) entity).getId(), true, postInsertEvent.getSession().getSessionFactory()));
     }
@@ -325,13 +378,14 @@ public class HibernateAuditLogListener implements PostDeleteEventListener, PostU
 
   }
 
-
   @Override
   public void onPostRemoveCollection(PostCollectionRemoveEvent event) {
-    LOG.info("onPostRemoveCollection for Parent Entity: " + event.getAffectedOwnerEntityName() + " , and collection : "
-      + event.getCollection().getClass());
-
+    // LOG.info("onPostRemoveCollection for Parent Entity: " + event.getAffectedOwnerEntityName() + " , and collection :
+    // "
+    // + event.getCollection().getClass());
+    LOG.info("onPostRemoveCollection");
   }
+
 
   @Override
   public void onPostUpdate(PostUpdateEvent postUpdateEvent) {
@@ -340,13 +394,24 @@ public class HibernateAuditLogListener implements PostDeleteEventListener, PostU
 
     AuditLogContext auditLogContext = AuditLogContextProvider.getAuditLogContext();
 
+    /**
+     * This is because our save(entity), update(entity) and delete(entity) methods on our DAOs should not
+     * execute the listeners. There might be a better way to do this like conditionally active the listeners.
+     */
+    if (auditLogContext.getActionName() == null && CollectionUtils.isEmpty(auditLogContext.getRelationsNames())) {
+      return;
+    }
+
     HashMap<String, Object> updateRecord = new HashMap<>();
     if (entity instanceof IAuditLog) {
       updateRecord.put(ENTITY, entity);
       updateRecord.put(PRINCIPAL, new Long(1));
       auditLogContext.getUpdates().add(updateRecord);
 
-      Type[] types = {};
+      ClassMetadata classMetadata =
+        postUpdateEvent.getSession().getSessionFactory().getClassMetadata(entity.getClass());
+      Type[] types = classMetadata.getPropertyTypes();
+
       auditLogContext.getUpdates().addAll(this.relations(postUpdateEvent.getState(), types,
         ((IAuditLog) entity).getId(), true, postUpdateEvent.getSession().getSessionFactory()));
     }
@@ -360,6 +425,23 @@ public class HibernateAuditLogListener implements PostDeleteEventListener, PostU
 
   }
 
+  @Override
+  public boolean onPreDelete(PreDeleteEvent arg0) {
+    LOG.debug("onPreDelete");
+    return false;
+  }
+
+  @Override
+  public boolean onPreInsert(PreInsertEvent arg0) {
+    LOG.debug("onPreInsert");
+    return false;
+  }
+
+  @Override
+  public boolean onPreUpdate(PreUpdateEvent arg0) {
+    LOG.debug("onPreUpdate");
+    return false;
+  }
 
   /**
    * We should not use the same session we writing to the database from an Hibernate Event Listener,

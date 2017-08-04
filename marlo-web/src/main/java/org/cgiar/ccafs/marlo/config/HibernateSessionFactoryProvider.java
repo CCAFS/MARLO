@@ -72,7 +72,7 @@ public class HibernateSessionFactoryProvider implements Provider<SessionFactory>
     // hibernateConfig.setProperty("hibernate.c3p0.min_size", "5");
 
     // hibernateConfig.setInterceptor(new AuditLogInterceptor());
-
+    this.registerHibernateEventListeners(hibernateConfig);
     sessionFactory = hibernateConfig.buildSessionFactory();
 
   }
@@ -80,6 +80,28 @@ public class HibernateSessionFactoryProvider implements Provider<SessionFactory>
   @Override
   public SessionFactory get() {
     return this.sessionFactory;
+  }
+
+  private void registerHibernateEventListeners(Configuration configuration) {
+    String className = "org.cgiar.ccafs.marlo.data.HibernateAuditLogListener";
+
+    configuration.setListener("pre-update", className);
+    configuration.setListener("pre-insert", className);
+    configuration.setListener("pre-delete", className);
+
+    configuration.setListener("post-collection-recreate", className);
+    configuration.setListener("post-collection-remove", className);
+    configuration.setListener("post-collection-update", className);
+
+
+    configuration.setListener("post-update", className);
+    configuration.setListener("post-insert", className);
+    configuration.setListener("post-delete", className);
+
+
+    configuration.setListeners("flush", new String[] {className, "org.hibernate.event.def.DefaultFlushEventListener"});
+    // configuration.setListener("flush-entity", className);
+
   }
 
 }
