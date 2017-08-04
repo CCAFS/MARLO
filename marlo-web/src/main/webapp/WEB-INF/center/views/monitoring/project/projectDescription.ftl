@@ -91,7 +91,12 @@
               <div class="col-md-6">
                 [@customForm.input name="principalInvestigator" i18nkey="projectDescription.pl" type="text" disabled=!editable  required=true editable=false /]
               </div>
-              <div class="col-md-6">
+            [#-- Project Status --]  
+              <div class="col-md-3">
+                [@customForm.select name="project.projectStatus.id" label=""  i18nkey="projectsList.status" listName="status" keyFieldName="id"  displayFieldName="name"  multiple=false required=true header=false className="" editable=editable/]
+              </div>  
+            [#-- Project Type --]  
+              <div class="col-md-3">
                 [@customForm.select name="project.projectType.id" label=""  i18nkey="Type" listName="projectTypes" keyFieldName="id"  displayFieldName="name"  multiple=false required=true header=false className="" editable=editable/]
               </div>
             </div>   
