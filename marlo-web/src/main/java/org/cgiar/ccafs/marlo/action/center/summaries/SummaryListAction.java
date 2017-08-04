@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
@@ -49,12 +50,15 @@ public class SummaryListAction extends BaseAction {
   private ICenterManager centerService;
 
   private ICenterProgramManager programService;
+  private ICenterProjectManager projectService;
 
   @Inject
-  public SummaryListAction(APConfig config, ICenterManager centerService, ICenterProgramManager programService) {
+  public SummaryListAction(APConfig config, ICenterManager centerService, ICenterProgramManager programService,
+    ICenterProjectManager projectService) {
     super(config);
     this.centerService = centerService;
     this.programService = programService;
+    this.projectService = projectService;
   }
 
   public List<CenterProject> getAllProjects() {
@@ -71,7 +75,8 @@ public class SummaryListAction extends BaseAction {
     loggedCenter = (Center) this.getSession().get(APConstants.SESSION_CENTER);
     loggedCenter = centerService.getCrpById(loggedCenter.getId());
 
-    allProjects = new ArrayList<CenterProject>();
+    allProjects = new ArrayList<CenterProject>(
+      projectService.findAll().stream().filter(p -> p.isActive()).collect(Collectors.toList()));
 
     programs =
       new ArrayList<>(programService.findAll().stream().filter(p -> p.isActive()).collect(Collectors.toList()));
