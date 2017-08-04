@@ -16,23 +16,26 @@
 
 package org.cgiar.ccafs.marlo.rest.services.deliverables;
 
-import org.cgiar.ccafs.marlo.utils.XMLReaderConnectionUtil;
+import org.cgiar.ccafs.marlo.utils.RestConnectionUtil;
 
-import org.dom4j.Element;
 import org.json.JSONObject;
 
 public class DataverseClientApi extends MetadataClientApi {
 
-  private XMLReaderConnectionUtil xmlReaderConnectionUtil = new XMLReaderConnectionUtil();
+  private RestConnectionUtil xmlReaderConnectionUtil = new RestConnectionUtil();
 
   @Override
   public JSONObject getMetadata(String link) {
     JSONObject jo = new JSONObject();
+
     try {
-      link =
-        "https://services.dataverse.harvard.edu/miniverse/metrics/v1/datasets/by-persistent-id?key=c1580888-185f-4250-8f44-b98ca5e7b01b&persistentId=doi%3A10.7910%2FDVN%2F0ZEXKC";
-      Element metadata = xmlReaderConnectionUtil.getXmlRestClient(link);
-      System.out.println(metadata);
+      /*
+       * link =
+       * "https://services.dataverse.harvard.edu/miniverse/metrics/v1/datasets/by-persistent-id?key=c1580888-185f-4250-8f44-b98ca5e7b01b&persistentId=doi%3A10.7910%2FDVN%2F0ZEXKC";
+       */
+      String metadata = xmlReaderConnectionUtil.getJsonRestClient(link);
+      jo = new JSONObject(metadata);
+      jo = jo.getJSONObject("data");
     } catch (Exception e) {
       e.printStackTrace();
       jo = null;

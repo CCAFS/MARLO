@@ -16,6 +16,7 @@
 
 package org.cgiar.ccafs.marlo.utils;
 
+import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -40,7 +41,7 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.hibernate.util.DTDEntityResolver;
 
-public class XMLReaderConnectionUtil {
+public class RestConnectionUtil {
 
 
   protected static Element getDocumentRoot(InputStreamReader stream) {
@@ -54,6 +55,44 @@ public class XMLReaderConnectionUtil {
     }
   }
 
+  public String getJsonRestClient(String linkRequest) {
+    HttpClient httpClient = HttpClientBuilder.create().build();
+    httpClient = this.verifiedClient(httpClient);
+    HttpResponse response = null;
+    HttpGet getRequest = new HttpGet(linkRequest);
+    getRequest.addHeader("accept", "application/json");
+    try {
+      response = httpClient.execute(getRequest);
+    } catch (ClientProtocolException e) {
+
+      e.printStackTrace();
+    } catch (Exception e) {
+
+      e.printStackTrace();
+    }
+
+    if (response.getStatusLine().getStatusCode() != 200) {
+      throw new RuntimeException("Failed : HTTP error code : " + response.getStatusLine().getStatusCode());
+    }
+
+    try {
+      BufferedReader br = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
+      String output;
+      StringBuilder json = new StringBuilder();
+
+      while ((output = br.readLine()) != null) {
+        json.append(output);
+      }
+      return json.toString();
+    } catch (Exception e) {
+
+      e.printStackTrace();
+    }
+
+    return null;
+
+
+  }
 
   public Element getXmlRestClient(String linkRequest) {
     HttpClient httpClient = HttpClientBuilder.create().build();

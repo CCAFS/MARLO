@@ -16,7 +16,7 @@
 
 package org.cgiar.ccafs.marlo.rest.services.deliverables;
 
-import org.cgiar.ccafs.marlo.utils.XMLReaderConnectionUtil;
+import org.cgiar.ccafs.marlo.utils.RestConnectionUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,7 @@ public class CGSPACEClientApi extends MetadataClientApi {
 
   private final String CGSPACEHANDLE = "https://cgspace.cgiar.org/rest/handle/{0}";
 
-  private XMLReaderConnectionUtil xmlReaderConnectionUtil = new XMLReaderConnectionUtil();
+  private RestConnectionUtil xmlReaderConnectionUtil = new RestConnectionUtil();
   private final String CGSPACE = "https://cgspace.cgiar.org/rest/items/{0}/metadata";
 
   public CGSPACEClientApi() {
@@ -73,7 +73,7 @@ public class CGSPACEClientApi extends MetadataClientApi {
   @Override
   public String parseLink() {
     String handleUrl = CGSPACEHANDLE.replace("{0}", this.getId().replace("oai:cgspace.cgiar.org:", ""));
-    XMLReaderConnectionUtil connection = new XMLReaderConnectionUtil();
+    RestConnectionUtil connection = new RestConnectionUtil();
     Element elementHandle = connection.getXmlRestClient(handleUrl);
     this.setId(elementHandle.element("id").getStringValue());
     this.setLink(this.getLink().replace("{0}", this.getId()));

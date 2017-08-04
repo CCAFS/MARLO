@@ -80,11 +80,12 @@ public class MetadataByLink extends BaseAction {
       return NOT_FOUND;
     }
 
-    page = "dataverse";
+
     MetadataClientApi metadataClientApi = MetadataApiFactory.getMetadataClientApi(page);
     metadataClientApi.setId(id);
     String handleUrl = metadataClientApi.parseLink();
     JSONObject metadataObject = metadataClientApi.getMetadata(handleUrl);
+    System.out.println(metadataObject);
     metadata = metadataObject.toString();
 
     /*
