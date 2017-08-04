@@ -69,10 +69,13 @@ public class MARLOCustomPersistFilter implements Filter {
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
     throws IOException, ServletException {
+    HttpServletRequest httpRequest = (HttpServletRequest) request;
+    String url = httpRequest.getRequestURL().toString();
+    String queryString = httpRequest.getQueryString();
+    StringBuilder stringBuilder = new StringBuilder();
+    stringBuilder.append(" [").append(httpRequest.getMethod()).append("] ");
 
-    String url = ((HttpServletRequest) request).getRequestURL().toString();
-    String queryString = ((HttpServletRequest) request).getQueryString();
-    StringBuilder stringBuilder = new StringBuilder(url);
+    stringBuilder.append(url);
     if (queryString != null) {
       stringBuilder.append("?").append(queryString);
     }
