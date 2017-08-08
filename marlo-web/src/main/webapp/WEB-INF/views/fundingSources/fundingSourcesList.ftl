@@ -2,8 +2,8 @@
 [#assign title = "MARLO Funding sources" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
-[#assign customJS = ["${baseUrl}/js/fundingSources/fundingSourcesList.js" ] /]
-[#assign customCSS = ["${baseUrl}/css/global/customDataTable.css"] /]
+[#assign customJS = ["${baseUrlMedia}/js/fundingSources/fundingSourcesList.js" ] /]
+[#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css"] /]
 [#assign currentSection = "fundingSources" /] 
 
 [#assign breadCrumb = [
@@ -27,7 +27,7 @@
     [#-- Add --]
     <div class="buttons">
       <div class="buttons-content">
-        [#if action.canAddFunding() && (!crpClosed)]<a class="addButton" href="[@s.url namespace="/fundingSources" action='${(crpSession)!}/addNewFundingSources' ][/@s.url]">Add Funding Source</a>[/#if]
+        [#if action.canAddFunding() && (!crpClosed)]<a class="addButton" href="[@s.url namespace="/fundingSources" action='${(crpSession)!}/addNewFundingSources' ][/@s.url]"><span class="saveText">Add Funding Source </span></a>[/#if]
         <div class="clearfix"></div>
       </div>
     </div>

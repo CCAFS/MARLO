@@ -4,11 +4,11 @@
 [#assign currentSectionString = "synthesis-${actionName?replace('/','-')}-${liaisonInstitutionID}" /]
 [#assign pageLibs = [ "datatables.net", "datatables.net-bs" ] /]
 [#assign customJS = [
-  "${baseUrl}/js/synthesis/crpIndicators.js",
-  "${baseUrl}/js/global/autoSave.js",
-  "${baseUrl}/js/global/fieldsValidation.js"
+  "${baseUrlMedia}/js/synthesis/crpIndicators.js",
+  "${baseUrlMedia}/js/global/autoSave.js",
+  "${baseUrlMedia}/js/global/fieldsValidation.js"
 ] /]
-[#assign customCSS = ["${baseUrl}/css/synthesis/synthesisGlobal.css"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/synthesis/synthesisGlobal.css"] /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = "crpIndicators" /]
 
@@ -28,7 +28,7 @@
         [#-- Help Message --]
         <div class="container helpText viewMore-block">
           <div class="helpMessage infoText">
-            <img class="col-md-2" src="${baseUrl}/images/global/icon-help.jpg" />
+            <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.jpg" />
             <p class="col-md-10"> [@s.text name="synthesis.crpIndicators.help" /]</p>
           </div> 
           <div style="display:none" class="viewMore closed"></div>
@@ -44,7 +44,7 @@
               [#assign hasPermission = (action.hasPermissionCrpIndicators(institution.id))!false /]
               <li class="${isActive?string('active','')} ${hasPermission?string('canEdit','')}">
                 <a href="[@s.url][@s.param name ="liaisonInstitutionID"]${institution.id}[/@s.param][@s.param name ="edit"]true[/@s.param][/@s.url]">${institution.acronym}</a>
-                [#if isCompleted] <p class="synthesisCompleted"> <img src="${baseUrl}/images/global/icon-check-tiny${isActive?string('-white','')}.png"/> </p> [/#if]
+                [#if isCompleted] <p class="synthesisCompleted"> <img src="${baseUrlMedia}/images/global/icon-check-tiny${isActive?string('-white','')}.png"/> </p> [/#if]
               </li>
             [/#list]
           </ul>
@@ -76,7 +76,7 @@
                   [#-- title --]
                   <h6 class="title" style="font-size: 1.2em;margin-bottom: 5px;">${indicatorReport.crpIndicator.id}.  ${indicatorReport.crpIndicator.name}
                     [#if indicatorReport.crpIndicator.description?has_content]
-                      <a id="showIndicatorDesc-${indicatorReport.crpIndicator.id}" class="showIndicatorDesc" href="#"><img src="${baseUrl}/images/global/icon-info.png" title="Show indicator description" alt="" /></a>
+                      <a id="showIndicatorDesc-${indicatorReport.crpIndicator.id}" class="showIndicatorDesc" href="#"><img src="${baseUrlMedia}/images/global/icon-info.png" title="Show indicator description" alt="" /></a>
                     [/#if]
                   </h6>
                   [#if indicatorReport.crpIndicator.description?has_content]

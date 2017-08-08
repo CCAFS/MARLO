@@ -16,7 +16,6 @@ package org.cgiar.ccafs.marlo.data.model;
 // Generated Jul 13, 2016 11:45:52 AM by Hibernate Tools 4.3.1.Final
 
 
-import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 import org.cgiar.ccafs.marlo.utils.CountryLocationLevel;
 
@@ -487,7 +486,7 @@ public class Project implements java.io.Serializable, IAuditLog {
       for (ProjectPartner partner : partners) {
         if (partner.getPartnerPersons() != null) {
           for (ProjectPartnerPerson person : partner.getPartnerPersons()) {
-            if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PC)) {
+            if (person.getContactType().equals("PC")) {
               projectCoordinators.add(person);
             }
           }
@@ -499,7 +498,7 @@ public class Project implements java.io.Serializable, IAuditLog {
         if (partner.getProjectPartnerPersons() != null) {
           for (ProjectPartnerPerson person : partner.getProjectPartnerPersons()) {
 
-            if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PC) && person.isActive()) {
+            if (person.getContactType().equals("PC") && person.isActive()) {
               projectCoordinators.add(person);
             }
           }
@@ -635,7 +634,7 @@ public class Project implements java.io.Serializable, IAuditLog {
 
         if (partner.getPartnerPersons() != null) {
           for (ProjectPartnerPerson person : partner.getPartnerPersons()) {
-            if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL)) {
+            if (person.getContactType().equals("PL")) {
               return partner;
             }
           }
@@ -649,7 +648,7 @@ public class Project implements java.io.Serializable, IAuditLog {
 
           for (ProjectPartnerPerson person : partner.getProjectPartnerPersons()) {
             if (person.isActive()) {
-              if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL) && person.isActive()) {
+              if (person.getContactType().equals("PL") && person.isActive()) {
                 return partner;
               }
             }
@@ -673,20 +672,23 @@ public class Project implements java.io.Serializable, IAuditLog {
 
     if (partners != null) {
       for (ProjectPartner partner : partners) {
-        for (ProjectPartnerPerson person : partner.getPartnerPersons()) {
+        if (partner.getPartnerPersons() != null) {
+          for (ProjectPartnerPerson person : partner.getPartnerPersons()) {
 
-          if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL)) {
-            return person;
+            if (person.getContactType().equals("PL")) {
+              return person;
+
+            }
 
           }
-
         }
+
       }
     } else {
       for (ProjectPartner partner : projectPartners.stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
         for (ProjectPartnerPerson person : partner.getProjectPartnerPersons()) {
           if (person.isActive()) {
-            if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL)) {
+            if (person.getContactType().equals("PL")) {
               return person;
             }
           }
@@ -1061,7 +1063,7 @@ public class Project implements java.io.Serializable, IAuditLog {
 
 
   public boolean isBilateralProject() {
-    return (type != null) ? type.equals(APConstants.PROJECT_BILATERAL) : false;
+    return (type != null) ? type.equals("BILATERAL") : false;
   }
 
 
@@ -1081,12 +1083,12 @@ public class Project implements java.io.Serializable, IAuditLog {
   }
 
   public boolean isCoFundedProject() {
-    return (type != null) ? type.equals(APConstants.PROJECT_CCAFS_COFUNDED) : false;
+    return (type != null) ? type.equals("COFUNDED") : false;
   }
 
 
   public boolean isCoreProject() {
-    return (type != null) ? type.equals(APConstants.PROJECT_CORE) : false;
+    return (type != null) ? type.equals("W1W2") : false;
   }
 
 

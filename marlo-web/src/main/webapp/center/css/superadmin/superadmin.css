@@ -1,0 +1,95 @@
+.acronymBlock {float: left;width: 18%;padding-left: 0;padding-right: 1%;}
+
+.nameBlock {padding: 0;width: 60%;float: left;}
+
+.buttonBlock {width: 20%;padding-right: 0;float: right;}
+
+li.targetUnit {
+  float: left;
+  width: 49%;
+  margin-left: 1%;
+}
+
+.srfIdo {/* padding: 5px; */}
+
+
+/** SLOs **/
+
+.srfSlo .blockTitle {
+  cursor: pointer;
+  padding-left: 20px;
+  background-repeat: no-repeat;
+  background-position: -4px;
+}
+
+.srfSlo .blockTitle.opened {
+  opacity: 0.5;
+  background-image: url(../../images/global/arrow-up.png);
+}
+
+.srfSlo .blockTitle.closed {
+  background-image: url(../../images/global/arrow-down.png);
+}
+
+.srfSlo .blockTitle small{
+  color: #389b98;
+}
+
+.srfSlo .blockContent{
+  padding: 0 15px 20px 15px;
+}
+
+/** IDOs **/
+
+.srfIdo .blockTitle {
+  cursor: pointer;
+  padding-left: 20px;
+  background-repeat: no-repeat;
+  background-position: -4px;
+}
+
+.srfIdo .blockTitle.opened {
+  opacity: 0.5;
+  background-image: url(../../images/global/arrow-up.png);
+}
+
+.srfIdo .blockTitle.closed {
+  background-image: url(../../images/global/arrow-down.png);
+}
+
+.srfIdo .blockTitle small{
+  color: #389b98;
+}
+
+.srfIdo .blockContent{
+  padding: 0 15px 20px 15px;
+}
+
+.targetsContent h6 {
+    display: inline-block;
+    margin-top: 11px;
+}
+
+.targetsList {
+    margin-top: 15px;
+}
+
+.targetRemove {
+    margin-left: 2%;
+    cursor: pointer;
+}
+
+.targetsContent input {
+    width: 17%;
+    margin-right: 2%;
+    display: inline-block;
+}
+
+.targetsContent {
+    margin: 0px 4%;
+    padding: 0 5%;
+    border: 1px dashed #ccc;
+    margin-bottom: 5px;
+    border-radius: 2px;
+    background-color: #f5f5f5;
+}

@@ -46,6 +46,7 @@
       var actionName = "${actionName}";
       var production = ${config.production?string};
       var baseURL = "${baseUrl}";
+      var baseUrlMedia = "${baseUrlMedia}";
       var debugMode = ${config.debug?string};
       var editable = ${editable?string};
       var canEdit = ${canEdit?string};
@@ -79,6 +80,15 @@
           [#elseif crpSession == "wle"]
             [#-- MARLO Production (WLE) --]
             [#assign tawktoSiteId = "582f0d9cfccdfa3ec837337d"]
+          [#elseif crpSession == "fta"]
+            [#-- MARLO Production (FTA) --]
+            [#assign tawktoSiteId = "59773fa85dfc8255d623ed45"]
+          [#elseif crpSession == "maize"]
+            [#-- MARLO Production (MAIZE) --]
+            [#assign tawktoSiteId = "597740fc5dfc8255d623ed4d"]
+          [#elseif crpSession == "wheat"]
+            [#-- MARLO Production (WHEAT) --]
+            [#assign tawktoSiteId = "5977436f5dfc8255d623ed52"]
           [/#if]
         [#else]
           [#-- MARLO Production - Public --]
@@ -137,17 +147,17 @@
     [/#if]
     
     [#-- Global Javascript --]
-    <script type="text/javascript" src="${baseUrl}/js/global/utils.js" ></script>
-    <script type="text/javascript" src="${baseUrl}/js/global/global.js" ></script>
+    <script type="text/javascript" src="${baseUrlMedia}/js/global/utils.js" ></script>
+    <script type="text/javascript" src="${baseUrlMedia}/js/global/global.js" ></script>
     [#if logged]
       [#-- Pusher app --]
-      <script type="text/javascript" src="${baseUrl}/js/global/pusher-app.js" ></script>
+      <script type="text/javascript" src="${baseUrlMedia}/js/global/pusher-app.js" ></script>
     [/#if]
     [#-- import the custom JS and CSS --]
     [#if customJS??][#list customJS as js]<script src="${js}"></script>[/#list][/#if]
     
     [#-- Changes on Save --]
-    <script type="text/javascript" src="${baseUrl}/js/global/changes.js" ></script>
+    <script type="text/javascript" src="${baseUrlMedia}/js/global/changes.js" ></script>
     
     [/#compress]
     

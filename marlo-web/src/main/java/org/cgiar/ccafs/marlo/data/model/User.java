@@ -38,6 +38,7 @@ public class User implements java.io.Serializable, IAuditLog {
   @Expose
   private Long id;
 
+
   @Expose
   private String firstName;
 
@@ -55,14 +56,17 @@ public class User implements java.io.Serializable, IAuditLog {
   @Expose
   private String password;
 
+
   @Expose
   private boolean cgiarUser;
 
   private boolean autoSave;
 
+
   private User createdBy;
 
   private Date activeSince;
+
 
   private User modifiedBy;
 
@@ -72,18 +76,27 @@ public class User implements java.io.Serializable, IAuditLog {
 
   private Date lastLogin;
 
-
   private Set<UserRole> userRoles = new HashSet<UserRole>(0);
 
+  private Set<CenterLeader> researchLeaders = new HashSet<CenterLeader>(0);
+
   private Set<CrpUser> crpUsers = new HashSet<CrpUser>(0);
-  private Set<CrpProgramLeader> crpProgramLeaders = new HashSet<CrpProgramLeader>(0);
+
   private Set<CrpSitesLeader> crpSitesLeaders = new HashSet<CrpSitesLeader>(0);
+
   private Set<CrpClusterActivityLeader> crpClusterActivityLeaders = new HashSet<CrpClusterActivityLeader>(0);
+
   private Set<LiaisonUser> liasonsUsers = new HashSet<LiaisonUser>(0);
+
+
   private Set<IpLiaisonUser> ipLiaisonUsers = new HashSet<IpLiaisonUser>(0);
   private Set<Submission> submissions = new HashSet<Submission>(0);
   private Set<ProjectPartnerPerson> projectPartnerPersons = new HashSet<ProjectPartnerPerson>(0);
   private List<CrpUser> crpUser;
+  // MARLO CIAT relations
+  private Set<CrpProgramLeader> crpProgramLeaders = new HashSet<CrpProgramLeader>(0);
+  private Set<CenterUserRole> centerUserRoles = new HashSet<CenterUserRole>(0);
+  private Set<CenterUser> centerUsers = new HashSet<CenterUser>(0);
 
   public User() {
   }
@@ -94,7 +107,6 @@ public class User implements java.io.Serializable, IAuditLog {
     this.cgiarUser = cgiarUser;
     this.active = active;
   }
-
 
   public User(String firstName, String lastName, String username, String email, String password, boolean cgiarUser,
     User createdBy, boolean active, Date lastLogin, Set<UserRole> userRoles, Set<CrpUser> crpUsers) {
@@ -111,7 +123,6 @@ public class User implements java.io.Serializable, IAuditLog {
     this.userRoles = userRoles;
     this.crpUsers = crpUsers;
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -137,6 +148,14 @@ public class User implements java.io.Serializable, IAuditLog {
 
   public Date getActiveSince() {
     return activeSince;
+  }
+
+  public Set<CenterUserRole> getCenterUserRoles() {
+    return centerUserRoles;
+  }
+
+  public Set<CenterUser> getCenterUsers() {
+    return centerUsers;
   }
 
   /**
@@ -177,6 +196,7 @@ public class User implements java.io.Serializable, IAuditLog {
     return crpClusterActivityLeaders;
   }
 
+
   public Set<CrpProgramLeader> getCrpProgramLeaders() {
     return crpProgramLeaders;
   }
@@ -186,33 +206,34 @@ public class User implements java.io.Serializable, IAuditLog {
     return crpSitesLeaders;
   }
 
-
   public List<CrpUser> getCrpUser() {
     return crpUser;
   }
-
 
   public Set<CrpUser> getCrpUsers() {
     return this.crpUsers;
   }
 
-
   public String getEmail() {
     return this.email;
   }
 
+
   public String getFirstName() {
     return this.firstName;
   }
+
 
   @Override
   public Long getId() {
     return this.id;
   }
 
+
   public Set<IpLiaisonUser> getIpLiaisonUsers() {
     return ipLiaisonUsers;
   }
+
 
   public Date getLastLogin() {
     return this.lastLogin;
@@ -243,20 +264,22 @@ public class User implements java.io.Serializable, IAuditLog {
     return modifiedBy;
   }
 
-
   public String getPassword() {
     return this.password;
   }
-
 
   public Set<ProjectPartnerPerson> getProjectPartnerPersons() {
     return projectPartnerPersons;
   }
 
+  public Set<CenterLeader> getResearchLeaders() {
+    return researchLeaders;
+  }
 
   public Set<Submission> getSubmissions() {
     return submissions;
   }
+
 
   public String getUsername() {
     return this.username;
@@ -267,6 +290,7 @@ public class User implements java.io.Serializable, IAuditLog {
     return this.userRoles;
   }
 
+
   @Override
   public boolean isActive() {
     return active;
@@ -276,6 +300,7 @@ public class User implements java.io.Serializable, IAuditLog {
     return autoSave;
   }
 
+
   public boolean isCgiarUser() {
     return cgiarUser;
   }
@@ -284,15 +309,23 @@ public class User implements java.io.Serializable, IAuditLog {
     this.active = active;
   }
 
-
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
 
-
   public void setAutoSave(boolean autoSave) {
     this.autoSave = autoSave;
   }
+
+  public void setCenterUserRoles(Set<CenterUserRole> centerUserRoles) {
+    this.centerUserRoles = centerUserRoles;
+  }
+
+
+  public void setCenterUsers(Set<CenterUser> centerUsers) {
+    this.centerUsers = centerUsers;
+  }
+
 
   public void setCgiarUser(boolean cgiarUser) {
     this.cgiarUser = cgiarUser;
@@ -318,10 +351,10 @@ public class User implements java.io.Serializable, IAuditLog {
     this.crpUser = crpUser;
   }
 
-
   public void setCrpUsers(Set<CrpUser> crpUsers) {
     this.crpUsers = crpUsers;
   }
+
 
   public void setEmail(String email) {
     this.email = email;
@@ -338,7 +371,6 @@ public class User implements java.io.Serializable, IAuditLog {
   public void setIpLiaisonUsers(Set<IpLiaisonUser> ipLiaisonUsers) {
     this.ipLiaisonUsers = ipLiaisonUsers;
   }
-
 
   public void setLastLogin(Date lastLogin) {
     this.lastLogin = lastLogin;
@@ -369,8 +401,13 @@ public class User implements java.io.Serializable, IAuditLog {
     this.password = password;
   }
 
+
   public void setProjectPartnerPersons(Set<ProjectPartnerPerson> projectPartnerPersons) {
     this.projectPartnerPersons = projectPartnerPersons;
+  }
+
+  public void setResearchLeaders(Set<CenterLeader> researchLeaders) {
+    this.researchLeaders = researchLeaders;
   }
 
   public void setSubmissions(Set<Submission> submissions) {

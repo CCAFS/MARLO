@@ -19,7 +19,7 @@
         <div class="search-content clearfix">
           <div class="search-input">
             [@customForm.input name="" showTitle=false type="text" i18nkey="form.buttons.searchUser" placeholder="Search by funding source name or ID"/]
-            <div class="search-loader" style="display:none"><img src="${baseUrl}/images/global/loading_2.gif"></div>
+            <div class="search-loader" style="display:none"><img src="${baseUrlMedia}/images/global/loading_2.gif"></div>
           </div>  
           <div class="search-button">[@s.text name="form.buttons.search" /]</div>
         </div> 
@@ -105,7 +105,7 @@
           <div class="form-group">
             <div class="row">
               <div class="col-md-12">
-                [@customForm.select name="institution" i18nkey="projectCofunded.donor" value="${action.getCGIARInsitution()}"  listName="institutions " keyFieldName="id"  displayFieldName="composedNameLoc" required=true /]
+                [@customForm.select name="institution" i18nkey="projectCofunded.donor" value="${action.getCGIARInstitution()}"  listName="institutions " keyFieldName="id"  displayFieldName="composedNameLoc" required=true /]
               </div>
             </div>
           </div>
@@ -174,8 +174,8 @@
     <input type="hidden" id="created-message" value="[@s.text name="users.createUser.message" /]" />
     <input type="hidden" id="actionName" value="${(actionName)!}" />
   </div>  
-<span class="hidden cgiarConsortium">${action.getCGIARInsitution()}</span>
+<span class="hidden cgiarConsortium">${action.getCGIARInstitution()}</span>
 </div>
 [#--  Funding Source Popup JS --]
-[#assign customJS =  [ "${baseUrl}/js/global/fundingSourcesPopup.js" ]  + customJS/]
+[#assign customJS =  [ "${baseUrlMedia}/js/global/fundingSourcesPopup.js" ]  + customJS/]
   

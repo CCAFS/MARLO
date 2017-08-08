@@ -2,7 +2,7 @@
 [#assign title = "Project Outcomes" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = ["select2", "jsUri"] /]
-[#assign customJS = [ "${baseUrl}/js/projects/projectOutcomes.js", "${baseUrl}/js/global/autoSave.js", "${baseUrl}/js/global/fieldsValidation.js"] /]
+[#assign customJS = [ "${baseUrlMedia}/js/projects/projectOutcomes.js", "${baseUrlMedia}/js/global/autoSave.js", "${baseUrlMedia}/js/global/fieldsValidation.js"] /]
 [#assign customCSS = [ ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "projectOutcomes" /]
@@ -26,7 +26,7 @@
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrl}/images/global/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.jpg" />
     <p class="col-md-10"> [@s.text name="projectOutcomes.help1" ] [@s.param] <a href="${baseUrl}/glossary.do" target="_blank">Glossary</a>[/@s.param][/@s.text]</p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>

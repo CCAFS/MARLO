@@ -2,8 +2,8 @@
 [#assign title = "Project Contributions to CRP" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = ["select2", "jsUri"] /]
-[#assign customJS = ["${baseUrl}/js/projects/projectContributionsCrpList.js","${baseUrl}/js/global/fieldsValidation.js"] /]
-[#assign customCSS = ["${baseUrl}/css/projects/projectContributionsCrpList.css"] /]
+[#assign customJS = ["${baseUrlMedia}/js/projects/projectContributionsCrpList.js","${baseUrlMedia}/js/global/fieldsValidation.js"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/projects/projectContributionsCrpList.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "contributionsCrpList" /]
 
@@ -21,7 +21,7 @@
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrl}/images/global/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.jpg" />
     <p class="col-md-10"> [@s.text name="projectContributionsCrpList.help" /] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
@@ -176,10 +176,10 @@
       <td class="text-center">
         [#if ((action.hasPermission("delete"))!true) && canEdit]
           <a id="removeOutcome-${projectOutcomeID}" class="removeOutcome" href="${baseUrl}/projects/${crpSession}/removeProjectOuctome.do?projectID=${projectID}&outcomeId=${projectOutcomeID}" title="">
-            <img src="${baseUrl}/images/global/trash.png" />
+            <img src="${baseUrlMedia}/images/global/trash.png" />
           </a>
         [#else]
-          <img src="${baseUrl}/images/global/trash_disable.png" title="" />
+          <img src="${baseUrlMedia}/images/global/trash_disable.png" title="" />
         [/#if]
       </td>
   </tr>

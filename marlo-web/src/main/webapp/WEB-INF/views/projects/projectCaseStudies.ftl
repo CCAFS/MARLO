@@ -6,8 +6,8 @@
 [#assign title = "Project Outcome Case Studies" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = [ "datatables.net", "datatables.net-bs" ] /]
-[#assign customJS = ["${baseUrl}/js/projects/projectCaseStudiesList.js","${baseUrl}/js/global/fieldsValidation.js"] /]
-[#assign customCSS = ["${baseUrl}/css/projects/projectCaseStudies.css"] /]
+[#assign customJS = ["${baseUrlMedia}/js/projects/projectCaseStudiesList.js","${baseUrlMedia}/js/global/fieldsValidation.js"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/projects/projectCaseStudies.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "caseStudies" /]
 [#assign hideJustification = true /]
@@ -29,7 +29,7 @@
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrl}/images/global/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.jpg" />
     <p class="col-md-10"> [@s.text name="projectCaseStudies.help" /] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
@@ -105,10 +105,10 @@
             <td class="removeHighlight-row text-center">
               [#if canEdit && action.canDelete(item.owner.id) && (item.year gte  currentCycleYear) && action.canEdit() ]
                 <a id="removeElement-${item.id}" class="removeElementList" href="#" title="" >
-                  <img src="${baseUrl}/images/global/trash.png" title="[@s.text name="projectCaseStudies.removeCaseStudy" /]" /> 
+                  <img src="${baseUrlMedia}/images/global/trash.png" title="[@s.text name="projectCaseStudies.removeCaseStudy" /]" /> 
                 </a>
               [#else]
-                <img src="${baseUrl}/images/global/trash_disable.png" title="[@s.text name="projectCaseStudies.cantDeleteCaseStudy" /]" />
+                <img src="${baseUrlMedia}/images/global/trash_disable.png" title="[@s.text name="projectCaseStudies.cantDeleteCaseStudy" /]" />
               [/#if]
             </td> 
           </tr> 

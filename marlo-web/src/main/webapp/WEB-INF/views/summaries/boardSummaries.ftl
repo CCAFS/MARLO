@@ -2,8 +2,8 @@
 [#assign title = "Summaries Section" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["select2","font-awesome","jsUri"] /]
-[#assign customJS = ["${baseUrl}/js/global/utils.js", "${baseUrl}/js/summaries/boardSummaries.js"] /]
-[#assign customCSS = ["${baseUrl}/css/summaries/summaries.css"] /]
+[#assign customJS = ["${baseUrlMedia}/js/global/utils.js", "${baseUrlMedia}/js/summaries/boardSummaries.js"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/summaries/summaries.css"] /]
 [#assign currentSection = "summaries" /]
 
 [#assign breadCrumb = [
@@ -148,10 +148,13 @@
           </div>
           
           [#-- PROJECT Leverages --]
+            [#if action.hasSpecificities("crp_leverages_module") ] 
           <div class="summariesFiles borderBox col-md-12" >
             <div class="col-md-12 title-file">
+           
               <input class="hidden" type="radio" name="formOptions" id="impactPathwayContributionsSummary" value="LeveragesReportingSummary"/>
               <label for="">[@s.text name="summaries.board.report.leverages" /]</label>
+            
             </div>
             <span class="description col-md-12">[@s.text name="summaries.board.report.leverages.description" /]</span>
               <div class="extraOptions" style="display:none">
@@ -163,7 +166,7 @@
                 </div>
             </div>
           </div>
-          
+            [/#if]
           [#-- Synthesis by Outcome 
           <div class="summariesFiles borderBox col-md-12" >
             <div class="col-md-12 title-file">
