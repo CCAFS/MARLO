@@ -111,6 +111,7 @@
       <div class="form-group">
         [@customForm.input name="${customName}.title" value="${(element.title)!'New Activity'}" type="text" i18nkey="project.activities.inputTitle"  placeholder="" className="activityTitle limitWords-15" required=true editable=editable && isActive /]
         <input class="activityId" type="hidden" name="${customName}.id" value="${(element.id)!-1}" />
+        <input class="activityId" type="hidden" name="${customName}.composeID" value="${(element.composeID)!}" />
         <span class="index hidden">${index}</span>
       </div>
       [#-- Description --]

@@ -259,7 +259,8 @@ public class ProjectActivitiesAction extends BaseAction {
     Project projectBD = projectManager.getProjectById(projectID);
 
 
-    activitiesPrew = projectBD.getActivities().stream().filter(a -> a.isActive()).collect(Collectors.toList());
+    activitiesPrew = projectBD.getActivities().stream()
+      .filter(a -> a.isActive() && a.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
 
 
     for (Activity activity : activitiesPrew) {
@@ -459,8 +460,8 @@ public class ProjectActivitiesAction extends BaseAction {
         this.setDraft(true);
       } else {
         this.setDraft(false);
-        project.setProjectActivities(new ArrayList<Activity>(
-          project.getActivities().stream().filter(a -> a.isActive()).collect(Collectors.toList())));
+        project.setProjectActivities(new ArrayList<Activity>(project.getActivities().stream()
+          .filter(a -> a.isActive() && a.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
 
         if (project.getProjectActivities() != null) {
           for (Activity openActivity : project.getProjectActivities()) {
