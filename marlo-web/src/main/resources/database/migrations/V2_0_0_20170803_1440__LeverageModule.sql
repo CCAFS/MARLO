@@ -1,0 +1,8 @@
+INSERT INTO `parameters` (`id`, `key`, `description`, `format`, `default_value`, `category`) VALUES ('45','crp_leverages_module', 'Leverage module available for crp', '1', NULL, '2');
+INSERT INTO `custom_parameters` (`parameter_id`, `crp_id`, `value`, `created_by`, `is_active`, `active_since`,`modified_by`, `modification_justification`) VALUES ('45', '1', 'true', '3', '1', CURRENT_TIMESTAMP, '1', '');
+INSERT INTO `custom_parameters` (`parameter_id`, `crp_id`, `value`, `created_by`, `is_active`, `active_since`,`modified_by`, `modification_justification`) VALUES ('45', '3', 'false', '3', '1', CURRENT_TIMESTAMP, '1', '');
+INSERT INTO `custom_parameters` (`parameter_id`, `crp_id`, `value`, `created_by`, `is_active`, `active_since`,`modified_by`, `modification_justification`) VALUES ('45', '4', 'true', '3', '1', CURRENT_TIMESTAMP, '1', '');
+INSERT INTO `custom_parameters` (`parameter_id`, `crp_id`, `value`, `created_by`, `is_active`, `active_since`,`modified_by`, `modification_justification`) VALUES ('45', '5', 'true', '3', '1', CURRENT_TIMESTAMP, '1', '');
+INSERT INTO `custom_parameters` (`parameter_id`, `crp_id`, `value`, `created_by`, `is_active`, `active_since`,`modified_by`, `modification_justification`) VALUES ('45', '7', 'true', '3', '1', CURRENT_TIMESTAMP, '1', '');
+INSERT INTO `custom_parameters` (`parameter_id`, `crp_id`, `value`, `created_by`, `is_active`, `active_since`,`modified_by`, `modification_justification`) VALUES ('45', '21', 'true', '3', '1', CURRENT_TIMESTAMP, '1', '');
+INSERT INTO `custom_parameters` (`parameter_id`, `crp_id`, `value`, `created_by`, `is_active`, `active_since`,`modified_by`, `modification_justification`) VALUES ('45', '22', 'true', '3', '1', CURRENT_TIMESTAMP, '1', '');
