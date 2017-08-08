@@ -7,7 +7,7 @@
   
   [#-- Description input on Planning only --] 
   <div class="form-group">
-    [@customForm.textArea name="deliverable.description" value="${(deliverable.description)!}" i18nkey="project.deliverable.generalInformation.description"  placeholder="" className="limitWords-150" required=true editable=editable /]
+    [@customForm.textArea name="deliverable.description" value="${(deliverable.description)!}" i18nkey="project.deliverable.generalInformation.description"  placeholder="" className="limitWords-50" required=true editable=editable /]
   </div> 
   [#-- Type and subtype inputs --] 
   <div class="form-group row">

@@ -107,8 +107,7 @@ public class DeliverableValidator extends BaseValidator {
         }
         // test
         // Add description validator
-        if (!(this.isValidString(deliverable.getDescription())
-          && this.wordCount(deliverable.getDescription()) <= 150)) {
+        if (!(this.isValidString(deliverable.getDescription()) && this.wordCount(deliverable.getDescription()) <= 50)) {
           this.addMessage(action.getText("project.deliverable.generalInformation.description"));
           action.getInvalidFields().put("input-deliverable.description", InvalidFieldsMessages.EMPTYFIELD);
         }
