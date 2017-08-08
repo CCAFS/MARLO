@@ -3,9 +3,9 @@
   { 'slug': 'home',           'name': 'menu.home',          'namespace': '/',               'action': 'login',                                              'visible': !logged, 'active': true },
   { 'slug': 'home',           'name': 'menu.home',          'namespace': '/',               'action': 'centerDashboard',                      'icon': 'home',     'visible': logged, 'active': true },
   { 'slug': 'impactPathway',  'name': 'menu.impactPathway', 'namespace': '/centerImpactPathway',  'action': '${(centerSession)!}/programimpacts',                          'visible': logged, 'active': true },
-  { 'slug': 'projects', 'name': 'menu.monitoring.projects',      'namespace': '/monitoring',       'action': '${(centerSession)!}/projectList',    'visible': (logged && action.canAccessSuperAdmin()), 'active': true },
-  { 'slug': 'outcomes', 'name': 'menu.monitoring.outcomes',      'namespace': '/monitoring',       'action': '${(centerSession)!}/monitoringOutcomesList',    'visible': (logged && action.canAccessSuperAdmin()), 'active':action.canAccessSuperAdmin() },
-  { 'slug': 'summaries', 'name': 'menu.monitoring.summaries',      'namespace': '/centerSummaries',       'action': '${(centerSession)!}/summaries',    'visible': (logged && action.canAccessSuperAdmin()), 'active': true }]
+  { 'slug': 'projects', 'name': 'menu.monitoring.projects',      'namespace': '/monitoring',       'action': '${(centerSession)!}/projectList',    'visible': (logged ), 'active': true },
+  { 'slug': 'outcomes', 'name': 'menu.monitoring.outcomes',      'namespace': '/monitoring',       'action': '${(centerSession)!}/monitoringOutcomesList',    'visible': (logged), 'active':action.canAccessSuperAdmin() },
+  { 'slug': 'summaries', 'name': 'menu.monitoring.summaries',      'namespace': '/centerSummaries',       'action': '${(centerSession)!}/summaries',    'visible': (logged ), 'active': true }]
   /]
 
 [#macro mainMenuList]
