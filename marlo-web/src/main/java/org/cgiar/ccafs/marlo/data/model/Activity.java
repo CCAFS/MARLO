@@ -36,7 +36,10 @@ public class Activity implements java.io.Serializable, IAuditLog {
 
   @Expose
   private ProjectPartnerPerson projectPartnerPerson;
-
+  @Expose
+  private Phase phase;
+  @Expose
+  private String composeID;
 
   @Expose
   private Project project;
@@ -44,12 +47,20 @@ public class Activity implements java.io.Serializable, IAuditLog {
 
   @Expose
   private User modifiedBy;
+
+
   @Expose
   private User createdBy;
+
+
   @Expose
   private String title;
+
+
   @Expose
   private String description;
+
+
   @Expose
   private Date startDate;
   @Expose
@@ -104,20 +115,21 @@ public class Activity implements java.io.Serializable, IAuditLog {
     return activityStatus;
   }
 
+  public String getComposeID() {
+    return composeID;
+  }
+
   public User getCreatedBy() {
     return createdBy;
   }
-
 
   public Set<DeliverableActivity> getDeliverableActivities() {
     return deliverableActivities;
   }
 
-
   public List<DeliverableActivity> getDeliverables() {
     return deliverables;
   }
-
 
   public String getDescription() {
     return description;
@@ -143,6 +155,7 @@ public class Activity implements java.io.Serializable, IAuditLog {
   }
 
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -151,6 +164,11 @@ public class Activity implements java.io.Serializable, IAuditLog {
   @Override
   public User getModifiedBy() {
     return modifiedBy;
+  }
+
+
+  public Phase getPhase() {
+    return phase;
   }
 
 
@@ -209,6 +227,11 @@ public class Activity implements java.io.Serializable, IAuditLog {
   }
 
 
+  public void setComposeID(String composeID) {
+    this.composeID = composeID;
+  }
+
+
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
@@ -246,6 +269,11 @@ public class Activity implements java.io.Serializable, IAuditLog {
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
+  }
+
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
   public void setProject(Project project) {
