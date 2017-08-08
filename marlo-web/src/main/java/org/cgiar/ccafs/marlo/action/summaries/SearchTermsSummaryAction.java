@@ -261,108 +261,111 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
       // Search projects with activities
       List<Project> projects = new ArrayList<>();
       Phase phase = phaseManager.findCycle(cycle, year, loggedCrp.getId().longValue());
-      for (ProjectPhase projectPhase : phase.getProjectPhases()) {
-        projects.add((projectPhase.getProject()));
-      }
-      for (Project project : projects) {
-        // Get active activities
-        for (Activity activity : project.getActivities().stream().filter(a -> a.isActive())
-          .collect(Collectors.toList())) {
-          String actTit = activity.getTitle();
-          String actDesc = activity.getDescription();
-          String startDate = null;
-          String endDate = null;
-          String projectTitle = project.getProjecInfoPhase(this.getActualPhase()).getTitle();
-          String insLeader = "";
-          String leader = "";
-          // Search keys in activity title
-          // count and store occurrences
-          Set<String> matchesTitle = new HashSet<>();
-          Set<String> matchesDescription = new HashSet<>();
-          if (activity.getTitle() != null) {
-            actTit = "<font size=2 face='Segoe UI' color='#000000'>" + activity.getTitle() + "</font>";
-            // Find keys in title
-            Matcher matcher = pattern.matcher(actTit);
-            // while are occurrences
-            while (matcher.find()) {
-              // add elements to matches
-              matchesTitle.add(matcher.group(1));
-            }
-            for (String match : matchesTitle) {
-              actTit = actTit.replaceAll("\\b" + match + "\\b",
-                "<font size=2 face='Segoe UI' color='#FF0000'><b>$0</b></font>");
-            }
-          } else {
-            actTit = "<font size=2 face='Segoe UI' color='#000000'></font>";
-          }
-          if (activity.getDescription() != null) {
-            actDesc = "<font size=2 face='Segoe UI' color='#000000'>" + activity.getDescription() + "</font>";
-            // Hash set list of matches, avoiding duplicates
-            // Find keys in description
-            Matcher matcher = pattern.matcher(actDesc);
-            // while are occurrences
-            while (matcher.find()) {
-              // add elements to matches
-              matchesDescription.add(matcher.group(1));
-            }
-            for (String match : matchesDescription) {
-              actDesc = actDesc.replaceAll("\\b" + match + "\\b",
-                "<font size=2 face='Segoe UI' color='#FF0000'><b>$0</b></font>");
-            }
-          } else {
-            actDesc = "<font size=2 face='Segoe UI' color='#000000'></font>";
-          }
-          // If matches is found
-          if ((matchesDescription.size() + matchesTitle.size()) > 0) {
-            // set dates
-            if (activity.getStartDate() != null) {
-              startDate = "<font size=2 face='Segoe UI' color='#000000'>"
-                + dateFormatter.format(activity.getStartDate()) + "</font>";
+      if (phase != null) {
+
+        for (ProjectPhase projectPhase : phase.getProjectPhases()) {
+          projects.add((projectPhase.getProject()));
+        }
+        for (Project project : projects) {
+          // Get active activities
+          for (Activity activity : project.getActivities().stream().filter(a -> a.isActive())
+            .collect(Collectors.toList())) {
+            String actTit = activity.getTitle();
+            String actDesc = activity.getDescription();
+            String startDate = null;
+            String endDate = null;
+            String projectTitle = project.getProjecInfoPhase(this.getActualPhase()).getTitle();
+            String insLeader = "";
+            String leader = "";
+            // Search keys in activity title
+            // count and store occurrences
+            Set<String> matchesTitle = new HashSet<>();
+            Set<String> matchesDescription = new HashSet<>();
+            if (activity.getTitle() != null) {
+              actTit = "<font size=2 face='Segoe UI' color='#000000'>" + activity.getTitle() + "</font>";
+              // Find keys in title
+              Matcher matcher = pattern.matcher(actTit);
+              // while are occurrences
+              while (matcher.find()) {
+                // add elements to matches
+                matchesTitle.add(matcher.group(1));
+              }
+              for (String match : matchesTitle) {
+                actTit = actTit.replaceAll("\\b" + match + "\\b",
+                  "<font size=2 face='Segoe UI' color='#FF0000'><b>$0</b></font>");
+              }
             } else {
-              startDate = "<font size=2 face='Segoe UI' color='#000000'></font>";
+              actTit = "<font size=2 face='Segoe UI' color='#000000'></font>";
             }
-            if (activity.getEndDate() != null) {
-              endDate = "<font size=2 face='Segoe UI' color='#000000'>" + dateFormatter.format(activity.getEndDate())
-                + "</font>";
+            if (activity.getDescription() != null) {
+              actDesc = "<font size=2 face='Segoe UI' color='#000000'>" + activity.getDescription() + "</font>";
+              // Hash set list of matches, avoiding duplicates
+              // Find keys in description
+              Matcher matcher = pattern.matcher(actDesc);
+              // while are occurrences
+              while (matcher.find()) {
+                // add elements to matches
+                matchesDescription.add(matcher.group(1));
+              }
+              for (String match : matchesDescription) {
+                actDesc = actDesc.replaceAll("\\b" + match + "\\b",
+                  "<font size=2 face='Segoe UI' color='#FF0000'><b>$0</b></font>");
+              }
             } else {
-              endDate = "<font size=2 face='Segoe UI' color='#000000'></font>";
+              actDesc = "<font size=2 face='Segoe UI' color='#000000'></font>";
             }
-            if (project.getProjecInfoPhase(this.getActualPhase()).getTitle() != null) {
-              projectTitle = "<font size=2 face='Segoe UI' color='#000000'>"
-                + project.getProjecInfoPhase(this.getActualPhase()).getTitle() + "</font>";
-            } else {
-              projectTitle = "<font size=2 face='Segoe UI' color='#000000'></font>";
-            }
-            String projectId =
-              "<font size=2 face='Segoe UI' color='#0000ff'>P" + project.getId().toString() + "</font>";
-            String projectU = project.getId().toString();
-            String actId = "<font size=2 face='Segoe UI' color='#0000ff'>A" + activity.getId().toString() + "</font>";
-            // Set leader
-            if (activity.getProjectPartnerPerson() != null) {
-              leader = "<font size=2 face='Segoe UI' color='#000000'>"
-                + activity.getProjectPartnerPerson().getUser().getComposedName() + "\n&lt;"
-                + activity.getProjectPartnerPerson().getUser().getEmail() + "&gt;</font>";
-            }
-            if (leader.isEmpty()) {
-              leader = "<font size=2 face='Segoe UI' color='#000000'></font>";
-            }
-            // Set leader institution
-            if (activity.getProjectPartnerPerson() != null) {
-              if (activity.getProjectPartnerPerson().getProjectPartner() != null) {
-                if (activity.getProjectPartnerPerson().getProjectPartner().getInstitution() != null) {
-                  insLeader = "<font size=2 face='Segoe UI' color='#000000'>";
-                  insLeader +=
-                    activity.getProjectPartnerPerson().getProjectPartner().getInstitution().getComposedName();
+            // If matches is found
+            if ((matchesDescription.size() + matchesTitle.size()) > 0) {
+              // set dates
+              if (activity.getStartDate() != null) {
+                startDate = "<font size=2 face='Segoe UI' color='#000000'>"
+                  + dateFormatter.format(activity.getStartDate()) + "</font>";
+              } else {
+                startDate = "<font size=2 face='Segoe UI' color='#000000'></font>";
+              }
+              if (activity.getEndDate() != null) {
+                endDate = "<font size=2 face='Segoe UI' color='#000000'>" + dateFormatter.format(activity.getEndDate())
+                  + "</font>";
+              } else {
+                endDate = "<font size=2 face='Segoe UI' color='#000000'></font>";
+              }
+              if (project.getProjecInfoPhase(this.getActualPhase()).getTitle() != null) {
+                projectTitle = "<font size=2 face='Segoe UI' color='#000000'>"
+                  + project.getProjecInfoPhase(this.getActualPhase()).getTitle() + "</font>";
+              } else {
+                projectTitle = "<font size=2 face='Segoe UI' color='#000000'></font>";
+              }
+              String projectId =
+                "<font size=2 face='Segoe UI' color='#0000ff'>P" + project.getId().toString() + "</font>";
+              String projectU = project.getId().toString();
+              String actId = "<font size=2 face='Segoe UI' color='#0000ff'>A" + activity.getId().toString() + "</font>";
+              // Set leader
+              if (activity.getProjectPartnerPerson() != null) {
+                leader = "<font size=2 face='Segoe UI' color='#000000'>"
+                  + activity.getProjectPartnerPerson().getUser().getComposedName() + "\n&lt;"
+                  + activity.getProjectPartnerPerson().getUser().getEmail() + "&gt;</font>";
+              }
+              if (leader.isEmpty()) {
+                leader = "<font size=2 face='Segoe UI' color='#000000'></font>";
+              }
+              // Set leader institution
+              if (activity.getProjectPartnerPerson() != null) {
+                if (activity.getProjectPartnerPerson().getProjectPartner() != null) {
+                  if (activity.getProjectPartnerPerson().getProjectPartner().getInstitution() != null) {
+                    insLeader = "<font size=2 face='Segoe UI' color='#000000'>";
+                    insLeader +=
+                      activity.getProjectPartnerPerson().getProjectPartner().getInstitution().getComposedName();
+                  }
                 }
               }
+              if (insLeader.isEmpty()) {
+                insLeader = "<font size=2 face='Segoe UI' color='#000000'></font>";
+              } else {
+                insLeader += "</font>";
+              }
+              model.addRow(new Object[] {projectId, projectTitle, actId, actTit, actDesc, startDate, endDate, insLeader,
+                leader, projectU});
             }
-            if (insLeader.isEmpty()) {
-              insLeader = "<font size=2 face='Segoe UI' color='#000000'></font>";
-            } else {
-              insLeader += "</font>";
-            }
-            model.addRow(new Object[] {projectId, projectTitle, actId, actTit, actDesc, startDate, endDate, insLeader,
-              leader, projectU});
           }
         }
       }
@@ -443,82 +446,85 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
     if (!keys.isEmpty()) {
       List<Project> projects = new ArrayList<>();
       Phase phase = phaseManager.findCycle(cycle, year, loggedCrp.getId().longValue());
-      for (ProjectPhase projectPhase : phase.getProjectPhases()) {
-        projects.add((projectPhase.getProject()));
-      }
-      for (Project project : projects) {
-        for (Deliverable deliverable : project.getDeliverables().stream().filter(d -> d.isActive())
-          .collect(Collectors.toList())) {
-          String devTitle = "";
-          // Pattern case insensitive
-          String patternString = "(?i)\\b(" + StringUtils.join(keys, "|") + ")\\b";
-          Pattern pattern = Pattern.compile(patternString);
-          // Search keys in deliverable title
-          // count and store occurrences
-          Set<String> matchesDelivTitle = new HashSet<>();
-          if (deliverable.getTitle() != null) {
-            devTitle = "<font size=2 face='Segoe UI' color='#000000'>" + deliverable.getTitle() + "</font>";
-            // Find keys in title
-            Matcher matcher = pattern.matcher(devTitle);
-            // while are occurrences
-            while (matcher.find()) {
-              // add elements to matches
-              matchesDelivTitle.add(matcher.group(1));
-            }
-            for (String match : matchesDelivTitle) {
-              devTitle = devTitle.replaceAll("\\b" + match + "\\b",
-                "<font size=2 face='Segoe UI' color='#FF0000'><b>$0</b></font>");
-            }
-          } else {
-            devTitle = "<font size=2 face='Segoe UI' color='#000000'></font>";
-          }
-          if (matchesDelivTitle.size() > 0) {
-            String projectId =
-              "<font size=2 face='Segoe UI' color='#0000ff'>P" + project.getId().toString() + "</font>";
-            String projectUrl = project.getId().toString();
-            String title = project.getProjecInfoPhase(this.getActualPhase()).getTitle();
-            String devId =
-              "<font size=2 face='Segoe UI' color='#0000ff'>D" + deliverable.getId().toString() + "</font>";
-            String devUrl = deliverable.getId().toString();
-            String devType = "<font size=2 face='Segoe UI' color='#000000'></font>";
-            String devSubType = "<font size=2 face='Segoe UI' color='#000000'></font>";
-            String leadIns = "<font size=2 face='Segoe UI' color='#000000'></font>";
-            String leader = "<font size=2 face='Segoe UI' color='#000000'></font>";
-            if (project.getProjecInfoPhase(this.getActualPhase()).getTitle() != null) {
-              title = "<font size=2 face='Segoe UI' color='#000000'>"
-                + project.getProjecInfoPhase(this.getActualPhase()).getTitle() + "</font>";
-            } else {
-              title = "<font size=2 face='Segoe UI' color='#000000'></font>";
-            }
-            if (deliverable.getDeliverableType() != null) {
-              if (deliverable.getDeliverableType().getDeliverableType() != null) {
-                devType = "<font size=2 face='Segoe UI' color='#000000'>"
-                  + deliverable.getDeliverableType().getDeliverableType().getName() + "</font>";
-                devSubType = "<font size=2 face='Segoe UI' color='#000000'>"
-                  + deliverable.getDeliverableType().getName() + "</font>";
-              } else {
-                devType = "<font size=2 face='Segoe UI' color='#000000'>D" + deliverable.getDeliverableType().getName()
-                  + "</font>";
+      if (phase != null) {
+
+        for (ProjectPhase projectPhase : phase.getProjectPhases()) {
+          projects.add((projectPhase.getProject()));
+        }
+        for (Project project : projects) {
+          for (Deliverable deliverable : project.getDeliverables().stream().filter(d -> d.isActive())
+            .collect(Collectors.toList())) {
+            String devTitle = "";
+            // Pattern case insensitive
+            String patternString = "(?i)\\b(" + StringUtils.join(keys, "|") + ")\\b";
+            Pattern pattern = Pattern.compile(patternString);
+            // Search keys in deliverable title
+            // count and store occurrences
+            Set<String> matchesDelivTitle = new HashSet<>();
+            if (deliverable.getTitle() != null) {
+              devTitle = "<font size=2 face='Segoe UI' color='#000000'>" + deliverable.getTitle() + "</font>";
+              // Find keys in title
+              Matcher matcher = pattern.matcher(devTitle);
+              // while are occurrences
+              while (matcher.find()) {
+                // add elements to matches
+                matchesDelivTitle.add(matcher.group(1));
               }
+              for (String match : matchesDelivTitle) {
+                devTitle = devTitle.replaceAll("\\b" + match + "\\b",
+                  "<font size=2 face='Segoe UI' color='#FF0000'><b>$0</b></font>");
+              }
+            } else {
+              devTitle = "<font size=2 face='Segoe UI' color='#000000'></font>";
             }
-            // Get partner responsible and institution
-            // Set responible;
-            DeliverablePartnership responisble = this.responsiblePartner(deliverable);
-            if (responisble != null) {
-              if (responisble.getProjectPartnerPerson() != null) {
-                ProjectPartnerPerson responsibleppp = responisble.getProjectPartnerPerson();
-                leader = "<font size=2 face='Segoe UI' color='#000000'>" + responsibleppp.getUser().getComposedName()
-                  + "\n&lt;" + responsibleppp.getUser().getEmail() + "&gt;</font>";
-                if (responsibleppp.getProjectPartner() != null) {
-                  if (responsibleppp.getProjectPartner().getInstitution() != null) {
-                    leadIns = "<font size=2 face='Segoe UI' color='#000000'>"
-                      + responsibleppp.getProjectPartner().getInstitution().getComposedName() + "</font>";
+            if (matchesDelivTitle.size() > 0) {
+              String projectId =
+                "<font size=2 face='Segoe UI' color='#0000ff'>P" + project.getId().toString() + "</font>";
+              String projectUrl = project.getId().toString();
+              String title = project.getProjecInfoPhase(this.getActualPhase()).getTitle();
+              String devId =
+                "<font size=2 face='Segoe UI' color='#0000ff'>D" + deliverable.getId().toString() + "</font>";
+              String devUrl = deliverable.getId().toString();
+              String devType = "<font size=2 face='Segoe UI' color='#000000'></font>";
+              String devSubType = "<font size=2 face='Segoe UI' color='#000000'></font>";
+              String leadIns = "<font size=2 face='Segoe UI' color='#000000'></font>";
+              String leader = "<font size=2 face='Segoe UI' color='#000000'></font>";
+              if (project.getProjecInfoPhase(this.getActualPhase()).getTitle() != null) {
+                title = "<font size=2 face='Segoe UI' color='#000000'>"
+                  + project.getProjecInfoPhase(this.getActualPhase()).getTitle() + "</font>";
+              } else {
+                title = "<font size=2 face='Segoe UI' color='#000000'></font>";
+              }
+              if (deliverable.getDeliverableType() != null) {
+                if (deliverable.getDeliverableType().getDeliverableType() != null) {
+                  devType = "<font size=2 face='Segoe UI' color='#000000'>"
+                    + deliverable.getDeliverableType().getDeliverableType().getName() + "</font>";
+                  devSubType = "<font size=2 face='Segoe UI' color='#000000'>"
+                    + deliverable.getDeliverableType().getName() + "</font>";
+                } else {
+                  devType = "<font size=2 face='Segoe UI' color='#000000'>D"
+                    + deliverable.getDeliverableType().getName() + "</font>";
+                }
+              }
+              // Get partner responsible and institution
+              // Set responible;
+              DeliverablePartnership responisble = this.responsiblePartner(deliverable);
+              if (responisble != null) {
+                if (responisble.getProjectPartnerPerson() != null) {
+                  ProjectPartnerPerson responsibleppp = responisble.getProjectPartnerPerson();
+                  leader = "<font size=2 face='Segoe UI' color='#000000'>" + responsibleppp.getUser().getComposedName()
+                    + "\n&lt;" + responsibleppp.getUser().getEmail() + "&gt;</font>";
+                  if (responsibleppp.getProjectPartner() != null) {
+                    if (responsibleppp.getProjectPartner().getInstitution() != null) {
+                      leadIns = "<font size=2 face='Segoe UI' color='#000000'>"
+                        + responsibleppp.getProjectPartner().getInstitution().getComposedName() + "</font>";
+                    }
                   }
                 }
               }
+              model.addRow(new Object[] {projectId, title, devId, devTitle, devType, devSubType, leadIns, leader,
+                projectUrl, devUrl});
             }
-            model.addRow(new Object[] {projectId, title, devId, devTitle, devType, devSubType, leadIns, leader,
-              projectUrl, devUrl});
           }
         }
       }
@@ -575,8 +581,8 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
   private TypedTableModel getMasterTableModel(String center, String date) {
     // Initialization of Model
     TypedTableModel model =
-      new TypedTableModel(new String[] {"center", "date", "keys", "regionalAvailable", "hasW1W2Co"},
-        new Class[] {String.class, String.class, String.class, Boolean.class, Boolean.class});
+      new TypedTableModel(new String[] {"center", "date", "keys", "regionalAvailable", "hasW1W2Co", "imageUrl"},
+        new Class[] {String.class, String.class, String.class, Boolean.class, Boolean.class, String.class});
     String keysString = "";
     int countKeys = 0;
     for (String key : keys) {
@@ -588,7 +594,9 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
         countKeys++;
       }
     }
-    model.addRow(new Object[] {center, date, keysString, hasRegions, hasW1W2Co});
+    // set CIAT imgage URL from repo
+    String imageUrl = this.getBaseUrl() + "/images/global/crps/" + this.loggedCrp.getAcronym().toLowerCase() + ".png";
+    model.addRow(new Object[] {center, date, keysString, hasRegions, hasW1W2Co, imageUrl});
     return model;
   }
 
@@ -608,184 +616,191 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
       // Decimal format for budgets
       List<Project> projects = new ArrayList<>();
       Phase phase = phaseManager.findCycle(cycle, year, loggedCrp.getId().longValue());
-      for (ProjectPhase projectPhase : phase.getProjectPhases()) {
-        projects.add((projectPhase.getProject()));
-      }
-      for (Project project : projects) {
-        String title = project.getProjecInfoPhase(this.getActualPhase()).getTitle();
-        String summary = project.getProjecInfoPhase(this.getActualPhase()).getSummary();
-        String startDate = null;
-        String endDate = null;
-        String flagships = "";
-        String regions = "";
-        String insLeader = "";
-        String leader = "";
-        Double w1w2 = null;
-        Double w1w2Co = null;
-        Double w3 = null;
-        Double bilateral = null;
-        Double center = null;
-        // count and store occurrences
-        Set<String> matchesTitle = new HashSet<>();
-        Set<String> matchesSummary = new HashSet<>();
-        if (project.getProjecInfoPhase(this.getActualPhase()).getTitle() != null) {
-          title = "<font size=2 face='Segoe UI' color='#000000'>"
-            + project.getProjecInfoPhase(this.getActualPhase()).getTitle() + "</font>";
-          // Hash set list of matches, avoiding duplicates
-          // Find keys in title
-          Matcher matcher = pattern.matcher(title);
-          // while are occurrences
-          while (matcher.find()) {
-            // add elements to matches
-            matchesTitle.add(matcher.group(1));
-          }
-          for (String match : matchesTitle) {
-            title =
-              title.replaceAll("\\b" + match + "\\b", "<font size=2 face='Segoe UI' color='#FF0000'><b>$0</b></font>");
-          }
-        } else {
-          title = "<font size=2 face='Segoe UI' color='#000000'></font>";
+      if (phase != null) {
+
+        for (ProjectPhase projectPhase : phase.getProjectPhases()) {
+          projects.add((projectPhase.getProject()));
         }
-        if (project.getProjecInfoPhase(this.getActualPhase()).getSummary() != null) {
-          summary = "<font size=2 face='Segoe UI' color='#000000'>"
-            + project.getProjecInfoPhase(this.getActualPhase()).getSummary() + "</font>";
-          // Hash set list of matches, avoiding duplicates
-          // Find keys in title
-          Matcher matcher = pattern.matcher(summary);
-          // while are occurrences
-          while (matcher.find()) {
-            // add elements to matches
-            matchesSummary.add(matcher.group(1));
-          }
-          for (String match : matchesSummary) {
-            summary = summary.replaceAll("\\b" + match + "\\b",
-              "<font size=2 face='Segoe UI' color='#FF0000'><b>$0</b></font>");
-          }
-        } else {
-          summary = "<font size=2 face='Segoe UI' color='#000000'></font>";
-        }
-        if ((matchesSummary.size() + matchesTitle.size()) > 0) {
-          // set dates
-          if (project.getProjecInfoPhase(this.getActualPhase()).getStartDate() != null) {
-            startDate = "<font size=2 face='Segoe UI' color='#000000'>"
-              + dateFormatter.format(project.getProjecInfoPhase(this.getActualPhase()).getStartDate()) + "</font>";
-          } else {
-            startDate = "<font size=2 face='Segoe UI' color='#000000'></font>";
-          }
-          if (project.getProjecInfoPhase(this.getActualPhase()).getEndDate() != null) {
-            endDate = "<font size=2 face='Segoe UI' color='#000000'>"
-              + dateFormatter.format(project.getProjecInfoPhase(this.getActualPhase()).getEndDate()) + "</font>";
-          } else {
-            endDate = "<font size=2 face='Segoe UI' color='#000000'></font>";
-          }
-          // get Flagships related to the project sorted by acronym
-          int countFlagships = 0;
-          for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-            .sorted((o1, o2) -> o1.getCrpProgram().getAcronym().compareTo(o2.getCrpProgram().getAcronym()))
-            .filter(
-              c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-            .collect(Collectors.toList())) {
-            if (countFlagships == 0) {
-              flagships += "<font size=2 face='Segoe UI' color='#000000'>"
-                + programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
-              countFlagships++;
-            } else {
-              flagships += ", " + programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
-              countFlagships++;
+        for (Project project : projects) {
+          String title = project.getProjecInfoPhase(this.getActualPhase()).getTitle();
+          String summary = project.getProjecInfoPhase(this.getActualPhase()).getSummary();
+          String startDate = null;
+          String endDate = null;
+          String flagships = "";
+          String regions = "";
+          String insLeader = "";
+          String leader = "";
+          Double w1w2 = null;
+          Double w1w2Co = null;
+          Double w3 = null;
+          Double bilateral = null;
+          Double center = null;
+          // count and store occurrences
+          Set<String> matchesTitle = new HashSet<>();
+          Set<String> matchesSummary = new HashSet<>();
+          if (project.getProjecInfoPhase(this.getActualPhase()).getTitle() != null) {
+            title = "<font size=2 face='Segoe UI' color='#000000'>"
+              + project.getProjecInfoPhase(this.getActualPhase()).getTitle() + "</font>";
+            // Hash set list of matches, avoiding duplicates
+            // Find keys in title
+            Matcher matcher = pattern.matcher(title);
+            // while are occurrences
+            while (matcher.find()) {
+              // add elements to matches
+              matchesTitle.add(matcher.group(1));
             }
-          }
-          if (flagships.isEmpty()) {
-            flagships = "<font size=2 face='Segoe UI' color='#000000'></font>";
+            for (String match : matchesTitle) {
+              title = title.replaceAll("\\b" + match + "\\b",
+                "<font size=2 face='Segoe UI' color='#FF0000'><b>$0</b></font>");
+            }
           } else {
-            flagships += "</font>";
+            title = "<font size=2 face='Segoe UI' color='#000000'></font>";
           }
-          // If has regions, add the regions to regionsArrayList, else do nothing
-          if (hasRegions) {
-            if (project.getProjecInfoPhase(this.getActualPhase()).getNoRegional() != null
-              && project.getProjecInfoPhase(this.getActualPhase()).getNoRegional()) {
-              regions = "<font size=2 face='Segoe UI' color='#000000'>Global";
+          if (project.getProjecInfoPhase(this.getActualPhase()).getSummary() != null) {
+            summary = "<font size=2 face='Segoe UI' color='#000000'>"
+              + project.getProjecInfoPhase(this.getActualPhase()).getSummary() + "</font>";
+            // Hash set list of matches, avoiding duplicates
+            // Find keys in title
+            Matcher matcher = pattern.matcher(summary);
+            // while are occurrences
+            while (matcher.find()) {
+              // add elements to matches
+              matchesSummary.add(matcher.group(1));
+            }
+            for (String match : matchesSummary) {
+              summary = summary.replaceAll("\\b" + match + "\\b",
+                "<font size=2 face='Segoe UI' color='#FF0000'><b>$0</b></font>");
+            }
+          } else {
+            summary = "<font size=2 face='Segoe UI' color='#000000'></font>";
+          }
+          if ((matchesSummary.size() + matchesTitle.size()) > 0) {
+            // set dates
+            if (project.getProjecInfoPhase(this.getActualPhase()).getStartDate() != null) {
+              startDate = "<font size=2 face='Segoe UI' color='#000000'>"
+                + dateFormatter.format(project.getProjecInfoPhase(this.getActualPhase()).getStartDate()) + "</font>";
             } else {
-              // Get Regions related to the project sorted by acronym
-              int countRegions = 0;
-              for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-                .sorted((c1, c2) -> c1.getCrpProgram().getAcronym().compareTo(c2.getCrpProgram().getAcronym()))
-                .filter(c -> c.isActive()
-                  && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
-                .collect(Collectors.toList())) {
-                if (countRegions == 0) {
-                  regions += "<font size=2 face='Segoe UI' color='#000000'>"
-                    + programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
-                  countRegions++;
-                } else {
-                  regions +=
-                    ", " + programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
-                  countRegions++;
-                }
+              startDate = "<font size=2 face='Segoe UI' color='#000000'></font>";
+            }
+            if (project.getProjecInfoPhase(this.getActualPhase()).getEndDate() != null) {
+              endDate = "<font size=2 face='Segoe UI' color='#000000'>"
+                + dateFormatter.format(project.getProjecInfoPhase(this.getActualPhase()).getEndDate()) + "</font>";
+            } else {
+              endDate = "<font size=2 face='Segoe UI' color='#000000'></font>";
+            }
+            // get Flagships related to the project sorted by acronym
+            int countFlagships = 0;
+            for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
+              .sorted((o1, o2) -> o1.getCrpProgram().getAcronym().compareTo(o2.getCrpProgram().getAcronym()))
+              .filter(
+                c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+              .collect(Collectors.toList())) {
+              if (countFlagships == 0) {
+                flagships += "<font size=2 face='Segoe UI' color='#000000'>"
+                  + programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
+                countFlagships++;
+              } else {
+                flagships +=
+                  ", " + programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
+                countFlagships++;
               }
             }
-            if (regions.isEmpty()) {
-              regions = "<font size=2 face='Segoe UI' color='#000000'></font>";
+            if (flagships.isEmpty()) {
+              flagships = "<font size=2 face='Segoe UI' color='#000000'></font>";
             } else {
-              regions += "</font>";
+              flagships += "</font>";
             }
-          }
-          // Set leader institution
-          ProjectPartner projectLeader = project.getLeader();
-          if (projectLeader != null) {
-            if (projectLeader.getInstitution() != null) {
-              insLeader = "<font size=2 face='Segoe UI' color='#000000'>";
-              insLeader += projectLeader.getInstitution().getComposedName();
+            // If has regions, add the regions to regionsArrayList, else do nothing
+            if (hasRegions) {
+              if (project.getProjecInfoPhase(this.getActualPhase()).getNoRegional() != null
+                && project.getProjecInfoPhase(this.getActualPhase()).getNoRegional()) {
+                regions = "<font size=2 face='Segoe UI' color='#000000'>Global";
+              } else {
+                // Get Regions related to the project sorted by acronym
+                int countRegions = 0;
+                for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
+                  .sorted((c1, c2) -> c1.getCrpProgram().getAcronym().compareTo(c2.getCrpProgram().getAcronym()))
+                  .filter(c -> c.isActive()
+                    && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+                  .collect(Collectors.toList())) {
+                  if (countRegions == 0) {
+                    regions += "<font size=2 face='Segoe UI' color='#000000'>"
+                      + programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
+                    countRegions++;
+                  } else {
+                    regions +=
+                      ", " + programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
+                    countRegions++;
+                  }
+                }
+              }
+              if (regions.isEmpty()) {
+                regions = "<font size=2 face='Segoe UI' color='#000000'></font>";
+              } else {
+                regions += "</font>";
+              }
             }
-          }
-          if (insLeader.isEmpty()) {
-            insLeader = "<font size=2 face='Segoe UI' color='#000000'></font>";
-          } else {
-            insLeader += "</font>";
-          }
-          // Set leader
-          if (project.getLeaderPerson(this.getActualPhase()) != null) {
-            leader = "<font size=2 face='Segoe UI' color='#000000'>";
-            leader = "<font size=2 face='Segoe UI' color='#000000'>"
-              + project.getLeaderPerson(this.getActualPhase()).getUser().getComposedName() + "\n&lt;"
-              + project.getLeaderPerson(this.getActualPhase()).getUser().getEmail() + "&gt;</font>";
-          }
-          if (leader.isEmpty()) {
-            leader = "<font size=2 face='Segoe UI' color='#000000'></font>";
-          }
-          // Set budgets
-          // coFinancing 1: cofinancing+no cofinancing, 2: cofinancing 3: no cofinancing
-          if (hasW1W2Co) {
-            w1w2 = this.getTotalYear(year, 1, project, 3);
-            w1w2Co = this.getTotalYear(year, 1, project, 2);
-          } else {
-            w1w2 = this.getTotalYear(year, 1, project, 1);
-            if (w1w2 == 0.0) {
+            // Set leader institution
+            ProjectPartner projectLeader = project.getLeader();
+            if (projectLeader != null) {
+              if (projectLeader.getInstitution() != null) {
+                insLeader = "<font size=2 face='Segoe UI' color='#000000'>";
+                insLeader += projectLeader.getInstitution().getComposedName();
+              }
+            }
+            if (insLeader.isEmpty()) {
+              insLeader = "<font size=2 face='Segoe UI' color='#000000'></font>";
+            } else {
+              insLeader += "</font>";
+            }
+            // Set leader
+            if (project.getLeaderPerson(this.getActualPhase()) != null
+              && project.getLeaderPerson(this.getActualPhase()).getUser() != null) {
+              leader = "<font size=2 face='Segoe UI' color='#000000'>";
+              ProjectPartnerPerson ppp = project.getLeaderPerson(this.getActualPhase());
+              leader = "<font size=2 face='Segoe UI' color='#000000'>"
+                + project.getLeaderPerson(this.getActualPhase()).getUser().getComposedName() + "\n&lt;"
+                + project.getLeaderPerson(this.getActualPhase()).getUser().getEmail() + "&gt;</font>";
+            }
+            if (leader.isEmpty()) {
+              leader = "<font size=2 face='Segoe UI' color='#000000'></font>";
+            }
+            // Set budgets
+            // coFinancing 1: cofinancing+no cofinancing, 2: cofinancing 3: no cofinancing
+            if (hasW1W2Co) {
+              w1w2 = this.getTotalYear(year, 1, project, 3);
+              w1w2Co = this.getTotalYear(year, 1, project, 2);
+            } else {
+              w1w2 = this.getTotalYear(year, 1, project, 1);
+              if (w1w2 == 0.0) {
+                w1w2 = null;
+              }
+            }
+            w3 = this.getTotalYear(year, 2, project, 1);
+            bilateral = this.getTotalYear(year, 3, project, 1);
+            center = this.getTotalYear(year, 4, project, 1);
+            if (w1w2 != null && w1w2 == 0.0) {
               w1w2 = null;
             }
-          }
-          w3 = this.getTotalYear(year, 2, project, 1);
-          bilateral = this.getTotalYear(year, 3, project, 1);
-          center = this.getTotalYear(year, 4, project, 1);
-          if (w1w2 != null && w1w2 == 0.0) {
-            w1w2 = null;
-          }
-          if (w1w2Co != null && w1w2Co == 0.0) {
-            w1w2Co = null;
-          }
-          if (w3 == 0.0) {
-            w3 = null;
-          }
-          if (bilateral == 0.0) {
-            bilateral = null;
-          }
-          if (center == 0.0) {
-            center = null;
-          }
+            if (w1w2Co != null && w1w2Co == 0.0) {
+              w1w2Co = null;
+            }
+            if (w3 == 0.0) {
+              w3 = null;
+            }
+            if (bilateral == 0.0) {
+              bilateral = null;
+            }
+            if (center == 0.0) {
+              center = null;
+            }
 
-          String projectId = "<font size=2 face='Segoe UI' color='#0000ff'>P" + project.getId().toString() + "</font>";
-          String projectUrl = project.getId().toString();
-          model.addRow(new Object[] {projectId, title, summary, startDate, endDate, flagships, regions, insLeader,
-            leader, w1w2, w3, bilateral, center, projectUrl, w1w2Co});
+            String projectId =
+              "<font size=2 face='Segoe UI' color='#0000ff'>P" + project.getId().toString() + "</font>";
+            String projectUrl = project.getId().toString();
+            model.addRow(new Object[] {projectId, title, summary, startDate, endDate, flagships, regions, insLeader,
+              leader, w1w2, w3, bilateral, center, projectUrl, w1w2Co});
+          }
         }
       }
     }

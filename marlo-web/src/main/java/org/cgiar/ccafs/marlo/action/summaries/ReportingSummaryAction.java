@@ -215,7 +215,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     }
     // Calculate column width
     long width = 471l / columnBudgetPartner;
-    HashMap<String, Long> hm = this.calculateWidth(width, columnBudgetPartner, paramName, exludeIndex);
+    HashMap<String, Long> hm = this.calculateWidth(width, columnBudgetPartner, paramName, exludeIndex, 0l);
     // Add x parameters
     for (HashMap.Entry<String, Long> entry : hm.entrySet()) {
       String key = entry.getKey();
@@ -699,10 +699,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   }
 
 
-  private HashMap<String, Long> calculateWidth(long width, int numColumns, String name,
-    ArrayList<Integer> excludeIndex) {
-    long xPosition = 0l;
-
+  private HashMap<String, Long> calculateWidth(long width, int numColumns, String name, ArrayList<Integer> excludeIndex,
+    long xPosition) {
     HashMap<String, Long> hm = new HashMap<String, Long>();
     for (int i = 0; i <= numColumns; i++) {
       if (!excludeIndex.contains(i)) {

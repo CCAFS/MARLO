@@ -156,7 +156,7 @@ $(document)
                               },
                               error: function(data) {
                                 var errorInfo =
-                                    "<p id='errorInfo' class='error-info'>An error has occurred creating this user, please contact with MARLOSupport@cgiar.org</p>"
+                                    "<p id='errorInfo' class='error-info'>This user cannot be created. Check that the email address is correct, and/or contact MARLOSupport@cgiar.org.</p>"
                                 $(".create-user-block").prepend(errorInfo);
                               }
                           });
