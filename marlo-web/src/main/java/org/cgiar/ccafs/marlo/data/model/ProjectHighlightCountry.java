@@ -20,6 +20,7 @@ public class ProjectHighlightCountry implements java.io.Serializable, IAuditLog 
   private Integer id;
 
   private ProjectHighlight projectHighlight;
+
   @Expose
   private LocElement locElement;
 
@@ -85,7 +86,6 @@ public class ProjectHighlightCountry implements java.io.Serializable, IAuditLog 
     return u;
   }
 
-
   public ProjectHighlight getProjectHighligth() {
     return projectHighlight;
   }
@@ -106,6 +106,7 @@ public class ProjectHighlightCountry implements java.io.Serializable, IAuditLog 
     return true;
   }
 
+
   public void setId(Integer id) {
     this.id = id;
   }
@@ -116,6 +117,12 @@ public class ProjectHighlightCountry implements java.io.Serializable, IAuditLog 
 
   public void setProjectHighligth(ProjectHighlight projectHighlight) {
     this.projectHighlight = projectHighlight;
+  }
+
+  @Override
+  public String toString() {
+    return "ProjectHighlightCountry [id=" + id + ", projectHighlight=" + projectHighlight + ", locElement=" + locElement
+      + "]";
   }
 
 

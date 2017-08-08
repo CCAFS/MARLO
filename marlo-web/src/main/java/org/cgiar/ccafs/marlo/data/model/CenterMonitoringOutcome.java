@@ -33,7 +33,6 @@ public class CenterMonitoringOutcome implements java.io.Serializable, IAuditLog 
   @Expose
   private CenterOutcome researchOutcome;
 
-
   @Expose
   private int year;
 
@@ -43,7 +42,6 @@ public class CenterMonitoringOutcome implements java.io.Serializable, IAuditLog 
 
   @Expose
   private boolean active;
-
 
   @Expose
   private Date activeSince;
@@ -57,7 +55,8 @@ public class CenterMonitoringOutcome implements java.io.Serializable, IAuditLog 
 
   private List<CenterMonitoringMilestone> milestones;
 
-  private Set<CenterMonitoringOutcomeEvidence> monitorignOutcomeEvidences = new HashSet<CenterMonitoringOutcomeEvidence>(0);
+  private Set<CenterMonitoringOutcomeEvidence> monitorignOutcomeEvidences =
+    new HashSet<CenterMonitoringOutcomeEvidence>(0);
 
   private List<CenterMonitoringOutcomeEvidence> evidences;
 
@@ -70,8 +69,8 @@ public class CenterMonitoringOutcome implements java.io.Serializable, IAuditLog 
     this.active = active;
   }
 
-  public CenterMonitoringOutcome(User modifiedBy, User createdBy, CenterOutcome researchOutcome, int year, String narrative,
-    boolean active, Date activeSince, String modificationJustification) {
+  public CenterMonitoringOutcome(User modifiedBy, User createdBy, CenterOutcome researchOutcome, int year,
+    String narrative, boolean active, Date activeSince, String modificationJustification) {
     this.modifiedBy = modifiedBy;
     this.createdBy = createdBy;
     this.researchOutcome = researchOutcome;
@@ -110,6 +109,7 @@ public class CenterMonitoringOutcome implements java.io.Serializable, IAuditLog 
     return milestones;
   }
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -118,7 +118,6 @@ public class CenterMonitoringOutcome implements java.io.Serializable, IAuditLog 
   public User getModifiedBy() {
     return modifiedBy;
   }
-
 
   public Set<CenterMonitoringOutcomeEvidence> getMonitorignOutcomeEvidences() {
     return monitorignOutcomeEvidences;
@@ -160,6 +159,7 @@ public class CenterMonitoringOutcome implements java.io.Serializable, IAuditLog 
     this.active = active;
   }
 
+
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
@@ -192,7 +192,6 @@ public class CenterMonitoringOutcome implements java.io.Serializable, IAuditLog 
     this.monitorignOutcomeEvidences = monitorignOutcomeEvidences;
   }
 
-
   public void setMonitoringMilestones(Set<CenterMonitoringMilestone> monitoringMilestones) {
     this.monitoringMilestones = monitoringMilestones;
   }
@@ -202,12 +201,18 @@ public class CenterMonitoringOutcome implements java.io.Serializable, IAuditLog 
     this.narrative = narrative;
   }
 
+
   public void setResearchOutcome(CenterOutcome researchOutcome) {
     this.researchOutcome = researchOutcome;
   }
 
   public void setYear(int year) {
     this.year = year;
+  }
+
+  @Override
+  public String toString() {
+    return "CenterMonitoringOutcome [id=" + id + ", researchOutcome=" + researchOutcome + ", year=" + year + "]";
   }
 
 

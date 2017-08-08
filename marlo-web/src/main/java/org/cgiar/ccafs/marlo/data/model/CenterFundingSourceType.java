@@ -18,6 +18,7 @@ public class CenterFundingSourceType implements java.io.Serializable, IAuditLog 
 
   private static final long serialVersionUID = 3947855061444655147L;
 
+
   @Expose
   private Long id;
 
@@ -38,7 +39,6 @@ public class CenterFundingSourceType implements java.io.Serializable, IAuditLog 
 
   @Expose
   private String modificationJustification;
-
 
   private Set<CenterProjectFundingSource> projectFundingSources = new HashSet<CenterProjectFundingSource>(0);
 
@@ -87,6 +87,8 @@ public class CenterFundingSourceType implements java.io.Serializable, IAuditLog 
     return sb.toString();
   }
 
+
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -129,18 +131,23 @@ public class CenterFundingSourceType implements java.io.Serializable, IAuditLog 
     this.modificationJustification = modificationJustification;
   }
 
-
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
   }
+
 
   public void setName(String name) {
     this.name = name;
   }
 
-
   public void setProjectFundingSources(Set<CenterProjectFundingSource> projectFundingSources) {
     this.projectFundingSources = projectFundingSources;
+  }
+
+
+  @Override
+  public String toString() {
+    return "CenterFundingSourceType [id=" + id + ", name=" + name + "]";
   }
 
 }

@@ -170,6 +170,7 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -260,7 +261,8 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return id.toString();
+    return "CrpClusterOfActivity [crpProgram=" + crpProgram + ", description=" + description + ", id=" + id
+      + ", identifier=" + identifier + "]";
   }
 
 

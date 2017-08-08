@@ -46,19 +46,18 @@ public class CenterTopic implements Serializable, IAuditLog {
   @Expose
   private String researchTopic;
 
-
   /**
    * The research program related to this research topic or flagship project.
    */
   @Expose
   private CenterProgram researchProgram;
 
+
   @Expose
   private boolean active;
 
   @Expose
   private Date activeSince;
-
 
   @Expose
   private User createdBy;
@@ -82,6 +81,7 @@ public class CenterTopic implements Serializable, IAuditLog {
 
   private Set<CenterOutcome> researchOutcomes = new HashSet<>(0);
 
+
   /**
    * 
    */
@@ -89,7 +89,6 @@ public class CenterTopic implements Serializable, IAuditLog {
     super();
     // TODO Auto-generated constructor stub
   }
-
 
   /**
    * @param researchTopic
@@ -100,6 +99,7 @@ public class CenterTopic implements Serializable, IAuditLog {
     this.researchTopic = researchTopic;
     this.researchProgram = researchProgram;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -123,7 +123,6 @@ public class CenterTopic implements Serializable, IAuditLog {
     return true;
   }
 
-
   public Date getActiveSince() {
     return activeSince;
   }
@@ -133,10 +132,10 @@ public class CenterTopic implements Serializable, IAuditLog {
     return color;
   }
 
+
   public User getCreatedBy() {
     return createdBy;
   }
-
 
   /**
    * @return the id
@@ -155,6 +154,7 @@ public class CenterTopic implements Serializable, IAuditLog {
   }
 
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -164,6 +164,7 @@ public class CenterTopic implements Serializable, IAuditLog {
   public User getModifiedBy() {
     return modifiedBy;
   }
+
 
   public Set<CenterOutcome> getResearchOutcomes() {
     return researchOutcomes;
@@ -186,7 +187,6 @@ public class CenterTopic implements Serializable, IAuditLog {
   public String getShortName() {
     return shortName;
   }
-
 
   @Override
   public int hashCode() {
@@ -212,6 +212,7 @@ public class CenterTopic implements Serializable, IAuditLog {
     this.activeSince = activeSince;
   }
 
+
   public void setColor(String color) {
     this.color = color;
   }
@@ -219,7 +220,6 @@ public class CenterTopic implements Serializable, IAuditLog {
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
-
 
   /**
    * @param id the id to set
@@ -259,8 +259,15 @@ public class CenterTopic implements Serializable, IAuditLog {
     this.researchTopic = researchTopic;
   }
 
+
   public void setShortName(String shortName) {
     this.shortName = shortName;
+  }
+
+  @Override
+  public String toString() {
+    return "CenterTopic [id=" + id + ", researchTopic=" + researchTopic + ", researchProgram=" + researchProgram
+      + ", shortName=" + shortName + "]";
   }
 
 

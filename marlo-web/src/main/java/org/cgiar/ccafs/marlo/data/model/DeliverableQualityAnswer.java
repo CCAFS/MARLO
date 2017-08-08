@@ -39,7 +39,6 @@ public class DeliverableQualityAnswer implements java.io.Serializable, IAuditLog
   @Expose
   private Date activeSince;
 
-
   private Set<DeliverableQualityCheck> checksForQualityAssurance = new HashSet<DeliverableQualityCheck>(0);
 
 
@@ -103,6 +102,7 @@ public class DeliverableQualityAnswer implements java.io.Serializable, IAuditLog
     return id;
   }
 
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -157,10 +157,10 @@ public class DeliverableQualityAnswer implements java.io.Serializable, IAuditLog
     this.id = id;
   }
 
-
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
+
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
@@ -168,6 +168,11 @@ public class DeliverableQualityAnswer implements java.io.Serializable, IAuditLog
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  @Override
+  public String toString() {
+    return "DeliverableQualityAnswer [id=" + id + ", name=" + name + "]";
   }
 
 

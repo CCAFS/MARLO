@@ -157,9 +157,9 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
   }
 
 
-  public CenterProject(User modifiedBy, User contactPerson, User projectLeader, User createdBy, CenterProjectStatus projectStatus,
-    String name, Date startDate, Date endDate, boolean active, Date activeSince, String modificationJustification,
-    Set<CenterProjectOutput> projectOutputs) {
+  public CenterProject(User modifiedBy, User contactPerson, User projectLeader, User createdBy,
+    CenterProjectStatus projectStatus, String name, Date startDate, Date endDate, boolean active, Date activeSince,
+    String modificationJustification, Set<CenterProjectOutput> projectOutputs) {
     this.modifiedBy = modifiedBy;
     this.contactPerson = contactPerson;
     this.projectLeader = projectLeader;
@@ -266,6 +266,7 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -574,7 +575,8 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return id.toString();
+    return "CenterProject [id=" + id + ", name=" + name + ", researchProgram=" + researchProgram + ", projectType="
+      + projectType + "]";
   }
 
 }

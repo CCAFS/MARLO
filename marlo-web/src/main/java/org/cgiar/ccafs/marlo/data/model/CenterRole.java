@@ -142,6 +142,7 @@ public class CenterRole implements Serializable {
 
   @Override
   public String toString() {
-    return id.toString();
+    return "CenterRole [id=" + id + ", researchCenter=" + researchCenter + ", description=" + description + ", acronym="
+      + acronym + "]";
   }
 }

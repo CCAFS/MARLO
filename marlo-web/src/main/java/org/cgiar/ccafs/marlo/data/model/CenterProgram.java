@@ -194,6 +194,7 @@ public class CenterProgram implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -363,7 +364,7 @@ public class CenterProgram implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return id.toString();
+    return "CenterProgram [id=" + id + ", name=" + name + ", programType=" + programType + "]";
   }
 
 

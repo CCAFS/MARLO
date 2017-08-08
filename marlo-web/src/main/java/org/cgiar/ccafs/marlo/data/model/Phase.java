@@ -33,6 +33,7 @@ public class Phase implements java.io.Serializable, IAuditLog {
     this.year = year;
   }
 
+
   public Phase(Crp crp, String description, int year, Set<ProjectPhase> projectPhases) {
     this.crp = crp;
     this.description = description;
@@ -105,6 +106,11 @@ public class Phase implements java.io.Serializable, IAuditLog {
 
   public void setYear(int year) {
     this.year = year;
+  }
+
+  @Override
+  public String toString() {
+    return "Phase [id=" + id + ", crp=" + crp + ", description=" + description + ", year=" + year + "]";
   }
 }
 

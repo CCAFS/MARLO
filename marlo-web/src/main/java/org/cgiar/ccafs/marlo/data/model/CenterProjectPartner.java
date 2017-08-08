@@ -31,6 +31,7 @@ public class CenterProjectPartner implements java.io.Serializable, IAuditLog {
   @Expose
   private Institution institution;
 
+
   @Expose
   private CenterProject project;
 
@@ -59,8 +60,8 @@ public class CenterProjectPartner implements java.io.Serializable, IAuditLog {
     this.active = active;
   }
 
-  public CenterProjectPartner(User modifiedBy, User createdBy, Institution institution, CenterProject project, boolean internal,
-    boolean active, Date activeSince, String modificationJustification,
+  public CenterProjectPartner(User modifiedBy, User createdBy, Institution institution, CenterProject project,
+    boolean internal, boolean active, Date activeSince, String modificationJustification,
     Set<CenterProjectPartnerPerson> projectPartnerPersons) {
     this.modifiedBy = modifiedBy;
     this.createdBy = createdBy;
@@ -95,7 +96,6 @@ public class CenterProjectPartner implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
   public Date getActiveSince() {
     return activeSince;
   }
@@ -125,6 +125,7 @@ public class CenterProjectPartner implements java.io.Serializable, IAuditLog {
   }
 
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -149,6 +150,7 @@ public class CenterProjectPartner implements java.io.Serializable, IAuditLog {
   public List<CenterProjectPartnerPerson> getUsers() {
     return users;
   }
+
 
   @Override
   public int hashCode() {
@@ -199,18 +201,23 @@ public class CenterProjectPartner implements java.io.Serializable, IAuditLog {
     this.modifiedBy = modifiedBy;
   }
 
-
   public void setProject(CenterProject project) {
     this.project = project;
   }
+
 
   public void setProjectPartnerPersons(Set<CenterProjectPartnerPerson> projectPartnerPersons) {
     this.projectPartnerPersons = projectPartnerPersons;
   }
 
-
   public void setUsers(List<CenterProjectPartnerPerson> users) {
     this.users = users;
+  }
+
+
+  @Override
+  public String toString() {
+    return "CenterProjectPartner [id=" + id + ", institution=" + institution + ", project=" + project + "]";
   }
 
 }

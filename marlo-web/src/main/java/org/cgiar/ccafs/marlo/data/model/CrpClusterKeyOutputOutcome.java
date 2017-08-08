@@ -29,6 +29,7 @@ public class CrpClusterKeyOutputOutcome implements java.io.Serializable, IAuditL
   @Expose
   private CrpProgramOutcome crpProgramOutcome;
 
+
   @Expose
   private User createdBy;
 
@@ -72,7 +73,6 @@ public class CrpClusterKeyOutputOutcome implements java.io.Serializable, IAuditL
     return true;
   }
 
-
   public Date getActiveSince() {
     return activeSince;
   }
@@ -112,6 +112,7 @@ public class CrpClusterKeyOutputOutcome implements java.io.Serializable, IAuditL
   }
 
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -121,6 +122,7 @@ public class CrpClusterKeyOutputOutcome implements java.io.Serializable, IAuditL
   public User getModifiedBy() {
     return modifiedBy;
   }
+
 
   @Override
   public int hashCode() {
@@ -167,9 +169,15 @@ public class CrpClusterKeyOutputOutcome implements java.io.Serializable, IAuditL
     this.modificationJustification = modificationJustification;
   }
 
-
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
+  }
+
+
+  @Override
+  public String toString() {
+    return "CrpClusterKeyOutputOutcome [id=" + id + ", crpClusterKeyOutput=" + crpClusterKeyOutput
+      + ", crpProgramOutcome=" + crpProgramOutcome + ", contribution=" + contribution + "]";
   }
 
 

@@ -28,6 +28,7 @@ public class DeliverableDataSharingFile implements java.io.Serializable, IAuditL
   @Expose
   private Integer typeId;
 
+
   @Expose
   private String externalFile;
 
@@ -83,7 +84,6 @@ public class DeliverableDataSharingFile implements java.io.Serializable, IAuditL
     return file;
   }
 
-
   @Override
   public Long getId() {
     return id;
@@ -133,6 +133,7 @@ public class DeliverableDataSharingFile implements java.io.Serializable, IAuditL
     return true;
   }
 
+
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
   }
@@ -141,18 +142,24 @@ public class DeliverableDataSharingFile implements java.io.Serializable, IAuditL
     this.externalFile = externalFile;
   }
 
-
   public void setFile(FileDB file) {
     this.file = file;
   }
+
 
   public void setId(Long id) {
     this.id = id;
   }
 
-
   public void setTypeId(Integer typeId) {
     this.typeId = typeId;
+  }
+
+
+  @Override
+  public String toString() {
+    return "DeliverableDataSharingFile [id=" + id + ", deliverable=" + deliverable + ", file=" + file + ", typeId="
+      + typeId + ", externalFile=" + externalFile + "]";
   }
 
 

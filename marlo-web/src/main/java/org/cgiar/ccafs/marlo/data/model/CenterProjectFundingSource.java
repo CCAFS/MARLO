@@ -49,8 +49,9 @@ public class CenterProjectFundingSource implements java.io.Serializable, IAuditL
   }
 
 
-  public CenterProjectFundingSource(Long id, User modifiedBy, User createdBy, Crp crp, CenterProject project, String title,
-    CenterFundingSourceType fundingSourceType, boolean active, Date activeSince, String modificationJustification) {
+  public CenterProjectFundingSource(Long id, User modifiedBy, User createdBy, Crp crp, CenterProject project,
+    String title, CenterFundingSourceType fundingSourceType, boolean active, Date activeSince,
+    String modificationJustification) {
     super();
     this.id = id;
     this.modifiedBy = modifiedBy;
@@ -99,9 +100,11 @@ public class CenterProjectFundingSource implements java.io.Serializable, IAuditL
   }
 
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
+
 
   @Override
   public User getModifiedBy() {
@@ -157,9 +160,15 @@ public class CenterProjectFundingSource implements java.io.Serializable, IAuditL
     this.project = project;
   }
 
-
   public void setTitle(String title) {
     this.title = title;
+  }
+
+
+  @Override
+  public String toString() {
+    return "CenterProjectFundingSource [id=" + id + ", crp=" + crp + ", project=" + project + ", title=" + title
+      + ", fundingSourceType=" + fundingSourceType + "]";
   }
 
 

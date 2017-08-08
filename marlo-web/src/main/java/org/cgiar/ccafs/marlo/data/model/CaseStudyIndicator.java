@@ -15,10 +15,10 @@ public class CaseStudyIndicator implements java.io.Serializable, IAuditLog {
    * 
    */
   private static final long serialVersionUID = -7193373165611989240L;
+
   @Expose
   private Long id;
   private CaseStudy caseStudy;
-
   @Expose
   private IpIndicator ipIndicator;
 
@@ -74,7 +74,6 @@ public class CaseStudyIndicator implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
-
   @Override
   public String getModificationJustification() {
 
@@ -106,17 +105,23 @@ public class CaseStudyIndicator implements java.io.Serializable, IAuditLog {
     return true;
   }
 
+
   public void setCaseStudy(CaseStudy caseStudy) {
     this.caseStudy = caseStudy;
   }
-
 
   public void setId(Long id) {
     this.id = id;
   }
 
+
   public void setIpIndicator(IpIndicator ipIndicator) {
     this.ipIndicator = ipIndicator;
+  }
+
+  @Override
+  public String toString() {
+    return "CaseStudyIndicator [id=" + id + ", caseStudy=" + caseStudy + ", ipIndicator=" + ipIndicator + "]";
   }
 
 

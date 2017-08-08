@@ -26,6 +26,7 @@ public class TargetUnitSelect implements Serializable {
   private static final long serialVersionUID = -4918721242504976282L;
 
   private SrfTargetUnit targetUnit;
+
   private Boolean check;
 
   public Boolean getCheck() {
@@ -42,6 +43,11 @@ public class TargetUnitSelect implements Serializable {
 
   public void setTargetUnit(SrfTargetUnit targetUnit) {
     this.targetUnit = targetUnit;
+  }
+
+  @Override
+  public String toString() {
+    return "TargetUnitSelect [targetUnit=" + targetUnit + ", check=" + check + "]";
   }
 
 }

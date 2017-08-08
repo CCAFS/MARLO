@@ -40,6 +40,7 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
   @Expose
   private FundingSource fundingSource;
 
+
   @Expose
   private boolean active;
 
@@ -98,7 +99,6 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
     return fundingSource;
   }
 
-
   @Override
   public Long getId() {
     return id;
@@ -149,6 +149,7 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
     return active;
   }
 
+
   public boolean isScope() {
     return scope;
   }
@@ -169,10 +170,10 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
     this.fundingSource = fundingSource;
   }
 
-
   public void setId(Long id) {
     this.id = id;
   }
+
 
   public void setLocElement(LocElement locElement) {
     this.locElement = locElement;
@@ -190,9 +191,15 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
     this.modifiedBy = modifiedBy;
   }
 
-
   public void setScope(boolean scope) {
     this.scope = scope;
+  }
+
+
+  @Override
+  public String toString() {
+    return "FundingSourceLocation [id=" + id + ", locElement=" + locElement + ", locElementType=" + locElementType
+      + ", fundingSource=" + fundingSource + ", scope=" + scope + "]";
   }
 
 
