@@ -330,8 +330,11 @@ public class ProjectActivitiesAction extends BaseAction {
 
   private Path getAutoSaveFilePath() {
     String composedClassName = project.getClass().getSimpleName();
+    // get the action name and replace / for _
     String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+    // concatane name and add the .json extension
+    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + this.getActualPhase().getDescription() + "_"
+      + this.getActualPhase().getYear() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
@@ -462,7 +465,7 @@ public class ProjectActivitiesAction extends BaseAction {
         this.setDraft(false);
         project.setProjectActivities(new ArrayList<Activity>(project.getActivities().stream()
           .filter(a -> a.isActive() && a.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
-
+        project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
         if (project.getProjectActivities() != null) {
           for (Activity openActivity : project.getProjectActivities()) {
             openActivity.setDeliverables(new ArrayList<DeliverableActivity>(openActivity.getDeliverableActivities()
@@ -575,6 +578,7 @@ public class ProjectActivitiesAction extends BaseAction {
        */
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_ACTIVITIES_RELATION);
+      relationsName.add(APConstants.PROJECT_INFO_RELATION);
       project = projectManager.getProjectById(projectID);
       project.setActiveSince(new Date());
       projectManager.saveProject(project, this.getActionName(), relationsName);

@@ -36,6 +36,50 @@ public class ActivityMySQLDAO implements ActivityDAO {
     this.dao = dao;
   }
 
+  /**
+   * clone the activity info
+   * 
+   * @param activityAdd activity to clone
+   * @param activity base
+   * @param phase the current phase
+   */
+  public void cloneActivity(Activity activityAdd, Activity activity, Phase phase) {
+    activityAdd.setActive(true);
+    activityAdd.setActiveSince(activity.getActiveSince());
+    activityAdd.setActivityProgress(activity.getActivityProgress());
+    activityAdd.setActivityStatus(activity.getActivityStatus());
+    activityAdd.setComposeID(activity.getComposeID());
+    activityAdd.setCreatedBy(activity.getCreatedBy());
+    activityAdd.setDescription(activity.getDescription());
+    activityAdd.setEndDate(activity.getEndDate());
+    activityAdd.setModificationJustification(activity.getModificationJustification());
+    activityAdd.setModifiedBy(activity.getModifiedBy());
+    activityAdd.setPhase(phase);
+    activityAdd.setProject(activity.getProject());
+    activityAdd.setProjectPartnerPerson(activity.getProjectPartnerPerson());
+    activityAdd.setStartDate(activity.getStartDate());
+    activityAdd.setTitle(activity.getTitle());
+  }
+
+  /**
+   * clone the cloneDeliverableActivity info
+   * 
+   * @param deliverableActivityAdd deliverableActivity to clone
+   * @param deliverableActivity base deliverableActivity
+   * @param activity the activity base
+   * @param activityAdd the new activity base
+   */
+  public void cloneDeliverableActivity(DeliverableActivity deliverableActivityAdd,
+    DeliverableActivity deliverableActivity, Activity activity, Activity activityAdd) {
+    deliverableActivityAdd.setActive(false);
+    deliverableActivityAdd.setActiveSince(activity.getActiveSince());
+    deliverableActivityAdd.setActivity(activityAdd);
+    deliverableActivityAdd.setCreatedBy(activity.getCreatedBy());
+    deliverableActivityAdd.setDeliverable(deliverableActivity.getDeliverable());
+    deliverableActivityAdd.setModificationJustification(activity.getModificationJustification());
+    deliverableActivityAdd.setModifiedBy(activity.getModifiedBy());
+  }
+
   @Override
   public boolean deleteActivity(long activityId) {
     Activity activity = this.find(activityId);
@@ -84,6 +128,7 @@ public class ActivityMySQLDAO implements ActivityDAO {
     return activity.getId();
   }
 
+
   public void saveActvityPhase(Phase next, long projecID, Activity activity) {
     Phase phase = dao.find(Phase.class, next.getId());
     if (phase.getEditable() != null && phase.getEditable()) {
@@ -92,21 +137,7 @@ public class ActivityMySQLDAO implements ActivityDAO {
           && c.getComposeID() == activity.getComposeID()).collect(Collectors.toList());
       if (activities.isEmpty()) {
         Activity activityAdd = new Activity();
-        activityAdd.setActive(true);
-        activityAdd.setActiveSince(activity.getActiveSince());
-        activityAdd.setActivityProgress(activity.getActivityProgress());
-        activityAdd.setActivityStatus(activity.getActivityStatus());
-        activityAdd.setComposeID(activity.getComposeID());
-        activityAdd.setCreatedBy(activity.getCreatedBy());
-        activityAdd.setDescription(activity.getDescription());
-        activityAdd.setEndDate(activity.getEndDate());
-        activityAdd.setModificationJustification(activity.getModificationJustification());
-        activityAdd.setModifiedBy(activity.getModifiedBy());
-        activityAdd.setPhase(phase);
-        activityAdd.setProject(activity.getProject());
-        activityAdd.setProjectPartnerPerson(activity.getProjectPartnerPerson());
-        activityAdd.setStartDate(activity.getStartDate());
-        activityAdd.setTitle(activity.getTitle());
+        this.cloneActivity(activityAdd, activityAdd, phase);
         dao.save(activityAdd);
         if (activityAdd.getComposeID() == null) {
           activity.setComposeID(activity.getProject().getId() + "-" + activityAdd.getId());
@@ -116,33 +147,13 @@ public class ActivityMySQLDAO implements ActivityDAO {
         if (activity.getDeliverables() != null) {
           for (DeliverableActivity deliverableActivity : activity.getDeliverables()) {
             DeliverableActivity deliverableActivityAdd = new DeliverableActivity();
-            deliverableActivityAdd.setActive(false);
-            deliverableActivityAdd.setActiveSince(activity.getActiveSince());
-            deliverableActivityAdd.setActivity(activityAdd);
-            deliverableActivityAdd.setCreatedBy(activity.getCreatedBy());
-            deliverableActivityAdd.setDeliverable(deliverableActivity.getDeliverable());
-            deliverableActivityAdd.setModificationJustification(activity.getModificationJustification());
-            deliverableActivityAdd.setModifiedBy(activity.getModifiedBy());
+            this.cloneDeliverableActivity(deliverableActivityAdd, deliverableActivity, activity, activityAdd);
             dao.save(deliverableActivityAdd);
           }
         }
       } else {
         Activity activityAdd = activities.get(0);
-        activityAdd.setActive(true);
-        activityAdd.setActiveSince(activity.getActiveSince());
-        activityAdd.setActivityProgress(activity.getActivityProgress());
-        activityAdd.setActivityStatus(activity.getActivityStatus());
-        activityAdd.setComposeID(activity.getComposeID());
-        activityAdd.setCreatedBy(activity.getCreatedBy());
-        activityAdd.setDescription(activity.getDescription());
-        activityAdd.setEndDate(activity.getEndDate());
-        activityAdd.setModificationJustification(activity.getModificationJustification());
-        activityAdd.setModifiedBy(activity.getModifiedBy());
-        activityAdd.setPhase(phase);
-        activityAdd.setProject(activity.getProject());
-        activityAdd.setProjectPartnerPerson(activity.getProjectPartnerPerson());
-        activityAdd.setStartDate(activity.getStartDate());
-        activityAdd.setTitle(activity.getTitle());
+        this.cloneActivity(activityAdd, activityAdd, phase);
         dao.update(activityAdd);
         if (activity.getDeliverables() == null) {
           activity.setDeliverables(new ArrayList<DeliverableActivity>());
@@ -152,15 +163,19 @@ public class ActivityMySQLDAO implements ActivityDAO {
             .filter(c -> c.isActive() && c.getDeliverable().equals(deliverableActivity.getDeliverable()))
             .collect(Collectors.toList()).isEmpty()) {
             DeliverableActivity deliverableActivityAdd = new DeliverableActivity();
-            deliverableActivityAdd.setActive(false);
-            deliverableActivityAdd.setActiveSince(activity.getActiveSince());
-            deliverableActivityAdd.setActivity(activityAdd);
-            deliverableActivityAdd.setCreatedBy(activity.getCreatedBy());
-            deliverableActivityAdd.setDeliverable(deliverableActivity.getDeliverable());
-            deliverableActivityAdd.setModificationJustification(activity.getModificationJustification());
-            deliverableActivityAdd.setModifiedBy(activity.getModifiedBy());
+            this.cloneDeliverableActivity(deliverableActivityAdd, deliverableActivity, activity, activityAdd);
             dao.save(deliverableActivityAdd);
           }
+        }
+        for (DeliverableActivity deliverableActivity : activity.getDeliverableActivities().stream()
+          .filter(c -> c.isActive()).collect(Collectors.toList())) {
+          if (activity.getDeliverables().stream()
+            .filter(c -> c.getDeliverable().equals(deliverableActivity.getDeliverable())).collect(Collectors.toList())
+            .isEmpty()) {
+            deliverableActivity.setActive(false);
+            dao.update(deliverableActivity);
+          }
+
         }
 
 
@@ -172,8 +187,5 @@ public class ActivityMySQLDAO implements ActivityDAO {
       }
     }
 
-
   }
-
-
 }
