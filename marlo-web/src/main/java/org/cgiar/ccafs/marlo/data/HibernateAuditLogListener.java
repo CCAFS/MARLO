@@ -380,9 +380,8 @@ public class HibernateAuditLogListener
 
   @Override
   public void onPostRemoveCollection(PostCollectionRemoveEvent event) {
-    // LOG.info("onPostRemoveCollection for Parent Entity: " + event.getAffectedOwnerEntityName() + " , and collection :
-    // "
-    // + event.getCollection().getClass());
+    LOG.info("onPostRemoveCollection for Parent Entity: " + event.getAffectedOwnerEntityName() + " , and collection :"
+      + event.getCollection().getClass());
     LOG.info("onPostRemoveCollection");
   }
 
@@ -426,20 +425,20 @@ public class HibernateAuditLogListener
   }
 
   @Override
-  public boolean onPreDelete(PreDeleteEvent arg0) {
-    LOG.debug("onPreDelete");
+  public boolean onPreDelete(PreDeleteEvent preDeleteEvent) {
+    LOG.debug("onPreDelete for entity: " + preDeleteEvent.getEntity());
     return false;
   }
 
   @Override
-  public boolean onPreInsert(PreInsertEvent arg0) {
-    LOG.debug("onPreInsert");
+  public boolean onPreInsert(PreInsertEvent preInsertEvent) {
+    LOG.debug("onPreInsert for entity: " + preInsertEvent.getEntity());
     return false;
   }
 
   @Override
-  public boolean onPreUpdate(PreUpdateEvent arg0) {
-    LOG.debug("onPreUpdate");
+  public boolean onPreUpdate(PreUpdateEvent preUpdateEvent) {
+    LOG.debug("onPreUpdate for entity: " + preUpdateEvent.getEntity());
     return false;
   }
 
