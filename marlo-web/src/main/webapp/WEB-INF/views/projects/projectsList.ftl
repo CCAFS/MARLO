@@ -28,7 +28,8 @@
 <section class="container">
   <article class="row" id="mainInformation">
     <div class="col-md-12">
-       
+      <div class="loadingBlock"></div>
+      <div style="display:none" >
         <!-- Nav tabs -->
         <ul class="nav nav-tabs" role="tablist">
           <li role="presentation" class="active">
@@ -71,14 +72,11 @@
           
             [#-- Archived Projects List (My Projects) --]
             <h3 class="headTitle text-center">Archived projects</h3>
-            [@projectList.projectsList projects=closedProjects canValidate=false canEdit=false namespace="/projects" defaultAction="${(crpSession)!}/description" /]
+            [@projectList.projectsListArchived projects=closedProjects canValidate=false canEdit=false namespace="/projects" defaultAction="${(crpSession)!}/description" /]
           
           </div>
         </div>
-      
-    
-    
-      
+      </div>
     </div>
     
   </article>
