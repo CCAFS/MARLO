@@ -8,8 +8,7 @@
         <th id="projectTitles" >[@s.text name="projectsList.projectTitles" /]</th>
         <th id="projectOutputs" >[@s.text name="projectsList.projectOutputs" /]</th>
         <th id="projectLeader">[@s.text name="projectsList.projectLeader" /]</th>
-        <th id="projectStartDate">[@s.text name="projectsList.startDate" /]</th>
-        <th id="projectEndDate">[@s.text name="projectsList.endDate" /]</th>
+        <th id="projectStatus">[@s.text name="projectsList.status" /]</th>
         <th id="projectDelete">[@s.text name="projectsList.delete" /]</th>
       </tr>
     </thead>
@@ -49,13 +48,9 @@
           <td>
            [#if project.projectLeader?has_content]${(project.projectLeader.composedName)!""}[#else][@s.text name="projectsList.none" /][/#if]
           </td>
-          [#-- start date --]
+          [#-- Status --]
           <td>
-           [#if project.startDate?has_content]${(project.starDateFormat)!""}[#else][@s.text name="projectsList.none" /][/#if]
-          </td>
-          [#-- end date --]
-          <td>
-           [#if project.endDate?has_content]${(project.endDateFormat)!""}[#else][@s.text name="projectsList.none" /][/#if]
+           [#if project.projectStatus?has_content]${(project.projectStatus.name)!""}[#else][@s.text name="projectsList.none" /][/#if]
           </td>
           [#-- Delete project--]
           <td class="text-center">

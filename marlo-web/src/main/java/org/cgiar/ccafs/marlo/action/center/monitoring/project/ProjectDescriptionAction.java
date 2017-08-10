@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.manager.ICenterProjectFundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectOutputManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProjectStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
@@ -42,6 +43,7 @@ import org.cgiar.ccafs.marlo.data.model.CenterProjectCrosscutingTheme;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectFundingSource;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectOutput;
+import org.cgiar.ccafs.marlo.data.model.CenterProjectStatus;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectType;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
 import org.cgiar.ccafs.marlo.data.model.Crp;
@@ -107,18 +109,21 @@ public class ProjectDescriptionAction extends BaseAction {
 
   private AuditLogManager auditLogService;
 
-
   private CenterProjectDescriptionValidator validator;
 
 
   private CrpManager crpService;
 
+
   private ICenterProjectTypeManager projectTypeService;
+
+  private ICenterProjectStatusManager projectStatusService;
 
 
   private CenterArea selectedResearchArea;
 
   private CenterProgram selectedProgram;
+
 
   private Center loggedCenter;
 
@@ -128,13 +133,16 @@ public class ProjectDescriptionAction extends BaseAction {
 
   private List<CenterFundingSourceType> fundingSourceTypes;
 
-
   private List<OutcomeOutputs> outputs;
+
   private List<TopicOutcomes> topicOutcomes;
+
+
   private List<LocElement> regionLists;
   private List<LocElement> countryLists;
   private List<Crp> crps;
   private List<CenterProjectType> projectTypes;
+  private List<CenterProjectStatus> status;
   private boolean region;
   private long programID;
   private long areaID;
@@ -150,7 +158,8 @@ public class ProjectDescriptionAction extends BaseAction {
     ICenterProjectOutputManager projectOutputService, ICenterProjectFundingSourceManager projectFundingSourceService,
     ICenterProjectCrosscutingThemeManager projectCrosscutingThemeService,
     ICenterProjectLocationManager projectLocationService, LocElementManager locElementService,
-    AuditLogManager auditLogService, CrpManager crpService, ICenterProjectTypeManager projectTypeService) {
+    AuditLogManager auditLogService, CrpManager crpService, ICenterProjectTypeManager projectTypeService,
+    ICenterProjectStatusManager projectStatusService) {
     super(config);
     this.centerService = centerService;
     this.projectService = projectService;
@@ -166,6 +175,7 @@ public class ProjectDescriptionAction extends BaseAction {
     this.auditLogService = auditLogService;
     this.crpService = crpService;
     this.projectTypeService = projectTypeService;
+    this.projectStatusService = projectStatusService;
   }
 
   public Boolean bolValue(String value) {
@@ -301,6 +311,10 @@ public class ProjectDescriptionAction extends BaseAction {
     return selectedResearchArea;
   }
 
+  public List<CenterProjectStatus> getStatus() {
+    return status;
+  }
+
   public List<TopicOutcomes> getTopicOutcomes() {
     return topicOutcomes;
   }
@@ -312,7 +326,6 @@ public class ProjectDescriptionAction extends BaseAction {
   public boolean isRegion() {
     return region;
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -493,6 +506,9 @@ public class ProjectDescriptionAction extends BaseAction {
       projectTypes =
         new ArrayList<>(projectTypeService.findAll().stream().filter(pt -> pt.isActive()).collect(Collectors.toList()));
 
+      status = new ArrayList<>(
+        projectStatusService.findAll().stream().filter(st -> st.isActive()).collect(Collectors.toList()));
+
       this.getProgramOutputs();
 
     }
@@ -593,6 +609,12 @@ public class ProjectDescriptionAction extends BaseAction {
         projectDB.setProjectType(projectType);
       }
 
+      if (project.getProjectStatus().getId() != null) {
+        CenterProjectStatus projectStatus =
+          projectStatusService.getProjectStatusById(project.getProjectStatus().getId());
+        projectDB.setProjectStatus(projectStatus);;
+      }
+
       if (project.getProjectLeader().getId() != null) {
         User projectLeader = userService.getUser(project.getProjectLeader().getId());
         projectDB.setProjectLeader(projectLeader);
@@ -643,6 +665,7 @@ public class ProjectDescriptionAction extends BaseAction {
     }
   }
 
+
   public void saveCrossCuting(CenterProject projectDB) {
     CenterProjectCrosscutingTheme crosscutingTheme = project.getProjectCrosscutingTheme();
 
@@ -668,7 +691,6 @@ public class ProjectDescriptionAction extends BaseAction {
 
 
   }
-
 
   public void saveFundingSources(CenterProject projectDB) {
 
@@ -818,6 +840,7 @@ public class ProjectDescriptionAction extends BaseAction {
 
   }
 
+
   public void saveOutputs(CenterProject projectDB) {
 
     if (projectDB.getProjectOutputs() != null && projectDB.getProjectOutputs().size() > 0) {
@@ -904,10 +927,10 @@ public class ProjectDescriptionAction extends BaseAction {
     this.region = region;
   }
 
-
   public void setRegionLists(List<LocElement> regionLists) {
     this.regionLists = regionLists;
   }
+
 
   public void setResearchAreas(List<CenterArea> researchAreas) {
     this.researchAreas = researchAreas;
@@ -917,13 +940,17 @@ public class ProjectDescriptionAction extends BaseAction {
     this.researchPrograms = researchPrograms;
   }
 
-
   public void setSelectedProgram(CenterProgram selectedProgram) {
     this.selectedProgram = selectedProgram;
   }
 
+
   public void setSelectedResearchArea(CenterArea selectedResearchArea) {
     this.selectedResearchArea = selectedResearchArea;
+  }
+
+  public void setStatus(List<CenterProjectStatus> status) {
+    this.status = status;
   }
 
   public void setTopicOutcomes(List<TopicOutcomes> topicOutcomes) {
