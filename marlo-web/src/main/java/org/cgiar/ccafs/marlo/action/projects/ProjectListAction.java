@@ -74,6 +74,8 @@ public class ProjectListAction extends BaseAction {
   private List<Project> myProjects;
   private List<Project> allProjects;
 
+  private List<Project> closedProjects;
+
   private String filterBy;
 
 
@@ -482,7 +484,12 @@ public class ProjectListAction extends BaseAction {
         }
       }
     }
+    closedProjects = loggedCrp.getProjects().stream()
+      .filter(
+        c -> c.isActive() && (c.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+          || c.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())))
 
+      .collect(Collectors.toList());
     String params[] = {loggedCrp.getAcronym() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_LIST_BASE_PERMISSION, params));
 
