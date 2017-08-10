@@ -45,7 +45,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author Sebastian Amariles - CIAT/CCAFS
@@ -374,130 +373,79 @@ public class ProjectListAction extends BaseAction {
     return projectID;
   }
 
+  /**
+   * load the flagships and regions for each project on list
+   * 
+   * @param list the list of project
+   */
+  public void loadFlagshipgsAndRegions(List<Project> list) {
+    for (Project project : list) {
+      List<CrpProgram> programs = new ArrayList<>();
+      List<CrpProgram> regions = new ArrayList<>();
+      for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
+        .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+        .collect(Collectors.toList())) {
+        programs.add(projectFocuses.getCrpProgram());
+      }
+      for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
+        .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+        .collect(Collectors.toList())) {
+        regions.add(projectFocuses.getCrpProgram());
+      }
+      project.setFlagships(programs);
+      project.setRegions(regions);
+    }
+  }
+
 
   @Override
   public void prepare() throws Exception {
-
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
     Phase phase =
       phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), loggedCrp.getId().longValue());
-
     if (projectManager.findAll() != null) {
-
       if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin()) {
         myProjects = new ArrayList<>();
         for (ProjectPhase projectPhase : phase.getProjectPhases()) {
           myProjects.add(projectPhase.getProject());
         }
         allProjects = new ArrayList<>();
-
-
       } else {
-
         allProjects = new ArrayList<>();
         for (ProjectPhase projectPhase : phase.getProjectPhases()) {
           allProjects.add(projectManager.getProjectById(projectPhase.getProject().getId()));
         }
         if (this.isPlanningActive()) {
-
           myProjects = projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym()).stream()
             .filter(p -> p.isActive()).collect(Collectors.toList());
-
         } else {
-
           myProjects = projectManager.getUserProjectsReporting(this.getCurrentUser().getId(), loggedCrp.getAcronym())
             .stream().filter(p -> p.isActive()).collect(Collectors.toList());
-
         }
         List<Project> mProjects = new ArrayList<>();
         mProjects.addAll(myProjects);
         for (Project project : mProjects) {
-
-
           if (!allProjects.contains(project)) {
             myProjects.remove(project);
           }
         }
-
         allProjects.removeAll(myProjects);
-
       }
-
-      filterBy = this.getRequest().getParameter(APConstants.FILTER_BY);
-
-      if (filterBy != null) {
-
-        String type = StringUtils.trim(filterBy);
-
-        if (type.equals("w1")) {
-          myProjects =
-            myProjects.stream().filter(c -> c.getType().equals(APConstants.PROJECT_CORE)).collect(Collectors.toList());
-
-          if (allProjects != null) {
-            allProjects = allProjects.stream().filter(c -> c.getType().equals(APConstants.PROJECT_CORE))
-              .collect(Collectors.toList());
-
-          }
-        }
-        if (type.equals("w3")) {
-          myProjects = myProjects.stream().filter(c -> c.getType().equals(APConstants.PROJECT_BILATERAL))
-            .collect(Collectors.toList());
-          if (allProjects != null) {
-            allProjects = allProjects.stream().filter(c -> c.getType().equals(APConstants.PROJECT_BILATERAL))
-              .collect(Collectors.toList());
-          }
-        }
-
-      }
-      for (Project project : myProjects) {
-        List<CrpProgram> programs = new ArrayList<>();
-        List<CrpProgram> regions = new ArrayList<>();
-        for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-          .filter(
-            c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-          .collect(Collectors.toList())) {
-          programs.add(projectFocuses.getCrpProgram());
-        }
-        for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-          .filter(
-            c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
-          .collect(Collectors.toList())) {
-          regions.add(projectFocuses.getCrpProgram());
-        }
-        project.setFlagships(programs);
-        project.setRegions(regions);
-      }
+      this.loadFlagshipgsAndRegions(myProjects);
       if (allProjects != null) {
-        for (Project project : allProjects) {
-          List<CrpProgram> programs = new ArrayList<>();
-          List<CrpProgram> regions = new ArrayList<>();
-          for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-            .filter(
-              c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-            .collect(Collectors.toList())) {
-            programs.add(projectFocuses.getCrpProgram());
-          }
-          for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-            .filter(
-              c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
-            .collect(Collectors.toList())) {
-            regions.add(projectFocuses.getCrpProgram());
-          }
-          project.setFlagships(programs);
-          project.setRegions(regions);
-        }
+        this.loadFlagshipgsAndRegions(allProjects);
       }
     }
     closedProjects = loggedCrp.getProjects().stream()
       .filter(
         c -> c.isActive() && (c.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
           || c.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())))
-
       .collect(Collectors.toList());
+    this.loadFlagshipgsAndRegions(closedProjects);
+    closedProjects.sort((p1, p2) -> p1.getStatus().compareTo(p2.getStatus()));
     String params[] = {loggedCrp.getAcronym() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_LIST_BASE_PERMISSION, params));
-
   }
 
 
@@ -506,15 +454,14 @@ public class ProjectListAction extends BaseAction {
     return SUCCESS;
   }
 
-
   public void setAllProjects(List<Project> allProjects) {
     this.allProjects = allProjects;
   }
 
+
   public void setClosedProjects(List<Project> closedProjects) {
     this.closedProjects = closedProjects;
   }
-
 
   public void setFilterBy(String filterBy) {
     this.filterBy = filterBy;
