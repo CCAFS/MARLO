@@ -19,6 +19,8 @@ package org.cgiar.ccafs.marlo.action.center.capdev;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.ICapacityDevelopmentTypeDAO;
+import org.cgiar.ccafs.marlo.data.manager.CapdevFoundingTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.CapdevHighestDegreeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICapacityDevelopmentService;
 import org.cgiar.ccafs.marlo.data.manager.ICapdevLocationsService;
 import org.cgiar.ccafs.marlo.data.manager.ICapdevParticipantService;
@@ -27,6 +29,8 @@ import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.model.CapacityDevelopment;
 import org.cgiar.ccafs.marlo.data.model.CapacityDevelopmentType;
+import org.cgiar.ccafs.marlo.data.model.CapdevFoundingType;
+import org.cgiar.ccafs.marlo.data.model.CapdevHighestDegree;
 import org.cgiar.ccafs.marlo.data.model.CapdevLocations;
 import org.cgiar.ccafs.marlo.data.model.CapdevParticipant;
 import org.cgiar.ccafs.marlo.data.model.Institution;
@@ -69,6 +73,8 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   private List<LocElement> countryList;
   private List<Institution> institutions;
   private List<CapacityDevelopmentType> capdevTypes;
+  private List<CapdevHighestDegree> highestDegrreList;
+  private List<CapdevFoundingType> foundingTypeList;
   private List<Long> capdevCountries;
   private List<Long> capdevRegions;
   private Participant participant;
@@ -86,6 +92,8 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   private final ICapdevLocationsService capdevLocationService;
   private final IParticipantService participantService;
   private final ICapdevParticipantService capdevParicipantService;
+  private final CapdevHighestDegreeManager capdevHighestDegreeService;
+  private final CapdevFoundingTypeManager capdevFoundingTypeService;
   private final CapacityDevelopmentValidator validator;
   private final ReadExcelFile reader = new ReadExcelFile();
 
@@ -100,7 +108,8 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     ICapacityDevelopmentTypeDAO capdevTypeService, LocElementManager locElementService,
     ICapdevLocationsService capdevLocationService, IParticipantService participantService,
     ICapdevParticipantService capdevParicipantService, CapacityDevelopmentValidator validator,
-    InstitutionManager institutionService) {
+    InstitutionManager institutionService, CapdevHighestDegreeManager capdevHighestDegreeService,
+    CapdevFoundingTypeManager capdevFoundingTypeService) {
     super(config);
     this.capdevService = capdevService;
     this.capdevTypeService = capdevTypeService;
@@ -110,6 +119,8 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     this.capdevParicipantService = capdevParicipantService;
     this.validator = validator;
     this.institutionService = institutionService;
+    this.capdevHighestDegreeService = capdevHighestDegreeService;
+    this.capdevFoundingTypeService = capdevFoundingTypeService;
   }
 
 
@@ -207,8 +218,18 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   }
 
 
+  public List<CapdevFoundingType> getFoundingTypeList() {
+    return foundingTypeList;
+  }
+
+
   public List<Map<String, Object>> getGenders() {
     return genders;
+  }
+
+
+  public List<CapdevHighestDegree> getHighestDegrreList() {
+    return highestDegrreList;
   }
 
 
@@ -263,7 +284,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     return participant;
   }
 
-
   public List<Participant> getParticipantList() {
     return participantList;
   }
@@ -272,6 +292,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   public List<Map<String, Object>> getPreviewList() {
     return previewList;
   }
+
 
   public List<Map<String, Object>> getPreviewListContent() {
     return previewListContent;
@@ -323,7 +344,8 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       participant.setGender((String) data[i][3]);
       participant.setLocElementsByCitizenship(
         locElementService.getLocElementByISOCode((String) reader.sustraerId((String) data[i][4])));
-      participant.setHighestDegree((String) data[i][5]);
+      participant
+        .setHighestDegree(capdevHighestDegreeService.getCapdevHighestDegreeById(Long.parseLong((String) data[i][5])));
       System.out.println("institution ID " + reader.sustraerId((String) data[i][6]).getClass());
       participant.setInstitutions(
         institutionService.getInstitutionById(Long.parseLong((String) (reader.sustraerId((String) data[i][6])))));
@@ -331,7 +353,8 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
         locElementService.getLocElementByISOCode((String) reader.sustraerId((String) data[i][7])));
       participant.setEmail((String) data[i][8]);
       participant.setReference((String) data[i][9]);
-      participant.setFellowship((String) data[i][10]);
+      participant
+        .setFellowship(capdevFoundingTypeService.getCapdevFoundingTypeById(Long.parseLong((String) data[i][10])));
 
       participant.setActive(true);
       participant.setUsersByCreatedBy(currentUser);
@@ -377,6 +400,15 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       new ArrayList<>(institutionService.findAll().stream().filter(ins -> ins.isActive()).collect(Collectors.toList()));
     Collections.sort(institutions, (c1, c2) -> c1.getName().compareTo(c2.getName()));
 
+    // highest degree list
+    highestDegrreList =
+      capdevHighestDegreeService.findAll().stream().filter(h -> h.getName() != null).collect(Collectors.toList());
+    Collections.sort(highestDegrreList, (c1, c2) -> c1.getName().compareTo(c2.getName()));
+
+    // founding type list
+    foundingTypeList = new ArrayList<>(
+      capdevFoundingTypeService.findAll().stream().filter(f -> f.getName() != null).collect(Collectors.toList()));
+    Collections.sort(foundingTypeList, (c1, c2) -> c1.getName().compareTo(c2.getName()));
 
     participantList = new ArrayList<>();
     capdevCountries = new ArrayList<>();
@@ -477,6 +509,8 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     capdevDB.setCapdevType(capdev.getCapdevType());
     capdevDB.setStartDate(capdev.getStartDate());
     capdevDB.setEndDate(capdev.getEndDate());
+    capdevDB.setDuration(capdev.getDuration());
+
 
     // if capdev is individual
     if (capdevDB.getCategory() == 1) {
@@ -591,6 +625,13 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   public void saveParticipant(Participant participant) {
     final Session session = SecurityUtils.getSubject().getSession();
     final User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
+    System.out.println("highest degree " + participant.getHighestDegree().getId());
+    if (participant.getHighestDegree().getId() == -1) {
+      participant.setHighestDegree(null);
+    }
+    if (participant.getFellowship().getId() == -1) {
+      participant.setFellowship(null);
+    }
     participant.setActive(true);
     participant.setAciveSince(new Date());
     participant.setUsersByCreatedBy(currentUser);
@@ -638,8 +679,18 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   }
 
 
+  public void setFoundingTypeList(List<CapdevFoundingType> foundingTypeList) {
+    this.foundingTypeList = foundingTypeList;
+  }
+
+
   public void setGenders(List<Map<String, Object>> genders) {
     this.genders = genders;
+  }
+
+
+  public void setHighestDegrreList(List<CapdevHighestDegree> highestDegrreList) {
+    this.highestDegrreList = highestDegrreList;
   }
 
 
@@ -721,6 +772,8 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
       if (capdev.getCategory() == 1) {
 
+        System.out.println("highest degree " + participant.getHighestDegree().getId());
+
         if (participant.getCode() == 0) {
           this.addFieldError("participant.code", "Code is required.");
         }
@@ -744,9 +797,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
         if (participant.getLocElementsByCitizenship().getId() == -1) {
           this.addFieldError("participant.locElementsByCitizenship.id", "Citizenship is required.");
         }
-        if (participant.getHighestDegree().length() > 100) {
-          this.addFieldError("participant.highestDegree", "Highest degree is very length.");
-        }
         if (participant.getPersonalEmail().equalsIgnoreCase("")) {
           this.addFieldError("participant.personalEmail", "Email is required.");
         }
@@ -769,9 +819,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
         if (participant.getSupervisor().length() > 100) {
           this.addFieldError("participant.supervisor", "Supervisor is very length.");
         }
-        if (participant.getFellowship().length() > 100) {
-          this.addFieldError("participant.fellowship", "Fellowship is very length.");
-        }
+
 
       }
 

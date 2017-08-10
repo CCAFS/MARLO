@@ -48,9 +48,11 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
@@ -248,18 +250,34 @@ public class CapdevDescriptionAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
 
-    researchAreas = researchAreaService.findAll();
-    researchPrograms = researchProgramSercive.findAll();
-    projects = projectService.findAll();
-    crps = crpService.findAll();
-    partners = institutionService.findAll();
-    outputs = researchOutputService.findAll();
+    researchAreas = researchAreaService.findAll().stream().filter(ra -> ra.isActive()).collect(Collectors.toList());
+    Collections.sort(researchAreas, (r1, r2) -> r1.getName().compareTo(r2.getName()));
+
+    researchPrograms =
+      researchProgramSercive.findAll().stream().filter(rp -> rp.isActive()).collect(Collectors.toList());
+    Collections.sort(researchPrograms, (r1, r2) -> r1.getName().compareTo(r2.getName()));
+
+    projects =
+      projectService.findAll().stream().filter(p -> p.isActive() && (p.getName() != null)).collect(Collectors.toList());
+    Collections.sort(projects, (r1, r2) -> r1.getName().compareTo(r2.getName()));
+
+    crps = crpService.findAll().stream().filter(out -> out.isActive()).collect(Collectors.toList());
+    Collections.sort(crps, (r1, r2) -> r1.getName().compareTo(r2.getName()));
+
+    partners = institutionService.findAll().stream().filter(pt -> pt.isActive()).collect(Collectors.toList());
+    Collections.sort(partners, (r1, r2) -> r1.getName().compareTo(r2.getName()));
+
+    outputs = researchOutputService.findAll().stream().filter(out -> out.isActive() && (out.getTitle() != null))
+      .collect(Collectors.toList());
+    Collections.sort(outputs, (r1, r2) -> r1.getTitle().compareTo(r2.getTitle()));
 
     // Disciplines List
     disciplines = disciplineService.findAll();
+    Collections.sort(disciplines, (r1, r2) -> r1.getName().compareTo(r2.getName()));
 
     // Target groups List
     targetGroups = targetGroupService.findAll();
+    Collections.sort(targetGroups, (r1, r2) -> r1.getName().compareTo(r2.getName()));
 
     capdevDisciplines = new ArrayList<>();
     capdevTargetGroup = new ArrayList<>();

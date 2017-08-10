@@ -33,6 +33,7 @@ import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -98,18 +99,25 @@ public class FilterListsAction extends BaseAction {
     if (projectID > 0) {
       projectPartners = projectPartnerService.findAll().stream()
         .filter(le -> le.isActive() && (le.getProject().getId() == projectID)).collect(Collectors.toList());
+      Collections.sort(projectPartners,
+        (p1, p2) -> p1.getInstitution().getName().compareTo(p2.getInstitution().getName()));
       projectOutputs = projectOutputService.findAll().stream()
         .filter(po -> po.isActive() && (po.getProject().getId() == projectID)).collect(Collectors.toList());
+      Collections.sort(projectOutputs,
+        (p1, p2) -> p1.getResearchOutput().getTitle().compareTo(p2.getResearchOutput().getTitle()));
 
     }
     if (projectID <= 0) {
-      partners = institutionService.findAll();
-      outputs = researchOutputService.findAll();
+      partners = institutionService.findAll().stream().filter(pt -> pt.isActive()).collect(Collectors.toList());
+      Collections.sort(partners, (r1, r2) -> r1.getName().compareTo(r2.getName()));
+
+      outputs = researchOutputService.findAll().stream().filter(out -> out.isActive() && (out.getTitle() != null))
+        .collect(Collectors.toList());
+      Collections.sort(outputs, (r1, r2) -> r1.getTitle().compareTo(r2.getTitle()));
     }
     if (projectPartners.isEmpty()) {
-      System.out.println("projectPartners.isEmpty() ");
-      partners = institutionService.findAll();
-      System.out.println("partners.size() " + partners.size());
+      partners = institutionService.findAll().stream().filter(pt -> pt.isActive()).collect(Collectors.toList());
+      Collections.sort(partners, (r1, r2) -> r1.getName().compareTo(r2.getName()));
       final List<Map<String, Object>> listpartnertMap = new ArrayList<>();
       for (final Institution partner : partners) {
         final Map<String, Object> partnertMap = new HashMap<>();
@@ -123,7 +131,6 @@ public class FilterListsAction extends BaseAction {
       jsonPartners_output.add(map);
     }
     if (!projectPartners.isEmpty()) {
-      System.out.println("!projectPartners.isEmpty()");
       final List<Map<String, Object>> listpartnertMap = new ArrayList<>();
       for (final CenterProjectPartner projectPartner : projectPartners) {
         final Map<String, Object> projectPartnermap = new HashMap<>();
@@ -138,9 +145,9 @@ public class FilterListsAction extends BaseAction {
     }
 
     if (projectOutputs.isEmpty()) {
-      System.out.println("projectOutputs.isEmpty() ");
-      outputs = researchOutputService.findAll();
-      System.out.println("outputs.size() " + outputs.size());
+      outputs = researchOutputService.findAll().stream().filter(out -> out.isActive() && (out.getTitle() != null))
+        .collect(Collectors.toList());
+      Collections.sort(outputs, (r1, r2) -> r1.getTitle().compareTo(r2.getTitle()));
       final List<Map<String, Object>> listpartnertMap = new ArrayList<>();
       for (final CenterOutput researchOutput : outputs) {
         final Map<String, Object> researchOutputMap = new HashMap<>();
@@ -155,7 +162,6 @@ public class FilterListsAction extends BaseAction {
     }
 
     if (!projectOutputs.isEmpty()) {
-      System.out.println("!projectOutputs.isEmpty()");
       final List<Map<String, Object>> listpartnertMap = new ArrayList<>();
       for (final CenterProjectOutput projectOutput : projectOutputs) {
         final Map<String, Object> projectOutputMap = new HashMap<>();
@@ -183,6 +189,7 @@ public class FilterListsAction extends BaseAction {
       projects = projectService.findAll().stream()
         .filter(p -> p.isActive() && (p.getResearchProgram().getId() == researchProgramID))
         .collect(Collectors.toList());
+      Collections.sort(projects, (p1, p2) -> p1.getName().compareTo(p2.getName()));
     } else {
       projects = projectService.findAll();
     }
@@ -211,6 +218,7 @@ public class FilterListsAction extends BaseAction {
     if (researchAreaID > 0) {
       researchPrograms = researchProgramSercive.findAll().stream()
         .filter(le -> le.isActive() && (le.getResearchArea().getId() == researchAreaID)).collect(Collectors.toList());
+      Collections.sort(researchPrograms, (r1, r2) -> r1.getName().compareTo(r2.getName()));
     } else {
       researchPrograms = researchProgramSercive.findAll();
     }

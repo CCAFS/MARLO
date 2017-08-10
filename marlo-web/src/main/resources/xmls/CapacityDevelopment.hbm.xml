@@ -65,6 +65,9 @@
 		<property name="endDate" type="date">
 			<column name="end_date" length="10" />
 		</property>
+		<property name="duration" type="java.lang.Long">
+			<column name="duration" />
+		</property>
 		<property name="numParticipants" type="java.lang.Integer">
 			<column name="num_participants" />
 		</property>

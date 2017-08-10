@@ -133,7 +133,7 @@ public class Clone {
      */
 
 
-    final String[] model = {"CapdevSupportingDocs"
+    final String[] model = {"CapdevFoundingType"
 
     };
     for (final String element : model) {

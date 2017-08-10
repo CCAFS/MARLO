@@ -21,12 +21,12 @@
 			class="org.cgiar.ccafs.marlo.data.model.LocElement" fetch="select">
 			<column name="country_of_institucion" />
 		</many-to-one>
-		<many-to-one name="institutions" class="org.cgiar.ccafs.marlo.data.model.Institution"
-			fetch="select">
+		<many-to-one name="institutions"
+			class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
 			<column name="institution" />
 		</many-to-one>
-		<many-to-one name="locElementsByCitizenship" class="org.cgiar.ccafs.marlo.data.model.LocElement"
-			fetch="select">
+		<many-to-one name="locElementsByCitizenship"
+			class="org.cgiar.ccafs.marlo.data.model.LocElement" fetch="select">
 			<column name="citizenship" />
 		</many-to-one>
 		<property name="code" type="long">
@@ -44,9 +44,10 @@
 		<property name="gender" type="string">
 			<column name="gender" not-null="true" />
 		</property>
-		<property name="highestDegree" type="string">
-			<column name="highest_degree" length="200" />
-		</property>
+		<many-to-one name="highestDegree"
+			class="org.cgiar.ccafs.marlo.data.model.CapdevHighestDegree" fetch="select">
+			<column name="highest_degree" />
+		</many-to-one>
 		<property name="email" type="string">
 			<column name="email" length="200" />
 		</property>
@@ -59,9 +60,10 @@
 		<property name="supervisor" type="string">
 			<column name="supervisor" length="200" />
 		</property>
-		<property name="fellowship" type="string">
-			<column name="fellowship" length="200" />
-		</property>
+		<many-to-one name="fellowship"
+			class="org.cgiar.ccafs.marlo.data.model.CapdevFoundingType" fetch="select">
+			<column name="fellowship" />
+		</many-to-one>
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>

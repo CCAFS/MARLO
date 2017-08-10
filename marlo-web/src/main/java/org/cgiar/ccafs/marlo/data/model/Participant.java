@@ -28,12 +28,12 @@ public class Participant implements java.io.Serializable {
   private LocElement locElementsByCountryOfInstitucion;
   private Institution institutions;
   private LocElement locElementsByCitizenship;
-  private String highestDegree;
+  private CapdevHighestDegree highestDegree;
   private String email;
   private String personalEmail;
   private String reference;
   private String supervisor;
-  private String fellowship;
+  private CapdevFoundingType fellowship;
   private boolean active;
   private Date aciveSince;
   private String modificationJustification;
@@ -59,9 +59,9 @@ public class Participant implements java.io.Serializable {
 
   public Participant(User usersByModifiedBy, User usersByCreatedBy, long code, String name, String middleName,
     String lastName, String gender, LocElement locElementsByCountryOfInstitucion, Institution institutions,
-    LocElement locElementsByCitizenship, String highestDegree, String email, String personalEmail, String reference,
-    String supervisor, String fellowship, boolean active, Date aciveSince, String modificationJustification,
-    Set<CapdevParticipant> capdevParticipants) {
+    LocElement locElementsByCitizenship, CapdevHighestDegree highestDegree, String email, String personalEmail,
+    String reference, String supervisor, CapdevFoundingType fellowship, boolean active, Date aciveSince,
+    String modificationJustification, Set<CapdevParticipant> capdevParticipants) {
     this.usersByModifiedBy = usersByModifiedBy;
     this.usersByCreatedBy = usersByCreatedBy;
     this.code = code;
@@ -102,7 +102,7 @@ public class Participant implements java.io.Serializable {
     return this.email;
   }
 
-  public String getFellowship() {
+  public CapdevFoundingType getFellowship() {
     return this.fellowship;
   }
 
@@ -110,7 +110,7 @@ public class Participant implements java.io.Serializable {
     return this.gender;
   }
 
-  public String getHighestDegree() {
+  public CapdevHighestDegree getHighestDegree() {
     return this.highestDegree;
   }
 
@@ -194,7 +194,7 @@ public class Participant implements java.io.Serializable {
     this.email = email;
   }
 
-  public void setFellowship(String fellowship) {
+  public void setFellowship(CapdevFoundingType fellowship) {
     this.fellowship = fellowship;
   }
 
@@ -204,7 +204,7 @@ public class Participant implements java.io.Serializable {
   }
 
 
-  public void setHighestDegree(String highestDegree) {
+  public void setHighestDegree(CapdevHighestDegree highestDegree) {
     this.highestDegree = highestDegree;
   }
 

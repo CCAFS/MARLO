@@ -211,6 +211,8 @@
 		<mapping resource="xmls/CapdevPartners.hbm.xml" />  
 		<mapping resource="xmls/CapdevSupportingDocs.hbm.xml" />  
 		<mapping resource="xmls/CapdevSuppDocsDocuments.hbm.xml" />  
+		<mapping resource="xmls/CapdevFoundingType.hbm.xml" />  
+		<mapping resource="xmls/CapdevHighestDegree.hbm.xml" />  
 	</session-factory>
 </hibernate-configuration>
 

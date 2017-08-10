@@ -36,6 +36,7 @@ public class CapacityDevelopment implements java.io.Serializable {
   private String ctEmail;
   private Date startDate;
   private Date endDate;
+  private Long duration;
   private Integer numParticipants;
   private Integer numMen;
   private Integer numWomen;
@@ -57,8 +58,8 @@ public class CapacityDevelopment implements java.io.Serializable {
   public CapacityDevelopment(CenterProject project, User usersByModifiedBy, User usersByCreatedBy,
     CenterArea researchArea, Crp crp, CenterProgram researchProgram, String title, CapacityDevelopmentType capdevType,
     int category, boolean active, String modificationJustification, String ctFirstName, String ctLastName,
-    String ctEmail, Date startDate, Date endDate, Integer numParticipants, Integer numMen, Integer numWomen,
-    Set<CapdevLocations> capdevLocations, Set<CapdevDiscipline> capdevDisciplines,
+    String ctEmail, Date startDate, Date endDate, Long duration, Integer numParticipants, Integer numMen,
+    Integer numWomen, Set<CapdevLocations> capdevLocations, Set<CapdevDiscipline> capdevDisciplines,
     Set<CapdevTargetgroup> capdevTargetgroups, Set<CapdevParticipant> capdevParticipants,
     Set<CapdevOutputs> capdevOutputses, Set<CapdevPartners> capdevPartnerses,
     Set<CapdevSupportingDocs> capdevSupportingDocses) {
@@ -78,6 +79,7 @@ public class CapacityDevelopment implements java.io.Serializable {
     this.ctEmail = ctEmail;
     this.startDate = startDate;
     this.endDate = endDate;
+    this.duration = duration;
     this.numParticipants = numParticipants;
     this.capdevLocations = capdevLocations;
     this.capdevDisciplines = capdevDisciplines;
@@ -166,6 +168,10 @@ public class CapacityDevelopment implements java.io.Serializable {
     return this.ctLastName;
   }
 
+  public Long getDuration() {
+    return duration;
+  }
+
   public Date getEndDate() {
     return this.endDate;
   }
@@ -234,10 +240,10 @@ public class CapacityDevelopment implements java.io.Serializable {
     return this.usersByCreatedBy;
   }
 
+
   public User getUsersByModifiedBy() {
     return this.usersByModifiedBy;
   }
-
 
   public boolean isActive() {
     return this.active;
@@ -258,6 +264,7 @@ public class CapacityDevelopment implements java.io.Serializable {
   public void setCapdevLocations(Set<CapdevLocations> capdevLocations) {
     this.capdevLocations = capdevLocations;
   }
+
 
   public void setCapdevOutputses(Set<CapdevOutputs> capdevOutputses) {
     this.capdevOutputses = capdevOutputses;
@@ -319,6 +326,11 @@ public class CapacityDevelopment implements java.io.Serializable {
   }
 
 
+  public void setDuration(Long duration) {
+    this.duration = duration;
+  }
+
+
   public void setEndDate(Date endDate) {
     this.endDate = endDate;
   }
@@ -358,7 +370,6 @@ public class CapacityDevelopment implements java.io.Serializable {
     this.researchArea = researchArea;
   }
 
-
   public void setResearchProgram(CenterProgram researchProgram) {
     this.researchProgram = researchProgram;
   }
@@ -367,6 +378,7 @@ public class CapacityDevelopment implements java.io.Serializable {
   public void setStartDate(Date startDate) {
     this.startDate = startDate;
   }
+
 
   public void setTitle(String title) {
     this.title = title;

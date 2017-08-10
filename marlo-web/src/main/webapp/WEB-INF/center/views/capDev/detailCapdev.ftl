@@ -109,20 +109,15 @@
 					</div>
 				</div>
 
-				<!-- num participants, num men and num women -->
-				<div class="row">
-					<div class="col-md-12 newCapdevField">
-						<div class="col-md-6 group individual">
-							[@customForm.input name="capdev.numParticipants" i18nkey="capdev.form.numParticipants" type="text" help="capdev.help.numParticipants"  editable=true className="numParticipants" /]
-						</div>
-						<div class="col-md-3 group individual">
-							[@customForm.input name="capdev.numMen" i18nkey="capdev.form.numMen" help="capdev.help.numMen" type="text" className="numMen" /]
-						</div>
-						<div class="col-md-3 group individual">
-							[@customForm.input name="capdev.numWomen" i18nkey="capdev.form.numWomen" help="capdev.help.numMen" type="text" className="numMen" /]
-						</div>
+
+				<!-- Duration -->
+				<div class="row newCapdevField">
+					<div class="col-md-4">
+						[@customForm.input name="capdev.duration" i18nkey="capdev.form.duration" type="text"  help="capdev.help.duration" required=true  editable=true className="capdevstartDate"/] 
 					</div>
 				</div>
+
+				
 
 
 				<!-- groups participants-->
@@ -197,10 +192,31 @@
 
 					[/#if]
 					
+					
+				</div>
+
+				<!-- num participants, num men and num women -->
+				<div class="row">
+					<div class="col-md-12 newCapdevField">
+						<div class="col-md-6 group individual">
+							[@customForm.input name="capdev.numParticipants" i18nkey="capdev.form.numParticipants" type="text" help="capdev.help.numParticipants"  editable=true className="numParticipants" /]
+						</div>
+						<div class="col-md-3 group individual">
+							[@customForm.input name="capdev.numMen" i18nkey="capdev.form.numMen" help="capdev.help.numMen" type="text" className="numMen" /]
+						</div>
+						<div class="col-md-3 group individual">
+							[@customForm.input name="capdev.numWomen" i18nkey="capdev.form.numWomen" help="capdev.help.numMen" type="text" className="numMen" /]
+						</div>
+					</div>
+				</div>
+
+				<div class="row grupsParticipantsForm">
 					<div class="note participantMessage">
 						<p>If you don’t have a list of participants, please enter the number of participants, number of men and number of women</p>
 					</div>
 				</div>
+
+
 
 				<!-- induvidual participant-->
 				<div class="row newCapdevField individualparticipantForm" style="display:none;">
@@ -237,7 +253,9 @@
 							[@customForm.select name="participant.locElementsByCitizenship.id" listName="countryList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.participant.citizenship" className="" multiple=false placeholder="capdev.select" required=true /]
 						</div>
 						<div class="col-md-6">
-							[@customForm.input name="participant.highestDegree" i18nkey="capdev.participant.Highestdegree" type="text" /]
+							<!-- [@customForm.input name="participant.highestDegree" i18nkey="capdev.participant.Highestdegree" type="text" /] -->
+
+							[@customForm.select name="participant.highestDegree.id" listName="highestDegrreList" keyFieldName="id" displayFieldName="name"  i18nkey="capdev.participant.Highestdegree"  multiple=false placeholder="capdev.select"  /]
 						</div>
 					</div>
 					<div class="col-md-12 newCapdevField">
@@ -264,7 +282,8 @@
 							[@customForm.input name="participant.supervisor" i18nkey="capdev.participant.Supervisor" type="text" required=true /]
 						</div>
 						<div class="col-md-6">
-							[@customForm.input name="participant.fellowship" i18nkey="capdev.participant.Fellowship" type="text" /]
+							<!-- [@customForm.input name="participant.fellowship" i18nkey="capdev.participant.Fellowship" type="text" /] -->
+							[@customForm.select name="participant.fellowship.id" listName="foundingTypeList" keyFieldName="id" displayFieldName="name"  i18nkey="capdev.participant.Fellowship"  multiple=false placeholder="capdev.select"  /]
 						</div>
 					</div>
 					
