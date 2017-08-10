@@ -15,19 +15,25 @@
 
 package org.cgiar.ccafs.marlo.data.model;
 
+import org.cgiar.ccafs.marlo.web.filter.MARLOCustomPersistFilter;
+
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 public class ProjectPartnerTest {
 
+  private final Logger LOG = LoggerFactory.getLogger(MARLOCustomPersistFilter.class);
+
 
   @Test
   public void testProjectPartnerToStringHandlesNulls() throws Exception {
     ProjectPartner projectPartner = new ProjectPartner();
     String projectPartnerToString = projectPartner.toString();
-    System.out.println("projectPartnerToString : " + projectPartnerToString);
+    LOG.info("projectPartnerToString : " + projectPartnerToString);
     assertThat(projectPartnerToString, notNullValue());
   }
 
