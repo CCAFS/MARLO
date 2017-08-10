@@ -5,6 +5,7 @@
   { 'slug': 'impactPathway',  'name': 'menu.impactPathway', 'namespace': '/centerImpactPathway',  'action': '${(centerSession)!}/programimpacts',                          'visible': logged, 'active': true },
   { 'slug': 'projects', 'name': 'menu.monitoring.projects',      'namespace': '/monitoring',       'action': '${(centerSession)!}/projectList',    'visible': (logged && action.canAccessSuperAdmin()), 'active': true },
   { 'slug': 'outcomes', 'name': 'menu.monitoring.outcomes',      'namespace': '/monitoring',       'action': '${(centerSession)!}/monitoringOutcomesList',    'visible': (logged && action.canAccessSuperAdmin()), 'active':action.canAccessSuperAdmin() },
+  { 'slug': 'capdev', 'name': 'Capacity Development',      'namespace': '',       'action': '',    'visible': (logged && action.canAccessSuperAdmin()), 'active':true },
   { 'slug': 'summaries', 'name': 'menu.monitoring.summaries',      'namespace': '/centerSummaries',       'action': '${(centerSession)!}/summaries',    'visible': (logged && action.canAccessSuperAdmin()), 'active': true }]
   /]
 
