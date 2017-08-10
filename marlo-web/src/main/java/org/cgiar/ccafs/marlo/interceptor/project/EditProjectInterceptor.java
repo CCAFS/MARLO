@@ -159,6 +159,14 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
 
       }
+      if (project.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+        || project.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
+
+        session.put(APConstants.TEMP_CYCLE, APConstants.REPORTING);
+        session.put(APConstants.TEMP_YEAR, baseAction.getReportingYear());
+
+
+      }
       String actionName = baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "");
       if (baseAction.isReportingActive() && actionName.equalsIgnoreCase(ProjectSectionStatusEnum.BUDGET.getStatus())) {
         canEdit = false;
