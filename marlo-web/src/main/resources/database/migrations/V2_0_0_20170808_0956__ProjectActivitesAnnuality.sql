@@ -9,7 +9,18 @@ set ml.composed_id=CONCAT(ml.project_id,'-',ml.id) ;
 CREATE TEMPORARY TABLE
 IF NOT EXISTS table_activites_project AS (SELECT * FROM activities);
 
+CREATE TEMPORARY TABLE
+IF NOT EXISTS table_temp_deliverable_activities AS (
+
+SELECT
+ pp.*,ppp.composed_id,ppp.project_id
+FROM
+  deliverable_activities pp
+INNER JOIN activities ppp ON pp.activity_id=ppp.id
+)
+;
 TRUNCATE TABLE activities;
+TRUNCATE TABLE deliverable_activities;
 
 
 
@@ -56,4 +67,30 @@ FROM
   table_activites_project t2
 left JOIN project_phases pp ON pp.project_id = t2.project_id
 left JOIN phases ph ON ph.id = pp.id_phase
+;
+
+insert into deliverable_activities (
+deliverable_id,
+activity_id,
+is_active,
+active_since,
+created_by,
+modified_by,
+modification_justification
+
+
+
+)
+select distinct 
+temp.deliverable_id,
+pp.id,
+temp.is_active,
+temp.active_since,
+temp.created_by,
+temp.modified_by,
+temp.modification_justification
+
+from table_temp_deliverable_activities temp 
+INNER JOIN activities pp on pp.project_id=temp.project_id
+and pp.composed_id =temp.composed_id
 ;

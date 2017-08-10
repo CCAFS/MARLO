@@ -581,7 +581,8 @@ public class ProjectActivitiesAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_INFO_RELATION);
       project = projectManager.getProjectById(projectID);
       project.setActiveSince(new Date());
-      projectManager.saveProject(project, this.getActionName(), relationsName);
+      project.setModifiedBy(this.getCurrentUser());
+      projectManager.saveProject(project, this.getActionName(), relationsName, this.getActualPhase());
       Path path = this.getAutoSaveFilePath();
 
       if (path.toFile().exists()) {

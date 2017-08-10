@@ -20,8 +20,10 @@ import org.cgiar.ccafs.marlo.data.dao.ActivityDAO;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.Project;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,7 +47,7 @@ public class ActivityMySQLDAO implements ActivityDAO {
    */
   public void cloneActivity(Activity activityAdd, Activity activity, Phase phase) {
     activityAdd.setActive(true);
-    activityAdd.setActiveSince(activity.getActiveSince());
+    activityAdd.setActiveSince(new Date());
     activityAdd.setActivityProgress(activity.getActivityProgress());
     activityAdd.setActivityStatus(activity.getActivityStatus());
     activityAdd.setComposeID(activity.getComposeID());
@@ -53,9 +55,9 @@ public class ActivityMySQLDAO implements ActivityDAO {
     activityAdd.setDescription(activity.getDescription());
     activityAdd.setEndDate(activity.getEndDate());
     activityAdd.setModificationJustification(activity.getModificationJustification());
-    activityAdd.setModifiedBy(activity.getModifiedBy());
+    activityAdd.setModifiedBy(activity.getCreatedBy());
     activityAdd.setPhase(phase);
-    activityAdd.setProject(activity.getProject());
+    activityAdd.setProject(dao.find(Project.class, activity.getProject().getId()));
     activityAdd.setProjectPartnerPerson(activity.getProjectPartnerPerson());
     activityAdd.setStartDate(activity.getStartDate());
     activityAdd.setTitle(activity.getTitle());
@@ -134,10 +136,10 @@ public class ActivityMySQLDAO implements ActivityDAO {
     if (phase.getEditable() != null && phase.getEditable()) {
       List<Activity> activities =
         phase.getProjectActivites().stream().filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
-          && c.getComposeID() == activity.getComposeID()).collect(Collectors.toList());
+          && c.getComposeID().equals(activity.getComposeID())).collect(Collectors.toList());
       if (activities.isEmpty()) {
         Activity activityAdd = new Activity();
-        this.cloneActivity(activityAdd, activityAdd, phase);
+        this.cloneActivity(activityAdd, activity, phase);
         dao.save(activityAdd);
         if (activityAdd.getComposeID() == null) {
           activity.setComposeID(activity.getProject().getId() + "-" + activityAdd.getId());
@@ -153,7 +155,7 @@ public class ActivityMySQLDAO implements ActivityDAO {
         }
       } else {
         Activity activityAdd = activities.get(0);
-        this.cloneActivity(activityAdd, activityAdd, phase);
+        this.cloneActivity(activityAdd, activity, phase);
         dao.update(activityAdd);
         if (activity.getDeliverables() == null) {
           activity.setDeliverables(new ArrayList<DeliverableActivity>());
