@@ -69,7 +69,9 @@
           </div>
           <div role="tabpanel" class="tab-pane" id="archived-tab">
           
-          Comming
+            [#-- Archived Projects List (My Projects) --]
+            <h3 class="headTitle text-center">Archived projects</h3>
+            [@projectList.projectsList projects=closedProjects canValidate=false canEdit=false namespace="/projects" defaultAction="${(crpSession)!}/description" /]
           
           </div>
         </div>
