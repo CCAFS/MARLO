@@ -50,6 +50,19 @@
 		
 		<div class="col-md-12 form-group newCapdevForm"> 
 			[@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
+			<!-- Radio Buttons-->
+			<div style="display: none;">
+				<div class="radio">
+				  <label><input  id="individual" type="radio" hidden="true" name="capdev.category" class="radioButton" value="${capdev.category}"  /></label>
+				</div>
+				<div class="radio">
+				  <label><input id="gruops" type="radio" hidden="true" name="capdev.category" class="radioButton"  value="${capdev.category}" /> </label>
+				</div>
+			</div>
+						
+					
+					
+
 			<div  class="fullForm" >
 
 				<!-- Disciplines-->
@@ -85,12 +98,12 @@
 				</div>
 
 				<!-- Targeted public-->
-				<div class="row">
+				<div class="row grupsParticipantsForm">
 					<div class="col-md-12 newCapdevField approachesListTitle">
 						[@s.text name="capdev.targetgroup"][/@s.text] 
 					</div>
 				</div>
-				<div class="row borderContainer">
+				<div class="row borderContainer grupsParticipantsForm">
 					<div class="col-md-12 newCapdevField ">
 						[@customForm.select name="capdevTargetGroup" listName="targetGroups" keyFieldName="id" displayFieldName="name"  i18nkey="capdev.targetgroupselect" className="targetGroupsSelect" multiple=false placeholder="capdev.select" help="capdev.help.targetgroup" /]
 					</div>
@@ -132,13 +145,6 @@
 					</div>
 				</div>
 				
-				<!-- project-->
-				<div class="row newCapdevField ">
-					<div class="col-md-12 project">
-						[@customForm.select name="capdev.project.id" listName="projects" keyFieldName="id" displayFieldName="name" i18nkey="capdev.form.project" placeholder="capdev.select" className="capdevProject" help="capdev.help.project" /]
-					</div>
-				</div>
-				
 				<!-- CRP -->
 				<div class="row">
 					<div class="col-md-12 newCapdevField">
@@ -149,13 +155,22 @@
 					</div>
 				</div>
 
+				<!-- project-->
+				<div class="row newCapdevField ">
+					<div class="col-md-12 project">
+						[@customForm.select name="capdev.project.id" listName="projects" keyFieldName="id" displayFieldName="name" i18nkey="capdev.form.project" placeholder="capdev.select" className="capdevProject" help="capdev.help.project" /]
+					</div>
+				</div>
+				
+				
+
 				<!-- Partners-->
-				<div class="row">
+				<div class="row grupsParticipantsForm">
 					<div class="col-md-12 newCapdevField approachesListTitle">
 						[@s.text name="capdev.partnerts"][/@s.text] 
 					</div>
 				</div>
-				<div class="row borderContainer">
+				<div class="row borderContainer grupsParticipantsForm">
 					<div class="col-md-12 newCapdevField ">
 						[@customForm.select name="capdevPartners" listName="partners" keyFieldName="id" displayFieldName="name"  i18nkey="capdev.partnertSelect" className="capdevPartnerSelect" multiple=false placeholder="capdev.select" help="capdev.help.partner" /]
 					</div>

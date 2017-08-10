@@ -41,8 +41,9 @@ public class test {
 
 
     try {
-      obj.createFile();
+      // obj.createFile();
       obj.readFile();
+      obj.sustraerId("AR- U.de.Palermo");
     } catch (final FileNotFoundException e) {
       e.printStackTrace();
     }
@@ -82,8 +83,10 @@ public class test {
       final String dataValidationCountryName = "countriesLis";
       final String dataValidationInstitutionName = "institutionsList";
 
-      final String[] countries = {"Colombia", "Brazil", "Espenia", "Argentina", "Aruba", "Egipto", "Panama", "Ecuador"};
-      final String[] institutions = {"U.chile", "U.coritiba", "U.panama", "U.de.Palermo", "U.delNilo", "U.de.Quito",};
+      final String[] countries =
+        {"1- Colombia", "2- Brazil", "3- Espenia", "4- Argentina", "5- Aruba", "6- Egipto", "7- Panama", "8- Ecuador"};
+      final String[] institutions =
+        {"CH- U.chile", "BZ- U.coritiba", "PN- U.panama", "AR- U.de.Palermo", "AF- U.delNilo", "EC- U.de.Quito",};
 
 
       for (int i = 0; i < countries.length; i++) {
@@ -169,6 +172,33 @@ public class test {
     }
   }
 
+  public Object getCellData(Cell cell) {
+    Object cellData = null;
+
+    switch (cell.getCellType()) {
+      case Cell.CELL_TYPE_STRING:
+        cellData = cell.getStringCellValue();
+        break;
+      case Cell.CELL_TYPE_NUMERIC:
+        cellData = cell.getNumericCellValue();
+        break;
+      case Cell.CELL_TYPE_BOOLEAN:
+        cellData = cell.getBooleanCellValue();
+        break;
+      case Cell.CELL_TYPE_BLANK:
+        cellData = cell.getStringCellValue();
+        break;
+
+
+      default:
+        break;
+    }
+
+
+    return cellData;
+
+  }
+
   public void readFile() throws FileNotFoundException {
     final File file = new File("C:\\Users\\logonzalez\\Downloads\\vineet.xlsx");
     FileInputStream fileInput;
@@ -177,10 +207,32 @@ public class test {
       final XSSFWorkbook wb = new XSSFWorkbook(fileInput);
       final Sheet sheet = wb.getSheetAt(0);
       System.out.println(sheet.getLastRowNum());
+
+      final Row firstRow = sheet.getRow(9);
+      final int totalRows = sheet.getLastRowNum() - firstRow.getRowNum();
+      System.out.println("firstRow " + firstRow.getRowNum());
+      System.out.println("totalRows " + totalRows);
+      final int totalColumns = firstRow.getLastCellNum();
+      for (int fila = firstRow.getRowNum() + 1; fila <= sheet.getLastRowNum(); fila++) {
+        final Row row = sheet.getRow(fila);
+        for (int col = 0; col < row.getLastCellNum(); col++) {
+          final Cell cell = row.getCell(col);
+          System.out.println(this.getCellData(cell));
+        }
+        System.out.println("-----------");
+
+      }
     } catch (final IOException e) {
       e.printStackTrace();
     }
 
+  }
+
+  public Object sustraerId(String cadena) {
+    final int index = cadena.indexOf("-");
+    final String newCadena = cadena.substring(0, index);
+    System.out.println(newCadena);
+    return newCadena;
   }
 
 
