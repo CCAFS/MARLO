@@ -101,7 +101,7 @@
                 </div>
               </div>
               <div id="statusDescription" class="form-group" style="display:${project.statusJustificationRequired?string('block','none')}">
-                [@customForm.textArea name="project.statusJustification" required=!((project.bilateralProject)!false) className="project-statusJustification limitWords-100" editable=editable  /]
+                [@customForm.textArea name="project.statusJustification" required=!((project.bilateralProject)!false) className="project-statusJustification limitWords-100" editable=action.hasPermission("statusDescription")  /]
               </div>
             </div>
             

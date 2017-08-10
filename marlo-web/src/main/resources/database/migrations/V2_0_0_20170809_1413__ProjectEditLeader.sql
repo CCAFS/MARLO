@@ -1,0 +1,1 @@
+update projects set is_project_leader_edit=1 where status in (3,5)
