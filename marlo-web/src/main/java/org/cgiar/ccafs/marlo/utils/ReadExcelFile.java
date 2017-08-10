@@ -38,8 +38,8 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 public class ReadExcelFile {
 
-  private static final String[] HEAD_TEMPLATE = {"Code", "Name", "Last Name", "Gender", "Citizenship", "Highest degree",
-    "Institution", "Country of institucion", "email", "Reference", "Fellowship"};
+  private static final String[] HEAD_TEMPLATE = {"Identification number", "Name", "Last Name", "Gender", "Citizenship",
+    "Highest degree", "Institution", "Country of institution", "Email", "Reference", "Fellowship"};
   private int totalRows;
   private int totalColumns;
 
@@ -51,23 +51,26 @@ public class ReadExcelFile {
   public Object getCellData(Cell cell) {
     Object cellData = null;
 
-    switch (cell.getCellType()) {
-      case Cell.CELL_TYPE_STRING:
-        cellData = cell.getStringCellValue();
-        break;
-      case Cell.CELL_TYPE_NUMERIC:
-        cellData = cell.getNumericCellValue();
-        break;
-      case Cell.CELL_TYPE_BOOLEAN:
-        cellData = cell.getBooleanCellValue();
-        break;
-      case Cell.CELL_TYPE_BLANK:
-        cellData = cell.getStringCellValue();
-        break;
+    if (cell != null) {
+      switch (cell.getCellType()) {
+        case Cell.CELL_TYPE_STRING:
+          cellData = cell.getStringCellValue();
+          break;
+        case Cell.CELL_TYPE_NUMERIC:
+          cellData = cell.getNumericCellValue();
+          break;
+        case Cell.CELL_TYPE_BOOLEAN:
+          cellData = cell.getBooleanCellValue();
+          break;
+        case Cell.CELL_TYPE_BLANK:
+          cellData = cell.getStringCellValue();
+          break;
 
-
-      default:
-        break;
+        default:
+          break;
+      }
+    } else {
+      cellData = "";
     }
 
 
@@ -79,13 +82,14 @@ public class ReadExcelFile {
     final List<Map<String, Object>> fullData = new ArrayList<>();
     try {
       final Sheet sheet = wb.getSheetAt(0);
-      final Row firstRow = sheet.getRow(0);
-      totalRows = sheet.getLastRowNum();
+      final Row firstRow = sheet.getRow(9); // fila donde esta el encabezado del template
+      totalRows = (sheet.getLastRowNum() - firstRow.getRowNum()) + 1;
+      System.out.println(totalRows);
       totalColumns = firstRow.getLastCellNum();
-      for (int fila = 1; fila <= totalRows; fila++) {
+      for (int fila = firstRow.getRowNum() + 1; fila <= sheet.getLastRowNum(); fila++) {
         final Row row = sheet.getRow(fila);
         final Map<String, Object> data = new HashMap<>();
-        for (int col = 0; col < row.getLastCellNum(); col++) {
+        for (int col = 0; col < firstRow.getLastCellNum(); col++) {
           final Cell cell = row.getCell(col);
           final Cell headerCell = firstRow.getCell(col);
           data.put(headerCell.getStringCellValue(), this.getCellData(cell));
@@ -104,9 +108,10 @@ public class ReadExcelFile {
 
 
   public List<String> getHeadersExcelFile(Workbook wb) {
+    // ######
     final Sheet sheet = wb.getSheetAt(0);
     final List<String> headers = new ArrayList<>();
-    final Row row = sheet.getRow(0);
+    final Row row = sheet.getRow(9);
     for (int i = 0; i < row.getLastCellNum(); i++) {
       final Cell cell = row.getCell(i);
       final Map<String, Object> data = new HashMap<>();
@@ -137,15 +142,15 @@ public class ReadExcelFile {
       final InputStream fip = new FileInputStream(file);
       final Workbook wb = WorkbookFactory.create(fip);
       final Sheet sheet = wb.getSheetAt(0);
-      final Row firstRow = sheet.getRow(0);
-      totalRows = sheet.getLastRowNum();
+      final Row firstRow = sheet.getRow(9);// fila del encabezado del template
+      totalRows = (sheet.getLastRowNum() - firstRow.getRowNum());
       totalColumns = firstRow.getLastCellNum();
       data = new Object[totalRows][totalColumns];
-      for (int fila = 1; fila <= totalRows; fila++) {
+      for (int fila = firstRow.getRowNum() + 1; fila <= sheet.getLastRowNum(); fila++) {
         final Row row = sheet.getRow(fila);
-        for (int col = 0; col < row.getLastCellNum(); col++) {
+        for (int col = 0; col < totalColumns; col++) {
           final Cell cell = row.getCell(col);
-          data[fila - 1][col] = this.getCellData(cell);
+          data[fila - (firstRow.getRowNum() + 1)][col] = this.getCellData(cell);
         }
 
       }
@@ -158,7 +163,6 @@ public class ReadExcelFile {
 
   }
 
-
   public void setTotalColumns(int totalColumns) {
     this.totalColumns = totalColumns;
   }
@@ -166,6 +170,13 @@ public class ReadExcelFile {
 
   public void setTotalRows(int totalRows) {
     this.totalRows = totalRows;
+  }
+
+
+  public Object sustraerId(String cadena) {
+    final int index = cadena.indexOf("-");
+    final String newCadena = cadena.substring(0, index);
+    return newCadena;
   }
 
   /*
@@ -217,6 +228,23 @@ public class ReadExcelFile {
     }
 
     return equal;
+  }
+
+
+  public boolean validarExcelFileData(File file) {
+    boolean rigthFile = true;
+    final Object[][] data = this.readExcelFile(file);
+    if (data.length > 0) {
+      for (final Object[] element : data) {
+        System.out.println(element[0]);
+        if ((element[0] == "") || (element[1] == "") || (element[2] == "")) {
+          rigthFile = false;
+        }
+      }
+    } else {
+      rigthFile = false;
+    }
+    return rigthFile;
   }
 
 

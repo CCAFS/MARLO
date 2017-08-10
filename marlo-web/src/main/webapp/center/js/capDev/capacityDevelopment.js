@@ -85,15 +85,12 @@
 
    //set contact person 
    (function(){
+    console.log("set contact person ")
     var ctFirsName = $(".ctFirsName").val();
     var ctLastName = $(".ctLastName").val();
     var ctEmail  = $(".ctEmail").val();
-    if( ctFirsName === null || ctLastName === null || ctEmail === null){
-      var composedName = ctFirsName+" "+ctLastName+" <"+ctEmail+" >";
-      $(".contact").val(composedName);  
-    }
-    
-  
+    var composedName = ctFirsName+" "+ctLastName+" <"+ctEmail+" >";
+    $(".contact").val(composedName);  
    })();
 
    
@@ -260,6 +257,8 @@
           },
           error: function() {
             console.log("ha ocurrido un error");
+            $("#filewarning").html("<p> An error has occurred by displaying the preview </p>");
+            $("#filewarning").show();
 
           },
           complete: function() {

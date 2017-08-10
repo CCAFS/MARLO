@@ -23,11 +23,13 @@ import org.cgiar.ccafs.marlo.data.manager.ICapacityDevelopmentService;
 import org.cgiar.ccafs.marlo.data.manager.ICapdevLocationsService;
 import org.cgiar.ccafs.marlo.data.manager.ICapdevParticipantService;
 import org.cgiar.ccafs.marlo.data.manager.IParticipantService;
+import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.model.CapacityDevelopment;
 import org.cgiar.ccafs.marlo.data.model.CapacityDevelopmentType;
 import org.cgiar.ccafs.marlo.data.model.CapdevLocations;
 import org.cgiar.ccafs.marlo.data.model.CapdevParticipant;
+import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Participant;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -41,8 +43,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
@@ -63,7 +67,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   private CapacityDevelopment capdev;
   private List<LocElement> regionsList;
   private List<LocElement> countryList;
-  private List<Map<String, Object>> countriesList;
+  private List<Institution> institutions;
   private List<CapacityDevelopmentType> capdevTypes;
   private List<Long> capdevCountries;
   private List<Long> capdevRegions;
@@ -78,6 +82,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   private final ICapacityDevelopmentService capdevService;
   private final ICapacityDevelopmentTypeDAO capdevTypeService;
   private final LocElementManager locElementService;
+  private final InstitutionManager institutionService;
   private final ICapdevLocationsService capdevLocationService;
   private final IParticipantService participantService;
   private final ICapdevParticipantService capdevParicipantService;
@@ -94,7 +99,8 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   public CapacityDevelopmentDetailAction(APConfig config, ICapacityDevelopmentService capdevService,
     ICapacityDevelopmentTypeDAO capdevTypeService, LocElementManager locElementService,
     ICapdevLocationsService capdevLocationService, IParticipantService participantService,
-    ICapdevParticipantService capdevParicipantService, CapacityDevelopmentValidator validator) {
+    ICapdevParticipantService capdevParicipantService, CapacityDevelopmentValidator validator,
+    InstitutionManager institutionService) {
     super(config);
     this.capdevService = capdevService;
     this.capdevTypeService = capdevTypeService;
@@ -103,6 +109,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     this.participantService = participantService;
     this.capdevParicipantService = capdevParicipantService;
     this.validator = validator;
+    this.institutionService = institutionService;
   }
 
 
@@ -132,6 +139,10 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       obj.setActive(false);
       obj.setUsersByModifiedBy(this.getCurrentUser());
       capdevParicipantService.saveCapdevParticipant(obj);
+      final Participant participant = obj.getParticipant();
+      participant.setActive(false);
+      participant.setUsersByModifiedBy(this.getCurrentUser());
+      participantService.saveParticipant(participant);
     }
     capdev.setNumParticipants(null);
     capdev.setNumMen(null);
@@ -191,11 +202,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   }
 
 
-  public List<Map<String, Object>> getCountriesList() {
-    return countriesList;
-  }
-
-
   public List<LocElement> getCountryList() {
     return countryList;
   }
@@ -203,6 +209,11 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
   public List<Map<String, Object>> getGenders() {
     return genders;
+  }
+
+
+  public List<Institution> getInstitutions() {
+    return institutions;
   }
 
 
@@ -262,10 +273,10 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     return previewList;
   }
 
-
   public List<Map<String, Object>> getPreviewListContent() {
     return previewListContent;
   }
+
 
   public List<String> getPreviewListHeader() {
     return previewListHeader;
@@ -302,17 +313,22 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     final Session session = SecurityUtils.getSubject().getSession();
 
     final User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
-
+    System.out.println(reader.getTotalRows());
     for (int i = 0; i < reader.getTotalRows(); i++) {
       final Participant participant = new Participant();
+      System.out.println(data[i][0]);
       participant.setCode(Math.round((double) data[i][0]));
       participant.setName((String) data[i][1]);
       participant.setLastName((String) data[i][2]);
       participant.setGender((String) data[i][3]);
-      participant.setCitizenship((String) data[i][4]);
+      participant.setLocElementsByCitizenship(
+        locElementService.getLocElementByISOCode((String) reader.sustraerId((String) data[i][4])));
       participant.setHighestDegree((String) data[i][5]);
-      participant.setInstitution((String) data[i][6]);
-      participant.setCountryOfInstitucion((String) data[i][7]);
+      System.out.println("institution ID " + reader.sustraerId((String) data[i][6]).getClass());
+      participant.setInstitutions(
+        institutionService.getInstitutionById(Long.parseLong((String) (reader.sustraerId((String) data[i][6])))));
+      participant.setLocElementsByCountryOfInstitucion(
+        locElementService.getLocElementByISOCode((String) reader.sustraerId((String) data[i][7])));
       participant.setEmail((String) data[i][8]);
       participant.setReference((String) data[i][9]);
       participant.setFellowship((String) data[i][10]);
@@ -356,13 +372,10 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       .collect(Collectors.toList()));
     Collections.sort(countryList, (c1, c2) -> c1.getName().compareTo(c2.getName()));
 
-    countriesList = new ArrayList<>();
-    for (final LocElement country : countryList) {
-      final Map<String, Object> countryMap = new HashMap<>();
-      countryMap.put("displayName", country.getName());
-      countryMap.put("value", country.getName());
-      countriesList.add(countryMap);
-    }
+    // institution List
+    institutions =
+      new ArrayList<>(institutionService.findAll().stream().filter(ins -> ins.isActive()).collect(Collectors.toList()));
+    Collections.sort(institutions, (c1, c2) -> c1.getName().compareTo(c2.getName()));
 
 
     participantList = new ArrayList<>();
@@ -382,7 +395,10 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       capdevTypes = new ArrayList<>(capdevTypeService.findAll().stream()
         .filter(le -> le.getCategory().equals("" + capdev.getCategory())).collect(Collectors.toList()));
 
-      final List<CapdevParticipant> participants = new ArrayList<>(capdev.getCapdevParticipants());
+      final List<CapdevParticipant> participants =
+        new ArrayList<>(capdev.getCapdevParticipants().stream().filter(p -> p.isActive()).collect(Collectors.toList()));
+      Collections.sort(participants, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
+
       if (capdev.getCategory() == 1) {
         if (!participants.isEmpty()) {
           participant = participants.get(0).getParticipant();
@@ -391,9 +407,8 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       }
       if (capdev.getCategory() == 2) {
         if (!participants.isEmpty()) {
-          if (!participants.get(0).isActive()) {
-            capdev.setCapdevParticipants(null);
-          }
+          final Set<CapdevParticipant> capdevParticipants = new HashSet<CapdevParticipant>(participants);
+          capdev.setCapdevParticipants(capdevParticipants);
         }
 
       }
@@ -556,7 +571,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
       final User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
       for (final Long iterator : capdevRegions) {
-        System.out.println("id Locelement-->" + iterator);
         final LocElement region = locElementService.getLocElementById(iterator);
         if (region != null) {
           capdevLocations = new CapdevLocations();
@@ -618,11 +632,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   }
 
 
-  public void setCountriesList(List<Map<String, Object>> countriesList) {
-    this.countriesList = countriesList;
-  }
-
-
   public void setCountryList(List<LocElement> countryList) {
     this.countryList = countryList;
   }
@@ -630,6 +639,11 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
   public void setGenders(List<Map<String, Object>> genders) {
     this.genders = genders;
+  }
+
+
+  public void setInstitutions(List<Institution> institutions) {
+    this.institutions = institutions;
   }
 
 
@@ -724,14 +738,16 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
         if (participant.getGender().equalsIgnoreCase("-1")) {
           this.addFieldError("participant.gender", "Gender is required.");
         }
-        if (participant.getCitizenship().equalsIgnoreCase("-1")) {
-          this.addFieldError("participant.citizenship", "Citizenship is required.");
+        System.out.println(
+          "participant.getLocElementsByCitizenship().getId() " + participant.getLocElementsByCitizenship().getId());
+        if (participant.getLocElementsByCitizenship().getId() == -1) {
+          this.addFieldError("participant.locElementsByCitizenship.id", "Citizenship is required.");
         }
         if (participant.getHighestDegree().length() > 100) {
           this.addFieldError("participant.highestDegree", "Highest degree is very length.");
         }
-        if (participant.getEmail().equalsIgnoreCase("")) {
-          this.addFieldError("participant.email", "Email is required.");
+        if (participant.getPersonalEmail().equalsIgnoreCase("")) {
+          this.addFieldError("participant.personalEmail", "Email is required.");
         }
         if (!participant.getPersonalEmail().equalsIgnoreCase("")) {
           final boolean validEmail = validator.validateEmail(participant.getPersonalEmail());
@@ -740,14 +756,11 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
             this.addFieldError("participant.personalEmail", "enter a valid email address.");
           }
         }
-        if (participant.getInstitution().equalsIgnoreCase("")) {
-          this.addFieldError("participant.institution", "institution required.");
+        if (participant.getInstitutions().getId() == -1) {
+          this.addFieldError("participant.institutions.id", "institution required.");
         }
-        if (participant.getInstitution().length() > 100) {
-          this.addFieldError("participant.institution", "institution is very length.");
-        }
-        if (participant.getCountryOfInstitucion().equalsIgnoreCase("-1")) {
-          this.addFieldError("participant.countryOfInstitucion", "Country of institution is required.");
+        if (participant.getLocElementsByCountryOfInstitucion().getId() == -1) {
+          this.addFieldError("participant.locElementsByCountryOfInstitucion.id", "Country of institution is required.");
         }
         if (participant.getSupervisor().equalsIgnoreCase("")) {
           this.addFieldError("participant.supervisor", "Supervisor is required.");
@@ -773,11 +786,12 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
             this.addFieldError("contact", "enter a valid email address.");
           }
         }
-        if (capdev.getNumParticipants() == null) {
-          this.addFieldError("capdev.numParticipants", "Num participants or a file are required.");
-        }
-        if (uploadFile == null) {
+        // if (capdev.getNumParticipants() == null) {
+        // this.addFieldError("capdev.numParticipants", "Num participants or a file are required.");
+        // }
+        if ((uploadFile == null) && (capdev.getNumParticipants() == null)) {
           this.addFieldError("upload_File", "File or number of participants are required.");
+          this.addFieldError("capdev.numParticipants", "Num participants or a file are required.");
         }
         if (uploadFile != null) {
           if (!uploadFileContentType.equals("application/vnd.ms-excel")
@@ -791,7 +805,11 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
           }
           if (!reader.validarExcelFile(uploadFile)) {
             System.out.println("el archivo no coincide con la plantilla");
-            this.addFieldError("upload_File", "file wrong");
+            this.addFieldError("upload_File", "file wrong, the file does not match the template.");
+          }
+          if (!reader.validarExcelFileData(uploadFile)) {
+            System.out.println("el archivo esta vacio o tiene campos nulos");
+            this.addFieldError("upload_File", "file wrong, the file can be empty or can has empty fields.");
           }
         }
       }

@@ -17,14 +17,26 @@
 			fetch="select">
 			<column name="created_by" not-null="true" />
 		</many-to-one>
+		<many-to-one name="locElementsByCountryOfInstitucion"
+			class="org.cgiar.ccafs.marlo.data.model.LocElement" fetch="select">
+			<column name="country_of_institucion" />
+		</many-to-one>
+		<many-to-one name="institutions" class="org.cgiar.ccafs.marlo.data.model.Institution"
+			fetch="select">
+			<column name="institution" />
+		</many-to-one>
+		<many-to-one name="locElementsByCitizenship" class="org.cgiar.ccafs.marlo.data.model.LocElement"
+			fetch="select">
+			<column name="citizenship" />
+		</many-to-one>
 		<property name="code" type="long">
 			<column name="code" not-null="true" />
 		</property>
 		<property name="name" type="string">
-			<column name="name" length="200"  />
+			<column name="name" length="200" />
 		</property>
 		<property name="middleName" type="string">
-			<column name="middle_name" length="200"  />
+			<column name="middle_name" length="200" />
 		</property>
 		<property name="lastName" type="string">
 			<column name="last_name" length="200" />
@@ -32,20 +44,11 @@
 		<property name="gender" type="string">
 			<column name="gender" not-null="true" />
 		</property>
-		<property name="citizenship" type="string">
-			<column name="citizenship" length="200" />
-		</property>
-		<property name="countryOfInstitucion" type="string">
-			<column name="country_of_institucion" length="200" />
-		</property>
 		<property name="highestDegree" type="string">
 			<column name="highest_degree" length="200" />
 		</property>
-		<property name="institution" type="string">
-			<column name="institution" length="200" />
-		</property>
 		<property name="email" type="string">
-			<column name="email" length="200"  />
+			<column name="email" length="200" />
 		</property>
 		<property name="personalEmail" type="string">
 			<column name="personal_email" length="200" />

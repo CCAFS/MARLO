@@ -117,7 +117,7 @@ public class ParticipantsAction extends BaseAction implements ServletRequestAwar
 
       final String[] countries = new String[countryList.size()];
       for (int i = 0; i < countryList.size(); i++) {
-        countries[i] = countryList.get(i).getIsoAlpha2() + "-" + countryList.get(i).getName();
+        countries[i] = countryList.get(i).getIsoAlpha2() + "- " + countryList.get(i).getName();
       }
 
       final List<Institution> institutionsList =
@@ -127,7 +127,7 @@ public class ParticipantsAction extends BaseAction implements ServletRequestAwar
 
       final String[] institutions = new String[institutionsList.size()];
       for (int i = 0; i < institutionsList.size(); i++) {
-        institutions[i] = institutionsList.get(i).getId() + "-" + institutionsList.get(i).getName();
+        institutions[i] = institutionsList.get(i).getId() + "- " + institutionsList.get(i).getName();
       }
 
 
@@ -137,7 +137,8 @@ public class ParticipantsAction extends BaseAction implements ServletRequestAwar
         celda.setCellValue(countries[i]);
       }
 
-      // sheet2.protectSheet("marlo-ciat");
+      sheet2.protectSheet("marlo-ciat");
+
       // 3. create named range for an area using AreaReference
       final Name namedCountry = wb.createName();
       namedCountry.setNameName(dataValidationCountryName);
@@ -157,10 +158,10 @@ public class ParticipantsAction extends BaseAction implements ServletRequestAwar
       reference = "institutions!$A$1:$A$" + institutions.length; // area reference
       namedInstitution.setRefersToFormula(reference);
 
-      // sheet3.protectSheet("marlo-ciat");
+      sheet3.protectSheet("marlo-ciat");
 
       validationHelper = sheet1.getDataValidationHelper();
-      final CellRangeAddressList addressListCountry = new CellRangeAddressList(11, 1000, 4, 4);
+      final CellRangeAddressList addressListCountry = new CellRangeAddressList(10, 1000, 4, 4);
       constraintCountries = validationHelper.createFormulaListConstraint(dataValidationCountryName);
       dataValidationCountries = validationHelper.createValidation(constraintCountries, addressListCountry);
       dataValidationCountries.setSuppressDropDownArrow(true);
@@ -171,7 +172,7 @@ public class ParticipantsAction extends BaseAction implements ServletRequestAwar
         dataValidationCountries.setSuppressDropDownArrow(false);
       }
 
-      final CellRangeAddressList addressListInstitution = new CellRangeAddressList(11, 1000, 6, 6);
+      final CellRangeAddressList addressListInstitution = new CellRangeAddressList(10, 1000, 6, 6);
       constraintInstitutions = validationHelper.createFormulaListConstraint(dataValidationInstitutionName);
       dataValidationInstitutions = validationHelper.createValidation(constraintInstitutions, addressListInstitution);
       dataValidationInstitutions.setSuppressDropDownArrow(true);
@@ -182,7 +183,7 @@ public class ParticipantsAction extends BaseAction implements ServletRequestAwar
         dataValidationInstitutions.setSuppressDropDownArrow(false);
       }
 
-      final CellRangeAddressList addressListCountryOfInstitution = new CellRangeAddressList(11, 1000, 7, 7);
+      final CellRangeAddressList addressListCountryOfInstitution = new CellRangeAddressList(10, 1000, 7, 7);
       constraintCountryOfInstitutions = validationHelper.createFormulaListConstraint(dataValidationCountryName);
       dataValidationCountryOfInstitutions =
         validationHelper.createValidation(constraintCountryOfInstitutions, addressListCountryOfInstitution);
@@ -198,18 +199,6 @@ public class ParticipantsAction extends BaseAction implements ServletRequestAwar
       sheet1.addValidationData(dataValidationCountries);
       sheet1.addValidationData(dataValidationInstitutions);
       sheet1.addValidationData(dataValidationCountryOfInstitutions);
-
-      // final Workbook wb = new XSSFWorkbook();
-      // final Sheet participants = wb.createSheet("Participants");
-      // final Row row = participants.createRow(0);
-      // for (int i = 0; i < HEAD_TEMPLATE.length; i++) {
-      // final Cell cell = row.createCell(i);
-      // cell.setCellValue(HEAD_TEMPLATE[i]);
-      // }
-      //
-      // for (int i = 0; i < HEAD_TEMPLATE.length; i++) {
-      // participants.autoSizeColumn(i);
-      // }
 
 
       final ByteArrayOutputStream fileOut = new ByteArrayOutputStream();

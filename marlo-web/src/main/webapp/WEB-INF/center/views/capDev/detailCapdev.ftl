@@ -210,19 +210,19 @@
 						</div>
 					</div>
 					<div class="col-md-12 newCapdevField">
-						[@customForm.input name="participant.code" i18nkey="capdev.participant.code" type="text" required=true className="participant-code" /]
+						[@customForm.input name="participant.code" i18nkey="capdev.participant.code" type="text" required=true className="participant-code"  help="capdev.help.participant.code"/]
 					</div>
 					<div class="col-md-12 newCapdevField">
 						<div class="col-md-6">
 							[@customForm.input name="participant.name" i18nkey="capdev.participant.firstName" type="text" required=true /]
 						</div>
 						<div class="col-md-6">
-							[@customForm.input name="participant.lastName" i18nkey="capdev.participant.lastName" type="text" required=true /]
+							[@customForm.input name="participant.middleName" i18nkey="capdev.participant.middleName" type="text"  /]
 						</div>
 					</div>
 					<div class="col-md-12 newCapdevField">
 						<div class="col-md-6">
-							[@customForm.input name="participant.middleName" i18nkey="capdev.participant.middleName" type="text"  /]
+							[@customForm.input name="participant.lastName" i18nkey="capdev.participant.lastName" type="text" required=true /]
 						</div>
 						<div class="col-md-6 genderSelect">
 							<input type="hidden" name="" value="${(participant.gender)!}" class="genderInput"/>
@@ -233,9 +233,8 @@
 					<div class="col-md-12 newCapdevField">
 						
 						<div class="col-md-6 pCitizenshipcountriesList">
-							<!-- [@customForm.input name="participant.citizenship" i18nkey="capdev.participant.citizenship" type="text" required=true /] -->
-							<input type="hidden" name="" value="${(participant.citizenship)!}" class="citizenshipInput"/>
-							[@customForm.select name="participant.citizenship" listName="countriesList" keyFieldName="value" displayFieldName="displayName" help="" i18nkey="capdev.participant.citizenship" className="" multiple=false placeholder="capdev.select" required=true /]
+							
+							[@customForm.select name="participant.locElementsByCitizenship.id" listName="countryList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.participant.citizenship" className="" multiple=false placeholder="capdev.select" required=true /]
 						</div>
 						<div class="col-md-6">
 							[@customForm.input name="participant.highestDegree" i18nkey="capdev.participant.Highestdegree" type="text" /]
@@ -252,12 +251,12 @@
 					</div>
 					<div class="col-md-12 newCapdevField">
 						<div class="col-md-6">
-							[@customForm.input name="participant.institution" i18nkey="capdev.participant.Institution" type="text" required=true /]
+							
+							[@customForm.select name="participant.institutions.id" listName="institutions" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.participant.Institution" className="" multiple=false placeholder="capdev.select" required=true /]
 						</div>
 						<div class="col-md-6 pcountryOfInstitucionList">
-							<!-- [@customForm.input name="participant.countryOfInstitucion" i18nkey="capdev.participant.country" type="text" required=true /] -->
-							<input type="hidden" name="" value="${(participant.countryOfInstitucion)!}" class="countryOfInstitucionInput"/>
-							[@customForm.select name="participant.countryOfInstitucion" listName="countriesList" keyFieldName="value" displayFieldName="displayName" help="" i18nkey="capdev.participant.country" className="" multiple=false placeholder="capdev.select" required=true /]
+							
+							[@customForm.select name="participant.locElementsByCountryOfInstitucion.id" listName="countryList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.participant.country" className="" multiple=false placeholder="capdev.select" required=true /]
 						</div>
 					</div>
 					<div class="col-md-12 newCapdevField">
@@ -431,10 +430,10 @@
     			<td>${i.participant.name}</td>
     			<td>${i.participant.lastName}</td>
     			<td>${i.participant.gender}</td>
-    			<td>${i.participant.citizenship}</td>
+    			<td>${i.participant.locElementsByCitizenship.name}</td>
     			<td>${i.participant.highestDegree}</td>
-    			<td>${i.participant.institution}</td>
-    			<td>${i.participant.countryOfInstitucion}</td>
+    			<td>${i.participant.institutions.name}</td>
+    			<td>${i.participant.locElementsByCountryOfInstitucion.name}</td>
     			<td>${i.participant.email}</td>
     			<td>${i.participant.reference}</td>
     			<td>${i.participant.fellowship}</td>
@@ -447,14 +446,7 @@
 [/#macro]
 
 
-<!-- [#macro disciplineMacro element isTemplate=false]
-	<div id="approach-${isTemplate?string('template',(element)!)}" class="approach  borderBox col-md-4 " style="display:${isTemplate?string('none','block')}" >
-		<div class="removeDiscipline removeIcon" title="Remove approach"></div>
-		<div class="col-md-4">
-			 [@s.text name="element" /]
-		</div>
-	</div>
-[/#macro] -->
+
 
 
 [#macro outComeMacro element isTemplate=false]
@@ -470,27 +462,7 @@
 
 
 
-<!-- [#macro countryMacro element name index isTemplate=false]
-	[#local customName = "${name}[${index}]"]
-	<div id="country-${isTemplate?string('template',(index)!)}" class="country  borderBox col-md-4 " style="display:${isTemplate?string('none','block')}" >
-		<div class="removeCountry removeIcon" title="Remove country"></div>
-		<div class="col-md-4">
-			${name}
-			 
-		</div>
-			}
-	</div>
-[/#macro]
 
-
-[#macro regionMacro element isTemplate=false]
-	<div id="region-${isTemplate?string('template',(element)!)}" class="region borderBox col-md-4 " style="display:${isTemplate?string('none','block')}" >
-		<div class="removeRegion removeIcon" title="Remove region"></div>
-		<div class="col-md-4">
-			 [@s.text name="element" /]
-		</div>
-	</div>
-[/#macro] -->
 
 
 

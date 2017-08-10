@@ -25,10 +25,10 @@ public class Participant implements java.io.Serializable {
   private String middleName;
   private String lastName;
   private String gender;
-  private String citizenship;
-  private String countryOfInstitucion;
+  private LocElement locElementsByCountryOfInstitucion;
+  private Institution institutions;
+  private LocElement locElementsByCitizenship;
   private String highestDegree;
-  private String institution;
   private String email;
   private String personalEmail;
   private String reference;
@@ -44,23 +44,24 @@ public class Participant implements java.io.Serializable {
 
 
   public Participant(User usersByCreatedBy, long code, String name, String middleName, String lastName, String gender,
-    String citizenship, String email, String personalEmail, boolean active) {
+    LocElement locElementsByCitizenship, String email, String personalEmail, boolean active) {
     this.usersByCreatedBy = usersByCreatedBy;
     this.code = code;
     this.name = name;
     this.middleName = middleName;
     this.lastName = lastName;
     this.gender = gender;
-    this.citizenship = citizenship;
+    this.locElementsByCitizenship = locElementsByCitizenship;
     this.email = email;
     this.personalEmail = personalEmail;
     this.active = active;
   }
 
   public Participant(User usersByModifiedBy, User usersByCreatedBy, long code, String name, String middleName,
-    String lastName, String gender, String citizenship, String countryOfInstitucion, String highestDegree,
-    String institution, String email, String personalEmail, String reference, String supervisor, String fellowship,
-    boolean active, Date aciveSince, String modificationJustification, Set<CapdevParticipant> capdevParticipants) {
+    String lastName, String gender, LocElement locElementsByCountryOfInstitucion, Institution institutions,
+    LocElement locElementsByCitizenship, String highestDegree, String email, String personalEmail, String reference,
+    String supervisor, String fellowship, boolean active, Date aciveSince, String modificationJustification,
+    Set<CapdevParticipant> capdevParticipants) {
     this.usersByModifiedBy = usersByModifiedBy;
     this.usersByCreatedBy = usersByCreatedBy;
     this.code = code;
@@ -68,10 +69,10 @@ public class Participant implements java.io.Serializable {
     this.middleName = middleName;
     this.lastName = lastName;
     this.gender = gender;
-    this.citizenship = citizenship;
-    this.countryOfInstitucion = countryOfInstitucion;
+    this.locElementsByCitizenship = locElementsByCitizenship;
+    this.locElementsByCountryOfInstitucion = locElementsByCountryOfInstitucion;
     this.highestDegree = highestDegree;
-    this.institution = institution;
+    this.institutions = institutions;
     this.email = email;
     this.personalEmail = personalEmail;
     this.reference = reference;
@@ -91,18 +92,11 @@ public class Participant implements java.io.Serializable {
     return this.capdevParticipants;
   }
 
-  public String getCitizenship() {
-    return this.citizenship;
-  }
 
   public long getCode() {
     return this.code;
   }
 
-
-  public String getCountryOfInstitucion() {
-    return countryOfInstitucion;
-  }
 
   public String getEmail() {
     return this.email;
@@ -124,12 +118,21 @@ public class Participant implements java.io.Serializable {
     return this.id;
   }
 
-  public String getInstitution() {
-    return this.institution;
+
+  public Institution getInstitutions() {
+    return institutions;
   }
 
   public String getLastName() {
     return this.lastName;
+  }
+
+  public LocElement getLocElementsByCitizenship() {
+    return locElementsByCitizenship;
+  }
+
+  public LocElement getLocElementsByCountryOfInstitucion() {
+    return locElementsByCountryOfInstitucion;
   }
 
   public String getMiddleName() {
@@ -164,35 +167,27 @@ public class Participant implements java.io.Serializable {
     return this.usersByModifiedBy;
   }
 
+
   public boolean isActive() {
     return this.active;
   }
+
 
   public void setAciveSince(Date aciveSince) {
     this.aciveSince = aciveSince;
   }
 
+
   public void setActive(boolean active) {
     this.active = active;
   }
-
 
   public void setCapdevParticipants(Set<CapdevParticipant> capdevParticipants) {
     this.capdevParticipants = capdevParticipants;
   }
 
-
-  public void setCitizenship(String citizenship) {
-    this.citizenship = citizenship;
-  }
-
-
   public void setCode(long code) {
     this.code = code;
-  }
-
-  public void setCountryOfInstitucion(String countryOfInstitucion) {
-    this.countryOfInstitucion = countryOfInstitucion;
   }
 
   public void setEmail(String email) {
@@ -203,24 +198,39 @@ public class Participant implements java.io.Serializable {
     this.fellowship = fellowship;
   }
 
+
   public void setGender(String gender) {
     this.gender = gender;
   }
+
 
   public void setHighestDegree(String highestDegree) {
     this.highestDegree = highestDegree;
   }
 
+
   public void setId(Long id) {
     this.id = id;
   }
 
-  public void setInstitution(String institution) {
-    this.institution = institution;
+
+  public void setInstitutions(Institution institutions) {
+    this.institutions = institutions;
   }
+
 
   public void setLastName(String lastName) {
     this.lastName = lastName;
+  }
+
+
+  public void setLocElementsByCitizenship(LocElement locElementsByCitizenship) {
+    this.locElementsByCitizenship = locElementsByCitizenship;
+  }
+
+
+  public void setLocElementsByCountryOfInstitucion(LocElement locElementsByCountryOfInstitucion) {
+    this.locElementsByCountryOfInstitucion = locElementsByCountryOfInstitucion;
   }
 
   public void setMiddleName(String middleName) {

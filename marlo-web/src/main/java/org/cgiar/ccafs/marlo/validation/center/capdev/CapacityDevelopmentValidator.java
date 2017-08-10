@@ -117,7 +117,7 @@ public class CapacityDevelopmentValidator extends BaseValidator {
       this.addMessage(baseAction.getText("capdev.action.participant.gender"));
       baseAction.getInvalidFields().put("input-participant.gender", InvalidFieldsMessages.EMPTYFIELD);
     }
-    if (participant.getCitizenship().equalsIgnoreCase("")) {
+    if (participant.getLocElementsByCitizenship().getId() == null) {
       this.addMessage(baseAction.getText("capdev.action.participant.citizenship"));
       baseAction.getInvalidFields().put("input-participant.citizenship", InvalidFieldsMessages.EMPTYFIELD);
     }
@@ -133,11 +133,11 @@ public class CapacityDevelopmentValidator extends BaseValidator {
         baseAction.getInvalidFields().put("input-participant.email", InvalidFieldsMessages.EMPTYFIELD);
       }
     }
-    if (participant.getInstitution().equalsIgnoreCase("")) {
+    if (participant.getInstitutions().getId() == null) {
       this.addMessage(baseAction.getText("capdev.action.participant.institution"));
       baseAction.getInvalidFields().put("input-participant.institution", InvalidFieldsMessages.EMPTYFIELD);
     }
-    if (participant.getCountryOfInstitucion().equalsIgnoreCase("")) {
+    if (participant.getLocElementsByCountryOfInstitucion().getId() == null) {
       this.addMessage(baseAction.getText("capdev.action.participant.countryOfInstitucion"));
       baseAction.getInvalidFields().put("input-participant.countryOfInstitucion", InvalidFieldsMessages.EMPTYFIELD);
     }

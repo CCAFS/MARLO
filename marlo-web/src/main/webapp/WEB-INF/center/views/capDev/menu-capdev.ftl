@@ -2,7 +2,7 @@
 [#assign objs= [
   { 'slug': 'Capdev Intervention',      'name': 'capdev.menu.hrefCapdev',           'action': 'detailCapdev',           'active': true  },
   { 'slug': 'Capdev Description',           'name': 'capdev.menu.hrefDescription',      'action': 'descriptionCapdev',           'active': true  },
-  { 'slug': 'Supporting Documents',         'name': 'capdev.menu.hrefSuppotingDocs',    'action': 'supportingDocs',           'active': true  }
+  { 'slug': 'Supporting Documents',         'name': 'capdev.menu.hrefSupportingDocs',    'action': 'supportingDocs',           'active': true  }
   
 ]/]
 
