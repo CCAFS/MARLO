@@ -356,14 +356,19 @@ public class ProjectListAction extends BaseAction {
     return allProjects;
   }
 
+  public List<Project> getClosedProjects() {
+    return closedProjects;
+  }
+
+
   public String getFilterBy() {
     return filterBy;
   }
 
-
   public List<Project> getMyProjects() {
     return myProjects;
   }
+
 
   public long getProjectID() {
     return projectID;
@@ -495,13 +500,19 @@ public class ProjectListAction extends BaseAction {
 
   }
 
+
   @Override
   public String save() {
     return SUCCESS;
   }
 
+
   public void setAllProjects(List<Project> allProjects) {
     this.allProjects = allProjects;
+  }
+
+  public void setClosedProjects(List<Project> closedProjects) {
+    this.closedProjects = closedProjects;
   }
 
 
