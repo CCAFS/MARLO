@@ -159,6 +159,8 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
 
       }
+
+      session.remove(APConstants.TEMP_CYCLE);
       if (project.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
         || project.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
 
