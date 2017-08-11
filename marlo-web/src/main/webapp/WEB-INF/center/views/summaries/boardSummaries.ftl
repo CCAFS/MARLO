@@ -79,7 +79,7 @@
             </div>
             <span class="description col-md-12">[@s.text name="summaries.board.report.project.description" /]</span>
             <div class="extraOptions col-md-12" style="display:none"> 
-              [@customForm.select name="projectID" header=false   label=""  i18nkey="Select a Project"  listName="allProjects"  keyFieldName="id"  displayFieldName="composedName" className="allPrograms"   multiple=false required=true   editable=true/]
+              [@customForm.select name="projectID" header=true   label=""  i18nkey="Select a Project"  listName="allProjects"  keyFieldName="id"  displayFieldName="composedName" className="allPrograms"   multiple=false required=true   editable=true/]
               <div class="pull-right">
                 <a style="display:none;" target="_blank" class="generateReport addButton pull-right" href="#">[@s.text name="form.buttons.generate" /]</a>
               </div>
