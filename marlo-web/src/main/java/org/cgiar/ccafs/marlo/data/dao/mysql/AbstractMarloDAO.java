@@ -44,9 +44,10 @@ public abstract class AbstractMarloDAO {
   }
 
 
-  private void addAuditLogFieldsToThreadStorage(String actionName, List<String> relationsNames) {
+  private void addAuditLogFieldsToThreadStorage(Object entity, String actionName, List<String> relationsNames) {
     LOG.debug("Adding auditing fields to AuditLogContext");
     AuditLogContext auditLogContext = AuditLogContextProvider.getAuditLogContext();
+    auditLogContext.setEntityCanonicalName(entity.getClass().getCanonicalName());
     auditLogContext.setActionName(actionName);
     auditLogContext.setRelationsNames(relationsNames);
   }
@@ -167,7 +168,7 @@ public abstract class AbstractMarloDAO {
    * @return true if the the save/updated was successfully made, false otherwhise.
    */
   protected boolean save(Object obj, String actionName, List<String> relationsName) {
-    this.addAuditLogFieldsToThreadStorage(actionName, relationsName);
+    this.addAuditLogFieldsToThreadStorage(obj, actionName, relationsName);
 
     sessionFactory.getCurrentSession().save(obj);
 
@@ -200,7 +201,7 @@ public abstract class AbstractMarloDAO {
     /**
      * Need to find a way to ensure the actionName and relationsName are handed to the interceptor.
      */
-    this.addAuditLogFieldsToThreadStorage(actionName, relationsName);
+    this.addAuditLogFieldsToThreadStorage(obj, actionName, relationsName);
 
     obj = sessionFactory.getCurrentSession().merge(obj);
     sessionFactory.getCurrentSession().saveOrUpdate(obj);

@@ -33,6 +33,9 @@ public final class AuditLogContext {
 
   private String actionName;
 
+  private String entityCanonicalName;
+
+
   private List<String> relationsNames;
 
 
@@ -48,6 +51,11 @@ public final class AuditLogContext {
 
   public Set<Map<String, Object>> getDeletes() {
     return deletes;
+  }
+
+
+  public String getEntityCanonicalName() {
+    return entityCanonicalName;
   }
 
 
@@ -76,6 +84,11 @@ public final class AuditLogContext {
   }
 
 
+  public void setEntityCanonicalName(String entityCanonicalName) {
+    this.entityCanonicalName = entityCanonicalName;
+  }
+
+
   public void setInserts(Set<Map<String, Object>> inserts) {
     this.inserts = inserts;
   }
@@ -84,6 +97,7 @@ public final class AuditLogContext {
   public void setRelationsNames(List<String> relationsNames) {
     this.relationsNames = relationsNames;
   }
+
 
   public void setUpdates(Set<Map<String, Object>> updates) {
     this.updates = updates;

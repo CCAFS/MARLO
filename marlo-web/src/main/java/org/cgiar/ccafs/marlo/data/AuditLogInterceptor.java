@@ -13,16 +13,15 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-
 package org.cgiar.ccafs.marlo.data;
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.AuditLogMySQLDao;
 import org.cgiar.ccafs.marlo.data.model.Auditlog;
+import org.cgiar.ccafs.marlo.utils.AuditLogContext;
+import org.cgiar.ccafs.marlo.utils.AuditLogContextProvider;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -31,107 +30,131 @@ import java.util.UUID;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.inject.Singleton;
-import org.hibernate.CallbackException;
+import org.apache.shiro.util.CollectionUtils;
 import org.hibernate.EmptyInterceptor;
 import org.hibernate.EntityMode;
-import org.hibernate.Session;
+import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
+import org.hibernate.StatelessSession;
 import org.hibernate.metadata.ClassMetadata;
+import org.hibernate.proxy.HibernateProxyHelper;
 import org.hibernate.type.ManyToOneType;
-import org.hibernate.type.OrderedSetType;
-import org.hibernate.type.SetType;
 import org.hibernate.type.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This is a EmptyInterceptor triggered when the data will be change ,
- * add and remove and save to audit log table
+ * Ideally we wouldn't need an interceptor and the event listeners, but I can't seem to find a way to
+ * listen for postFlush events. The FlushEventListener seems to be called before the pre and post save/upate/delete
+ * methods, therefore have to revert to using the Interceptor for the flushing.
  * 
- * @author Christian Garcia
+ * @author GrantL
  */
-@Singleton
 public class AuditLogInterceptor extends EmptyInterceptor {
 
+  private static final long serialVersionUID = 1L;
+
   public static Logger LOG = LoggerFactory.getLogger(AuditLogInterceptor.class);
-  private static final long serialVersionUID = -900829831186014812L;
-  Session session;
-  private Set<Map<String, Object>> inserts;
-  private Set<Map<String, Object>> updates;
-  private Set<Map<String, Object>> deletes;
-  private AuditLogMySQLDao dao;
-  private final String PRINCIPAL = "PRINCIPAL";
-  private final String ENTITY = "entity";
-  private final String RELATION_NAME = "relationName";
-  private String transactionId;
-  private String actionName;
-  private List<String> relationsName;
 
+  /**
+   * I don't like the sessionFactory being held by the Interceptor. However Gavin King the author of
+   * Hibernate doesn't seem to have an issue with it: https://hibernate.atlassian.net/browse/HB-860
+   */
+  private SessionFactory sessionFactory;
 
-  public AuditLogInterceptor(SessionFactory sessionFactory) {
-    this.dao = new AuditLogMySQLDao(sessionFactory) {
-    };
-    inserts = new HashSet<Map<String, Object>>();
-    updates = new HashSet<Map<String, Object>>();
-    deletes = new HashSet<Map<String, Object>>();
-
-
+  public AuditLogInterceptor() {
   }
 
-
-  public String getActionName() {
-    return actionName;
-  }
-
-
-  public List<String> getRelationsName() {
-    return relationsName;
-  }
+  private List<Auditlog> createAllAuditLogsForCrudType(String function, String transactionId,
+    Set<Map<String, Object>> records, String actionName, SessionFactory sessionFactory) {
+    Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+    List<Auditlog> auditLogs = new ArrayList<>();
 
 
-  public Set<HashMap<String, Object>> loadList(IAuditLog entity) {
-    Set<HashMap<String, Object>> setRelations = new HashSet<>();
+    for (Map<String, Object> record : records) {
+      /**
+       * See comment below in regards to simplifying.
+       */
+      if (record.get(IAuditLog.PRINCIPAL).toString().equals("1")) {
+        IAuditLog entity = (IAuditLog) record.get(IAuditLog.ENTITY);
 
-    ClassMetadata classMetadata = session.getSessionFactory().getClassMetadata(entity.getClass());
-    String[] propertyNames = classMetadata.getPropertyNames();
-    for (String name : propertyNames) {
+        Auditlog auditLog =
+          this.createAuditlog(IAuditLog.SAVED, entity, gson.toJson(entity), entity.getModifiedBy().getId(),
+            transactionId, new Long(record.get(IAuditLog.PRINCIPAL).toString()), null, actionName);
+        auditLogs.add(auditLog);
+      } else {
+        /**
+         * This complex logic might be able to be simplified by using
+         * a @PostCollectionUpdateEventListener, @PostCollectionRemoveEventListener or
+         * a @PostCollectionRecreateEventListener to detect changes to child relations. For now just leave it as is
+         * until I understand the code better.
+         */
+        Set<IAuditLog> collectionRecords = (Set<IAuditLog>) record.get(IAuditLog.ENTITY);
+        for (IAuditLog collectionRecord : collectionRecords) {
+          this.loadRelations(collectionRecord, false, 2, sessionFactory);
+          if (collectionRecord.isActive()) {
+            String json = gson.toJson(collectionRecord);
 
-      Object propertyValue = classMetadata.getPropertyValue(entity, name, EntityMode.POJO);
-      Type propertyType = classMetadata.getPropertyType(name);
-
-      if (propertyValue != null && (propertyType instanceof OrderedSetType || propertyType instanceof SetType)) {
-        HashMap<String, Object> objects = new HashMap<>();
-        Set<IAuditLog> listRelation = new HashSet<>();
-
-        Set<IAuditLog> entityRelation = (Set<IAuditLog>) propertyValue;
-        try {
-          for (IAuditLog iAuditLog : entityRelation) {
-
-            if (iAuditLog.isActive()) {
-
-              listRelation.add(iAuditLog);
-            }
+            Auditlog auditlog =
+              this.createAuditlog(IAuditLog.UPDATED, collectionRecord, json, collectionRecord.getModifiedBy().getId(),
+                transactionId, new Long(record.get(IAuditLog.PRINCIPAL).toString()),
+                record.get(IAuditLog.RELATION_NAME).toString(), actionName);
+            auditLogs.add(auditlog);
           }
-        } catch (Exception e) {
-
         }
 
-        objects.put(ENTITY, listRelation);
-        objects.put(PRINCIPAL, "3");
-        objects.put(RELATION_NAME, propertyType.getName() + ":" + entity.getId());
-        setRelations.add(objects);
       }
-
 
     }
 
-    return setRelations;
+    return auditLogs;
+  }
+
+  private List<Auditlog> createAllAuditLogsForTransaction(SessionFactory sessionFactory) {
+
+
+    String transactionId = UUID.randomUUID().toString();
+
+    // Use the AuditLogContextHelper to retrieve the updates, inserts and deletes and other context information
+    AuditLogContext auditLogContext = AuditLogContextProvider.getAuditLogContext();
+
+    List<Auditlog> allAuditlogsForTransaction = new ArrayList<>();
+
+    allAuditlogsForTransaction.addAll(this.createAllAuditLogsForCrudType(IAuditLog.SAVED, transactionId,
+      auditLogContext.getInserts(), auditLogContext.getActionName(), sessionFactory));
+    allAuditlogsForTransaction.addAll(this.createAllAuditLogsForCrudType(IAuditLog.UPDATED, transactionId,
+      auditLogContext.getUpdates(), auditLogContext.getActionName(), sessionFactory));
+    allAuditlogsForTransaction.addAll(this.createAllAuditLogsForCrudType(IAuditLog.DELETED, transactionId,
+      auditLogContext.getDeletes(), auditLogContext.getActionName(), sessionFactory));
+
+    return allAuditlogsForTransaction;
   }
 
 
-  public void loadRelations(IAuditLog entity, boolean loadUsers, int level) {
-    ClassMetadata classMetadata = session.getSessionFactory().getClassMetadata(entity.getClass());
+  private Auditlog createAuditlog(String action, IAuditLog entity, String json, long userId, String transactionId,
+    Long principal, String relationName, String actionName) {
+    StringBuilder detailBuilder = new StringBuilder();
+    if (actionName == null) {
+      detailBuilder.append(entity.getLogDeatil());
+    } else {
+      detailBuilder.append("Action: ").append(actionName).append(" ").append(entity.getLogDeatil());
+    }
+    Auditlog auditRecord = new Auditlog(action, detailBuilder.toString(), new Date(), entity.getId().toString(),
+      entity.getClass().toString(), json, userId, transactionId, principal, relationName,
+      entity.getModificationJustification());
+    return auditRecord;
+  }
+
+  /**
+   * This code should be simplified!!!
+   * 
+   * @param entity
+   * @param loadUsers
+   * @param level
+   */
+  public void loadRelations(IAuditLog entity, boolean loadUsers, int level, SessionFactory sessionFactory) {
+    ClassMetadata classMetadata =
+      sessionFactory.getClassMetadata(HibernateProxyHelper.getClassWithoutInitializingProxy(entity));
 
 
     String[] propertyNames = classMetadata.getPropertyNames();
@@ -146,18 +169,19 @@ public class AuditLogInterceptor extends EmptyInterceptor {
           if (loadUsers) {
             IAuditLog entityRelation = (IAuditLog) propertyValue;
 
+            Object obj = sessionFactory.getCurrentSession().get(propertyType.getReturnedClass(),
+              (Serializable) entityRelation.getId());
 
-            Object obj = dao.find(propertyType.getReturnedClass(), (Serializable) entityRelation.getId());
-
-            this.loadRelations((IAuditLog) obj, false, 2);
+            this.loadRelations((IAuditLog) obj, false, 2, sessionFactory);
             classMetadata.setPropertyValue(entity, name, obj, EntityMode.POJO);
           } else {
             if (!(name.equals("createdBy") || name.equals("modifiedBy"))) {
               IAuditLog entityRelation = (IAuditLog) propertyValue;
 
-              Object obj = dao.find(propertyType.getReturnedClass(), (Serializable) entityRelation.getId());
+              Object obj = sessionFactory.getCurrentSession().get(propertyType.getReturnedClass(),
+                (Serializable) entityRelation.getId());
               if (level == 2) {
-                this.loadRelations((IAuditLog) obj, false, 3);
+                this.loadRelations((IAuditLog) obj, false, 3, sessionFactory);
               }
 
               // this.loadRelations((IAuditLog) obj, false);
@@ -170,237 +194,71 @@ public class AuditLogInterceptor extends EmptyInterceptor {
       }
 
     }
-
-
   }
 
+  /**
+   * We should not use the same session we writing to the database from an Hibernate Event Listener,
+   * therefore we use a openStatelessSession.
+   * 
+   * @param sessionFactory
+   * @param auditLogs
+   */
+  private void persistAuditLogs(SessionFactory sessionFactory, List<Auditlog> auditLogs) {
+    StatelessSession openStatelessSession = null;
+    try {
+      openStatelessSession = sessionFactory.openStatelessSession();
 
-  public void logIt(String action, IAuditLog entity, String json, long userId, String transactionId, Long principal,
-    String relationName, String actionName) {
+      openStatelessSession.beginTransaction();
 
-    String detail = "";
-    if (actionName == null) {
-      detail = entity.getLogDeatil();
-    } else {
-      detail = "Action: " + actionName + " " + entity.getLogDeatil();
-    }
-    Auditlog auditRecord =
-      new Auditlog(action, detail, new Date(), entity.getId().toString(), entity.getClass().toString(), json, userId,
-        transactionId, principal, relationName, entity.getModificationJustification());
-  }
-
-
-  public void logSaveAndUpdate(String function, Set<Map<String, Object>> elements) {
-    Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-
-
-    for (Iterator<Map<String, Object>> it = elements.iterator(); it.hasNext();) {
-      Map<String, Object> map = it.next();
-      if (map.get(PRINCIPAL).toString().equals("1")) {
-        IAuditLog entity = (IAuditLog) map.get(ENTITY);
-        this.loadRelations(entity, true, 1);
-        String json = gson.toJson(entity);
-
-        this.logIt(function, entity, json, entity.getModifiedBy().getId(), this.transactionId,
-          new Long(map.get(PRINCIPAL).toString()), null, actionName);
-
-      } else {
-        Set<IAuditLog> set = (Set<IAuditLog>) map.get(ENTITY);
-        for (IAuditLog iAuditLog : set) {
-          this.loadRelations(iAuditLog, false, 2);
-          if (iAuditLog.isActive()) {
-            String json = gson.toJson(iAuditLog);
-
-            this.logIt("Updated", iAuditLog, json, iAuditLog.getModifiedBy().getId(), this.transactionId,
-              new Long(map.get(PRINCIPAL).toString()), map.get(RELATION_NAME).toString(), actionName);
-
-          }
-
-        }
+      for (Auditlog auditLog : auditLogs) {
+        openStatelessSession.insert(auditLog);
       }
+      openStatelessSession.getTransaction().commit();
 
+    } catch (HibernateException e) {
+      LOG.error("Unable to insert Auditlog entity");
+    } finally {
 
-    }
-  }
-
-
-  /**
-   * delete an object, the object is not delete into database yet.
-   */
-  @Override
-  public void onDelete(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
-
-    HashMap<String, Object> objects = new HashMap<>();
-
-    if (entity instanceof IAuditLog) {
-      objects.put(ENTITY, entity);
-      objects.put("PRINCIPAL", new Long(1));
-
-      // deletes.add(objects);
-      // deletes.addAll(this.relations(state, types, propertyNames, ((IAuditLog) entity).getId(), true));
-    }
-  }
-
-  /**
-   * this method triggered when update an object, the object is not update into database yet.
-   */
-  @Override
-  public boolean onFlushDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState,
-    String[] propertyNames, Type[] types) throws CallbackException {
-    HashMap<String, Object> objects = new HashMap<>();
-    if (entity instanceof IAuditLog) {
-      if (!((IAuditLog) entity).isActive()) {
-        objects.put(ENTITY, entity);
-        objects.put("PRINCIPAL", new Long(1));
-
-        deletes.add(objects);
-        deletes.addAll(this.relations(currentState, types, ((IAuditLog) entity).getId(), true));
-      } else {
-        objects.put(ENTITY, entity);
-        objects.put(PRINCIPAL, new Long(1));
-        updates.add(objects);
-
-        updates.addAll(this.relations(currentState, types, ((IAuditLog) entity).getId(), true));
+      if (openStatelessSession != null) {
+        openStatelessSession.close();
       }
-
     }
-    return false;
 
   }
 
-  /**
-   * this method triggered when save an object, the object is not save into database yet.
-   */
-  @Override
-  public boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types)
-    throws CallbackException {
-    HashMap<String, Object> objects = new HashMap<>();
-    if (entity instanceof IAuditLog) {
-      objects.put(ENTITY, entity);
-      objects.put(PRINCIPAL, new Long(1));
-      inserts.add(objects);
 
-      inserts.addAll(this.relations(state, types, ((IAuditLog) entity).getId(), true));
-    }
-    return false;
-
-  }
-
-  /**
-   * this method triggered after the saved, updated or deleted objects are committed to database.
-   */
-  @SuppressWarnings("rawtypes")
   @Override
   public void postFlush(Iterator iterator) {
+    LOG.debug("begin onFlush");
 
-    transactionId = UUID.randomUUID().toString();
-    try {
+    AuditLogContext auditLogContext = AuditLogContextProvider.getAuditLogContext();
 
-      this.logSaveAndUpdate("Saved", inserts);
-      this.logSaveAndUpdate("Updated", updates);
-      // this.logSaveAndUpdate("Deleted", deletes);
-    } catch (Exception e) {
-      e.printStackTrace();
-      LOG.error(e.getLocalizedMessage());
-    } finally {
-      inserts.clear();
-      updates.clear();
-      deletes.clear();
-
-    }
-  }
-
-  /**
-   * this method triggered before the saved, updated or deleted objects are committed to database (usually before
-   * postFlush).
-   */
-  @SuppressWarnings("rawtypes")
-  @Override
-  public void preFlush(Iterator iterator) {
-
-  }
-
-  public Set<HashMap<String, Object>> relations(Object[] state, Type[] types, Object id, boolean firstRelations) {
-
-    Set<HashMap<String, Object>> relations = new HashSet<>();
-    int i = 0;
-    String parentId = "";
-    try {
-      parentId = id.toString();
-    } catch (Exception e1) {
-      parentId = "";
-    }
-    for (Type type : types) {
-      HashMap<String, Object> objects = new HashMap<>();
-
-      if (type instanceof OrderedSetType || type instanceof SetType) {
-
-        if (relationsName.contains(type.getName())) {
-          Set<IAuditLog> listRelation = new HashSet<>();
-          Set<Object> set = (Set<Object>) state[i];
-          if (set != null) {
-            for (Object iAuditLog : set) {
-              if (iAuditLog instanceof IAuditLog) {
-                IAuditLog audit = (IAuditLog) iAuditLog;
-                if (audit.isActive()) {
-                  try {
-                    String name = audit.getClass().getName();
-                    Class<?> className = Class.forName(name);
-
-                    Object obj = dao.find(className, (Serializable) audit.getId());
-
-
-                    listRelation.add((IAuditLog) obj);
-                    Set<HashMap<String, Object>> loadList = this.loadList((IAuditLog) obj);
-                    for (HashMap<String, Object> hashMap : loadList) {
-                      HashSet<IAuditLog> relationAudit = (HashSet<IAuditLog>) hashMap.get(ENTITY);
-                      for (IAuditLog iAuditLog2 : relationAudit) {
-                        Set<HashMap<String, Object>> loadListRelations = this.loadList(iAuditLog2);
-
-                        relations.addAll(loadListRelations);
-                      }
-                    }
-
-
-                    relations.addAll(loadList);
-                  } catch (ClassNotFoundException e) {
-
-                    LOG.error(e.getLocalizedMessage());
-                  }
-                }
-
-
-              }
-
-
-            }
-            if (!listRelation.isEmpty()) {
-              objects.put(ENTITY, listRelation);
-              objects.put(PRINCIPAL, "3");
-              objects.put(RELATION_NAME, type.getName() + ":" + parentId);
-              relations.add(objects);
-            }
-
-          }
-        }
-
-      }
-      i++;
+    /**
+     * This is because our save(entity), update(entity) and delete(entity) methods on our DAOs should not
+     * execute the listeners. There might be a better way to do this like conditionally active the listeners.
+     */
+    if (auditLogContext.getActionName() == null) {
+      LOG.debug("No ActionName in auditLogContext so ignoring flushEvent.");
+      return;
     }
 
-    return relations;
+    if (sessionFactory.getCurrentSession().isDirty()) {
+      LOG.debug("Hibernate session is clean, ignoring flushEvent.");
+      return;
+    }
+
+    List<Auditlog> createAuditlogs = this.createAllAuditLogsForTransaction(sessionFactory);
+
+    if (CollectionUtils.isEmpty(createAuditlogs)) {
+      LOG.info("Audit logs are empty");
+      return;
+    }
+
+    this.persistAuditLogs(sessionFactory, createAuditlogs);
   }
 
-
-  public void setActionName(String actionName) {
-    this.actionName = actionName;
+  public void setSessionFactory(SessionFactory sessionFactory) {
+    this.sessionFactory = sessionFactory;
   }
 
-  public void setRelationsName(List<String> relationName) {
-    this.relationsName = relationName;
-  }
-
-  public void setSession(Session session) {
-    this.session = session;
-  }
 }

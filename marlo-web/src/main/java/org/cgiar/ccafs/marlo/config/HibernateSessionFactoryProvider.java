@@ -15,6 +15,7 @@
 
 package org.cgiar.ccafs.marlo.config;
 
+import org.cgiar.ccafs.marlo.data.AuditLogInterceptor;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.PropertiesManager;
 
@@ -71,9 +72,16 @@ public class HibernateSessionFactoryProvider implements Provider<SessionFactory>
     }
     // hibernateConfig.setProperty("hibernate.c3p0.min_size", "5");
 
-    // hibernateConfig.setInterceptor(new AuditLogInterceptor());
+    AuditLogInterceptor auditLogInterceptor = new AuditLogInterceptor();
+
+    hibernateConfig.setInterceptor(auditLogInterceptor);
     this.registerHibernateEventListeners(hibernateConfig);
     sessionFactory = hibernateConfig.buildSessionFactory();
+
+    /**
+     * See comments on the @HibernateAuditLogListener as to why we need the interceptor as well.
+     */
+    auditLogInterceptor.setSessionFactory(sessionFactory);
 
   }
 
