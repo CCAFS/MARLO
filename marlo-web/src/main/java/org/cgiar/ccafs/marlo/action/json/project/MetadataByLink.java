@@ -49,7 +49,7 @@ public class MetadataByLink extends BaseAction {
   private String page;
 
 
-  private String id;
+  private String link;
   private String metadata;
 
   // Managers
@@ -76,13 +76,13 @@ public class MetadataByLink extends BaseAction {
       return NOT_FOUND;
     }
 
-    if (id.equals("-1")) {
+    if (link.equals("-1")) {
       return NOT_FOUND;
     }
 
 
     MetadataClientApi metadataClientApi = MetadataApiFactory.getMetadataClientApi(page);
-    metadataClientApi.setId(id);
+    metadataClientApi.setLink(link);
     String handleUrl = metadataClientApi.parseLink();
     JSONObject metadataObject = metadataClientApi.getMetadata(handleUrl);
     System.out.println(metadataObject);
@@ -124,9 +124,9 @@ public class MetadataByLink extends BaseAction {
     Map<String, Object> parameters = this.getParameters();
     // If there is a parameter take its values
     try {
-      id = StringUtils.trim(((String[]) parameters.get(APConstants.METADATA_REQUEST_ID))[0]);
+      link = StringUtils.trim(((String[]) parameters.get(APConstants.METADATA_REQUEST_ID))[0]);
     } catch (Exception e) {
-      id = StringUtils.trim(((String[]) parameters.get("q"))[0]);
+      link = StringUtils.trim(((String[]) parameters.get("q"))[0]);
     }
 
     page = StringUtils.trim(((String[]) parameters.get(APConstants.PAGE_ID))[0]);
