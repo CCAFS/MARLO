@@ -34,10 +34,10 @@ public class CGSPACEClientApi extends MetadataClientApi {
 
 
   private RestConnectionUtil xmlReaderConnectionUtil = new RestConnectionUtil();
-  private final String CGSPACE = "https://cgspace.cgiar.org/rest/items/{0}/metadata";
+  private final String RESTURL = "https://cgspace.cgiar.org/rest/items/{0}/metadata";
 
   public CGSPACEClientApi() {
-    this.setLink(CGSPACE);
+    this.setLink(RESTURL);
   }
 
   @Override
@@ -79,17 +79,17 @@ public class CGSPACEClientApi extends MetadataClientApi {
   public String parseLink() {
 
     if (this.getLink().contains(HANDELEURL)) {
-      this.setLink(this.getLink().replace(HANDELEURL, ""));
+      this.setId(this.getLink().replace(HANDELEURL, ""));
     }
     if (this.getLink().contains(CGSPACEURL)) {
-      this.setLink(this.getLink().replace(CGSPACEURL, ""));
+      this.setId(this.getLink().replace(CGSPACEURL, ""));
     }
 
     String handleUrl = CGSPACEHANDLE.replace("{0}", this.getId());
     RestConnectionUtil connection = new RestConnectionUtil();
     Element elementHandle = connection.getXmlRestClient(handleUrl);
     this.setId(elementHandle.element("id").getStringValue());
-    this.setLink(this.getLink().replace("{0}", this.getId()));
+    this.setLink(RESTURL.replace("{0}", this.getId()));
     return this.getLink();
   }
 }
