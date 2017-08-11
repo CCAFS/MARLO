@@ -25,7 +25,7 @@ public class MetadataApiFactory {
       return null;
     }
     if (clientType.equalsIgnoreCase("cgspace")) {
-      return new CGSPACEClientApi();
+      return new CGSpaceClientAPI();
     }
     if (clientType.equalsIgnoreCase("dataverse")) {
       return new DataverseClientApi();

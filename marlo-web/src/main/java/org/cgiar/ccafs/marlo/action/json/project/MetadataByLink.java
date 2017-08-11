@@ -92,7 +92,7 @@ public class MetadataByLink extends BaseAction {
      * switch (page) {
      * case "cgspace":
      * linkRequest = CGSPACE;
-     * MetadataClientApi metadataClientApi = new CGSPACEClientApi();
+     * MetadataClientApi metadataClientApi = new CGSpaceClientAPI();
      * metadataClientApi.setLink(linkRequest);
      * metadataClientApi.setId(id);
      * String handleUrl = metadataClientApi.parseLink();

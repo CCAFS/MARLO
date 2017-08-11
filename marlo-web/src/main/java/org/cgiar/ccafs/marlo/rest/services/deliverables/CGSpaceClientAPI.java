@@ -24,7 +24,7 @@ import java.util.List;
 import org.dom4j.Element;
 import org.json.JSONObject;
 
-public class CGSPACEClientApi extends MetadataClientApi {
+public class CGSpaceClientAPI extends MetadataClientApi {
 
   private final String CGSPACEHANDLE = "https://cgspace.cgiar.org/rest/handle/{0}";
 
@@ -36,7 +36,7 @@ public class CGSPACEClientApi extends MetadataClientApi {
   private RestConnectionUtil xmlReaderConnectionUtil = new RestConnectionUtil();
   private final String RESTURL = "https://cgspace.cgiar.org/rest/items/{0}/metadata";
 
-  public CGSPACEClientApi() {
+  public CGSpaceClientAPI() {
     this.setLink(RESTURL);
   }
 
