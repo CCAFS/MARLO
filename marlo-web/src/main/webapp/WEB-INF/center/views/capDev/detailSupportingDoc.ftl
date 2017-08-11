@@ -65,9 +65,15 @@
 				</div>
 				<div class="row newCapdevField">
 					<div class="col-md-6">
-						 [@customForm.select name="capdevSupportingDocs.centerDeliverableTypes.id" listName="deliverablesList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.supportingDocs.type"  placeholder="capdev.select" required=true editable=true/]
+						 [@customForm.select name="capdevSupportingDocs.centerDeliverableTypes.id" listName="deliverablesList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.supportingDocs.type" className="capdevDeliverableType" placeholder="capdev.select" required=true editable=true/]
 					</div>
 					<div class="col-md-6">
+						[@customForm.select name="capdevSupportingDocs.deliverableSubtype.id" listName="deliverablesSubtypesList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.supportingDocs.subType" className="capdevDeliverableSubtype" placeholder="capdev.select" required=true editable=true/]
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-md-12">
 						[@customForm.input name="capdevSupportingDocs.publicationDate" i18nkey="capdev.supportingDocs.publicationdate" type="text" help="" editable=true  required=true /]
 					</div>
 				</div>

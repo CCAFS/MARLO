@@ -19,11 +19,13 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.ICenterProgramDAO;
 import org.cgiar.ccafs.marlo.data.manager.ICapacityDevelopmentService;
+import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.model.CenterDeliverableType;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
@@ -53,6 +55,7 @@ public class FilterListsAction extends BaseAction {
   private List<Map<String, Object>> jsonProjects;
   private List<Map<String, Object>> jsonPartners_output;
   private List<Map<String, Object>> jsonCapdevList;
+  private List<Map<String, Object>> jsonDeliverableSubtypes;
 
   private final ICenterProgramDAO researchProgramSercive;
   private final ICenterProjectManager projectService;
@@ -62,12 +65,14 @@ public class FilterListsAction extends BaseAction {
 
   private final ICapacityDevelopmentService capdevService;
   private final ICenterOutputManager researchOutputService;
+  private final ICenterDeliverableTypeManager centerDeliverableService;
 
   @Inject
   public FilterListsAction(APConfig config, ICenterProgramDAO researchProgramSercive,
     ICenterProjectManager projectService, ICenterProjectPartnerManager projectPartnerService,
     ICenterProjectOutputManager projectOutputService, InstitutionManager institutionService,
-    ICenterOutputManager researchOutputService, ICapacityDevelopmentService capdevService) {
+    ICenterOutputManager researchOutputService, ICapacityDevelopmentService capdevService,
+    ICenterDeliverableTypeManager centerDeliverableService) {
     super(config);
     this.researchProgramSercive = researchProgramSercive;
     this.projectService = projectService;
@@ -76,6 +81,7 @@ public class FilterListsAction extends BaseAction {
     this.institutionService = institutionService;
     this.researchOutputService = researchOutputService;
     this.capdevService = capdevService;
+    this.centerDeliverableService = centerDeliverableService;
   }
 
   @Override
@@ -83,6 +89,34 @@ public class FilterListsAction extends BaseAction {
     return SUCCESS;
   }
 
+
+  public String filterDeliverablesSubtypes() throws Exception {
+    final Map<String, Object> parameters = this.getParameters();
+    jsonDeliverableSubtypes = new ArrayList<>();
+    final long deliverableTypeParentId =
+      Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
+
+    List<CenterDeliverableType> deliverablesSubtypesList = new ArrayList<>();
+    if (deliverableTypeParentId > 0) {
+      deliverablesSubtypesList = new ArrayList<>(centerDeliverableService.findAll().stream()
+        .filter(dt -> (dt.getDeliverableType() != null) && (dt.getDeliverableType().getId() == deliverableTypeParentId))
+        .collect(Collectors.toList()));
+      Collections.sort(deliverablesSubtypesList, (ra1, ra2) -> ra1.getName().compareTo(ra2.getName()));
+    } else {
+
+    }
+
+    if (!deliverablesSubtypesList.isEmpty()) {
+      for (final CenterDeliverableType deliverable : deliverablesSubtypesList) {
+        final Map<String, Object> DeliverablesSubtypesMap = new HashMap<>();
+        DeliverablesSubtypesMap.put("deliberableID", deliverable.getId());
+        DeliverablesSubtypesMap.put("deliberableName", deliverable.getName());
+
+        jsonDeliverableSubtypes.add(DeliverablesSubtypesMap);
+      }
+    }
+    return SUCCESS;
+  }
 
   public String filterPartners_Outputs() throws Exception {
     final Map<String, Object> parameters = this.getParameters();
@@ -239,23 +273,33 @@ public class FilterListsAction extends BaseAction {
   }
 
 
+  public List<Map<String, Object>> getJsonDeliverableSubtypes() {
+    return jsonDeliverableSubtypes;
+  }
+
+
   public List<Map<String, Object>> getJsonPartners_output() {
     return jsonPartners_output;
   }
-
 
   public List<Map<String, Object>> getJsonProjects() {
     return jsonProjects;
   }
 
+
   public List<Map<String, Object>> getJsonResearchPrograms() {
     return jsonResearchPrograms;
   }
 
-
   public void setJsonCapdevList(List<Map<String, Object>> jsonCapdevList) {
     this.jsonCapdevList = jsonCapdevList;
   }
+
+
+  public void setJsonDeliverableSubtypes(List<Map<String, Object>> jsonDeliverableSubtypes) {
+    this.jsonDeliverableSubtypes = jsonDeliverableSubtypes;
+  }
+
 
   public void setJsonPartners_output(List<Map<String, Object>> jsonPartners_output) {
     this.jsonPartners_output = jsonPartners_output;

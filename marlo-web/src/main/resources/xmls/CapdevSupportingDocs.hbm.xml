@@ -21,6 +21,10 @@
 			class="org.cgiar.ccafs.marlo.data.model.CenterDeliverableType" fetch="select">
 			<column name="deliverable_type" />
 		</many-to-one>
+		<many-to-one name="deliverableSubtype"
+			class="org.cgiar.ccafs.marlo.data.model.CenterDeliverableType" fetch="select">
+			<column name="deliverable_subtype" />
+		</many-to-one>
 		<many-to-one name="capacityDevelopment"
 			class="org.cgiar.ccafs.marlo.data.model.CapacityDevelopment" fetch="select">
 			<column name="capdev_id" />

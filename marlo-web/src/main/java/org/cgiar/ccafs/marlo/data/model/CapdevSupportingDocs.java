@@ -21,6 +21,7 @@ public class CapdevSupportingDocs implements java.io.Serializable {
   private User usersByModifiedBy;
   private User usersByCreatedBy;
   private CenterDeliverableType centerDeliverableTypes;
+  private CenterDeliverableType deliverableSubtype;
   private CapacityDevelopment capacityDevelopment;
   private String title;
   private Date publicationDate;
@@ -33,12 +34,13 @@ public class CapdevSupportingDocs implements java.io.Serializable {
   }
 
   public CapdevSupportingDocs(User usersByModifiedBy, User usersByCreatedBy,
-    CenterDeliverableType centerDeliverableTypes, CapacityDevelopment capacityDevelopment, String title,
-    Date publicationDate, Boolean active, Date activeSince, String modificationJustification,
-    Set<CapdevSuppDocsDocuments> capdevSuppDocsDocumentses) {
+    CenterDeliverableType centerDeliverableTypes, CenterDeliverableType deliverableSubtype,
+    CapacityDevelopment capacityDevelopment, String title, Date publicationDate, Boolean active, Date activeSince,
+    String modificationJustification, Set<CapdevSuppDocsDocuments> capdevSuppDocsDocumentses) {
     this.usersByModifiedBy = usersByModifiedBy;
     this.usersByCreatedBy = usersByCreatedBy;
     this.centerDeliverableTypes = centerDeliverableTypes;
+    this.deliverableSubtype = deliverableSubtype;
     this.capacityDevelopment = capacityDevelopment;
     this.title = title;
     this.publicationDate = publicationDate;
@@ -69,6 +71,10 @@ public class CapdevSupportingDocs implements java.io.Serializable {
     return this.centerDeliverableTypes;
   }
 
+  public CenterDeliverableType getDeliverableSubtype() {
+    return deliverableSubtype;
+  }
+
   public Long getId() {
     return this.id;
   }
@@ -97,6 +103,7 @@ public class CapdevSupportingDocs implements java.io.Serializable {
     this.active = active;
   }
 
+
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
@@ -106,13 +113,16 @@ public class CapdevSupportingDocs implements java.io.Serializable {
     this.capacityDevelopment = capacityDevelopment;
   }
 
-
   public void setCapdevSuppDocsDocumentses(Set<CapdevSuppDocsDocuments> capdevSuppDocsDocumentses) {
     this.capdevSuppDocsDocumentses = capdevSuppDocsDocumentses;
   }
 
   public void setCenterDeliverableTypes(CenterDeliverableType centerDeliverableTypes) {
     this.centerDeliverableTypes = centerDeliverableTypes;
+  }
+
+  public void setDeliverableSubtype(CenterDeliverableType deliverableSubtype) {
+    this.deliverableSubtype = deliverableSubtype;
   }
 
   public void setId(Long id) {
@@ -131,9 +141,11 @@ public class CapdevSupportingDocs implements java.io.Serializable {
     this.title = title;
   }
 
+
   public void setUsersByCreatedBy(User usersByCreatedBy) {
     this.usersByCreatedBy = usersByCreatedBy;
   }
+
 
   public void setUsersByModifiedBy(User usersByModifiedBy) {
     this.usersByModifiedBy = usersByModifiedBy;

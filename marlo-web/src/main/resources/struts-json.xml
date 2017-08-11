@@ -56,14 +56,14 @@
 		</action>
 
 
-    <action name="searchInstitutionsName"
-      class="org.cgiar.ccafs.marlo.action.json.global.SearchInstitutionsNameAction"
-      method="search">
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="searchInstitutionsNameAction">true</param>
-      </result>
-    </action>
+		<action name="searchInstitutionsName"
+			class="org.cgiar.ccafs.marlo.action.json.global.SearchInstitutionsNameAction"
+			method="search">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="searchInstitutionsNameAction">true</param>
+			</result>
+		</action>
 
 
 		<action name="institutionsByTypeAndCountry"
@@ -536,6 +536,16 @@
 			method="filterCapDevList">
 			<result type="json">
 				<param name="root">jsonCapdevList</param>
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+		<action name="filterDeliverablesSubtypes"
+			class="org.cgiar.ccafs.marlo.action.center.json.capdev.FilterListsAction"
+			method="filterDeliverablesSubtypes">
+			<result type="json">
+				<param name="root">jsonDeliverableSubtypes</param>
 				<param name="noCache">true</param>
 				<param name="excludeNullProperties">true</param>
 			</result>

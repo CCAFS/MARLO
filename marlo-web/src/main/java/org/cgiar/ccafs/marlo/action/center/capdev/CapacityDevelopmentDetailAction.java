@@ -344,8 +344,8 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       participant.setGender((String) data[i][3]);
       participant.setLocElementsByCitizenship(
         locElementService.getLocElementByISOCode((String) reader.sustraerId((String) data[i][4])));
-      participant
-        .setHighestDegree(capdevHighestDegreeService.getCapdevHighestDegreeById(Long.parseLong((String) data[i][5])));
+      participant.setHighestDegree(capdevHighestDegreeService
+        .getCapdevHighestDegreeById(Long.parseLong((String) reader.sustraerId((String) data[i][5]))));
       System.out.println("institution ID " + reader.sustraerId((String) data[i][6]).getClass());
       participant.setInstitutions(
         institutionService.getInstitutionById(Long.parseLong((String) (reader.sustraerId((String) data[i][6])))));
@@ -353,8 +353,8 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
         locElementService.getLocElementByISOCode((String) reader.sustraerId((String) data[i][7])));
       participant.setEmail((String) data[i][8]);
       participant.setReference((String) data[i][9]);
-      participant
-        .setFellowship(capdevFoundingTypeService.getCapdevFoundingTypeById(Long.parseLong((String) data[i][10])));
+      participant.setFellowship(capdevFoundingTypeService
+        .getCapdevFoundingTypeById(Long.parseLong((String) reader.sustraerId((String) data[i][10]))));
 
       participant.setActive(true);
       participant.setUsersByCreatedBy(currentUser);

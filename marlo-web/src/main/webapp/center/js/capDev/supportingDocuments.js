@@ -1,3 +1,4 @@
+
 //event add link supporting document
 
 $(".addCapdevsupportDocument").click(function(){
@@ -77,3 +78,34 @@ $('#confirm-delete').on('show.bs.modal', function(e) {
      $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
             
 });
+
+
+//event to filter the deliverables subtypes
+$(".capdevDeliverableType").on("change", function(){
+  console.log('cambio el deliverable type');
+   var deliverableID = $(".capdevDeliverableType").val();
+      if(deliverableID > 0){
+         $.ajax({
+        'url': baseURL + '/filterDeliverablesSubtypes.do',
+        'data': {
+          q: deliverableID
+        },
+        'dataType': "json",
+        beforeSend: function() {
+        },
+        success: function(data) {
+          var length = data.length;
+          $('.capdevDeliverableSubtype').empty();
+          $('.capdevDeliverableSubtype').append('<option value= -1>select option... </option>');
+          for (var i = 0; i < length; i++) {
+            $('.capdevDeliverableSubtype').append('<option value=' + data[i]['deliberableID'] + '>' + data[i]['deliberableName'] + '</option>');
+          }
+        },
+        error: function() {
+        },
+        complete: function() {
+         
+        }
+      })
+    }
+})
