@@ -344,7 +344,7 @@ public class ImpactSubmissionSummaryAction extends BaseAction implements Summary
     }
 
     // Get CIAT imgage URL from repo
-    String imageUrl = this.getBaseUrl() + "center/images/global/centers/CIAT.png";
+    String imageUrl = this.getBaseUrl() + "/center/images/global/centers/CIAT.png";
 
     model.addRow(new Object[] {title, currentDate, impactSubmission, imageUrl});
     return model;
