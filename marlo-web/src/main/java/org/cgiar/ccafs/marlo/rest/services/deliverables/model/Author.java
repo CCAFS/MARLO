@@ -17,13 +17,18 @@
 package org.cgiar.ccafs.marlo.rest.services.deliverables.model;
 
 
-public class Authors {
+public class Author {
 
   private String lastName;
 
   private String firstName;
 
   private String orcidId;
+
+  public Author(String firstName) {
+    super();
+    this.firstName = firstName;
+  }
 
   public String getFirstName() {
     return firstName;
@@ -51,7 +56,7 @@ public class Authors {
 
   @Override
   public String toString() {
-    return "Authors [lastName = " + lastName + ", firstName = " + firstName + ", orcidId = " + orcidId + "]";
+    return "Author [lastName = " + lastName + ", firstName = " + firstName + ", orcidId = " + orcidId + "]";
   }
 }
 

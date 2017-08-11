@@ -16,6 +16,7 @@
 
 package org.cgiar.ccafs.marlo.rest.services.deliverables;
 
+import org.cgiar.ccafs.marlo.rest.services.deliverables.model.MetadataModel;
 import org.cgiar.ccafs.marlo.utils.RestConnectionUtil;
 
 import org.json.JSONObject;
@@ -24,8 +25,11 @@ public class DataverseClientApi extends MetadataClientApi {
 
   private RestConnectionUtil xmlReaderConnectionUtil = new RestConnectionUtil();
 
+  /**
+   * TODO implement method
+   */
   @Override
-  public JSONObject getMetadata(String link) {
+  public MetadataModel getMetadata(String link) {
     JSONObject jo = new JSONObject();
 
     try {
@@ -41,7 +45,7 @@ public class DataverseClientApi extends MetadataClientApi {
       jo = null;
     }
 
-    return jo;
+    return null;
   }
 
 }

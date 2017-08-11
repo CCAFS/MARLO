@@ -16,31 +16,22 @@
 
 package org.cgiar.ccafs.marlo.rest.services.deliverables;
 
-import org.json.JSONObject;
+import org.cgiar.ccafs.marlo.rest.services.deliverables.model.MetadataModel;
 
 public abstract class MetadataClientApi {
 
-  private String link;
   private String id;
-  private JSONObject jsonObject;
 
   public String getId() {
     return id;
   }
 
-  public JSONObject getJsonObject() {
-    return jsonObject;
+
+  public MetadataModel getMetadata(String link) {
+    return null;
   }
 
-  public String getLink() {
-    return link;
-  };
-
-  public JSONObject getMetadata(String link) {
-    return jsonObject;
-  }
-
-  public String parseLink() {
+  public String parseLink(String link) {
     return link;
   }
 
@@ -48,12 +39,5 @@ public abstract class MetadataClientApi {
     this.id = id;
   }
 
-  public void setJsonObject(JSONObject jsonObject) {
-    this.jsonObject = jsonObject;
-  }
-
-  public void setLink(String link) {
-    this.link = link;
-  }
 
 }

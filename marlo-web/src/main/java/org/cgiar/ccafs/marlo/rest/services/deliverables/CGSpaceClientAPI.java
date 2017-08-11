@@ -16,44 +16,62 @@
 
 package org.cgiar.ccafs.marlo.rest.services.deliverables;
 
+import org.cgiar.ccafs.marlo.rest.services.deliverables.model.Author;
+import org.cgiar.ccafs.marlo.rest.services.deliverables.model.MetadataModel;
+import org.cgiar.ccafs.marlo.utils.DateTypeAdapter;
 import org.cgiar.ccafs.marlo.utils.RestConnectionUtil;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.dom4j.Element;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CGSpaceClientAPI extends MetadataClientApi {
 
-  private final String CGSPACEHANDLE = "https://cgspace.cgiar.org/rest/handle/{0}";
-
-
-  private final String HANDELEURL = "http://hdl.handle.net/";
-  private final String CGSPACEURL = "https://cgspace.cgiar.org/handle/";
-
-
-  private RestConnectionUtil xmlReaderConnectionUtil = new RestConnectionUtil();
-  private final String RESTURL = "https://cgspace.cgiar.org/rest/items/{0}/metadata";
+  private static final Logger LOG = LoggerFactory.getLogger(CGSpaceClientAPI.class);
+  private final String CGSPACE_HANDLE = "https://cgspace.cgiar.org/rest/handle/{0}";
+  private final String HANDLE_URL = "http://hdl.handle.net/";
+  private final String CGSPACE_URL = "https://cgspace.cgiar.org/handle/";
+  private final String REST_URL = "https://cgspace.cgiar.org/rest/items/{0}/metadata";
+  private RestConnectionUtil xmlReaderConnectionUtil;
+  private Map<String, String> coverterAtrributes;
 
   public CGSpaceClientAPI() {
-    this.setLink(RESTURL);
+    xmlReaderConnectionUtil = new RestConnectionUtil();
+    coverterAtrributes = new HashMap<String, String>();
+    coverterAtrributes.put("description.abstract", "description");
+    coverterAtrributes.put("date.available", "publicationDate");
+    coverterAtrributes.put("language.iso", "language");
+    coverterAtrributes.put("subject", "keywords");
+    coverterAtrributes.put("identifier.citation", "citation");
+    coverterAtrributes.put("identifier.uri", "handle");
+    coverterAtrributes.put("identifier.doi", "doi");
   }
 
   @Override
-  public JSONObject getMetadata(String link) {
+  public MetadataModel getMetadata(String link) {
+    MetadataModel metadataModel = null;
     JSONObject jo = new JSONObject();
     try {
-      Element metadata = xmlReaderConnectionUtil.getXmlRestClient(this.getLink());
-      List<String> authors = new ArrayList<String>();
+      Element metadata = xmlReaderConnectionUtil.getXmlRestClient(link);
+      List<Author> authors = new ArrayList<Author>();
       List<Element> elements = metadata.elements();
       for (Element element : elements) {
         Element key = element.element("key");
         Element value = element.element("value");
         String keyValue = key.getStringValue();
         keyValue = keyValue.substring(3);
-        if (keyValue.equals("contributor.author")) {
-          authors.add(value.getStringValue());
+        if (keyValue.equals("authors")) {
+          Author author = new Author(value.getStringValue());
+          authors.add(author);
         } else {
           if (jo.has(keyValue)) {
             jo.put(keyValue, jo.get(keyValue) + "," + value.getStringValue());
@@ -66,30 +84,47 @@ public class CGSpaceClientAPI extends MetadataClientApi {
       }
 
       jo.put("contributor.author", authors);
+      GsonBuilder gsonBuilder = new GsonBuilder();
+      gsonBuilder.registerTypeAdapter(Date.class, new DateTypeAdapter());
+      Gson gson = gsonBuilder.create();
+      String data = jo.toString();
+      for (String key : coverterAtrributes.keySet()) {
+        data = data.replace(key, coverterAtrributes.get(key));
+      }
+      metadataModel = gson.fromJson(data, MetadataModel.class);
+
     } catch (Exception e) {
       e.printStackTrace();
-      jo = null;
+      LOG.error(e.getLocalizedMessage());
+
     }
 
-    return jo;
+    return metadataModel;
 
   }
 
+  /**
+   * with the link get the id and make a connection to get the Metadata id connnection and format into the rest url
+   * 
+   * @return the link to get the metadata
+   */
   @Override
-  public String parseLink() {
+  public String parseLink(String link) {
 
-    if (this.getLink().contains(HANDELEURL)) {
-      this.setId(this.getLink().replace(HANDELEURL, ""));
+    // if the link contains http://hdl.handle.net/ we remove it from the link
+    if (link.contains(HANDLE_URL)) {
+      this.setId(link.replace(HANDLE_URL, ""));
     }
-    if (this.getLink().contains(CGSPACEURL)) {
-      this.setId(this.getLink().replace(CGSPACEURL, ""));
+    // if the link https://cgspace.cgiar.org/handle/ we remove it from the link
+    if (link.contains(CGSPACE_URL)) {
+      this.setId(link.replace(CGSPACE_URL, ""));
     }
 
-    String handleUrl = CGSPACEHANDLE.replace("{0}", this.getId());
+    String handleUrl = CGSPACE_HANDLE.replace("{0}", this.getId());
     RestConnectionUtil connection = new RestConnectionUtil();
     Element elementHandle = connection.getXmlRestClient(handleUrl);
     this.setId(elementHandle.element("id").getStringValue());
-    this.setLink(RESTURL.replace("{0}", this.getId()));
-    return this.getLink();
+    String linkRest = (REST_URL.replace("{0}", this.getId()));
+    return linkRest;
   }
 }

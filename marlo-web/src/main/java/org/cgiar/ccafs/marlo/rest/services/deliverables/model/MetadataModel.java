@@ -16,10 +16,11 @@
 
 package org.cgiar.ccafs.marlo.rest.services.deliverables.model;
 
+import java.util.Date;
 
 public class MetadataModel {
 
-  private Authors[] authors;
+  private Author[] author;
 
   private String citation;
 
@@ -39,12 +40,12 @@ public class MetadataModel {
 
   private String doi;
 
-  private String publicationDate;
+  private Date publicationDate;
 
   private String country;
 
-  public Authors[] getAuthors() {
-    return authors;
+  public Author[] getAuthors() {
+    return author;
   }
 
   public String getCitation() {
@@ -79,7 +80,7 @@ public class MetadataModel {
     return openAccess;
   }
 
-  public String getPublicationDate() {
+  public Date getPublicationDate() {
     return publicationDate;
   }
 
@@ -91,8 +92,8 @@ public class MetadataModel {
     return title;
   }
 
-  public void setAuthors(Authors[] authors) {
-    this.authors = authors;
+  public void setAuthors(Author[] authors) {
+    this.author = authors;
   }
 
   public void setCitation(String citation) {
@@ -127,7 +128,7 @@ public class MetadataModel {
     this.openAccess = openAccess;
   }
 
-  public void setPublicationDate(String publicationDate) {
+  public void setPublicationDate(Date publicationDate) {
     this.publicationDate = publicationDate;
   }
 
@@ -141,7 +142,7 @@ public class MetadataModel {
 
   @Override
   public String toString() {
-    return "MetadataModel [authors = " + authors + ", citation = " + citation + ", title = " + title + ", handle = "
+    return "MetadataModel [author = " + author + ", citation = " + citation + ", title = " + title + ", handle = "
       + handle + ", keywords = " + keywords + ", description = " + description + ", rights = " + rights
       + ", language = " + language + ", openAccess = " + openAccess + ", doi = " + doi + ", publicationDate = "
       + publicationDate + ", country = " + country + "]";

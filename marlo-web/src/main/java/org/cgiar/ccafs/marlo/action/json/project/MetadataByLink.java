@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.rest.services.deliverables.MetadataApiFactory;
 import org.cgiar.ccafs.marlo.rest.services.deliverables.MetadataClientApi;
+import org.cgiar.ccafs.marlo.rest.services.deliverables.model.MetadataModel;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.ClientRepository;
 
@@ -26,7 +27,6 @@ import java.util.Map;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +50,7 @@ public class MetadataByLink extends BaseAction {
 
 
   private String link;
-  private String metadata;
+  private MetadataModel metadata;
 
   // Managers
   private ClientRepository clientRepository;
@@ -82,11 +82,9 @@ public class MetadataByLink extends BaseAction {
 
 
     MetadataClientApi metadataClientApi = MetadataApiFactory.getMetadataClientApi(page);
-    metadataClientApi.setLink(link);
-    String handleUrl = metadataClientApi.parseLink();
-    JSONObject metadataObject = metadataClientApi.getMetadata(handleUrl);
-    System.out.println(metadataObject);
-    metadata = metadataObject.toString();
+    String handleUrl = metadataClientApi.parseLink(link);
+    metadata = metadataClientApi.getMetadata(handleUrl);
+    System.out.println(metadata);
 
     /*
      * switch (page) {
@@ -115,7 +113,7 @@ public class MetadataByLink extends BaseAction {
   }
 
 
-  public String getMetadata() {
+  public MetadataModel getMetadata() {
     return metadata;
   }
 
@@ -134,7 +132,7 @@ public class MetadataByLink extends BaseAction {
   }
 
 
-  public void setMetadata(String metadata) {
+  public void setMetadata(MetadataModel metadata) {
     this.metadata = metadata;
   }
 
