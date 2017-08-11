@@ -47,10 +47,6 @@
         <!-- Tab panes -->
         <div class="tab-content">
           <div role="tabpanel" class="tab-pane active" id="active-tab">
-          
-            [#-- Projects List (My Projects) --]
-            <h3 class="headTitle text-center">[@s.text name="projectsList.yourProjects"/]</h3>
-            [@projectList.projectsList projects=myProjects canValidate=true canEdit=true namespace="/projects" defaultAction="${(crpSession)!}/description" /]
             [#-- Section Buttons --]
             [#if (action.canAddCoreProject() || action.canAddBilateralProject()) && (!crpClosed) && !reportingActive]
             <div class="buttons">
@@ -62,18 +58,18 @@
             </div>
             [/#if]
             <div class="clearfix"></div>
+            [#-- Projects List (My Projects) --]
+            <h3 class="headTitle text-center">[@s.text name="projectsList.yourProjects"/]</h3>
+            [@projectList.projectsList projects=myProjects canValidate=true canEdit=true namespace="/projects" defaultAction="${(crpSession)!}/description" /]
             <hr/>
             [#-- Projects List (Other Projects) --]
             <h3 class="headTitle text-center">[@s.text name="projectsList.otherProjects" /] <br /> <small>[@s.text name="projectsList.otherProjects.help" /]</small></h3>
             [@projectList.projectsList projects=allProjects canValidate=true namespace="/projects" defaultAction="${(crpSession)!}/description"/]
-          
           </div>
           <div role="tabpanel" class="tab-pane" id="archived-tab">
-          
             [#-- Archived Projects List (My Projects) --]
             <h3 class="headTitle text-center">Archived projects</h3>
             [@projectList.projectsListArchived projects=closedProjects canValidate=false canEdit=false namespace="/projects" defaultAction="${(crpSession)!}/description" /]
-          
           </div>
         </div>
       </div>
