@@ -698,15 +698,10 @@ function getIfpriMetadata(channel,url,uri) {
 
 function getCGSpaceMetadata(channel,url,uri) {
   var data = {
-    pageID: "cgspace"
+      pageID: "cgspace",
+      metadataID: url
   }
 
-  if(uri.host() == "hdl.handle.net") {
-    console.log(uri.path());
-    data.metadataID = "oai:cgspace.cgiar.org:" + uri.path().slice(1, uri.path().length);
-  } else {
-    data.metadataID = "oai:" + uri.host() + ":" + uri.path().slice(8, uri.path().length);
-  }
   // get data from url
   // Ajax to service
   $.ajax({
