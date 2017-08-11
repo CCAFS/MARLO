@@ -445,17 +445,62 @@
     <tbody>
     	[#list element as i]
     		<tr>
-    			<td>${i.participant.code}</td>
-    			<td>${i.participant.name}</td>
-    			<td>${i.participant.lastName}</td>
-    			<td>${i.participant.gender}</td>
-    			<td>${i.participant.locElementsByCitizenship.name}</td>
-    			<td>${i.participant.highestDegree}</td>
-    			<td>${i.participant.institutions.name}</td>
-    			<td>${i.participant.locElementsByCountryOfInstitucion.name}</td>
-    			<td>${i.participant.email}</td>
-    			<td>${i.participant.reference}</td>
-    			<td>${i.participant.fellowship}</td>
+    			[#if i.participant.code??]
+    				<td>${i.participant.code}</td>
+    			[#else]
+    				<td>Not defined</td>
+    			[/#if]
+    			[#if i.participant.name??]
+    				<td>${i.participant.name}</td>
+    			[#else]
+    				<td>Not defined</td>
+    			[/#if]
+    			[#if i.participant.lastName??]
+    				<td>${i.participant.lastName}</td>
+    			[#else]
+    				<td>Not defined</td>
+    			[/#if]
+    			[#if i.participant.gender??]
+    				<td>${i.participant.gender}</td>
+    			[#else]
+    				<td>Not defined</td>
+    			[/#if]
+    			[#if i.participant.locElementsByCitizenship??]
+    				<td>${i.participant.locElementsByCitizenship.name}</td>
+    			[#else]
+    				<td>Not defined</td>
+    			[/#if]
+    			[#if i.participant.highestDegree??]
+    				<td>${i.participant.highestDegree.name}</td>
+    			[#else]
+    				<td>Not defined</td>
+    			[/#if]
+    			[#if i.participant.institutions??]
+    				<td>${i.participant.institutions.name}</td>
+    			[#else]
+    				<td>Not defined</td>
+    			[/#if]
+    			[#if i.participant.locElementsByCountryOfInstitucion??]
+    				<td>${i.participant.locElementsByCountryOfInstitucion.name}</td>
+    			[#else]
+    				<td>Not defined</td>
+    			[/#if]
+    			[#if i.participant.email??]
+    				<td>${i.participant.email}</td>
+    			[#else]
+    				<td>Not defined</td>
+    			[/#if]
+    			[#if i.participant.reference??]
+    				<td>${i.participant.reference}</td>
+    			[#else]
+    				<td>Not defined</td>
+    			[/#if]
+    			[#if i.participant.fellowship??]
+    				<td>${i.participant.fellowship.name}</td>
+    			[#else]
+    				<td>Not defined</td>
+    			[/#if]
+    			
     		</tr>
     	[/#list]
    

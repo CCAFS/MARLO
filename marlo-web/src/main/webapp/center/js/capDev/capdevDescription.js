@@ -79,7 +79,7 @@ $(".removeTargetGroup-action").on("click", removeTargetGroupAction);
 $(".capdevResearchArea").on("change",ajaxFilterResearchProgram)
 
 
-//funcion invocada cuando el se activa el evento onChange 
+//funcion invocada cuando  se activa el evento onChange 
 function  ajaxFilterResearchProgram(){
   var researchAreaID = $(this).val();
   filterResearchProgram(researchAreaID);
