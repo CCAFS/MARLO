@@ -189,7 +189,7 @@ public class CenterOutcomeDAO implements ICenterOutcomeDAO {
 
     query.append("SELECT  ");
     query.append("mco.`year` AS monitoringYear,  ");
-    query.append("co.id AS outcomeId,  ");
+    query.append("co.id AS outcomeId, co.description as outcomeDesc,  ");
     query.append("(  ");
     query.append("CASE  ");
     query.append("WHEN co.description IS NULL  ");
