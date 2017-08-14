@@ -6,7 +6,7 @@
 
   { 'slug': 'projects', 'name': 'menu.monitoring.projects',      'namespace': '/monitoring',       'action': '${(centerSession)!}/projectList',    'visible': (logged), 'active': true },
   { 'slug': 'outcomes', 'name': 'menu.monitoring.outcomes',      'namespace': '/monitoring',       'action': '${(centerSession)!}/monitoringOutcomesList',    'visible': (logged), 'active':action.canAccessSuperAdmin() },
-  { 'slug': 'capdev', 'name': 'Capacity Development',      'namespace': '',       'action': '',    'visible': (logged), 'active':true },
+  { 'slug': 'capdev', 'name': 'menu.capdev',      'namespace': '',       'action': '',    'visible': (logged), 'active':false },
   { 'slug': 'summaries', 'name': 'menu.monitoring.summaries',      'namespace': '/centerSummaries',       'action': '${(centerSession)!}/summaries',    'visible': (logged), 'active': true }]
 
   /]
