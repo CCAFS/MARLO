@@ -19,7 +19,12 @@ package org.cgiar.ccafs.marlo.rest.services.deliverables;
 
 public class MetadataApiFactory {
 
-
+  /**
+   * TODO DOCUMENT
+   * 
+   * @param clientType
+   * @return
+   */
   public static MetadataClientApi getMetadataClientApi(String clientType) {
     if (clientType == null) {
       return null;

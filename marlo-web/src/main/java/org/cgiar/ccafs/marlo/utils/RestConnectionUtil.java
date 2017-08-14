@@ -131,7 +131,7 @@ public class RestConnectionUtil {
 
   }
 
-  public HttpClient verifiedClient(HttpClient base) {
+  private HttpClient verifiedClient(HttpClient base) {
     try {
       SSLContext ctx = SSLContext.getInstance("SSL");
       X509TrustManager tm = new X509TrustManager() {

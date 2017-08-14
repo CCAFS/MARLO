@@ -500,205 +500,17 @@ function syncMetadata() {
   if(url == "") {
     return;
   }
+  getMetadata(channel, url, uri);
 
-  if(channel == "cgspace") {
-    // Get CGSpace Metadata from MARLO server
-    getCGSpaceMetadata(channel, url, uri);
-  } else if(channel == "dataverse") {
-    // Get Dataverse Metadata from native API
-    getDataverseMetadata(channel, url, uri);
-  } else if(channel == "ifpri") {
-    // Get IFPRI E-BRARY Metadata from MARLO server
-    getIfpriMetadata(channel, url, uri);
-  } else if(channel == "ilri") {
-    // Get IFPRI E-BRARY Metadata from MARLO server
-    getIlriMetadata(channel, url, uri);
-  }
+
+
 
 }
 
-function getIlriMetadata(channel,url,uri) {
-  var pathArray = uri.path().split('/');
 
+function getMetadata(channel,url,uri) {
   var data = {
       pageID: channel,
-      metadataID: pathArray[pathArray.indexOf("dataset") + 1]
-  }
-
-  // get data from url
-  // Ajax to service
-  $.ajax({
-      'url': baseURL + '/metadataByLink.do',
-      'type': "GET",
-      'data': data,
-      beforeSend: function() {
-        $(".deliverableDisseminationUrl").addClass('input-loading');
-        $('#metadata-output').html("Searching ... " + data.metadataID);
-      },
-      success: function(m) {
-
-        m.metadata = JSON.parse(m.metadata);
-
-        console.log(m.metadata);
-
-        if(jQuery.isEmptyObject(m.metadata)) {
-          $('#metadata-output').html("Metadata empty");
-        } else {
-          var result = m.metadata.result;
-
-          function ilriDate(date) {
-            if(date) {
-              var arrayDate = (date).split('/');
-              return arrayDate[2] + "-" + arrayDate[1] + "-" + arrayDate[0];
-            }
-            return "";
-          }
-
-          // Getting authors
-          var authors = [];
-          var authorsMetadata = result.ILRI_actystaff.split(',');
-          $.each(authorsMetadata, function(i,element) {
-            var elementArray = $.trim(element).split(' ');
-
-            authors.push({
-                lastName: elementArray[1],
-                firstName: elementArray[0],
-                orcidId: ''
-            });
-          });
-
-          // Setting Metadata
-          setMetadata({
-              title: result.title,
-              description: result.notes,
-              citation: result.ILRI_actycitation,
-              date: ilriDate(result.ILRI_actydatavailable),
-              language: '',
-              keywords: function() {
-                var output = [];
-                $.each(result.tags, function(i,element) {
-                  output.push(element.display_name);
-                })
-                return output.join(', ');
-              },
-              handle: '',
-              country: result.ILRI_actycountries.join(', '),
-              doi: '',
-              authors: authors
-          });
-
-          // Set Authors
-          // authorsByService(authors);
-
-          $('#metadata-output').empty().append("Found metadata for " + data.metadataID);
-        }
-
-      },
-      complete: function() {
-        $(".deliverableDisseminationUrl").removeClass('input-loading');
-      },
-      error: function() {
-        console.log("error");
-        $('#metadata-output').empty().append("Invalid URL for searching metadata");
-      }
-  });
-}
-
-function getIfpriMetadata(channel,url,uri) {
-
-  // https://www.oclc.org/support/services/contentdm/help/customizing-website-help/other-customizations/contentdm-api-reference.en.html
-
-  var pathArray = uri.path().split('/');
-  var itemInfo = {
-      collection: pathArray[pathArray.indexOf("collection") + 1],
-      id: pathArray[pathArray.indexOf("id") + 1]
-  }
-
-  var data = {
-      pageID: "ifpri",
-      metadataID: "dmGetItemInfo/" + itemInfo.collection + "/" + itemInfo.id + "/json"
-  }
-
-  // get data from url
-  // Ajax to service
-  $.ajax({
-      'url': baseURL + '/metadataByLink.do',
-      'type': "GET",
-      'data': data,
-      beforeSend: function() {
-        $(".deliverableDisseminationUrl").addClass('input-loading');
-        $('#metadata-output').html("Searching ... " + data.metadataID);
-      },
-      success: function(m) {
-
-        m.metadata = JSON.parse(m.metadata);
-        console.log(m.metadata);
-
-        if(jQuery.isEmptyObject(m.metadata)) {
-          $('#metadata-output').html("Metadata empty");
-        } else {
-
-          function validateKeyObject(Obj) {
-            if(typeof Obj === 'object') {
-              if(jQuery.isEmptyObject(Obj)) {
-                return "";
-              }
-            } else {
-              return Obj;
-            }
-            return "";
-          }
-
-          // Getting authors
-          var authors = [];
-          var authorsMetadata = m.metadata.orcid.split(';');
-          $.each(authorsMetadata, function(i,element) {
-            var elementArray = $.trim(element).split(' ');
-            var orcid = elementArray[0]
-            elementArray.shift();
-            var name = elementArray.join('');
-
-            authors.push({
-                lastName: name.split(',')[0],
-                firstName: name.split(',')[1],
-                orcidId: orcid
-            });
-          });
-
-          // Setting Metadata
-          setMetadata({
-              title: validateKeyObject(m.metadata.title),
-              description: validateKeyObject(m.metadata.descri),
-              citation: validateKeyObject(m.metadata.full),
-              date: validateKeyObject(m.metadata.dmcreated),
-              language: validateKeyObject(m.metadata.langua),
-              keywords: validateKeyObject(m.metadata.loc),
-              handle: '',
-              country: validateKeyObject(m.metadata.contri),
-              doi: validateKeyObject(m.metadata.doi),
-              authors: authors
-          });
-
-          // Set Authors
-          // authorsByService(authors);
-
-          $('#metadata-output').empty().append("Found metadata for " + data.metadataID);
-        }
-
-      },
-      complete: function() {
-        $(".deliverableDisseminationUrl").removeClass('input-loading');
-      },
-      error: function() {
-        console.log("error");
-        $('#metadata-output').empty().append("Invalid URL for searching metadata");
-      }
-  });
-}
-
-function getCGSpaceMetadata(channel,url,uri) {
-  var data = {
-      pageID: "cgspace",
       metadataID: url
   }
 
@@ -713,51 +525,28 @@ function getCGSpaceMetadata(channel,url,uri) {
         $(".deliverableDisseminationUrl").addClass('input-loading');
         $('#metadata-output').html("Searching ... " + data.metadataID);
       },
-      success: function(m) {
-        console.log(m);
+      success: function(data) {
+        console.log(data);
 
-        if(m.errorMessage) {
-          $('#metadata-output').html(data.errorMessage);
-        } else {
-          m.metadata = JSON.parse(m.metadata);
-          if(jQuery.isEmptyObject(m.metadata)) {
+
+          if(jQuery.isEmptyObject(data)) {
             $('#metadata-output').html("Metadata empty");
           } else {
             var fields = [];
-            $.each(m.metadata, function(key,value) {
-              // console.log(key + "-" + value);
-              fields.push(key.charAt(0).toUpperCase() + key.slice(1));
-            });
 
-            // Getting authors
-            var authors = [];
-            $.each(m.metadata['contributor.author'], function(i,element) {
-              authors.push({
-                  lastName: (element).split(',')[0],
-                  firstName: (element).split(',')[1]
-              });
-            });
+
+
 
             // Setting Metadata
-            setMetadata({
-                title: m.metadata['title'],
-                citation: m.metadata['identifier.citation'],
-                date: m.metadata['date.available'].split("T")[0],
-                language: m.metadata['language.iso'],
-                country: m.metadata['coverage.country'],
-                description: m.metadata['description.abstract'],
-                keywords: m.metadata['subject'],
-                handle: m.metadata['identifier.uri'],
-                doi: m.metadata['identifier.doi'],
-                authors: authors
-            });
+            setMetadata(data);
 
             // Set Authors
-            // authorsByService(authors);
+            authorsByService(data.author);
 
-            // Open Acces Validation
+
+            // Open Access Validation
             var $input = $(".accessible ").parent().find('input');
-            if(m.metadata['identifier.status'] == "Open Access") {
+            if(data.openacess == "Open Access") {
               $input.val(true);
               $(".accessible ").parent().find("label").removeClass("radio-checked");
               $(".openAccessOptions").hide("slow");
@@ -769,9 +558,9 @@ function getCGSpaceMetadata(channel,url,uri) {
               $(".accessible .no-button-label ").addClass("radio-checked");
             }
 
-            $('#metadata-output').empty().append("Found metadata for " + data.metadataID);
+            $('#metadata-output').empty().append("Found metadata in " + channel);
           }
-        }
+
       },
       complete: function() {
         $(".deliverableDisseminationUrl").removeClass('input-loading');
@@ -783,83 +572,7 @@ function getCGSpaceMetadata(channel,url,uri) {
   });
 }
 
-function getDataverseMetadata(channel,url,uri) {
-  /**
-   * Dataverse metadata is harvest using swagger https://services.dataverse.harvard.edu/static/swagger-ui/
-   */
 
-  var data = {
-      key: 'c1580888-185f-4250-8f44-b98ca5e7b01b',
-      persistentId: uri.getQueryParamValue('persistentId')
-  }
-
-  $.ajax({
-      // url: 'https://dataverse.harvard.edu/api/datasets/:persistentId/',
-      url: 'https://services.dataverse.harvard.edu/miniverse/metrics/v1/datasets/by-persistent-id',
-      data: data,
-      beforeSend: function() {
-        $(".deliverableDisseminationUrl").addClass('input-loading');
-        $('#metadata-output').html("Searching ... " + data.persistentId);
-      },
-      success: function(m) {
-        if(m.status == "OK") {
-
-          console.log(m.data);
-
-          // Getting authors
-          var authors = [];
-          $.each(m.data.metadata_blocks.citation.author, function(i,element) {
-            authors.push({
-                lastName: (element.authorName).split(',')[0],
-                firstName: (element.authorName).split(',')[1],
-                orcidId: element.authorIdentifier
-            });
-          });
-
-          // Setting Metadata
-          setMetadata({
-              title: m.data.title,
-              citation: '',
-              date: m.data.timestamps.publicationdate.split(' ')[0],
-              language: '',
-              description: function() {
-                var output = "";
-                $.each(m.data.metadata_blocks.citation.dsDescription, function(i,element) {
-                  output += element.dsDescriptionValue;
-                })
-                return output;
-              },
-              keywords: function() {
-                var output = [];
-                $.each(m.data.metadata_blocks.citation.keyword, function(i,element) {
-                  output.push(element.keywordValue);
-                })
-                return output.join(', ');
-              },
-              handle: '',
-              doi: data.persistentId,
-              authors: authors
-          });
-
-          // Set Authors
-          // authorsByService(authors);
-
-          $('#metadata-output').empty().append("Found metadata for " + data.persistentId);
-
-        } else {
-          $('#metadata-output').empty().append("Invalid URL for searching metadata");
-        }
-
-      },
-      complete: function() {
-        $(".deliverableDisseminationUrl").removeClass('input-loading');
-      },
-      error: function() {
-        $('#metadata-output').empty().append("Invalid URL for searching metadata");
-      }
-  });
-
-}
 
 function validateAuthors(lastName,firstName) {
   if($(".authorsList").find('.author input.lastNameInput[value="' + lastName + '"]').exists()

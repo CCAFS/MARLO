@@ -16,16 +16,20 @@
 
 package org.cgiar.ccafs.marlo.rest.services.deliverables;
 
+import org.cgiar.ccafs.marlo.rest.services.deliverables.model.Author;
 import org.cgiar.ccafs.marlo.rest.services.deliverables.model.MetadataModel;
 import org.cgiar.ccafs.marlo.utils.DateTypeAdapter;
 import org.cgiar.ccafs.marlo.utils.RestConnectionUtil;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,6 +61,29 @@ public class DataverseClientApi extends MetadataClientApi {
       String metadata = xmlReaderConnectionUtil.getJsonRestClient(link);
       jo = new JSONObject(metadata);
       jo = jo.getJSONObject("data");
+      jo.put("description", jo.getJSONObject("dsDescription").get("dsDescriptionValue"));
+      StringBuilder keywords = new StringBuilder();
+
+      JSONArray keywordArray = jo.getJSONArray("keyword");
+      for (Object object : keywordArray) {
+        JSONObject jsonObject = (JSONObject) object;
+        if (keywords.length() == 0) {
+          keywords.append(jsonObject.get("keywordValue"));
+        } else {
+          keywords.append(", " + jsonObject.get("keywordValue"));
+        }
+      }
+      jo.put("keywords", keywords.toString());
+      List<Author> authors = new ArrayList<Author>();
+      JSONArray authorsArray = jo.getJSONArray("author");
+      for (Object object : authorsArray) {
+        JSONObject jsonObject = (JSONObject) object;
+        Author author = new Author(jsonObject.getString("authorName"));
+        author.setOrcidId(jsonObject.getString("authorIdentifier"));
+        authors.add(author);
+      }
+      jo.put("author", authors);
+      jo.put("doi", this.getId());
       GsonBuilder gsonBuilder = new GsonBuilder();
       gsonBuilder.registerTypeAdapter(Date.class, new DateTypeAdapter());
       Gson gson = gsonBuilder.create();
