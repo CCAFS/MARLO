@@ -73,6 +73,7 @@ public class FlywayContextListener implements ServletContextListener {
       flyway.migrate();
     }
 
+
   }
 
   private DataSource getDataSource() {
