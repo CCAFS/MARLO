@@ -16,6 +16,8 @@
 
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
+import org.cgiar.ccafs.marlo.data.dao.InstitutionLocationDAO;
+import org.cgiar.ccafs.marlo.data.dao.LocElementDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectPartnerDAO;
 import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
@@ -33,10 +35,15 @@ import com.google.inject.Inject;
 public class ProjectPartnerMySQLDAO implements ProjectPartnerDAO {
 
   private StandardDAO dao;
+  private LocElementDAO locElementDAO;
+  private InstitutionLocationDAO institutionDAO;
+
 
   @Inject
-  public ProjectPartnerMySQLDAO(StandardDAO dao) {
+  public ProjectPartnerMySQLDAO(StandardDAO dao, LocElementDAO locElementDAO, InstitutionLocationDAO institutionDAO) {
     this.dao = dao;
+    this.locElementDAO = locElementDAO;
+    this.institutionDAO = institutionDAO;
   }
 
   /**
@@ -50,14 +57,17 @@ public class ProjectPartnerMySQLDAO implements ProjectPartnerDAO {
 
     if (projectPartner.getSelectedLocations() != null) {
       for (InstitutionLocation institutioLocation : projectPartner.getSelectedLocations()) {
+        LocElement locElement = locElementDAO.findISOCode(institutioLocation.getLocElement().getIsoAlpha2());
+        InstitutionLocation institutionLocationDB =
+          institutionDAO.findByLocation(locElement.getId(), projectPartner.getInstitution().getId());
         ProjectPartnerLocation partnerLocation = new ProjectPartnerLocation();
-        partnerLocation.setInstitutionLocation(institutioLocation);
+        partnerLocation.setInstitutionLocation(institutionLocationDB);
         partnerLocation.setActive(true);
         partnerLocation.setActiveSince(new Date());
         partnerLocation.setCreatedBy(projectPartner.getCreatedBy());
         partnerLocation.setModificationJustification(projectPartner.getModificationJustification());
         partnerLocation.setModifiedBy(projectPartner.getCreatedBy());
-        partnerLocation.setProjectPartner(projectPartner);
+        partnerLocation.setProjectPartner(projectPartnerAdd);
         dao.save(partnerLocation);
       }
     }
@@ -76,13 +86,13 @@ public class ProjectPartnerMySQLDAO implements ProjectPartnerDAO {
       for (ProjectPartnerPerson projectPartnerPerson : projectPartner.getPartnerPersons()) {
         ProjectPartnerPerson projectPartnerPersonAdd = new ProjectPartnerPerson();
         projectPartnerPersonAdd.setActive(true);
-        projectPartnerPersonAdd.setActiveSince(projectPartnerPerson.getActiveSince());
-        projectPartnerPersonAdd.setCreatedBy(projectPartnerPerson.getCreatedBy());
-        projectPartnerPersonAdd.setModificationJustification(projectPartnerPerson.getModificationJustification());
-        projectPartnerPersonAdd.setModifiedBy(projectPartnerPerson.getCreatedBy());
+        projectPartnerPersonAdd.setActiveSince(projectPartner.getActiveSince());
+        projectPartnerPersonAdd.setCreatedBy(projectPartner.getCreatedBy());
+        projectPartnerPersonAdd.setModificationJustification(projectPartner.getModificationJustification());
+        projectPartnerPersonAdd.setModifiedBy(projectPartner.getCreatedBy());
         projectPartnerPersonAdd.setProjectPartner(projectPartnerAdd);
-        projectPartnerPersonAdd.setContactType(projectPartnerPersonAdd.getContactType());
-        projectPartnerPersonAdd.setUser(projectPartnerPersonAdd.getUser());
+        projectPartnerPersonAdd.setContactType(projectPartnerPerson.getContactType());
+        projectPartnerPersonAdd.setUser(projectPartnerPerson.getUser());
         dao.save(projectPartnerPersonAdd);
       }
     }
@@ -114,6 +124,7 @@ public class ProjectPartnerMySQLDAO implements ProjectPartnerDAO {
       projectPartnerAdd.setResponsibilities(projectPartner.getResponsibilities());
       projectPartnerAdd.setProject(projectPartner.getProject());
       dao.save(projectPartnerAdd);
+      projectPartnerAdd = dao.find(ProjectPartner.class, projectPartnerAdd.getId());
       this.addPersons(projectPartner, projectPartnerAdd);
       this.addOffices(projectPartner, projectPartnerAdd);
     } else {
