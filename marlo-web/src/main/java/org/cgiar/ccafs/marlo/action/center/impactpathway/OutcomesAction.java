@@ -282,8 +282,9 @@ public class OutcomesAction extends BaseAction {
 
         outcome.setMilestones(new ArrayList<>(
           outcome.getResearchMilestones().stream().filter(rm -> rm.isActive()).collect(Collectors.toList())));
-      }
 
+      }
+      outcome.getMilestones().sort(Comparator.nullsLast((p1, p2) -> p1.getTargetYear().compareTo(p2.getTargetYear())));
 
       if (selectedProgram.getResearchTopics() != null) {
         researchTopics = new ArrayList<>(selectedProgram.getResearchTopics().stream()
