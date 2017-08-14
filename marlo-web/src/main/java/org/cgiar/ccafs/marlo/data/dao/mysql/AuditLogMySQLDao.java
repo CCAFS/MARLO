@@ -215,7 +215,6 @@ public class AuditLogMySQLDao extends AbstractMarloDAO implements AuditLogDao {
           classMetadata.setPropertyValue(iAuditLog, name, relation, EntityMode.POJO);
         }
       }
-      session.close();
     } catch (JsonSyntaxException e) {
       e.printStackTrace();
     }
