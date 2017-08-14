@@ -15,7 +15,13 @@
         <th id="projectTitles" >[@s.text name="projectsList.projectTitles" /]</th>
         <th id="projectLeader" >[@s.text name="projectsList.projectLeader" /]</th>
         [#--  <th id="projectType">[@s.text name="projectsList.projectType" /]</th>--]
-        <th id="projectFlagships">[@s.text name="projectsList.projectFlagships" /]</th>
+        <th id="projectFlagships">
+          [#if action.hasProgramnsRegions()]
+            [@s.text name="projectsList.projectFlagshipsRegions" /] 
+          [#else]
+             [@s.text name="projectsList.projectFlagships" /]
+          [/#if]
+        </th>
         [#if !reportingActive]
           <th id="projectBudget">[@s.text name="projectsList.W1W2projectBudget" /]</th>
           <th id="projectBudget">[@s.text name="projectsList.W3projectBudget" /]</th>
@@ -41,7 +47,8 @@
         </td>
           [#-- Project Title --]
           <td class="left">
-            [#if isProjectNew]<span class="label label-info">New</span>[/#if]
+            [#if isProjectNew]<span class="label label-info">[@s.text name="global.new" /]</span>[/#if]
+            [#if project.administrative]<span class="label label-primary">[@s.text name="project.management" /]</span>[/#if]
             [#if project.title?has_content]
               <a href="${projectUrl}" title="${project.title}">
               [#if project.title?length < 120] ${project.title}</a> [#else] [@utilities.wordCutter string=project.title maxPos=120 /]...</a> [/#if]
@@ -68,8 +75,8 @@
             [#else]
               [@s.text name="projectsList.none" /]
             [/#if]
-          [#else]
-            <span class="programTag" style="border-color:#444">PMU</span>
+          [#else] 
+             <span class="programTag" style="border-color:#444">${(project.liaisonInstitution.crpProgram.acronym)!}</span>
           [/#if]
           </td>
           [#if !reportingActive]

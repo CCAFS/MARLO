@@ -109,7 +109,11 @@ public class UserManagerImp implements UserManager {
   @Override
   public User getUserByUsername(String username) {
     String email = userDAO.getEmailByUsername(username);
-    return this.getUserByEmail(email);
+    if (email != null) {
+      return this.getUserByEmail(email);
+    }
+    LOG.warn("Information related to the user {} wasn't found.", username);
+    return null;
   }
 
   @Override

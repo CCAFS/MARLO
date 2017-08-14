@@ -27,7 +27,7 @@
     [#-- Add --]
     <div class="buttons">
       <div class="buttons-content">
-        [#if action.canAddFunding() && (!crpClosed)]<a class="addButton" href="[@s.url namespace="/fundingSources" action='${(crpSession)!}/addNewFundingSources' ][/@s.url]">Add Funding Source</a>[/#if]
+        [#if action.canAddFunding() && (!crpClosed)]<a class="addButton" href="[@s.url namespace="/fundingSources" action='${(crpSession)!}/addNewFundingSources' ][/@s.url]"><span class="saveText">Add Funding Source </span></a>[/#if]
         <div class="clearfix"></div>
       </div>
     </div>

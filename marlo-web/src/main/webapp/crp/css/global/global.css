@@ -55,8 +55,12 @@ a:hover {
 }
 
 a.disabled {
-  color: #ccc !important;
-  cursor: context-menu;
+  background: #ffffff !important;
+  border: 1px solid #c5c5c5;
+  border-bottom: 3px solid #c5c5c5;
+  color: #848484 !important;
+  cursor: default;
+  text-decoration: none;
 }
 
 a.addLink {
