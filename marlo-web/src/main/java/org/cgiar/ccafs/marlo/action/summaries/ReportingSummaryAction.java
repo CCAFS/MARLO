@@ -192,6 +192,43 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   }
 
   /**
+   * Add columns depending on specificity parameters
+   * 
+   * @param masterReport: used to update the parameters
+   * @return masterReport with the added parameters.
+   */
+  private MasterReport addColumnParameters(MasterReport masterReport) {
+    // Set columns for BudgetByPartners
+    int columnBudgetPartner = 4;
+    String paramName = "BudgetPartner";
+    // used to which index will be excluded
+    ArrayList<Integer> exludeIndex = new ArrayList<>();
+    if (this.hasGender) {
+      columnBudgetPartner++;
+    } else {
+      exludeIndex.add(0);
+    }
+    if (this.hasW1W2Co) {
+      columnBudgetPartner++;
+    } else {
+      exludeIndex.add(2);
+    }
+    // Calculate column width
+    long width = 471l / columnBudgetPartner;
+    HashMap<String, Long> hm = this.calculateWidth(width, columnBudgetPartner, paramName, exludeIndex, 0l);
+    // Add x parameters
+    for (HashMap.Entry<String, Long> entry : hm.entrySet()) {
+      String key = entry.getKey();
+      Object value = entry.getValue();
+      masterReport.getParameterValues().put(key, value);
+    }
+    // add width
+    masterReport.getParameterValues().put("BudgetPartnerWidth", width);
+    return masterReport;
+  }
+
+
+  /**
    * Method to add i8n parameters to masterReport in Pentaho
    * 
    * @param masterReport
@@ -214,7 +251,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     masterReport.getParameterValues().put("i8nBudgetMenu",
       "Project " + this.getText("projects.menu.budget") + " (USD)");
     masterReport.getParameterValues().put("i8nBudgetPartnerMenu",
-      this.getText("projects.menu.budgetByPartners") + "(USD)");
+      this.getText("projects.menu.budgetByPartners") + " (USD)");
     masterReport.getParameterValues().put("i8nBudgetCoAsMenu", this.getText("planning.cluster") + " (USD)");
 
     /**
@@ -610,7 +647,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return masterReport;
   }
 
-
   public String calculateAcumulativeTarget(int yearCalculate, IpProjectIndicator id) {
     int acumulative = 0;
     try {
@@ -660,6 +696,20 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       return "Cannot be Calculated";
     }
     return String.valueOf(acumulative);
+  }
+
+
+  private HashMap<String, Long> calculateWidth(long width, int numColumns, String name, ArrayList<Integer> excludeIndex,
+    long xPosition) {
+    HashMap<String, Long> hm = new HashMap<String, Long>();
+    for (int i = 0; i <= numColumns; i++) {
+      if (!excludeIndex.contains(i)) {
+        hm.put("xPosition" + name + i, xPosition);
+        xPosition += width;
+      }
+    }
+
+    return hm;
   }
 
 
@@ -773,6 +823,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         masterReport.setDataFactory(cdf);
         // Set i8n for pentaho
         masterReport = this.addi8nParameters(masterReport);
+        // Set columns parameters (x and width)
+        masterReport = this.addColumnParameters(masterReport);
 
         // Start Setting Planning Subreports
         // Subreport Description

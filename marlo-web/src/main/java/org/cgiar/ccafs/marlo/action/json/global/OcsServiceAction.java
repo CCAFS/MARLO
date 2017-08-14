@@ -18,8 +18,8 @@ package org.cgiar.ccafs.marlo.action.json.global;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.ocs.MarloOcsClient;
 import org.cgiar.ccafs.marlo.ocs.model.AgreementOCS;
+import org.cgiar.ccafs.marlo.ocs.ws.MarloOcsClient;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.Map;

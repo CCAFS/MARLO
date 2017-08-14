@@ -77,7 +77,9 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
     boolean editParameter = false;
 
     String projectParameter = ((String[]) parameters.get(APConstants.FUNDING_SOURCE_REQUEST_ID))[0];
-
+    if (projectParameter == null) {
+      throw new NullPointerException();
+    }
     fundingSourceID = Long.parseLong(projectParameter);
 
     FundingSource project = fundingSourceManager.getFundingSourceById(fundingSourceID);

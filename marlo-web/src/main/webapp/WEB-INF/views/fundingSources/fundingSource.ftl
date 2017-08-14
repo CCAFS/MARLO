@@ -170,18 +170,18 @@
               [@customForm.select name="fundingSource.directDonor.id" i18nkey="projectCofunded.directDonor" className="donor" showTitle=false listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" required=false editable=editable /]
             </div>
           </div> 
-          <br>
-          [#-- Request partner adition --]
-          [#if editable]
-          <p id="addPartnerText" class="helpMessage">
-            [@s.text name="fundingSource.addDonorMessage.first" /]
-            <a class="popup" href="[@s.url action='${crpSession}/partnerSave' namespace="/projects"][@s.param name='fundingSourceID']${fundingSource.id?c}[/@s.param][/@s.url]">
-              [@s.text name="projectPartners.addPartnerMessage.second" /]
-            </a>
-          </p> 
-          [/#if]
         </div>
         [#-- End Direct Donor --]
+
+        [#-- Request partner adition --]
+        [#if editable]
+        <p id="addPartnerText" class="helpMessage">
+          [@s.text name="fundingSource.addDonorMessage.first" /]
+          <a class="popup" href="[@s.url action='${crpSession}/partnerSave' namespace="/projects"][@s.param name='fundingSourceID']${fundingSource.id?c}[/@s.param][/@s.url]">
+            [@s.text name="projectPartners.addPartnerMessage.second" /]
+          </a>
+        </p> 
+        [/#if]
       </div>
     </div>
     <h4 class="headTitle">Location information</h4> 

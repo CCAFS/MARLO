@@ -137,6 +137,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
       masterReport.getParameterValues().put("year", year);
       masterReport.getParameterValues().put("date", currentDate);
       masterReport.getParameterValues().put("regionalAvalaible", this.hasProgramnsRegions());
+      masterReport.getParameterValues().put("showDescription",
+        this.hasSpecificities(APConstants.CRP_REPORTS_DESCRIPTION));
       // Set i8n for pentaho
       masterReport = this.addi8nParameters(masterReport);
       ExcelReportUtil.createXLSX(masterReport, os);
