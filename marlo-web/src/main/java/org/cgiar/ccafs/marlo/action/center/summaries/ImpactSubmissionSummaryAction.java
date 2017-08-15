@@ -458,9 +458,10 @@ public class ImpactSubmissionSummaryAction extends BaseAction implements Summary
     TypedTableModel model =
       new TypedTableModel(new String[] {"shortName", "title", "research_topic", "outcome", "showResearchTopic", "id"},
         new Class[] {String.class, String.class, String.class, String.class, Boolean.class, Long.class});
-
-    for (CenterTopic researchTopic : researchProgram.getResearchTopics().stream().filter(rt -> rt.isActive())
-      .collect(Collectors.toList())) {
+    List<CenterTopic> researchTopics = researchProgram.getResearchTopics().stream()
+      .filter(rt -> rt.isActive() && rt.getResearchOutcomes().size() > 0).collect(Collectors.toList());
+    Collections.sort(researchTopics, (ra1, ra2) -> ra1.getOrder().compareTo(ra2.getOrder()));
+    for (CenterTopic researchTopic : researchTopics) {
       String researchTopicTitle = "";
       Boolean showResearchTopic;
       int countOutcome = 0;
