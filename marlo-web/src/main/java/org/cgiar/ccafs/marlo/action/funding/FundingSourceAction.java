@@ -579,8 +579,12 @@ public class FundingSourceAction extends BaseAction {
 
       status = new HashMap<>();
       List<AgreementStatusEnum> list = Arrays.asList(AgreementStatusEnum.values());
-      for (AgreementStatusEnum agreementStatusEnum : list) {
-        status.put(agreementStatusEnum.getStatusId(), agreementStatusEnum.getStatus());
+      if (this.hasSpecificities(APConstants.CRP_STATUS_FUNDING_SOURCES)) {
+        for (AgreementStatusEnum agreementStatusEnum : list) {
+          status.put(agreementStatusEnum.getStatusId(), agreementStatusEnum.getStatus());
+        }
+      } else {
+        status.put(AgreementStatusEnum.ONGOING.getStatusId(), AgreementStatusEnum.ONGOING.getStatus());
       }
 
 

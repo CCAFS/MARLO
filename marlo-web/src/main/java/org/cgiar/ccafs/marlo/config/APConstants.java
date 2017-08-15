@@ -45,6 +45,7 @@ public final class APConstants {
 
   public static final String CRP_CUSTOM_FILE = "crp_custom_file";
   public static final String CRP_CUSTOM_GENDER = "crp_custom_gender";
+  public static final String CRP_STATUS_FUNDING_SOURCES = "crp_status_funding_sources";
   public static final String CRP_DIVISION_FS = "crp_division_fs";
   public static final String CRP_EMAIL_FUNDING_SOURCE = "crp_email_funding_source";
   public static final String CRP_FPL_ROLE = "crp_fpl_rol";
