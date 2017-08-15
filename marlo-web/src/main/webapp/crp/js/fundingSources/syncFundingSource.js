@@ -13,10 +13,6 @@ function initSync() {
     settingDate(".startDateInput", ".endDateInput", ".extensionDateInput");
   }
   
-  
-  
-  
-
   // Harvest metadata from URL
   $syncButtons.on("click", syncMetadata);
 
@@ -42,6 +38,7 @@ function setMetadata(data) {
   $.each(data, function(key,value) {
     var $parent = $('.metadataElement-' + key);
     var $input = $parent.find(".metadataValue");
+    console.log('>> input : '+ $input.attr('class'));
     var $spanSuggested = $parent.find(".metadataSuggested");
     var $hide = $parent.find('.hide');
 
@@ -60,6 +57,7 @@ function setMetadata(data) {
 
     // Select2
     if($input.hasClass('select2-hidden-accessible')) {
+      console.log(key + " is select2");
       var inputValue = $input.val();
       var inputName = $input.attr("name");
       var $hiddenInput =
@@ -156,6 +154,7 @@ function getOCSMetadata() {
         ocsCode: $('input.financeCode').val()
       },
       beforeSend: function() {
+        $('.loading.syncBlock').show(); 
         $(".financeCode").addClass('input-loading');
         $('.financeCode-message').text("");
         $syncButtons.addClass('button-disabled');
@@ -206,6 +205,7 @@ function getOCSMetadata() {
         }
       },
       complete: function() {
+        $('.loading.syncBlock').hide(); 
         $(".financeCode").removeClass('input-loading');
         $syncButtons.removeClass('button-disabled');
         syncing = false;
