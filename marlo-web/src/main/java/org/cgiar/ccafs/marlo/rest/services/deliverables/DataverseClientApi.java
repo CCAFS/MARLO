@@ -60,7 +60,9 @@ public class DataverseClientApi extends MetadataClientApi {
     try {
       String metadata = xmlReaderConnectionUtil.getJsonRestClient(link);
       jo = new JSONObject(metadata);
-      jo = jo.getJSONObject("data");
+      System.out.println(jo);
+      JSONObject object2 = jo.getJSONObject("dsDescription");
+
       jo.put("description", jo.getJSONObject("dsDescription").get("dsDescriptionValue"));
       StringBuilder keywords = new StringBuilder();
 
