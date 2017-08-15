@@ -186,32 +186,47 @@
       [#-- Contact person name and email --]
       [#assign canSeePIEmail = action.hasSpecificities('crp_email_funding_source')]
       <div class="form-group row">
-          <div class="col-md-6 metadataElement-pInvestigator">[@customForm.input name="fundingSource.contactPersonName" i18nkey="projectCofunded.contactName" className="contactName metadataValue" required=true readOnly=isSynced editable=editable /]</div>
+          <div class="col-md-6 metadataElement-pInvestigator">[@customForm.input name="fundingSource.contactPersonName" help="projectCofunded.contactName.help" i18nkey="projectCofunded.contactName" className="contactName metadataValue" required=true readOnly=isSynced editable=editable /]</div>
           <div class="col-md-6" style="display:${canSeePIEmail?string('block','none')}">[@customForm.input name="fundingSource.contactPersonEmail" i18nkey="projectCofunded.contactEmail" className="contactEmail" required=true editable=editable /]</div>
       </div>
 
-      [#-- Donor --]
-      <div class="form-group">
-        <div class="row">
-          <div class="col-md-12 metadataElement-donorName">
-            [@customForm.select name="fundingSource.institution.id" i18nkey="projectCofunded.donor" className="donor"  listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" required=true editable=editable /]
-            <span class="text-warning metadataSuggested"></span><br />
-          </div>
-        </div>
+      [#-- Original Donor --]
+      <div class="form-group-donor">
+        <div class="form-group">
+          <div class="row">
+            <div class="col-md-12 metadataElement-donorName">
+              <label for="">[@s.text name="projectCofunded.donor" /]:[@customForm.req required=editable /]</label>
+              <span class="description"><i>([@s.text name="projectCofunded.donor.helpText" /])</i></span>
+              [@customForm.select name="fundingSource.institution.id" i18nkey="projectCofunded.donor" className="donor" showTitle=false  listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" required=true editable=editable /]
+              <span class="text-warning metadataSuggested"></span><br />
+            </div>
+          </div> 
+        </div>      
+        [#-- End Original Donor --]     
         
+        [#-- Direct Donor --]
+        <div class="form-group">
+          <div class="row">
+            <div class="col-md-12">
+              <label for="">[@s.text name="projectCofunded.directDonor" /]: </label>
+              <span class="description"><i>([@s.text name="projectCofunded.directDonor.helpText" /])</i></span><br>
+              [@customForm.select name="fundingSource.directDonor.id" i18nkey="projectCofunded.directDonor" className="donor" showTitle=false listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" required=false editable=editable /]
+            </div>
+          </div> 
+        </div>
+        [#-- End Direct Donor --]
+
         [#-- Request partner adition --]
         [#if editable]
         <p id="addPartnerText" class="helpMessage">
-          [@s.text name="projectPartners.addPartnerMessage.first" /]
+          [@s.text name="fundingSource.addDonorMessage.first" /]
           <a class="popup" href="[@s.url action='${crpSession}/partnerSave' namespace="/projects"][@s.param name='fundingSourceID']${fundingSource.id?c}[/@s.param][/@s.url]">
             [@s.text name="projectPartners.addPartnerMessage.second" /]
           </a>
         </p> 
         [/#if]
       </div>
-      
     </div>
-    
     <h4 class="headTitle">Location information</h4> 
     <div class="borderBox informationWrapper">
     [#-- GLOBAL DIMENSION --]

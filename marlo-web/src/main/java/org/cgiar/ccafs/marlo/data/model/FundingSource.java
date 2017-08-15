@@ -28,18 +28,17 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   @Expose
   private Date activeSince;
 
-
   private List<FundingSourceBudget> budgets;
 
-  private List<FundingSourceInstitution> institutions;
 
+  private List<FundingSourceInstitution> institutions;
 
   @Expose
   private BudgetType budgetType;
 
+
   @Expose
   private Boolean w1w2;
-
 
   @Expose
   private String contactPersonEmail;
@@ -51,7 +50,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   @Expose
   private User createdBy;
-
 
   @Expose
   private Crp crp;
@@ -75,7 +73,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   @Expose
   private FileDB file;
 
-
   @Expose
   private PartnerDivision partnerDivision;
 
@@ -85,8 +82,8 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   private Set<FundingSourceBudget> fundingSourceBudgets = new HashSet<FundingSourceBudget>(0);
 
-  private Set<FundingSource> fundingSources = new HashSet<FundingSource>(0);
 
+  private Set<FundingSource> fundingSources = new HashSet<FundingSource>(0);
 
   private Set<FundingSourceInstitution> fundingSourceInstitutions = new HashSet<FundingSourceInstitution>(0);
 
@@ -95,10 +92,10 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
    * Funding Source Locations
    */
   private Set<FundingSourceLocation> fundingSourceLocations = new HashSet<FundingSourceLocation>(0);
+
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
 
   private List<FundingSourceLocation> fundingRegions;
-
 
   private List<FundingSourceLocation> fundingCountry;
 
@@ -108,12 +105,13 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   @Expose
   private Long id;
 
-
   @Expose
   private Institution institution;
 
+
   @Expose
-  private String modificationJustification;
+  private Institution directDonor;
+
 
   @Expose
   private User modifiedBy;
@@ -121,16 +119,20 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   private Set<ProjectBudget> projectBudgets = new HashSet<ProjectBudget>(0);
 
+  @Expose
+  private String modificationJustification;
 
   private List<ProjectBudget> projectBudgetsList;
   @Expose
   private Date startDate;
 
+
   @Expose
   private Date endDate;
 
-  @Expose
   private Integer status;
+
+
   @Expose
   private String title;
 
@@ -170,7 +172,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     this.crp = crp;
   }
 
-
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
@@ -198,7 +199,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
-
   public List<FundingSourceBudget> getBudgets() {
     return budgets;
   }
@@ -206,6 +206,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   public BudgetType getBudgetType() {
     return budgetType;
   }
+
 
   public String getComposedName() {
     try {
@@ -240,6 +241,10 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   }
 
 
+  public Institution getDirectDonor() {
+    return directDonor;
+  }
+
   public Date getEndDate() {
     return endDate;
   }
@@ -272,7 +277,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return fundingSourceBudgets;
   }
 
-
   public Set<FundingSourceInstitution> getFundingSourceInstitutions() {
     return fundingSourceInstitutions;
   }
@@ -295,6 +299,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return id;
   }
 
+
   public Institution getInstitution() {
     return institution;
   }
@@ -309,6 +314,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
+
 
   @Override
   public String getModificationJustification() {
@@ -427,7 +433,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return global;
   }
 
-
   public void setActive(boolean active) {
     this.active = active;
   }
@@ -466,6 +471,10 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   public void setDescription(String description) {
     this.description = description;
+  }
+
+  public void setDirectDonor(Institution directDonor) {
+    this.directDonor = directDonor;
   }
 
   public void setEndDate(Date endDate) {

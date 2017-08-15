@@ -1,3 +1,4 @@
+
 $(document).ready(init);
 
 function init() {
@@ -11,6 +12,30 @@ function init() {
         option.prop('disabled', true);
         // option.hide();
       });
+  
+  // Original Donor
+  $(".donor").on("change", function() {
+    var $option = $(this).find("option:selected");
+    var selectedValue = $option.val();
+    var count = 0;
+    // Count repeated donors
+    $('select.donor').each(function(i, e){
+      if (e.value == selectedValue) {
+        count++;
+      }
+    });
+    // Check if the donor is already selected
+    if (count > 1){
+      // Reset Select
+      $(this).val(-1);
+      $(this).trigger('select2:change');
+      // Noty Message
+      var message ="Donors must be different";
+      var notyOptions = jQuery.extend({}, notyDefaultOptions);
+      notyOptions.text = message;
+      noty(notyOptions);
+    }
+  });
 
   // Agreement status & Donor
   $('form select').select2({
