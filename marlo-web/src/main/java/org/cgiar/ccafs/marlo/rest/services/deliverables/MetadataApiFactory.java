@@ -20,10 +20,11 @@ package org.cgiar.ccafs.marlo.rest.services.deliverables;
 public class MetadataApiFactory {
 
   /**
-   * TODO DOCUMENT
+   * Api is created depending on the page we are looking for, if you are going to add a new repository you must create
+   * the class and write the methods and add it here in the factory
    * 
-   * @param clientType
-   * @return
+   * @param clientType the id of the page we want to search
+   * @return the api of the page
    */
   public static MetadataClientApi getMetadataClientApi(String clientType) {
     if (clientType == null) {
