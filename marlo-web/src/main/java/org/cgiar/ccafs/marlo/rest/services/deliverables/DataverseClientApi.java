@@ -18,17 +18,11 @@ package org.cgiar.ccafs.marlo.rest.services.deliverables;
 
 import org.cgiar.ccafs.marlo.rest.services.deliverables.model.Author;
 import org.cgiar.ccafs.marlo.rest.services.deliverables.model.MetadataModel;
-import org.cgiar.ccafs.marlo.utils.DateTypeAdapter;
 import org.cgiar.ccafs.marlo.utils.RestConnectionUtil;
 
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -42,31 +36,32 @@ public class DataverseClientApi extends MetadataClientApi {
   private final String REST_URL =
     "https://services.dataverse.harvard.edu/miniverse/metrics/v1/datasets/by-persistent-id?key=c1580888-185f-4250-8f44-b98ca5e7b01b&persistentId=doi:{0}";
   private RestConnectionUtil xmlReaderConnectionUtil;
-  private Map<String, String> coverterAtrributes;
+
 
   public DataverseClientApi() {
     xmlReaderConnectionUtil = new RestConnectionUtil();
-    coverterAtrributes = new HashMap<String, String>();
   }
 
-  /**
-   * TODO implement method
-   */
   @Override
   public MetadataModel getMetadata(String link) {
-    MetadataModel metadataModel = null;
+    MetadataModel metadataModel = new MetadataModel();
     JSONObject jo = new JSONObject();
 
     try {
       String metadata = xmlReaderConnectionUtil.getJsonRestClient(link);
       jo = new JSONObject(metadata);
       System.out.println(jo);
-      JSONObject object2 = jo.getJSONObject("dsDescription");
-
-      jo.put("description", jo.getJSONObject("dsDescription").get("dsDescriptionValue"));
+      jo = jo.getJSONObject("data");
+      JSONObject citation = jo.getJSONObject("metadata_blocks").getJSONObject("citation");
+      System.out.println(citation);
+      metadataModel.setTitle(citation.get("title").toString());
+      JSONArray deJsonObject = citation.getJSONArray("dsDescription");
+      for (Object object : deJsonObject) {
+        JSONObject jsonObject = (JSONObject) object;
+        metadataModel.setDescription(jsonObject.getString("dsDescriptionValue"));
+      }
       StringBuilder keywords = new StringBuilder();
-
-      JSONArray keywordArray = jo.getJSONArray("keyword");
+      JSONArray keywordArray = citation.getJSONArray("keyword");
       for (Object object : keywordArray) {
         JSONObject jsonObject = (JSONObject) object;
         if (keywords.length() == 0) {
@@ -75,27 +70,23 @@ public class DataverseClientApi extends MetadataClientApi {
           keywords.append(", " + jsonObject.get("keywordValue"));
         }
       }
-      jo.put("keywords", keywords.toString());
+      metadataModel.setKeywords(keywords.toString());
       List<Author> authors = new ArrayList<Author>();
-      JSONArray authorsArray = jo.getJSONArray("author");
+      JSONArray authorsArray = citation.getJSONArray("author");
       for (Object object : authorsArray) {
         JSONObject jsonObject = (JSONObject) object;
         Author author = new Author(jsonObject.getString("authorName"));
-        author.setOrcidId(jsonObject.getString("authorIdentifier"));
+        if (jsonObject.has("authorIdentifier")) {
+          author.setOrcidId(jsonObject.getString("authorIdentifier"));
+        }
         authors.add(author);
       }
-      jo.put("author", authors);
-      jo.put("doi", this.getId());
-      GsonBuilder gsonBuilder = new GsonBuilder();
-      gsonBuilder.registerTypeAdapter(Date.class, new DateTypeAdapter());
-      Gson gson = gsonBuilder.create();
-      String data = jo.toString();
-      for (String key : coverterAtrributes.keySet()) {
-        data = data.replace(key, coverterAtrributes.get(key));
-      }
-      metadataModel = gson.fromJson(data, MetadataModel.class);
+      Author[] authorsArr = new Author[authors.size()];
+      authorsArr = authors.toArray(authorsArr);
+      metadataModel.setAuthors(authorsArr);
+      metadataModel.setDoi(this.getId());
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.error(e.getLocalizedMessage());
       jo = null;
     }
 
