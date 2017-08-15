@@ -33,6 +33,8 @@
   
   <h4 class="headTitle">General information</h4> 
     <div class="borderBox">
+      [#-- Loading --]
+      <div class="loading syncBlock" style="display:none"></div>
       
       <div class="form-group row">
         <div class="col-md-7 managingPartners">
@@ -154,12 +156,10 @@
         </p>
       </div>
        
-      [#-- Agreement status and total budget --]
+      
       <div class="form-group">
         <div class="row">
-          <div class="col-md-6 metadataElement-contractStatusId">
-            [@customForm.select name="fundingSource.status" i18nkey="projectCofunded.agreementStatus" className="agreementStatus metadataValue"  listName="status" keyFieldName=""  displayFieldName="" header=false disabled=isSynced editable=editable /] </div>
-            [#if isSynced && editable]<input type="hidden" class="selectHiddenInput" name="fundingSource.status" value="${(fundingSource.status)!}" />[/#if]
+          [#-- Funding Window --]
           <div class="col-md-6 metadataElement-fundingTypeId">
             [@customForm.select name="fundingSource.budgetType.id" i18nkey="projectCofunded.type" className="type metadataValue" listName="budgetTypes" header=false required=true disabled=isSynced editable=editable && action.canEditType() /]
             [#if isSynced && editable && action.canEditType()]<input type="hidden" class="selectHiddenInput" name="fundingSource.budgetType.id" value="${(fundingSource.budgetType.id)!}" />[/#if]
@@ -180,6 +180,11 @@
               </div>
             [/#if]
           </div>
+          [#-- Agreement status --]
+          <div class="col-md-6 metadataElement-contractStatusId">
+            [@customForm.select name="fundingSource.status" i18nkey="projectCofunded.agreementStatus" className="agreementStatus metadataValue"  listName="status" keyFieldName=""  displayFieldName="" header=false disabled=isSynced editable=editable /] 
+            [#if isSynced && editable]<input type="hidden" class="selectHiddenInput" name="fundingSource.status" value="${(fundingSource.status)!}" />[/#if]
+          </div>
         </div>
       </div>
       
@@ -192,27 +197,23 @@
 
       [#-- Original Donor --]
       <div class="form-group-donor">
-        <div class="form-group">
-          <div class="row">
-            <div class="col-md-12 metadataElement-donorName">
-              <label for="">[@s.text name="projectCofunded.donor" /]:[@customForm.req required=editable /]</label>
-              <span class="description"><i>([@s.text name="projectCofunded.donor.helpText" /])</i></span>
-              [@customForm.select name="fundingSource.institution.id" i18nkey="projectCofunded.donor" className="donor" showTitle=false  listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" required=true editable=editable /]
-              <span class="text-warning metadataSuggested"></span><br />
-            </div>
-          </div> 
+        <div class="form-group row">
+          <div class="col-md-12 metadataElement-donorName">
+            <label for="">[@s.text name="projectCofunded.donor" /]:[@customForm.req required=editable /]</label>
+            <span class="description"><i>([@s.text name="projectCofunded.donor.helpText" /])</i></span>
+            [@customForm.select name="fundingSource.institution.id" i18nkey="projectCofunded.donor" className="donor" showTitle=false  listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" required=true editable=editable /]
+            <span class="text-warning metadataSuggested"></span><br />
+          </div>
         </div>      
         [#-- End Original Donor --]     
         
         [#-- Direct Donor --]
-        <div class="form-group">
-          <div class="row">
-            <div class="col-md-12">
-              <label for="">[@s.text name="projectCofunded.directDonor" /]: </label>
-              <span class="description"><i>([@s.text name="projectCofunded.directDonor.helpText" /])</i></span><br>
-              [@customForm.select name="fundingSource.directDonor.id" i18nkey="projectCofunded.directDonor" className="donor" showTitle=false listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" required=false editable=editable /]
-            </div>
-          </div> 
+        <div class="form-group row">
+          <div class="col-md-12">
+            <label for="">[@s.text name="projectCofunded.directDonor" /]: </label>
+            <span class="description"><i>([@s.text name="projectCofunded.directDonor.helpText" /])</i></span><br>
+            [@customForm.select name="fundingSource.directDonor.id" i18nkey="projectCofunded.directDonor" className="donor" showTitle=false listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" required=false editable=editable /]
+          </div>
         </div>
         [#-- End Direct Donor --]
 

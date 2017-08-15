@@ -3,14 +3,13 @@ $(document).ready(init);
 
 function init() {
 
-  /** Check region option * */
+  // Check region option
   $("#regionList").find(".region").each(
       function(i,e) {
         var option =
             $("#regionSelect").find(
                 "option[value='" + $(e).find("input.rId").val() + "-" + $(e).find("input.regionScope").val() + "']");
         option.prop('disabled', true);
-        // option.hide();
       });
   
   // Original Donor
@@ -59,6 +58,7 @@ function init() {
     $(this).trigger("change.select2");
   });
 
+  // Remove partner
   $(".removeLeadPartner").on("click", removeLeadPartner);
 
   // Country item
@@ -77,9 +77,11 @@ function init() {
     $option.remove();
     $(this).trigger("change.select2");
   });
+  
+  // Remove country item
   $(".removeCountry").on("click", removeCountry);
 
-  // REGION item
+  // Region item
   $("#regionSelect").on("change", function() {
     var option = $(this).find("option:selected");
     if(option.val() != "-1") {
@@ -89,6 +91,8 @@ function init() {
       $('#regionSelect').select2();
     }
   });
+  
+  // Remove region item
   $(".removeRegion").on("click", removeRegion);
 
   // Setting Currency Inputs
@@ -102,7 +106,7 @@ function init() {
       width: '100%'
   });
 
-  changeDonorByFundingType($(".type").val(), $(".donor"))
+  // changeDonorByFundingType($(".type").val(), $(".donor"))
 
   // Check Funding type
   onChangeFundingType($(".type").val());
@@ -112,8 +116,6 @@ function init() {
     templateResult: budgetTypeTemplate
   });
   
-  $(".removeLeadPartner").on("click", removeLeadPartner);
-
   // When select center as Funding Window
   var lastDonor = -1;
   $("select.type").on("change", function() {
@@ -155,6 +157,7 @@ function init() {
       }
   });
 
+  // Remove file event
   $uploadBlock.find('.removeIcon').on('click', function() {
     $uploadBlock.find('.textMessage .contentResult').html("");
     $uploadBlock.find('.textMessage').hide();
@@ -162,7 +165,7 @@ function init() {
     $('input#fileID').val('');
   });
 
-  // Principal investigator auto-complete
+  // Add Principal investigator auto-complete
   addContactAutoComplete();
 
   // Disabled Auto save AJAX if click Save
@@ -171,6 +174,7 @@ function init() {
     autoSaveActive = false;
   });
 
+  // General YES/NO event
   $(".button-label").on("click", function() {
     var valueSelected = $(this).hasClass('yes-button-label');
     var $input = $(this).parent().find('input');
@@ -190,20 +194,23 @@ function init() {
   });
   
   // Check total grant amount
-  $('.currencyInput').on('keyup', function(){
-    var grantAmount = $('#grantTotalAmount input').val();
-    var total = 0
-    $('.currencyInput').each(function(i,e) {
-      total = total + removeCurrencyFormat(e.value || "0");
-    });
-    $('#grantTotalAmount .remaining').text(setCurrencyFormat(grantAmount - total));
-    
-    if (grantAmount < total){
-      $('#grantTotalAmount').addClass('fieldError').animateCss('shake');
-    }else{
-      $('#grantTotalAmount').removeClass('fieldError');
-    }
-  }).trigger('keyup');
+  $('.currencyInput').on('keyup', keyupBudgetYear).trigger('keyup');
+}
+
+
+function keyupBudgetYear(){
+  var grantAmount = $('#grantTotalAmount input').val();
+  var total = 0
+  $('.currencyInput').each(function(i,e) {
+    total = total + removeCurrencyFormat(e.value || "0");
+  });
+  $('#grantTotalAmount .remaining').text(setCurrencyFormat(grantAmount - total));
+  
+  if (grantAmount < total){
+    $('#grantTotalAmount').addClass('fieldError').animateCss('shake');
+  }else{
+    $('#grantTotalAmount').removeClass('fieldError');
+  }
 }
 
 /**
@@ -697,14 +704,20 @@ function settingDate(start,end,extensionDate) {
       $('.budgetByYears .nav-tabs').append(tab);
 
       if(!$('#fundingYear-' + startYear).exists()) {
+        // CustomName
+        var customName = 'fundingSource.budgets[-1]';
         // Build Content
-        var content = '<div class="tab-pane col-md-4 going" id="fundingYear-' + startYear + '">';
+        var content =  '<div class="tab-pane going" id="fundingYear-' + startYear + '">';
+        content += '<div class="form-group row">';
+        content += '<div class="col-md-4">';
         content += '<label for="">Budget for ' + startYear + ':</label>';
-        content += '<input type="hidden" name="fundingSource.budgets[-1].year" value="' + startYear + '">';
+        content += '<input type="hidden" name="' + customName + '.year" value="' + startYear + '">';
         content +=
-            '<input type="text" name="fundingSource.budgets[-1].budget" class="currencyInput form-control input-sm col-md-4" />';
+            '<input type="text" name="' + customName + '.budget" class="currencyInput form-control input-sm" />';
         content += '</div>';
-
+        content += '</div>';
+        content += '</div>';
+        
         var $content = $(content);
         // Set indexes
         $content.setNameIndexes(1, index);
@@ -713,6 +726,10 @@ function settingDate(start,end,extensionDate) {
 
         // Set currency format
         $content.find('input.currencyInput').currencyInput();
+        
+        // Set Budget currency event that check the total grant amount
+        $content.find('.currencyInput').on('keyup', keyupBudgetYear);
+        
       } else {
         // Set indexes
         $('#fundingYear-' + startYear).setNameIndexes(1, index);
@@ -789,8 +806,7 @@ function ajaxService(url,data) {
         $.each(m.institutions, function(i,e) {
           $select.addOption(e.id, e.name);
         });
-        changeDonorByFundingType(data.budgetTypeID, $select)
-
+        changeDonorByFundingType(data.budgetTypeID, $select);
       },
       error: function(e) {
         console.log(e);
