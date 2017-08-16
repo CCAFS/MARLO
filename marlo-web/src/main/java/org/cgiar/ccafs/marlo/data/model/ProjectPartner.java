@@ -4,6 +4,7 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -56,12 +57,11 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
 
   private Set<ProjectPartnerLocation> projectPartnerLocations = new HashSet<ProjectPartnerLocation>(0);
 
-  private List<InstitutionLocation> selectedLocations;
+  private List<InstitutionLocation> selectedLocations = new ArrayList<>();
 
+  private List<ProjectPartnerPerson> partnerPersons = new ArrayList<>();
 
-  private List<ProjectPartnerPerson> partnerPersons;
-
-  private List<ProjectPartnerContribution> partnerContributors;
+  private List<ProjectPartnerContribution> partnerContributors = new ArrayList<>();
 
   public ProjectPartner() {
   }
