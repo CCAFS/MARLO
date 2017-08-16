@@ -109,8 +109,8 @@
             [/#if]
           </div>
         </div>
-        <div id="metadata-output"></div>
-        <input type="hidden" name="fundingSource.syncedDate" value="${(fundingSource.syncedDate?date)!'2017-06-30'}" />
+        <div id="metadata-output">${(fundingSource.syncedDate?date)!}</div>
+        <input type="hidden" class="fundingSourceSyncedDate" name="fundingSource.syncedDate" value="${(fundingSource.syncedDate?date)!'2017-06-30'}" />
         
         
       </div>
@@ -211,7 +211,7 @@
         <div class="form-group row">
           <div class="col-md-12">
             <label for="">[@s.text name="projectCofunded.directDonor" /]: </label>
-            <span class="description"><i>([@s.text name="projectCofunded.directDonor.helpText" /])</i></span><br>
+            <span class="description"><i>([@s.text name="projectCofunded.directDonor.helpText" /])</i></span>
             [@customForm.select name="fundingSource.directDonor.id" i18nkey="projectCofunded.directDonor" className="donor" showTitle=false listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" required=false editable=editable /]
           </div>
         </div>

@@ -86,6 +86,8 @@ function syncFundingSource() {
   $('.financeCode').attr('readOnly', true);
   // Update Grant total amount triggering the currency inputs
   $('.currencyInput').trigger('keyup');
+  // Update Funding source
+  $('.fundingSourceSyncedDate').val(new Date());
   // Update component
   $(document).trigger('updateComponent');
   

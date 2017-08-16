@@ -556,7 +556,7 @@ function checkRegionList(block) {
 }
 
 function settingDate(start,end,extensionDate) {
-  var dateFormat = "yy-mm-dd";
+  var dateFormat = "yyyy-MM";
   var from = $(start).datepicker({
       dateFormat: dateFormat,
       minDate: MIN_DATE,
@@ -628,10 +628,7 @@ function settingDate(start,end,extensionDate) {
         var selectedDate = new Date(inst.selectedYear, inst.selectedMonth + 1, 0);
         if(budgetsConflicts(inst.selectedYear + 1, extension.val().split('-')[0])) {
           $(this).datepicker("hide");
-          return
-          
-
-        }
+          return        }
         $(this).datepicker('setDate', selectedDate);
         if(selectedDate != "") {
           $(to).datepicker("option", "maxDate", selectedDate);
