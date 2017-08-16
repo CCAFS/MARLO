@@ -31,7 +31,7 @@
 	border-style: solid;
     border-width: 1px;
     border-radius: 7px;
-    border-color: #ccc;
+    border-color: #E7E6E6;
     width: 28%;
     background-color: #f2f2f2;
     display: inline-flex;
@@ -59,7 +59,7 @@
 .newCapdevForm{
 		border-style: solid;
 		border-width: 1px;
-		border-color: #ccc;
+		border-color: #E7E6E6;
 }
 
 .newCapdevField{
@@ -70,7 +70,7 @@
 
 .approachesListTitle{
 		margin-left:3%;
-		border-bottom: 1px solid #ccc;
+		border-bottom: 1px solid #E7E6E6;
 		width: 94%;
 		font-family: Sans-serif;
 		font-weight: 600;
@@ -79,14 +79,14 @@
 
 .approachesListContainer{
 	margin:1%;
-	border-left: 3px solid #ccc;
-	border-bottom: 1px solid #ccc;
+	border-left: 3px solid #E7E6E6;
+	border-bottom: 1px solid #E7E6E6;
 }
 
 .objectivesTitle{
 	width: 94%;
 	margin-left:3%;
-	border-bottom: 1px solid #ccc;
+	border-bottom: 1px solid #E7E6E6;
 	font-family: Sans-serif;
 	font-weight: 600;
 }
@@ -97,8 +97,8 @@
 
 .outComesContainer{
     margin:1%;
-	border-left: 3px solid #ccc;
-	border-bottom: 1px solid #ccc;
+	border-left: 3px solid #E7E6E6;
+	border-bottom: 1px solid #E7E6E6;
 
 }
 
@@ -116,7 +116,7 @@
 	padding: 2%;
 	border-style: solid;
     border-width: 1px;
-    border-color: #ccc;
+    border-color: #E7E6E6;
 }
 
 .paintedDot{
@@ -128,14 +128,14 @@
 
 .notPaintedDot{
 	border-radius: 50%;
-	background-color: #cccccc;
+	background-color: #E7E6E6;
 	width: 1px;
 }
 
 .attachTitle{
 	width: 94%;
 	margin-left:3%;
-	border-bottom: 1px solid #ccc;
+	border-bottom: 1px solid #E7E6E6;
 	font-family: Sans-serif;
 	font-weight: 600;
 }
@@ -143,7 +143,7 @@
 .attachmentContainer{
 	border-style: dashed;
 	border-width: 1px;
-	border-color: #ccc;
+	border-color: #E7E6E6;
 	width: 94%;
 	min-height: 100px;
 	margin-left:3%;
@@ -153,7 +153,7 @@
 .deliverablesTitle{
 	width: 94%;
 	margin-left:3%;
-	border-bottom: 1px solid #ccc;
+	border-bottom: 1px solid #E7E6E6;
 	font-family: Sans-serif;
 	font-weight: 600;
 }
@@ -161,7 +161,7 @@
 .deliverablesContainer{
 	border-style: dashed;
 	border-width: 1px;
-	border-color: #ccc;
+	border-color: #E7E6E6;
 	width: 94%;
 	min-height: 100px;
 	margin:3%;
@@ -171,13 +171,13 @@
 .newDeliverableForm{
 	border-style: solid;
 	border-width: 1px;
-	border-color: #ccc;
+	border-color: #E7E6E6;
 }
 
 .supporDocumentsContainer{
 	border-style: dashed;
 	border-width: 1px;
-	border-color: #ccc;
+	border-color: #E7E6E6;
 	
 }
 
@@ -192,8 +192,8 @@
 
 .borderContainer{
 	margin:1%;
-	border-left: 3px solid #ccc;
-	border-bottom: 1px solid #ccc;
+	border-left: 3px solid #E7E6E6;
+	border-bottom: 1px solid #E7E6E6;
 }
 
 
@@ -220,15 +220,13 @@
 
 
 .listContainer{
-	margin-left: 3%;
-	border-left: 3px solid #ccc;
-	border-bottom: 1px solid #ccc;
-	width: 47%;
+	border-left: 3px solid #E7E6E6;
+	border-bottom: 1px solid #E7E6E6;
 }
 
 .listContainerTitle{
 	margin-left:3%;
-	border-bottom: 1px solid #ccc;
+	border-bottom: 1px solid #E7E6E6;
 	width: 45%;
 	font-family: Sans-serif;
 	font-weight: 600;
@@ -317,3 +315,11 @@
 	 color:red;
 }
 
+.borderedBox{
+	border: 2px solid #fff;
+}
+
+.capdevDimension{
+	border-bottom: 1px solid #E7E6E6;
+	margin: 2% 0 2% 0;
+}

@@ -37,6 +37,10 @@ public class CapacityDevelopment implements java.io.Serializable {
   private Date startDate;
   private Date endDate;
   private Long duration;
+  private Boolean global;
+  private Boolean regional;
+  private String sGlobal;
+  private String sRegional;
   private Integer numParticipants;
   private Integer numMen;
   private Integer numWomen;
@@ -58,10 +62,10 @@ public class CapacityDevelopment implements java.io.Serializable {
   public CapacityDevelopment(CenterProject project, User usersByModifiedBy, User usersByCreatedBy,
     CenterArea researchArea, Crp crp, CenterProgram researchProgram, String title, CapacityDevelopmentType capdevType,
     int category, boolean active, String modificationJustification, String ctFirstName, String ctLastName,
-    String ctEmail, Date startDate, Date endDate, Long duration, Integer numParticipants, Integer numMen,
-    Integer numWomen, Set<CapdevLocations> capdevLocations, Set<CapdevDiscipline> capdevDisciplines,
-    Set<CapdevTargetgroup> capdevTargetgroups, Set<CapdevParticipant> capdevParticipants,
-    Set<CapdevOutputs> capdevOutputses, Set<CapdevPartners> capdevPartnerses,
+    String ctEmail, Date startDate, Date endDate, Long duration, Boolean global, Boolean regional,
+    Integer numParticipants, Integer numMen, Integer numWomen, Set<CapdevLocations> capdevLocations,
+    Set<CapdevDiscipline> capdevDisciplines, Set<CapdevTargetgroup> capdevTargetgroups,
+    Set<CapdevParticipant> capdevParticipants, Set<CapdevOutputs> capdevOutputses, Set<CapdevPartners> capdevPartnerses,
     Set<CapdevSupportingDocs> capdevSupportingDocses) {
     this.project = project;
     this.usersByModifiedBy = usersByModifiedBy;
@@ -80,6 +84,8 @@ public class CapacityDevelopment implements java.io.Serializable {
     this.startDate = startDate;
     this.endDate = endDate;
     this.duration = duration;
+    this.global = global;
+    this.regional = regional;
     this.numParticipants = numParticipants;
     this.capdevLocations = capdevLocations;
     this.capdevDisciplines = capdevDisciplines;
@@ -186,6 +192,10 @@ public class CapacityDevelopment implements java.io.Serializable {
     return date;
   }
 
+  public Boolean getGlobal() {
+    return global;
+  }
+
   public Long getId() {
     return this.id;
   }
@@ -210,6 +220,10 @@ public class CapacityDevelopment implements java.io.Serializable {
     return this.project;
   }
 
+  public Boolean getRegional() {
+    return regional;
+  }
+
   public CenterArea getResearchArea() {
     return this.researchArea;
   }
@@ -217,6 +231,15 @@ public class CapacityDevelopment implements java.io.Serializable {
   public CenterProgram getResearchProgram() {
     return this.researchProgram;
   }
+
+  public String getsGlobal() {
+    return sGlobal;
+  }
+
+  public String getsRegional() {
+    return sRegional;
+  }
+
 
   public String getStarDateFormat() {
     final String pattern = "yyyy-MM-dd";
@@ -232,6 +255,7 @@ public class CapacityDevelopment implements java.io.Serializable {
     return this.startDate;
   }
 
+
   public String getTitle() {
     return this.title;
   }
@@ -245,21 +269,26 @@ public class CapacityDevelopment implements java.io.Serializable {
     return this.usersByModifiedBy;
   }
 
+
   public boolean isActive() {
     return this.active;
   }
+
 
   public void setActive(boolean active) {
     this.active = active;
   }
 
+
   public void setCapDevCountries(List<CapdevLocations> capDevCountries) {
     this.capDevCountries = capDevCountries;
   }
 
+
   public void setCapdevDisciplines(Set<CapdevDiscipline> capdevDisciplines) {
     this.capdevDisciplines = capdevDisciplines;
   }
+
 
   public void setCapdevLocations(Set<CapdevLocations> capdevLocations) {
     this.capdevLocations = capdevLocations;
@@ -335,6 +364,10 @@ public class CapacityDevelopment implements java.io.Serializable {
     this.endDate = endDate;
   }
 
+  public void setGlobal(Boolean global) {
+    this.global = global;
+  }
+
 
   public void setId(Long id) {
     this.id = id;
@@ -366,12 +399,28 @@ public class CapacityDevelopment implements java.io.Serializable {
   }
 
 
+  public void setRegional(Boolean regional) {
+    this.regional = regional;
+  }
+
+
   public void setResearchArea(CenterArea researchArea) {
     this.researchArea = researchArea;
   }
 
+
   public void setResearchProgram(CenterProgram researchProgram) {
     this.researchProgram = researchProgram;
+  }
+
+
+  public void setsGlobal(String sGlobal) {
+    this.sGlobal = sGlobal;
+  }
+
+
+  public void setsRegional(String sRegional) {
+    this.sRegional = sRegional;
   }
 
 

@@ -5,28 +5,28 @@ function init(){
     //filter research program list
     (function(){
       var researchAreaID = $(".capdevResearchArea").val();
-      if(researchAreaID > 0){
+      
       	var researchProgramSelected = $(".capdevResearchProgram").val();
       	filterResearchProgram(researchAreaID, researchProgramSelected);
-      }
+      
     })();
 
    //filter project list 
     (function(){
       var researchProgramID = $(".capdevResearchProgram").val();
       //filterProject(researchProgramID);
-      if(researchProgramID > 0){
+      
       	var projectSelected = $(".capdevProject").val()
       	filterProject(researchProgramID, projectSelected);
-      }
+      
     })();
 
     //filter partners and outputs list
     (function(){
       var projectID = $(".capdevProject").val();
-      if(projectID > 0){
+     
         filterPartners_outputs(projectID);
-      }
+      
     })();
 
     
@@ -35,7 +35,6 @@ function init(){
 
   //event add discipline
   $(".disciplinesSelect").change(function() {
-    console.log("cambio");
       var option = $(this).find("option:selected");
       if(option.val() != "-1") {
         addDiscipline(option);
@@ -55,7 +54,6 @@ function init(){
 
   // Event add target group
 $(".targetGroupsSelect").on("change", function() {
-      console.log("cambio");
       var option = $(this).find("option:selected");
       if(option.val() != "-1") {
         addTargetGroup(option);
@@ -89,7 +87,8 @@ function  ajaxFilterResearchProgram(){
 
 //funcion invocada cuando se carga toda la pagina
 function filterResearchProgram(researchAreaID,researchProgramSelected){
-   $.ajax({
+  if(researchAreaID > 0){
+     $.ajax({
       'url': baseURL + '/filterReasearchProgram.do',
       'data': {
         q: researchAreaID
@@ -98,6 +97,7 @@ function filterResearchProgram(researchAreaID,researchProgramSelected){
       beforeSend: function() {
       },
       success: function(data) {
+         $('.capdevResearchProgram').removeAttr('disabled');
         var length = data.length;
         $('.capdevResearchProgram').empty();
         $('.capdevResearchProgram').append('<option value= -1>select option... </option>');
@@ -108,14 +108,21 @@ function filterResearchProgram(researchAreaID,researchProgramSelected){
       error: function() {
       },
       complete: function() {
-      	$(".researchProgram select option").each(function(index) {
-	      if($(this).val() == researchProgramSelected){
-	      	console.log("if del complete")
-	        $(this).attr( "selected" , "selected");
-	      }
-      	});
+        $(".researchProgram select option").each(function(index) {
+        if($(this).val() == researchProgramSelected){
+          $(this).attr( "selected" , "selected");
+        }
+        });
       }
     })
+  }
+  else{
+     $('.capdevResearchProgram').attr('disabled', 'disabled');
+     $('.capdevResearchProgram').empty();
+     $('.capdevResearchProgram').append('<option value= -1>select option... </option>');
+
+  }
+  
 }
 
 
@@ -132,7 +139,8 @@ function  ajaxFilterProject(){
 
 //funcion invocada cuando se carga toda la pagina
 function filterProject(researchProgramID,projectSelected){
-   $.ajax({
+  if(researchProgramID > 0){
+     $.ajax({
       'url': baseURL + '/filterProject.do',
       'data': {
         q: researchProgramID
@@ -141,6 +149,7 @@ function filterProject(researchProgramID,projectSelected){
       beforeSend: function() {
       },
       success: function(data) {
+        $('.capdevProject').removeAttr('disabled');
         var length = data.length;
         $('.capdevProject').empty();
         $('.capdevProject').append('<option value= -1>select option... </option>');
@@ -151,13 +160,20 @@ function filterProject(researchProgramID,projectSelected){
       error: function() {
       },
       complete: function() {
-      	$(".project select option").each(function() {
-	      if($(this).val() == projectSelected){
-	        $(this).attr( "selected" , "selected");
-	      }
-      	});
+        $(".project select option").each(function() {
+        if($(this).val() == projectSelected){
+          $(this).attr( "selected" , "selected");
+        }
+        });
       }
     })
+  }
+  else{
+    $('.capdevProject').attr('disabled', 'disabled');
+    $('.capdevProject').empty();
+    $('.capdevProject').append('<option value= -1>select option... </option>');
+  }
+  
 }
 
 //event to filter partners according to project selected
@@ -169,8 +185,8 @@ function ajaxFilterPartners_outputs(){
 }
 
 function filterPartners_outputs(projectID){
-	console.log("projectID "+projectID)
-	$.ajax({
+  if(projectID > 0){
+    $.ajax({
       'url': baseURL + '/filterPartners_outputs.do',
       'data': {
         q: projectID
@@ -179,7 +195,8 @@ function filterPartners_outputs(projectID){
       beforeSend: function() {
       },
       success: function(data) {
-      	//set  partners List
+         $(".capdevOutputSelect").removeAttr('disabled');
+        //set  partners List
         var partnersLength = data[0]['partners'].length;
         $('.capdevPartnerSelect').empty();
         $('.capdevPartnerSelect').append('<option value= -1>select option... </option>');
@@ -198,13 +215,21 @@ function filterPartners_outputs(projectID){
       error: function() {
       },
       complete: function() {
-      	/*$(".project select option").each(function() {
-	      if($(this).val() == projectSelected){
-	        $(this).attr( "selected" , "selected");
-	      }
-      	});*/
+        /*$(".project select option").each(function() {
+        if($(this).val() == projectSelected){
+          $(this).attr( "selected" , "selected");
+        }
+        });*/
       }
-    })	
+    })  
+  }
+  else{
+    $(".capdevOutputSelect").attr('disabled', 'disabled');
+    $('.capdevOutputSelect').empty();
+    $('.capdevOutputSelect').append('<option value= -1>select option... </option>');
+  }
+	
+	
 }
 
 

@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.manager.ICenterProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverableType;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
@@ -32,6 +33,7 @@ import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
@@ -53,6 +55,7 @@ public class FilterListsAction extends BaseAction {
 
   private List<Map<String, Object>> jsonResearchPrograms;
   private List<Map<String, Object>> jsonProjects;
+  private List<Map<String, Object>> jsonCountries;
   private List<Map<String, Object>> jsonPartners_output;
   private List<Map<String, Object>> jsonCapdevList;
   private List<Map<String, Object>> jsonDeliverableSubtypes;
@@ -62,7 +65,7 @@ public class FilterListsAction extends BaseAction {
   private final ICenterProjectPartnerManager projectPartnerService;
   private final ICenterProjectOutputManager projectOutputService;
   private final InstitutionManager institutionService;
-
+  private final LocElementManager locElementService;
   private final ICapacityDevelopmentService capdevService;
   private final ICenterOutputManager researchOutputService;
   private final ICenterDeliverableTypeManager centerDeliverableService;
@@ -72,7 +75,7 @@ public class FilterListsAction extends BaseAction {
     ICenterProjectManager projectService, ICenterProjectPartnerManager projectPartnerService,
     ICenterProjectOutputManager projectOutputService, InstitutionManager institutionService,
     ICenterOutputManager researchOutputService, ICapacityDevelopmentService capdevService,
-    ICenterDeliverableTypeManager centerDeliverableService) {
+    ICenterDeliverableTypeManager centerDeliverableService, LocElementManager locElementService) {
     super(config);
     this.researchProgramSercive = researchProgramSercive;
     this.projectService = projectService;
@@ -82,6 +85,7 @@ public class FilterListsAction extends BaseAction {
     this.researchOutputService = researchOutputService;
     this.capdevService = capdevService;
     this.centerDeliverableService = centerDeliverableService;
+    this.locElementService = locElementService;
   }
 
   @Override
@@ -89,6 +93,39 @@ public class FilterListsAction extends BaseAction {
     return SUCCESS;
   }
 
+
+  public String filterCountry() throws Exception {
+    final Map<String, Object> parameters = this.getParameters();
+    jsonCountries = new ArrayList<>();
+    final long regionID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
+
+    List<LocElement> countryList = new ArrayList<>();
+    if (regionID > 0) {
+      countryList = new ArrayList<>(locElementService.findAll()
+        .stream().filter(le -> le.isActive() && (le.getLocElementType() != null)
+          && (le.getLocElementType().getId() == 2) && (le.getLocElement().getId() == regionID))
+        .collect(Collectors.toList()));
+      Collections.sort(countryList, (c1, c2) -> c1.getName().compareTo(c2.getName()));
+    } else {
+      countryList = new ArrayList<>(locElementService.findAll().stream()
+        .filter(le -> le.isActive() && (le.getLocElementType() != null) && (le.getLocElementType().getId() == 2))
+        .collect(Collectors.toList()));
+      Collections.sort(countryList, (c1, c2) -> c1.getName().compareTo(c2.getName()));
+    }
+
+    if (!countryList.isEmpty()) {
+      for (final LocElement country : countryList) {
+        final Map<String, Object> countryMap = new HashMap<>();
+        countryMap.put("countryID", country.getId());
+        countryMap.put("countryName", country.getName());
+
+        jsonCountries.add(countryMap);
+      }
+    }
+
+
+    return SUCCESS;
+  }
 
   public String filterDeliverablesSubtypes() throws Exception {
     final Map<String, Object> parameters = this.getParameters();
@@ -273,26 +310,36 @@ public class FilterListsAction extends BaseAction {
   }
 
 
+  public List<Map<String, Object>> getJsonCountries() {
+    return jsonCountries;
+  }
+
+
   public List<Map<String, Object>> getJsonDeliverableSubtypes() {
     return jsonDeliverableSubtypes;
   }
-
 
   public List<Map<String, Object>> getJsonPartners_output() {
     return jsonPartners_output;
   }
 
+
   public List<Map<String, Object>> getJsonProjects() {
     return jsonProjects;
   }
-
 
   public List<Map<String, Object>> getJsonResearchPrograms() {
     return jsonResearchPrograms;
   }
 
+
   public void setJsonCapdevList(List<Map<String, Object>> jsonCapdevList) {
     this.jsonCapdevList = jsonCapdevList;
+  }
+
+
+  public void setJsonCountries(List<Map<String, Object>> jsonCountries) {
+    this.jsonCountries = jsonCountries;
   }
 
 

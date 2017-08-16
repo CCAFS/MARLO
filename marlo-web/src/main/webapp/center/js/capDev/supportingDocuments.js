@@ -1,6 +1,11 @@
+$(document).ready(init);
+
+function init(){
+  block();
+}
+
 
 //event add link supporting document
-
 $(".addCapdevsupportDocument").click(function(){
 	var $list = $(".documentList");
 	var $item = $("#document-template").clone(true).removeAttr("id");
@@ -10,13 +15,22 @@ $(".addCapdevsupportDocument").click(function(){
 	updateDocument();
 });
 
+function block(){
+  
+  var type = $(".capdevDeliverableType").val();
+  
+  if(type ==+ -1){
+    $(".capdevDeliverableSubtype").attr('disabled', 'disabled');
+  }
+
+}
+
 
 //event remove link supporting document
 $(".removeCapdevsupportDocument").click(function(){
-	console.log("removeCapdevsupportDocument");
+	
 	var $list = $('.documentList');
-	console.log('lista')
-	console.log($list[0])
+	
 	var $item = $(this).parents('.documents');
 	$item.hide(1000, function() {
 	$item.remove();
@@ -38,7 +52,7 @@ function updateDocument() {
 
 function checkItems(block) {
   var items = $(block).find('.documents').length;
-  console.log(items)
+  
   if(items == 0) {
     $(block).parent().find('p.inf').fadeIn();
   } else {
@@ -57,15 +71,12 @@ $(".removeCapdevsupportDocument-action").click(function(){
         q: documentID
       },
       beforeSend: function() {
-        console.log("antes de enviar el ajax")
       },
       success: function(data) {
       },
       error: function() {
-        console.log("algun error")
       },
       complete: function() {
-        console.log("terminado todo")
       }
     });
 })
@@ -82,7 +93,6 @@ $('#confirm-delete').on('show.bs.modal', function(e) {
 
 //event to filter the deliverables subtypes
 $(".capdevDeliverableType").on("change", function(){
-  console.log('cambio el deliverable type');
    var deliverableID = $(".capdevDeliverableType").val();
       if(deliverableID > 0){
          $.ajax({
@@ -94,6 +104,7 @@ $(".capdevDeliverableType").on("change", function(){
         beforeSend: function() {
         },
         success: function(data) {
+          $(".capdevDeliverableSubtype").removeAttr('disabled');
           var length = data.length;
           $('.capdevDeliverableSubtype').empty();
           $('.capdevDeliverableSubtype').append('<option value= -1>select option... </option>');
@@ -107,5 +118,11 @@ $(".capdevDeliverableType").on("change", function(){
          
         }
       })
+    }
+    else{
+       $(".capdevDeliverableSubtype").attr('disabled', 'disabled');
+       $('.capdevDeliverableSubtype').empty();
+       $('.capdevDeliverableSubtype').append('<option value= -1>select option... </option>');
+
     }
 })

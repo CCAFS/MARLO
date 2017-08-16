@@ -124,6 +124,13 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   }
 
 
+  public Boolean bolValue(String value) {
+    if ((value == null) || value.isEmpty() || value.toLowerCase().equals("null")) {
+      return null;
+    }
+    return Boolean.valueOf(value);
+  }
+
   @Override
   public String cancel() {
     System.out.println("Se cancelo la operacion");
@@ -163,6 +170,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
     return SUCCESS;
   }
+
 
   public String deleteRegion() {
     System.out.println("delete");
@@ -279,10 +287,10 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     return numWomen;
   }
 
-
   public Participant getParticipant() {
     return participant;
   }
+
 
   public List<Participant> getParticipantList() {
     return participantList;
@@ -424,6 +432,8 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
 
     if (capdev != null) {
+      System.out.println("reginal dimension " + capdev.getRegional());
+
       capdevTypes = new ArrayList<>(capdevTypeService.findAll().stream()
         .filter(le -> le.getCategory().equals("" + capdev.getCategory())).collect(Collectors.toList()));
       Collections.sort(capdevTypes, (c1, c2) -> c1.getName().compareTo(c2.getName()));
@@ -444,6 +454,13 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
           capdev.setCapdevParticipants(capdevParticipants);
         }
 
+      }
+
+      if (capdev.getGlobal() != null) {
+        capdev.setsGlobal(String.valueOf(capdev.getGlobal()));
+      }
+      if (capdev.getRegional() != null) {
+        capdev.setsRegional(String.valueOf(capdev.getRegional()));
       }
 
 
@@ -494,7 +511,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
   }
 
-
   @Override
   public String save() {
 
@@ -510,7 +526,8 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     capdevDB.setStartDate(capdev.getStartDate());
     capdevDB.setEndDate(capdev.getEndDate());
     capdevDB.setDuration(capdev.getDuration());
-
+    capdevDB.setGlobal(this.bolValue(capdev.getsGlobal()));
+    capdevDB.setRegional(this.bolValue(capdev.getsRegional()));
 
     // if capdev is individual
     if (capdevDB.getCategory() == 1) {
@@ -754,6 +771,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     this.setInvalidFields(new HashMap<>());
 
     if (save) {
+      System.out.println("regional dimension " + capdev.getRegional());
       // validator.validateCapDevDetail(this, capdev, participant, uploadFile, uploadFileContentType);
       if (capdev.getTitle().equalsIgnoreCase("")) {
         this.addFieldError("capdev.title", "Title is required.");

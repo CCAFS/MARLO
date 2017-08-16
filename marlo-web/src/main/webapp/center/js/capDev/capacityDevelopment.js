@@ -85,12 +85,17 @@
 
    //set contact person 
    (function(){
-    console.log("set contact person ")
     var ctFirsName = $(".ctFirsName").val();
     var ctLastName = $(".ctLastName").val();
     var ctEmail  = $(".ctEmail").val();
-    var composedName = ctFirsName+" "+ctLastName+" <"+ctEmail+" >";
-    $(".contact").val(composedName);  
+    if(!ctFirsName || !ctLastName || !ctEmail){
+      $(".contact").val(""); 
+    }
+    else{
+      var composedName = ctFirsName+" "+ctLastName+" <"+ctEmail+" >";
+      $(".contact").val(composedName);  
+    }
+    
    })();
 
    
@@ -142,6 +147,17 @@
 
 
 
+(function(){
+  // Is this capdev has a regional dimension
+  var valueSelected = $(".regional .onoffswitch-radio").val();
+  if(valueSelected) {
+    $(".regionsBox").show("slow");
+  } 
+})();
+
+
+
+
   }
 
   
@@ -178,7 +194,7 @@
   function uploadFile(){
     var file = document.getElementById('uploadFile').files[0];
       if (file) {
-          console.log("hola");
+          
             $.ajax({
         'url': baseURL + '/previewParticipants.do',
         'data':file,
@@ -190,7 +206,7 @@
         beforeSend: function() {
         },
         success: function(data) {
-          console.log(data);
+          
         },
         error: function() {
         },
@@ -205,7 +221,7 @@
     $('#btnDisplay').click(function() {
       $("#participantsTable").empty();
       $("#filewarning").empty();
-      console.log("holiss");
+      
 
       var file = document.getElementById('uploadFile').files[0];
 
@@ -220,11 +236,11 @@
            contentType:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
            processData: false,
           beforeSend: function() {
-            console.log("loading...");
+            
             $(".loader").show();
           },
           success: function(data) {
-            console.log(data.length)
+           
             if(data.length > 0){
               var mytable = $('<table></table>').attr( "class","table table-bordered");
             var rows = data[0].content.length;
@@ -256,7 +272,7 @@
 
           },
           error: function() {
-            console.log("ha ocurrido un error");
+            
             $("#filewarning").html("<p> An error has occurred by displaying the preview </p>");
             $("#filewarning").show();
 
@@ -732,13 +748,14 @@
     $item.find(".name").attr("title", $(option).text());
     $item.find(".name").html(v);
     $item.find(".rId").val(optionValue);
+
     //$item.find(".id").val(-1);
     $list.append($item);
     $item.show('slow');
     updateRegionList($list);
     checkRegionList($list);
 
-
+    filterCountry(optionValue)
 
   }
 
@@ -759,6 +776,8 @@
     console.log(option);
     option.prop('disabled', false);
     //$('.capdevRegionsSelect').select2();
+
+    filterCountry(-1)
 
   }
 
@@ -829,7 +848,80 @@
   }
 
 
+  //filter countries according region selected
+function filterCountry(regionID){
+  
+   $.ajax({
+    'url': baseURL + '/filterCountry.do',
+    'data': {
+      q: regionID
+    },
+    'dataType': "json",
+    beforeSend: function() {
+    },
+    success: function(data) {
+      var length = data.length;
+      $('.capdevCountriesSelect').empty();
+      $('.capdevCountriesSelect').append('<option value= -1>select option... </option>');
+      for (var i = 0; i < length; i++) {
+        $('.capdevCountriesSelect').append('<option value=' + data[i]['countryID'] + '>' + data[i]['countryName'] + '</option>');
+      }
+    },
+    error: function() {
+    },
+    complete: function() {
+      /*$(".project select option").each(function() {
+      if($(this).val() == projectSelected){
+        $(this).attr( "selected" , "selected");
+      }
+      });*/
+    }
+  })
+  
+  
+}
 
+  
+
+
+$(".button-label").on("click", function() {
+    var valueSelected = $(this).hasClass('yes-button-label');
+    var $input = $(this).parent().find('input');
+    if($(this).hasClass("radio-checked")) {
+      console.log(valueSelected)
+      $(this).removeClass("radio-checked")
+      $input.val("");
+    } else {
+      console.log(valueSelected)
+      $input.val(valueSelected);
+      $(this).parent().find("label").removeClass("radio-checked");
+      $(this).addClass("radio-checked");
+    }
+  });
+
+  
+  // Is this capdev has a global dimension
+  $(".global .button-label").on("click", function() {
+    var valueSelected = $(this).hasClass('yes-button-label');
+    var isChecekd = $(this).hasClass('radio-checked');
+    if(!valueSelected || !isChecekd) {
+      // $(".countriesBox").show("slow");
+    } else {
+      // $(".countriesBox").hide("slow");
+    }
+  });
+
+  // Is this capdev has a regional dimension
+  $(".regional .button-label").on("click", function() {
+    var valueSelected = $(this).hasClass('yes-button-label');
+    var isChecekd = $(this).hasClass('radio-checked');
+    if(!valueSelected || !isChecekd) {
+      $(".regionsBox").hide("slow");
+    } else {
+
+      $(".regionsBox").show("slow");
+    }
+  });
 
 
   

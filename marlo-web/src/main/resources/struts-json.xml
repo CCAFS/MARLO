@@ -520,6 +520,16 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		
+		<action name="filterCountry"
+			class="org.cgiar.ccafs.marlo.action.center.json.capdev.FilterListsAction"
+			method="filterCountry">
+			<result type="json">
+				<param name="root">jsonCountries</param>
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
 
 		<action name="filterPartners_outputs"
 			class="org.cgiar.ccafs.marlo.action.center.json.capdev.FilterListsAction"

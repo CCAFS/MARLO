@@ -292,17 +292,24 @@
 				
 
 				<!-- Regions and countries lists -->
-				<div class="row">
-					<div class="col-md-12">
+				<h4 class="headTitle newCapdevField">Location Information</h4>	
+				<div class="row newCapdevField">
+					<div class="simpleBox">
+						
+						<div class="form-group capdevDimension">[@customForm.yesNoInput  label="capdev.globalDimensionQuestion" name="capdev.sGlobal"  inverse=false  cssClass="global" /] </div>
+
+						<div class="form-group capdevDimension">[@customForm.yesNoInput  label="capdev.regionDimensionQuestion" name="capdev.sRegional"  inverse=false  cssClass="regional" /] </div>
+
+						
 						<!-- regions-->
-						<div class="col-md-5 listContainer panel ">
-							<div class="newCapdevField ">
+						<div class="listContainer capdevRegional regionsBox" style="display:none">
+							<div class="newCapdevField">
 								[@customForm.select name="capdevRegions" listName="regionsList" keyFieldName="id" displayFieldName="name" help="capdev.help.region" i18nkey="capdev.form.region" className="capdevRegionsSelect" multiple=false placeholder="capdev.select"  /]
 							</div>
 
-							<div id="capdevRegionsList" class="newCapdevField regionsList">
-								<div class="row">
-									<div class="col-md-12 panel-body">
+							<div id="capdevRegionsList" class="regionsList">
+								<div class="">
+									<div class=" panel-body">
 										
 										<ul class="list">
 											[#if capdev.capDevRegions?has_content]
@@ -325,35 +332,40 @@
 							</div>
 						</div>
 
-						<!-- countries-->
-						<div class="col-md-5 listContainer panel">
+							
+						 	
 
-							<div class="newCapdevField">
-								[@customForm.select name="capdevCountries" listName="countryList" keyFieldName="id" displayFieldName="name" help="capdev.help.country" i18nkey="capdev.form.country" className="capdevCountriesSelect" multiple=false placeholder="capdev.select"  /]
-							</div>
-							<div id="capdevCountriesList" class="newCapdevField countriesList">
-								<div class="row">
-									<div class="col-md-12 panel-body">
-										<ul class="list">
-											[#if capdev.capDevCountries?has_content]
-											[#list capdev.capDevCountries as country]
-											<li id="" class="capdevCountry clearfix col-md-3">
-												<div class="removeCountry-action removeCountry removeIcon" title="Remove country"></div>
-												<input class="id" type="hidden" name="capdev.capDevCountries[${country_index}].id" value="${(country.id)!-1}" />
-												<input class="cId" type="hidden" name="capdev.capDevCountries[${country_index}].locElement.id" value="${(country.locElement.id)!}" />
-												${country.locElement.name}
-												<div class="clearfix"></div>
-											</li>
-											[/#list]
-											[#else]
-											<p class="emptyText"> [@s.text name="capdev.notCountries" /]</p> 
-											[/#if]
-										</ul>
+						<div class="">
+							<div class="capdevDimension"><label>If the capacity development intervention focuses on specific countries, please list these countries:</label></div>
+							<!-- countries-->
+							<div class="listContainer ">
+								<div class="newCapdevField">
+									[@customForm.select name="capdevCountries" listName="countryList" keyFieldName="id" displayFieldName="name" help="capdev.help.country" i18nkey="capdev.form.country" className="capdevCountriesSelect" multiple=false placeholder="capdev.select"  /]
+								</div>
+								<div id="capdevCountriesList" class=" countriesList">
+									<div class="">
+										<div class=" panel-body">
+											<ul class="list">
+												[#if capdev.capDevCountries?has_content]
+												[#list capdev.capDevCountries as country]
+												<li id="" class="capdevCountry clearfix col-md-3">
+													<div class="removeCountry-action removeCountry removeIcon" title="Remove country"></div>
+													<input class="id" type="hidden" name="capdev.capDevCountries[${country_index}].id" value="${(country.id)!-1}" />
+													<input class="cId" type="hidden" name="capdev.capDevCountries[${country_index}].locElement.id" value="${(country.locElement.id)!}" />
+													${country.locElement.name}
+													<div class="clearfix"></div>
+												</li>
+												[/#list]
+												[#else]
+												<p class="emptyText"> [@s.text name="capdev.notCountries" /]</p> 
+												[/#if]
+											</ul>
+										</div>
 									</div>
 								</div>
 							</div>
 						</div>
-					</div> 	
+					</div>
 				</div>
 
 				

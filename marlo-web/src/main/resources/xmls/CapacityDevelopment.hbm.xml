@@ -47,6 +47,12 @@
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>
+		<property name="global" type="java.lang.Boolean">
+			<column name="is_global"  />
+		</property>
+		<property name="regional" type="java.lang.Boolean">
+			<column name="is_regional"  />
+		</property>
 		<property name="modificationJustification" type="string">
 			<column name="modification_justification" length="65535" />
 		</property>
