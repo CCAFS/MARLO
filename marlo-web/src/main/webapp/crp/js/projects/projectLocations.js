@@ -584,7 +584,7 @@ function addMarker(map,idMarker,latitude,longitude,sites,isList,locType) {
           lat: latitude,
           lng: longitude
       },
-      icon: baseURL + '/images/global/otherSite-marker.png',
+      icon: baseUrlMedia + '/images/global/otherSite-marker.png',
       name: sites,
       animation: google.maps.Animation.DROP,
       list: isList
