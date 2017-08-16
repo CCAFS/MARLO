@@ -32,7 +32,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.shiro.util.CollectionUtils;
 import org.hibernate.EmptyInterceptor;
-import org.hibernate.EntityMode;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 import org.hibernate.StatelessSession;
@@ -159,7 +158,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
 
     String[] propertyNames = classMetadata.getPropertyNames();
     for (String name : propertyNames) {
-      Object propertyValue = classMetadata.getPropertyValue(entity, name, EntityMode.POJO);
+      Object propertyValue = classMetadata.getPropertyValue(entity, name);
 
       if (propertyValue != null && propertyValue instanceof IAuditLog) {
         Type propertyType = classMetadata.getPropertyType(name);
@@ -173,7 +172,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
               (Serializable) entityRelation.getId());
 
             this.loadRelations((IAuditLog) obj, false, 2, sessionFactory);
-            classMetadata.setPropertyValue(entity, name, obj, EntityMode.POJO);
+            classMetadata.setPropertyValue(entity, name, obj);
           } else {
             if (!(name.equals("createdBy") || name.equals("modifiedBy"))) {
               IAuditLog entityRelation = (IAuditLog) propertyValue;
@@ -185,7 +184,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
               }
 
               // this.loadRelations((IAuditLog) obj, false);
-              classMetadata.setPropertyValue(entity, name, obj, EntityMode.POJO);
+              classMetadata.setPropertyValue(entity, name, obj);
             }
           }
 

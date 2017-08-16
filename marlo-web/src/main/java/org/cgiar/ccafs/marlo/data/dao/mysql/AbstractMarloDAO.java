@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * @author Héctor F. Tobón R. - CIAT/CCAFS
  * @author Hermes Jimenez - CIAT/CCAFS
  */
-public abstract class AbstractMarloDAO {
+public abstract class AbstractMarloDAO<T, ID extends Serializable> {
 
   private static final Logger LOG = LoggerFactory.getLogger(AbstractMarloDAO.class);
   private final SessionFactory sessionFactory;
@@ -64,7 +64,12 @@ public abstract class AbstractMarloDAO {
     return true;
   }
 
-  public void executeQuery(String sqlQuery) {
+  /**
+   * Pass String based hibernate query.
+   * 
+   * @param sqlQuery
+   */
+  public void executeUpdateQuery(String sqlQuery) {
 
     Query query = this.sessionFactory.getCurrentSession().createSQLQuery(sqlQuery);
     query.executeUpdate();
@@ -78,13 +83,17 @@ public abstract class AbstractMarloDAO {
    * @param id is the record identifier.
    * @return the object populated.
    */
-  public <T> T find(Class<T> clazz, Object id) {
-    T obj = null;
-    obj = (T) sessionFactory.getCurrentSession().get(clazz, (Serializable) id);
-
+  public T find(Class<T> clazz, ID id) {
+    T obj = (T) sessionFactory.getCurrentSession().get(clazz, id);
     return obj;
   }
 
+
+  protected List<T> findAll(Query hibernateQuery) {
+    @SuppressWarnings("unchecked")
+    List<T> list = hibernateQuery.list();
+    return list;
+  }
 
   /**
    * This method make a query that returns a list of objects from the model.
@@ -98,12 +107,9 @@ public abstract class AbstractMarloDAO {
    * @param hibernateQuery is a string representing an HQL query.
    * @return a list of <T> objects.
    */
-  protected <T> List<T> findAll(String hibernateQuery) {
+  protected List<T> findAll(String hibernateQuery) {
     Query query = sessionFactory.getCurrentSession().createQuery(hibernateQuery);
-
-    @SuppressWarnings("unchecked")
-    List<T> list = query.list();
-    return list;
+    return this.findAll(query);
   }
 
   /**
@@ -120,13 +126,26 @@ public abstract class AbstractMarloDAO {
 
   }
 
-  protected <T> List<T> findEveryone(Class<T> clazz) {
+  protected List<T> findEveryone(Class<T> clazz) {
     Query query = sessionFactory.getCurrentSession().createQuery("from " + clazz.getName());
     @SuppressWarnings("unchecked")
     List<T> list = query.list();
     return list;
 
   }
+
+  /**
+   * Allows clients to create the HibernateQuery and set parameters on it.
+   * 
+   * @param clazz
+   * @param hibernateQuery
+   * @return
+   */
+  protected T findSingleResult(Class<T> clazz, Query hibernateQuery) {
+    T object = clazz.cast(hibernateQuery.uniqueResult());
+    return object;
+  }
+
 
   /**
    * This method make a query that returns a single object result from the model.
@@ -136,10 +155,9 @@ public abstract class AbstractMarloDAO {
    * @param hibernateQuery is a string representing an HQL query.
    * @return a Object of <T>
    */
-  protected <T> Object findSingleResult(Class<T> clazz, String hibernateQuery) {
+  protected T findSingleResult(Class<T> clazz, String hibernateQuery) {
     Query query = sessionFactory.getCurrentSession().createQuery(hibernateQuery);
-    Object object = clazz.cast(query.uniqueResult());
-    return object;
+    return this.findSingleResult(clazz, query);
   }
 
 
@@ -154,26 +172,23 @@ public abstract class AbstractMarloDAO {
    * @param obj is the Object to be saved/updated.
    * @return true if the the save/updated was successfully made, false otherwhise.
    */
-  protected boolean save(Object obj) {
-    sessionFactory.getCurrentSession().save(obj);
-    return true;
+  protected T saveEntity(T entity) {
+    sessionFactory.getCurrentSession().persist(entity);
+    return entity;
   }
 
 
   /**
-   * This method saves or update a record into the database.
+   * This method persists record into the database.
    * 
    * @param obj is the Object to be saved/updated.
    * @param actionName the action that called the save
    * @return true if the the save/updated was successfully made, false otherwhise.
    */
-  protected boolean save(Object obj, String actionName, List<String> relationsName) {
-    this.addAuditLogFieldsToThreadStorage(obj, actionName, relationsName);
-
-    sessionFactory.getCurrentSession().save(obj);
-
-
-    return true;
+  protected T saveEntity(T entity, String actionName, List<String> relationsName) {
+    this.addAuditLogFieldsToThreadStorage(entity, actionName, relationsName);
+    sessionFactory.getCurrentSession().persist(entity);
+    return entity;
   }
 
 
@@ -183,11 +198,9 @@ public abstract class AbstractMarloDAO {
    * @param obj is the Object to be saved/updated.
    * @return true if the the save/updated was successfully made, false otherwhise.
    */
-  protected boolean update(Object obj) {
-
-    obj = sessionFactory.getCurrentSession().merge(obj);
-    sessionFactory.getCurrentSession().saveOrUpdate(obj);
-    return true;
+  protected T update(T entity) {
+    entity = (T) sessionFactory.getCurrentSession().merge(entity);
+    return entity;
   }
 
   /**
@@ -197,16 +210,9 @@ public abstract class AbstractMarloDAO {
    * @param actionName the action that called the save
    * @return true if the the save/updated was successfully made, false otherwhise.
    */
-  protected boolean update(Object obj, String actionName, List<String> relationsName) {
-    /**
-     * Need to find a way to ensure the actionName and relationsName are handed to the interceptor.
-     */
-    this.addAuditLogFieldsToThreadStorage(obj, actionName, relationsName);
-
-    obj = sessionFactory.getCurrentSession().merge(obj);
-    sessionFactory.getCurrentSession().saveOrUpdate(obj);
-
-    return true;
-
+  protected T update(T entity, String actionName, List<String> relationsName) {
+    this.addAuditLogFieldsToThreadStorage(entity, actionName, relationsName);
+    entity = (T) sessionFactory.getCurrentSession().merge(entity);
+    return entity;
   }
 }

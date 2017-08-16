@@ -24,7 +24,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class CenterDeliverableCrosscutingThemeDAO extends AbstractMarloDAO
+public class CenterDeliverableCrosscutingThemeDAO extends AbstractMarloDAO<CenterDeliverableCrosscutingTheme, Long>
   implements ICenterDeliverableCrosscutingThemeDAO {
 
 
@@ -76,7 +76,7 @@ public class CenterDeliverableCrosscutingThemeDAO extends AbstractMarloDAO
   @Override
   public long save(CenterDeliverableCrosscutingTheme deliverableCrosscutingTheme) {
     if (deliverableCrosscutingTheme.getId() == null) {
-      super.save(deliverableCrosscutingTheme);
+      super.saveEntity(deliverableCrosscutingTheme);
     } else {
       super.update(deliverableCrosscutingTheme);
     }
@@ -87,7 +87,7 @@ public class CenterDeliverableCrosscutingThemeDAO extends AbstractMarloDAO
   public long save(CenterDeliverableCrosscutingTheme deliverableCrosscutingTheme, String actionName,
     List<String> relationsName) {
     if (deliverableCrosscutingTheme.getId() == null) {
-      super.save(deliverableCrosscutingTheme, actionName, relationsName);
+      super.saveEntity(deliverableCrosscutingTheme, actionName, relationsName);
     } else {
       super.update(deliverableCrosscutingTheme, actionName, relationsName);
     }

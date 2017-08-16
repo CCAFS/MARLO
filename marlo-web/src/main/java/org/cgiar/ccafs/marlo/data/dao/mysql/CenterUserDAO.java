@@ -24,7 +24,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class CenterUserDAO extends AbstractMarloDAO implements ICenterUserDAO {
+public class CenterUserDAO extends AbstractMarloDAO<CenterUser, Long> implements ICenterUserDAO {
 
 
   @Inject
@@ -79,7 +79,7 @@ public class CenterUserDAO extends AbstractMarloDAO implements ICenterUserDAO {
   @Override
   public long save(CenterUser crpUser) {
     if (crpUser.getId() == null) {
-      super.save(crpUser);
+      super.saveEntity(crpUser);
     } else {
       super.update(crpUser);
     }

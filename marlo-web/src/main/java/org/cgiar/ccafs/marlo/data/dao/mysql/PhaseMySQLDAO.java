@@ -24,7 +24,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class PhaseMySQLDAO extends AbstractMarloDAO implements PhaseDAO {
+public class PhaseMySQLDAO extends AbstractMarloDAO<Phase, Long> implements PhaseDAO {
 
 
   @Inject
@@ -80,7 +80,7 @@ public class PhaseMySQLDAO extends AbstractMarloDAO implements PhaseDAO {
   @Override
   public long save(Phase phase) {
     if (phase.getId() == null) {
-      super.save(phase);
+      super.saveEntity(phase);
     } else {
       super.update(phase);
     }

@@ -24,7 +24,8 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class CenterProjectCrosscutingThemeDAO extends AbstractMarloDAO implements ICenterProjectCrosscutingThemeDAO {
+public class CenterProjectCrosscutingThemeDAO extends AbstractMarloDAO<CenterProjectCrosscutingTheme, Long>
+  implements ICenterProjectCrosscutingThemeDAO {
 
 
   @Inject
@@ -75,7 +76,7 @@ public class CenterProjectCrosscutingThemeDAO extends AbstractMarloDAO implement
   @Override
   public long save(CenterProjectCrosscutingTheme projectCrosscutingTheme) {
     if (projectCrosscutingTheme.getId() == null) {
-      super.save(projectCrosscutingTheme);
+      super.saveEntity(projectCrosscutingTheme);
     } else {
       super.update(projectCrosscutingTheme);
     }

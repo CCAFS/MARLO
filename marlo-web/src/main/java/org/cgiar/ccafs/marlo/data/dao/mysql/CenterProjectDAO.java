@@ -24,7 +24,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class CenterProjectDAO extends AbstractMarloDAO implements ICenterProjectDAO {
+public class CenterProjectDAO extends AbstractMarloDAO<CenterProject, Long> implements ICenterProjectDAO {
 
 
   @Inject
@@ -75,7 +75,7 @@ public class CenterProjectDAO extends AbstractMarloDAO implements ICenterProject
   @Override
   public long save(CenterProject project) {
     if (project.getId() == null) {
-      super.save(project);
+      super.saveEntity(project);
     } else {
       super.update(project);
     }
@@ -85,7 +85,7 @@ public class CenterProjectDAO extends AbstractMarloDAO implements ICenterProject
   @Override
   public long save(CenterProject project, String actionName, List<String> relationsName) {
     if (project.getId() == null) {
-      super.save(project, actionName, relationsName);
+      super.saveEntity(project, actionName, relationsName);
     } else {
       super.update(project, actionName, relationsName);
     }

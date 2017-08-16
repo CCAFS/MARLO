@@ -25,7 +25,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class SectionStatusMySQLDAO extends AbstractMarloDAO implements SectionStatusDAO {
+public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long> implements SectionStatusDAO {
 
 
   @Inject
@@ -113,10 +113,10 @@ public class SectionStatusMySQLDAO extends AbstractMarloDAO implements SectionSt
   }
 
   @Override
-  public SectionStatus getSectionStatusByFundingSource(long fundingSource, String cycle, Integer year,
+  public SectionStatus getSectionStatusByFundingSource(long fundingSourceId, String cycle, Integer year,
     String sectionName) {
     String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName
-      + "' and funding_source_id=" + fundingSource;
+      + "' and funding_source_id=" + fundingSourceId;
     List<SectionStatus> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
@@ -194,7 +194,7 @@ public class SectionStatusMySQLDAO extends AbstractMarloDAO implements SectionSt
   @Override
   public long save(SectionStatus sectionStatus) {
     if (sectionStatus.getId() == null) {
-      super.save(sectionStatus);
+      super.saveEntity(sectionStatus);
     } else {
       super.update(sectionStatus);
     }

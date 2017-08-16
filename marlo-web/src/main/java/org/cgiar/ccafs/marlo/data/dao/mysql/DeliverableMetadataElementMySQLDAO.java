@@ -24,7 +24,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class DeliverableMetadataElementMySQLDAO extends AbstractMarloDAO implements DeliverableMetadataElementDAO {
+public class DeliverableMetadataElementMySQLDAO extends AbstractMarloDAO<DeliverableMetadataElement, Long> implements DeliverableMetadataElementDAO {
 
 
   @Inject
@@ -68,7 +68,7 @@ public class DeliverableMetadataElementMySQLDAO extends AbstractMarloDAO impleme
   @Override
   public long save(DeliverableMetadataElement deliverableMetadataElement) {
     if (deliverableMetadataElement.getId() == null) {
-      super.save(deliverableMetadataElement);
+      super.saveEntity(deliverableMetadataElement);
     } else {
       super.update(deliverableMetadataElement);
     }

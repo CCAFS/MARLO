@@ -27,7 +27,7 @@ import org.hibernate.SessionFactory;
  * @author Hermes Jiménez - CIAT/CCAFS
  * @author Christian Garcia - CIAT/CCAFS
  */
-public class CenterDAO extends AbstractMarloDAO implements ICenterDAO {
+public class CenterDAO extends AbstractMarloDAO<Center, Long> implements ICenterDAO {
 
 
   @Inject
@@ -82,7 +82,7 @@ public class CenterDAO extends AbstractMarloDAO implements ICenterDAO {
   @Override
   public long save(Center crp) {
     if (crp.getId() == null) {
-      super.save(crp);
+      super.saveEntity(crp);
     } else {
       super.update(crp);
     }

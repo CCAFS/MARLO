@@ -25,7 +25,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class SubmissionMySQLDAO extends AbstractMarloDAO implements SubmissionDAO {
+public class SubmissionMySQLDAO extends AbstractMarloDAO<Submission, Long> implements SubmissionDAO {
 
 
   @Inject
@@ -70,7 +70,7 @@ public class SubmissionMySQLDAO extends AbstractMarloDAO implements SubmissionDA
   @Override
   public long save(Submission submission) {
     if (submission.getId() == null) {
-      super.save(submission);
+      super.saveEntity(submission);
     } else {
       super.update(submission);
     }

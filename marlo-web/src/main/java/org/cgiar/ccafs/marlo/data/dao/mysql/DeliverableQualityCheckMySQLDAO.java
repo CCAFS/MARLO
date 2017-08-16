@@ -24,7 +24,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class DeliverableQualityCheckMySQLDAO extends AbstractMarloDAO implements DeliverableQualityCheckDAO {
+public class DeliverableQualityCheckMySQLDAO extends AbstractMarloDAO<DeliverableQualityCheck, Long> implements DeliverableQualityCheckDAO {
 
 
   @Inject
@@ -80,7 +80,7 @@ public class DeliverableQualityCheckMySQLDAO extends AbstractMarloDAO implements
   @Override
   public long save(DeliverableQualityCheck deliverableQualityCheck) {
     if (deliverableQualityCheck.getId() == null) {
-      super.save(deliverableQualityCheck);
+      super.saveEntity(deliverableQualityCheck);
     } else {
       super.update(deliverableQualityCheck);
     }

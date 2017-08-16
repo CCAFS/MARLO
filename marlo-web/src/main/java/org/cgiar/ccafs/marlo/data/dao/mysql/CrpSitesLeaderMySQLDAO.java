@@ -24,7 +24,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class CrpSitesLeaderMySQLDAO extends AbstractMarloDAO implements CrpSitesLeaderDAO {
+public class CrpSitesLeaderMySQLDAO extends AbstractMarloDAO<CrpSitesLeader, Long> implements CrpSitesLeaderDAO {
 
 
   @Inject
@@ -69,7 +69,7 @@ public class CrpSitesLeaderMySQLDAO extends AbstractMarloDAO implements CrpSites
   @Override
   public long save(CrpSitesLeader crpSitesLeader) {
     if (crpSitesLeader.getId() == null) {
-      super.save(crpSitesLeader);
+      super.saveEntity(crpSitesLeader);
     } else {
       super.update(crpSitesLeader);
     }

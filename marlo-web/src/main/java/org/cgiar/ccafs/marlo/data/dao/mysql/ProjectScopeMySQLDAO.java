@@ -24,7 +24,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class ProjectScopeMySQLDAO extends AbstractMarloDAO implements ProjectScopeDAO {
+public class ProjectScopeMySQLDAO extends AbstractMarloDAO<ProjectScope, Long> implements ProjectScopeDAO {
 
 
   @Inject
@@ -69,7 +69,7 @@ public class ProjectScopeMySQLDAO extends AbstractMarloDAO implements ProjectSco
   @Override
   public long save(ProjectScope projectScope) {
     if (projectScope.getId() == null) {
-      super.save(projectScope);
+      super.saveEntity(projectScope);
     } else {
       super.update(projectScope);
     }

@@ -24,7 +24,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class CaseStudyMySQLDAO extends AbstractMarloDAO implements CaseStudyDAO {
+public class CaseStudyMySQLDAO extends AbstractMarloDAO<CaseStudy, Long> implements CaseStudyDAO {
 
 
   @Inject
@@ -69,7 +69,7 @@ public class CaseStudyMySQLDAO extends AbstractMarloDAO implements CaseStudyDAO 
   @Override
   public long save(CaseStudy caseStudy) {
     if (caseStudy.getId() == null) {
-      super.save(caseStudy);
+      super.saveEntity(caseStudy);
     } else {
       super.update(caseStudy);
     }
@@ -81,7 +81,7 @@ public class CaseStudyMySQLDAO extends AbstractMarloDAO implements CaseStudyDAO 
   @Override
   public long save(CaseStudy caseStudy, String section, List<String> relationsName) {
     if (caseStudy.getId() == null) {
-      super.save(caseStudy, section, relationsName);
+      super.saveEntity(caseStudy, section, relationsName);
     } else {
       super.update(caseStudy, section, relationsName);
     }

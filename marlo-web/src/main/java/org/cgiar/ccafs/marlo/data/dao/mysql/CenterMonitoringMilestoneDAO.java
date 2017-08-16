@@ -24,7 +24,8 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class CenterMonitoringMilestoneDAO extends AbstractMarloDAO implements ICenterMonitoringMilestoneDAO {
+public class CenterMonitoringMilestoneDAO extends AbstractMarloDAO<CenterMonitoringMilestone, Long>
+  implements ICenterMonitoringMilestoneDAO {
 
 
   @Inject
@@ -75,7 +76,7 @@ public class CenterMonitoringMilestoneDAO extends AbstractMarloDAO implements IC
   @Override
   public long save(CenterMonitoringMilestone monitoringMilestone) {
     if (monitoringMilestone.getId() == null) {
-      super.save(monitoringMilestone);
+      super.saveEntity(monitoringMilestone);
     } else {
       super.update(monitoringMilestone);
     }

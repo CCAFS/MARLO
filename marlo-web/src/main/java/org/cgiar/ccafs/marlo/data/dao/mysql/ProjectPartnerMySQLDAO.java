@@ -22,9 +22,10 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
-public class ProjectPartnerMySQLDAO extends AbstractMarloDAO implements ProjectPartnerDAO {
+public class ProjectPartnerMySQLDAO extends AbstractMarloDAO<ProjectPartner, Long> implements ProjectPartnerDAO {
 
 
   @Inject
@@ -67,9 +68,22 @@ public class ProjectPartnerMySQLDAO extends AbstractMarloDAO implements ProjectP
   }
 
   @Override
+  public ProjectPartner getProjectPartnerByIdAndEagerFetchLocations(long projectPartnerID) {
+    String query = "select pp from ProjectPartner pp left join fetch pp.projectPartnerLocations ppl "
+      + "where pp.id = :projectPartnerID";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("projectPartnerID", projectPartnerID);
+    Object findSingleResult = super.findSingleResult(ProjectPartner.class, createQuery);
+
+    ProjectPartner projectPartner = (ProjectPartner) findSingleResult;
+    projectPartner.getProjectPartnerLocations().size();
+    return projectPartner;
+  }
+
+  @Override
   public long save(ProjectPartner projectPartner) {
     if (projectPartner.getId() == null) {
-      super.save(projectPartner);
+      super.saveEntity(projectPartner);
     } else {
       super.update(projectPartner);
     }

@@ -24,7 +24,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class IpProgramElementRelationTypeMySQLDAO extends AbstractMarloDAO implements IpProgramElementRelationTypeDAO {
+public class IpProgramElementRelationTypeMySQLDAO extends AbstractMarloDAO<IpProgramElementRelationType, Long> implements IpProgramElementRelationTypeDAO {
 
 
   @Inject
@@ -68,7 +68,7 @@ public class IpProgramElementRelationTypeMySQLDAO extends AbstractMarloDAO imple
   @Override
   public long save(IpProgramElementRelationType ipProgramElementRelationType) {
     if (ipProgramElementRelationType.getId() == null) {
-      super.save(ipProgramElementRelationType);
+      super.saveEntity(ipProgramElementRelationType);
     } else {
       super.update(ipProgramElementRelationType);
     }

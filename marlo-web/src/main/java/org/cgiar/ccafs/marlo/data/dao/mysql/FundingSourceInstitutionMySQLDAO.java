@@ -24,7 +24,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class FundingSourceInstitutionMySQLDAO extends AbstractMarloDAO implements FundingSourceInstitutionDAO {
+public class FundingSourceInstitutionMySQLDAO extends AbstractMarloDAO<FundingSourceInstitution, Long> implements FundingSourceInstitutionDAO {
 
 
   @Inject
@@ -69,7 +69,7 @@ public class FundingSourceInstitutionMySQLDAO extends AbstractMarloDAO implement
   @Override
   public long save(FundingSourceInstitution fundingSourceInstitution) {
     if (fundingSourceInstitution.getId() == null) {
-      super.save(fundingSourceInstitution);
+      super.saveEntity(fundingSourceInstitution);
     } else {
       super.update(fundingSourceInstitution);
     }

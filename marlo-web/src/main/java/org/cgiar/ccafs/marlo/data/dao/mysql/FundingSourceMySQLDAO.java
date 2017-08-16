@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class FundingSourceMySQLDAO extends AbstractMarloDAO implements FundingSourceDAO {
+public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long> implements FundingSourceDAO {
 
 
   @Inject
@@ -81,7 +81,7 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO implements FundingSo
   @Override
   public long save(FundingSource fundingSource) {
     if (fundingSource.getId() == null) {
-      super.save(fundingSource);
+      super.saveEntity(fundingSource);
     } else {
       super.update(fundingSource);
     }
@@ -93,7 +93,7 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO implements FundingSo
   @Override
   public long save(FundingSource fundingSource, String sectionName, List<String> relationsName) {
     if (fundingSource.getId() == null) {
-      super.save(fundingSource, sectionName, relationsName);
+      super.saveEntity(fundingSource, sectionName, relationsName);
     } else {
       super.update(fundingSource, sectionName, relationsName);
     }

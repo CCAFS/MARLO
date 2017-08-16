@@ -24,7 +24,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class LocElementMySQLDAO extends AbstractMarloDAO implements LocElementDAO {
+public class LocElementMySQLDAO extends AbstractMarloDAO<LocElement, Long> implements LocElementDAO {
 
 
   @Inject
@@ -89,7 +89,7 @@ public class LocElementMySQLDAO extends AbstractMarloDAO implements LocElementDA
   @Override
   public long save(LocElement locElement) {
     if (locElement.getId() == null) {
-      super.save(locElement);
+      super.saveEntity(locElement);
     } else {
       super.update(locElement);
     }

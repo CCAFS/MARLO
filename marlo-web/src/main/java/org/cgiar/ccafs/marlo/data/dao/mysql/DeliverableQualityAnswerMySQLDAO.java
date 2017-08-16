@@ -24,7 +24,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class DeliverableQualityAnswerMySQLDAO extends AbstractMarloDAO implements DeliverableQualityAnswerDAO {
+public class DeliverableQualityAnswerMySQLDAO extends AbstractMarloDAO<DeliverableQualityAnswer, Long> implements DeliverableQualityAnswerDAO {
 
 
   @Inject
@@ -69,7 +69,7 @@ public class DeliverableQualityAnswerMySQLDAO extends AbstractMarloDAO implement
   @Override
   public long save(DeliverableQualityAnswer deliverableQualityAnswer) {
     if (deliverableQualityAnswer.getId() == null) {
-      super.save(deliverableQualityAnswer);
+      super.saveEntity(deliverableQualityAnswer);
     } else {
       super.update(deliverableQualityAnswer);
     }

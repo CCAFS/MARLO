@@ -24,7 +24,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class GenderTypeMySQLDAO extends AbstractMarloDAO implements GenderTypeDAO {
+public class GenderTypeMySQLDAO extends AbstractMarloDAO<GenderType, Long> implements GenderTypeDAO {
 
 
   @Inject
@@ -69,7 +69,7 @@ public class GenderTypeMySQLDAO extends AbstractMarloDAO implements GenderTypeDA
   @Override
   public long save(GenderType genderType) {
     if (genderType.getId() == null) {
-      super.save(genderType);
+      super.saveEntity(genderType);
     } else {
       super.update(genderType);
     }

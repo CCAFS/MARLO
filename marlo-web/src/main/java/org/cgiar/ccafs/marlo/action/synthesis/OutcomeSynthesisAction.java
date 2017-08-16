@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.IpElementManager;
 import org.cgiar.ccafs.marlo.data.manager.IpIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.IpLiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.IpProjectIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.OutcomeSynthesyManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
@@ -74,6 +75,7 @@ public class OutcomeSynthesisAction extends BaseAction {
   private IpElementManager ipElementManager;
   private OutcomeSynthesyManager outcomeSynthesisManager;
   private IpIndicatorManager ipIndicatorManager;
+  private IpProjectIndicatorManager ipProjectIndicatorManager;
   private String transaction;
   private AuditLogManager auditLogManager;
   private SynthesisByOutcomeValidator validator;
@@ -190,7 +192,7 @@ public class OutcomeSynthesisAction extends BaseAction {
   }
 
   public List<IpProjectIndicator> getProjectIndicators(int year, long indicator, long midOutcome) {
-    return ipIndicatorManager.getProjectIndicators(year, indicator, program.getId(), midOutcome);
+    return ipProjectIndicatorManager.getProjectIndicators(year, indicator, program.getId(), midOutcome);
   }
 
   public List<OutcomeSynthesy> getRegionalSynthesis(long indicator, long midoutcome) {

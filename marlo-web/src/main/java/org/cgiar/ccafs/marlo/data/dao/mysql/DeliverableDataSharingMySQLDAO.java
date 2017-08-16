@@ -24,7 +24,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class DeliverableDataSharingMySQLDAO extends AbstractMarloDAO implements DeliverableDataSharingDAO {
+public class DeliverableDataSharingMySQLDAO extends AbstractMarloDAO<DeliverableDataSharing, Long> implements DeliverableDataSharingDAO {
 
 
   @Inject
@@ -68,7 +68,7 @@ public class DeliverableDataSharingMySQLDAO extends AbstractMarloDAO implements 
   @Override
   public long save(DeliverableDataSharing deliverableDataSharing) {
     if (deliverableDataSharing.getId() == null) {
-      super.save(deliverableDataSharing);
+      super.saveEntity(deliverableDataSharing);
     } else {
       super.update(deliverableDataSharing);
     }

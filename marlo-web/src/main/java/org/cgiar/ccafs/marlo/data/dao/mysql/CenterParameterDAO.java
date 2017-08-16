@@ -24,7 +24,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class CenterParameterDAO extends AbstractMarloDAO implements ICenterParameterDAO {
+public class CenterParameterDAO extends AbstractMarloDAO<CenterParameter, Long> implements ICenterParameterDAO {
 
 
   @Inject
@@ -74,7 +74,7 @@ public class CenterParameterDAO extends AbstractMarloDAO implements ICenterParam
   @Override
   public long save(CenterParameter centerParameter) {
     if (centerParameter.getId() == null) {
-      super.save(centerParameter);
+      super.saveEntity(centerParameter);
     } else {
       super.update(centerParameter);
     }
@@ -84,7 +84,7 @@ public class CenterParameterDAO extends AbstractMarloDAO implements ICenterParam
   @Override
   public long save(CenterParameter centerParameter, String actionName, List<String> relationsName) {
     if (centerParameter.getId() == null) {
-      super.save(centerParameter, actionName, relationsName);
+      super.saveEntity(centerParameter, actionName, relationsName);
     } else {
       super.update(centerParameter, actionName, relationsName);
     }

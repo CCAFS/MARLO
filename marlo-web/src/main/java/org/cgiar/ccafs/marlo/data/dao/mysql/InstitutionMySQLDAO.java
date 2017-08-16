@@ -29,7 +29,7 @@ import org.hibernate.SessionFactory;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class InstitutionMySQLDAO extends AbstractMarloDAO implements InstitutionDAO {
+public class InstitutionMySQLDAO extends AbstractMarloDAO<Institution, Long> implements InstitutionDAO {
 
 
   @Inject
@@ -70,7 +70,7 @@ public class InstitutionMySQLDAO extends AbstractMarloDAO implements Institution
   @Override
   public long save(Institution institution) {
     if (institution.getId() == null) {
-      super.save(institution);
+      super.saveEntity(institution);
     } else {
       super.update(institution);
     }

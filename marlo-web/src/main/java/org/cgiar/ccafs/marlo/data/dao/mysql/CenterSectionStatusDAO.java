@@ -25,7 +25,7 @@ import java.util.Map;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class CenterSectionStatusDAO extends AbstractMarloDAO implements ICenterSectionStatusDAO {
+public class CenterSectionStatusDAO extends AbstractMarloDAO<CenterSectionStatus, Long> implements ICenterSectionStatusDAO {
 
 
   @Inject
@@ -154,7 +154,7 @@ public class CenterSectionStatusDAO extends AbstractMarloDAO implements ICenterS
   @Override
   public long save(CenterSectionStatus sectionStatus) {
     if (sectionStatus.getId() == null) {
-      super.save(sectionStatus);
+      super.saveEntity(sectionStatus);
     } else {
       super.update(sectionStatus);
     }

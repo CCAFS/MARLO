@@ -24,7 +24,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class LocGeopositionMySQLDAO extends AbstractMarloDAO implements LocGeopositionDAO {
+public class LocGeopositionMySQLDAO extends AbstractMarloDAO<LocGeoposition, Long> implements LocGeopositionDAO {
 
 
   @Inject
@@ -69,7 +69,7 @@ public class LocGeopositionMySQLDAO extends AbstractMarloDAO implements LocGeopo
   @Override
   public long save(LocGeoposition locGeoposition) {
     if (locGeoposition.getId() == null) {
-      super.save(locGeoposition);
+      super.saveEntity(locGeoposition);
     } else {
       super.update(locGeoposition);
     }

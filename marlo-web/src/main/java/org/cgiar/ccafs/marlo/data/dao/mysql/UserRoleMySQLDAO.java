@@ -24,7 +24,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class UserRoleMySQLDAO extends AbstractMarloDAO implements UserRoleDAO {
+public class UserRoleMySQLDAO extends AbstractMarloDAO<UserRole, Long> implements UserRoleDAO {
 
 
   @Inject
@@ -80,7 +80,7 @@ public class UserRoleMySQLDAO extends AbstractMarloDAO implements UserRoleDAO {
   @Override
   public long save(UserRole userRole) {
     if (userRole.getId() == null) {
-      super.save(userRole);
+      super.saveEntity(userRole);
     } else {
       super.update(userRole);
     }

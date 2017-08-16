@@ -27,7 +27,7 @@ import org.hibernate.SessionFactory;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class CrpPpaPartnerMySQLDAO extends AbstractMarloDAO implements CrpPpaPartnerDAO {
+public class CrpPpaPartnerMySQLDAO extends AbstractMarloDAO<CrpPpaPartner, Long> implements CrpPpaPartnerDAO {
 
 
   @Inject
@@ -69,7 +69,7 @@ public class CrpPpaPartnerMySQLDAO extends AbstractMarloDAO implements CrpPpaPar
   @Override
   public long save(CrpPpaPartner crpPpaPartner) {
     if (crpPpaPartner.getId() == null) {
-      super.save(crpPpaPartner);
+      super.saveEntity(crpPpaPartner);
     } else {
       super.update(crpPpaPartner);
     }

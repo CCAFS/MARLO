@@ -24,7 +24,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class DeliverableActivityMySQLDAO extends AbstractMarloDAO implements DeliverableActivityDAO {
+public class DeliverableActivityMySQLDAO extends AbstractMarloDAO<DeliverableActivity, Long> implements DeliverableActivityDAO {
 
 
   @Inject
@@ -80,7 +80,7 @@ public class DeliverableActivityMySQLDAO extends AbstractMarloDAO implements Del
   @Override
   public long save(DeliverableActivity deliverableActivity) {
     if (deliverableActivity.getId() == null) {
-      super.save(deliverableActivity);
+      super.saveEntity(deliverableActivity);
     } else {
       super.update(deliverableActivity);
     }

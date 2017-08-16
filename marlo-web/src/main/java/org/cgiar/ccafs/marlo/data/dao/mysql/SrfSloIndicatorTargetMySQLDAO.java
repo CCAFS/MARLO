@@ -24,7 +24,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class SrfSloIndicatorTargetMySQLDAO extends AbstractMarloDAO implements SrfSloIndicatorTargetDAO {
+public class SrfSloIndicatorTargetMySQLDAO extends AbstractMarloDAO<SrfSloIndicatorTarget, Long> implements SrfSloIndicatorTargetDAO {
 
 
   @Inject
@@ -69,7 +69,7 @@ public class SrfSloIndicatorTargetMySQLDAO extends AbstractMarloDAO implements S
   @Override
   public long save(SrfSloIndicatorTarget srfSloIndicatorTarget) {
     if (srfSloIndicatorTarget.getId() == null) {
-      super.save(srfSloIndicatorTarget);
+      super.saveEntity(srfSloIndicatorTarget);
     } else {
       super.update(srfSloIndicatorTarget);
     }

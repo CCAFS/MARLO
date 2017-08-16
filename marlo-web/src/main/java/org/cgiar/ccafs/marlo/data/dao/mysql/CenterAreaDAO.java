@@ -30,7 +30,7 @@ import org.hibernate.SessionFactory;
 /**
  * Modified by @author nmatovu last on Oct 7, 2016
  */
-public class CenterAreaDAO extends AbstractMarloDAO implements ICenterAreaDAO {
+public class CenterAreaDAO extends AbstractMarloDAO<CenterArea, Long> implements ICenterAreaDAO {
 
 
   @Inject
@@ -107,7 +107,7 @@ public class CenterAreaDAO extends AbstractMarloDAO implements ICenterAreaDAO {
   @Override
   public long save(CenterArea researchArea) {
     if (researchArea.getId() == null) {
-      super.save(researchArea);
+      super.saveEntity(researchArea);
     } else {
       super.update(researchArea);
     }

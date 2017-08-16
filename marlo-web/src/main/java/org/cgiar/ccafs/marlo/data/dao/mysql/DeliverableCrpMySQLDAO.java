@@ -24,7 +24,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class DeliverableCrpMySQLDAO extends AbstractMarloDAO implements DeliverableCrpDAO {
+public class DeliverableCrpMySQLDAO extends AbstractMarloDAO<DeliverableCrp, Long> implements DeliverableCrpDAO {
 
 
   @Inject
@@ -69,7 +69,7 @@ public class DeliverableCrpMySQLDAO extends AbstractMarloDAO implements Delivera
   @Override
   public long save(DeliverableCrp deliverableCrp) {
     if (deliverableCrp.getId() == null) {
-      super.save(deliverableCrp);
+      super.saveEntity(deliverableCrp);
     } else {
       super.update(deliverableCrp);
     }

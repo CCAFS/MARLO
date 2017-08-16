@@ -24,7 +24,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class CenterRoleDAO extends AbstractMarloDAO implements ICenterRoleDAO {
+public class CenterRoleDAO extends AbstractMarloDAO<CenterRole, Long> implements ICenterRoleDAO {
 
 
   @Inject
@@ -74,7 +74,7 @@ public class CenterRoleDAO extends AbstractMarloDAO implements ICenterRoleDAO {
   @Override
   public long save(CenterRole role) {
     if (role.getId() == null) {
-      super.save(role);
+      super.saveEntity(role);
     } else {
       super.update(role);
     }
@@ -84,7 +84,7 @@ public class CenterRoleDAO extends AbstractMarloDAO implements ICenterRoleDAO {
   @Override
   public long save(CenterRole role, String actionName, List<String> relationsName) {
     if (role.getId() == null) {
-      super.save(role, actionName, relationsName);
+      super.saveEntity(role, actionName, relationsName);
     } else {
       super.update(role, actionName, relationsName);
     }

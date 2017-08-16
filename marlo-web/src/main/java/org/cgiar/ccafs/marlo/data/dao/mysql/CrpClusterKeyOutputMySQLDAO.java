@@ -24,7 +24,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class CrpClusterKeyOutputMySQLDAO extends AbstractMarloDAO implements CrpClusterKeyOutputDAO {
+public class CrpClusterKeyOutputMySQLDAO extends AbstractMarloDAO<CrpClusterKeyOutput, Long> implements CrpClusterKeyOutputDAO {
 
 
   @Inject
@@ -69,7 +69,7 @@ public class CrpClusterKeyOutputMySQLDAO extends AbstractMarloDAO implements Crp
   @Override
   public long save(CrpClusterKeyOutput crpClusterKeyOutput) {
     if (crpClusterKeyOutput.getId() == null) {
-      super.save(crpClusterKeyOutput);
+      super.saveEntity(crpClusterKeyOutput);
     } else {
       super.update(crpClusterKeyOutput);
     }

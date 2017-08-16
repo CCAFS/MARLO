@@ -24,7 +24,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class LiaisonUserMySQLDAO extends AbstractMarloDAO implements LiaisonUserDAO {
+public class LiaisonUserMySQLDAO extends AbstractMarloDAO<LiaisonUser, Long> implements LiaisonUserDAO {
 
 
   @Inject
@@ -93,7 +93,7 @@ public class LiaisonUserMySQLDAO extends AbstractMarloDAO implements LiaisonUser
   public long save(LiaisonUser liaisonUser) {
     if (liaisonUser.getId() == null) {
       liaisonUser.setActive(true);
-      super.save(liaisonUser);
+      super.saveEntity(liaisonUser);
     } else {
       super.update(liaisonUser);
     }

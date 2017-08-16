@@ -24,7 +24,8 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class CenterDeliverableDocumentDAO extends AbstractMarloDAO implements ICenterDeliverableDocumentDAO {
+public class CenterDeliverableDocumentDAO extends AbstractMarloDAO<CenterDeliverableDocument, Long>
+  implements ICenterDeliverableDocumentDAO {
 
 
   @Inject
@@ -75,7 +76,7 @@ public class CenterDeliverableDocumentDAO extends AbstractMarloDAO implements IC
   @Override
   public long save(CenterDeliverableDocument deliverableDocument) {
     if (deliverableDocument.getId() == null) {
-      super.save(deliverableDocument);
+      super.saveEntity(deliverableDocument);
     } else {
       super.update(deliverableDocument);
     }

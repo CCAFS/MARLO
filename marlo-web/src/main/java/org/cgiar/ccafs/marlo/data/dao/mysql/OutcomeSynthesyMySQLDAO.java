@@ -24,7 +24,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class OutcomeSynthesyMySQLDAO extends AbstractMarloDAO implements OutcomeSynthesyDAO {
+public class OutcomeSynthesyMySQLDAO extends AbstractMarloDAO<OutcomeSynthesy, Long> implements OutcomeSynthesyDAO {
 
 
   @Inject
@@ -68,7 +68,7 @@ public class OutcomeSynthesyMySQLDAO extends AbstractMarloDAO implements Outcome
   @Override
   public long save(OutcomeSynthesy outcomeSynthesy) {
     if (outcomeSynthesy.getId() == null) {
-      super.save(outcomeSynthesy);
+      super.saveEntity(outcomeSynthesy);
     } else {
       super.update(outcomeSynthesy);
     }

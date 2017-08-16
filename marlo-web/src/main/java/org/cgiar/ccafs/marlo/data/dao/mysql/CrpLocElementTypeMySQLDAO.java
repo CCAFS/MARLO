@@ -24,7 +24,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class CrpLocElementTypeMySQLDAO extends AbstractMarloDAO implements CrpLocElementTypeDAO {
+public class CrpLocElementTypeMySQLDAO extends AbstractMarloDAO<CrpLocElementType, Long> implements CrpLocElementTypeDAO {
 
 
   @Inject
@@ -81,7 +81,7 @@ public class CrpLocElementTypeMySQLDAO extends AbstractMarloDAO implements CrpLo
   @Override
   public long save(CrpLocElementType crpLocElementType) {
     if (crpLocElementType.getId() == null) {
-      super.save(crpLocElementType);
+      super.saveEntity(crpLocElementType);
     } else {
       super.update(crpLocElementType);
     }

@@ -18,7 +18,6 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.IpIndicatorDAO;
 import org.cgiar.ccafs.marlo.data.model.IpIndicator;
-import org.cgiar.ccafs.marlo.data.model.IpProjectIndicator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +26,7 @@ import java.util.Map;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class IpIndicatorMySQLDAO extends AbstractMarloDAO implements IpIndicatorDAO {
+public class IpIndicatorMySQLDAO extends AbstractMarloDAO<IpIndicator, Long> implements IpIndicatorDAO {
 
 
   @Inject
@@ -161,35 +160,9 @@ public class IpIndicatorMySQLDAO extends AbstractMarloDAO implements IpIndicator
   }
 
   @Override
-  public List<IpProjectIndicator> getProjectIndicators(int year, long indicator, long program, long midOutcome) {
-    StringBuilder query = new StringBuilder();
-    query.append("SELECT ai.id,ai.project_id, ai.description, ai.gender, ai.target, ai.year, aip.id as 'parent_id', ");
-    query.append("aip.description as 'parent_description', aip.target as 'parent_target', ");
-    query.append(
-      "ie.id as 'outcome_id', ie.description as 'outcome_description',ai.archived,ai.narrative_gender,ai.narrative_targets ");
-    query.append("FROM ip_project_indicators as ai ");
-    query.append("INNER JOIN ip_indicators aip ON ai.parent_id = aip.id ");
-    query.append("INNER JOIN ip_elements ie ON ai.outcome_id = ie.id ");
-    query.append("WHERE ai.is_active = TRUE and aip.id=" + indicator + " and ai.year=" + year + " and ie.ip_program_id="
-      + program + " and ie.id=" + midOutcome);
-
-    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
-    List<IpProjectIndicator> ipIndicators = new ArrayList<>();
-    if (rList != null) {
-      for (Map<String, Object> map : rList) {
-        IpProjectIndicator indicatorDB = super.find(IpProjectIndicator.class, Long.parseLong(map.get("id").toString()));
-
-        ipIndicators.add(indicatorDB);
-      }
-    }
-
-    return ipIndicators;
-  }
-
-  @Override
   public long save(IpIndicator ipIndicator) {
     if (ipIndicator.getId() == null) {
-      super.save(ipIndicator);
+      super.saveEntity(ipIndicator);
     } else {
       super.update(ipIndicator);
     }

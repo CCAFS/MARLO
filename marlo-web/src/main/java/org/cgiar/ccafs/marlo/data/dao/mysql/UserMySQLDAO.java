@@ -22,15 +22,19 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.inject.Inject;
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  * @author Christian Garcia - CIAT/CCAFS
  */
-public class UserMySQLDAO extends AbstractMarloDAO implements UserDAO {
+public class UserMySQLDAO extends AbstractMarloDAO<User, Long> implements UserDAO {
 
+  public static Logger LOG = LoggerFactory.getLogger(UserMySQLDAO.class);
 
   @Inject
   public UserMySQLDAO(SessionFactory sessionFactory) {
@@ -46,8 +50,9 @@ public class UserMySQLDAO extends AbstractMarloDAO implements UserDAO {
 
   @Override
   public String getEmailByUsername(String username) {
-    String query = "select email from " + User.class.getName() + " where username = '" + username + "'";
-    String email = (String) super.findSingleResult(String.class, query);
+    String queryString = "select email from " + User.class.getName() + " where username = '" + username + "'";
+    Query query = this.getSessionFactory().getCurrentSession().createQuery(queryString);
+    String email = (String) query.uniqueResult();
     return email;
   }
 
@@ -77,7 +82,7 @@ public class UserMySQLDAO extends AbstractMarloDAO implements UserDAO {
   @Override
   public boolean saveLastLogin(User user) {
     if (user.getId() == null) {
-      super.save(user);
+      super.saveEntity(user);
     } else {
       super.update(user);
     }
@@ -87,7 +92,7 @@ public class UserMySQLDAO extends AbstractMarloDAO implements UserDAO {
   @Override
   public Long saveUser(User user) {
     if (user.getId() == null) {
-      super.save(user);
+      super.saveEntity(user);
     } else {
       super.update(user);
     }
@@ -118,6 +123,18 @@ public class UserMySQLDAO extends AbstractMarloDAO implements UserDAO {
     query.append("END, email, last_name, first_name ");
 
     return super.findAll(query.toString());
+  }
+
+  @Override
+  public boolean verifiyCredentials(String email, String password) {
+    String query = "from " + User.class.getName() + " where email= '" + email + "' and password= '" + password
+      + "' and is_active = 1";
+    List<User> users = super.findAll(query);
+    if (users.size() > 0) {
+      return true;
+    }
+    LOG.error("verifiyCredentials() > There was an error verifiying the credentials", email);
+    return false;
   }
 
 }

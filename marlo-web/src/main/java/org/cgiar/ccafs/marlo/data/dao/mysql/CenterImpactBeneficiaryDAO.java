@@ -24,7 +24,8 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class CenterImpactBeneficiaryDAO extends AbstractMarloDAO implements ICenterImpactBeneficiaryDAO {
+public class CenterImpactBeneficiaryDAO extends AbstractMarloDAO<CenterImpactBeneficiary, Long>
+  implements ICenterImpactBeneficiaryDAO {
 
 
   @Inject
@@ -75,7 +76,7 @@ public class CenterImpactBeneficiaryDAO extends AbstractMarloDAO implements ICen
   @Override
   public long save(CenterImpactBeneficiary researchImpactBeneficiary) {
     if (researchImpactBeneficiary.getId() == null) {
-      super.save(researchImpactBeneficiary);
+      super.saveEntity(researchImpactBeneficiary);
     } else {
       super.update(researchImpactBeneficiary);
     }

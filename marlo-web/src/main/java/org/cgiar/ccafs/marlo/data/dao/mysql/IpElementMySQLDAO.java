@@ -26,7 +26,7 @@ import java.util.Map;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class IpElementMySQLDAO extends AbstractMarloDAO implements IpElementDAO {
+public class IpElementMySQLDAO extends AbstractMarloDAO<IpElement, Long> implements IpElementDAO {
 
 
   @Inject
@@ -214,7 +214,7 @@ public class IpElementMySQLDAO extends AbstractMarloDAO implements IpElementDAO 
   @Override
   public long save(IpElement ipElement) {
     if (ipElement.getId() == null) {
-      super.save(ipElement);
+      super.saveEntity(ipElement);
     } else {
       super.update(ipElement);
     }

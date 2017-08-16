@@ -24,7 +24,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class FileDBMySQLDAO extends AbstractMarloDAO implements FileDBDAO {
+public class FileDBMySQLDAO extends AbstractMarloDAO<FileDB, Long> implements FileDBDAO {
 
 
   @Inject
@@ -69,7 +69,7 @@ public class FileDBMySQLDAO extends AbstractMarloDAO implements FileDBDAO {
   @Override
   public long save(FileDB fileDB) {
     if (fileDB.getId() == null) {
-      super.save(fileDB);
+      super.saveEntity(fileDB);
     } else {
       super.update(fileDB);
     }

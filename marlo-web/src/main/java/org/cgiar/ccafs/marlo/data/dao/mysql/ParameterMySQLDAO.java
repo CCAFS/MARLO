@@ -24,7 +24,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class ParameterMySQLDAO extends AbstractMarloDAO implements ParameterDAO {
+public class ParameterMySQLDAO extends AbstractMarloDAO<Parameter, Long> implements ParameterDAO {
 
 
   @Inject
@@ -79,7 +79,7 @@ public class ParameterMySQLDAO extends AbstractMarloDAO implements ParameterDAO 
   @Override
   public long save(Parameter parameter) {
     if (parameter.getId() == null) {
-      super.save(parameter);
+      super.saveEntity(parameter);
     } else {
       super.update(parameter);
     }

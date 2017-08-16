@@ -24,7 +24,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class CrpClusterOfActivityMySQLDAO extends AbstractMarloDAO implements CrpClusterOfActivityDAO {
+public class CrpClusterOfActivityMySQLDAO extends AbstractMarloDAO<CrpClusterOfActivity, Long> implements CrpClusterOfActivityDAO {
 
 
   @Inject
@@ -69,7 +69,7 @@ public class CrpClusterOfActivityMySQLDAO extends AbstractMarloDAO implements Cr
   @Override
   public Long save(CrpClusterOfActivity crpClusterOfActivity) {
     if (crpClusterOfActivity.getId() == null) {
-      super.save(crpClusterOfActivity);
+      super.saveEntity(crpClusterOfActivity);
     } else {
       super.update(crpClusterOfActivity);
     }

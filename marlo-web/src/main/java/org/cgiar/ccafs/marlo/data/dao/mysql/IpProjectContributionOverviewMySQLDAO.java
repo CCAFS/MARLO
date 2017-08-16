@@ -26,7 +26,7 @@ import java.util.Map;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class IpProjectContributionOverviewMySQLDAO extends AbstractMarloDAO
+public class IpProjectContributionOverviewMySQLDAO extends AbstractMarloDAO<IpProjectContributionOverview, Long>
   implements IpProjectContributionOverviewDAO {
 
 
@@ -119,7 +119,7 @@ public class IpProjectContributionOverviewMySQLDAO extends AbstractMarloDAO
   @Override
   public long save(IpProjectContributionOverview ipProjectContributionOverview) {
     if (ipProjectContributionOverview.getId() == null) {
-      super.save(ipProjectContributionOverview);
+      super.saveEntity(ipProjectContributionOverview);
     } else {
       super.update(ipProjectContributionOverview);
     }

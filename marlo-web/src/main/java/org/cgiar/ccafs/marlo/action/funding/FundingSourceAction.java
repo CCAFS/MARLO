@@ -668,13 +668,11 @@ public class FundingSourceAction extends BaseAction {
     this.setBasePermission(this.getText(Permission.PROJECT_FUNDING_SOURCE_BASE_PERMISSION, params));
 
     if (this.isHttpPost()) {
-      // fundingSource.setFile(null);
       if (fundingSource.getInstitutions() != null) {
         for (FundingSourceInstitution fundingSourceInstitution : fundingSource.getInstitutions()) {
           fundingSourceInstitution
             .setInstitution(institutionManager.getInstitutionById(fundingSourceInstitution.getId()));
         }
-        // fundingSource.setW1w2(null);
         fundingSource.getInstitutions().clear();
       }
 

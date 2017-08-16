@@ -25,32 +25,30 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.shiro.util.CollectionUtils;
-import org.hibernate.EntityMode;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.event.FlushEvent;
-import org.hibernate.event.FlushEventListener;
-import org.hibernate.event.Initializable;
-import org.hibernate.event.PostCollectionRecreateEvent;
-import org.hibernate.event.PostCollectionRecreateEventListener;
-import org.hibernate.event.PostCollectionRemoveEvent;
-import org.hibernate.event.PostCollectionRemoveEventListener;
-import org.hibernate.event.PostCollectionUpdateEvent;
-import org.hibernate.event.PostCollectionUpdateEventListener;
-import org.hibernate.event.PostDeleteEvent;
-import org.hibernate.event.PostDeleteEventListener;
-import org.hibernate.event.PostInsertEvent;
-import org.hibernate.event.PostInsertEventListener;
-import org.hibernate.event.PostUpdateEvent;
-import org.hibernate.event.PostUpdateEventListener;
-import org.hibernate.event.PreDeleteEvent;
-import org.hibernate.event.PreDeleteEventListener;
-import org.hibernate.event.PreInsertEvent;
-import org.hibernate.event.PreInsertEventListener;
-import org.hibernate.event.PreUpdateEvent;
-import org.hibernate.event.PreUpdateEventListener;
+import org.hibernate.event.spi.FlushEvent;
+import org.hibernate.event.spi.FlushEventListener;
+import org.hibernate.event.spi.PostCollectionRecreateEvent;
+import org.hibernate.event.spi.PostCollectionRecreateEventListener;
+import org.hibernate.event.spi.PostCollectionRemoveEvent;
+import org.hibernate.event.spi.PostCollectionRemoveEventListener;
+import org.hibernate.event.spi.PostCollectionUpdateEvent;
+import org.hibernate.event.spi.PostCollectionUpdateEventListener;
+import org.hibernate.event.spi.PostDeleteEvent;
+import org.hibernate.event.spi.PostDeleteEventListener;
+import org.hibernate.event.spi.PostInsertEvent;
+import org.hibernate.event.spi.PostInsertEventListener;
+import org.hibernate.event.spi.PostUpdateEvent;
+import org.hibernate.event.spi.PostUpdateEventListener;
+import org.hibernate.event.spi.PreDeleteEvent;
+import org.hibernate.event.spi.PreDeleteEventListener;
+import org.hibernate.event.spi.PreInsertEvent;
+import org.hibernate.event.spi.PreInsertEventListener;
+import org.hibernate.event.spi.PreUpdateEvent;
+import org.hibernate.event.spi.PreUpdateEventListener;
 import org.hibernate.metadata.ClassMetadata;
+import org.hibernate.persister.entity.EntityPersister;
 import org.hibernate.type.OrderedSetType;
 import org.hibernate.type.SetType;
 import org.hibernate.type.Type;
@@ -64,20 +62,12 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Christian Garcia, Grant Lay
  */
-public class HibernateAuditLogListener
-  implements PreDeleteEventListener, PreUpdateEventListener, PreInsertEventListener, PostDeleteEventListener,
-  PostUpdateEventListener, PostInsertEventListener, FlushEventListener, PostCollectionUpdateEventListener,
-  PostCollectionRemoveEventListener, PostCollectionRecreateEventListener, Initializable {
+public class HibernateAuditLogListener implements PreDeleteEventListener, PreUpdateEventListener,
+  PreInsertEventListener, PostDeleteEventListener, PostUpdateEventListener, PostInsertEventListener, FlushEventListener,
+  PostCollectionUpdateEventListener, PostCollectionRemoveEventListener, PostCollectionRecreateEventListener {
 
   public static Logger LOG = LoggerFactory.getLogger(HibernateAuditLogListener.class);
   private static final long serialVersionUID = 1L;
-
-
-  @Override
-  public void initialize(Configuration arg0) {
-    LOG.debug("Initializing HibernateAuditLogListener");
-
-  }
 
 
   /**
@@ -93,7 +83,7 @@ public class HibernateAuditLogListener
     String[] propertyNames = classMetadata.getPropertyNames();
     for (String name : propertyNames) {
 
-      Object propertyValue = classMetadata.getPropertyValue(entity, name, EntityMode.POJO);
+      Object propertyValue = classMetadata.getPropertyValue(entity, name);
       Type propertyType = classMetadata.getPropertyType(name);
 
       if (propertyValue != null && (propertyType instanceof OrderedSetType || propertyType instanceof SetType)) {
@@ -365,6 +355,12 @@ public class HibernateAuditLogListener
     }
 
     return relations;
+  }
+
+  @Override
+  public boolean requiresPostCommitHanding(EntityPersister persister) {
+    // TODO Auto-generated method stub
+    return false;
   }
 
 

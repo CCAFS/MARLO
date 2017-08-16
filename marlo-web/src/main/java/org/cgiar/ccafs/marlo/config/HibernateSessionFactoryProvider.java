@@ -23,8 +23,10 @@ import java.net.URL;
 
 import com.google.inject.Provider;
 import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
+import org.hibernate.service.ServiceRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,9 +77,11 @@ public class HibernateSessionFactoryProvider implements Provider<SessionFactory>
     AuditLogInterceptor auditLogInterceptor = new AuditLogInterceptor();
 
     hibernateConfig.setInterceptor(auditLogInterceptor);
-    this.registerHibernateEventListeners(hibernateConfig);
-    sessionFactory = hibernateConfig.buildSessionFactory();
 
+    ServiceRegistry serviceRegistry =
+      new StandardServiceRegistryBuilder().applySettings(hibernateConfig.getProperties()).build();
+    // this.registerHibernateEventListeners(serviceRegistry);
+    this.sessionFactory = hibernateConfig.buildSessionFactory(serviceRegistry);
     /**
      * See comments on the @HibernateAuditLogListener as to why we need the interceptor as well.
      */
@@ -90,26 +94,29 @@ public class HibernateSessionFactoryProvider implements Provider<SessionFactory>
     return this.sessionFactory;
   }
 
-  private void registerHibernateEventListeners(Configuration configuration) {
-    String className = "org.cgiar.ccafs.marlo.data.HibernateAuditLogListener";
-
-    configuration.setListener("pre-update", className);
-    configuration.setListener("pre-insert", className);
-    configuration.setListener("pre-delete", className);
-
-    configuration.setListener("post-collection-recreate", className);
-    configuration.setListener("post-collection-remove", className);
-    configuration.setListener("post-collection-update", className);
-
-
-    configuration.setListener("post-update", className);
-    configuration.setListener("post-insert", className);
-    configuration.setListener("post-delete", className);
-
-
-    configuration.setListeners("flush", new String[] {className, "org.hibernate.event.def.DefaultFlushEventListener"});
-    // configuration.setListener("flush-entity", className);
-
-  }
+  // private void registerHibernateEventListeners(ServiceRegistry serviceRegistry) {
+  //
+  // final EventListenerRegistry eventListenerRegistry = serviceRegistry.getService(EventListenerRegistry.class);
+  //
+  // HibernateAuditLogListener hibernateAuditLogListener = new HibernateAuditLogListener();
+  //
+  // eventListenerRegistry.prependListeners(EventType.PRE_UPDATE, hibernateAuditLogListener);
+  // eventListenerRegistry.prependListeners(EventType.PRE_INSERT, hibernateAuditLogListener);
+  // eventListenerRegistry.prependListeners(EventType.PRE_DELETE, hibernateAuditLogListener);
+  //
+  // eventListenerRegistry.prependListeners(EventType.POST_COLLECTION_RECREATE, hibernateAuditLogListener);
+  // eventListenerRegistry.prependListeners(EventType.POST_COLLECTION_REMOVE, hibernateAuditLogListener);
+  // eventListenerRegistry.prependListeners(EventType.POST_COLLECTION_UPDATE, hibernateAuditLogListener);
+  //
+  //
+  // eventListenerRegistry.prependListeners(EventType.POST_UPDATE, hibernateAuditLogListener);
+  // eventListenerRegistry.prependListeners(EventType.POST_INSERT, hibernateAuditLogListener);
+  // eventListenerRegistry.prependListeners(EventType.POST_DELETE, hibernateAuditLogListener);
+  //
+  // eventListenerRegistry.prependListeners(EventType.FLUSH, hibernateAuditLogListener);
+  //
+  // LOG.debug("Finished registering Hibernate Event Listeners");
+  //
+  // }
 
 }

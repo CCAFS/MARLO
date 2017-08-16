@@ -40,7 +40,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-import org.hibernate.util.DTDEntityResolver;
+import org.hibernate.internal.util.xml.XMLHelper;
 import org.json.JSONObject;
 
 /**
@@ -51,7 +51,7 @@ public class ClientRepository {
   protected static Element getDocumentRoot(InputStreamReader stream) {
     try {
       SAXReader saxReader = new SAXReader();
-      saxReader.setEntityResolver(new DTDEntityResolver());
+      saxReader.setEntityResolver(XMLHelper.DEFAULT_DTD_RESOLVER);
       saxReader.setMergeAdjacentText(true);
       return saxReader.read(stream).getRootElement();
     } catch (DocumentException de) {

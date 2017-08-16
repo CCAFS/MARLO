@@ -28,7 +28,8 @@ import java.util.Map;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class CrpIndicatorReportMySQLDAO extends AbstractMarloDAO implements CrpIndicatorReportDAO {
+public class CrpIndicatorReportMySQLDAO extends AbstractMarloDAO<CrpIndicatorReport, Long>
+  implements CrpIndicatorReportDAO {
 
 
   @Inject
@@ -70,6 +71,10 @@ public class CrpIndicatorReportMySQLDAO extends AbstractMarloDAO implements CrpI
 
   }
 
+
+  /**
+   * This can be refactored with some logic moving to the service/manager layer.
+   */
   @Override
   public List<CrpIndicatorReport> getIndicatorReportsList(long leader, int year) {
 
@@ -105,9 +110,11 @@ public class CrpIndicatorReportMySQLDAO extends AbstractMarloDAO implements CrpI
 
           CrpIndicatorReport report = new CrpIndicatorReport();
           report.setActual("");
-          report.setCrpIndicator(super.find(CrpIndicator.class, Long.parseLong(map.get("indicator_id").toString())));
+          report.setCrpIndicator((CrpIndicator) this.getSessionFactory().getCurrentSession().get(CrpIndicator.class,
+            Long.parseLong(map.get("indicator_id").toString())));
           report.setDeviation("");
-          report.setIpLiaisonInstitution(super.find(IpLiaisonInstitution.class, leader));
+          report.setIpLiaisonInstitution((IpLiaisonInstitution) this.getSessionFactory().getCurrentSession()
+            .get(IpLiaisonInstitution.class, leader));
           report.setNextTarget("");
           report.setSupportLinks("");
           report.setTarget("");
@@ -124,7 +131,7 @@ public class CrpIndicatorReportMySQLDAO extends AbstractMarloDAO implements CrpI
   @Override
   public long save(CrpIndicatorReport crpIndicatorReport) {
     if (crpIndicatorReport.getId() == null) {
-      super.save(crpIndicatorReport);
+      super.saveEntity(crpIndicatorReport);
     } else {
       super.update(crpIndicatorReport);
     }

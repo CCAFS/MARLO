@@ -24,7 +24,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class RoleMySQLDAO extends AbstractMarloDAO implements RoleDAO {
+public class RoleMySQLDAO extends AbstractMarloDAO<Role, Long> implements RoleDAO {
 
 
   @Inject
@@ -69,7 +69,7 @@ public class RoleMySQLDAO extends AbstractMarloDAO implements RoleDAO {
   @Override
   public long save(Role role) {
     if (role.getId() == null) {
-      super.save(role);
+      super.saveEntity(role);
     } else {
       super.update(role);
     }

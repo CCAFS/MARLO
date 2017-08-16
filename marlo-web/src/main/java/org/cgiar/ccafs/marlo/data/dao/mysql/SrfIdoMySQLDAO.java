@@ -24,7 +24,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class SrfIdoMySQLDAO extends AbstractMarloDAO implements SrfIdoDAO {
+public class SrfIdoMySQLDAO extends AbstractMarloDAO<SrfIdo, Long> implements SrfIdoDAO {
 
 
   @Inject
@@ -69,7 +69,7 @@ public class SrfIdoMySQLDAO extends AbstractMarloDAO implements SrfIdoDAO {
   @Override
   public long save(SrfIdo srfIdo) {
     if (srfIdo.getId() == null) {
-      super.save(srfIdo);
+      super.saveEntity(srfIdo);
     } else {
       super.update(srfIdo);
     }

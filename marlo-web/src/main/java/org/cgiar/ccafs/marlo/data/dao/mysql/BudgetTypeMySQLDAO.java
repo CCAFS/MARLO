@@ -24,7 +24,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class BudgetTypeMySQLDAO extends AbstractMarloDAO implements BudgetTypeDAO {
+public class BudgetTypeMySQLDAO extends AbstractMarloDAO<BudgetType, Long> implements BudgetTypeDAO {
 
 
   @Inject
@@ -69,7 +69,7 @@ public class BudgetTypeMySQLDAO extends AbstractMarloDAO implements BudgetTypeDA
   @Override
   public long save(BudgetType budgetType) {
     if (budgetType.getId() == null) {
-      super.save(budgetType);
+      super.saveEntity(budgetType);
     } else {
       super.update(budgetType);
     }

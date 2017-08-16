@@ -24,7 +24,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class SrfCrossCuttingIssueMySQLDAO extends AbstractMarloDAO implements SrfCrossCuttingIssueDAO {
+public class SrfCrossCuttingIssueMySQLDAO extends AbstractMarloDAO<SrfCrossCuttingIssue, Long> implements SrfCrossCuttingIssueDAO {
 
 
   @Inject
@@ -69,7 +69,7 @@ public class SrfCrossCuttingIssueMySQLDAO extends AbstractMarloDAO implements Sr
   @Override
   public long save(SrfCrossCuttingIssue srfCrossCuttingIssue) {
     if (srfCrossCuttingIssue.getId() == null) {
-      super.save(srfCrossCuttingIssue);
+      super.saveEntity(srfCrossCuttingIssue);
     } else {
       super.update(srfCrossCuttingIssue);
     }

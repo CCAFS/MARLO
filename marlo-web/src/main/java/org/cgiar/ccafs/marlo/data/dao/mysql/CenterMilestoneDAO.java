@@ -24,7 +24,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class CenterMilestoneDAO extends AbstractMarloDAO implements ICenterMilestoneDAO {
+public class CenterMilestoneDAO extends AbstractMarloDAO<CenterMilestone, Long> implements ICenterMilestoneDAO {
 
 
   @Inject
@@ -75,7 +75,7 @@ public class CenterMilestoneDAO extends AbstractMarloDAO implements ICenterMiles
   @Override
   public long save(CenterMilestone centerMilestone) {
     if (centerMilestone.getId() == null) {
-      super.save(centerMilestone);
+      super.saveEntity(centerMilestone);
     } else {
       super.update(centerMilestone);
     }
@@ -85,7 +85,7 @@ public class CenterMilestoneDAO extends AbstractMarloDAO implements ICenterMiles
   @Override
   public long save(CenterMilestone centerMilestone, String actionName, List<String> relationsName) {
     if (centerMilestone.getId() == null) {
-      super.save(centerMilestone, actionName, relationsName);
+      super.saveEntity(centerMilestone, actionName, relationsName);
     } else {
       super.update(centerMilestone, actionName, relationsName);
     }

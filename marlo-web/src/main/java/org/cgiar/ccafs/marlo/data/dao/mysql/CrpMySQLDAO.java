@@ -27,7 +27,7 @@ import org.hibernate.SessionFactory;
  * @author Hermes Jiménez - CIAT/CCAFS
  * @author Christian Garcia - CIAT/CCAFS
  */
-public class CrpMySQLDAO extends AbstractMarloDAO implements CrpDAO {
+public class CrpMySQLDAO extends AbstractMarloDAO<Crp, Long> implements CrpDAO {
 
 
   @Inject
@@ -82,7 +82,7 @@ public class CrpMySQLDAO extends AbstractMarloDAO implements CrpDAO {
   @Override
   public long save(Crp crp) {
     if (crp.getId() == null) {
-      super.save(crp);
+      super.saveEntity(crp);
     } else {
       super.update(crp);
     }

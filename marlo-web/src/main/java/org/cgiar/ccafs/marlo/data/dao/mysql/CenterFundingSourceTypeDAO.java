@@ -24,7 +24,8 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class CenterFundingSourceTypeDAO extends AbstractMarloDAO implements ICenterFundingSourceTypeDAO {
+public class CenterFundingSourceTypeDAO extends AbstractMarloDAO<CenterFundingSourceType, Long>
+  implements ICenterFundingSourceTypeDAO {
 
 
   @Inject
@@ -75,7 +76,7 @@ public class CenterFundingSourceTypeDAO extends AbstractMarloDAO implements ICen
   @Override
   public long save(CenterFundingSourceType fundingSourceType) {
     if (fundingSourceType.getId() == null) {
-      super.save(fundingSourceType);
+      super.saveEntity(fundingSourceType);
     } else {
       super.update(fundingSourceType);
     }

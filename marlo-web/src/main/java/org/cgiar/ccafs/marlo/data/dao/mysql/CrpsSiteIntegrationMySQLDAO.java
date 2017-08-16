@@ -24,7 +24,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class CrpsSiteIntegrationMySQLDAO extends AbstractMarloDAO implements CrpsSiteIntegrationDAO {
+public class CrpsSiteIntegrationMySQLDAO extends AbstractMarloDAO<CrpsSiteIntegration, Long> implements CrpsSiteIntegrationDAO {
 
 
   @Inject
@@ -69,7 +69,7 @@ public class CrpsSiteIntegrationMySQLDAO extends AbstractMarloDAO implements Crp
   @Override
   public long save(CrpsSiteIntegration crpsSiteIntegration) {
     if (crpsSiteIntegration.getId() == null) {
-      super.save(crpsSiteIntegration);
+      super.saveEntity(crpsSiteIntegration);
     } else {
       super.update(crpsSiteIntegration);
     }

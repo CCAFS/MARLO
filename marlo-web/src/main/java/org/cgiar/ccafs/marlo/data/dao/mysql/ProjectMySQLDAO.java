@@ -27,7 +27,7 @@ import java.util.Map;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class ProjectMySQLDAO extends AbstractMarloDAO implements ProjectDAO {
+public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements ProjectDAO {
 
 
   @Inject
@@ -87,7 +87,7 @@ public class ProjectMySQLDAO extends AbstractMarloDAO implements ProjectDAO {
           query.append(column);
           query.append(" = '" + columnValue + "'");
 
-          super.executeQuery(query.toString());
+          super.executeUpdateQuery(query.toString());
 
 
         }
@@ -112,7 +112,7 @@ public class ProjectMySQLDAO extends AbstractMarloDAO implements ProjectDAO {
 
     this.deleteOnCascade("projects", "id", project.getId(), project.getModifiedBy().getId(),
       project.getModificationJustification());
-    return this.save(project) > 0;
+    return this.saveEntity(project).getId() > 0;
   }
 
   @Override
@@ -160,9 +160,9 @@ public class ProjectMySQLDAO extends AbstractMarloDAO implements ProjectDAO {
   @Override
   public long save(Project project) {
     if (project.getId() == null) {
-      super.save(project);
+      project = super.saveEntity(project);
     } else {
-      super.update(project);
+      project = super.update(project);
     }
 
 
@@ -172,7 +172,7 @@ public class ProjectMySQLDAO extends AbstractMarloDAO implements ProjectDAO {
   @Override
   public long save(Project project, String sectionName, List<String> relationsName) {
     if (project.getId() == null) {
-      super.save(project, sectionName, relationsName);
+      super.saveEntity(project, sectionName, relationsName);
     } else {
       super.update(project, sectionName, relationsName);
     }

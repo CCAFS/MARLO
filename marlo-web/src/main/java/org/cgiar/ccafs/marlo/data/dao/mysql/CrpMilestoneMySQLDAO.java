@@ -24,7 +24,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class CrpMilestoneMySQLDAO extends AbstractMarloDAO implements CrpMilestoneDAO {
+public class CrpMilestoneMySQLDAO extends AbstractMarloDAO<CrpMilestone, Long> implements CrpMilestoneDAO {
 
 
   @Inject
@@ -69,7 +69,7 @@ public class CrpMilestoneMySQLDAO extends AbstractMarloDAO implements CrpMilesto
   @Override
   public long save(CrpMilestone crpMilestone) {
     if (crpMilestone.getId() == null) {
-      super.save(crpMilestone);
+      super.saveEntity(crpMilestone);
     } else {
       super.update(crpMilestone);
     }

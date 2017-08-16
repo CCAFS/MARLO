@@ -24,7 +24,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class CustomParameterMySQLDAO extends AbstractMarloDAO implements CustomParameterDAO {
+public class CustomParameterMySQLDAO extends AbstractMarloDAO<CustomParameter, Long> implements CustomParameterDAO {
 
 
   @Inject
@@ -69,7 +69,7 @@ public class CustomParameterMySQLDAO extends AbstractMarloDAO implements CustomP
   @Override
   public long save(CustomParameter customParameter) {
     if (customParameter.getId() == null) {
-      super.save(customParameter);
+      super.saveEntity(customParameter);
     } else {
       super.update(customParameter);
     }

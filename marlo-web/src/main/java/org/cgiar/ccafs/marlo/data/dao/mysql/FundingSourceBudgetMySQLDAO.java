@@ -24,7 +24,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class FundingSourceBudgetMySQLDAO extends AbstractMarloDAO implements FundingSourceBudgetDAO {
+public class FundingSourceBudgetMySQLDAO extends AbstractMarloDAO<FundingSourceBudget, Long> implements FundingSourceBudgetDAO {
 
 
   @Inject
@@ -88,7 +88,7 @@ public class FundingSourceBudgetMySQLDAO extends AbstractMarloDAO implements Fun
       fundingSourceBudget.setId(list.get(0).getId());
       super.update(fundingSourceBudget);
     } else {
-      super.save(fundingSourceBudget);
+      super.saveEntity(fundingSourceBudget);
     }
 
 

@@ -24,7 +24,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class CrpIndicatorTypeMySQLDAO extends AbstractMarloDAO implements CrpIndicatorTypeDAO {
+public class CrpIndicatorTypeMySQLDAO extends AbstractMarloDAO<CrpIndicatorType, Long> implements CrpIndicatorTypeDAO {
 
 
   @Inject
@@ -68,7 +68,7 @@ public class CrpIndicatorTypeMySQLDAO extends AbstractMarloDAO implements CrpInd
   @Override
   public long save(CrpIndicatorType crpIndicatorType) {
     if (crpIndicatorType.getId() == null) {
-      super.save(crpIndicatorType);
+      super.saveEntity(crpIndicatorType);
     } else {
       super.update(crpIndicatorType);
     }

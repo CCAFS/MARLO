@@ -99,4 +99,14 @@ public interface UserDAO {
    * @return a list of maps with the information of the users found.
    */
   public List<User> searchUser(String searchValue);
+
+  /**
+   * This method checks if the credentials received as parameter
+   * correspond with the credentials of some user in the database.
+   * 
+   * @param email
+   * @param password - password encrypted with MD5
+   * @return true if the credentials are valid. False otherwise.
+   */
+  public boolean verifiyCredentials(String email, String password);
 }

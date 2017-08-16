@@ -25,7 +25,7 @@ import java.util.Map;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class IpLiaisonInstitutionMySQLDAO extends AbstractMarloDAO implements IpLiaisonInstitutionDAO {
+public class IpLiaisonInstitutionMySQLDAO extends AbstractMarloDAO<IpLiaisonInstitution, Long> implements IpLiaisonInstitutionDAO {
 
 
   @Inject
@@ -95,7 +95,7 @@ public class IpLiaisonInstitutionMySQLDAO extends AbstractMarloDAO implements Ip
   @Override
   public long save(IpLiaisonInstitution ipLiaisonInstitution) {
     if (ipLiaisonInstitution.getId() == null) {
-      super.save(ipLiaisonInstitution);
+      super.saveEntity(ipLiaisonInstitution);
     } else {
       super.update(ipLiaisonInstitution);
     }
@@ -107,7 +107,7 @@ public class IpLiaisonInstitutionMySQLDAO extends AbstractMarloDAO implements Ip
   @Override
   public long save(IpLiaisonInstitution ipLiaisonInstitution, String section, List<String> relationsName) {
     if (ipLiaisonInstitution.getId() == null) {
-      super.save(ipLiaisonInstitution, section, relationsName);
+      super.saveEntity(ipLiaisonInstitution, section, relationsName);
     } else {
       super.update(ipLiaisonInstitution, section, relationsName);
     }
