@@ -1,4 +1,3 @@
-
 $(document).ready(init);
 
 function init() {
@@ -106,7 +105,7 @@ function init() {
       width: '100%'
   });
 
-  // changeDonorByFundingType($(".type").val(), $(".donor"))
+  changeDonorByFundingType($(".type").val(), $(".donor"))
 
   // Check Funding type
   onChangeFundingType($(".type").val());
@@ -119,15 +118,12 @@ function init() {
   // When select center as Funding Window
   var lastDonor = -1;
   $("select.type").on("change", function() {
-    var option = $(this).find("option:selected");
-    var url = baseURL + "/institutionsByBudgetType.do";
-    var data = {
-      budgetTypeID: option.val()
-    };
+    var $option = $(this).find("option:selected");
+    var optionValue = $option.val();
     // Change Donor list
-    ajaxService(url, data);
+    getInstitutionsBudgetByType(optionValue);
     // Event on change
-    onChangeFundingType(option.val());
+    onChangeFundingType(optionValue);
   });
 
   // Set file upload (blueimp-tmpl)
@@ -556,11 +552,11 @@ function checkRegionList(block) {
 }
 
 function settingDate(start,end,extensionDate) {
-  var dateFormat = "yyyy-MM";
+  var dateFormat = "yy-mm-dd";
   var from = $(start).datepicker({
       dateFormat: dateFormat,
-      minDate: MIN_DATE,
-      maxDate: $(end).val() || MAX_DATE,
+      minDate: new Date(MIN_DATE),
+      maxDate: new Date($(end).val()) || (MAX_DATE),
       changeMonth: true,
       numberOfMonths: 1,
       changeYear: true,
@@ -568,17 +564,17 @@ function settingDate(start,end,extensionDate) {
         var selectedDate = new Date(inst.selectedYear, inst.selectedMonth, 1);
         if(budgetsConflicts(from.val().split('-')[0], inst.selectedYear - 1)) {
           $(this).datepicker("hide");
-          return
-          
-
+          return
         }
         $(this).datepicker('setDate', selectedDate);
+        $(this).datepicker("hide");
         if(selectedDate != "") {
           $(end).datepicker("option", "minDate", selectedDate);
         }
         getYears();
       }
   }).on("change", function() {
+    $(this).parent().find('.dateLabel').html(getDateLabel(this));
     getYears();
   }).on("click", function() {
     if(!$(this).val()) {
@@ -586,11 +582,11 @@ function settingDate(start,end,extensionDate) {
       getYears();
     }
   });
-
+  
   var to = $(end).datepicker({
       dateFormat: dateFormat,
-      minDate: $(start).val() || MIN_DATE,
-      maxDate: MAX_DATE,
+      minDate: new Date($(start).val()) || new Date(MIN_DATE),
+      maxDate: new Date($(extensionDate).val()) || new Date(MAX_DATE),
       changeMonth: true,
       numberOfMonths: 1,
       changeYear: true,
@@ -598,17 +594,19 @@ function settingDate(start,end,extensionDate) {
         var selectedDate = new Date(inst.selectedYear, inst.selectedMonth + 1, 0);
         if(budgetsConflicts(inst.selectedYear + 1, to.val().split('-')[0])) {
           $(this).datepicker("hide");
-          return
-          
-
+          return
         }
         $(this).datepicker('setDate', selectedDate);
+        $(this).next().html(getDateLabel(this));
+        $(this).datepicker("hide");
         if(selectedDate != "") {
           $(start).datepicker("option", "maxDate", selectedDate);
+          $(extensionDate).datepicker("option", "minDate", selectedDate);
         }
         getYears();
       }
   }).on("change", function() {
+    $(this).parent().find('.dateLabel').html(getDateLabel(this));
     getYears();
   }).on("click", function() {
     if(!$(this).val()) {
@@ -619,29 +617,41 @@ function settingDate(start,end,extensionDate) {
 
   var extension = $(extensionDate).datepicker({
       dateFormat: dateFormat,
-      minDate: $(to).val() || MIN_DATE,
-      maxDate: MAX_DATE,
+      minDate: new Date($(to).val()) || new Date(MIN_DATE),
+      maxDate: new Date(MAX_DATE),
       changeMonth: true,
       numberOfMonths: 1,
       changeYear: true,
       onChangeMonthYear: function(year,month,inst) {
         var selectedDate = new Date(inst.selectedYear, inst.selectedMonth + 1, 0);
+        console.log(selectedDate);
         if(budgetsConflicts(inst.selectedYear + 1, extension.val().split('-')[0])) {
           $(this).datepicker("hide");
           return        }
         $(this).datepicker('setDate', selectedDate);
+        $(this).next().html(getDateLabel(this));
+        $(this).datepicker("hide");
         if(selectedDate != "") {
-          $(to).datepicker("option", "maxDate", selectedDate);
+           $(to).datepicker("option", "maxDate", selectedDate);
         }
-        getYears();
+         getYears();
       }
   }).on("change", function() {
+    $(this).parent().find('.dateLabel').html(getDateLabel(this));
     getYears();
   }).on("click", function() {
     if(!$(this).val()) {
       $(this).datepicker('setDate', new Date());
-      getYears();
+       getYears();
     }
+  });
+  
+  // Event when a datelabel is clicked
+  $('.dateLabel').on('click', function(){
+    if(!isSynced) {
+      $(this).parent().find('input').datepicker("show");
+    }
+   
   });
 
   // Activate tab default
@@ -763,6 +773,14 @@ function settingDate(start,end,extensionDate) {
 
     return date;
   }
+  function getDateLabel(element){
+    var dateValue = $(element).val();
+    var year = dateValue.split('-')[0];
+    var month = dateValue.split('-')[1];
+    var day = dateValue.split('-')[2];
+    console.log($(element).val());
+    return $.datepicker.formatDate( "MM yy", new Date(year, month -1, day) );
+  }
 }
 
 function addDataTable() {
@@ -788,12 +806,16 @@ function addDataTable() {
 
 }
 
-function ajaxService(url,data) {
+function getInstitutionsBudgetByType(budgetTypeID) {
   var $select = $(".donor");
+  var url = baseURL + "/institutionsByBudgetType.do";
+
   $.ajax({
       url: url,
       type: 'GET',
-      data: data,
+      data: {
+        budgetTypeID: budgetTypeID
+      },
       beforeSend: function() {
         $('.loading').show();
       },
@@ -803,7 +825,7 @@ function ajaxService(url,data) {
         $.each(m.institutions, function(i,e) {
           $select.addOption(e.id, e.name);
         });
-        changeDonorByFundingType(data.budgetTypeID, $select);
+        changeDonorByFundingType(budgetTypeID, $select);
       },
       error: function(e) {
         console.log(e);
@@ -811,7 +833,6 @@ function ajaxService(url,data) {
       complete: function() {
         $('.loading').hide();
         $select.trigger("change.select2");
-        console.log(data);
       }
   });
 }

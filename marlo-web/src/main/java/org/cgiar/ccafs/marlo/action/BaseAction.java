@@ -1049,7 +1049,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.centerSession;
   }
 
-
   public List<Center> getCentersList() {
     return centerService.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
   }
@@ -1110,7 +1109,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.crpID;
   }
 
-
   /**
    * Get the Crp List
    * 
@@ -1119,6 +1117,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public List<Crp> getCrpList() {
     return crpManager.findAll().stream().filter(c -> c.isMarlo()).collect(Collectors.toList());
   }
+
 
   /**
    * Get the crp that is currently save in the session, if the user access to the platform whit a diferent url, get the
@@ -1224,6 +1223,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
     }
     return u;
+  }
+
+  /**
+   * This method return the Date Format from APConstants class
+   * 
+   * @return A dateformat (yyyy-MM-dd)
+   */
+  public String getDateFormat() {
+    return APConstants.DATE_FORMAT;
   }
 
   /**

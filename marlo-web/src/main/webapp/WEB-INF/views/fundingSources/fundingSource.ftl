@@ -131,12 +131,23 @@
       </div>
       
       [#-- Start date, End date and finance code --]
-      <div class="form-group">
-        <div class="dateErrorBox"></div>
-        <div class="row">
-           <div class="col-md-4 metadataElement-startDate">[@customForm.input name="fundingSource.startDate" i18nkey="projectCofunded.startDate" className="metadataValue startDateInput" required=true  readOnly=isSynced editable=editable && action.canEditFundingSourceBudget() /] </div>
-           <div class="col-md-4 metadataElement-endDate">[@customForm.input name="fundingSource.endDate" i18nkey="projectCofunded.endDate" className="metadataValue endDateInput" required=true  readOnly=isSynced editable=editable && action.canEditFundingSourceBudget() /] </div>
-           <div class="col-md-4 metadataElement-extensionDate">[@customForm.input name="fundingSource.extensionDate" i18nkey="projectCofunded.extensionDate" className="metadataValue extensionDateInput" required=false  readOnly=isSynced editable=editable && action.canEditFundingSourceBudget() /] </div>
+      <div class="dateErrorBox"></div>
+      <div class="clearfix"></div>
+      <div class="form-group row">
+        <div class="col-md-4 metadataElement-startDate">
+          <label for="fundingSource.startDate">[@s.text name="fundingSource.startDate" /]:[@customForm.req required=editable && action.canEditFundingSourceBudget()  /]</label>
+          <input id="fundingSource.startDate" type="hidden" name="fundingSource.startDate" value="${(fundingSource.startDate?string["yyyy-MM-dd"])!}" class="form-control input-sm metadataValue startDateInput">
+          <p class="dateLabel btn btn-default ${isSynced?string('disabled','')}">${(fundingSource.startDate?string["MMMM yyyy"])!}  </p>
+        </div>
+        <div class="col-md-4 metadataElement-endDate">
+          <label for="fundingSource.endDate">[@s.text name="fundingSource.endDate" /]:[@customForm.req required=editable && action.canEditFundingSourceBudget()  /]</label>
+          <input id="fundingSource.endDate" type="hidden" name="fundingSource.endDate" value="${(fundingSource.endDate?string["yyyy-MM-dd"])!}" class="form-control input-sm metadataValue endDateInput required">
+          <p class="dateLabel btn btn-default ${isSynced?string('disabled','')}">${(fundingSource.endDate?string["MMMM yyyy"])!}  </p>
+        </div>
+        <div class="col-md-4 metadataElement-extensionDate">
+          <label for="fundingSource.extensionDate">[@s.text name="fundingSource.extensionDate" /]:[@customForm.req required=editable && action.canEditFundingSourceBudget()  /] </label>
+          <input id="fundingSource.extensionDate" type="hidden" name="fundingSource.extensionDate" value="${(fundingSource.extensionDate?string["yyyy-MM-dd"])!}" class="form-control input-sm metadataValue extensionDateInput">
+          <p class="dateLabel btn btn-default ${isSynced?string('disabled','')}">${(fundingSource.extensionDate?string["MMMM yyyy"])!}  </p>
         </div>
       </div>
       
@@ -202,7 +213,7 @@
             <label for="">[@s.text name="projectCofunded.donor" /]:[@customForm.req required=editable /]</label>
             <span class="description"><i>([@s.text name="projectCofunded.donor.helpText" /])</i></span>
             [@customForm.select name="fundingSource.institution.id" i18nkey="projectCofunded.donor" className="donor" showTitle=false  listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" required=true editable=editable /]
-            <span class="text-warning metadataSuggested"></span><br />
+            <span class="text-warning metadataSuggested"></span> 
           </div>
         </div>      
         [#-- End Original Donor --]     

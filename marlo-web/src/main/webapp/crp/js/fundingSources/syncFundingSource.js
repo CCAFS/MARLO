@@ -4,11 +4,11 @@ $(document).ready(initSync);
 function initSync() {
   console.log('Sync FS started');
   syncing = false;
-  isSynced = $('#isSynced').val() === "false";
+  isSynced = $('#isSynced').val() === "true";
   $syncButtons = $("#fillMetadata .checkButton, #fillMetadata .updateButton");
   $unSyncButtons = $("#fillMetadata .uncheckButton");
 
-  if(isSynced) {
+  if(!isSynced) {
     // Set Datepicker
     settingDate(".startDateInput", ".endDateInput", ".extensionDateInput");
   }
@@ -88,6 +88,8 @@ function syncFundingSource() {
   $('.currencyInput').trigger('keyup');
   // Update Funding source
   $('.fundingSourceSyncedDate').val(new Date());
+  // Hide Date labels
+  $('.dateLabel').addClass('disabled');
   // Update component
   $(document).trigger('updateComponent');
   
@@ -133,6 +135,8 @@ function unSyncFundingSource() {
   $('#fillMetadata input:hidden').val(false);
   // Dissemination URL
   $('.financeCode').attr('readOnly', false);
+  // show Date labels
+  $('.dateLabel').removeClass('disabled');
   // Set datepicker
   settingDate(".startDateInput", ".endDateInput", ".extensionDateInput");
 
