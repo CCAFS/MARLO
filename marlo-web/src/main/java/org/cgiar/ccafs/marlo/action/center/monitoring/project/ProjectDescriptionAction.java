@@ -474,13 +474,15 @@ public class ProjectDescriptionAction extends BaseAction {
         if (project.getProjectLocations() != null) {
 
           List<CenterProjectLocation> countries = new ArrayList<>(project.getProjectLocations().stream()
-            .filter(fl -> fl.isActive() && fl.getLocElement().getLocElementType().getId() == 2)
+            .filter(
+              fl -> fl.isActive() && fl.getLocElement() != null && fl.getLocElement().getLocElementType().getId() == 2)
             .collect(Collectors.toList()));
 
           project.setProjectCountries(new ArrayList<>(countries));
 
           List<CenterProjectLocation> regions = new ArrayList<>(project.getProjectLocations().stream()
-            .filter(fl -> fl.isActive() && fl.getLocElement().getLocElementType().getId() == 1)
+            .filter(
+              fl -> fl.isActive() && fl.getLocElement() != null && fl.getLocElement().getLocElementType().getId() == 1)
             .collect(Collectors.toList()));
 
 

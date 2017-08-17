@@ -109,8 +109,8 @@
               [@customForm.textArea name="project.suggestedName" i18nkey="projectDescription.suggestedName" required=false className="project-title" required=true editable=editable && action.hasPermission("title") /]
             </div>
             [#-- Project Description --]
-            <div class="form-group">
-              [@customForm.textArea name="project.description" i18nkey="projectDescription.description" required=true className="project-title" editable=editable && action.hasPermission("title") /]
+            <div class="form-group metadataElement-objectives">
+              [@customForm.textArea name="project.description" i18nkey="projectDescription.description" required=true className="metadataValue" editable=editable && action.hasPermission("title") /]
             </div>            
             <div class="form-group row">  
               [#-- Start Date --]
@@ -148,8 +148,8 @@
               [@customForm.input name="project.directDonor" i18nkey="projectDescription.customerDonor" type="text" required=false  editable=editable/]
             </div>
             [#-- Total Amount --]
-            <div class="form-group metadataElement-donorName">
-              [@customForm.input name="project.totalAmount" className="amount" i18nkey="projectDescription.totalAmount" type="text" required=true  editable=editable/]
+            <div class="form-group metadataElement-grantAmount">
+              [@customForm.input name="project.totalAmount" className="metadataValue amount" i18nkey="projectDescription.totalAmount" type="text" required=true  editable=editable/]
             </div>
            
             [#-- CRP Project Contributions --]
