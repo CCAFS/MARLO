@@ -85,7 +85,7 @@ public final class APConstants {
   public static final String CRP_SL_ROLE = "crp_sl_rol";
   public static final String CUSTOM_FILE = "global";
   public static final String CRP_OTHER_LOCATIONS = "crp_other_locations";
-
+  public static final String CRP_REPORTS_DESCRIPTION = "crp_reports_description";
   public static final String CUSTOM_LAGUAGE = "en";
   public static final String CRP_CLUSTER_LEADER = "crp_cluster_leader";
   public static final String CRP_NEXT_USERS = "crp_next_users";

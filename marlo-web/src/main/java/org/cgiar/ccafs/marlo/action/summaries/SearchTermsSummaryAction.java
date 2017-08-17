@@ -579,8 +579,8 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
   private TypedTableModel getMasterTableModel(String center, String date) {
     // Initialization of Model
     TypedTableModel model =
-      new TypedTableModel(new String[] {"center", "date", "keys", "regionalAvailable", "hasW1W2Co"},
-        new Class[] {String.class, String.class, String.class, Boolean.class, Boolean.class});
+      new TypedTableModel(new String[] {"center", "date", "keys", "regionalAvailable", "hasW1W2Co", "hasActivities"},
+        new Class[] {String.class, String.class, String.class, Boolean.class, Boolean.class, Boolean.class});
     String keysString = "";
     int countKeys = 0;
     for (String key : keys) {
@@ -592,7 +592,15 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
         countKeys++;
       }
     }
-    model.addRow(new Object[] {center, date, keysString, hasRegions, hasW1W2Co});
+    Boolean hasActivities = false;
+    try {
+      hasActivities = this.hasSpecificities(APConstants.CRP_ACTIVITES_MODULE);
+    } catch (Exception e) {
+      LOG.warn("Failed to get " + APConstants.CRP_ACTIVITES_MODULE
+        + " parameter. Parameter will be set as false. Exception: " + e.getMessage());
+      hasActivities = false;
+    }
+    model.addRow(new Object[] {center, date, keysString, hasRegions, hasW1W2Co, hasActivities});
     return model;
   }
 

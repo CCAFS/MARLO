@@ -505,6 +505,8 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     for (ProjectPhase projectPhase : phase.getProjectPhases()) {
       projects.add((projectPhase.getProject()));
     }
+    // sort projects by id
+    projects.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
     for (Project project : projects) {
       // Get PPA institutions with budgets
       List<Institution> institutionsList = new ArrayList<>();
