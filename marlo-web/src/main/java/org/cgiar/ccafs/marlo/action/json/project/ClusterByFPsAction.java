@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 
 public class ClusterByFPsAction extends BaseAction {
 
@@ -91,8 +92,11 @@ public class ClusterByFPsAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
-    flagshipID = (StringUtils.trim(((String[]) parameters.get(APConstants.FLAGSHIP_ID))[0]));
+    // Map<String, Object> parameters = this.getParameters();
+    // flagshipID = (StringUtils.trim(((String[]) parameters.get(APConstants.FLAGSHIP_ID))[0]));
+
+    Map<String, Parameter> parameters = this.getParameters();
+    flagshipID = (StringUtils.trim(parameters.get(APConstants.FLAGSHIP_ID).getMultipleValues()[0]));
   }
 
 

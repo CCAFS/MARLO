@@ -26,6 +26,7 @@ import java.util.Map;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -73,8 +74,11 @@ public class MilestoneInformationAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
-    milestoneID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.MILESTONE_REQUEST_ID))[0]));
+    // Map<String, Object> parameters = this.getParameters();
+    Map<String, Parameter> parameters = this.getParameters();
+    // milestoneID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.MILESTONE_REQUEST_ID))[0]));
+    milestoneID =
+      Long.parseLong(StringUtils.trim(parameters.get(APConstants.MILESTONE_REQUEST_ID).getMultipleValues()[0]));
 
   }
 

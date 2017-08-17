@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 import com.google.inject.Inject;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
+import org.apache.struts2.dispatcher.Parameter;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -45,7 +46,7 @@ public class EditCaseStudyInterceptor extends AbstractInterceptor implements Ser
 
   private static final long serialVersionUID = 7287623847333177230L;
 
-  private Map<String, Object> parameters;
+  private Map<String, Parameter> parameters;
   private Map<String, Object> session;
   private Crp crp;
   private long caseStudyId = 0;
@@ -90,13 +91,15 @@ public class EditCaseStudyInterceptor extends AbstractInterceptor implements Ser
     boolean editParameter = false;
     boolean canSwitchProject = false;
     baseAction.setSession(session);
-    String projectParameter = ((String[]) parameters.get(APConstants.CASE_STUDY_REQUEST_ID))[0];
+    // String projectParameter = ((String[]) parameters.get(APConstants.CASE_STUDY_REQUEST_ID))[0];
+    String projectParameter = parameters.get(APConstants.CASE_STUDY_REQUEST_ID).getMultipleValues()[0];
     caseStudyId = Long.parseLong(projectParameter);
     CaseStudy caseStudy = caseStudyManager.getCaseStudyById(caseStudyId);
     String projectIDParameter;
 
     try {
-      projectIDParameter = ((String[]) parameters.get(APConstants.PROJECT_REQUEST_ID))[0];
+      // projectIDParameter = ((String[]) parameters.get(APConstants.PROJECT_REQUEST_ID))[0];
+      projectIDParameter = parameters.get(APConstants.PROJECT_REQUEST_ID).getMultipleValues()[0];
     } catch (Exception e) {
       projectIDParameter = String.valueOf(caseStudy.getCaseStudyProjects().stream()
         .filter(cs -> cs.isActive() && cs.isCreated()).collect(Collectors.toList()).get(0).getProject().getId());
@@ -135,7 +138,8 @@ public class EditCaseStudyInterceptor extends AbstractInterceptor implements Ser
 
       // TODO Validate is the project is new
       if (parameters.get(APConstants.EDITABLE_REQUEST) != null) {
-        String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
+        // String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
+        String stringEditable = parameters.get(APConstants.EDITABLE_REQUEST).getMultipleValues()[0];
         editParameter = stringEditable.equals("true");
         if (!editParameter) {
           baseAction.setEditableParameter(hasPermissionToEdit);
@@ -157,12 +161,10 @@ public class EditCaseStudyInterceptor extends AbstractInterceptor implements Ser
         System.out.println(studyProject.getProject().getId());
       }
 
-      List<CaseStudyProject> caseStudyProjects =
-        new ArrayList<>(
-          caseStudy
-            .getCaseStudyProjects().stream().filter(cs -> cs.isActive()
-              && cs.getProject().getId().longValue() == project.getId().longValue() && cs.isCreated())
-          .collect(Collectors.toList()));
+      List<CaseStudyProject> caseStudyProjects = new ArrayList<>(caseStudy.getCaseStudyProjects().stream()
+        .filter(
+          cs -> cs.isActive() && cs.getProject().getId().longValue() == project.getId().longValue() && cs.isCreated())
+        .collect(Collectors.toList()));
 
       if (caseStudyProjects.isEmpty()) {
         canEdit = false;

@@ -31,6 +31,7 @@ import java.util.Map;
 import com.google.inject.Inject;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
+import org.apache.struts2.dispatcher.Parameter;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -42,7 +43,7 @@ public class EditOutputInterceptor extends AbstractInterceptor implements Serial
   private ICenterOutputManager outputService;
   private ICenterProgramManager programService;
 
-  private Map<String, Object> parameters;
+  private Map<String, Parameter> parameters;
   private Map<String, Object> session;
   private Center researchCenter;
 
@@ -64,7 +65,8 @@ public class EditOutputInterceptor extends AbstractInterceptor implements Serial
     researchCenter = (Center) session.get(APConstants.SESSION_CENTER);
 
     try {
-      outputID = Long.parseLong(((String[]) parameters.get(APConstants.OUTPUT_ID))[0]);
+      // outputID = Long.parseLong(((String[]) parameters.get(APConstants.OUTPUT_ID))[0]);
+      outputID = Long.parseLong(parameters.get(APConstants.OUTPUT_ID).getMultipleValues()[0]);
     } catch (Exception e) {
       return BaseAction.NOT_FOUND;
     }
@@ -110,7 +112,8 @@ public class EditOutputInterceptor extends AbstractInterceptor implements Serial
           }
 
           if (parameters.get(APConstants.EDITABLE_REQUEST) != null) {
-            String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
+            // String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
+            String stringEditable = parameters.get(APConstants.EDITABLE_REQUEST).getMultipleValues()[0];
             editParameter = stringEditable.equals("true");
             // If the user is not asking for edition privileges we don't need to validate them.
             if (!editParameter) {

@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -91,8 +92,10 @@ public class NextUserListAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
-    nextUserID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.NEXT_USER_ID))[0]));
+    // Map<String, Object> parameters = this.getParameters();
+    Map<String, Parameter> parameters = this.getParameters();
+    // nextUserID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.NEXT_USER_ID))[0]));
+    nextUserID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.NEXT_USER_ID).getMultipleValues()[0]));
   }
 
   public void setMessage(String message) {

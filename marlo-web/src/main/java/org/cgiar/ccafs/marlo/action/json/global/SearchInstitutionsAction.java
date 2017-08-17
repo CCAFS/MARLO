@@ -28,6 +28,7 @@ import java.util.Map;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,10 +72,15 @@ public class SearchInstitutionsAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
-    queryParameter = StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]);
-    withPPA = Integer.parseInt(StringUtils.trim(((String[]) parameters.get(APConstants.WITH_PPA_PARAMETER))[0]));
-    onlyPPA = Integer.parseInt(StringUtils.trim(((String[]) parameters.get(APConstants.ONLY_PPA_PARAMETER))[0]));
+    // Map<String, Object> parameters = this.getParameters();
+    // queryParameter = StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]);
+    // withPPA = Integer.parseInt(StringUtils.trim(((String[]) parameters.get(APConstants.WITH_PPA_PARAMETER))[0]));
+    // onlyPPA = Integer.parseInt(StringUtils.trim(((String[]) parameters.get(APConstants.ONLY_PPA_PARAMETER))[0]));
+
+    Map<String, Parameter> parameters = this.getParameters();
+    queryParameter = StringUtils.trim(parameters.get(APConstants.QUERY_PARAMETER).getMultipleValues()[0]);
+    withPPA = Integer.parseInt(StringUtils.trim(parameters.get(APConstants.WITH_PPA_PARAMETER).getMultipleValues()[0]));
+    onlyPPA = Integer.parseInt(StringUtils.trim(parameters.get(APConstants.ONLY_PPA_PARAMETER).getMultipleValues()[0]));
 
   }
 

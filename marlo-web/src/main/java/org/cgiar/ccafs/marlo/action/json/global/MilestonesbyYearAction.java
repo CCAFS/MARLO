@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -75,9 +76,14 @@ public class MilestonesbyYearAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
-    crpProgamID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.OUTCOME_REQUEST_ID))[0]));
-    year = Integer.parseInt(StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0]));
+    // Map<String, Object> parameters = this.getParameters();
+    // crpProgamID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.OUTCOME_REQUEST_ID))[0]));
+    // year = Integer.parseInt(StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0]));
+
+    Map<String, Parameter> parameters = this.getParameters();
+    crpProgamID =
+      Long.parseLong(StringUtils.trim(parameters.get(APConstants.OUTCOME_REQUEST_ID).getMultipleValues()[0]));
+    year = Integer.parseInt(StringUtils.trim(parameters.get(APConstants.YEAR_REQUEST).getMultipleValues()[0]));
 
   }
 

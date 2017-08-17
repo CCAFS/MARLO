@@ -29,6 +29,7 @@ import java.util.Map;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -79,8 +80,11 @@ public class GeopositionByLocElementAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
-    locElementID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.LOC_ELEMENT_ID))[0]));
+    // Map<String, Object> parameters = this.getParameters();
+    // locElementID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.LOC_ELEMENT_ID))[0]));
+
+    Map<String, Parameter> parameters = this.getParameters();
+    locElementID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.LOC_ELEMENT_ID).getMultipleValues()[0]));
 
   }
 

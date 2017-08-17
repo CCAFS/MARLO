@@ -28,6 +28,7 @@ import java.util.Map;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -80,9 +81,11 @@ public class DeliverableSubTypeAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
+    // Map<String, Object> parameters = this.getParameters();
+    Map<String, Parameter> parameters = this.getParameters();
     deliverableTypeId =
-      Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.DELIVERABLE_TYPE_ID))[0]));
+      // Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.DELIVERABLE_TYPE_ID))[0]));
+      Long.parseLong(StringUtils.trim(parameters.get(APConstants.DELIVERABLE_TYPE_ID).getMultipleValues()[0]));
   }
 
   public void setDeliverableSubTypes(List<Map<String, Object>> deliverableSubTypes) {

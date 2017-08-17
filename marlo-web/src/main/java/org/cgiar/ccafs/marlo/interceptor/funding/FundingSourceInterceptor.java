@@ -32,12 +32,13 @@ import java.util.Map;
 import com.google.inject.Inject;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
+import org.apache.struts2.dispatcher.Parameter;
 
 public class FundingSourceInterceptor extends AbstractInterceptor implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  private Map<String, Object> parameters;
+  private Map<String, Parameter> parameters;
   private Map<String, Object> session;
   private Crp crp;
   private long fundingSourceID = 0;
@@ -76,7 +77,8 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
     boolean hasPermissionToEdit = false;
     boolean editParameter = false;
 
-    String projectParameter = ((String[]) parameters.get(APConstants.FUNDING_SOURCE_REQUEST_ID))[0];
+    // String projectParameter = ((String[]) parameters.get(APConstants.FUNDING_SOURCE_REQUEST_ID))[0];
+    String projectParameter = parameters.get(APConstants.FUNDING_SOURCE_REQUEST_ID).getMultipleValues()[0];
     if (projectParameter == null) {
       throw new NullPointerException();
     }
@@ -107,7 +109,8 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
 
 
       if (parameters.get(APConstants.EDITABLE_REQUEST) != null) {
-        String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
+        // String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
+        String stringEditable = parameters.get(APConstants.EDITABLE_REQUEST).getMultipleValues()[0];
         editParameter = stringEditable.equals("true");
         if (!editParameter) {
           baseAction.setEditableParameter(hasPermissionToEdit);

@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -249,8 +250,11 @@ public class SearchUserAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
-    userEmail = StringUtils.trim(((String[]) parameters.get(APConstants.USER_EMAIL))[0]);
+    // Map<String, Object> parameters = this.getParameters();
+    // userEmail = StringUtils.trim(((String[]) parameters.get(APConstants.USER_EMAIL))[0]);
+
+    Map<String, Parameter> parameters = this.getParameters();
+    userEmail = StringUtils.trim(parameters.get(APConstants.USER_EMAIL).getMultipleValues()[0]);
   }
 
 

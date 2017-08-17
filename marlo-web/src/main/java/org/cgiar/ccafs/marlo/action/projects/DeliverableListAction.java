@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -124,9 +125,12 @@ public class DeliverableListAction extends BaseAction {
   @Override
   public String delete() {
 
-    Map<String, Object> parameters = this.getParameters();
+    // Map<String, Object> parameters = this.getParameters();
+    Map<String, Parameter> parameters = this.getParameters();
     deliverableID =
-      Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID))[0]));
+      // Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID))[0]));
+      Long
+        .parseLong(StringUtils.trim(parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID).getMultipleValues()[0]));
 
 
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
@@ -147,6 +151,7 @@ public class DeliverableListAction extends BaseAction {
     return SUCCESS;
   }
 
+  @Override
   public List<Integer> getAllYears() {
     return allYears;
   }
@@ -172,7 +177,7 @@ public class DeliverableListAction extends BaseAction {
                     || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
                     || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
                       || a.getStatus().intValue() == 0 || a.getStatus().intValue() == -1))))
-            .collect(Collectors.toList());
+              .collect(Collectors.toList());
           return openA;
         } else {
 
@@ -207,20 +212,18 @@ public class DeliverableListAction extends BaseAction {
 
       } else {
         if (this.isPlanningActive()) {
-          List<Deliverable> openA =
-            deliverables.stream()
-              .filter(a -> a.isActive() && ((a.getStatus() != null
-                && (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-                  || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId()))))))
+          List<Deliverable> openA = deliverables.stream()
+            .filter(a -> a.isActive()
+              && ((a.getStatus() != null && (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+                || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId()))))))
             .collect(Collectors.toList());
 
           return openA;
         } else {
-          List<Deliverable> openA =
-            deliverables.stream()
-              .filter(a -> a.isActive() && ((a.getStatus() != null
-                && (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-                  || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId()))))))
+          List<Deliverable> openA = deliverables.stream()
+            .filter(a -> a.isActive()
+              && ((a.getStatus() != null && (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+                || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId()))))))
             .collect(Collectors.toList());
           openA.removeAll(deliverables.stream()
             .filter(d -> d.isActive() && d.getYear() == this.getCurrentCycleYear() && d.getStatus() != null

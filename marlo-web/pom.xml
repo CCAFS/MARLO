@@ -14,8 +14,8 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <struts2.version>2.3.32</struts2.version>
-    <struts2-json.version>2.3.32</struts2-json.version>
+    <struts2.version>2.5.12</struts2.version>
+    <struts2-json.version>2.5.12</struts2-json.version>
     <guice.version>3.0</guice.version>
     <mysql.version>5.1.39</mysql.version>
     <junit.version>4.12</junit.version>

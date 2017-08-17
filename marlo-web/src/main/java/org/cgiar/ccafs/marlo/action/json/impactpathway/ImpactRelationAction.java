@@ -51,6 +51,7 @@ import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -689,36 +690,46 @@ public class ImpactRelationAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
+    // Map<String, Object> parameters = this.getParameters();
+
+    Map<String, Parameter> parameters = this.getParameters();
+
     // Validating parameters.
 
     id = "";
 
     try {
-      id = (StringUtils.trim(((String[]) parameters.get(APConstants.ID))[0]));
+      // id = (StringUtils.trim(((String[]) parameters.get(APConstants.ID))[0]));
+      id = (StringUtils.trim(parameters.get(APConstants.ID).getMultipleValues()[0]));
     } catch (Exception e) {
       LOG.error("There was an exception trying to parse the   id = {} ",
-        StringUtils.trim(((String[]) parameters.get(APConstants.ID))[0]));
+        // StringUtils.trim(((String[]) parameters.get(APConstants.ID))[0]));
+        StringUtils.trim(parameters.get(APConstants.ID).getMultipleValues()[0]));
 
     }
 
     try {
-      type = (StringUtils.trim(((String[]) parameters.get(APConstants.TYPE))[0]));
+      // type = (StringUtils.trim(((String[]) parameters.get(APConstants.TYPE))[0]));
+      type = (StringUtils.trim(parameters.get(APConstants.TYPE).getMultipleValues()[0]));
     } catch (Exception e) {
       LOG.error("There was an exception trying to parse the   type = {} ",
-        StringUtils.trim(((String[]) parameters.get(APConstants.TYPE))[0]));
+        // StringUtils.trim(((String[]) parameters.get(APConstants.TYPE))[0]));
+        StringUtils.trim(parameters.get(APConstants.TYPE).getMultipleValues()[0]));
 
     }
 
 
     try {
-      flagshipId = (StringUtils.trim(((String[]) parameters.get(APConstants.FLAGSHIP_ID))[0]));
+      // flagshipId = (StringUtils.trim(((String[]) parameters.get(APConstants.FLAGSHIP_ID))[0]));
+      flagshipId = (StringUtils.trim(parameters.get(APConstants.FLAGSHIP_ID).getMultipleValues()[0]));
+
       if (flagshipId.isEmpty()) {
         flagshipId = null;
       }
     } catch (Exception e) {
       LOG.error("There was an exception trying to parse the   FLAGSHIP_ID = {} ",
-        StringUtils.trim(((String[]) parameters.get(APConstants.FLAGSHIP_ID))[0]));
+        // StringUtils.trim(((String[]) parameters.get(APConstants.FLAGSHIP_ID))[0]));
+        StringUtils.trim(parameters.get(APConstants.FLAGSHIP_ID).getMultipleValues()[0]));
       flagshipId = null;
     }
   }

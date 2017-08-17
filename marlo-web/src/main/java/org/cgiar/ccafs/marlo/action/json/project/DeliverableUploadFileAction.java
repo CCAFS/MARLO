@@ -27,6 +27,7 @@ import java.util.Map;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -120,10 +121,14 @@ public class DeliverableUploadFileAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
+    // Map<String, Object> parameters = this.getParameters();
+    Map<String, Parameter> parameters = this.getParameters();
     deliverableID =
-      Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID))[0]));
-    fileType = StringUtils.trim(((String[]) parameters.get(APConstants.FILE_TYPE_REQUEST))[0]);
+      // Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID))[0]));
+      Long
+        .parseLong(StringUtils.trim(parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID).getMultipleValues()[0]));
+    // fileType = StringUtils.trim(((String[]) parameters.get(APConstants.FILE_TYPE_REQUEST))[0]);
+    fileType = StringUtils.trim(parameters.get(APConstants.FILE_TYPE_REQUEST).getMultipleValues()[0]);
   }
 
   public void setFile(File file) {

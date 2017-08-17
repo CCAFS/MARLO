@@ -29,6 +29,7 @@ import java.util.Map;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 
 /**
  * @author Christian Garcia- CIAT/CCAFS
@@ -73,7 +74,8 @@ public class DeliverableStatusAction extends BaseAction {
     }
     if (this.isPlanningActive()) {
 
-      if (deliverable.getStatus() !=null && deliverable.getStatus().intValue() != Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+      if (deliverable.getStatus() != null
+        && deliverable.getStatus().intValue() != Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
         status.remove(ProjectStatusEnum.Complete.getStatusId());
       }
       if (this.isDeliverableNew(deliverableID)) {
@@ -96,9 +98,13 @@ public class DeliverableStatusAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
-    deliverableID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.DELIVERABLE_ID))[0]));
-    year = Integer.parseInt(StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0]));
+    // Map<String, Object> parameters = this.getParameters();
+    // deliverableID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.DELIVERABLE_ID))[0]));
+    // year = Integer.parseInt(StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0]));
+
+    Map<String, Parameter> parameters = this.getParameters();
+    deliverableID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.DELIVERABLE_ID).getMultipleValues()[0]));
+    year = Integer.parseInt(StringUtils.trim(parameters.get(APConstants.YEAR_REQUEST).getMultipleValues()[0]));
   }
 
 
@@ -108,3 +114,4 @@ public class DeliverableStatusAction extends BaseAction {
 
 
 }
+
