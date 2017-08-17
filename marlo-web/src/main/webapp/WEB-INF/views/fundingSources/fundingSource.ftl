@@ -141,7 +141,7 @@
         </div>
         <div class="col-md-4 metadataElement-endDate">
           <label for="fundingSource.endDate">[@s.text name="fundingSource.endDate" /]:[@customForm.req required=editable && action.canEditFundingSourceBudget()  /]</label>
-          <input id="fundingSource.endDate" type="hidden" name="fundingSource.endDate" value="${(fundingSource.endDate?string["yyyy-MM-dd"])!}" class="form-control input-sm metadataValue endDateInput required">
+          <input id="fundingSource.endDate" type="hidden" name="fundingSource.endDate" value="${(fundingSource.endDate?string["yyyy-MM-dd"])!}" class="form-control input-sm metadataValue endDateInput">
           <p class="dateLabel btn btn-default ${isSynced?string('disabled','')}">${(fundingSource.endDate?string["MMMM yyyy"])!}  </p>
         </div>
         <div class="col-md-4 metadataElement-extensionDate">
@@ -193,7 +193,7 @@
           </div>
           [#-- Agreement status --]
           <div class="col-md-6 metadataElement-contractStatusId">
-            [@customForm.select name="fundingSource.status" i18nkey="projectCofunded.agreementStatus" className="agreementStatus metadataValue"  listName="status" keyFieldName=""  displayFieldName="" header=false disabled=isSynced editable=editable /] 
+            [@customForm.select name="fundingSource.status" i18nkey="projectCofunded.agreementStatus" className="agreementStatus metadataValue ${(action.hasSpecificities('crp_status_funding_sources')?string('','onlyOngoing'))!} "  listName="status" keyFieldName=""  displayFieldName="" header=false disabled=isSynced editable=editable /] 
             [#if isSynced && editable]<input type="hidden" class="selectHiddenInput" name="fundingSource.status" value="${(fundingSource.status)!}" />[/#if]
           </div>
         </div>

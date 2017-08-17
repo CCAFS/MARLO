@@ -220,10 +220,11 @@ function onChangeFundingType(typeID) {
 
   // Change Agreement Status when is (W1W2 Type => 1)
   var $agreementStatus = $('select.agreementStatus');
+  var onlyOngoingStatus = $agreementStatus.hasClass('onlyOngoing');
   // 3 => Concept Note/Pipeline
   // 4 => Informally Confirmed
   var $options = $agreementStatus.find("option[value='3'], option[value='4']");
-  if(typeID == W1W2) {
+  if((typeID == W1W2) || onlyOngoingStatus) {
     $agreementStatus.val(ON_GOING); // On-going
     $options.remove();
   } else {
