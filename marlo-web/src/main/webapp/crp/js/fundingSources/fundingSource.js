@@ -1,7 +1,11 @@
+var allowExtensionDate;
 $(document).ready(init);
 
 function init() {
-
+  
+  // Check if (crp_funding_source_extension_date) parameter is true
+  allowExtensionDate = $('.allowExtensionDate').text() === "true";
+  
   // Check region option
   $("#regionList").find(".region").each(
       function(i,e) {
@@ -40,7 +44,7 @@ function init() {
     width: "100%"
   });
 
-  // Popup
+  // Activate Popup
   popups();
 
   // Add Data Table
@@ -193,7 +197,9 @@ function init() {
   $('.currencyInput').on('keyup', keyupBudgetYear).trigger('keyup');
 }
 
-
+/**
+ * Validate the grand total amount doesn't exceed
+ */
 function keyupBudgetYear(){
   var grantAmount = $('#grantTotalAmount input').val();
   var total = 0
@@ -552,12 +558,21 @@ function checkRegionList(block) {
   }
 }
 
+/**
+ * Set the JQuery UI Datepicker plugin for start, end and extension dates
+ * 
+ * @param start
+ * @param end
+ * @param extensionDate
+ * @returns
+ */
 function settingDate(start,end,extensionDate) {
   var dateFormat = "yy-mm-dd";
+  
   var from = $(start).datepicker({
       dateFormat: dateFormat,
       minDate: new Date(MIN_DATE),
-      maxDate: new Date($(end).val()) || (MAX_DATE),
+      maxDate: new Date($(end).val()) || new Date(MAX_DATE),
       changeMonth: true,
       numberOfMonths: 1,
       changeYear: true,
@@ -568,6 +583,7 @@ function settingDate(start,end,extensionDate) {
           return
         }
         $(this).datepicker('setDate', selectedDate);
+        $(this).next().html(getDateLabel(this));
         $(this).datepicker("hide");
         if(selectedDate != "") {
           $(end).datepicker("option", "minDate", selectedDate);
@@ -575,6 +591,7 @@ function settingDate(start,end,extensionDate) {
         getYears();
       }
   }).on("change", function() {
+    // The change event is used for Sync
     $(this).parent().find('.dateLabel').html(getDateLabel(this));
     getYears();
   }).on("click", function() {
@@ -602,11 +619,14 @@ function settingDate(start,end,extensionDate) {
         $(this).datepicker("hide");
         if(selectedDate != "") {
           $(start).datepicker("option", "maxDate", selectedDate);
-          $(extensionDate).datepicker("option", "minDate", selectedDate);
+          if(allowExtensionDate){
+            $(extensionDate).datepicker("option", "minDate", selectedDate);
+          }
         }
         getYears();
       }
   }).on("change", function() {
+    // The change event is used for Sync
     $(this).parent().find('.dateLabel').html(getDateLabel(this));
     getYears();
   }).on("click", function() {
@@ -638,6 +658,7 @@ function settingDate(start,end,extensionDate) {
          getYears();
       }
   }).on("change", function() {
+    // The change event is used for Sync
     $(this).parent().find('.dateLabel').html(getDateLabel(this));
     getYears();
   }).on("click", function() {
@@ -693,8 +714,15 @@ function settingDate(start,end,extensionDate) {
   }
 
   function getYears() {
-    var startYear = (from.val().split('-')[0]) || currentCycleYear;
-    var endYear = (extension.val().split('-')[0]) || (to.val().split('-')[0]) || startYear;
+    var startYear, endYear, years;
+    
+    startYear = (from.val().split('-')[0]) || currentCycleYear;
+    if(allowExtensionDate){
+      endYear = (extension.val().split('-')[0]) || (to.val().split('-')[0]) || startYear;
+    }else{
+      endYear = (to.val().split('-')[0]) || startYear;
+    }
+    
     var years = [];
 
     // Clear tabs & content
@@ -784,6 +812,9 @@ function settingDate(start,end,extensionDate) {
   }
 }
 
+/**
+ * Add Datatable plugin
+ */
 function addDataTable() {
   $('table').dataTable({
       "bPaginate": false, // This option enable the table pagination
@@ -807,10 +838,15 @@ function addDataTable() {
 
 }
 
+/**
+ * Get from the back-end a list of institutions
+ * 
+ * @param budgetTypeID
+ * @returns
+ */
 function getInstitutionsBudgetByType(budgetTypeID) {
   var $select = $(".donor");
   var url = baseURL + "/institutionsByBudgetType.do";
-
   $.ajax({
       url: url,
       type: 'GET',
@@ -840,7 +876,7 @@ function getInstitutionsBudgetByType(budgetTypeID) {
 
 function changeDonorByFundingType(budgetType,$select) {
   var donorId = $select.find("option:selected").val();
-  if(donorId == "-1" && budgetType == "1") {
+  if((donorId == "-1") && (budgetType == "1")) {
     $select.val($(".cgiarConsortium").text()).trigger("change");
   }
 }

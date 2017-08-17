@@ -20,6 +20,7 @@
 [#assign startYear = ((fundingSource.startDate?string.yyyy)?number)!currentCycleYear /]
 [#assign endYear = ((fundingSource.endDate?string.yyyy)?number)!startYear /]
 [#assign extensionYear = ((fundingSource.extensionDate?string.yyyy)?number)!endYear /]
+[#assign allowExtensionDate = action.hasSpecificities('crp_funding_source_extension_date') /]
     
 <section class="container">
   <article class="" id="mainInformation">
@@ -108,9 +109,11 @@
               </div>
             [/#if]
           </div>
+          <div id="metadata-output row">
+            <p class="lastDaySync" style="display:${(!isSynced)?string('none', 'block')}">Last sync was made on <span>${(fundingSource.syncedDate?date)!}</span></p>
+          </div>
+          <input type="hidden" class="fundingSourceSyncedDate" name="fundingSource.syncedDate" value="${(fundingSource.syncedDate?string["yyyy-MM-dd"])!'2017-06-30'}" />
         </div>
-        <div id="metadata-output">${(fundingSource.syncedDate?date)!}</div>
-        <input type="hidden" class="fundingSourceSyncedDate" name="fundingSource.syncedDate" value="${(fundingSource.syncedDate?date)!'2017-06-30'}" />
         
         
       </div>
@@ -131,8 +134,8 @@
       </div>
       
       [#-- Start date, End date and finance code --]
-      <div class="dateErrorBox"></div>
-      <div class="clearfix"></div>
+      <ul class="dateErrorBox form-group"></ul> 
+      
       <div class="form-group row">
         <div class="col-md-4 metadataElement-startDate">
           <label for="fundingSource.startDate">[@s.text name="fundingSource.startDate" /]:[@customForm.req required=editable && action.canEditFundingSourceBudget()  /]</label>
@@ -145,9 +148,11 @@
           <p class="dateLabel btn btn-default ${isSynced?string('disabled','')}">${(fundingSource.endDate?string["MMMM yyyy"])!}  </p>
         </div>
         <div class="col-md-4 metadataElement-extensionDate">
+          [#if allowExtensionDate]
           <label for="fundingSource.extensionDate">[@s.text name="fundingSource.extensionDate" /]:[@customForm.req required=editable && action.canEditFundingSourceBudget()  /] </label>
           <input id="fundingSource.extensionDate" type="hidden" name="fundingSource.extensionDate" value="${(fundingSource.extensionDate?string["yyyy-MM-dd"])!}" class="form-control input-sm metadataValue extensionDateInput">
           <p class="dateLabel btn btn-default ${isSynced?string('disabled','')}">${(fundingSource.extensionDate?string["MMMM yyyy"])!}  </p>
+          [/#if]
         </div>
       </div>
       
@@ -502,6 +507,10 @@
   [/#list]
 </ul>
 
+
+<span class="hidden allowExtensionDate">${allowExtensionDate?string}</span>
+
 <span class="hidden cgiarConsortium">${action.getCGIARInstitution()}</span>
+
 
 [#include "/WEB-INF/global/pages/footer.ftl"]

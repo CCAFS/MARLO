@@ -86,8 +86,21 @@ function syncFundingSource() {
   $('.financeCode').attr('readOnly', true);
   // Update Grant total amount triggering the currency inputs
   $('.currencyInput').trigger('keyup');
-  // Update Funding source
-  $('.fundingSourceSyncedDate').val(new Date());
+  // Update Funding source last update
+  var today = new Date();
+  var dd = today.getDate();
+  var mm = today.getMonth()+1; // January is 0!
+
+  var yyyy = today.getFullYear();
+  if(dd<10){
+      dd='0'+dd;
+  } 
+  if(mm<10){
+      mm='0'+mm;
+  } 
+  $('.fundingSourceSyncedDate').val(yyyy+'-'+mm+'-'+dd);
+  $('.lastDaySync').show();
+  $('.lastDaySync span').html($.datepicker.formatDate( "M dd, yy", new Date(yyyy, mm -1, dd) ));
   // Hide Date labels
   $('.dateLabel').addClass('disabled');
   // Update component
@@ -137,6 +150,8 @@ function unSyncFundingSource() {
   $('.financeCode').attr('readOnly', false);
   // show Date labels
   $('.dateLabel').removeClass('disabled');
+  // Hide Last update label
+  $('.lastDaySync').hide();
   // Set datepicker
   settingDate(".startDateInput", ".endDateInput", ".extensionDateInput");
 
