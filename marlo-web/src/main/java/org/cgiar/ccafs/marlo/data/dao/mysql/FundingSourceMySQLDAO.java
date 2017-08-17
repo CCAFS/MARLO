@@ -74,9 +74,13 @@ public class FundingSourceMySQLDAO implements FundingSourceDAO {
 
   @Override
   public List<Map<String, Object>> getFundingSource(long userId, String crp) {
-    String query = "select DISTINCT project_id from user_permissions where id=" + userId + " and crp_acronym='" + crp
-      + "' and permission_id = 438 and project_id is not null";
-    return dao.findCustomQuery(query);
+    StringBuilder builder = new StringBuilder();
+    builder.append("select DISTINCT project_id from user_permission where  crp_acronym='" + crp
+      + "' and permission_id = 438 and project_id is not null");
+    List<Map<String, Object>> list =
+      dao.excuteStoreProccedure(" call getPermissions(" + userId + ")", builder.toString());
+
+    return list;
   }
 
   @Override

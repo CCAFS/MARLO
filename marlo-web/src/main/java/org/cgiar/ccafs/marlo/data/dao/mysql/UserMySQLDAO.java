@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 
@@ -53,8 +54,14 @@ public class UserMySQLDAO implements UserDAO {
 
   @Override
   public List<Map<String, Object>> getPermission(int userId, String crpId) {
-    String query = "select * from user_permissions where id=" + userId + " and crp_acronym='" + crpId + "'";
-    return dao.findCustomQuery(query);
+    StringBuilder builder = new StringBuilder();
+    builder.append(" select * from user_permission");
+    List<Map<String, Object>> list =
+      dao.excuteStoreProccedure(" call getPermissions(" + userId + ")", builder.toString());
+    list = list.stream().filter(c -> c.get("crp_acronym").equals(crpId)).collect(Collectors.toList());
+    return list;
+
+
   }
 
 

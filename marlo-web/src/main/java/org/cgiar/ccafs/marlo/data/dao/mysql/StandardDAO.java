@@ -95,6 +95,44 @@ public class StandardDAO {
     }
   }
 
+  /**
+   * This method make a query that returns a not mapped object result from the model.
+   * 
+   * @param sqlQuery is a string representing an SQL query.
+   */
+  public List<Map<String, Object>> excuteStoreProccedure(String storeProccedure, String sqlQuery) {
+    Session session = null;
+    Transaction tx = null;
+
+    try {
+      session = this.openSession();
+      tx = this.initTransaction(session);
+
+      session.flush();
+      session.clear();
+      session.createSQLQuery(storeProccedure).executeUpdate();
+      Query query = session.createSQLQuery(sqlQuery);
+
+      query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+      List<Map<String, Object>> result = query.list();
+      this.commitTransaction(tx);
+
+      return result;
+    } catch (Exception e) {
+      e.printStackTrace();
+      if (tx != null) {
+        this.rollBackTransaction(tx);
+      }
+      e.printStackTrace();
+      return null;
+    } finally {
+      if (session.isOpen()) {
+        // Flushing the changes always.
+      }
+    }
+  }
+
+
   public boolean executeQuery(String sqlQuery) {
     Session session = null;
     Transaction tx = null;
@@ -155,7 +193,6 @@ public class StandardDAO {
     }
     return obj;
   }
-
 
   /**
    * This method make a query that returns a list of objects from the model.
@@ -248,10 +285,11 @@ public class StandardDAO {
     }
   }
 
+
   /**
    * This method make a query that returns a not mapped object result from the model.
    * 
-   * @param sqlQuery is a string representing an HQL query.
+   * @param sqlQuery is a string representing an SQL query.
    */
   public List<Map<String, Object>> findCustomQuery(String sqlQuery) {
     Session session = null;
