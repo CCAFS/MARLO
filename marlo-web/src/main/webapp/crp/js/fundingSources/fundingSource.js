@@ -673,9 +673,17 @@ function settingDate(start,end,extensionDate) {
     if(!isSynced) {
       $(this).parent().find('input').datepicker("show");
     }
-   
   });
 
+  // Clear Date
+  $('.clearDate').on('click', function(){
+    if(!isSynced) {
+      $(this).parent().find('input').val('');
+      $(this).parent().find('.dateLabel').text('');
+      getYears();
+    }
+  });
+  
   // Activate tab default
   if(!$('.budgetByYears .nav-tabs li.active').exists()) {
     $('.budgetByYears .nav-tabs li').last().addClass('active');

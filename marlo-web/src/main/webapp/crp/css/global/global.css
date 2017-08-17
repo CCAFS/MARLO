@@ -6727,3 +6727,7 @@ img#crpSelectedImage {
   background-color: #eee;
   opacity: 1;
 }
+
+.clearDate{
+	cursor: pointer;
+}

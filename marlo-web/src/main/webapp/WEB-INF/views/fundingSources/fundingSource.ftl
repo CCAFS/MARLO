@@ -149,9 +149,10 @@
         </div>
         <div class="col-md-4 metadataElement-extensionDate">
           [#if allowExtensionDate]
-          <label for="fundingSource.extensionDate">[@s.text name="fundingSource.extensionDate" /]:[@customForm.req required=editable && action.canEditFundingSourceBudget()  /] </label>
+          <label for="fundingSource.extensionDate">[@s.text name="fundingSource.extensionDate" /]:</label> 
           <input id="fundingSource.extensionDate" type="hidden" name="fundingSource.extensionDate" value="${(fundingSource.extensionDate?string["yyyy-MM-dd"])!}" class="form-control input-sm metadataValue extensionDateInput">
           <p class="dateLabel btn btn-default ${isSynced?string('disabled','')}">${(fundingSource.extensionDate?string["MMMM yyyy"])!}  </p>
+          <small class="pull-right clearDate syncVisibles" style="display:${isSynced?string('none', 'block')}"> <span class="glyphicon glyphicon-remove"></span> Clear</small>
           [/#if]
         </div>
       </div>
