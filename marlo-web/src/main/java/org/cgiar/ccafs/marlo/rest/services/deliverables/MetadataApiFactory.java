@@ -36,6 +36,9 @@ public class MetadataApiFactory {
     if (clientType.equalsIgnoreCase("dataverse")) {
       return new DataverseClientApi();
     }
+    if (clientType.equalsIgnoreCase("ifpri")) {
+      return new IFPRIClientAPI();
+    }
 
     return null;
   }
