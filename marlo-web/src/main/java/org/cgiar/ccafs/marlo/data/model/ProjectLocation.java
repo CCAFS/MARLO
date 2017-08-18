@@ -56,6 +56,9 @@ public class ProjectLocation implements java.io.Serializable, IAuditLog {
   @Expose
   private User createdBy;
 
+  @Expose
+  private Phase phase;
+
 
   @Expose
   private User modifiedBy;
@@ -101,6 +104,7 @@ public class ProjectLocation implements java.io.Serializable, IAuditLog {
     return true;
   }
 
+
   public Date getActiveSince() {
     return activeSince;
   }
@@ -120,10 +124,10 @@ public class ProjectLocation implements java.io.Serializable, IAuditLog {
     return locElement;
   }
 
-
   public LocElementType getLocElementType() {
     return locElementType;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -135,6 +139,7 @@ public class ProjectLocation implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+
   @Override
   public String getModificationJustification() {
     return modificationJustification;
@@ -143,6 +148,10 @@ public class ProjectLocation implements java.io.Serializable, IAuditLog {
   @Override
   public User getModifiedBy() {
     return modifiedBy;
+  }
+
+  public Phase getPhase() {
+    return phase;
   }
 
   public Project getProject() {
@@ -158,10 +167,10 @@ public class ProjectLocation implements java.io.Serializable, IAuditLog {
     return scope;
   }
 
-
   public void setActive(boolean active) {
     this.active = active;
   }
+
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
@@ -174,7 +183,6 @@ public class ProjectLocation implements java.io.Serializable, IAuditLog {
   public void setId(Long id) {
     this.id = id;
   }
-
 
   public void setLocElement(LocElement locElement) {
     this.locElement = locElement;
@@ -190,8 +198,13 @@ public class ProjectLocation implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
+
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
   public void setProject(Project project) {
