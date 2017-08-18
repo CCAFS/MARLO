@@ -390,9 +390,9 @@ function checkLeadPartnerItems(block) {
   var CIAT_ID = 46;
   console.log(">> "+$('input.fId').val());
   if($('input.fId[value="'+CIAT_ID+'"]').exists()){
-    $('.buttons-field, .financeChannel').show();
+    $('.buttons-field, .financeChannel, .extensionDateBlock').show();
   }else{
-    $('.buttons-field, .financeChannel').hide();
+    $('.buttons-field, .financeChannel, .extensionDateBlock').hide();
     if(isSynced){
       unSyncFundingSource();
     }
