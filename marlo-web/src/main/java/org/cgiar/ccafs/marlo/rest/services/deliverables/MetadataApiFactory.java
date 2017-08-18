@@ -39,7 +39,9 @@ public class MetadataApiFactory {
     if (clientType.equalsIgnoreCase("ifpri")) {
       return new IFPRIClientAPI();
     }
-
+    if (clientType.equalsIgnoreCase("ilri")) {
+      return new ILRIClientAPI();
+    }
     return null;
   }
 
