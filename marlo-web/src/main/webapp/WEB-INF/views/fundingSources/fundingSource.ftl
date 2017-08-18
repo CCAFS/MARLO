@@ -20,6 +20,8 @@
 [#assign startYear = ((fundingSource.startDate?string.yyyy)?number)!currentCycleYear /]
 [#assign endYear = ((fundingSource.endDate?string.yyyy)?number)!startYear /]
 [#assign extensionYear = ((fundingSource.extensionDate?string.yyyy)?number)!endYear /]
+[#assign hasInstitutions = fundingSource.institutions?has_content /]
+
     
 <section class="container">
   <article class="" id="mainInformation">
@@ -46,7 +48,7 @@
              <div class="panel-head"><label for=""> [@customForm.text name="fundingSource.leadPartner" readText=!editable /]:[@customForm.req required=editable /]</label></div>
               <div id="leadPartnerList" class="panel-body" listname="deliverable.fundingSources"> 
                 <ul class="list">
-                [#if fundingSource.institutions?has_content]
+                [#if hasInstitutions]
                   [#list fundingSource.institutions as institutionLead]
                     [#-- Show if is a headquarter institution --]
                     [#if !(institutionLead.headquarter??)]
@@ -86,11 +88,36 @@
         
         </div>
         
-        [#-- Finance code --]
+        [#-- Finance code module --]
         [#assign isSynced = (fundingSource.synced)!false ]
-        <div class="col-md-5">
+        [#assign financeChannelInstitution = {} /]
+        [#if fundingSource.institutions?has_content]
+          [#assign financeChannelInstitution = (fundingSource.institutions)?first /]
+        [/#if]
+        <div class="col-md-5 form-group">
           <div class="url-field">
-            [@customForm.input name="fundingSource.financeCode"  i18nkey="projectCofunded.financeCode" className="financeCode" placeholder="projectCofunded.financeCode.placeholder" readOnly=isSynced editable=editable/]
+            <label for="fundingSource.financeCode" class="editable">[@s.text name="projectCofunded.financeCode"/]:<span class="red requiredTag" style="display:none;">*</span></label>
+            <div class="input-group">
+              [#-- Finance Channel --]
+              <div class="input-group-btn financeChannel" style="display:${hasCIAT?string('', 'none')}">
+                <button type="button" class="btn btn-default btn-sm disabled dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <small>CIAT-OCS</small>  [#--<span class="caret"></span>--]
+                </button>
+                [#-- 
+                <ul class="dropdown-menu">
+                  [#if hasInstitutions]
+                    [#list fundingSource.institutions as institutionLead]
+                      [#if institutionLead.institution.id != financeChannelInstitution.institution.id]
+                        <li><a href="#"><small>${(institutionLead.institution.acronym)!}</small></a></li>
+                      [/#if]
+                    [/#list]
+                  [/#if]
+                </ul>
+                 --]
+              </div><!-- /btn-group -->
+              [#-- Finance Input --]
+              <input type="text" name="fundingSource.financeCode" value="${(fundingSource.financeCode)!}" class="form-control input-sm financeCode optional" [#if isSynced]readonly="readonly"[/#if] placeholder="e.g. OCS Code">
+            </div><!-- /input-group -->
             <span class="financeCode-message"></span>
           </div>
           <div class="buttons-field" style="display:${hasCIAT?string('block', 'none')}">
@@ -107,7 +134,9 @@
                 </div>
               </div>
             [/#if]
-          </div>
+          </div> 
+        </div>
+        <div class="col-md-5">
           <div id="metadata-output row">
             <p class="lastDaySync" style="display:${(!isSynced)?string('none', 'block')}">Last sync was made on <span>${(fundingSource.syncedDate?date)!}</span></p>
           </div>

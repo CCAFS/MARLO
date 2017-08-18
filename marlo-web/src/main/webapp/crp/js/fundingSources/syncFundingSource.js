@@ -38,7 +38,6 @@ function setMetadata(data) {
   $.each(data, function(key,value) {
     var $parent = $('.metadataElement-' + key);
     var $input = $parent.find(".metadataValue");
-    console.log('>> input : '+ $input.attr('class'));
     var $spanSuggested = $parent.find(".metadataSuggested");
     var $hide = $parent.find('.hide');
 

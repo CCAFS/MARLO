@@ -52,7 +52,7 @@ function setMetadata(data) {
 
 function syncDeliverable() {
   // Hide Sync Button & dissemination channel
-  $('#fillMetadata .checkButton, .disseminationChannelBlock').hide('slow');
+  $('#fillMetadata .checkButton, .disseminationChannelBlock, .financeChannel').hide('slow');
   // Show UnSync & Update Button
   $('#fillMetadata .unSyncBlock').show();
   // Set hidden inputs
@@ -76,7 +76,7 @@ function unSyncDeliverable() {
   });
 
   // Show Sync Button & dissemination channel
-  $('#fillMetadata .checkButton, .disseminationChannelBlock').show('slow');
+  $('#fillMetadata .checkButton, .disseminationChannelBlock, .financeChannel').show('slow');
   // Hide UnSync & Update Button
   $('#fillMetadata .unSyncBlock').hide();
   // Set hidden inputs

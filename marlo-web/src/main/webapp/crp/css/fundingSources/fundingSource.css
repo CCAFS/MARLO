@@ -56,6 +56,11 @@ table {
   float:left;
 }
 
+.url-field button{
+  height: 27px;
+  line-height: 1.1em;
+}
+
 .buttons-field{
   width: 40%;
   float:right;

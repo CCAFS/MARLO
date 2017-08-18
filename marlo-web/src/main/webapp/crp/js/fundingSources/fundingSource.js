@@ -6,6 +6,11 @@ function init() {
   // Check if (crp_funding_source_extension_date) parameter is true
   allowExtensionDate = $('.allowExtensionDate').text() === "true";
   
+  // Dropdown
+  $('.dropdown-toggle').on('show.bs.dropdown', function () {
+    console.log('dropdown-toggle');
+  })
+  
   // Check region option
   $("#regionList").find(".region").each(
       function(i,e) {
@@ -344,7 +349,7 @@ function removeLeadPartner() {
   var name = $item.find(".name").attr("title");
 
   var $select = $(".institution");
-  $item.hide(300, function() {
+  $item.hide(200, function() {
     $item.remove();
     checkLeadPartnerItems($list);
     updateLeadPartner($list);
@@ -385,9 +390,9 @@ function checkLeadPartnerItems(block) {
   var CIAT_ID = 46;
   console.log(">> "+$('input.fId').val());
   if($('input.fId[value="'+CIAT_ID+'"]').exists()){
-    $('.buttons-field').show();
+    $('.buttons-field, .financeChannel').show();
   }else{
-    $('.buttons-field').hide();
+    $('.buttons-field, .financeChannel').hide();
     if(isSynced){
       unSyncFundingSource();
     }
