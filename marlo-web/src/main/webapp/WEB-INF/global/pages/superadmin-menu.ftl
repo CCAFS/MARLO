@@ -20,14 +20,14 @@
         [#if action.canAccessSuperAdmin()]
         <li class="[#if currentSection?? && currentSection != 'superadmin' ]currentSection[/#if]">
           <a href="[@s.url namespace="/" action="${(crpSession?lower_case)!}/crpDashboard" ][@s.param name="edit" value="true"/][/@s.url]">
-            <span class="glyphicon glyphicon-chevron-down"></span> CRP (${(currentCrp.acronym)!})
+            <span class="glyphicon glyphicon-chevron-down"></span> CRP (${(currentCrp.acronym?upper_case)!})
           </a>
           <ul class="subMenu">
           [#if crpList?has_content]
             [#list crpList as crp]
               [#if crp.login]
-              <li class="[#if crpSession?? && crpSession == crp.acronym?lower_case ]currentSection[/#if]">
-                <a href="[@s.url namespace="/" action="${crp.acronym?lower_case}/crpDashboard" ][@s.param name="edit" value="true"/][/@s.url]">${crp.acronym}</a>
+              <li class="[#if crpSession?? && crpSession == crp.acronym?lower_case ]currentSection[/#if]" >
+                <a href="[@s.url namespace="/" action="${crp.acronym?lower_case}/crpDashboard" ][@s.param name="edit" value="true"/][/@s.url]" title="">${crp.acronym?upper_case}</a>
               </li>
               [/#if]
             [/#list]
