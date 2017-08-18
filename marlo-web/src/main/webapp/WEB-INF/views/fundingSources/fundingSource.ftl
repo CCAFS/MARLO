@@ -20,7 +20,6 @@
 [#assign startYear = ((fundingSource.startDate?string.yyyy)?number)!currentCycleYear /]
 [#assign endYear = ((fundingSource.endDate?string.yyyy)?number)!startYear /]
 [#assign extensionYear = ((fundingSource.extensionDate?string.yyyy)?number)!endYear /]
-[#assign allowExtensionDate = action.hasSpecificities('crp_funding_source_extension_date') /]
     
 <section class="container">
   <article class="" id="mainInformation">
@@ -148,12 +147,10 @@
           <p class="dateLabel btn btn-default ${isSynced?string('disabled','')}">${(fundingSource.endDate?string["MMMM yyyy"])!}  </p>
         </div>
         <div class="col-md-4 metadataElement-extensionDate">
-          [#if allowExtensionDate]
           <label for="fundingSource.extensionDate">[@s.text name="fundingSource.extensionDate" /]:</label> 
           <input id="fundingSource.extensionDate" type="hidden" name="fundingSource.extensionDate" value="${(fundingSource.extensionDate?string["yyyy-MM-dd"])!}" class="form-control input-sm metadataValue extensionDateInput">
           <p class="dateLabel btn btn-default ${isSynced?string('disabled','')}">${(fundingSource.extensionDate?string["MMMM yyyy"])!}  </p>
           <small class="pull-right clearDate syncVisibles" style="display:${isSynced?string('none', 'block')}"> <span class="glyphicon glyphicon-remove"></span> Clear</small>
-          [/#if]
         </div>
       </div>
       
@@ -507,9 +504,6 @@
     <li class="budgetTypeDescription-${budgetType.id}">${(budgetType.description)!}</li>
   [/#list]
 </ul>
-
-
-<span class="hidden allowExtensionDate">${allowExtensionDate?string}</span>
 
 <span class="hidden cgiarConsortium">${action.getCGIARInstitution()}</span>
 
