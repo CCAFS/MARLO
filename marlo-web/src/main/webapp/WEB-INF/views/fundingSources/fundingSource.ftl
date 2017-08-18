@@ -534,6 +534,8 @@
   [/#list]
 </ul>
 
+<span class="hidden allowExtensionDate">${hasCIAT?string}</span>
+
 <span class="hidden cgiarConsortium">${action.getCGIARInstitution()}</span>
 
 

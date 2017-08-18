@@ -1,10 +1,13 @@
-var allowExtensionDate;
+var allowExtensionDate, dateFormat, from, to, extension;
 $(document).ready(init);
 
 function init() {
   
   // Check if (crp_funding_source_extension_date) parameter is true
   allowExtensionDate = $('.allowExtensionDate').text() === "true";
+  
+  // Set Dateformat
+  dateFormat = "yy-mm-dd";
   
   // Dropdown
   $('.dropdown-toggle').on('show.bs.dropdown', function () {
@@ -391,13 +394,16 @@ function checkLeadPartnerItems(block) {
   console.log(">> "+$('input.fId').val());
   if($('input.fId[value="'+CIAT_ID+'"]').exists()){
     $('.buttons-field, .financeChannel, .extensionDateBlock').show();
+    allowExtensionDate = true;
   }else{
     $('.buttons-field, .financeChannel, .extensionDateBlock').hide();
+    allowExtensionDate = false;
     if(isSynced){
       unSyncFundingSource();
     }
   }
   
+  refreshYears();
   
   var items = $(block).find('.leadPartners').length;
   if(items == 0) {
@@ -572,9 +578,8 @@ function checkRegionList(block) {
  * @returns
  */
 function settingDate(start,end,extensionDate) {
-  var dateFormat = "yy-mm-dd";
   
-  var from = $(start).datepicker({
+  from = $(start).datepicker({
       dateFormat: dateFormat,
       minDate: new Date(MIN_DATE),
       maxDate: new Date($(end).val()) || new Date(MAX_DATE),
@@ -593,20 +598,20 @@ function settingDate(start,end,extensionDate) {
         if(selectedDate != "") {
           $(end).datepicker("option", "minDate", selectedDate);
         }
-        getYears();
+        refreshYears();
       }
   }).on("change", function() {
     // The change event is used for Sync
     $(this).parent().find('.dateLabel').html(getDateLabel(this));
-    getYears();
+    refreshYears();
   }).on("click", function() {
     if(!$(this).val()) {
       $(this).datepicker('setDate', new Date());
-      getYears();
+      refreshYears();
     }
   });
   
-  var to = $(end).datepicker({
+  to = $(end).datepicker({
       dateFormat: dateFormat,
       minDate: new Date($(start).val()) || new Date(MIN_DATE),
       maxDate: new Date($(extensionDate).val()) || new Date(MAX_DATE),
@@ -628,20 +633,20 @@ function settingDate(start,end,extensionDate) {
             $(extensionDate).datepicker("option", "minDate", selectedDate);
           }
         }
-        getYears();
+        refreshYears();
       }
   }).on("change", function() {
     // The change event is used for Sync
     $(this).parent().find('.dateLabel').html(getDateLabel(this));
-    getYears();
+    refreshYears();
   }).on("click", function() {
     if(!$(this).val()) {
       $(this).datepicker('setDate', new Date());
-      getYears();
+      refreshYears();
     }
   });
 
-  var extension = $(extensionDate).datepicker({
+  extension = $(extensionDate).datepicker({
       dateFormat: dateFormat,
       minDate: new Date($(to).val()) || new Date(MIN_DATE),
       maxDate: new Date(MAX_DATE),
@@ -660,16 +665,16 @@ function settingDate(start,end,extensionDate) {
         if(selectedDate != "") {
            $(to).datepicker("option", "maxDate", selectedDate);
         }
-         getYears();
+         refreshYears();
       }
   }).on("change", function() {
     // The change event is used for Sync
     $(this).parent().find('.dateLabel').html(getDateLabel(this));
-    getYears();
+    refreshYears();
   }).on("click", function() {
     if(!$(this).val()) {
       $(this).datepicker('setDate', new Date());
-       getYears();
+       refreshYears();
     }
   });
   
@@ -685,7 +690,7 @@ function settingDate(start,end,extensionDate) {
     if(!isSynced) {
       $(this).parent().find('input').val('');
       $(this).parent().find('.dateLabel').text('');
-      getYears();
+      refreshYears();
     }
   });
   
@@ -694,135 +699,158 @@ function settingDate(start,end,extensionDate) {
     $('.budgetByYears .nav-tabs li').last().addClass('active');
     $('.budgetByYears .tab-content .tab-pane').last().addClass('active');
   }
+}
 
-  function budgetsConflicts(lowEnd,highEnd) {
-    var yearConflicts = [];
-    // Getting conflicts
-    for(var i = parseInt(lowEnd); i <= parseInt(highEnd); i++) {
-      var projectsBudgets = $('#fundingYear-' + i).find('tr.projectBudgetItem').length;
-      if(projectsBudgets > 0) {
-        yearConflicts.push(i);
-      }
+/**
+ * Check for budget conflicts, date cannot be changed as this funding source has at least one budget allocation
+ * 
+ * @param lowEnd
+ * @param highEnd
+ * @returns
+ */
+function budgetsConflicts(lowEnd,highEnd) {
+  var yearConflicts = [];
+  // Getting conflicts
+  for(var i = parseInt(lowEnd); i <= parseInt(highEnd); i++) {
+    var projectsBudgets = $('#fundingYear-' + i).find('tr.projectBudgetItem').length;
+    if(projectsBudgets > 0) {
+      yearConflicts.push(i);
     }
-
-    if(yearConflicts.length > 0) {
-      // Noty Message
-      var message =
-          "Date cannot be changed as this funding source has at least one budget allocation in <b>"
-              + yearConflicts.join(', ') + "</b>";
-      var notyOptions = jQuery.extend({}, notyDefaultOptions);
-      notyOptions.text = message;
-      notyOptions.animation = {
-          open: 'animated bounceInLeft', // Animate.css class names
-          close: 'animated bounceOutLeft', // Animate.css class names
-          easing: 'swing', // unavailable - no need
-          speed: 500
-      // unavailable - no need
-      };
-      $('.dateErrorBox').noty(notyOptions);
-
-      return true;
-    }
-    return false;
   }
 
-  function getYears() {
-    var startYear, endYear, years;
-    
-    startYear = (from.val().split('-')[0]) || currentCycleYear;
-    if(allowExtensionDate){
-      endYear = (extension.val().split('-')[0]) || (to.val().split('-')[0]) || startYear;
-    }else{
-      endYear = (to.val().split('-')[0]) || startYear;
-    }
-    
-    var years = [];
+  if(yearConflicts.length > 0) {
+    // Noty Message
+    var message =
+        "Date cannot be changed as this funding source has at least one budget allocation in <b>"
+            + yearConflicts.join(', ') + "</b>";
+    var notyOptions = jQuery.extend({}, notyDefaultOptions);
+    notyOptions.text = message;
+    notyOptions.animation = {
+        open: 'animated bounceInLeft', // Animate.css class names
+        close: 'animated bounceOutLeft', // Animate.css class names
+        easing: 'swing', // unavailable - no need
+        speed: 500
+    // unavailable - no need
+    };
+    $('.dateErrorBox').noty(notyOptions);
 
-    // Clear tabs & content
-    $('.budgetByYears .nav-tabs').empty();
-    $('.budgetByYears .tab-content .tab-pane').removeClass('active going');
+    return true;
+  }
+  return false;
+}
 
-    var index = 0;
-    while(startYear <= endYear) {
 
-      // Build Tab
-      var tab = '<li>';
-      tab += '<a href="#fundingYear-' + startYear + '" data-toggle="tab">' + startYear + '</a>';
-      tab += '</li>';
-      // Append Tab
-      $('.budgetByYears .nav-tabs').append(tab);
+/**
+ * @returns
+ */
+function refreshYears() {
+  var startYear, endYear, years;
+  
+  startYear = (from.val().split('-')[0]) || currentCycleYear;
+  if(allowExtensionDate){
+    endYear = (extension.val().split('-')[0]) || (to.val().split('-')[0]) || startYear;
+  }else{
+    endYear = (to.val().split('-')[0]) || startYear;
+  }
+  
+  var years = [];
 
-      if(!$('#fundingYear-' + startYear).exists()) {
-        // CustomName
-        var customName = 'fundingSource.budgets[-1]';
-        // Build Content
-        var content =  '<div class="tab-pane going" id="fundingYear-' + startYear + '">';
-        content += '<div class="form-group row">';
-        content += '<div class="col-md-4">';
-        content += '<label for="">Budget for ' + startYear + ':</label>';
-        content += '<input type="hidden" name="' + customName + '.year" value="' + startYear + '">';
-        content +=
-            '<input type="text" name="' + customName + '.budget" class="currencyInput form-control input-sm" />';
-        content += '</div>';
-        content += '</div>';
-        content += '</div>';
-        
-        var $content = $(content);
-        // Set indexes
-        $content.setNameIndexes(1, index);
-        // Append Content
-        $('.budgetByYears .tab-content').append($content);
+  // Clear tabs & content
+  $('.budgetByYears .nav-tabs').empty();
+  $('.budgetByYears .tab-content .tab-pane').removeClass('active going');
 
-        // Set currency format
-        $content.find('input.currencyInput').currencyInput();
-        
-        // Set Budget currency event that check the total grant amount
-        $content.find('.currencyInput').on('keyup', keyupBudgetYear);
-        
-      } else {
-        // Set indexes
-        $('#fundingYear-' + startYear).setNameIndexes(1, index);
-        $('#fundingYear-' + startYear).addClass('going')
-      }
+  var index = 0;
+  while(startYear <= endYear) {
 
-      index++;
-      years.push(startYear++);
-    }
+    // Build Tab
+    var tab = '<li>';
+    tab += '<a href="#fundingYear-' + startYear + '" data-toggle="tab">' + startYear + '</a>';
+    tab += '</li>';
+    // Append Tab
+    $('.budgetByYears .nav-tabs').append(tab);
 
-    // Clear unused content names
-    $('.budgetByYears .tab-content .tab-pane').not('.going').each(function(i,content) {
-      $(content).setNameIndexes(1, index + i);
-    });
+    if(!$('#fundingYear-' + startYear).exists()) {
+      // CustomName
+      var customName = 'fundingSource.budgets[-1]';
+      // Build Content
+      var content =  '<div class="tab-pane going" id="fundingYear-' + startYear + '">';
+      content += '<div class="form-group row">';
+      content += '<div class="col-md-4">';
+      content += '<label for="">Budget for ' + startYear + ':</label>';
+      content += '<input type="hidden" name="' + customName + '.year" value="' + startYear + '">';
+      content +=
+          '<input type="text" name="' + customName + '.budget" class="currencyInput form-control input-sm" />';
+      content += '</div>';
+      content += '</div>';
+      content += '</div>';
+      
+      var $content = $(content);
+      // Set indexes
+      $content.setNameIndexes(1, index);
+      // Append Content
+      $('.budgetByYears .tab-content').append($content);
 
-    // Set active tab & content
-    if(years.indexOf(parseInt(currentCycleYear)) == -1) {
-      $('.budgetByYears .nav-tabs li').last().addClass('active');
-      $('.budgetByYears .tab-content .tab-pane').last().addClass('active');
+      // Set currency format
+      $content.find('input.currencyInput').currencyInput();
+      
+      // Set Budget currency event that check the total grant amount
+      $content.find('.currencyInput').on('keyup', keyupBudgetYear);
+      
     } else {
-      $('a[href="#fundingYear-' + currentCycleYear + '"]').parent().addClass('active');
-      $('#fundingYear-' + currentCycleYear).addClass('active');
+      // Set indexes
+      $('#fundingYear-' + startYear).setNameIndexes(1, index);
+      $('#fundingYear-' + startYear).addClass('going')
     }
 
+    index++;
+    years.push(startYear++);
   }
 
-  function getDate(element) {
-    var date;
-    try {
-      date = $.datepicker.parseDate(dateFormat, element.value);
-    } catch(error) {
-      date = null;
-    }
+  // Clear unused content names
+  $('.budgetByYears .tab-content .tab-pane').not('.going').each(function(i,content) {
+    $(content).setNameIndexes(1, index + i);
+  });
 
-    return date;
+  // Set active tab & content
+  if(years.indexOf(parseInt(currentCycleYear)) == -1) {
+    $('.budgetByYears .nav-tabs li').last().addClass('active');
+    $('.budgetByYears .tab-content .tab-pane').last().addClass('active');
+  } else {
+    $('a[href="#fundingYear-' + currentCycleYear + '"]').parent().addClass('active');
+    $('#fundingYear-' + currentCycleYear).addClass('active');
   }
-  function getDateLabel(element){
-    var dateValue = $(element).val();
-    var year = dateValue.split('-')[0];
-    var month = dateValue.split('-')[1];
-    var day = dateValue.split('-')[2];
-    console.log($(element).val());
-    return $.datepicker.formatDate( "MM yy", new Date(year, month -1, day) );
+
+}
+
+/**
+ * Get date in format
+ * 
+ * @param element
+ * @returns
+ */
+function getDate(element) {
+  var date;
+  try {
+    date = $.datepicker.parseDate(dateFormat, element.value);
+  } catch(error) {
+    date = null;
   }
+  return date;
+}
+
+/**
+ * Get date in MM yy format
+ * 
+ * @param element - An input with a Date value
+ * @returns String e.g. May 2017
+ */
+function getDateLabel(element){
+  var dateValue = $(element).val();
+  var year = dateValue.split('-')[0];
+  var month = dateValue.split('-')[1];
+  var day = dateValue.split('-')[2];
+  console.log($(element).val());
+  return $.datepicker.formatDate( "MM yy", new Date(year, month -1, day) );
 }
 
 /**
