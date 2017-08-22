@@ -15,7 +15,6 @@
 
 package org.cgiar.ccafs.marlo.config;
 
-import org.cgiar.ccafs.marlo.data.AuditLogInterceptor;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.PropertiesManager;
 
@@ -72,51 +71,15 @@ public class HibernateSessionFactoryProvider implements Provider<SessionFactory>
     if (showSql != null && ("true".equals(showSql) || "false".equals(showSql))) {
       hibernateConfig.setProperty(Environment.SHOW_SQL, manager.getPropertiesAsString(APConfig.MYSQL_SHOW_SQL));
     }
-    // hibernateConfig.setProperty("hibernate.c3p0.min_size", "5");
-
-    AuditLogInterceptor auditLogInterceptor = new AuditLogInterceptor();
-
-    hibernateConfig.setInterceptor(auditLogInterceptor);
 
     ServiceRegistry serviceRegistry =
       new StandardServiceRegistryBuilder().applySettings(hibernateConfig.getProperties()).build();
-    // this.registerHibernateEventListeners(serviceRegistry);
     this.sessionFactory = hibernateConfig.buildSessionFactory(serviceRegistry);
-    /**
-     * See comments on the @HibernateAuditLogListener as to why we need the interceptor as well.
-     */
-    auditLogInterceptor.setSessionFactory(sessionFactory);
-
   }
 
   @Override
   public SessionFactory get() {
     return this.sessionFactory;
   }
-
-  // private void registerHibernateEventListeners(ServiceRegistry serviceRegistry) {
-  //
-  // final EventListenerRegistry eventListenerRegistry = serviceRegistry.getService(EventListenerRegistry.class);
-  //
-  // HibernateAuditLogListener hibernateAuditLogListener = new HibernateAuditLogListener();
-  //
-  // eventListenerRegistry.prependListeners(EventType.PRE_UPDATE, hibernateAuditLogListener);
-  // eventListenerRegistry.prependListeners(EventType.PRE_INSERT, hibernateAuditLogListener);
-  // eventListenerRegistry.prependListeners(EventType.PRE_DELETE, hibernateAuditLogListener);
-  //
-  // eventListenerRegistry.prependListeners(EventType.POST_COLLECTION_RECREATE, hibernateAuditLogListener);
-  // eventListenerRegistry.prependListeners(EventType.POST_COLLECTION_REMOVE, hibernateAuditLogListener);
-  // eventListenerRegistry.prependListeners(EventType.POST_COLLECTION_UPDATE, hibernateAuditLogListener);
-  //
-  //
-  // eventListenerRegistry.prependListeners(EventType.POST_UPDATE, hibernateAuditLogListener);
-  // eventListenerRegistry.prependListeners(EventType.POST_INSERT, hibernateAuditLogListener);
-  // eventListenerRegistry.prependListeners(EventType.POST_DELETE, hibernateAuditLogListener);
-  //
-  // eventListenerRegistry.prependListeners(EventType.FLUSH, hibernateAuditLogListener);
-  //
-  // LOG.debug("Finished registering Hibernate Event Listeners");
-  //
-  // }
 
 }

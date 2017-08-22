@@ -44,15 +44,6 @@ public class MyIntegrator implements Integrator {
 
     HibernateAuditLogListener hibernateAuditLogListener = new HibernateAuditLogListener();
 
-    eventListenerRegistry.prependListeners(EventType.PRE_UPDATE, hibernateAuditLogListener);
-    eventListenerRegistry.prependListeners(EventType.PRE_INSERT, hibernateAuditLogListener);
-    eventListenerRegistry.prependListeners(EventType.PRE_DELETE, hibernateAuditLogListener);
-
-    eventListenerRegistry.prependListeners(EventType.POST_COLLECTION_RECREATE, hibernateAuditLogListener);
-    eventListenerRegistry.prependListeners(EventType.POST_COLLECTION_REMOVE, hibernateAuditLogListener);
-    eventListenerRegistry.prependListeners(EventType.POST_COLLECTION_UPDATE, hibernateAuditLogListener);
-
-
     eventListenerRegistry.prependListeners(EventType.POST_UPDATE, hibernateAuditLogListener);
     eventListenerRegistry.prependListeners(EventType.POST_INSERT, hibernateAuditLogListener);
     eventListenerRegistry.prependListeners(EventType.POST_DELETE, hibernateAuditLogListener);

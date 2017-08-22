@@ -41,10 +41,6 @@ public class APModule implements Module {
   private static final Logger LOG = LoggerFactory.getLogger(APModule.class);
 
   private PropertiesManager properties;
-  private APConfig config;
-
-  private final String path = "/hibernate.cfg.xml";
-
 
   @Override
   public void configure(Binder binder) {
@@ -58,12 +54,10 @@ public class APModule implements Module {
 
     properties = new PropertiesManager();
 
-    config = new APConfig(properties);
-
     LOG.info("----- DATABASE CONNECTION -----");
-    LOG.info(properties.getPropertiesAsString(config.MYSQL_USER));
-    LOG.info(properties.getPropertiesAsString(config.MYSQL_HOST));
-    LOG.info(properties.getPropertiesAsString(config.MYSQL_DATABASE));
+    LOG.info(properties.getPropertiesAsString(APConfig.MYSQL_USER));
+    LOG.info(properties.getPropertiesAsString(APConfig.MYSQL_HOST));
+    LOG.info(properties.getPropertiesAsString(APConfig.MYSQL_DATABASE));
 
 
   }

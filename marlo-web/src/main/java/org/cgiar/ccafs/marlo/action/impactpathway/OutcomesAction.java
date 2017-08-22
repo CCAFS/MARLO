@@ -652,7 +652,7 @@ public class OutcomesAction extends BaseAction {
       crpProgramOutcome.getCrpMilestones().stream().filter(c -> c.isActive()).collect(Collectors.toList());
     for (CrpMilestone crpMilestone : crpMilestonesDettached) {
       if (crpProgramOutcome.getMilestones() != null) {
-        // If our DTO milestones do not have our managed milestone then delete it.
+        // If our milestones that we have populated from the client do not have our managed milestone then delete it.
         if (!crpProgramOutcome.getMilestones().contains(crpMilestone)) {
           crpMilestoneManager.deleteCrpMilestone(crpMilestone.getId());
         }

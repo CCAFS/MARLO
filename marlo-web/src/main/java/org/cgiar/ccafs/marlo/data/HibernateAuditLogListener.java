@@ -16,39 +16,40 @@
 
 package org.cgiar.ccafs.marlo.data;
 
+import org.cgiar.ccafs.marlo.data.model.Auditlog;
 import org.cgiar.ccafs.marlo.utils.AuditLogContext;
 import org.cgiar.ccafs.marlo.utils.AuditLogContextProvider;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.apache.shiro.util.CollectionUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
+import org.hibernate.StatelessSession;
+import org.hibernate.action.spi.BeforeTransactionCompletionProcess;
+import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.event.spi.FlushEvent;
 import org.hibernate.event.spi.FlushEventListener;
-import org.hibernate.event.spi.PostCollectionRecreateEvent;
-import org.hibernate.event.spi.PostCollectionRecreateEventListener;
-import org.hibernate.event.spi.PostCollectionRemoveEvent;
-import org.hibernate.event.spi.PostCollectionRemoveEventListener;
-import org.hibernate.event.spi.PostCollectionUpdateEvent;
-import org.hibernate.event.spi.PostCollectionUpdateEventListener;
 import org.hibernate.event.spi.PostDeleteEvent;
 import org.hibernate.event.spi.PostDeleteEventListener;
 import org.hibernate.event.spi.PostInsertEvent;
 import org.hibernate.event.spi.PostInsertEventListener;
 import org.hibernate.event.spi.PostUpdateEvent;
 import org.hibernate.event.spi.PostUpdateEventListener;
-import org.hibernate.event.spi.PreDeleteEvent;
-import org.hibernate.event.spi.PreDeleteEventListener;
-import org.hibernate.event.spi.PreInsertEvent;
-import org.hibernate.event.spi.PreInsertEventListener;
-import org.hibernate.event.spi.PreUpdateEvent;
-import org.hibernate.event.spi.PreUpdateEventListener;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.persister.entity.EntityPersister;
+import org.hibernate.proxy.HibernateProxyHelper;
+import org.hibernate.type.ManyToOneType;
 import org.hibernate.type.OrderedSetType;
 import org.hibernate.type.SetType;
 import org.hibernate.type.Type;
@@ -62,13 +63,214 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Christian Garcia, Grant Lay
  */
-public class HibernateAuditLogListener implements PreDeleteEventListener, PreUpdateEventListener,
-  PreInsertEventListener, PostDeleteEventListener, PostUpdateEventListener, PostInsertEventListener, FlushEventListener,
-  PostCollectionUpdateEventListener, PostCollectionRemoveEventListener, PostCollectionRecreateEventListener {
+public class HibernateAuditLogListener
+  implements PostDeleteEventListener, PostUpdateEventListener, PostInsertEventListener, FlushEventListener {
 
-  public static Logger LOG = LoggerFactory.getLogger(HibernateAuditLogListener.class);
+  /**
+   * This private class handles the insertion into the AuditLog Table.
+   * This happens postFlush but not before commit to the database.
+   * 
+   * @author GrantL
+   */
+  private class MARLOAuditBeforeTransactionCompletionProcess implements BeforeTransactionCompletionProcess {
+
+
+    private List<Auditlog> createAllAuditLogsForCrudType(String function, String transactionId,
+      Set<Map<String, Object>> records, String actionName, SessionFactory sessionFactory) {
+
+      Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+      List<Auditlog> auditLogs = new ArrayList<>();
+
+
+      for (Map<String, Object> record : records) {
+        /**
+         * See comment below in regards to simplifying.
+         */
+        if (record.get(IAuditLog.PRINCIPAL).toString().equals("1")) {
+          IAuditLog entity = (IAuditLog) record.get(IAuditLog.ENTITY);
+
+          Auditlog auditLog = this.createAuditlog(function, entity, gson.toJson(entity), entity.getModifiedBy().getId(),
+            transactionId, new Long(record.get(IAuditLog.PRINCIPAL).toString()), null, actionName);
+          auditLogs.add(auditLog);
+        } else {
+          /**
+           * This complex logic might be able to be simplified by using
+           * a @PostCollectionUpdateEventListener, @PostCollectionRemoveEventListener or
+           * a @PostCollectionRecreateEventListener to detect changes to child relations. For now just leave it as is
+           * until I understand the code better.
+           */
+          Set<IAuditLog> collectionRecords = (Set<IAuditLog>) record.get(IAuditLog.ENTITY);
+          for (IAuditLog collectionRecord : collectionRecords) {
+            this.loadRelations(collectionRecord, false, 2, sessionFactory);
+            if (collectionRecord.isActive()) {
+              String json = gson.toJson(collectionRecord);
+
+              Auditlog auditlog =
+                this.createAuditlog(IAuditLog.UPDATED, collectionRecord, json, collectionRecord.getModifiedBy().getId(),
+                  transactionId, new Long(record.get(IAuditLog.PRINCIPAL).toString()),
+                  record.get(IAuditLog.RELATION_NAME).toString(), actionName);
+              auditLogs.add(auditlog);
+            }
+          }
+
+        }
+
+      }
+
+      return auditLogs;
+    }
+
+    private List<Auditlog> createAllAuditLogsForTransaction(SessionFactory sessionFactory) {
+
+
+      String transactionId = UUID.randomUUID().toString();
+
+      // Use the AuditLogContextHelper to retrieve the updates, inserts and deletes and other context information
+      AuditLogContext auditLogContext = AuditLogContextProvider.getAuditLogContext();
+
+      List<Auditlog> allAuditlogsForTransaction = new ArrayList<>();
+
+      allAuditlogsForTransaction.addAll(this.createAllAuditLogsForCrudType(IAuditLog.SAVED, transactionId,
+        auditLogContext.getInserts(), auditLogContext.getActionName(), sessionFactory));
+      allAuditlogsForTransaction.addAll(this.createAllAuditLogsForCrudType(IAuditLog.UPDATED, transactionId,
+        auditLogContext.getUpdates(), auditLogContext.getActionName(), sessionFactory));
+      allAuditlogsForTransaction.addAll(this.createAllAuditLogsForCrudType(IAuditLog.DELETED, transactionId,
+        auditLogContext.getDeletes(), auditLogContext.getActionName(), sessionFactory));
+
+      return allAuditlogsForTransaction;
+    }
+
+    private Auditlog createAuditlog(String action, IAuditLog entity, String json, long userId, String transactionId,
+      Long principal, String relationName, String actionName) {
+      StringBuilder detailBuilder = new StringBuilder();
+      if (actionName == null) {
+        detailBuilder.append(entity.getLogDeatil());
+      } else {
+        detailBuilder.append("Action: ").append(actionName).append(" ").append(entity.getLogDeatil());
+      }
+      Auditlog auditRecord = new Auditlog(action, detailBuilder.toString(), new Date(), entity.getId().toString(),
+        entity.getClass().toString(), json, userId, transactionId, principal, relationName,
+        entity.getModificationJustification());
+      return auditRecord;
+    }
+
+
+    @Override
+    public void doBeforeTransactionCompletion(SessionImplementor session) {
+      LOG.debug("begin doAfterTransactionCompletion");
+
+      AuditLogContext auditLogContext = AuditLogContextProvider.getAuditLogContext();
+
+      SessionFactory sessionFactory = session.getFactory().getCurrentSession().getSessionFactory();
+
+      /**
+       * This is because our save(entity), update(entity) and delete(entity) methods on our DAOs should not
+       * execute the listeners. There might be a better way to do this like conditionally active the listeners.
+       */
+      if (auditLogContext.getActionName() == null) {
+        LOG.debug("No ActionName in auditLogContext so ignoring.");
+        return;
+      }
+
+      List<Auditlog> createAuditlogs = this.createAllAuditLogsForTransaction(sessionFactory);
+
+      if (CollectionUtils.isEmpty(createAuditlogs)) {
+        LOG.info("Audit logs are empty");
+        return;
+      }
+
+      this.persistAuditLogs(sessionFactory, createAuditlogs);
+
+    }
+
+    /**
+     * This code should be simplified!!!
+     * 
+     * @param entity
+     * @param loadUsers
+     * @param level
+     */
+    public void loadRelations(IAuditLog entity, boolean loadUsers, int level, SessionFactory sessionFactory) {
+      ClassMetadata classMetadata =
+        sessionFactory.getClassMetadata(HibernateProxyHelper.getClassWithoutInitializingProxy(entity));
+
+
+      String[] propertyNames = classMetadata.getPropertyNames();
+      for (String name : propertyNames) {
+        Object propertyValue = classMetadata.getPropertyValue(entity, name);
+
+        if (propertyValue != null && propertyValue instanceof IAuditLog) {
+          Type propertyType = classMetadata.getPropertyType(name);
+
+          if (propertyValue != null && propertyType instanceof ManyToOneType) {
+
+            if (loadUsers) {
+              IAuditLog entityRelation = (IAuditLog) propertyValue;
+
+              Object obj = sessionFactory.getCurrentSession().get(propertyType.getReturnedClass(),
+                (Serializable) entityRelation.getId());
+
+              this.loadRelations((IAuditLog) obj, false, 2, sessionFactory);
+              classMetadata.setPropertyValue(entity, name, obj);
+            } else {
+              if (!(name.equals("createdBy") || name.equals("modifiedBy"))) {
+                IAuditLog entityRelation = (IAuditLog) propertyValue;
+
+                Object obj = sessionFactory.getCurrentSession().get(propertyType.getReturnedClass(),
+                  (Serializable) entityRelation.getId());
+                if (level == 2) {
+                  this.loadRelations((IAuditLog) obj, false, 3, sessionFactory);
+                }
+
+                // this.loadRelations((IAuditLog) obj, false);
+                classMetadata.setPropertyValue(entity, name, obj);
+              }
+            }
+
+
+          }
+        }
+
+      }
+    }
+
+    /**
+     * We should not use the same session when writing to the database from an Hibernate Event Listener,
+     * therefore we use a openStatelessSession.
+     * 
+     * @param sessionFactory
+     * @param auditLogs
+     */
+    private void persistAuditLogs(SessionFactory sessionFactory, List<Auditlog> auditLogs) {
+      StatelessSession openStatelessSession = null;
+      try {
+        openStatelessSession = sessionFactory.openStatelessSession();
+
+        openStatelessSession.beginTransaction();
+
+        for (Auditlog auditLog : auditLogs) {
+          openStatelessSession.insert(auditLog);
+        }
+        openStatelessSession.getTransaction().commit();
+
+      } catch (HibernateException e) {
+        LOG.error("Unable to insert Auditlog entity");
+      } finally {
+
+        if (openStatelessSession != null) {
+          openStatelessSession.close();
+        }
+      }
+
+    }
+
+
+  }
+
+  public static final Logger LOG = LoggerFactory.getLogger(HibernateAuditLogListener.class);
+
+
   private static final long serialVersionUID = 1L;
-
 
   /**
    * This code should be simplified!!!
@@ -81,15 +283,29 @@ public class HibernateAuditLogListener implements PreDeleteEventListener, PreUpd
 
     ClassMetadata classMetadata = sessionFactory.getClassMetadata(entity.getClass());
     String[] propertyNames = classMetadata.getPropertyNames();
+
     for (String name : propertyNames) {
 
       Object propertyValue = classMetadata.getPropertyValue(entity, name);
       Type propertyType = classMetadata.getPropertyType(name);
 
+
       if (propertyValue != null && (propertyType instanceof OrderedSetType || propertyType instanceof SetType)) {
+
+        /** Add instanceof check to ensure no classCast exceptions. **/
+        Set<?> checkElementCollectionTypes = (Set<?>) propertyValue;
+        /** Java type erasure means we have to do it this way **/
+        if (checkElementCollectionTypes.size() == 0
+          || !(checkElementCollectionTypes.iterator().next() instanceof IAuditLog)) {
+          /** We don't want to record entities that are not instances of IAuditLog such as SectionStatus **/
+          continue;
+        }
+
         HashMap<String, Object> objects = new HashMap<>();
         Set<IAuditLog> listRelation = new HashSet<>();
 
+        /** Our instanceof check in the if statement above ensures that we will only be dealing with IAuditLog **/
+        @SuppressWarnings(value = {"unchecked"})
         Set<IAuditLog> entityRelation = (Set<IAuditLog>) propertyValue;
         for (IAuditLog iAuditLog : entityRelation) {
 
@@ -112,12 +328,14 @@ public class HibernateAuditLogListener implements PreDeleteEventListener, PreUpd
     return setRelations;
   }
 
+
   /**
    * Unfortunately this is not the equivalent of the postFlush method in an Hibernate interceptor,
    * as it gets called before the pre and post update/save/delete methods.
    */
   @Override
   public void onFlush(FlushEvent flushEvent) throws HibernateException {
+    /** Sometimes good to know when a Flush event happens **/
     LOG.debug("begin onFlushEvent");
   }
 
@@ -159,8 +377,9 @@ public class HibernateAuditLogListener implements PreDeleteEventListener, PreUpd
       auditLogContext.getDeletes().addAll(this.relations(postDeleteEvent.getDeletedState(), types,
         ((IAuditLog) entity).getId(), true, postDeleteEvent.getSession().getSessionFactory()));
     }
-  }
 
+    postDeleteEvent.getSession().getActionQueue().registerProcess(new MARLOAuditBeforeTransactionCompletionProcess());
+  }
 
   @Override
   public void onPostInsert(PostInsertEvent postInsertEvent) {
@@ -200,21 +419,8 @@ public class HibernateAuditLogListener implements PreDeleteEventListener, PreUpd
       auditLogContext.getInserts().addAll(this.relations(postInsertEvent.getState(), types,
         ((IAuditLog) entity).getId(), true, postInsertEvent.getSession().getSessionFactory()));
     }
+    postInsertEvent.getSession().getActionQueue().registerProcess(new MARLOAuditBeforeTransactionCompletionProcess());
 
-  }
-
-  @Override
-  public void onPostRecreateCollection(PostCollectionRecreateEvent event) {
-    LOG.info("onPostRecreateCollection for Parent Entity: " + event.getAffectedOwnerEntityName()
-      + " , and collection : " + event.getCollection().getClass());
-
-  }
-
-  @Override
-  public void onPostRemoveCollection(PostCollectionRemoveEvent event) {
-    LOG.info("onPostRemoveCollection for Parent Entity: " + event.getAffectedOwnerEntityName() + " , and collection :"
-      + event.getCollection().getClass());
-    LOG.info("onPostRemoveCollection");
   }
 
 
@@ -256,31 +462,9 @@ public class HibernateAuditLogListener implements PreDeleteEventListener, PreUpd
         ((IAuditLog) entity).getId(), true, postUpdateEvent.getSession().getSessionFactory()));
     }
 
-  }
+    // LOG.debug("COMPARE LOGS WITH STAGING BRANCH: " + auditLogContext.getUpdates().toString());
+    postUpdateEvent.getSession().getActionQueue().registerProcess(new MARLOAuditBeforeTransactionCompletionProcess());
 
-  @Override
-  public void onPostUpdateCollection(PostCollectionUpdateEvent event) {
-    LOG.info("onPostUpdateCollection for Parent Entity: " + event.getAffectedOwnerEntityName() + " , and collection : "
-      + event.getCollection().getClass());
-
-  }
-
-  @Override
-  public boolean onPreDelete(PreDeleteEvent preDeleteEvent) {
-    LOG.debug("onPreDelete for entity: " + preDeleteEvent.getEntity());
-    return false;
-  }
-
-  @Override
-  public boolean onPreInsert(PreInsertEvent preInsertEvent) {
-    LOG.debug("onPreInsert for entity: " + preInsertEvent.getEntity());
-    return false;
-  }
-
-  @Override
-  public boolean onPreUpdate(PreUpdateEvent preUpdateEvent) {
-    LOG.debug("onPreUpdate for entity: " + preUpdateEvent.getEntity());
-    return false;
   }
 
 
@@ -312,8 +496,15 @@ public class HibernateAuditLogListener implements PreDeleteEventListener, PreUpd
                     String name = audit.getClass().getName();
                     Class<?> className = Class.forName(name);
 
+                    /**
+                     * Ensure that lazy loaded collections are at least proxy instances (if not fetched).
+                     * If you are not getting all collections auditLogged it is because the Action classes are
+                     * persisting the dettached entity and not copying across the managed collections (e.g. the ones
+                     * in our entities that are using Set). Better to refactor the Action classes to copy the List
+                     * collections, which are full of detached entities, see OutcomeAction save method for an example.
+                     * When issue #1124 is solved, this won't be a problem.
+                     */
                     Object obj = sessionFactory.getCurrentSession().get(className, (Serializable) audit.getId());
-
 
                     listRelation.add((IAuditLog) obj);
                     Set<HashMap<String, Object>> loadList = this.loadListOfRelations((IAuditLog) obj, sessionFactory);
@@ -357,10 +548,12 @@ public class HibernateAuditLogListener implements PreDeleteEventListener, PreUpd
     return relations;
   }
 
+  /**
+   * Setting this to true ensures our BeforeTransactionCompletionProcess get kicked off.
+   */
   @Override
   public boolean requiresPostCommitHanding(EntityPersister persister) {
-    // TODO Auto-generated method stub
-    return false;
+    return true;
   }
 
 
