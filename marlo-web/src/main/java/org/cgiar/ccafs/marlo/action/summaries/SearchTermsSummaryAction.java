@@ -172,7 +172,7 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
       Resource reportResource =
         manager.createDirectly(this.getClass().getResource("/pentaho/search_terms.prpt"), MasterReport.class);
       MasterReport masterReport = (MasterReport) reportResource.getResource();
-      String center = loggedCrp.getName();
+      String center = loggedCrp.getAcronym();
       // Get datetime
       ZonedDateTime timezone = ZonedDateTime.now();
       DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
