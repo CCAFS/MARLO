@@ -32,7 +32,7 @@ public interface IpProjectContributionDAO {
    * @param ipProjectContributionId is the ipProjectContribution identifier.
    * @return true if the ipProjectContribution was successfully deleted, false otherwise.
    */
-  public boolean deleteIpProjectContribution(long ipProjectContributionId);
+  public void deleteIpProjectContribution(long ipProjectContributionId);
 
   /**
    * This method validate if the ipProjectContribution identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface IpProjectContributionDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(IpProjectContribution ipProjectContribution);
+  public IpProjectContribution save(IpProjectContribution ipProjectContribution);
 }

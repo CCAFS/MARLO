@@ -34,9 +34,9 @@ public class IpLiaisonInstitutionMySQLDAO extends AbstractMarloDAO<IpLiaisonInst
   }
 
   @Override
-  public boolean deleteIpLiaisonInstitution(long ipLiaisonInstitutionId) {
+  public void deleteIpLiaisonInstitution(long ipLiaisonInstitutionId) {
     IpLiaisonInstitution ipLiaisonInstitution = this.find(ipLiaisonInstitutionId);
-    return super.delete(ipLiaisonInstitution);
+    super.delete(ipLiaisonInstitution);
   }
 
   @Override
@@ -93,25 +93,25 @@ public class IpLiaisonInstitutionMySQLDAO extends AbstractMarloDAO<IpLiaisonInst
   }
 
   @Override
-  public long save(IpLiaisonInstitution ipLiaisonInstitution) {
+  public IpLiaisonInstitution save(IpLiaisonInstitution ipLiaisonInstitution) {
     if (ipLiaisonInstitution.getId() == null) {
       super.saveEntity(ipLiaisonInstitution);
     } else {
-      super.update(ipLiaisonInstitution);
+      ipLiaisonInstitution = super.update(ipLiaisonInstitution);
     }
 
 
-    return ipLiaisonInstitution.getId();
+    return ipLiaisonInstitution;
   }
 
   @Override
-  public long save(IpLiaisonInstitution ipLiaisonInstitution, String section, List<String> relationsName) {
+  public IpLiaisonInstitution save(IpLiaisonInstitution ipLiaisonInstitution, String section, List<String> relationsName) {
     if (ipLiaisonInstitution.getId() == null) {
       super.saveEntity(ipLiaisonInstitution, section, relationsName);
     } else {
-      super.update(ipLiaisonInstitution, section, relationsName);
+      ipLiaisonInstitution = super.update(ipLiaisonInstitution, section, relationsName);
     }
-    return ipLiaisonInstitution.getId();
+    return ipLiaisonInstitution;
   }
 
 

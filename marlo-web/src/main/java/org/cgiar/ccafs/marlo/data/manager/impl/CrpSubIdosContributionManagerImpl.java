@@ -41,9 +41,9 @@ public class CrpSubIdosContributionManagerImpl implements CrpSubIdosContribution
   }
 
   @Override
-  public boolean deleteCrpSubIdosContribution(long crpSubIdosContributionId) {
+  public void deleteCrpSubIdosContribution(long crpSubIdosContributionId) {
 
-    return crpSubIdosContributionDAO.deleteCrpSubIdosContribution(crpSubIdosContributionId);
+    crpSubIdosContributionDAO.deleteCrpSubIdosContribution(crpSubIdosContributionId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class CrpSubIdosContributionManagerImpl implements CrpSubIdosContribution
   }
 
   @Override
-  public long saveCrpSubIdosContribution(CrpSubIdosContribution crpSubIdosContribution) {
+  public CrpSubIdosContribution saveCrpSubIdosContribution(CrpSubIdosContribution crpSubIdosContribution) {
 
     return crpSubIdosContributionDAO.save(crpSubIdosContribution);
   }

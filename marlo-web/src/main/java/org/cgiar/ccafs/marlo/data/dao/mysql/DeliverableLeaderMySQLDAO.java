@@ -33,10 +33,10 @@ public class DeliverableLeaderMySQLDAO extends AbstractMarloDAO<DeliverableLeade
   }
 
   @Override
-  public boolean deleteDeliverableLeader(long deliverableLeaderId) {
+  public void deleteDeliverableLeader(long deliverableLeaderId) {
     DeliverableLeader deliverableLeader = this.find(deliverableLeaderId);
 
-    return super.delete(deliverableLeader);
+    super.delete(deliverableLeader);
   }
 
   @Override
@@ -67,15 +67,15 @@ public class DeliverableLeaderMySQLDAO extends AbstractMarloDAO<DeliverableLeade
   }
 
   @Override
-  public long save(DeliverableLeader deliverableLeader) {
+  public DeliverableLeader save(DeliverableLeader deliverableLeader) {
     if (deliverableLeader.getId() == null) {
       super.saveEntity(deliverableLeader);
     } else {
-      super.update(deliverableLeader);
+      deliverableLeader = super.update(deliverableLeader);
     }
 
 
-    return deliverableLeader.getId();
+    return deliverableLeader;
   }
 
 

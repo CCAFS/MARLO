@@ -41,9 +41,9 @@ public class ProjectPartnerPersonManagerImpl implements ProjectPartnerPersonMana
   }
 
   @Override
-  public boolean deleteProjectPartnerPerson(long projectPartnerPersonId) {
+  public void deleteProjectPartnerPerson(long projectPartnerPersonId) {
 
-    return projectPartnerPersonDAO.deleteProjectPartnerPerson(projectPartnerPersonId);
+    projectPartnerPersonDAO.deleteProjectPartnerPerson(projectPartnerPersonId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class ProjectPartnerPersonManagerImpl implements ProjectPartnerPersonMana
   }
 
   @Override
-  public long saveProjectPartnerPerson(ProjectPartnerPerson projectPartnerPerson) {
+  public ProjectPartnerPerson saveProjectPartnerPerson(ProjectPartnerPerson projectPartnerPerson) {
 
     return projectPartnerPersonDAO.save(projectPartnerPerson);
   }

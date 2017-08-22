@@ -34,10 +34,10 @@ public class CaseStudyIndicatorMySQLDAO extends AbstractMarloDAO<CaseStudyIndica
   }
 
   @Override
-  public boolean deleteCaseStudyIndicator(long caseStudyIndicatorId) {
+  public void deleteCaseStudyIndicator(long caseStudyIndicatorId) {
     CaseStudyIndicator caseStudyIndicator = this.find(caseStudyIndicatorId);
 
-    return super.delete(caseStudyIndicator);
+    super.delete(caseStudyIndicator);
   }
 
   @Override
@@ -68,15 +68,15 @@ public class CaseStudyIndicatorMySQLDAO extends AbstractMarloDAO<CaseStudyIndica
   }
 
   @Override
-  public long save(CaseStudyIndicator caseStudyIndicator) {
+  public CaseStudyIndicator save(CaseStudyIndicator caseStudyIndicator) {
     if (caseStudyIndicator.getId() == null) {
       super.saveEntity(caseStudyIndicator);
     } else {
-      super.update(caseStudyIndicator);
+      caseStudyIndicator = super.update(caseStudyIndicator);
     }
 
 
-    return caseStudyIndicator.getId();
+    return caseStudyIndicator;
   }
 
 

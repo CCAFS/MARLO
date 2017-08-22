@@ -35,10 +35,10 @@ public class IpIndicatorMySQLDAO extends AbstractMarloDAO<IpIndicator, Long> imp
   }
 
   @Override
-  public boolean deleteIpIndicator(long ipIndicatorId) {
+  public void deleteIpIndicator(long ipIndicatorId) {
     IpIndicator ipIndicator = this.find(ipIndicatorId);
     ipIndicator.setActive(false);
-    return this.save(ipIndicator) > 0;
+    this.save(ipIndicator);
   }
 
   @Override
@@ -160,15 +160,15 @@ public class IpIndicatorMySQLDAO extends AbstractMarloDAO<IpIndicator, Long> imp
   }
 
   @Override
-  public long save(IpIndicator ipIndicator) {
+  public IpIndicator save(IpIndicator ipIndicator) {
     if (ipIndicator.getId() == null) {
       super.saveEntity(ipIndicator);
     } else {
-      super.update(ipIndicator);
+      ipIndicator = super.update(ipIndicator);
     }
 
 
-    return ipIndicator.getId();
+    return ipIndicator;
   }
 
 

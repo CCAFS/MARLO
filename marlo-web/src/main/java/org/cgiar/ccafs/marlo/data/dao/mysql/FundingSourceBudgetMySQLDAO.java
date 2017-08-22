@@ -33,10 +33,10 @@ public class FundingSourceBudgetMySQLDAO extends AbstractMarloDAO<FundingSourceB
   }
 
   @Override
-  public boolean deleteFundingSourceBudget(long fundingSourceBudgetId) {
+  public void deleteFundingSourceBudget(long fundingSourceBudgetId) {
     FundingSourceBudget fundingSourceBudget = this.find(fundingSourceBudgetId);
     fundingSourceBudget.setActive(false);
-    return this.save(fundingSourceBudget) > 0;
+    this.save(fundingSourceBudget);
   }
 
   @Override
@@ -78,7 +78,7 @@ public class FundingSourceBudgetMySQLDAO extends AbstractMarloDAO<FundingSourceB
   }
 
   @Override
-  public long save(FundingSourceBudget fundingSourceBudget) {
+  public FundingSourceBudget save(FundingSourceBudget fundingSourceBudget) {
 
     String query = "from " + FundingSourceBudget.class.getName() + " where funding_source_id= "
       + fundingSourceBudget.getFundingSource().getId() + " and year= " + fundingSourceBudget.getYear()
@@ -86,13 +86,13 @@ public class FundingSourceBudgetMySQLDAO extends AbstractMarloDAO<FundingSourceB
     List<FundingSourceBudget> list = super.findAll(query);
     if (list.size() > 0) {
       fundingSourceBudget.setId(list.get(0).getId());
-      super.update(fundingSourceBudget);
+      fundingSourceBudget = super.update(fundingSourceBudget);
     } else {
       super.saveEntity(fundingSourceBudget);
     }
 
 
-    return fundingSourceBudget.getId();
+    return fundingSourceBudget;
   }
 
 

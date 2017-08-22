@@ -1422,8 +1422,7 @@ public class DeliverableAction extends BaseAction {
           .getProjectPartnerPersonById(deliverable.getResponsiblePartner().getProjectPartnerPerson().getId());
       }
 
-      Long deliverableSaveId = deliverableManager.saveDeliverable(deliverablePrew);
-      Deliverable deliverableSave = deliverableManager.getDeliverableById(deliverableSaveId);
+      deliverablePrew = deliverableManager.saveDeliverable(deliverablePrew);
 
       if (partnershipResponsible != null && partnerPerson != null) {
         Long partnerId1 = partnershipResponsible.getProjectPartnerPerson().getId();
@@ -1437,7 +1436,7 @@ public class DeliverableAction extends BaseAction {
           DeliverablePartnership partnership = new DeliverablePartnership();
           partnership.setProjectPartnerPerson(partnerPerson);
           partnership.setPartnerType(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue());
-          partnership.setDeliverable(deliverableSave);
+          partnership.setDeliverable(deliverablePrew);
           partnership.setActive(true);
           partnership.setCreatedBy(this.getCurrentUser());
           partnership.setModifiedBy(this.getCurrentUser());
@@ -1488,7 +1487,7 @@ public class DeliverableAction extends BaseAction {
         DeliverablePartnership partnership = new DeliverablePartnership();
         partnership.setProjectPartnerPerson(partnerPerson);
         partnership.setPartnerType(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue());
-        partnership.setDeliverable(deliverableSave);
+        partnership.setDeliverable(deliverablePrew);
         partnership.setActive(true);
         partnership.setCreatedBy(this.getCurrentUser());
         partnership.setModifiedBy(this.getCurrentUser());
@@ -1512,7 +1511,7 @@ public class DeliverableAction extends BaseAction {
         deliverablePartnershipManager.saveDeliverablePartnership(partnership);
       }
 
-      this.partnershipPreviousData(deliverableSave);
+      this.partnershipPreviousData(deliverablePrew);
       this.parnershipNewData();
 
 

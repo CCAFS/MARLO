@@ -34,10 +34,10 @@ public class CenterMonitoringOutcomeEvidenceDAO extends AbstractMarloDAO<CenterM
   }
 
   @Override
-  public boolean deleteMonitorignOutcomeEvidence(long monitorignOutcomeEvidenceId) {
+  public void deleteMonitorignOutcomeEvidence(long monitorignOutcomeEvidenceId) {
     CenterMonitoringOutcomeEvidence monitorignOutcomeEvidence = this.find(monitorignOutcomeEvidenceId);
     monitorignOutcomeEvidence.setActive(false);
-    return this.save(monitorignOutcomeEvidence) > 0;
+    this.save(monitorignOutcomeEvidence);
   }
 
   @Override
@@ -74,13 +74,13 @@ public class CenterMonitoringOutcomeEvidenceDAO extends AbstractMarloDAO<CenterM
   }
 
   @Override
-  public long save(CenterMonitoringOutcomeEvidence monitorignOutcomeEvidence) {
+  public CenterMonitoringOutcomeEvidence save(CenterMonitoringOutcomeEvidence monitorignOutcomeEvidence) {
     if (monitorignOutcomeEvidence.getId() == null) {
       super.saveEntity(monitorignOutcomeEvidence);
     } else {
-      super.update(monitorignOutcomeEvidence);
+      monitorignOutcomeEvidence = super.update(monitorignOutcomeEvidence);
     }
-    return monitorignOutcomeEvidence.getId();
+    return monitorignOutcomeEvidence;
   }
 
 

@@ -34,7 +34,7 @@ public interface SrfSubIdoManager {
    * @param srfSubIdoId is the srfSubIdo identifier.
    * @return true if the srfSubIdo was successfully deleted, false otherwise.
    */
-  public boolean deleteSrfSubIdo(long srfSubIdoId);
+  public void deleteSrfSubIdo(long srfSubIdoId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface SrfSubIdoManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveSrfSubIdo(SrfSubIdo srfSubIdo);
+  public SrfSubIdo saveSrfSubIdo(SrfSubIdo srfSubIdo);
 
 
 }

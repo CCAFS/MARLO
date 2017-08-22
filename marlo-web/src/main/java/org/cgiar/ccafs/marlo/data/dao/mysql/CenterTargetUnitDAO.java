@@ -33,10 +33,10 @@ public class CenterTargetUnitDAO extends AbstractMarloDAO<CenterTargetUnit, Long
   }
 
   @Override
-  public boolean deleteTargetUnit(long targetUnitId) {
+  public void deleteTargetUnit(long targetUnitId) {
     CenterTargetUnit targetUnit = this.find(targetUnitId);
     targetUnit.setActive(false);
-    return this.save(targetUnit) > 0;
+    this.save(targetUnit);
   }
 
   @Override
@@ -73,13 +73,13 @@ public class CenterTargetUnitDAO extends AbstractMarloDAO<CenterTargetUnit, Long
   }
 
   @Override
-  public long save(CenterTargetUnit targetUnit) {
+  public CenterTargetUnit save(CenterTargetUnit targetUnit) {
     if (targetUnit.getId() == null) {
       super.saveEntity(targetUnit);
     } else {
-      super.update(targetUnit);
+      targetUnit = super.update(targetUnit);
     }
-    return targetUnit.getId();
+    return targetUnit;
   }
 
 

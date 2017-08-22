@@ -34,9 +34,9 @@ public class DeliverablePublicationMetadataMySQLDAO extends AbstractMarloDAO<Del
   }
 
   @Override
-  public boolean deleteDeliverablePublicationMetadata(long deliverablePublicationMetadataId) {
+  public void deleteDeliverablePublicationMetadata(long deliverablePublicationMetadataId) {
     DeliverablePublicationMetadata deliverablePublicationMetadata = this.find(deliverablePublicationMetadataId);
-    return super.delete(deliverablePublicationMetadata);
+    super.delete(deliverablePublicationMetadata);
   }
 
   @Override
@@ -67,15 +67,15 @@ public class DeliverablePublicationMetadataMySQLDAO extends AbstractMarloDAO<Del
   }
 
   @Override
-  public long save(DeliverablePublicationMetadata deliverablePublicationMetadata) {
+  public DeliverablePublicationMetadata save(DeliverablePublicationMetadata deliverablePublicationMetadata) {
     if (deliverablePublicationMetadata.getId() == null) {
       super.saveEntity(deliverablePublicationMetadata);
     } else {
-      super.update(deliverablePublicationMetadata);
+      deliverablePublicationMetadata = super.update(deliverablePublicationMetadata);
     }
 
 
-    return deliverablePublicationMetadata.getId();
+    return deliverablePublicationMetadata;
   }
 
 

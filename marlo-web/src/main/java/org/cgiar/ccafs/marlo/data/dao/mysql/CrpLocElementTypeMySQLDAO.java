@@ -33,10 +33,10 @@ public class CrpLocElementTypeMySQLDAO extends AbstractMarloDAO<CrpLocElementTyp
   }
 
   @Override
-  public boolean deleteCrpLocElementType(long crpLocElementTypeId) {
+  public void deleteCrpLocElementType(long crpLocElementTypeId) {
     CrpLocElementType crpLocElementType = this.find(crpLocElementTypeId);
 
-    return super.delete(crpLocElementType);
+    super.delete(crpLocElementType);
   }
 
   @Override
@@ -79,15 +79,15 @@ public class CrpLocElementTypeMySQLDAO extends AbstractMarloDAO<CrpLocElementTyp
   }
 
   @Override
-  public long save(CrpLocElementType crpLocElementType) {
+  public CrpLocElementType save(CrpLocElementType crpLocElementType) {
     if (crpLocElementType.getId() == null) {
       super.saveEntity(crpLocElementType);
     } else {
-      super.update(crpLocElementType);
+      crpLocElementType = super.update(crpLocElementType);
     }
 
 
-    return crpLocElementType.getId();
+    return crpLocElementType;
   }
 
 

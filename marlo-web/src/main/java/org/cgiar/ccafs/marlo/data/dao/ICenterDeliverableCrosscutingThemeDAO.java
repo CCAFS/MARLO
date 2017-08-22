@@ -33,7 +33,7 @@ public interface ICenterDeliverableCrosscutingThemeDAO {
    * @param deliverableCrosscutingThemeId is the deliverableCrosscutingTheme identifier.
    * @return true if the deliverableCrosscutingTheme was successfully deleted, false otherwise.
    */
-  public boolean deleteDeliverableCrosscutingTheme(long deliverableCrosscutingThemeId);
+  public void deleteDeliverableCrosscutingTheme(long deliverableCrosscutingThemeId);
 
   /**
    * This method validate if the deliverableCrosscutingTheme identify with the given id exists in the system.
@@ -77,7 +77,7 @@ public interface ICenterDeliverableCrosscutingThemeDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterDeliverableCrosscutingTheme deliverableCrosscutingTheme);
+  public CenterDeliverableCrosscutingTheme save(CenterDeliverableCrosscutingTheme deliverableCrosscutingTheme);
 
   /**
    * This method saves the information of the given deliverableCrosscutingTheme
@@ -89,6 +89,6 @@ public interface ICenterDeliverableCrosscutingThemeDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterDeliverableCrosscutingTheme deliverableCrosscutingTheme, String actionName,
+  public CenterDeliverableCrosscutingTheme save(CenterDeliverableCrosscutingTheme deliverableCrosscutingTheme, String actionName,
     List<String> relationsName);
 }

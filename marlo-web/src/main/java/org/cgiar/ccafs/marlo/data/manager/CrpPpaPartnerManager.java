@@ -34,7 +34,7 @@ public interface CrpPpaPartnerManager {
    * @param crpPpaPartnerId is the crpPpaPartner identifier.
    * @return true if the crpPpaPartner was successfully deleted, false otherwise.
    */
-  public boolean deleteCrpPpaPartner(long crpPpaPartnerId);
+  public void deleteCrpPpaPartner(long crpPpaPartnerId);
 
 
   /**
@@ -70,6 +70,6 @@ public interface CrpPpaPartnerManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveCrpPpaPartner(CrpPpaPartner crpPpaPartner);
+  public CrpPpaPartner saveCrpPpaPartner(CrpPpaPartner crpPpaPartner);
 
 }

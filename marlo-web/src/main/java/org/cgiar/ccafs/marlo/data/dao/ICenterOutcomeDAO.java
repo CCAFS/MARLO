@@ -32,7 +32,7 @@ public interface ICenterOutcomeDAO {
    * @param researchOutcomeId is the researchOutcome identifier.
    * @return true if the researchOutcome was successfully deleted, false otherwise.
    */
-  public boolean deleteResearchOutcome(long researchOutcomeId);
+  public void deleteResearchOutcome(long researchOutcomeId);
 
   /**
    * This method validate if the researchOutcome identify with the given id exists in the system.
@@ -74,7 +74,7 @@ public interface ICenterOutcomeDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterOutcome researchOutcome);
+  public CenterOutcome save(CenterOutcome researchOutcome);
 
   /**
    * This method saves the information of the given researchOutcome
@@ -84,5 +84,5 @@ public interface ICenterOutcomeDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterOutcome outcome, String actionName, List<String> relationsName);
+  public CenterOutcome save(CenterOutcome outcome, String actionName, List<String> relationsName);
 }

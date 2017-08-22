@@ -35,7 +35,7 @@ public interface ProjectLocationManager {
    * @param projectLocationId is the projectLocation identifier.
    * @return true if the projectLocation was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectLocation(long projectLocationId);
+  public void deleteProjectLocation(long projectLocationId);
 
 
   /**
@@ -89,7 +89,7 @@ public interface ProjectLocationManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveProjectLocation(ProjectLocation projectLocation);
+  public ProjectLocation saveProjectLocation(ProjectLocation projectLocation);
 
 
 }

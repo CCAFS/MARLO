@@ -33,10 +33,10 @@ public class DeliverableActivityMySQLDAO extends AbstractMarloDAO<DeliverableAct
   }
 
   @Override
-  public boolean deleteDeliverableActivity(long deliverableActivityId) {
+  public void deleteDeliverableActivity(long deliverableActivityId) {
     DeliverableActivity deliverableActivity = this.find(deliverableActivityId);
     deliverableActivity.setActive(false);
-    return this.save(deliverableActivity) > 0;
+    this.save(deliverableActivity);
   }
 
   @Override
@@ -78,15 +78,15 @@ public class DeliverableActivityMySQLDAO extends AbstractMarloDAO<DeliverableAct
   }
 
   @Override
-  public long save(DeliverableActivity deliverableActivity) {
+  public DeliverableActivity save(DeliverableActivity deliverableActivity) {
     if (deliverableActivity.getId() == null) {
       super.saveEntity(deliverableActivity);
     } else {
-      super.update(deliverableActivity);
+      deliverableActivity = super.update(deliverableActivity);
     }
 
 
-    return deliverableActivity.getId();
+    return deliverableActivity;
   }
 
 

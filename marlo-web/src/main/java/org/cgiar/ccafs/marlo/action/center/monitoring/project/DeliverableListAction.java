@@ -107,7 +107,8 @@ public class DeliverableListAction extends BaseAction {
     deliverable.setDeliverableCrosscutingTheme(deliverableCrosscutingTheme);
     deliverableCrosscutingTheme.setDeliverable(deliverable);
 
-    deliverableID = deliverableService.saveDeliverable(deliverable);
+    deliverable = deliverableService.saveDeliverable(deliverable);
+    deliverableID = deliverable.getId();
 
     if (deliverableID > 0) {
       return SUCCESS;

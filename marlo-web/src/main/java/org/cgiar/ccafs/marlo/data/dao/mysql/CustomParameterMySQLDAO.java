@@ -33,10 +33,10 @@ public class CustomParameterMySQLDAO extends AbstractMarloDAO<CustomParameter, L
   }
 
   @Override
-  public boolean deleteCustomParameter(long customParameterId) {
+  public void deleteCustomParameter(long customParameterId) {
     CustomParameter customParameter = this.find(customParameterId);
     customParameter.setActive(false);
-    return this.save(customParameter) > 0;
+    this.save(customParameter);
   }
 
   @Override
@@ -67,15 +67,15 @@ public class CustomParameterMySQLDAO extends AbstractMarloDAO<CustomParameter, L
   }
 
   @Override
-  public long save(CustomParameter customParameter) {
+  public CustomParameter save(CustomParameter customParameter) {
     if (customParameter.getId() == null) {
       super.saveEntity(customParameter);
     } else {
-      super.update(customParameter);
+      customParameter = super.update(customParameter);
     }
 
 
-    return customParameter.getId();
+    return customParameter;
   }
 
 

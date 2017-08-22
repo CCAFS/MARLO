@@ -33,10 +33,10 @@ public class ProjectBudgetsCluserActvityMySQLDAO extends AbstractMarloDAO<Projec
   }
 
   @Override
-  public boolean deleteProjectBudgetsCluserActvity(long projectBudgetsCluserActvityId) {
+  public void deleteProjectBudgetsCluserActvity(long projectBudgetsCluserActvityId) {
     ProjectBudgetsCluserActvity projectBudgetsCluserActvity = this.find(projectBudgetsCluserActvityId);
     projectBudgetsCluserActvity.setActive(false);
-    return this.save(projectBudgetsCluserActvity) > 0;
+    this.save(projectBudgetsCluserActvity);
   }
 
   @Override
@@ -67,15 +67,15 @@ public class ProjectBudgetsCluserActvityMySQLDAO extends AbstractMarloDAO<Projec
   }
 
   @Override
-  public long save(ProjectBudgetsCluserActvity projectBudgetsCluserActvity) {
+  public ProjectBudgetsCluserActvity save(ProjectBudgetsCluserActvity projectBudgetsCluserActvity) {
     if (projectBudgetsCluserActvity.getId() == null) {
       super.saveEntity(projectBudgetsCluserActvity);
     } else {
-      super.update(projectBudgetsCluserActvity);
+      projectBudgetsCluserActvity = super.update(projectBudgetsCluserActvity);
     }
 
 
-    return projectBudgetsCluserActvity.getId();
+    return projectBudgetsCluserActvity;
   }
 
 

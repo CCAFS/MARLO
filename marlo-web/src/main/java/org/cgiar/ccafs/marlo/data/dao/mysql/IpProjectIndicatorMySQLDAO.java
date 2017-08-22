@@ -36,10 +36,10 @@ public class IpProjectIndicatorMySQLDAO extends AbstractMarloDAO<IpProjectIndica
   }
 
   @Override
-  public boolean deleteIpProjectIndicator(long ipProjectIndicatorId) {
+  public void deleteIpProjectIndicator(long ipProjectIndicatorId) {
     IpProjectIndicator ipProjectIndicator = this.find(ipProjectIndicatorId);
     ipProjectIndicator.setActive(false);
-    return this.save(ipProjectIndicator) > 0;
+    this.save(ipProjectIndicator);
   }
 
   @Override
@@ -96,15 +96,15 @@ public class IpProjectIndicatorMySQLDAO extends AbstractMarloDAO<IpProjectIndica
   }
 
   @Override
-  public long save(IpProjectIndicator ipProjectIndicator) {
+  public IpProjectIndicator save(IpProjectIndicator ipProjectIndicator) {
     if (ipProjectIndicator.getId() == null) {
       super.saveEntity(ipProjectIndicator);
     } else {
-      super.update(ipProjectIndicator);
+      ipProjectIndicator = super.update(ipProjectIndicator);
     }
 
 
-    return ipProjectIndicator.getId();
+    return ipProjectIndicator;
   }
 
 }

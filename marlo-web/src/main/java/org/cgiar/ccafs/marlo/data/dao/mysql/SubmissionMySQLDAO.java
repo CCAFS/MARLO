@@ -34,10 +34,10 @@ public class SubmissionMySQLDAO extends AbstractMarloDAO<Submission, Long> imple
   }
 
   @Override
-  public boolean deleteSubmission(long submissionId) {
+  public void deleteSubmission(long submissionId) {
     Submission submission = this.find(submissionId);
 
-    return super.delete(submission);
+    super.delete(submission);
   }
 
   @Override
@@ -68,15 +68,15 @@ public class SubmissionMySQLDAO extends AbstractMarloDAO<Submission, Long> imple
   }
 
   @Override
-  public long save(Submission submission) {
+  public Submission save(Submission submission) {
     if (submission.getId() == null) {
       super.saveEntity(submission);
     } else {
-      super.update(submission);
+      submission = super.update(submission);
     }
 
 
-    return submission.getId();
+    return submission;
   }
 
 

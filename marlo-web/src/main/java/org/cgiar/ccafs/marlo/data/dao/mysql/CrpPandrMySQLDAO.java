@@ -33,10 +33,10 @@ public class CrpPandrMySQLDAO extends AbstractMarloDAO<CrpPandr, Long> implement
   }
 
   @Override
-  public boolean deleteCrpPandr(long crpPandrId) {
+  public void deleteCrpPandr(long crpPandrId) {
     CrpPandr crpPandr = this.find(crpPandrId);
     crpPandr.setActive(false);
-    return this.save(crpPandr) > 0;
+    this.save(crpPandr);
   }
 
   @Override
@@ -67,15 +67,15 @@ public class CrpPandrMySQLDAO extends AbstractMarloDAO<CrpPandr, Long> implement
   }
 
   @Override
-  public long save(CrpPandr crpPandr) {
+  public CrpPandr save(CrpPandr crpPandr) {
     if (crpPandr.getId() == null) {
       super.saveEntity(crpPandr);
     } else {
-      super.update(crpPandr);
+      crpPandr = super.update(crpPandr);
     }
 
 
-    return crpPandr.getId();
+    return crpPandr;
   }
 
 

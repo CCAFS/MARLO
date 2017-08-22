@@ -32,7 +32,7 @@ public interface ICenterProjectTypeDAO {
    * @param projectTypeId is the projectType identifier.
    * @return true if the projectType was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectType(long projectTypeId);
+  public void deleteProjectType(long projectTypeId);
 
   /**
    * This method validate if the projectType identify with the given id exists in the system.
@@ -74,7 +74,7 @@ public interface ICenterProjectTypeDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterProjectType projectType);
+  public CenterProjectType save(CenterProjectType projectType);
 
   /**
    * This method saves the information of the given projectType
@@ -84,5 +84,5 @@ public interface ICenterProjectTypeDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterProjectType projectType, String actionName, List<String> relationsName);
+  public CenterProjectType save(CenterProjectType projectType, String actionName, List<String> relationsName);
 }

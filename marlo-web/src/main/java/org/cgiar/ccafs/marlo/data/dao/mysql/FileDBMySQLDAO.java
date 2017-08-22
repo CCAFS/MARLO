@@ -33,10 +33,10 @@ public class FileDBMySQLDAO extends AbstractMarloDAO<FileDB, Long> implements Fi
   }
 
   @Override
-  public boolean deleteFileDB(long fileDBId) {
+  public void deleteFileDB(long fileDBId) {
     FileDB fileDB = this.find(fileDBId);
 
-    return super.delete(fileDB);
+    super.delete(fileDB);
   }
 
   @Override
@@ -67,15 +67,15 @@ public class FileDBMySQLDAO extends AbstractMarloDAO<FileDB, Long> implements Fi
   }
 
   @Override
-  public long save(FileDB fileDB) {
+  public FileDB save(FileDB fileDB) {
     if (fileDB.getId() == null) {
       super.saveEntity(fileDB);
     } else {
-      super.update(fileDB);
+      fileDB = super.update(fileDB);
     }
 
 
-    return fileDB.getId();
+    return fileDB;
   }
 
 

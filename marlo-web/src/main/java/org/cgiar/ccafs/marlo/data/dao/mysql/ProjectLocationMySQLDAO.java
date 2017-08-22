@@ -34,10 +34,10 @@ public class ProjectLocationMySQLDAO extends AbstractMarloDAO<ProjectLocation, L
   }
 
   @Override
-  public boolean deleteProjectLocation(long projectLocationId) {
+  public void deleteProjectLocation(long projectLocationId) {
     ProjectLocation projectLocation = this.find(projectLocationId);
     projectLocation.setActive(false);
-    return this.save(projectLocation) > 0;
+    this.save(projectLocation);
   }
 
   @Override
@@ -86,15 +86,15 @@ public class ProjectLocationMySQLDAO extends AbstractMarloDAO<ProjectLocation, L
   }
 
   @Override
-  public long save(ProjectLocation projectLocation) {
+  public ProjectLocation save(ProjectLocation projectLocation) {
     if (projectLocation.getId() == null) {
       super.saveEntity(projectLocation);
     } else {
-      super.update(projectLocation);
+      projectLocation = super.update(projectLocation);
     }
 
 
-    return projectLocation.getId();
+    return projectLocation;
   }
 
 

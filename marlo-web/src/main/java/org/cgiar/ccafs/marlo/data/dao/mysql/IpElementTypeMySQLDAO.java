@@ -33,9 +33,9 @@ public class IpElementTypeMySQLDAO extends AbstractMarloDAO<IpElementType, Long>
   }
 
   @Override
-  public boolean deleteIpElementType(long ipElementTypeId) {
+  public void deleteIpElementType(long ipElementTypeId) {
     IpElementType ipElementType = this.find(ipElementTypeId);
-    return super.delete(ipElementType);
+    super.delete(ipElementType);
   }
 
   @Override
@@ -66,15 +66,15 @@ public class IpElementTypeMySQLDAO extends AbstractMarloDAO<IpElementType, Long>
   }
 
   @Override
-  public long save(IpElementType ipElementType) {
+  public IpElementType save(IpElementType ipElementType) {
     if (ipElementType.getId() == null) {
       super.saveEntity(ipElementType);
     } else {
-      super.update(ipElementType);
+      ipElementType = super.update(ipElementType);
     }
 
 
-    return ipElementType.getId();
+    return ipElementType;
   }
 
 

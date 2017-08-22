@@ -33,10 +33,10 @@ public class DeliverableQualityAnswerMySQLDAO extends AbstractMarloDAO<Deliverab
   }
 
   @Override
-  public boolean deleteDeliverableQualityAnswer(long deliverableQualityAnswerId) {
+  public void deleteDeliverableQualityAnswer(long deliverableQualityAnswerId) {
     DeliverableQualityAnswer deliverableQualityAnswer = this.find(deliverableQualityAnswerId);
     deliverableQualityAnswer.setActive(false);
-    return this.save(deliverableQualityAnswer) > 0;
+    this.save(deliverableQualityAnswer);
   }
 
   @Override
@@ -67,15 +67,15 @@ public class DeliverableQualityAnswerMySQLDAO extends AbstractMarloDAO<Deliverab
   }
 
   @Override
-  public long save(DeliverableQualityAnswer deliverableQualityAnswer) {
+  public DeliverableQualityAnswer save(DeliverableQualityAnswer deliverableQualityAnswer) {
     if (deliverableQualityAnswer.getId() == null) {
       super.saveEntity(deliverableQualityAnswer);
     } else {
-      super.update(deliverableQualityAnswer);
+      deliverableQualityAnswer = super.update(deliverableQualityAnswer);
     }
 
 
-    return deliverableQualityAnswer.getId();
+    return deliverableQualityAnswer;
   }
 
 

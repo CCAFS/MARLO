@@ -33,10 +33,10 @@ public class ProjectComponentLessonMySQLDAO extends AbstractMarloDAO<ProjectComp
   }
 
   @Override
-  public boolean deleteProjectComponentLesson(long projectComponentLessonId) {
+  public void deleteProjectComponentLesson(long projectComponentLessonId) {
     ProjectComponentLesson projectComponentLesson = this.find(projectComponentLessonId);
     projectComponentLesson.setActive(false);
-    return this.save(projectComponentLesson) > 0;
+    this.save(projectComponentLesson);
   }
 
   @Override
@@ -67,15 +67,15 @@ public class ProjectComponentLessonMySQLDAO extends AbstractMarloDAO<ProjectComp
   }
 
   @Override
-  public long save(ProjectComponentLesson projectComponentLesson) {
+  public ProjectComponentLesson save(ProjectComponentLesson projectComponentLesson) {
     if (projectComponentLesson.getId() == null) {
       super.saveEntity(projectComponentLesson);
     } else {
-      super.update(projectComponentLesson);
+      projectComponentLesson = super.update(projectComponentLesson);
     }
 
 
-    return projectComponentLesson.getId();
+    return projectComponentLesson;
   }
 
 

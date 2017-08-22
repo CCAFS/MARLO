@@ -34,10 +34,10 @@ public class CenterDeliverableDocumentDAO extends AbstractMarloDAO<CenterDeliver
   }
 
   @Override
-  public boolean deleteDeliverableDocument(long deliverableDocumentId) {
+  public void deleteDeliverableDocument(long deliverableDocumentId) {
     CenterDeliverableDocument deliverableDocument = this.find(deliverableDocumentId);
     deliverableDocument.setActive(false);
-    return this.save(deliverableDocument) > 0;
+    this.save(deliverableDocument);
   }
 
   @Override
@@ -74,13 +74,13 @@ public class CenterDeliverableDocumentDAO extends AbstractMarloDAO<CenterDeliver
   }
 
   @Override
-  public long save(CenterDeliverableDocument deliverableDocument) {
+  public CenterDeliverableDocument save(CenterDeliverableDocument deliverableDocument) {
     if (deliverableDocument.getId() == null) {
       super.saveEntity(deliverableDocument);
     } else {
-      super.update(deliverableDocument);
+      deliverableDocument = super.update(deliverableDocument);
     }
-    return deliverableDocument.getId();
+    return deliverableDocument;
   }
 
 

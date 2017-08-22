@@ -41,9 +41,9 @@ public class OutcomeSynthesyManagerImpl implements OutcomeSynthesyManager {
   }
 
   @Override
-  public boolean deleteOutcomeSynthesy(long outcomeSynthesyId) {
+  public void deleteOutcomeSynthesy(long outcomeSynthesyId) {
 
-    return outcomeSynthesyDAO.deleteOutcomeSynthesy(outcomeSynthesyId);
+    outcomeSynthesyDAO.deleteOutcomeSynthesy(outcomeSynthesyId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class OutcomeSynthesyManagerImpl implements OutcomeSynthesyManager {
   }
 
   @Override
-  public long saveOutcomeSynthesy(OutcomeSynthesy outcomeSynthesy) {
+  public OutcomeSynthesy saveOutcomeSynthesy(OutcomeSynthesy outcomeSynthesy) {
 
     return outcomeSynthesyDAO.save(outcomeSynthesy);
   }

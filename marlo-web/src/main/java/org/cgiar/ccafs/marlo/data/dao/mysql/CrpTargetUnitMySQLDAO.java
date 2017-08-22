@@ -33,10 +33,10 @@ public class CrpTargetUnitMySQLDAO extends AbstractMarloDAO<CrpTargetUnit, Long>
   }
 
   @Override
-  public boolean deleteCrpTargetUnit(long crpTargetUnitId) {
+  public void deleteCrpTargetUnit(long crpTargetUnitId) {
     CrpTargetUnit crpTargetUnit = this.find(crpTargetUnitId);
     crpTargetUnit.setActive(false);
-    return this.save(crpTargetUnit) > 0;
+    this.save(crpTargetUnit);
   }
 
   @Override
@@ -78,15 +78,15 @@ public class CrpTargetUnitMySQLDAO extends AbstractMarloDAO<CrpTargetUnit, Long>
   }
 
   @Override
-  public long save(CrpTargetUnit crpTargetUnit) {
+  public CrpTargetUnit save(CrpTargetUnit crpTargetUnit) {
     if (crpTargetUnit.getId() == null) {
       super.saveEntity(crpTargetUnit);
     } else {
-      super.update(crpTargetUnit);
+      crpTargetUnit = super.update(crpTargetUnit);
     }
 
 
-    return crpTargetUnit.getId();
+    return crpTargetUnit;
   }
 
 

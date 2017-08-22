@@ -33,9 +33,9 @@ public class MetadataElementMySQLDAO extends AbstractMarloDAO<MetadataElement, L
   }
 
   @Override
-  public boolean deleteMetadataElement(long metadataElementId) {
+  public void deleteMetadataElement(long metadataElementId) {
     MetadataElement metadataElement = this.find(metadataElementId);
-    return this.save(metadataElement) > 0;
+    this.save(metadataElement);
   }
 
   @Override
@@ -66,15 +66,15 @@ public class MetadataElementMySQLDAO extends AbstractMarloDAO<MetadataElement, L
   }
 
   @Override
-  public long save(MetadataElement metadataElement) {
+  public MetadataElement save(MetadataElement metadataElement) {
     if (metadataElement.getId() == null) {
       super.saveEntity(metadataElement);
     } else {
-      super.update(metadataElement);
+      metadataElement = super.update(metadataElement);
     }
 
 
-    return metadataElement.getId();
+    return metadataElement;
   }
 
 

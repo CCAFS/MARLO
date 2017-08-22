@@ -43,10 +43,10 @@ public class CenterAreaDAO extends AbstractMarloDAO<CenterArea, Long> implements
    * @see org.cgiar.ccafs.marlo.data.dao.ICenterAreaDAO#deleteResearchArea(long)
    */
   @Override
-  public boolean deleteResearchArea(long researchAreaId) {
+  public void deleteResearchArea(long researchAreaId) {
     CenterArea researchArea = this.find(researchAreaId);
     researchArea.setActive(false);
-    return this.save(researchArea) > 0;
+    this.save(researchArea);
   }
 
   /*
@@ -105,13 +105,13 @@ public class CenterAreaDAO extends AbstractMarloDAO<CenterArea, Long> implements
    * @see org.cgiar.ccafs.marlo.data.dao.ICenterAreaDAO#save(org.cgiar.ccafs.marlo.data.model.CenterArea)
    */
   @Override
-  public long save(CenterArea researchArea) {
+  public CenterArea save(CenterArea researchArea) {
     if (researchArea.getId() == null) {
       super.saveEntity(researchArea);
     } else {
-      super.update(researchArea);
+      researchArea = super.update(researchArea);
     }
-    return researchArea.getId();
+    return researchArea;
   }
 
 }

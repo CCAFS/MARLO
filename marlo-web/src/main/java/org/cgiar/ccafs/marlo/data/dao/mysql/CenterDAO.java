@@ -36,10 +36,10 @@ public class CenterDAO extends AbstractMarloDAO<Center, Long> implements ICenter
   }
 
   @Override
-  public boolean deleteCrp(long crpId) {
+  public void deleteCrp(long crpId) {
     Center center = this.find(crpId);
     center.setActive(false);
-    return this.save(center) > 0;
+    this.save(center);
   }
 
   @Override
@@ -80,12 +80,12 @@ public class CenterDAO extends AbstractMarloDAO<Center, Long> implements ICenter
   }
 
   @Override
-  public long save(Center crp) {
+  public Center save(Center crp) {
     if (crp.getId() == null) {
       super.saveEntity(crp);
     } else {
-      super.update(crp);
+      crp = super.update(crp);
     }
-    return crp.getId();
+    return crp;
   }
 }

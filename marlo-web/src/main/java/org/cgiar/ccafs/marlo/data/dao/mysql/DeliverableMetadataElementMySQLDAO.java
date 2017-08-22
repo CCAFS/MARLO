@@ -33,9 +33,9 @@ public class DeliverableMetadataElementMySQLDAO extends AbstractMarloDAO<Deliver
   }
 
   @Override
-  public boolean deleteDeliverableMetadataElement(long deliverableMetadataElementId) {
+  public void deleteDeliverableMetadataElement(long deliverableMetadataElementId) {
     DeliverableMetadataElement deliverableMetadataElement = this.find(deliverableMetadataElementId);
-    return this.save(deliverableMetadataElement) > 0;
+    this.save(deliverableMetadataElement);
   }
 
   @Override
@@ -66,15 +66,15 @@ public class DeliverableMetadataElementMySQLDAO extends AbstractMarloDAO<Deliver
   }
 
   @Override
-  public long save(DeliverableMetadataElement deliverableMetadataElement) {
+  public DeliverableMetadataElement save(DeliverableMetadataElement deliverableMetadataElement) {
     if (deliverableMetadataElement.getId() == null) {
       super.saveEntity(deliverableMetadataElement);
     } else {
-      super.update(deliverableMetadataElement);
+      deliverableMetadataElement = super.update(deliverableMetadataElement);
     }
 
 
-    return deliverableMetadataElement.getId();
+    return deliverableMetadataElement;
   }
 
 

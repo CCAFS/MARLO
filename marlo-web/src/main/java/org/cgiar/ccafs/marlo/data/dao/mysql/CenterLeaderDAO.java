@@ -40,10 +40,10 @@ public class CenterLeaderDAO extends AbstractMarloDAO<CenterLeader, Long> implem
 
 
   @Override
-  public boolean deleteResearchLeader(long researchLeaderId) {
+  public void deleteResearchLeader(long researchLeaderId) {
     CenterLeader researchLeader = this.find(researchLeaderId);
     researchLeader.setActive(false);
-    return this.save(researchLeader) > 0;
+    this.save(researchLeader);
   }
 
 
@@ -73,13 +73,13 @@ public class CenterLeaderDAO extends AbstractMarloDAO<CenterLeader, Long> implem
   }
 
   @Override
-  public long save(CenterLeader researchLeader) {
+  public CenterLeader save(CenterLeader researchLeader) {
     if (researchLeader.getId() == null) {
       super.saveEntity(researchLeader);
     } else {
-      super.update(researchLeader);
+      researchLeader = super.update(researchLeader);
     }
-    return researchLeader.getId();
+    return researchLeader;
   }
 
 }

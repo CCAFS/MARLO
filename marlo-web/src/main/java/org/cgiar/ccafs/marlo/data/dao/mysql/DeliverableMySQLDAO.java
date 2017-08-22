@@ -33,10 +33,10 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
   }
 
   @Override
-  public boolean deleteDeliverable(long deliverableId) {
+  public void deleteDeliverable(long deliverableId) {
     Deliverable deliverable = this.find(deliverableId);
     deliverable.setActive(false);
-    return this.save(deliverable) > 0;
+    this.save(deliverable);
   }
 
   @Override
@@ -67,25 +67,25 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
   }
 
   @Override
-  public long save(Deliverable deliverable) {
+  public Deliverable save(Deliverable deliverable) {
     if (deliverable.getId() == null) {
       super.saveEntity(deliverable);
     } else {
-      super.update(deliverable);
+      deliverable = super.update(deliverable);
     }
 
 
-    return deliverable.getId();
+    return deliverable;
   }
 
   @Override
-  public long save(Deliverable deliverable, String section, List<String> relationsName) {
+  public Deliverable save(Deliverable deliverable, String section, List<String> relationsName) {
     if (deliverable.getId() == null) {
       super.saveEntity(deliverable, section, relationsName);
     } else {
-      super.update(deliverable, section, relationsName);
+      deliverable = super.update(deliverable, section, relationsName);
     }
-    return deliverable.getId();
+    return deliverable;
   }
 
 

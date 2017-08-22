@@ -33,10 +33,10 @@ public class CenterImpactDAO extends AbstractMarloDAO<CenterImpact, Long> implem
   }
 
   @Override
-  public boolean deleteResearchImpact(long researchImpactId) {
+  public void deleteResearchImpact(long researchImpactId) {
     CenterImpact researchImpact = this.find(researchImpactId);
     researchImpact.setActive(false);
-    return this.save(researchImpact) > 0;
+    this.save(researchImpact);
   }
 
   @Override
@@ -73,13 +73,13 @@ public class CenterImpactDAO extends AbstractMarloDAO<CenterImpact, Long> implem
   }
 
   @Override
-  public long save(CenterImpact researchImpact) {
+  public CenterImpact save(CenterImpact researchImpact) {
     if (researchImpact.getId() == null) {
       super.saveEntity(researchImpact);
     } else {
-      super.update(researchImpact);
+      researchImpact = super.update(researchImpact);
     }
-    return researchImpact.getId();
+    return researchImpact;
   }
 
 

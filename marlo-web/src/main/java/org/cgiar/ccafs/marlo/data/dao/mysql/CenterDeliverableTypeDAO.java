@@ -34,10 +34,10 @@ public class CenterDeliverableTypeDAO extends AbstractMarloDAO<CenterDeliverable
   }
 
   @Override
-  public boolean deleteDeliverableType(long deliverableTypeId) {
+  public void deleteDeliverableType(long deliverableTypeId) {
     CenterDeliverableType deliverableType = this.find(deliverableTypeId);
     deliverableType.setActive(false);
-    return this.save(deliverableType) > 0;
+    this.save(deliverableType);
   }
 
   @Override
@@ -84,13 +84,13 @@ public class CenterDeliverableTypeDAO extends AbstractMarloDAO<CenterDeliverable
   }
 
   @Override
-  public long save(CenterDeliverableType deliverableType) {
+  public CenterDeliverableType save(CenterDeliverableType deliverableType) {
     if (deliverableType.getId() == null) {
       super.saveEntity(deliverableType);
     } else {
-      super.update(deliverableType);
+      deliverableType = super.update(deliverableType);
     }
-    return deliverableType.getId();
+    return deliverableType;
   }
 
 

@@ -41,9 +41,9 @@ public class DeliverableFundingSourceManagerImpl implements DeliverableFundingSo
   }
 
   @Override
-  public boolean deleteDeliverableFundingSource(long deliverableFundingSourceId) {
+  public void deleteDeliverableFundingSource(long deliverableFundingSourceId) {
 
-    return deliverableFundingSourceDAO.deleteDeliverableFundingSource(deliverableFundingSourceId);
+    deliverableFundingSourceDAO.deleteDeliverableFundingSource(deliverableFundingSourceId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class DeliverableFundingSourceManagerImpl implements DeliverableFundingSo
   }
 
   @Override
-  public long saveDeliverableFundingSource(DeliverableFundingSource deliverableFundingSource) {
+  public DeliverableFundingSource saveDeliverableFundingSource(DeliverableFundingSource deliverableFundingSource) {
 
     return deliverableFundingSourceDAO.save(deliverableFundingSource);
   }

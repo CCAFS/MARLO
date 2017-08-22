@@ -34,7 +34,7 @@ public interface CrpSitesLeaderManager {
    * @param crpSitesLeaderId is the crpSitesLeader identifier.
    * @return true if the crpSitesLeader was successfully deleted, false otherwise.
    */
-  public boolean deleteCrpSitesLeader(long crpSitesLeaderId);
+  public void deleteCrpSitesLeader(long crpSitesLeaderId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface CrpSitesLeaderManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveCrpSitesLeader(CrpSitesLeader crpSitesLeader);
+  public CrpSitesLeader saveCrpSitesLeader(CrpSitesLeader crpSitesLeader);
 
 
 }

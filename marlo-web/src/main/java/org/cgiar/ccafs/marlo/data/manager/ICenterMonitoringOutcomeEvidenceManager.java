@@ -34,7 +34,7 @@ public interface ICenterMonitoringOutcomeEvidenceManager {
    * @param monitorignOutcomeEvidenceId is the monitorignOutcomeEvidence identifier.
    * @return true if the monitorignOutcomeEvidence was successfully deleted, false otherwise.
    */
-  public boolean deleteMonitorignOutcomeEvidence(long monitorignOutcomeEvidenceId);
+  public void deleteMonitorignOutcomeEvidence(long monitorignOutcomeEvidenceId);
 
 
   /**
@@ -80,7 +80,7 @@ public interface ICenterMonitoringOutcomeEvidenceManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveMonitorignOutcomeEvidence(CenterMonitoringOutcomeEvidence monitorignOutcomeEvidence);
+  public CenterMonitoringOutcomeEvidence saveMonitorignOutcomeEvidence(CenterMonitoringOutcomeEvidence monitorignOutcomeEvidence);
 
 
 }

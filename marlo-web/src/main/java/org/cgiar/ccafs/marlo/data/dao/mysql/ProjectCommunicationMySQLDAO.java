@@ -33,10 +33,10 @@ public class ProjectCommunicationMySQLDAO extends AbstractMarloDAO<ProjectCommun
   }
 
   @Override
-  public boolean deleteProjectCommunication(long projectCommunicationId) {
+  public void deleteProjectCommunication(long projectCommunicationId) {
     ProjectCommunication projectCommunication = this.find(projectCommunicationId);
     projectCommunication.setActive(false);
-    return this.save(projectCommunication) > 0;
+    this.save(projectCommunication);
   }
 
   @Override
@@ -67,15 +67,15 @@ public class ProjectCommunicationMySQLDAO extends AbstractMarloDAO<ProjectCommun
   }
 
   @Override
-  public long save(ProjectCommunication projectCommunication) {
+  public ProjectCommunication save(ProjectCommunication projectCommunication) {
     if (projectCommunication.getId() == null) {
       super.saveEntity(projectCommunication);
     } else {
-      super.update(projectCommunication);
+      projectCommunication = super.update(projectCommunication);
     }
 
 
-    return projectCommunication.getId();
+    return projectCommunication;
   }
 
 

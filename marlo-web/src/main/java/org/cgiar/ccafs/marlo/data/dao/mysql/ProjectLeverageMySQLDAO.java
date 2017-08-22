@@ -33,10 +33,10 @@ public class ProjectLeverageMySQLDAO extends AbstractMarloDAO<ProjectLeverage, L
   }
 
   @Override
-  public boolean deleteProjectLeverage(long projectLeverageId) {
+  public void deleteProjectLeverage(long projectLeverageId) {
     ProjectLeverage projectLeverage = this.find(projectLeverageId);
     projectLeverage.setActive(false);
-    return this.save(projectLeverage) > 0;
+    this.save(projectLeverage);
   }
 
   @Override
@@ -67,15 +67,15 @@ public class ProjectLeverageMySQLDAO extends AbstractMarloDAO<ProjectLeverage, L
   }
 
   @Override
-  public long save(ProjectLeverage projectLeverage) {
+  public ProjectLeverage save(ProjectLeverage projectLeverage) {
     if (projectLeverage.getId() == null) {
       super.saveEntity(projectLeverage);
     } else {
-      super.update(projectLeverage);
+      projectLeverage = super.update(projectLeverage);
     }
 
 
-    return projectLeverage.getId();
+    return projectLeverage;
   }
 
 

@@ -33,10 +33,10 @@ public class ProjectClusterActivityMySQLDAO extends AbstractMarloDAO<ProjectClus
   }
 
   @Override
-  public boolean deleteProjectClusterActivity(long projectClusterActivityId) {
+  public void deleteProjectClusterActivity(long projectClusterActivityId) {
     ProjectClusterActivity projectClusterActivity = this.find(projectClusterActivityId);
     projectClusterActivity.setActive(false);
-    return this.save(projectClusterActivity) > 0;
+    this.save(projectClusterActivity);
   }
 
   @Override
@@ -67,15 +67,15 @@ public class ProjectClusterActivityMySQLDAO extends AbstractMarloDAO<ProjectClus
   }
 
   @Override
-  public long save(ProjectClusterActivity projectClusterActivity) {
+  public ProjectClusterActivity save(ProjectClusterActivity projectClusterActivity) {
     if (projectClusterActivity.getId() == null) {
       super.saveEntity(projectClusterActivity);
     } else {
-      super.update(projectClusterActivity);
+      projectClusterActivity = super.update(projectClusterActivity);
     }
 
 
-    return projectClusterActivity.getId();
+    return projectClusterActivity;
   }
 
 

@@ -909,14 +909,12 @@ public class CrpProgamRegionsAction extends BaseAction {
       crpsSiteIntegration.setActiveSince(new Date());
       crpsSiteIntegration.setRegional(true);
 
-      Long newSiteIntegrationID = crpsSiteIntegrationManager.saveCrpsSiteIntegration(crpsSiteIntegration);
-      CrpsSiteIntegration crpSiteIntegration =
-        crpsSiteIntegrationManager.getCrpsSiteIntegrationById(newSiteIntegrationID);
+      crpsSiteIntegration = crpsSiteIntegrationManager.saveCrpsSiteIntegration(crpsSiteIntegration);
 
       locElement.setIsSiteIntegration(true);
       locElementManger.saveLocElement(locElement);
 
-      this.saveSiteLeaderBySiteIntegration(crpProgram, crpSiteIntegration);
+      this.saveSiteLeaderBySiteIntegration(crpProgram, crpsSiteIntegration);
 
 
     } else {

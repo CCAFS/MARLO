@@ -33,10 +33,10 @@ public class DeliverablePartnershipMySQLDAO extends AbstractMarloDAO<Deliverable
   }
 
   @Override
-  public boolean deleteDeliverablePartnership(long deliverablePartnershipId) {
+  public void deleteDeliverablePartnership(long deliverablePartnershipId) {
     DeliverablePartnership deliverablePartnership = this.find(deliverablePartnershipId);
     deliverablePartnership.setActive(false);
-    return this.save(deliverablePartnership) > 0;
+    this.save(deliverablePartnership);
   }
 
   @Override
@@ -67,15 +67,15 @@ public class DeliverablePartnershipMySQLDAO extends AbstractMarloDAO<Deliverable
   }
 
   @Override
-  public long save(DeliverablePartnership deliverablePartnership) {
+  public DeliverablePartnership save(DeliverablePartnership deliverablePartnership) {
     if (deliverablePartnership.getId() == null) {
       super.saveEntity(deliverablePartnership);
     } else {
-      super.update(deliverablePartnership);
+      deliverablePartnership = super.update(deliverablePartnership);
     }
 
 
-    return deliverablePartnership.getId();
+    return deliverablePartnership;
   }
 
 

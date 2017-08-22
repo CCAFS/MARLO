@@ -33,10 +33,10 @@ public class ProjectCrpContributionMySQLDAO extends AbstractMarloDAO<ProjectCrpC
   }
 
   @Override
-  public boolean deleteProjectCrpContribution(long projectCrpContributionId) {
+  public void deleteProjectCrpContribution(long projectCrpContributionId) {
     ProjectCrpContribution projectCrpContribution = this.find(projectCrpContributionId);
     projectCrpContribution.setActive(false);
-    return this.save(projectCrpContribution) > 0;
+    this.save(projectCrpContribution);
   }
 
   @Override
@@ -67,15 +67,15 @@ public class ProjectCrpContributionMySQLDAO extends AbstractMarloDAO<ProjectCrpC
   }
 
   @Override
-  public long save(ProjectCrpContribution projectCrpContribution) {
+  public ProjectCrpContribution save(ProjectCrpContribution projectCrpContribution) {
     if (projectCrpContribution.getId() == null) {
       super.saveEntity(projectCrpContribution);
     } else {
-      super.update(projectCrpContribution);
+      projectCrpContribution = super.update(projectCrpContribution);
     }
 
 
-    return projectCrpContribution.getId();
+    return projectCrpContribution;
   }
 
 

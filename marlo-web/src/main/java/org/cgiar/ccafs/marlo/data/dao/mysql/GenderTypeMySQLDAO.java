@@ -33,10 +33,10 @@ public class GenderTypeMySQLDAO extends AbstractMarloDAO<GenderType, Long> imple
   }
 
   @Override
-  public boolean deleteGenderType(long genderTypeId) {
+  public void deleteGenderType(long genderTypeId) {
     GenderType genderType = this.find(genderTypeId);
 
-    return super.delete(genderType);
+    super.delete(genderType);
   }
 
   @Override
@@ -67,15 +67,15 @@ public class GenderTypeMySQLDAO extends AbstractMarloDAO<GenderType, Long> imple
   }
 
   @Override
-  public long save(GenderType genderType) {
+  public GenderType save(GenderType genderType) {
     if (genderType.getId() == null) {
       super.saveEntity(genderType);
     } else {
-      super.update(genderType);
+      genderType = super.update(genderType);
     }
 
 
-    return genderType.getId();
+    return genderType;
   }
 
 

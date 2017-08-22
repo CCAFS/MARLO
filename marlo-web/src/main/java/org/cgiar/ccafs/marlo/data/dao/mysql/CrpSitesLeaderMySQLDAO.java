@@ -33,10 +33,10 @@ public class CrpSitesLeaderMySQLDAO extends AbstractMarloDAO<CrpSitesLeader, Lon
   }
 
   @Override
-  public boolean deleteCrpSitesLeader(long crpSitesLeaderId) {
+  public void deleteCrpSitesLeader(long crpSitesLeaderId) {
     CrpSitesLeader crpSitesLeader = this.find(crpSitesLeaderId);
     crpSitesLeader.setActive(false);
-    return this.save(crpSitesLeader) > 0;
+    this.save(crpSitesLeader);
   }
 
   @Override
@@ -67,13 +67,13 @@ public class CrpSitesLeaderMySQLDAO extends AbstractMarloDAO<CrpSitesLeader, Lon
   }
 
   @Override
-  public long save(CrpSitesLeader crpSitesLeader) {
+  public CrpSitesLeader save(CrpSitesLeader crpSitesLeader) {
     if (crpSitesLeader.getId() == null) {
       super.saveEntity(crpSitesLeader);
     } else {
-      super.update(crpSitesLeader);
+      crpSitesLeader = super.update(crpSitesLeader);
     }
-    return crpSitesLeader.getId();
+    return crpSitesLeader;
   }
 
 

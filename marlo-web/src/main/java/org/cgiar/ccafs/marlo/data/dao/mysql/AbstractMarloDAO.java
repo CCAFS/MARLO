@@ -56,12 +56,9 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    * This method deletes a record from the database.
    * 
    * @param obj is a persistence instance from the database model.
-   * @return true if the record was successfully deleted, false otherwhise.
    */
-  protected boolean delete(Object obj) {
+  protected void delete(Object obj) {
     this.sessionFactory.getCurrentSession().delete(obj);
-    // Better to not use booleans.
-    return true;
   }
 
   /**
@@ -161,9 +158,44 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
   }
 
 
+  // /**
+  // * Return the ID for the entity or null
+  // *
+  // * @param entity
+  // * @return
+  // */
+  // private ID getId(T entity) {
+  // ClassMetadata metadata = this.sessionFactory.getClassMetadata(entity.getClass());
+  // if (metadata.hasIdentifierProperty()) {
+  // return (ID) metadata.getIdentifier(entity, (SessionImplementor) this.sessionFactory.getCurrentSession());
+  // }
+  // return null;
+  // }
+
+  /**
+   * Return the sessionFactory. DAOs are free to get this and use it to perform custom queries.
+   * 
+   * @return
+   */
   SessionFactory getSessionFactory() {
     return this.sessionFactory;
   }
+
+  //
+  // /**
+  // * Performs either a save or update depending on if there is an identifier or not.
+  // *
+  // * @param entity
+  // * @return
+  // */
+  // public T save(T entity) {
+  // if (this.getId(entity) != null) {
+  // return this.update(entity);
+  //
+  // }
+  // return this.saveEntity(entity);
+  //
+  // }
 
 
   /**

@@ -32,7 +32,7 @@ public interface ProjectPartnerPersonDAO {
    * @param projectPartnerPersonId is the projectPartnerPerson identifier.
    * @return true if the projectPartnerPerson was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectPartnerPerson(long projectPartnerPersonId);
+  public void deleteProjectPartnerPerson(long projectPartnerPersonId);
 
   /**
    * This method validate if the projectPartnerPerson identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface ProjectPartnerPersonDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(ProjectPartnerPerson projectPartnerPerson);
+  public ProjectPartnerPerson save(ProjectPartnerPerson projectPartnerPerson);
 }

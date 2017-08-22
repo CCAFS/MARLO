@@ -33,10 +33,10 @@ public class BudgetTypeMySQLDAO extends AbstractMarloDAO<BudgetType, Long> imple
   }
 
   @Override
-  public boolean deleteBudgetType(long budgetTypeId) {
+  public void deleteBudgetType(long budgetTypeId) {
     BudgetType budgetType = this.find(budgetTypeId);
 
-    return super.delete(budgetType);
+    super.delete(budgetType);
   }
 
   @Override
@@ -67,15 +67,15 @@ public class BudgetTypeMySQLDAO extends AbstractMarloDAO<BudgetType, Long> imple
   }
 
   @Override
-  public long save(BudgetType budgetType) {
+  public BudgetType save(BudgetType budgetType) {
     if (budgetType.getId() == null) {
       super.saveEntity(budgetType);
     } else {
-      super.update(budgetType);
+      budgetType = super.update(budgetType);
     }
 
 
-    return budgetType.getId();
+    return budgetType;
   }
 
 

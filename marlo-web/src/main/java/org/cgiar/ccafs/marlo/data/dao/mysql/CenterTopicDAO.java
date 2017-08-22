@@ -33,10 +33,10 @@ public class CenterTopicDAO extends AbstractMarloDAO<CenterTopic, Long> implemen
   }
 
   @Override
-  public boolean deleteResearchTopic(long researchTopicId) {
+  public void deleteResearchTopic(long researchTopicId) {
     CenterTopic researchTopic = this.find(researchTopicId);
     researchTopic.setActive(false);
-    return this.save(researchTopic) > 0;
+    this.save(researchTopic);
   }
 
   @Override
@@ -73,13 +73,13 @@ public class CenterTopicDAO extends AbstractMarloDAO<CenterTopic, Long> implemen
   }
 
   @Override
-  public long save(CenterTopic researchTopic) {
+  public CenterTopic save(CenterTopic researchTopic) {
     if (researchTopic.getId() == null) {
       super.saveEntity(researchTopic);
     } else {
-      super.update(researchTopic);
+      researchTopic = super.update(researchTopic);
     }
-    return researchTopic.getId();
+    return researchTopic;
   }
 
 

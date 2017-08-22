@@ -41,9 +41,9 @@ public class DeliverableUserManagerImpl implements DeliverableUserManager {
   }
 
   @Override
-  public boolean deleteDeliverableUser(long deliverableUserId) {
+  public void deleteDeliverableUser(long deliverableUserId) {
 
-    return deliverableUserDAO.deleteDeliverableUser(deliverableUserId);
+    deliverableUserDAO.deleteDeliverableUser(deliverableUserId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class DeliverableUserManagerImpl implements DeliverableUserManager {
   }
 
   @Override
-  public long saveDeliverableUser(DeliverableUser deliverableUser) {
+  public DeliverableUser saveDeliverableUser(DeliverableUser deliverableUser) {
 
     return deliverableUserDAO.save(deliverableUser);
   }

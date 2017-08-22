@@ -33,9 +33,9 @@ public class DeliverableDataSharingMySQLDAO extends AbstractMarloDAO<Deliverable
   }
 
   @Override
-  public boolean deleteDeliverableDataSharing(long deliverableDataSharingId) {
+  public void deleteDeliverableDataSharing(long deliverableDataSharingId) {
     DeliverableDataSharing deliverableDataSharing = this.find(deliverableDataSharingId);
-    return super.delete(deliverableDataSharing);
+    super.delete(deliverableDataSharing);
   }
 
   @Override
@@ -66,15 +66,15 @@ public class DeliverableDataSharingMySQLDAO extends AbstractMarloDAO<Deliverable
   }
 
   @Override
-  public long save(DeliverableDataSharing deliverableDataSharing) {
+  public DeliverableDataSharing save(DeliverableDataSharing deliverableDataSharing) {
     if (deliverableDataSharing.getId() == null) {
       super.saveEntity(deliverableDataSharing);
     } else {
-      super.update(deliverableDataSharing);
+      deliverableDataSharing = super.update(deliverableDataSharing);
     }
 
 
-    return deliverableDataSharing.getId();
+    return deliverableDataSharing;
   }
 
 

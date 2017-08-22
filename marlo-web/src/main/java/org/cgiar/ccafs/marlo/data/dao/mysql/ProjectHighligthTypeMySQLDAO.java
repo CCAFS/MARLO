@@ -34,10 +34,10 @@ public class ProjectHighligthTypeMySQLDAO extends AbstractMarloDAO<ProjectHighli
   }
 
   @Override
-  public boolean deleteProjectHighligthType(long projectHighligthTypeId) {
+  public void deleteProjectHighligthType(long projectHighligthTypeId) {
     ProjectHighlightType projectHighlightType = this.find(projectHighligthTypeId);
 
-    return super.delete(projectHighlightType);
+    super.delete(projectHighlightType);
   }
 
   @Override
@@ -68,15 +68,15 @@ public class ProjectHighligthTypeMySQLDAO extends AbstractMarloDAO<ProjectHighli
   }
 
   @Override
-  public long save(ProjectHighlightType projectHighlightType) {
+  public ProjectHighlightType save(ProjectHighlightType projectHighlightType) {
     if (projectHighlightType.getId() == null) {
       super.saveEntity(projectHighlightType);
     } else {
-      super.update(projectHighlightType);
+      projectHighlightType = super.update(projectHighlightType);
     }
 
 
-    return projectHighlightType.getId();
+    return projectHighlightType;
   }
 
 

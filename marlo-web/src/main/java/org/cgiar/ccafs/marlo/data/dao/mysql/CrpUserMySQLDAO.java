@@ -33,10 +33,10 @@ public class CrpUserMySQLDAO extends AbstractMarloDAO<CrpUser, Long> implements 
   }
 
   @Override
-  public boolean deleteCrpUser(long crpUserId) {
+  public void deleteCrpUser(long crpUserId) {
     CrpUser crpUser = this.find(crpUserId);
     crpUser.setActive(false);
-    return this.save(crpUser) > 0;
+    this.save(crpUser);
   }
 
   @Override
@@ -77,13 +77,13 @@ public class CrpUserMySQLDAO extends AbstractMarloDAO<CrpUser, Long> implements 
   }
 
   @Override
-  public long save(CrpUser crpUser) {
+  public CrpUser save(CrpUser crpUser) {
     if (crpUser.getId() == null) {
       super.saveEntity(crpUser);
     } else {
-      super.update(crpUser);
+      crpUser = super.update(crpUser);
     }
-    return crpUser.getId();
+    return crpUser;
   }
 
 

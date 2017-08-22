@@ -90,10 +90,10 @@ public class ProjectBudgetMySQLDAO extends AbstractMarloDAO<ProjectBudget, Long>
   }
 
   @Override
-  public boolean deleteProjectBudget(long projectBudgetId) {
+  public void deleteProjectBudget(long projectBudgetId) {
     ProjectBudget projectBudget = this.find(projectBudgetId);
     projectBudget.setActive(false);
-    return this.save(projectBudget) > 0;
+    this.save(projectBudget);
   }
 
   @Override
@@ -167,15 +167,15 @@ public class ProjectBudgetMySQLDAO extends AbstractMarloDAO<ProjectBudget, Long>
   }
 
   @Override
-  public long save(ProjectBudget projectBudget) {
+  public ProjectBudget save(ProjectBudget projectBudget) {
     if (projectBudget.getId() == null) {
       super.saveEntity(projectBudget);
     } else {
-      super.update(projectBudget);
+      projectBudget = super.update(projectBudget);
     }
 
 
-    return projectBudget.getId();
+    return projectBudget;
   }
 
 

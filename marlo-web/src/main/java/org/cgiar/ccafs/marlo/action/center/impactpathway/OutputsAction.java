@@ -353,11 +353,9 @@ public class OutputsAction extends BaseAction {
 
       outputDb.setShortName(output.getShortName());
 
-      long outputSaveId = outputService.saveResearchOutput(outputDb);
+      outputDb = outputService.saveResearchOutput(outputDb);
 
-      CenterOutput outputSave = outputService.getResearchOutputById(outputSaveId);
-
-      this.saveNextUser(outputSave);
+      this.saveNextUser(outputDb);
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.RESEARCH_OUTPUT_NEXTUSER_RELATION);

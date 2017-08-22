@@ -33,10 +33,10 @@ public class DeliverableGenderLevelMySQLDAO extends AbstractMarloDAO<Deliverable
   }
 
   @Override
-  public boolean deleteDeliverableGenderLevel(long deliverableGenderLevelId) {
+  public void deleteDeliverableGenderLevel(long deliverableGenderLevelId) {
     DeliverableGenderLevel deliverableGenderLevel = this.find(deliverableGenderLevelId);
     deliverableGenderLevel.setActive(false);
-    return this.save(deliverableGenderLevel) > 0;
+    this.save(deliverableGenderLevel);
   }
 
   @Override
@@ -67,15 +67,15 @@ public class DeliverableGenderLevelMySQLDAO extends AbstractMarloDAO<Deliverable
   }
 
   @Override
-  public long save(DeliverableGenderLevel deliverableGenderLevel) {
+  public DeliverableGenderLevel save(DeliverableGenderLevel deliverableGenderLevel) {
     if (deliverableGenderLevel.getId() == null) {
       super.saveEntity(deliverableGenderLevel);
     } else {
-      super.update(deliverableGenderLevel);
+      deliverableGenderLevel = super.update(deliverableGenderLevel);
     }
 
 
-    return deliverableGenderLevel.getId();
+    return deliverableGenderLevel;
   }
 
 

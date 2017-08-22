@@ -33,10 +33,10 @@ public class CenterRegionDAO extends AbstractMarloDAO<CenterRegion, Long> implem
   }
 
   @Override
-  public boolean deleteResearchRegion(long researchRegionId) {
+  public void deleteResearchRegion(long researchRegionId) {
     CenterRegion researchRegion = this.find(researchRegionId);
     researchRegion.setActive(false);
-    return this.save(researchRegion) > 0;
+    this.save(researchRegion);
   }
 
   @Override
@@ -73,13 +73,13 @@ public class CenterRegionDAO extends AbstractMarloDAO<CenterRegion, Long> implem
   }
 
   @Override
-  public long save(CenterRegion researchRegion) {
+  public CenterRegion save(CenterRegion researchRegion) {
     if (researchRegion.getId() == null) {
       super.saveEntity(researchRegion);
     } else {
-      super.update(researchRegion);
+      researchRegion = super.update(researchRegion);
     }
-    return researchRegion.getId();
+    return researchRegion;
   }
 
 

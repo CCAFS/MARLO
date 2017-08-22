@@ -41,9 +41,9 @@ public class FileDBManagerImpl implements FileDBManager {
   }
 
   @Override
-  public boolean deleteFileDB(long fileDBId) {
+  public void deleteFileDB(long fileDBId) {
 
-    return fileDBDAO.deleteFileDB(fileDBId);
+    fileDBDAO.deleteFileDB(fileDBId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class FileDBManagerImpl implements FileDBManager {
   }
 
   @Override
-  public long saveFileDB(FileDB fileDB) {
+  public FileDB saveFileDB(FileDB fileDB) {
 
     return fileDBDAO.save(fileDB);
   }

@@ -33,10 +33,10 @@ public class DeliverableCrpMySQLDAO extends AbstractMarloDAO<DeliverableCrp, Lon
   }
 
   @Override
-  public boolean deleteDeliverableCrp(long deliverableCrpId) {
+  public void deleteDeliverableCrp(long deliverableCrpId) {
     DeliverableCrp deliverableCrp = this.find(deliverableCrpId);
 
-    return super.delete(deliverableCrp);
+    super.delete(deliverableCrp);
   }
 
   @Override
@@ -67,15 +67,15 @@ public class DeliverableCrpMySQLDAO extends AbstractMarloDAO<DeliverableCrp, Lon
   }
 
   @Override
-  public long save(DeliverableCrp deliverableCrp) {
+  public DeliverableCrp save(DeliverableCrp deliverableCrp) {
     if (deliverableCrp.getId() == null) {
       super.saveEntity(deliverableCrp);
     } else {
-      super.update(deliverableCrp);
+      deliverableCrp = super.update(deliverableCrp);
     }
 
 
-    return deliverableCrp.getId();
+    return deliverableCrp;
   }
 
 

@@ -34,10 +34,10 @@ public class CenterDeliverableCrosscutingThemeDAO extends AbstractMarloDAO<Cente
   }
 
   @Override
-  public boolean deleteDeliverableCrosscutingTheme(long deliverableCrosscutingThemeId) {
+  public void deleteDeliverableCrosscutingTheme(long deliverableCrosscutingThemeId) {
     CenterDeliverableCrosscutingTheme deliverableCrosscutingTheme = this.find(deliverableCrosscutingThemeId);
     deliverableCrosscutingTheme.setActive(false);
-    return this.save(deliverableCrosscutingTheme) > 0;
+    this.save(deliverableCrosscutingTheme);
   }
 
   @Override
@@ -74,24 +74,24 @@ public class CenterDeliverableCrosscutingThemeDAO extends AbstractMarloDAO<Cente
   }
 
   @Override
-  public long save(CenterDeliverableCrosscutingTheme deliverableCrosscutingTheme) {
+  public CenterDeliverableCrosscutingTheme save(CenterDeliverableCrosscutingTheme deliverableCrosscutingTheme) {
     if (deliverableCrosscutingTheme.getId() == null) {
       super.saveEntity(deliverableCrosscutingTheme);
     } else {
-      super.update(deliverableCrosscutingTheme);
+      deliverableCrosscutingTheme = super.update(deliverableCrosscutingTheme);
     }
-    return deliverableCrosscutingTheme.getId();
+    return deliverableCrosscutingTheme;
   }
 
   @Override
-  public long save(CenterDeliverableCrosscutingTheme deliverableCrosscutingTheme, String actionName,
+  public CenterDeliverableCrosscutingTheme save(CenterDeliverableCrosscutingTheme deliverableCrosscutingTheme, String actionName,
     List<String> relationsName) {
     if (deliverableCrosscutingTheme.getId() == null) {
       super.saveEntity(deliverableCrosscutingTheme, actionName, relationsName);
     } else {
-      super.update(deliverableCrosscutingTheme, actionName, relationsName);
+      deliverableCrosscutingTheme = super.update(deliverableCrosscutingTheme, actionName, relationsName);
     }
-    return deliverableCrosscutingTheme.getId();
+    return deliverableCrosscutingTheme;
   }
 
 

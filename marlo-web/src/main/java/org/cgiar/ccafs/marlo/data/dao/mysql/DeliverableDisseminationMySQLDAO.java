@@ -33,9 +33,9 @@ public class DeliverableDisseminationMySQLDAO extends AbstractMarloDAO<Deliverab
   }
 
   @Override
-  public boolean deleteDeliverableDissemination(long deliverableDisseminationId) {
+  public void deleteDeliverableDissemination(long deliverableDisseminationId) {
     DeliverableDissemination deliverableDissemination = this.find(deliverableDisseminationId);
-    return super.delete(deliverableDissemination);
+    super.delete(deliverableDissemination);
   }
 
   @Override
@@ -66,15 +66,15 @@ public class DeliverableDisseminationMySQLDAO extends AbstractMarloDAO<Deliverab
   }
 
   @Override
-  public long save(DeliverableDissemination deliverableDissemination) {
+  public DeliverableDissemination save(DeliverableDissemination deliverableDissemination) {
     if (deliverableDissemination.getId() == null) {
       super.saveEntity(deliverableDissemination);
     } else {
-      super.update(deliverableDissemination);
+      deliverableDissemination = super.update(deliverableDissemination);
     }
 
 
-    return deliverableDissemination.getId();
+    return deliverableDissemination;
   }
 
 

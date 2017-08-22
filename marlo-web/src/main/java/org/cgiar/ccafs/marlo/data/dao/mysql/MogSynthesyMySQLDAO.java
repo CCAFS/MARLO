@@ -33,9 +33,9 @@ public class MogSynthesyMySQLDAO extends AbstractMarloDAO<MogSynthesy, Long> imp
   }
 
   @Override
-  public boolean deleteMogSynthesy(long mogSynthesyId) {
+  public void deleteMogSynthesy(long mogSynthesyId) {
     MogSynthesy mogSynthesy = this.find(mogSynthesyId);
-    return super.delete(mogSynthesy);
+    super.delete(mogSynthesy);
   }
 
   @Override
@@ -81,15 +81,15 @@ public class MogSynthesyMySQLDAO extends AbstractMarloDAO<MogSynthesy, Long> imp
   }
 
   @Override
-  public long save(MogSynthesy mogSynthesy) {
+  public MogSynthesy save(MogSynthesy mogSynthesy) {
     if (mogSynthesy.getId() == null) {
       super.saveEntity(mogSynthesy);
     } else {
-      super.update(mogSynthesy);
+      mogSynthesy = super.update(mogSynthesy);
     }
 
 
-    return mogSynthesy.getId();
+    return mogSynthesy;
   }
 
 

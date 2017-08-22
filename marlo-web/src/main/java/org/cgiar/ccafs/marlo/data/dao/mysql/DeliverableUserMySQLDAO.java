@@ -33,9 +33,9 @@ public class DeliverableUserMySQLDAO extends AbstractMarloDAO<DeliverableUser, L
   }
 
   @Override
-  public boolean deleteDeliverableUser(long deliverableUserId) {
+  public void deleteDeliverableUser(long deliverableUserId) {
     DeliverableUser deliverableUser = this.find(deliverableUserId);
-    return super.delete(deliverableUser);
+    super.delete(deliverableUser);
   }
 
   @Override
@@ -66,15 +66,15 @@ public class DeliverableUserMySQLDAO extends AbstractMarloDAO<DeliverableUser, L
   }
 
   @Override
-  public long save(DeliverableUser deliverableUser) {
+  public DeliverableUser save(DeliverableUser deliverableUser) {
     if (deliverableUser.getId() == null) {
       super.saveEntity(deliverableUser);
     } else {
-      super.update(deliverableUser);
+      deliverableUser = super.update(deliverableUser);
     }
 
 
-    return deliverableUser.getId();
+    return deliverableUser;
   }
 
 

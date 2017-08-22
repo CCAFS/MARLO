@@ -42,9 +42,9 @@ public class CenterOutcomeManager implements ICenterOutcomeManager {
   }
 
   @Override
-  public boolean deleteResearchOutcome(long researchOutcomeId) {
+  public void deleteResearchOutcome(long researchOutcomeId) {
 
-    return researchOutcomeDAO.deleteResearchOutcome(researchOutcomeId);
+    researchOutcomeDAO.deleteResearchOutcome(researchOutcomeId);
   }
 
   @Override
@@ -72,13 +72,13 @@ public class CenterOutcomeManager implements ICenterOutcomeManager {
   }
 
   @Override
-  public long saveResearchOutcome(CenterOutcome researchOutcome) {
+  public CenterOutcome saveResearchOutcome(CenterOutcome researchOutcome) {
 
     return researchOutcomeDAO.save(researchOutcome);
   }
 
   @Override
-  public long saveResearchOutcome(CenterOutcome outcome, String actionName, List<String> relationsName) {
+  public CenterOutcome saveResearchOutcome(CenterOutcome outcome, String actionName, List<String> relationsName) {
     return researchOutcomeDAO.save(outcome, actionName, relationsName);
   }
 

@@ -33,10 +33,10 @@ public class ProjectPhaseMySQLDAO extends AbstractMarloDAO<ProjectPhase, Long> i
   }
 
   @Override
-  public boolean deleteProjectPhase(long projectPhaseId) {
+  public void deleteProjectPhase(long projectPhaseId) {
     ProjectPhase projectPhase = this.find(projectPhaseId);
 
-    return super.delete(projectPhase);
+    super.delete(projectPhase);
   }
 
   @Override
@@ -67,15 +67,15 @@ public class ProjectPhaseMySQLDAO extends AbstractMarloDAO<ProjectPhase, Long> i
   }
 
   @Override
-  public long save(ProjectPhase projectPhase) {
+  public ProjectPhase save(ProjectPhase projectPhase) {
     if (projectPhase.getId() == null) {
       super.saveEntity(projectPhase);
     } else {
-      super.update(projectPhase);
+      projectPhase = super.update(projectPhase);
     }
 
 
-    return projectPhase.getId();
+    return projectPhase;
   }
 
 

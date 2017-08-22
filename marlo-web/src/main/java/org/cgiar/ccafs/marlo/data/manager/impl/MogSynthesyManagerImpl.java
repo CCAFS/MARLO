@@ -41,9 +41,9 @@ public class MogSynthesyManagerImpl implements MogSynthesyManager {
   }
 
   @Override
-  public boolean deleteMogSynthesy(long mogSynthesyId) {
+  public void deleteMogSynthesy(long mogSynthesyId) {
 
-    return mogSynthesyDAO.deleteMogSynthesy(mogSynthesyId);
+    mogSynthesyDAO.deleteMogSynthesy(mogSynthesyId);
   }
 
   @Override
@@ -77,7 +77,7 @@ public class MogSynthesyManagerImpl implements MogSynthesyManager {
   }
 
   @Override
-  public long saveMogSynthesy(MogSynthesy mogSynthesy) {
+  public MogSynthesy saveMogSynthesy(MogSynthesy mogSynthesy) {
 
     return mogSynthesyDAO.save(mogSynthesy);
   }

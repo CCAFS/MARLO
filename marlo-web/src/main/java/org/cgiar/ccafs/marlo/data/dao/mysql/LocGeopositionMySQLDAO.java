@@ -33,10 +33,10 @@ public class LocGeopositionMySQLDAO extends AbstractMarloDAO<LocGeoposition, Lon
   }
 
   @Override
-  public boolean deleteLocGeoposition(long locGeopositionId) {
+  public void deleteLocGeoposition(long locGeopositionId) {
     LocGeoposition locGeoposition = this.find(locGeopositionId);
     locGeoposition.setActive(false);
-    return this.save(locGeoposition) > 0;
+    this.save(locGeoposition);
   }
 
   @Override
@@ -67,13 +67,13 @@ public class LocGeopositionMySQLDAO extends AbstractMarloDAO<LocGeoposition, Lon
   }
 
   @Override
-  public long save(LocGeoposition locGeoposition) {
+  public LocGeoposition save(LocGeoposition locGeoposition) {
     if (locGeoposition.getId() == null) {
       super.saveEntity(locGeoposition);
     } else {
-      super.update(locGeoposition);
+      locGeoposition = super.update(locGeoposition);
     }
-    return locGeoposition.getId();
+    return locGeoposition;
   }
 
 

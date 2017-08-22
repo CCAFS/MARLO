@@ -34,10 +34,10 @@ public class CenterProjectFundingSourceDAO extends AbstractMarloDAO<CenterProjec
   }
 
   @Override
-  public boolean deleteProjectFundingSource(long projectFundingSourceId) {
+  public void deleteProjectFundingSource(long projectFundingSourceId) {
     CenterProjectFundingSource projectFundingSource = this.find(projectFundingSourceId);
     projectFundingSource.setActive(false);
-    return this.save(projectFundingSource) > 0;
+    this.save(projectFundingSource);
   }
 
   @Override
@@ -74,13 +74,13 @@ public class CenterProjectFundingSourceDAO extends AbstractMarloDAO<CenterProjec
   }
 
   @Override
-  public long save(CenterProjectFundingSource projectFundingSource) {
+  public CenterProjectFundingSource save(CenterProjectFundingSource projectFundingSource) {
     if (projectFundingSource.getId() == null) {
       super.saveEntity(projectFundingSource);
     } else {
-      super.update(projectFundingSource);
+      projectFundingSource = super.update(projectFundingSource);
     }
-    return projectFundingSource.getId();
+    return projectFundingSource;
   }
 
 

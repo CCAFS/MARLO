@@ -33,10 +33,10 @@ public class InstitutionTypeMySQLDAO extends AbstractMarloDAO<InstitutionType, L
   }
 
   @Override
-  public boolean deleteInstitutionType(long institutionTypeId) {
+  public void deleteInstitutionType(long institutionTypeId) {
     InstitutionType institutionType = this.find(institutionTypeId);
 
-    return super.delete(institutionType);
+    super.delete(institutionType);
   }
 
   @Override
@@ -67,15 +67,15 @@ public class InstitutionTypeMySQLDAO extends AbstractMarloDAO<InstitutionType, L
   }
 
   @Override
-  public long save(InstitutionType institutionType) {
+  public InstitutionType save(InstitutionType institutionType) {
     if (institutionType.getId() == null) {
       super.saveEntity(institutionType);
     } else {
-      super.update(institutionType);
+      institutionType = super.update(institutionType);
     }
 
 
-    return institutionType.getId();
+    return institutionType;
   }
 
 

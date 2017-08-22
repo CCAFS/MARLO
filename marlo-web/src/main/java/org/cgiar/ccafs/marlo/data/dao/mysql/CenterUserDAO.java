@@ -33,10 +33,10 @@ public class CenterUserDAO extends AbstractMarloDAO<CenterUser, Long> implements
   }
 
   @Override
-  public boolean deleteCrpUser(long crpUserId) {
+  public void deleteCrpUser(long crpUserId) {
     CenterUser crpUser = this.find(crpUserId);
     crpUser.setActive(false);
-    return this.save(crpUser) > 0;
+    this.save(crpUser);
   }
 
   @Override
@@ -77,13 +77,13 @@ public class CenterUserDAO extends AbstractMarloDAO<CenterUser, Long> implements
   }
 
   @Override
-  public long save(CenterUser crpUser) {
+  public CenterUser save(CenterUser crpUser) {
     if (crpUser.getId() == null) {
       super.saveEntity(crpUser);
     } else {
-      super.update(crpUser);
+      crpUser = super.update(crpUser);
     }
-    return crpUser.getId();
+    return crpUser;
   }
 
 

@@ -33,10 +33,10 @@ public class SrfSloIndicatorMySQLDAO extends AbstractMarloDAO<SrfSloIndicator, L
   }
 
   @Override
-  public boolean deleteSrfSloIndicator(long srfSloIndicatorId) {
+  public void deleteSrfSloIndicator(long srfSloIndicatorId) {
     SrfSloIndicator srfSloIndicator = this.find(srfSloIndicatorId);
     srfSloIndicator.setActive(false);
-    return this.save(srfSloIndicator) > 0;
+    this.save(srfSloIndicator);
   }
 
   @Override
@@ -67,13 +67,13 @@ public class SrfSloIndicatorMySQLDAO extends AbstractMarloDAO<SrfSloIndicator, L
   }
 
   @Override
-  public long save(SrfSloIndicator srfSloIndicator) {
+  public SrfSloIndicator save(SrfSloIndicator srfSloIndicator) {
     if (srfSloIndicator.getId() == null) {
       super.saveEntity(srfSloIndicator);
     } else {
-      super.update(srfSloIndicator);
+      srfSloIndicator = super.update(srfSloIndicator);
     }
-    return srfSloIndicator.getId();
+    return srfSloIndicator;
   }
 
 

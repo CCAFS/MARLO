@@ -33,10 +33,10 @@ public class PartnerDivisionMySQLDAO extends AbstractMarloDAO<PartnerDivision, L
   }
 
   @Override
-  public boolean deletePartnerDivision(long partnerDivisionId) {
+  public void deletePartnerDivision(long partnerDivisionId) {
     PartnerDivision partnerDivision = this.find(partnerDivisionId);
     partnerDivision.setActive(false);
-    return this.save(partnerDivision) > 0;
+    this.save(partnerDivision);
   }
 
   @Override
@@ -67,15 +67,15 @@ public class PartnerDivisionMySQLDAO extends AbstractMarloDAO<PartnerDivision, L
   }
 
   @Override
-  public long save(PartnerDivision partnerDivision) {
+  public PartnerDivision save(PartnerDivision partnerDivision) {
     if (partnerDivision.getId() == null) {
       super.saveEntity(partnerDivision);
     } else {
-      super.update(partnerDivision);
+      partnerDivision = super.update(partnerDivision);
     }
 
 
-    return partnerDivision.getId();
+    return partnerDivision;
   }
 
 

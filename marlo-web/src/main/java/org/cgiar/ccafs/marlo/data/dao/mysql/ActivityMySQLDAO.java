@@ -33,10 +33,10 @@ public class ActivityMySQLDAO extends AbstractMarloDAO<Activity, Long> implement
   }
 
   @Override
-  public boolean deleteActivity(long activityId) {
+  public void deleteActivity(long activityId) {
     Activity activity = this.find(activityId);
     activity.setActive(false);
-    return this.save(activity) > 0;
+    this.save(activity);
   }
 
   @Override
@@ -67,15 +67,15 @@ public class ActivityMySQLDAO extends AbstractMarloDAO<Activity, Long> implement
   }
 
   @Override
-  public long save(Activity activity) {
+  public Activity save(Activity activity) {
     if (activity.getId() == null) {
       activity = super.saveEntity(activity);
     } else {
-      super.update(activity);
+      activity = super.update(activity);
     }
 
 
-    return activity.getId();
+    return activity;
   }
 
 

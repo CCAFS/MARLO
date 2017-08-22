@@ -33,10 +33,10 @@ public class CrpClusterActivityLeaderMySQLDAO extends AbstractMarloDAO<CrpCluste
   }
 
   @Override
-  public boolean deleteCrpClusterActivityLeader(long crpClusterActivityLeaderId) {
+  public void deleteCrpClusterActivityLeader(long crpClusterActivityLeaderId) {
     CrpClusterActivityLeader crpClusterActivityLeader = this.find(crpClusterActivityLeaderId);
     crpClusterActivityLeader.setActive(false);
-    return this.save(crpClusterActivityLeader) > 0;
+    this.save(crpClusterActivityLeader);
   }
 
   @Override
@@ -67,15 +67,15 @@ public class CrpClusterActivityLeaderMySQLDAO extends AbstractMarloDAO<CrpCluste
   }
 
   @Override
-  public long save(CrpClusterActivityLeader crpClusterActivityLeader) {
+  public CrpClusterActivityLeader save(CrpClusterActivityLeader crpClusterActivityLeader) {
     if (crpClusterActivityLeader.getId() == null) {
       super.saveEntity(crpClusterActivityLeader);
     } else {
-      super.update(crpClusterActivityLeader);
+      crpClusterActivityLeader = super.update(crpClusterActivityLeader);
     }
 
 
-    return crpClusterActivityLeader.getId();
+    return crpClusterActivityLeader;
   }
 
 

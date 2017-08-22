@@ -152,7 +152,6 @@ public class GuestUsersAction extends BaseAction {
   @Override
   public String save() {
     User newUser;
-    long newUserID;
 
     if (isNewUser) {
 
@@ -173,7 +172,7 @@ public class GuestUsersAction extends BaseAction {
       if (!user.isCgiarUser()) {
         newUser.setPassword(user.getPassword());
       }
-      newUserID = userManager.saveUser(newUser, this.getCurrentUser());
+      newUser = userManager.saveUser(newUser, this.getCurrentUser());
 
 
     } else {
@@ -188,14 +187,11 @@ public class GuestUsersAction extends BaseAction {
       if (!user.isCgiarUser()) {
         newUser.setPassword(user.getPassword());
       }
-      newUserID = userManager.saveUser(newUser, this.getCurrentUser());
+      newUser = userManager.saveUser(newUser, this.getCurrentUser());
     }
 
 
-    if (newUserID != -1) {
-      userID = newUserID;
-      newUser = userManager.getUser(newUserID);
-
+    if (newUser.getId() != -1) {
       if (user.getCrpUser() != null) {
         for (CrpUser crpUser : user.getCrpUser()) {
           if (crpUser.getId() == -1) {
@@ -211,11 +207,9 @@ public class GuestUsersAction extends BaseAction {
             newCrpUser.setModificationJustification(" ");
             newCrpUser.setActive(true);
 
-            long newCrpUserID = crpUserManager.saveCrpUser(newCrpUser);
+            newCrpUser = crpUserManager.saveCrpUser(newCrpUser);
 
-            if (newCrpUserID != -1) {
-
-              newCrpUser = crpUserManager.getCrpUserById(newCrpUserID);
+            if (newCrpUser.getId() != -1) {
 
               UserRole userRole = new UserRole();
 
@@ -227,9 +221,9 @@ public class GuestUsersAction extends BaseAction {
               userRole.setRole(guestRole);
               userRole.setUser(newUser);
 
-              long userRoleID = userRoleManager.saveUserRole(userRole);
+              userRole = userRoleManager.saveUserRole(userRole);
 
-              if (isNewUser && userRoleID != -1) {
+              if (isNewUser && userRole.getId() != -1) {
                 try {
                   this.sendMailNewUser(newUser, crp);
                 } catch (NoSuchAlgorithmException e) {

@@ -34,7 +34,7 @@ public interface ICenterMonitoringMilestoneManager {
    * @param monitoringMilestoneId is the monitoringMilestone identifier.
    * @return true if the monitoringMilestone was successfully deleted, false otherwise.
    */
-  public boolean deleteMonitoringMilestone(long monitoringMilestoneId);
+  public void deleteMonitoringMilestone(long monitoringMilestoneId);
 
 
   /**
@@ -78,7 +78,7 @@ public interface ICenterMonitoringMilestoneManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveMonitoringMilestone(CenterMonitoringMilestone monitoringMilestone);
+  public CenterMonitoringMilestone saveMonitoringMilestone(CenterMonitoringMilestone monitoringMilestone);
 
 
 }

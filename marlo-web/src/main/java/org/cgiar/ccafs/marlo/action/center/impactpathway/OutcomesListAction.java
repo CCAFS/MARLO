@@ -101,8 +101,9 @@ public class OutcomesListAction extends BaseAction {
     outcome.setResearchTopic(selectedResearchTopic);
     outcome.setTargetYear(-1);
     outcome.setImpactPathway(true);
-    outcomeID = outcomeService.saveResearchOutcome(outcome);
-
+    outcome = outcomeService.saveResearchOutcome(outcome);
+    outcomeID = outcome.getId(); 
+    
     if (outcomeID > 0) {
       return SUCCESS;
     } else {
@@ -244,11 +245,10 @@ public class OutcomesListAction extends BaseAction {
         } catch (Exception ex) {
           User user = userService.getUser(this.getCurrentUser().getId());
 
-          List<CenterLeader> userAreaLeads =
-            new ArrayList<>(user.getResearchLeaders().stream()
-              .filter(rl -> rl.isActive()
-                && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue())
-              .collect(Collectors.toList()));
+          List<CenterLeader> userAreaLeads = new ArrayList<>(user.getResearchLeaders().stream()
+            .filter(
+              rl -> rl.isActive() && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue())
+            .collect(Collectors.toList()));
           if (!userAreaLeads.isEmpty()) {
             areaID = userAreaLeads.get(0).getResearchArea().getId();
           } else {

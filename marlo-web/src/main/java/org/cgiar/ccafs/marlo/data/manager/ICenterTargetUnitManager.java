@@ -34,7 +34,7 @@ public interface ICenterTargetUnitManager {
    * @param targetUnitId is the targetUnit identifier.
    * @return true if the targetUnit was successfully deleted, false otherwise.
    */
-  public boolean deleteTargetUnit(long targetUnitId);
+  public void deleteTargetUnit(long targetUnitId);
 
 
   /**
@@ -78,7 +78,7 @@ public interface ICenterTargetUnitManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveTargetUnit(CenterTargetUnit targetUnit);
+  public CenterTargetUnit saveTargetUnit(CenterTargetUnit targetUnit);
 
 
 }

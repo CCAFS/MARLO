@@ -34,10 +34,10 @@ public class CenterMonitoringMilestoneDAO extends AbstractMarloDAO<CenterMonitor
   }
 
   @Override
-  public boolean deleteMonitoringMilestone(long monitoringMilestoneId) {
+  public void deleteMonitoringMilestone(long monitoringMilestoneId) {
     CenterMonitoringMilestone monitoringMilestone = this.find(monitoringMilestoneId);
     monitoringMilestone.setActive(false);
-    return this.save(monitoringMilestone) > 0;
+    this.save(monitoringMilestone);
   }
 
   @Override
@@ -74,13 +74,13 @@ public class CenterMonitoringMilestoneDAO extends AbstractMarloDAO<CenterMonitor
   }
 
   @Override
-  public long save(CenterMonitoringMilestone monitoringMilestone) {
+  public CenterMonitoringMilestone save(CenterMonitoringMilestone monitoringMilestone) {
     if (monitoringMilestone.getId() == null) {
       super.saveEntity(monitoringMilestone);
     } else {
-      super.update(monitoringMilestone);
+      monitoringMilestone = super.update(monitoringMilestone);
     }
-    return monitoringMilestone.getId();
+    return monitoringMilestone;
   }
 
 

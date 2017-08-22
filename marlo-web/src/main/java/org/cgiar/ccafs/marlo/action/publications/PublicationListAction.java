@@ -84,9 +84,8 @@ public class PublicationListAction extends BaseAction {
       deliverable.setCreateDate(new Date());
       deliverable.setIsPublication(true);
 
-
-      deliverableID = deliverableManager.saveDeliverable(deliverable);
-
+      deliverable = deliverableManager.saveDeliverable(deliverable);
+      deliverableID = deliverable.getId();
 
       LiaisonUser user = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId(), loggedCrp.getId());
       if (user != null) {

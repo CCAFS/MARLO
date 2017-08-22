@@ -34,7 +34,7 @@ public interface ICenterDeliverableOutputManager {
    * @param deliverableOutputId is the deliverableOutput identifier.
    * @return true if the deliverableOutput was successfully deleted, false otherwise.
    */
-  public boolean deleteDeliverableOutput(long deliverableOutputId);
+  public void deleteDeliverableOutput(long deliverableOutputId);
 
 
   /**
@@ -78,7 +78,7 @@ public interface ICenterDeliverableOutputManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveDeliverableOutput(CenterDeliverableOutput deliverableOutput);
+  public CenterDeliverableOutput saveDeliverableOutput(CenterDeliverableOutput deliverableOutput);
 
   /**
    * This method saves the information of the given deliverableOutput
@@ -88,7 +88,7 @@ public interface ICenterDeliverableOutputManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveDeliverableOutput(CenterDeliverableOutput deliverableOutput, String actionName,
+  public CenterDeliverableOutput saveDeliverableOutput(CenterDeliverableOutput deliverableOutput, String actionName,
     List<String> relationsName);
 
 

@@ -33,9 +33,9 @@ public class IpProgramTypeMySQLDAO extends AbstractMarloDAO<IpProgramType, Long>
   }
 
   @Override
-  public boolean deleteIpProgramType(long ipProgramTypeId) {
+  public void deleteIpProgramType(long ipProgramTypeId) {
     IpProgramType ipProgramType = this.find(ipProgramTypeId);
-    return super.delete(ipProgramType);
+    super.delete(ipProgramType);
   }
 
   @Override
@@ -66,15 +66,15 @@ public class IpProgramTypeMySQLDAO extends AbstractMarloDAO<IpProgramType, Long>
   }
 
   @Override
-  public long save(IpProgramType ipProgramType) {
+  public IpProgramType save(IpProgramType ipProgramType) {
     if (ipProgramType.getId() == null) {
       super.saveEntity(ipProgramType);
     } else {
-      super.update(ipProgramType);
+      ipProgramType = super.update(ipProgramType);
     }
 
 
-    return ipProgramType.getId();
+    return ipProgramType;
   }
 
 

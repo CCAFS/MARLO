@@ -34,7 +34,7 @@ public interface ICenterRegionManager {
    * @param researchRegionId is the researchRegion identifier.
    * @return true if the researchRegion was successfully deleted, false otherwise.
    */
-  public boolean deleteResearchRegion(long researchRegionId);
+  public void deleteResearchRegion(long researchRegionId);
 
 
   /**
@@ -78,7 +78,7 @@ public interface ICenterRegionManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveResearchRegion(CenterRegion researchRegion);
+  public CenterRegion saveResearchRegion(CenterRegion researchRegion);
 
 
 }

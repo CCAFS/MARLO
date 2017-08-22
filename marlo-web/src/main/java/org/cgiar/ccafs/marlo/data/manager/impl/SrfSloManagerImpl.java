@@ -41,9 +41,9 @@ public class SrfSloManagerImpl implements SrfSloManager {
   }
 
   @Override
-  public boolean deleteSrfSlo(long srfSloId) {
+  public void deleteSrfSlo(long srfSloId) {
 
-    return srfSloDAO.deleteSrfSlo(srfSloId);
+    srfSloDAO.deleteSrfSlo(srfSloId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class SrfSloManagerImpl implements SrfSloManager {
   }
 
   @Override
-  public long saveSrfSlo(SrfSlo srfSlo) {
+  public SrfSlo saveSrfSlo(SrfSlo srfSlo) {
 
     return srfSloDAO.save(srfSlo);
   }

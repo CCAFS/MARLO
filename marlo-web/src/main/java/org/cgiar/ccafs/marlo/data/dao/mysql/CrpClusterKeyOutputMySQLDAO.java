@@ -33,10 +33,10 @@ public class CrpClusterKeyOutputMySQLDAO extends AbstractMarloDAO<CrpClusterKeyO
   }
 
   @Override
-  public boolean deleteCrpClusterKeyOutput(long crpClusterKeyOutputId) {
+  public void deleteCrpClusterKeyOutput(long crpClusterKeyOutputId) {
     CrpClusterKeyOutput crpClusterKeyOutput = this.find(crpClusterKeyOutputId);
     crpClusterKeyOutput.setActive(false);
-    return this.save(crpClusterKeyOutput) > 0;
+    this.save(crpClusterKeyOutput);
   }
 
   @Override
@@ -67,15 +67,15 @@ public class CrpClusterKeyOutputMySQLDAO extends AbstractMarloDAO<CrpClusterKeyO
   }
 
   @Override
-  public long save(CrpClusterKeyOutput crpClusterKeyOutput) {
+  public CrpClusterKeyOutput save(CrpClusterKeyOutput crpClusterKeyOutput) {
     if (crpClusterKeyOutput.getId() == null) {
       super.saveEntity(crpClusterKeyOutput);
     } else {
-      super.update(crpClusterKeyOutput);
+      crpClusterKeyOutput = super.update(crpClusterKeyOutput);
     }
 
 
-    return crpClusterKeyOutput.getId();
+    return crpClusterKeyOutput;
   }
 
 

@@ -34,10 +34,10 @@ public class CenterFundingSourceTypeDAO extends AbstractMarloDAO<CenterFundingSo
   }
 
   @Override
-  public boolean deleteFundingSourceType(long fundingSourceTypeId) {
+  public void deleteFundingSourceType(long fundingSourceTypeId) {
     CenterFundingSourceType fundingSourceType = this.find(fundingSourceTypeId);
     fundingSourceType.setActive(false);
-    return this.save(fundingSourceType) > 0;
+    this.save(fundingSourceType);
   }
 
   @Override
@@ -74,13 +74,13 @@ public class CenterFundingSourceTypeDAO extends AbstractMarloDAO<CenterFundingSo
   }
 
   @Override
-  public long save(CenterFundingSourceType fundingSourceType) {
+  public CenterFundingSourceType save(CenterFundingSourceType fundingSourceType) {
     if (fundingSourceType.getId() == null) {
       super.saveEntity(fundingSourceType);
     } else {
-      super.update(fundingSourceType);
+      fundingSourceType = super.update(fundingSourceType);
     }
-    return fundingSourceType.getId();
+    return fundingSourceType;
   }
 
 

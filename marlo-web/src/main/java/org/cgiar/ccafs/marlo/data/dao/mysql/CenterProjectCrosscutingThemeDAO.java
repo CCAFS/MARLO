@@ -34,10 +34,10 @@ public class CenterProjectCrosscutingThemeDAO extends AbstractMarloDAO<CenterPro
   }
 
   @Override
-  public boolean deleteProjectCrosscutingTheme(long projectCrosscutingThemeId) {
+  public void deleteProjectCrosscutingTheme(long projectCrosscutingThemeId) {
     CenterProjectCrosscutingTheme projectCrosscutingTheme = this.find(projectCrosscutingThemeId);
     projectCrosscutingTheme.setActive(false);
-    return this.save(projectCrosscutingTheme) > 0;
+    this.save(projectCrosscutingTheme);
   }
 
   @Override
@@ -74,13 +74,13 @@ public class CenterProjectCrosscutingThemeDAO extends AbstractMarloDAO<CenterPro
   }
 
   @Override
-  public long save(CenterProjectCrosscutingTheme projectCrosscutingTheme) {
+  public CenterProjectCrosscutingTheme save(CenterProjectCrosscutingTheme projectCrosscutingTheme) {
     if (projectCrosscutingTheme.getId() == null) {
       super.saveEntity(projectCrosscutingTheme);
     } else {
-      super.update(projectCrosscutingTheme);
+      projectCrosscutingTheme = super.update(projectCrosscutingTheme);
     }
-    return projectCrosscutingTheme.getId();
+    return projectCrosscutingTheme;
   }
 
 

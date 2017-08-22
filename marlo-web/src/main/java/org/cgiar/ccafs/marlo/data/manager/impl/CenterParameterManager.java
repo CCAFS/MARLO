@@ -42,9 +42,9 @@ public class CenterParameterManager implements ICenterParameterManager {
   }
 
   @Override
-  public boolean deleteCenterParameter(long centerParameterId) {
+  public void deleteCenterParameter(long centerParameterId) {
 
-    return centerParameterDAO.deleteCenterParameter(centerParameterId);
+    centerParameterDAO.deleteCenterParameter(centerParameterId);
   }
 
   @Override
@@ -72,13 +72,13 @@ public class CenterParameterManager implements ICenterParameterManager {
   }
 
   @Override
-  public long saveCenterParameter(CenterParameter centerParameter) {
+  public CenterParameter saveCenterParameter(CenterParameter centerParameter) {
 
     return centerParameterDAO.save(centerParameter);
   }
 
   @Override
-  public long saveCenterParameter(CenterParameter centerParameter, String actionName, List<String> relationsName) {
+  public CenterParameter saveCenterParameter(CenterParameter centerParameter, String actionName, List<String> relationsName) {
     return centerParameterDAO.save(centerParameter, actionName, relationsName);
   }
 

@@ -33,9 +33,9 @@ public class IpLiaisonUserMySQLDAO extends AbstractMarloDAO<IpLiaisonUser, Long>
   }
 
   @Override
-  public boolean deleteIpLiaisonUser(long ipLiaisonUserId) {
+  public void deleteIpLiaisonUser(long ipLiaisonUserId) {
     IpLiaisonUser ipLiaisonUser = this.find(ipLiaisonUserId);
-    return super.delete(ipLiaisonUser);
+    super.delete(ipLiaisonUser);
   }
 
   @Override
@@ -66,15 +66,15 @@ public class IpLiaisonUserMySQLDAO extends AbstractMarloDAO<IpLiaisonUser, Long>
   }
 
   @Override
-  public long save(IpLiaisonUser ipLiaisonUser) {
+  public IpLiaisonUser save(IpLiaisonUser ipLiaisonUser) {
     if (ipLiaisonUser.getId() == null) {
       super.saveEntity(ipLiaisonUser);
     } else {
-      super.update(ipLiaisonUser);
+      ipLiaisonUser = super.update(ipLiaisonUser);
     }
 
 
-    return ipLiaisonUser.getId();
+    return ipLiaisonUser;
   }
 
 

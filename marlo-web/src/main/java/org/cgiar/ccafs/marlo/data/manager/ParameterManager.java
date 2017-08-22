@@ -34,7 +34,7 @@ public interface ParameterManager {
    * @param parameterId is the parameter identifier.
    * @return true if the parameter was successfully deleted, false otherwise.
    */
-  public boolean deleteParameter(long parameterId);
+  public void deleteParameter(long parameterId);
 
 
   /**
@@ -72,7 +72,7 @@ public interface ParameterManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveParameter(Parameter parameter);
+  public Parameter saveParameter(Parameter parameter);
 
 
 }

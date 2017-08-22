@@ -33,9 +33,9 @@ public class CenterSubmissionDAO extends AbstractMarloDAO<CenterSubmission, Long
   }
 
   @Override
-  public boolean deleteSubmission(long submissionId) {
+  public void deleteSubmission(long submissionId) {
     CenterSubmission submission = this.find(submissionId);
-    return super.delete(submission);
+    super.delete(submission);
   }
 
   @Override
@@ -72,13 +72,13 @@ public class CenterSubmissionDAO extends AbstractMarloDAO<CenterSubmission, Long
   }
 
   @Override
-  public long save(CenterSubmission submission) {
+  public CenterSubmission save(CenterSubmission submission) {
     if (submission.getId() == null) {
       super.saveEntity(submission);
     } else {
-      super.update(submission);
+      submission = super.update(submission);
     }
-    return submission.getId();
+    return submission;
   }
 
 

@@ -32,7 +32,7 @@ public interface DeliverableQualityAnswerDAO {
    * @param deliverableQualityAnswerId is the deliverableQualityAnswer identifier.
    * @return true if the deliverableQualityAnswer was successfully deleted, false otherwise.
    */
-  public boolean deleteDeliverableQualityAnswer(long deliverableQualityAnswerId);
+  public void deleteDeliverableQualityAnswer(long deliverableQualityAnswerId);
 
   /**
    * This method validate if the deliverableQualityAnswer identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface DeliverableQualityAnswerDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(DeliverableQualityAnswer deliverableQualityAnswer);
+  public DeliverableQualityAnswer save(DeliverableQualityAnswer deliverableQualityAnswer);
 }

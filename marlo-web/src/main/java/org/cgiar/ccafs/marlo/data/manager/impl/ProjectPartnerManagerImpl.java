@@ -41,9 +41,9 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
   }
 
   @Override
-  public boolean deleteProjectPartner(long projectPartnerId) {
+  public void deleteProjectPartner(long projectPartnerId) {
 
-    return projectPartnerDAO.deleteProjectPartner(projectPartnerId);
+    projectPartnerDAO.deleteProjectPartner(projectPartnerId);
   }
 
   @Override
@@ -71,7 +71,7 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
   }
 
   @Override
-  public long saveProjectPartner(ProjectPartner projectPartner) {
+  public ProjectPartner saveProjectPartner(ProjectPartner projectPartner) {
 
     return projectPartnerDAO.save(projectPartner);
   }

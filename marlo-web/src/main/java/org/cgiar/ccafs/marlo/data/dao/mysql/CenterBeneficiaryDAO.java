@@ -33,10 +33,10 @@ public class CenterBeneficiaryDAO extends AbstractMarloDAO<CenterBeneficiary, Lo
   }
 
   @Override
-  public boolean deleteBeneficiary(long beneficiaryId) {
+  public void deleteBeneficiary(long beneficiaryId) {
     CenterBeneficiary beneficiary = this.find(beneficiaryId);
     beneficiary.setActive(false);
-    return this.save(beneficiary) > 0;
+    this.save(beneficiary);
   }
 
   @Override
@@ -73,13 +73,13 @@ public class CenterBeneficiaryDAO extends AbstractMarloDAO<CenterBeneficiary, Lo
   }
 
   @Override
-  public long save(CenterBeneficiary beneficiary) {
+  public CenterBeneficiary save(CenterBeneficiary beneficiary) {
     if (beneficiary.getId() == null) {
       super.saveEntity(beneficiary);
     } else {
-      super.update(beneficiary);
+      beneficiary = super.update(beneficiary);
     }
-    return beneficiary.getId();
+    return beneficiary;
   }
 
 

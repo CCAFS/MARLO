@@ -33,10 +33,10 @@ public class CenterOutcomeDAO extends AbstractMarloDAO<CenterOutcome, Long> impl
   }
 
   @Override
-  public boolean deleteResearchOutcome(long researchOutcomeId) {
+  public void deleteResearchOutcome(long researchOutcomeId) {
     CenterOutcome researchOutcome = this.find(researchOutcomeId);
     researchOutcome.setActive(false);
-    return this.save(researchOutcome) > 0;
+    this.save(researchOutcome);
   }
 
   @Override
@@ -73,23 +73,23 @@ public class CenterOutcomeDAO extends AbstractMarloDAO<CenterOutcome, Long> impl
   }
 
   @Override
-  public long save(CenterOutcome researchOutcome) {
+  public CenterOutcome save(CenterOutcome researchOutcome) {
     if (researchOutcome.getId() == null) {
       super.saveEntity(researchOutcome);
     } else {
-      super.update(researchOutcome);
+      researchOutcome = super.update(researchOutcome);
     }
-    return researchOutcome.getId();
+    return researchOutcome;
   }
 
   @Override
-  public long save(CenterOutcome outcome, String actionName, List<String> relationsName) {
+  public CenterOutcome save(CenterOutcome outcome, String actionName, List<String> relationsName) {
     if (outcome.getId() == null) {
       super.saveEntity(outcome, actionName, relationsName);
     } else {
-      super.update(outcome, actionName, relationsName);
+      outcome = super.update(outcome, actionName, relationsName);
     }
-    return outcome.getId();
+    return outcome;
   }
 
 

@@ -33,10 +33,10 @@ public class CrpsSiteIntegrationMySQLDAO extends AbstractMarloDAO<CrpsSiteIntegr
   }
 
   @Override
-  public boolean deleteCrpsSiteIntegration(long crpsSiteIntegrationId) {
+  public void deleteCrpsSiteIntegration(long crpsSiteIntegrationId) {
     CrpsSiteIntegration crpsSiteIntegration = this.find(crpsSiteIntegrationId);
     crpsSiteIntegration.setActive(false);
-    return this.save(crpsSiteIntegration) > 0;
+    this.save(crpsSiteIntegration);
   }
 
   @Override
@@ -67,13 +67,13 @@ public class CrpsSiteIntegrationMySQLDAO extends AbstractMarloDAO<CrpsSiteIntegr
   }
 
   @Override
-  public long save(CrpsSiteIntegration crpsSiteIntegration) {
+  public CrpsSiteIntegration save(CrpsSiteIntegration crpsSiteIntegration) {
     if (crpsSiteIntegration.getId() == null) {
       super.saveEntity(crpsSiteIntegration);
     } else {
-      super.update(crpsSiteIntegration);
+      crpsSiteIntegration = super.update(crpsSiteIntegration);
     }
-    return crpsSiteIntegration.getId();
+    return crpsSiteIntegration;
   }
 
 

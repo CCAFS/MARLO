@@ -33,10 +33,10 @@ public class LocElementMySQLDAO extends AbstractMarloDAO<LocElement, Long> imple
   }
 
   @Override
-  public boolean deleteLocElement(long locElementId) {
+  public void deleteLocElement(long locElementId) {
     LocElement locElement = this.find(locElementId);
     locElement.setActive(false);
-    return this.save(locElement) > 0;
+    this.save(locElement);
   }
 
   @Override
@@ -87,13 +87,13 @@ public class LocElementMySQLDAO extends AbstractMarloDAO<LocElement, Long> imple
   }
 
   @Override
-  public long save(LocElement locElement) {
+  public LocElement save(LocElement locElement) {
     if (locElement.getId() == null) {
       super.saveEntity(locElement);
     } else {
-      super.update(locElement);
+      locElement = super.update(locElement);
     }
-    return locElement.getId();
+    return locElement;
   }
 
 

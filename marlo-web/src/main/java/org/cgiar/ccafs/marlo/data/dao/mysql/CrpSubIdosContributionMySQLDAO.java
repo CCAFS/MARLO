@@ -33,10 +33,10 @@ public class CrpSubIdosContributionMySQLDAO extends AbstractMarloDAO<CrpSubIdosC
   }
 
   @Override
-  public boolean deleteCrpSubIdosContribution(long crpSubIdosContributionId) {
+  public void deleteCrpSubIdosContribution(long crpSubIdosContributionId) {
     CrpSubIdosContribution crpSubIdosContribution = this.find(crpSubIdosContributionId);
     crpSubIdosContribution.setActive(false);
-    return this.save(crpSubIdosContribution) > 0;
+    this.save(crpSubIdosContribution);
   }
 
   @Override
@@ -67,13 +67,13 @@ public class CrpSubIdosContributionMySQLDAO extends AbstractMarloDAO<CrpSubIdosC
   }
 
   @Override
-  public long save(CrpSubIdosContribution crpSubIdosContribution) {
+  public CrpSubIdosContribution save(CrpSubIdosContribution crpSubIdosContribution) {
     if (crpSubIdosContribution.getId() == null) {
       super.saveEntity(crpSubIdosContribution);
     } else {
-      super.update(crpSubIdosContribution);
+      crpSubIdosContribution = super.update(crpSubIdosContribution);
     }
-    return crpSubIdosContribution.getId();
+    return crpSubIdosContribution;
   }
 
 

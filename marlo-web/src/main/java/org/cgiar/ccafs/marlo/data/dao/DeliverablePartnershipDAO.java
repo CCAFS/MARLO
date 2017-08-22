@@ -32,7 +32,7 @@ public interface DeliverablePartnershipDAO {
    * @param deliverablePartnershipId is the deliverablePartnership identifier.
    * @return true if the deliverablePartnership was successfully deleted, false otherwise.
    */
-  public boolean deleteDeliverablePartnership(long deliverablePartnershipId);
+  public void deleteDeliverablePartnership(long deliverablePartnershipId);
 
   /**
    * This method validate if the deliverablePartnership identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface DeliverablePartnershipDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(DeliverablePartnership deliverablePartnership);
+  public DeliverablePartnership save(DeliverablePartnership deliverablePartnership);
 }

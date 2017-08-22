@@ -33,10 +33,10 @@ public class SrfTargetUnitMySQLDAO extends AbstractMarloDAO<SrfTargetUnit, Long>
   }
 
   @Override
-  public boolean deleteSrfTargetUnit(long srfTargetUnitId) {
+  public void deleteSrfTargetUnit(long srfTargetUnitId) {
     SrfTargetUnit srfTargetUnit = this.find(srfTargetUnitId);
     srfTargetUnit.setActive(false);
-    return this.save(srfTargetUnit) > 0;
+    this.save(srfTargetUnit);
   }
 
   @Override
@@ -67,13 +67,13 @@ public class SrfTargetUnitMySQLDAO extends AbstractMarloDAO<SrfTargetUnit, Long>
   }
 
   @Override
-  public long save(SrfTargetUnit srfTargetUnit) {
+  public SrfTargetUnit save(SrfTargetUnit srfTargetUnit) {
     if (srfTargetUnit.getId() == null) {
       super.saveEntity(srfTargetUnit);
     } else {
-      super.update(srfTargetUnit);
+      srfTargetUnit = super.update(srfTargetUnit);
     }
-    return srfTargetUnit.getId();
+    return srfTargetUnit;
   }
 
 

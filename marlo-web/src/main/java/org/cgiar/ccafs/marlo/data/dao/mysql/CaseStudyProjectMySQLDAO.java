@@ -33,10 +33,10 @@ public class CaseStudyProjectMySQLDAO extends AbstractMarloDAO<CaseStudyProject,
   }
 
   @Override
-  public boolean deleteCaseStudyProject(long caseStudyProjectId) {
+  public void deleteCaseStudyProject(long caseStudyProjectId) {
     CaseStudyProject caseStudyProject = this.find(caseStudyProjectId);
 
-    return super.delete(caseStudyProject);
+    super.delete(caseStudyProject);
   }
 
   @Override
@@ -67,15 +67,15 @@ public class CaseStudyProjectMySQLDAO extends AbstractMarloDAO<CaseStudyProject,
   }
 
   @Override
-  public long save(CaseStudyProject caseStudyProject) {
+  public CaseStudyProject save(CaseStudyProject caseStudyProject) {
     if (caseStudyProject.getId() == null) {
       super.saveEntity(caseStudyProject);
     } else {
-      super.update(caseStudyProject);
+      caseStudyProject = super.update(caseStudyProject);
     }
 
 
-    return caseStudyProject.getId();
+    return caseStudyProject;
   }
 
 

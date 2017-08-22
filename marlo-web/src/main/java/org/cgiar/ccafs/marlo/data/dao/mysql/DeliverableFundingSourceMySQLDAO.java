@@ -33,10 +33,10 @@ public class DeliverableFundingSourceMySQLDAO extends AbstractMarloDAO<Deliverab
   }
 
   @Override
-  public boolean deleteDeliverableFundingSource(long deliverableFundingSourceId) {
+  public void deleteDeliverableFundingSource(long deliverableFundingSourceId) {
     DeliverableFundingSource deliverableFundingSource = this.find(deliverableFundingSourceId);
     deliverableFundingSource.setActive(false);
-    return this.save(deliverableFundingSource) > 0;
+    this.save(deliverableFundingSource);
   }
 
   @Override
@@ -67,15 +67,15 @@ public class DeliverableFundingSourceMySQLDAO extends AbstractMarloDAO<Deliverab
   }
 
   @Override
-  public long save(DeliverableFundingSource deliverableFundingSource) {
+  public DeliverableFundingSource save(DeliverableFundingSource deliverableFundingSource) {
     if (deliverableFundingSource.getId() == null) {
       super.saveEntity(deliverableFundingSource);
     } else {
-      super.update(deliverableFundingSource);
+      deliverableFundingSource = super.update(deliverableFundingSource);
     }
 
 
-    return deliverableFundingSource.getId();
+    return deliverableFundingSource;
   }
 
 

@@ -33,9 +33,9 @@ public class IpProgramElementRelationTypeMySQLDAO extends AbstractMarloDAO<IpPro
   }
 
   @Override
-  public boolean deleteIpProgramElementRelationType(long ipProgramElementRelationTypeId) {
+  public void deleteIpProgramElementRelationType(long ipProgramElementRelationTypeId) {
     IpProgramElementRelationType ipProgramElementRelationType = this.find(ipProgramElementRelationTypeId);
-    return super.delete(ipProgramElementRelationType);
+    super.delete(ipProgramElementRelationType);
   }
 
   @Override
@@ -66,15 +66,15 @@ public class IpProgramElementRelationTypeMySQLDAO extends AbstractMarloDAO<IpPro
   }
 
   @Override
-  public long save(IpProgramElementRelationType ipProgramElementRelationType) {
+  public IpProgramElementRelationType save(IpProgramElementRelationType ipProgramElementRelationType) {
     if (ipProgramElementRelationType.getId() == null) {
       super.saveEntity(ipProgramElementRelationType);
     } else {
-      super.update(ipProgramElementRelationType);
+      ipProgramElementRelationType = super.update(ipProgramElementRelationType);
     }
 
 
-    return ipProgramElementRelationType.getId();
+    return ipProgramElementRelationType;
   }
 
 

@@ -34,10 +34,10 @@ public class ProjectHighligthCountryMySQLDAO extends AbstractMarloDAO<ProjectHig
   }
 
   @Override
-  public boolean deleteProjectHighligthCountry(long projectHighligthCountryId) {
+  public void deleteProjectHighligthCountry(long projectHighligthCountryId) {
     ProjectHighlightCountry projectHighlightCountry = this.find(projectHighligthCountryId);
 
-    return super.delete(projectHighlightCountry);
+    super.delete(projectHighlightCountry);
   }
 
   @Override
@@ -68,15 +68,15 @@ public class ProjectHighligthCountryMySQLDAO extends AbstractMarloDAO<ProjectHig
   }
 
   @Override
-  public long save(ProjectHighlightCountry projectHighlightCountry) {
+  public ProjectHighlightCountry save(ProjectHighlightCountry projectHighlightCountry) {
     if (projectHighlightCountry.getId() == null) {
       super.saveEntity(projectHighlightCountry);
     } else {
-      super.update(projectHighlightCountry);
+      projectHighlightCountry = super.update(projectHighlightCountry);
     }
 
 
-    return projectHighlightCountry.getId();
+    return projectHighlightCountry;
   }
 
 

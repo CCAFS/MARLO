@@ -34,7 +34,7 @@ public interface FundingSourceLocationsManager {
    * @param fundingSourceLocationsId is the fundingSourceLocations identifier.
    * @return true if the fundingSourceLocations was successfully deleted, false otherwise.
    */
-  public boolean deleteFundingSourceLocations(long fundingSourceLocationsId);
+  public void deleteFundingSourceLocations(long fundingSourceLocationsId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface FundingSourceLocationsManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveFundingSourceLocations(FundingSourceLocation fundingSourceLocations);
+  public FundingSourceLocation saveFundingSourceLocations(FundingSourceLocation fundingSourceLocations);
 
 
 }

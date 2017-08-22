@@ -32,7 +32,7 @@ public interface CrpProgramLeaderDAO {
    * @param crpProgramLeaderId is the crpProgramLeader identifier.
    * @return true if the crpProgramLeader was successfully deleted, false otherwise.
    */
-  public boolean deleteCrpProgramLeader(long crpProgramLeaderId);
+  public void deleteCrpProgramLeader(long crpProgramLeaderId);
 
   /**
    * This method validate if the crpProgramLeader identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface CrpProgramLeaderDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CrpProgramLeader crpProgramLeader);
+  public CrpProgramLeader save(CrpProgramLeader crpProgramLeader);
 }

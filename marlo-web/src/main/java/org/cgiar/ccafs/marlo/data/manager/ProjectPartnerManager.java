@@ -34,7 +34,7 @@ public interface ProjectPartnerManager {
    * @param projectPartnerId is the projectPartner identifier.
    * @return true if the projectPartner was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectPartner(long projectPartnerId);
+  public void deleteProjectPartner(long projectPartnerId);
 
 
   /**
@@ -73,7 +73,7 @@ public interface ProjectPartnerManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveProjectPartner(ProjectPartner projectPartner);
+  public ProjectPartner saveProjectPartner(ProjectPartner projectPartner);
 
 
 }

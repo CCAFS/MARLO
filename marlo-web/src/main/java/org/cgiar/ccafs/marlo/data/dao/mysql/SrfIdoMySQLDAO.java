@@ -33,10 +33,10 @@ public class SrfIdoMySQLDAO extends AbstractMarloDAO<SrfIdo, Long> implements Sr
   }
 
   @Override
-  public boolean deleteSrfIdo(long srfIdoId) {
+  public void deleteSrfIdo(long srfIdoId) {
     SrfIdo srfIdo = this.find(srfIdoId);
     srfIdo.setActive(false);
-    return this.save(srfIdo) > 0;
+    this.save(srfIdo);
   }
 
   @Override
@@ -67,13 +67,13 @@ public class SrfIdoMySQLDAO extends AbstractMarloDAO<SrfIdo, Long> implements Sr
   }
 
   @Override
-  public long save(SrfIdo srfIdo) {
+  public SrfIdo save(SrfIdo srfIdo) {
     if (srfIdo.getId() == null) {
       super.saveEntity(srfIdo);
     } else {
-      super.update(srfIdo);
+      srfIdo = super.update(srfIdo);
     }
-    return srfIdo.getId();
+    return srfIdo;
   }
 
 

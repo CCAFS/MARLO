@@ -34,7 +34,7 @@ public interface ICenterProjectOutputManager {
    * @param projectOutputId is the projectOutput identifier.
    * @return true if the projectOutput was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectOutput(long projectOutputId);
+  public void deleteProjectOutput(long projectOutputId);
 
 
   /**
@@ -78,7 +78,7 @@ public interface ICenterProjectOutputManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveProjectOutput(CenterProjectOutput projectOutput);
+  public CenterProjectOutput saveProjectOutput(CenterProjectOutput projectOutput);
 
 
 }

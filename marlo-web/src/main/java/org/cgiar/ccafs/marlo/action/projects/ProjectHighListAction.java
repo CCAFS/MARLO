@@ -104,7 +104,8 @@ public class ProjectHighListAction extends BaseAction {
     projectHighlight.setTitle("");
     projectHighlight.setModificationJustification("");
 
-    higlightID = projectHighligthManager.saveProjectHighligth(projectHighlight);
+    projectHighlight = projectHighligthManager.saveProjectHighligth(projectHighlight);
+    higlightID = projectHighlight.getId();
 
     if (higlightID > 0) {
       return SUCCESS;
@@ -132,6 +133,7 @@ public class ProjectHighListAction extends BaseAction {
     return SUCCESS;
   }
 
+  @Override
   public List<Integer> getAllYears() {
     return allYears;
   }

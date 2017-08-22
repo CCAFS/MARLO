@@ -33,10 +33,10 @@ public class SrfCrossCuttingIssueMySQLDAO extends AbstractMarloDAO<SrfCrossCutti
   }
 
   @Override
-  public boolean deleteSrfCrossCuttingIssue(long srfCrossCuttingIssueId) {
+  public void deleteSrfCrossCuttingIssue(long srfCrossCuttingIssueId) {
     SrfCrossCuttingIssue srfCrossCuttingIssue = this.find(srfCrossCuttingIssueId);
     srfCrossCuttingIssue.setActive(false);
-    return this.save(srfCrossCuttingIssue) > 0;
+    this.save(srfCrossCuttingIssue);
   }
 
   @Override
@@ -67,13 +67,13 @@ public class SrfCrossCuttingIssueMySQLDAO extends AbstractMarloDAO<SrfCrossCutti
   }
 
   @Override
-  public long save(SrfCrossCuttingIssue srfCrossCuttingIssue) {
+  public SrfCrossCuttingIssue save(SrfCrossCuttingIssue srfCrossCuttingIssue) {
     if (srfCrossCuttingIssue.getId() == null) {
       super.saveEntity(srfCrossCuttingIssue);
     } else {
-      super.update(srfCrossCuttingIssue);
+      srfCrossCuttingIssue = super.update(srfCrossCuttingIssue);
     }
-    return srfCrossCuttingIssue.getId();
+    return srfCrossCuttingIssue;
   }
 
 

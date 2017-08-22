@@ -34,7 +34,7 @@ public interface CrpUserManager {
    * @param crpUserId is the crpUser identifier.
    * @return true if the crpUser was successfully deleted, false otherwise.
    */
-  public boolean deleteCrpUser(long crpUserId);
+  public void deleteCrpUser(long crpUserId);
 
 
   /**
@@ -78,7 +78,7 @@ public interface CrpUserManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveCrpUser(CrpUser crpUser);
+  public CrpUser saveCrpUser(CrpUser crpUser);
 
 
 }

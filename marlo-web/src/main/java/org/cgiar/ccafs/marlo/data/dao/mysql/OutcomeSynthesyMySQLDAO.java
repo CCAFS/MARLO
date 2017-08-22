@@ -33,9 +33,9 @@ public class OutcomeSynthesyMySQLDAO extends AbstractMarloDAO<OutcomeSynthesy, L
   }
 
   @Override
-  public boolean deleteOutcomeSynthesy(long outcomeSynthesyId) {
+  public void deleteOutcomeSynthesy(long outcomeSynthesyId) {
     OutcomeSynthesy outcomeSynthesy = this.find(outcomeSynthesyId);
-    return super.delete(outcomeSynthesy);
+    super.delete(outcomeSynthesy);
   }
 
   @Override
@@ -66,15 +66,15 @@ public class OutcomeSynthesyMySQLDAO extends AbstractMarloDAO<OutcomeSynthesy, L
   }
 
   @Override
-  public long save(OutcomeSynthesy outcomeSynthesy) {
+  public OutcomeSynthesy save(OutcomeSynthesy outcomeSynthesy) {
     if (outcomeSynthesy.getId() == null) {
       super.saveEntity(outcomeSynthesy);
     } else {
-      super.update(outcomeSynthesy);
+      outcomeSynthesy = super.update(outcomeSynthesy);
     }
 
 
-    return outcomeSynthesy.getId();
+    return outcomeSynthesy;
   }
 
 

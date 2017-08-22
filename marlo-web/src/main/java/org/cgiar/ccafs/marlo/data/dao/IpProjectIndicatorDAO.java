@@ -32,7 +32,7 @@ public interface IpProjectIndicatorDAO {
    * @param ipProjectIndicatorId is the ipProjectIndicator identifier.
    * @return true if the ipProjectIndicator was successfully deleted, false otherwise.
    */
-  public boolean deleteIpProjectIndicator(long ipProjectIndicatorId);
+  public void deleteIpProjectIndicator(long ipProjectIndicatorId);
 
   /**
    * This method validate if the ipProjectIndicator identify with the given id exists in the system.
@@ -68,5 +68,5 @@ public interface IpProjectIndicatorDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(IpProjectIndicator ipProjectIndicator);
+  public IpProjectIndicator save(IpProjectIndicator ipProjectIndicator);
 }

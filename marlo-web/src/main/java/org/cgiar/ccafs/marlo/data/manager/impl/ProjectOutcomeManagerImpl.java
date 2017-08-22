@@ -41,9 +41,9 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
   }
 
   @Override
-  public boolean deleteProjectOutcome(long projectOutcomeId) {
+  public void deleteProjectOutcome(long projectOutcomeId) {
 
-    return projectOutcomeDAO.deleteProjectOutcome(projectOutcomeId);
+    projectOutcomeDAO.deleteProjectOutcome(projectOutcomeId);
   }
 
   @Override
@@ -66,14 +66,14 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
   }
 
   @Override
-  public long saveProjectOutcome(ProjectOutcome projectOutcome) {
+  public ProjectOutcome saveProjectOutcome(ProjectOutcome projectOutcome) {
 
     return projectOutcomeDAO.save(projectOutcome);
   }
 
 
   @Override
-  public long saveProjectOutcome(ProjectOutcome projectOutcome, String section, List<String> relationsName) {
+  public ProjectOutcome saveProjectOutcome(ProjectOutcome projectOutcome, String section, List<String> relationsName) {
 
     return projectOutcomeDAO.save(projectOutcome, section, relationsName);
   }

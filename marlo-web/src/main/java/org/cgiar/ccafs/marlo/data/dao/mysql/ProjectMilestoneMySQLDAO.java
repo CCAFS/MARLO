@@ -33,10 +33,10 @@ public class ProjectMilestoneMySQLDAO extends AbstractMarloDAO<ProjectMilestone,
   }
 
   @Override
-  public boolean deleteProjectMilestone(long projectMilestoneId) {
+  public void deleteProjectMilestone(long projectMilestoneId) {
     ProjectMilestone projectMilestone = this.find(projectMilestoneId);
     projectMilestone.setActive(false);
-    return this.save(projectMilestone) > 0;
+    this.save(projectMilestone);
   }
 
   @Override
@@ -67,15 +67,15 @@ public class ProjectMilestoneMySQLDAO extends AbstractMarloDAO<ProjectMilestone,
   }
 
   @Override
-  public long save(ProjectMilestone projectMilestone) {
+  public ProjectMilestone save(ProjectMilestone projectMilestone) {
     if (projectMilestone.getId() == null) {
       super.saveEntity(projectMilestone);
     } else {
-      super.update(projectMilestone);
+      projectMilestone = super.update(projectMilestone);
     }
 
 
-    return projectMilestone.getId();
+    return projectMilestone;
   }
 
 

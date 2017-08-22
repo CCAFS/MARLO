@@ -34,7 +34,7 @@ public interface DeliverablePartnershipManager {
    * @param deliverablePartnershipId is the deliverablePartnership identifier.
    * @return true if the deliverablePartnership was successfully deleted, false otherwise.
    */
-  public boolean deleteDeliverablePartnership(long deliverablePartnershipId);
+  public void deleteDeliverablePartnership(long deliverablePartnershipId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface DeliverablePartnershipManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveDeliverablePartnership(DeliverablePartnership deliverablePartnership);
+  public DeliverablePartnership saveDeliverablePartnership(DeliverablePartnership deliverablePartnership);
 
 
 }

@@ -72,6 +72,8 @@ import com.google.inject.Inject;
 import com.ibm.icu.util.Calendar;
 import com.ibm.icu.util.GregorianCalendar;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -79,8 +81,9 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class OutcomesAction extends BaseAction {
 
-
   private static final long serialVersionUID = -793652591843623397L;
+
+  private final Logger logger = LoggerFactory.getLogger(OutcomesAction.class);
 
 
   private AuditLogManager auditLogManager;
@@ -261,7 +264,7 @@ public class OutcomesAction extends BaseAction {
 
           }
         } catch (Exception e) {
-
+          logger.error("Exception occurred in loadInfo method of OutcomesAction : " + e);
         }
         crpOutcomeSubIdo.setSubIdoList(mapSubidos);
       }
@@ -583,37 +586,45 @@ public class OutcomesAction extends BaseAction {
 
 
     /*
-     * Save outcomes
+     * Save outcomes -- outcomes are detached entities.
      */
     for (CrpProgramOutcome crpProgramOutcome : outcomes) {
 
       if (crpProgramOutcome.getId() == null) {
+        // New entity - this is ok.
         crpProgramOutcome.setActive(true);
 
         crpProgramOutcome.setCreatedBy(this.getCurrentUser());
         crpProgramOutcome.setModifiedBy(this.getCurrentUser());
         crpProgramOutcome.setModificationJustification("");
         crpProgramOutcome.setActiveSince(new Date());
+        crpProgramOutcome.setCrpProgram(selectedProgram);
+        // Now our programEntity is attached.
+        crpProgramOutcome = crpProgramOutcomeManager.saveCrpProgramOutcome(crpProgramOutcome);
+        this.saveMilestones(crpProgramOutcome);
+        this.saveSubIdo(crpProgramOutcome);
 
       } else {
+        // Fetch Managed entity
         CrpProgramOutcome db = crpProgramOutcomeManager.getCrpProgramOutcomeById(crpProgramOutcome.getId());
-        crpProgramOutcome.setActive(true);
-        crpProgramOutcome.setCreatedBy(db.getCreatedBy());
-        crpProgramOutcome.setModifiedBy(this.getCurrentUser());
-        crpProgramOutcome.setModificationJustification("");
-        crpProgramOutcome.setActiveSince(db.getActiveSince());
+
+        db.setActive(true);
+        db.setModifiedBy(this.getCurrentUser());
+        db.setModificationJustification("");
+        db = crpProgramOutcomeManager.saveCrpProgramOutcome(db);
+        // Now copy across the stupidity. See issue #1124
+        db.setMilestones(crpProgramOutcome.getMilestones());
+        db.setSubIdos(crpProgramOutcome.getSubIdos());
+        this.saveMilestones(db);
+        this.saveSubIdo(db);
       }
 
-
-      crpProgramOutcome.setCrpProgram(selectedProgram);
-      crpProgramOutcomeManager.saveCrpProgramOutcome(crpProgramOutcome);
-
-      this.saveMilestones(crpProgramOutcome);
-      this.saveSubIdo(crpProgramOutcome);
-
     }
-    for (CrpProgramOutcome crpProgramOutcome : selectedProgram.getCrpProgramOutcomes().stream()
-      .filter(c -> c.isActive()).collect(Collectors.toList())) {
+    // I don't understand what the below code is doing @GrantL
+    List<CrpProgramOutcome> selectedProgramCrpProgramOutcomes =
+      selectedProgram.getCrpProgramOutcomes().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+
+    for (CrpProgramOutcome crpProgramOutcome : selectedProgramCrpProgramOutcomes) {
       if (!outcomes.contains(crpProgramOutcome)) {
         // if (crpProgramOutcome.getCrpMilestones().isEmpty() && crpProgramOutcome.getCrpOutcomeSubIdos().isEmpty()) {
         crpProgramOutcomeManager.deleteCrpProgramOutcome(crpProgramOutcome.getId());
@@ -634,15 +645,14 @@ public class OutcomesAction extends BaseAction {
   }
 
   public void saveMilestones(CrpProgramOutcome crpProgramOutcome) {
-    CrpProgramOutcome crpProgramOutcomeBD =
-      crpProgramOutcomeManager.getCrpProgramOutcomeById(crpProgramOutcome.getId());
-
     /*
      * Delete Milestones
      */
-    for (CrpMilestone crpMilestone : crpProgramOutcomeBD.getCrpMilestones().stream().filter(c -> c.isActive())
-      .collect(Collectors.toList())) {
+    List<CrpMilestone> crpMilestonesDettached =
+      crpProgramOutcome.getCrpMilestones().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+    for (CrpMilestone crpMilestone : crpMilestonesDettached) {
       if (crpProgramOutcome.getMilestones() != null) {
+        // If our DTO milestones do not have our managed milestone then delete it.
         if (!crpProgramOutcome.getMilestones().contains(crpMilestone)) {
           crpMilestoneManager.deleteCrpMilestone(crpMilestone.getId());
         }
@@ -675,7 +685,7 @@ public class OutcomesAction extends BaseAction {
           crpMilestone.setActiveSince(db.getActiveSince());
         }
         crpMilestone.setCrpProgramOutcome(crpProgramOutcome);
-        crpMilestoneManager.saveCrpMilestone(crpMilestone);
+        crpMilestone = crpMilestoneManager.saveCrpMilestone(crpMilestone);
       }
     }
 

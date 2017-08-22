@@ -84,19 +84,19 @@ public class UserMySQLDAO extends AbstractMarloDAO<User, Long> implements UserDA
     if (user.getId() == null) {
       super.saveEntity(user);
     } else {
-      super.update(user);
+      user = super.update(user);
     }
     return true;
   }
 
   @Override
-  public Long saveUser(User user) {
+  public User saveUser(User user) {
     if (user.getId() == null) {
       super.saveEntity(user);
     } else {
-      super.update(user);
+      user = super.update(user);
     }
-    return user.getId();
+    return user;
   }
 
   @Override

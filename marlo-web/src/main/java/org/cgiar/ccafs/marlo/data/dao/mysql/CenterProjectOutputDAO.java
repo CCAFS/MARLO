@@ -34,10 +34,10 @@ public class CenterProjectOutputDAO extends AbstractMarloDAO<CenterProjectOutput
   }
 
   @Override
-  public boolean deleteProjectOutput(long projectOutputId) {
+  public void deleteProjectOutput(long projectOutputId) {
     CenterProjectOutput projectOutput = this.find(projectOutputId);
     projectOutput.setActive(false);
-    return this.save(projectOutput) > 0;
+    this.save(projectOutput);
   }
 
   @Override
@@ -74,13 +74,13 @@ public class CenterProjectOutputDAO extends AbstractMarloDAO<CenterProjectOutput
   }
 
   @Override
-  public long save(CenterProjectOutput projectOutput) {
+  public CenterProjectOutput save(CenterProjectOutput projectOutput) {
     if (projectOutput.getId() == null) {
       super.saveEntity(projectOutput);
     } else {
-      super.update(projectOutput);
+      projectOutput = super.update(projectOutput);
     }
-    return projectOutput.getId();
+    return projectOutput;
   }
 
 

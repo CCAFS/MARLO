@@ -34,10 +34,10 @@ public class CenterNextuserTypeDAO extends AbstractMarloDAO<CenterNextuserType, 
   }
 
   @Override
-  public boolean deleteNextuserType(long nextuserTypeId) {
+  public void deleteNextuserType(long nextuserTypeId) {
     CenterNextuserType nextuserType = this.find(nextuserTypeId);
     nextuserType.setActive(false);
-    return this.save(nextuserType) > 0;
+    this.save(nextuserType);
   }
 
   @Override
@@ -74,13 +74,13 @@ public class CenterNextuserTypeDAO extends AbstractMarloDAO<CenterNextuserType, 
   }
 
   @Override
-  public long save(CenterNextuserType nextuserType) {
+  public CenterNextuserType save(CenterNextuserType nextuserType) {
     if (nextuserType.getId() == null) {
       super.saveEntity(nextuserType);
     } else {
-      super.update(nextuserType);
+      nextuserType = super.update(nextuserType);
     }
-    return nextuserType.getId();
+    return nextuserType;
   }
 
 

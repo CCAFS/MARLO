@@ -33,9 +33,9 @@ public class CenterRoleDAO extends AbstractMarloDAO<CenterRole, Long> implements
   }
 
   @Override
-  public boolean deleteRole(long roleId) {
+  public void deleteRole(long roleId) {
     CenterRole role = this.find(roleId);
-    return super.delete(role);
+    super.delete(role);
   }
 
   @Override
@@ -72,23 +72,23 @@ public class CenterRoleDAO extends AbstractMarloDAO<CenterRole, Long> implements
   }
 
   @Override
-  public long save(CenterRole role) {
+  public CenterRole save(CenterRole role) {
     if (role.getId() == null) {
       super.saveEntity(role);
     } else {
-      super.update(role);
+      role = super.update(role);
     }
-    return role.getId();
+    return role;
   }
 
   @Override
-  public long save(CenterRole role, String actionName, List<String> relationsName) {
+  public CenterRole save(CenterRole role, String actionName, List<String> relationsName) {
     if (role.getId() == null) {
       super.saveEntity(role, actionName, relationsName);
     } else {
-      super.update(role, actionName, relationsName);
+      role = super.update(role, actionName, relationsName);
     }
-    return role.getId();
+    return role;
   }
 
 

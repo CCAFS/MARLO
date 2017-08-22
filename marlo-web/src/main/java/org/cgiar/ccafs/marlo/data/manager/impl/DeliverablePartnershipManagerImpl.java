@@ -41,9 +41,9 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
   }
 
   @Override
-  public boolean deleteDeliverablePartnership(long deliverablePartnershipId) {
+  public void deleteDeliverablePartnership(long deliverablePartnershipId) {
 
-    return deliverablePartnershipDAO.deleteDeliverablePartnership(deliverablePartnershipId);
+    deliverablePartnershipDAO.deleteDeliverablePartnership(deliverablePartnershipId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
   }
 
   @Override
-  public long saveDeliverablePartnership(DeliverablePartnership deliverablePartnership) {
+  public DeliverablePartnership saveDeliverablePartnership(DeliverablePartnership deliverablePartnership) {
 
     return deliverablePartnershipDAO.save(deliverablePartnership);
   }

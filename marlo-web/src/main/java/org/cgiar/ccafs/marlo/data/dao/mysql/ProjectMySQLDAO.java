@@ -26,17 +26,28 @@ import java.util.Map;
 
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements ProjectDAO {
 
+  private Logger Log = LoggerFactory.getLogger(ProjectMySQLDAO.class);
 
   @Inject
   public ProjectMySQLDAO(SessionFactory sessionFactory) {
     super(sessionFactory);
   }
 
-
-  public boolean deleteOnCascade(String tableName, String columnName, Long columnValue, long userID,
+  /**
+   * This looks like it is generic functionality, why is it here in the ProjectDAO?
+   * 
+   * @param tableName
+   * @param columnName
+   * @param columnValue
+   * @param userID
+   * @param justification
+   */
+  public void deleteOnCascade(String tableName, String columnName, Long columnValue, long userID,
     String justification) {
 
     StringBuilder query = new StringBuilder();
@@ -94,25 +105,20 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
       }
 
 
-    } catch (Exception e)
-
-    {
-
-      e.printStackTrace();
-      return false;
+    } catch (Exception e) {
+      Log.error("Delete on cascade failed for tableName: " + tableName + ", columnName : " + columnName
+        + " , columnValue: " + columnValue + " , and userId ; " + userID + " , with error = " + e.getMessage());
     }
-
-    return true;
 
   }
 
   @Override
-  public boolean deleteProject(Project project) {
+  public void deleteProject(Project project) {
 
 
     this.deleteOnCascade("projects", "id", project.getId(), project.getModifiedBy().getId(),
       project.getModificationJustification());
-    return this.saveEntity(project).getId() > 0;
+    this.saveEntity(project);
   }
 
   @Override
@@ -158,27 +164,27 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
   }
 
   @Override
-  public long save(Project project) {
+  public Project save(Project project) {
     if (project.getId() == null) {
       project = super.saveEntity(project);
     } else {
-      project = super.update(project);
+      project = project = super.update(project);
     }
 
 
-    return project.getId();
+    return project;
   }
 
   @Override
-  public long save(Project project, String sectionName, List<String> relationsName) {
+  public Project save(Project project, String sectionName, List<String> relationsName) {
     if (project.getId() == null) {
       super.saveEntity(project, sectionName, relationsName);
     } else {
-      super.update(project, sectionName, relationsName);
+      project = super.update(project, sectionName, relationsName);
     }
 
 
-    return project.getId();
+    return project;
   }
 
 

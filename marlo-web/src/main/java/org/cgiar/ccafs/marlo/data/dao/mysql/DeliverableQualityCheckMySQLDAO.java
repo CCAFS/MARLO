@@ -33,10 +33,10 @@ public class DeliverableQualityCheckMySQLDAO extends AbstractMarloDAO<Deliverabl
   }
 
   @Override
-  public boolean deleteDeliverableQualityCheck(long deliverableQualityCheckId) {
+  public void deleteDeliverableQualityCheck(long deliverableQualityCheckId) {
     DeliverableQualityCheck deliverableQualityCheck = this.find(deliverableQualityCheckId);
     deliverableQualityCheck.setActive(false);
-    return this.save(deliverableQualityCheck) > 0;
+    this.save(deliverableQualityCheck);
   }
 
   @Override
@@ -78,15 +78,15 @@ public class DeliverableQualityCheckMySQLDAO extends AbstractMarloDAO<Deliverabl
   }
 
   @Override
-  public long save(DeliverableQualityCheck deliverableQualityCheck) {
+  public DeliverableQualityCheck save(DeliverableQualityCheck deliverableQualityCheck) {
     if (deliverableQualityCheck.getId() == null) {
       super.saveEntity(deliverableQualityCheck);
     } else {
-      super.update(deliverableQualityCheck);
+      deliverableQualityCheck = super.update(deliverableQualityCheck);
     }
 
 
-    return deliverableQualityCheck.getId();
+    return deliverableQualityCheck;
   }
 
 

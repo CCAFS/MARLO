@@ -33,11 +33,11 @@ public class LiaisonInstitutionMySQLDAO extends AbstractMarloDAO<LiaisonInstitut
   }
 
   @Override
-  public boolean deleteLiaisonInstitution(long liaisonInstitutionId) {
+  public void deleteLiaisonInstitution(long liaisonInstitutionId) {
     LiaisonInstitution liaisonInstitution = this.find(liaisonInstitutionId);
 
     liaisonInstitution.setActive(false);
-    return this.save(liaisonInstitution) > 0;
+    this.save(liaisonInstitution);
 
   }
 
@@ -80,16 +80,16 @@ public class LiaisonInstitutionMySQLDAO extends AbstractMarloDAO<LiaisonInstitut
 
 
   @Override
-  public long save(LiaisonInstitution liaisonInstitution) {
+  public LiaisonInstitution save(LiaisonInstitution liaisonInstitution) {
     if (liaisonInstitution.getId() == null) {
       liaisonInstitution.setActive(true);
       super.saveEntity(liaisonInstitution);
     } else {
-      super.update(liaisonInstitution);
+      liaisonInstitution = super.update(liaisonInstitution);
     }
 
 
-    return liaisonInstitution.getId();
+    return liaisonInstitution;
   }
 
 

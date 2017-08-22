@@ -33,10 +33,10 @@ public class ProjectScopeMySQLDAO extends AbstractMarloDAO<ProjectScope, Long> i
   }
 
   @Override
-  public boolean deleteProjectScope(long projectScopeId) {
+  public void deleteProjectScope(long projectScopeId) {
     ProjectScope projectScope = this.find(projectScopeId);
     projectScope.setActive(false);
-    return this.save(projectScope) > 0;
+    this.save(projectScope);
   }
 
   @Override
@@ -67,15 +67,15 @@ public class ProjectScopeMySQLDAO extends AbstractMarloDAO<ProjectScope, Long> i
   }
 
   @Override
-  public long save(ProjectScope projectScope) {
+  public ProjectScope save(ProjectScope projectScope) {
     if (projectScope.getId() == null) {
       super.saveEntity(projectScope);
     } else {
-      super.update(projectScope);
+      projectScope = super.update(projectScope);
     }
 
 
-    return projectScope.getId();
+    return projectScope;
   }
 
 

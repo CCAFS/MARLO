@@ -33,9 +33,9 @@ public class CenterCycleDAO extends AbstractMarloDAO<CenterCycle, Long> implemen
   }
 
   @Override
-  public boolean deleteResearchCycle(long researchCycleId) {
+  public void deleteResearchCycle(long researchCycleId) {
     CenterCycle researchCycle = this.find(researchCycleId);
-    return super.delete(researchCycle);
+    super.delete(researchCycle);
   }
 
   @Override
@@ -72,13 +72,13 @@ public class CenterCycleDAO extends AbstractMarloDAO<CenterCycle, Long> implemen
   }
 
   @Override
-  public long save(CenterCycle researchCycle) {
+  public CenterCycle save(CenterCycle researchCycle) {
     if (researchCycle.getId() == null) {
       super.saveEntity(researchCycle);
     } else {
-      super.update(researchCycle);
+      researchCycle = super.update(researchCycle);
     }
-    return researchCycle.getId();
+    return researchCycle;
   }
 
 

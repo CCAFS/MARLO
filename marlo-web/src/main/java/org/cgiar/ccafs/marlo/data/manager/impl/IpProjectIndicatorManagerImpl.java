@@ -41,9 +41,9 @@ public class IpProjectIndicatorManagerImpl implements IpProjectIndicatorManager 
   }
 
   @Override
-  public boolean deleteIpProjectIndicator(long ipProjectIndicatorId) {
+  public void deleteIpProjectIndicator(long ipProjectIndicatorId) {
 
-    return ipProjectIndicatorDAO.deleteIpProjectIndicator(ipProjectIndicatorId);
+    ipProjectIndicatorDAO.deleteIpProjectIndicator(ipProjectIndicatorId);
   }
 
   @Override
@@ -71,7 +71,7 @@ public class IpProjectIndicatorManagerImpl implements IpProjectIndicatorManager 
   }
 
   @Override
-  public long saveIpProjectIndicator(IpProjectIndicator ipProjectIndicator) {
+  public IpProjectIndicator saveIpProjectIndicator(IpProjectIndicator ipProjectIndicator) {
 
     return ipProjectIndicatorDAO.save(ipProjectIndicator);
   }

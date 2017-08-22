@@ -67,6 +67,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
@@ -601,8 +602,8 @@ public class FundingSourceAction extends BaseAction {
       for (CrpPpaPartner crpPpaPartner : ppaPartners) {
         institutions.add(crpPpaPartner.getInstitution());
       }
-
-      if (fundingSource.getBudgetType() != null) {
+      
+      if (fundingSource.getBudgetType() != null && fundingSource.getBudgetType().getId() != null) {
         // if the funding source is type center funds -- institutions are ppa
         if (fundingSource.getBudgetType().getId().longValue() == 4) {
           List<Institution> allInstitutions = null;
@@ -759,6 +760,10 @@ public class FundingSourceAction extends BaseAction {
        */
 
       if (fundingSource.getBudgets() != null) {
+        
+        //TODO find out why the fundingSource budgets are being set to null.
+        fundingSource.getBudgets().removeIf(Objects::isNull);
+
         for (FundingSourceBudget fundingSourceBudget : fundingSource.getBudgets()) {
           if (fundingSourceBudget.getId() == null) {
             fundingSourceBudget.setActive(true);

@@ -34,7 +34,7 @@ public interface IpProjectIndicatorManager {
    * @param ipProjectIndicatorId is the ipProjectIndicator identifier.
    * @return true if the ipProjectIndicator was successfully deleted, false otherwise.
    */
-  public boolean deleteIpProjectIndicator(long ipProjectIndicatorId);
+  public void deleteIpProjectIndicator(long ipProjectIndicatorId);
 
 
   /**
@@ -81,7 +81,7 @@ public interface IpProjectIndicatorManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveIpProjectIndicator(IpProjectIndicator ipProjectIndicator);
+  public IpProjectIndicator saveIpProjectIndicator(IpProjectIndicator ipProjectIndicator);
 
 
 }

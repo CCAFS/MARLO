@@ -33,10 +33,10 @@ public class CenterMilestoneDAO extends AbstractMarloDAO<CenterMilestone, Long> 
   }
 
   @Override
-  public boolean deleteCenterMilestone(long centerMilestoneId) {
+  public void deleteCenterMilestone(long centerMilestoneId) {
     CenterMilestone centerMilestone = this.find(centerMilestoneId);
     centerMilestone.setActive(false);
-    return this.save(centerMilestone) > 0;
+    this.save(centerMilestone);
   }
 
   @Override
@@ -73,23 +73,23 @@ public class CenterMilestoneDAO extends AbstractMarloDAO<CenterMilestone, Long> 
   }
 
   @Override
-  public long save(CenterMilestone centerMilestone) {
+  public CenterMilestone save(CenterMilestone centerMilestone) {
     if (centerMilestone.getId() == null) {
       super.saveEntity(centerMilestone);
     } else {
-      super.update(centerMilestone);
+      centerMilestone = super.update(centerMilestone);
     }
-    return centerMilestone.getId();
+    return centerMilestone;
   }
 
   @Override
-  public long save(CenterMilestone centerMilestone, String actionName, List<String> relationsName) {
+  public CenterMilestone save(CenterMilestone centerMilestone, String actionName, List<String> relationsName) {
     if (centerMilestone.getId() == null) {
       super.saveEntity(centerMilestone, actionName, relationsName);
     } else {
-      super.update(centerMilestone, actionName, relationsName);
+      centerMilestone = super.update(centerMilestone, actionName, relationsName);
     }
-    return centerMilestone.getId();
+    return centerMilestone;
   }
 
 

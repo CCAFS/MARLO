@@ -42,9 +42,9 @@ public class CenterProjectCrosscutingThemeManager implements ICenterProjectCross
   }
 
   @Override
-  public boolean deleteProjectCrosscutingTheme(long projectCrosscutingThemeId) {
+  public void deleteProjectCrosscutingTheme(long projectCrosscutingThemeId) {
 
-    return projectCrosscutingThemeDAO.deleteProjectCrosscutingTheme(projectCrosscutingThemeId);
+    projectCrosscutingThemeDAO.deleteProjectCrosscutingTheme(projectCrosscutingThemeId);
   }
 
   @Override
@@ -72,7 +72,7 @@ public class CenterProjectCrosscutingThemeManager implements ICenterProjectCross
   }
 
   @Override
-  public long saveProjectCrosscutingTheme(CenterProjectCrosscutingTheme projectCrosscutingTheme) {
+  public CenterProjectCrosscutingTheme saveProjectCrosscutingTheme(CenterProjectCrosscutingTheme projectCrosscutingTheme) {
 
     return projectCrosscutingThemeDAO.save(projectCrosscutingTheme);
   }

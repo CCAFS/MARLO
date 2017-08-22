@@ -34,9 +34,9 @@ public class CenterSectionStatusDAO extends AbstractMarloDAO<CenterSectionStatus
   }
 
   @Override
-  public boolean deleteSectionStatus(long sectionStatusId) {
+  public void deleteSectionStatus(long sectionStatusId) {
     CenterSectionStatus sectionStatus = this.find(sectionStatusId);
-    return super.delete(sectionStatus);
+    super.delete(sectionStatus);
   }
 
   @Override
@@ -152,13 +152,13 @@ public class CenterSectionStatusDAO extends AbstractMarloDAO<CenterSectionStatus
   }
 
   @Override
-  public long save(CenterSectionStatus sectionStatus) {
+  public CenterSectionStatus save(CenterSectionStatus sectionStatus) {
     if (sectionStatus.getId() == null) {
       super.saveEntity(sectionStatus);
     } else {
-      super.update(sectionStatus);
+      sectionStatus = super.update(sectionStatus);
     }
-    return sectionStatus.getId();
+    return sectionStatus;
   }
 
 

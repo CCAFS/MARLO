@@ -41,9 +41,9 @@ public class ProjectHighligthManagerImpl implements ProjectHighligthManager {
   }
 
   @Override
-  public boolean deleteProjectHighligth(long projectHighligthId) {
+  public void deleteProjectHighligth(long projectHighligthId) {
 
-    return projectHighligthDAO.deleteProjectHighligth(projectHighligthId);
+    projectHighligthDAO.deleteProjectHighligth(projectHighligthId);
   }
 
   @Override
@@ -66,13 +66,13 @@ public class ProjectHighligthManagerImpl implements ProjectHighligthManager {
   }
 
   @Override
-  public long saveProjectHighligth(ProjectHighlight projectHighlight) {
+  public ProjectHighlight saveProjectHighligth(ProjectHighlight projectHighlight) {
 
     return projectHighligthDAO.save(projectHighlight);
   }
 
   @Override
-  public long saveProjectHighligth(ProjectHighlight projectHighlight, String section, List<String> relationsName) {
+  public ProjectHighlight saveProjectHighligth(ProjectHighlight projectHighlight, String section, List<String> relationsName) {
     return projectHighligthDAO.save(projectHighlight, section, relationsName);
   }
 

@@ -41,9 +41,9 @@ public class CrpClusterActivityLeaderManagerImpl implements CrpClusterActivityLe
   }
 
   @Override
-  public boolean deleteCrpClusterActivityLeader(long crpClusterActivityLeaderId) {
+  public void deleteCrpClusterActivityLeader(long crpClusterActivityLeaderId) {
 
-    return crpClusterActivityLeaderDAO.deleteCrpClusterActivityLeader(crpClusterActivityLeaderId);
+    crpClusterActivityLeaderDAO.deleteCrpClusterActivityLeader(crpClusterActivityLeaderId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class CrpClusterActivityLeaderManagerImpl implements CrpClusterActivityLe
   }
 
   @Override
-  public long saveCrpClusterActivityLeader(CrpClusterActivityLeader crpClusterActivityLeader) {
+  public CrpClusterActivityLeader saveCrpClusterActivityLeader(CrpClusterActivityLeader crpClusterActivityLeader) {
 
     return crpClusterActivityLeaderDAO.save(crpClusterActivityLeader);
   }

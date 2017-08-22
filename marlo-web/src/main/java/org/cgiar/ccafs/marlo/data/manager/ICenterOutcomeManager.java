@@ -34,7 +34,7 @@ public interface ICenterOutcomeManager {
    * @param researchOutcomeId is the researchOutcome identifier.
    * @return true if the researchOutcome was successfully deleted, false otherwise.
    */
-  public boolean deleteResearchOutcome(long researchOutcomeId);
+  public void deleteResearchOutcome(long researchOutcomeId);
 
 
   /**
@@ -78,7 +78,7 @@ public interface ICenterOutcomeManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveResearchOutcome(CenterOutcome researchOutcome);
+  public CenterOutcome saveResearchOutcome(CenterOutcome researchOutcome);
 
   /**
    * This method saves the information of the given researchOutcome
@@ -88,7 +88,7 @@ public interface ICenterOutcomeManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveResearchOutcome(CenterOutcome outcome, String actionName, List<String> relationsName);
+  public CenterOutcome saveResearchOutcome(CenterOutcome outcome, String actionName, List<String> relationsName);
 
 
 }

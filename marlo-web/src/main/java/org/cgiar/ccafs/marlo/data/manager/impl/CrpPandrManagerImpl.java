@@ -41,9 +41,9 @@ public class CrpPandrManagerImpl implements CrpPandrManager {
   }
 
   @Override
-  public boolean deleteCrpPandr(long crpPandrId) {
+  public void deleteCrpPandr(long crpPandrId) {
 
-    return crpPandrDAO.deleteCrpPandr(crpPandrId);
+    crpPandrDAO.deleteCrpPandr(crpPandrId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class CrpPandrManagerImpl implements CrpPandrManager {
   }
 
   @Override
-  public long saveCrpPandr(CrpPandr crpPandr) {
+  public CrpPandr saveCrpPandr(CrpPandr crpPandr) {
 
     return crpPandrDAO.save(crpPandr);
   }

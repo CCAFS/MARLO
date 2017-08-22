@@ -413,9 +413,7 @@ public class ProjectPartnersAction extends BaseAction {
           Institution institution = institutionService.getInstitutionById(projectPartner.getInstitution().getId());
           partnerNew.setInstitution(institution);
 
-          long partnerNewId = partnerService.saveProjectPartner(partnerNew);
-
-          partnerNew = partnerService.getProjectPartnerById(partnerNewId);
+          partnerNew = partnerService.saveProjectPartner(partnerNew);
 
           if (projectPartner.getUsers() != null) {
             for (CenterProjectPartnerPerson partnerPerson : projectPartner.getUsers()) {

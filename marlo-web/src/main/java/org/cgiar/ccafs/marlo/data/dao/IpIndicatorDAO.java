@@ -32,7 +32,7 @@ public interface IpIndicatorDAO {
    * @param ipIndicatorId is the ipIndicator identifier.
    * @return true if the ipIndicator was successfully deleted, false otherwise.
    */
-  public boolean deleteIpIndicator(long ipIndicatorId);
+  public void deleteIpIndicator(long ipIndicatorId);
 
   /**
    * This method validate if the ipIndicator identify with the given id exists in the system.
@@ -72,5 +72,5 @@ public interface IpIndicatorDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(IpIndicator ipIndicator);
+  public IpIndicator save(IpIndicator ipIndicator);
 }

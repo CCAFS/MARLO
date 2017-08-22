@@ -33,10 +33,10 @@ public class DeliverableProgramMySQLDAO extends AbstractMarloDAO<DeliverableProg
   }
 
   @Override
-  public boolean deleteDeliverableProgram(long deliverableProgramId) {
+  public void deleteDeliverableProgram(long deliverableProgramId) {
     DeliverableProgram deliverableProgram = this.find(deliverableProgramId);
 
-    return super.delete(deliverableProgram);
+    super.delete(deliverableProgram);
   }
 
   @Override
@@ -67,15 +67,15 @@ public class DeliverableProgramMySQLDAO extends AbstractMarloDAO<DeliverableProg
   }
 
   @Override
-  public long save(DeliverableProgram deliverableProgram) {
+  public DeliverableProgram save(DeliverableProgram deliverableProgram) {
     if (deliverableProgram.getId() == null) {
       super.saveEntity(deliverableProgram);
     } else {
-      super.update(deliverableProgram);
+      deliverableProgram = super.update(deliverableProgram);
     }
 
 
-    return deliverableProgram.getId();
+    return deliverableProgram;
   }
 
 

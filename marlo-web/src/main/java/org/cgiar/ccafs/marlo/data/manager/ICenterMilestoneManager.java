@@ -34,7 +34,7 @@ public interface ICenterMilestoneManager {
    * @param centerMilestoneId is the centerMilestone identifier.
    * @return true if the centerMilestone was successfully deleted, false otherwise.
    */
-  public boolean deleteCenterMilestone(long centerMilestoneId);
+  public void deleteCenterMilestone(long centerMilestoneId);
 
 
   /**
@@ -78,7 +78,7 @@ public interface ICenterMilestoneManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveCenterMilestone(CenterMilestone centerMilestone);
+  public CenterMilestone saveCenterMilestone(CenterMilestone centerMilestone);
 
   /**
    * This method saves the information of the given centerMilestone
@@ -88,7 +88,7 @@ public interface ICenterMilestoneManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveCenterMilestone(CenterMilestone centerMilestone, String actionName, List<String> relationsName);
+  public CenterMilestone saveCenterMilestone(CenterMilestone centerMilestone, String actionName, List<String> relationsName);
 
 
 }

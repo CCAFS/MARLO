@@ -33,10 +33,10 @@ public class CenterProjectTypeDAO extends AbstractMarloDAO<CenterProjectType, Lo
   }
 
   @Override
-  public boolean deleteProjectType(long projectTypeId) {
+  public void deleteProjectType(long projectTypeId) {
     CenterProjectType projectType = this.find(projectTypeId);
     projectType.setActive(false);
-    return this.save(projectType) > 0;
+    this.save(projectType);
   }
 
   @Override
@@ -73,23 +73,23 @@ public class CenterProjectTypeDAO extends AbstractMarloDAO<CenterProjectType, Lo
   }
 
   @Override
-  public long save(CenterProjectType projectType) {
+  public CenterProjectType save(CenterProjectType projectType) {
     if (projectType.getId() == null) {
       super.saveEntity(projectType);
     } else {
-      super.update(projectType);
+      projectType = super.update(projectType);
     }
-    return projectType.getId();
+    return projectType;
   }
 
   @Override
-  public long save(CenterProjectType projectType, String actionName, List<String> relationsName) {
+  public CenterProjectType save(CenterProjectType projectType, String actionName, List<String> relationsName) {
     if (projectType.getId() == null) {
       super.saveEntity(projectType, actionName, relationsName);
     } else {
-      super.update(projectType, actionName, relationsName);
+      projectType = super.update(projectType, actionName, relationsName);
     }
-    return projectType.getId();
+    return projectType;
   }
 
 

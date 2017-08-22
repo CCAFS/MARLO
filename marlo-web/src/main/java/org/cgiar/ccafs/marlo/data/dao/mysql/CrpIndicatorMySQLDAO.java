@@ -33,10 +33,10 @@ public class CrpIndicatorMySQLDAO extends AbstractMarloDAO<CrpIndicator, Long> i
   }
 
   @Override
-  public boolean deleteCrpIndicator(long crpIndicatorId) {
+  public void deleteCrpIndicator(long crpIndicatorId) {
     CrpIndicator crpIndicator = this.find(crpIndicatorId);
     crpIndicator.setActive(false);
-    return this.save(crpIndicator) > 0;
+    this.save(crpIndicator);
   }
 
   @Override
@@ -67,15 +67,15 @@ public class CrpIndicatorMySQLDAO extends AbstractMarloDAO<CrpIndicator, Long> i
   }
 
   @Override
-  public long save(CrpIndicator crpIndicator) {
+  public CrpIndicator save(CrpIndicator crpIndicator) {
     if (crpIndicator.getId() == null) {
       super.saveEntity(crpIndicator);
     } else {
-      super.update(crpIndicator);
+      crpIndicator = super.update(crpIndicator);
     }
 
 
-    return crpIndicator.getId();
+    return crpIndicator;
   }
 
 

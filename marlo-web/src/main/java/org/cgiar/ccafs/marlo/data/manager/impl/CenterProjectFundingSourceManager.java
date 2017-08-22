@@ -42,9 +42,9 @@ public class CenterProjectFundingSourceManager implements ICenterProjectFundingS
   }
 
   @Override
-  public boolean deleteProjectFundingSource(long projectFundingSourceId) {
+  public void deleteProjectFundingSource(long projectFundingSourceId) {
 
-    return projectFundingSourceDAO.deleteProjectFundingSource(projectFundingSourceId);
+    projectFundingSourceDAO.deleteProjectFundingSource(projectFundingSourceId);
   }
 
   @Override
@@ -72,7 +72,7 @@ public class CenterProjectFundingSourceManager implements ICenterProjectFundingS
   }
 
   @Override
-  public long saveProjectFundingSource(CenterProjectFundingSource projectFundingSource) {
+  public CenterProjectFundingSource saveProjectFundingSource(CenterProjectFundingSource projectFundingSource) {
 
     return projectFundingSourceDAO.save(projectFundingSource);
   }

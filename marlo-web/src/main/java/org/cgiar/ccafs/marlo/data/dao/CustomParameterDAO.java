@@ -32,7 +32,7 @@ public interface CustomParameterDAO {
    * @param customParameterId is the customParameter identifier.
    * @return true if the customParameter was successfully deleted, false otherwise.
    */
-  public boolean deleteCustomParameter(long customParameterId);
+  public void deleteCustomParameter(long customParameterId);
 
   /**
    * This method validate if the customParameter identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface CustomParameterDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CustomParameter customParameter);
+  public CustomParameter save(CustomParameter customParameter);
 }

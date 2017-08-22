@@ -33,10 +33,10 @@ public class ProjectPartnerPersonMySQLDAO extends AbstractMarloDAO<ProjectPartne
   }
 
   @Override
-  public boolean deleteProjectPartnerPerson(long projectPartnerPersonId) {
+  public void deleteProjectPartnerPerson(long projectPartnerPersonId) {
     ProjectPartnerPerson projectPartnerPerson = this.find(projectPartnerPersonId);
     projectPartnerPerson.setActive(false);
-    return this.save(projectPartnerPerson) > 0;
+    this.save(projectPartnerPerson);
   }
 
   @Override
@@ -67,15 +67,15 @@ public class ProjectPartnerPersonMySQLDAO extends AbstractMarloDAO<ProjectPartne
   }
 
   @Override
-  public long save(ProjectPartnerPerson projectPartnerPerson) {
+  public ProjectPartnerPerson save(ProjectPartnerPerson projectPartnerPerson) {
     if (projectPartnerPerson.getId() == null) {
       super.saveEntity(projectPartnerPerson);
     } else {
-      super.update(projectPartnerPerson);
+      projectPartnerPerson = super.update(projectPartnerPerson);
     }
 
 
-    return projectPartnerPerson.getId();
+    return projectPartnerPerson;
   }
 
 

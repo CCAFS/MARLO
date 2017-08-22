@@ -33,7 +33,7 @@ public interface ICenterMilestoneDAO {
    * @param centerMilestoneId is the centerMilestone identifier.
    * @return true if the centerMilestone was successfully deleted, false otherwise.
    */
-  public boolean deleteCenterMilestone(long centerMilestoneId);
+  public void deleteCenterMilestone(long centerMilestoneId);
 
   /**
    * This method validate if the centerMilestone identify with the given id exists in the system.
@@ -75,7 +75,7 @@ public interface ICenterMilestoneDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterMilestone centerMilestone);
+  public CenterMilestone save(CenterMilestone centerMilestone);
 
   /**
    * This method saves the information of the given centerMilestone
@@ -85,5 +85,5 @@ public interface ICenterMilestoneDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterMilestone centerMilestone, String actionName, List<String> relationsName);
+  public CenterMilestone save(CenterMilestone centerMilestone, String actionName, List<String> relationsName);
 }

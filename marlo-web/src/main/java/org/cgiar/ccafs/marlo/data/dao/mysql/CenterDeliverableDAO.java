@@ -33,10 +33,10 @@ public class CenterDeliverableDAO extends AbstractMarloDAO<CenterDeliverable, Lo
   }
 
   @Override
-  public boolean deleteDeliverable(long deliverableId) {
+  public void deleteDeliverable(long deliverableId) {
     CenterDeliverable deliverable = this.find(deliverableId);
     deliverable.setActive(false);
-    return this.save(deliverable) > 0;
+    this.save(deliverable);
   }
 
   @Override
@@ -73,23 +73,23 @@ public class CenterDeliverableDAO extends AbstractMarloDAO<CenterDeliverable, Lo
   }
 
   @Override
-  public long save(CenterDeliverable deliverable) {
+  public CenterDeliverable save(CenterDeliverable deliverable) {
     if (deliverable.getId() == null) {
       super.saveEntity(deliverable);
     } else {
-      super.update(deliverable);
+      deliverable = super.update(deliverable);
     }
-    return deliverable.getId();
+    return deliverable;
   }
 
   @Override
-  public long save(CenterDeliverable deliverable, String actionName, List<String> relationsName) {
+  public CenterDeliverable save(CenterDeliverable deliverable, String actionName, List<String> relationsName) {
     if (deliverable.getId() == null) {
       super.saveEntity(deliverable, actionName, relationsName);
     } else {
-      super.update(deliverable, actionName, relationsName);
+      deliverable = super.update(deliverable, actionName, relationsName);
     }
-    return deliverable.getId();
+    return deliverable;
   }
 
 

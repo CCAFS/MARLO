@@ -33,10 +33,10 @@ public class CrpMilestoneMySQLDAO extends AbstractMarloDAO<CrpMilestone, Long> i
   }
 
   @Override
-  public boolean deleteCrpMilestone(long crpMilestoneId) {
+  public void deleteCrpMilestone(long crpMilestoneId) {
     CrpMilestone crpMilestone = this.find(crpMilestoneId);
     crpMilestone.setActive(false);
-    return this.save(crpMilestone) > 0;
+    this.save(crpMilestone);
   }
 
   @Override
@@ -67,13 +67,13 @@ public class CrpMilestoneMySQLDAO extends AbstractMarloDAO<CrpMilestone, Long> i
   }
 
   @Override
-  public long save(CrpMilestone crpMilestone) {
+  public CrpMilestone save(CrpMilestone crpMilestone) {
     if (crpMilestone.getId() == null) {
       super.saveEntity(crpMilestone);
     } else {
-      super.update(crpMilestone);
+      crpMilestone = super.update(crpMilestone);
     }
-    return crpMilestone.getId();
+    return crpMilestone;
   }
 
 

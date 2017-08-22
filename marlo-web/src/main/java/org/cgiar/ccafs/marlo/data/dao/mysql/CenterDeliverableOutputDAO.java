@@ -34,10 +34,10 @@ public class CenterDeliverableOutputDAO extends AbstractMarloDAO<CenterDeliverab
   }
 
   @Override
-  public boolean deleteDeliverableOutput(long deliverableOutputId) {
+  public void deleteDeliverableOutput(long deliverableOutputId) {
     CenterDeliverableOutput deliverableOutput = this.find(deliverableOutputId);
     deliverableOutput.setActive(false);
-    return this.save(deliverableOutput) > 0;
+    this.save(deliverableOutput);
   }
 
   @Override
@@ -74,23 +74,23 @@ public class CenterDeliverableOutputDAO extends AbstractMarloDAO<CenterDeliverab
   }
 
   @Override
-  public long save(CenterDeliverableOutput deliverableOutput) {
+  public CenterDeliverableOutput save(CenterDeliverableOutput deliverableOutput) {
     if (deliverableOutput.getId() == null) {
       super.saveEntity(deliverableOutput);
     } else {
-      super.update(deliverableOutput);
+      deliverableOutput = super.update(deliverableOutput);
     }
-    return deliverableOutput.getId();
+    return deliverableOutput;
   }
 
   @Override
-  public long save(CenterDeliverableOutput deliverableOutput, String actionName, List<String> relationsName) {
+  public CenterDeliverableOutput save(CenterDeliverableOutput deliverableOutput, String actionName, List<String> relationsName) {
     if (deliverableOutput.getId() == null) {
       super.saveEntity(deliverableOutput, actionName, relationsName);
     } else {
-      super.update(deliverableOutput, actionName, relationsName);
+      deliverableOutput = super.update(deliverableOutput, actionName, relationsName);
     }
-    return deliverableOutput.getId();
+    return deliverableOutput;
   }
 
 

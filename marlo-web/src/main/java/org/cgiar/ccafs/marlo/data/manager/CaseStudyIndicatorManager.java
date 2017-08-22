@@ -34,7 +34,7 @@ public interface CaseStudyIndicatorManager {
    * @param caseStudyIndicatorId is the caseStudyIndicator identifier.
    * @return true if the caseStudyIndicator was successfully deleted, false otherwise.
    */
-  public boolean deleteCaseStudyIndicator(long caseStudyIndicatorId);
+  public void deleteCaseStudyIndicator(long caseStudyIndicatorId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface CaseStudyIndicatorManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveCaseStudyIndicator(CaseStudyIndicator caseStudyIndicator);
+  public CaseStudyIndicator saveCaseStudyIndicator(CaseStudyIndicator caseStudyIndicator);
 
 
 }

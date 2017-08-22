@@ -33,10 +33,10 @@ public class RoleMySQLDAO extends AbstractMarloDAO<Role, Long> implements RoleDA
   }
 
   @Override
-  public boolean deleteRole(long roleId) {
+  public void deleteRole(long roleId) {
     Role role = this.find(roleId);
 
-    return super.delete(role);
+    super.delete(role);
   }
 
   @Override
@@ -67,13 +67,13 @@ public class RoleMySQLDAO extends AbstractMarloDAO<Role, Long> implements RoleDA
   }
 
   @Override
-  public long save(Role role) {
+  public Role save(Role role) {
     if (role.getId() == null) {
       super.saveEntity(role);
     } else {
-      super.update(role);
+      role = super.update(role);
     }
-    return role.getId();
+    return role;
   }
 
 

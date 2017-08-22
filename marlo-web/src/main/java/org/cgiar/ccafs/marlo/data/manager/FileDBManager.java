@@ -34,7 +34,7 @@ public interface FileDBManager {
    * @param fileDBId is the fileDB identifier.
    * @return true if the fileDB was successfully deleted, false otherwise.
    */
-  public boolean deleteFileDB(long fileDBId);
+  public void deleteFileDB(long fileDBId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface FileDBManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveFileDB(FileDB fileDB);
+  public FileDB saveFileDB(FileDB fileDB);
 
 
 }

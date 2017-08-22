@@ -32,7 +32,7 @@ public interface ICenterObjectiveDAO {
    * @param researchObjectiveId is the researchObjective identifier.
    * @return true if the researchObjective was successfully deleted, false otherwise.
    */
-  public boolean deleteResearchObjective(long researchObjectiveId);
+  public void deleteResearchObjective(long researchObjectiveId);
 
   /**
    * This method validate if the researchObjective identify with the given id exists in the system.
@@ -74,5 +74,5 @@ public interface ICenterObjectiveDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterObjective researchObjective);
+  public CenterObjective save(CenterObjective researchObjective);
 }

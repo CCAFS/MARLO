@@ -34,7 +34,7 @@ public interface DeliverableManager {
    * @param deliverableId is the deliverable identifier.
    * @return true if the deliverable was successfully deleted, false otherwise.
    */
-  public boolean deleteDeliverable(long deliverableId);
+  public void deleteDeliverable(long deliverableId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface DeliverableManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveDeliverable(Deliverable deliverable);
+  public Deliverable saveDeliverable(Deliverable deliverable);
 
   /**
    * This method saves the information of the given deliverable and save the history in the auditlog
@@ -80,7 +80,7 @@ public interface DeliverableManager {
    * @param relationsName - the model class relations of deliverables that save in the auditlog.
    * @return
    */
-  public long saveDeliverable(Deliverable deliverable, String section, List<String> relationsName);
+  public Deliverable saveDeliverable(Deliverable deliverable, String section, List<String> relationsName);
 
 
 }

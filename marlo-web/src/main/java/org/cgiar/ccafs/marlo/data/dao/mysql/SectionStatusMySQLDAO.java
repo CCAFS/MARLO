@@ -34,10 +34,10 @@ public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long>
   }
 
   @Override
-  public boolean deleteSectionStatus(long sectionStatusId) {
+  public void deleteSectionStatus(long sectionStatusId) {
     SectionStatus sectionStatus = this.find(sectionStatusId);
 
-    return super.delete(sectionStatus);
+    super.delete(sectionStatus);
   }
 
   @Override
@@ -192,14 +192,14 @@ public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long>
   }
 
   @Override
-  public long save(SectionStatus sectionStatus) {
+  public SectionStatus save(SectionStatus sectionStatus) {
     if (sectionStatus.getId() == null) {
       super.saveEntity(sectionStatus);
     } else {
-      super.update(sectionStatus);
+      sectionStatus = super.update(sectionStatus);
     }
 
 
-    return sectionStatus.getId();
+    return sectionStatus;
   }
 }

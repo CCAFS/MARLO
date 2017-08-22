@@ -33,10 +33,10 @@ public class PhaseMySQLDAO extends AbstractMarloDAO<Phase, Long> implements Phas
   }
 
   @Override
-  public boolean deletePhase(long phaseId) {
+  public void deletePhase(long phaseId) {
     Phase phase = this.find(phaseId);
 
-    return super.delete(phase);
+    super.delete(phase);
   }
 
   @Override
@@ -78,15 +78,15 @@ public class PhaseMySQLDAO extends AbstractMarloDAO<Phase, Long> implements Phas
   }
 
   @Override
-  public long save(Phase phase) {
+  public Phase save(Phase phase) {
     if (phase.getId() == null) {
       super.saveEntity(phase);
     } else {
-      super.update(phase);
+      phase = super.update(phase);
     }
 
 
-    return phase.getId();
+    return phase;
   }
 
 

@@ -32,7 +32,7 @@ public interface CrpLocElementTypeDAO {
    * @param crpLocElementTypeId is the crpLocElementType identifier.
    * @return true if the crpLocElementType was successfully deleted, false otherwise.
    */
-  public boolean deleteCrpLocElementType(long crpLocElementTypeId);
+  public void deleteCrpLocElementType(long crpLocElementTypeId);
 
   /**
    * This method validate if the crpLocElementType identify with the given id exists in the system.
@@ -68,5 +68,5 @@ public interface CrpLocElementTypeDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CrpLocElementType crpLocElementType);
+  public CrpLocElementType save(CrpLocElementType crpLocElementType);
 }

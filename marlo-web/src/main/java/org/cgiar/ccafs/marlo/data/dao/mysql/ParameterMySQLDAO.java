@@ -33,10 +33,10 @@ public class ParameterMySQLDAO extends AbstractMarloDAO<Parameter, Long> impleme
   }
 
   @Override
-  public boolean deleteParameter(long parameterId) {
+  public void deleteParameter(long parameterId) {
     Parameter parameter = this.find(parameterId);
 
-    return super.delete(parameter);
+    super.delete(parameter);
   }
 
   @Override
@@ -77,15 +77,15 @@ public class ParameterMySQLDAO extends AbstractMarloDAO<Parameter, Long> impleme
   }
 
   @Override
-  public long save(Parameter parameter) {
+  public Parameter save(Parameter parameter) {
     if (parameter.getId() == null) {
       super.saveEntity(parameter);
     } else {
-      super.update(parameter);
+      parameter = super.update(parameter);
     }
 
 
-    return parameter.getId();
+    return parameter;
   }
 
 

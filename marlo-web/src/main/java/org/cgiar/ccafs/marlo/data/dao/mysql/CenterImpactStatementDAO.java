@@ -34,10 +34,10 @@ public class CenterImpactStatementDAO extends AbstractMarloDAO<CenterImpactState
   }
 
   @Override
-  public boolean deleteResearchImpactStatement(long researchImpactStatementId) {
+  public void deleteResearchImpactStatement(long researchImpactStatementId) {
     CenterImpactStatement researchImpactStatement = this.find(researchImpactStatementId);
     researchImpactStatement.setActive(false);
-    return this.save(researchImpactStatement) > 0;
+    this.save(researchImpactStatement);
   }
 
   @Override
@@ -74,23 +74,23 @@ public class CenterImpactStatementDAO extends AbstractMarloDAO<CenterImpactState
   }
 
   @Override
-  public long save(CenterImpactStatement researchImpactStatement) {
+  public CenterImpactStatement save(CenterImpactStatement researchImpactStatement) {
     if (researchImpactStatement.getId() == null) {
       super.saveEntity(researchImpactStatement);
     } else {
-      super.update(researchImpactStatement);
+      researchImpactStatement = super.update(researchImpactStatement);
     }
-    return researchImpactStatement.getId();
+    return researchImpactStatement;
   }
 
   @Override
-  public long save(CenterImpactStatement researchImpactStatement, String actionName, List<String> relationsName) {
+  public CenterImpactStatement save(CenterImpactStatement researchImpactStatement, String actionName, List<String> relationsName) {
     if (researchImpactStatement.getId() == null) {
       super.saveEntity(researchImpactStatement, actionName, relationsName);
     } else {
-      super.update(researchImpactStatement, actionName, relationsName);
+      researchImpactStatement = super.update(researchImpactStatement, actionName, relationsName);
     }
-    return researchImpactStatement.getId();
+    return researchImpactStatement;
   }
 
 

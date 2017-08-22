@@ -33,10 +33,10 @@ public class CrpProgramCountryMySQLDAO extends AbstractMarloDAO<CrpProgramCountr
   }
 
   @Override
-  public boolean deleteCrpProgramCountry(long crpProgramCountryId) {
+  public void deleteCrpProgramCountry(long crpProgramCountryId) {
     CrpProgramCountry crpProgramCountry = this.find(crpProgramCountryId);
     crpProgramCountry.setActive(false);
-    return this.save(crpProgramCountry) > 0;
+    this.save(crpProgramCountry);
   }
 
   @Override
@@ -67,15 +67,15 @@ public class CrpProgramCountryMySQLDAO extends AbstractMarloDAO<CrpProgramCountr
   }
 
   @Override
-  public long save(CrpProgramCountry crpProgramCountry) {
+  public CrpProgramCountry save(CrpProgramCountry crpProgramCountry) {
     if (crpProgramCountry.getId() == null) {
       super.saveEntity(crpProgramCountry);
     } else {
-      super.update(crpProgramCountry);
+      crpProgramCountry = super.update(crpProgramCountry);
     }
 
 
-    return crpProgramCountry.getId();
+    return crpProgramCountry;
   }
 
 

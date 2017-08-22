@@ -36,10 +36,10 @@ public class IpProjectContributionOverviewMySQLDAO extends AbstractMarloDAO<IpPr
   }
 
   @Override
-  public boolean deleteIpProjectContributionOverview(long ipProjectContributionOverviewId) {
+  public void deleteIpProjectContributionOverview(long ipProjectContributionOverviewId) {
     IpProjectContributionOverview ipProjectContributionOverview = this.find(ipProjectContributionOverviewId);
     ipProjectContributionOverview.setActive(false);
-    return this.save(ipProjectContributionOverview) > 0;
+    this.save(ipProjectContributionOverview);
   }
 
   @Override
@@ -117,15 +117,15 @@ public class IpProjectContributionOverviewMySQLDAO extends AbstractMarloDAO<IpPr
   }
 
   @Override
-  public long save(IpProjectContributionOverview ipProjectContributionOverview) {
+  public IpProjectContributionOverview save(IpProjectContributionOverview ipProjectContributionOverview) {
     if (ipProjectContributionOverview.getId() == null) {
       super.saveEntity(ipProjectContributionOverview);
     } else {
-      super.update(ipProjectContributionOverview);
+      ipProjectContributionOverview = super.update(ipProjectContributionOverview);
     }
 
 
-    return ipProjectContributionOverview.getId();
+    return ipProjectContributionOverview;
   }
 
 

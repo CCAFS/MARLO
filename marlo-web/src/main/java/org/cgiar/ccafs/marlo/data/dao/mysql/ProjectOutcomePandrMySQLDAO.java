@@ -33,10 +33,10 @@ public class ProjectOutcomePandrMySQLDAO extends AbstractMarloDAO<ProjectOutcome
   }
 
   @Override
-  public boolean deleteProjectOutcomePandr(long projectOutcomePandrId) {
+  public void deleteProjectOutcomePandr(long projectOutcomePandrId) {
     ProjectOutcomePandr projectOutcomePandr = this.find(projectOutcomePandrId);
     projectOutcomePandr.setActive(false);
-    return this.save(projectOutcomePandr) > 0;
+    this.save(projectOutcomePandr);
   }
 
   @Override
@@ -67,15 +67,15 @@ public class ProjectOutcomePandrMySQLDAO extends AbstractMarloDAO<ProjectOutcome
   }
 
   @Override
-  public long save(ProjectOutcomePandr projectOutcomePandr) {
+  public ProjectOutcomePandr save(ProjectOutcomePandr projectOutcomePandr) {
     if (projectOutcomePandr.getId() == null) {
       super.saveEntity(projectOutcomePandr);
     } else {
-      super.update(projectOutcomePandr);
+      projectOutcomePandr = super.update(projectOutcomePandr);
     }
 
 
-    return projectOutcomePandr.getId();
+    return projectOutcomePandr;
   }
 
 

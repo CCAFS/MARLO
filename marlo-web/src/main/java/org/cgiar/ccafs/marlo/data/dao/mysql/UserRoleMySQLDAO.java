@@ -33,9 +33,9 @@ public class UserRoleMySQLDAO extends AbstractMarloDAO<UserRole, Long> implement
   }
 
   @Override
-  public boolean deleteUserRole(long userRoleId) {
+  public void deleteUserRole(long userRoleId) {
     UserRole userRole = this.find(userRoleId);
-    return super.delete(userRole);
+    super.delete(userRole);
   }
 
   @Override
@@ -78,13 +78,13 @@ public class UserRoleMySQLDAO extends AbstractMarloDAO<UserRole, Long> implement
   }
 
   @Override
-  public long save(UserRole userRole) {
+  public UserRole save(UserRole userRole) {
     if (userRole.getId() == null) {
       super.saveEntity(userRole);
     } else {
-      super.update(userRole);
+      userRole = super.update(userRole);
     }
-    return userRole.getId();
+    return userRole;
   }
 
 

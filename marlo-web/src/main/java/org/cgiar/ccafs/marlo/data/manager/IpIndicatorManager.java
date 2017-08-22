@@ -34,7 +34,7 @@ public interface IpIndicatorManager {
    * @param ipIndicatorId is the ipIndicator identifier.
    * @return true if the ipIndicator was successfully deleted, false otherwise.
    */
-  public boolean deleteIpIndicator(long ipIndicatorId);
+  public void deleteIpIndicator(long ipIndicatorId);
 
   /**
    * This method validate if the ipIndicator identify with the given id exists in the system.
@@ -67,6 +67,6 @@ public interface IpIndicatorManager {
    */
   public IpIndicator getIpIndicatorById(long ipIndicatorID);
 
-  public long saveIpIndicator(IpIndicator ipIndicator);
+  public IpIndicator saveIpIndicator(IpIndicator ipIndicator);
 
 }

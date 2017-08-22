@@ -33,10 +33,10 @@ public class CrpProgramOutcomeMySQLDAO extends AbstractMarloDAO<CrpProgramOutcom
   }
 
   @Override
-  public boolean deleteCrpProgramOutcome(long crpProgramOutcomeId) {
+  public void deleteCrpProgramOutcome(long crpProgramOutcomeId) {
     CrpProgramOutcome crpProgramOutcome = this.find(crpProgramOutcomeId);
     crpProgramOutcome.setActive(false);
-    return this.save(crpProgramOutcome) > 0;
+    this.save(crpProgramOutcome);
   }
 
   @Override
@@ -67,13 +67,13 @@ public class CrpProgramOutcomeMySQLDAO extends AbstractMarloDAO<CrpProgramOutcom
   }
 
   @Override
-  public long save(CrpProgramOutcome crpProgramOutcome) {
+  public CrpProgramOutcome save(CrpProgramOutcome crpProgramOutcome) {
     if (crpProgramOutcome.getId() == null) {
       super.saveEntity(crpProgramOutcome);
     } else {
-      super.update(crpProgramOutcome);
+      crpProgramOutcome = super.update(crpProgramOutcome);
     }
-    return crpProgramOutcome.getId();
+    return crpProgramOutcome;
   }
 
 

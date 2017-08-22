@@ -33,9 +33,9 @@ public class CenterParameterDAO extends AbstractMarloDAO<CenterParameter, Long> 
   }
 
   @Override
-  public boolean deleteCenterParameter(long centerParameterId) {
+  public void deleteCenterParameter(long centerParameterId) {
     CenterParameter centerParameter = this.find(centerParameterId);
-    return super.delete(centerParameter);
+    super.delete(centerParameter);
   }
 
   @Override
@@ -72,23 +72,23 @@ public class CenterParameterDAO extends AbstractMarloDAO<CenterParameter, Long> 
   }
 
   @Override
-  public long save(CenterParameter centerParameter) {
+  public CenterParameter save(CenterParameter centerParameter) {
     if (centerParameter.getId() == null) {
       super.saveEntity(centerParameter);
     } else {
-      super.update(centerParameter);
+      centerParameter = super.update(centerParameter);
     }
-    return centerParameter.getId();
+    return centerParameter;
   }
 
   @Override
-  public long save(CenterParameter centerParameter, String actionName, List<String> relationsName) {
+  public CenterParameter save(CenterParameter centerParameter, String actionName, List<String> relationsName) {
     if (centerParameter.getId() == null) {
       super.saveEntity(centerParameter, actionName, relationsName);
     } else {
-      super.update(centerParameter, actionName, relationsName);
+      centerParameter = super.update(centerParameter, actionName, relationsName);
     }
-    return centerParameter.getId();
+    return centerParameter;
   }
 
 

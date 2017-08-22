@@ -33,10 +33,10 @@ public class CrpAssumptionMySQLDAO extends AbstractMarloDAO<CrpAssumption, Long>
   }
 
   @Override
-  public boolean deleteCrpAssumption(long crpAssumptionId) {
+  public void deleteCrpAssumption(long crpAssumptionId) {
     CrpAssumption crpAssumption = this.find(crpAssumptionId);
     crpAssumption.setActive(false);
-    return this.save(crpAssumption) > 0;
+    this.save(crpAssumption);
   }
 
   @Override
@@ -67,15 +67,15 @@ public class CrpAssumptionMySQLDAO extends AbstractMarloDAO<CrpAssumption, Long>
   }
 
   @Override
-  public long save(CrpAssumption crpAssumption) {
+  public CrpAssumption save(CrpAssumption crpAssumption) {
     if (crpAssumption.getId() == null) {
       super.saveEntity(crpAssumption);
     } else {
-      super.update(crpAssumption);
+      crpAssumption = super.update(crpAssumption);
     }
 
 
-    return crpAssumption.getId();
+    return crpAssumption;
   }
 
 

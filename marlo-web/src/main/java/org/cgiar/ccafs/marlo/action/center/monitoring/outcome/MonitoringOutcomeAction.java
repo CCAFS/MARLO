@@ -199,8 +199,7 @@ public class MonitoringOutcomeAction extends BaseAction {
       monitoringOutcome.setModificationJustification("");
 
 
-      long monitoringOutcomeID = monitoringOutcomeService.saveMonitoringOutcome(monitoringOutcome);
-      monitoringOutcome = monitoringOutcomeService.getMonitoringOutcomeById(monitoringOutcomeID);
+      monitoringOutcome = monitoringOutcomeService.saveMonitoringOutcome(monitoringOutcome);
 
       List<CenterMilestone> milestones = new ArrayList<>(outcome.getResearchMilestones().stream()
         .filter(rm -> rm.isActive() && rm.getTargetYear() >= calendarStart.get(Calendar.YEAR))
@@ -224,7 +223,6 @@ public class MonitoringOutcomeAction extends BaseAction {
 
       }
 
-      monitoringOutcome = monitoringOutcomeService.getMonitoringOutcomeById(monitoringOutcomeID);
       monitoringOutcome.setMilestones(new ArrayList<>(
         monitoringOutcome.getMonitoringMilestones().stream().filter(mm -> mm.isActive()).collect(Collectors.toList())));
       monitoringOutcome.setEvidences(new ArrayList<>());

@@ -34,7 +34,7 @@ public interface ICenterImpactBeneficiaryManager {
    * @param researchImpactBeneficiaryId is the researchImpactBeneficiary identifier.
    * @return true if the researchImpactBeneficiary was successfully deleted, false otherwise.
    */
-  public boolean deleteResearchImpactBeneficiary(long researchImpactBeneficiaryId);
+  public void deleteResearchImpactBeneficiary(long researchImpactBeneficiaryId);
 
 
   /**
@@ -80,7 +80,7 @@ public interface ICenterImpactBeneficiaryManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveResearchImpactBeneficiary(CenterImpactBeneficiary researchImpactBeneficiary);
+  public CenterImpactBeneficiary saveResearchImpactBeneficiary(CenterImpactBeneficiary researchImpactBeneficiary);
 
 
 }

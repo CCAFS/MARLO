@@ -111,10 +111,10 @@ public class IPSubmissionAction extends BaseAction {
           submission.setYear((short) this.getCenterYear());
           submission.setResearchCycle(cycle);
 
-          long submissionId = submissionService.saveSubmission(submission);
+          submission = submissionService.saveSubmission(submission);
 
-          if (submissionId > 0) {
-            this.setCenterSubmission(submissionService.getSubmissionById(submissionId));
+          if (submission.getId() > 0) {
+            this.setCenterSubmission(submission);
             this.sendNotficationEmail();
           }
 

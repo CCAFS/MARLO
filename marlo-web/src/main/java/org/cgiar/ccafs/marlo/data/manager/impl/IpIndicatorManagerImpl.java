@@ -41,9 +41,9 @@ public class IpIndicatorManagerImpl implements IpIndicatorManager {
   }
 
   @Override
-  public boolean deleteIpIndicator(long ipIndicatorId) {
+  public void deleteIpIndicator(long ipIndicatorId) {
 
-    return ipIndicatorDAO.deleteIpIndicator(ipIndicatorId);
+    ipIndicatorDAO.deleteIpIndicator(ipIndicatorId);
   }
 
   @Override
@@ -83,7 +83,7 @@ public class IpIndicatorManagerImpl implements IpIndicatorManager {
   }
 
   @Override
-  public long saveIpIndicator(IpIndicator ipIndicator) {
+  public IpIndicator saveIpIndicator(IpIndicator ipIndicator) {
 
     return ipIndicatorDAO.save(ipIndicator);
   }

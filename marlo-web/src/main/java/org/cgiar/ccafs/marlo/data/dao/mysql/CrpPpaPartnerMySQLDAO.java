@@ -36,10 +36,10 @@ public class CrpPpaPartnerMySQLDAO extends AbstractMarloDAO<CrpPpaPartner, Long>
   }
 
   @Override
-  public boolean deleteCrpPpaPartner(long crpPpaPartnerId) {
+  public void deleteCrpPpaPartner(long crpPpaPartnerId) {
     CrpPpaPartner crpPpaPartner = this.find(crpPpaPartnerId);
     crpPpaPartner.setActive(false);
-    return this.save(crpPpaPartner) > 0;
+    this.save(crpPpaPartner);
   }
 
   @Override
@@ -67,13 +67,13 @@ public class CrpPpaPartnerMySQLDAO extends AbstractMarloDAO<CrpPpaPartner, Long>
   }
 
   @Override
-  public long save(CrpPpaPartner crpPpaPartner) {
+  public CrpPpaPartner save(CrpPpaPartner crpPpaPartner) {
     if (crpPpaPartner.getId() == null) {
       super.saveEntity(crpPpaPartner);
     } else {
-      super.update(crpPpaPartner);
+      crpPpaPartner = super.update(crpPpaPartner);
     }
-    return crpPpaPartner.getId();
+    return crpPpaPartner;
   }
 
 }

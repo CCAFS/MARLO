@@ -33,10 +33,10 @@ public class InstitutionLocationMySQLDAO extends AbstractMarloDAO<InstitutionLoc
   }
 
   @Override
-  public boolean deleteInstitutionLocation(long institutionLocationId) {
+  public void deleteInstitutionLocation(long institutionLocationId) {
     InstitutionLocation institutionLocation = this.find(institutionLocationId);
 
-    return super.delete(institutionLocation);
+    super.delete(institutionLocation);
   }
 
   @Override
@@ -79,15 +79,15 @@ public class InstitutionLocationMySQLDAO extends AbstractMarloDAO<InstitutionLoc
   }
 
   @Override
-  public long save(InstitutionLocation institutionLocation) {
+  public InstitutionLocation save(InstitutionLocation institutionLocation) {
     if (institutionLocation.getId() == null) {
       super.saveEntity(institutionLocation);
     } else {
-      super.update(institutionLocation);
+      institutionLocation = super.update(institutionLocation);
     }
 
 
-    return institutionLocation.getId();
+    return institutionLocation;
   }
 
 
