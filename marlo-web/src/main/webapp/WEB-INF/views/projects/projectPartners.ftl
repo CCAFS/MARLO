@@ -301,8 +301,9 @@
       
       [#-- Responsibilities --]
       [#if project.projectEditLeader]
+     
       <div class="form-group partnerResponsabilities chosen"> 
-        [@customForm.textArea name="${name}.responsibilities" className="resp limitWords-100" i18nkey="projectPartners.responsabilities" required=isPPA editable=editable /]
+        [@customForm.textArea name="${name}.responsibilities" className="resp limitWords-100" i18nkey="projectPartners.responsabilities" required=action.hasSpecificities('crp_partner_contribution') editable=editable /]
         <div class="clearfix"></div>
       </div>
       [/#if]
