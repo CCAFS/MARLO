@@ -2,14 +2,11 @@ $(document).ready(init);
 
 function init() {
 
-  $("a[data-toggle='tab']").on('shown.bs.tab', function(e) {
-    $("#indexTab").val($(this).attr("index"));
-    $(".radio-block").each(function(i,e) {
-      showHiddenTags(e);
-    });
-  });
+  // Setting ID to Date-picker input
   $(".dateMetadata").attr("id", "deliverableMetadataDate");
   $(".restrictionDate").attr("id", "restrictionDate");
+
+  // Set Date-picker widget
   $("#deliverableMetadataDate, #restrictionDate").datepicker({
       dateFormat: "yy-mm-dd",
       minDate: '2012-01-01',
@@ -21,6 +18,19 @@ function init() {
         var selectedDate = new Date(inst.selectedYear, inst.selectedMonth, 1)
         $(this).datepicker('setDate', selectedDate);
       }
+  });
+
+  addDisseminationEvents();
+}
+
+function addDisseminationEvents() {
+
+  // Update indexTab input
+  $("a[data-toggle='tab']").on('shown.bs.tab', function(e) {
+    $("#indexTab").val($(this).attr("index"));
+    $(".radio-block").each(function(i,e) {
+      showHiddenTags(e);
+    });
   });
 
   // YES/NO Event for deliverables
@@ -55,7 +65,6 @@ function init() {
       $(".findableOptions").show("slow");
       $(".dataSharing").hide("slow");
     }
-
   });
 
   // Does the publication acknowledge
@@ -76,19 +85,6 @@ function init() {
   // Does this license allow modifications?
   $(".licenceModifications .button-label").on("click", function() {
     // Do Something
-  });
-
-  $("#deliverableMetadataDate").datepicker({
-      dateFormat: "yy-mm-dd",
-      minDate: '2015-01-01',
-      maxDate: '2030-12-31',
-      changeMonth: true,
-      numberOfMonths: 1,
-      changeYear: true,
-      onChangeMonthYear: function(year,month,inst) {
-        var selectedDate = new Date(inst.selectedYear, inst.selectedMonth, 1)
-        $(this).datepicker('setDate', selectedDate);
-      }
   });
 
   // Add Author
@@ -142,8 +138,7 @@ function init() {
   $(".crpSelect").on("change", function() {
     var option = $(this).find("option:selected");
     if(option.val() != "" && option.val() != "-1") {
-      if($(".flagshipList").find(".flagships input.idCrp[value='" + option.val() + "']").exists()) {
-      } else {
+      if(!($(".flagshipList").find(".flagships input.idCrp[value='" + option.val() + "']").exists())) {
         var composedText = option.text().toUpperCase();
         var v = composedText.length > 60 ? composedText.substr(0, 60) + ' ... ' : composedText;
         addCrp("", v, composedText, option.val());
@@ -154,6 +149,7 @@ function init() {
   // Remove flagship
   $(".removeFlagship ").on("click", removeFlagship);
 
+  // Edit an Author
   if(editable) {
     $('.lastName').dblclick(function() {
       var spantext = $(this).text();
@@ -463,8 +459,6 @@ function setMetadata(data) {
 
 /**
  * Sync the deliverable in the interface and set as synced
- * 
- * @returns
  */
 function syncDeliverable() {
   // Hide Sync Button & dissemination channel
@@ -483,8 +477,6 @@ function syncDeliverable() {
 
 /**
  * UnSync the deliverable in the interface
- * 
- * @returns
  */
 function unSyncDeliverable() {
   // Show metadata
@@ -556,17 +548,16 @@ function getMetadata(channel,url) {
         $(".deliverableDisseminationUrl").addClass('input-loading');
         $('#metadata-output').html("Searching ... " + data.metadataID);
       },
-      success: function(data) {
-        data = data.metadata;
-        if(jQuery.isEmptyObject(data)) {
+      success: function(metadata) {
+        metadata = metadata.metadata;
+        if(jQuery.isEmptyObject(metadata)) {
           $('#metadata-output').html("Metadata empty");
         } else {
           // Setting Metadata
-          setMetadata(data);
-
-          $('#metadata-output').empty().append("Found metadata in " + channel);
+          setMetadata(metadata);
+          // Show a message indicating the medatada harves was successfully
+          $('#metadata-output').empty().append("Found metadata successfully in " + channel);
         }
-
       },
       complete: function() {
         $(".deliverableDisseminationUrl").removeClass('input-loading');
