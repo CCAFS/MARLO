@@ -90,7 +90,47 @@ public class ProjectLocationMySQLDAO implements ProjectLocationDAO {
   public boolean deleteProjectLocation(long projectLocationId) {
     ProjectLocation projectLocation = this.find(projectLocationId);
     projectLocation.setActive(false);
-    return this.save(projectLocation) > 0;
+    long result = this.save(projectLocation);
+
+    if (projectLocation.getPhase().getNext() != null) {
+      this.deletProjectLocationPhase(projectLocation.getPhase().getNext(), projectLocation.getProject().getId(),
+        projectLocation);
+    }
+    return result > 0;
+
+  }
+
+  public void deletProjectLocationPhase(Phase next, long projecID, ProjectLocation projectLocation) {
+    Phase phase = dao.find(Phase.class, next.getId());
+    boolean hasLocElement = false;
+    if (projectLocation.getLocElement() != null) {
+      hasLocElement = true;
+    }
+    if (phase.getEditable() != null && phase.getEditable()) {
+
+      List<ProjectLocation> locations = new ArrayList<ProjectLocation>();
+
+      if (hasLocElement) {
+        locations.addAll(phase.getProjectLocations().stream()
+          .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID && c.getLocElement() != null
+            && projectLocation.getLocElement().getId().longValue() == c.getLocElement().getId().longValue())
+          .collect(Collectors.toList()));
+      } else {
+        locations.addAll(phase.getProjectLocations().stream()
+          .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID && c.getLocElementType() != null
+            && projectLocation.getLocElementType().getId().longValue() == c.getLocElementType().getId().longValue())
+          .collect(Collectors.toList()));
+      }
+      for (ProjectLocation location : locations) {
+        this.deleteProjectLocation(location.getId());
+      }
+    } else {
+      if (phase.getNext() != null) {
+        this.deletProjectLocationPhase(phase.getNext(), projecID, projectLocation);
+      }
+    }
+
+
   }
 
   @Override
