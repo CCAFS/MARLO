@@ -13,6 +13,8 @@
   {"label":"projectPartners", "nameSpace":"/projects", "action":""}
 ] /]
 
+[#assign partnerRespRequired = action.hasSpecificities('crp_partner_contribution') ]
+
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
@@ -117,6 +119,8 @@
 
 [#-- Hidden Parameters Interface --]
 <input id="partners-name" type="hidden" value="project.partners" />
+<input id="partnerRespRequired" type="hidden" value="${partnerRespRequired?string}" />
+
 
 [#-- Single partner TEMPLATE from partnersTemplate.ftl --]
 [@projectPartnerMacro element={} name="project.partners[-1]" isTemplate=true /]
@@ -125,7 +129,7 @@
 [@contactPersonMacro element={} name="project.partners[-1].partnerPersons[-1]" isTemplate=true /]
 
 [#-- Country Element Template --]
-  [@locElementMacro element={} name="project.partners[-1].selectedLocations" index=-1 isTemplate=true /]
+[@locElementMacro element={} name="project.partners[-1].selectedLocations" index=-1 isTemplate=true /]
 
 [#-- PPA list Template --]
 <ul style="display:none">
@@ -303,7 +307,7 @@
       [#-- Responsibilities --]
       [#if project.projectInfo.isProjectEditLeader()]
       <div class="form-group partnerResponsabilities chosen"> 
-        [@customForm.textArea name="${name}.responsibilities" className="resp limitWords-100" i18nkey="projectPartners.responsabilities" required=isPPA editable=editable /]
+        [@customForm.textArea name="${name}.responsibilities" className="resp limitWords-100" i18nkey="projectPartners.responsabilities" required=partnerRespRequired editable=editable /]
         <div class="clearfix"></div>
       </div>
       [/#if]
