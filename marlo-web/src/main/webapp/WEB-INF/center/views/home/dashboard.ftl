@@ -11,6 +11,11 @@
 [#include "/WEB-INF/center/global/pages/header.ftl" /]
 [#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
 
+[#if switchSession]
+  <script type="text/javascript">
+        location.reload();
+  </script>
+[/#if]
 <section class="marlo-content">
   <div class="container">
     [#-- What do you want to do --]

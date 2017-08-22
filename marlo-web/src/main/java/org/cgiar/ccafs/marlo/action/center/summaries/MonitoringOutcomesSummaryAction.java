@@ -325,7 +325,7 @@ public class MonitoringOutcomesSummaryAction extends BaseAction implements Summa
         String outcomeId = map.get("outcomeId").toString();
         String outcomeUrl =
           this.getBaseUrl() + "/monitoring/" + this.getCenterSession() + "/monitoringOutcome.do?outcomeID=" + outcomeId;
-        String outcomeTitle = map.get("outcomeDesc").toString();
+        String outcomeTitle = map.get("outcomeTitle").toString();
         String milestoneId = map.get("milestoneId").toString();
         String milestoneTitle = map.get("milestoneTitle").toString();
         String outcomeTargetUnit = map.get("outcomeTargetUnit").toString();
