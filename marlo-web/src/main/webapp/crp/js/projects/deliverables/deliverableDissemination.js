@@ -298,7 +298,6 @@ function openAccessRestriction() {
 }
 
 function changeDisseminationChannel() {
-
   var channel = $(".disseminationChannel").val();
   $('#disseminationUrl').find("input").val("");
   $("#metadata-output").empty();
@@ -319,12 +318,10 @@ function changeDisseminationChannel() {
   } else {
     $('#disseminationUrl').slideUp("slow");
   }
-
   checkFAIRCompliant();
 }
 
 function addAuthorElement() {
-
   var firstName = $(".fName").val();
   var lastName = $(".lName").val();
   var orcidId = $(".oId").val();
@@ -400,6 +397,12 @@ function checkNextAuthorItems(block) {
   }
 }
 
+/**
+ * Set the metadata in the interface
+ * 
+ * @param {Object} data
+ * @returns
+ */
 function setMetadata(data) {
   console.log(data);
 
@@ -420,30 +423,50 @@ function setMetadata(data) {
   });
 
   // Set Authors
-  if(data.authors.length > 0) {
-    // Clear Authors
-    $('.authorsList').empty();
-    // Add Authors from data source
-    $.each(data.authors, function(i,author) {
-      addAuthor(author);
-    });
-    // Hide authors
-    $('.author').addClass('hideAuthor');
-    $('.authorVisibles').hide();
-    $('.metadataElement-authors .hide').val("true");
+  if(typeof (data.authors) != 'undefined') {
+    if(data.authors.length > 0) {
+      // Clear Authors
+      $('.authorsList').empty();
+      // Add Authors from data source
+      $.each(data.authors, function(i,author) {
+        addAuthor(author);
+      });
+      // Hide authors
+      $('.author').addClass('hideAuthor');
+      $('.authorVisibles').hide();
+      $('.metadataElement-authors .hide').val("true");
+    } else {
+      // Show authors
+      $('.author').removeClass('hideAuthor');
+      $('.authorVisibles').show();
+      $('.metadataElement-authors .hide').val("false");
+    }
+  }
+
+  // Open Access Validation
+  var $input = $(".accessible ").parent().find('input');
+  if(data.openacess == "Open Access") {
+    $input.val(true);
+    $(".accessible ").parent().find("label").removeClass("radio-checked");
+    $(".openAccessOptions").hide("slow");
+    $(".accessible .yes-button-label ").addClass("radio-checked");
   } else {
-    // Show authors
-    $('.author').removeClass('hideAuthor');
-    $('.authorVisibles').show();
-    $('.metadataElement-authors .hide').val("false");
+    $input.val(false);
+    $(".accessible ").parent().find("label").removeClass("radio-checked");
+    $(".openAccessOptions").show("slow");
+    $(".accessible .no-button-label ").addClass("radio-checked");
   }
 
   syncDeliverable();
 
 }
 
+/**
+ * Sync the deliverable in the interface and set as synced
+ * 
+ * @returns
+ */
 function syncDeliverable() {
-
   // Hide Sync Button & dissemination channel
   $('#fillMetadata .checkButton, .disseminationChannelBlock').hide('slow');
   // Show UnSync & Update Button
@@ -458,6 +481,11 @@ function syncDeliverable() {
   $(document).trigger('updateComponent');
 }
 
+/**
+ * UnSync the deliverable in the interface
+ * 
+ * @returns
+ */
 function unSyncDeliverable() {
   // Show metadata
   $('.metadataElement').each(function(i,e) {
@@ -493,22 +521,25 @@ function unSyncDeliverable() {
 function syncMetadata() {
   var channel = $(".disseminationChannel").val();
   var url = $.trim($(".deliverableDisseminationUrl").val());
-  // jsUri Library (https://github.com/derek-watson/jsUri)
-  var uri = new Uri(url);
 
   // Validate URL
   if(url == "") {
     return;
   }
-  getMetadata(channel, url, uri);
 
-
-
+  // Get metadata
+  getMetadata(channel, url);
 
 }
 
-
-function getMetadata(channel,url,uri) {
+/**
+ * Get Deliverable metadata from different repositories using ajax
+ * 
+ * @param {string} channel - Repository whrere the metadata is hosted (e.g. CGSpace, Dataverse etc.)
+ * @param {string} url - Repositori URL (e.g. https://cgspace.cgiar.org/handle/10568/79435)
+ * @returns the ajax return a metadata object
+ */
+function getMetadata(channel,url) {
   var data = {
       pageID: channel,
       metadataID: url
@@ -526,40 +557,15 @@ function getMetadata(channel,url,uri) {
         $('#metadata-output').html("Searching ... " + data.metadataID);
       },
       success: function(data) {
-        console.log(data);
+        data = data.metadata;
+        if(jQuery.isEmptyObject(data)) {
+          $('#metadata-output').html("Metadata empty");
+        } else {
+          // Setting Metadata
+          setMetadata(data);
 
-
-          if(jQuery.isEmptyObject(data)) {
-            $('#metadata-output').html("Metadata empty");
-          } else {
-            var fields = [];
-
-
-
-
-            // Setting Metadata
-            setMetadata(data);
-
-            // Set Authors
-            authorsByService(data.author);
-
-
-            // Open Access Validation
-            var $input = $(".accessible ").parent().find('input');
-            if(data.openacess == "Open Access") {
-              $input.val(true);
-              $(".accessible ").parent().find("label").removeClass("radio-checked");
-              $(".openAccessOptions").hide("slow");
-              $(".accessible .yes-button-label ").addClass("radio-checked");
-            } else {
-              $input.val(false);
-              $(".accessible ").parent().find("label").removeClass("radio-checked");
-              $(".openAccessOptions").show("slow");
-              $(".accessible .no-button-label ").addClass("radio-checked");
-            }
-
-            $('#metadata-output').empty().append("Found metadata in " + channel);
-          }
+          $('#metadata-output').empty().append("Found metadata in " + channel);
+        }
 
       },
       complete: function() {
@@ -572,8 +578,13 @@ function getMetadata(channel,url,uri) {
   });
 }
 
-
-
+/**
+ * Validate duplicated authors
+ * 
+ * @param {string} lastName
+ * @param {string} firstName
+ * @returns {boolean} True if is duplicated.
+ */
 function validateAuthors(lastName,firstName) {
   if($(".authorsList").find('.author input.lastNameInput[value="' + lastName + '"]').exists()
       || $(".authorsList").find(".author input.firstNameInput[value='" + firstName + "']").exists()) {
