@@ -166,10 +166,19 @@ public class ProjectLocationAction extends BaseAction {
     return SUCCESS;
   }
 
+  /**
+   * The name of the autosave file is constructed and the path is searched
+   * 
+   * @return Auto save file path
+   */
   private Path getAutoSaveFilePath() {
+    // get the class simple name
     String composedClassName = project.getClass().getSimpleName();
+    // get the action name and replace / for _
     String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+    // concatane name and add the .json extension
+    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + this.getActualPhase().getDescription() + "_"
+      + this.getActualPhase().getYear() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
@@ -947,7 +956,7 @@ public class ProjectLocationAction extends BaseAction {
                   projectLocation.setCreatedBy(this.getCurrentUser());
                   projectLocation.setModificationJustification("");
                   projectLocation.setModifiedBy(this.getCurrentUser());
-
+                  projectLocation.setPhase(this.getActualPhase());
                   projectLocationManager.saveProjectLocation(projectLocation);
 
                 } else {
@@ -958,6 +967,7 @@ public class ProjectLocationAction extends BaseAction {
                     existProjectLocation.setCreatedBy(this.getCurrentUser());
                     existProjectLocation.setModificationJustification("");
                     existProjectLocation.setModifiedBy(this.getCurrentUser());
+                    existProjectLocation.setPhase(this.getActualPhase());
                     projectLocationManager.saveProjectLocation(existProjectLocation);
                   }
                 }
@@ -1026,7 +1036,7 @@ public class ProjectLocationAction extends BaseAction {
                     projectLocation.setCreatedBy(this.getCurrentUser());
                     projectLocation.setModificationJustification("");
                     projectLocation.setModifiedBy(this.getCurrentUser());
-
+                    projectLocation.setPhase(this.getActualPhase());
                     projectLocationManager.saveProjectLocation(projectLocation);
                   }
                 }
@@ -1067,7 +1077,7 @@ public class ProjectLocationAction extends BaseAction {
       projectLocationSave.setModifiedBy(this.getCurrentUser());
       projectLocationSave.setModificationJustification("");
       projectLocationSave.setProject(project);
-
+      projectLocationSave.setPhase(this.getActualPhase());
       if (!regionsCustomSaved.contains(countryFundingSources.getLocElement()) && countryFundingSources.isSelected()) {
 
         projectLocationSave.setLocElement(countryFundingSources.getLocElement());

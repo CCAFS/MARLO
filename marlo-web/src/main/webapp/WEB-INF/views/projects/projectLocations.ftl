@@ -41,6 +41,7 @@
         [#include "/WEB-INF/views/projects/messages-projects.ftl" /]
       
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
+                        <input class="projectInfo" type="hidden" name="project.projectInfo.id" value="${project.projectInfo.id}" />
            
           <p class="bg-primary" style="padding: 18px; display:none;">
             <span class="glyphicon glyphicon-flash"></span>
