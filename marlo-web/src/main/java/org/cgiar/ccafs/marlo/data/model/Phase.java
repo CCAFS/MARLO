@@ -44,7 +44,7 @@ public class Phase implements java.io.Serializable, IAuditLog {
   private Set<CrpClusterOfActivity> clusters = new HashSet<CrpClusterOfActivity>(0);
   private Set<ProjectOutcome> projectOutcomes = new HashSet<ProjectOutcome>(0);
   private Set<Activity> projectActivites = new HashSet<Activity>(0);
-
+  private Set<ProjectLocation> projectLocations = new HashSet<ProjectLocation>(0);
 
   public Phase() {
   }
@@ -114,6 +114,7 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return this.id;
   }
 
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -121,12 +122,12 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+
   @Override
   public String getModificationJustification() {
 
     return "";
   }
-
 
   @Override
   public User getModifiedBy() {
@@ -134,7 +135,6 @@ public class Phase implements java.io.Serializable, IAuditLog {
     u.setId(new Long(3));
     return u;
   }
-
 
   public Phase getNext() {
     return next;
@@ -155,36 +155,42 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return projectActivites;
   }
 
+
   public Set<ProjectClusterActivity> getProjectClusters() {
     return projectClusters;
   }
+
 
   public Set<ProjectFocus> getProjectFocuses() {
     return projectFocuses;
   }
 
-
   public Set<ProjectInfo> getProjectInfos() {
     return projectInfos;
   }
+
+  public Set<ProjectLocation> getProjectLocations() {
+    return projectLocations;
+  }
+
 
   public Set<ProjectOutcome> getProjectOutcomes() {
     return projectOutcomes;
   }
 
-
   public Set<ProjectPhase> getProjectPhases() {
     return this.projectPhases;
   }
+
 
   public Boolean getVisible() {
     return visible;
   }
 
-
   public int getYear() {
     return this.year;
   }
+
 
   @Override
   public int hashCode() {
@@ -200,10 +206,10 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
   public Boolean isReporting() {
     return description.equals(APConstants.REPORTING);
   }
+
 
   public void setClusters(Set<CrpClusterOfActivity> clusters) {
     this.clusters = clusters;
@@ -251,6 +257,10 @@ public class Phase implements java.io.Serializable, IAuditLog {
 
   public void setProjectInfos(Set<ProjectInfo> projectInfos) {
     this.projectInfos = projectInfos;
+  }
+
+  public void setProjectLocations(Set<ProjectLocation> projectLocations) {
+    this.projectLocations = projectLocations;
   }
 
   public void setProjectOutcomes(Set<ProjectOutcome> projectOutcomes) {
