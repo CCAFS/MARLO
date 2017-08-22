@@ -145,6 +145,10 @@ public class FundingSourceValidator extends BaseValidator {
       }
     }
 
+    // Validate Grant Amount only if the Funding source is Synced
+    if (fundingSource.getSynced()) {
+      // TODO: Validate the budget amount do not exceed the grant total amount (fundingSource.getGrantAmount())
+    }
 
     if (action.hasSpecificities(APConstants.CRP_EMAIL_FUNDING_SOURCE)) {
       if (!this.isValidString(fundingSource.getContactPersonEmail())) {

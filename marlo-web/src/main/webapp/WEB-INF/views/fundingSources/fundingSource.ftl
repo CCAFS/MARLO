@@ -98,6 +98,7 @@
           <div class="url-field">
             <label for="fundingSource.financeCode" class="editable">[@s.text name="projectCofunded.financeCode"/]:<span class="red requiredTag" style="display:none;">*</span></label>
             <div class="input-group">
+              [#if editable]
               [#-- Finance Channel --]
               <div class="input-group-btn financeChannel" style="display:${hasCIAT?string('', 'none')}">
                 <button type="button" class="btn btn-default btn-sm disabled dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -117,6 +118,9 @@
               </div><!-- /btn-group -->
               [#-- Finance Input --]
               <input type="text" name="fundingSource.financeCode" value="${(fundingSource.financeCode)!}" class="form-control input-sm financeCode optional" [#if isSynced]readonly="readonly"[/#if] placeholder="e.g. OCS Code">
+              [#else]
+                <small>CIAT-OCS:</small> ${(fundingSource.financeCode)!}
+              [/#if]
             </div><!-- /input-group -->
             <span class="financeCode-message"></span>
           </div>
@@ -167,19 +171,31 @@
       <div class="form-group row">
         <div class="col-md-4 metadataElement-startDate">
           <label for="fundingSource.startDate">[@s.text name="fundingSource.startDate" /]:[@customForm.req required=editable && action.canEditFundingSourceBudget()  /]</label>
-          <input id="fundingSource.startDate" type="hidden" name="fundingSource.startDate" value="${(fundingSource.startDate?string["yyyy-MM-dd"])!}" class="form-control input-sm metadataValue startDateInput">
-          <p class="dateLabel btn btn-default ${isSynced?string('disabled','')}">${(fundingSource.startDate?string["MMMM yyyy"])!}  </p>
+          [#if editable]
+            <input id="fundingSource.startDate" type="hidden" name="fundingSource.startDate" value="${(fundingSource.startDate?string["yyyy-MM-dd"])!}" class="form-control input-sm metadataValue startDateInput">
+            <p class="dateLabel btn btn-default ${isSynced?string('disabled','')}">${(fundingSource.startDate?string["MMMM yyyy"])!}</p>
+          [#else]
+            <div class="input"><p>${(fundingSource.startDate?string["MMMM yyyy"])!}</p></div>
+          [/#if]
         </div>
         <div class="col-md-4 metadataElement-endDate">
           <label for="fundingSource.endDate">[@s.text name="fundingSource.endDate" /]:[@customForm.req required=editable && action.canEditFundingSourceBudget()  /]</label>
-          <input id="fundingSource.endDate" type="hidden" name="fundingSource.endDate" value="${(fundingSource.endDate?string["yyyy-MM-dd"])!}" class="form-control input-sm metadataValue endDateInput">
-          <p class="dateLabel btn btn-default ${isSynced?string('disabled','')}">${(fundingSource.endDate?string["MMMM yyyy"])!}  </p>
+          [#if editable]
+            <input id="fundingSource.endDate" type="hidden" name="fundingSource.endDate" value="${(fundingSource.endDate?string["yyyy-MM-dd"])!}" class="form-control input-sm metadataValue endDateInput">
+            <p class="dateLabel btn btn-default ${isSynced?string('disabled','')}">${(fundingSource.endDate?string["MMMM yyyy"])!}</p>
+          [#else]
+            <div class="input"><p>${(fundingSource.endDate?string["MMMM yyyy"])!}</p></div>
+          [/#if]
         </div>
         <div class="col-md-4 extensionDateBlock metadataElement-extensionDate" style="display:${hasCIAT?string('block', 'none')}">
           <label for="fundingSource.extensionDate">[@s.text name="fundingSource.extensionDate" /]:</label> 
-          <input id="fundingSource.extensionDate" type="hidden" name="fundingSource.extensionDate" value="${(fundingSource.extensionDate?string["yyyy-MM-dd"])!}" class="form-control input-sm metadataValue extensionDateInput">
-          <p class="dateLabel btn btn-default ${isSynced?string('disabled','')}">${(fundingSource.extensionDate?string["MMMM yyyy"])!}  </p>
-          <small class="pull-right clearDate syncVisibles" style="display:${isSynced?string('none', 'block')}"> <span class="glyphicon glyphicon-remove"></span> Clear</small>
+          [#if editable]
+            <input id="fundingSource.extensionDate" type="hidden" name="fundingSource.extensionDate" value="${(fundingSource.extensionDate?string["yyyy-MM-dd"])!}" class="form-control input-sm metadataValue extensionDateInput">
+            <p class="dateLabel btn btn-default ${isSynced?string('disabled','')}">${(fundingSource.extensionDate?string["MMMM yyyy"])!}</p>
+            <small class="pull-right clearDate syncVisibles" style="display:${isSynced?string('none', 'block')}"> <span class="glyphicon glyphicon-remove"></span> Clear</small>
+          [#else]
+            <div class="input"><p>${(fundingSource.extensionDate?string["MMMM yyyy"])!}</p></div>
+          [/#if]
         </div>
       </div>
       
