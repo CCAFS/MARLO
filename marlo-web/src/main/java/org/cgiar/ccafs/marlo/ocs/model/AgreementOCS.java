@@ -27,27 +27,17 @@ public class AgreementOCS {
   private String id;
   private String description;
   private DonorOCS originalDonor;
-
   private DonorOCS directDonor;
-
-
   private List<CountryOCS> countries;
-
-
   private List<CrpOCS> crps;
-
-
   private ResearcherOCS researcher;
-
   private String shortTitle;
-
   private String objectives;
   private String grantAmount;
   private Date startDate;
   private Date endDate;
   private Date extensionDate;
   private String contractStatus;
-
   private String fundingType;
   private List<PlaOCS> plas;
 
