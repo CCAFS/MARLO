@@ -499,9 +499,10 @@ public class HibernateAuditLogListener
                     /**
                      * Ensure that lazy loaded collections are at least proxy instances (if not fetched).
                      * If you are not getting all collections auditLogged it is because the Action classes are
-                     * persisting the dettached entity and not copying across the managed collections (e.g. the ones
-                     * in our entities that are using Set). Better to refactor the Action classes to copy the List
-                     * collections, which are full of detached entities, see OutcomeAction save method for an example.
+                     * persisting the detached entity and not copying across the managed collections (e.g. the ones
+                     * in our entities that are generally using Set). To overcome refactor the Action classes to copy
+                     * the List collections, which are full of detached entities, see OutcomeAction save method for an
+                     * example.
                      * When issue #1124 is solved, this won't be a problem.
                      */
                     Object obj = sessionFactory.getCurrentSession().get(className, (Serializable) audit.getId());

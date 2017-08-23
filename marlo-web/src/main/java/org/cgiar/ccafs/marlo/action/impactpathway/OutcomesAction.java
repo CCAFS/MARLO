@@ -611,10 +611,17 @@ public class OutcomesAction extends BaseAction {
         db.setActive(true);
         db.setModifiedBy(this.getCurrentUser());
         db.setModificationJustification("");
+        // Copy across non collections items.
+        db.setSrfTargetUnit(crpProgramOutcome.getSrfTargetUnit());
+        db.setDescription(crpProgramOutcome.getDescription());
+        db.setYear(crpProgramOutcome.getYear());
+        db.setValue(crpProgramOutcome.getValue());
+        /** Actually we shouldn't need to call save as Hibernate will realize the entity is dirty and save **/
         db = crpProgramOutcomeManager.saveCrpProgramOutcome(db);
-        // Now copy across the stupidity. See issue #1124
+        // Now copy across the placeholder collections. See issue #1124.
         db.setMilestones(crpProgramOutcome.getMilestones());
         db.setSubIdos(crpProgramOutcome.getSubIdos());
+        // Execute logic to update child collections.
         this.saveMilestones(db);
         this.saveSubIdo(db);
       }
