@@ -410,7 +410,7 @@ public class ClusterActivitiesAction extends BaseAction {
 
     // Subject
     String subject = this.getText("email.cluster.assigned.subject",
-      new String[] {crpClusterPreview.getIdentifier(), loggedCrp.getName()});
+      new String[] {crpClusterPreview.getIdentifier(), loggedCrp.getAcronym()});
 
     // Message
     userAssigned = userManager.getUser(userAssigned.getId());
@@ -418,7 +418,7 @@ public class ClusterActivitiesAction extends BaseAction {
     // Building the Email message:
     message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
     message.append(this.getText("email.cluster.assigned", new String[] {crpClusterPreview.getIdentifier(),
-      crpClusterPreview.getDescription(), loggedCrp.getName(), this.getText("email.cluster.responsabilities")}));
+      crpClusterPreview.getDescription(), loggedCrp.getAcronym(), this.getText("email.cluster.responsabilities")}));
     message.append(this.getText("email.support", new String[] {crpAdmins}));
     message.append(this.getText("email.getStarted"));
     message.append(this.getText("email.bye"));
@@ -482,7 +482,7 @@ public class ClusterActivitiesAction extends BaseAction {
 
     // Subject
     String subject = this.getText("email.cluster.unassigned.subject",
-      new String[] {crpClusterOfActivity.getIdentifier(), loggedCrp.getName()});
+      new String[] {crpClusterOfActivity.getIdentifier(), loggedCrp.getAcronym()});
 
 
     // Message
@@ -490,8 +490,8 @@ public class ClusterActivitiesAction extends BaseAction {
     StringBuilder message = new StringBuilder();
     // Building the Email message:
     message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
-    message.append(this.getText("email.cluster.unassigned",
-      new String[] {crpClusterOfActivity.getIdentifier(), crpClusterOfActivity.getDescription(), loggedCrp.getName()}));
+    message.append(this.getText("email.cluster.unassigned", new String[] {crpClusterOfActivity.getIdentifier(),
+      crpClusterOfActivity.getDescription(), loggedCrp.getAcronym()}));
     message.append(this.getText("email.support", new String[] {crpAdmins}));
     message.append(this.getText("email.bye"));
 
