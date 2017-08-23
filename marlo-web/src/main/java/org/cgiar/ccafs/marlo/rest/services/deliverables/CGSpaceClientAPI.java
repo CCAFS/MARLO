@@ -71,6 +71,11 @@ public class CGSpaceClientAPI extends MetadataClientApi {
         keyValue = keyValue.substring(3);
         if (keyValue.equals("authors")) {
           Author author = new Author(value.getStringValue());
+          String names[] = author.getFirstName().split(", ");
+          if (names.length == 2) {
+            author.setFirstName(names[1]);
+            author.setLastName(names[0]);
+          }
           authors.add(author);
         } else {
           if (jo.has(keyValue)) {

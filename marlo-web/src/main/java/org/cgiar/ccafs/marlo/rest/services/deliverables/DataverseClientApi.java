@@ -76,6 +76,12 @@ public class DataverseClientApi extends MetadataClientApi {
       for (Object object : authorsArray) {
         JSONObject jsonObject = (JSONObject) object;
         Author author = new Author(jsonObject.getString("authorName"));
+        String names[] = author.getFirstName().split(", ");
+        if (names.length == 2) {
+          author.setFirstName(names[1]);
+          author.setLastName(names[0]);
+        }
+
         if (jsonObject.has("authorIdentifier")) {
           author.setOrcidId(jsonObject.getString("authorIdentifier"));
         }

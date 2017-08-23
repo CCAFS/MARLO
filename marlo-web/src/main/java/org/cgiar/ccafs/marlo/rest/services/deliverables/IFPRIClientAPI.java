@@ -77,6 +77,11 @@ public class IFPRIClientAPI extends MetadataClientApi {
         if (div.length == 2) {
           String firstName = div[1].replace("{0}", ", ");
           Author author = new Author(firstName);
+          String names[] = author.getFirstName().split(", ");
+          if (names.length == 2) {
+            author.setFirstName(names[1]);
+            author.setLastName(names[0]);
+          }
           author.setOrcidId(div[0]);
           authors.add(author);
         }

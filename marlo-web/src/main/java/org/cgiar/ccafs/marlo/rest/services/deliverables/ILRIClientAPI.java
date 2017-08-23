@@ -66,6 +66,11 @@ public class ILRIClientAPI extends MetadataClientApi {
       for (String string : authorsJson) {
         string = string.substring(0, string.indexOf("("));
         Author author = new Author(string);
+        String names[] = author.getFirstName().split(", ");
+        if (names.length == 2) {
+          author.setFirstName(names[0]);
+          author.setLastName(names[1]);
+        }
         authors.add(author);
 
 
