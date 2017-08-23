@@ -1,5 +1,5 @@
 var $removePartnerDialog, $projectPPAPartners;
-var canUpdatePPAPartners, allPPAInstitutions, partnerPersonTypes, leaderType, coordinatorType, defaultType;
+var canUpdatePPAPartners, allPPAInstitutions, partnerPersonTypes, leaderType, coordinatorType, defaultType, partnerRespRequired;
 var projectLeader;
 var lWordsResp = 100;
 
@@ -12,6 +12,7 @@ function init() {
   $projectPPAPartners = $('#projectPPAPartners');
   allPPAInstitutions = JSON.parse($('#allPPAInstitutions').val());
   canUpdatePPAPartners = ($("#canUpdatePPAPartners").val() === "true");
+  partnerRespRequired = ($("#partnerRespRequired").val() === "true");
   leaderType = 'PL';
   coordinatorType = 'PC';
   defaultType = 'CP';
@@ -937,7 +938,7 @@ function PartnerObject(partner) {
   };
   this.showPPAs = function() {
     $(this.ppaPartnersList).slideDown();
-    $(partner).find('.partnerResponsabilities .requiredTag').hide();
+    // $(partner).find('.partnerResponsabilities .requiredTag').hide();
     $(partner).find('.contactsPerson .requiredTag').hide();
   };
   this.hidePPAs = function() {
@@ -949,7 +950,7 @@ function PartnerObject(partner) {
       $(partner).find('.addContact .addLink').trigger('click');
     }
     
-    $(partner).find('.partnerResponsabilities .requiredTag').show();
+    // $(partner).find('.partnerResponsabilities .requiredTag').show();
     $(partner).find('.contactsPerson .requiredTag').show();
     
   };
@@ -1046,7 +1047,6 @@ function formatStateCountries(state) {
 };
 
 // Locations (Country Offices)
-
 function addLocElementCountry() {
   var $partner = $(this).parents('.projectPartner');
   var partner = new PartnerObject($partner);

@@ -165,7 +165,7 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
 
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
-      String center = loggedCrp.getName();
+      String center = loggedCrp.getAcronym();
 
 
       // Get datetime
