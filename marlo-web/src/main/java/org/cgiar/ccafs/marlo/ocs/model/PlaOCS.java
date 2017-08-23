@@ -21,10 +21,17 @@ import java.util.List;
 public class PlaOCS {
 
   private String id;
-
   private String description;
+  private double ammount;
+
   private List<PartnerOCS> partners;
+
+
   private List<CountryOCS> countries;
+
+  public double getAmmount() {
+    return ammount;
+  }
 
   public List<CountryOCS> getCountries() {
     return countries;
@@ -40,6 +47,10 @@ public class PlaOCS {
 
   public List<PartnerOCS> getPartners() {
     return partners;
+  }
+
+  public void setAmmount(double ammount) {
+    this.ammount = ammount;
   }
 
   public void setCountries(List<CountryOCS> countries) {

@@ -26,50 +26,58 @@ public class AgreementOCS {
 
   private String id;
   private String description;
-  private DonorOCS donor;
+  private DonorOCS originalDonor;
+
+  private DonorOCS directDonor;
+
+
   private List<CountryOCS> countries;
+
+
   private List<CrpOCS> crps;
+
+
   private ResearcherOCS researcher;
+
   private String shortTitle;
+
   private String objectives;
   private String grantAmount;
-
   private Date startDate;
   private Date endDate;
   private Date extensionDate;
   private String contractStatus;
+
   private String fundingType;
   private List<PlaOCS> plas;
-
 
   public String getContractStatus() {
     return contractStatus;
   }
 
-
   public List<CountryOCS> getCountries() {
     return countries;
   }
 
-
   public List<CrpOCS> getCrps() {
     return crps;
   }
-
 
   public String getDescription() {
     return description;
   }
 
 
-  public DonorOCS getDonor() {
-    return donor;
+  public DonorOCS getDirectDonor() {
+    return directDonor;
   }
+
 
   @JSON(format = "yyyy-MM-dd")
   public Date getEndDate() {
     return endDate;
   }
+
 
   @JSON(format = "yyyy-MM-dd")
   public Date getExtensionDate() {
@@ -86,7 +94,6 @@ public class AgreementOCS {
     return grantAmount;
   }
 
-
   public String getId() {
     return id;
   }
@@ -94,6 +101,11 @@ public class AgreementOCS {
 
   public String getObjectives() {
     return objectives;
+  }
+
+
+  public DonorOCS getOriginalDonor() {
+    return originalDonor;
   }
 
 
@@ -111,6 +123,7 @@ public class AgreementOCS {
     return shortTitle;
   }
 
+
   @JSON(format = "yyyy-MM-dd")
   public Date getStartDate() {
     return startDate;
@@ -120,7 +133,6 @@ public class AgreementOCS {
   public void setContractStatus(String contractStatus) {
     this.contractStatus = contractStatus;
   }
-
 
   public void setCountries(List<CountryOCS> countries) {
     this.countries = countries;
@@ -137,8 +149,8 @@ public class AgreementOCS {
   }
 
 
-  public void setDonor(DonorOCS donor) {
-    this.donor = donor;
+  public void setDirectDonor(DonorOCS directDonor) {
+    this.directDonor = directDonor;
   }
 
 
@@ -169,6 +181,11 @@ public class AgreementOCS {
 
   public void setObjectives(String objectives) {
     this.objectives = objectives;
+  }
+
+
+  public void setOriginalDonor(DonorOCS originalDonor) {
+    this.originalDonor = originalDonor;
   }
 
   public void setPlas(List<PlaOCS> plas) {

@@ -17,6 +17,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;element name="agreementId" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="amountUsd" type="{http://www.w3.org/2001/XMLSchema}double" minOccurs="0"/>
  *         &lt;element name="description" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="partner" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="partnertext" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
@@ -32,6 +33,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "tWsMarloPla", propOrder = {
     "agreementId",
+    "amountUsd",
     "description",
     "partner",
     "partnertext",
@@ -40,6 +42,7 @@ import javax.xml.bind.annotation.XmlType;
 public class TWsMarloPla {
 
     protected String agreementId;
+    protected Double amountUsd;
     protected String description;
     protected String partner;
     protected String partnertext;
@@ -67,6 +70,30 @@ public class TWsMarloPla {
      */
     public void setAgreementId(String value) {
         this.agreementId = value;
+    }
+
+    /**
+     * Gets the value of the amountUsd property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Double }
+     *     
+     */
+    public Double getAmountUsd() {
+        return amountUsd;
+    }
+
+    /**
+     * Sets the value of the amountUsd property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Double }
+     *     
+     */
+    public void setAmountUsd(Double value) {
+        this.amountUsd = value;
     }
 
     /**
