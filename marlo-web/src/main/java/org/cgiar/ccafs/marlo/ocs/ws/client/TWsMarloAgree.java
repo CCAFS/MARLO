@@ -17,6 +17,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;element name="agreementId" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="centerAmount" type="{http://www.w3.org/2001/XMLSchema}double" minOccurs="0"/>
  *         &lt;element name="description" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="donor" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="donorText" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
@@ -25,6 +26,8 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="fundingType" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="grantAmount" type="{http://www.w3.org/2001/XMLSchema}double" minOccurs="0"/>
  *         &lt;element name="objectives" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="originalDonor" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="originalDonorText" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="researcher" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="researcherText" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="shortName" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
@@ -41,6 +44,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "tWsMarloAgree", propOrder = {
     "agreementId",
+    "centerAmount",
     "description",
     "donor",
     "donorText",
@@ -49,6 +53,8 @@ import javax.xml.bind.annotation.XmlType;
     "fundingType",
     "grantAmount",
     "objectives",
+    "originalDonor",
+    "originalDonorText",
     "researcher",
     "researcherText",
     "shortName",
@@ -58,6 +64,7 @@ import javax.xml.bind.annotation.XmlType;
 public class TWsMarloAgree {
 
     protected String agreementId;
+    protected Double centerAmount;
     protected String description;
     protected String donor;
     protected String donorText;
@@ -66,6 +73,8 @@ public class TWsMarloAgree {
     protected String fundingType;
     protected Double grantAmount;
     protected String objectives;
+    protected String originalDonor;
+    protected String originalDonorText;
     protected String researcher;
     protected String researcherText;
     protected String shortName;
@@ -94,6 +103,30 @@ public class TWsMarloAgree {
      */
     public void setAgreementId(String value) {
         this.agreementId = value;
+    }
+
+    /**
+     * Gets the value of the centerAmount property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Double }
+     *     
+     */
+    public Double getCenterAmount() {
+        return centerAmount;
+    }
+
+    /**
+     * Sets the value of the centerAmount property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Double }
+     *     
+     */
+    public void setCenterAmount(Double value) {
+        this.centerAmount = value;
     }
 
     /**
@@ -286,6 +319,54 @@ public class TWsMarloAgree {
      */
     public void setObjectives(String value) {
         this.objectives = value;
+    }
+
+    /**
+     * Gets the value of the originalDonor property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getOriginalDonor() {
+        return originalDonor;
+    }
+
+    /**
+     * Sets the value of the originalDonor property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setOriginalDonor(String value) {
+        this.originalDonor = value;
+    }
+
+    /**
+     * Gets the value of the originalDonorText property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getOriginalDonorText() {
+        return originalDonorText;
+    }
+
+    /**
+     * Sets the value of the originalDonorText property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setOriginalDonorText(String value) {
+        this.originalDonorText = value;
     }
 
     /**
