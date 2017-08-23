@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
@@ -31,6 +32,7 @@ import org.cgiar.ccafs.marlo.validation.BaseValidator;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
@@ -145,10 +147,39 @@ public class FundingSourceValidator extends BaseValidator {
       }
     }
 
-    // Validate Grant Amount only if the Funding source is Synced
+
+    /**
+     * Validate Grant Amount only if the Funding source is Synced.
+     * If the budgets are greater than the grant amount send a message to
+     * the user, and the funding source is pending for validation
+     * 
+     * @author JULIANRODRIGUEZ <julian.rodriguez@cgiar.org>
+     * @date 23/08/2017
+     */
+
     if (fundingSource.getSynced()) {
-      // TODO: Validate the budget amount do not exceed the grant total amount (fundingSource.getGrantAmount())
+
+      Double grantAmount = fundingSource.getGrantAmount();
+      List<FundingSourceBudget> budgets = fundingSource.getBudgets();
+      double currentBudget = 0;
+
+      for (FundingSourceBudget fundingSourceBudget : budgets) {
+        currentBudget += fundingSourceBudget.getBudget();
+      }
+
+      if (currentBudget > grantAmount) {
+
+
+        for (int i = 0; i < budgets.size(); i++) {
+          action.getInvalidFields().put("fundingSource.budgets[" + i + "].budget",
+            InvalidFieldsMessages.INVALID_NUMBER);
+
+        }
+
+      }
+
     }
+
 
     if (action.hasSpecificities(APConstants.CRP_EMAIL_FUNDING_SOURCE)) {
       if (!this.isValidString(fundingSource.getContactPersonEmail())) {
