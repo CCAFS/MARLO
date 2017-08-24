@@ -13,7 +13,7 @@
   {"label":"projectPartners", "nameSpace":"/projects", "action":""}
 ] /]
 
-[#assign partnerRespRequired = action.hasSpecificities('crp_partner_contribution') ]
+[#assign partnerRespRequired = action.hasSpecificities('crp_nonPPAPartner_resp_required') ]
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]

@@ -63,7 +63,7 @@ public final class APConstants {
   public static final String CRP_OPEN_REPORTING_DATE = "crp_open_reporting_date";
   // Crp Parameters
   public static final String CRP_PARAMETERS = "crp_parameters";
-  public static final String CRP_PARTNER_CONTRIBUTIONS = "crp_partner_contribution";
+  public static final String CRP_PARTNER_CONTRIBUTIONS = "crp_nonPPAPartner_resp_required";
 
 
   public static final String CRP_PC_ROLE = "crp_pc_rol";
