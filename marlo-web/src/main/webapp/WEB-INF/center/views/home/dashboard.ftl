@@ -27,12 +27,12 @@
         </a>
       </div>
       
-      <div id="startMonitoring" class="option ${action.canAccessSuperAdmin()?string('','disabled')}">
+      <div id="startMonitoring" class="option">
       <a href="[@s.url action="monitoring/${centerSession}/projectList"][@s.param name="edit" value="true"/][/@s.url]">
         <p>[@s.text name="dashboard.decisionTree.startMonitoring" /]</p>
       </a>       
       </div>
-      <div id="finalDes" class="option" title="dashboard.decisionTree.finishDes">`
+      <div id="finalDes" class="option">`
         <a href="[@s.url action="centerSummaries/${centerSession}/summaries"][@s.param name="edit" value="true"/][/@s.url]">
           <p>[@s.text name="dashboard.decisionTree.finishDes" /]</p>
         </a>  
