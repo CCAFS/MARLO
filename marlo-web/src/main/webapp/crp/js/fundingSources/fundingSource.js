@@ -669,7 +669,9 @@ function settingDate(start,end,extensionDate) {
       }
   }).on("change", function() {
     // The change event is used for Sync
-    $(this).parent().find('.dateLabel').html(getDateLabel(this));
+    if(this.value){
+      $(this).parent().find('.dateLabel').html(getDateLabel(this));      
+    }
     refreshYears();
   }).on("click", function() {
     if(!$(this).val()) {
