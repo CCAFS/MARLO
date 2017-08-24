@@ -28,16 +28,12 @@
       </div>
       
       <div id="startMonitoring" class="option ${action.canAccessSuperAdmin()?string('','disabled')}">
-  [#if action.canAccessSuperAdmin()]
       <a href="[@s.url action="monitoring/${centerSession}/projectList"][@s.param name="edit" value="true"/][/@s.url]">
         <p>[@s.text name="dashboard.decisionTree.startMonitoring" /]</p>
-      </a>  
-  [#else]
-      <p>[@s.text name="dashboard.decisionTree.startMonitoring" /]</p>
-  [/#if]        
+      </a>       
       </div>
       <div id="finalDes" class="option" title="dashboard.decisionTree.finishDes">`
-        <a href="[@s.url action="summaries/${centerSession}/summaries"][@s.param name="edit" value="true"/][/@s.url]">
+        <a href="[@s.url action="centerSummaries/${centerSession}/summaries"][@s.param name="edit" value="true"/][/@s.url]">
           <p>[@s.text name="dashboard.decisionTree.finishDes" /]</p>
         </a>  
       </div>
