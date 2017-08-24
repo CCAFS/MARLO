@@ -150,8 +150,8 @@ public class FundingSourceValidator extends BaseValidator {
 
     /**
      * Validate Grant Amount only if the Funding source is Synced.
-     * If the budgets are greater than the grant amount send a message to
-     * the user, and the funding source is pending for validation
+     * If budgets are larger than the total amount, the funding source is pending for validation.
+     * A message is sent to the user indicating that there is something to modify. *
      * 
      * @author JULIANRODRIGUEZ <julian.rodriguez@cgiar.org>
      * @date 23/08/2017
