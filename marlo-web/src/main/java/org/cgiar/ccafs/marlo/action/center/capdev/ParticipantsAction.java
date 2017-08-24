@@ -156,6 +156,7 @@ public class ParticipantsAction extends BaseAction implements ServletRequestAwar
         .collect(Collectors.toList()));
       Collections.sort(countryList, (c1, c2) -> c1.getName().compareTo(c2.getName()));
 
+      // arreglo usado para escribir la data al template
       final String[] countries = new String[countryList.size()];
       for (int i = 0; i < countryList.size(); i++) {
         countries[i] = countryList.get(i).getIsoAlpha2() + "- " + countryList.get(i).getName();

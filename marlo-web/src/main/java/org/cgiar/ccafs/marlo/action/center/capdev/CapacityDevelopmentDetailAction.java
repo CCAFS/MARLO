@@ -450,7 +450,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
 
     if (capdev != null) {
-      System.out.println("reginal dimension " + capdev.getRegional());
 
       capdevTypes = new ArrayList<>(capdevTypeService.findAll().stream()
         .filter(le -> le.getCategory().equals("" + capdev.getCategory())).collect(Collectors.toList()));
