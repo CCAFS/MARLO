@@ -189,8 +189,9 @@ function getOCSMetadata() {
           }
           // Principal Investigator
           agreement.pInvestigator = agreement.researcher.name;
-          // Donor
-          agreement.donorName = agreement.donor.name;
+          // Donors
+          agreement.originalDonorName = agreement.originalDonor.name;
+          agreement.directDonorName = agreement.directDonor.name;
           // Validate extension date
           if(agreement.extensionDate == "1900-01-01") {
             agreement.extensionDate = "";

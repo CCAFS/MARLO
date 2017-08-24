@@ -257,7 +257,7 @@
       [#-- Original Donor --]
       <div class="form-group-donor">
         <div class="form-group row">
-          <div class="col-md-12 metadataElement-donorName">
+          <div class="col-md-12 metadataElement-originalDonorName">
             <label for="">[@s.text name="projectCofunded.donor" /]:[@customForm.req required=editable /]</label>
             <span class="description"><i>([@s.text name="projectCofunded.donor.helpText" /])</i></span>
             [@customForm.select name="fundingSource.institution.id" i18nkey="projectCofunded.donor" className="donor" showTitle=false  listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" required=true editable=editable /]
@@ -268,10 +268,11 @@
         
         [#-- Direct Donor --]
         <div class="form-group row">
-          <div class="col-md-12">
+          <div class="col-md-12 metadataElement-directDonorName">
             <label for="">[@s.text name="projectCofunded.directDonor" /]: </label>
             <span class="description"><i>([@s.text name="projectCofunded.directDonor.helpText" /])</i></span>
             [@customForm.select name="fundingSource.directDonor.id" i18nkey="projectCofunded.directDonor" className="donor" showTitle=false listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" required=false editable=editable /]
+            <span class="text-warning metadataSuggested"></span> 
           </div>
         </div>
         [#-- End Direct Donor --]

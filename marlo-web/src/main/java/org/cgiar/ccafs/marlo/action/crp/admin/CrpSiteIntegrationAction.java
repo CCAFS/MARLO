@@ -309,7 +309,7 @@ public class CrpSiteIntegrationAction extends BaseAction {
     String bbcEmails = this.config.getEmailNotification();
     sendMail.send(toEmail, ccEmail, bbcEmails,
       this.getText("email.siteIntegration.assigned.subject",
-        new String[] {loggedCrp.getName(), siteRoleAcronym, crpsSiteIntegration.getLocElement().getName()}),
+        new String[] {loggedCrp.getAcronym(), siteRoleAcronym, crpsSiteIntegration.getLocElement().getName()}),
       message.toString(), null, null, null, true);
   }
 

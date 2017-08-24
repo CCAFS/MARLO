@@ -857,7 +857,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
       new String[] {"center", "date", "year", "crp_id", "regionalAvalaible", "hasW1W2Co", "hasGender"},
       new Class[] {String.class, String.class, Integer.class, Long.class, Boolean.class, Boolean.class, Boolean.class});
 
-    String center = loggedCrp.getName();
+    String center = loggedCrp.getAcronym();
     // Get datetime
     ZonedDateTime timezone = ZonedDateTime.now();
     DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
