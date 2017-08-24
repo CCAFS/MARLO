@@ -171,8 +171,9 @@ public class FundingSourceValidator extends BaseValidator {
 
 
         for (int i = 0; i < budgets.size(); i++) {
-          action.getInvalidFields().put("fundingSource.budgets[" + i + "].budget",
-            InvalidFieldsMessages.INVALID_NUMBER);
+          this.addMessage(action.getText("fundingSource.budgetWrongValue"));
+          action.getInvalidFields().put("input-fundingSource.budgets[" + i + "].budget",
+            InvalidFieldsMessages.WRONGVALUE);
 
         }
 
