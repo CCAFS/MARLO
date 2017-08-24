@@ -1564,7 +1564,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                     || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
                     || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
                       || a.getStatus().intValue() == 0 || a.getStatus().intValue() == -1))))
-              .collect(Collectors.toList());
+            .collect(Collectors.toList());
         } else {
           openA = deliverables.stream()
             .filter(a -> a.isActive()
@@ -1977,7 +1977,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return canSwitchProject;
   }
 
-
   /**
    * ************************ CENTER METHOD *********************
    * verify if the project is complete
@@ -2038,6 +2037,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
+
   public boolean isCompleteImpact(long crpProgramID) {
 
     List<SectionStatus> sectionsBD = sectionStatusManager.findAll();
@@ -2059,7 +2059,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     return true;
   }
-
 
   /**
    * ************************ CENTER METHOD *********************
@@ -2105,6 +2104,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return true;
   }
+
 
   public boolean isCompletePreProject(long projectID) {
 
@@ -2386,7 +2386,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   public boolean isCrpRefresh() {
     try {
       // return Integer.parseInt(this.getSession().get(APConstants.CRP_CLOSED).toString()) == 1;
@@ -2397,6 +2396,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
   }
+
 
   public boolean isDataSaved() {
     return dataSaved;
@@ -2489,13 +2489,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return fullEditable;
   }
 
-
   protected boolean isHttpPost() {
     if (this.getRequest().getMethod().equalsIgnoreCase("post")) {
       return true;
     }
     return false;
   }
+
 
   public Boolean isI(long deliverableID) {
     try {
@@ -2559,7 +2559,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public boolean isLessonsActive() {
     return Boolean.parseBoolean(this.getSession().get(APConstants.CRP_LESSONS_ACTIVE).toString());
   }
@@ -2576,6 +2575,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return true;
   }
+
 
   public boolean isPhaseOne() {
     try {
@@ -2721,13 +2721,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       project
         .getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
           && c.getYear().intValue() == year && (c.isUnSubmit() == null || !c.isUnSubmit()))
-        .collect(Collectors.toList());
+      .collect(Collectors.toList());
     if (submissions.isEmpty()) {
       return false;
     }
     return true;
   }
-
 
   /**
    * ************************ CENTER METHOD *********************
@@ -2755,6 +2754,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     return false;
   }
+
 
   /**
    * ************************ CENTER METHOD *********************
@@ -2948,7 +2948,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return SUCCESS;
   }
 
-
   public void saveLessons(Crp crp, Project project) {
 
     if (project.isProjectEditLeader() && !this.isProjectNew(project.getId())) {
@@ -3034,6 +3033,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   public void setAdd(boolean add) {
     this.add = true;
   }
@@ -3042,10 +3042,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.basePermission = basePermission;
   }
 
-
   public void setCancel(boolean cancel) {
     this.cancel = true;
   }
+
 
   public void setCanEdit(boolean canEdit) {
     this.canEdit = canEdit;
@@ -3059,7 +3059,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.centerID = centerID;
   }
 
-
   public void setCenterSession(String centerSession) {
     this.centerSession = centerSession;
   }
@@ -3069,28 +3068,28 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.centerSubmission = centerSubmission;
   }
 
+
   public void setCrpID(Long crpID) {
     this.crpID = crpID;
   }
-
 
   public void setCrpSession(String crpSession) {
     this.crpSession = crpSession;
   }
 
+
   public void setCurrentCenter(Center currentCenter) {
     this.currentCenter = currentCenter;
   }
-
 
   public void setDataSaved(boolean dataSaved) {
     this.dataSaved = dataSaved;
   }
 
+
   public void setDelete(boolean delete) {
     this.delete = delete;
   }
-
 
   public void setDifferences(List<HistoryDifference> differences) {
     this.differences = differences;
@@ -3101,19 +3100,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.draft = draft;
   }
 
+
   public void setEditable(boolean isEditable) {
     this.isEditable = isEditable;
   }
-
 
   public void setEditableParameter(boolean isEditable) {
     this.isEditable = isEditable;
   }
 
+
   public void setFullEditable(boolean fullEditable) {
     this.fullEditable = fullEditable;
   }
-
 
   public void setInvalidFields(HashMap<String, String> invalidFields) {
     this.invalidFields = invalidFields;
@@ -3123,6 +3122,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public void setJustification(String justification) {
     this.justification = justification;
   }
+
 
   public void setLessonsActive(boolean lessonsActive) {
     this.lessonsActive = lessonsActive;
@@ -3140,10 +3140,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.planningYear = planningYear;
   }
 
-
   public void setReportingActive(boolean reportingActive) {
     this.reportingActive = reportingActive;
   }
+
 
   public void setReportingYear(int reportingYear) {
     this.reportingYear = reportingYear;
@@ -3181,6 +3181,16 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public void setUrl(String url) {
     this.url = url;
+  }
+
+  public String specificityValue(String specificity) {
+    try {
+      String value = (this.getSession().get(specificity).toString());
+      return value;
+    } catch (Exception e) {
+      return null;
+    }
+
   }
 
   public String submit() {
