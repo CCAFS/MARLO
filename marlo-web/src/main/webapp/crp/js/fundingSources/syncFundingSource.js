@@ -183,6 +183,7 @@ function getOCSMetadata() {
       success: function(data) {
         if(data.json) {
           var agreement = data.json;
+          console.log(agreement);
           // Extension date validation
           if(!allowExtensionDate){
             agreement.endDate = agreement.extensionDate;
@@ -190,8 +191,12 @@ function getOCSMetadata() {
           // Principal Investigator
           agreement.pInvestigator = agreement.researcher.name;
           // Donors
-          agreement.originalDonorName = agreement.originalDonor.name;
-          agreement.directDonorName = agreement.directDonor.name;
+          if(agreement.originalDonor){
+            agreement.originalDonorName = agreement.originalDonor.name;
+          }
+          if(agreement.directDonor){
+            agreement.directDonorName = agreement.directDonor.name;
+          }
           // Validate extension date
           if(agreement.extensionDate == "1900-01-01") {
             agreement.extensionDate = "";
