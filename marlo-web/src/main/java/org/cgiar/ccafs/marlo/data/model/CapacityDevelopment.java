@@ -37,6 +37,7 @@ public class CapacityDevelopment implements java.io.Serializable {
   private Date startDate;
   private Date endDate;
   private Long duration;
+  private String durationUnit;
   private Boolean global;
   private Boolean regional;
   private String sGlobal;
@@ -62,7 +63,7 @@ public class CapacityDevelopment implements java.io.Serializable {
   public CapacityDevelopment(CenterProject project, User usersByModifiedBy, User usersByCreatedBy,
     CenterArea researchArea, Crp crp, CenterProgram researchProgram, String title, CapacityDevelopmentType capdevType,
     int category, boolean active, String modificationJustification, String ctFirstName, String ctLastName,
-    String ctEmail, Date startDate, Date endDate, Long duration, Boolean global, Boolean regional,
+    String ctEmail, Date startDate, Date endDate, Long duration, String durationUnit, Boolean global, Boolean regional,
     Integer numParticipants, Integer numMen, Integer numWomen, Set<CapdevLocations> capdevLocations,
     Set<CapdevDiscipline> capdevDisciplines, Set<CapdevTargetgroup> capdevTargetgroups,
     Set<CapdevParticipant> capdevParticipants, Set<CapdevOutputs> capdevOutputses, Set<CapdevPartners> capdevPartnerses,
@@ -84,6 +85,7 @@ public class CapacityDevelopment implements java.io.Serializable {
     this.startDate = startDate;
     this.endDate = endDate;
     this.duration = duration;
+    this.durationUnit = durationUnit;
     this.global = global;
     this.regional = regional;
     this.numParticipants = numParticipants;
@@ -178,6 +180,10 @@ public class CapacityDevelopment implements java.io.Serializable {
     return duration;
   }
 
+  public String getDurationUnit() {
+    return durationUnit;
+  }
+
   public Date getEndDate() {
     return this.endDate;
   }
@@ -236,10 +242,10 @@ public class CapacityDevelopment implements java.io.Serializable {
     return sGlobal;
   }
 
+
   public String getsRegional() {
     return sRegional;
   }
-
 
   public String getStarDateFormat() {
     final String pattern = "yyyy-MM-dd";
@@ -251,14 +257,15 @@ public class CapacityDevelopment implements java.io.Serializable {
     return date;
   }
 
+
   public Date getStartDate() {
     return this.startDate;
   }
 
-
   public String getTitle() {
     return this.title;
   }
+
 
   public User getUsersByCreatedBy() {
     return this.usersByCreatedBy;
@@ -359,10 +366,15 @@ public class CapacityDevelopment implements java.io.Serializable {
     this.duration = duration;
   }
 
+  public void setDurationUnit(String durationUnit) {
+    this.durationUnit = durationUnit;
+  }
+
 
   public void setEndDate(Date endDate) {
     this.endDate = endDate;
   }
+
 
   public void setGlobal(Boolean global) {
     this.global = global;

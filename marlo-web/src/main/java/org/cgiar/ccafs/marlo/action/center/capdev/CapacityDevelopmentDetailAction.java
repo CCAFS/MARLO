@@ -80,6 +80,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   private Participant participant;
   private List<Participant> participantList;
   private List<Map<String, Object>> genders;
+  private List<Map<String, Object>> durationUnit;
   private List<Map<String, Object>> json;
   private String contact;
   private File uploadFile;
@@ -226,6 +227,11 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   }
 
 
+  public List<Map<String, Object>> getDurationUnit() {
+    return durationUnit;
+  }
+
+
   public List<CapdevFoundingType> getFoundingTypeList() {
     return foundingTypeList;
   }
@@ -268,7 +274,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     return numMen;
   }
 
-
   /*
    * this method is used to get the number of women in the list of participants.
    * @param data an object array containing the data of participants
@@ -286,6 +291,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     }
     return numWomen;
   }
+
 
   public Participant getParticipant() {
     return participant;
@@ -373,7 +379,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     return participantList;
   }
 
-
   @Override
   public void prepare() throws Exception {
     System.out.println("prepare");
@@ -389,6 +394,19 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
     genders.add(genderM);
     genders.add(genderF);
+
+
+    // Unit duration
+    durationUnit = new ArrayList<>();
+    final Map<String, Object> hours = new HashMap<>();
+    hours.put("displayName", "Hours");
+    hours.put("value", "Hours");
+    final Map<String, Object> days = new HashMap<>();
+    days.put("displayName", "Days");
+    days.put("value", "Days");
+
+    durationUnit.add(hours);
+    durationUnit.add(days);
 
 
     // Regions List
@@ -511,6 +529,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
   }
 
+
   @Override
   public String save() {
 
@@ -526,11 +545,19 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     capdevDB.setStartDate(capdev.getStartDate());
     capdevDB.setEndDate(capdev.getEndDate());
     capdevDB.setDuration(capdev.getDuration());
+    capdevDB.setDurationUnit(capdev.getDurationUnit());
     capdevDB.setGlobal(this.bolValue(capdev.getsGlobal()));
     capdevDB.setRegional(this.bolValue(capdev.getsRegional()));
 
     // if capdev is individual
     if (capdevDB.getCategory() == 1) {
+      capdevDB.setNumParticipants(1);
+      if (participant.getGender().equals("M")) {
+        capdevDB.setNumMen(1);
+      }
+      if (participant.getGender().equals("F")) {
+        capdevDB.setNumWomen(1);
+      }
       capdevService.saveCapacityDevelopment(capdevDB);
       this.saveParticipant(participant);
       if (capdevDB.getCapdevParticipants().isEmpty()) {
@@ -693,6 +720,11 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
   public void setCountryList(List<LocElement> countryList) {
     this.countryList = countryList;
+  }
+
+
+  public void setDurationUnit(List<Map<String, Object>> durationUnit) {
+    this.durationUnit = durationUnit;
   }
 
 

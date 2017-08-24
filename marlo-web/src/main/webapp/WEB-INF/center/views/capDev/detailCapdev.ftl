@@ -112,8 +112,13 @@
 
 				<!-- Duration -->
 				<div class="row newCapdevField">
-					<div class="col-md-4">
-						[@customForm.input name="capdev.duration" i18nkey="capdev.form.duration" type="text"  help="capdev.help.duration" required=true  editable=true className="capdevstartDate"/] 
+					<div class="col-md-3">
+						[@customForm.input name="capdev.duration" i18nkey="capdev.form.duration" type="text"  help="capdev.help.duration"   editable=true className="capdevstartDate"/] 
+					</div>
+
+					<div class="col-md-3 durationUnitSelect">
+						<input type="hidden" name="" value="${(capdev.durationUnit)!}" class="durationUnitaInput"/>
+						[@customForm.select name="capdev.durationUnit" listName="durationUnit" keyFieldName="value" displayFieldName="displayName" help="" i18nkey="capdev.form.durationUnit"  placeholder="capdev.select"  editable=true className=""/]
 					</div>
 				</div>
 

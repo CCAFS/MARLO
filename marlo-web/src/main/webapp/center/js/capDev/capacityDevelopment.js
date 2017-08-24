@@ -148,7 +148,7 @@
 
 
 (function(){
-  // Is this capdev has a regional dimension
+  //  this capdev has a regional dimension
   var valueSelected = $(".regional .onoffswitch-radio").val();
   if(valueSelected) {
     $(".regionsBox").show("slow");
@@ -156,6 +156,24 @@
 })();
 
 
+  
+
+    //remove default option  from duration Unit Select
+  $(".durationUnitSelect option[value='-1']").remove();
+
+
+    //set value to duartion unit field
+  (function(){
+    var durationUnit = $(".durationUnitaInput").val();
+    console.log(durationUnit);
+
+    $(".durationUnitSelect select option").each(function() {
+      if($(this).val() == durationUnit){
+        $(this).attr( "selected" , "selected");
+      }
+      });
+
+  })();
 
 
   }

@@ -74,6 +74,9 @@
 		<property name="duration" type="java.lang.Long">
 			<column name="duration" />
 		</property>
+		<property name="durationUnit" type="string">
+			<column name="duration_unit" length="45" />
+		</property>
 		<property name="numParticipants" type="java.lang.Integer">
 			<column name="num_participants" />
 		</property>
