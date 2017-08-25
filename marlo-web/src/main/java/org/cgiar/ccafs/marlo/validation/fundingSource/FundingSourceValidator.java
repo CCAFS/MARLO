@@ -114,12 +114,14 @@ public class FundingSourceValidator extends BaseValidator {
       action.getInvalidFields().put("input-fundingSource.endDate", InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    // Validate the donor with id -1, beacause front end send this when there is not one selected
-    if (fundingSource.getInstitution() == null || fundingSource.getInstitution().getId() == null
-      || fundingSource.getInstitution().getId().longValue() == -1) {
-      this.addMessage(action.getText("fundingSource.institution.id"));
-      action.getInvalidFields().put("input-fundingSource.institution.id", InvalidFieldsMessages.EMPTYFIELD);
+    // Validate the direct donor with id -1, beacause front end send this when there is not one selected
+
+    if (fundingSource.getDirectDonor() == null || fundingSource.getDirectDonor().getId() == null
+      || fundingSource.getDirectDonor().getId().longValue() == -1) {
+      this.addMessage(action.getText("fundingSource.directDonor.id"));
+      action.getInvalidFields().put("input-fundingSource.directDonor.id", InvalidFieldsMessages.EMPTYFIELD);
     }
+
     if (!this.isValidString(fundingSource.getContactPersonName())) {
       this.addMessage(action.getText("fundingSource.contactPersonName"));
       action.getInvalidFields().put("input-fundingSource.contactPersonName", InvalidFieldsMessages.EMPTYFIELD);
@@ -155,6 +157,9 @@ public class FundingSourceValidator extends BaseValidator {
      * 
      * @author JULIANRODRIGUEZ <julian.rodriguez@cgiar.org>
      * @date 23/08/2017
+     * @update Added null field validation when you calculate de currentBudget
+     * @author JULIANRODRIGUEZ <julian.rodriguez@cgiar.org>
+     * @date 25/08/2017
      */
 
     if (fundingSource.getSynced()) {
@@ -164,7 +169,10 @@ public class FundingSourceValidator extends BaseValidator {
       double currentBudget = 0;
 
       for (FundingSourceBudget fundingSourceBudget : budgets) {
-        currentBudget += fundingSourceBudget.getBudget();
+        if (fundingSourceBudget.getBudget() != null) {
+          currentBudget += fundingSourceBudget.getBudget();
+        }
+
       }
 
       if (currentBudget > grantAmount) {
