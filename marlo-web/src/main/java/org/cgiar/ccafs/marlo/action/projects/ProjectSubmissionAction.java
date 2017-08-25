@@ -129,7 +129,7 @@ public class ProjectSubmissionAction extends BaseAction {
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
     fileName.append("Full_Project_Report-");
-    fileName.append(loggedCrp.getName() + "-");
+    fileName.append(loggedCrp.getAcronym() + "-");
     fileName.append("P" + projectID + "-");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".pdf");

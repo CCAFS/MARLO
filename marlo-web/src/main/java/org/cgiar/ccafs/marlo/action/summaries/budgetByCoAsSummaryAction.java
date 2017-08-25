@@ -182,7 +182,7 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
         manager.createDirectly(this.getClass().getResource("/pentaho/budgetByCoAsSummary.prpt"), MasterReport.class);
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
-      String center = loggedCrp.getName();
+      String center = loggedCrp.getAcronym();
 
       // Get datetime
       ZonedDateTime timezone = ZonedDateTime.now();

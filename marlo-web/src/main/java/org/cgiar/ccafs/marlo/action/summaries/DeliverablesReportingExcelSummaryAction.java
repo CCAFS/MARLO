@@ -233,7 +233,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
         manager.createDirectly(this.getClass().getResource("/pentaho/deliverablesReporting.prpt"), MasterReport.class);
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
-      String center = loggedCrp.getName();
+      String center = loggedCrp.getAcronym();
 
       ZonedDateTime timezone = ZonedDateTime.now();
       DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");

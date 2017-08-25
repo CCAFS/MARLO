@@ -189,7 +189,6 @@ public class ProjectPartnersValidator extends BaseValidator {
           // Validating that the partner has a least one contact person
           if (project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader()) {
             if (action.hasSpecificities(APConstants.CRP_PARTNER_CONTRIBUTIONS)) {
-
               this.validatePersonResponsibilities(action, c, partner);
             }
           }
@@ -238,10 +237,8 @@ public class ProjectPartnersValidator extends BaseValidator {
               j++;
 
             }
-
-
-            c++;
           }
+          c++;
         }
       }
     } catch (Exception e) {

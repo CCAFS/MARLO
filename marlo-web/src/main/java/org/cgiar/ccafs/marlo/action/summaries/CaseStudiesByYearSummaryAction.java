@@ -133,7 +133,7 @@ public class CaseStudiesByYearSummaryAction extends BaseAction implements Summar
         manager.createDirectly(this.getClass().getResource("/pentaho/CaseStudies.prpt"), MasterReport.class);
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
-      String center = loggedCrp.getName();
+      String center = loggedCrp.getAcronym();
 
 
       // Get datetime

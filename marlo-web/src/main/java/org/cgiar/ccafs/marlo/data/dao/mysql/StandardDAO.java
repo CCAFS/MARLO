@@ -502,6 +502,10 @@ public class StandardDAO {
     try {
       session = this.openSession();
       tx = this.initTransaction(session);
+      if (!session.isOpen() || !session.isConnected() || session.connection().isClosed()) {
+        session = this.openSession();
+        tx = this.initTransaction(session);
+      }
       session.save(obj);
       this.commitTransaction(tx);
 
@@ -609,7 +613,10 @@ public class StandardDAO {
 
       tx = this.initTransaction(session);
 
-
+      if (!session.isOpen() || !session.isConnected() || session.connection().isClosed()) {
+        session = this.openSession();
+        tx = this.initTransaction(session);
+      }
       obj = session.merge(obj);
       session.saveOrUpdate(obj);
       this.commitTransaction(tx);
