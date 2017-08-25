@@ -33,10 +33,12 @@ import java.util.UUID;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.shiro.util.CollectionUtils;
+import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 import org.hibernate.StatelessSession;
 import org.hibernate.action.spi.BeforeTransactionCompletionProcess;
+import org.hibernate.engine.spi.PersistenceContext;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.event.spi.FlushEvent;
 import org.hibernate.event.spi.FlushEventListener;
@@ -88,7 +90,7 @@ public class HibernateAuditLogListener
          */
         if (record.get(IAuditLog.PRINCIPAL).toString().equals("1")) {
           IAuditLog entity = (IAuditLog) record.get(IAuditLog.ENTITY);
-
+          entity = this.loadRelations(entity, true, 1, sessionFactory);
           Auditlog auditLog = this.createAuditlog(function, entity, gson.toJson(entity), entity.getModifiedBy().getId(),
             transactionId, new Long(record.get(IAuditLog.PRINCIPAL).toString()), null, actionName);
           auditLogs.add(auditLog);
@@ -101,7 +103,7 @@ public class HibernateAuditLogListener
            */
           Set<IAuditLog> collectionRecords = (Set<IAuditLog>) record.get(IAuditLog.ENTITY);
           for (IAuditLog collectionRecord : collectionRecords) {
-            this.loadRelations(collectionRecord, false, 2, sessionFactory);
+            collectionRecord = this.loadRelations(collectionRecord, false, 2, sessionFactory);
             if (collectionRecord.isActive()) {
               String json = gson.toJson(collectionRecord);
 
@@ -154,18 +156,19 @@ public class HibernateAuditLogListener
       return auditRecord;
     }
 
-
+    /**
+     * Entry point for our BeforeTransactionCompletionProcess.
+     */
     @Override
-    public void doBeforeTransactionCompletion(SessionImplementor session) {
+    public void doBeforeTransactionCompletion(SessionImplementor sessionImplementor) {
       LOG.debug("begin doAfterTransactionCompletion");
 
       AuditLogContext auditLogContext = AuditLogContextProvider.getAuditLogContext();
 
-      SessionFactory sessionFactory = session.getFactory().getCurrentSession().getSessionFactory();
+      SessionFactory sessionFactory = sessionImplementor.getFactory().getCurrentSession().getSessionFactory();
 
       /**
-       * This is because our save(entity), update(entity) and delete(entity) methods on our DAOs should not
-       * execute the listeners. There might be a better way to do this like conditionally active the listeners.
+       * This check may no longer be required.
        */
       if (auditLogContext.getActionName() == null) {
         LOG.debug("No ActionName in auditLogContext so ignoring.");
@@ -190,10 +193,9 @@ public class HibernateAuditLogListener
      * @param loadUsers
      * @param level
      */
-    public void loadRelations(IAuditLog entity, boolean loadUsers, int level, SessionFactory sessionFactory) {
+    public IAuditLog loadRelations(IAuditLog entity, boolean loadUsers, int level, SessionFactory sessionFactory) {
       ClassMetadata classMetadata =
         sessionFactory.getClassMetadata(HibernateProxyHelper.getClassWithoutInitializingProxy(entity));
-
 
       String[] propertyNames = classMetadata.getPropertyNames();
       for (String name : propertyNames) {
@@ -205,25 +207,19 @@ public class HibernateAuditLogListener
           if (propertyValue != null && propertyType instanceof ManyToOneType) {
 
             if (loadUsers) {
-              IAuditLog entityRelation = (IAuditLog) propertyValue;
-
-              Object obj = sessionFactory.getCurrentSession().get(propertyType.getReturnedClass(),
-                (Serializable) entityRelation.getId());
-
-              this.loadRelations((IAuditLog) obj, false, 2, sessionFactory);
-              classMetadata.setPropertyValue(entity, name, obj);
+              IAuditLog entityRelation = this.unProxyIAuditLogObject(propertyValue, sessionFactory);
+              entityRelation = this.loadRelations(entityRelation, false, 2, sessionFactory);
+              classMetadata.setPropertyValue(entity, name, entityRelation);
+              LOG.debug("set property: " + name + ", on entity: " + entity + ", with value: " + entityRelation);
             } else {
               if (!(name.equals("createdBy") || name.equals("modifiedBy"))) {
-                IAuditLog entityRelation = (IAuditLog) propertyValue;
-
-                Object obj = sessionFactory.getCurrentSession().get(propertyType.getReturnedClass(),
-                  (Serializable) entityRelation.getId());
+                IAuditLog entityRelation = this.unProxyIAuditLogObject(propertyValue, sessionFactory);
                 if (level == 2) {
-                  this.loadRelations((IAuditLog) obj, false, 3, sessionFactory);
+                  entityRelation = this.loadRelations(entityRelation, false, 3, sessionFactory);
                 }
 
-                // this.loadRelations((IAuditLog) obj, false);
-                classMetadata.setPropertyValue(entity, name, obj);
+                classMetadata.setPropertyValue(entity, name, entityRelation);
+                LOG.debug("set property: " + name + ", on entity: " + entity + ", with value: " + entityRelation);
               }
             }
 
@@ -232,7 +228,10 @@ public class HibernateAuditLogListener
         }
 
       }
+
+      return entity;
     }
+
 
     /**
      * We should not use the same session when writing to the database from an Hibernate Event Listener,
@@ -261,6 +260,19 @@ public class HibernateAuditLogListener
           openStatelessSession.close();
         }
       }
+
+    }
+
+    private IAuditLog unProxyIAuditLogObject(Object propertyValue, SessionFactory sessionFactory) {
+      PersistenceContext persistenceContext =
+        ((SessionImplementor) sessionFactory.getCurrentSession()).getPersistenceContext();
+
+      if (!Hibernate.isInitialized(propertyValue)) {
+        Hibernate.initialize(propertyValue);
+      }
+      IAuditLog iAuditLog = (IAuditLog) persistenceContext.unproxy(propertyValue);
+
+      return iAuditLog;
 
     }
 
