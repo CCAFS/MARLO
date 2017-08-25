@@ -253,29 +253,29 @@
           <div class="col-md-6 metadataElement-pInvestigator">[@customForm.input name="fundingSource.contactPersonName" help="projectCofunded.contactName.help" i18nkey="projectCofunded.contactName" className="contactName metadataValue" required=true readOnly=isSynced editable=editable /]</div>
           <div class="col-md-6" style="display:${canSeePIEmail?string('block','none')}">[@customForm.input name="fundingSource.contactPersonEmail" i18nkey="projectCofunded.contactEmail" className="contactEmail" required=true editable=editable /]</div>
       </div>
-
-      [#-- Original Donor --]
-      <div class="form-group-donor">
-        <div class="form-group row">
-          <div class="col-md-12 metadataElement-originalDonorName">
-            <label for="">[@s.text name="projectCofunded.donor" /]:[@customForm.req required=editable /]</label>
-            <span class="description"><i>([@s.text name="projectCofunded.donor.helpText" /])</i></span>
-            [@customForm.select name="fundingSource.institution.id" i18nkey="projectCofunded.donor" className="donor" showTitle=false  listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" required=true editable=editable /]
-            <span class="text-warning metadataSuggested"></span> 
-          </div>
-        </div>      
-        [#-- End Original Donor --]     
+      
+      <br />
         
+      <div class="form-group-donor">
         [#-- Direct Donor --]
         <div class="form-group row">
           <div class="col-md-12 metadataElement-directDonorName">
-            <label for="">[@s.text name="projectCofunded.directDonor" /]: </label>
+            <label for="">[@s.text name="projectCofunded.directDonor" /]:[@customForm.req required=editable /] </label>
             <span class="description"><i>([@s.text name="projectCofunded.directDonor.helpText" /])</i></span>
-            [@customForm.select name="fundingSource.directDonor.id" i18nkey="projectCofunded.directDonor" className="donor" showTitle=false listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" required=false editable=editable /]
+            [@customForm.select name="fundingSource.directDonor.id" i18nkey="projectCofunded.directDonor" className="donor" showTitle=false listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" editable=editable /]
             <span class="text-warning metadataSuggested"></span> 
           </div>
         </div>
-        [#-- End Direct Donor --]
+
+        [#-- Original Donor --]
+        <div class="form-group row">
+          <div class="col-md-12 metadataElement-originalDonorName">
+            <label for="">[@s.text name="projectCofunded.donor" /]:</label>
+            <span class="description"><i>([@s.text name="projectCofunded.donor.helpText" /])</i></span>
+            [@customForm.select name="fundingSource.institution.id" i18nkey="projectCofunded.donor" className="donor" showTitle=false  listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" editable=editable /]
+            <span class="text-warning metadataSuggested"></span> 
+          </div>
+        </div>
 
         [#-- Request partner adition --]
         [#if editable]

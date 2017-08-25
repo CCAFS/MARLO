@@ -365,7 +365,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
    * this budget is excluded from the calculation
    * 
    * @param year the year to review
-   * @param budgetID the budget id to exclud
+   * @param budgetID the budget id to exclude
    * @return
    */
   public double getRemainingExcludeBudget(int year, long budgetID) {
