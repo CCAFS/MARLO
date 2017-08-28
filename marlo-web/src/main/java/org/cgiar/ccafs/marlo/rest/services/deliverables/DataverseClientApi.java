@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.utils.RestConnectionUtil;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ibm.icu.text.SimpleDateFormat;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -55,6 +56,9 @@ public class DataverseClientApi extends MetadataClientApi {
       JSONObject citation = jo.getJSONObject("metadata_blocks").getJSONObject("citation");
       System.out.println(citation);
       metadataModel.setTitle(citation.get("title").toString());
+      JSONObject timestamps = jo.getJSONObject("timestamps");
+      SimpleDateFormat dt = new SimpleDateFormat("yyyyy-MM-dd hh:mm:ss");
+      metadataModel.setPublicationDate(dt.parse(timestamps.get("publicationdate").toString()));
       JSONArray deJsonObject = citation.getJSONArray("dsDescription");
       for (Object object : deJsonObject) {
         JSONObject jsonObject = (JSONObject) object;

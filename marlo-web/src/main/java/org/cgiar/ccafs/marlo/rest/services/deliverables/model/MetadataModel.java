@@ -18,6 +18,8 @@ package org.cgiar.ccafs.marlo.rest.services.deliverables.model;
 
 import java.util.Date;
 
+import org.apache.struts2.json.annotations.JSON;
+
 public class MetadataModel {
 
   private Author[] author;
@@ -80,6 +82,7 @@ public class MetadataModel {
     return openAccess;
   }
 
+  @JSON(format = "yyyy-MM-dd")
   public Date getPublicationDate() {
     return publicationDate;
   }

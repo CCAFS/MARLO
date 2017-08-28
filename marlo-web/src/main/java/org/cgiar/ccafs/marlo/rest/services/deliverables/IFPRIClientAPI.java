@@ -29,6 +29,7 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,24 +70,31 @@ public class IFPRIClientAPI extends MetadataClientApi {
       Gson gson = gsonBuilder.create();
       String data = jo.toString();
       List<Author> authors = new ArrayList<Author>();
-      String authorJson = jo.getString("orcid");
-      String authorsJson[] = authorJson.split("; ");
-      for (String string : authorsJson) {
-        string = string.replace(", ", "{0}");
-        String div[] = string.split(" ");
-        if (div.length == 2) {
-          String firstName = div[1].replace("{0}", ", ");
-          Author author = new Author(firstName);
-          String names[] = author.getFirstName().split(", ");
-          if (names.length == 2) {
-            author.setFirstName(names[1]);
-            author.setLastName(names[0]);
-          }
-          author.setOrcidId(div[0]);
-          authors.add(author);
-        }
+      if (jo.has("orcid") && jo.get("orcid") != null) {
+        try {
+          String authorJson = jo.getString("orcid");
+          String authorsJson[] = authorJson.split("; ");
+          for (String string : authorsJson) {
+            string = string.replace(", ", "{0}");
+            String div[] = string.split(" ");
+            if (div.length == 2) {
+              String firstName = div[1].replace("{0}", ", ");
+              Author author = new Author(firstName);
+              String names[] = author.getFirstName().split(", ");
+              if (names.length == 2) {
+                author.setFirstName(names[1]);
+                author.setLastName(names[0]);
+              }
+              author.setOrcidId(div[0]);
+              authors.add(author);
+            }
 
+          }
+        } catch (JSONException e) {
+          LOG.error("No authors");
+        }
       }
+
       for (String key : coverterAtrributes.keySet()) {
         data = data.replace(key, coverterAtrributes.get(key));
       }

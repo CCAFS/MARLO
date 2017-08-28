@@ -60,16 +60,18 @@ public class ILRIClientAPI extends MetadataClientApi {
         JSONObject jsonObject = (JSONObject) object;
         metadataModel.setTitle(jsonObject.getString("resource_description"));
       }
+      metadataModel.setRights(jo.getString("license_id"));
+
       List<Author> authors = new ArrayList<Author>();
       String authorJson = jo.getString("ILRI_prjstaff");
       String authorsJson[] = authorJson.split(", ");
       for (String string : authorsJson) {
         string = string.substring(0, string.indexOf("("));
         Author author = new Author(string);
-        String names[] = author.getFirstName().split(", ");
-        if (names.length == 2) {
-          author.setFirstName(names[0]);
-          author.setLastName(names[1]);
+        String names[] = author.getFirstName().split(". ");
+        if (names.length == 3) {
+          author.setFirstName(names[1]);
+          author.setLastName(names[2]);
         }
         authors.add(author);
 

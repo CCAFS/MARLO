@@ -48,7 +48,7 @@ public class CGSpaceClientAPI extends MetadataClientApi {
     xmlReaderConnectionUtil = new RestConnectionUtil();
     coverterAtrributes = new HashMap<String, String>();
     coverterAtrributes.put("description.abstract", "description");
-    coverterAtrributes.put("date.available", "publicationDate");
+    coverterAtrributes.put("date.issued", "publicationDate");
     coverterAtrributes.put("language.iso", "language");
     coverterAtrributes.put("subject", "keywords");
     coverterAtrributes.put("identifier.citation", "citation");
@@ -69,7 +69,7 @@ public class CGSpaceClientAPI extends MetadataClientApi {
         Element value = element.element("value");
         String keyValue = key.getStringValue();
         keyValue = keyValue.substring(3);
-        if (keyValue.equals("authors")) {
+        if (keyValue.equals("contributor.author")) {
           Author author = new Author(value.getStringValue());
           String names[] = author.getFirstName().split(", ");
           if (names.length == 2) {
@@ -78,6 +78,13 @@ public class CGSpaceClientAPI extends MetadataClientApi {
           }
           authors.add(author);
         } else {
+          if (keyValue.equals("identifier.status")) {
+            if (value.getStringValue().equals("Open Access")) {
+              jo.put("openAccess", "true");
+            } else {
+              jo.put("openAccess", "false");
+            }
+          }
           if (jo.has(keyValue)) {
             jo.put(keyValue, jo.get(keyValue) + "," + value.getStringValue());
           } else {
@@ -88,7 +95,7 @@ public class CGSpaceClientAPI extends MetadataClientApi {
 
       }
 
-      jo.put("contributor.author", authors);
+
       GsonBuilder gsonBuilder = new GsonBuilder();
       gsonBuilder.registerTypeAdapter(Date.class, new DateTypeAdapter());
       Gson gson = gsonBuilder.create();
@@ -97,6 +104,10 @@ public class CGSpaceClientAPI extends MetadataClientApi {
         data = data.replace(key, coverterAtrributes.get(key));
       }
       metadataModel = gson.fromJson(data, MetadataModel.class);
+      System.out.println(metadataModel.getPublicationDate());
+      Author[] authorsArr = new Author[authors.size()];
+      authorsArr = authors.toArray(authorsArr);
+      metadataModel.setAuthors(authorsArr);
 
     } catch (Exception e) {
       e.printStackTrace();
