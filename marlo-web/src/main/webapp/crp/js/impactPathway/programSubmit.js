@@ -55,38 +55,10 @@ $(document).ready(function() {
       var notyOptions = jQuery.extend({}, notyDefaultOptions);
       notyOptions.text = 'The justification field needs to be filled';
       noty(notyOptions);
-
-    }
-  });
-
-  // Pop up when exists a draft version $('header a, #mainMenu a, .subMainMenu a, #secondaryMenu a')
-  $('#secondaryMenu a').on('click', function(e) {
-    selectedUrl = $.trim($(this).attr("href"));
-    selectedAction = getClassParameter($(this), 'action');
-
-    // Prevent middle click
-    if(e.which == 2) {
-      return;
-    }
-    if((isChanged() || forceChange || draft) && editable && draft && selectedUrl && (myTurn == 1)) {
-      e.preventDefault();
-      $('#discardChanges').modal();
     }
   });
 
 });
-
-function acceptChanges() {
-  $('#redirectionUrl').val(selectedAction);
-  $('button[name="save"]').trigger('click');
-  $('#discardChanges').modal('hide');
-}
-
-function cancel() {
-  window.location.replace(selectedUrl);
-  window.location.href = selectedUrl;
-  $('#discardChanges').modal('hide');
-}
 
 function submitButtonEvent(e) {
   e.preventDefault();
