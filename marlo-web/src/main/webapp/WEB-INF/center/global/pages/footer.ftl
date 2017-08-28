@@ -101,6 +101,9 @@
     [#-- import the custom JS and CSS --]
     [#if customJS??][#list customJS as js]<script src="${js}"></script>[/#list][/#if]
     
+    [#-- Changes on Save --]
+    <script type="text/javascript" src="${baseUrlMedia}/js/global/changes.js" ></script>
+    
     [/#compress]
     
     <div id="draggable-button">
