@@ -150,3 +150,138 @@ DROP COLUMN `license`,
 DROP COLUMN `other_license`,
 DROP COLUMN `allow_modifications`;
 
+-- deliverable_users
+CREATE TEMPORARY TABLE
+IF NOT EXISTS table_deliverable_users AS (SELECT * FROM deliverable_users);
+
+TRUNCATE TABLE deliverable_users;
+
+
+ALTER TABLE `deliverable_users`
+ADD COLUMN `id_phase`  bigint(20) NULL AFTER `modification_justification`;
+
+ALTER TABLE `deliverable_users` ADD FOREIGN KEY (`id_phase`) REFERENCES `phases` (`id`);
+
+INSERT INTO deliverable_users (
+deliverable_id,
+first_name,
+last_name,
+element_id,
+
+id_phase
+) SELECT 
+
+t2.deliverable_id,
+t2.first_name,
+t2.last_name,
+t2.element_idph.id
+FROM
+  table_deliverable_users t2
+ left join deliverables d on d.id=t2.deliverable_id
+left JOIN project_phases pp ON pp.project_id = d.project_id
+left JOIN phases ph ON ph.id = pp.id_phase
+;
+
+-- deliverable_quality_checks
+
+CREATE TEMPORARY TABLE
+IF NOT EXISTS table_deliverable_quality_checks AS (SELECT * FROM deliverable_quality_checks);
+
+TRUNCATE TABLE deliverable_quality_checks;
+
+
+ALTER TABLE `deliverable_quality_checks`
+ADD COLUMN `id_phase`  bigint(20) NULL AFTER `modification_justification`;
+
+ALTER TABLE `deliverable_quality_checks` ADD FOREIGN KEY (`id_phase`) REFERENCES `phases` (`id`);
+
+INSERT INTO deliverable_quality_checks (
+deliverable_id,
+quality_assurance,
+file_assurance,
+link_assurance,
+data_dictionary,
+file_dictionary,
+link_dictionary,
+data_tools,
+file_tools,
+link_tools,
+is_active,
+active_since,
+modified_by,
+created_by,
+modification_justification,
+
+id_phase
+) SELECT 
+
+t2.deliverable_id,
+t2.quality_assurance,
+t2.file_assurance,
+t2.link_assurance,
+t2.data_dictionary,
+t2.file_dictionary,
+t2.link_dictionary,
+t2.data_tools,
+t2.file_tools,
+t2.link_tools,
+t2.is_active,
+t2.active_since,
+t2.modified_by,
+t2.created_by,
+t2.modification_justification,
+ph.id
+FROM
+  table_deliverable_quality_checks t2
+ left join deliverables d on d.id=t2.deliverable_id
+left JOIN project_phases pp ON pp.project_id = d.project_id
+left JOIN phases ph ON ph.id = pp.id_phase
+;
+
+-- deliverable_quality_answers 
+
+CREATE TEMPORARY TABLE
+IF NOT EXISTS table_deliverable_quality_answers AS (SELECT * FROM deliverable_quality_answers);
+
+TRUNCATE TABLE deliverable_quality_answers;
+
+
+ALTER TABLE `deliverable_quality_answers`
+ADD COLUMN `id_phase`  bigint(20) NULL AFTER `modification_justification`;
+
+ALTER TABLE `deliverable_quality_answers` ADD FOREIGN KEY (`id_phase`) REFERENCES `phases` (`id`);
+
+INSERT INTO deliverable_quality_answers (
+deliverable_id,
+quality_assurance,
+file_assurance,
+link_assurance,
+data_dictionary,
+file_dictionary,
+link_dictionary,
+data_tools,
+file_tools,
+link_tools,
+is_active,
+active_since,
+modified_by,
+created_by,
+modification_justification,
+
+id_phase
+) SELECT 
+
+name,
+is_active,
+modified_by,
+created_by,
+modification_justification,
+active_since,
+
+ph.id
+FROM
+  table_deliverable_quality_answers t2
+ left join deliverables d on d.id=t2.deliverable_id
+left JOIN project_phases pp ON pp.project_id = d.project_id
+left JOIN phases ph ON ph.id = pp.id_phase
+;
