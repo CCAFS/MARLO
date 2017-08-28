@@ -92,6 +92,7 @@ public class EditPartnerRequestAction extends BaseAction {
         LocElement locElement = locElementManager.getLocElementByISOCode(country);
         partnerRequest.setLocElement(locElement);
       }
+      partnerRequest.setModifiedBy(this.getCurrentUser());
       partnerRequestManager.savePartnerRequest(partnerRequest);
     } catch (Exception e) {
       System.out.println(e.getMessage());

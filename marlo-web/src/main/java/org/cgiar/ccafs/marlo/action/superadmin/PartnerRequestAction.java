@@ -98,6 +98,7 @@ public class PartnerRequestAction extends BaseAction {
 
     partnerRequest.setAcepted(new Boolean(true));
     partnerRequest.setActive(false);
+    partnerRequest.setModifiedBy(this.getCurrentUser());
     partnerRequestManager.savePartnerRequest(partnerRequest);
 
     // Send notification email

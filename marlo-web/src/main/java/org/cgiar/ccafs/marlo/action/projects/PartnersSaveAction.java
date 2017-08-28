@@ -333,18 +333,18 @@ public class PartnersSaveAction extends BaseAction {
         this.addFieldError("activityPartner.partner.name", this.getText("validation.field.required"));
         anyError = true;
       }
-
-
+      // Check the institution type
       if (activityPartner.getPartner().getInstitutionType().getId() == -1) {
-        this.addFieldError("activityPartner.institutionType.id", this.getText("validation.field.required"));
+        this.addFieldError("activityPartner.partner.institutionType.id", this.getText("validation.field.required"));
         anyError = true;
       }
-      /*
-       * if (activityPartner.getPartner().getLocElement().getId() == -1) {
-       * this.addFieldError("activityPartner.locElement.id", this.getText("validation.field.required"));
-       * anyError = true;
-       * }
-       */
+
+      // Check the location
+      if (locationId == -1 || locationId == 0) {
+        this.addFieldError("locationId", this.getText("validation.field.required"));
+        anyError = true;
+      }
+
 
       if (anyError) {
         this.addActionError(this.getText("saving.fields.required"));
