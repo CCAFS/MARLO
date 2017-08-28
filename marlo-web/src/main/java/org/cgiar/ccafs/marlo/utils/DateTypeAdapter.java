@@ -49,6 +49,8 @@ public class DateTypeAdapter extends TypeAdapter<Date> {
       Date date = foDateFormat.parse(dateAux);
       return date;
     } catch (Exception ignored) {
+
+
     }
     try {
       return enUsFormat.parse(json);
