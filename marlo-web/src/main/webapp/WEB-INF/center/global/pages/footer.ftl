@@ -48,6 +48,7 @@
       var debugMode = ${config.debug?string};
       var editable = ${editable?string};
       var canEdit = ${canEdit?string};
+      var draft = ${draft?string};
       var autoSaveActive = ${((currentUser.autoSave)!false)?string};
       var currentCenterID=${(centerID)!'-1'};
       var currentCycleYear = ${(currentCycleYear)!1999};
