@@ -37,14 +37,12 @@
     <div class="row">
       [#-- Project Menu --]
       <div class="col-md-3">
-        [#include "/WEB-INF/center//views/monitoring/project/menu-projects.ftl" /]
+        [#include "/WEB-INF/center/views/monitoring/project/menu-projects.ftl" /]
       </div>
       [#-- Project Section Content --]
       <div class="col-md-9">
         [#-- Section Messages --]
-        [#--  --include "/WEB-INF/center//views/projects/messages-projects.ftl" / --]
-        [#-- Projects data information --]
-        [#include "/WEB-INF/center//views/monitoring/project/dataInfo-projects.ftl" /]
+        [#include "/WEB-INF/center/views/monitoring/project/messages-projects.ftl" /]
         <br />
       
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]

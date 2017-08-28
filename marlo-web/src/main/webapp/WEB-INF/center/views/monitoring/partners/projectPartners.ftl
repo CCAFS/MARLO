@@ -2,7 +2,12 @@
 [#assign title = "Project Partners" /]
 [#assign currentSectionString = "program-${actionName?replace('/','-')}-${programID}" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = ["${baseUrlMedia}/js/global/usersManagement.js", "${baseUrlMedia}/js/impactPathway/output.js", "${baseUrlMedia}/js/global/fieldsValidation.js", "${baseUrlMedia}/js/global/autoSave.js"] /]
+[#assign customJS = [
+  "${baseUrlMedia}/js/global/usersManagement.js", 
+  "${baseUrlMedia}/js/impactPathway/output.js", 
+  "${baseUrlMedia}/js/global/fieldsValidation.js", 
+  "${baseUrlMedia}/js/global/autoSave.js"
+  ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/impactPathway/outputList.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "projectPartners" /]
@@ -30,12 +35,11 @@
     
     <div class="row">
       <div class="col-md-3">
-        [#include "/WEB-INF/center//views/monitoring/project/menu-projects.ftl" /]
+        [#include "/WEB-INF/center/views/monitoring/project/menu-projects.ftl" /]
       </div>
       <div class="col-md-9">
         [#-- Section Messages --]
-        [#-- Projects data information --]
-        [#include "/WEB-INF/center//views/monitoring/project/dataInfo-projects.ftl" /]
+        [#include "/WEB-INF/center/views/monitoring/project/messages-projects.ftl" /]
         <br />
 
         <span id="programSelected" class="hidden">${(selectedProgram.id)!}</span>
