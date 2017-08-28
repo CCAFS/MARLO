@@ -49,6 +49,18 @@ $(document).ready(function() {
     e.preventDefault();
     var $request = $(this).parents('.partnerRequestItem');
 
+    // Validate fields
+    var name = $('input[name="name"]').val();
+    var typeValue = $('select#type').val();
+    var countryValue = $('select#country').val();
+    
+    if(!name || (typeValue == "-1") || (countryValue == "-1")){
+      var notyOptions = jQuery.extend({}, notyDefaultOptions);
+      notyOptions.text = 'The required(*) fields needs to be filled';
+      noty(notyOptions);
+      return
+    }
+
     $.ajax({
         url: baseURL + '/editPartnerRequest.do',
         data: $request.find('.editForm').serializeObject(),

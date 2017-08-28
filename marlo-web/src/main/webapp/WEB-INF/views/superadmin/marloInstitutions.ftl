@@ -126,11 +126,11 @@
             <input type="hidden" name="requestID"  value="${(partner.id)!}"/>
             <div class="form-group row">
               <div class="col-md-3">
-                <label for="">Acronym</label>
+                <label for="">Acronym:</label>
                 <input type="text" class="form-control input-sm" name="acronym" value="${(partner.acronym)!}" />
               </div>
               <div class="col-md-9">
-                <label for="">Name</label>
+                <label for="">Name: [@customForm.req required=true /]</label>
                 <input type="text" class="form-control input-sm" name="name" value="${(partner.partnerName)!}" />
               </div>
             </div>
@@ -139,7 +139,7 @@
                 [@customForm.select name="type" value=partner.institutionType required=true label="" i18nkey="Institution Type" listName="institutionTypesList" keyFieldName="id"  displayFieldName="name" /]
               </div>
               <div class="col-md-6">
-                [@customForm.select name="country" value="'${partner.locElement.isoAlpha2}'" label="" i18nkey="Country ISO Code" listName="countriesList" keyFieldName="isoAlpha2"  displayFieldName="name" /]
+                [@customForm.select name="country" value="'${partner.locElement.isoAlpha2}'" required=true label="" i18nkey="Country ISO Code" listName="countriesList" keyFieldName="isoAlpha2"  displayFieldName="name" /]
               </div>
             </div>
             <div class="form-group">
