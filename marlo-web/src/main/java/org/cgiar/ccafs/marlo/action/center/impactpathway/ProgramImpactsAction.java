@@ -638,7 +638,6 @@ public class ProgramImpactsAction extends BaseAction {
       selectedProgram.setActiveSince(new Date());
       selectedProgram.setModifiedBy(this.getCurrentUser());
       programService.saveProgram(selectedProgram, this.getActionName(), relationsName);
-      Collection<String> messages = this.getActionMessages();
 
       Path path = this.getAutoSaveFilePath();
 
@@ -646,20 +645,30 @@ public class ProgramImpactsAction extends BaseAction {
         path.toFile().delete();
       }
 
-      if (!this.getInvalidFields().isEmpty()) {
-        this.setActionMessages(null);
+      // check if there is a url to redirect
+      if (this.getUrl() == null || this.getUrl().isEmpty()) {
+        // check if there are missing field
+        if (!this.getInvalidFields().isEmpty()) {
+          this.setActionMessages(null);
+          // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
+          List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+          for (String key : keys) {
+            this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+          }
 
-        List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
-        for (String key : keys) {
-          this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+        } else {
+          this.addActionMessage("message:" + this.getText("saving.saved"));
         }
-
+        return SUCCESS;
       } else {
-        this.addActionMessage("message:" + this.getText("saving.saved"));
+        // No messages to next page
+
+        this.addActionMessage("");
+        this.setActionMessages(null);
+        // redirect the url select by user
+        return REDIRECT;
       }
 
-      messages = this.getActionMessages();
-      return SUCCESS;
     } else {
       this.setActionMessages(null);
       return NOT_AUTHORIZED;

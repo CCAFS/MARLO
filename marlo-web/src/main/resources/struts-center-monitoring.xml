@@ -28,6 +28,11 @@
         <param name="edit">true</param>
         <param name="cancel">true</param>
       </result>
+      <result name="redirect" type="redirectAction">
+        <param name="actionName">${url}</param>
+        <param name="edit">true</param>
+        <param name="projectID">${projectID}</param>
+      </result>
     </action>
     
     <action name="{center}/projectPartners"
@@ -45,6 +50,11 @@
         <param name="projectID">${projectID}</param>
         <param name="edit">true</param>
         <param name="cancel">true</param>
+      </result>
+      <result name="redirect" type="redirectAction">
+        <param name="actionName">${url}</param>
+        <param name="edit">true</param>
+        <param name="projectID">${projectID}</param>
       </result>
     </action>
     
@@ -91,6 +101,11 @@
         <param name="deliverableID">${deliverableID}</param>
         <param name="edit">true</param>
         <param name="cancel">true</param>
+      </result>
+      <result name="redirect" type="redirectAction">
+        <param name="actionName">${url}</param>
+        <param name="edit">true</param>
+        <param name="deliverableID">${deliverableID}</param>
       </result>
     </action>
     
