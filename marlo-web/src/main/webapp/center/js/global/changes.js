@@ -1,3 +1,4 @@
+var selectedUrl, selectedAction;
 $(document).ready(function() {
 
   // Generating hash from form information
@@ -26,6 +27,7 @@ $(document).ready(function() {
     }
     if((isChanged() || forceChange || draft) && editable && draft && selectedUrl && (myTurn == 1)) {
       e.preventDefault();
+      console.log('discardChanges');
       $('#discardChanges').modal();
     }
   });

@@ -144,8 +144,6 @@ public class MonitoringOutcomesSummaryAction extends BaseAction implements Summa
       // Subreport Program Impacts
       this.fillSubreport((SubReport) hm.get("details"), "details");
 
-      this.fillSubreport((SubReport) hm.get("detailsMil"), "detailsMil");
-
       ExcelReportUtil.createXLSX(masterReport, os);
       bytesExcel = os.toByteArray();
       os.close();
@@ -169,10 +167,6 @@ public class MonitoringOutcomesSummaryAction extends BaseAction implements Summa
     switch (query) {
       case "details":
         model = this.getOutcomeTableModel();
-        break;
-
-      case "detailsMil":
-        model = this.getMilestoneTableModel();
         break;
 
     }
@@ -314,47 +308,13 @@ public class MonitoringOutcomesSummaryAction extends BaseAction implements Summa
     return model;
   }
 
-
-  private TypedTableModel getMilestoneTableModel() {
-    // Initialization of Model
-    TypedTableModel model = new TypedTableModel(
-      new String[] {"milestoneId", "milestoneTitle", "outcomeId", "outcomeTitle", "milestoneTargetUnit",
-        "monitoringYear", "monitoringProgress", "outcomeUrl"},
-      new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class});
-
-    List<Map<String, Object>> reportMilestone = milestoneService.getMonitoringMilestones(researchProgram.getId());
-
-    if (reportMilestone != null) {
-      for (Map<String, Object> map : reportMilestone) {
-
-        String milestoneId = map.get("milestoneId").toString();
-        String milestoneTitle = map.get("milestoneTitle").toString();
-
-        String outcomeId = map.get("outcomeId").toString();
-        String outcomeUrl =
-          this.getBaseUrl() + "/monitoring/" + this.getCenterSession() + "/monitoringOutcome.do?outcomeID=" + outcomeId;
-        String outcomeTitle = map.get("outcomeDesc").toString();
-
-        String milestoneTargetUnit = map.get("milestoneTargetUnit").toString();
-        String monitoringYear = map.get("monitoringYear").toString();
-        String monitoringProgress = map.get("monitoringProgress").toString();
-
-
-        model.addRow(new Object[] {milestoneId, milestoneTitle, outcomeId, outcomeTitle, milestoneTargetUnit,
-          monitoringYear, monitoringProgress, outcomeUrl});
-      }
-    }
-    return model;
-  }
-
   private TypedTableModel getOutcomeTableModel() {
     // Initialization of Model
     TypedTableModel model = new TypedTableModel(
-      new String[] {"outcomeId", "outcomeTitle", "impactStatement", "researchTopic", "outcomeTargetUnit",
-        "monitoringYear", "monitoringProgress", "outcomeUrl"},
+      new String[] {"outcomeId", "outcomeTitle", "milestoneId", "milestoneTitle", "outcomeTargetUnit", "monitoringYear",
+        "monitoringProgress", "milestoneTargetUnit", "milestoneProgress", "outcomeUrl"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class});
+        String.class, String.class, String.class});
 
     List<Map<String, Object>> reportOutcome = outcomeService.getMonitoringOutcomes(researchProgram.getId());
 
@@ -365,16 +325,18 @@ public class MonitoringOutcomesSummaryAction extends BaseAction implements Summa
         String outcomeId = map.get("outcomeId").toString();
         String outcomeUrl =
           this.getBaseUrl() + "/monitoring/" + this.getCenterSession() + "/monitoringOutcome.do?outcomeID=" + outcomeId;
-        String outcomeTitle = map.get("outcomeDesc").toString();
-        String impactStatement = map.get("impactStatement").toString();
-        String researchTopic = map.get("topic").toString();
+        String outcomeTitle = map.get("outcomeTitle").toString();
+        String milestoneId = map.get("milestoneId").toString();
+        String milestoneTitle = map.get("milestoneTitle").toString();
         String outcomeTargetUnit = map.get("outcomeTargetUnit").toString();
         String monitoringYear = map.get("monitoringYear").toString();
         String monitoringProgress = map.get("monitoringProgress").toString();
+        String milestoneTargetUnit = map.get("milestoneTargetUnit").toString();
+        String milestoneProgress = map.get("milestoneProgress").toString();
 
 
-        model.addRow(new Object[] {outcomeId, outcomeTitle, impactStatement, researchTopic, outcomeTargetUnit,
-          monitoringYear, monitoringProgress, outcomeUrl});
+        model.addRow(new Object[] {outcomeId, outcomeTitle, milestoneId, milestoneTitle, outcomeTargetUnit,
+          monitoringYear, monitoringProgress, milestoneTargetUnit, milestoneProgress, outcomeUrl});
       }
     }
     return model;

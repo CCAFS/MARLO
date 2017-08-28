@@ -1,0 +1,8 @@
+INSERT INTO `parameters` (`id`, `key`, `description`, `format`, `default_value`, `category`) VALUES ('44','crp_reports_description', 'Description on Excel Reports', '1', NULL, '2');
+INSERT INTO `custom_parameters` (`parameter_id`, `crp_id`, `value`, `created_by`, `is_active`, `active_since`,`modified_by`, `modification_justification`) VALUES ('44', '1', 'true', '3', '1', CURRENT_TIMESTAMP, '1', '');
+INSERT INTO `custom_parameters` (`parameter_id`, `crp_id`, `value`, `created_by`, `is_active`, `active_since`,`modified_by`, `modification_justification`) VALUES ('44', '3', 'false', '3', '1', CURRENT_TIMESTAMP, '1', '');
+INSERT INTO `custom_parameters` (`parameter_id`, `crp_id`, `value`, `created_by`, `is_active`, `active_since`,`modified_by`, `modification_justification`) VALUES ('44', '4', 'true', '3', '1', CURRENT_TIMESTAMP, '1', '');
+INSERT INTO `custom_parameters` (`parameter_id`, `crp_id`, `value`, `created_by`, `is_active`, `active_since`,`modified_by`, `modification_justification`) VALUES ('44', '5', 'true', '3', '1', CURRENT_TIMESTAMP, '1', '');
+INSERT INTO `custom_parameters` (`parameter_id`, `crp_id`, `value`, `created_by`, `is_active`, `active_since`,`modified_by`, `modification_justification`) VALUES ('44', '7', 'true', '3', '1', CURRENT_TIMESTAMP, '1', '');
+INSERT INTO `custom_parameters` (`parameter_id`, `crp_id`, `value`, `created_by`, `is_active`, `active_since`,`modified_by`, `modification_justification`) VALUES ('44', '21', 'true', '3', '1', CURRENT_TIMESTAMP, '1', '');
+INSERT INTO `custom_parameters` (`parameter_id`, `crp_id`, `value`, `created_by`, `is_active`, `active_since`,`modified_by`, `modification_justification`) VALUES ('44', '22', 'true', '3', '1', CURRENT_TIMESTAMP, '1', '');

@@ -50,7 +50,7 @@ public class DateTypeAdapter extends TypeAdapter<Date> {
 
       return date;
     } catch (Exception ignored) {
-      ignored.printStackTrace();
+
     }
     try {
       return enUsFormat.parse(json);

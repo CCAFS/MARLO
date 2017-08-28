@@ -1,6 +1,6 @@
 [#ftl]
 [#-- Projects data information --]
-[#include "/WEB-INF/views/projects/dataInfo-projects.ftl" /]
+[#include "/WEB-INF/center/views/monitoring/project/dataInfo-projects.ftl" /]
 
 [#-- History Message --]
 [#if transaction??]
