@@ -505,6 +505,8 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     for (ProjectPhase projectPhase : phase.getProjectPhases()) {
       projects.add((projectPhase.getProject()));
     }
+    // sort projects by id
+    projects.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
     for (Project project : projects) {
       // Get PPA institutions with budgets
       List<Institution> institutionsList = new ArrayList<>();
@@ -855,7 +857,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
       new String[] {"center", "date", "year", "crp_id", "regionalAvalaible", "hasW1W2Co", "hasGender"},
       new Class[] {String.class, String.class, Integer.class, Long.class, Boolean.class, Boolean.class, Boolean.class});
 
-    String center = loggedCrp.getName();
+    String center = loggedCrp.getAcronym();
     // Get datetime
     ZonedDateTime timezone = ZonedDateTime.now();
     DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");

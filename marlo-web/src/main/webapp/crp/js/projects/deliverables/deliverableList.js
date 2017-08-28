@@ -42,8 +42,8 @@ $(document).ready(function() {
 function openDialog() {
   $("#diagramPopup").dialog({
       title: 'FAIR Diagram',
-      width: '990',
-      heigth: '100%',
+      width: '90%',
+      /* heigth: '100%', */
       modal: true,
       closeText: ""
   });

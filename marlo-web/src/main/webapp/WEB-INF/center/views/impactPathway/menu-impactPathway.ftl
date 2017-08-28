@@ -137,6 +137,8 @@ error
   <div id="impactGraphic"></div>
 </div>
 
+[#-- Discard Changes Popup --]
+[#include "/WEB-INF/global/macros/discardChangesPopup.ftl"]
 
 [#-- program Submit JS --]
 [#assign customJS = [ "${baseUrlMedia}/js/global/impactGraphic.js", "${baseUrlMedia}/js/impactPathway/programSubmit.js" ] + customJS  /]

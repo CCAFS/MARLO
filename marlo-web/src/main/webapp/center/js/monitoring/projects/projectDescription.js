@@ -451,10 +451,11 @@ function checkOutputsToRemove() {
  * Attach to the date fields the datepicker plugin
  */
 function datePickerConfig(element) {
-  date($(element.startDate), $(element.endDate), $(element.extensionDate));
+  settingDate($(element.startDate), $(element.endDate), $(element.extensionDate));
 }
 
-function date(start,end,extension) {
+
+function settingDate(start,end,extension) {
   var dateFormat = "yy-mm-dd";
   var from = $(start).datepicker({
       dateFormat: dateFormat,

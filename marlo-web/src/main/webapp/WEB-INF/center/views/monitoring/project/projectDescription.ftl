@@ -37,14 +37,12 @@
     <div class="row">
       [#-- Project Menu --]
       <div class="col-md-3">
-        [#include "/WEB-INF/center//views/monitoring/project/menu-projects.ftl" /]
+        [#include "/WEB-INF/center/views/monitoring/project/menu-projects.ftl" /]
       </div>
       [#-- Project Section Content --]
       <div class="col-md-9">
         [#-- Section Messages --]
-        [#--  --include "/WEB-INF/center//views/projects/messages-projects.ftl" / --]
-        [#-- Projects data information --]
-        [#include "/WEB-INF/center//views/monitoring/project/dataInfo-projects.ftl" /]
+        [#include "/WEB-INF/center/views/monitoring/project/messages-projects.ftl" /]
         <br />
       
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
@@ -91,7 +89,12 @@
               <div class="col-md-6">
                 [@customForm.input name="principalInvestigator" i18nkey="projectDescription.pl" type="text" disabled=!editable  required=true editable=false /]
               </div>
-              <div class="col-md-6">
+            [#-- Project Status --]  
+              <div class="col-md-3">
+                [@customForm.select name="project.projectStatus.id" label=""  i18nkey="projectsList.status" listName="status" keyFieldName="id"  displayFieldName="name"  multiple=false required=true header=false className="" editable=editable/]
+              </div>  
+            [#-- Project Type --]  
+              <div class="col-md-3">
                 [@customForm.select name="project.projectType.id" label=""  i18nkey="Type" listName="projectTypes" keyFieldName="id"  displayFieldName="name"  multiple=false required=true header=false className="" editable=editable/]
               </div>
             </div>   
@@ -104,8 +107,8 @@
               [@customForm.textArea name="project.suggestedName" i18nkey="projectDescription.suggestedName" required=false className="project-title" required=true editable=editable && action.hasPermission("title") /]
             </div>
             [#-- Project Description --]
-            <div class="form-group">
-              [@customForm.textArea name="project.description" i18nkey="projectDescription.description" required=true className="project-title" editable=editable && action.hasPermission("title") /]
+            <div class="form-group metadataElement-objectives">
+              [@customForm.textArea name="project.description" i18nkey="projectDescription.description" required=true className="metadataValue" editable=editable && action.hasPermission("title") /]
             </div>            
             <div class="form-group row">  
               [#-- Start Date --]
@@ -143,8 +146,8 @@
               [@customForm.input name="project.directDonor" i18nkey="projectDescription.customerDonor" type="text" required=false  editable=editable/]
             </div>
             [#-- Total Amount --]
-            <div class="form-group metadataElement-donorName">
-              [@customForm.input name="project.totalAmount" className="amount" i18nkey="projectDescription.totalAmount" type="text" required=true  editable=editable/]
+            <div class="form-group metadataElement-grantAmount">
+              [@customForm.input name="project.totalAmount" className="metadataValue amount" i18nkey="projectDescription.totalAmount" type="text" required=true  editable=editable/]
             </div>
            
             [#-- CRP Project Contributions --]
