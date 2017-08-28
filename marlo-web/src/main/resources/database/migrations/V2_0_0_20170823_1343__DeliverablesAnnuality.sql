@@ -1,3 +1,4 @@
+SET FOREIGN_KEY_CHECKS = 0;
 CREATE TABLE `deliverables_info` (
 `id`  bigint(20) NOT NULL AUTO_INCREMENT ,
 `title`  text CHARACTER SET utf8 COLLATE utf8_general_ci NULL ,
@@ -28,12 +29,12 @@ FOREIGN KEY (`key_output_id`) REFERENCES `crp_cluster_key_outputs` (`id`) ON DEL
 FOREIGN KEY (`outcome_id`) REFERENCES `crp_program_outcomes` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
 FOREIGN KEY (`deliverable_id`) REFERENCES `deliverables` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 
-)
+)ENGINE=InnoDB
 ;
 
 
 ALTER TABLE `deliverables_info`
-ADD COLUMN `id_phase`  bigint(20) NULL AFTER `modification_justification`;
+ADD COLUMN `id_phase`  bigint(20) NULL AFTER `deliverable_id`;
 
 ALTER TABLE `deliverables_info` ADD FOREIGN KEY (`id_phase`) REFERENCES `phases` (`id`);
 
@@ -158,7 +159,7 @@ TRUNCATE TABLE deliverable_users;
 
 
 ALTER TABLE `deliverable_users`
-ADD COLUMN `id_phase`  bigint(20) NULL AFTER `modification_justification`;
+ADD COLUMN `id_phase`  bigint(20) NULL AFTER `deliverable_id`;
 
 ALTER TABLE `deliverable_users` ADD FOREIGN KEY (`id_phase`) REFERENCES `phases` (`id`);
 
@@ -174,7 +175,7 @@ id_phase
 t2.deliverable_id,
 t2.first_name,
 t2.last_name,
-t2.element_idph.id
+t2.element_id,ph.id
 FROM
   table_deliverable_users t2
  left join deliverables d on d.id=t2.deliverable_id
@@ -191,7 +192,7 @@ TRUNCATE TABLE deliverable_quality_checks;
 
 
 ALTER TABLE `deliverable_quality_checks`
-ADD COLUMN `id_phase`  bigint(20) NULL AFTER `modification_justification`;
+ADD COLUMN `id_phase`  bigint(20) NULL AFTER `deliverable_id`;
 
 ALTER TABLE `deliverable_quality_checks` ADD FOREIGN KEY (`id_phase`) REFERENCES `phases` (`id`);
 
@@ -238,50 +239,482 @@ left JOIN project_phases pp ON pp.project_id = d.project_id
 left JOIN phases ph ON ph.id = pp.id_phase
 ;
 
--- deliverable_quality_answers 
+
+
+-- deliverable_publications_metada
 
 CREATE TEMPORARY TABLE
-IF NOT EXISTS table_deliverable_quality_answers AS (SELECT * FROM deliverable_quality_answers);
+IF NOT EXISTS table_deliverable_publications_metada AS (SELECT * FROM deliverable_publications_metada);
 
-TRUNCATE TABLE deliverable_quality_answers;
+TRUNCATE TABLE deliverable_publications_metada;
 
 
-ALTER TABLE `deliverable_quality_answers`
-ADD COLUMN `id_phase`  bigint(20) NULL AFTER `modification_justification`;
+ALTER TABLE `deliverable_publications_metada`
+ADD COLUMN `id_phase`  bigint(20) NULL AFTER `deliverable_id`;
 
-ALTER TABLE `deliverable_quality_answers` ADD FOREIGN KEY (`id_phase`) REFERENCES `phases` (`id`);
+ALTER TABLE `deliverable_publications_metada` ADD FOREIGN KEY (`id_phase`) REFERENCES `phases` (`id`);
 
-INSERT INTO deliverable_quality_answers (
+INSERT INTO deliverable_publications_metada (
 deliverable_id,
-quality_assurance,
-file_assurance,
-link_assurance,
-data_dictionary,
-file_dictionary,
-link_dictionary,
-data_tools,
-file_tools,
-link_tools,
-is_active,
-active_since,
-modified_by,
-created_by,
-modification_justification,
+volume,
+issue,
+pages,
+journal,
+isi_publication,
+nasr,
+co_author,
+publication_acknowledge,
+
 
 id_phase
 ) SELECT 
 
-name,
-is_active,
-modified_by,
-created_by,
-modification_justification,
-active_since,
+t2.deliverable_id,
+t2.volume,
+t2.issue,
+t2.pages,
+t2.journal,
+t2.isi_publication,
+t2.nasr,
+t2.co_author,
+t2.publication_acknowledge,
 
 ph.id
 FROM
-  table_deliverable_quality_answers t2
+  table_deliverable_publications_metada t2
  left join deliverables d on d.id=t2.deliverable_id
 left JOIN project_phases pp ON pp.project_id = d.project_id
 left JOIN phases ph ON ph.id = pp.id_phase
 ;
+
+-- deliverable_programs
+
+CREATE TEMPORARY TABLE
+IF NOT EXISTS table_deliverable_programs AS (SELECT * FROM deliverable_programs);
+
+TRUNCATE TABLE deliverable_programs;
+
+
+ALTER TABLE `deliverable_programs`
+ADD COLUMN `id_phase`  bigint(20) NULL AFTER `deliverable_id`;
+
+ALTER TABLE `deliverable_programs` ADD FOREIGN KEY (`id_phase`) REFERENCES `phases` (`id`);
+
+INSERT INTO deliverable_programs (
+deliverable_id,
+ip_program_id,
+id_phase
+) SELECT 
+
+t2.deliverable_id,
+t2.ip_program_id,
+ph.id
+FROM
+  table_deliverable_programs t2
+ left join deliverables d on d.id=t2.deliverable_id
+left JOIN project_phases pp ON pp.project_id = d.project_id
+left JOIN phases ph ON ph.id = pp.id_phase
+;
+
+-- deliverable_partnerships
+
+CREATE TEMPORARY TABLE
+IF NOT EXISTS table_deliverable_partnerships AS (SELECT * FROM deliverable_partnerships);
+
+TRUNCATE TABLE deliverable_partnerships;
+
+
+ALTER TABLE `deliverable_partnerships`
+ADD COLUMN `id_phase`  bigint(20) NULL AFTER `deliverable_id`;
+
+ALTER TABLE `deliverable_partnerships` ADD FOREIGN KEY (`id_phase`) REFERENCES `phases` (`id`);
+
+INSERT INTO deliverable_partnerships (
+deliverable_id,
+partner_person_id,
+partner_type,
+is_active,
+active_since,
+created_by,
+modified_by,
+modification_justification,
+division_id,
+
+id_phase
+) SELECT 
+
+t2.deliverable_id,
+t2.partner_person_id,
+t2.partner_type,
+t2.is_active,
+t2.active_since,
+t2.created_by,
+t2.modified_by,
+t2.modification_justification,
+t2.division_id,
+ph.id
+FROM
+  table_deliverable_partnerships t2
+ left join deliverables d on d.id=t2.deliverable_id
+left JOIN project_phases pp ON pp.project_id = d.project_id
+left JOIN phases ph ON ph.id = pp.id_phase
+;
+
+
+-- deliverable_metadata_elements
+
+CREATE TEMPORARY TABLE
+IF NOT EXISTS table_deliverable_metadata_elements AS (SELECT * FROM deliverable_metadata_elements);
+
+TRUNCATE TABLE deliverable_metadata_elements;
+
+
+ALTER TABLE `deliverable_metadata_elements`
+ADD COLUMN `id_phase`  bigint(20) NULL AFTER `deliverable_id`;
+
+ALTER TABLE `deliverable_metadata_elements` ADD FOREIGN KEY (`id_phase`) REFERENCES `phases` (`id`);
+
+INSERT INTO deliverable_metadata_elements (
+deliverable_id,
+element_id,
+element_value,
+hide,
+
+
+id_phase
+) SELECT 
+
+t2.deliverable_id,
+t2.element_id,
+t2.element_value,
+t2.hide,
+
+ph.id
+FROM
+  table_deliverable_metadata_elements t2
+ left join deliverables d on d.id=t2.deliverable_id
+left JOIN project_phases pp ON pp.project_id = d.project_id
+left JOIN phases ph ON ph.id = pp.id_phase
+;
+
+-- deliverable_leaders
+
+CREATE TEMPORARY TABLE
+IF NOT EXISTS table_deliverable_leaders AS (SELECT * FROM deliverable_leaders);
+
+TRUNCATE TABLE deliverable_leaders;
+
+
+ALTER TABLE `deliverable_leaders`
+ADD COLUMN `id_phase`  bigint(20) NULL AFTER `deliverable_id`;
+
+ALTER TABLE `deliverable_leaders` ADD FOREIGN KEY (`id_phase`) REFERENCES `phases` (`id`);
+
+INSERT INTO deliverable_leaders (
+deliverable_id,
+instituion_id,
+
+
+
+id_phase
+) SELECT 
+
+t2.deliverable_id,
+t2.instituion_id,
+ph.id
+FROM
+  table_deliverable_leaders t2
+ left join deliverables d on d.id=t2.deliverable_id
+left JOIN project_phases pp ON pp.project_id = d.project_id
+left JOIN phases ph ON ph.id = pp.id_phase
+;
+
+
+-- deliverable_gender_levels
+
+CREATE TEMPORARY TABLE
+IF NOT EXISTS table_deliverable_gender_levels AS (SELECT * FROM deliverable_gender_levels);
+
+TRUNCATE TABLE deliverable_gender_levels;
+
+
+ALTER TABLE `deliverable_gender_levels`
+ADD COLUMN `id_phase`  bigint(20) NULL AFTER `deliverable_id`;
+
+ALTER TABLE `deliverable_gender_levels` ADD FOREIGN KEY (`id_phase`) REFERENCES `phases` (`id`);
+
+INSERT INTO deliverable_gender_levels (
+deliverable_id,
+gender_level,
+is_active,
+active_since,
+created_by,
+modified_by,
+modification_justification,
+
+id_phase
+) SELECT 
+t2.deliverable_id,
+t2.gender_level,
+t2.is_active,
+t2.active_since,
+t2.created_by,
+t2.modified_by,
+t2.modification_justification,
+ph.id
+FROM
+  table_deliverable_gender_levels t2
+ left join deliverables d on d.id=t2.deliverable_id
+left JOIN project_phases pp ON pp.project_id = d.project_id
+left JOIN phases ph ON ph.id = pp.id_phase
+;
+
+-- deliverable_funding_sources
+
+CREATE TEMPORARY TABLE
+IF NOT EXISTS table_deliverable_funding_sources AS (SELECT * FROM deliverable_funding_sources);
+
+TRUNCATE TABLE deliverable_funding_sources;
+
+
+ALTER TABLE `deliverable_funding_sources`
+ADD COLUMN `id_phase`  bigint(20) NULL AFTER `deliverable_id`;
+
+ALTER TABLE `deliverable_funding_sources` ADD FOREIGN KEY (`id_phase`) REFERENCES `phases` (`id`);
+
+INSERT INTO deliverable_funding_sources (
+deliverable_id,
+funding_source_id,
+is_active,
+active_since,
+created_by,
+modified_by,
+modification_justification,
+
+
+id_phase
+) SELECT 
+t2.deliverable_id,
+t2.funding_source_id,
+t2.is_active,
+t2.active_since,
+t2.created_by,
+t2.modified_by,
+t2.modification_justification,
+
+ph.id
+FROM
+  table_deliverable_funding_sources t2
+ left join deliverables d on d.id=t2.deliverable_id
+left JOIN project_phases pp ON pp.project_id = d.project_id
+left JOIN phases ph ON ph.id = pp.id_phase
+;
+
+
+
+-- deliverable_dissemination
+
+CREATE TEMPORARY TABLE
+IF NOT EXISTS table_deliverable_dissemination AS (SELECT * FROM deliverable_dissemination);
+
+TRUNCATE TABLE deliverable_dissemination;
+
+
+ALTER TABLE `deliverable_dissemination`
+ADD COLUMN `id_phase`  bigint(20) NULL AFTER `deliverable_id`;
+
+ALTER TABLE `deliverable_dissemination` ADD FOREIGN KEY (`id_phase`) REFERENCES `phases` (`id`);
+
+INSERT INTO deliverable_dissemination (
+deliverable_id,
+is_open_access,
+intellectual_property,
+limited_exclusivity,
+restricted_use_agreement,
+restricted_access_until,
+effective_date_restriction,
+restricted_embargoed,
+not_disseminated,
+already_disseminated,
+dissemination_channel,
+dissemination_URL,
+dissemination_channel_name,
+synced,
+
+
+id_phase
+) SELECT 
+t2.deliverable_id,
+t2.is_open_access,
+t2.intellectual_property,
+t2.limited_exclusivity,
+t2.restricted_use_agreement,
+t2.restricted_access_until,
+t2.effective_date_restriction,
+t2.restricted_embargoed,
+t2.not_disseminated,
+t2.already_disseminated,
+t2.dissemination_channel,
+t2.dissemination_URL,
+t2.dissemination_channel_name,
+t2.synced,
+
+ph.id
+FROM
+  table_deliverable_dissemination t2
+ left join deliverables d on d.id=t2.deliverable_id
+left JOIN project_phases pp ON pp.project_id = d.project_id
+left JOIN phases ph ON ph.id = pp.id_phase
+;
+
+
+-- deliverable_data_sharing
+
+
+CREATE TEMPORARY TABLE
+IF NOT EXISTS table_deliverable_data_sharing AS (SELECT * FROM deliverable_data_sharing);
+
+TRUNCATE TABLE deliverable_data_sharing;
+
+
+ALTER TABLE `deliverable_data_sharing`
+ADD COLUMN `id_phase`  bigint(20) NULL AFTER `deliverable_id`;
+
+ALTER TABLE `deliverable_data_sharing` ADD FOREIGN KEY (`id_phase`) REFERENCES `phases` (`id`);
+
+INSERT INTO deliverable_data_sharing (
+deliverable_id,
+institutional_repository,
+link_institutional_repository,
+ccfas_host_greater,
+link_ccfas_host_greater,
+ccfas_host_smaller,
+
+
+id_phase
+) SELECT 
+t2.deliverable_id,
+t2.institutional_repository,
+t2.link_institutional_repository,
+t2.ccfas_host_greater,
+t2.link_ccfas_host_greater,
+t2.ccfas_host_smaller,
+
+
+ph.id
+FROM
+  table_deliverable_data_sharing t2
+ left join deliverables d on d.id=t2.deliverable_id
+left JOIN project_phases pp ON pp.project_id = d.project_id
+left JOIN phases ph ON ph.id = pp.id_phase
+;
+
+-- deliverable_data_sharing_file
+
+CREATE TEMPORARY TABLE
+IF NOT EXISTS table_deliverable_data_sharing_file AS (SELECT * FROM deliverable_data_sharing_file);
+
+TRUNCATE TABLE deliverable_data_sharing_file;
+
+
+ALTER TABLE `deliverable_data_sharing_file`
+ADD COLUMN `id_phase`  bigint(20) NULL AFTER `deliverable_id`;
+
+ALTER TABLE `deliverable_data_sharing_file` ADD FOREIGN KEY (`id_phase`) REFERENCES `phases` (`id`);
+
+INSERT INTO deliverable_data_sharing_file (
+deliverable_id,
+type_id,
+file_id,
+external_file,
+
+
+
+id_phase
+) SELECT 
+t2.deliverable_id,
+t2.type_id,
+t2.file_id,
+t2.external_file,
+
+ph.id
+FROM
+  table_deliverable_data_sharing_file t2
+ left join deliverables d on d.id=t2.deliverable_id
+left JOIN project_phases pp ON pp.project_id = d.project_id
+left JOIN phases ph ON ph.id = pp.id_phase
+;
+
+
+-- deliverable_crps
+
+CREATE TEMPORARY TABLE
+IF NOT EXISTS table_deliverable_crps AS (SELECT * FROM deliverable_crps);
+
+TRUNCATE TABLE deliverable_crps;
+
+
+ALTER TABLE `deliverable_crps`
+ADD COLUMN `id_phase`  bigint(20) NULL AFTER `deliverable_id`;
+
+ALTER TABLE `deliverable_crps` ADD FOREIGN KEY (`id_phase`) REFERENCES `phases` (`id`);
+
+INSERT INTO deliverable_crps (
+deliverable_id,
+crp_id,
+crp_program,
+
+id_phase
+) SELECT 
+t2.deliverable_id,
+t2.crp_id,
+t2.crp_program,
+ph.id
+FROM
+  table_deliverable_crps t2
+ left join deliverables d on d.id=t2.deliverable_id
+left JOIN project_phases pp ON pp.project_id = d.project_id
+left JOIN phases ph ON ph.id = pp.id_phase
+;
+
+
+-- deliverable_activities
+
+CREATE TEMPORARY TABLE
+IF NOT EXISTS table_deliverable_activities AS (SELECT * FROM deliverable_activities);
+
+TRUNCATE TABLE deliverable_activities;
+
+
+ALTER TABLE `deliverable_activities`
+ADD COLUMN `id_phase`  bigint(20) NULL AFTER `deliverable_id`;
+
+ALTER TABLE `deliverable_activities` ADD FOREIGN KEY (`id_phase`) REFERENCES `phases` (`id`);
+
+INSERT INTO deliverable_activities (
+deliverable_id,
+activity_id,
+is_active,
+active_since,
+created_by,
+modified_by,
+modification_justification,
+
+id_phase
+) SELECT 
+t2.deliverable_id,
+t2.activity_id,
+t2.is_active,
+t2.active_since,
+t2.created_by,
+t2.modified_by,
+t2.modification_justification,
+
+ph.id
+FROM
+  table_deliverable_activities t2
+ left join deliverables d on d.id=t2.deliverable_id
+left JOIN project_phases pp ON pp.project_id = d.project_id
+left JOIN phases ph ON ph.id = pp.id_phase
+;
+
