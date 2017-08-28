@@ -26,6 +26,8 @@ public class InvalidFieldsMessages {
   public static String CHECKBOX = "Select an option";
   public static String INVALID_FORMAT = "Only excel files(.xls, xlsx) are allowed.";
   public static String FILE_SIZE = "The maximun size allowed is 30MB";
+  public static String WRONG_FILE = "The file does not match the template.";
+  public static String EMPTY_FILE = "The file can be empty or can has empty fields.";
 
 
 }

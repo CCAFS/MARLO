@@ -77,51 +77,61 @@
 
 
 					  <tr >
-					    <td>C${i.id}</td>
-					    [#if i.title??]
+					    <td><a href="[@s.url action='${centerSession}/detailCapdev'][@s.param name='capdevID']${i.id?c}[/@s.param][/@s.url]">C${i.id}</a></td>
+					     
 					    <td>
-					    	<a href="[@s.url action='${centerSession}/detailCapdev'][@s.param name='capdevID']${i.id?c}[/@s.param][/@s.url]">${i.title}</a>
+						    [#if i.title?has_content]
+						    	<a href="[@s.url action='${centerSession}/detailCapdev'][@s.param name='capdevID']${i.id?c}[/@s.param][/@s.url]">${i.title}</a>
+						    [#else]
+						    	<a href="[@s.url action='${centerSession}/detailCapdev'][@s.param name='capdevID']${i.id?c}[/@s.param][/@s.url]">Not defined</a>
+						    [/#if]
 					    </td> 
-					    <td>${i.capdevType.name}</td>
-					    <td>${i.startDate}</td>
-					    [#else]
 					    <td>
-					    	<a href="[@s.url action='${centerSession}/detailCapdev'][@s.param name='capdevID']${i.id?c}[/@s.param][/@s.url]">Not defined</a>
-					    </td> 
-					    <td>Not defined</td>
-					    <td>Not defined</td>
-					    [/#if]
+						    [#if i.capdevType??]
+						    	${i.capdevType.name}
+						    [#else]
+						    	Not defined
+						    [/#if]
+					    </td>
+					     <td>
+						    [#if i.startDate??]
+						    	${i.startDate}
+						    [#else]
+						    	Not defined
+						    [/#if]
+					    </td>
+					    
 					    <td>
-					    [#if i.endDate??]
-					    	${i.endDate}
-					    [#else]
-					    	Not defined
-					    [/#if]
+						    [#if i.endDate??]
+						    	${i.endDate}
+						    [#else]
+						    	Not defined
+						    [/#if]
 					    </td>
 					    <td>
-					    [#if i.researchArea??] 
-					    	${i.researchArea.name}
-					    [#else]
-					    	Not defined
-					    [/#if]
+						    [#if i.researchArea??] 
+						    	${i.researchArea.name}
+						    [#else]
+						    	Not defined
+						    [/#if]
 					    </td>
 					    <td>
-					    [#if i.researchProgram??]
-					    	${i.researchProgram.name}
-					    [#else]
-					    	Not defined
-					    [/#if]
+						    [#if i.researchProgram??]
+						    	${i.researchProgram.name}
+						    [#else]
+						    	Not defined
+						    [/#if]
 					    </td>
 					    <td>
-					    [#if i.capdevParticipants?has_content]
-					    [#if i.capdevParticipants?size  > 1 ]
-				    		<div class=" iconContentBox">
-				    			<img src="${baseUrlMedia}/images/global/participants.png" class="capDevIcon" title="List of participants" />
-				    		</div>
-				    	[#else]
-				    	[/#if]
-				    	[#else]
-				    	[/#if]
+						    [#if i.capdevParticipants?has_content]
+						    [#if i.capdevParticipants?size  > 1 ]
+					    		<div class=" iconContentBox">
+					    			<img src="${baseUrlMedia}/images/global/participants.png" class="capDevIcon" title="List of participants" />
+					    		</div>
+					    	[#else]
+					    	[/#if]
+					    	[#else]
+					    	[/#if]
 
 				    		<div class=" iconContentBox">
 				    			<img src="${baseUrlMedia}/images/global/deliverable.png" class="capDevIcon" title="Supporting documents" />

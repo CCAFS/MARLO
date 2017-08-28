@@ -38,54 +38,130 @@ public class CapacityDevelopmentValidator extends BaseValidator {
 
   }
 
+  public Boolean bolValue(String value) {
+    if ((value == null) || value.isEmpty() || value.toLowerCase().equals("null")) {
+      return null;
+    }
+    return Boolean.valueOf(value);
+  }
+
+  public void validate(BaseAction baseAction, CapacityDevelopment capdev, Participant participant, File uploadFile,
+    String uploadFileContentType) {
+    baseAction.setInvalidFields(new HashMap<>());
+
+    if (!baseAction.getFieldErrors().isEmpty()) {
+      baseAction.addActionError(baseAction.getText("saving.fields.required"));
+    }
+
+    this.validateCapDevDetail(baseAction, capdev, participant, uploadFile, uploadFileContentType);
+
+  }
 
   public void validateCapDevDetail(BaseAction baseAction, CapacityDevelopment capdev, Participant participant,
     File uploadFile, String uploadFileContentType) {
-    baseAction.setInvalidFields(new HashMap<>());
+
+
+    if (capdev.getTitle() != null) {
+      if (!this.isValidString(capdev.getTitle()) && (this.wordCount(capdev.getTitle()) <= 50)) {
+        this.addMessage(baseAction.getText("capdev.action.title"));
+        baseAction.getInvalidFields().put("input-capdev.title", InvalidFieldsMessages.EMPTYFIELD);
+      }
+    } else {
+      this.addMessage(baseAction.getText("capdev.action.title"));
+      baseAction.getInvalidFields().put("input-capdev.title", InvalidFieldsMessages.EMPTYFIELD);
+    }
 
     if (capdev.getCapdevType().getId() == -1) {
       this.addMessage(baseAction.getText("capdev.action.type"));
-      baseAction.getInvalidFields().put("CIAT_detailCapdev_capdev_capdevType_id", InvalidFieldsMessages.EMPTYFIELD);
+      baseAction.getInvalidFields().put("input-capdev.capdevType.id", InvalidFieldsMessages.EMPTYFIELD);
     }
+
     if (capdev.getStartDate() == null) {
       this.addMessage(baseAction.getText("capdev.action.startDate"));
       baseAction.getInvalidFields().put("input-capdev.startDate", InvalidFieldsMessages.EMPTYFIELD);
     }
+
+    if (capdev.getEndDate() == null) {
+      this.addMessage(baseAction.getText("capdev.action.startDate"));
+      baseAction.getInvalidFields().put("input-capdev.endDate", InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    if (capdev.getDuration() == null) {
+      this.addMessage(baseAction.getText("capdev.action.duration"));
+      baseAction.getInvalidFields().put("input-capdev.duration", InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    if (this.bolValue(capdev.getsGlobal()) != null) {
+      if (this.bolValue(capdev.getsGlobal())) {
+        if ((capdev.getCapDevCountries() == null) || capdev.getCapDevCountries().isEmpty()) {
+          this.addMessage(baseAction.getText("capdev.action.countries"));
+          baseAction.getInvalidFields().put("list-capdev.countries", baseAction.getText(InvalidFieldsMessages.EMPTYLIST,
+            new String[] {"Capacity Development Intervention Countries"}));
+        }
+      }
+    } else {
+      this.addMessage(baseAction.getText("capdev.action.global"));
+      baseAction.getInvalidFields().put("input-capdev.sGlobal", InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    if (this.bolValue(capdev.getsRegional()) != null) {
+      if (this.bolValue(capdev.getsRegional())) {
+        if ((capdev.getCapDevRegions() == null) || capdev.getCapDevRegions().isEmpty()) {
+          this.addMessage(baseAction.getText("capdev.action.regions"));
+          baseAction.getInvalidFields().put("list-capdev.regions", baseAction.getText(InvalidFieldsMessages.EMPTYLIST,
+            new String[] {"Capacity Development Intervention Regions"}));
+        }
+      }
+    } else {
+      this.addMessage(baseAction.getText("capdev.action.region"));
+      baseAction.getInvalidFields().put("input-capdev.sRegional", InvalidFieldsMessages.EMPTYFIELD);
+    }
+
     if (capdev.getCategory() == 1) {
 
       this.validateParticipant(participant, baseAction);
     }
     if (capdev.getCategory() == 2) {
-      if (capdev.getTitle().equalsIgnoreCase("")) {
-        this.addMessage(baseAction.getText("capdev.action.title"));
-        baseAction.getInvalidFields().put("input-capdev.title", InvalidFieldsMessages.EMPTYFIELD);
-      }
+
       if (capdev.getCtFirstName().equalsIgnoreCase("") || capdev.getCtLastName().equalsIgnoreCase("")
         || capdev.getCtEmail().equalsIgnoreCase("")) {
-        this.addMessage("contact");
+        this.addMessage(baseAction.getText("capdev.action.contactPerson"));
         baseAction.getInvalidFields().put("input-contact", InvalidFieldsMessages.EMPTYFIELD);
       }
       if ((uploadFile == null) && (capdev.getNumParticipants() == null)) {
         this.addMessage(baseAction.getText("capdev.action.numParticipants"));
-        baseAction.getInvalidFields().put("input-capdev.numParticipants", InvalidFieldsMessages.EMPTYFIELD);
+        baseAction.getInvalidFields().put("list-capdev.uploadFile",
+          baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Number of participants or a file "}));
       }
       if (uploadFile != null) {
         if (!uploadFileContentType.equals("application/vnd.ms-excel")
           && !uploadFileContentType.equals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")) {
           System.out.println("formato incorrecto");
-          this.addMessage("uploadFile");
-          baseAction.getInvalidFields().put("input-uploadFile", InvalidFieldsMessages.INVALID_FORMAT);
+          this.addMessage(baseAction.getText("capdev.action.file"));
+          baseAction.getInvalidFields().put("list-capdev.uploadFile",
+            baseAction.getText(InvalidFieldsMessages.INVALID_FORMAT, new String[] {""}));
+        } else {
+          if (!reader.validarExcelFile(uploadFile)) {
+            System.out.println("el archivo no coincide con la plantilla");
+            this.addMessage(baseAction.getText("capdev.action.file"));
+            baseAction.getInvalidFields().put("list-capdev.uploadFile",
+              baseAction.getText(InvalidFieldsMessages.WRONG_FILE, new String[] {""}));
+          }
+          if (!reader.validarExcelFileData(uploadFile)) {
+            System.out.println("el archivo esta vacio o tiene campos nulos");
+            this.addMessage(baseAction.getText("capdev.action.file"));
+            baseAction.getInvalidFields().put("list-capdev.uploadFile",
+              baseAction.getText(InvalidFieldsMessages.EMPTY_FILE, new String[] {""}));
+          }
         }
         if (uploadFile.length() > 31457280) {
           System.out.println("file muy pesado");
-          this.addMessage("uploadFile");
-          baseAction.getInvalidFields().put("input-uploadFile", InvalidFieldsMessages.FILE_SIZE);
+          this.addMessage(baseAction.getText("capdev.action.file"));
+          baseAction.getInvalidFields().put("list-capdev.uploadFile",
+            baseAction.getText(InvalidFieldsMessages.FILE_SIZE, new String[] {""}));
+
         }
-        if (!reader.validarExcelFile(uploadFile)) {
-          System.out.println("el archivo no coincide con la plantilla");
-          this.addMessage("uploadFile");
-          baseAction.getInvalidFields().put("input-uploadFile", "file wrong");
-        }
+
       }
     }
 
@@ -117,29 +193,30 @@ public class CapacityDevelopmentValidator extends BaseValidator {
       this.addMessage(baseAction.getText("capdev.action.participant.gender"));
       baseAction.getInvalidFields().put("input-participant.gender", InvalidFieldsMessages.EMPTYFIELD);
     }
-    if (participant.getLocElementsByCitizenship().getId() == null) {
+    if (participant.getLocElementsByCitizenship().getId() == -1) {
       this.addMessage(baseAction.getText("capdev.action.participant.citizenship"));
-      baseAction.getInvalidFields().put("input-participant.citizenship", InvalidFieldsMessages.EMPTYFIELD);
+      baseAction.getInvalidFields().put("input-participant.locElementsByCitizenship.id",
+        InvalidFieldsMessages.EMPTYFIELD);
     }
-    if (participant.getEmail().equalsIgnoreCase("")) {
-      this.addMessage(baseAction.getText("capdev.action.participant.email"));
-      baseAction.getInvalidFields().put("input-participant.email", InvalidFieldsMessages.EMPTYFIELD);
+    if (participant.getPersonalEmail().equalsIgnoreCase("")) {
+      this.addMessage(baseAction.getText("capdev.action.participant.personalEmail"));
+      baseAction.getInvalidFields().put("input-participant.personalEmail", InvalidFieldsMessages.EMPTYFIELD);
     }
-    if (!participant.getEmail().equalsIgnoreCase("")) {
-      final boolean validEmail = this.isValidEmail(participant.getEmail());
+    if (!participant.getPersonalEmail().equalsIgnoreCase("")) {
+      final boolean validEmail = this.isValidEmail(participant.getPersonalEmail());
       if (!validEmail) {
-        System.out.println("Email no valido");
-        this.addMessage(baseAction.getText("capdev.action.participant.email"));
-        baseAction.getInvalidFields().put("input-participant.email", InvalidFieldsMessages.EMPTYFIELD);
+        this.addMessage(baseAction.getText("capdev.action.participant.personalEmail"));
+        baseAction.getInvalidFields().put("input-participant.personalEmail", InvalidFieldsMessages.EMPTYFIELD);
       }
     }
-    if (participant.getInstitutions().getId() == null) {
+    if (participant.getInstitutions().getId() == -1) {
       this.addMessage(baseAction.getText("capdev.action.participant.institution"));
-      baseAction.getInvalidFields().put("input-participant.institution", InvalidFieldsMessages.EMPTYFIELD);
+      baseAction.getInvalidFields().put("input-participant.institutions.id", InvalidFieldsMessages.EMPTYFIELD);
     }
-    if (participant.getLocElementsByCountryOfInstitucion().getId() == null) {
+    if (participant.getLocElementsByCountryOfInstitucion().getId() == -1) {
       this.addMessage(baseAction.getText("capdev.action.participant.countryOfInstitucion"));
-      baseAction.getInvalidFields().put("input-participant.countryOfInstitucion", InvalidFieldsMessages.EMPTYFIELD);
+      baseAction.getInvalidFields().put("input-participant.locElementsByCountryOfInstitucion.id",
+        InvalidFieldsMessages.EMPTYFIELD);
     }
     if (participant.getSupervisor().equalsIgnoreCase("")) {
       this.addMessage(baseAction.getText("capdev.action.participant.supervisor"));

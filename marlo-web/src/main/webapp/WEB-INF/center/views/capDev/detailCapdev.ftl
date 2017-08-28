@@ -2,7 +2,7 @@
 
 [#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css"] /]
 [#assign customCSS = ["${baseUrlMedia}/css/capDev/capacityDevelopment.css"] /]
-[#assign customJS = ["${baseUrlMedia}/js/capDev/capacityDevelopment.js"] /]
+[#assign customJS = ["${baseUrlMedia}/js/capDev/capacityDevelopment.js", "${baseUrlMedia}/js/global/fieldsValidation.js"] /]
 
 
 [#assign breadCrumb = [
@@ -50,7 +50,7 @@
 
 			[@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
 			<!-- Radio Buttons-->
-			<div class="row newCapdevField" > 
+			<div class=" row newCapdevField" > 
 				
 				<div class="col-md-12">
 					<div class="col-md-3">
@@ -69,11 +69,9 @@
 
 			<div  class="fullForm" >
 				<!-- Title-->
-				<div class="row newCapdevField" >
+				<div class="form-group row newCapdevField" >
 					<div class="col-md-12 "> 
-						<div class="" > 
-							[@customForm.input name="capdev.title" type="text" help="capdev.help.title" i18nkey="capdev.form.title"  required=true  /]
-						</div>
+						[@customForm.input name="capdev.title" type="text" help="capdev.help.title" i18nkey="capdev.form.title"  required=true  /]
 					</div>
 				</div>
 
@@ -81,7 +79,7 @@
 				<div class="row">
 					<div class="col-md-12 newCapdevField"> 
 						<!-- type-->
-						<div class="col-md-6 "> 
+						<div class="col-md-6" > 
 							[@customForm.select name="capdev.capdevType.id" listName="capdevTypes" keyFieldName="id" displayFieldName="name" help="capdev.help.type" i18nkey="capdev.form.type"  placeholder="capdev.select" required=true editable=true/]
 						</div>
 
@@ -113,7 +111,7 @@
 				<!-- Duration -->
 				<div class="row newCapdevField">
 					<div class="col-md-3">
-						[@customForm.input name="capdev.duration" i18nkey="capdev.form.duration" type="text"  help="capdev.help.duration"   editable=true className="capdevstartDate"/] 
+						[@customForm.input name="capdev.duration" i18nkey="capdev.form.duration" type="text"  help="capdev.help.duration"   editable=true className="capdevDuration"/] 
 					</div>
 
 					<div class="col-md-3 durationUnitSelect">
@@ -155,8 +153,8 @@
 						</div>
 
 						<div class="row newCapdevField">
-							<div class="col-md-12 newCapdevField participantsBox">
-								[@s.fielderror fieldName="upload_File" class="fileError" /]
+							<div class="col-md-12 newCapdevField participantsBox " listname="capdev.uploadFile">
+								<!-- [@s.fielderror fieldName="upload_File" class="fileError" /] -->
 								<div class="col-md-12">
 									[@s.file id="uploadFile" name="uploadFile" label="Select a File to upload" size="40" class="uploadParticipants"/]
 								</div>
@@ -298,7 +296,7 @@
 
 				<!-- Regions and countries lists -->
 				<h4 class="headTitle newCapdevField">Location Information</h4>	
-				<div class="row newCapdevField">
+				<div class="row newCapdevField form-group">
 					<div class="simpleBox">
 						
 						<div class="form-group capdevDimension">[@customForm.yesNoInput  label="capdev.globalDimensionQuestion" name="capdev.sGlobal"  inverse=false  cssClass="global" /] </div>
@@ -307,7 +305,7 @@
 
 						
 						<!-- regions-->
-						<div class="listContainer capdevRegional regionsBox" style="display:none">
+						<div class="listContainer capdevRegional regionsBox" style="display:none" listname="capdev.regions">
 							<div class="newCapdevField">
 								[@customForm.select name="capdevRegions" listName="regionsList" keyFieldName="id" displayFieldName="name" help="capdev.help.region" i18nkey="capdev.form.region" className="capdevRegionsSelect" multiple=false placeholder="capdev.select"  /]
 							</div>
@@ -340,34 +338,30 @@
 							
 						 	
 
-						<div class="">
-							<div class="capdevDimension"><label>If the capacity development intervention focuses on specific countries, please list these countries:</label></div>
-							<!-- countries-->
-							<div class="listContainer ">
-								<div class="newCapdevField">
-									[@customForm.select name="capdevCountries" listName="countryList" keyFieldName="id" displayFieldName="name" help="capdev.help.country" i18nkey="capdev.form.country" className="capdevCountriesSelect" multiple=false placeholder="capdev.select"  /]
-								</div>
-								<div id="capdevCountriesList" class=" countriesList">
-									<div class="">
-										<div class=" panel-body">
-											<ul class="list">
-												[#if capdev.capDevCountries?has_content]
-												[#list capdev.capDevCountries as country]
-												<li id="" class="capdevCountry clearfix col-md-3">
-													<div class="removeCountry-action removeCountry removeIcon" title="Remove country"></div>
-													<input class="id" type="hidden" name="capdev.capDevCountries[${country_index}].id" value="${(country.id)!-1}" />
-													<input class="cId" type="hidden" name="capdev.capDevCountries[${country_index}].locElement.id" value="${(country.locElement.id)!}" />
-													${country.locElement.name}
-													<div class="clearfix"></div>
-												</li>
-												[/#list]
-												[#else]
-												<p class="emptyText"> [@s.text name="capdev.notCountries" /]</p> 
-												[/#if]
-											</ul>
-										</div>
+						<div class="capdevDimension"><label>If the capacity development intervention focuses on specific countries, please list these countries:</label></div>
+						<!-- countries-->
+						<div class="listContainer"  listname="capdev.countries">
+							<div class="newCapdevField">
+								[@customForm.select name="capdevCountries" listName="countryList" keyFieldName="id" displayFieldName="name" help="capdev.help.country" i18nkey="capdev.form.country" className="capdevCountriesSelect" multiple=false placeholder="capdev.select"  /]
+							</div>
+							<div id="capdevCountriesList" class="countriesList" >
+									<div class="panel-body" >
+										<ul class="list">
+											[#if capdev.capDevCountries?has_content]
+											[#list capdev.capDevCountries as country]
+											<li id="" class="capdevCountry clearfix col-md-3">
+												<div class="removeCountry-action removeCountry removeIcon" title="Remove country"></div>
+												<input class="id" type="hidden" name="capdev.capDevCountries[${country_index}].id" value="${(country.id)!-1}" />
+												<input class="cId" type="hidden" name="capdev.capDevCountries[${country_index}].locElement.id" value="${(country.locElement.id)!}" />
+												${country.locElement.name}
+												<div class="clearfix"></div>
+											</li>
+											[/#list]
+											[#else]
+											<p class="emptyText"> [@s.text name="capdev.notCountries" /]</p> 
+											[/#if]
+										</ul>
 									</div>
-								</div>
 							</div>
 						</div>
 					</div>

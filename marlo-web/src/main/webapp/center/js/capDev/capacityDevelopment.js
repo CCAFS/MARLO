@@ -12,6 +12,7 @@
     $('.numMen').integerInput();
     $('.numMen').integerInput();
     $('.participant-code').integerInput();
+    $('.capdevDuration').integerInput();
 
     datePickerConfig({
       "startDate": "#capdev\\.startDate",

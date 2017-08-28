@@ -38,7 +38,6 @@ import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Participant;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
-import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.utils.ReadExcelFile;
 import org.cgiar.ccafs.marlo.validation.center.capdev.CapacityDevelopmentValidator;
 
@@ -63,8 +62,11 @@ import org.apache.shiro.session.Session;
 public class CapacityDevelopmentDetailAction extends BaseAction {
 
 
-  private static final long serialVersionUID = 1L;
+  public enum DurationUnits {
+    HOURS, DAYS
+  }
 
+  private static final long serialVersionUID = 1L;
 
   private long capdevID;
   private int capdevCategory;
@@ -398,15 +400,12 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
     // Unit duration
     durationUnit = new ArrayList<>();
-    final Map<String, Object> hours = new HashMap<>();
-    hours.put("displayName", "Hours");
-    hours.put("value", "Hours");
-    final Map<String, Object> days = new HashMap<>();
-    days.put("displayName", "Days");
-    days.put("value", "Days");
-
-    durationUnit.add(hours);
-    durationUnit.add(days);
+    for (final DurationUnits unit : DurationUnits.values()) {
+      final Map<String, Object> map = new HashMap<>();
+      map.put("displayName", unit);
+      map.put("value", unit);
+      durationUnit.add(map);
+    }
 
 
     // Regions List
@@ -539,14 +538,19 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     final CapacityDevelopment capdevDB = capdevService.getCapacityDevelopmentById(capdevID);
 
     capdevDB.setUsersByCreatedBy(currentUser);
-    capdevDB.setTitle(capdev.getTitle());
-    capdevDB.setCapdevType(capdev.getCapdevType());
     capdevDB.setStartDate(capdev.getStartDate());
     capdevDB.setEndDate(capdev.getEndDate());
     capdevDB.setDuration(capdev.getDuration());
     capdevDB.setDurationUnit(capdev.getDurationUnit());
     capdevDB.setGlobal(this.bolValue(capdev.getsGlobal()));
     capdevDB.setRegional(this.bolValue(capdev.getsRegional()));
+
+
+    capdevDB.setTitle(capdev.getTitle());
+
+    if (capdev.getCapdevType().getId() != -1) {
+      capdevDB.setCapdevType(capdev.getCapdevType());
+    }
 
     // if capdev is individual
     if (capdevDB.getCategory() == 1) {
@@ -557,11 +561,18 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       if (participant.getGender().equals("F")) {
         capdevDB.setNumWomen(1);
       }
+
       capdevService.saveCapacityDevelopment(capdevDB);
-      this.saveParticipant(participant);
-      if (capdevDB.getCapdevParticipants().isEmpty()) {
-        this.saveCapDevParticipan(participant, capdevDB);
+      // verifica si se ingreso la info de un participante para hacer el save del participante.
+      if (participant.getCode() != 0) {
+        this.saveParticipant(participant);
+
+        // verifica si la capdev tiene algun participante registrado, sino registra el capdevParticipant
+        if (capdevDB.getCapdevParticipants().isEmpty()) {
+          this.saveCapDevParticipan(participant, capdevDB);
+        }
       }
+
     }
 
     // if capdec is group
@@ -571,13 +582,19 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       capdevDB.setCtLastName(capdev.getCtLastName());
       capdevDB.setCtEmail(capdev.getCtEmail());
       if (uploadFile != null) {
-        final Object[][] data = reader.readExcelFile(uploadFile);
-        this.loadParticipantsList(data);
-        capdevDB.setNumParticipants(participantList.size());
-        final int numMen = this.getNumMenParticipants(data);
-        final int numWomen = this.getNumWomenParticipants(data);
-        capdevDB.setNumMen(numMen);
-        capdevDB.setNumWomen(numWomen);
+        System.out.println("uploadFileContentType " + uploadFileContentType);
+        if (uploadFileContentType.equals("application/vnd.ms-excel")
+          || uploadFileContentType.equals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")) {
+
+          final Object[][] data = reader.readExcelFile(uploadFile);
+          this.loadParticipantsList(data);
+          capdevDB.setNumParticipants(participantList.size());
+          final int numMen = this.getNumMenParticipants(data);
+          final int numWomen = this.getNumWomenParticipants(data);
+          capdevDB.setNumMen(numMen);
+          capdevDB.setNumWomen(numWomen);
+        }
+
 
       } else {
         capdevDB.setNumParticipants(capdev.getNumParticipants());
@@ -596,7 +613,16 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     this.saveCapDevRegions(capdevRegions, capdevDB);
     this.saveCapDevCountries(capdevCountries, capdevDB);
 
-    this.addActionMessage("message: Information was correctly saved.</br>");
+
+    if (!this.getInvalidFields().isEmpty()) {
+      this.setActionMessages(null);
+      final List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+      for (final String key : keys) {
+        this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+      }
+    } else {
+      this.addActionMessage("message:" + this.getText("saving.saved"));
+    }
 
 
     return SUCCESS;
@@ -802,115 +828,110 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     this.setInvalidFields(new HashMap<>());
 
     if (save) {
-      System.out.println("regional dimension " + capdev.getRegional());
-      // validator.validateCapDevDetail(this, capdev, participant, uploadFile, uploadFileContentType);
-      if (capdev.getTitle().equalsIgnoreCase("")) {
-        this.addFieldError("capdev.title", "Title is required.");
-      }
-      if (capdev.getTitle().length() > 500) {
-        this.addFieldError("capdev.title", "Title is very length.");
-      }
-      if (capdev.getCapdevType().getId() == -1) {
-        this.addFieldError("capdev.capdevType.id", "Type is required.");
-        this.getInvalidFields().put("capdev.capdevType.id", InvalidFieldsMessages.EMPTYFIELD);
-      }
-      if (capdev.getStartDate() == null) {
-        this.addFieldError("capdev.startDate", "Start Date is required.");
-        this.getInvalidFields().put("capdev.startDate", InvalidFieldsMessages.EMPTYFIELD);
-      }
+      validator.validate(this, capdev, participant, uploadFile, uploadFileContentType);
 
-      if (capdev.getCategory() == 1) {
+      // if (capdev.getTitle().equalsIgnoreCase("")) {
+      // this.addFieldError("capdev.title", "Title is required.");
+      // }
+      // if (capdev.getTitle().length() > 500) {
+      // this.addFieldError("capdev.title", "Title is very length.");
+      // }
+      // if (capdev.getCapdevType().getId() == -1) {
+      // this.addFieldError("capdev.capdevType.id", "Type is required.");
+      // this.getInvalidFields().put("capdev.capdevType.id", InvalidFieldsMessages.EMPTYFIELD);
+      // }
+      // if (capdev.getStartDate() == null) {
+      // this.addFieldError("capdev.startDate", "Start Date is required.");
+      // this.getInvalidFields().put("capdev.startDate", InvalidFieldsMessages.EMPTYFIELD);
+      // }
+      //
+      // if (capdev.getCategory() == 1) {
+      //
+      // System.out.println("highest degree " + participant.getHighestDegree().getId());
+      //
+      // if (participant.getCode() == 0) {
+      // this.addFieldError("participant.code", "Code is required.");
+      // }
+      // if (participant.getName().equalsIgnoreCase("")) {
+      // this.addFieldError("participant.name", "First name is required.");
+      // }
+      // if (participant.getName().length() > 100) {
+      // this.addFieldError("participant.name", "First name is very length.");
+      // }
+      // if (participant.getLastName().equalsIgnoreCase("")) {
+      // this.addFieldError("participant.lastName", "Last name is required.");
+      // }
+      // if (participant.getLastName().length() > 100) {
+      // this.addFieldError("participant.lastName", "Last name is very length.");
+      // }
+      // if (participant.getGender().equalsIgnoreCase("-1")) {
+      // this.addFieldError("participant.gender", "Gender is required.");
+      // }
+      // System.out.println(
+      // "participant.getLocElementsByCitizenship().getId() " + participant.getLocElementsByCitizenship().getId());
+      // if (participant.getLocElementsByCitizenship().getId() == -1) {
+      // this.addFieldError("participant.locElementsByCitizenship.id", "Citizenship is required.");
+      // }
+      // if (participant.getPersonalEmail().equalsIgnoreCase("")) {
+      // this.addFieldError("participant.personalEmail", "Email is required.");
+      // }
+      // if (!participant.getPersonalEmail().equalsIgnoreCase("")) {
+      // final boolean validEmail = validator.validateEmail(participant.getPersonalEmail());
+      // if (!validEmail) {
+      // System.out.println("Email no valido");
+      // this.addFieldError("participant.personalEmail", "enter a valid email address.");
+      // }
+      // }
+      // if (participant.getInstitutions().getId() == -1) {
+      // this.addFieldError("participant.institutions.id", "institution required.");
+      // }
+      // if (participant.getLocElementsByCountryOfInstitucion().getId() == -1) {
+      // this.addFieldError("participant.locElementsByCountryOfInstitucion.id", "Country of institution is required.");
+      // }
+      // if (participant.getSupervisor().equalsIgnoreCase("")) {
+      // this.addFieldError("participant.supervisor", "Supervisor is required.");
+      // }
+      // if (participant.getSupervisor().length() > 100) {
+      // this.addFieldError("participant.supervisor", "Supervisor is very length.");
+      // }
+      //
+      //
+      // }
+      //
+      // if (capdev.getCategory() == 2) {
+      // if (capdev.getCtFirstName().equalsIgnoreCase("") || capdev.getCtLastName().equalsIgnoreCase("")
+      // || capdev.getCtEmail().equalsIgnoreCase("")) {
+      // this.addFieldError("contact", "Contact person is required.");
+      // }
+      // if (!capdev.getCtEmail().equalsIgnoreCase("")) {
+      // final boolean validEmail = validator.validateEmail(capdev.getCtEmail());
+      // if (!validEmail) {
+      // System.out.println("Email no valido");
+      // this.addFieldError("contact", "enter a valid email address.");
+      // }
+      // }
+      //
+      // if ((uploadFile == null) && (capdev.getNumParticipants() == null)) {
+      // this.addFieldError("upload_File", "File or number of participants are required.");
+      // this.addFieldError("capdev.numParticipants", "Num participants or a file are required.");
+      // }
+      // if (uploadFile != null) {
+      // if (!uploadFileContentType.equals("application/vnd.ms-excel")
+      // && !uploadFileContentType.equals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")) {
+      // System.out.println("formato incorrecto");
+      // this.addFieldError("upload_File", "Only excel files(.xls, xlsx) are allowed.");
+      // }
+      // if (uploadFile.length() > 31457280) {
+      // System.out.println("file muy pesado");
+      // this.addFieldError("upload_File", "capdev.fileSize");
+      // }
+      // if (!reader.validarExcelFile(uploadFile)) {
+      // System.out.println("el archivo no coincide con la plantilla");
+      // this.addFieldError("upload_File", "file wrong, the file does not match the template.");
+      // }
 
-        System.out.println("highest degree " + participant.getHighestDegree().getId());
-
-        if (participant.getCode() == 0) {
-          this.addFieldError("participant.code", "Code is required.");
-        }
-        if (participant.getName().equalsIgnoreCase("")) {
-          this.addFieldError("participant.name", "First name is required.");
-        }
-        if (participant.getName().length() > 100) {
-          this.addFieldError("participant.name", "First name is very length.");
-        }
-        if (participant.getLastName().equalsIgnoreCase("")) {
-          this.addFieldError("participant.lastName", "Last name is required.");
-        }
-        if (participant.getLastName().length() > 100) {
-          this.addFieldError("participant.lastName", "Last name is very length.");
-        }
-        if (participant.getGender().equalsIgnoreCase("-1")) {
-          this.addFieldError("participant.gender", "Gender is required.");
-        }
-        System.out.println(
-          "participant.getLocElementsByCitizenship().getId() " + participant.getLocElementsByCitizenship().getId());
-        if (participant.getLocElementsByCitizenship().getId() == -1) {
-          this.addFieldError("participant.locElementsByCitizenship.id", "Citizenship is required.");
-        }
-        if (participant.getPersonalEmail().equalsIgnoreCase("")) {
-          this.addFieldError("participant.personalEmail", "Email is required.");
-        }
-        if (!participant.getPersonalEmail().equalsIgnoreCase("")) {
-          final boolean validEmail = validator.validateEmail(participant.getPersonalEmail());
-          if (!validEmail) {
-            System.out.println("Email no valido");
-            this.addFieldError("participant.personalEmail", "enter a valid email address.");
-          }
-        }
-        if (participant.getInstitutions().getId() == -1) {
-          this.addFieldError("participant.institutions.id", "institution required.");
-        }
-        if (participant.getLocElementsByCountryOfInstitucion().getId() == -1) {
-          this.addFieldError("participant.locElementsByCountryOfInstitucion.id", "Country of institution is required.");
-        }
-        if (participant.getSupervisor().equalsIgnoreCase("")) {
-          this.addFieldError("participant.supervisor", "Supervisor is required.");
-        }
-        if (participant.getSupervisor().length() > 100) {
-          this.addFieldError("participant.supervisor", "Supervisor is very length.");
-        }
-
-
-      }
-
-      if (capdev.getCategory() == 2) {
-        if (capdev.getCtFirstName().equalsIgnoreCase("") || capdev.getCtLastName().equalsIgnoreCase("")
-          || capdev.getCtEmail().equalsIgnoreCase("")) {
-          this.addFieldError("contact", "Contact person is required.");
-        }
-        if (!capdev.getCtEmail().equalsIgnoreCase("")) {
-          final boolean validEmail = validator.validateEmail(capdev.getCtEmail());
-          if (!validEmail) {
-            System.out.println("Email no valido");
-            this.addFieldError("contact", "enter a valid email address.");
-          }
-        }
-        // if (capdev.getNumParticipants() == null) {
-        // this.addFieldError("capdev.numParticipants", "Num participants or a file are required.");
-        // }
-        if ((uploadFile == null) && (capdev.getNumParticipants() == null)) {
-          this.addFieldError("upload_File", "File or number of participants are required.");
-          this.addFieldError("capdev.numParticipants", "Num participants or a file are required.");
-        }
-        if (uploadFile != null) {
-          if (!uploadFileContentType.equals("application/vnd.ms-excel")
-            && !uploadFileContentType.equals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")) {
-            System.out.println("formato incorrecto");
-            this.addFieldError("upload_File", "Only excel files(.xls, xlsx) are allowed.");
-          }
-          if (uploadFile.length() > 31457280) {
-            System.out.println("file muy pesado");
-            this.addFieldError("upload_File", "capdev.fileSize");
-          }
-          if (!reader.validarExcelFile(uploadFile)) {
-            System.out.println("el archivo no coincide con la plantilla");
-            this.addFieldError("upload_File", "file wrong, the file does not match the template.");
-          }
-          if (!reader.validarExcelFileData(uploadFile)) {
-            System.out.println("el archivo esta vacio o tiene campos nulos");
-            this.addFieldError("upload_File", "file wrong, the file can be empty or can has empty fields.");
-          }
-        }
-      }
+      // }
+      // }
     }
 
 
