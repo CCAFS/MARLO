@@ -19,7 +19,11 @@ public class CapacityDevelopment implements java.io.Serializable {
    * 
    */
   private static final long serialVersionUID = 1L;
+
+
   private Long id;
+
+
   private CenterProject project;
   private User usersByModifiedBy;
   private User usersByCreatedBy;
@@ -54,11 +58,10 @@ public class CapacityDevelopment implements java.io.Serializable {
   private Set<CapdevOutputs> capdevOutputses = new HashSet<CapdevOutputs>(0);
   private Set<CapdevPartners> capdevPartnerses = new HashSet<CapdevPartners>(0);
   private Set<CapdevSupportingDocs> capdevSupportingDocses = new HashSet<CapdevSupportingDocs>(0);
-
+  private Set<CenterSectionStatus> sectionStatuses = new HashSet<CenterSectionStatus>(0);
 
   public CapacityDevelopment() {
   }
-
 
   public CapacityDevelopment(CenterProject project, User usersByModifiedBy, User usersByCreatedBy,
     CenterArea researchArea, Crp crp, CenterProgram researchProgram, String title, CapacityDevelopmentType capdevType,
@@ -100,6 +103,7 @@ public class CapacityDevelopment implements java.io.Serializable {
     this.capdevSupportingDocses = capdevSupportingDocses;
   }
 
+
   public CapacityDevelopment(String title, CapacityDevelopmentType capdevType, int category, boolean active,
     String ctFirstName, String ctLastName, String ctEmail, Date startDate) {
     this.title = title;
@@ -112,10 +116,10 @@ public class CapacityDevelopment implements java.io.Serializable {
     this.startDate = startDate;
   }
 
+
   public List<CapdevLocations> getCapDevCountries() {
     return capDevCountries;
   }
-
 
   public Set<CapdevDiscipline> getCapdevDisciplines() {
     return capdevDisciplines;
@@ -124,6 +128,7 @@ public class CapacityDevelopment implements java.io.Serializable {
   public Set<CapdevLocations> getCapdevLocations() {
     return capdevLocations;
   }
+
 
   public Set<CapdevOutputs> getCapdevOutputses() {
     return capdevOutputses;
@@ -141,11 +146,9 @@ public class CapacityDevelopment implements java.io.Serializable {
     return capDevRegions;
   }
 
-
   public Set<CapdevSupportingDocs> getCapdevSupportingDocses() {
     return capdevSupportingDocses;
   }
-
 
   public Set<CapdevTargetgroup> getCapdevTargetgroups() {
     return capdevTargetgroups;
@@ -156,9 +159,11 @@ public class CapacityDevelopment implements java.io.Serializable {
     return this.capdevType;
   }
 
+
   public int getCategory() {
     return this.category;
   }
+
 
   public Crp getCrp() {
     return this.crp;
@@ -238,14 +243,18 @@ public class CapacityDevelopment implements java.io.Serializable {
     return this.researchProgram;
   }
 
+  public Set<CenterSectionStatus> getSectionStatuses() {
+    return sectionStatuses;
+  }
+
   public String getsGlobal() {
     return sGlobal;
   }
 
-
   public String getsRegional() {
     return sRegional;
   }
+
 
   public String getStarDateFormat() {
     final String pattern = "yyyy-MM-dd";
@@ -257,15 +266,14 @@ public class CapacityDevelopment implements java.io.Serializable {
     return date;
   }
 
-
   public Date getStartDate() {
     return this.startDate;
   }
 
+
   public String getTitle() {
     return this.title;
   }
-
 
   public User getUsersByCreatedBy() {
     return this.usersByCreatedBy;
@@ -366,10 +374,10 @@ public class CapacityDevelopment implements java.io.Serializable {
     this.duration = duration;
   }
 
+
   public void setDurationUnit(String durationUnit) {
     this.durationUnit = durationUnit;
   }
-
 
   public void setEndDate(Date endDate) {
     this.endDate = endDate;
@@ -423,6 +431,11 @@ public class CapacityDevelopment implements java.io.Serializable {
 
   public void setResearchProgram(CenterProgram researchProgram) {
     this.researchProgram = researchProgram;
+  }
+
+
+  public void setSectionStatuses(Set<CenterSectionStatus> sectionStatuses) {
+    this.sectionStatuses = sectionStatuses;
   }
 
 

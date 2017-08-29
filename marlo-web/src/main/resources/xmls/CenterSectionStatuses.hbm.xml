@@ -23,6 +23,9 @@
         <many-to-one name="deliverable" class="org.cgiar.ccafs.marlo.data.model.CenterDeliverable" fetch="select">
             <column name="deliverable_id" />
         </many-to-one>
+        <many-to-one name="capacityDevelopment" class="org.cgiar.ccafs.marlo.data.model.CapacityDevelopment" fetch="select">
+            <column name="capdev_id" />
+        </many-to-one>        
         <property name="sectionName" type="string">
             <column name="section_name" not-null="true">
                 <comment>Some section name (would be the action name)</comment>

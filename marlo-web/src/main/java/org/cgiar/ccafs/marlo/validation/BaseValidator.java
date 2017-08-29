@@ -4,6 +4,7 @@ package org.cgiar.ccafs.marlo.validation;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.ICenterSectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
+import org.cgiar.ccafs.marlo.data.model.CapacityDevelopment;
 import org.cgiar.ccafs.marlo.data.model.CaseStudy;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
@@ -113,6 +114,37 @@ public class BaseValidator {
       return !string.trim().isEmpty();
     }
     return false;
+  }
+
+  /**
+   * ******************************************************************************************
+   * ************************* CENTER METHOD **************************************************
+   * *******************************************************************************************
+   * This method saves the missing fields into the database for a section at CapDev.
+   * 
+   * @param program is a CenterProgram.
+   * @param sectionName is the name of the section (researchImpact, researchTopics, etc.).
+   */
+  protected void saveMissingFields(CapacityDevelopment capacityDevelopment, String sectionName) {
+
+    int year = Calendar.getInstance().get(Calendar.YEAR);
+
+    CenterSectionStatus status =
+      centerSectionStatusManager.getSectionStatusByCapdev(capacityDevelopment.getId(), sectionName, year);
+    if (status == null) {
+
+      status = new CenterSectionStatus();
+      status.setSectionName(sectionName);
+      status.setCapacityDevelopment(capacityDevelopment);
+      status.setYear(year);
+    }
+    if (this.missingFields.length() > 0) {
+      status.setMissingFields(this.missingFields.toString());
+    } else {
+      status.setMissingFields("");
+    }
+
+    centerSectionStatusManager.saveSectionStatus(status);
   }
 
   /**

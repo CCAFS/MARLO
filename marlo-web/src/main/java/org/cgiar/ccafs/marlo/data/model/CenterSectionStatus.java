@@ -23,11 +23,15 @@ public class CenterSectionStatus implements java.io.Serializable, IAuditLog {
 
 
   private Long id;
+
   private CenterProgram researchProgram;
+
+
   private CenterOutcome researchOutcome;
   private CenterOutput researchOutput;
   private CenterProject project;
   private CenterDeliverable deliverable;
+  private CapacityDevelopment capacityDevelopment;
   private String sectionName;
   private String missingFields;
   private String cycle;
@@ -49,6 +53,10 @@ public class CenterSectionStatus implements java.io.Serializable, IAuditLog {
 
   public CenterSectionStatus(String sectionName) {
     this.sectionName = sectionName;
+  }
+
+  public CapacityDevelopment getCapacityDevelopment() {
+    return capacityDevelopment;
   }
 
   public String getCycle() {
@@ -89,10 +97,10 @@ public class CenterSectionStatus implements java.io.Serializable, IAuditLog {
     return project;
   }
 
-
   public CenterOutcome getResearchOutcome() {
     return researchOutcome;
   }
+
 
   public CenterOutput getResearchOutput() {
     return researchOutput;
@@ -113,6 +121,10 @@ public class CenterSectionStatus implements java.io.Serializable, IAuditLog {
   @Override
   public boolean isActive() {
     return true;
+  }
+
+  public void setCapacityDevelopment(CapacityDevelopment capacityDevelopment) {
+    this.capacityDevelopment = capacityDevelopment;
   }
 
   public void setCycle(String cycle) {

@@ -96,6 +96,11 @@ public class CenterSectionStatusManager implements ICenterSectionStatusManager {
   }
 
   @Override
+  public CenterSectionStatus getSectionStatusByCapdev(long capdevId, String sectionName, int year) {
+    return sectionStatusDAO.getSectionStatusByCapdev(capdevId, sectionName, year);
+  }
+
+  @Override
   public CenterSectionStatus getSectionStatusByDeliverable(long deliverableId, long projectId, String sectionName,
     int year) {
     return sectionStatusDAO.getSectionStatusByDeliverable(deliverableId, projectId, sectionName, year);

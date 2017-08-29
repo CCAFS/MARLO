@@ -84,6 +84,15 @@ public interface ICenterSectionStatusDAO {
   public List<CenterSectionStatus> getSectionStatus(long programId, String sectionName);
 
   /**
+   * gets a CenterSectionStatus of the one section by a specific research program
+   * 
+   * @param capdevId
+   * @param sectionName
+   * @return a CenterSectionStatus Object
+   */
+  public CenterSectionStatus getSectionStatusByCapdev(long capdevId, String sectionName, int year);
+
+  /**
    * gets a CenterSectionStatus of the one section by a specific deliverable
    * 
    * @param deliverableId

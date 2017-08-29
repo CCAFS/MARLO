@@ -90,9 +90,21 @@ public class CenterSectionStatusDAO implements ICenterSectionStatusDAO {
   }
 
   @Override
-  public CenterSectionStatus getSectionStatusByDeliverable(long deliverableId, long projectId, String sectionName, int year) {
-    String query = "from " + CenterSectionStatus.class.getName() + " where section_name='" + sectionName + "' and project_id="
-      + projectId + " and deliverable_id=" + deliverableId + " and year=" + year;
+  public CenterSectionStatus getSectionStatusByCapdev(long capdevId, String sectionName, int year) {
+    String query = "from " + CenterSectionStatus.class.getName() + " where section_name='" + sectionName
+      + "' and capdev_id=" + capdevId + " and year=" + year;
+    List<CenterSectionStatus> list = dao.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+  }
+
+  @Override
+  public CenterSectionStatus getSectionStatusByDeliverable(long deliverableId, long projectId, String sectionName,
+    int year) {
+    String query = "from " + CenterSectionStatus.class.getName() + " where section_name='" + sectionName
+      + "' and project_id=" + projectId + " and deliverable_id=" + deliverableId + " and year=" + year;
     List<CenterSectionStatus> list = dao.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
@@ -135,8 +147,8 @@ public class CenterSectionStatusDAO implements ICenterSectionStatusDAO {
 
   @Override
   public CenterSectionStatus getSectionStatusByProject(long programId, long projectId, String sectionName, int year) {
-    String query = "from " + CenterSectionStatus.class.getName() + " where section_name='" + sectionName + "' and project_id="
-      + projectId + " and year=" + year;
+    String query = "from " + CenterSectionStatus.class.getName() + " where section_name='" + sectionName
+      + "' and project_id=" + projectId + " and year=" + year;
     List<CenterSectionStatus> list = dao.findAll(query);
     if (list.size() > 0) {
       return list.get(0);

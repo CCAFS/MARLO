@@ -48,10 +48,10 @@
 			<column name="is_active" not-null="true" />
 		</property>
 		<property name="global" type="java.lang.Boolean">
-			<column name="is_global"  />
+			<column name="is_global" />
 		</property>
 		<property name="regional" type="java.lang.Boolean">
-			<column name="is_regional"  />
+			<column name="is_regional" />
 		</property>
 		<property name="modificationJustification" type="string">
 			<column name="modification_justification" length="65535" />
@@ -128,11 +128,19 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CapdevPartners" />
 		</set>
-		<set name="capdevSupportingDocses" table="capdev_supporting_docs" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="capdev_id" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CapdevSupportingDocs" />
-        </set>
+		<set name="capdevSupportingDocses" table="capdev_supporting_docs"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="capdev_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CapdevSupportingDocs" />
+		</set>
+		<set name="sectionStatuses" table="center_section_statuses"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="capdev_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterSectionStatus" />
+		</set>
 	</class>
 </hibernate-mapping>

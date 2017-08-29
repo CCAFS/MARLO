@@ -55,6 +55,8 @@ public class CapacityDevelopmentValidator extends BaseValidator {
 
     this.validateCapDevDetail(baseAction, capdev, participant, uploadFile, uploadFileContentType);
 
+    this.saveMissingFields(capdev, "detailCapdev");
+
   }
 
   public void validateCapDevDetail(BaseAction baseAction, CapacityDevelopment capdev, Participant participant,
