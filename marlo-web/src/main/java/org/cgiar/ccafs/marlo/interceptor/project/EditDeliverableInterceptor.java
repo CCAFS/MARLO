@@ -147,23 +147,29 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
       }
 
 
-      if (deliverable.getStatus() != null) {
-        if (deliverable.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+      if (deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus() != null) {
+        if (deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus().intValue() == Integer
+          .parseInt(ProjectStatusEnum.Complete.getStatusId())) {
           canEdit = false;
         }
       }
 
 
-      if (baseAction.isReportingActive() && deliverable.getStatus() != null
-        && deliverable.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-        && deliverable.getYear() == baseAction.getCurrentCycleYear()) {
+      if (baseAction.isReportingActive()
+        && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus() != null
+        && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus().intValue() == Integer
+          .parseInt(ProjectStatusEnum.Complete.getStatusId())
+        && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getYear() == baseAction.getCurrentCycleYear()) {
         canEdit = true;
       }
 
-      if (baseAction.isReportingActive() && deliverable.getStatus() != null
-        && deliverable.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-        && deliverable.getNewExpectedYear() != null
-        && deliverable.getNewExpectedYear().intValue() == baseAction.getCurrentCycleYear()) {
+      if (baseAction.isReportingActive()
+        && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus() != null
+        && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus().intValue() == Integer
+          .parseInt(ProjectStatusEnum.Complete.getStatusId())
+        && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getNewExpectedYear() != null
+        && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getNewExpectedYear().intValue() == baseAction
+          .getCurrentCycleYear()) {
         canEdit = true;
       }
 

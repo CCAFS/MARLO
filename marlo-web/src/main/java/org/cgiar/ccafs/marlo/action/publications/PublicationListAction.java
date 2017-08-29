@@ -19,12 +19,14 @@ package org.cgiar.ccafs.marlo.action.publications;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableLeaderManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableLeader;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
@@ -51,6 +53,8 @@ public class PublicationListAction extends BaseAction {
   private CrpManager crpManager;
   private long deliverableID;
   private DeliverableManager deliverableManager;
+  private DeliverableInfoManager deliverableInfoManager;
+
   private LiaisonUserManager liaisonUserManager;
   private InstitutionManager institutionManager;
   private DeliverableLeaderManager deliverableLeaderManager;
@@ -58,12 +62,13 @@ public class PublicationListAction extends BaseAction {
   @Inject
   public PublicationListAction(APConfig config, CrpManager crpManager, DeliverableManager deliverableManager,
     InstitutionManager institutionManager, LiaisonUserManager liaisonUserManager,
-    DeliverableLeaderManager deliverableLeaderManager) {
+    DeliverableInfoManager deliverableInfoManager, DeliverableLeaderManager deliverableLeaderManager) {
 
     super(config);
     this.deliverableManager = deliverableManager;
     this.crpManager = crpManager;
     this.liaisonUserManager = liaisonUserManager;
+    this.deliverableInfoManager = deliverableInfoManager;
     this.deliverableLeaderManager = deliverableLeaderManager;
     this.institutionManager = institutionManager;
   }
@@ -74,10 +79,8 @@ public class PublicationListAction extends BaseAction {
     String params[] = {loggedCrp.getAcronym()};
     if (this.hasPermission(this.generatePermission(Permission.PUBLICATION_ADD, params))) {
       Deliverable deliverable = new Deliverable();
-      deliverable.setYear(this.getCurrentCycleYear());
+
       deliverable.setCreatedBy(this.getCurrentUser());
-      deliverable.setModifiedBy(this.getCurrentUser());
-      deliverable.setModificationJustification("New publication created");
       deliverable.setActive(true);
       deliverable.setActiveSince(new Date());
       deliverable.setCrp(loggedCrp);
@@ -86,8 +89,13 @@ public class PublicationListAction extends BaseAction {
 
 
       deliverableID = deliverableManager.saveDeliverable(deliverable);
-
-
+      DeliverableInfo deliverableInfo = new DeliverableInfo();
+      deliverableInfo.setYear(this.getCurrentCycleYear());
+      deliverableInfo.setModifiedBy(this.getCurrentUser());
+      deliverableInfo.setDeliverable(deliverable);
+      deliverableInfo.setPhase(this.getActualPhase());
+      deliverableInfo.setModificationJustification("New publication created");
+      deliverableInfoManager.saveDeliverableInfo(deliverableInfo);
       LiaisonUser user = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId(), loggedCrp.getId());
       if (user != null) {
         LiaisonInstitution liaisonInstitution = user.getLiaisonInstitution();

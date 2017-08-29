@@ -1733,20 +1733,31 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         .filter(d -> d.isActive() && d.getProject() != null && d.getProject().isActive()
           && d.getProject().getProjecInfoPhase(this.getActualPhase()).getReporting() != null
           && d.getProject().getProjecInfoPhase(this.getActualPhase()).getReporting() && d.getProject().getCrp() != null
-          && d.getProject().getCrp().getId().equals(this.loggedCrp.getId()) && d.getStatus() != null
-          && ((d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-            && (d.getYear() >= this.year
-              || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() >= this.year)))
-          || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-            && (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))
-          || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
-            && (d.getYear() == this.year
-              || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))))
-        && (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-          || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-          || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
+          && d.getProject().getCrp().getId().equals(this.loggedCrp.getId())
+          && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
+          && ((d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Complete.getStatusId())
+          && (d.getDeliverableInfo(this.getActualPhase()).getYear() >= this.year
+            || (d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null
+              && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear().intValue() >= this.year)))
+          || (d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Extended.getStatusId())
+            && (d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null
+              && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear().intValue() == this.year))
+          || (d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+            && (d.getDeliverableInfo(this.getActualPhase()).getYear() == this.year
+              || (d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null
+                && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear().intValue() == this.year))))
+        && (d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+          .parseInt(ProjectStatusEnum.Extended.getStatusId())
+          || d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Complete.getStatusId())
+          || d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
         .collect(Collectors.toList()));
-      deliverables.sort((p1, p2) -> p1.isRequieriedReporting(year).compareTo(p2.isRequieriedReporting(year)));
+      deliverables.sort((p1, p2) -> p1.getDeliverableInfo(this.getActualPhase()).isRequieriedReporting(year)
+        .compareTo(p2.getDeliverableInfo(this.getActualPhase()).isRequieriedReporting(year)));
       HashSet<Deliverable> deliverablesHL = new HashSet<>();
       deliverablesHL.addAll(deliverables);
       deliverables.clear();
@@ -1754,7 +1765,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       for (Deliverable deliverable : deliverables) {
         String delivType = null;
         String delivSubType = null;
-        String delivStatus = deliverable.getStatusName();
+        String delivStatus = deliverable.getDeliverableInfo(this.getActualPhase()).getStatusName();
         String delivYear = null;
         String keyOutput = "";
         String leader = null;
@@ -1763,27 +1774,39 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         Boolean showFAIR = false;
         Boolean showPublication = false;
         Boolean showCompilance = false;
-        if (deliverable.getDeliverableType() != null) {
-          delivSubType = deliverable.getDeliverableType().getName();
-          if (deliverable.getDeliverableType().getId() == 51 || deliverable.getDeliverableType().getId() == 56
-            || deliverable.getDeliverableType().getId() == 57 || deliverable.getDeliverableType().getId() == 76
-            || deliverable.getDeliverableType().getId() == 54 || deliverable.getDeliverableType().getId() == 81
-            || deliverable.getDeliverableType().getId() == 82 || deliverable.getDeliverableType().getId() == 83
-            || deliverable.getDeliverableType().getId() == 55 || deliverable.getDeliverableType().getId() == 62
-            || deliverable.getDeliverableType().getId() == 53 || deliverable.getDeliverableType().getId() == 60
-            || deliverable.getDeliverableType().getId() == 59 || deliverable.getDeliverableType().getId() == 58
-            || deliverable.getDeliverableType().getId() == 77 || deliverable.getDeliverableType().getId() == 75
-            || deliverable.getDeliverableType().getId() == 78 || deliverable.getDeliverableType().getId() == 72
-            || deliverable.getDeliverableType().getId() == 73) {
+        if (deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType() != null) {
+          delivSubType = deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getName();
+          if (deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 51
+            || deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 56
+            || deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 57
+            || deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 76
+            || deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 54
+            || deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 81
+            || deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 82
+            || deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 83
+            || deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 55
+            || deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 62
+            || deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 53
+            || deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 60
+            || deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 59
+            || deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 58
+            || deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 77
+            || deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 75
+            || deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 78
+            || deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 72
+            || deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 73) {
             showFAIR = true;
           }
-          if (deliverable.getDeliverableType().getId() == 51 || deliverable.getDeliverableType().getId() == 74) {
+          if (deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 51
+            || deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 74) {
             showCompilance = true;
           }
-          if (deliverable.getDeliverableType().getDeliverableType() != null) {
-            delivType = deliverable.getDeliverableType().getDeliverableType().getName();
+          if (deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getDeliverableType() != null) {
+            delivType =
+              deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getDeliverableType().getName();
             // FAIR and deliverable publication
-            if (deliverable.getDeliverableType().getDeliverableType().getId() == 49) {
+            if (deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getDeliverableType()
+              .getId() == 49) {
               showFAIR = true;
               showPublication = true;
             }
@@ -1792,16 +1815,17 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         if (delivStatus.equals("")) {
           delivStatus = null;
         }
-        if (deliverable.getYear() != 0) {
-          delivYear = "" + deliverable.getYear();
+        if (deliverable.getDeliverableInfo(this.getActualPhase()).getYear() != 0) {
+          delivYear = "" + deliverable.getDeliverableInfo(this.getActualPhase()).getYear();
         }
-        if (deliverable.getCrpClusterKeyOutput() != null) {
+        if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrpClusterKeyOutput() != null) {
           keyOutput += "● ";
-          if (deliverable.getCrpClusterKeyOutput().getCrpClusterOfActivity().getCrpProgram() != null) {
-            keyOutput +=
-              deliverable.getCrpClusterKeyOutput().getCrpClusterOfActivity().getCrpProgram().getAcronym() + " - ";
+          if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrpClusterKeyOutput().getCrpClusterOfActivity()
+            .getCrpProgram() != null) {
+            keyOutput += deliverable.getDeliverableInfo(this.getActualPhase()).getCrpClusterKeyOutput()
+              .getCrpClusterOfActivity().getCrpProgram().getAcronym() + " - ";
           }
-          keyOutput += deliverable.getCrpClusterKeyOutput().getKeyOutput();
+          keyOutput += deliverable.getDeliverableInfo(this.getActualPhase()).getCrpClusterKeyOutput().getKeyOutput();
         }
         // Get partner responsible and institution
         // Set responible;
@@ -1828,28 +1852,28 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         }
         // Get cross_cutting dimension
         String crossCutting = "";
-        if (deliverable.getCrossCuttingNa() != null) {
-          if (deliverable.getCrossCuttingNa() == true) {
+        if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingNa() != null) {
+          if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingNa() == true) {
             crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● N/A <br>";
           }
         }
-        if (deliverable.getCrossCuttingGender() != null) {
-          if (deliverable.getCrossCuttingGender() == true) {
+        if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingGender() != null) {
+          if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingGender() == true) {
             crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Gender <br>";
           }
         }
-        if (deliverable.getCrossCuttingYouth() != null) {
-          if (deliverable.getCrossCuttingYouth() == true) {
+        if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingYouth() != null) {
+          if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingYouth() == true) {
             crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Youth <br>";
           }
         }
-        if (deliverable.getCrossCuttingCapacity() != null) {
-          if (deliverable.getCrossCuttingCapacity() == true) {
+        if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingCapacity() != null) {
+          if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingCapacity() == true) {
             crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Capacity Development <br>";
           }
         }
-        if (deliverable.getCrossCuttingGender() != null) {
-          if (deliverable.getCrossCuttingGender() == true) {
+        if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingGender() != null) {
+          if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingGender() == true) {
             if (deliverable.getDeliverableGenderLevels() == null
               || deliverable.getDeliverableGenderLevels().isEmpty()) {
               crossCutting += "<br><b>Gender level(s):</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&lt;Not Defined&gt;";
@@ -1874,19 +1898,22 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         // Reporting
         Integer delivNewYear = null;
         String delivNewYearJustification = null;
-        if (deliverable.getStatus() != null) {
+        if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null) {
           // Extended
-          if (deliverable.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-            delivNewYear = deliverable.getNewExpectedYear();
-            delivNewYearJustification = deliverable.getStatusDescription();
+          if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+            delivNewYear = deliverable.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear();
+            delivNewYearJustification = deliverable.getDeliverableInfo(this.getActualPhase()).getStatusDescription();
           }
           // Complete
-          if (deliverable.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
-            delivNewYear = deliverable.getNewExpectedYear();
+          if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+            delivNewYear = deliverable.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear();
           }
           // Canceled
-          if (deliverable.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
-            delivNewYearJustification = deliverable.getStatusDescription();
+          if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
+            delivNewYearJustification = deliverable.getDeliverableInfo(this.getActualPhase()).getStatusDescription();
           }
         }
         String delivDisseminationChannel = null;
@@ -1966,13 +1993,14 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
               }
             }
           }
-          if (deliverable.getAdoptedLicense() != null) {
-            if (deliverable.getAdoptedLicense() == true) {
-              delivLicense = deliverable.getLicense();
+          if (deliverable.getDeliverableInfo(this.getActualPhase()).getAdoptedLicense() != null) {
+            if (deliverable.getDeliverableInfo(this.getActualPhase()).getAdoptedLicense() == true) {
+              delivLicense = deliverable.getDeliverableInfo(this.getActualPhase()).getLicense();
               if (delivLicense.equals("OTHER")) {
-                delivLicense = deliverable.getOtherLicense();
+                delivLicense = deliverable.getDeliverableInfo(this.getActualPhase()).getOtherLicense();
                 showDelivLicenseModifications = true;
-                if (deliverable.getAllowModifications() != null && deliverable.getAllowModifications() == true) {
+                if (deliverable.getDeliverableInfo(this.getActualPhase()).getAllowModifications() != null
+                  && deliverable.getDeliverableInfo(this.getActualPhase()).getAllowModifications() == true) {
                   delivLicenseModifications = "Yes";
                 } else {
                   delivLicenseModifications = "No";
@@ -2254,7 +2282,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
             }
           }
         }
-        model.addRow(new Object[] {deliverable.getId(), deliverable.getTitle(), delivType, delivSubType, delivStatus,
+        model.addRow(new Object[] {deliverable.getId(),
+          deliverable.getDeliverableInfo(this.getActualPhase()).getTitle(), delivType, delivSubType, delivStatus,
           delivYear, keyOutput, leader, institution, fundingSources, crossCutting, delivNewYear,
           delivNewYearJustification, delivDisseminationChannel, delivDisseminationUrl, delivOpenAccess, delivLicense,
           titleMetadata, descriptionMetadata, dateMetadata, languageMetadata, countryMetadata, keywordsMetadata,
@@ -2276,35 +2305,38 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       0);
     if (!project.getDeliverables().isEmpty()) {
       for (Deliverable deliverable : project.getDeliverables().stream()
-        .sorted((d1, d2) -> Long.compare(d1.getId(), d2.getId())).filter(c -> c.isActive() && c.getYear() >= year)
+        .sorted((d1, d2) -> Long.compare(d1.getId(), d2.getId()))
+        .filter(c -> c.isActive() && c.getDeliverableInfo(this.getActualPhase()).getYear() >= year)
         .collect(Collectors.toList())) {
         String delivType = null;
         String delivSubType = null;
-        String delivStatus = deliverable.getStatusName();
+        String delivStatus = deliverable.getDeliverableInfo(this.getActualPhase()).getStatusName();
         String delivYear = null;
         String keyOutput = "";
         String leader = null;
         String institution = null;
         String fundingSources = "";
-        if (deliverable.getDeliverableType() != null) {
-          delivSubType = deliverable.getDeliverableType().getName();
-          if (deliverable.getDeliverableType().getDeliverableType() != null) {
-            delivType = deliverable.getDeliverableType().getDeliverableType().getName();
+        if (deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType() != null) {
+          delivSubType = deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getName();
+          if (deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getDeliverableType() != null) {
+            delivType =
+              deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getDeliverableType().getName();
           }
         }
         if (delivStatus.equals("")) {
           delivStatus = null;
         }
-        if (deliverable.getYear() != 0) {
-          delivYear = "" + deliverable.getYear();
+        if (deliverable.getDeliverableInfo(this.getActualPhase()).getYear() != 0) {
+          delivYear = "" + deliverable.getDeliverableInfo(this.getActualPhase()).getYear();
         }
-        if (deliverable.getCrpClusterKeyOutput() != null) {
+        if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrpClusterKeyOutput() != null) {
           keyOutput += "● ";
-          if (deliverable.getCrpClusterKeyOutput().getCrpClusterOfActivity().getCrpProgram() != null) {
-            keyOutput +=
-              deliverable.getCrpClusterKeyOutput().getCrpClusterOfActivity().getCrpProgram().getAcronym() + " - ";
+          if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrpClusterKeyOutput().getCrpClusterOfActivity()
+            .getCrpProgram() != null) {
+            keyOutput += deliverable.getDeliverableInfo(this.getActualPhase()).getCrpClusterKeyOutput()
+              .getCrpClusterOfActivity().getCrpProgram().getAcronym() + " - ";
           }
-          keyOutput += deliverable.getCrpClusterKeyOutput().getKeyOutput();
+          keyOutput += deliverable.getDeliverableInfo(this.getActualPhase()).getCrpClusterKeyOutput().getKeyOutput();
         }
         // Get partner responsible and institution
         // Set responible;
@@ -2331,28 +2363,28 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         }
         // Get cross_cutting dimension
         String crossCutting = "";
-        if (deliverable.getCrossCuttingNa() != null) {
-          if (deliverable.getCrossCuttingNa() == true) {
+        if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingNa() != null) {
+          if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingNa() == true) {
             crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● N/A <br>";
           }
         }
-        if (deliverable.getCrossCuttingGender() != null) {
-          if (deliverable.getCrossCuttingGender() == true) {
+        if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingGender() != null) {
+          if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingGender() == true) {
             crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Gender <br>";
           }
         }
-        if (deliverable.getCrossCuttingYouth() != null) {
-          if (deliverable.getCrossCuttingYouth() == true) {
+        if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingYouth() != null) {
+          if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingYouth() == true) {
             crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Youth <br>";
           }
         }
-        if (deliverable.getCrossCuttingCapacity() != null) {
-          if (deliverable.getCrossCuttingCapacity() == true) {
+        if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingCapacity() != null) {
+          if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingCapacity() == true) {
             crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Capacity Development <br>";
           }
         }
-        if (deliverable.getCrossCuttingGender() != null) {
-          if (deliverable.getCrossCuttingGender() == true) {
+        if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingGender() != null) {
+          if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingGender() == true) {
             if (deliverable.getDeliverableGenderLevels() == null
               || deliverable.getDeliverableGenderLevels().isEmpty()) {
               crossCutting += "<br><b>Gender level(s):</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&lt;Not Defined&gt;";
@@ -2374,7 +2406,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         if (keyOutput.isEmpty()) {
           keyOutput = null;
         }
-        model.addRow(new Object[] {deliverable.getId(), deliverable.getTitle(), delivType, delivSubType, delivStatus,
+        model.addRow(new Object[] {deliverable.getId(),
+          deliverable.getDeliverableInfo(this.getActualPhase()).getTitle(), delivType, delivSubType, delivStatus,
           delivYear, keyOutput, leader, institution, fundingSources, crossCutting});
       }
     }

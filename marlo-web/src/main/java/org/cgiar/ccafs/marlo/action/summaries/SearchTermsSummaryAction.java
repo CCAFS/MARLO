@@ -461,8 +461,9 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
             // Search keys in deliverable title
             // count and store occurrences
             Set<String> matchesDelivTitle = new HashSet<>();
-            if (deliverable.getTitle() != null) {
-              devTitle = "<font size=2 face='Segoe UI' color='#000000'>" + deliverable.getTitle() + "</font>";
+            if (deliverable.getDeliverableInfo(this.getActualPhase()).getTitle() != null) {
+              devTitle = "<font size=2 face='Segoe UI' color='#000000'>"
+                + deliverable.getDeliverableInfo(this.getActualPhase()).getTitle() + "</font>";
               // Find keys in title
               Matcher matcher = pattern.matcher(devTitle);
               // while are occurrences
@@ -495,15 +496,17 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
               } else {
                 title = "<font size=2 face='Segoe UI' color='#000000'></font>";
               }
-              if (deliverable.getDeliverableType() != null) {
-                if (deliverable.getDeliverableType().getDeliverableType() != null) {
-                  devType = "<font size=2 face='Segoe UI' color='#000000'>"
-                    + deliverable.getDeliverableType().getDeliverableType().getName() + "</font>";
+              if (deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType() != null) {
+                if (deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType()
+                  .getDeliverableType() != null) {
+                  devType = "<font size=2 face='Segoe UI' color='#000000'>" + deliverable
+                    .getDeliverableInfo(this.getActualPhase()).getDeliverableType().getDeliverableType().getName()
+                    + "</font>";
                   devSubType = "<font size=2 face='Segoe UI' color='#000000'>"
-                    + deliverable.getDeliverableType().getName() + "</font>";
+                    + deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getName() + "</font>";
                 } else {
                   devType = "<font size=2 face='Segoe UI' color='#000000'>D"
-                    + deliverable.getDeliverableType().getName() + "</font>";
+                    + deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getName() + "</font>";
                 }
               }
               // Get partner responsible and institution

@@ -73,7 +73,9 @@ public class DeliverableStatusAction extends BaseAction {
     }
     if (this.isPlanningActive()) {
 
-      if (deliverable.getStatus() !=null && deliverable.getStatus().intValue() != Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+      if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null
+        && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() != Integer
+          .parseInt(ProjectStatusEnum.Complete.getStatusId())) {
         status.remove(ProjectStatusEnum.Complete.getStatusId());
       }
       if (this.isDeliverableNew(deliverableID)) {

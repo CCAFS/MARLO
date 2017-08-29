@@ -58,6 +58,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFile;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel;
+import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
@@ -855,8 +856,9 @@ public class DeliverableAction extends BaseAction {
         reader.close();
 
 
-        if (deliverable.getNewExpectedYear() == null) {
-          deliverable.setNewExpectedYear(deliverableDb.getNewExpectedYear());
+        if (deliverable.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() == null) {
+          deliverable.getDeliverableInfo(this.getActualPhase())
+            .setNewExpectedYear(deliverableDb.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear());
         }
         deliverable.setResponsiblePartner(this.responsiblePartnerAutoSave());
         deliverable.setOtherPartners(this.otherPartnersAutoSave());
@@ -1005,8 +1007,9 @@ public class DeliverableAction extends BaseAction {
         status.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
       }
       if (this.isPlanningActive()) {
-        if (deliverable.getStatus() != null) {
-          if (deliverable.getStatus().intValue() != Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+        if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null) {
+          if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() != Integer
+            .parseInt(ProjectStatusEnum.Complete.getStatusId())) {
             status.remove(ProjectStatusEnum.Complete.getStatusId());
           }
 
@@ -1020,12 +1023,12 @@ public class DeliverableAction extends BaseAction {
           status.remove(ProjectStatusEnum.Complete.getStatusId());
         } else {
           // OLD Deliverable
-          if (deliverable.getYear() < this.getReportingYear()) {
+          if (deliverable.getDeliverableInfo(this.getActualPhase()).getYear() < this.getReportingYear()) {
             status.remove(ProjectStatusEnum.Ongoing.getStatusId());
           }
         }
       } else {
-        if (deliverable.getYear() <= this.getReportingYear()) {
+        if (deliverable.getDeliverableInfo(this.getActualPhase()).getYear() <= this.getReportingYear()) {
           status.remove(ProjectStatusEnum.Ongoing.getStatusId());
         }
       }
@@ -1062,8 +1065,9 @@ public class DeliverableAction extends BaseAction {
         deliverableTypeManager.findAll().stream().filter(dt -> dt.getDeliverableType() == null && dt.getCrp() != null
           && dt.getCrp().getId().longValue() == loggedCrp.getId().longValue()).collect(Collectors.toList())));
 
-      if (deliverable.getDeliverableType() != null) {
-        Long deliverableTypeParentId = deliverable.getDeliverableType().getDeliverableType().getId();
+      if (deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType() != null) {
+        Long deliverableTypeParentId =
+          deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getDeliverableType().getId();
 
         deliverableSubTypes = new ArrayList<>(deliverableTypeManager.findAll().stream()
           .filter(dt -> dt.getDeliverableType() != null && dt.getDeliverableType().getId() == deliverableTypeParentId)
@@ -1165,10 +1169,10 @@ public class DeliverableAction extends BaseAction {
 
       }
 
-      deliverable.setCrossCuttingGender(null);
-      deliverable.setCrossCuttingCapacity(null);
-      deliverable.setCrossCuttingNa(null);
-      deliverable.setCrossCuttingYouth(null);
+      deliverable.getDeliverableInfo(this.getActualPhase()).setCrossCuttingGender(null);
+      deliverable.getDeliverableInfo(this.getActualPhase()).setCrossCuttingCapacity(null);
+      deliverable.getDeliverableInfo(this.getActualPhase()).setCrossCuttingNa(null);
+      deliverable.getDeliverableInfo(this.getActualPhase()).setCrossCuttingYouth(null);
 
       if (deliverable.getCrps() != null) {
         deliverable.getCrps().clear();
@@ -1273,79 +1277,79 @@ public class DeliverableAction extends BaseAction {
       project.setActiveSince(projectDB.getActiveSince());
 
       Deliverable deliverablePrew = deliverableManager.getDeliverableById(deliverableID);
+      DeliverableInfo deliverableInfoPrew = deliverablePrew.getDeliverableInfo(this.getActualPhase());
+      deliverableInfoPrew.setTitle(deliverable.getDeliverableInfo().getTitle());
+      deliverableInfoPrew.setDescription(deliverable.getDeliverableInfo().getDescription());
 
-      deliverablePrew.setTitle(deliverable.getTitle());
-      deliverablePrew.setDescription(deliverable.getDescription());
+      deliverableInfoPrew.setYear(deliverable.getDeliverableInfo().getYear());
 
-      deliverablePrew.setYear(deliverable.getYear());
-
-      if (deliverable.getNewExpectedYear() != null) {
-        deliverablePrew.setNewExpectedYear(deliverable.getNewExpectedYear());
+      if (deliverable.getDeliverableInfo().getNewExpectedYear() != null) {
+        deliverableInfoPrew.setNewExpectedYear(deliverable.getDeliverableInfo().getNewExpectedYear());
       }
 
 
-      deliverablePrew.setStatusDescription(deliverable.getStatusDescription());
+      deliverableInfoPrew.setStatusDescription(deliverable.getDeliverableInfo().getStatusDescription());
 
       if (this.isReportingActive()) {
 
-        if (deliverable.getAdoptedLicense() != null) {
-          deliverablePrew.setAdoptedLicense(deliverable.getAdoptedLicense());
-          if (deliverable.getAdoptedLicense().booleanValue()) {
-            deliverablePrew.setLicense(deliverable.getLicense());
-            if (deliverable.getLicense() != null) {
-              if (deliverable.getLicense().equals(LicensesTypeEnum.OTHER.getValue())) {
-                deliverablePrew.setOtherLicense(deliverable.getOtherLicense());
-                deliverablePrew.setAllowModifications(deliverable.getAllowModifications());
+        if (deliverable.getDeliverableInfo().getAdoptedLicense() != null) {
+          deliverableInfoPrew.setAdoptedLicense(deliverable.getDeliverableInfo().getAdoptedLicense());
+          if (deliverable.getDeliverableInfo().getAdoptedLicense().booleanValue()) {
+            deliverableInfoPrew.setLicense(deliverable.getDeliverableInfo().getLicense());
+            if (deliverable.getDeliverableInfo().getLicense() != null) {
+              if (deliverable.getDeliverableInfo().getLicense().equals(LicensesTypeEnum.OTHER.getValue())) {
+                deliverableInfoPrew.setOtherLicense(deliverable.getDeliverableInfo().getOtherLicense());
+                deliverableInfoPrew.setAllowModifications(deliverable.getDeliverableInfo().getAllowModifications());
               } else {
-                deliverablePrew.setOtherLicense(null);
-                deliverablePrew.setAllowModifications(null);
+                deliverableInfoPrew.setOtherLicense(null);
+                deliverableInfoPrew.setAllowModifications(null);
               }
             }
-            deliverablePrew.setAdoptedLicense(deliverable.getAdoptedLicense());
+            deliverableInfoPrew.setAdoptedLicense(deliverable.getDeliverableInfo().getAdoptedLicense());
           } else {
 
-            deliverablePrew.setLicense(null);
-            deliverablePrew.setOtherLicense(null);
-            deliverablePrew.setAllowModifications(null);
+            deliverableInfoPrew.setLicense(null);
+            deliverableInfoPrew.setOtherLicense(null);
+            deliverableInfoPrew.setAllowModifications(null);
           }
         } else {
-          deliverablePrew.setLicense(null);
-          deliverablePrew.setOtherLicense(null);
-          deliverablePrew.setAllowModifications(null);
+          deliverableInfoPrew.setLicense(null);
+          deliverableInfoPrew.setOtherLicense(null);
+          deliverableInfoPrew.setAllowModifications(null);
         }
 
 
       }
 
 
-      if (deliverable.getCrossCuttingCapacity() == null) {
-        deliverablePrew.setCrossCuttingCapacity(false);
+      if (deliverable.getDeliverableInfo().getCrossCuttingCapacity() == null) {
+        deliverableInfoPrew.setCrossCuttingCapacity(false);
       } else {
-        deliverablePrew.setCrossCuttingCapacity(true);
+        deliverableInfoPrew.setCrossCuttingCapacity(true);
       }
-      if (deliverable.getCrossCuttingNa() == null) {
-        deliverablePrew.setCrossCuttingNa(false);
+      if (deliverable.getDeliverableInfo().getCrossCuttingNa() == null) {
+        deliverableInfoPrew.setCrossCuttingNa(false);
       } else {
-        deliverablePrew.setCrossCuttingNa(true);
+        deliverableInfoPrew.setCrossCuttingNa(true);
       }
-      if (deliverable.getCrossCuttingGender() == null) {
-        deliverablePrew.setCrossCuttingGender(false);
+      if (deliverable.getDeliverableInfo().getCrossCuttingGender() == null) {
+        deliverableInfoPrew.setCrossCuttingGender(false);
       } else {
-        deliverablePrew.setCrossCuttingGender(true);
+        deliverableInfoPrew.setCrossCuttingGender(true);
       }
-      if (deliverable.getCrossCuttingYouth() == null) {
-        deliverablePrew.setCrossCuttingYouth(false);
+      if (deliverable.getDeliverableInfo().getCrossCuttingYouth() == null) {
+        deliverableInfoPrew.setCrossCuttingYouth(false);
       } else {
-        deliverablePrew.setCrossCuttingYouth(true);
+        deliverableInfoPrew.setCrossCuttingYouth(true);
       }
 
 
       if (this.isPlanningActive()) {
-        if (deliverable.getCrpClusterKeyOutput() != null) {
-          CrpClusterKeyOutput keyOutput =
-            crpClusterKeyOutputManager.getCrpClusterKeyOutputById(deliverable.getCrpClusterKeyOutput().getId());
+        if (deliverable.getDeliverableInfo().getCrpClusterKeyOutput() != null) {
+          CrpClusterKeyOutput keyOutput = crpClusterKeyOutputManager
+            .getCrpClusterKeyOutputById(deliverable.getDeliverableInfo().getCrpClusterKeyOutput().getId());
 
-          deliverablePrew.setCrpClusterKeyOutput(keyOutput);
+          deliverableInfoPrew.setCrpClusterKeyOutput(keyOutput);
         }
 
         if (deliverable.getFundingSources() != null) {
@@ -1382,14 +1386,14 @@ public class DeliverableAction extends BaseAction {
       }
 
 
-      if (deliverable.getStatus() != null) {
-        deliverablePrew.setStatus(deliverable.getStatus());
+      if (deliverable.getDeliverableInfo().getStatus() != null) {
+        deliverableInfoPrew.setStatus(deliverable.getDeliverableInfo().getStatus());
       }
 
       DeliverableType deliverableType =
-        deliverableTypeManager.getDeliverableTypeById(deliverable.getDeliverableType().getId());
+        deliverableTypeManager.getDeliverableTypeById(deliverable.getDeliverableInfo().getDeliverableType().getId());
 
-      deliverablePrew.setDeliverableType(deliverableType);
+      deliverableInfoPrew.setDeliverableType(deliverableType);
 
 
       DeliverablePartnership partnershipResponsible = null;
@@ -1555,7 +1559,7 @@ public class DeliverableAction extends BaseAction {
         }
       }
 
-      if (!deliverablePrew.getCrossCuttingGender().booleanValue()) {
+      if (!deliverableInfoPrew.getCrossCuttingGender().booleanValue()) {
         Deliverable deliverableDB = deliverableManager.getDeliverableById(deliverableID);
         for (DeliverableGenderLevel genderLevel : deliverableDB.getDeliverableGenderLevels().stream()
           .filter(c -> c.isActive()).collect(Collectors.toList())) {
@@ -1594,8 +1598,8 @@ public class DeliverableAction extends BaseAction {
 
       deliverable = deliverableManager.getDeliverableById(deliverableID);
       deliverable.setActiveSince(new Date());
-      deliverable.setModifiedBy(this.getCurrentUser());
-      deliverable.setModificationJustification(this.getJustification());
+      // deliverable.setModifiedBy(this.getCurrentUser());
+      // deliverable.setModificationJustification(this.getJustification());
 
       deliverableManager.saveDeliverable(deliverable, this.getActionName(), relationsName);
       Path path = this.getAutoSaveFilePath();

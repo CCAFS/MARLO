@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Aug 28, 2017 2:21:11 PM by Hibernate Tools 4.3.1.Final -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.DeliverableInfo" table="deliverables_info" catalog="ccafs_marlo" optimistic-lock="version">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="crpClusterKeyOutput" class="org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput" fetch="select">
+            <column name="key_output_id" />
+        </many-to-one>
+        <many-to-one name="crpProgramOutcome" class="org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome" fetch="select">
+            <column name="outcome_id" />
+        </many-to-one>
+        <many-to-one name="deliverableType" class="org.cgiar.ccafs.marlo.data.model.DeliverableType" fetch="select">
+            <column name="type_id" />
+        </many-to-one>
+        <many-to-one name="deliverable" class="org.cgiar.ccafs.marlo.data.model.Deliverable" fetch="select">
+            <column name="deliverable_id" />
+        </many-to-one>
+        <many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
+            <column name="id_phase" />
+        </many-to-one>
+        <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="modified_by" not-null="true" />
+        </many-to-one>
+        <property name="title" type="string">
+            <column name="title" length="65535" />
+        </property>
+        <property name="description" type="string">
+            <column name="description" length="65535" />
+        </property>
+        <property name="typeOther" type="string">
+            <column name="type_other" length="65535">
+                <comment>Other type defined by the user.</comment>
+            </column>
+        </property>
+        <property name="newExpectedYear" type="java.lang.Integer">
+            <column name="new_expected_year" />
+        </property>
+        <property name="year" type="int">
+            <column name="year" not-null="true" />
+        </property>
+        <property name="status" type="java.lang.Integer">
+            <column name="status" />
+        </property>
+        <property name="statusDescription" type="string">
+            <column name="status_description" length="65535" />
+        </property>
+        <property name="modificationJustification" type="string">
+            <column name="modification_justification" length="65535" not-null="true" />
+        </property>
+        <property name="crossCuttingGender" type="java.lang.Boolean">
+            <column name="cross_cutting_gender" />
+        </property>
+        <property name="crossCuttingYouth" type="java.lang.Boolean">
+            <column name="cross_cutting_youth" />
+        </property>
+        <property name="crossCuttingCapacity" type="java.lang.Boolean">
+            <column name="cross_cutting_capacity" />
+        </property>
+        <property name="crossCuttingNa" type="java.lang.Boolean">
+            <column name="cross_cutting_na" />
+        </property>
+        <property name="adoptedLicense" type="java.lang.Boolean">
+            <column name="adopted_license" />
+        </property>
+        <property name="license" type="string">
+            <column name="license" length="65535" />
+        </property>
+        <property name="otherLicense" type="string">
+            <column name="other_license" length="65535" />
+        </property>
+        <property name="allowModifications" type="java.lang.Boolean">
+            <column name="allow_modifications" />
+        </property>
+    </class>
+</hibernate-mapping>
