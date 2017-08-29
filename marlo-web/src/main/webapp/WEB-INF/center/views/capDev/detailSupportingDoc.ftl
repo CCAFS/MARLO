@@ -3,8 +3,9 @@
 [#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css"] /]
 [#assign customCSS = ["${baseUrlMedia}/css/capDev/capacityDevelopment.css"] /]
 [#assign customJS = ["${baseUrlMedia}/js/capDev/capacityDevelopment.js"] /]
-[#assign customJS = ["${baseUrlMedia}/js/capDev/supportingDocuments.js"] /]
+[#assign customJS = ["${baseUrlMedia}/js/capDev/supportingDocuments.js","${baseUrlMedia}/js/global/fieldsValidation.js"] /]
 
+[#assign currentStage = "supportingDocuments" /] 
 
 [#assign breadCrumb = [
   {"label":"capdevList", "nameSpace":"/capdev", "action":"${(centerSession)!}/capdev"},
@@ -85,11 +86,12 @@
 				<div class="row">
 					<div class="col-md-12">
 						<label for="">Document(s):</label>
-						<div class=" borderBox documentList">
+						<div class=" borderBox documentList" listname="capdev.supportingDocs">
 							
 							[#if capdevSupportingDocs.capdevSuppDocsDocumentses?has_content]
 								[#list capdevSupportingDocs.capdevSuppDocsDocumentses as document ]
 									[#if document.active]
+									<input class="documentID" type="hidden" name="" value="${document.id}" />
 									<div class="col-md-12 documents">
 								    	<input class="documentID" type="hidden" name="" value="${document.id}" />
 								    	<div class="removeCapdevsupportDocument-action removeCapdevsupportDocument removeIcon" title="Remove document"></div>
@@ -146,7 +148,11 @@
 </div>
 
 
+
+
 [#include "/WEB-INF/center/global/pages/footer.ftl"]
+
+
 
 
 

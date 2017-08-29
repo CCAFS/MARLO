@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.model.CapdevSuppDocsDocuments;
 import org.cgiar.ccafs.marlo.data.model.CapdevSupportingDocs;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverableType;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.validation.center.capdev.CapdevSupportingDocsValidator;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,6 +45,7 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
 
   private long supportingDocID;
   private long capdevID;
+  private final CapdevSupportingDocsValidator validator;
   private CapdevSupportingDocs capdevSupportingDocs;
   private List<CenterDeliverableType> deliverablesList;
   private List<CenterDeliverableType> deliverablesSubtypesList;
@@ -56,16 +58,16 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
   @Inject
   public CapdevSupportingDocsDetailAction(APConfig config, CapdevSupportingDocsManager capdevsupportingDocsService,
     ICenterDeliverableTypeManager centerDeliverableService,
-    CapdevSuppDocsDocumentsManager capdevSuppDocsDocumentsService) {
+    CapdevSuppDocsDocumentsManager capdevSuppDocsDocumentsService, CapdevSupportingDocsValidator validator) {
     super(config);
     this.capdevsupportingDocsService = capdevsupportingDocsService;
     this.centerDeliverableService = centerDeliverableService;
     this.capdevSuppDocsDocumentsService = capdevSuppDocsDocumentsService;
+    this.validator = validator;
   }
 
 
   public String deleteDocumentLink() {
-    System.out.println("delete country");
     final Map<String, Object> parameters = this.getParameters();
     final long documentID =
       Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
@@ -110,6 +112,7 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
     return supportingDocID;
   }
 
+
   @Override
   public void prepare() throws Exception {
     links = new ArrayList<>();
@@ -126,14 +129,21 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
 
     capdevSupportingDocs = capdevsupportingDocsService.getCapdevSupportingDocsById(supportingDocID);
 
-    if (capdevSupportingDocs.getCenterDeliverableTypes() != null) {
-      final Long deliverableTypeParentId = capdevSupportingDocs.getCenterDeliverableTypes().getId();
+    if (capdevSupportingDocs != null) {
+      if (capdevSupportingDocs.getCenterDeliverableTypes() != null) {
+        final Long deliverableTypeParentId = capdevSupportingDocs.getCenterDeliverableTypes().getId();
 
-      deliverablesSubtypesList = new ArrayList<>(centerDeliverableService.findAll().stream()
-        .filter(dt -> (dt.getDeliverableType() != null) && (dt.getDeliverableType().getId() == deliverableTypeParentId))
-        .collect(Collectors.toList()));
-      Collections.sort(deliverablesSubtypesList, (ra1, ra2) -> ra1.getName().compareTo(ra2.getName()));
+        deliverablesSubtypesList = new ArrayList<>(centerDeliverableService.findAll().stream()
+          .filter(
+            dt -> (dt.getDeliverableType() != null) && (dt.getDeliverableType().getId() == deliverableTypeParentId))
+          .collect(Collectors.toList()));
+        Collections.sort(deliverablesSubtypesList, (ra1, ra2) -> ra1.getName().compareTo(ra2.getName()));
+      }
+
+
     }
+
+
   }
 
 
@@ -142,31 +152,46 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
     final CapdevSupportingDocs capdevSupportingDocsDB =
       capdevsupportingDocsService.getCapdevSupportingDocsById(supportingDocID);
     capdevSupportingDocsDB.setTitle(capdevSupportingDocs.getTitle());
-    capdevSupportingDocsDB.setCenterDeliverableTypes(capdevSupportingDocs.getCenterDeliverableTypes());
-    capdevSupportingDocsDB.setDeliverableSubtype(capdevSupportingDocs.getDeliverableSubtype());
+    if (capdevSupportingDocs.getCenterDeliverableTypes().getId() > -1) {
+      capdevSupportingDocsDB.setCenterDeliverableTypes(capdevSupportingDocs.getCenterDeliverableTypes());
+      capdevSupportingDocsDB.setDeliverableSubtype(capdevSupportingDocs.getDeliverableSubtype());
+    } else {
+      capdevSupportingDocsDB.setCenterDeliverableTypes(null);
+      capdevSupportingDocsDB.setDeliverableSubtype(null);
+    }
     capdevSupportingDocsDB.setPublicationDate(capdevSupportingDocs.getPublicationDate());
     capdevsupportingDocsService.saveCapdevSupportingDocs(capdevSupportingDocsDB);
 
+
     this.saveLinks(links, capdevSupportingDocsDB);
 
-    this.addActionMessage("message: Information was correctly saved.</br>");
+    if (!this.getInvalidFields().isEmpty()) {
+      this.setActionMessages(null);
+      final List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+      for (final String key : keys) {
+        this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+      }
+    } else {
+      this.addActionMessage("message:" + this.getText("saving.saved"));
+    }
 
     return SUCCESS;
   }
 
 
-  public void saveLinks(List<String> links, CapdevSupportingDocs capdevSupportingDocs) {
+  public void saveLinks(List<String> links, CapdevSupportingDocs capdevSupportingDocsDB) {
     if (!links.isEmpty()) {
       for (final String link : links) {
-        final CapdevSuppDocsDocuments document = new CapdevSuppDocsDocuments();
-        document.setLink(link);
-        document.setCapdevSupportingDocs(capdevSupportingDocs);
-        document.setActive(true);
-        document.setActiveSince(new Date());
-        document.setUsersByCreatedBy(this.getCurrentUser());
-        capdevSuppDocsDocumentsService.saveCapdevSuppDocsDocuments(document);
+        final CapdevSuppDocsDocuments documentSave = new CapdevSuppDocsDocuments();
+        documentSave.setActive(true);
+        documentSave.setActiveSince(new Date());
+        documentSave.setLink(link);
+        documentSave.setCapdevSupportingDocs(capdevSupportingDocsDB);
+        documentSave.setUsersByCreatedBy(this.getCurrentUser());
+        capdevSuppDocsDocumentsService.saveCapdevSuppDocsDocuments(documentSave);
       }
     }
+
   }
 
 
@@ -174,10 +199,10 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
     this.capdevID = capdevID;
   }
 
-
   public void setCapdevSupportingDocs(CapdevSupportingDocs capdevSupportingDocs) {
     this.capdevSupportingDocs = capdevSupportingDocs;
   }
+
 
   public void setDeliverablesList(List<CenterDeliverableType> deliverablesList) {
     this.deliverablesList = deliverablesList;
@@ -207,18 +232,20 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      if (capdevSupportingDocs.getTitle().equalsIgnoreCase("")) {
-        this.addFieldError("capdevSupportingDocs.title", "Title is required.");
-      }
-      if (capdevSupportingDocs.getCenterDeliverableTypes().getId() == -1) {
-        this.addFieldError("capdevSupportingDocs.centerDeliverableTypes.id", "Type is required.");
-      }
-      if (capdevSupportingDocs.getDeliverableSubtype().getId() == -1) {
-        this.addFieldError("capdevSupportingDocs.deliverableSubtype.id", "Subtype is required.");
-      }
-      if (capdevSupportingDocs.getPublicationDate() == null) {
-        this.addFieldError("capdevSupportingDocs.publicationDate", "Publication date is required.");
-      }
+      validator.validate(this, capdevSupportingDocs, links);
+
+      // if (capdevSupportingDocs.getTitle().equalsIgnoreCase("")) {
+      // this.addFieldError("capdevSupportingDocs.title", "Title is required.");
+      // }
+      // if (capdevSupportingDocs.getCenterDeliverableTypes().getId() == -1) {
+      // this.addFieldError("capdevSupportingDocs.centerDeliverableTypes.id", "Type is required.");
+      // }
+      // if (capdevSupportingDocs.getDeliverableSubtype().getId() == -1) {
+      // this.addFieldError("capdevSupportingDocs.deliverableSubtype.id", "Subtype is required.");
+      // }
+      // if (capdevSupportingDocs.getPublicationDate() == null) {
+      // this.addFieldError("capdevSupportingDocs.publicationDate", "Publication date is required.");
+      // }
 
 
     }

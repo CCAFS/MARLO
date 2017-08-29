@@ -46,6 +46,7 @@ import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.TargetGroup;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.validation.center.capdev.CapDevDescriptionValidator;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -67,6 +68,7 @@ public class CapdevDescriptionAction extends BaseAction {
   private static final long serialVersionUID = 1L;
 
   private CapacityDevelopment capdev;
+  private final CapDevDescriptionValidator validator;
   private long capdevID;
   private List<Discipline> disciplines;
   private List<TargetGroup> targetGroups;
@@ -103,7 +105,7 @@ public class CapdevDescriptionAction extends BaseAction {
     ICapacityDevelopmentService capdevService, ICapdevDisciplineService capdevDisciplineService,
     ICapdevTargetgroupService capdevTargetgroupService, InstitutionManager institutionService,
     ICenterOutputManager researchOutputService, ICapdevPartnersService capdevPartnerService,
-    ICapdevOutputsService capdevOutputService) {
+    ICapdevOutputsService capdevOutputService, CapDevDescriptionValidator validator) {
     super(config);
     this.researchAreaService = researchAreaService;
     this.researchProgramSercive = researchProgramSercive;
@@ -118,6 +120,7 @@ public class CapdevDescriptionAction extends BaseAction {
     this.researchOutputService = researchOutputService;
     this.capdevPartnerService = capdevPartnerService;
     this.capdevOutputService = capdevOutputService;
+    this.validator = validator;
   }
 
 
@@ -297,18 +300,28 @@ public class CapdevDescriptionAction extends BaseAction {
   @Override
   public String save() {
 
-    System.out.println("capdev.getResearchArea() " + capdev.getResearchArea().getId());
+
     final CapacityDevelopment capdevDB = capdevService.getCapacityDevelopmentById(capdevID);
+    System.out.println("capdev.getResearchArea() " + capdev.getResearchArea().getId());
+
 
     if (capdev.getResearchArea().getId() > -1) {
       capdevDB.setResearchArea(capdev.getResearchArea());
+
+      if (capdev.getResearchProgram() != null) {
+        System.out.println("capdev.getResearchProgram() " + capdev.getResearchProgram().getId());
+        if (capdev.getResearchProgram().getId() != -1) {
+          capdevDB.setResearchProgram(capdev.getResearchProgram());
+        }
+      }
+      if (capdev.getProject() != null) {
+        System.out.println("capdev.getProject() " + capdev.getProject().getId());
+        if (capdev.getProject().getId() != -1) {
+          capdevDB.setProject(capdev.getProject());
+        }
+      }
     }
-    if (capdev.getResearchProgram().getId() > -1) {
-      capdevDB.setResearchProgram(capdev.getResearchProgram());
-    }
-    if (capdev.getProject().getId() > -1) {
-      capdevDB.setProject(capdev.getProject());
-    }
+
     if (capdev.getCrp().getId() > -1) {
       capdevDB.setCrp(capdev.getCrp());
     }
@@ -317,14 +330,19 @@ public class CapdevDescriptionAction extends BaseAction {
     capdevService.saveCapacityDevelopment(capdevDB);
     this.saveCapDevDisciplines(capdevDisciplines, capdevDB);
     this.saveCapdevTargetGroups(capdevTargetGroup, capdevDB);
-    // System.out.println("capdevPartners.size() " + capdevPartners.size());
-    // System.out.println("capdevOutputs.size() " + capdevOutputs.size());
     this.saveCapdevPartners(capdevPartners, capdevDB);
     this.saveCapdevOutputs(capdevOutputs, capdevDB);
 
 
-    this.addActionMessage("message: Information was correctly saved.</br>");
-
+    if (!this.getInvalidFields().isEmpty()) {
+      this.setActionMessages(null);
+      final List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+      for (final String key : keys) {
+        this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+      }
+    } else {
+      this.addActionMessage("message:" + this.getText("saving.saved"));
+    }
 
     return SUCCESS;
   }
@@ -374,7 +392,6 @@ public class CapdevDescriptionAction extends BaseAction {
 
   public void saveCapdevPartners(List<Long> partners, CapacityDevelopment capdev) {
     CapdevPartners capdevPartner = null;
-    System.out.println(capdev);
     final Session session = SecurityUtils.getSubject().getSession();
     final User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
     if (!partners.isEmpty()) {
@@ -496,5 +513,11 @@ public class CapdevDescriptionAction extends BaseAction {
     this.targetGroups = targetGroups;
   }
 
+  @Override
+  public void validate() {
+    if (save) {
+      validator.validate(this, capdev, capdevDisciplines, capdevTargetGroup, capdevPartners, capdevOutputs);
+    }
 
+  }
 }

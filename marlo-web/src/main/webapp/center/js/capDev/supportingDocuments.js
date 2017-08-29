@@ -63,6 +63,7 @@ function checkItems(block) {
 
 //action remove link supporting document
 $(".removeCapdevsupportDocument-action").click(function(){
+  console.log("removeCapdevsupportDocument");
 	var documentID = $(".documentID").val();
 
 	$.ajax({

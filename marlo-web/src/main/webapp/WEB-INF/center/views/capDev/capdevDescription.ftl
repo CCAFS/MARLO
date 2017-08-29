@@ -3,8 +3,9 @@
 [#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css"] /]
 [#assign customCSS = ["${baseUrlMedia}/css/capDev/capacityDevelopment.css"] /]
 [#assign customJS = ["${baseUrlMedia}/js/capDev/capacityDevelopment.js"] /]
-[#assign customJS = ["${baseUrlMedia}/js/capDev/capdevDescription.js"] /]
+[#assign customJS = ["${baseUrlMedia}/js/capDev/capdevDescription.js","${baseUrlMedia}/js/global/fieldsValidation.js"] /]
 
+[#assign currentStage = "capdevDescription" /]
 
 [#assign breadCrumb = [
   {"label":"capdevList", "nameSpace":"/capdev", "action":"${(centerSession)!}/capdev"},
@@ -66,16 +67,16 @@
 			<div  class="fullForm" >
 
 				<!-- Disciplines-->
-				<div class="row ">
-					<div class="col-md-12 newCapdevField approachesListTitle">
+				<div class="form-group row ">
+					<div class="col-md-12 newCapdevField approachesListTitle" listname="capdev.disciplines">
 						[@s.text name="capdev.form.listOfApproaches"][/@s.text] 
 					</div>
 				</div>
-				<div class="row approachesListContainer">
+				<div class="form-group row approachesListContainer" >
 					<div class="col-md-12 newCapdevField">
 						[@customForm.select name="capdevDisciplines" listName="disciplines" keyFieldName="id" displayFieldName="name"  i18nkey="capdev.form.selectApproach" className="disciplinesSelect" multiple=false placeholder="capdev.select" help="capdev.help.discipline" /]
 					</div>
-					<div id="disciplinesList" class="col-md-12 newCapdevField approachesList">
+					<div id="disciplinesList" class="col-md-12 newCapdevField approachesList" listname="capdev.disciplines">
 						<ul class="list">
 							[#if capdev.capdevDisciplines?has_content]
 							[#list capdev.capdevDisciplines as discipline]
@@ -98,17 +99,17 @@
 				</div>
 
 				<!-- Targeted public-->
-				<div class="row grupsParticipantsForm">
-					<div class="col-md-12 newCapdevField approachesListTitle">
+				<div class="form-group row grupsParticipantsForm">
+					<div class="col-md-12 newCapdevField approachesListTitle" listname="capdev.targetgroup">
 						[@s.text name="capdev.targetgroup"][/@s.text] 
 					</div>
 				</div>
-				<div class="row borderContainer grupsParticipantsForm">
+				<div class="form-group row borderContainer grupsParticipantsForm" >
 					<div class="col-md-12 newCapdevField ">
 						[@customForm.select name="capdevTargetGroup" listName="targetGroups" keyFieldName="id" displayFieldName="name"  i18nkey="capdev.targetgroupselect" className="targetGroupsSelect" multiple=false placeholder="capdev.select" help="capdev.help.targetgroup" /]
 					</div>
 
-					<div id="targetGroupsList" class="col-md-12 newCapdevField ">
+					<div id="targetGroupsList" class="col-md-12 newCapdevField" >
 						<ul class="list">
 							[#if capdev.capdevTargetgroups?has_content]
 							[#list capdev.capdevTargetgroups as targetGroup]
@@ -157,7 +158,7 @@
 
 				<!-- project-->
 				<div class="row newCapdevField ">
-					<div class="col-md-12 project">
+					<div class="col-md-12 project" listname="capdev.project">
 						[@customForm.select name="capdev.project.id" listName="projects" keyFieldName="id" displayFieldName="name" i18nkey="capdev.form.project" placeholder="capdev.select" className="capdevProject" help="capdev.help.project" /]
 					</div>
 				</div>
@@ -165,17 +166,17 @@
 				
 
 				<!-- Partners-->
-				<div class="row grupsParticipantsForm">
-					<div class="col-md-12 newCapdevField approachesListTitle">
+				<div class="form-group row grupsParticipantsForm">
+					<div class="col-md-12 newCapdevField approachesListTitle" listname="capdev.partners">
 						[@s.text name="capdev.partnerts"][/@s.text] 
 					</div>
 				</div>
-				<div class="row borderContainer grupsParticipantsForm">
+				<div class="form-group row borderContainer grupsParticipantsForm" >
 					<div class="col-md-12 newCapdevField ">
 						[@customForm.select name="capdevPartners" listName="partners" keyFieldName="id" displayFieldName="name"  i18nkey="capdev.partnertSelect" className="capdevPartnerSelect" multiple=false placeholder="capdev.select" help="capdev.help.partner" /]
 					</div>
 					
-					<div id="capdevPartnersList" class=" partnersList">
+					<div id="capdevPartnersList" class=" partnersList" >
 						<ul class="list">
 							[#if capdev.capdevPartnerses?has_content]
 							[#list capdev.capdevPartnerses as partner]
@@ -198,17 +199,17 @@
 				</div>
 
 				<!-- OutPuts-->
-				<div class="row">
-					<div class="col-md-12 newCapdevField objectivesTitle">
+				<div class="form-group row">
+					<div class="col-md-12 newCapdevField objectivesTitle" listname="capdev.outputs">
 						[@s.text name="capdev.form.objectives"][/@s.text]
 					</div>
 				</div>
-				<div class="row outComesContainer">
+				<div class="form-group row outComesContainer" >
 					<div class="col-md-12 newCapdevField">
 						[@customForm.select name="capdevOutputs" listName="outputs" keyFieldName="id" displayFieldName="title" i18nkey="capdev.form.selectOutcome" className="capdevOutputSelect" multiple=false placeholder="capdev.select" help="capdev.help.output" /]
 					</div>
 
-					<div id="capdevOutputsList" class="outputsList">
+					<div id="capdevOutputsList" class="outputsList" >
 						<ul class="list">
 							[#if capdev.capdevOutputses?has_content]
 							[#list capdev.capdevOutputses as output]
