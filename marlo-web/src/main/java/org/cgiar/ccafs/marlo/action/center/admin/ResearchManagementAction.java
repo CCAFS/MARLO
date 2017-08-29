@@ -18,14 +18,20 @@ package org.cgiar.ccafs.marlo.action.center.admin;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.ICenterAreaManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterLeaderManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
+import org.cgiar.ccafs.marlo.data.model.CenterLeader;
+import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 
@@ -37,23 +43,27 @@ public class ResearchManagementAction extends BaseAction {
   private static final long serialVersionUID = -8241378443798479147L;
 
   private ICenterManager centerService;
-  private ICenterAreaManager areaService;
-  private ICenterProgramManager programService;
+  private ICenterAreaManager centerAreaService;
+  private ICenterProgramManager centerProgramService;
+  private ICenterLeaderManager centerLeaderService;
   private Center loggedCenter;
-  private List<CenterArea> areas;
+  private List<CenterArea> centerAreas;
 
   @Inject
   public ResearchManagementAction(APConfig config, ICenterManager centerService, ICenterAreaManager areaService,
-    ICenterProgramManager programService) {
+    ICenterProgramManager programService, ICenterLeaderManager centerLeaderService) {
     super(config);
     this.centerService = centerService;
-    this.areaService = areaService;
-    this.programService = programService;
+    this.centerAreaService = areaService;
+    this.centerProgramService = programService;
+    this.centerLeaderService = centerLeaderService;
   }
 
-  public List<CenterArea> getAreas() {
-    return areas;
+
+  public List<CenterArea> getCenterAreas() {
+    return centerAreas;
   }
+
 
   public Center getLoggedCenter() {
     return loggedCenter;
@@ -67,12 +77,122 @@ public class ResearchManagementAction extends BaseAction {
 
     String params[] = {loggedCenter.getAcronym() + ""};
     this.setBasePermission(this.getText(Permission.CENTER_ADMIN_BASE_PERMISSION, params));
+    // Get loggedCenter centerAreas
+    centerAreas = new ArrayList<>(centerAreaService.findAll().stream()
+      .filter(ca -> ca.isActive() && ca.getResearchCenter().equals(loggedCenter)).collect(Collectors.toList()));
+    for (CenterArea centerArea : centerAreas) {
+      // Set area leaders
+      centerArea
+        .setLeaders(centerArea.getResearchLeaders().stream().filter(rl -> rl.isActive()).collect(Collectors.toList()));
+      // Set center programs
+
+      centerArea.setPrograms(centerArea.getResearchPrograms().stream()
+        .filter(cps -> cps.isActive() && cps.getResearchArea().getId() == centerArea.getId())
+        .collect(Collectors.toList()));
+      // set program leader
+      for (CenterProgram centerProgram : centerArea.getPrograms()) {
+        centerProgram.setLeaders(
+          centerProgram.getResearchLeaders().stream().filter(rl -> rl.isActive()).collect(Collectors.toList()));
+      }
+    }
+    if (this.isHttpPost()) {
+      if (centerAreas != null) {
+        centerAreas.clear();
+      }
+    }
   }
 
 
-  public void setAreas(List<CenterArea> areas) {
-    this.areas = areas;
+  @Override
+  public String save() {
+    if (this.hasPermission("*")) {
+      // Get database center area
+      List<CenterArea> centerAreasDB = new ArrayList<>(centerAreaService.findAll().stream()
+        .filter(ca -> ca.isActive() && ca.getResearchCenter().equals(loggedCenter)).collect(Collectors.toList()));
+      // Check deleted center area
+      for (CenterArea centerArea : centerAreasDB) {
+        if (!centerAreas.contains(centerArea)) {
+          // delete centerLeaders
+          List<CenterLeader> centerLeaders =
+            centerArea.getResearchLeaders().stream().filter(rl -> rl.isActive()).collect(Collectors.toList());
+          for (CenterLeader centerLeader : centerLeaders) {
+            centerLeaderService.deleteResearchLeader(centerLeader.getId());
+          }
+          // delete research programs
+          List<CenterProgram> centerPrograms = centerArea.getResearchPrograms().stream()
+            .filter(cps -> cps.isActive() && cps.getResearchArea().getId() == centerArea.getId())
+            .collect(Collectors.toList());
+
+          for (CenterProgram centerProgram : centerPrograms) {
+            List<CenterLeader> programLeaders =
+              centerProgram.getResearchLeaders().stream().filter(rl -> rl.isActive()).collect(Collectors.toList());
+            // delete program leaders
+            for (CenterLeader centerLeader : programLeaders) {
+              centerLeaderService.deleteResearchLeader(centerLeader.getId());
+            }
+            centerProgramService.deleteProgram(centerProgram.getId());
+          }
+          // delete center area
+          centerAreaService.deleteResearchArea(centerArea.getId());
+        }
+      }
+
+      // Check changes
+      for (CenterArea centerArea : centerAreas) {
+        // Check if is a new one
+        if (centerArea.getId() == null || centerArea.getId() == -1) {
+          CenterArea newCenterArea = new CenterArea();
+
+          newCenterArea.setActive(true);
+          newCenterArea.setCreatedBy(this.getCurrentUser());
+          newCenterArea.setModifiedBy(this.getCurrentUser());
+          newCenterArea.setActiveSince(new Date());
+          newCenterArea.setName(centerArea.getName());
+          newCenterArea.setAcronym(centerArea.getAcronym());
+          newCenterArea.setResearchCenter(loggedCenter);
+          newCenterArea.setModificationJustification("");
+          centerAreaService.save(newCenterArea);
+          // save area leaders
+          List<CenterLeader> centerLeaders =
+            newCenterArea.getResearchLeaders().stream().filter(rl -> rl.isActive()).collect(Collectors.toList());
+          for (CenterLeader centerLeader : centerLeaders) {
+            centerLeaderService.saveResearchLeader(centerLeader);
+          }
+          // save new programs
+          List<CenterProgram> newCenterPrograms = newCenterArea.getResearchPrograms().stream()
+            .filter(cps -> cps.isActive() && cps.getResearchArea().getId() == centerArea.getId())
+            .collect(Collectors.toList());
+          for (CenterProgram newCenterProgram : newCenterPrograms) {
+            // Save center program
+            centerProgramService.saveProgram(newCenterProgram);
+            List<CenterLeader> programLeaders =
+              newCenterProgram.getResearchLeaders().stream().filter(rl -> rl.isActive()).collect(Collectors.toList());
+            for (CenterLeader centerLeader : programLeaders) {
+              centerLeaderService.saveResearchLeader(centerLeader);
+            }
+          }
+
+        } else {
+          // check if there are changes
+          CenterArea centerAreaDB = centerAreaService.find(centerArea.getId());
+          if (!centerArea.equals(centerAreaDB)) {
+            centerAreaService.save(centerArea);
+            // TODO: Check if there are area leaders, program or program leaders changes.
+          }
+        }
+
+      }
+
+      return SUCCESS;
+    } else {
+      return NOT_AUTHORIZED;
+    }
   }
+
+  public void setCenterAreas(List<CenterArea> centerAreas) {
+    this.centerAreas = centerAreas;
+  }
+
 
   public void setLoggedCenter(Center loggedCenter) {
     this.loggedCenter = loggedCenter;
