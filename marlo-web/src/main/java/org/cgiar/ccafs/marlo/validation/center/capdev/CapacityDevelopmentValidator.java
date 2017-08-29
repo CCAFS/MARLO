@@ -26,6 +26,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 
@@ -71,10 +72,10 @@ public class CapacityDevelopmentValidator extends BaseValidator {
       baseAction.getInvalidFields().put("input-capdev.title", InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    if (capdev.getCapdevType().getId() == -1) {
-      this.addMessage(baseAction.getText("capdev.action.type"));
-      baseAction.getInvalidFields().put("input-capdev.capdevType.id", InvalidFieldsMessages.EMPTYFIELD);
-    }
+    // if (capdev.getCapdevType().getId() == -1) {
+    // this.addMessage(baseAction.getText("capdev.action.type"));
+    // baseAction.getInvalidFields().put("input-capdev.capdevType.id", InvalidFieldsMessages.EMPTYFIELD);
+    // }
 
     if (capdev.getStartDate() == null) {
       this.addMessage(baseAction.getText("capdev.action.startDate"));
@@ -93,7 +94,8 @@ public class CapacityDevelopmentValidator extends BaseValidator {
 
     if (this.bolValue(capdev.getsGlobal()) != null) {
       if (this.bolValue(capdev.getsGlobal())) {
-        if ((capdev.getCapDevCountries() == null) || capdev.getCapDevCountries().isEmpty()) {
+        if ((capdev.getCapDevCountries() == null)
+          || capdev.getCapDevCountries().stream().filter(c -> c.isActive()).collect(Collectors.toList()).isEmpty()) {
           this.addMessage(baseAction.getText("capdev.action.countries"));
           baseAction.getInvalidFields().put("list-capdev.countries", baseAction.getText(InvalidFieldsMessages.EMPTYLIST,
             new String[] {"Capacity Development Intervention Countries"}));

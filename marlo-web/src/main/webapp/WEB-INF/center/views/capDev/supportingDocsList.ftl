@@ -86,23 +86,34 @@
 							[#list capdev.capdevSupportingDocses as supportDocs]
 								[#if supportDocs.active]
 									<tr>
-										<td>${supportDocs.id}</td>
-										[#if supportDocs.title??]
-											<td><a href="[@s.url action='${centerSession}/detailSupportingDoc'][@s.param name='capdevID']${supportDocs.capacityDevelopment.id?c}[/@s.param][@s.param name='supportingDocID']${supportDocs.id?c}[/@s.param][/@s.url]">${supportDocs.title}</a></td>
-											<td>${supportDocs.centerDeliverableTypes.name}</td>
-											<td>${supportDocs.publicationDate}</td>
-											
-										[#else]
-											<td><a href="[@s.url action='${centerSession}/detailSupportingDoc'][@s.param name='capdevID']${supportDocs.capacityDevelopment.id?c}[/@s.param][@s.param name='supportingDocID']${supportDocs.id?c}[/@s.param][/@s.url]">Not defined</a></td>
-											<td>Not defined</td>
-											<td>Not defined</td>
-										[/#if]
+										<td>
+											<a href="[@s.url action='${centerSession}/detailSupportingDoc'][@s.param name='capdevID']${supportDocs.capacityDevelopment.id?c}[/@s.param][@s.param name='supportingDocID']${supportDocs.id?c}[/@s.param][/@s.url]">S${supportDocs.id} </a>
+										</td>
+										<td>
+										    [#if supportDocs.title?has_content]
+										    	<a href="[@s.url action='${centerSession}/detailSupportingDoc'][@s.param name='capdevID']${supportDocs.capacityDevelopment.id?c}[/@s.param][@s.param name='supportingDocID']${supportDocs.id?c}[/@s.param][/@s.url]">${supportDocs.title}</a>
+										    [#else]
+										    	<a href="[@s.url action='${centerSession}/detailSupportingDoc'][@s.param name='capdevID']${supportDocs.capacityDevelopment.id?c}[/@s.param][@s.param name='supportingDocID']${supportDocs.id?c}[/@s.param][/@s.url]">Not defined</a>
+										    [/#if]
+									    </td>
+									    <td>
+										    [#if supportDocs.centerDeliverableTypes??]
+										    	${supportDocs.centerDeliverableTypes.name}
+										    [#else]
+										    	Not defined
+										    [/#if]
+									    </td>
+									    <td>
+										    [#if supportDocs.publicationDate??]
+										    	${supportDocs.publicationDate}
+										    [#else]
+										    	Not defined
+										    [/#if]
+									    </td>
 										<td>
 								             <a  class="deleteDoc" href="#" data-href="[@s.url action='${centerSession}/deleteSupportingDoc'][@s.param name='capdevID']${capdev.id}[/@s.param] [@s.param name='supportingDocID']${supportDocs.id?c}[/@s.param] [/@s.url]" data-toggle="modal" data-target="#confirm-delete">
 								               <img src="${baseUrlMedia}/images/global/trash.png" title="[@s.text name="capdev.removeCapdev" /]" /> 
 								             </a>
-
-
 							            </td>
 
 

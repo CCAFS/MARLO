@@ -305,12 +305,12 @@
 
 						
 						<!-- regions-->
-						<div class="listContainer capdevRegional regionsBox" style="display:none" listname="capdev.regions">
-							<div class="newCapdevField">
+						<div class="form-group row listContainer capdevRegional regionsBox" style="display:none" >
+							<div class="form-group  newCapdevField" listname="capdev.regions">
 								[@customForm.select name="capdevRegions" listName="regionsList" keyFieldName="id" displayFieldName="name" help="capdev.help.region" i18nkey="capdev.form.region" className="capdevRegionsSelect" multiple=false placeholder="capdev.select"  /]
 							</div>
 
-							<div id="capdevRegionsList" class="regionsList">
+							<div id="capdevRegionsList" >
 								<div class="">
 									<div class=" panel-body">
 										
@@ -340,7 +340,7 @@
 
 						<div class="capdevDimension"><label>If the capacity development intervention focuses on specific countries, please list these countries:</label></div>
 						<!-- countries-->
-						<div class="listContainer"  listname="capdev.countries">
+						<div class="form-group listContainer"  listname="capdev.countries">
 							<div class="newCapdevField">
 								[@customForm.select name="capdevCountries" listName="countryList" keyFieldName="id" displayFieldName="name" help="capdev.help.country" i18nkey="capdev.form.country" className="capdevCountriesSelect" multiple=false placeholder="capdev.select"  /]
 							</div>

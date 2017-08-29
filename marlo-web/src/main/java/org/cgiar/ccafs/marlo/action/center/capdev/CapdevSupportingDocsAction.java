@@ -23,7 +23,12 @@ import org.cgiar.ccafs.marlo.data.model.CapacityDevelopment;
 import org.cgiar.ccafs.marlo.data.model.CapdevSupportingDocs;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
@@ -100,6 +105,12 @@ public class CapdevSupportingDocsAction extends BaseAction {
       capdevID = -1;
     }
     capdev = capdevService.getCapacityDevelopmentById(capdevID);
+    if (!capdev.getCapdevSupportingDocses().isEmpty()) {
+      final List<CapdevSupportingDocs> documentesDB = new ArrayList<>(
+        capdev.getCapdevSupportingDocses().stream().filter(d -> d.getActive()).collect(Collectors.toList()));
+      Collections.sort(documentesDB, (r1, r2) -> r1.getId().compareTo(r2.getId()));
+      capdev.setCapdevSupportingDocses(new HashSet<CapdevSupportingDocs>(documentesDB));
+    }
   }
 
 
