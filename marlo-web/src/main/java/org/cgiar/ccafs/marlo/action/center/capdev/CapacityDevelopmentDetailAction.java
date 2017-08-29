@@ -575,7 +575,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
     }
 
-    // if capdec is group
+    // if capdev is group
     if (capdevDB.getCategory() == 2) {
       capdevDB.setTitle(capdev.getTitle());
       capdevDB.setCtFirstName(capdev.getCtFirstName());
@@ -595,11 +595,17 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
           capdevDB.setNumWomen(numWomen);
         }
 
-
       } else {
         capdevDB.setNumParticipants(capdev.getNumParticipants());
-        capdevDB.setNumMen(capdev.getNumMen());
-        capdevDB.setNumWomen(capdev.getNumWomen());
+        if ((capdev.getNumMen() != null) && (capdev.getNumWomen() != null)) {
+          final int totalParticipants = capdev.getNumMen() + capdev.getNumWomen();
+          if (capdev.getNumParticipants() == totalParticipants) {
+            capdevDB.setNumMen(capdev.getNumMen());
+            capdevDB.setNumWomen(capdev.getNumWomen());
+          }
+        }
+
+
       }
       capdevService.saveCapacityDevelopment(capdevDB);
       for (final Participant participant : participantList) {

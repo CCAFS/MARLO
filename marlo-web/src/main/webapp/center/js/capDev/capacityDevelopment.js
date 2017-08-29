@@ -177,9 +177,12 @@
   })();
 
 
+  
+
+
   }
 
-  
+
 
 
   //event to download participants template 
@@ -314,7 +317,7 @@
 
       
 
-      
+    
       
        
 
@@ -942,7 +945,5 @@ $(".button-label").on("click", function() {
     }
   });
 
-
-  
 
   

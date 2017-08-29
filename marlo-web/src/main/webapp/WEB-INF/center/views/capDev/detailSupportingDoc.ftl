@@ -5,6 +5,7 @@
 [#assign customJS = ["${baseUrlMedia}/js/capDev/capacityDevelopment.js"] /]
 [#assign customJS = ["${baseUrlMedia}/js/capDev/supportingDocuments.js","${baseUrlMedia}/js/global/fieldsValidation.js"] /]
 
+[#assign currentStage = "supportingDocuments" /] 
 
 [#assign breadCrumb = [
   {"label":"capdevList", "nameSpace":"/capdev", "action":"${(centerSession)!}/capdev"},

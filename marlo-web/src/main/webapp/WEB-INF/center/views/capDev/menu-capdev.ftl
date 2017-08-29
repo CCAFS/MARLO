@@ -1,8 +1,8 @@
 [#ftl]
 [#assign objs= [
-  { 'slug': 'Capdev Intervention',      'name': 'capdev.menu.hrefCapdev',           'action': 'detailCapdev',           'active': true  },
-  { 'slug': 'Capdev Description',           'name': 'capdev.menu.hrefDescription',      'action': 'descriptionCapdev',           'active': true  },
-  { 'slug': 'Supporting Documents',         'name': 'capdev.menu.hrefSupportingDocs',    'action': 'supportingDocs',           'active': true  }
+  { 'slug': 'capdevIntervention',      'name': 'capdev.menu.hrefCapdev',           'action': 'detailCapdev',           'active': true  },
+  { 'slug': 'capdevDescription',           'name': 'capdev.menu.hrefDescription',      'action': 'descriptionCapdev',           'active': true  },
+  { 'slug': 'supportingDocuments',         'name': 'capdev.menu.hrefSupportingDocs',    'action': 'supportingDocs',           'active': true  }
   
 ]/]
 
@@ -15,8 +15,8 @@
    <ul>
     [#list objs as item]
       <li>
-        <ul>
-              <li id="menu-${item.action}" ">
+        <ul> 
+              <li id="menu-${item.action}" class="[#if item.slug == currentStage]currentSection[/#if] capdevmenu-links">
                 <a href="[@s.url action="${centerSession}/${item.action}"][@s.param name='capdevID']${capdevID}[/@s.param][/@s.url]"  class="action-${centerSession}/${item.action}">
                   [@s.text name=item.name/]
                 </a>

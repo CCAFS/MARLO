@@ -4,6 +4,7 @@
 [#assign customCSS = ["${baseUrlMedia}/css/capDev/capacityDevelopment.css"] /]
 [#assign customJS = ["${baseUrlMedia}/js/capDev/capacityDevelopment.js", "${baseUrlMedia}/js/global/fieldsValidation.js"] /]
 
+[#assign currentStage = "capdevIntervention" /]
 
 [#assign breadCrumb = [
   {"label":"capdevList", "nameSpace":"/capdev", "action":"${(centerSession)!}/capdev"},
@@ -46,7 +47,7 @@
 			</div>
 		</div>
 		
-		<div class="col-md-12 form-group newCapdevForm"> 
+		<div class="col-md-12 form-group "> 
 
 			[@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
 			<!-- Radio Buttons-->
@@ -67,17 +68,17 @@
 				</div>
 			</div>
 
-			<div  class="fullForm" >
+			<div  class="fullForm borderBox" >
 				<!-- Title-->
-				<div class="form-group row newCapdevField" >
+				<div class="form-group row " >
 					<div class="col-md-12 "> 
 						[@customForm.input name="capdev.title" type="text" help="capdev.help.title" i18nkey="capdev.form.title"  required=true  /]
 					</div>
 				</div>
 
 				<!-- type and contact Person -->
-				<div class="row">
-					<div class="col-md-12 newCapdevField"> 
+				<div class="form-group row">
+					<!-- <div class="col-md-12 "> --> 
 						<!-- type-->
 						<div class="col-md-6" > 
 							[@customForm.select name="capdev.capdevType.id" listName="capdevTypes" keyFieldName="id" displayFieldName="name" help="capdev.help.type" i18nkey="capdev.form.type"  placeholder="capdev.select" required=true editable=true/]
@@ -90,12 +91,12 @@
 							<input class="ctLastName" type="hidden" name="capdev.ctLastName" value="${(capdev.ctLastName)!}" /> 
 							<input class="ctEmail" type="hidden" name="capdev.ctEmail" value="${(capdev.ctEmail)!}" /> 
 						</div>
-					</div>
+					<!-- </div> -->
 				</div>
 
 				<!-- dates -->
-				<div class="row ">
-					<div class="col-md-12 newCapdevField">
+				<div class="form-group row ">
+					<!-- <div class="col-md-12 newCapdevField"> -->
 						<!-- Strart date-->
 						<div class="col-md-6 ">
 							[@customForm.input name="capdev.startDate" i18nkey="capdev.form.startDate" type="text"  help="capdev.help.startDate" required=true  editable=true className="capdevstartDate"/]
@@ -104,12 +105,12 @@
 						<div class="col-md-6 ">
 							[@customForm.input name="capdev.endDate" i18nkey="capdev.form.endDate" type="text" help="capdev.help.endDate" editable=true /]
 						</div>
-					</div>
+					<!-- </div> -->
 				</div>
 
 
 				<!-- Duration -->
-				<div class="row newCapdevField">
+				<div class="form-group row ">
 					<div class="col-md-3">
 						[@customForm.input name="capdev.duration" i18nkey="capdev.form.duration" type="text"  help="capdev.help.duration"   editable=true className="capdevDuration"/] 
 					</div>
@@ -124,7 +125,8 @@
 
 
 				<!-- groups participants-->
-				<div class="row grupsParticipantsForm">
+				<h4 class="form-group headTitle newCapdevField grupsParticipantsForm">Participants Information</h4>
+				<div class="form-group row grupsParticipantsForm simpleBox">
 					[#if capdev.capdevParticipants?has_content && capdev.capdevParticipants?size > 1] 
 						<div class="capdevParticipantsTable">
 							<div class="capdev-participantslist-title">List of participants</div>
@@ -139,9 +141,9 @@
 							</div>
 						</div>
 					[#else]
-						<div class="col-md-12 newCapdevField participantsheader">
-							<div class="col-md-6  participantsTitle">
-								[@s.label key="capdev.form.participants" /]
+						<div class="form-group col-md-12 newCapdevField participantsheader">
+							<div class="col-md-6  ">
+								<!-- [@s.label key="capdev.form.participants" /] -->
 							</div>
 							<div class="col-md-6 ">
 								<div class="pull-right">
@@ -152,8 +154,8 @@
 							</div>
 						</div>
 
-						<div class="row newCapdevField">
-							<div class="col-md-12 newCapdevField participantsBox " listname="capdev.uploadFile">
+						<div class="form-group row ">
+							<div class="col-md-12  participantsBox " listname="capdev.uploadFile">
 								<!-- [@s.fielderror fieldName="upload_File" class="fileError" /] -->
 								<div class="col-md-12">
 									[@s.file id="uploadFile" name="uploadFile" label="Select a File to upload" size="40" class="uploadParticipants"/]
@@ -194,44 +196,42 @@
 						</div>
 
 					[/#if]
+
+					<!-- num participants, num men and num women -->
+					<div class="row">
+						<div class="col-md-12 newCapdevField">
+							<div class="col-md-6 group individual">
+								[@customForm.input name="capdev.numParticipants" i18nkey="capdev.form.numParticipants" type="text" help="capdev.help.numParticipants"  editable=true className="numParticipants" /]
+							</div>
+							<div class="col-md-3 group individual">
+								[@customForm.input name="capdev.numMen" i18nkey="capdev.form.numMen" help="capdev.help.numMen" type="text" className="numMen" /]
+							</div>
+							<div class="col-md-3 group individual">
+								[@customForm.input name="capdev.numWomen" i18nkey="capdev.form.numWomen" help="capdev.help.numMen" type="text" className="numWomen" /]
+							</div>
+						</div>
+					</div>
+
+					<div class="row grupsParticipantsForm">
+						<div class="note participantMessage">
+							<p>If you don’t have a list of participants, please enter the number of participants, number of men and number of women</p>
+						</div>
+					</div>
 					
 					
 				</div>
 
-				<!-- num participants, num men and num women -->
-				<div class="row">
-					<div class="col-md-12 newCapdevField">
-						<div class="col-md-6 group individual">
-							[@customForm.input name="capdev.numParticipants" i18nkey="capdev.form.numParticipants" type="text" help="capdev.help.numParticipants"  editable=true className="numParticipants" /]
-						</div>
-						<div class="col-md-3 group individual">
-							[@customForm.input name="capdev.numMen" i18nkey="capdev.form.numMen" help="capdev.help.numMen" type="text" className="numMen" /]
-						</div>
-						<div class="col-md-3 group individual">
-							[@customForm.input name="capdev.numWomen" i18nkey="capdev.form.numWomen" help="capdev.help.numMen" type="text" className="numMen" /]
-						</div>
-					</div>
-				</div>
-
-				<div class="row grupsParticipantsForm">
-					<div class="note participantMessage">
-						<p>If you don’t have a list of participants, please enter the number of participants, number of men and number of women</p>
-					</div>
-				</div>
+				
 
 
 
 				<!-- induvidual participant-->
-				<div class="row newCapdevField individualparticipantForm" style="display:none;">
-					<div class="col-md-12 ">
-						<div class=" participantsTitle newCapdevField" >
-							[@s.text name="capdev.participant"][/@s.text]
-						</div>
-					</div>
+				<h4 class="headTitle newCapdevField individualparticipantForm">Participant Information</h4>
+				<div class=" row newCapdevField individualparticipantForm simpleBox" style="display:none;">
 					<div class="col-md-12 newCapdevField">
 						[@customForm.input name="participant.code" i18nkey="capdev.participant.code" type="text" required=true className="participant-code"  help="capdev.help.participant.code"/]
 					</div>
-					<div class="col-md-12 newCapdevField">
+					<div class=" newCapdevField">
 						<div class="col-md-6">
 							[@customForm.input name="participant.name" i18nkey="capdev.participant.firstName" type="text" required=true /]
 						</div>
@@ -289,7 +289,6 @@
 							[@customForm.select name="participant.fellowship.id" listName="foundingTypeList" keyFieldName="id" displayFieldName="name"  i18nkey="capdev.participant.Fellowship"  multiple=false placeholder="capdev.select"  /]
 						</div>
 					</div>
-					
 				</div>
 
 				

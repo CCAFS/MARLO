@@ -323,3 +323,9 @@
 	border-bottom: 1px solid #E7E6E6;
 	margin: 2% 0 2% 0;
 }
+
+.capdevmenu-links > a{
+    font-size: 0.95em;
+    color: #5E5E5E;
+}
+
