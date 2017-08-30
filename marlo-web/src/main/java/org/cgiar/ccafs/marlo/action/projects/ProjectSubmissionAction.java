@@ -129,7 +129,7 @@ public class ProjectSubmissionAction extends BaseAction {
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
     fileName.append("Full_Project_Report-");
-    fileName.append(loggedCrp.getName() + "-");
+    fileName.append(loggedCrp.getAcronym() + "-");
     fileName.append("P" + projectID + "-");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".pdf");
@@ -274,14 +274,14 @@ public class ProjectSubmissionAction extends BaseAction {
 
     // subject
     String subject = null;
-    subject = this.getText("submit.email.subject", new String[] {loggedCrp.getName(),
+    subject = this.getText("submit.email.subject", new String[] {loggedCrp.getAcronym(),
       String.valueOf(project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER))});
 
     // Building the email message
     StringBuilder message = new StringBuilder();
     String[] values = new String[6];
     values[0] = this.getCurrentUser().getFirstName();
-    values[1] = loggedCrp.getName();
+    values[1] = loggedCrp.getAcronym();
     values[2] = project.getTitle();
     values[3] = String.valueOf(project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER));
     values[4] = String.valueOf(this.getCurrentCycleYear());

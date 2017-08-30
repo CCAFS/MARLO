@@ -100,15 +100,27 @@ public class ProjectBudgetsValidator extends BaseValidator {
       action.getFieldErrors().clear();
       if (project.getBudgets() != null && project.getBudgets().size() > 0) {
         long total = 0;
+        int i = 0;
         for (ProjectBudget projectBudget : project.getBudgets()) {
           if (projectBudget != null) {
             if (projectBudget.getAmount() != null) {
               if (projectBudget.getYear() == action.getCurrentCycleYear()) {
                 FundingSource fundingSource =
                   fundingSourceManager.getFundingSourceById(projectBudget.getFundingSource().getId());
-
-                if (fundingSource.getRemaining(projectBudget.getYear()) < 0) {
+                // calculate the remaing. If the budget is new, calculate it with the budgets associated with this FS in
+                // the year evaluated. If it is not new this budget is excluded from the calculation
+                double remaining = 0;
+                if (projectBudget.getId() == null) {
+                  remaining = fundingSource.getRemaining(projectBudget.getYear());
+                } else {
+                  remaining =
+                    fundingSource.getRemainingExcludeBudget(projectBudget.getYear(), projectBudget.getId().longValue());
+                }
+                if (remaining - projectBudget.getAmount() < 0) {
                   this.addMessage(action.getText("projectBudgets.fundig"));
+                  action.getInvalidFields().put("input-project.budgets[" + i + "].amount",
+                    InvalidFieldsMessages.EMPTYFIELD);
+
                 }
 
               }
@@ -116,11 +128,11 @@ public class ProjectBudgetsValidator extends BaseValidator {
             }
 
           }
-
+          i++;
         }
         if (total == 0) {
           this.addMessage(action.getText("projectBudgets.amount"));
-          int i = 0;
+          i = 0;
           for (ProjectBudget projectBudget : project.getBudgets()) {
             action.getInvalidFields().put("input-project.budgets[" + i + "].amount", InvalidFieldsMessages.EMPTYFIELD);
             i++;

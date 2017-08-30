@@ -465,14 +465,14 @@ public class CrpProgamRegionsAction extends BaseAction {
     String bbcEmails = this.config.getEmailNotification();
 
     String subject =
-      this.getText("email.region.assigned.subject", new String[] {crpProgram.getAcronym(), loggedCrp.getName()});
+      this.getText("email.region.assigned.subject", new String[] {crpProgram.getAcronym(), loggedCrp.getAcronym()});
 
     userAssigned = userManager.getUser(userAssigned.getId());
     StringBuilder message = new StringBuilder();
     // Building the Email message:
     message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
     message.append(this.getText("email.region.assigned",
-      new String[] {crpProgram.getAcronym(), crpProgram.getName(), loggedCrp.getName()}));
+      new String[] {crpProgram.getAcronym(), crpProgram.getName(), loggedCrp.getAcronym()}));
     message.append(this.getText("email.support", new String[] {crpAdmins}));
     message.append(this.getText("email.getStarted"));
     message.append(this.getText("email.bye"));
@@ -508,11 +508,14 @@ public class CrpProgamRegionsAction extends BaseAction {
     String bbcEmails = this.config.getEmailNotification();
     if (role.equals(rplRole)) {
       sendMail.send(toEmail, ccEmail, bbcEmails,
-        this.getText("email.region.unassigned.subject", new String[] {loggedCrp.getName(), crpProgram.getAcronym()}),
+        this.getText("email.region.unassigned.subject", new String[] {loggedCrp.getAcronym(), crpProgram.getAcronym()}),
         message.toString(), null, null, null, true);
     } else {
-      sendMail.send(toEmail, ccEmail, bbcEmails, this.getText("email.regionmanager.unassigned.subject",
-        new String[] {loggedCrp.getName(), crpProgram.getAcronym()}), message.toString(), null, null, null, true);
+      sendMail
+        .send(toEmail, ccEmail, bbcEmails,
+          this.getText("email.regionmanager.unassigned.subject",
+            new String[] {loggedCrp.getAcronym(), crpProgram.getAcronym()}),
+          message.toString(), null, null, null, true);
     }
   }
 

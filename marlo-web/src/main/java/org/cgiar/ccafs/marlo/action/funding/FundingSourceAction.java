@@ -537,14 +537,14 @@ public class FundingSourceAction extends BaseAction {
           List<FundingSourceLocation> countries =
             new ArrayList<>(fundingSource.getFundingSourceLocations().stream().filter(fl -> fl.isActive()
               && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 2)
-              .collect(Collectors.toList()));
+            .collect(Collectors.toList()));
 
           fundingSource.setFundingCountry(new ArrayList<>(countries));
 
           List<FundingSourceLocation> regions =
             new ArrayList<>(fundingSource.getFundingSourceLocations().stream().filter(fl -> fl.isActive()
               && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 1)
-              .collect(Collectors.toList()));
+            .collect(Collectors.toList()));
 
           List<FundingSourceLocation> regionsWScope = new ArrayList<>();
           if (regions.size() > 0) {
@@ -788,13 +788,15 @@ public class FundingSourceAction extends BaseAction {
         }
       }
 
-
+      // if remove some institution or add new we call clearPermissionsCache to refresh permissions -CGARCIA
+      boolean instituionsEdited = false;
       if (fundingSource.getInstitutions() != null) {
 
 
         for (FundingSourceInstitution fundingSourceInstitution : fundingSourceDB.getFundingSourceInstitutions()) {
           if (!fundingSource.getInstitutions().contains(fundingSourceInstitution)) {
             fundingSourceInstitutionManager.deleteFundingSourceInstitution(fundingSourceInstitution.getId());
+            instituionsEdited = true;
           }
         }
         for (FundingSourceInstitution fundingSourceInstitution : fundingSource.getInstitutions()) {
@@ -804,10 +806,15 @@ public class FundingSourceAction extends BaseAction {
             fundingSourceInstitution.setFundingSource(fundingSource);
 
             fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
+            instituionsEdited = true;
           }
 
         }
       }
+      if (instituionsEdited) {
+        this.clearPermissionsCache();
+      }
+
 
       this.saveLocations(fundingSourceDB);
 
