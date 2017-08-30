@@ -108,7 +108,7 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
     masterReport.getParameterValues().put("i8nProjectId", this.getText("searchTerms.projectId"));
     masterReport.getParameterValues().put("i8nTitle", this.getText("project.title.readText"));
     masterReport.getParameterValues().put("i8nFlagship", this.getText("projectOtherContributions.flagship"));
-    masterReport.getParameterValues().put("i8nOutcomeStatement", this.getText("outcome.Statement"));
+    masterReport.getParameterValues().put("i8nOutcomeStatement", this.getText("outcome.statement.readText"));
     masterReport.getParameterValues().put("i8nExpectedValue", this.getText("projectOutcome.expectedValue"));
     masterReport.getParameterValues().put("i8nTargetUnit", this.getText("outcome.targetUnit"));
     masterReport.getParameterValues().put("i8nNarrativeTarget",
@@ -118,7 +118,7 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
     masterReport.getParameterValues().put("i8nMilestoneExpectedValue",
       this.getText("projectOutcomeMilestone.expectedValue"));
     masterReport.getParameterValues().put("i8nMilestoneExpectedNarrative",
-      this.getText("projectOutcomeMilestone.expectedNarrative.readText"));
+      this.getText("outcome.expectedNarrativeMilestone"));
     return masterReport;
   }
 
@@ -132,7 +132,7 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
       Resource reportResource = manager
         .createDirectly(this.getClass().getResource("/pentaho/OutcomesContributionsSummary.prpt"), MasterReport.class);
       MasterReport masterReport = (MasterReport) reportResource.getResource();
-      String center = loggedCrp.getName();
+      String center = loggedCrp.getAcronym();
       // Get datetime
       ZonedDateTime timezone = ZonedDateTime.now();
       DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");

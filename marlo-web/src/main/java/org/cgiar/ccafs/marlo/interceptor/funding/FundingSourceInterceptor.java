@@ -70,14 +70,16 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
   void setPermissionParameters(ActionInvocation invocation) {
     BaseAction baseAction = (BaseAction) invocation.getAction();
     User user = (User) session.get(APConstants.SESSION_USER);
-    baseAction.clearPermissionsCache();
+
 
     boolean canEdit = false;
     boolean hasPermissionToEdit = false;
     boolean editParameter = false;
 
     String projectParameter = ((String[]) parameters.get(APConstants.FUNDING_SOURCE_REQUEST_ID))[0];
-
+    if (projectParameter == null) {
+      throw new NullPointerException();
+    }
     fundingSourceID = Long.parseLong(projectParameter);
 
     FundingSource project = fundingSourceManager.getFundingSourceById(fundingSourceID);

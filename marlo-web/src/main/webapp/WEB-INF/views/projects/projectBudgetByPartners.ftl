@@ -68,10 +68,7 @@
               [#list startYear .. endYear as year]
                 <div role="tabpanel" class="tab-pane [#if year == selectedYear]active[/#if]" id="year-${year}">
                   [#-- No Budget available for this year --]
-                  [#if reportingActive && (year  lte currentCycleYear)]
-                      <div class="note">No budget available for this year</div>
-                  [#else]
-                  
+           
                     [#-- Budgest cannot be editable message --]
                     [#if !isYearEditable(year) && editable]<div class="note">Budgets for ${year} cannot be editable.</div>[/#if]
                   
@@ -99,7 +96,7 @@
                       <div class="simpleBox emptyMessage text-center">Before entering budget information, you need to add project partner in <a href="[@s.url action="${crpSession}/partners"][@s.param name="projectID" value=projectID /][@s.param name="edit" value=true /][/@s.url]">partners section</a></div>
                     [/#if]
 
-                  [/#if]
+                
                 </div>
               [/#list]  
             </div>

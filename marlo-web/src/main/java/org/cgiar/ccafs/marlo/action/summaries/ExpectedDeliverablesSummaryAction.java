@@ -104,6 +104,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
     masterReport.getParameterValues().put("i8nShared", this.getText("deliverable.shared"));
     masterReport.getParameterValues().put("i8nFundingSourcesID", this.getText("deliverable.fundingSourcesID"));
     masterReport.getParameterValues().put("i8nFundingWindows", this.getText("deliverable.fundingWindows"));
+    masterReport.getParameterValues().put("i8nNewExpectedYear", this.getText("deliverable.newExpectedYear"));
 
     return masterReport;
   }
@@ -137,6 +138,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
       masterReport.getParameterValues().put("year", year);
       masterReport.getParameterValues().put("date", currentDate);
       masterReport.getParameterValues().put("regionalAvalaible", this.hasProgramnsRegions());
+      masterReport.getParameterValues().put("showDescription",
+        this.hasSpecificities(APConstants.CRP_REPORTS_DESCRIPTION));
       // Set i8n for pentaho
       masterReport = this.addi8nParameters(masterReport);
       ExcelReportUtil.createXLSX(masterReport, os);

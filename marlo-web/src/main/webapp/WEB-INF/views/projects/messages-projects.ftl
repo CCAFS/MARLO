@@ -35,9 +35,11 @@
       <p class="readPrivileges">MARLO is closed.</p>
     [#else]
       [#if project.projectEditLeader]
+        [#if !(action.hasPermission("statusDescription")) ]
         <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
+        [/#if]
       [#else]
-        <p class="readPrivileges">This project is being preset by [#if crpSession == "pim"]PMU[#else][@s.text name="global.managementLiaison" /][/#if], it will be able for editing by the project leader soon...</p>
+        <p class="readPrivileges">[@s.text name="project.preset.messagge" /]</p>
       [/#if]    
     [/#if]
   [/#if]
