@@ -49,7 +49,7 @@
 				 Capacity Development Description	
 		</div>
 		
-		<div class="col-md-12 form-group newCapdevForm"> 
+		<div class="col-md-12 form-group "> 
 			[@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
 			<!-- Radio Buttons-->
 			<div style="display: none;">
@@ -64,7 +64,7 @@
 					
 					
 
-			<div  class="fullForm" >
+			<div  class="fullForm borderBox" >
 
 				<!-- Disciplines-->
 				<div class="form-group row ">
@@ -89,10 +89,13 @@
 								<div class="clearfix"></div>
 							</li>
 							[#else]
+
 							[/#if]
 							[/#list]
 							[#else]
-							<p class="emptyText"> [@s.text name="capdev.notDisciplines" /]</p> 
+							<p class="emptyText"> [@s.text name="capdev.notDisciplines" /]</p>
+							
+								 
 							[/#if]
 						</ul>
 					</div>
@@ -125,7 +128,7 @@
 							[/#if]
 							[/#list]
 							[#else]
-							<p class="emptyText"> [@s.text name="capdev.notTargetGroups" /]</p> 
+								<p class="emptyText"> [@s.text name="capdev.notTargetGroups" /]</p> 
 							[/#if]
 						</ul>
 					</div>
@@ -157,7 +160,7 @@
 				</div>
 
 				<!-- project-->
-				<div class="row newCapdevField ">
+				<div class="form-group row newCapdevField ">
 					<div class="col-md-12 project" listname="capdev.project">
 						[@customForm.select name="capdev.project.id" listName="projects" keyFieldName="id" displayFieldName="name" i18nkey="capdev.form.project" placeholder="capdev.select" className="capdevProject" help="capdev.help.project" /]
 					</div>
@@ -192,7 +195,7 @@
 							[/#if]
 							[/#list] 
 							[#else]
-							<p class="emptyText"> [@s.text name="capdev.notPartners" /]</p> 
+								<p class="emptyText"> [@s.text name="capdev.notPartners" /]</p> 
 							[/#if]
 						</ul>
 					</div>
@@ -225,7 +228,7 @@
 							[/#if]
 							[/#list] 
 							[#else]
-							<p class="emptyText"> [@s.text name="capdev.notOutput" /]</p> 
+								<p class="emptyText"> [@s.text name="capdev.notOutput" /]</p> 
 							[/#if]
 						</ul>
 					</div>

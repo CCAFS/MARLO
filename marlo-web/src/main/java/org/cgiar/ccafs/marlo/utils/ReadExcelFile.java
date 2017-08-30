@@ -82,12 +82,14 @@ public class ReadExcelFile {
     final List<Map<String, Object>> fullData = new ArrayList<>();
     try {
       final Sheet sheet = wb.getSheetAt(0);
+      this.searchForEmptyRows(sheet);
       final Row firstRow = sheet.getRow(9); // fila donde esta el encabezado del template
       totalRows = (sheet.getLastRowNum() - firstRow.getRowNum()) + 1;
       System.out.println(totalRows);
       totalColumns = firstRow.getLastCellNum();
-      for (int fila = firstRow.getRowNum() + 1; fila <= sheet.getLastRowNum(); fila++) {
-        final Row row = sheet.getRow(fila);
+      final List<Row> rows = this.searchForEmptyRows(sheet);
+      for (int fila = 0; fila < rows.size(); fila++) {
+        final Row row = rows.get(fila);
         final Map<String, Object> data = new HashMap<>();
         for (int col = 0; col < firstRow.getLastCellNum(); col++) {
           final Cell cell = row.getCell(col);
@@ -143,14 +145,16 @@ public class ReadExcelFile {
       final Workbook wb = WorkbookFactory.create(fip);
       final Sheet sheet = wb.getSheetAt(0);
       final Row firstRow = sheet.getRow(9);// fila del encabezado del template
-      totalRows = (sheet.getLastRowNum() - firstRow.getRowNum());
+      final List<Row> rows = this.searchForEmptyRows(sheet);
+      // totalRows = (sheet.getLastRowNum() - firstRow.getRowNum());
+      totalRows = rows.size();
       totalColumns = firstRow.getLastCellNum();
       data = new Object[totalRows][totalColumns];
-      for (int fila = firstRow.getRowNum() + 1; fila <= sheet.getLastRowNum(); fila++) {
-        final Row row = sheet.getRow(fila);
+      for (int fila = 0; fila < rows.size(); fila++) {
+        final Row row = rows.get(fila);
         for (int col = 0; col < totalColumns; col++) {
           final Cell cell = row.getCell(col);
-          data[fila - (firstRow.getRowNum() + 1)][col] = this.getCellData(cell);
+          data[fila][col] = this.getCellData(cell);
         }
 
       }
@@ -163,6 +167,26 @@ public class ReadExcelFile {
 
   }
 
+  public List<Row> searchForEmptyRows(Sheet sheet) {
+    // Decide which rows to process
+    final List<Row> notEmptyRows = new ArrayList<>();
+    final Row firstRow = sheet.getRow(10);
+    final int rowStart = firstRow.getRowNum();
+    final int rowEnd = sheet.getLastRowNum();
+
+    for (int rowNum = rowStart; rowNum <= rowEnd; rowNum++) {
+      final Row r = sheet.getRow(rowNum);
+      if (r != null) {
+        notEmptyRows.add(r);
+        continue;
+      }
+
+
+    }
+    return notEmptyRows;
+  }
+
+
   public void setTotalColumns(int totalColumns) {
     this.totalColumns = totalColumns;
   }
@@ -172,11 +196,14 @@ public class ReadExcelFile {
     this.totalRows = totalRows;
   }
 
-
   public Object sustraerId(String cadena) {
-    final int index = cadena.indexOf("-");
-    final String newCadena = cadena.substring(0, index);
+    String newCadena = null;
+    if (!cadena.equals("")) {
+      final int index = cadena.indexOf("-");
+      newCadena = cadena.substring(0, index);
+    }
     return newCadena;
+
   }
 
   /*
@@ -206,6 +233,7 @@ public class ReadExcelFile {
     return equal;
   }
 
+
   /*
    * this method validate if excel file correspond with template
    */
@@ -229,7 +257,6 @@ public class ReadExcelFile {
 
     return equal;
   }
-
 
   public boolean validarExcelFileData(File file) {
     boolean rigthFile = true;

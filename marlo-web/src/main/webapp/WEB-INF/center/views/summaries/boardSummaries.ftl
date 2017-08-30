@@ -23,6 +23,7 @@
       <div id="impactPathway" class="summariesSection current"><span></span><a href="">[@s.text name="summaries.board.options.impactPathway" /]</a></div>
       <div id="projects" class="summariesSection" style="opacity:0.5;" ><span></span><a href="">[@s.text name="summaries.board.options.projects" /]</a></div>
       <div id="monitoring" class="summariesSection" style="opacity:0.5;"><span></span><a href="">[@s.text name="summaries.board.options.monitoring" /]</a> </div>
+      <div id="capdev" class="summariesSection" style="opacity:0.5;"><span></span><a href="">[@s.text name="summaries.board.options.capdev" /]</a> </div>
     </div>
     <div class="summariesContent borderBox col-md-12">
       <div class="loading" style="display:none"></div>
@@ -146,6 +147,37 @@
           </div>
           --]
           
+          
+        </div>
+
+        [#-- -- -- capdev reports -- -- --]
+        <div id="capdev-contentOptions" style="display:none">
+        
+        [#-- full capdev  report--]
+          <div class="summariesFiles borderBox col-md-12">
+            <div class="col-md-12 title-file">
+              <input class="hidden" type="radio" name="formOptions" id="leadProjectInstitutionsSummary" value="projectSummary"/>
+              <label for="">Full capacity development interventions report </label>
+            </div>
+            
+            
+              <div class="pull-right">
+                <a  target="_blank" class=" addButton pull-right" href="#">[@s.text name="form.buttons.generate" /]</a>
+              </div>
+          </div>
+        
+          [#--capdev report by program--]
+          <div class="summariesFiles borderBox col-md-12">
+            <div class="col-md-12 title-file">
+              
+              <label for="">Capacity development intervention report by research program </label>
+            </div>
+            
+              <div class="pull-right">
+                <a   target="_blank" class=" addButton pull-right" href="[@s.url action='/capdevSummaries' /]">[@s.text name="form.buttons.generate" /]</a>
+              </div>
+          </div>
+        
           
         </div>
 

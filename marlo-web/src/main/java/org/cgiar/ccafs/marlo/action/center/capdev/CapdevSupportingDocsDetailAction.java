@@ -180,6 +180,13 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
 
 
   public void saveLinks(List<String> links, CapdevSupportingDocs capdevSupportingDocsDB) {
+    final List<CapdevSuppDocsDocuments> documents = new ArrayList<>(capdevSupportingDocsDB
+      .getCapdevSuppDocsDocumentses().stream().filter(d -> d.getActive()).collect(Collectors.toList()));
+
+    for (final CapdevSuppDocsDocuments document : documents) {
+      capdevSuppDocsDocumentsService.deleteCapdevSuppDocsDocuments(document.getId());
+    }
+
     if (!links.isEmpty()) {
       for (final String link : links) {
         final CapdevSuppDocsDocuments documentSave = new CapdevSuppDocsDocuments();

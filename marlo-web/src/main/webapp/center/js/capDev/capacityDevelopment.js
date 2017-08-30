@@ -166,7 +166,7 @@
     //set value to duartion unit field
   (function(){
     var durationUnit = $(".durationUnitaInput").val();
-    console.log(durationUnit);
+    
 
     $(".durationUnitSelect select option").each(function() {
       if($(this).val() == durationUnit){

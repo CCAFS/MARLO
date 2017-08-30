@@ -1,11 +1,15 @@
 [#ftl]
 
-[#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css"] /]
-[#assign customCSS = ["${baseUrlMedia}/css/capDev/capacityDevelopment.css"] /]
+[#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css", 
+					  "${baseUrlMedia}/css/capDev/capacityDevelopment.css"] /]
+
 [#assign customJS = [
 	"${baseUrlMedia}/js/capDev/capacityDevelopment.js",
  	"${baseUrlMedia}/js/capDev/capdevList.js"] 
 /]
+
+[#assign currentSection = "capdev" /]
 
 
 [#assign breadCrumb = [
@@ -18,8 +22,7 @@
 
 
 <script src="${baseUrl}/bower_components/jquery/dist/jquery.min.js"></script>
-<script src="${baseUrlMedia}/js/capDev/capacityDevelopment.js"></script>
-<script src="${baseUrlMedia}/js/capDev/capdevList.js"></script>
+
 
 
 	<div class="container">
@@ -44,33 +47,23 @@
 		</div>
 		
 		
-		<div class="row searchArea">
-			<div class="col-md-12">
-				<div class="pull-right">
-	  				<img src="${baseUrlMedia}/images/global/search.png" class="searchIcon" />
-				</div>
-				<div class="pull-right ">
-						<input id="capdevSearchInput" type="search" name="search" class="form-control input-sm searchInput" aria-controls="projects"><br>
-				</div> 
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-md-12">
-				<table id="capdevs" class="table table-bordered capdevTable">
-					<thead>
-					  <tr>
+		
+			
+				<table class="capDevList" id="capdevs">
+					<thead >
+					  <tr class="header">
 					    <th style="width: 3%">ID</th>
-					    <th style="width: 15%">Title</th> 
+					    <th style="width: 21%">Title</th> 
 					    <th style="width: 7%">Type</th>
 					    <th style="width: 7%">Start date</th>
 					    <th style="width: 7%">End date</th>
 					    <th style="width: 7%">Research Area</th>
 					    <th style="width: 7%">Research Program</th>
 					    <th style="width: 7%">Annexes</th>
-					    <th style="width: 7%">Remove</th>
+					    <th style="width: 1%">Remove</th>
 					  </tr>
 				  	</thead>
-				  	<tbody id="capdevTbody">
+				  	<tbody >
 					  [#if capDevs?has_content]
 					  [#list capDevs as i]
 					  [#if i.active]
@@ -123,28 +116,23 @@
 						    [/#if]
 					    </td>
 					    <td>
-						    [#if i.capdevParticipants?has_content]
-						    [#if i.capdevParticipants?size  > 1 ]
-					    		<div class=" iconContentBox">
-					    			<img src="${baseUrlMedia}/images/global/participants.png" class="capDevIcon" title="List of participants" />
-					    		</div>
-					    	[#else]
-					    	[/#if]
-					    	[#else]
-					    	[/#if]
+					    	<div class="icon">
+					    		
+				    			<img src="${baseUrlMedia}/images/global/participants.png" class="[#if i.capdevParticipants?has_content && i.capdevParticipants?size  > 1]capDevIconEnable [#else]capDevIconDisable[/#if]" title="List of participants" />
+					    		
+						    	
+						    	<img src="${baseUrlMedia}/images/global/deliverable.png" class="[#if i.capdevSupportingDocses?has_content] capDevIconEnable [#else]capDevIconDisable[/#if]" title="Supporting documents" />
+					    	</div>
 
-				    		<div class=" iconContentBox">
-				    			<img src="${baseUrlMedia}/images/global/deliverable.png" class="capDevIcon" title="Supporting documents" />
-				    		</div>
+				    		
 					    </td>
-					    <td>
+					    <td class="removeCol">
 					    	<a id="removeCapdev-${i.id}" class="removeCapdev" href="#" data-href="[@s.url action='${centerSession}/deleteCapdev'][@s.param name='capdevID']${i.id}[/@s.param] [/@s.url]" data-toggle="modal" data-target="#confirm-delete-capdev">
 				               <img src="${baseUrlMedia}/images/global/trash.png" title="[@s.text name="capdev.removeCapdev" /]" /> 
 				             </a>
 					    </td>
-
-					     
 					  </tr>
+
 					   <div class="modal fade" id="confirm-delete-capdev" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 					        <div class="modal-dialog">
 					            <div class="modal-content">
@@ -174,29 +162,26 @@
 					  [/#if]
 				  	</tbody>
 				</table>
-			</div>
-		</div>
+			
 		<div class="row">
-			<div class="pull-right">
-				<div class="col-md-12">
-						<div class="buttons">	
-				        	<div class="buttons-content ">        
-					          	<!-- <a class="addButton" href="[@s.url action='${centerSession}/addCapdev' ][@s.param name='capdeID']${capdevID}[/@s.param][@s.param name='capdevCategory']2[/@s.param][/@s.url]">[@s.text name="capdev.addgroupItem" /]</a> -->
-					          	<a class="addButton" href="[@s.url action='${centerSession}/addCapdev'][@s.param name='capdevID']${capdevID}[/@s.param][@s.param name='capdevCategory']2[/@s.param][/@s.url]">[@s.text name="capdev.addgroupItem" /]</a>
-					        	<!-- <div class="clearfix"></div> -->
-				        	</div>
-				        	<div class="buttons-content ">        
-					          	<a class="addButton" href="[@s.url action='${centerSession}/addCapdev' ][@s.param name='capdevID']${capdevID}[/@s.param][@s.param name='capdevCategory']1[/@s.param][/@s.url]">[@s.text name="capdev.addindividualItem" /]</a>
-					        	<!-- <div class="clearfix"></div> -->
-				        	</div>
-	    				</div>
-	    		</div>
+		
+
+			<div class="addButtons">
+				
+	        	<div>        
+		          	<a class="addButton" href="[@s.url action='${centerSession}/addCapdev' ][@s.param name='capdevID']${capdevID}[/@s.param][@s.param name='capdevCategory']1[/@s.param][/@s.url]">[@s.text name="capdev.addindividualItem" /]</a>
+	        	</div>
+	        	<div >        
+		          	<a class="addButton" href="[@s.url action='${centerSession}/addCapdev'][@s.param name='capdevID']${capdevID}[/@s.param][@s.param name='capdevCategory']2[/@s.param][/@s.url]">[@s.text name="capdev.addgroupItem" /]</a>
+	        	</div>
 			</div>
+	    		
+		
 		</div>
 
 		<div class="row conventionContainer">
 			<div class="col-md-12 itemName">
-				<div class="col-md-2"> Annexes:</div>
+				<div class="col-md-1"> Annexes:</div>
 
 				<div class="col-md-2">
 					<img src="${baseUrlMedia}/images/global/participants.png" class="capDevIconConvention" />
@@ -207,6 +192,10 @@
 				<div class="col-md-2">
 					<img src="${baseUrlMedia}/images/global/deliverable.png" class="capDevIconConvention" />
 					<div>Supporting documents</div>
+				</div>
+
+				<div class="col-md-7">
+					If any icon is highlighted it mean that the capacity development intervention has any of those: list of participants or supporting documents, or has both.
 				</div>
 				
 			</div>

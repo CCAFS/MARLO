@@ -1,9 +1,13 @@
 [#ftl]
 
-[#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css"] /]
-[#assign customCSS = ["${baseUrlMedia}/css/capDev/capacityDevelopment.css"] /]
-[#assign customJS = ["${baseUrlMedia}/js/capDev/capacityDevelopment.js"] /]
-[#assign customJS = ["${baseUrlMedia}/js/capDev/supportingDocuments.js","${baseUrlMedia}/js/global/fieldsValidation.js"] /]
+[#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css", 
+					  "${baseUrlMedia}/css/capDev/capacityDevelopment.css"] /]
+
+
+[#assign customJS = ["${baseUrlMedia}/js/capDev/supportingDocuments.js",
+					 "${baseUrlMedia}/js/global/fieldsValidation.js", 
+					 "${baseUrlMedia}/js/capDev/capacityDevelopment.js"] /]
 
 [#assign currentStage = "supportingDocuments" /] 
 
@@ -53,18 +57,21 @@
 				Supporting Documents		
 		</div>
 		
-		<div class="col-md-12 form-group newCapdevForm"> 
+		<div class="col-md-12 form-group "> 
 
 			[@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
 			
 
-			<div  class="fullForm" >
+			<div  class="fullForm borderBox" >
 				
 				<!-- supporting documents -->
-				<div class="row newCapdevField">
-					[@customForm.input name="capdevSupportingDocs.title" i18nkey="capdev.supportingDocs.title" type="text" help="" editable=true   required=true /]
+				<div class="form-group row ">
+					<div class="col-md-12">
+						[@customForm.input name="capdevSupportingDocs.title" i18nkey="capdev.supportingDocs.title" type="text" help="" editable=true   required=true /]
+					</div>
+					
 				</div>
-				<div class="row newCapdevField">
+				<div class="form-group row ">
 					<!-- supporting docs type -->
 					<div class="col-md-6">
 						 [@customForm.select name="capdevSupportingDocs.centerDeliverableTypes.id" listName="deliverablesList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.supportingDocs.type" className="capdevDeliverableType" placeholder="capdev.select" required=true editable=true/]
@@ -83,8 +90,8 @@
 					
 					
 
-				<div class="row">
-					<div class="col-md-12">
+				<div class="form-group row">
+					<div class="form-group col-md-12">
 						<label for="">Document(s):</label>
 						<div class=" borderBox documentList" listname="capdev.supportingDocs">
 							
@@ -97,7 +104,7 @@
 								    	<div class="removeCapdevsupportDocument-action removeCapdevsupportDocument removeIcon" title="Remove document"></div>
 										<div class="input input-" style="display:block;">
 											<label for="" class="editable">Link:</label>
-											<input type="text" id="" name="" value="${document.link}" class="form-control input-sm link ">
+											<input type="text" id="" name="links[${document_index}]" value="${document.link}" class="form-control input-sm link ">
 										</div>
 								    </div>
 								    [/#if]

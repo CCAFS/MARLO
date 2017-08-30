@@ -20,6 +20,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -43,7 +45,7 @@ public class test {
     try {
       // obj.createFile();
       obj.readFile();
-      obj.sustraerId("AR- U.de.Palermo");
+      // obj.sustraerId("AR- U.de.Palermo");
     } catch (final FileNotFoundException e) {
       e.printStackTrace();
     }
@@ -56,6 +58,7 @@ public class test {
 
 
   }
+
 
   public void createFile() throws FileNotFoundException {
     try {
@@ -175,23 +178,25 @@ public class test {
   public Object getCellData(Cell cell) {
     Object cellData = null;
 
-    switch (cell.getCellType()) {
-      case Cell.CELL_TYPE_STRING:
-        cellData = cell.getStringCellValue();
-        break;
-      case Cell.CELL_TYPE_NUMERIC:
-        cellData = cell.getNumericCellValue();
-        break;
-      case Cell.CELL_TYPE_BOOLEAN:
-        cellData = cell.getBooleanCellValue();
-        break;
-      case Cell.CELL_TYPE_BLANK:
-        cellData = cell.getStringCellValue();
-        break;
+    if (cell != null) {
+      switch (cell.getCellType()) {
+        case Cell.CELL_TYPE_STRING:
+          cellData = cell.getStringCellValue();
+          break;
+        case Cell.CELL_TYPE_NUMERIC:
+          cellData = cell.getNumericCellValue();
+          break;
+        case Cell.CELL_TYPE_BOOLEAN:
+          cellData = cell.getBooleanCellValue();
+          break;
+        case Cell.CELL_TYPE_BLANK:
+          cellData = cell.getStringCellValue();
+          break;
 
 
-      default:
-        break;
+        default:
+          break;
+      }
     }
 
 
@@ -200,21 +205,23 @@ public class test {
   }
 
   public void readFile() throws FileNotFoundException {
-    final File file = new File("C:\\Users\\logonzalez\\Downloads\\vineet.xlsx");
+    final File file = new File("C:\\Users\\logonzalez\\Downloads\\participants.xlsx");
     FileInputStream fileInput;
     try {
       fileInput = new FileInputStream(file);
       final XSSFWorkbook wb = new XSSFWorkbook(fileInput);
       final Sheet sheet = wb.getSheetAt(0);
-      System.out.println(sheet.getLastRowNum());
+      final List<Row> notEmptyRows = this.searchForEmptyRows(sheet);
+      // System.out.println(sheet.getLastRowNum());
 
       final Row firstRow = sheet.getRow(9);
       final int totalRows = sheet.getLastRowNum() - firstRow.getRowNum();
-      System.out.println("firstRow " + firstRow.getRowNum());
-      System.out.println("totalRows " + totalRows);
+      // System.out.println("firstRow " + firstRow.getRowNum());
+      // System.out.println("totalRows " + totalRows);
       final int totalColumns = firstRow.getLastCellNum();
-      for (int fila = firstRow.getRowNum() + 1; fila <= sheet.getLastRowNum(); fila++) {
-        final Row row = sheet.getRow(fila);
+      System.out.println("notEmptyRows.size " + notEmptyRows.size());
+      for (int fila = 0; fila < notEmptyRows.size(); fila++) {
+        final Row row = notEmptyRows.get(fila);
         for (int col = 0; col < row.getLastCellNum(); col++) {
           final Cell cell = row.getCell(col);
           System.out.println(this.getCellData(cell));
@@ -226,6 +233,30 @@ public class test {
       e.printStackTrace();
     }
 
+  }
+
+  public List<Row> searchForEmptyRows(Sheet sheet) {
+    // Decide which rows to process
+    final List<Row> notEmptyRows = new ArrayList<>();
+    final Row firstRow = sheet.getRow(10);
+    final int rowStart = firstRow.getRowNum();
+    final int rowEnd = sheet.getLastRowNum();
+
+
+    for (int rowNum = rowStart; rowNum <= rowEnd; rowNum++) {
+      final Row r = sheet.getRow(rowNum);
+      if (r != null) {
+        // System.out.println("empty row " + r.getRowNum());
+        // sheet.removeRow(r);
+        // This whole row is empty
+        // Handle it as needed
+        notEmptyRows.add(r);
+        continue;
+      }
+
+
+    }
+    return notEmptyRows;
   }
 
   public Object sustraerId(String cadena) {

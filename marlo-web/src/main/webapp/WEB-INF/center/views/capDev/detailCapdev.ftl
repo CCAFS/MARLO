@@ -78,7 +78,6 @@
 
 				<!-- type and contact Person -->
 				<div class="form-group row">
-					<!-- <div class="col-md-12 "> --> 
 						<!-- type-->
 						<div class="col-md-6" > 
 							[@customForm.select name="capdev.capdevType.id" listName="capdevTypes" keyFieldName="id" displayFieldName="name" help="capdev.help.type" i18nkey="capdev.form.type"  placeholder="capdev.select" required=true editable=true/]
@@ -91,7 +90,6 @@
 							<input class="ctLastName" type="hidden" name="capdev.ctLastName" value="${(capdev.ctLastName)!}" /> 
 							<input class="ctEmail" type="hidden" name="capdev.ctEmail" value="${(capdev.ctEmail)!}" /> 
 						</div>
-					<!-- </div> -->
 				</div>
 
 				<!-- dates -->
@@ -198,15 +196,15 @@
 					[/#if]
 
 					<!-- num participants, num men and num women -->
-					<div class="row">
-						<div class="col-md-12 newCapdevField">
-							<div class="col-md-6 group individual">
+					<div class="form-group row">
+						<div class="col-md-12 ">
+							<div class="col-md-4 group individual">
 								[@customForm.input name="capdev.numParticipants" i18nkey="capdev.form.numParticipants" type="text" help="capdev.help.numParticipants"  editable=true className="numParticipants" /]
 							</div>
-							<div class="col-md-3 group individual">
+							<div class="col-md-4 group individual">
 								[@customForm.input name="capdev.numMen" i18nkey="capdev.form.numMen" help="capdev.help.numMen" type="text" className="numMen" /]
 							</div>
-							<div class="col-md-3 group individual">
+							<div class="col-md-4 group individual">
 								[@customForm.input name="capdev.numWomen" i18nkey="capdev.form.numWomen" help="capdev.help.numMen" type="text" className="numWomen" /]
 							</div>
 						</div>
@@ -217,8 +215,6 @@
 							<p>If you don’t have a list of participants, please enter the number of participants, number of men and number of women</p>
 						</div>
 					</div>
-					
-					
 				</div>
 
 				
@@ -227,41 +223,39 @@
 
 				<!-- induvidual participant-->
 				<h4 class="headTitle newCapdevField individualparticipantForm">Participant Information</h4>
-				<div class=" row newCapdevField individualparticipantForm simpleBox" style="display:none;">
-					<div class="col-md-12 newCapdevField">
-						[@customForm.input name="participant.code" i18nkey="capdev.participant.code" type="text" required=true className="participant-code"  help="capdev.help.participant.code"/]
+				<div class="row  individualparticipantForm simpleBox" style="display:none;">
+					<div class="form-group row">
+						<div class="col-md-12">
+							[@customForm.input name="participant.code" i18nkey="capdev.participant.code" type="text" required=true className="participant-code"  help="capdev.help.participant.code"/]
+						</div>
+						
 					</div>
-					<div class=" newCapdevField">
+					<div class="form-group row">
 						<div class="col-md-6">
 							[@customForm.input name="participant.name" i18nkey="capdev.participant.firstName" type="text" required=true /]
 						</div>
-						<div class="col-md-6">
+						<div class=" col-md-6">
 							[@customForm.input name="participant.middleName" i18nkey="capdev.participant.middleName" type="text"  /]
 						</div>
 					</div>
-					<div class="col-md-12 newCapdevField">
-						<div class="col-md-6">
+					<div class="form-group row ">
+						<div class="form-group col-md-6">
 							[@customForm.input name="participant.lastName" i18nkey="capdev.participant.lastName" type="text" required=true /]
 						</div>
-						<div class="col-md-6 genderSelect">
+						<div class="form-group col-md-6 genderSelect">
 							<input type="hidden" name="" value="${(participant.gender)!}" class="genderInput"/>
 							[@customForm.select name="participant.gender" listName="genders" keyFieldName="value" displayFieldName="displayName" help="" i18nkey="capdev.participant.gender"  placeholder="capdev.select" required=true editable=true className=""/]
 						</div>
-						
 					</div>
-					<div class="col-md-12 newCapdevField">
-						
+					<div class="form-group row">
 						<div class="col-md-6 pCitizenshipcountriesList">
-							
 							[@customForm.select name="participant.locElementsByCitizenship.id" listName="countryList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.participant.citizenship" className="" multiple=false placeholder="capdev.select" required=true /]
 						</div>
 						<div class="col-md-6">
-							<!-- [@customForm.input name="participant.highestDegree" i18nkey="capdev.participant.Highestdegree" type="text" /] -->
-
 							[@customForm.select name="participant.highestDegree.id" listName="highestDegrreList" keyFieldName="id" displayFieldName="name"  i18nkey="capdev.participant.Highestdegree"  multiple=false placeholder="capdev.select"  /]
 						</div>
 					</div>
-					<div class="col-md-12 newCapdevField">
+					<div class="form-group row  ">
 						
 						<div class="col-md-6">
 							[@customForm.input name="participant.personalEmail" i18nkey="capdev.participant.personalEmail" type="text" required=true /]
@@ -270,17 +264,15 @@
 							[@customForm.input name="participant.email" i18nkey="capdev.participant.Email" type="text"  /]
 						</div>
 					</div>
-					<div class="col-md-12 newCapdevField">
+					<div class="form-group row">
 						<div class="col-md-6">
-							
 							[@customForm.select name="participant.institutions.id" listName="institutions" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.participant.Institution" className="" multiple=false placeholder="capdev.select" required=true /]
 						</div>
 						<div class="col-md-6 pcountryOfInstitucionList">
-							
 							[@customForm.select name="participant.locElementsByCountryOfInstitucion.id" listName="countryList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.participant.country" className="" multiple=false placeholder="capdev.select" required=true /]
 						</div>
 					</div>
-					<div class="col-md-12 newCapdevField">
+					<div class="form-group row">
 						<div class="col-md-6">
 							[@customForm.input name="participant.supervisor" i18nkey="capdev.participant.Supervisor" type="text" required=true /]
 						</div>
@@ -304,13 +296,12 @@
 
 						
 						<!-- regions-->
-						<div class="form-group row listContainer capdevRegional regionsBox" style="display:none" >
+						<div class="form-group  listContainer capdevRegional regionsBox" style="display:none" >
 							<div class="form-group  newCapdevField" listname="capdev.regions">
 								[@customForm.select name="capdevRegions" listName="regionsList" keyFieldName="id" displayFieldName="name" help="capdev.help.region" i18nkey="capdev.form.region" className="capdevRegionsSelect" multiple=false placeholder="capdev.select"  /]
 							</div>
 
 							<div id="capdevRegionsList" >
-								<div class="">
 									<div class=" panel-body">
 										
 										<ul class="list">
@@ -329,7 +320,6 @@
 											[/#if]
 										</ul>
 									</div>
-								</div>
 
 							</div>
 						</div>
@@ -339,7 +329,7 @@
 
 						<div class="capdevDimension"><label>If the capacity development intervention focuses on specific countries, please list these countries:</label></div>
 						<!-- countries-->
-						<div class="form-group listContainer"  listname="capdev.countries">
+						<div class="form-group  listContainer"  listname="capdev.countries">
 							<div class="newCapdevField">
 								[@customForm.select name="capdevCountries" listName="countryList" keyFieldName="id" displayFieldName="name" help="capdev.help.country" i18nkey="capdev.form.country" className="capdevCountriesSelect" multiple=false placeholder="capdev.select"  /]
 							</div>

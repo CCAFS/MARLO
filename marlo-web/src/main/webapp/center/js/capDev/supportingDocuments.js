@@ -4,6 +4,29 @@ function init(){
   block();
 }
 
+var $supportDocsList = $('table.supportDocsList');
+
+var table = $supportDocsList.DataTable({
+  "bPaginate": true, // This option enable the table pagination
+  "bLengthChange": true, // This option disables the select table size option
+  "bFilter": true, // This option enable the search
+  "bSort": true, // this option enable the sort of contents by columns
+  "bAutoWidth": false, // This option enables the auto adjust columns width
+  "iDisplayLength": 15, // Number of rows to show on the table,
+  aoColumnDefs: [
+      {
+          bSortable: false,
+          aTargets: [
+              -1, 
+          ]
+      }, {
+          sType: "natural",
+          aTargets: [
+            0
+          ]
+      }
+  ]
+});
 
 //event add link supporting document
 $(".addCapdevsupportDocument").click(function(){

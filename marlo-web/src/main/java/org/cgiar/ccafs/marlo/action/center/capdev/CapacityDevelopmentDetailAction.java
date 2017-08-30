@@ -358,19 +358,33 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       participant.setName((String) data[i][1]);
       participant.setLastName((String) data[i][2]);
       participant.setGender((String) data[i][3]);
-      participant.setLocElementsByCitizenship(
-        locElementService.getLocElementByISOCode((String) reader.sustraerId((String) data[i][4])));
-      participant.setHighestDegree(capdevHighestDegreeService
-        .getCapdevHighestDegreeById(Long.parseLong((String) reader.sustraerId((String) data[i][5]))));
-      System.out.println("institution ID " + reader.sustraerId((String) data[i][6]).getClass());
-      participant.setInstitutions(
-        institutionService.getInstitutionById(Long.parseLong((String) (reader.sustraerId((String) data[i][6])))));
-      participant.setLocElementsByCountryOfInstitucion(
-        locElementService.getLocElementByISOCode((String) reader.sustraerId((String) data[i][7])));
+
+      if (reader.sustraerId((String) data[i][4]) != null) {
+        participant.setLocElementsByCitizenship(
+          locElementService.getLocElementByISOCode((String) reader.sustraerId((String) data[i][4])));
+      }
+      if (reader.sustraerId((String) data[i][5]) != null) {
+        participant.setHighestDegree(capdevHighestDegreeService
+          .getCapdevHighestDegreeById(Long.parseLong((String) reader.sustraerId((String) data[i][5]))));
+      }
+      if (reader.sustraerId((String) data[i][6]) != null) {
+        System.out.println("institution ID " + reader.sustraerId((String) data[i][6]).getClass());
+        participant.setInstitutions(
+          institutionService.getInstitutionById(Long.parseLong((String) (reader.sustraerId((String) data[i][6])))));
+      }
+      if (reader.sustraerId((String) data[i][7]) != null) {
+        participant.setLocElementsByCountryOfInstitucion(
+          locElementService.getLocElementByISOCode((String) reader.sustraerId((String) data[i][7])));
+      }
+
       participant.setEmail((String) data[i][8]);
       participant.setReference((String) data[i][9]);
-      participant.setFellowship(capdevFoundingTypeService
-        .getCapdevFoundingTypeById(Long.parseLong((String) reader.sustraerId((String) data[i][10]))));
+
+      if (reader.sustraerId((String) data[i][10]) != null) {
+        participant.setFellowship(capdevFoundingTypeService
+          .getCapdevFoundingTypeById(Long.parseLong((String) reader.sustraerId((String) data[i][10]))));
+      }
+
 
       participant.setActive(true);
       participant.setUsersByCreatedBy(currentUser);
@@ -582,17 +596,24 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       capdevDB.setCtLastName(capdev.getCtLastName());
       capdevDB.setCtEmail(capdev.getCtEmail());
       if (uploadFile != null) {
-        System.out.println("uploadFileContentType " + uploadFileContentType);
         if (uploadFileContentType.equals("application/vnd.ms-excel")
-          || uploadFileContentType.equals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")) {
+          || (uploadFileContentType.equals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+            && (uploadFile.length() < 31457280))) {
 
-          final Object[][] data = reader.readExcelFile(uploadFile);
-          this.loadParticipantsList(data);
-          capdevDB.setNumParticipants(participantList.size());
-          final int numMen = this.getNumMenParticipants(data);
-          final int numWomen = this.getNumWomenParticipants(data);
-          capdevDB.setNumMen(numMen);
-          capdevDB.setNumWomen(numWomen);
+          if (reader.validarExcelFile(uploadFile)) {
+
+            if (reader.validarExcelFileData(uploadFile)) {
+
+              final Object[][] data = reader.readExcelFile(uploadFile);
+              this.loadParticipantsList(data);
+              capdevDB.setNumParticipants(participantList.size());
+              final int numMen = this.getNumMenParticipants(data);
+              final int numWomen = this.getNumWomenParticipants(data);
+              capdevDB.setNumMen(numMen);
+              capdevDB.setNumWomen(numWomen);
+            }
+          }
+
         }
 
       } else {

@@ -27,25 +27,7 @@
 }
 
 
-.iconContentBox {
-	border-style: solid;
-    border-width: 1px;
-    border-radius: 7px;
-    border-color: #E7E6E6;
-    width: 28%;
-    background-color: #f2f2f2;
-    display: inline-flex;
-    margin-left: 3%;
-    margin-top: 4%;
-    padding: 2%;
-}
 
-.capDevIcon {
-	width: 94%;
-    height: 67%;
-    margin-left: auto;
-		
-}
 
 .capDevIconConvention{
 	width: 13%;
@@ -329,3 +311,74 @@
     color: #5E5E5E;
 }
 
+
+
+.capDevList thead tr.header th {
+  height:45px;
+  background-color: #7B9074;
+  color: #fff;
+  text-align: center;
+}
+
+.capDevList a:HOVER {
+  text-decoration: underline;
+}
+
+.supportDocsList thead tr.header th {
+  height:45px;
+  background-color: #7B9074;
+  color: #fff;
+  text-align: center;
+}
+
+.supportDocsList a:HOVER {
+  text-decoration: underline;
+}
+
+.addButtons > div {
+	display: inline-block;
+	
+	float: right;
+	margin: 0 2% 2% 2%;
+}
+
+.removeCol > a{
+	margin: 34%;
+}
+
+div.icon {
+    margin-left: 18px;
+}
+
+div.contentIcon {
+	border-style: solid;
+    border-width: 1px;
+    border-radius: 7px;
+    border-color: #E7E6E6;
+    background-color: #f2f2f2;
+    
+    
+}
+
+img.capDevIconEnable {
+	width: 34%;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 2px;
+    border-color: #777;
+    background-color: #d9ead3;
+    margin: 2px 5px 2px 0;
+		
+}
+
+img.capDevIconDisable{
+	width: 34%;
+    opacity: 0.4;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 2px;
+    border-color: #777;
+    background-color: #f2f2f2;
+    margin: 2px 5px 2px 0;
+    
+}
