@@ -224,7 +224,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     if (this.getDeliverableInfo() != null) {
       return this.getDeliverableInfo();
     } else {
-      List<DeliverableInfo> infos = deliverableInfos.stream().filter(
+      List<DeliverableInfo> infos = this.getDeliverableInfos().stream().filter(
         c -> c.getPhase() != null && c.getPhase().getId() != null && c.getPhase().getId().longValue() == phase.getId())
         .collect(Collectors.toList());
       if (!infos.isEmpty()) {

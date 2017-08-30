@@ -829,7 +829,7 @@ public class DeliverableAction extends BaseAction {
 
       project = projectManager.getProjectById(deliverable.getProject().getId());
       projectID = project.getId();
-
+      project.getProjecInfoPhase(this.getActualPhase());
       Path path = this.getAutoSaveFilePath();
 
       if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
@@ -914,6 +914,7 @@ public class DeliverableAction extends BaseAction {
 
         this.setDraft(true);
       } else {
+        deliverable.getDeliverableInfo(this.getActualPhase());
         deliverable.setResponsiblePartner(this.responsiblePartner());
         deliverable.setOtherPartners(this.otherPartners());
         deliverable.setFundingSources(
@@ -1078,12 +1079,16 @@ public class DeliverableAction extends BaseAction {
 
         keyOutputs = new ArrayList<>();
 
-        for (ProjectOutcome projectOutcome : project.getProjectOutcomes().stream().filter(ca -> ca.isActive())
-          .collect(Collectors.toList())) {
+        for (ProjectOutcome projectOutcome : project.getProjectOutcomes().stream()
+          .filter(ca -> ca.isActive() && ca.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
 
           for (CrpClusterKeyOutputOutcome keyOutcome : projectOutcome.getCrpProgramOutcome()
             .getCrpClusterKeyOutputOutcomes().stream().filter(ko -> ko.isActive()).collect(Collectors.toList())) {
-            keyOutputs.add(keyOutcome.getCrpClusterKeyOutput());
+            if (keyOutcome.getCrpClusterKeyOutput().getCrpClusterOfActivity().getPhase()
+              .equals(this.getActualPhase())) {
+              keyOutputs.add(keyOutcome.getCrpClusterKeyOutput());
+            }
+
           }
 
         }

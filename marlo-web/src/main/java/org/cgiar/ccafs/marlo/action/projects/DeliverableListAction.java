@@ -21,12 +21,14 @@ import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
@@ -64,7 +66,7 @@ public class DeliverableListAction extends BaseAction {
   private List<Deliverable> deliverables;
   private List<DeliverableType> deliverablesType;
 
-
+  private PhaseManager phaseManager;
   private DeliverableTypeManager deliverableTypeManager;
   private DeliverableInfoManager deliverableInfoManager;
 
@@ -78,7 +80,7 @@ public class DeliverableListAction extends BaseAction {
 
   @Inject
   public DeliverableListAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
-    DeliverableTypeManager deliverableTypeManager, DeliverableManager deliverableManager,
+    DeliverableTypeManager deliverableTypeManager, DeliverableManager deliverableManager, PhaseManager phaseManager,
     DeliverableInfoManager deliverableInfoManager, SectionStatusManager sectionStatusManager) {
     super(config);
     this.projectManager = projectManager;
@@ -87,6 +89,7 @@ public class DeliverableListAction extends BaseAction {
     this.deliverableInfoManager = deliverableInfoManager;
     this.deliverableTypeManager = deliverableTypeManager;
     this.deliverableManager = deliverableManager;
+    this.phaseManager = phaseManager;
   }
 
 
@@ -303,7 +306,8 @@ public class DeliverableListAction extends BaseAction {
   public void prepare() throws Exception {
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
-
+    Phase phase = this.getActualPhase();
+    phase = phaseManager.getPhaseById(phase.getId());
     try {
       projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
       project = projectManager.getProjectById(projectID);
@@ -317,10 +321,21 @@ public class DeliverableListAction extends BaseAction {
         }
 
         if (project.getDeliverables() != null) {
-          deliverables =
-            new ArrayList<>(project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList()));
+
+          List<DeliverableInfo> infos = phase.getDeliverableInfos()
+            .stream().filter(c -> c.getDeliverable().getProject() != null
+              && c.getDeliverable().getProject().equals(project) && c.getDeliverable().isActive())
+            .collect(Collectors.toList());
+          deliverables = new ArrayList<>();
+          for (DeliverableInfo deliverableInfo : infos) {
+            Deliverable deliverable = deliverableInfo.getDeliverable();
+            deliverable.setDeliverableInfo(deliverableInfo);
+            deliverables.add(deliverable);
+          }
+
         }
       }
+
 
       if (this.isReportingActive()) {
         deliverables.sort(

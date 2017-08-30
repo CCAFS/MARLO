@@ -2,20 +2,20 @@
 <div class="simpleBox">
   [#-- Title input --] 
   <div class="form-group">
-    [@customForm.input name="deliverable.title" value="${(deliverable.title)!}" type="text" i18nkey="project.deliverable.generalInformation.title"  placeholder="" className="limitWords-25" required=true editable=editable /]
+    [@customForm.input name="deliverable.deliverableInfo.title" value="${(deliverable.deliverableInfo.title)!}" type="text" i18nkey="project.deliverable.generalInformation.title"  placeholder="" className="limitWords-25" required=true editable=editable /]
   </div>
   
   [#-- Description input on Planning only --] 
   <div class="form-group">
-    [@customForm.textArea name="deliverable.description" value="${(deliverable.description)!}" i18nkey="project.deliverable.generalInformation.description"  placeholder="" className="limitWords-50" required=true editable=editable /]
+    [@customForm.textArea name="deliverable.deliverableInfo.description" value="${(deliverable.deliverableInfo.description)!}" i18nkey="project.deliverable.generalInformation.description"  placeholder="" className="limitWords-50" required=true editable=editable /]
   </div> 
   [#-- Type and subtype inputs --] 
   <div class="form-group row">
     <div class="col-md-6 ">
-      [@customForm.select name="deliverable.deliverableType.deliverableType.id" label=""  i18nkey="project.deliverable.generalInformation.type" listName="deliverableTypeParent" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm typeSelect" editable=editable/]
+      [@customForm.select name="deliverable.deliverableInfo.deliverableType.deliverableType.id" label=""  i18nkey="project.deliverable.generalInformation.type" listName="deliverableTypeParent" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm typeSelect" editable=editable/]
     </div>
     <div class="col-md-6">
-      [@customForm.select name="deliverable.deliverableType.id" label=""  i18nkey="project.deliverable.generalInformation.subType" listName="deliverableSubTypes" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm subTypeSelect" editable=editable/]
+      [@customForm.select name="deliverable.deliverableInfo.deliverableType.id" label=""  i18nkey="project.deliverable.generalInformation.subType" listName="deliverableSubTypes" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm subTypeSelect" editable=editable/]
     </div>
   </div>
   [#-- Deliverable table with categories and sub categories --]
@@ -58,39 +58,40 @@
     <div class="clearfix"></div>
   </div>
   
+  
    <div class="clearfix"></div>
   [#-- Status and year expected selects --]
   <div class="${reportingActive?string('fieldFocus','')}">
   <div class="form-group row">
     <div class="col-md-4">
-      [@customForm.select name="deliverable.status" label=""   i18nkey="project.deliverable.generalInformation.status" listName="status"  multiple=false required=true header=false className=" status" editable=editable/]
+      [@customForm.select name="deliverable.deliverableInfo.status" label=""   i18nkey="project.deliverable.generalInformation.status" listName="status"  multiple=false required=true header=false className=" status" editable=editable/]
     </div>
     <div class="col-md-4 form-group">
       [#-- If is editable, deliverable is old, there is a saved year and the year is < to the current cycle year --]
-      [#assign canNotEditYear = (deliverable.status??) && ( ( !action.isDeliverableNew(deliverable.id) && (deliverable.year??) && (deliverable.year == currentCycleYear)) || (deliverable.status == 4)  || (deliverable.status == 5) ) /]
-      [#if canNotEditYear] <input type="hidden" name="deliverable.year" value="${(deliverable.year)!}"/>  [/#if]
-      [@customForm.select name="deliverable.year" label=""  i18nkey="project.deliverable.generalInformation.year" listName="project.allYears" header=false  multiple=false required=true  className="yearExpected" disabled=canNotEditYear editable=editable/]
-      [#if !editable]${(deliverable.year)!}[/#if]
+      [#assign canNotEditYear = (deliverable.deliverableInfo.status??) && ( ( !action.isDeliverableNew(deliverable.id) && (deliverable.deliverableInfo.year??) && (deliverable.deliverableInfo.year == currentCycleYear)) || (deliverable.deliverableInfo.status == 4)  || (deliverable.deliverableInfo.status == 5) ) /]
+      [#if canNotEditYear] <input type="hidden" name="deliverable.deliverableInfo.year" value="${(deliverable.deliverableInfo.year)!}"/>  [/#if]
+      [@customForm.select name="deliverable.deliverableInfo.year" label=""  i18nkey="project.deliverable.generalInformation.year" listName="project.projectInfo.allYears" header=false  multiple=false required=true  className="yearExpected" disabled=canNotEditYear editable=editable/]
+      [#if !editable]${(deliverable.deliverableInfo.year)!}[/#if]
     </div>
     [#-- New Expected Year - Extended = 4 --]
     [#if reportingActive]
-      [#assign canViewNewExpectedYear = (deliverable.status??) && ((deliverable.status == 4)  ||  ( (deliverable.status == 3) &&  deliverable.newExpectedYear?has_content  )) /]
+      [#assign canViewNewExpectedYear = (deliverable.deliverableInfo.status??) && ((deliverable.deliverableInfo.status == 4)  ||  ( (deliverable.deliverableInfo.status == 3) &&  deliverable.deliverableInfo.newExpectedYear?has_content  )) /]
     [#else]
-      [#assign canViewNewExpectedYear = !action.isDeliverableNew(deliverable.id) && (currentCycleYear gt deliverable.year) && (deliverable.status??) && ((deliverable.status == 4)  ||  ( (deliverable.status == 3) &&  deliverable.newExpectedYear?has_content  )) /]
+      [#assign canViewNewExpectedYear = !action.isDeliverableNew(deliverable.id) && (currentCycleYear gt deliverable.deliverableInfo.year) && (deliverable.deliverableInfo.status??) && ((deliverable.deliverableInfo.status == 4)  ||  ( (deliverable.deliverableInfo.status == 3) &&  deliverable.deliverableInfo.newExpectedYear?has_content  )) /]
     [/#if]
     <div id="newExpectedYear" class="col-md-4" style="display:${canViewNewExpectedYear?string('block','none')}">
       [#if editable]
         [#if reportingActive]
           [#assign startExpectedYear = currentCycleYear-1]
         [#else]
-          [#assign startExpectedYear = (deliverable.year)!currentCycleYear ]
+          [#assign startExpectedYear = (deliverable.deliverableInfo.year)!currentCycleYear ]
         [/#if]
-        [@customForm.select name="deliverable.newExpectedYear"  label=""  listName="project.getYears(${startExpectedYear})" header=false  multiple=false required=true  className="yearNewExpected" editable=editable/]
+        [@customForm.select name="deliverable.deliverableInfo.newExpectedYear"  label=""  listName="project.projectInfo.getYears(${startExpectedYear})" header=false  multiple=false required=true  className="yearNewExpected" editable=editable/]
       [#else]
-        <input type="hidden" name="deliverable.newExpectedYear" value="${(deliverable.newExpectedYear)!}"/>
+        <input type="hidden" name="deliverable.deliverableInfo.newExpectedYear" value="${(deliverable.deliverableInfo.newExpectedYear)!}"/>
         <div class="select">
           <label for="">Expected year:</label>
-          <p>${(deliverable.newExpectedYear)!}</p>
+          <p>${(deliverable.deliverableInfo.newExpectedYear)!}</p>
         </div>
       [/#if]
     </div> 
@@ -99,15 +100,15 @@
   
   [#-- Status justification textArea --]
   [#if !action.isDeliverableNew(deliverable.id)]
-    [#assign justificationRequired = (deliverable.year??) && (deliverable.status??) &&  ((deliverable.status == 4)  || (deliverable.status == 5)) ]
+    [#assign justificationRequired = (deliverable.deliverableInfo.year??) && (deliverable.deliverableInfo.status??) &&  ((deliverable.deliverableInfo.status == 4)  || (deliverable.deliverableInfo.status == 5)) ]
     <div class="form-group">
       <div id="statusDescription" class="col-md-12" style="display:${justificationRequired?string('block','none')}">
-        [@customForm.textArea name="deliverable.statusDescription" className="statusDescription limitWords-150" i18nkey="deliverable.statusJustification.status${(deliverable.status)!'NotSelected'}" editable=editable/]
+        [@customForm.textArea name="deliverable.deliverableInfo.statusDescription" className="statusDescription limitWords-150" i18nkey="deliverable.deliverableInfo.statusJustification.status${(deliverable.deliverableInfo.status)!'NotSelected'}" editable=editable/]
         <div id="statusesLabels" style="display:none">
-          <div id="status-2">[@s.text name="deliverable.statusJustification.status2" /]:<span class="red">*</span></div>[#-- Ongoing("2", "On-going") --]
-          <div id="status-3">[@s.text name="deliverable.statusJustification.status3" /]:<span class="red">*</span></div>[#-- Complete("3", "Complete") --]
-          <div id="status-4">[@s.text name="deliverable.statusJustification.status4" /]:<span class="red">*</span></div>[#-- Extended("4", "Extended") --]
-          <div id="status-5">[@s.text name="deliverable.statusJustification.status5" /]:<span class="red">*</span></div>[#-- Cancelled("5", "Cancelled") --]
+          <div id="status-2">[@s.text name="deliverable.deliverableInfo.statusJustification.status2" /]:<span class="red">*</span></div>[#-- Ongoing("2", "On-going") --]
+          <div id="status-3">[@s.text name="deliverable.deliverableInfo.statusJustification.status3" /]:<span class="red">*</span></div>[#-- Complete("3", "Complete") --]
+          <div id="status-4">[@s.text name="deliverable.deliverableInfo.statusJustification.status4" /]:<span class="red">*</span></div>[#-- Extended("4", "Extended") --]
+          <div id="status-5">[@s.text name="deliverable.deliverableInfo.statusJustification.status5" /]:<span class="red">*</span></div>[#-- Cancelled("5", "Cancelled") --]
         </div>
       </div>
     </div>
@@ -116,9 +117,10 @@
   </div>
   
   [#-- Key Outputs select --]
-  [#if !project.administrative && !phaseOne]
+  [#if !project.projectInfo.administrative && !phaseOne]
     <div class="form-group">
-      [@customForm.select name="deliverable.crpClusterKeyOutput.id" label=""  i18nkey="project.deliverable.generalInformation.keyOutput" listName="keyOutputs" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className="keyOutput" editable=editable/]
+
+      [@customForm.select name="deliverable.deliverableInfo.crpClusterKeyOutput.id" label=""  i18nkey="project.deliverable.generalInformation.keyOutput" listName="keyOutputs" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className="keyOutput" editable=editable/]
     </div>
   [/#if]
   
@@ -155,19 +157,19 @@
 <div class="simpleBox">
   [#-- Does this deliverable have a cross-cutting dimension --]
   <div class="form-group">
-    <label for="">[@customForm.text name="deliverable.crossCuttingDimensions" readText=!editable/] [@customForm.req required=editable/]</label>
+    <label for="">[@customForm.text name="deliverable.deliverableInfo.crossCuttingDimensions" readText=!editable/] [@customForm.req required=editable/]</label>
     <div class="row">
       <div class="col-md-12">
         [#if editable]
-          <label class="checkbox-inline"><input type="checkbox" name="deliverable.crossCuttingGender"   id="gender"   value="true" [#if (deliverable.crossCuttingGender)!false ]checked="checked"[/#if]> Gender</label>
-          <label class="checkbox-inline"><input type="checkbox" name="deliverable.crossCuttingYouth"    id="youth"    value="true" [#if (deliverable.crossCuttingYouth)!false ]checked="checked"[/#if]> Youth</label>
-          <label class="checkbox-inline"><input type="checkbox" name="deliverable.crossCuttingCapacity" id="capacity" value="true" [#if (deliverable.crossCuttingCapacity)!false ]checked="checked"[/#if]> Capacity Development</label>
-          <label class="checkbox-inline"><input type="checkbox" name="deliverable.crossCuttingNa"       id="na"       value="true" [#if (deliverable.crossCuttingNa)!false ]checked="checked"[/#if]> N/A</label>
+          <label class="checkbox-inline"><input type="checkbox" name="deliverable.deliverableInfo.crossCuttingGender"   id="gender"   value="true" [#if (deliverable.deliverableInfo.crossCuttingGender)!false ]checked="checked"[/#if]> Gender</label>
+          <label class="checkbox-inline"><input type="checkbox" name="deliverable.deliverableInfo.crossCuttingYouth"    id="youth"    value="true" [#if (deliverable.deliverableInfo.crossCuttingYouth)!false ]checked="checked"[/#if]> Youth</label>
+          <label class="checkbox-inline"><input type="checkbox" name="deliverable.deliverableInfo.crossCuttingCapacity" id="capacity" value="true" [#if (deliverable.deliverableInfo.crossCuttingCapacity)!false ]checked="checked"[/#if]> Capacity Development</label>
+          <label class="checkbox-inline"><input type="checkbox" name="deliverable.deliverableInfo.crossCuttingNa"       id="na"       value="true" [#if (deliverable.deliverableInfo.crossCuttingNa)!false ]checked="checked"[/#if]> N/A</label>
         [#else]
-          [#if (deliverable.crossCuttingGender)!false ] <p class="checked"> Gender</p>[/#if]
-          [#if (deliverable.crossCuttingYouth)!false ] <p class="checked"> Youth</p>[/#if]
-          [#if (deliverable.crossCuttingCapacity)!false ] <p class="checked"> Capacity Development</p>[/#if]
-          [#if (deliverable.crossCuttingNa)!false ] <p class="checked"> N/A</p>[/#if]
+          [#if (deliverable.deliverableInfo.crossCuttingGender)!false ] <p class="checked"> Gender</p>[/#if]
+          [#if (deliverable.deliverableInfo.crossCuttingYouth)!false ] <p class="checked"> Youth</p>[/#if]
+          [#if (deliverable.deliverableInfo.crossCuttingCapacity)!false ] <p class="checked"> Capacity Development</p>[/#if]
+          [#if (deliverable.deliverableInfo.crossCuttingNa)!false ] <p class="checked"> N/A</p>[/#if]
         [/#if]
       </div>
     </div>

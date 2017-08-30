@@ -45,6 +45,8 @@ public class Phase implements java.io.Serializable, IAuditLog {
   private Set<ProjectOutcome> projectOutcomes = new HashSet<ProjectOutcome>(0);
   private Set<Activity> projectActivites = new HashSet<Activity>(0);
   private Set<ProjectLocation> projectLocations = new HashSet<ProjectLocation>(0);
+  private Set<DeliverableInfo> deliverableInfos = new HashSet<DeliverableInfo>(0);
+
 
   public Phase() {
   }
@@ -99,6 +101,11 @@ public class Phase implements java.io.Serializable, IAuditLog {
   }
 
 
+  public Set<DeliverableInfo> getDeliverableInfos() {
+    return deliverableInfos;
+  }
+
+
   public String getDescription() {
     return this.description;
   }
@@ -129,6 +136,7 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return "";
   }
 
+
   @Override
   public User getModifiedBy() {
     User u = new User();
@@ -139,7 +147,6 @@ public class Phase implements java.io.Serializable, IAuditLog {
   public Phase getNext() {
     return next;
   }
-
 
   public Set<CrpProgramOutcome> getOutcomes() {
     return outcomes;
@@ -165,6 +172,7 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return projectFocuses;
   }
 
+
   public Set<ProjectInfo> getProjectInfos() {
     return projectInfos;
   }
@@ -173,24 +181,23 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return projectLocations;
   }
 
-
   public Set<ProjectOutcome> getProjectOutcomes() {
     return projectOutcomes;
   }
+
 
   public Set<ProjectPhase> getProjectPhases() {
     return this.projectPhases;
   }
 
-
   public Boolean getVisible() {
     return visible;
   }
 
+
   public int getYear() {
     return this.year;
   }
-
 
   @Override
   public int hashCode() {
@@ -199,6 +206,7 @@ public class Phase implements java.io.Serializable, IAuditLog {
     result = prime * result + ((id == null) ? 0 : id.hashCode());
     return result;
   }
+
 
   @Override
   public boolean isActive() {
@@ -210,13 +218,17 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return description.equals(APConstants.REPORTING);
   }
 
-
   public void setClusters(Set<CrpClusterOfActivity> clusters) {
     this.clusters = clusters;
   }
 
+
   public void setCrp(Crp crp) {
     this.crp = crp;
+  }
+
+  public void setDeliverableInfos(Set<DeliverableInfo> deliverableInfos) {
+    this.deliverableInfos = deliverableInfos;
   }
 
   public void setDescription(String description) {

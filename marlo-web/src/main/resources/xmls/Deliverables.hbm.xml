@@ -18,6 +18,12 @@
       <column name="crp_id"  />
 		</many-to-one>
 		
+		 <set name="deliverableInfos" table="deliverables_info" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="deliverable_id" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableInfo" />
+        </set>
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>

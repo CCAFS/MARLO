@@ -47,15 +47,15 @@
             [#-- Draft Tag --]
             [#if hasDraft]<strong class="text-info">[DRAFT]</strong>[/#if]
 
-            [#if deliverable.isRequieriedReporting(currentCycleYear) && reportingActive && !isDeliverableComplete]
+            [#if deliverable.deliverableInfo.isRequieriedReporting(currentCycleYear) && reportingActive && !isDeliverableComplete]
               <span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>
             [/#if]
-            [#if deliverable.title?has_content]
-                <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='deliverableID']${deliverable.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]" title="${deliverable.title}">
-                [#if deliverable.title?length < 120] 
-                  ${deliverable.title}
+            [#if deliverable.deliverableInfo.title?has_content]
+                <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='deliverableID']${deliverable.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]" title="${deliverable.deliverableInfo.title}">
+                [#if deliverable.deliverableInfo.title?length < 120] 
+                  ${deliverable.deliverableInfo.title}
                 [#else] 
-                  [@utilities.wordCutter string=deliverable.title maxPos=120 /]
+                  [@utilities.wordCutter string=deliverable.deliverableInfo.title maxPos=120 /]
                 [/#if]
                 </a> 
             [#else]
@@ -70,20 +70,20 @@
           </td>
           [#-- Deliverable Type --]
           <td >
-            ${(deliverable.deliverableType.name?capitalize)!'none'}
+            ${(deliverable.deliverableInfo.deliverableType.name?capitalize)!'none'}
           </td>
           [#-- Deliverable Year --]
           <td class="text-center">
-          [#if deliverable.year== -1]
+          [#if deliverable.deliverableInfo.year== -1]
           none
           [#else]
-          ${(deliverable.year)!'none'}
+          ${(deliverable.deliverableInfo.year)!'none'}
           [/#if]
             
           </td>
           [#-- Deliverable FAIR compliance --]
           <td class="fair"> 
-          [#if deliverable.requeriedFair()]
+          [#if deliverable.deliverableInfo.requeriedFair()]
             <span class="[#attempt][#if action.isF(deliverable.id)??][#if action.isF(deliverable.id)] achieved [#else] notAchieved [/#if][/#if][#recover][/#attempt]">F</span>
             <span class="[#attempt][#if action.isA(deliverable.id)??][#if action.isA(deliverable.id)] achieved [#else] notAchieved [/#if][/#if][#recover][/#attempt]">A</span>
             <span class="[#attempt][#if action.isI(deliverable.id)??][#if action.isI(deliverable.id)] achieved [#else] notAchieved [/#if][/#if][#recover][/#attempt]">I</span>
@@ -95,9 +95,9 @@
           [#-- Deliverable Status --]
           <td>
             [#attempt]
-              ${(deliverable.statusName)!'none'}
-              [#if deliverable.status?? && deliverable.status==4 && deliverable.newExpectedYear??]
-               to ${deliverable.newExpectedYear}
+              ${(deliverable.deliverableInfo.statusName)!'none'}
+              [#if deliverable.deliverableInfo.status?? && deliverable.deliverableInfo.status==4 && deliverable.deliverableInfo.newExpectedYear??]
+               to ${deliverable.deliverableInfo.newExpectedYear}
               [/#if]
             [#recover]
               none
