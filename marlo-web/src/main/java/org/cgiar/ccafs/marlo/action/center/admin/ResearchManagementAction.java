@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.action.center.admin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CenterAllTypesManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterAreaManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterLeaderManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
@@ -24,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterLeader;
+import org.cgiar.ccafs.marlo.data.model.CenterLeaderTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -37,6 +39,7 @@ import com.google.inject.Inject;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
+ * @author Andrés Valencia - CIAT/CCAFS
  */
 public class ResearchManagementAction extends BaseAction {
 
@@ -46,18 +49,97 @@ public class ResearchManagementAction extends BaseAction {
   private ICenterAreaManager centerAreaService;
   private ICenterProgramManager centerProgramService;
   private ICenterLeaderManager centerLeaderService;
+  private CenterAllTypesManager centerAllTypesManager;
   private Center loggedCenter;
   private List<CenterArea> centerAreas;
 
   @Inject
   public ResearchManagementAction(APConfig config, ICenterManager centerService, ICenterAreaManager areaService,
-    ICenterProgramManager programService, ICenterLeaderManager centerLeaderService) {
+    ICenterProgramManager programService, ICenterLeaderManager centerLeaderService,
+    CenterAllTypesManager centerAllTypesManager) {
     super(config);
     this.centerService = centerService;
     this.centerAreaService = areaService;
     this.centerProgramService = programService;
     this.centerLeaderService = centerLeaderService;
+    this.centerAllTypesManager = centerAllTypesManager;
   }
+
+  /*
+   * Check if center area, program or leaders has changed
+   */
+  private void checkChanges() {
+    // Check changes
+    for (CenterArea centerArea : centerAreas) {
+      // Check if is a new one
+      if (centerArea.getId() == null || centerArea.getId() == -1) {
+        CenterArea newCenterArea = new CenterArea();
+
+        newCenterArea.setActive(true);
+        newCenterArea.setCreatedBy(this.getCurrentUser());
+        newCenterArea.setModifiedBy(this.getCurrentUser());
+        newCenterArea.setActiveSince(new Date());
+        newCenterArea.setName(centerArea.getName());
+        newCenterArea.setAcronym(centerArea.getAcronym());
+        newCenterArea.setResearchCenter(loggedCenter);
+        newCenterArea.setModificationJustification("");
+        centerAreaService.save(newCenterArea);
+        // save area leaders
+        List<CenterLeader> centerLeaders =
+          newCenterArea.getResearchLeaders().stream().filter(rl -> rl.isActive()).collect(Collectors.toList());
+        for (CenterLeader centerLeader : centerLeaders) {
+          centerLeader.setActive(true);
+          centerLeader.setActiveSince(new Date());
+          centerLeader.setCreatedBy(this.getCurrentUser());
+          centerLeader.setModificationJustification("");
+          centerLeader.setModifiedBy(this.getCurrentUser());
+          centerLeader.setResearchArea(newCenterArea);
+          centerLeader.setResearchCenter(loggedCenter);
+          centerLeader.setType(
+            centerAllTypesManager.getCenterAllTypesById(CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue()));
+          // TODO: set center leader?
+          centerLeaderService.saveResearchLeader(centerLeader);
+        }
+        // save new programs
+        List<CenterProgram> newCenterPrograms = newCenterArea.getResearchPrograms().stream()
+          .filter(cps -> cps.isActive() && cps.getResearchArea().getId() == centerArea.getId())
+          .collect(Collectors.toList());
+        for (CenterProgram newCenterProgram : newCenterPrograms) {
+          // Save center program
+          centerProgramService.saveProgram(newCenterProgram);
+          List<CenterLeader> programLeaders =
+            newCenterProgram.getResearchLeaders().stream().filter(rl -> rl.isActive()).collect(Collectors.toList());
+          for (CenterLeader centerLeader : programLeaders) {
+            centerLeaderService.saveResearchLeader(centerLeader);
+          }
+        }
+
+      } else {
+        // check if there are changes
+        CenterArea centerAreaDB = centerAreaService.find(centerArea.getId());
+        if (!centerArea.equals(centerAreaDB)) {
+          centerAreaService.save(centerArea);
+          List<CenterLeader> areaLeaders =
+            centerArea.getResearchLeaders().stream().filter(rl -> rl.isActive()).collect(Collectors.toList());
+          List<CenterLeader> areaLeadersDB =
+            centerAreaDB.getResearchLeaders().stream().filter(rl -> rl.isActive()).collect(Collectors.toList());
+          if (!areaLeaders.equals(areaLeadersDB)) {
+            for (CenterLeader areaLeader : areaLeaders) {
+              if (areaLeader.getId() == null || areaLeader.getId() == -1) {
+                // new area leader
+                centerLeaderService.saveResearchLeader(areaLeader);
+
+              }
+            }
+          }
+          // TODO: Check if there are area leaders, program or program leaders changes.
+        }
+      }
+
+    }
+
+  }
+
 
   /*
    * Check if center area, programs and/or leaders were deleted
@@ -92,10 +174,48 @@ public class ResearchManagementAction extends BaseAction {
         // delete center area
         centerAreaService.deleteResearchArea(centerAreaDB.getId());
       }
-      // check area leaders
-
     }
-
+    // Check programs and leaders
+    for (CenterArea centerArea : centerAreas) {
+      if (centerArea.getId() != null && centerArea.getId() != -1) {
+        CenterArea centerAreaDB = centerAreaService.find(centerArea.getId());
+        // Delete area leaders
+        List<CenterLeader> areaLeadersDB =
+          centerAreaDB.getResearchLeaders().stream().filter(rl -> rl.isActive()).collect(Collectors.toList());
+        for (CenterLeader areaLeaderDB : areaLeadersDB) {
+          if (!centerArea.getLeaders().contains(areaLeaderDB)) {
+            centerLeaderService.deleteResearchLeader(areaLeaderDB.getId());
+          }
+        }
+        // Delete programs
+        List<CenterProgram> centerProgramsDB =
+          centerAreaDB.getResearchPrograms().stream().filter(rp -> rp.isActive()).collect(Collectors.toList());
+        for (CenterProgram centerProgramDB : centerProgramsDB) {
+          if (!centerArea.getPrograms().contains(centerProgramDB)) {
+            List<CenterLeader> programLeadersDB =
+              centerProgramDB.getResearchLeaders().stream().filter(rl -> rl.isActive()).collect(Collectors.toList());
+            // delete program leaders
+            for (CenterLeader centerLeaderDB : programLeadersDB) {
+              centerLeaderService.deleteResearchLeader(centerLeaderDB.getId());
+            }
+            centerProgramService.deleteProgram(centerProgramDB.getId());
+          }
+        }
+        // Delete program leaders
+        List<CenterProgram> centerPrograms = centerArea.getPrograms();
+        for (CenterProgram centerProgram : centerPrograms) {
+          if (centerProgram.getId() != null && centerProgram.getId() != -1) {
+            CenterProgram centerProgramDB = centerProgramService.getProgramById(centerProgram.getId());
+            List<CenterLeader> programLeadersDB =
+              centerProgramDB.getResearchLeaders().stream().filter(rl -> rl.isActive()).collect(Collectors.toList());
+            for (CenterLeader programLeaderDB : programLeadersDB) {
+              centerProgram.getLeaders().contains(programLeaderDB);
+              centerLeaderService.deleteResearchLeader(programLeaderDB.getId());
+            }
+          }
+        }
+      }
+    }
   }
 
 
@@ -107,7 +227,6 @@ public class ResearchManagementAction extends BaseAction {
   public Center getLoggedCenter() {
     return loggedCenter;
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -145,73 +264,14 @@ public class ResearchManagementAction extends BaseAction {
   public String save() {
     if (this.hasPermission("*")) {
       this.checkDeleted();
+      this.checkChanges();
 
-
-      // Check changes
-      for (CenterArea centerArea : centerAreas) {
-        // Check if is a new one
-        if (centerArea.getId() == null || centerArea.getId() == -1) {
-          CenterArea newCenterArea = new CenterArea();
-
-          newCenterArea.setActive(true);
-          newCenterArea.setCreatedBy(this.getCurrentUser());
-          newCenterArea.setModifiedBy(this.getCurrentUser());
-          newCenterArea.setActiveSince(new Date());
-          newCenterArea.setName(centerArea.getName());
-          newCenterArea.setAcronym(centerArea.getAcronym());
-          newCenterArea.setResearchCenter(loggedCenter);
-          newCenterArea.setModificationJustification("");
-          centerAreaService.save(newCenterArea);
-          // save area leaders
-          List<CenterLeader> centerLeaders =
-            newCenterArea.getResearchLeaders().stream().filter(rl -> rl.isActive()).collect(Collectors.toList());
-          for (CenterLeader centerLeader : centerLeaders) {
-            centerLeaderService.saveResearchLeader(centerLeader);
-          }
-          // save new programs
-          List<CenterProgram> newCenterPrograms = newCenterArea.getResearchPrograms().stream()
-            .filter(cps -> cps.isActive() && cps.getResearchArea().getId() == centerArea.getId())
-            .collect(Collectors.toList());
-          for (CenterProgram newCenterProgram : newCenterPrograms) {
-            // Save center program
-            centerProgramService.saveProgram(newCenterProgram);
-            List<CenterLeader> programLeaders =
-              newCenterProgram.getResearchLeaders().stream().filter(rl -> rl.isActive()).collect(Collectors.toList());
-            for (CenterLeader centerLeader : programLeaders) {
-              centerLeaderService.saveResearchLeader(centerLeader);
-            }
-          }
-
-        } else {
-          // check if there are changes
-          CenterArea centerAreaDB = centerAreaService.find(centerArea.getId());
-          if (!centerArea.equals(centerAreaDB)) {
-            centerAreaService.save(centerArea);
-            List<CenterLeader> areaLeaders =
-              centerArea.getResearchLeaders().stream().filter(rl -> rl.isActive()).collect(Collectors.toList());
-            List<CenterLeader> areaLeadersDB =
-              centerAreaDB.getResearchLeaders().stream().filter(rl -> rl.isActive()).collect(Collectors.toList());
-            if (!areaLeaders.equals(areaLeadersDB)) {
-              for (CenterLeader areaLeader : areaLeaders) {
-                if (areaLeader.getId() == null || areaLeader.getId() == -1) {
-                  // new area leader
-                  centerLeaderService.saveResearchLeader(areaLeader);
-
-                }
-              }
-            }
-            // TODO: Check if there are area leaders, program or program leaders changes.
-          }
-        }
-
-      }
 
       return SUCCESS;
     } else {
       return NOT_AUTHORIZED;
     }
   }
-
 
   public void setCenterAreas(List<CenterArea> centerAreas) {
     this.centerAreas = centerAreas;
