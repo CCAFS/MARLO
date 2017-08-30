@@ -177,7 +177,7 @@
       
 
     </div>
-    [#if editable && targetUnitList?has_content]<div class="col-md-12 note">[@s.text name = "outcomes.addNewTargetUnit" /]</div> <br /> <br />[/#if]
+    [#if editable && targetUnitList?has_content]<div class="form-group note">[@s.text name = "outcomes.addNewTargetUnit" /]</div>[/#if]
     
     
     [#assign baselineIndicators = [
@@ -189,7 +189,7 @@
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" role="tablist">
       <li role="presentation" class="active"><a href="#subIdos-tab-${index}" aria-controls="home" role="tab" data-toggle="tab">Sub-IDOs <span class="badge">${(outcome.subIdos?size)!'0'}</span></a></li>
-      [#if action.hasSpecificities('crp_baseline_indicators')]
+      [#if action.hasSpecificities('crp_baseline_indicators') && (crpProgramID == 86)]
       <li role="presentation"><a href="#baseline-tab-${index}" aria-controls="profile" role="tab" data-toggle="tab">Baseline Indicators <span class="badge">${(baselineIndicators?size)!'0'}</span></a></li>
       [/#if]
       <li role="presentation"><a href="#milestones-tab-${index}" aria-controls="messages" role="tab" data-toggle="tab">Milestones <span class="badge">${(outcome.milestones?size)!'0'}</span></a></li>
@@ -219,7 +219,7 @@
       </div>
       
       [#-- Baseline indicators --]
-      [#if action.hasSpecificities('crp_baseline_indicators')]
+      [#if action.hasSpecificities('crp_baseline_indicators') && (crpProgramID == 86)]
       <div role="tabpanel" class="tab-pane fade" id="baseline-tab-${index}">
         [#-- Upload a PDF with baseline instructions --]
         <div class="form-group fileUploadContainer">
