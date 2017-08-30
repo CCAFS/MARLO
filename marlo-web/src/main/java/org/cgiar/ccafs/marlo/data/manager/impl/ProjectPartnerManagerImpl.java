@@ -71,6 +71,11 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
   }
 
   @Override
+  public List<ProjectPartner> getProjectPartnersForProjectWithActiveProjectPartnerPersons(long projectId) {
+    return projectPartnerDAO.getProjectPartnersForProjectWithActiveProjectPartnerPersons(projectId);
+  }
+
+  @Override
   public ProjectPartner saveProjectPartner(ProjectPartner projectPartner) {
 
     return projectPartnerDAO.save(projectPartner);

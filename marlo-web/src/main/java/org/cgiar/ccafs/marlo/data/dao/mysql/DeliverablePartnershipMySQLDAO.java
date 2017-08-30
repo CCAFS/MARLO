@@ -22,9 +22,11 @@ import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
-public class DeliverablePartnershipMySQLDAO extends AbstractMarloDAO<DeliverablePartnership, Long> implements DeliverablePartnershipDAO {
+public class DeliverablePartnershipMySQLDAO extends AbstractMarloDAO<DeliverablePartnership, Long>
+  implements DeliverablePartnershipDAO {
 
 
   @Inject
@@ -64,6 +66,35 @@ public class DeliverablePartnershipMySQLDAO extends AbstractMarloDAO<Deliverable
     }
     return null;
 
+  }
+
+  @Override
+  public List<DeliverablePartnership> findForDeliverableIdAndPartnerTypeOther(long deliverableId) {
+    String query = "select dp from DeliverablePartnership as dp " + "inner join dp.deliverable as d "
+      + "where dp.active is true " + "and dp.partnerType = 'Other' " + "and d.id = :deliverableId ";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("deliverableId", deliverableId);
+
+    List<DeliverablePartnership> deliverablePartnerships = createQuery.list();
+
+    return deliverablePartnerships;
+  }
+
+  @Override
+  public List<DeliverablePartnership> findForDeliverableIdAndProjectPersonIdPartnerTypeOther(long deliverableId,
+    long projectPersonId) {
+    String query = "select dp from DeliverablePartnership as dp " + "inner join dp.projectPartnerPerson as ppp "
+      + "inner join dp.deliverable as d " + "where dp.active is true " + "and dp.partnerType = 'Other' "
+      + "and d.id = :deliverableId " + "and ppp.id = :projectPersonId";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("deliverableId", deliverableId);
+    createQuery.setParameter("projectPersonId", projectPersonId);
+
+    List<DeliverablePartnership> deliverablePartnerships = createQuery.list();
+
+    return deliverablePartnerships;
   }
 
   @Override

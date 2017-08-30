@@ -22,9 +22,11 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
-public class ProjectPartnerPersonMySQLDAO extends AbstractMarloDAO<ProjectPartnerPerson, Long> implements ProjectPartnerPersonDAO {
+public class ProjectPartnerPersonMySQLDAO extends AbstractMarloDAO<ProjectPartnerPerson, Long>
+  implements ProjectPartnerPersonDAO {
 
 
   @Inject
@@ -64,6 +66,40 @@ public class ProjectPartnerPersonMySQLDAO extends AbstractMarloDAO<ProjectPartne
     }
     return null;
 
+  }
+
+  @Override
+  public List<ProjectPartnerPerson> findAllForOtherPartnerTypeWithDeliverableIdAndPartnerId(long deliverableId,
+    long partnerId) {
+    String query = "select projectPartnerPerson from ProjectPartnerPerson as projectPartnerPerson "
+      + "inner join projectPartnerPerson.projectPartner as projectPartner "
+      + "inner join projectPartnerPerson.deliverablePartnerships as deliverablePartnership "
+      + "inner join deliverablePartnership.deliverable as deliverable " + "where deliverablePartnership.active is true "
+      + "and deliverablePartnership.partnerType = 'Other' " + "and deliverable.id = :deliverableId "
+      + "and projectPartner.id = :partnerId";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("deliverableId", deliverableId);
+    createQuery.setParameter("partnerId", partnerId);
+
+    List<ProjectPartnerPerson> projectPartnerPersons = createQuery.list();
+
+    return projectPartnerPersons;
+
+  }
+
+  @Override
+  public List<ProjectPartnerPerson> findAllForProjectPartner(long projectPartnerId) {
+    String query = "select projectPartnerPerson from ProjectPartnerPerson as projectPartnerPerson "
+      + "inner join projectPartnerPerson.projectPartner as projectPartner "
+      + "where projectPartnerPerson.active is true " + "and projectPartner.id = :projectPartnerId";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("projectPartnerId", projectPartnerId);
+
+    List<ProjectPartnerPerson> projectPartnerPersons = createQuery.list();
+
+    return projectPartnerPersons;
   }
 
   @Override

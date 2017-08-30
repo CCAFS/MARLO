@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -57,6 +57,18 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
 
     return deliverablePartnershipDAO.findAll();
 
+  }
+
+  @Override
+  public List<DeliverablePartnership> findForDeliverableIdAndPartnerTypeOther(long deliverableId) {
+    return deliverablePartnershipDAO.findForDeliverableIdAndPartnerTypeOther(deliverableId);
+  }
+
+  @Override
+  public List<DeliverablePartnership> findForDeliverableIdAndProjectPersonIdPartnerTypeOther(long deliverableId,
+    long projectPersonId) {
+    return deliverablePartnershipDAO.findForDeliverableIdAndProjectPersonIdPartnerTypeOther(deliverableId,
+      projectPersonId);
   }
 
   @Override

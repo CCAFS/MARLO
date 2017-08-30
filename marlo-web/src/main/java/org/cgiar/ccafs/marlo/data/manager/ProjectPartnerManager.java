@@ -65,6 +65,8 @@ public interface ProjectPartnerManager {
 
   public ProjectPartner getProjectPartnerByIdAndEagerFetchLocations(long projectPartnerID);
 
+  public List<ProjectPartner> getProjectPartnersForProjectWithActiveProjectPartnerPersons(long projectId);
+
   /**
    * This method saves the information of the given projectPartner
    * 
@@ -74,6 +76,4 @@ public interface ProjectPartnerManager {
    *         or -1 is some error occurred.
    */
   public ProjectPartner saveProjectPartner(ProjectPartner projectPartner);
-
-
 }

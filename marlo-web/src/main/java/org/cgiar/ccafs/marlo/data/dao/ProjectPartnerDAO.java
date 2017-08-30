@@ -66,6 +66,9 @@ public interface ProjectPartnerDAO {
    */
   public ProjectPartner getProjectPartnerByIdAndEagerFetchLocations(long projectPartnerID);
 
+  public List<ProjectPartner> getProjectPartnersForProjectWithActiveProjectPartnerPersons(long projectId);
+
+
   /**
    * This method saves the information of the given projectPartner
    * 

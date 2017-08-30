@@ -398,14 +398,20 @@ public class DeliverableAction extends BaseAction {
 
   public DeliverablePartnership getDeliverablePartnership(long projectPeronID) {
 
-    for (DeliverablePartnership deliverablePartnership : deliverableManager.getDeliverableById(deliverableID)
-      .getDeliverablePartnerships().stream().filter(c -> c.isActive()
-        && c.getProjectPartnerPerson().getId().longValue() == projectPeronID && c.getPartnerType().equals("Other"))
-      .collect(Collectors.toList())) {
+    // List<DeliverablePartnership> deliverablePartnerships = deliverableManager.getDeliverableById(deliverableID)
+    // .getDeliverablePartnerships().stream().filter(c -> c.isActive()
+    // && c.getProjectPartnerPerson().getId().longValue() == projectPeronID && c.getPartnerType().equals("Other"))
+    // .collect(Collectors.toList());
+
+    List<DeliverablePartnership> deliverablePartnerships = deliverablePartnershipManager
+      .findForDeliverableIdAndProjectPersonIdPartnerTypeOther(deliverableID, projectPeronID);
+
+    for (DeliverablePartnership deliverablePartnership : deliverablePartnerships) {
       return deliverablePartnership;
     }
 
     return null;
+
   }
 
   public List<Map<String, Object>> getDeliverablesSubTypes(long deliverableTypeID) {
@@ -499,12 +505,12 @@ public class DeliverableAction extends BaseAction {
     return partners;
   }
 
-  public List<ProjectPartnerPerson> getPersons(long partnerID) {
-    ProjectPartner projectPartner = projectPartnerManager.getProjectPartnerById(partnerID);
+  public List<ProjectPartnerPerson> getPersons(long projectPartnerId) {
     List<ProjectPartnerPerson> projectPartnerPersons =
-      projectPartner.getProjectPartnerPersons().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+      projectPartnerPersonManager.findAllForProjectPartner(projectPartnerId);
     return projectPartnerPersons;
   }
+
 
   public Map<String, String> getPrograms() {
     return programs;
@@ -530,9 +536,15 @@ public class DeliverableAction extends BaseAction {
     Set<ProjectPartner> deliverablePartnerPersonsSet = new HashSet<>();
     List<ProjectPartner> deliverablePartnerPersons = new ArrayList<>();
 
-    for (DeliverablePartnership deliverablePartnership : deliverableManager.getDeliverableById(deliverableID)
-      .getDeliverablePartnerships().stream().filter(c -> c.isActive() && c.getPartnerType().equals("Other"))
-      .collect(Collectors.toList())) {
+    List<DeliverablePartnership> deliverablePartnerships =
+      deliverablePartnershipManager.findForDeliverableIdAndPartnerTypeOther(deliverableID);
+
+
+    // List<DeliverablePartnership> deliverablePartnerships =
+    // deliverableManager.getDeliverableById(deliverableID).getDeliverablePartnerships().stream()
+    // .filter(c -> c.isActive() && c.getPartnerType().equals("Other")).collect(Collectors.toList());
+
+    for (DeliverablePartnership deliverablePartnership : deliverablePartnerships) {
       deliverablePartnerPersonsSet.add(deliverablePartnership.getProjectPartnerPerson().getProjectPartner());
     }
 
@@ -541,32 +553,25 @@ public class DeliverableAction extends BaseAction {
 
   }
 
-  public List<ProjectPartnerPerson> getSelectedPersons(long partnerID) {
+  public List<Long> getSelectedPersons(long partnerID) {
 
-    List<ProjectPartnerPerson> deliverablePartnerPersons = new ArrayList<>();
+    List<ProjectPartnerPerson> deliverablePartnerPersons =
+      projectPartnerPersonManager.findAllForOtherPartnerTypeWithDeliverableIdAndPartnerId(deliverableID, partnerID);
 
-    List<DeliverablePartnership> partnerships =
-      deliverableManager.getDeliverableById(deliverableID).getDeliverablePartnerships().stream()
-        .filter(c -> c.isActive() && c.getProjectPartnerPerson().getProjectPartner().getId().longValue() == partnerID
-          && c.getPartnerType().equals("Other"))
-        .collect(Collectors.toList());
+    List<Long> projectPartnerPersonIds =
+      deliverablePartnerPersons.stream().map(e -> e.getId()).collect(Collectors.toList());
 
-    for (DeliverablePartnership deliverablePartnership : partnerships) {
-      deliverablePartnerPersons.add(deliverablePartnership.getProjectPartnerPerson());
-    }
-    return deliverablePartnerPersons;
-
+    return projectPartnerPersonIds;
   }
-
 
   public Map<String, String> getStatus() {
     return status;
   }
 
+
   public String getTransaction() {
     return transaction;
   }
-
 
   @Override
   public Boolean isDeliverableNew(long deliverableID) {
@@ -606,6 +611,7 @@ public class DeliverableAction extends BaseAction {
 
     }
   }
+
 
   public Boolean isDeliverabletNew(long deliverableID) {
 
@@ -1024,26 +1030,29 @@ public class DeliverableAction extends BaseAction {
         }
       }
 
-      // Getting partners list
-      partners = new ArrayList<>();
-      for (ProjectPartner partner : projectPartnerManager.findAll().stream()
-        .filter(pp -> pp.isActive() && (pp.getProject().getId() == projectID
-          && !pp.getProjectPartnerPersons().stream().filter(c -> c.isActive()).collect(Collectors.toList()).isEmpty()))
-        .collect(Collectors.toList())) {
-        partners.add(partner);
-      }
 
+      // List<ProjectPartner> projectPartnersWithActiveProjectPartnerPersons = projectPartnerManager.findAll().stream()
+      // .filter(pp -> pp.isActive() && (pp.getProject().getId() == projectID
+      // && !pp.getProjectPartnerPersons().stream().filter(c -> c.isActive()).collect(Collectors.toList()).isEmpty()))
+      // .collect(Collectors.toList());
 
-      partnerPersons = new ArrayList<>();
-      for (ProjectPartner partner : projectPartnerManager.findAll().stream()
-        .filter(pp -> pp.isActive() && pp.getProject().getId() == projectID).collect(Collectors.toList())) {
+      partners = projectPartnerManager.getProjectPartnersForProjectWithActiveProjectPartnerPersons(projectID);
 
-        for (ProjectPartnerPerson partnerPerson : partner.getProjectPartnerPersons().stream()
-          .filter(ppa -> ppa.isActive()).collect(Collectors.toList())) {
+      // partnerPersons = new ArrayList<>();
+      partnerPersons =
+        partners.stream().flatMap(e -> e.getProjectPartnerPersons().stream()).collect(Collectors.toList());
 
-          partnerPersons.add(partnerPerson);
-        }
-      }
+      // List<ProjectPartner> projectPartners = projectPartnerManager.findAll().stream()
+      // .filter(pp -> pp.isActive() && pp.getProject().getId() == projectID).collect(Collectors.toList());
+      //
+      // for (ProjectPartner partner : projectPartners) {
+      //
+      // for (ProjectPartnerPerson partnerPerson : partner.getProjectPartnerPersons().stream()
+      // .filter(ppa -> ppa.isActive()).collect(Collectors.toList())) {
+      //
+      // partnerPersons.add(partnerPerson);
+      // }
+      // }
 
       this.fundingSources = new ArrayList<>();
       List<FundingSource> fundingSources =
