@@ -85,9 +85,10 @@ public class DeliverableValidator extends BaseValidator {
 
     boolean validate = false;
     if (action.isPlanningActive()) {
-      validate = deliverable.getYear() >= action.getCurrentCycleYear();
+      validate = deliverable.getDeliverableInfo(action.getActualPhase()).getYear() >= action.getCurrentCycleYear();
     } else {
-      validate = deliverable.isRequieriedReporting(action.getCurrentCycleYear());
+      validate =
+        deliverable.getDeliverableInfo(action.getActualPhase()).isRequieriedReporting(action.getCurrentCycleYear());
     }
     if (validate) {
       Project project = projectManager.getProjectById(deliverable.getProject().getId());
@@ -99,15 +100,18 @@ public class DeliverableValidator extends BaseValidator {
           this.addMissingField("draft");
         }
       }
-      if (!(deliverable.getStatus() != null
-        && deliverable.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId()))) {
-        if (!(this.isValidString(deliverable.getTitle()) && this.wordCount(deliverable.getTitle()) <= 25)) {
+      if (!(deliverable.getDeliverableInfo(action.getActualPhase()).getStatus() != null
+        && deliverable.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == Integer
+          .parseInt(ProjectStatusEnum.Cancelled.getStatusId()))) {
+        if (!(this.isValidString(deliverable.getDeliverableInfo(action.getActualPhase()).getTitle())
+          && this.wordCount(deliverable.getDeliverableInfo(action.getActualPhase()).getTitle()) <= 25)) {
           this.addMessage(action.getText("project.deliverable.generalInformation.title"));
           action.getInvalidFields().put("input-deliverable.title", InvalidFieldsMessages.EMPTYFIELD);
         }
         // test
         // Add description validator
-        if (!(this.isValidString(deliverable.getDescription()) && this.wordCount(deliverable.getDescription()) <= 50)) {
+        if (!(this.isValidString(deliverable.getDeliverableInfo(action.getActualPhase()).getDescription())
+          && this.wordCount(deliverable.getDeliverableInfo(action.getActualPhase()).getDescription()) <= 50)) {
           this.addMessage(action.getText("project.deliverable.generalInformation.description"));
           action.getInvalidFields().put("input-deliverable.description", InvalidFieldsMessages.EMPTYFIELD);
         }
@@ -118,13 +122,16 @@ public class DeliverableValidator extends BaseValidator {
          * action.getInvalidFields().put("input-deliverable.description", InvalidFieldsMessages.EMPTYFIELD);
          * }
          */
-        if (deliverable.getDeliverableType() != null) {
-          if (deliverable.getDeliverableType().getId() == null || deliverable.getDeliverableType().getId() == -1) {
+        if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType() != null) {
+          if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId() == null
+            || deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId() == -1) {
             this.addMessage(action.getText("project.deliverable.generalInformation.subType"));
             action.getInvalidFields().put("input-deliverable.deliverableType.id", InvalidFieldsMessages.EMPTYFIELD);
           } else {
-            if (deliverable.getDeliverableType().getDeliverableType() != null) {
-              if (deliverable.getDeliverableType().getDeliverableType().getId() == -1) {
+            if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType()
+              .getDeliverableType() != null) {
+              if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getDeliverableType()
+                .getId() == -1) {
                 this.addMessage(action.getText("project.deliverable.generalInformation.type"));
                 action.getInvalidFields().put("input-deliverable.deliverableType.deliverableType.id",
                   InvalidFieldsMessages.EMPTYFIELD);
@@ -142,8 +149,8 @@ public class DeliverableValidator extends BaseValidator {
             InvalidFieldsMessages.EMPTYFIELD);
         }
 
-        if (deliverable.getStatus() != null) {
-          if (deliverable.getStatus() == -1) {
+        if (deliverable.getDeliverableInfo(action.getActualPhase()).getStatus() != null) {
+          if (deliverable.getDeliverableInfo(action.getActualPhase()).getStatus() == -1) {
             this.addMessage(action.getText("project.deliverable.generalInformation.status"));
             action.getInvalidFields().put("input-deliverable.status", InvalidFieldsMessages.EMPTYFIELD);
           }
@@ -153,22 +160,25 @@ public class DeliverableValidator extends BaseValidator {
         }
 
 
-        if (deliverable.getYear() == -1) {
+        if (deliverable.getDeliverableInfo(action.getActualPhase()).getYear() == -1) {
           this.addMessage(action.getText("project.deliverable.generalInformation.year"));
           action.getInvalidFields().put("input-deliverable.year", InvalidFieldsMessages.EMPTYFIELD);
         }
 
-        if (deliverable.getNewExpectedYear() != null && deliverable.getStatus() != null
-          && deliverable.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-          && deliverable.getNewExpectedYear().intValue() == action.getCurrentCycleYear()) {
+        if (deliverable.getDeliverableInfo(action.getActualPhase()).getNewExpectedYear() != null
+          && deliverable.getDeliverableInfo(action.getActualPhase()).getStatus() != null
+          && deliverable.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Extended.getStatusId())
+          && deliverable.getDeliverableInfo(action.getActualPhase()).getNewExpectedYear().intValue() == action
+            .getCurrentCycleYear()) {
           this.addMessage(action.getText("project.deliverable.generalInformation.newewExpectedYear"));
           action.getInvalidFields().put("input-deliverable.newExpectedYear", InvalidFieldsMessages.EMPTYFIELD);
         }
         if (!action.isReportingActive()) {
           if (!(project.getProjecInfoPhase(action.getActualPhase()).getAdministrative() != null
             && project.getProjecInfoPhase(action.getActualPhase()).getAdministrative().booleanValue() == true)) {
-            if (deliverable.getCrpClusterKeyOutput() != null) {
-              if (deliverable.getCrpClusterKeyOutput().getId() == -1) {
+            if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrpClusterKeyOutput() != null) {
+              if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrpClusterKeyOutput().getId() == -1) {
                 this.addMessage(action.getText("project.deliverable.generalInformation.keyOutput"));
                 action.getInvalidFields().put("input-deliverable.crpClusterKeyOutput.id",
                   InvalidFieldsMessages.EMPTYFIELD);
@@ -280,7 +290,8 @@ public class DeliverableValidator extends BaseValidator {
               action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Funding Sources"}));
           }
         }
-        if (deliverable.getCrossCuttingGender() != null && deliverable.getCrossCuttingGender().booleanValue() == true) {
+        if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingGender() != null
+          && deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingGender().booleanValue() == true) {
 
           if (deliverable.getGenderLevels() == null || deliverable.getGenderLevels().isEmpty()) {
             this.addMessage(action.getText("project.deliverable.generalInformation.genderLevels"));
@@ -294,8 +305,9 @@ public class DeliverableValidator extends BaseValidator {
       if (action.isReportingActive()) {
 
 
-        if (deliverable.getStatus() != null
-          && deliverable.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
+        if (deliverable.getDeliverableInfo(action.getActualPhase()).getStatus() != null
+          && deliverable.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
 
           this.addMessage(action.getText("project.deliverable.generalInformation.status"));
           action.getInvalidFields().put("input-deliverable.status", InvalidFieldsMessages.EMPTYFIELD);
@@ -321,14 +333,16 @@ public class DeliverableValidator extends BaseValidator {
         }
 
         // Deliverable Publication Meta-data
-        if (deliverable.getDeliverableType() != null && deliverable.getDeliverableType().getDeliverableType() != null) {
-          if (deliverable.getDeliverableType().getDeliverableType().getId() == 49) {
+        if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType() != null && deliverable
+          .getDeliverableInfo(action.getActualPhase()).getDeliverableType().getDeliverableType() != null) {
+          if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getDeliverableType()
+            .getId() == 49) {
             this.validatePublicationMetadata(deliverable);
           }
         }
 
         // Deliverable Licenses
-        if (deliverable.getAdoptedLicense() != null) {
+        if (deliverable.getDeliverableInfo(action.getActualPhase()).getAdoptedLicense() != null) {
           this.validateLicense(deliverable);
         } else {
           this.addMessage(action.getText("project.deliverable.v.ALicense"));
@@ -336,8 +350,9 @@ public class DeliverableValidator extends BaseValidator {
         }
 
         // Deliverable Quality Check
-        if (deliverable.getDeliverableType() != null && (deliverable.getDeliverableType().getId().intValue() == 51
-          || deliverable.getDeliverableType().getId().intValue() == 74)) {
+        if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType() != null
+          && (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId().intValue() == 51
+            || deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId().intValue() == 74)) {
           if (deliverable.getQualityCheck() != null) {
             if (deliverable.getQualityCheck().getQualityAssurance() == null) {
               this.addMessage(action.getText("project.deliverable.v.qualityCheck.assurance"));
@@ -492,17 +507,18 @@ public class DeliverableValidator extends BaseValidator {
 
 
   public void validateLicense(Deliverable deliverable) {
-    if (deliverable.getAdoptedLicense().booleanValue()) {
-      if (deliverable.getLicense() != null) {
-        if (deliverable.getLicense().equals(LicensesTypeEnum.OTHER.getValue())) {
-          if (deliverable.getOtherLicense() != null) {
-            if (!(this.isValidString(deliverable.getOtherLicense())
-              && this.wordCount(deliverable.getOtherLicense()) <= 100)) {
+    if (deliverable.getDeliverableInfo(action.getActualPhase()).getAdoptedLicense().booleanValue()) {
+      if (deliverable.getDeliverableInfo(action.getActualPhase()).getLicense() != null) {
+        if (deliverable.getDeliverableInfo(action.getActualPhase()).getLicense()
+          .equals(LicensesTypeEnum.OTHER.getValue())) {
+          if (deliverable.getDeliverableInfo(action.getActualPhase()).getOtherLicense() != null) {
+            if (!(this.isValidString(deliverable.getDeliverableInfo(action.getActualPhase()).getOtherLicense())
+              && this.wordCount(deliverable.getDeliverableInfo(action.getActualPhase()).getOtherLicense()) <= 100)) {
               this.addMessage(action.getText("project.deliverable.license.v.other"));
               action.getInvalidFields().put("input-deliverable.otherLicense", InvalidFieldsMessages.EMPTYFIELD);
             }
 
-            if (deliverable.getAllowModifications() == null) {
+            if (deliverable.getDeliverableInfo(action.getActualPhase()).getAllowModifications() == null) {
               this.addMessage(action.getText("project.deliverable.license.v.allowModification"));
               action.getInvalidFields().put("input-deliverable.dissemination.allowModification",
                 InvalidFieldsMessages.EMPTYFIELD);
@@ -564,7 +580,8 @@ public class DeliverableValidator extends BaseValidator {
 
       boolean indicators = false;
 
-      if (deliverable.getDeliverableType().getId() != 63 || deliverable.getDeliverableType().getId() != 79) {
+      if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId() != 63
+        || deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId() != 79) {
         indicators = true;
       }
 
