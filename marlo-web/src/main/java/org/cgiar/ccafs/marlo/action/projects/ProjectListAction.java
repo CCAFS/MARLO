@@ -442,6 +442,10 @@ public class ProjectListAction extends BaseAction {
         c -> c.isActive() && (c.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
           || c.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())))
       .collect(Collectors.toList());
+    myProjects.removeAll(closedProjects);
+    if (allProjects != null) {
+      allProjects.removeAll(closedProjects);
+    }
     this.loadFlagshipgsAndRegions(closedProjects);
     closedProjects.sort((p1, p2) -> p1.getStatus().compareTo(p2.getStatus()));
     String params[] = {loggedCrp.getAcronym() + ""};

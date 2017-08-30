@@ -151,9 +151,8 @@
           [#-- Summary PDF download --]
           <td>
             [#if true]
-            
             <a href="[@s.url namespace="/projects" action='${(crpSession)!}/reportingSummary'][@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='cycle']${action.getCurrentCycle()}[/@s.param][@s.param name='year']${action.getCurrentCycleYear()}[/@s.param][/@s.url]" target="__BLANK">
-              <img src="${baseUrlMedia}/images/global/pdf.png" height="25" title="[@s.text name="Download PDF" /]" />
+              <img src="${baseUrlMedia}/images/global/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
             </a>
             [#else]
               <img src="${baseUrlMedia}/images/global/download-summary-disabled.png" height="25" title="[@s.text name="global.comingSoon" /]" />
@@ -179,11 +178,6 @@
 [#macro projectsListArchived projects={} owned=true canValidate=false canEdit=false isPlanning=false namespace="/" defaultAction="description"]
   <table class="projectsList" id="projects">
     <thead>
-      [#--  <tr class="header">
-        <th colspan="5">General Information</th>
-        <th colspan="3">Actions</th> 
-      </tr>
-      --]
       <tr class="subHeader">
         <th id="ids">[@s.text name="projectsList.projectids" /]</th>
         <th id="projectTitles" >[@s.text name="projectsList.projectTitles" /]</th>
@@ -197,8 +191,8 @@
           [/#if]
         </th>
         <th id="projectActionStatus">[@s.text name="projectsList.projectActionStatus" /]</th>
-        <th id="projectActionStatusJustification">[@s.text name="projectsList.projectActionStatusJustification" /]</th>
         <th id="projectDownload">[@s.text name="projectsList.download" /]</th>
+        <th id="projectDownload">[@s.text name="projectsList.delete" /]</th>
       </tr>
     </thead>
     <tbody>
@@ -244,9 +238,11 @@
           <td>
             <strong>${(project.statusName)!}</strong> 
           </td>
-          [#-- Project Action Status Justification --]
-          <td class="text-left"> 
-             ${(project.statusJustification)!'<i>Not available</i>'} 
+          [#-- Summary PDF download --]
+          <td>
+            <a href="[@s.url namespace="/projects" action='${(crpSession)!}/reportingSummary'][@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='cycle']${action.getCurrentCycle()}[/@s.param][@s.param name='year']${action.getCurrentCycleYear()}[/@s.param][/@s.url]" target="__BLANK">
+              <img src="${baseUrlMedia}/images/global/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
+            </a>
           </td>
           [#-- Delete Project--]
           <td>

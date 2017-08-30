@@ -1,0 +1,10 @@
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
+  border-top: 4px solid #1882aa;
+  border-bottom-color: transparent;
+  color: #0377a3;
+}
+
+.nav-tabs>li>a {
+ color: #6f6f6f;
+ border-radius: 0 0 0;
+}
