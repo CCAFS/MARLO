@@ -315,49 +315,7 @@ left JOIN project_phases pp ON pp.project_id = d.project_id
 left JOIN phases ph ON ph.id = pp.id_phase
 ;
 
--- deliverable_partnerships
 
-CREATE TEMPORARY TABLE
-IF NOT EXISTS table_deliverable_partnerships AS (SELECT * FROM deliverable_partnerships);
-
-TRUNCATE TABLE deliverable_partnerships;
-
-
-ALTER TABLE `deliverable_partnerships`
-ADD COLUMN `id_phase`  bigint(20) NULL AFTER `deliverable_id`;
-
-ALTER TABLE `deliverable_partnerships` ADD FOREIGN KEY (`id_phase`) REFERENCES `phases` (`id`);
-
-INSERT INTO deliverable_partnerships (
-deliverable_id,
-partner_person_id,
-partner_type,
-is_active,
-active_since,
-created_by,
-modified_by,
-modification_justification,
-division_id,
-
-id_phase
-) SELECT 
-
-t2.deliverable_id,
-t2.partner_person_id,
-t2.partner_type,
-t2.is_active,
-t2.active_since,
-t2.created_by,
-t2.modified_by,
-t2.modification_justification,
-t2.division_id,
-ph.id
-FROM
-  table_deliverable_partnerships t2
- left join deliverables d on d.id=t2.deliverable_id
-left JOIN project_phases pp ON pp.project_id = d.project_id
-left JOIN phases ph ON ph.id = pp.id_phase
-;
 
 
 -- deliverable_metadata_elements

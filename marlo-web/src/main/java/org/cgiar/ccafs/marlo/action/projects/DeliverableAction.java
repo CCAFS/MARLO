@@ -1098,6 +1098,7 @@ public class DeliverableAction extends BaseAction {
       partners = new ArrayList<>();
       for (ProjectPartner partner : projectPartnerManager.findAll().stream()
         .filter(pp -> pp.isActive() && (pp.getProject().getId() == projectID
+          && pp.getPhase().equals(this.getActualPhase())
           && !pp.getProjectPartnerPersons().stream().filter(c -> c.isActive()).collect(Collectors.toList()).isEmpty()))
         .collect(Collectors.toList())) {
         partners.add(partner);
@@ -1106,7 +1107,9 @@ public class DeliverableAction extends BaseAction {
 
       partnerPersons = new ArrayList<>();
       for (ProjectPartner partner : projectPartnerManager.findAll().stream()
-        .filter(pp -> pp.isActive() && pp.getProject().getId() == projectID).collect(Collectors.toList())) {
+        .filter(
+          pp -> pp.isActive() && pp.getProject().getId() == projectID && pp.getPhase().equals(this.getActualPhase()))
+        .collect(Collectors.toList())) {
 
         for (ProjectPartnerPerson partnerPerson : partner.getProjectPartnerPersons().stream()
           .filter(ppa -> ppa.isActive()).collect(Collectors.toList())) {
