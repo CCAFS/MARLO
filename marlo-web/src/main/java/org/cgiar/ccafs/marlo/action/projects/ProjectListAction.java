@@ -76,6 +76,8 @@ public class ProjectListAction extends BaseAction {
   private List<Project> myProjects;
   private List<Project> allProjects;
 
+  private List<Project> closedProjects;
+
   private String filterBy;
 
 
@@ -361,66 +363,83 @@ public class ProjectListAction extends BaseAction {
     return allProjects;
   }
 
+  public List<Project> getClosedProjects() {
+    return closedProjects;
+  }
+
+
   public String getFilterBy() {
     return filterBy;
   }
-
 
   public List<Project> getMyProjects() {
     return myProjects;
   }
 
+
   public long getProjectID() {
     return projectID;
+  }
+
+  /**
+   * load the flagships and regions for each project on list
+   * 
+   * @param list the list of project
+   */
+  public void loadFlagshipgsAndRegions(List<Project> list) {
+    for (Project project : list) {
+      List<CrpProgram> programs = new ArrayList<>();
+      List<CrpProgram> regions = new ArrayList<>();
+      for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
+        .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+        .collect(Collectors.toList())) {
+        programs.add(projectFocuses.getCrpProgram());
+      }
+      for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
+        .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+        .collect(Collectors.toList())) {
+        regions.add(projectFocuses.getCrpProgram());
+      }
+      project.setFlagships(programs);
+      project.setRegions(regions);
+    }
   }
 
 
   @Override
   public void prepare() throws Exception {
-
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+
     Phase phase = this.getActualPhase();
     phase = phaseManager.getPhaseById(phase.getId());
     if (projectManager.findAll() != null) {
-
       if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin()) {
         myProjects = new ArrayList<>();
         for (ProjectPhase projectPhase : phase.getProjectPhases()) {
           myProjects.add(projectPhase.getProject());
         }
         allProjects = new ArrayList<>();
-
-
       } else {
-
         allProjects = new ArrayList<>();
         for (ProjectPhase projectPhase : phase.getProjectPhases()) {
           allProjects.add(projectManager.getProjectById(projectPhase.getProject().getId()));
         }
         if (this.isPlanningActive()) {
-
           myProjects = projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym()).stream()
             .filter(p -> p.isActive()).collect(Collectors.toList());
-
         } else {
-
           myProjects = projectManager.getUserProjectsReporting(this.getCurrentUser().getId(), loggedCrp.getAcronym())
             .stream().filter(p -> p.isActive()).collect(Collectors.toList());
-
         }
         List<Project> mProjects = new ArrayList<>();
         mProjects.addAll(myProjects);
         for (Project project : mProjects) {
-
-
           if (!allProjects.contains(project)) {
             myProjects.remove(project);
           }
         }
-
         allProjects.removeAll(myProjects);
-
       }
 
 
@@ -445,35 +464,21 @@ public class ProjectListAction extends BaseAction {
         project.setFlagships(programs);
         project.setRegions(regions);
       }
-      if (allProjects != null) {
-        for (Project project : allProjects) {
-          project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
-          List<CrpProgram> programs = new ArrayList<>();
-          List<CrpProgram> regions = new ArrayList<>();
-          for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-            .filter(
-              c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
-                && c.getPhase().equals(this.getActualPhase()))
-            .collect(Collectors.toList())) {
-            programs.add(projectFocuses.getCrpProgram());
-          }
-          for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-            .filter(
-              c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()
-                && c.getPhase().equals(this.getActualPhase()))
-            .collect(Collectors.toList())) {
-            regions.add(projectFocuses.getCrpProgram());
-          }
-          project.setFlagships(programs);
-          project.setRegions(regions);
-        }
-      }
+
+      this.loadFlagshipgsAndRegions(myProjects);
+
     }
 
+    myProjects.removeAll(closedProjects);
+    if (allProjects != null) {
+      allProjects.removeAll(closedProjects);
+    }
+    this.loadFlagshipgsAndRegions(closedProjects);
+    // closedProjects.sort((p1, p2) -> p1.getStatus().compareTo(p2.getStatus()));
     String params[] = {loggedCrp.getAcronym() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_LIST_BASE_PERMISSION, params));
-
   }
+
 
   @Override
   public String save() {
@@ -484,6 +489,10 @@ public class ProjectListAction extends BaseAction {
     this.allProjects = allProjects;
   }
 
+
+  public void setClosedProjects(List<Project> closedProjects) {
+    this.closedProjects = closedProjects;
+  }
 
   public void setFilterBy(String filterBy) {
     this.filterBy = filterBy;

@@ -135,6 +135,8 @@ public final class APConstants {
   public static final String FUNDING_SOURCES_BUDGETS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.FundingSource.fundingSourceBudgets)";
 
+  public static final String TEMP_CYCLE = "temp_cycle";
+  public static final String TEMP_YEAR = "temp_year";
 
   public static final String FUNDING_SOURCES_INSTITUTIONS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.FundingSource.fundingInstitutions)";

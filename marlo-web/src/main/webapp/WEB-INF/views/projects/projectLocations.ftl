@@ -376,9 +376,11 @@
       </div>
     </div>
     [#-- TEST FORM BY LOCATION LEVEL --]
+    [#if editable]
     <div class="col-md-12" style="">
       <span class="pull-right glyphicon glyphicon-plus addLoc-locLevel"><b> [@s.text name="Add new location" /]</b></span>
     </div>
+    [/#if]
     <input class="locationLevelId" type="hidden" name="${locationLevelName}[${index}].id" value="${(element.id)!}"/>
     <input class="locationLevelName" type="hidden" name="${locationLevelName}[${index}].name" value="${(element.name)!}"/>
     <input type="hidden" class="isList" name="${customName}.isList"  value="${(list)?string}"/>

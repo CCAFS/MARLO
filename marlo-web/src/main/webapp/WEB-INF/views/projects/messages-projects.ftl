@@ -35,7 +35,9 @@
       <p class="readPrivileges">MARLO is closed.</p>
     [#else]
       [#if project.projectInfo.isProjectEditLeader()]
+        [#if !(action.hasPermission("statusDescription")) ]
         <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
+        [/#if]
       [#else]
         <p class="readPrivileges">[@s.text name="project.preset.messagge" /]</p>
       [/#if]    

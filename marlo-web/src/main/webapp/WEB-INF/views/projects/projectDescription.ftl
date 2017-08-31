@@ -93,25 +93,17 @@
               [@customForm.textArea name="project.projectInfo.summary"  i18nkey="project.summary" required=!((project.bilateralProject)!false) className="project-description limitWords-250" editable=editable && action.hasPermission("summary") /]
             </div>
             
-            [#-- Project status 
-            [#if reportingActive ]
-            <div class="form-group">
-              <br />
-              <div class="dottedBox ${reportingActive?string('fieldFocus','')}">
-                <div class="row">
-                  <div class="col-md-6">
-                    [@customForm.select name="project.status" value="${(project.status)!}" i18nkey="project.status" listName="projectStatuses" header=false editable=editable /]
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-md-12">
-                    [@customForm.textArea name="project.statusJustification" required=!((project.bilateralProject)!false) className="project-statusJustification limitWords-100" editable=editable  /]
-                  </div>
+            [#-- Project status --]
+            <div class="form-group ${reportingActive?string('fieldFocus','')}">
+              <div class="form-group row">
+                <div class="col-md-6">
+                  [@customForm.select name="project.status" value="${(project.status)!}" i18nkey="project.status" className="description_project_status" listName="projectStatuses" header=false editable=editable /]
                 </div>
               </div>
+              <div id="statusDescription" class="form-group" style="display:${project.statusJustificationRequired?string('block','none')}">
+                [@customForm.textArea name="project.statusJustification" required=!((project.bilateralProject)!false) className="project-statusJustification limitWords-100" editable=action.hasPermission("statusDescription")  /]
+              </div>
             </div>
-            [/#if]
-            --]
             
             [#--  Regions/global and Flagships that the project is working on --]
             [#if !project.projectInfo.administrative]
