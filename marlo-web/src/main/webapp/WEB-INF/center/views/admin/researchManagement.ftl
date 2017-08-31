@@ -1,7 +1,10 @@
 [#ftl]
 [#assign title = "Research Areas" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
-[#assign customJS = ["${baseUrlMedia}/js/global/usersManagement.js"] /]
+[#assign customJS = [
+  "${baseUrlMedia}/js/global/usersManagement.js",
+  "${baseUrlMedia}/js/admin/researchManagement.js"
+] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "researchManagement" /]
 
@@ -23,7 +26,7 @@
         [@s.form action=actionName enctype="multipart/form-data" ]  
           <h4 class="sectionTitle form-group">[@s.text name="researchManagement.title" /]</h4>
           <div class="researchAreas-block">
-            <div class="items-list" listname="centerAreas">
+            <div listname="centerAreas">
               [#if centerAreas?has_content]
                 [#list centerAreas as item]
                   [@researchAreaMacro element=item name="centerAreas" index=item_index /]
@@ -34,7 +37,7 @@
           </div>
           [#-- Add Research Area Button --]
           <div class="text-center">
-            <div class="bigAddButton "><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="researchManagement.addResearchArea"/]</div>
+            <div class="addResearchArea bigAddButton"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="researchManagement.addResearchArea"/]</div>
           </div>
         [/@s.form]
       </div>
@@ -44,6 +47,17 @@
 
 
 [@researchAreaMacro element={} name="centerAreas" index=-1 template=true/]
+
+[@userItemMacro element={} name="centerAreas[-1].leaders" index=-1 template=true/]
+
+[@programMacro element={} name="centerAreas[-1].programs" index=-1 template=true/]
+
+[@userItemMacro element={} name="centerAreas[-1].programs[-1].leaders" index=-1 template=true/]
+
+
+[#-- Search users Interface --]
+[#import "/WEB-INF/global/macros/usersPopup.ftl" as usersForm/]
+[@usersForm.searchUsers/]
 
 [#include "/WEB-INF/center/global/pages/footer.ftl" /]
 
@@ -61,7 +75,7 @@
     <br />
     
     [#-- Remove Button --]
-    <div class="removeProgram removeElement" title="[@s.text name="researchManagement.removeArea"/]"></div>
+    <div class="removeArea removeElement" title="[@s.text name="researchManagement.removeArea"/]"></div>
     
     [#-- Basic Information --]
     <div class="form-group row">
@@ -72,7 +86,7 @@
     [#-- Leaders --]
     <div class="form-group">
       <h5 class="sectionSubTitle" for="">[@s.text name="researchArea.leaders" /]</h5>
-      <div class="simpleBox researchAreas-leaders-block">
+      <div class="simpleBox researchAreas-leaders-block items-list">
         <ul>
           [#if element.leaders?has_content]
             [#list element.leaders as item]
@@ -103,9 +117,7 @@
         <div class="addResearchProgram button-blue"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="researchManagement.addResearchProgram"/]</div>
       </div>
     </div>
-    
-    [#-- Remove Button --]
-    [#if editable]<span class="glyphicon glyphicon-remove pull-right remove-researchArea" aria-hidden="true"></span>[/#if]
+     
   </div>
 [/#macro]
 
@@ -134,7 +146,7 @@
     [#-- Leaders --]
     <div class="form-group">
       <label for="">[@s.text name="programs.leaders" /]:</label>
-      <div class="simpleBox researchAreas-leaders-block">
+      <div class="simpleBox researchAreas-leaders-block items-list">
         <ul>
           [#if element.leaders?has_content]
             [#list element.leaders as item]
@@ -149,19 +161,17 @@
       </div>
     </div>
     
-    [#-- Remove Button --]
-    [#if editable]<span class="glyphicon glyphicon-remove pull-right remove-researchArea" aria-hidden="true"></span>[/#if]
   </div>
 [/#macro]
 
 [#macro userItemMacro element name index template=false]
   [#local customName = "${name}[${index}]" /]
-  <li id="user-${template?string('template',index)}" class="user userItem" style="display:${template?string('none','block')}">
+  <li id="userItem-${template?string('template',index)}" class="user userItem" style="display:${template?string('none','block')}">
     <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
     <span class="name"> ${(element.user.getComposedName()?html)!'Unknown user'}</span>
     <input class="user" type="hidden" name="${customName}.user.id" value="${(element.user.id)!}"/>
     <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
     [#-- Remove Button --]
-    <span class="glyphicon glyphicon-remove pull-right remove-userItem" aria-hidden="true"></span>
+    <span class="glyphicon glyphicon-remove pull-right removeUserItem" aria-hidden="true"></span>
   </li>
 [/#macro]
