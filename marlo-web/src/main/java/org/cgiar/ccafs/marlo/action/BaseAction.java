@@ -2727,6 +2727,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public boolean isReportingActive() {
 
+    if (this.getSession().containsKey(APConstants.TEMP_CYCLE)) {
+      return true;
+    }
     return Boolean.parseBoolean(this.getSession().get(APConstants.CRP_REPORTING_ACTIVE).toString());
 
   }
