@@ -419,7 +419,7 @@ public class OutputsListAction extends BaseAction {
   public void setOutcomeID(long outcomeID) {
     this.outcomeID = outcomeID;
   }
-
+  
   public void setOutcomes(List<CenterOutcome> outcomes) {
     this.outcomes = outcomes;
   }
