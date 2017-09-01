@@ -116,7 +116,7 @@ public class RejectPartnerRequestAction extends BaseAction {
     StringBuilder message = new StringBuilder();
     message.append(this.getText("email.dear", new String[] {partnerRequest.getCreatedBy().getFirstName()}));
     message.append(this.getText("marloRequestInstitution.reject.email",
-      new String[] {partnerRequest.getPartnerInfo(), this.getCurrentUser().getComposedCompleteName(), justification}));
+      new String[] {partnerRequest.getPartnerInfo(), justification}));
 
     message.append(this.getText("email.support.noCrpAdmins"));
     message.append(this.getText("email.bye"));
