@@ -149,11 +149,11 @@ public class ResearchManagementAction extends BaseAction {
         // check center area changes
         boolean hasChanges = false;
         CenterArea centerAreaDB = centerAreaService.find(centerArea.getId());
-        if (centerArea.getAcronym() != centerAreaDB.getAcronym()) {
+        if (!centerArea.getAcronym().equals(centerAreaDB.getAcronym())) {
           centerAreaDB.setAcronym(centerArea.getAcronym());
           hasChanges = true;
         }
-        if (centerArea.getName() != centerAreaDB.getName()) {
+        if (!centerArea.getName().equals(centerAreaDB.getName())) {
           centerAreaDB.setName(centerArea.getName());
           hasChanges = true;
         }
@@ -190,9 +190,6 @@ public class ResearchManagementAction extends BaseAction {
 
         // check new programs
         if (centerArea.getPrograms() != null && centerArea.getPrograms().size() > 0) {
-          /**
-           * 
-           */
           // save new programs
           for (CenterProgram centerProgram : centerArea.getPrograms()) {
             if (centerProgram.getId() == null || centerProgram.getId() == -1) {
@@ -234,15 +231,17 @@ public class ResearchManagementAction extends BaseAction {
               // check programs changes
               CenterProgram centerProgramDB = centerProgramService.getProgramById(centerProgram.getId());
               boolean hasChangesProgram = false;
-              if (centerProgram.getAcronym() != centerProgramDB.getAcronym()) {
+              if (!centerProgram.getAcronym().equals(centerProgramDB.getAcronym())) {
                 centerProgramDB.setAcronym(centerProgram.getAcronym());
                 hasChangesProgram = true;
               }
-              if (centerProgram.getName() != centerProgramDB.getName()) {
+              if (!centerProgram.getName().equals(centerProgramDB.getName())) {
                 centerProgramDB.setName(centerProgram.getName());
                 hasChangesProgram = true;
               }
               if (hasChangesProgram) {
+                centerProgramDB.setActive(true);
+                centerProgramDB.setModifiedBy(this.getCurrentUser());
                 centerProgramService.saveProgram(centerProgramDB);
               }
               // check if there are new program leaders
@@ -348,8 +347,9 @@ public class ResearchManagementAction extends BaseAction {
             List<CenterLeader> programLeadersDB =
               centerProgramDB.getResearchLeaders().stream().filter(rl -> rl.isActive()).collect(Collectors.toList());
             for (CenterLeader programLeaderDB : programLeadersDB) {
-              centerProgram.getLeaders().contains(programLeaderDB);
-              centerLeaderService.deleteResearchLeader(programLeaderDB.getId());
+              if (centerProgram.getLeaders() == null || !centerProgram.getLeaders().contains(programLeaderDB)) {
+                centerLeaderService.deleteResearchLeader(programLeaderDB.getId());
+              }
             }
           }
         }
