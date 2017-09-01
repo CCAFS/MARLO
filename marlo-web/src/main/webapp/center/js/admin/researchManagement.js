@@ -34,6 +34,10 @@ function attachEvents() {
 
 function addResearchArea() {
   console.log("addResearchArea");
+  var $list = $('.researchAreas-list');
+  var $item = $('#researchArea-template').clone(true).removeAttr("id");
+  $list.append($item);
+  $item.show('slow');
 }
 
 function removeArea() {

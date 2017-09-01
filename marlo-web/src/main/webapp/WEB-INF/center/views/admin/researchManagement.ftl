@@ -26,7 +26,7 @@
         [@s.form action=actionName enctype="multipart/form-data" ]  
           <h4 class="sectionTitle form-group">[@s.text name="researchManagement.title" /]</h4>
           <div class="researchAreas-block">
-            <div listname="centerAreas">
+            <div class="researchAreas-list" listname="centerAreas">
               [#if centerAreas?has_content]
                 [#list centerAreas as item]
                   [@researchAreaMacro element=item name="centerAreas" index=item_index /]
@@ -34,11 +34,15 @@
               [/#if] 
               <p class="emptyMessage text-center usersMessage" style="display:${(centerAreas?has_content)?string('none','block')}">No Research Areas added yet.</p>
             </div>
+            [#-- Add Research Area Button --]
+            <div class="text-center">
+              <div class="addResearchArea bigAddButton"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="researchManagement.addResearchArea"/]</div>
+            </div>
           </div>
-          [#-- Add Research Area Button --]
-          <div class="text-center">
-            <div class="addResearchArea bigAddButton"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="researchManagement.addResearchArea"/]</div>
-          </div>
+          
+          [#-- Section Buttons & hidden inputs--]
+          [#include "/WEB-INF/center/views/admin/buttons-admin.ftl" /]
+          
         [/@s.form]
       </div>
     </div>
