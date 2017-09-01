@@ -33,23 +33,35 @@ function attachEvents() {
 // ************************************************************************************************//
 
 function addResearchArea() {
-  console.log("addResearchArea");
   var $list = $('.researchAreas-list');
   var $item = $('#researchArea-template').clone(true).removeAttr("id");
   $list.append($item);
   $item.show('slow');
+  updateResearchIndex();
 }
 
 function removeArea() {
-  console.log("removeArea");
+  var $parent = $(this).parents('.researchArea');
+  $parent.hide(function() {
+    $parent.remove();
+    updateResearchIndex();
+  });
 }
 
 function addResearchProgram() {
-  console.log("addResearchProgram");
+  var $list = $(this).parents('.researchArea').find('.programs-list');
+  var $item = $('#researchProgram-template').clone(true).removeAttr("id");
+  $list.append($item);
+  $item.show('slow');
+  updateResearchIndex();
 }
 
 function removeProgram() {
-  console.log("removeProgram");
+  var $parent = $(this).parents('.researchProgram');
+  $parent.hide(function() {
+    $parent.remove();
+    updateResearchIndex();
+  });
 }
 
 /**
@@ -60,9 +72,9 @@ function removeProgram() {
  * @returns
  */
 function addUserItem(composedName,userId) {
-  $usersList = $elementSelected.parents(".items-list");
-  console.log($usersList);
-  var $li = $("#userItem-template").clone(true).removeAttr("id");
+  var cloneItem = $elementSelected.classParam("clone");
+  var $usersList = $elementSelected.parents(".items-list");
+  var $li = $("#" + cloneItem + "-template").clone(true).removeAttr("id");
   $li.find('.name').html(escapeHtml(composedName));
   $li.find('.user').val(userId);
   $usersList.find("ul").append($li);
@@ -87,5 +99,25 @@ function removeUserItem() {
  * Update Research Areas, programs and person indexes
  */
 function updateResearchIndex() {
+  $('form .researchArea').each(function(iResearchArea,researchArea) {
 
+    // Update Research Area Index
+    $(researchArea).setNameIndexes(1, iResearchArea);
+
+    // Update Research Area - Leaders Index
+    $(researchArea).find('.userItem').each(function(iLeader,leader) {
+      $(leader).setNameIndexes(2, iLeader);
+    });
+
+    // Update Research Area - Programs Index
+    $(researchArea).find('.researchProgram').each(function(iResearchProgram,researchProgram) {
+      $(researchProgram).setNameIndexes(2, iResearchProgram);
+
+      // Update Research Program - Leaders Index
+      $(researchProgram).find('.userItem').each(function(iProgramLeader,programLeader) {
+        $(programLeader).setNameIndexes(3, iProgramLeader);
+      });
+    });
+
+  });
 }

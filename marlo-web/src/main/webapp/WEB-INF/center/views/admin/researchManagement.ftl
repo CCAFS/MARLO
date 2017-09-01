@@ -52,11 +52,11 @@
 
 [@researchAreaMacro element={} name="centerAreas" index=-1 template=true/]
 
-[@userItemMacro element={} name="centerAreas[-1].leaders" index=-1 template=true/]
+[@userItemMacro element={} name="centerAreas[-1].leaders" index=-1 id="userItemAreaLeader" template=true/]
 
 [@programMacro element={} name="centerAreas[-1].programs" index=-1 template=true/]
 
-[@userItemMacro element={} name="centerAreas[-1].programs[-1].leaders" index=-1 template=true/]
+[@userItemMacro element={} name="centerAreas[-1].programs[-1].leaders" index=-1 id="userItemProgramLeader" template=true/]
 
 
 [#-- Search users Interface --]
@@ -65,9 +65,9 @@
 
 [#include "/WEB-INF/center/global/pages/footer.ftl" /]
 
-[#macro researchAreaMacro element name index template=false]
+[#macro researchAreaMacro element name index id="researchArea" template=false]
   [#local customName = "${name}[${index}]" /]
-  <div id="researchArea-${template?string('template',index)}" class="researchArea borderBox" style="display:${template?string('none','block')}">
+  <div id="${id}-${template?string('template',index)}" class="${id} borderBox" style="display:${template?string('none','block')}">
     [#-- Hidden inputs --]
     <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
     
@@ -100,7 +100,7 @@
           [/#if]
         </ul>
         <div class="text-center">
-          <div class="searchUser button-green"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addPerson" /]</div>
+          <div class="searchUser button-green clone-userItemAreaLeader"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addPerson" /]</div>
         </div>
       </div>
     </div>
@@ -108,7 +108,7 @@
     [#-- Programs --]
     <div class="form-group">
       <h5 class="sectionSubTitle" for="">[@s.text name="researchArea.programs" /]:</h5>
-      <div class="researchAreas-programs-block">
+      <div class="programs-list">
         [#if element.programs?has_content]
           [#list element.programs as item]
             [@programMacro element=item name="${customName}.programs" index=item_index /]
@@ -125,9 +125,9 @@
   </div>
 [/#macro]
 
-[#macro programMacro element name index template=false]
+[#macro programMacro element name index id="researchProgram" template=false]
   [#local customName = "${name}[${index}]" /]
-  <div id="program-${template?string('template',index)}" class="program simpleBox" style="display:${template?string('none','block')}">
+  <div id="${id}-${template?string('template',index)}" class="${id} simpleBox" style="display:${template?string('none','block')}">
     [#-- Hidden inputs --]
     <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
     
@@ -160,7 +160,7 @@
           [/#if]
         </ul>
         <div class="text-center">
-          <div class="searchUser button-green"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addPerson" /]</div>
+          <div class="searchUser button-green clone-userItemProgramLeader"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addPerson" /]</div>
         </div>
       </div>
     </div>
@@ -168,9 +168,9 @@
   </div>
 [/#macro]
 
-[#macro userItemMacro element name index template=false]
+[#macro userItemMacro element name index id="userItem" template=false]
   [#local customName = "${name}[${index}]" /]
-  <li id="userItem-${template?string('template',index)}" class="user userItem" style="display:${template?string('none','block')}">
+  <li id="${id}-${template?string('template',index)}" class="user userItem ${id}" style="display:${template?string('none','block')}">
     <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
     <span class="name"> ${(element.user.getComposedName()?html)!'Unknown user'}</span>
     <input class="user" type="hidden" name="${customName}.user.id" value="${(element.user.id)!}"/>
