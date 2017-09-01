@@ -289,7 +289,7 @@ public class ResearchManagementAction extends BaseAction {
       .filter(ca -> ca.isActive() && ca.getResearchCenter().equals(loggedCenter)).collect(Collectors.toList()));
     // Check deleted center area
     for (CenterArea centerAreaDB : centerAreasDB) {
-      if (!centerAreas.contains(centerAreaDB)) {
+      if (centerAreas.isEmpty() || !centerAreas.contains(centerAreaDB)) {
         // delete centerLeaders
         List<CenterLeader> areaLeadersDB =
           centerAreaDB.getResearchLeaders().stream().filter(rl -> rl.isActive()).collect(Collectors.toList());
@@ -322,7 +322,7 @@ public class ResearchManagementAction extends BaseAction {
         List<CenterLeader> areaLeadersDB =
           centerAreaDB.getResearchLeaders().stream().filter(rl -> rl.isActive()).collect(Collectors.toList());
         for (CenterLeader areaLeaderDB : areaLeadersDB) {
-          if (!centerArea.getLeaders().contains(areaLeaderDB)) {
+          if (centerArea.getLeaders() == null || !centerArea.getLeaders().contains(areaLeaderDB)) {
             centerLeaderService.deleteResearchLeader(areaLeaderDB.getId());
           }
         }
@@ -330,7 +330,7 @@ public class ResearchManagementAction extends BaseAction {
         List<CenterProgram> centerProgramsDB =
           centerAreaDB.getResearchPrograms().stream().filter(rp -> rp.isActive()).collect(Collectors.toList());
         for (CenterProgram centerProgramDB : centerProgramsDB) {
-          if (!centerArea.getPrograms().contains(centerProgramDB)) {
+          if (centerArea.getPrograms() == null || !centerArea.getPrograms().contains(centerProgramDB)) {
             List<CenterLeader> programLeadersDB =
               centerProgramDB.getResearchLeaders().stream().filter(rl -> rl.isActive()).collect(Collectors.toList());
             // delete program leaders
