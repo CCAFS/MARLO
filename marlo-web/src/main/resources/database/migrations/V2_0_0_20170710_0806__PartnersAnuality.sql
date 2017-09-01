@@ -143,7 +143,7 @@ id_phase
 ) SELECT 
 
 t2.deliverable_id,
-t2.ppp,
+ppp.id,
 t2.partner_type,
 t2.is_active,
 t2.active_since,
@@ -161,5 +161,5 @@ FROM
 left JOIN project_phases pp ON pp.project_id = d.project_id
 
 left JOIN phases ph ON ph.id = pp.id_phase
-  inner join project_partners pp on  pp.id=ppp.project_partner_id on pp.id_phase=ph.id
+  inner join project_partners ppa on  ppa.id=ppp.project_partner_id and ppa.id_phase=ph.id
 ;
