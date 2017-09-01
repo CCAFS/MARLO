@@ -24,8 +24,8 @@
 
 
 <script src="${baseUrl}/bower_components/jquery/dist/jquery.min.js"></script>
-<script src="${baseUrlMedia}/js/capDev/capacityDevelopment.js"></script>
-<script src="${baseUrlMedia}/js/capDev/supportingDocuments.js"></script>
+<!-- <script src="${baseUrlMedia}/js/capDev/capacityDevelopment.js"></script>
+<script src="${baseUrlMedia}/js/capDev/supportingDocuments.js"></script> -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.7.7/xlsx.core.min.js"></script>
 
 
@@ -95,25 +95,27 @@
 						<label for="">Document(s):</label>
 						<div class=" borderBox documentList" listname="capdev.supportingDocs">
 							
-							[#if capdevSupportingDocs.capdevSuppDocsDocumentses?has_content]
-								[#list capdevSupportingDocs.capdevSuppDocsDocumentses as document ]
+							[#if documents?has_content]
+								[#list documents as document ]
 									[#if document.active]
-									<input class="documentID" type="hidden" name="" value="${document.id}" />
+									
 									<div class="col-md-12 documents">
 								    	<input class="documentID" type="hidden" name="" value="${document.id}" />
 								    	<div class="removeCapdevsupportDocument-action removeCapdevsupportDocument removeIcon" title="Remove document"></div>
 										<div class="input input-" style="display:block;">
-											<label for="" class="editable">Link:</label>
-											<input type="text" id="" name="links[${document_index}]" value="${document.link}" class="form-control input-sm link ">
+											
+											[@customForm.input name="documents[${document_index}].link" i18nkey="capdev.supportingDocs.link" type="text" className="link"   /]
+											
+											
 										</div>
 								    </div>
 								    [/#if]
 							    [/#list]
 							[#else]
-								
+								<p class="text-center inf" style="display:${(documents?has_content)?string('none','block')}">[@s.text name="There are not document(s) added yet." /]</p>
 
 							[/#if]
-							<p class="text-center inf" style="display:${(capdevSupportingDocs.capdevSuppDocsDocumentses?has_content)?string('none','block')}">[@s.text name="There are not document(s) added yet." /]</p>
+							
 						</div>
 						<div class="col-md-12">
 							<div class="pull-right">
@@ -150,7 +152,7 @@
 <div id="document-template" class="documents form-group "  style="display:none;">
     <div class="col-md-12">
     	<div class="removeCapdevsupportDocument removeIcon" title="Remove document"></div>
-    	[@customForm.input name="links[-1]" i18nkey="capdev.supportingDocs.link" type="text" className="link"   /]
+    	[@customForm.input name="documents[-1].link" i18nkey="capdev.supportingDocs.link" type="text" className="link"   /]
     </div>
 </div>
 

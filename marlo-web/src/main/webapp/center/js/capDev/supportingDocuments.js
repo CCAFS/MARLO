@@ -30,11 +30,12 @@ var table = $supportDocsList.DataTable({
 
 //event add link supporting document
 $(".addCapdevsupportDocument").click(function(){
+  
 	var $list = $(".documentList");
 	var $item = $("#document-template").clone(true).removeAttr("id");
 	$list.append($item);
 	$item.show('slow');
-	checkItems($list);
+	checkDocsItems($list);
 	updateDocument();
 });
 
@@ -57,7 +58,7 @@ $(".removeCapdevsupportDocument").click(function(){
 	var $item = $(this).parents('.documents');
 	$item.hide(1000, function() {
 	$item.remove();
-	checkItems($list);
+	checkDocsItems($list);
 	updateDocument();
   });
 
@@ -73,8 +74,10 @@ function updateDocument() {
   });
 }
 
-function checkItems(block) {
+function checkDocsItems(block) {
   var items = $(block).find('.documents').length;
+
+  
   
   if(items == 0) {
     $(block).parent().find('p.inf').fadeIn();

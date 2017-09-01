@@ -162,7 +162,7 @@
             
             
               <div class="pull-right">
-                <a  target="_blank" class=" addButton pull-right" href="#">[@s.text name="form.buttons.generate" /]</a>
+                <a  target="_blank" class=" addButton pull-right" href="[@s.url action='/capdevSummaries' /]">[@s.text name="form.buttons.generate" /]</a>
               </div>
           </div>
         

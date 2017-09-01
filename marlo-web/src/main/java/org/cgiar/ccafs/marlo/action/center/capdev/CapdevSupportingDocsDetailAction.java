@@ -51,6 +51,7 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
   private List<CenterDeliverableType> deliverablesSubtypesList;
   private List<String> links;
   private List<Map<String, Object>> json;
+  private List<CapdevSuppDocsDocuments> documents;
   private final CapdevSupportingDocsManager capdevsupportingDocsService;
   private final CapdevSuppDocsDocumentsManager capdevSuppDocsDocumentsService;
   private final ICenterDeliverableTypeManager centerDeliverableService;
@@ -100,6 +101,10 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
   }
 
 
+  public List<CapdevSuppDocsDocuments> getDocuments() {
+    return documents;
+  }
+
   public List<Map<String, Object>> getJson() {
     return json;
   }
@@ -107,6 +112,7 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
   public List<String> getLinks() {
     return links;
   }
+
 
   public long getSupportingDocID() {
     return supportingDocID;
@@ -138,6 +144,13 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
             dt -> (dt.getDeliverableType() != null) && (dt.getDeliverableType().getId() == deliverableTypeParentId))
           .collect(Collectors.toList()));
         Collections.sort(deliverablesSubtypesList, (ra1, ra2) -> ra1.getName().compareTo(ra2.getName()));
+      }
+
+      if (capdevSupportingDocs.getCapdevSuppDocsDocumentses() != null) {
+        documents = capdevSupportingDocs.getCapdevSuppDocsDocumentses().stream().filter(d -> d.getActive())
+          .collect(Collectors.toList());
+
+        Collections.sort(documents, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
       }
 
 
@@ -180,31 +193,59 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
 
 
   public void saveLinks(List<String> links, CapdevSupportingDocs capdevSupportingDocsDB) {
-    final List<CapdevSuppDocsDocuments> documents = new ArrayList<>(capdevSupportingDocsDB
-      .getCapdevSuppDocsDocumentses().stream().filter(d -> d.getActive()).collect(Collectors.toList()));
 
-    for (final CapdevSuppDocsDocuments document : documents) {
-      capdevSuppDocsDocumentsService.deleteCapdevSuppDocsDocuments(document.getId());
-    }
 
-    if (!links.isEmpty()) {
-      for (final String link : links) {
-        final CapdevSuppDocsDocuments documentSave = new CapdevSuppDocsDocuments();
-        documentSave.setActive(true);
-        documentSave.setActiveSince(new Date());
-        documentSave.setLink(link);
-        documentSave.setCapdevSupportingDocs(capdevSupportingDocsDB);
-        documentSave.setUsersByCreatedBy(this.getCurrentUser());
-        capdevSuppDocsDocumentsService.saveCapdevSuppDocsDocuments(documentSave);
+    if ((capdevSupportingDocsDB.getCapdevSuppDocsDocumentses() != null)
+      && (capdevSupportingDocsDB.getCapdevSuppDocsDocumentses().size() > 0)) {
+      final List<CapdevSuppDocsDocuments> documentsDB = new ArrayList<>(capdevSupportingDocsDB
+        .getCapdevSuppDocsDocumentses().stream().filter(d -> d.getActive()).collect(Collectors.toList()));
+
+      for (final CapdevSuppDocsDocuments document : documentsDB) {
+        if (!documents.contains(document)) {
+          capdevSuppDocsDocumentsService.deleteCapdevSuppDocsDocuments(document.getId());
+        }
       }
     }
 
-  }
+    if (!documents.isEmpty()) {
+      for (final CapdevSuppDocsDocuments document : documents) {
+        System.out.println(document.getLink());
+        CapdevSuppDocsDocuments documentSave = null;
+        if (document.getId() == null) {
 
+          documentSave = new CapdevSuppDocsDocuments();
+          documentSave.setActive(true);
+          documentSave.setActiveSince(new Date());
+          documentSave.setLink(document.getLink());
+          documentSave.setCapdevSupportingDocs(capdevSupportingDocsDB);
+          documentSave.setUsersByCreatedBy(this.getCurrentUser());
+          capdevSuppDocsDocumentsService.saveCapdevSuppDocsDocuments(documentSave);
+        } else {
+          boolean hasChanges = false;
+          final CapdevSuppDocsDocuments documentprevio =
+            capdevSuppDocsDocumentsService.getCapdevSuppDocsDocumentsById(document.getId());
+          if (!documentprevio.getLink().equals(documentprevio.getLink())) {
+            hasChanges = true;
+            documentprevio.setLink(document.getLink());
+          }
+
+          if (hasChanges) {
+            documentprevio.setUsersByModifiedBy(this.getCurrentUser());
+            documentprevio.setActiveSince(new Date());
+            capdevSuppDocsDocumentsService.saveCapdevSuppDocsDocuments(documentprevio);
+          }
+
+        }
+      }
+    }
+
+
+  }
 
   public void setCapdevID(long capdevID) {
     this.capdevID = capdevID;
   }
+
 
   public void setCapdevSupportingDocs(CapdevSupportingDocs capdevSupportingDocs) {
     this.capdevSupportingDocs = capdevSupportingDocs;
@@ -218,6 +259,11 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
 
   public void setDeliverablesSubtypesList(List<CenterDeliverableType> deliverablesSubtypesList) {
     this.deliverablesSubtypesList = deliverablesSubtypesList;
+  }
+
+
+  public void setDocuments(List<CapdevSuppDocsDocuments> documents) {
+    this.documents = documents;
   }
 
 
@@ -239,7 +285,7 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      validator.validate(this, capdevSupportingDocs, links);
+      validator.validate(this, capdevSupportingDocs, documents);
 
       // if (capdevSupportingDocs.getTitle().equalsIgnoreCase("")) {
       // this.addFieldError("capdevSupportingDocs.title", "Title is required.");

@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -47,21 +48,21 @@ public class CapacityDevelopmentValidator extends BaseValidator {
   }
 
   public void validate(BaseAction baseAction, CapacityDevelopment capdev, Participant participant, File uploadFile,
-    String uploadFileContentType) {
+    String uploadFileContentType, List<Long> countries, List<Long> regions) {
     baseAction.setInvalidFields(new HashMap<>());
 
     if (!baseAction.getFieldErrors().isEmpty()) {
       baseAction.addActionError(baseAction.getText("saving.fields.required"));
     }
 
-    this.validateCapDevDetail(baseAction, capdev, participant, uploadFile, uploadFileContentType);
+    this.validateCapDevDetail(baseAction, capdev, participant, uploadFile, uploadFileContentType, countries, regions);
 
     this.saveMissingFields(capdev, "detailCapdev");
 
   }
 
   public void validateCapDevDetail(BaseAction baseAction, CapacityDevelopment capdev, Participant participant,
-    File uploadFile, String uploadFileContentType) {
+    File uploadFile, String uploadFileContentType, List<Long> countries, List<Long> regions) {
 
 
     if (capdev.getTitle() != null) {
@@ -93,32 +94,46 @@ public class CapacityDevelopmentValidator extends BaseValidator {
       this.addMessage(baseAction.getText("capdev.action.duration"));
       baseAction.getInvalidFields().put("input-capdev.duration", InvalidFieldsMessages.EMPTYFIELD);
     }
-
-    if (this.bolValue(capdev.getsGlobal()) != null) {
-      if (this.bolValue(capdev.getsGlobal())) {
-        if ((capdev.getCapDevCountries() == null)
-          || capdev.getCapDevCountries().stream().filter(c -> c.isActive()).collect(Collectors.toList()).isEmpty()) {
-          this.addMessage(baseAction.getText("capdev.action.countries"));
-          baseAction.getInvalidFields().put("list-capdev.countries", baseAction.getText(InvalidFieldsMessages.EMPTYLIST,
-            new String[] {"Capacity Development Intervention Countries"}));
-        }
-      }
-    } else {
+    if (this.bolValue(capdev.getsGlobal()) == null) {
       this.addMessage(baseAction.getText("capdev.action.global"));
       baseAction.getInvalidFields().put("input-capdev.sGlobal", InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    if (this.bolValue(capdev.getsRegional()) != null) {
-      if (this.bolValue(capdev.getsRegional())) {
-        if ((capdev.getCapDevRegions() == null) || capdev.getCapDevRegions().isEmpty()) {
-          this.addMessage(baseAction.getText("capdev.action.regions"));
-          baseAction.getInvalidFields().put("list-capdev.regions", baseAction.getText(InvalidFieldsMessages.EMPTYLIST,
-            new String[] {"Capacity Development Intervention Regions"}));
-        }
-      }
-    } else {
+    if (countries.get(0) == -1) {
+      countries.remove(0);
+    }
+    if (countries.isEmpty() && (capdev.getCapDevCountries() == null)) {
+      this.addMessage(baseAction.getText("capdev.action.countries"));
+      baseAction.getInvalidFields().put("list-capdev.countries", baseAction.getText(InvalidFieldsMessages.EMPTYLIST,
+        new String[] {"Capacity Development Intervention Countries"}));
+
+    } else if (countries.isEmpty()
+      && capdev.getCapDevCountries().stream().filter(c -> c.isActive()).collect(Collectors.toList()).isEmpty()) {
+      this.addMessage(baseAction.getText("capdev.action.countries"));
+      baseAction.getInvalidFields().put("list-capdev.countries", baseAction.getText(InvalidFieldsMessages.EMPTYLIST,
+        new String[] {"Capacity Development Intervention Countries"}));
+
+    }
+
+    if (this.bolValue(capdev.getsRegional()) == null) {
       this.addMessage(baseAction.getText("capdev.action.region"));
       baseAction.getInvalidFields().put("input-capdev.sRegional", InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    if (regions.get(0) == -1) {
+      regions.remove(0);
+    }
+    if (regions.isEmpty() && (capdev.getCapDevRegions() == null)) {
+      this.addMessage(baseAction.getText("capdev.action.regions"));
+      baseAction.getInvalidFields().put("list-capdev.regions", baseAction.getText(InvalidFieldsMessages.EMPTYLIST,
+        new String[] {"Capacity Development Intervention Regions"}));
+
+    } else if (regions.isEmpty()
+      && capdev.getCapDevRegions().stream().filter(c -> c.isActive()).collect(Collectors.toList()).isEmpty()) {
+      this.addMessage(baseAction.getText("capdev.action.regions"));
+      baseAction.getInvalidFields().put("list-capdev.regions", baseAction.getText(InvalidFieldsMessages.EMPTYLIST,
+        new String[] {"Capacity Development Intervention Regions"}));
+
     }
 
     if (capdev.getCategory() == 1) {
@@ -163,7 +178,6 @@ public class CapacityDevelopmentValidator extends BaseValidator {
           this.addMessage(baseAction.getText("capdev.action.file"));
           baseAction.getInvalidFields().put("list-capdev.uploadFile",
             baseAction.getText(InvalidFieldsMessages.FILE_SIZE, new String[] {""}));
-
         }
 
       }

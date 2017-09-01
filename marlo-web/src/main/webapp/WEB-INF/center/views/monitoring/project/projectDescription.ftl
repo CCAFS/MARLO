@@ -225,7 +225,7 @@
                 [#-- SELECT COUNTRIES --]
                 <div class="countriesBox form-group" style="display:block">
                   <div class="panel tertiary">
-                   <div class="panel-head"><label for=""> [@customForm.text name="projectDescription.listCountries" readText=!editable /]:[@customForm.req required=editable/]</label></div>
+                    <div class="panel-head"><label for=""> [@customForm.text name="projectDescription.listCountries" readText=!editable /]:[@customForm.req   required=editable/]</label></div>
                     <div id="countryList" class="panel-body" listname="project.countries"> 
                       <ul class="list">
                       [#if project.projectCountries?has_content]

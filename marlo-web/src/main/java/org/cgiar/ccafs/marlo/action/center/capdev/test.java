@@ -43,8 +43,8 @@ public class test {
 
 
     try {
-      // obj.createFile();
-      obj.readFile();
+      obj.createFile();
+      // obj.readFile();
       // obj.sustraerId("AR- U.de.Palermo");
     } catch (final FileNotFoundException e) {
       e.printStackTrace();
@@ -170,8 +170,6 @@ public class test {
 
     } catch (EncryptedDocumentException | IOException e1) {
       e1.printStackTrace();
-
-
     }
   }
 

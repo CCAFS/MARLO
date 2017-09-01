@@ -16,6 +16,7 @@
 package org.cgiar.ccafs.marlo.validation.center.capdev;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.data.model.CapdevSuppDocsDocuments;
 import org.cgiar.ccafs.marlo.data.model.CapdevSupportingDocs;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
@@ -33,7 +34,8 @@ public class CapdevSupportingDocsValidator extends BaseValidator {
 
   }
 
-  public void validate(BaseAction baseAction, CapdevSupportingDocs capdevSupportingDocs, List<String> links) {
+  public void validate(BaseAction baseAction, CapdevSupportingDocs capdevSupportingDocs,
+    List<CapdevSuppDocsDocuments> links) {
 
     baseAction.setInvalidFields(new HashMap<>());
 
@@ -46,7 +48,7 @@ public class CapdevSupportingDocsValidator extends BaseValidator {
 
 
   public void validateSupportingDocs(BaseAction baseAction, CapdevSupportingDocs capdevSupportingDocs,
-    List<String> links) {
+    List<CapdevSuppDocsDocuments> links) {
     if (capdevSupportingDocs.getTitle().equalsIgnoreCase("")) {
       this.addMessage(baseAction.getText("capdev.action.supportingDocs.title"));
       baseAction.getInvalidFields().put("input-capdevSupportingDocs.title", InvalidFieldsMessages.EMPTYFIELD);
@@ -63,15 +65,16 @@ public class CapdevSupportingDocsValidator extends BaseValidator {
         baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Supporting Documents"}));
     } else {
       for (int j = 0; j < links.size(); j++) {
-        this.valideDocument(baseAction, links.get(j), j);
+        this.valideDocument(baseAction, links.get(j).getLink(), j);
       }
     }
   }
 
   public void valideDocument(BaseAction baseAction, String link, int i) {
-    if (link.equalsIgnoreCase("")) {
+    // System.out.println(link + " " + i);
+    if ((link == null) || link.equals("")) {
       this.addMessage(baseAction.getText("capdev.action.supportingDocs.link"));
-      baseAction.getInvalidFields().put("input-links[" + i + "]", InvalidFieldsMessages.EMPTYFIELD);
+      baseAction.getInvalidFields().put("input-documents[" + i + "].link", InvalidFieldsMessages.EMPTYFIELD);
     }
   }
 

@@ -855,7 +855,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     this.setInvalidFields(new HashMap<>());
 
     if (save) {
-      validator.validate(this, capdev, participant, uploadFile, uploadFileContentType);
+      validator.validate(this, capdev, participant, uploadFile, uploadFileContentType, capdevCountries, capdevRegions);
 
       // if (capdev.getTitle().equalsIgnoreCase("")) {
       // this.addFieldError("capdev.title", "Title is required.");

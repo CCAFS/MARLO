@@ -287,7 +287,7 @@
 
 				<!-- Regions and countries lists -->
 				<h4 class="headTitle newCapdevField">Location Information</h4>	
-				<div class="row newCapdevField form-group">
+				<div class=" newCapdevField form-group">
 					<div class="simpleBox">
 						
 						<div class="form-group capdevDimension">[@customForm.yesNoInput  label="capdev.globalDimensionQuestion" name="capdev.sGlobal"  inverse=false  cssClass="global" /] </div>
@@ -296,14 +296,11 @@
 
 						
 						<!-- regions-->
-						<div class="form-group  listContainer capdevRegional regionsBox" style="display:none" >
-							<div class="form-group  newCapdevField" listname="capdev.regions">
-								[@customForm.select name="capdevRegions" listName="regionsList" keyFieldName="id" displayFieldName="name" help="capdev.help.region" i18nkey="capdev.form.region" className="capdevRegionsSelect" multiple=false placeholder="capdev.select"  /]
-							</div>
-
-							<div id="capdevRegionsList" >
-									<div class=" panel-body">
-										
+						<div class="form-group capdevRegional regionsBox" style="display:none" >
+							<div class="panel tertiary" >
+								<div id="capdevRegionsList">
+									<div class=" panel-body" listname="capdev.regions">
+										[@customForm.select name="capdevRegions" listName="regionsList" keyFieldName="id" displayFieldName="name" help="capdev.help.region" i18nkey="capdev.form.region" className="capdevRegionsSelect" multiple=false placeholder="capdev.select"  /]
 										<ul class="list">
 											[#if capdev.capDevRegions?has_content]
 											[#list capdev.capDevRegions as region]
@@ -320,21 +317,18 @@
 											[/#if]
 										</ul>
 									</div>
-
+								</div>
 							</div>
 						</div>
 
-							
-						 	
 
 						<div class="capdevDimension"><label>If the capacity development intervention focuses on specific countries, please list these countries:</label></div>
 						<!-- countries-->
-						<div class="form-group  listContainer"  listname="capdev.countries">
-							<div class="newCapdevField">
-								[@customForm.select name="capdevCountries" listName="countryList" keyFieldName="id" displayFieldName="name" help="capdev.help.country" i18nkey="capdev.form.country" className="capdevCountriesSelect" multiple=false placeholder="capdev.select"  /]
-							</div>
-							<div id="capdevCountriesList" class="countriesList" >
-									<div class="panel-body" >
+						<div class="form-group  countriesBox">
+							<div class="panel tertiary">
+								<div id="capdevCountriesList">
+									<div class="panel-body" listname="capdev.countries">
+										[@customForm.select name="capdevCountries" listName="countryList" keyFieldName="id" displayFieldName="name" help="capdev.help.country" i18nkey="capdev.form.country" className="capdevCountriesSelect" multiple=false placeholder="capdev.select"  /]
 										<ul class="list">
 											[#if capdev.capDevCountries?has_content]
 											[#list capdev.capDevCountries as country]
@@ -351,6 +345,7 @@
 											[/#if]
 										</ul>
 									</div>
+								</div>
 							</div>
 						</div>
 					</div>
