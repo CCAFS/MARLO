@@ -2,10 +2,10 @@
 [#assign mainMenu= [
   { 'slug': 'home',           'name': 'menu.home',          'namespace': '/',               'action': 'login',                                              'visible': !logged, 'active': true },
   { 'slug': 'home',           'name': 'menu.home',          'namespace': '/',               'action': 'centerDashboard',                      'icon': 'home',     'visible': logged, 'active': true },
-  { 'slug': 'impactPathway',  'name': 'menu.impactPathway', 'namespace': '/centerImpactPathway',  'action': '${(centerSession)!}/programimpacts',                          'visible': logged, 'active': true },
+  { 'slug': 'impactPathway',  'name': 'menu.impactPathway', 'namespace': '/centerImpactPathway',  'action': '${(centerSession)!}/programimpacts', 'visible': logged, 'active': true, 'param':(programID)! },
 
-  { 'slug': 'projects', 'name': 'menu.monitoring.projects',      'namespace': '/monitoring',       'action': '${(centerSession)!}/projectList',    'visible': (logged), 'active': true },
-  { 'slug': 'outcomes', 'name': 'menu.monitoring.outcomes',      'namespace': '/monitoring',       'action': '${(centerSession)!}/monitoringOutcomesList',    'visible': (logged), 'active':action.canAccessSuperAdmin() },
+  { 'slug': 'projects', 'name': 'menu.monitoring.projects',      'namespace': '/monitoring',       'action': '${(centerSession)!}/projectList',    'visible': (logged), 'active': true, 'param':(programID)! },
+  { 'slug': 'outcomes', 'name': 'menu.monitoring.outcomes',      'namespace': '/monitoring',       'action': '${(centerSession)!}/monitoringOutcomesList',    'visible': (logged), 'active':action.canAccessSuperAdmin(), 'param':(programID)! },
   { 'slug': 'capdev', 'name': 'menu.capdev',      'namespace': '',       'action': '',    'visible': (logged), 'active':false },
   { 'slug': 'summaries', 'name': 'menu.monitoring.summaries',      'namespace': '/centerSummaries',       'action': '${(centerSession)!}/summaries',    'visible': (logged), 'active': true }]
 
@@ -17,7 +17,7 @@
     <li id="${item.slug}" class="[#if currentSection?? && currentSection == item.slug ]currentSection[/#if] ${(item.active)?string('enabled','disabled')}">
       [#-- Monitoring Programs tag --]
       [#if item_index==3]<span class="tagMainMenu visible-md-block visible-lg-block">Monitoring Programs</span>[/#if]
-      <a href="[@s.url namespace=item.namespace action='${item.action}'][#if logged][@s.param name="edit" value="true"/][/#if][/@s.url]" onclick="return ${item.active?string}">
+      <a href="[@s.url namespace=item.namespace action='${item.action}'][#if logged][@s.param name="edit" value="true"/][/#if][#if item.param??][@s.param name="programID" value=item.param/][/#if][/@s.url]" onclick="return ${item.active?string}">
         [#if item.icon?has_content]<span class="glyphicon glyphicon-${item.icon}"></span> [/#if]
         [@s.text name=item.name ][@s.param]${(centerSession?upper_case)!'CENTER'}[/@s.param] [/@s.text]
       </a>
