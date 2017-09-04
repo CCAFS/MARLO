@@ -98,6 +98,10 @@
                   <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addOutput" /]
                 </a></div>
               </div>
+            [#else]
+              <div class="text-right">
+                [@s.text name="programImpact.outputList.allTopics" /]
+              </div>   
             [/#if]  
             [#else]
             [#if selectedResearchTopic?has_content] 
@@ -106,6 +110,10 @@
                   <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addOutput" /]
                 </a></div>
               </div>
+            [#else]
+              <div class="text-right">
+                [@s.text name="programImpact.outputList.allTopics" /]
+              </div> 
             [/#if]
             [/#if]
           [/#if]

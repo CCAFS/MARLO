@@ -373,21 +373,21 @@ public class OutputsListAction extends BaseAction {
           } catch (Exception ex) {
 
             if (!researchTopics.isEmpty()) {
-              selectedResearchTopic = researchTopics.get(0);
+              outputs = this.allProgramOutput();
             }
 
-            if (selectedResearchTopic != null) {
-              if (selectedResearchTopic.getResearchOutcomes() != null) {
-                outcomes = selectedResearchTopic.getResearchOutcomes().stream()
-                  .filter(ro -> ro.isActive() && ro.getDescription() != null && ro.getTargetYear() != -1)
-                  .collect(Collectors.toList());
-
-                if (!outcomes.isEmpty()) {
-                  selectedResearchOutcome = outcomes.get(0);
-                }
-
-              }
-            }
+            // if (selectedResearchTopic != null) {
+            // if (selectedResearchTopic.getResearchOutcomes() != null) {
+            // outcomes = selectedResearchTopic.getResearchOutcomes().stream()
+            // .filter(ro -> ro.isActive() && ro.getDescription() != null && ro.getTargetYear() != -1)
+            // .collect(Collectors.toList());
+            //
+            // if (!outcomes.isEmpty()) {
+            // selectedResearchOutcome = outcomes.get(0);
+            // }
+            //
+            // }
+            // }
           }
         }
 
@@ -419,7 +419,7 @@ public class OutputsListAction extends BaseAction {
   public void setOutcomeID(long outcomeID) {
     this.outcomeID = outcomeID;
   }
-  
+
   public void setOutcomes(List<CenterOutcome> outcomes) {
     this.outcomes = outcomes;
   }

@@ -91,7 +91,7 @@
               </div>
               [#else]
               <div class="text-right">
-                In order to add a new outcome, please select a specific "Research Topic" from the drop-down list above.
+                [@s.text name="programImpact.outcomeList.allTopics" /]
               </div>
               [/#if]
             [#else]
@@ -103,7 +103,7 @@
               </div>
               [#else]
               <div class="text-right">
-                In order to add a new outcome, please select a specific "Research Topic" from the drop-down list above.
+               [@s.text name="programImpact.outcomeList.allTopics" /]
               </div>
               [/#if]
             [/#if]
