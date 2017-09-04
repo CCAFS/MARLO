@@ -1281,8 +1281,11 @@ public class DeliverableAction extends BaseAction {
 
       deliverablePrew.setYear(deliverable.getYear());
 
-      if (deliverable.getNewExpectedYear() != null) {
+      if (deliverable.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+        && deliverable.getNewExpectedYear() != null) {
         deliverablePrew.setNewExpectedYear(deliverable.getNewExpectedYear());
+      } else {
+        deliverablePrew.setNewExpectedYear(null);
       }
 
 
