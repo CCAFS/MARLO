@@ -439,9 +439,9 @@
       </div>
     [/#if]
     <div class="leftHead">
-        <span class="index">O${(element.researchOutput.id)!}</span>
-      </div>
-    [#-- output Title --]
+      <span class="index">O${(element.researchOutput.id)!}</span>
+    </div>
+    [#-- Output Title --]
     <div class="blockTitle closed form-group" style="margin-top:30px;">
       <label for="">Output statement:</label>
       <div class="oStatement">

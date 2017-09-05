@@ -1,9 +1,11 @@
 var isSynced, $syncButtons, $unSyncButtons, syncing;
+var allowExtensionDate;
 $(document).ready(initSync);
 
 function initSync() {
   console.log('Sync FS started');
   syncing = false;
+  allowExtensionDate = true;
   isSynced = $('#isSynced').val() === "true";
   $syncButtons = $("#fillMetadata .checkButton, #fillMetadata .updateButton");
   $unSyncButtons = $("#fillMetadata .uncheckButton");
@@ -12,13 +14,12 @@ function initSync() {
     // Set Datepicker
     settingDate(".startDateInput", ".endDateInput", ".extensionDateInput");
   }
-
+  
   // Harvest metadata from URL
   $syncButtons.on("click", syncMetadata);
 
   // Unsync metadata
   $unSyncButtons.on("click", unSyncFundingSource);
-
 }
 
 /**
@@ -39,7 +40,6 @@ function setMetadata(data) {
   $.each(data, function(key,value) {
     var $parent = $('.metadataElement-' + key);
     var $input = $parent.find(".metadataValue");
-    console.log('>> input : '+ $input.attr('class'));
     var $spanSuggested = $parent.find(".metadataSuggested");
     var $hide = $parent.find('.hide');
 
@@ -87,8 +87,21 @@ function syncFundingSource() {
   $('.financeCode').attr('readOnly', true);
   // Update Grant total amount triggering the currency inputs
   $('.currencyInput').trigger('keyup');
-  // Update Funding source
-  $('.fundingSourceSyncedDate').val(new Date());
+  // Update Funding source last update
+  var today = new Date();
+  var dd = today.getDate();
+  var mm = today.getMonth()+1; // January is 0!
+
+  var yyyy = today.getFullYear();
+  if(dd<10){
+      dd='0'+dd;
+  } 
+  if(mm<10){
+      mm='0'+mm;
+  } 
+  $('.fundingSourceSyncedDate').val(yyyy+'-'+mm+'-'+dd);
+  $('.lastDaySync').show();
+  $('.lastDaySync span').html($.datepicker.formatDate( "M dd, yy", new Date(yyyy, mm -1, dd) ));
   // Hide Date labels
   $('.dateLabel').addClass('disabled');
   // Update component
@@ -138,6 +151,8 @@ function unSyncFundingSource() {
   $('.financeCode').attr('readOnly', false);
   // show Date labels
   $('.dateLabel').removeClass('disabled');
+  // Hide Last update label
+  $('.lastDaySync').hide();
   // Set datepicker
   settingDate(".startDateInput", ".endDateInput", ".extensionDateInput");
 
@@ -170,10 +185,20 @@ function getOCSMetadata() {
       success: function(data) {
         if(data.json) {
           var agreement = data.json;
+          console.log(agreement);
+          // Extension date validation
+          if(!allowExtensionDate){
+            agreement.endDate = agreement.extensionDate;
+          }
           // Principal Investigator
           agreement.pInvestigator = agreement.researcher.name;
-          // Donor
-          agreement.donorName = agreement.donor.name;
+          // Donors
+          if(agreement.originalDonor){
+            agreement.originalDonorName = agreement.originalDonor.name;
+          }
+          if(agreement.directDonor){
+            agreement.directDonorName = agreement.directDonor.name;
+          }
           // Validate extension date
           if(agreement.extensionDate == "1900-01-01") {
             agreement.extensionDate = "";
