@@ -1,7 +1,15 @@
 var allowExtensionDate, dateFormat, from, to, extension;
+var W1W2, ON_GOING;
+var $fundingType;
 $(document).ready(init);
 
 function init() {
+  
+  // Setting constants
+  W1W2 = 1;
+  ON_GOING = 2;
+  
+  $fundingType = $(".type");
   
   // Check if (crp_funding_source_extension_date) parameter is true
   allowExtensionDate = $('.allowExtensionDate').text() === "true";
@@ -117,10 +125,10 @@ function init() {
       width: '100%'
   });
 
-  changeDonorByFundingType($(".type").val(), $(".donor"))
+  changeDonorByFundingType($fundingType.val(), $(".donor"))
 
   // Check Funding type
-  onChangeFundingType($(".type").val());
+  onChangeFundingType($fundingType.val());
 
   // Funding Window / Budget type
   $("select.type").select2({
@@ -216,7 +224,8 @@ function keyupBudgetYear(){
   });
   $('#grantTotalAmount .remaining').text(setCurrencyFormat(grantAmount - total));
   
-  if (grantAmount < total){
+  // Validate total of agreement and budget type
+  if ((grantAmount < total) && ($fundingType.val() != W1W2)){
     $('#grantTotalAmount').addClass('fieldError').animateCss('shake');
   }else{
     $('#grantTotalAmount').removeClass('fieldError');
@@ -229,9 +238,6 @@ function keyupBudgetYear(){
  * @param {number} typeID - Funding budget type
  */
 function onChangeFundingType(typeID) {
-  var W1W2 = 1;
-  var ON_GOING = 2;
-
   // Change Agreement Status when is (W1W2 Type => 1)
   var $agreementStatus = $('select.agreementStatus');
   var onlyOngoingStatus = $agreementStatus.hasClass('onlyOngoing');
