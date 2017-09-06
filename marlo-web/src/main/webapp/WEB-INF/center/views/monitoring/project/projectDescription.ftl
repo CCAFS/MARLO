@@ -142,7 +142,7 @@
               [@customForm.input name="project.originalDonor" i18nkey="projectDescription.originalDonor" className="metadataValue" type="text" required=true  editable=editable/]
             </div>
             [#-- Customer Donor --]
-            <div class="form-group">
+            <div class="form-group metadataElement-directDonorName">
               [@customForm.input name="project.directDonor" i18nkey="projectDescription.customerDonor" type="text" required=false  editable=editable/]
             </div>
             [#-- Total Amount --]
@@ -191,12 +191,10 @@
                 [#-- REGIONAL SELECT --]
                 <div class="regionsBox form-group" style="display:[#if project.sRegion??][#if project.sRegion=="true"]block[#else]none[/#if][#else]none[/#if]">
                   <div class="panel tertiary">
-                   <div class="panel-head">
-                     <label for=""> [@customForm.text name="projectDescription.selectRegions" readText=!editable /]:[@customForm.req required=editable /]</label>
-                     <br />
-                     <small style="color: #337ab7;">(Standart regions are defined by United Nations)</small>
-                   </div>
-                   
+                    <div class="panel-head">
+                      <label for=""> [@customForm.text name="projectDescription.selectRegions" readText=!editable /]:[@customForm.req required=editable /]</label><br />
+                      <small style="color: #337ab7;">(Standart regions are defined by United Nations)</small>
+                    </div>
                     <div id="regionList" class="panel-body" listname="project.regions"> 
                       <ul class="list">
                       [#if project.projectRegions?has_content]
@@ -222,65 +220,65 @@
                   </div>
                 </div>
                 
-                [#-- SELECT COUNTRIES --]
-                <div class="countriesBox form-group" style="display:block">
-                  <div class="panel tertiary">
-                   <div class="panel-head"><label for=""> [@customForm.text name="projectDescription.listCountries" readText=!editable /]:[@customForm.req required=editable/]</label></div>
-                    <div id="countryList" class="panel-body" listname="project.countries"> 
-                      <ul class="list">
-                      [#if project.projectCountries?has_content]
-                        [#list project.projectCountries as country]
-                            <li id="" class="country clearfix col-md-3">
-                            [#if editable ]
-                              <div class="removeCountry removeIcon" title="Remove country"></div>
-                            [/#if]
-                              <input class="id" type="hidden" name="project.projectCountries[${country_index}].id" value="${(country.id)!-1}" />
-                              <input class="cId" type="hidden" name="project.projectCountries[${country_index}].locElement.isoAlpha2" value="${(country.locElement.isoAlpha2)!}" />
-                              <span class="name"><span> <i class="flag-sm flag-sm-${(country.locElement.isoAlpha2)!}"></i> [@utilities.wordCutter string=(country.locElement.name)! maxPos=20 /]</span></span>
-                              <div class="clearfix"></div>
-                            </li>
-                        [/#list]
-                        [#else]
-                        <p class="emptyText"> [@s.text name="No countries added yet." /]</p> 
-                      [/#if]
-                      </ul>
-                      [#if editable ]
-                        [@customForm.select name="" label=""  showTitle=false  i18nkey="" listName="countryLists" keyFieldName="isoAlpha2"  displayFieldName="name"  multiple=false required=true  className="countriesSelect" editable=editable /]
-                      [/#if] 
-                    </div>
+              [#-- SELECT COUNTRIES --]
+              <div class="countriesBox form-group" style="display:block">
+                <div class="panel tertiary">
+                  <div class="panel-head"><label for=""> [@customForm.text name="projectDescription.listCountries" readText=!editable /]:[@customForm.req required=editable/]</label></div>
+                  <div id="countryList" class="panel-body" listname="project.countries"> 
+                    <ul class="list">
+                    [#if project.projectCountries?has_content]
+                      [#list project.projectCountries as country]
+                          <li id="" class="country clearfix col-md-3">
+                          [#if editable ]
+                            <div class="removeCountry removeIcon" title="Remove country"></div>
+                          [/#if]
+                            <input class="id" type="hidden" name="project.projectCountries[${country_index}].id" value="${(country.id)!-1}" />
+                            <input class="cId" type="hidden" name="project.projectCountries[${country_index}].locElement.isoAlpha2" value="${(country.locElement.isoAlpha2)!}" />
+                            <span class="name"><span> <i class="flag-sm flag-sm-${(country.locElement.isoAlpha2)!}"></i> [@utilities.wordCutter string=(country.locElement.name)! maxPos=20 /]</span></span>
+                            <div class="clearfix"></div>
+                          </li>
+                      [/#list]
+                      [#else]
+                      <p class="emptyText"> [@s.text name="No countries added yet." /]</p> 
+                    [/#if]
+                    </ul>
+                    [#if editable ]
+                      [@customForm.select name="" label=""  showTitle=false  i18nkey="" listName="countryLists" keyFieldName="isoAlpha2"  displayFieldName="name"  multiple=false required=true  className="countriesSelect" editable=editable /]
+                    [/#if] 
                   </div>
                 </div>
-                
               </div>
             </div>
             
-            [#-- Select the cross-cutting dimension(s) to this project? --]
-            <div class="form-group">
-              <label for="">[@customForm.text name="projectDescription.crossCuttingDimensions" readText=!editable/] [@customForm.req required=editable/]</label>
-                [#assign crossCutingName = "project.projectCrosscutingTheme" /]
-                <div class="checkbox crossCutting">
-                [#if editable]
-                  <label class="col-md-3"><input type="checkbox" name="${crossCutingName}.climateChange"          class="optionable"  value="true" [#if (project.projectCrosscutingTheme.climateChange)!false ]checked="checked"[/#if] > Climate Change</label>
-                  <label class="col-md-3"><input type="checkbox" name="${crossCutingName}.gender"                 class="optionable"  value="true" [#if (project.projectCrosscutingTheme.gender)!false ]checked="checked"[/#if] > Gender</label>
-                  <label class="col-md-3"><input type="checkbox" name="${crossCutingName}.youth"                  class="optionable"  value="true" [#if (project.projectCrosscutingTheme.youth)!false ]checked="checked"[/#if] > Youth</label>
-                  <label class="col-md-3"><input type="checkbox" name="${crossCutingName}.policiesInstitutions"   class="optionable"  value="true" [#if (project.projectCrosscutingTheme.policiesInstitutions)!false ]checked="checked"[/#if] > Policies and Institutions</label>
-                  <label class="col-md-3"><input type="checkbox" name="${crossCutingName}.capacityDevelopment"    class="optionable"  value="true" [#if (project.projectCrosscutingTheme.capacityDevelopment)!false ]checked="checked"[/#if] > Capacity Development</label>
-                  <label class="col-md-3"><input type="checkbox" name="${crossCutingName}.bigData"                class="optionable"  value="true" [#if (project.projectCrosscutingTheme.bigData)!false ]checked="checked"[/#if] > Big Data</label>
-                  <label class="col-md-3"><input type="checkbox" name="${crossCutingName}.impactAssessment"       class="optionable"  value="true" [#if (project.projectCrosscutingTheme.impactAssessment)!false ]checked="checked"[/#if] > Impact Assessment</label>
-                  <label class="col-md-3"><input type="checkbox" name="${crossCutingName}.na"                     class="na"          value="true" [#if (project.projectCrosscutingTheme.na)!false ]checked="checked"[/#if] > N/A</label>
-                  <div class="clearfix"></div>
-                [#else]
-                  [#if (project.projectCrosscutingTheme.climateChange)!false ]<p class="checked"> Climate Change</p>[/#if]
-                  [#if (project.projectCrosscutingTheme.gender)!false ]<p class="checked"> Gender</p>[/#if]
-                  [#if (project.projectCrosscutingTheme.youth)!false ]<p class="checked"> Youth</p>[/#if]
-                  [#if (project.projectCrosscutingTheme.policiesInstitutions)!false ]<p class="checked"> Policies and Institutions</p>[/#if]
-                  [#if (project.projectCrosscutingTheme.capacityDevelopment)!false ]<p class="checked"> Capacity Development</p>[/#if]
-                  [#if (project.projectCrosscutingTheme.bigData)!false ]<p class="checked"> Big Data</p>[/#if]
-                  [#if (project.projectCrosscutingTheme.impactAssessment)!false ]<p class="checked"> Impact Assessment</p>[/#if]
-                  [#if (project.projectCrosscutingTheme.na)!false ]<p class="checked"> N/A</p>[/#if]                     
-                [/#if]
-                </div>
+          </div>
+            
+          [#-- Select the cross-cutting dimension(s) to this project? --]
+          <div class="form-group">
+            <label for="">[@customForm.text name="projectDescription.crossCuttingDimensions" readText=!editable/] [@customForm.req required=editable/]</label>
+            [#assign crossCutingName = "project.projectCrosscutingTheme" /]
+            <div class="checkbox crossCutting">
+            [#if editable]
+              <label class="col-md-3"><input type="checkbox" name="${crossCutingName}.climateChange"          class="optionable"  value="true" [#if (project.projectCrosscutingTheme.climateChange)!false ]checked="checked"[/#if] > Climate Change</label>
+              <label class="col-md-3"><input type="checkbox" name="${crossCutingName}.gender"                 class="optionable"  value="true" [#if (project.projectCrosscutingTheme.gender)!false ]checked="checked"[/#if] > Gender</label>
+              <label class="col-md-3"><input type="checkbox" name="${crossCutingName}.youth"                  class="optionable"  value="true" [#if (project.projectCrosscutingTheme.youth)!false ]checked="checked"[/#if] > Youth</label>
+              <label class="col-md-3"><input type="checkbox" name="${crossCutingName}.policiesInstitutions"   class="optionable"  value="true" [#if (project.projectCrosscutingTheme.policiesInstitutions)!false ]checked="checked"[/#if] > Policies and Institutions</label>
+              <label class="col-md-3"><input type="checkbox" name="${crossCutingName}.capacityDevelopment"    class="optionable"  value="true" [#if (project.projectCrosscutingTheme.capacityDevelopment)!false ]checked="checked"[/#if] > Capacity Development</label>
+              <label class="col-md-3"><input type="checkbox" name="${crossCutingName}.bigData"                class="optionable"  value="true" [#if (project.projectCrosscutingTheme.bigData)!false ]checked="checked"[/#if] > Big Data</label>
+              <label class="col-md-3"><input type="checkbox" name="${crossCutingName}.impactAssessment"       class="optionable"  value="true" [#if (project.projectCrosscutingTheme.impactAssessment)!false ]checked="checked"[/#if] > Impact Assessment</label>
+              <label class="col-md-3"><input type="checkbox" name="${crossCutingName}.na"                     class="na"          value="true" [#if (project.projectCrosscutingTheme.na)!false ]checked="checked"[/#if] > N/A</label>
+              <div class="clearfix"></div>
+            [#else]
+              [#if (project.projectCrosscutingTheme.climateChange)!false ]<p class="checked"> Climate Change</p>[/#if]
+              [#if (project.projectCrosscutingTheme.gender)!false ]<p class="checked"> Gender</p>[/#if]
+              [#if (project.projectCrosscutingTheme.youth)!false ]<p class="checked"> Youth</p>[/#if]
+              [#if (project.projectCrosscutingTheme.policiesInstitutions)!false ]<p class="checked"> Policies and Institutions</p>[/#if]
+              [#if (project.projectCrosscutingTheme.capacityDevelopment)!false ]<p class="checked"> Capacity Development</p>[/#if]
+              [#if (project.projectCrosscutingTheme.bigData)!false ]<p class="checked"> Big Data</p>[/#if]
+              [#if (project.projectCrosscutingTheme.impactAssessment)!false ]<p class="checked"> Impact Assessment</p>[/#if]
+              [#if (project.projectCrosscutingTheme.na)!false ]<p class="checked"> N/A</p>[/#if]                     
+            [/#if]
             </div>
+          </div>
            
           [#-- Outputs --]
           <div class="form-group">      
@@ -318,13 +316,10 @@
             </div>
           </div>
           
-          
-          
-          
         </div>
       </div>
       [#-- Section Buttons & hidden inputs--]
-      [#include "/WEB-INF/center//views/monitoring/project/buttons-projects.ftl" /]
+      [#include "/WEB-INF/center/views/monitoring/project/buttons-projects.ftl" /]
          
       [/@s.form] 
     </div>  

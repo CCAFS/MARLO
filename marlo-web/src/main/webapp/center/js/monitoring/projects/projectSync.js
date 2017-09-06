@@ -199,6 +199,9 @@ function getOCSMetadata() {
           if(agreement.directDonor){
             agreement.directDonorName = agreement.directDonor.name;
           }
+          if(agreement.directDonor){
+            agreement.donorName = agreement.donor.name;
+          }
           // Validate extension date
           if(agreement.extensionDate == "1900-01-01") {
             agreement.extensionDate = "";
