@@ -167,7 +167,7 @@ public class FundingSourceValidator extends BaseValidator {
 
     if (fundingSource.getSynced()) {
 
-      if (fundingSource.getBudgetType().getId() != 1) {
+      if (fundingSource.getBudgetType().getId() != APConstants.BUDGET_TYPE) {
 
         Double grantAmount = fundingSource.getGrantAmount();
         List<FundingSourceBudget> budgets = fundingSource.getBudgets();

@@ -106,6 +106,8 @@ public final class APConstants {
   public static final int DELIVERABLE_QUALITY_ANSWER_YES = 2;
   public static final int DELIVERABLE_QUALITY_ANSWER_YES_BUT_NO = 1;
 
+  public static final int BUDGET_TYPE = 1;
+
   public static final String DELIVERABLE_TYPE_ID = "deliverableTypeId";
   // Request variables
   public static final String EDITABLE_REQUEST = "edit";
