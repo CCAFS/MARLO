@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpElementManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
@@ -55,6 +56,7 @@ import org.cgiar.ccafs.marlo.data.model.IpProjectContributionOverview;
 import org.cgiar.ccafs.marlo.data.model.IpProjectIndicator;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.OtherContribution;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
@@ -67,6 +69,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlightCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlightType;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighligthsTypeEnum;
+import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectLeverage;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocationElementType;
@@ -158,27 +161,38 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   private Project project;
   private Boolean hasW1W2Co;
   private Boolean hasGender;
+  private Phase selectedPhase;
   // Front-end
   private long projectID;
   private int year;
   private String cycle;
+  private ProjectInfo projectInfo;
 
 
   // Managers
   private ProjectManager projectManager;
+
+
   private CrpProgramManager programManager;
+
+
   private GenderTypeManager genderTypeManager;
+
+
   private InstitutionManager institutionManager;
+
+
   private ProjectBudgetManager projectBudgetManager;
   private LocElementManager locElementManager;
   private CrpManager crpManager;
   private IpElementManager ipElementManager;
+  private PhaseManager phaseManager;
 
   @Inject
   public ReportingSummaryAction(APConfig config, CrpManager crpManager, ProjectManager projectManager,
     GenderTypeManager genderTypeManager, CrpProgramManager programManager, InstitutionManager institutionManager,
     ProjectBudgetManager projectBudgetManager, LocElementManager locElementManager, IpElementManager ipElementManager,
-    SrfTargetUnitManager srfTargetUnitManager) {
+    SrfTargetUnitManager srfTargetUnitManager, PhaseManager phaseManager) {
     super(config);
     this.crpManager = crpManager;
     this.projectManager = projectManager;
@@ -189,6 +203,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     this.ipElementManager = ipElementManager;
     this.genderTypeManager = genderTypeManager;
     this.srfTargetUnitManager = srfTargetUnitManager;
+    this.phaseManager = phaseManager;
   }
 
   /**
@@ -226,7 +241,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     masterReport.getParameterValues().put("BudgetPartnerWidth", width);
     return masterReport;
   }
-
 
   /**
    * Method to add i8n parameters to masterReport in Pentaho
@@ -698,7 +712,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return String.valueOf(acumulative);
   }
 
-
   private HashMap<String, Long> calculateWidth(long width, int numColumns, String name, ArrayList<Integer> excludeIndex,
     long xPosition) {
     HashMap<String, Long> hm = new HashMap<String, Long>();
@@ -712,7 +725,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return hm;
   }
 
-
   public boolean containsOutput(long outputID, long outcomeID) {
     if (project.getMogs() != null) {
       for (IpElement output : project.getMogs()) {
@@ -724,6 +736,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     }
     return false;
   }
+
 
   @Override
   public String execute() throws Exception {
@@ -791,7 +804,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         // method to get all the subreports in the prpt and store in the HashMap
         this.getAllSubreports(hm, masteritemBand);
         // Uncomment to see which Subreports are detecting the method getAllSubreports
-        // System.out.println("Pentaho SubReports: " + hm);
+        System.out.println("Pentaho SubReports: " + hm);
         // get project leader
         ProjectPartner projectLeader = project.getLeader();
         // get Flagships related to the project sorted by acronym
@@ -799,7 +812,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
           .sorted((o1, o2) -> o1.getCrpProgram().getAcronym().compareTo(o2.getCrpProgram().getAcronym()))
           .filter(
-            c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+            c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+              && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
           .collect(Collectors.toList())) {
           flagships.add(programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()));
         }
@@ -810,7 +824,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
             .sorted((c1, c2) -> c1.getCrpProgram().getAcronym().compareTo(c2.getCrpProgram().getAcronym()))
             .filter(
-              c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+              c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()
+                && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
             .collect(Collectors.toList())) {
             regions.add(programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()));
           }
@@ -844,6 +859,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           args.clear();
           this.fillSubreport((SubReport) hm.get("Description_CoAs"), "description_coas", args);
         }
+
         // Subreport Partners
         this.fillSubreport((SubReport) hm.get("partners"), "partners_count", args);
         // Subreport Partner Leader
@@ -858,9 +874,11 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         // Subreport Partner Lessons
         args.clear();
         this.fillSubreport((SubReport) hm.get("partner_lessons"), "partner_lessons", args);
+
         // Subreport Locations
         args.clear();
         this.fillSubreport((SubReport) hm.get("locations"), "locations", args);
+
         if (cycle.equals("Planning")) {
           // Subreport Outcomes
           args.clear();
@@ -868,6 +886,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         } else {
           // Subreport Project Outcomes
           args.clear();
+
           this.fillSubreport((SubReport) hm.get("project_outcomes"), "project_outcomes", args);
           this.fillSubreport((SubReport) hm.get("other_outcomes"), "other_outcomes", args);
           this.fillSubreport((SubReport) hm.get("ccafs_outcomes"), "ccafs_outcomes", args);
@@ -877,38 +896,37 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           this.fillSubreport((SubReport) hm.get("case_studies"), "case_studies", args);
           this.fillSubreport((SubReport) hm.get("overview_by_mogs"), "overview_by_mogs", args);
         }
-        // Subreport Deliverables
-        if (cycle.equals("Planning")) {
-          // Subreport Outcomes
-          args.clear();
-          this.fillSubreport((SubReport) hm.get("deliverables"), "deliverables_list", args);
-        } else {
-          args.clear();
-          this.fillSubreport((SubReport) hm.get("deliverables"), "deliverables_list_reporting", args);
-          this.fillSubreport((SubReport) hm.get("project_highlight"), "project_highlight", args);
-        }
-        // Subreport Activities
-        args.clear();
-        if (cycle.equals("Planning")) {
-
-          this.fillSubreport((SubReport) hm.get("activities"), "activities_list", args);
-        } else {
-          this.fillSubreport((SubReport) hm.get("activities_reporting_list"), "activities_reporting_list", args);
-        }
-        if (cycle.equals("Planning")) {
-          // Subreport Budgets Summary
-          args.clear();
-          this.fillSubreport((SubReport) hm.get("budgets"), "budget_summary", args);
-
-          // Subreport BudgetsbyPartners
-          this.fillSubreport((SubReport) hm.get("budgets_by_partners"), "budgets_by_partners_list", args);
-
-          // Subreport BudgetsbyCoas
-          this.fillSubreport((SubReport) hm.get("budgets_by_coas"), "budgets_by_coas_list", args);
-        } else {
-          // Subreport Leverages for reporting
-          this.fillSubreport((SubReport) hm.get("leverages"), "leverages", args);
-        }
+        /*
+         * // Subreport Deliverables
+         * if (cycle.equals("Planning")) {
+         * // Subreport Outcomes
+         * args.clear();
+         * this.fillSubreport((SubReport) hm.get("deliverables"), "deliverables_list", args);
+         * } else {
+         * args.clear();
+         * this.fillSubreport((SubReport) hm.get("deliverables"), "deliverables_list_reporting", args);
+         * this.fillSubreport((SubReport) hm.get("project_highlight"), "project_highlight", args);
+         * }
+         * // Subreport Activities
+         * args.clear();
+         * if (cycle.equals("Planning")) {
+         * this.fillSubreport((SubReport) hm.get("activities"), "activities_list", args);
+         * } else {
+         * this.fillSubreport((SubReport) hm.get("activities_reporting_list"), "activities_reporting_list", args);
+         * }
+         * if (cycle.equals("Planning")) {
+         * // Subreport Budgets Summary
+         * args.clear();
+         * this.fillSubreport((SubReport) hm.get("budgets"), "budget_summary", args);
+         * // Subreport BudgetsbyPartners
+         * this.fillSubreport((SubReport) hm.get("budgets_by_partners"), "budgets_by_partners_list", args);
+         * // Subreport BudgetsbyCoas
+         * this.fillSubreport((SubReport) hm.get("budgets_by_coas"), "budgets_by_coas_list", args);
+         * } else {
+         * // Subreport Leverages for reporting
+         * this.fillSubreport((SubReport) hm.get("leverages"), "leverages", args);
+         * }
+         */
       }
       PdfReportUtil.createPDF(masterReport, os);
       bytesPDF = os.toByteArray();
@@ -1030,6 +1048,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     subReport.setDataFactory(cdf);
   }
 
+
   private TypedTableModel getActivitiesReportingTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"activity_id", "title", "description", "start_date", "end_date", "institution", "activity_leader",
@@ -1079,6 +1098,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     }
     return model;
   }
+
 
   private TypedTableModel getActivitiesTableModel() {
     TypedTableModel model = new TypedTableModel(
@@ -1736,25 +1756,26 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           && d.getProject().getCrp().getId().equals(this.loggedCrp.getId())
           && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
           && ((d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Complete.getStatusId())
-          && (d.getDeliverableInfo(this.getActualPhase()).getYear() >= this.year
-            || (d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null
-              && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear().intValue() >= this.year)))
-          || (d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Extended.getStatusId())
-            && (d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null
-              && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear().intValue() == this.year))
-          || (d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
-            && (d.getDeliverableInfo(this.getActualPhase()).getYear() == this.year
+            .parseInt(ProjectStatusEnum.Complete
+              .getStatusId())
+            && (d.getDeliverableInfo(this.getActualPhase()).getYear() >= this.year
               || (d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null
-                && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear().intValue() == this.year))))
-        && (d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-          .parseInt(ProjectStatusEnum.Extended.getStatusId())
-          || d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Complete.getStatusId())
-          || d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
+                && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear().intValue() >= this.year)))
+            || (d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Extended.getStatusId())
+              && (d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null
+                && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear().intValue() == this.year))
+            || (d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+              && (d.getDeliverableInfo(this.getActualPhase()).getYear() == this.year
+                || (d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null
+                  && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear().intValue() == this.year))))
+          && (d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Extended.getStatusId())
+            || d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Complete.getStatusId())
+            || d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
         .collect(Collectors.toList()));
       deliverables.sort((p1, p2) -> p1.getDeliverableInfo(this.getActualPhase()).isRequieriedReporting(year)
         .compareTo(p2.getDeliverableInfo(this.getActualPhase()).isRequieriedReporting(year)));
@@ -2427,7 +2448,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     TypedTableModel model = new TypedTableModel(new String[] {"description"}, new Class[] {String.class}, 0);
     if (project.getProjectClusterActivities() != null) {
       for (ProjectClusterActivity projectClusterActivity : project.getProjectClusterActivities().stream()
-        .filter(c -> c.isActive()).collect(Collectors.toList())) {
+        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+        .collect(Collectors.toList())) {
         model.addRow(new Object[] {projectClusterActivity.getCrpClusterOfActivity().getComposedName()});
       }
     }
@@ -2446,25 +2468,25 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     String orgLeader = null;
     String ml = null;
     String mlContact = null;
-    String title = project.getProjecInfoPhase(this.getActualPhase()).getTitle();
+    String title = projectInfo.getTitle();
     String startDate = null;
     String endDate = null;
-    if (project.getProjecInfoPhase(this.getActualPhase()).getStartDate() != null) {
-      startDate = formatter.format(project.getProjecInfoPhase(this.getActualPhase()).getStartDate());
+    if (projectInfo.getStartDate() != null) {
+      startDate = formatter.format(projectInfo.getStartDate());
     }
-    if (project.getProjecInfoPhase(this.getActualPhase()).getEndDate() != null) {
-      endDate = formatter.format(project.getProjecInfoPhase(this.getActualPhase()).getEndDate());
+    if (projectInfo.getEndDate() != null) {
+      endDate = formatter.format(projectInfo.getEndDate());
     }
-    if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution() != null) {
-      ml = project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getAcronym();
+    if (projectInfo.getLiaisonInstitution() != null) {
+      ml = projectInfo.getLiaisonInstitution().getAcronym();
     }
-    if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonUser() != null) {
-      ml = project.getProjecInfoPhase(this.getActualPhase()).getLiaisonUser().getLiaisonInstitution().getAcronym();
-      mlContact = project.getProjecInfoPhase(this.getActualPhase()).getLiaisonUser().getComposedName() + "\n&lt;"
-        + project.getProjecInfoPhase(this.getActualPhase()).getLiaisonUser().getUser().getEmail() + "&gt;";
-      if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonUser() != null) {
-        mlContact = project.getProjecInfoPhase(this.getActualPhase()).getLiaisonUser().getComposedName() + "\n&lt;"
-          + project.getProjecInfoPhase(this.getActualPhase()).getLiaisonUser().getUser().getEmail() + "&gt;";
+    if (projectInfo.getLiaisonUser() != null) {
+      ml = projectInfo.getLiaisonUser().getLiaisonInstitution().getAcronym();
+      mlContact = projectInfo.getLiaisonUser().getComposedName() + "\n&lt;"
+        + projectInfo.getLiaisonUser().getUser().getEmail() + "&gt;";
+      if (projectInfo.getLiaisonUser() != null) {
+        mlContact = projectInfo.getLiaisonUser().getComposedName() + "\n&lt;"
+          + projectInfo.getLiaisonUser().getUser().getEmail() + "&gt;";
       }
       // Get type from funding sources
       String type = "";
@@ -2483,60 +2505,57 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           type += ", " + typeString;
         }
       }
-      String status = ProjectStatusEnum
-        .getValue(project.getProjecInfoPhase(this.getActualPhase()).getStatus().intValue()).getStatus();
+      String status = ProjectStatusEnum.getValue(projectInfo.getStatus().intValue()).getStatus();
       if (projectLeader.getInstitution() != null) {
         orgLeader = projectLeader.getInstitution().getComposedName();
-
       }
       String leader = null;
       // Check if project leader is assigned
-      if (project.getLeaderPerson(this.getActualPhase()) != null
-        && project.getLeaderPerson(this.getActualPhase()).getUser() != null) {
-        leader = project.getLeaderPerson(this.getActualPhase()).getUser().getComposedName() + "\n&lt;"
-          + project.getLeaderPerson(this.getActualPhase()).getUser().getEmail() + "&gt;";
+      if (project.getLeaderPerson(this.getSelectedPhase()) != null
+        && project.getLeaderPerson(this.getSelectedPhase()).getUser() != null) {
+        leader = project.getLeaderPerson(this.getSelectedPhase()).getUser().getComposedName() + "\n&lt;"
+          + project.getLeaderPerson(this.getSelectedPhase()).getUser().getEmail() + "&gt;";
       }
-      String summary = project.getProjecInfoPhase(this.getActualPhase()).getSummary();
+      String summary = projectInfo.getSummary();
       if (summary != null) {
         if (summary.equals("")) {
           summary = null;
         }
       }
-      String analysis = project.getProjecInfoPhase(this.getActualPhase()).getGenderAnalysis();
+      String analysis = projectInfo.getGenderAnalysis();
       if (analysis != null) {
         if (analysis.equals("")) {
           analysis = null;
         }
       }
       String crossCutting = "";
-      if (project.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingNa() != null) {
-        if (project.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingNa() == true) {
+      if (projectInfo.getCrossCuttingNa() != null) {
+        if (projectInfo.getCrossCuttingNa() == true) {
           crossCutting += "● N/A <br>";
         }
       }
-      if (project.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingGender() != null) {
-        if (project.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingGender() == true) {
+      if (projectInfo.getCrossCuttingGender() != null) {
+        if (projectInfo.getCrossCuttingGender() == true) {
           crossCutting += "● Gender <br>";
         }
       }
-      if (project.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingYouth() != null) {
-        if (project.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingYouth() == true) {
+      if (projectInfo.getCrossCuttingYouth() != null) {
+        if (projectInfo.getCrossCuttingYouth() == true) {
           crossCutting += "● Youth <br>";
         }
       }
-      if (project.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingCapacity() != null) {
-        if (project.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingCapacity() == true) {
+      if (projectInfo.getCrossCuttingCapacity() != null) {
+        if (projectInfo.getCrossCuttingCapacity() == true) {
           crossCutting += "● Capacity Development <br>";
         }
       }
-      if (project.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingGender() != null) {
-        if (project.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingGender() == false) {
-          if (project.getProjecInfoPhase(this.getActualPhase()).getDimension() == null
-            || project.getProjecInfoPhase(this.getActualPhase()).getDimension().isEmpty()) {
+      if (projectInfo.getCrossCuttingGender() != null) {
+        if (projectInfo.getCrossCuttingGender() == false) {
+          if (projectInfo.getDimension() == null || projectInfo.getDimension().isEmpty()) {
             crossCutting += "<br><br>" + "<b>Reason for not addressing gender dimension: </b> &lt;Not Defined&gt;";
           } else {
-            crossCutting += "<br><br>" + "<b>Reason for not addressing gender dimension: </b>"
-              + project.getProjecInfoPhase(this.getActualPhase()).getDimension();
+            crossCutting +=
+              "<br><br>" + "<b>Reason for not addressing gender dimension: </b>" + projectInfo.getDimension();
           }
         }
       }
@@ -2589,7 +2608,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
-
   private void getFooterSubreports(HashMap<String, Element> hm, ReportFooter reportFooter) {
 
     int elementCount = reportFooter.getElementCount();
@@ -2611,7 +2629,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return config.getDownloadURL() + "/" + this.getHighlightsImagesUrlPath().replace('\\', '/');
   }
 
-
   public String getHighlightsImagesUrlPath() {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project.getId() + File.separator
       + "hightlightsImage" + File.separator;
@@ -2621,6 +2638,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + projectID + File.separator
       + "hightlightsImage" + File.separator;
   }
+
 
   private String getHightlightImagePath(long projectID) {
     return config.getUploadsBaseFolder() + File.separator + this.getHighlightsImagesUrlPath(projectID) + File.separator;
@@ -2633,6 +2651,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     }
     return inputStream;
   }
+
 
   private TypedTableModel getLeveragesTableModel() {
     // Decimal format
@@ -2689,7 +2708,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           model.addRow(new Object[] {locTypeName, locLat, locLong, locName});
         }
       }
-      for (ProjectLocation pl : project.getProjectLocations().stream().filter(c -> c.isActive())
+      for (ProjectLocation pl : project.getProjectLocations().stream()
+        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
         .collect(Collectors.toList())) {
         LocElement le = pl.getLocElement();
         String locTypeName = null;
@@ -2721,9 +2741,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     // Initialization of Model
     TypedTableModel model = new TypedTableModel(
       new String[] {"title", "center", "current_date", "project_submission", "cycle", "isNew", "isAdministrative",
-        "type", "isGlobal", "isPhaseOne", "budget_gender", "hasTargetUnit", "hasW1W2Co", "hasActivities"},
+        "type", "isGlobal", "isPhaseOne", "budget_gender", "hasTargetUnit", "hasW1W2Co", "hasActivities", "phaseID"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, Boolean.class, Boolean.class,
-        String.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class});
+        String.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class,
+        Long.class});
     // Filling title
     String title = "";
     if (projectLeader != null) {
@@ -2732,7 +2753,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         title += projectLeader.getInstitution().getAcronym() + "-";
       }
     }
-    if (project.getProjecInfoPhase(this.getActualPhase()).getAdministrative() == false) {
+    if (projectInfo.getAdministrative() == false) {
       if (flagships != null) {
         if (!flagships.isEmpty()) {
           for (CrpProgram crpProgram : flagships) {
@@ -2740,8 +2761,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           }
         }
       }
-      if (project.getProjecInfoPhase(this.getActualPhase()).getNoRegional() != null
-        && project.getProjecInfoPhase(this.getActualPhase()).getNoRegional()) {
+      if (projectInfo.getNoRegional() != null && projectInfo.getNoRegional()) {
         title += "Global" + "-";
       } else {
         if (regions != null && !regions.isEmpty()) {
@@ -2797,11 +2817,11 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     centerURL = project.getCrp().getAcronym();
     Boolean isAdministrative = false;
     String type = "Research Project";
-    if (project.getProjecInfoPhase(this.getActualPhase()).getAdministrative() != null) {
-      if (project.getProjecInfoPhase(this.getActualPhase()).getAdministrative() == true) {
+    if (projectInfo.getAdministrative() != null) {
+      if (projectInfo.getAdministrative() == true) {
         type = "Management Project";
       }
-      isAdministrative = project.getProjecInfoPhase(this.getActualPhase()).getAdministrative();
+      isAdministrative = projectInfo.getAdministrative();
     } else {
       isAdministrative = false;
     }
@@ -2828,10 +2848,11 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       hasActivities = false;
     }
 
+    Long phaseID = this.getSelectedPhase().getId();
+
     model.addRow(new Object[] {title, centerURL, currentDate, submission, cycle, isNew, isAdministrative, type,
-      project.getProjecInfoPhase(this.getActualPhase()).getLocationGlobal(), this.isPhaseOne(), hasGender,
-      hasTargetUnit, hasW1W2Co, project.getProjecInfoPhase(this.getActualPhase()).getLocationGlobal(),
-      this.isPhaseOne(), hasGender, hasTargetUnit, hasW1W2Co, hasActivities});
+      projectInfo.getLocationGlobal(), this.isPhaseOne(), hasGender, hasTargetUnit, hasW1W2Co,
+      projectInfo.getLocationGlobal(), this.isPhaseOne(), hasGender, hasTargetUnit, hasW1W2Co, hasActivities, phaseID});
     return model;
   }
 
@@ -2889,11 +2910,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   }
 
   private TypedTableModel getOtherContributionsDetailTableModel() {
-    TypedTableModel model =
-      new TypedTableModel(
-        new String[] {"region", "indicator", "contribution_description", "target_contribution",
-          "otherContributionyear"},
-        new Class[] {String.class, String.class, String.class, Integer.class, Integer.class}, 0);
+    TypedTableModel model = new TypedTableModel(
+      new String[] {"region", "indicator", "contribution_description", "target_contribution", "otherContributionyear"},
+      new Class[] {String.class, String.class, String.class, Integer.class, Integer.class}, 0);
     for (OtherContribution otherContribution : project.getOtherContributions().stream().filter(oc -> oc.isActive())
       .collect(Collectors.toList())) {
       String region = null, indicator = null, contributionDescription = null;
@@ -2947,7 +2966,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         String.class, String.class, String.class},
       0);
     if (!project.getProjectOutcomes().isEmpty()) {
-      for (ProjectOutcome projectOutcome : project.getProjectOutcomes().stream().filter(c -> c.isActive())
+      for (ProjectOutcome projectOutcome : project.getProjectOutcomes().stream()
+        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
         .collect(Collectors.toList())) {
         String expValue = null;
         String expUnit = null;
@@ -3110,8 +3130,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       new TypedTableModel(new String[] {"year", "lesson"}, new Class[] {Integer.class, String.class}, 0);
     if (!cycle.equals("")) {
       for (ProjectComponentLesson pcl : project.getProjectComponentLessons().stream()
-        .sorted((p1, p2) -> p1.getYear() - p2.getYear()).filter(c -> c.isActive()
-          && c.getComponentName().equals("partners") && c.getCycle().equals(cycle) && c.getYear() == this.getYear())
+        .sorted((p1, p2) -> p1.getYear() - p2.getYear())
+        .filter(c -> c.isActive() && c.getComponentName().equals("partners") && c.getCycle().equals(cycle)
+          && c.getYear() == this.getYear() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
         .collect(Collectors.toList())) {
         String lessons = null;
         if (pcl.getLessons() != null && !pcl.getLessons().isEmpty()) {
@@ -3133,8 +3154,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     if (projectLeader.getId() != null) {
       leaderCount = 1;
       // Get list of partners except project leader
-      for (ProjectPartner projectPartner : project.getProjectPartners().stream()
-        .filter(c -> c.isActive() && c.getId() != projectLeader.getId()).collect(Collectors.toList())) {
+      for (ProjectPartner projectPartner : project.getProjectPartners().stream().filter(c -> c.isActive()
+        && c.getId() != projectLeader.getId() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+        .collect(Collectors.toList())) {
         countryOffices = null;
         responsibilities = projectPartner.getResponsibilities();
         for (ProjectPartnerLocation projectPartnerLocation : projectPartner.getProjectPartnerLocations().stream()
@@ -3150,7 +3172,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       }
     } else {
       // Get all partners
-      for (ProjectPartner projectPartner : project.getProjectPartners().stream().filter(c -> c.isActive())
+      for (ProjectPartner projectPartner : project.getProjectPartners().stream()
+        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
         .collect(Collectors.toList())) {
         countryOffices = null;
         responsibilities = projectPartner.getResponsibilities();
@@ -3173,8 +3196,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     TypedTableModel model =
       new TypedTableModel(new String[] {"count", "overall"}, new Class[] {Integer.class, String.class}, 0);
     int partnersSize = 0;
-    List<ProjectPartner> projectPartners =
-      project.getProjectPartners().stream().filter(pp -> pp.isActive()).collect(Collectors.toList());
+    List<ProjectPartner> projectPartners = project.getProjectPartners().stream()
+      .filter(pp -> pp.isActive() && pp.getPhase() != null && pp.getPhase().equals(this.getSelectedPhase()))
+      .collect(Collectors.toList());
     if (!projectPartners.isEmpty()) {
       partnersSize = projectPartners.size();
     }
@@ -3350,6 +3374,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return projectID;
   }
 
+  public ProjectInfo getProjectInfo() {
+    return projectInfo;
+  }
+
   private TypedTableModel getProjectOtherOutcomesTableModel() {
     TypedTableModel model =
       new TypedTableModel(new String[] {"out_statement", "year"}, new Class[] {String.class, Integer.class}, 0);
@@ -3364,7 +3392,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     }
     return model;
   }
-
 
   private TypedTableModel getProjectOutcomesTableModel() {
     TypedTableModel model = new TypedTableModel(
@@ -3435,11 +3462,11 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       + "project_outcome" + File.separator;
   }
 
+
   private TypedTableModel getRLTableModel(List<CrpProgram> regions) {
     TypedTableModel model = new TypedTableModel(new String[] {"RL"}, new Class[] {String.class}, 0);
     String global = "";
-    if (project.getProjecInfoPhase(this.getActualPhase()).getNoRegional() != null
-      && project.getProjecInfoPhase(this.getActualPhase()).getNoRegional()) {
+    if (projectInfo.getNoRegional() != null && projectInfo.getNoRegional()) {
       global = "Global";
       model.addRow(new Object[] {global});
     } else {
@@ -3448,6 +3475,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       }
     }
     return model;
+  }
+
+  public Phase getSelectedPhase() {
+    return selectedPhase;
   }
 
   public HashMap<Long, String> getTargetUnitList() {
@@ -3667,6 +3698,11 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       cycle = this.getCurrentCycle();
     }
 
+    // Get phase
+    selectedPhase =
+      phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), loggedCrp.getId().longValue());
+    projectInfo = project.getProjecInfoPhase(this.getSelectedPhase());
+
   }
 
   private DeliverablePartnership responsiblePartner(Deliverable deliverable) {
@@ -3703,6 +3739,14 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
+  }
+
+  public void setProjectInfo(ProjectInfo projectInfo) {
+    this.projectInfo = projectInfo;
+  }
+
+  public void setSelectedPhase(Phase phase) {
+    this.selectedPhase = phase;
   }
 
   public void setTargetUnitList(HashMap<Long, String> targetUnitList) {
