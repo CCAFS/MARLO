@@ -155,37 +155,46 @@ public class FundingSourceValidator extends BaseValidator {
      * If budgets are larger than the total amount, the funding source is pending for validation.
      * A message is sent to the user indicating that there is something to modify. *
      * 
-     * @author JULIANRODRIGUEZ <julian.rodriguez@cgiar.org>
+     * @author Julián Rodríguez CCAFS/CIAT
      * @date 23/08/2017
      * @update Added null field validation when you calculate de currentBudget
-     * @author JULIANRODRIGUEZ <julian.rodriguez@cgiar.org>
+     * @author Julián Rodríguez CCAFS/CIAT
      * @date 25/08/2017
+     * @update Exclude the validation to W1W2
+     * @author Julián Rodríguez CCAFS/CIAT
+     * @date 06/09/2017
      */
 
     if (fundingSource.getSynced()) {
 
-      Double grantAmount = fundingSource.getGrantAmount();
-      List<FundingSourceBudget> budgets = fundingSource.getBudgets();
-      double currentBudget = 0;
+      if (fundingSource.getBudgetType().getId() != 1) {
 
-      for (FundingSourceBudget fundingSourceBudget : budgets) {
-        if (fundingSourceBudget.getBudget() != null) {
-          currentBudget += fundingSourceBudget.getBudget();
-        }
+        Double grantAmount = fundingSource.getGrantAmount();
+        List<FundingSourceBudget> budgets = fundingSource.getBudgets();
+        double currentBudget = 0;
 
-      }
-
-      if (currentBudget > grantAmount) {
-
-
-        for (int i = 0; i < budgets.size(); i++) {
-          this.addMessage(action.getText("fundingSource.budgetWrongValue"));
-          action.getInvalidFields().put("input-fundingSource.budgets[" + i + "].budget",
-            InvalidFieldsMessages.WRONGVALUE);
+        for (FundingSourceBudget fundingSourceBudget : budgets) {
+          if (fundingSourceBudget.getBudget() != null) {
+            currentBudget += fundingSourceBudget.getBudget();
+          }
 
         }
 
+        if (currentBudget > grantAmount) {
+
+
+          for (int i = 0; i < budgets.size(); i++) {
+            this.addMessage(action.getText("fundingSource.budgetWrongValue"));
+            action.getInvalidFields().put("input-fundingSource.budgets[" + i + "].budget",
+              InvalidFieldsMessages.WRONGVALUE);
+
+          }
+
+        }
+
+
       }
+
 
     }
 
