@@ -326,10 +326,11 @@ public class ProjectPartnersAction extends BaseAction {
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_PARTNERS_RELATION);
-      project = projectService.getCenterProjectById(projectID);
-      project.setActiveSince(new Date());
-      project.setModifiedBy(this.getCurrentUser());
-      projectService.saveCenterProject(project, this.getActionName(), relationsName);
+      projectDB.setActiveSince(new Date());
+      projectDB.setModifiedBy(this.getCurrentUser());
+      projectDB = projectService.saveCenterProject(projectDB, this.getActionName(), relationsName);
+
+      project = projectDB;
 
       Path path = this.getAutoSaveFilePath();
 
@@ -430,7 +431,7 @@ public class ProjectPartnersAction extends BaseAction {
               User user = userService.getUser(partnerPerson.getUser().getId());
               partnerPersonNew.setUser(user);
 
-              partnerPersonService.saveProjectPartnerPerson(partnerPersonNew);
+              partnerPersonNew = partnerPersonService.saveProjectPartnerPerson(partnerPersonNew);
 
             }
           }
@@ -440,7 +441,7 @@ public class ProjectPartnersAction extends BaseAction {
 
           if (partnerNew.isInternal() != projectPartner.isInternal()) {
             partnerNew.setInternal(projectPartner.isInternal());
-            partnerService.saveProjectPartner(projectPartner);
+            projectPartner = partnerService.saveProjectPartner(projectPartner);
           }
 
           if (projectPartner.getUsers() != null) {
@@ -460,7 +461,7 @@ public class ProjectPartnersAction extends BaseAction {
                 User user = userService.getUser(partnerPerson.getUser().getId());
                 partnerPersonNew.setUser(user);
 
-                partnerPersonService.saveProjectPartnerPerson(partnerPersonNew);
+                partnerPersonNew = partnerPersonService.saveProjectPartnerPerson(partnerPersonNew);
               }
             }
           }

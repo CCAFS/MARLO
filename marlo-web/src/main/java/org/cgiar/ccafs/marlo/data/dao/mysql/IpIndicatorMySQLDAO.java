@@ -129,6 +129,10 @@ public class IpIndicatorMySQLDAO extends AbstractMarloDAO<IpIndicator, Long> imp
     return ipIndicators;
   }
 
+
+  /**
+   * TODO improve this so that only one SQL query gets executed.
+   */
   @Override
   public List<IpIndicator> getIndicatorsFlagShips() {
 
