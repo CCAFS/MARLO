@@ -104,10 +104,10 @@ public class MARLOCustomPersistFilter implements Filter {
       throw staleEx;
     } catch (Throwable ex) {
       // Rollback only
-      ex.printStackTrace();
+      LOG.error("Exception occurred when trying to commit transaction");
       try {
         if (sessionFactory.getCurrentSession().getTransaction().isActive()) {
-          LOG.debug("Trying to rollback database transaction after exception");
+          LOG.info("Trying to rollback database transaction after exception");
           sessionFactory.getCurrentSession().getTransaction().rollback();
         }
       } catch (Throwable rbEx) {

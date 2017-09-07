@@ -62,6 +62,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Sebastian Amariles - CIAT/CCAFS
@@ -74,7 +76,7 @@ public class ProjectOutcomeAction extends BaseAction {
    * 
    */
   private static final long serialVersionUID = 4520862722467820286L;
-
+  private static final Logger LOG = LoggerFactory.getLogger(ProjectOutcomeAction.class);
 
   private ProjectManager projectManager;
   private ProjectMilestoneManager projectMilestoneManager;
@@ -318,7 +320,11 @@ public class ProjectOutcomeAction extends BaseAction {
       projectOutcomeID =
         Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_OUTCOME_REQUEST_ID)));
     } catch (Exception e) {
-
+      LOG.error("unable to parse projectOutcomeID", e);
+      /**
+       * Original code swallows the exception and didn't even log it. Now we at least log it,
+       * but we need to revisit to see if we should continue processing or re-throw the exception.
+       */
     }
 
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {

@@ -1106,7 +1106,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       }
     } catch (Exception e) {
-
+      LOG.error(
+        "I'm not exactly sure what exception this is supposed to catch!  If this statement ever gets printed, I will be surprised!",
+        e);
+      /**
+       * Original code swallows the exception and didn't even log it. Now we at least log it,
+       * but we need to revisit to see if we should continue processing or re-throw the exception.
+       */
     }
     return this.crpID;
   }

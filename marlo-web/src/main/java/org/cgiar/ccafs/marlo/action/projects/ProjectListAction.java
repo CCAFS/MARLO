@@ -333,7 +333,7 @@ public class ProjectListAction extends BaseAction {
           this.addActionMessage(
             "message:" + this.getText("deleting.successProject", new String[] {this.getText("project").toLowerCase()}));
         } catch (Exception e) {
-          logger.error("Unable to delete project due to exception: " + e);
+          logger.error("Unable to delete project", e);
           this.addActionError(this.getText("deleting.problem", new String[] {this.getText("project").toLowerCase()}));
           /**
            * Assume we don't need to re-throw the exception as this transaction is limited to deleting only.

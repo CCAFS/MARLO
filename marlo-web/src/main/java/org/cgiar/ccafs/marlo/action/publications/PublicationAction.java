@@ -300,7 +300,11 @@ public class PublicationAction extends BaseAction {
       deliverableID =
         Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_DELIVERABLE_REQUEST_ID)));
     } catch (Exception e) {
-
+      LOG.error("unable to parse deliverableID", e);
+      /**
+       * Original code swallows the exception and didn't even log it. Now we at least log it,
+       * but we need to revisit to see if we should continue processing or re-throw the exception.
+       */
     }
 
 
@@ -382,7 +386,11 @@ public class PublicationAction extends BaseAction {
               deliverableProgram.setIpProgram(program);
               programs.add(deliverableProgram);
             } catch (Exception e) {
-
+              LOG.error("unable to add deliverableProgram to programs list", e);
+              /**
+               * Original code swallows the exception and didn't even log it. Now we at least log it,
+               * but we need to revisit to see if we should continue processing or re-throw the exception.
+               */
             }
           }
         }
@@ -397,7 +405,11 @@ public class PublicationAction extends BaseAction {
               deliverableProgram.setIpProgram(program);
               regions.add(deliverableProgram);
             } catch (Exception e) {
-
+              LOG.error("unable to add delverable program to regions list", e);
+              /**
+               * Original code swallows the exception and didn't even log it. Now we at least log it,
+               * but we need to revisit to see if we should continue processing or re-throw the exception.
+               */
             }
           }
         }

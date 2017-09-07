@@ -117,7 +117,11 @@ public class FundingSourceListAction extends BaseAction {
           fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
         }
       } catch (Exception e) {
-
+        logger.error("unable to save FundingSourceInstitution", e);
+        /**
+         * Original code swallows the exception and didn't even log it. Now we at least log it,
+         * but we need to revisit to see if we should continue processing or re-throw the exception.
+         */
       }
 
 
