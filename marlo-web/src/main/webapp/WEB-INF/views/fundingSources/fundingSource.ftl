@@ -63,7 +63,7 @@
                         
                         [#-- Check IFPRI Division --]
                         [#if institutionLead.institution.id == action.getIFPRIId() ] [#assign ifpriDivision = true /] [/#if]
-                        [#-- Check CIAT Division --]
+                        [#-- Check CIAT Institution --]
                         [#if institutionLead.institution.acronym == "CIAT" ] [#assign hasCIAT = true /] [/#if]
                       </li>
                     [/#if]
@@ -169,6 +169,7 @@
       <ul class="dateErrorBox form-group"></ul> 
       
       <div class="form-group row">
+        [#-- Start Date --]
         <div class="col-md-4 metadataElement-startDate">
           <label for="fundingSource.startDate">[@s.text name="fundingSource.startDate" /]:[@customForm.req required=editable && action.canEditFundingSourceBudget()  /]</label>
           [#if editable]
@@ -178,6 +179,7 @@
             <div class="input"><p>${(fundingSource.startDate?string["MMMM yyyy"])!}</p></div>
           [/#if]
         </div>
+        [#-- End Date --]
         <div class="col-md-4 metadataElement-endDate">
           <label for="fundingSource.endDate">[@s.text name="fundingSource.endDate" /]:[@customForm.req required=editable && action.canEditFundingSourceBudget()  /]</label>
           [#if editable]
@@ -187,6 +189,7 @@
             <div class="input"><p>${(fundingSource.endDate?string["MMMM yyyy"])!}</p></div>
           [/#if]
         </div>
+        [#-- Extension Date --]
         <div class="col-md-4 extensionDateBlock metadataElement-extensionDate" style="display:${hasCIAT?string('block', 'none')}">
           <label for="fundingSource.extensionDate">[@s.text name="fundingSource.extensionDate" /]:</label> 
           [#if editable]
