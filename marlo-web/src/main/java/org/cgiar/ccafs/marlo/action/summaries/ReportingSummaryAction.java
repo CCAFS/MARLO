@@ -806,7 +806,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         // Uncomment to see which Subreports are detecting the method getAllSubreports
         System.out.println("Pentaho SubReports: " + hm);
         // get project leader
-        ProjectPartner projectLeader = project.getLeader();
+        ProjectPartner projectLeader = project.getLeader(this.getSelectedPhase());
         // get Flagships related to the project sorted by acronym
         List<CrpProgram> flagships = new ArrayList<>();
         for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
@@ -884,17 +884,19 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           args.clear();
           this.fillSubreport((SubReport) hm.get("outcomes"), "outcomes_list", args);
         } else {
-          // Subreport Project Outcomes
-          args.clear();
 
-          this.fillSubreport((SubReport) hm.get("project_outcomes"), "project_outcomes", args);
-          this.fillSubreport((SubReport) hm.get("other_outcomes"), "other_outcomes", args);
-          this.fillSubreport((SubReport) hm.get("ccafs_outcomes"), "ccafs_outcomes", args);
-          this.fillSubreport((SubReport) hm.get("other_contributions"), "other_contributions", args);
-          this.fillSubreport((SubReport) hm.get("other_contributions_detail"), "other_contributions_detail", args);
-          this.fillSubreport((SubReport) hm.get("other_contributions_crps"), "other_contributions_crps", args);
-          this.fillSubreport((SubReport) hm.get("case_studies"), "case_studies", args);
-          this.fillSubreport((SubReport) hm.get("overview_by_mogs"), "overview_by_mogs", args);
+          // // Subreport Project Outcomes
+          // args.clear();
+          //
+          // this.fillSubreport((SubReport) hm.get("project_outcomes"), "project_outcomes", args);
+          // this.fillSubreport((SubReport) hm.get("other_outcomes"), "other_outcomes", args);
+          // this.fillSubreport((SubReport) hm.get("ccafs_outcomes"), "ccafs_outcomes", args);
+          // this.fillSubreport((SubReport) hm.get("other_contributions"), "other_contributions", args);
+          // this.fillSubreport((SubReport) hm.get("other_contributions_detail"), "other_contributions_detail", args);
+          // this.fillSubreport((SubReport) hm.get("other_contributions_crps"), "other_contributions_crps", args);
+          // this.fillSubreport((SubReport) hm.get("case_studies"), "case_studies", args);
+          // this.fillSubreport((SubReport) hm.get("overview_by_mogs"), "overview_by_mogs", args);
+
         }
 
         // Subreport Deliverables
@@ -903,9 +905,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           args.clear();
           this.fillSubreport((SubReport) hm.get("deliverables"), "deliverables_list", args);
         } else {
-          args.clear();
-          this.fillSubreport((SubReport) hm.get("deliverables"), "deliverables_list_reporting", args);
-          this.fillSubreport((SubReport) hm.get("project_highlight"), "project_highlight", args);
+          // args.clear();
+          // this.fillSubreport((SubReport) hm.get("deliverables"), "deliverables_list_reporting", args);
+          // this.fillSubreport((SubReport) hm.get("project_highlight"), "project_highlight", args);
         }
         /*
          * // Subreport Activities
@@ -3209,7 +3211,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     String overall = "";
     if (cycle.equals("Reporting")) {
       // Get project partners overall
-      for (ProjectPartner projectPartner : project.getProjectPartners().stream().filter(pp -> pp.isActive())
+      for (ProjectPartner projectPartner : project.getProjectPartners().stream()
+        .filter(pp -> pp.isActive() && pp.getPhase() != null && pp.getPhase().equals(this.getSelectedPhase()))
         .collect(Collectors.toList())) {
         for (ProjectPartnerOverall projectPartnerOverall : projectPartner.getProjectPartnerOveralls().stream()
           .filter(ppo -> ppo.getYear() == year).collect(Collectors.toList())) {
