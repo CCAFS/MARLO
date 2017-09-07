@@ -1084,7 +1084,7 @@ public class CrpAdminManagmentAction extends BaseAction {
         crpProgram.setModificationJustification("");
         crpProgram.setActiveSince(crpProgramDb.getActiveSince());
         crpProgramManager.saveCrpProgram(crpProgram);
-        for (LiaisonInstitution liasonInstitution : crpProgram.getLiaisonInstitutions()) {
+        for (LiaisonInstitution liasonInstitution : crpProgramDb.getLiaisonInstitutions()) {
           liasonInstitution.setAcronym(crpProgram.getAcronym());
           liasonInstitution.setName(crpProgram.getName());
           liaisonInstitutionManager.saveLiaisonInstitution(liasonInstitution);
