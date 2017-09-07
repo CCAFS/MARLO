@@ -88,12 +88,16 @@
 </div> 
 </nav> 
 
-<div class="subMainMenu">
-<div class="container">
-  [#include "/WEB-INF/global/pages/breadcrumb.ftl" /]
+<div class="timeline">
+  [#include "/WEB-INF/global/pages/timeline.ftl" /]
 </div>
 
-[#include "/WEB-INF/global/pages/generalMessages.ftl" /]
+<div class="subMainMenu">
+  <div class="container">
+    [#include "/WEB-INF/global/pages/breadcrumb.ftl" /]
+  </div>
+  
+  [#include "/WEB-INF/global/pages/generalMessages.ftl" /]
 
 </div>
 
