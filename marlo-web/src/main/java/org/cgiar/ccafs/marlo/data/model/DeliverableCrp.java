@@ -27,8 +27,13 @@ public class DeliverableCrp implements java.io.Serializable, IAuditLog {
   @Expose
   private Deliverable deliverable;
 
+  @Expose
+  private Phase phase;
+
+
   public DeliverableCrp() {
   }
+
 
   public DeliverableCrp(Deliverable deliverable) {
 
@@ -57,7 +62,6 @@ public class DeliverableCrp implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
   public CrpPandr getCrpPandr() {
     return crpPandr;
   }
@@ -65,6 +69,7 @@ public class DeliverableCrp implements java.io.Serializable, IAuditLog {
   public Deliverable getDeliverable() {
     return deliverable;
   }
+
 
   @Override
   public Long getId() {
@@ -74,7 +79,6 @@ public class DeliverableCrp implements java.io.Serializable, IAuditLog {
   public IpProgram getIpProgram() {
     return ipProgram;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -89,11 +93,16 @@ public class DeliverableCrp implements java.io.Serializable, IAuditLog {
     return "";
   }
 
+
   @Override
   public User getModifiedBy() {
     User u = new User();
     u.setId(new Long(3));
     return u;
+  }
+
+  public Phase getPhase() {
+    return phase;
   }
 
   @Override
@@ -103,7 +112,6 @@ public class DeliverableCrp implements java.io.Serializable, IAuditLog {
     result = prime * result + ((id == null) ? 0 : id.hashCode());
     return result;
   }
-
 
   @Override
   public boolean isActive() {
@@ -129,6 +137,11 @@ public class DeliverableCrp implements java.io.Serializable, IAuditLog {
 
   public void setIpProgram(IpProgram ipProgram) {
     this.ipProgram = ipProgram;
+  }
+
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
 

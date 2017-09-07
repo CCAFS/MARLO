@@ -38,6 +38,8 @@ public class DeliverablePublicationMetadata implements java.io.Serializable, IAu
   private Boolean coAuthor;
   @Expose
   private Boolean publicationAcknowledge;
+  @Expose
+  private Phase phase;
 
   public DeliverablePublicationMetadata() {
   }
@@ -111,6 +113,10 @@ public class DeliverablePublicationMetadata implements java.io.Serializable, IAu
     return this.pages;
   }
 
+  public Phase getPhase() {
+    return phase;
+  }
+
   public Boolean getPublicationAcknowledge() {
     return publicationAcknowledge;
   }
@@ -155,6 +161,10 @@ public class DeliverablePublicationMetadata implements java.io.Serializable, IAu
 
   public void setPages(String pages) {
     this.pages = pages;
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
   public void setPublicationAcknowledge(Boolean publicationAcknowledge) {

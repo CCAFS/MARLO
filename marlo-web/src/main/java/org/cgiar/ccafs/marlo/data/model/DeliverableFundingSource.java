@@ -36,6 +36,8 @@ public class DeliverableFundingSource implements java.io.Serializable, IAuditLog
   private Date activeSince;
   @Expose
   private String modificationJustification;
+  @Expose
+  private Phase phase;
 
   public DeliverableFundingSource() {
   }
@@ -50,6 +52,7 @@ public class DeliverableFundingSource implements java.io.Serializable, IAuditLog
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -93,7 +96,6 @@ public class DeliverableFundingSource implements java.io.Serializable, IAuditLog
     return fundingSource;
   }
 
-
   @Override
   public Long getId() {
     return this.id;
@@ -106,16 +108,21 @@ public class DeliverableFundingSource implements java.io.Serializable, IAuditLog
     return sb.toString();
   }
 
-
   @Override
   public String getModificationJustification() {
     return this.modificationJustification;
   }
 
+
   @Override
   public User getModifiedBy() {
     return this.modifiedBy;
   }
+
+  public Phase getPhase() {
+    return phase;
+  }
+
 
   @Override
   public int hashCode() {
@@ -133,7 +140,6 @@ public class DeliverableFundingSource implements java.io.Serializable, IAuditLog
   public void setActive(boolean active) {
     this.active = active;
   }
-
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
@@ -154,6 +160,7 @@ public class DeliverableFundingSource implements java.io.Serializable, IAuditLog
     this.deliverable = deliverable;
   }
 
+
   public void setFundingSource(FundingSource fundingSource) {
     this.fundingSource = fundingSource;
   }
@@ -168,6 +175,10 @@ public class DeliverableFundingSource implements java.io.Serializable, IAuditLog
 
   public void setModifiedBy(User usersByModifiedBy) {
     this.modifiedBy = usersByModifiedBy;
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
 

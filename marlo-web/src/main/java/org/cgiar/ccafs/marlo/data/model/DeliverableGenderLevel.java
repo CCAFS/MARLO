@@ -40,10 +40,11 @@ public class DeliverableGenderLevel implements java.io.Serializable, IAuditLog {
   private String nameGenderLevel;
   private String descriptionGenderLevel;
 
+  @Expose
+  private Phase phase;
 
   public DeliverableGenderLevel() {
   }
-
 
   public DeliverableGenderLevel(Deliverable deliverable, User usersByCreatedBy, User usersByModifiedBy,
     long genderLevel, boolean isActive, Date activeSince, String modificationJustification) {
@@ -55,7 +56,6 @@ public class DeliverableGenderLevel implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -84,14 +84,15 @@ public class DeliverableGenderLevel implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
+
   public User getCreatedBy() {
     return createdBy;
   }
 
+
   public Deliverable getDeliverable() {
     return deliverable;
   }
-
 
   public String getDescriptionGenderLevel() {
     return descriptionGenderLevel;
@@ -101,11 +102,11 @@ public class DeliverableGenderLevel implements java.io.Serializable, IAuditLog {
     return genderLevel;
   }
 
+
   @Override
   public Long getId() {
     return id;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -116,7 +117,6 @@ public class DeliverableGenderLevel implements java.io.Serializable, IAuditLog {
 
     return sb.toString();
   }
-
 
   @Override
   public String getModificationJustification() {
@@ -132,6 +132,11 @@ public class DeliverableGenderLevel implements java.io.Serializable, IAuditLog {
 
   public String getNameGenderLevel() {
     return nameGenderLevel;
+  }
+
+
+  public Phase getPhase() {
+    return phase;
   }
 
 
@@ -194,8 +199,13 @@ public class DeliverableGenderLevel implements java.io.Serializable, IAuditLog {
     this.modifiedBy = modifiedBy;
   }
 
+
   public void setNameGenderLevel(String nameGenderLevel) {
     this.nameGenderLevel = nameGenderLevel;
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
 

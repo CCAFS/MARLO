@@ -21,5 +21,8 @@
         <property name="externalFile" type="string">
             <column name="external_file" length="500" />
         </property>
+         <many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
+            <column name="id_phase" />
+        </many-to-one>
     </class>
 </hibernate-mapping>

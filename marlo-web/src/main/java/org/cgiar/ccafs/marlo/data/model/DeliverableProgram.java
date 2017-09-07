@@ -20,8 +20,8 @@ public class DeliverableProgram implements java.io.Serializable, IAuditLog {
 
 
   private Deliverable deliverable;
-
-
+  @Expose
+  private Phase phase;
   @Expose
   private IpProgram ipProgram;
 
@@ -32,7 +32,6 @@ public class DeliverableProgram implements java.io.Serializable, IAuditLog {
     this.deliverable = deliverable;
     this.ipProgram = ipProgram;
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -56,15 +55,16 @@ public class DeliverableProgram implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
   public Deliverable getDeliverable() {
     return deliverable;
   }
+
 
   @Override
   public Long getId() {
     return id;
   }
+
 
   public IpProgram getIpProgram() {
     return ipProgram;
@@ -83,12 +83,15 @@ public class DeliverableProgram implements java.io.Serializable, IAuditLog {
     return "";
   }
 
-
   @Override
   public User getModifiedBy() {
     User u = new User();
     u.setId(new Long(3));
     return u;
+  }
+
+  public Phase getPhase() {
+    return phase;
   }
 
 
@@ -107,6 +110,7 @@ public class DeliverableProgram implements java.io.Serializable, IAuditLog {
     return true;
   }
 
+
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
   }
@@ -117,6 +121,10 @@ public class DeliverableProgram implements java.io.Serializable, IAuditLog {
 
   public void setIpProgram(IpProgram ipProgram) {
     this.ipProgram = ipProgram;
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
 

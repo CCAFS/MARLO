@@ -38,10 +38,9 @@ public class DeliverableQualityAnswer implements java.io.Serializable, IAuditLog
 
   @Expose
   private Date activeSince;
-
-
+  @Expose
+  private Phase phase;
   private Set<DeliverableQualityCheck> checksForQualityAssurance = new HashSet<DeliverableQualityCheck>(0);
-
 
   private Set<DeliverableQualityCheck> checksForDataDictionary = new HashSet<DeliverableQualityCheck>(0);
 
@@ -52,11 +51,9 @@ public class DeliverableQualityAnswer implements java.io.Serializable, IAuditLog
   public DeliverableQualityAnswer() {
   }
 
-
   public DeliverableQualityAnswer(boolean active) {
     this.active = active;
   }
-
 
   public DeliverableQualityAnswer(User modifiedBy, User createdBy, String name, boolean active,
     String modificationJustification, Date activeSince, Set<DeliverableQualityCheck> checksForQualityAssurance,
@@ -103,12 +100,14 @@ public class DeliverableQualityAnswer implements java.io.Serializable, IAuditLog
     return id;
   }
 
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
+
 
   @Override
   public String getModificationJustification() {
@@ -122,6 +121,10 @@ public class DeliverableQualityAnswer implements java.io.Serializable, IAuditLog
 
   public String getName() {
     return name;
+  }
+
+  public Phase getPhase() {
+    return phase;
   }
 
   @Override
@@ -157,10 +160,10 @@ public class DeliverableQualityAnswer implements java.io.Serializable, IAuditLog
     this.id = id;
   }
 
-
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
+
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
@@ -168,6 +171,10 @@ public class DeliverableQualityAnswer implements java.io.Serializable, IAuditLog
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
 

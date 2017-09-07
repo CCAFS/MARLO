@@ -23,6 +23,9 @@
         <property name="restrictedUseAgreement" type="java.lang.Boolean">
             <column name="restricted_use_agreement" />
         </property>
+         <many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
+            <column name="id_phase" />
+        </many-to-one>
         <property name="restrictedAccessUntil" type="date">
             <column name="restricted_access_until" length="10" />
         </property>

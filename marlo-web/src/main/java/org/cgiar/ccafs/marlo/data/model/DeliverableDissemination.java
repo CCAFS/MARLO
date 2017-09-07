@@ -46,6 +46,8 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
   private String disseminationChannelName;
   @Expose
   private Boolean synced;
+  @Expose
+  private Phase phase;
 
 
   private String type;
@@ -58,6 +60,7 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
   public DeliverableDissemination(Deliverable deliverable) {
     this.deliverable = deliverable;
   }
+
 
   public DeliverableDissemination(Deliverable deliverable, Boolean isOpenAccess, Boolean intellectualProperty,
     Boolean limitedExclusivity, Boolean restrictedUseAgreement, Date restrictedAccessUntil,
@@ -76,6 +79,7 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
     this.disseminationUrl = disseminationUrl;
     this.disseminationChannelName = disseminationChannelName;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -111,7 +115,6 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
     return disseminationChannel;
   }
 
-
   public String getDisseminationChannelName() {
     return disseminationChannelName;
   }
@@ -120,10 +123,10 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
     return disseminationUrl;
   }
 
+
   public Boolean getEffectiveDateRestriction() {
     return effectiveDateRestriction;
   }
-
 
   @Override
   public Long getId() {
@@ -134,10 +137,10 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
     return intellectualProperty;
   }
 
+
   public Boolean getIsOpenAccess() {
     return isOpenAccess;
   }
-
 
   public Boolean getLimitedExclusivity() {
     return limitedExclusivity;
@@ -157,7 +160,6 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
     return "";
   }
 
-
   @Override
   public User getModifiedBy() {
     User u = new User();
@@ -168,6 +170,11 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
 
   public Boolean getNotDisseminated() {
     return notDisseminated;
+  }
+
+
+  public Phase getPhase() {
+    return phase;
   }
 
 
@@ -194,6 +201,7 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
   public String getType() {
     return type;
   }
+
 
   @Override
   public int hashCode() {
@@ -251,6 +259,10 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
 
   public void setNotDisseminated(Boolean notDisseminated) {
     this.notDisseminated = notDisseminated;
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
   public void setRestrictedAccessUntil(Date restrictedAccessUntil) {
