@@ -80,14 +80,14 @@
                 
                 [#-- GLOBAL DIMENSION --]
                 <div class="form-group  col-md-12">
-                  [@customForm.yesNoInput  label="projectLocations.globalDimension" name="project.locationGlobal"  editable=editable && action.hasSpecificities("crp_other_locations") inverse=false  cssClass="" /] 
+                  [@customForm.yesNoInput  label="projectLocations.globalDimension" name="project.projectInfo.locationGlobal"  editable=editable && action.hasSpecificities("crp_other_locations") inverse=false  cssClass="" /] 
                 </div>
                 <br />
                 <div class="form-group col-md-12 ">
                   <hr />
                 </div>
                 <div class="form-group col-md-12">
-                  [@customForm.yesNoInput  label="projectLocations.regionalDimension" name="project.locationRegional"   editable=editable && action.hasSpecificities("crp_other_locations") inverse=false  cssClass="isRegional" /]
+                  [@customForm.yesNoInput  label="projectLocations.regionalDimension" name="project.projectInfo.locationRegional"   editable=editable && action.hasSpecificities("crp_other_locations") inverse=false  cssClass="isRegional" /]
                   [#if editable && action.hasSpecificities("crp_other_locations")]
                     <small style="color: #337ab7;">[@s.text name="projectLocations.regionsNote" /] </small>
                   [/#if]

@@ -117,7 +117,6 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
     this.reporting = reporting;
   }
 
-
   public ProjectInfo(User user, boolean isCofinancing, String modificationJustification, int scale) {
     this.modifiedBy = user;
     this.cofinancing = isCofinancing;
@@ -155,6 +154,7 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
     return allYears;
   }
 
+
   public Boolean getCrossCuttingCapacity() {
     return crossCuttingCapacity;
   }
@@ -162,7 +162,6 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
   public Boolean getCrossCuttingGender() {
     return crossCuttingGender;
   }
-
 
   public Boolean getCrossCuttingNa() {
     return crossCuttingNa;
@@ -183,10 +182,10 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
     return endDate;
   }
 
+
   public String getGenderAnalysis() {
     return genderAnalysis;
   }
-
 
   @Override
   public Long getId() {
@@ -285,6 +284,17 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
 
   public String getStatusJustification() {
     return statusJustification;
+  }
+
+
+  public Boolean getStatusJustificationRequired() {
+    // Alow for comments when the project is extended, cancelled or complete;
+    if ((this.status == Long.parseLong(ProjectStatusEnum.Extended.getStatusId()))
+      || (this.status == Long.parseLong(ProjectStatusEnum.Cancelled.getStatusId()))
+      || (this.status == Long.parseLong(ProjectStatusEnum.Complete.getStatusId()))) {
+      return true;
+    }
+    return false;
   }
 
 

@@ -100,8 +100,8 @@
                   [@customForm.select name="project.status" value="${(project.status)!}" i18nkey="project.status" className="description_project_status" listName="projectStatuses" header=false editable=editable /]
                 </div>
               </div>
-              <div id="statusDescription" class="form-group" style="display:${project.statusJustificationRequired?string('block','none')}">
-                [@customForm.textArea name="project.statusJustification" required=!((project.bilateralProject)!false) className="project-statusJustification limitWords-100" editable=action.hasPermission("statusDescription")  /]
+              <div id="statusDescription" class="form-group" style="display:${project.projectInfo.statusJustificationRequired?string('block','none')}">
+                [@customForm.textArea name="project.projectInfo.statusJustification" required=!((project.bilateralProject)!false) className="project-statusJustification limitWords-100" editable=action.hasPermission("statusDescription")  /]
               </div>
             </div>
             
