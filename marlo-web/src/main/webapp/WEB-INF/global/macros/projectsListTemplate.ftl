@@ -107,6 +107,8 @@
           [/#if]
           [#-- Project Action Status --]
           <td>
+            <strong>${(project.statusName)!}</strong>
+            <i>
             [#assign currentCycleYear= currentCycleYear /]
             [#assign submission = action.isProjectSubmitted(project.id) /] [#-- (project.isSubmitted(currentCycleYear, cycleName))! --]
             [#assign completed = (action.isCompleteProject(project.id))!false /]
@@ -138,6 +140,7 @@
                 <p title="Ready for project leader completion">Ready for PL</p>
               [/#if]
             [/#if]
+            </i>
             
             
           </td>
@@ -148,13 +151,98 @@
           [#-- Summary PDF download --]
           <td>
             [#if true]
-            
             <a href="[@s.url namespace="/projects" action='${(crpSession)!}/reportingSummary'][@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='cycle']${action.getCurrentCycle()}[/@s.param][@s.param name='year']${action.getCurrentCycleYear()}[/@s.param][/@s.url]" target="__BLANK">
-              <img src="${baseUrlMedia}/images/global/pdf.png" height="25" title="[@s.text name="Download PDF" /]" />
+              <img src="${baseUrlMedia}/images/global/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
             </a>
             [#else]
               <img src="${baseUrlMedia}/images/global/download-summary-disabled.png" height="25" title="[@s.text name="global.comingSoon" /]" />
             [/#if]
+          </td>
+          [#-- Delete Project--]
+          <td>
+            [#if canEdit && isProjectNew && action.deletePermission(project.id) ]
+              <a id="removeProject-${project.id}" class="removeProject" href="#" title="">
+                <img src="${baseUrlMedia}/images/global/trash.png" title="[@s.text name="projectsList.deleteProject" /]" /> 
+              </a>
+            [#else]
+              <img src="${baseUrlMedia}/images/global/trash_disable.png" title="[@s.text name="projectsList.cantDeleteProject" /]" />
+            [/#if]
+          </td>
+        </tr>  
+      [/#list]
+    [/#if]
+    </tbody>
+  </table>
+[/#macro]
+
+[#macro projectsListArchived projects={} owned=true canValidate=false canEdit=false isPlanning=false namespace="/" defaultAction="description"]
+  <table class="projectsList" id="projects">
+    <thead>
+      <tr class="subHeader">
+        <th id="ids">[@s.text name="projectsList.projectids" /]</th>
+        <th id="projectTitles" >[@s.text name="projectsList.projectTitles" /]</th>
+        <th id="projectLeader" >[@s.text name="projectsList.projectLeader" /]</th>
+        [#--  <th id="projectType">[@s.text name="projectsList.projectType" /]</th>--]
+        <th id="projectFlagships">
+          [#if action.hasProgramnsRegions()]
+            [@s.text name="projectsList.projectFlagshipsRegions" /] 
+          [#else]
+             [@s.text name="projectsList.projectFlagships" /]
+          [/#if]
+        </th>
+        <th id="projectActionStatus">[@s.text name="projectsList.projectActionStatus" /]</th>
+        <th id="projectDownload">[@s.text name="projectsList.download" /]</th>
+        <th id="projectDownload">[@s.text name="projectsList.delete" /]</th>
+      </tr>
+    </thead>
+    <tbody>
+    [#if projects?has_content]
+      [#list projects as project]
+        [#assign isProjectNew = action.isProjectNew(project.id) /]
+        [#local projectUrl][@s.url namespace=namespace action=defaultAction][@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='edit' value="true" /][/@s.url][/#local]
+        <tr>
+        [#-- ID --]
+        <td class="projectId">
+          <a href="${projectUrl}"> P${project.id}</a>
+        </td>
+          [#-- Project Title --]
+          <td class="left">
+            [#if isProjectNew]<span class="label label-info">[@s.text name="global.new" /]</span>[/#if]
+            [#if project.administrative]<span class="label label-primary">[@s.text name="project.management" /]</span>[/#if]
+            [#if project.title?has_content]
+              <a href="${projectUrl}" title="${project.title}">
+              [#if project.title?length < 120] ${project.title}</a> [#else] [@utilities.wordCutter string=project.title maxPos=120 /]...</a> [/#if]
+            [#else]
+              <a href="${projectUrl}">
+                [@s.text name="projectsList.title.none" /]
+              </a>
+            [/#if]
+          </td>
+          [#-- Project Leader --]
+          <td class=""> 
+            [#if project.leader?has_content]${(project.leader.institution.acronym)!project.leader.institution.name}[#else][@s.text name="projectsList.title.none" /][/#if]
+          </td>
+          [#-- Flagship / Regions --]
+          <td>
+          [#if !project.administrative]
+            [#if project.flagships?has_content || project.regions?has_content]
+              [#if project.flagships?has_content][#list project.flagships as element]<span class="programTag" style="border-color:${(element.color)!'#fff'}">${element.acronym}</span>[/#list][/#if][#if project.regions?has_content][#list project.regions as element]<span class="programTag" style="border-color:${(element.color)!'#fff'}">${element.acronym}</span>[/#list][/#if]
+            [#else]
+              [@s.text name="projectsList.none" /]
+            [/#if]
+          [#else] 
+             <span class="programTag" style="border-color:#444">${(project.liaisonInstitution.crpProgram.acronym)!}</span>
+          [/#if]
+          </td>
+          [#-- Project Action Status --]
+          <td>
+            <strong>${(project.statusName)!}</strong> 
+          </td>
+          [#-- Summary PDF download --]
+          <td>
+            <a href="[@s.url namespace="/projects" action='${(crpSession)!}/reportingSummary'][@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='cycle']${action.getCurrentCycle()}[/@s.param][@s.param name='year']${action.getCurrentCycleYear()}[/@s.param][/@s.url]" target="__BLANK">
+              <img src="${baseUrlMedia}/images/global/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
+            </a>
           </td>
           [#-- Delete Project--]
           <td>
@@ -266,46 +354,4 @@
   </table>
 [/#macro]
 
-[#macro deliverablesList deliverable={} owned=true canValidate=false canEdit=false isPlanning=false namespace="/" defaultAction="deliverables"]
-  <table class="projectsList" id="projects">
-    <thead>
-      <tr class="subHeader">
-        <th id="ids">[@s.text name="projectsList.projectids" /]</th>
-        <th id="deliverableTitles" >Deliverable Name</th>
-        <th id="deliverableType">[@s.text name="projectsList.projectType" /]</th>
-        <th id="deliverableEDY">Expected delivery year</th>
-        <th id="deliverableFC">FAIR compliance</th>
-        <th id="deliverableStatus">Status</th>
-        <th id="deliverableRF">Required Fields</th>
-        <th id="deliverableDelete">[@s.text name="projectsList.delete" /]</th>
-      </tr>
-    </thead>
-    <tbody>
-    [#if projects?has_content]
-      [#list projects as project]
-        <tr>
-        [#-- ID --]
-        <td class="projectId">
-          <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='projectID']${deliverable.id?c}[/@s.param][/@s.url]"> P${deliverable.id}</a>
-        </td>
-          [#-- Project Title --]
-          <td class="left"> 
-            [#if project.title?has_content]
-              <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='projectID']${project.id?c}[/@s.param][/@s.url]" title="${project.title}">
-              [#if project.title?length < 120] ${project.title}</a> [#else] [@utilities.wordCutter string=project.title maxPos=120 /]...</a> [/#if]
-            [#else]
-              <a href="[@s.url namespace=namespace action=defaultAction includeParams='get'] [@s.param name='projectID']${project.id?c}[/@s.param][/@s.url] ">
-                [@s.text name="projectsList.title.none" /]
-              </a>
-            [/#if]
-          </td>
-          [#-- Project Type --]
-          <td>
-            [@s.text name="project.type.${(project.type?lower_case)!'none'}" /]
-          </td>
-        </tr>  
-      [/#list]
-    [/#if]
-    </tbody>
-  </table>
-[/#macro]
+]
