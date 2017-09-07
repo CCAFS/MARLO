@@ -55,5 +55,8 @@
   [#if libraryName="blueimp-file-upload"]<script src="${baseUrl}/bower_components/blueimp-file-upload/js/jquery.fileupload.js"></script>[/#if]
   [#if libraryName="google-diff-match-patch"]<script src="${baseUrl}/bower_components/google-diff-match-patch/diff_match_patch.js"></script>[/#if]
   [#if libraryName="jquery-pretty-text-diff"]<script src="${baseUrl}/bower_components/jquery-pretty-text-diff/jquery.pretty-text-diff.min.js"></script>[/#if]
+  [#if libraryName="d3"]<script src="${baseUrl}/bower_components/d3/d3.js"></script>[/#if]
+  [#if libraryName="labella"]<script src="${baseUrl}/bower_components/labella/dist/labella.min.js"></script>[/#if]
+  [#if libraryName="d3kit-timeline"]<script src="${baseUrl}/bower_components/d3kit-timeline/dist/d3kit-timeline.min.js"></script>[/#if]
   [#-- endbower --]
 [/#macro]
