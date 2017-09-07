@@ -518,7 +518,18 @@ public class HibernateAuditLogListener
                      * When issue #1124 is solved, this won't be a problem.
                      */
                     Object obj = sessionFactory.getCurrentSession().get(className, (Serializable) audit.getId());
-
+                    if (obj == null) {
+                      /**
+                       * This is likely to be that the entity has just been hard deleted (MARLO has a mixture of
+                       * entities
+                       * where some are soft deleted and others are hard deleted).
+                       */
+                      LOG.info("IAuditLog obj with className: " + className + ", and id: " + audit.getId()
+                        + " can not be found");
+                      // Add the audit from the state object array
+                      listRelation.add(audit);
+                      continue;
+                    }
                     listRelation.add((IAuditLog) obj);
                     Set<HashMap<String, Object>> loadList = this.loadListOfRelations((IAuditLog) obj, sessionFactory);
                     for (HashMap<String, Object> hashMap : loadList) {
