@@ -1293,6 +1293,8 @@ public class DeliverableAction extends BaseAction {
 
       if (deliverable.getDeliverableInfo().getNewExpectedYear() != null) {
         deliverableInfoPrew.setNewExpectedYear(deliverable.getDeliverableInfo().getNewExpectedYear());
+      } else {
+        deliverableInfoPrew.setNewExpectedYear(null);
       }
 
 
