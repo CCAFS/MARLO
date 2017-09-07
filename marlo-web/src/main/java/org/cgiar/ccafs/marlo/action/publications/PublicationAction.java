@@ -409,8 +409,8 @@ public class PublicationAction extends BaseAction {
          */
         deliverable.setGenderLevels(
           deliverable.getDeliverableGenderLevels().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-        DeliverableQualityCheck deliverableQualityCheck =
-          deliverableQualityCheckManager.getDeliverableQualityCheckByDeliverable(deliverable.getId());
+        DeliverableQualityCheck deliverableQualityCheck = deliverableQualityCheckManager
+          .getDeliverableQualityCheckByDeliverable(deliverable.getId(), this.getActualPhase().getId());
         deliverable.setQualityCheck(deliverableQualityCheck);
 
         if (deliverable.getDeliverableMetadataElements() != null) {

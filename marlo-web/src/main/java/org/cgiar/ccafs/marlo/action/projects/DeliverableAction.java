@@ -932,9 +932,11 @@ public class DeliverableAction extends BaseAction {
         deliverable.getDeliverableInfo(this.getActualPhase());
         deliverable.setResponsiblePartner(this.responsiblePartner());
         deliverable.setOtherPartners(this.otherPartners());
+
         deliverable.setFundingSources(deliverable.getDeliverableFundingSources().stream()
           .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
           .collect(Collectors.toList()));
+
         deliverable.setGenderLevels(deliverable.getDeliverableGenderLevels().stream()
           .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
 

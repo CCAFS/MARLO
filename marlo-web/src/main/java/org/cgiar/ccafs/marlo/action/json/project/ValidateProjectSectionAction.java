@@ -952,8 +952,8 @@ public class ValidateProjectSectionAction extends BaseAction {
 
       if (this.isReportingActive()) {
 
-        DeliverableQualityCheck deliverableQualityCheck =
-          deliverableQualityCheckManager.getDeliverableQualityCheckByDeliverable(deliverable.getId());
+        DeliverableQualityCheck deliverableQualityCheck = deliverableQualityCheckManager
+          .getDeliverableQualityCheckByDeliverable(deliverable.getId(), this.getActualPhase().getId());
         deliverable.setQualityCheck(deliverableQualityCheck);
 
         if (deliverable.getDeliverableMetadataElements() != null) {
