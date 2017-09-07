@@ -896,17 +896,18 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           this.fillSubreport((SubReport) hm.get("case_studies"), "case_studies", args);
           this.fillSubreport((SubReport) hm.get("overview_by_mogs"), "overview_by_mogs", args);
         }
+
+        // Subreport Deliverables
+        if (cycle.equals("Planning")) {
+          // Subreport Outcomes
+          args.clear();
+          this.fillSubreport((SubReport) hm.get("deliverables"), "deliverables_list", args);
+        } else {
+          args.clear();
+          this.fillSubreport((SubReport) hm.get("deliverables"), "deliverables_list_reporting", args);
+          this.fillSubreport((SubReport) hm.get("project_highlight"), "project_highlight", args);
+        }
         /*
-         * // Subreport Deliverables
-         * if (cycle.equals("Planning")) {
-         * // Subreport Outcomes
-         * args.clear();
-         * this.fillSubreport((SubReport) hm.get("deliverables"), "deliverables_list", args);
-         * } else {
-         * args.clear();
-         * this.fillSubreport((SubReport) hm.get("deliverables"), "deliverables_list_reporting", args);
-         * this.fillSubreport((SubReport) hm.get("project_highlight"), "project_highlight", args);
-         * }
          * // Subreport Activities
          * args.clear();
          * if (cycle.equals("Planning")) {
@@ -1751,34 +1752,34 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       // get Reporting deliverables
       List<Deliverable> deliverables = new ArrayList<>(project.getDeliverables().stream()
         .filter(d -> d.isActive() && d.getProject() != null && d.getProject().isActive()
-          && d.getProject().getProjecInfoPhase(this.getActualPhase()).getReporting() != null
-          && d.getProject().getProjecInfoPhase(this.getActualPhase()).getReporting() && d.getProject().getCrp() != null
-          && d.getProject().getCrp().getId().equals(this.loggedCrp.getId())
-          && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-          && ((d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+          && d.getProject().getProjecInfoPhase(this.getSelectedPhase()).getReporting() != null
+          && d.getProject().getProjecInfoPhase(this.getSelectedPhase()).getReporting()
+          && d.getProject().getCrp() != null && d.getProject().getCrp().getId().equals(this.loggedCrp.getId())
+          && d.getDeliverableInfo(this.getSelectedPhase()).getStatus() != null
+          && ((d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Complete
               .getStatusId())
-            && (d.getDeliverableInfo(this.getActualPhase()).getYear() >= this.year
-              || (d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null
-                && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear().intValue() >= this.year)))
-            || (d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+            && (d.getDeliverableInfo(this.getSelectedPhase()).getYear() >= this.year
+              || (d.getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear() != null
+                && d.getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear().intValue() >= this.year)))
+            || (d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
               .parseInt(ProjectStatusEnum.Extended.getStatusId())
-              && (d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null
-                && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear().intValue() == this.year))
-            || (d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+              && (d.getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear() != null
+                && d.getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear().intValue() == this.year))
+            || (d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
               .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
-              && (d.getDeliverableInfo(this.getActualPhase()).getYear() == this.year
-                || (d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null
-                  && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear().intValue() == this.year))))
-          && (d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+              && (d.getDeliverableInfo(this.getSelectedPhase()).getYear() == this.year
+                || (d.getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear() != null
+                  && d.getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear().intValue() == this.year))))
+          && (d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Extended.getStatusId())
-            || d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+            || d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
               .parseInt(ProjectStatusEnum.Complete.getStatusId())
-            || d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+            || d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
               .parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
         .collect(Collectors.toList()));
-      deliverables.sort((p1, p2) -> p1.getDeliverableInfo(this.getActualPhase()).isRequieriedReporting(year)
-        .compareTo(p2.getDeliverableInfo(this.getActualPhase()).isRequieriedReporting(year)));
+      deliverables.sort((p1, p2) -> p1.getDeliverableInfo(this.getSelectedPhase()).isRequieriedReporting(year)
+        .compareTo(p2.getDeliverableInfo(this.getSelectedPhase()).isRequieriedReporting(year)));
       HashSet<Deliverable> deliverablesHL = new HashSet<>();
       deliverablesHL.addAll(deliverables);
       deliverables.clear();
@@ -1786,7 +1787,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       for (Deliverable deliverable : deliverables) {
         String delivType = null;
         String delivSubType = null;
-        String delivStatus = deliverable.getDeliverableInfo(this.getActualPhase()).getStatusName();
+        String delivStatus = deliverable.getDeliverableInfo(this.getSelectedPhase()).getStatusName();
         String delivYear = null;
         String keyOutput = "";
         String leader = null;
@@ -1795,38 +1796,39 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         Boolean showFAIR = false;
         Boolean showPublication = false;
         Boolean showCompilance = false;
-        if (deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType() != null) {
-          delivSubType = deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getName();
-          if (deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 51
-            || deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 56
-            || deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 57
-            || deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 76
-            || deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 54
-            || deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 81
-            || deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 82
-            || deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 83
-            || deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 55
-            || deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 62
-            || deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 53
-            || deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 60
-            || deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 59
-            || deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 58
-            || deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 77
-            || deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 75
-            || deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 78
-            || deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 72
-            || deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 73) {
+        if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType() != null) {
+          delivSubType = deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getName();
+          if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getId() == 51
+            || deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getId() == 56
+            || deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getId() == 57
+            || deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getId() == 76
+            || deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getId() == 54
+            || deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getId() == 81
+            || deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getId() == 82
+            || deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getId() == 83
+            || deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getId() == 55
+            || deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getId() == 62
+            || deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getId() == 53
+            || deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getId() == 60
+            || deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getId() == 59
+            || deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getId() == 58
+            || deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getId() == 77
+            || deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getId() == 75
+            || deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getId() == 78
+            || deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getId() == 72
+            || deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getId() == 73) {
             showFAIR = true;
           }
-          if (deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 51
-            || deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() == 74) {
+          if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getId() == 51
+            || deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getId() == 74) {
             showCompilance = true;
           }
-          if (deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getDeliverableType() != null) {
-            delivType =
-              deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getDeliverableType().getName();
+          if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType()
+            .getDeliverableType() != null) {
+            delivType = deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType()
+              .getDeliverableType().getName();
             // FAIR and deliverable publication
-            if (deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getDeliverableType()
+            if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getDeliverableType()
               .getId() == 49) {
               showFAIR = true;
               showPublication = true;
@@ -1836,17 +1838,17 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         if (delivStatus.equals("")) {
           delivStatus = null;
         }
-        if (deliverable.getDeliverableInfo(this.getActualPhase()).getYear() != 0) {
-          delivYear = "" + deliverable.getDeliverableInfo(this.getActualPhase()).getYear();
+        if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getYear() != 0) {
+          delivYear = "" + deliverable.getDeliverableInfo(this.getSelectedPhase()).getYear();
         }
-        if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrpClusterKeyOutput() != null) {
+        if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrpClusterKeyOutput() != null) {
           keyOutput += "● ";
-          if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrpClusterKeyOutput().getCrpClusterOfActivity()
+          if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrpClusterKeyOutput().getCrpClusterOfActivity()
             .getCrpProgram() != null) {
-            keyOutput += deliverable.getDeliverableInfo(this.getActualPhase()).getCrpClusterKeyOutput()
+            keyOutput += deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrpClusterKeyOutput()
               .getCrpClusterOfActivity().getCrpProgram().getAcronym() + " - ";
           }
-          keyOutput += deliverable.getDeliverableInfo(this.getActualPhase()).getCrpClusterKeyOutput().getKeyOutput();
+          keyOutput += deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrpClusterKeyOutput().getKeyOutput();
         }
         // Get partner responsible and institution
         // Set responible;
@@ -1873,28 +1875,28 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         }
         // Get cross_cutting dimension
         String crossCutting = "";
-        if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingNa() != null) {
-          if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingNa() == true) {
+        if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingNa() != null) {
+          if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingNa() == true) {
             crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● N/A <br>";
           }
         }
-        if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingGender() != null) {
-          if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingGender() == true) {
+        if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingGender() != null) {
+          if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingGender() == true) {
             crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Gender <br>";
           }
         }
-        if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingYouth() != null) {
-          if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingYouth() == true) {
+        if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingYouth() != null) {
+          if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingYouth() == true) {
             crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Youth <br>";
           }
         }
-        if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingCapacity() != null) {
-          if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingCapacity() == true) {
+        if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingCapacity() != null) {
+          if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingCapacity() == true) {
             crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Capacity Development <br>";
           }
         }
-        if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingGender() != null) {
-          if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingGender() == true) {
+        if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingGender() != null) {
+          if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingGender() == true) {
             if (deliverable.getDeliverableGenderLevels() == null
               || deliverable.getDeliverableGenderLevels().isEmpty()) {
               crossCutting += "<br><b>Gender level(s):</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&lt;Not Defined&gt;";
@@ -1919,22 +1921,22 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         // Reporting
         Integer delivNewYear = null;
         String delivNewYearJustification = null;
-        if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null) {
+        if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getStatus() != null) {
           // Extended
-          if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+          if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-            delivNewYear = deliverable.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear();
-            delivNewYearJustification = deliverable.getDeliverableInfo(this.getActualPhase()).getStatusDescription();
+            delivNewYear = deliverable.getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear();
+            delivNewYearJustification = deliverable.getDeliverableInfo(this.getSelectedPhase()).getStatusDescription();
           }
           // Complete
-          if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+          if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Complete.getStatusId())) {
-            delivNewYear = deliverable.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear();
+            delivNewYear = deliverable.getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear();
           }
           // Canceled
-          if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+          if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
-            delivNewYearJustification = deliverable.getDeliverableInfo(this.getActualPhase()).getStatusDescription();
+            delivNewYearJustification = deliverable.getDeliverableInfo(this.getSelectedPhase()).getStatusDescription();
           }
         }
         String delivDisseminationChannel = null;
@@ -2014,14 +2016,14 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
               }
             }
           }
-          if (deliverable.getDeliverableInfo(this.getActualPhase()).getAdoptedLicense() != null) {
-            if (deliverable.getDeliverableInfo(this.getActualPhase()).getAdoptedLicense() == true) {
-              delivLicense = deliverable.getDeliverableInfo(this.getActualPhase()).getLicense();
+          if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getAdoptedLicense() != null) {
+            if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getAdoptedLicense() == true) {
+              delivLicense = deliverable.getDeliverableInfo(this.getSelectedPhase()).getLicense();
               if (delivLicense.equals("OTHER")) {
-                delivLicense = deliverable.getDeliverableInfo(this.getActualPhase()).getOtherLicense();
+                delivLicense = deliverable.getDeliverableInfo(this.getSelectedPhase()).getOtherLicense();
                 showDelivLicenseModifications = true;
-                if (deliverable.getDeliverableInfo(this.getActualPhase()).getAllowModifications() != null
-                  && deliverable.getDeliverableInfo(this.getActualPhase()).getAllowModifications() == true) {
+                if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getAllowModifications() != null
+                  && deliverable.getDeliverableInfo(this.getSelectedPhase()).getAllowModifications() == true) {
                   delivLicenseModifications = "Yes";
                 } else {
                   delivLicenseModifications = "No";
@@ -2304,7 +2306,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           }
         }
         model.addRow(new Object[] {deliverable.getId(),
-          deliverable.getDeliverableInfo(this.getActualPhase()).getTitle(), delivType, delivSubType, delivStatus,
+          deliverable.getDeliverableInfo(this.getSelectedPhase()).getTitle(), delivType, delivSubType, delivStatus,
           delivYear, keyOutput, leader, institution, fundingSources, crossCutting, delivNewYear,
           delivNewYearJustification, delivDisseminationChannel, delivDisseminationUrl, delivOpenAccess, delivLicense,
           titleMetadata, descriptionMetadata, dateMetadata, languageMetadata, countryMetadata, keywordsMetadata,
@@ -2327,37 +2329,38 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     if (!project.getDeliverables().isEmpty()) {
       for (Deliverable deliverable : project.getDeliverables().stream()
         .sorted((d1, d2) -> Long.compare(d1.getId(), d2.getId()))
-        .filter(c -> c.isActive() && c.getDeliverableInfo(this.getActualPhase()).getYear() >= year)
+        .filter(c -> c.isActive() && c.getDeliverableInfo(this.getSelectedPhase()).getYear() >= year)
         .collect(Collectors.toList())) {
         String delivType = null;
         String delivSubType = null;
-        String delivStatus = deliverable.getDeliverableInfo(this.getActualPhase()).getStatusName();
+        String delivStatus = deliverable.getDeliverableInfo(this.getSelectedPhase()).getStatusName();
         String delivYear = null;
         String keyOutput = "";
         String leader = null;
         String institution = null;
         String fundingSources = "";
-        if (deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType() != null) {
-          delivSubType = deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getName();
-          if (deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getDeliverableType() != null) {
-            delivType =
-              deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getDeliverableType().getName();
+        if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType() != null) {
+          delivSubType = deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getName();
+          if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType()
+            .getDeliverableType() != null) {
+            delivType = deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType()
+              .getDeliverableType().getName();
           }
         }
         if (delivStatus.equals("")) {
           delivStatus = null;
         }
-        if (deliverable.getDeliverableInfo(this.getActualPhase()).getYear() != 0) {
-          delivYear = "" + deliverable.getDeliverableInfo(this.getActualPhase()).getYear();
+        if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getYear() != 0) {
+          delivYear = "" + deliverable.getDeliverableInfo(this.getSelectedPhase()).getYear();
         }
-        if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrpClusterKeyOutput() != null) {
+        if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrpClusterKeyOutput() != null) {
           keyOutput += "● ";
-          if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrpClusterKeyOutput().getCrpClusterOfActivity()
+          if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrpClusterKeyOutput().getCrpClusterOfActivity()
             .getCrpProgram() != null) {
-            keyOutput += deliverable.getDeliverableInfo(this.getActualPhase()).getCrpClusterKeyOutput()
+            keyOutput += deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrpClusterKeyOutput()
               .getCrpClusterOfActivity().getCrpProgram().getAcronym() + " - ";
           }
-          keyOutput += deliverable.getDeliverableInfo(this.getActualPhase()).getCrpClusterKeyOutput().getKeyOutput();
+          keyOutput += deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrpClusterKeyOutput().getKeyOutput();
         }
         // Get partner responsible and institution
         // Set responible;
@@ -2384,28 +2387,28 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         }
         // Get cross_cutting dimension
         String crossCutting = "";
-        if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingNa() != null) {
-          if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingNa() == true) {
+        if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingNa() != null) {
+          if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingNa() == true) {
             crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● N/A <br>";
           }
         }
-        if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingGender() != null) {
-          if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingGender() == true) {
+        if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingGender() != null) {
+          if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingGender() == true) {
             crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Gender <br>";
           }
         }
-        if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingYouth() != null) {
-          if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingYouth() == true) {
+        if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingYouth() != null) {
+          if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingYouth() == true) {
             crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Youth <br>";
           }
         }
-        if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingCapacity() != null) {
-          if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingCapacity() == true) {
+        if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingCapacity() != null) {
+          if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingCapacity() == true) {
             crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Capacity Development <br>";
           }
         }
-        if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingGender() != null) {
-          if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingGender() == true) {
+        if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingGender() != null) {
+          if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingGender() == true) {
             if (deliverable.getDeliverableGenderLevels() == null
               || deliverable.getDeliverableGenderLevels().isEmpty()) {
               crossCutting += "<br><b>Gender level(s):</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&lt;Not Defined&gt;";
@@ -2428,7 +2431,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           keyOutput = null;
         }
         model.addRow(new Object[] {deliverable.getId(),
-          deliverable.getDeliverableInfo(this.getActualPhase()).getTitle(), delivType, delivSubType, delivStatus,
+          deliverable.getDeliverableInfo(this.getSelectedPhase()).getTitle(), delivType, delivSubType, delivStatus,
           delivYear, keyOutput, leader, institution, fundingSources, crossCutting});
       }
     }
