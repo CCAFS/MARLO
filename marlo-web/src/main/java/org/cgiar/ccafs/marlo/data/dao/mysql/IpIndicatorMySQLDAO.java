@@ -135,16 +135,12 @@ public class IpIndicatorMySQLDAO extends AbstractMarloDAO<IpIndicator, Long> imp
     StringBuilder query = new StringBuilder();
 
 
-    query.append("SELECT DISTINCT i.id, ");
-    query.append("                i.* ,prog.acronym");
-    query.append(" FROM   ip_indicators i ");
-    query.append("       LEFT JOIN ip_indicators p ");
-    query.append("              ON i.parent_id = p.id ");
-    query.append("       INNER JOIN ip_project_indicators ipi ");
-    query.append("               ON i.id = ipi.parent_id ");
-    query.append("       INNER JOIN ip_elements ie ");
-    query.append("               ON ipi.outcome_id = ie.id ");
-    query.append("        inner  JOIN ip_programs prog on prog.id=ie.ip_program_id and prog.type_id=4");
+    query.append("SELECT DISTINCT i.id, prog.acronym ");
+    query.append("FROM ip_indicators i ");
+    query.append("LEFT JOIN ip_indicators p ON i.parent_id = p.id ");
+    query.append("INNER JOIN ip_project_indicators ipi ON i.id = ipi.parent_id ");
+    query.append("INNER JOIN ip_elements ie ON ipi.outcome_id = ie.id ");
+    query.append("INNER JOIN ip_programs prog on prog.id=ie.ip_program_id and prog.type_id=4");
 
     List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
     List<IpIndicator> ipIndicators = new ArrayList<>();
