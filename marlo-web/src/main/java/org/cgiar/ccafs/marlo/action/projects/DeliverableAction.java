@@ -1261,7 +1261,15 @@ public class DeliverableAction extends BaseAction {
        */
       // deliverablePrew = deliverableManager.saveDeliverable(deliverablePrew);
 
+      if (deliverable.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+        && deliverable.getNewExpectedYear() != null) {
+        deliverableManagedState.setNewExpectedYear(deliverable.getNewExpectedYear());
+      } else {
+        deliverableManagedState.setNewExpectedYear(null);
+      }
+
       this.saveDeliverablePartnership(deliverableManagedState, partnershipResponsible, partnerPerson);
+
 
       this.removeDeliverablePartnerships(deliverableManagedState);
 
