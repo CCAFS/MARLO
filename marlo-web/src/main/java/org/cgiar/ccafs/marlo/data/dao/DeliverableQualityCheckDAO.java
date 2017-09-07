@@ -63,7 +63,7 @@ public interface DeliverableQualityCheckDAO {
    * @param Deliverable is the Deliverable identifier.
    * @return a DeliverableQualityCheck object.
    */
-  public DeliverableQualityCheck findByDeliverable(long id);
+  public DeliverableQualityCheck findByDeliverable(long id, long phaseID);
 
 
   /**

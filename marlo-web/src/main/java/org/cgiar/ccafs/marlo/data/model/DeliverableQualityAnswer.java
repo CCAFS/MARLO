@@ -38,8 +38,7 @@ public class DeliverableQualityAnswer implements java.io.Serializable, IAuditLog
 
   @Expose
   private Date activeSince;
-  @Expose
-  private Phase phase;
+
   private Set<DeliverableQualityCheck> checksForQualityAssurance = new HashSet<DeliverableQualityCheck>(0);
 
   private Set<DeliverableQualityCheck> checksForDataDictionary = new HashSet<DeliverableQualityCheck>(0);
@@ -123,9 +122,6 @@ public class DeliverableQualityAnswer implements java.io.Serializable, IAuditLog
     return name;
   }
 
-  public Phase getPhase() {
-    return phase;
-  }
 
   @Override
   public boolean isActive() {
@@ -171,10 +167,6 @@ public class DeliverableQualityAnswer implements java.io.Serializable, IAuditLog
 
   public void setName(String name) {
     this.name = name;
-  }
-
-  public void setPhase(Phase phase) {
-    this.phase = phase;
   }
 
 

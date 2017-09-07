@@ -238,6 +238,8 @@ public final class APConstants {
 
   public static final String PROJECT_DELIVERABLE_GENDER_LEVELS =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableGenderLevels)";
+  public static final String PROJECT_DELIVERABLE_INFO =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableInfos)";
   public static final String PROJECT_DELIVERABLE_LEADERS =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableLeaders)";
 

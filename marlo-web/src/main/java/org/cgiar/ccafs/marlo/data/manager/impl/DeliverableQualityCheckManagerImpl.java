@@ -60,8 +60,8 @@ public class DeliverableQualityCheckManagerImpl implements DeliverableQualityChe
   }
 
   @Override
-  public DeliverableQualityCheck getDeliverableQualityCheckByDeliverable(long deliverableID) {
-    return deliverableQualityCheckDAO.findByDeliverable(deliverableID);
+  public DeliverableQualityCheck getDeliverableQualityCheckByDeliverable(long deliverableID, long phaseID) {
+    return deliverableQualityCheckDAO.findByDeliverable(deliverableID, phaseID);
   }
 
   @Override

@@ -58,9 +58,10 @@ public interface DeliverableQualityCheckManager {
    * This method gets a deliverableQualityCheck object by a given Deliverable identifier.
    * 
    * @param Deliverable is the Deliverable identifier.
+   * @param phaseID the phase we wanto to search
    * @return a DeliverableQualityCheck object.
    */
-  public DeliverableQualityCheck getDeliverableQualityCheckByDeliverable(long deliverableID);
+  public DeliverableQualityCheck getDeliverableQualityCheckByDeliverable(long deliverableID, long phaseID);
 
   /**
    * This method gets a deliverableQualityCheck object by a given deliverableQualityCheck identifier.

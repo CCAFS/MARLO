@@ -67,9 +67,9 @@ public class DeliverableQualityCheckMySQLDAO implements DeliverableQualityCheckD
   }
 
   @Override
-  public DeliverableQualityCheck findByDeliverable(long id) {
-    String query =
-      "from " + DeliverableQualityCheck.class.getName() + " where deliverable_id=" + id + " and is_active=1";
+  public DeliverableQualityCheck findByDeliverable(long id, long phaseID) {
+    String query = "from " + DeliverableQualityCheck.class.getName() + " where deliverable_id=" + id
+      + " and is_active=1 and id_phase=" + phaseID;
     List<DeliverableQualityCheck> list = dao.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
