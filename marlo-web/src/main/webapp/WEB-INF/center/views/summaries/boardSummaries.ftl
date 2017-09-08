@@ -159,15 +159,27 @@
               <input class="hidden" type="radio" name="formOptions" id="leadProjectInstitutionsSummary" value="projectSummary"/>
               <label for="">Full capacity development interventions report </label>
             </div>
-            
-            
-              <div class="pull-right">
-                <a  target="_blank" class=" addButton pull-right" href="[@s.url action='/capdevSummaries' /]">[@s.text name="form.buttons.generate" /]</a>
+            <div class="col-md-12"> 
+              <div class="col-md-6 ">
+                [@customForm.select name="" header=false   label=""  i18nkey="Select a Research Area"  listName="researchAreas"  keyFieldName="id"  displayFieldName="name" className="researchAreasSelect"   multiple=false required=true placeholder="ALL"  editable=true/]
               </div>
+              <div class="col-md-6">
+                <!-- [@customForm.select name="" header=false   label=""  i18nkey="Select a Year"  listName=""  keyFieldName=""  displayFieldName="" className="allPrograms"   multiple=false required=true   editable=true/] -->
+                [@customForm.input name="" type="text" help="" i18nkey="Select a Year"  required=true className="year" /]
+              </div>
+
+              
+              
+              <div class="pull-right">
+                <a id="generarReportCapdev" target="_blank" class=" addButton pull-right generateReportcapdev" href="#">[@s.text name="form.buttons.generate" /]</a>
+              </div>
+            </div>
+            
+            
           </div>
         
           [#--capdev report by program--]
-          <div class="summariesFiles borderBox col-md-12">
+          <!-- <div class="summariesFiles borderBox col-md-12">
             <div class="col-md-12 title-file">
               
               <label for="">Capacity development intervention report by research program </label>
@@ -176,7 +188,7 @@
               <div class="pull-right">
                 <a   target="_blank" class=" addButton pull-right" href="[@s.url action='/capdevSummaries' /]">[@s.text name="form.buttons.generate" /]</a>
               </div>
-          </div>
+          </div> -->
         
           
         </div>

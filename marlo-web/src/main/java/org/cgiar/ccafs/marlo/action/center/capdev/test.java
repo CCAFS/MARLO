@@ -95,7 +95,10 @@ public class test {
       for (int i = 0; i < countries.length; i++) {
         final Row fila = sheet2.createRow(i);
         final Cell celda = fila.createCell(0);
+        final Cell celdaformula = fila.createCell(1);
+        final String formula = "SUM(C1,D1)";
         celda.setCellValue(countries[i]);
+        celdaformula.setCellFormula(formula);
       }
 
       sheet2.protectSheet("marlo-ciat");

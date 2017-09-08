@@ -722,8 +722,17 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     final Session session = SecurityUtils.getSubject().getSession();
     final User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
     System.out.println("highest degree " + participant.getHighestDegree().getId());
+    if (participant.getLocElementsByCitizenship().getId() == -1) {
+      participant.setLocElementsByCitizenship(null);
+    }
     if (participant.getHighestDegree().getId() == -1) {
       participant.setHighestDegree(null);
+    }
+    if (participant.getInstitutions().getId() == -1) {
+      participant.setInstitutions(null);
+    }
+    if (participant.getLocElementsByCountryOfInstitucion().getId() == -1) {
+      participant.setLocElementsByCountryOfInstitucion(null);
     }
     if (participant.getFellowship().getId() == -1) {
       participant.setFellowship(null);

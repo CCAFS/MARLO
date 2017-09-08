@@ -260,7 +260,7 @@ public class FilterListsAction extends BaseAction {
       projects = projectService.findAll().stream()
         .filter(p -> p.isActive() && (p.getResearchProgram().getId() == researchProgramID))
         .collect(Collectors.toList());
-      Collections.sort(projects, (p1, p2) -> p1.getName().compareTo(p2.getName()));
+      // Collections.sort(projects, (p1, p2) -> p1.getName().compareTo(p2.getName()));
     } else {
       projects = projectService.findAll();
     }
