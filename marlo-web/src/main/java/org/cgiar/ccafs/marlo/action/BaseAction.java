@@ -735,6 +735,23 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * ***********************CENTER METHOD********************
+   * Check if the capDev section is Active
+   * ************************************************************
+   * 
+   * @return true if the section is Active.
+   */
+  public boolean centerCapDevActive() {
+    try {
+      boolean sectionActive = Boolean.parseBoolean(this.getSession().get(APConstants.CENTER_CAPDEV_ACTIVE).toString());
+      return sectionActive;
+    } catch (Exception e) {
+      return false;
+    }
+
+  }
+
+  /**
+   * ***********************CENTER METHOD********************
    * Check if the Impact Pathway section is Active
    * ************************************************************
    * 
@@ -753,7 +770,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * ***********************CENTER METHOD********************
-   * Check if the Impact Pathway section is Active
+   * Check if the Monitoring section is Active
    * ************************************************************
    * 
    * @return true if the section is Active.
@@ -771,7 +788,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * ***********************CENTER METHOD********************
-   * Check if the Impact Pathway section is Active
+   * Check if the Summaries section is Active
    * ************************************************************
    * 
    * @return true if the section is Active.
@@ -779,7 +796,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean centerSummariesActive() {
     try {
       boolean sectionActive =
-        Boolean.parseBoolean(this.getSession().get(APConstants.CENTER_IMPACT_PATHWAY_ACTIVE).toString());
+        Boolean.parseBoolean(this.getSession().get(APConstants.CENTER_SUMMARIES_ACTIVE).toString());
       return sectionActive;
     } catch (Exception e) {
       return false;
