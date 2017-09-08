@@ -376,6 +376,9 @@ public final class APConstants {
   public static final String CENTER_CUSTOM_FILE = "center_custom_file";
   public static final String CENTER_COORD_ROLE = "center_coord_role";
   public static final String CENTER_PROGRAM_TYPE = "center_program_type";
+  public static final String CENTER_IMPACT_PATHWAY_ACTIVE = "center_impact_pathway_active";
+  public static final String CENTER_MONITORING_ACTIVE = "center_monitoring_active";
+  public static final String CENTER_SUMMARIES_ACTIVE = "center_summaries_active";
 
   public static final String CENTER_DELIVERABLE_ID = "deliverableID";
   public static final String CENTER_PROGRAM_ID = "programID";

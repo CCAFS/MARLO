@@ -13,12 +13,12 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.interceptor;
+package org.cgiar.ccafs.marlo.interceptor.center;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.model.Crp;
-import org.cgiar.ccafs.marlo.data.model.CustomParameter;
+import org.cgiar.ccafs.marlo.data.model.Center;
+import org.cgiar.ccafs.marlo.data.model.CenterCustomParameter;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.List;
@@ -38,17 +38,17 @@ import org.slf4j.LoggerFactory;
  * @author Hermes Jiménez - CIAT/CCAFS
  * @author Héctor Fabio Tobón R.
  */
-public class AccessibleStageInterceptor extends AbstractInterceptor {
+public class AccessibleCenterStageInterceptor extends AbstractInterceptor {
 
   private static final long serialVersionUID = 3723021484076686914L;
 
-  private static final Logger LOG = LoggerFactory.getLogger(AccessibleStageInterceptor.class);
+  private static final Logger LOG = LoggerFactory.getLogger(AccessibleCenterStageInterceptor.class);
 
   private APConfig config;
-  private Crp loggedCrp;
+  private Center loggedCenter;
 
   @Inject
-  public AccessibleStageInterceptor(APConfig config) {
+  public AccessibleCenterStageInterceptor(APConfig config) {
     this.config = config;
   }
 
@@ -58,17 +58,23 @@ public class AccessibleStageInterceptor extends AbstractInterceptor {
 
     String stageName = ServletActionContext.getActionMapping().getNamespace();
     Map<String, Object> session = invocation.getInvocationContext().getSession();
-    loggedCrp = (Crp) session.get(APConstants.SESSION_CRP);
+    loggedCenter = (Center) session.get(APConstants.SESSION_CENTER);
     // Check what section is the user loading and
     // validate if it is active
-    if (stageName.startsWith("/admin")) {
-      if (Boolean.parseBoolean(this.sectionActive(APConstants.CRP_ADMIN_ACTIVE))) {
+    if (stageName.startsWith("/centerImpactPathway")) {
+      if (Boolean.parseBoolean(this.sectionActive(APConstants.CENTER_IMPACT_PATHWAY_ACTIVE))) {
         return invocation.invoke();
       } else {
         return BaseAction.NOT_AUTHORIZED;
       }
-    } else if (stageName.startsWith("/impactPathway")) {
-      if (Boolean.parseBoolean(this.sectionActive(APConstants.CRP_IMPACT_PATHWAY_ACTIVE))) {
+    } else if (stageName.startsWith("/monitoring")) {
+      if (Boolean.parseBoolean(this.sectionActive(APConstants.CENTER_MONITORING_ACTIVE))) {
+        return invocation.invoke();
+      } else {
+        return BaseAction.NOT_AUTHORIZED;
+      }
+    } else if (stageName.startsWith("/centerSummaries")) {
+      if (Boolean.parseBoolean(this.sectionActive(APConstants.CENTER_SUMMARIES_ACTIVE))) {
         return invocation.invoke();
       } else {
         return BaseAction.NOT_AUTHORIZED;
@@ -79,10 +85,9 @@ public class AccessibleStageInterceptor extends AbstractInterceptor {
   }
 
   public String sectionActive(String section) {
-    List<CustomParameter> parameters = loggedCrp.getCustomParameters().stream()
-      .filter(
-        p -> p.getParameter().getKey().equals(section) && p.isActive() && p.getCrp().getId().equals(loggedCrp.getId()))
-      .collect(Collectors.toList());
+    List<CenterCustomParameter> parameters =
+      loggedCenter.getCenterCustomParameters().stream().filter(p -> p.getCenterParameter().getKey().equals(section)
+        && p.isActive() && p.getResearchCenter().getId().equals(loggedCenter.getId())).collect(Collectors.toList());
 
     if (parameters.size() == 0) {
       return "false";
