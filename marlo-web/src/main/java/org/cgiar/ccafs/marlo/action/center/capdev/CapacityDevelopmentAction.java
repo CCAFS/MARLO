@@ -112,8 +112,10 @@ public class CapacityDevelopmentAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    capDevs = capdevService.findAll().stream().filter(cdl -> cdl.isActive()).collect(Collectors.toList());
-    Collections.sort(capDevs, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
+    if (capdevService.findAll() != null) {
+      capDevs = capdevService.findAll().stream().filter(cdl -> cdl.isActive()).collect(Collectors.toList());
+      Collections.sort(capDevs, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
+    }
 
 
   }
