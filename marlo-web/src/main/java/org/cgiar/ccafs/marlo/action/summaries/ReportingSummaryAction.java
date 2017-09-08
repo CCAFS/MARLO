@@ -2381,8 +2381,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         }
         // Get funding sources if exist
         for (DeliverableFundingSource dfs : deliverable.getDeliverableFundingSources().stream()
-          .filter(d -> d.isActive()).collect(Collectors.toList())) {
-          fundingSources += "● " + dfs.getFundingSource().getTitle() + "<br>";
+          .filter(d -> d.isActive() && d.getPhase() != null && d.getPhase().equals(this.getSelectedPhase()))
+          .collect(Collectors.toList())) {
+          fundingSources +=
+            "● " + "(" + dfs.getFundingSource().getId() + ") - " + dfs.getFundingSource().getTitle() + "<br>";
         }
         if (fundingSources.isEmpty()) {
           fundingSources = null;
@@ -2856,7 +2858,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     Long phaseID = this.getSelectedPhase().getId();
 
     model.addRow(new Object[] {title, centerURL, currentDate, submission, cycle, isNew, isAdministrative, type,
-      projectInfo.getLocationGlobal(), this.isPhaseOne(), hasGender, hasTargetUnit, hasW1W2Co,
       projectInfo.getLocationGlobal(), this.isPhaseOne(), hasGender, hasTargetUnit, hasW1W2Co, hasActivities, phaseID});
     return model;
   }
