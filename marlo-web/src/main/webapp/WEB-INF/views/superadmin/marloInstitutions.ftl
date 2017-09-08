@@ -1,9 +1,9 @@
 [#ftl]
 [#assign title = "MARLO Admin" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
-[#assign pageLibs = [] /]
-[#assign customJS = [ "${baseUrlMedia}/js/superadmin/marloParameters.js" ] /]
-[#assign customCSS = [ "${baseUrlMedia}/css/superadmin/superadmin.css" ] /]
+[#assign pageLibs = [ "flat-flags", "google-diff-match-patch", "jquery-pretty-text-diff"] /]
+[#assign customJS = [ "${baseUrlMedia}/js/superadmin/marloInstitutions.js" ] /]
+[#assign customCSS = [ "${baseUrlMedia}/css/superadmin/superadmin.css","${baseUrlMedia}/css/global/customDataTable.css" ] /]
 [#assign currentSection = "superadmin" /]
 [#assign currentStage = "institutions" /]
 
@@ -19,7 +19,7 @@
   [#include "/WEB-INF/global/pages/breadcrumb.ftl" /]
 </div>
 [#include "/WEB-INF/global/pages/generalMessages.ftl" /]
-
+[#import "/WEB-INF/global/macros/utils.ftl" as utilities/]
 
 <section class="marlo-content">
   <div class="container"> 
@@ -28,82 +28,138 @@
         [#include "/WEB-INF/views/superadmin/menu-superadmin.ftl" /]
       </div>
       <div class="col-md-9">
-        [@s.form action=actionName enctype="multipart/form-data" ]
-        
-          [#-- Requested Institutions--]
-          <h4 class="sectionTitle">[@s.text name="marloInstitutions.title" /]</h4>
-          <div class="borderBox">
-          
-          
-          </div>
-          
-         
-          
-        [/@s.form]
+        [#-- Requested Institutions--]
+        <h4 class="sectionTitle">[@s.text name="marloRequestInstitution.title" /]</h4>  
+        [@partnersList partners=partners  canEdit=editable namespace="/marloInstitutions" defaultAction="${(crpSession)!}/marloInstitutions"/]
       </div>
     </div>
   </div>
 </section>
 
-[#-- Parameter template --]
-<table>
-	<tbody>
-    [@parameterMacro element={} name="crps[-1].parameters" index=-1 isTemplate=true /]
-	</tbody>
-</table>
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="loading" style="display:none"></div>
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Reject the request</h4>
+      </div>
+      <div class="modal-body">
+        <div class="requestInfo">
+        
+        </div>
+        
+        <div class="form-group">
+          [@customForm.textArea name="marloRequestInstitution.justification" required=true className="limitWords-30" /]
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger rejectButton"> <span class="glyphicon glyphicon-remove"></span> Reject</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]
 
-[#-- MACROS --]
-[#macro crpParametersMacro element name index isTemplate=false]
-  <div id="crpParameters-${isTemplate?string('template',index)}" class="crpParameters borderBox" style="display:${isTemplate?string('none','block')}">
-    [#local customName = "${name}[${index}]"]
-    [#-- CRP Title --]
-    <div class="blockTitle closed">
-      <strong>${(element.acronym?upper_case)!}</strong> - ${(element.name)!} <small>(Parameters: ${(element.parameters?size)!0})</small>
-    </div>
-    
-    <div class="blockContent" style="display:none">
-      <hr /> 
-      [#if element.parameters??]
-        <table class="table table-striped table-condensed ">
-          <tbody>
-          [#list element.parameters as parameter]
-            [@parameterMacro element=parameter name="${customName}.parameters" index=parameter_index /]
-          [/#list]
-          </tbody>
-        </table>
-      [/#if]
-      [#-- Add parameter --]
-      <div class="buttonBlock text-right">
-        <div class="addParameter button-blue">
-          <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addParameter"/]
-        </div>
+
+[#macro partnersList partners={} canEdit=false  namespace="/" defaultAction=""]
+  <ul class="list-group">
+    [#if partners?has_content]
+      [#list partners as partner]
+        <li id="partnerRequestItem-${(partner.id)!}" class="list-group-item partnerRequestItem">
+          <div class="loading" style="display:none"></div>
+          
+          [#-- Partner name --]
+          <div class="requestInfo">
+            <div class="form-group">
+               <h4 style="font-family: 'Open Sans';">${partner.partnerInfo}</h4>
+               <span class="hiddenTitle" style="display:none">${partner.partnerName}</span>
+               [#if partner.webPage??]
+                <i>(<a href="${partner.webPage}">${partner.webPage}</a>)</i>
+               [/#if]
+               <hr />
+            </div>
+            
+            <div class="form-group">
+              [#-- Partner type --]
+              <p><strong>[@s.text name="Type" /]:</strong> <i>${partner.institutionType.name}</i></p>
+              [#-- Country --]
+              <p><strong>[@s.text name="Country" /]:</strong> <i class="flag-sm flag-sm-${(partner.countryISO?upper_case)!}"></i> <i>${partner.countryInfo}</i></p>
+              [#-- Requested by --]
+              <p><strong>[@s.text name="Requested By" /]:</strong> <i>${(partner.createdBy.composedName?html)!'none'}</i></p>
+            </div>
+            
+          </div>
+          
+          <div class="form-group col-md-8 sameness" style="display:none">
+            <br />
+            <div class="grayBox">
+              <strong>Similar institutions in MARLO:</strong>
+              <ul></ul>
+            </div>
+          </div>
+          
+          [#-- Action --]
+          <div class="btn-group pull-right" role="group" aria-label="..."">
+            [#-- Edit --]
+            <a class="btn btn-default btn-sm editRequest" href="#">
+              <span class="glyphicon glyphicon-pencil"></span> Edit Request
+            </a>
+            [#-- Accept --]
+            <a class="btn btn-success btn-sm" href="[@s.url namespace="" action="superadmin/addPartner"][@s.param name='requestID']${partner.id?c}[/@s.param][/@s.url]">
+              <span class="glyphicon glyphicon-ok"></span> Accept
+            </a>
+            [#-- Reject --]
+            <a class="btn btn-danger btn-sm rejectRequest partnerRequestId-${partner.id}" href="#">
+               <span class="glyphicon glyphicon-remove"></span> Reject
+            </a>
+          </div>
+          
+          <div class="clearfix"></div>
+          
+          [#-- Edit Form --]
+          <form class="editForm editForm-${(partner.id)!} simpleBox" style="display:none">
+            <input type="hidden" name="requestID"  value="${(partner.id)!}"/>
+            <div class="form-group row">
+              <div class="col-md-3">
+                <label for="">Acronym:</label>
+                <input type="text" class="form-control input-sm" name="acronym" value="${(partner.acronym)!}" />
+              </div>
+              <div class="col-md-9">
+                <label for="">Name: [@customForm.req required=true /]</label>
+                <input type="text" class="form-control input-sm" name="name" value="${(partner.partnerName)!}" />
+              </div>
+            </div>
+            <div class="form-group row">
+              <div class="col-md-6">
+                [@customForm.select name="type" value=partner.institutionType required=true label="" i18nkey="Institution Type" listName="institutionTypesList" keyFieldName="id"  displayFieldName="name" /]
+              </div>
+              <div class="col-md-6">
+                [@customForm.select name="country" value="'${partner.locElement.isoAlpha2}'" required=true label="" i18nkey="Country ISO Code" listName="countriesList" keyFieldName="isoAlpha2"  displayFieldName="name" /]
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="">Web Page</label>
+              <input type="text" class="form-control input-sm" name="webPage" value="${(partner.webPage)!}" />
+            </div>
+            <button class="saveButton">Save</button>
+            <button class="cancelButton">Cancel</button>
+          </form>
+          
+          <div class="clearfix"></div>
+        </li>
+      [/#list]
+    [#else]
+      <div class="text-center">
+        No partner requested yet.
       </div>
-      
-    </div>
-  </div>
+    [/#if]
+  </ul>
+  
 [/#macro]
 
-[#macro parameterMacro element name index isTemplate=false]
-  [#local customName = "${name}[${index}]"]
-  <tr id="parameter-${isTemplate?string('template',index)}" class="parameter" style="display:${isTemplate?string('none','table-row')}">
-    <td>
-      <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
-      [#if isTemplate]
-        [@customForm.input name="${customName}.key" placeholder="Key" showTitle=false /]
-      [#else]
-        <input type="hidden" name="${customName}.key" value="${(element.key)!}" />
-        <strong>${(element.key)!}</strong>
-      [/#if]
-    </td>
-    <td>
-      [@customForm.input name="${customName}.value" placeholder="Value" showTitle=false /]
-    </td>
-    <td>
-      <div style="position:relative">
-        <div class="removeParameter removeIcon" title="Remove"></div>
-      </div>
-    </td>
-  </tr>
-[/#macro]
+
