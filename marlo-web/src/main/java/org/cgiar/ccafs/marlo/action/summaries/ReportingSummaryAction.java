@@ -909,14 +909,15 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           // this.fillSubreport((SubReport) hm.get("deliverables"), "deliverables_list_reporting", args);
           // this.fillSubreport((SubReport) hm.get("project_highlight"), "project_highlight", args);
         }
+
+        // Subreport Activities
+        args.clear();
+        if (cycle.equals("Planning")) {
+          this.fillSubreport((SubReport) hm.get("activities"), "activities_list", args);
+        } else {
+          // this.fillSubreport((SubReport) hm.get("activities_reporting_list"), "activities_reporting_list", args);
+        }
         /*
-         * // Subreport Activities
-         * args.clear();
-         * if (cycle.equals("Planning")) {
-         * this.fillSubreport((SubReport) hm.get("activities"), "activities_list", args);
-         * } else {
-         * this.fillSubreport((SubReport) hm.get("activities_reporting_list"), "activities_reporting_list", args);
-         * }
          * if (cycle.equals("Planning")) {
          * // Subreport Budgets Summary
          * args.clear();
@@ -1113,7 +1114,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
     if (!project.getActivities().isEmpty()) {
       for (Activity activity : project.getActivities().stream().sorted((d1, d2) -> Long.compare(d1.getId(), d2.getId()))
-        .filter(a -> a.isActive() && (a.getActivityStatus() == 2 || a.getActivityStatus() == 4))
+        .filter(a -> a.isActive() && (a.getActivityStatus() == 2 || a.getActivityStatus() == 4) && a.getPhase() != null
+          && a.getPhase().equals(this.getSelectedPhase()))
         .collect(Collectors.toList())) {
         String institution = null;
         String activityLeader = null;
