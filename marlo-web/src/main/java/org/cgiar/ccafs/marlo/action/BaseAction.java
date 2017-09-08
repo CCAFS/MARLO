@@ -132,6 +132,8 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.inject.Inject;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
@@ -1435,6 +1437,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+
   public List<Phase> getPhasesImpact() {
     if (this.getSession().containsKey(APConstants.PHASES_IMPACT)) {
       return (List<Phase>) this.getSession().get(APConstants.PHASES_IMPACT);
@@ -1447,6 +1450,45 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       this.getSession().put(APConstants.PHASES_IMPACT, phases);
       return phases;
     }
+  }
+
+  public String getPhasesImpactJson() {
+    List<Phase> phases;
+    if (this.getSession().containsKey(APConstants.PHASES_IMPACT)) {
+      phases = (List<Phase>) this.getSession().get(APConstants.PHASES_IMPACT);
+    } else {
+      phases = phaseManager
+        .findAll().stream().filter(c -> c.getCrp().getId().longValue() == this.getCrpID().longValue()
+          && c.getVisible() != null && c.getVisible() && c.getDescription().equals(APConstants.PLANNING))
+        .collect(Collectors.toList());
+      phases.sort((p1, p2) -> new Integer(p1.getYear()).compareTo(new Integer(p2.getYear())));
+      this.getSession().put(APConstants.PHASES_IMPACT, phases);
+
+    }
+    GsonBuilder builder = new GsonBuilder();
+    Gson gson = builder.create();
+    return gson.toJson(phases);
+  }
+
+  /**
+   * validate if the list of phases are on session if not, will be find on bd on json format
+   * 
+   * @return the jsons of the phases for the crp
+   */
+  public String getPhasesJson() {
+    List<Phase> phases;
+    if (this.getSession().containsKey(APConstants.PHASES)) {
+      phases = (List<Phase>) this.getSession().get(APConstants.PHASES);
+    } else {
+      phases = phaseManager.findAll().stream().filter(
+        c -> c.getCrp().getId().longValue() == this.getCrpID().longValue() && c.getVisible() != null && c.getVisible())
+        .collect(Collectors.toList());
+      phases.sort((p1, p2) -> new Integer(p1.getYear()).compareTo(new Integer(p2.getYear())));
+      this.getSession().put(APConstants.PHASES, phases);
+    }
+    GsonBuilder builder = new GsonBuilder();
+    Gson gson = builder.create();
+    return gson.toJson(phases);
   }
 
 
