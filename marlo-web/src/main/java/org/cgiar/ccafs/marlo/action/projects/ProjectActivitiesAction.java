@@ -440,6 +440,7 @@ public class ProjectActivitiesAction extends BaseAction {
               if (deliverableActivity.getId() == -1) {
                 Deliverable deliverable =
                   deliverableManager.getDeliverableById(deliverableActivity.getDeliverable().getId());
+                deliverable.getDeliverableInfo(this.getActualPhase());
                 deliverableActivity.setDeliverable(deliverable);
               }
             }
@@ -469,7 +470,8 @@ public class ProjectActivitiesAction extends BaseAction {
         if (project.getProjectActivities() != null) {
           for (Activity openActivity : project.getProjectActivities()) {
             openActivity.setDeliverables(new ArrayList<DeliverableActivity>(openActivity.getDeliverableActivities()
-              .stream().filter(da -> da.isActive()).collect(Collectors.toList())));
+              .stream().filter(da -> da.isActive() && da.getPhase().equals(this.getActualPhase()))
+              .collect(Collectors.toList())));
           }
         }
         /*
@@ -498,16 +500,20 @@ public class ProjectActivitiesAction extends BaseAction {
       if (project.getDeliverables() != null) {
         if (project.getDeliverables().isEmpty()) {
           project.setProjectDeliverables(new ArrayList<Deliverable>(projectManager.getProjectById(projectID)
-            .getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList())));
+            .getDeliverables().stream().filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null)
+            .collect(Collectors.toList())));
         } else {
-          project.setProjectDeliverables(new ArrayList<Deliverable>(
-            project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList())));
+          project.setProjectDeliverables(new ArrayList<Deliverable>(project.getDeliverables().stream()
+            .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null)
+            .collect(Collectors.toList())));
         }
       }
 
       partnerPersons = new ArrayList<>();
       for (ProjectPartner partner : projectPartnerManager.findAll().stream()
-        .filter(pp -> pp.isActive() && pp.getProject().getId() == projectID).collect(Collectors.toList())) {
+        .filter(
+          pp -> pp.isActive() && pp.getProject().getId() == projectID && pp.getPhase().equals(this.getActualPhase()))
+        .collect(Collectors.toList())) {
 
         for (ProjectPartnerPerson partnerPerson : partner.getProjectPartnerPersons().stream()
           .filter(ppa -> ppa.isActive()).collect(Collectors.toList())) {

@@ -181,7 +181,7 @@
     [#if editable]<div class="removeDeliverable removeIcon" title="Remove deliverable"></div>[/#if] 
     <input class="id" type="hidden" name="${deliverableCustomName}.deliverable.id" value="${(element.deliverable.id)!-1}" />
     <input class="idTable" type="hidden" name="${deliverableCustomName}.id" value="${(element.id)!-1}" />
-    <input class="title" type="hidden" name="${deliverableCustomName}.deliverable.title" value="${(element.deliverable.title)!'null'}" />
+    <input class="title" type="hidden" name="${deliverableCustomName}.deliverable.devliverableInfo.title" value="${(element.deliverable.devliverableInfo.title)!'null'}" />
     <span class="name">${(element.deliverable.composedName)!'null'}</span>
     <div class="clearfix"></div>
   </div>
