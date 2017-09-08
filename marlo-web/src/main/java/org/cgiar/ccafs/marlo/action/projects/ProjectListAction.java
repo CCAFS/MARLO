@@ -468,12 +468,24 @@ public class ProjectListAction extends BaseAction {
       this.loadFlagshipgsAndRegions(myProjects);
 
     }
+    closedProjects = loggedCrp.getProjects().stream()
+      .filter(c -> c.isActive() && c.getProjecInfoPhase(this.getActualPhase()) != null
+        && (c.getProjecInfoPhase(this.getActualPhase()).getStatus() != null
+          && c.getProjecInfoPhase(this.getActualPhase()).getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+        || c.getProjecInfoPhase(this.getActualPhase()).getStatus().intValue() == Integer
+          .parseInt(ProjectStatusEnum.Complete.getStatusId())))
+      .collect(Collectors.toList());
 
-    myProjects.removeAll(closedProjects);
-    if (allProjects != null) {
-      allProjects.removeAll(closedProjects);
+    if (closedProjects != null) {
+      myProjects.removeAll(closedProjects);
+      if (allProjects != null) {
+        allProjects.removeAll(closedProjects);
+      }
+      this.loadFlagshipgsAndRegions(closedProjects);
     }
-    this.loadFlagshipgsAndRegions(closedProjects);
+
+
     // closedProjects.sort((p1, p2) -> p1.getStatus().compareTo(p2.getStatus()));
     String params[] = {loggedCrp.getAcronym() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_LIST_BASE_PERMISSION, params));

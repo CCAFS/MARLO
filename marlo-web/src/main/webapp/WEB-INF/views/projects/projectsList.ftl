@@ -61,7 +61,8 @@
           <div role="tabpanel" class="tab-pane" id="archived-tab">
             [#-- Archived Projects List (My Projects) --]
             <h3 class="headTitle text-center">[@s.text name="projectsList.archivedProjects"/]</h3>
-            [@projectList.projectsListArchived projects=closedProjects canValidate=false canEdit=false namespace="/projects" defaultAction="${(crpSession)!}/description" /]
+            ${closedProjects}
+            [@projectList.projectsListArchived projects=(closedProjects)! canValidate=false canEdit=false namespace="/projects" defaultAction="${(crpSession)!}/description" /]
           </div>
         </div>
       </div>
