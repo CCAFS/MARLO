@@ -208,10 +208,10 @@
           [#-- Project Title --]
           <td class="left">
             [#if isProjectNew]<span class="label label-info">[@s.text name="global.new" /]</span>[/#if]
-            [#if project.administrative]<span class="label label-primary">[@s.text name="project.management" /]</span>[/#if]
-            [#if project.title?has_content]
+            [#if project.projectInfo.administrative]<span class="label label-primary">[@s.text name="project.management" /]</span>[/#if]
+            [#if project.projectInfo.title?has_content]
               <a href="${projectUrl}" title="${project.projectInfo.title}">
-              [#if project.title?length < 120] ${project.projectInfo.title}</a> [#else] [@utilities.wordCutter string=project.title maxPos=120 /]...</a> [/#if]
+              [#if project.projectInfo.title?length < 120] ${project.projectInfo.title}</a> [#else] [@utilities.wordCutter string=project.projectInfo.title maxPos=120 /]...</a> [/#if]
             [#else]
               <a href="${projectUrl}">
                 [@s.text name="projectsList.title.none" /]
@@ -220,11 +220,11 @@
           </td>
           [#-- Project Leader --]
           <td class=""> 
-            [#if project.leader?has_content]${(project.projectInfo.leader.institution.acronym)!project.projectInfo.leader.institution.name}[#else][@s.text name="projectsList.title.none" /][/#if]
+            [#if project.projectInfo.leader?has_content]${(project.projectInfo.leader.institution.acronym)!project.projectInfo.leader.institution.name}[#else][@s.text name="projectsList.title.none" /][/#if]
           </td>
           [#-- Flagship / Regions --]
           <td>
-          [#if !project.administrative]
+          [#if !project.projectInfo.administrative]
             [#if project.flagships?has_content || project.regions?has_content]
               [#if project.flagships?has_content][#list project.flagships as element]<span class="programTag" style="border-color:${(element.color)!'#fff'}">${element.acronym}</span>[/#list][/#if][#if project.regions?has_content][#list project.regions as element]<span class="programTag" style="border-color:${(element.color)!'#fff'}">${element.acronym}</span>[/#list][/#if]
             [#else]
