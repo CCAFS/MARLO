@@ -28,7 +28,9 @@ INNER JOIN project_partner_locations ppp ON pp.id = ppp.project_partner_id)
 
 
 CREATE TEMPORARY TABLE
-IF NOT EXISTS table_deliverable_partnerships AS (select dp.*,ppp.project_partner_id,ppp.user_id from deliverable_partnerships dp inner join project_partner_persons ppp on dp.partner_person_id=ppp.id);
+IF NOT EXISTS table_deliverable_partnerships AS (select dp.*,pp.institution_id,pp.project_id,ppp.user_id from deliverable_partnerships dp inner join project_partner_persons ppp on dp.partner_person_id=ppp.id
+INNER JOIN project_partners pp on pp.id=ppp.project_partner_id
+inner join institutions inst on inst.id=pp.institution_id);
 
 TRUNCATE TABLE deliverable_partnerships;
 
@@ -154,10 +156,9 @@ t2.division_id,
 ph.id
 FROM
 table_deliverable_partnerships t2
-inner join  project_partner_persons ppp on 
-ppp.project_partner_id=t2.project_partner_id and ppp.user_id=t2.user_id
 left join deliverables d on d.id=t2.deliverable_id
 left JOIN project_phases pp ON pp.project_id = d.project_id
 left JOIN phases ph ON ph.id = pp.id_phase
-inner join project_partners ppa on  ppa.id=t2.project_partner_id and ppa.id_phase=ph.id
+inner join project_partners ppa on  ppa.project_id=t2.project_id and ppa.institution_id=t2.institution_id and ppa.id_phase=ph.id
+inner join  project_partner_persons ppp on ppp.project_partner_id=ppa.id
 ;

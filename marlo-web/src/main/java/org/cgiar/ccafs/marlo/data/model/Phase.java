@@ -5,6 +5,7 @@ package org.cgiar.ccafs.marlo.data.model;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -34,11 +35,23 @@ public class Phase implements java.io.Serializable, IAuditLog {
   @Expose
   private Phase next;
 
+  @Expose
+  private Date startDate;
+  @Expose
+  private Date endDate;
+
 
   private Set<ProjectPhase> projectPhases = new HashSet<ProjectPhase>(0);
+
+
   private Set<ProjectInfo> projectInfos = new HashSet<ProjectInfo>(0);
+
+
   private Set<ProjectFocus> projectFocuses = new HashSet<ProjectFocus>(0);
+
+
   private Set<ProjectClusterActivity> projectClusters = new HashSet<ProjectClusterActivity>(0);
+
   private Set<ProjectPartner> partners = new HashSet<ProjectPartner>(0);
   private Set<CrpProgramOutcome> outcomes = new HashSet<CrpProgramOutcome>(0);
   private Set<CrpClusterOfActivity> clusters = new HashSet<CrpClusterOfActivity>(0);
@@ -47,10 +60,8 @@ public class Phase implements java.io.Serializable, IAuditLog {
   private Set<ProjectLocation> projectLocations = new HashSet<ProjectLocation>(0);
   private Set<DeliverableInfo> deliverableInfos = new HashSet<DeliverableInfo>(0);
 
-
   public Phase() {
   }
-
 
   public Phase(Crp crp, String description, int year) {
     this.crp = crp;
@@ -58,14 +69,12 @@ public class Phase implements java.io.Serializable, IAuditLog {
     this.year = year;
   }
 
-
   public Phase(Crp crp, String description, int year, Set<ProjectPhase> projectPhases) {
     this.crp = crp;
     this.description = description;
     this.year = year;
     this.projectPhases = projectPhases;
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -116,6 +125,11 @@ public class Phase implements java.io.Serializable, IAuditLog {
   }
 
 
+  public Date getEndDate() {
+    return endDate;
+  }
+
+
   @Override
   public Long getId() {
     return this.id;
@@ -144,9 +158,11 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return u;
   }
 
+
   public Phase getNext() {
     return next;
   }
+
 
   public Set<CrpProgramOutcome> getOutcomes() {
     return outcomes;
@@ -157,11 +173,9 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return partners;
   }
 
-
   public Set<Activity> getProjectActivites() {
     return projectActivites;
   }
-
 
   public Set<ProjectClusterActivity> getProjectClusters() {
     return projectClusters;
@@ -177,9 +191,11 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return projectInfos;
   }
 
+
   public Set<ProjectLocation> getProjectLocations() {
     return projectLocations;
   }
+
 
   public Set<ProjectOutcome> getProjectOutcomes() {
     return projectOutcomes;
@@ -188,6 +204,10 @@ public class Phase implements java.io.Serializable, IAuditLog {
 
   public Set<ProjectPhase> getProjectPhases() {
     return this.projectPhases;
+  }
+
+  public Date getStartDate() {
+    return startDate;
   }
 
   public Boolean getVisible() {
@@ -218,10 +238,10 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return description.equals(APConstants.REPORTING);
   }
 
+
   public void setClusters(Set<CrpClusterOfActivity> clusters) {
     this.clusters = clusters;
   }
-
 
   public void setCrp(Crp crp) {
     this.crp = crp;
@@ -231,12 +251,17 @@ public class Phase implements java.io.Serializable, IAuditLog {
     this.deliverableInfos = deliverableInfos;
   }
 
+
   public void setDescription(String description) {
     this.description = description;
   }
 
   public void setEditable(Boolean editable) {
     this.editable = editable;
+  }
+
+  public void setEndDate(Date endDate) {
+    this.endDate = endDate;
   }
 
   public void setId(Long id) {
@@ -281,6 +306,10 @@ public class Phase implements java.io.Serializable, IAuditLog {
 
   public void setProjectPhases(Set<ProjectPhase> projectPhases) {
     this.projectPhases = projectPhases;
+  }
+
+  public void setStartDate(Date startDate) {
+    this.startDate = startDate;
   }
 
   public void setVisible(Boolean visible) {

@@ -477,7 +477,8 @@ public class DeliverableAction extends BaseAction {
     List<ProjectPartner> deliverablePartnerPersons = new ArrayList<>();
 
     for (DeliverablePartnership deliverablePartnership : deliverableManager.getDeliverableById(deliverableID)
-      .getDeliverablePartnerships().stream().filter(c -> c.isActive() && c.getPartnerType().equals("Other"))
+      .getDeliverablePartnerships().stream()
+      .filter(c -> c.isActive() && c.getPartnerType().equals("Other") && c.getPhase().equals(this.getActualPhase()))
       .collect(Collectors.toList())) {
       deliverablePartnerPersonsSet.add(deliverablePartnership.getProjectPartnerPerson().getProjectPartner());
     }
@@ -494,7 +495,7 @@ public class DeliverableAction extends BaseAction {
     for (DeliverablePartnership deliverablePartnership : deliverableManager.getDeliverableById(deliverableID)
       .getDeliverablePartnerships().stream()
       .filter(c -> c.isActive() && c.getProjectPartnerPerson().getProjectPartner().getId().longValue() == partnerID
-        && c.getPartnerType().equals("Other"))
+        && c.getPartnerType().equals("Other") && c.getPhase().equals(this.getActualPhase()))
       .collect(Collectors.toList())) {
       deliverablePartnerPersons.add(deliverablePartnership.getProjectPartnerPerson());
     }
