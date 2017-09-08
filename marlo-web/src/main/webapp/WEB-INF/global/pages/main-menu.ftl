@@ -88,17 +88,19 @@
 </div> 
 </nav> 
 
-<div class="timeline">
-  [#include "/WEB-INF/global/pages/timeline.ftl" /]
-</div>
 
 <div class="subMainMenu">
   <div class="container">
     [#include "/WEB-INF/global/pages/breadcrumb.ftl" /]
   </div>
-  
-  [#include "/WEB-INF/global/pages/generalMessages.ftl" /]
-
 </div>
 
+[#if logged?? && logged]
+<div class="form-group">
+  [#include "/WEB-INF/global/pages/timeline.ftl" /]
+  <div class="clearFix"></div>
+</div>
+[/#if]
+
+[#include "/WEB-INF/global/pages/generalMessages.ftl" /]
 
