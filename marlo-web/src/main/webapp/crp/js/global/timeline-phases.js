@@ -9,7 +9,7 @@ var timeline_options = {
     timenav_height_percentage: 72, // Overrides timenav height as a percentage of the screen
     timenav_height_min: 50, // Minimum timenav height
     marker_height_min: 25, // Minimum Marker Height
-    marker_width_min: 100, // Minimum Marker Width
+    marker_width_min: 250, // Minimum Marker Width
     marker_padding: 1, // Top Bottom Marker Padding
     start_at_slide: currenPhaseIndex,
     menubar_height: 50,
@@ -45,7 +45,7 @@ $(document).ready(function() {
 function init_slide_menu(data) {
   console.log('EVENT=' + data.type, data);
   var phaseID = (data.unique_id).split('-')[1];
-// Execute a change of phase
+  // Execute a change of phase
   $.ajax({
       url: baseURL + '/changePhase.do',
       method: 'POST',
