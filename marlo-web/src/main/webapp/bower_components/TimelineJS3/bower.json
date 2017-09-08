@@ -1,0 +1,19 @@
+{
+  "name": "TimelineJS3",
+  "version": "3.3.9",
+  "homepage": "https://github.com/shahharsh2603/TimelineJS3",
+  "authors": [
+    "shahharsh2603(shahharsh2603@gmail.com)"
+  ],
+  "description": "This is a fork of the TimelineJS3 repository created by NUKnightLab with bower support added",
+  "main": ["compiled/js/timeline.js","compiled/css/timeline.css"],
+  "moduleType": [],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

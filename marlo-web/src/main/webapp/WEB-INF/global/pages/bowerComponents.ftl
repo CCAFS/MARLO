@@ -21,6 +21,7 @@
   [#if libraryName="datatables.net-bs" ]<link rel="stylesheet" href="${baseUrl}/bower_components/datatables.net-bs/css/dataTables.bootstrap.css" />[/#if]
   [#if libraryName="intro.js" ]<link rel="stylesheet" href="${baseUrl}/bower_components/intro.js/introjs.css" />[/#if]
   [#if libraryName="font-awesome" ]<link rel="stylesheet" href="${baseUrl}/bower_components/font-awesome/css/font-awesome.css" />[/#if]
+  [#if libraryName="TimelineJS3" ]<link rel="stylesheet" href="${baseUrl}/bower_components/TimelineJS3/compiled/css/timeline.css" />[/#if]
   [#-- endbower --]
 [/#macro]
 
@@ -55,5 +56,6 @@
   [#if libraryName="blueimp-file-upload"]<script src="${baseUrl}/bower_components/blueimp-file-upload/js/jquery.fileupload.js"></script>[/#if]
   [#if libraryName="google-diff-match-patch"]<script src="${baseUrl}/bower_components/google-diff-match-patch/diff_match_patch.js"></script>[/#if]
   [#if libraryName="jquery-pretty-text-diff"]<script src="${baseUrl}/bower_components/jquery-pretty-text-diff/jquery.pretty-text-diff.min.js"></script>[/#if]
+  [#if libraryName="TimelineJS3"]<script src="${baseUrl}/bower_components/TimelineJS3/compiled/js/timeline.js"></script>[/#if]
   [#-- endbower --]
 [/#macro]
