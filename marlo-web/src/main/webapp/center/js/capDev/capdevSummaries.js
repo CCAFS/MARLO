@@ -3,9 +3,25 @@ $(document).ready(init);
 function init(){
 	$('.researchAreasSelect').append('<option value= -1 selected>All </option>');
 
-	/*datePickerConfig({
-      "year": ".year"
-    });*/
+
+	
+	/* plugin developed by valluminarias*/
+    $(".year").yearselect({
+    	start:2000,
+    	end:2030,
+    	step:1,
+    	order: 'asc',
+    	selected: 2017, 
+    	formatDisplay: function(yr) { return yr },
+    	displayAsValue: true
+
+    })
+
+    $('.year').append('<option value=0 selected>Select a year </option>');
+
+    
+
+    //setDefaultYear();
 
 }
 
@@ -80,3 +96,18 @@ function datePickerConfig(element) {
 
             });
   }
+
+
+
+ /*Se configura la anio actual por defecto*/
+function setDefaultYear(){
+	console.log(new Date().getFullYear())
+
+	var currentYear = new Date().getFullYear();
+
+	$(".capdevYearSelect select option").each(function() {
+      if($(this).val() == currentYear){
+        $(this).attr( "selected" , "selected");
+      }
+      });
+}

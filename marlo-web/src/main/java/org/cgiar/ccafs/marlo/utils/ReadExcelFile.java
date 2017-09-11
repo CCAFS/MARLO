@@ -206,6 +206,16 @@ public class ReadExcelFile {
 
   }
 
+  public Object sustraerID(String cadena) {
+    String newCadena = null;
+    if (!cadena.equals("")) {
+      final int index = cadena.indexOf("-");
+      newCadena = cadena.substring(index + 2, cadena.length());
+    }
+    return newCadena;
+
+  }
+
   /*
    * this method validate if excel file correspond with template
    */

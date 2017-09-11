@@ -28,7 +28,6 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataValidation;
 import org.apache.poi.ss.usermodel.DataValidationConstraint;
 import org.apache.poi.ss.usermodel.DataValidationHelper;
-import org.apache.poi.ss.usermodel.Name;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddressList;
@@ -45,7 +44,7 @@ public class test {
     try {
       obj.createFile();
       // obj.readFile();
-      // obj.sustraerId("AR- U.de.Palermo");
+      obj.sustraerId("Acacia Water - 1070");
     } catch (final FileNotFoundException e) {
       e.printStackTrace();
     }
@@ -72,7 +71,7 @@ public class test {
 
 
       final String path = new File(".").getCanonicalPath();
-      final String filePath = path + "/src/main/resources/template/participants-template.xlsx";
+      final String filePath = "C:\\Users\\logonzalez\\Downloads\\participants-template.xlsm";
       final File file = new File(filePath);
       final FileInputStream fileInput = new FileInputStream(file);
       final XSSFWorkbook wb = new XSSFWorkbook(fileInput);
@@ -82,7 +81,7 @@ public class test {
       final XSSFSheet sheet3 = wb.getSheet("institutions");
 
 
-      String reference = null;
+      final String reference = null;
       final String dataValidationCountryName = "countriesLis";
       final String dataValidationInstitutionName = "institutionsList";
 
@@ -96,17 +95,17 @@ public class test {
         final Row fila = sheet2.createRow(i);
         final Cell celda = fila.createCell(0);
         final Cell celdaformula = fila.createCell(1);
-        final String formula = "SUM(C1,D1)";
+        // final String formula = "SUM(C1,D1)";
         celda.setCellValue(countries[i]);
-        celdaformula.setCellFormula(formula);
+        // celdaformula.setCellFormula(formula);
       }
 
-      sheet2.protectSheet("marlo-ciat");
-      // 3. create named range for an area using AreaReference
-      final Name namedCountry = wb.createName();
-      namedCountry.setNameName(dataValidationCountryName);
-      reference = "countries!$A$1:$A$" + countries.length; // area reference
-      namedCountry.setRefersToFormula(reference);
+      // sheet2.protectSheet("marlo-ciat");
+      // // 3. create named range for an area using AreaReference
+      // final Name namedCountry = wb.createName();
+      // namedCountry.setNameName(dataValidationCountryName);
+      // reference = "countries!$A$1:$A$" + countries.length; // area reference
+      // namedCountry.setRefersToFormula(reference);
 
 
       for (int i = 0; i < institutions.length; i++) {
@@ -116,12 +115,12 @@ public class test {
 
       }
 
-      final Name namedInstitution = wb.createName();
-      namedInstitution.setNameName(dataValidationInstitutionName);
-      reference = "institutions!$A$1:$A$" + institutions.length; // area reference
-      namedInstitution.setRefersToFormula(reference);
-
-      sheet3.protectSheet("marlo-ciat");
+      // final Name namedInstitution = wb.createName();
+      // namedInstitution.setNameName(dataValidationInstitutionName);
+      // reference = "institutions!$A$1:$A$" + institutions.length; // area reference
+      // namedInstitution.setRefersToFormula(reference);
+      //
+      // sheet3.protectSheet("marlo-ciat");
 
       validationHelper = sheet1.getDataValidationHelper();
       final CellRangeAddressList addressListCountry = new CellRangeAddressList(11, 1000, 4, 4);
@@ -165,7 +164,7 @@ public class test {
 
       FileOutputStream fileOut;
 
-      fileOut = new FileOutputStream("C:\\Users\\logonzalez\\Downloads\\vineet.xlsx");
+      fileOut = new FileOutputStream("C:\\Users\\logonzalez\\Downloads\\vineet.xlsm");
       wb.write(fileOut);
       fileOut.close();
       wb.close();
@@ -262,8 +261,9 @@ public class test {
 
   public Object sustraerId(String cadena) {
     final int index = cadena.indexOf("-");
-    final String newCadena = cadena.substring(0, index);
+    final String newCadena = cadena.substring(index + 2, cadena.length());
     System.out.println(newCadena);
+    System.out.println(newCadena.length());
     return newCadena;
   }
 
