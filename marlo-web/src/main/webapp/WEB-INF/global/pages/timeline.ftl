@@ -9,6 +9,8 @@
       "events": [
       [#if phases?size > 1]
         [#list phases as phase]
+          [#-- [#if (actualPhase.id == phase.id)](Current)[/#if] --]
+        
           [#-- Timeline Event --]
           [#if phase.isReporting()]
             [#assign yearEvent = phase.year +1 /]
@@ -19,7 +21,7 @@
           [/#if]
           {
               "text": {
-                "headline": "${crpSession} ${(phase.description)!} ${(phase.year)!} [#if (actualPhase.id == phase.id)](Current)[/#if]",
+                "headline": "${(phase.description)!}  ${(phase.year)!} ",
               },
               "start_date": {
                   "year": "${yearEvent}",
@@ -41,14 +43,18 @@
       [/#if]
       ]
     }
-    
     var currenPhaseIndex = ${(currenPhaseIndex)!0};
+    
+    console.log(dataObject);
+    console.log(currenPhaseIndex);
   </script>
   
-  <div style="width: 100%;height: 150px;">
+  <div style="width: 100%;height: 80px;">
+    <div class="loading timeline-loader" style="display:none"></div>
     <div id="timeline-phases" ></div>
   </div>
   [@components.js_imports libraryName="TimelineJS3" /]
+  [@components.js_imports libraryName="jsUri" /] 
   [#assign customJS = [ "${baseUrlMedia}/js/global/timeline-phases.js"  ] + customJS  /]
  
 </div>

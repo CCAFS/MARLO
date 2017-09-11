@@ -1,9 +1,11 @@
 .tl-slidenav-previous {
   top: 5px !important;
+  display: none !important;
 }
 
 .tl-slidenav-next {
   top: 5px !important;
+  display: none !important;
 }
 
 .tl-slidenav-content-container {width: 506px;}
@@ -21,7 +23,7 @@
 }
 
 .tl-text h2.tl-headline-title, .tl-text h2.tl-headline{
-  font-size: 1.6em;
+  font-size: 1.4em;
   margin: 0;
 }
 
@@ -35,8 +37,8 @@ h3.tl-headline-date {
   padding: 5px;
 }
 
-.tl-attribution {
-  display: none;
+.tl-attribution span {
+  display: none !important;
 }
 
 .tl-menubar-button {
@@ -45,7 +47,6 @@ h3.tl-headline-date {
 }
 
 .tl-slide-content-container {
-  /* border-radius: 5px; */
 }
 
 .tl-slide-scrollable-container {
@@ -55,16 +56,48 @@ div#ccafs-planning-2018 {
 }
 
 .tl-storyslider {
-  border-radius: 5px;
+  /* border-radius: 5px; */
   /* display: none; */
+  width: 12%;
+  float: left;
+  height: 100% !important;
 }
 
 span.tl-icon-goback {
-  display: none;
+  /* display: none; */
 }
 
 div#tl-adnyds {}
 
 .tl-menubar {
   /* display: none; */
+  left: 12%;
+  top: 1px !important;
+}
+
+.tl-timenav {
+  width: 88%;
+  float: right;
+  border: 1px solid #f1f1f1;
+}
+
+.tl-slidenav-icon {
+}
+
+.tl-slide-content {
+  width: 100% !important;
+}
+
+.tl-timeaxis-background {
+  height: 35px;
+}
+
+.tl-timenav-line {}
+
+.tl-timegroup-message {
+  font-size: 0.9em;
+}
+
+.tl-attribution {
+  display: none;
 }
