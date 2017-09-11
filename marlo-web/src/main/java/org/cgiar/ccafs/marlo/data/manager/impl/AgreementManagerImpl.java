@@ -14,38 +14,30 @@
  *****************************************************************/
 
 
-package org.cgiar.ccafs.marlo.data.dao.mysql;
+package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.AgreementDAO;
+import org.cgiar.ccafs.marlo.data.manager.AgreementManager;
 import org.cgiar.ccafs.marlo.data.model.Agreements;
 
-import com.google.inject.Inject;
 
+public class AgreementManagerImpl implements AgreementManager {
 
-public class AgreementMySQLDAO implements AgreementDAO {
-
-  private StandardDAO dao;
-
-  @Inject
-  public AgreementMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
-  }
+  private AgreementDAO agreementDAO;
 
   @Override
   public Agreements find(String id) {
-    return dao.find(Agreements.class, id);
+    return this.agreementDAO.find(id);
   }
 
   @Override
   public String save(Agreements agreement) {
-    dao.save(agreement);
-    return agreement.getId();
+    return this.agreementDAO.save(agreement);
   }
 
   @Override
   public String update(Agreements agreement) {
-    dao.update(agreement);
-    return agreement.getId();
+    return this.agreementDAO.update(agreement);
   }
 
 }

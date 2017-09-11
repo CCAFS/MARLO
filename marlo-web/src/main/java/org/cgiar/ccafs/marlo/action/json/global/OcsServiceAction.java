@@ -17,10 +17,20 @@ package org.cgiar.ccafs.marlo.action.json.global;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.AgreementManager;
+import org.cgiar.ccafs.marlo.data.model.Agreements;
 import org.cgiar.ccafs.marlo.ocs.model.AgreementOCS;
+import org.cgiar.ccafs.marlo.ocs.model.CountryOCS;
+import org.cgiar.ccafs.marlo.ocs.model.CrpOCS;
+import org.cgiar.ccafs.marlo.ocs.model.DonorOCS;
+import org.cgiar.ccafs.marlo.ocs.model.PlaOCS;
+import org.cgiar.ccafs.marlo.ocs.model.ResearcherOCS;
 import org.cgiar.ccafs.marlo.ocs.ws.MarloOcsClient;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import com.google.inject.Inject;
@@ -40,21 +50,42 @@ public class OcsServiceAction extends BaseAction {
    */
   private String ocsCode;
   private MarloOcsClient ocsClient;
+  private AgreementManager agreementManager;
 
   private AgreementOCS json;
 
 
   @Inject
-  public OcsServiceAction(APConfig config, MarloOcsClient ocsClient) {
+  public OcsServiceAction(APConfig config, MarloOcsClient ocsClient, AgreementManager agreementManager) {
     super(config);
     this.ocsClient = ocsClient;
+    this.agreementManager = agreementManager;
 
   }
 
 
   @Override
   public String execute() throws Exception {
-    json = ocsClient.getagreement(ocsCode);
+
+    Agreements agreement = agreementManager.find(ocsCode);
+
+    if (agreement != null) {
+
+      Date today = new Date();
+
+      if (agreement.getSyncDate().compareTo(today) == 0) {
+
+        json = this.returnOCS(agreement);
+
+      } else {
+        json = ocsClient.getagreement(ocsCode);
+      }
+
+    } else {
+      json = ocsClient.getagreement(ocsCode);
+    }
+
+
     return SUCCESS;
   }
 
@@ -70,6 +101,108 @@ public class OcsServiceAction extends BaseAction {
     ocsCode = (StringUtils.trim(((String[]) parameters.get(APConstants.OCS_CODE_REQUEST_ID))[0]));
   }
 
+  /**
+   * return an Agreements Object Type given an AgreementOCS type
+   * 
+   * @author Julián Rodríguez CCAFS/CIAT
+   * @param agreementOCS this is the object from the service
+   * @since 11/09/2017
+   * @return
+   */
+  private Agreements returnAgreement(AgreementOCS agreementOCS) {
+
+    Agreements agreement = new Agreements();
+    agreement.setId(agreementOCS.getId());
+    agreement.setDescription(agreementOCS.getDescription());
+    agreement.setShortTitle(agreementOCS.getShortTitle());
+    agreement.setObjectives(agreementOCS.getObjectives());
+    agreement.setGrantAmmount(agreementOCS.getGrantAmount());
+    agreement.setStartDate(agreementOCS.getStartDate());
+    agreement.setEndDate(agreementOCS.getEndDate());
+    agreement.setExtensionDate(agreementOCS.getExtensionDate());
+    agreement.setContractStatus(agreementOCS.getContractStatus());
+    agreement.setFundingType(agreementOCS.getFundingType());
+    agreement.setOriginalDonorId(agreementOCS.getOriginalDonor().getId());
+    agreement.setOriginalDonor(agreementOCS.getOriginalDonor().getName());
+    agreement.setDonorId(agreementOCS.getDirectDonor().getId());
+    agreement.setDonor(agreementOCS.getDirectDonor().getName());
+    agreement.setResearchId(agreementOCS.getResearcher().getId());
+    agreement.setReasearchName(agreementOCS.getResearcher().getName());
+
+
+    /*
+     * agreementOCS.setResearcher(researcher);
+     * List<CountryOCS> countries = new ArrayList<CountryOCS>();
+     * countries.addAll(agreement.getCountriesAgreements());
+     * agreementOCS.setCountries(countries);
+     * List<CrpOCS> crps = new ArrayList<CrpOCS>();
+     * crps.addAll(agreement.getCrpsAgreements());
+     * agreementOCS.setCrps(crps);
+     * List<PlaOCS> plas = new ArrayList<PlaOCS>();
+     * plas.addAll(agreement.getPlasAgreements());
+     * agreementOCS.setPlas(plas);
+     */
+
+
+    return agreement;
+
+  }
+
+
+  /**
+   * return an object type AgreementOCS given an Agreements type
+   * 
+   * @author Julián Rodríguez CCAFS/CIAT
+   * @param agreement this is the object store in Database
+   * @since 11/09/2017
+   * @return an AgreementOCS
+   */
+  private AgreementOCS returnOCS(Agreements agreement) {
+
+    AgreementOCS agreementOCS = new AgreementOCS();
+    agreementOCS.setId(agreement.getId());
+    agreementOCS.setDescription(agreement.getDescription());
+    agreementOCS.setShortTitle(agreement.getShortTitle());
+    agreementOCS.setObjectives(agreement.getObjectives());
+    agreementOCS.setGrantAmount(agreement.getGrantAmmount());
+    agreementOCS.setStartDate(agreement.getStartDate());
+    agreementOCS.setEndDate(agreement.getEndDate());
+    agreementOCS.setExtensionDate(agreement.getExtensionDate());
+    agreementOCS.setContractStatus(agreement.getContractStatus());
+    agreementOCS.setFundingType(agreement.getFundingType());
+
+    DonorOCS originalDonor = new DonorOCS();
+    originalDonor.setId(agreement.getOriginalDonorId());
+    originalDonor.setName(agreement.getOriginalDonor());
+
+    DonorOCS donor = new DonorOCS();
+    donor.setId(agreement.getDonorId());
+    donor.setName(agreement.getDonor());
+
+    agreementOCS.setOriginalDonor(originalDonor);
+    agreementOCS.setDirectDonor(donor);
+
+    ResearcherOCS researcher = new ResearcherOCS();
+    researcher.setId(agreement.getResearchId());
+    researcher.setName(agreement.getReasearchName());
+    agreementOCS.setResearcher(researcher);
+
+
+    List<CountryOCS> countries = new ArrayList<CountryOCS>();
+    countries.addAll(agreement.getCountriesAgreements());
+    agreementOCS.setCountries(countries);
+
+    List<CrpOCS> crps = new ArrayList<CrpOCS>();
+    crps.addAll(agreement.getCrpsAgreements());
+    agreementOCS.setCrps(crps);
+
+    List<PlaOCS> plas = new ArrayList<PlaOCS>();
+    plas.addAll(agreement.getPlasAgreements());
+    agreementOCS.setPlas(plas);
+
+
+    return agreementOCS;
+  }
 
   public void setJson(AgreementOCS json) {
     this.json = json;

@@ -18,6 +18,9 @@ package org.cgiar.ccafs.marlo.data.dao;
 
 import org.cgiar.ccafs.marlo.data.model.Agreements;
 
+import com.google.inject.ImplementedBy;
+
+@ImplementedBy(Agreements.class)
 public interface AgreementDAO {
 
   public Agreements find(String id);
