@@ -1622,6 +1622,7 @@ public class DeliverableAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_DELIVERABLE_FUNDING_RELATION);
       relationsName.add(APConstants.PROJECT_DELIVERABLE_GENDER_LEVELS);
       relationsName.add(APConstants.PROJECT_DELIVERABLE_INFO);
+
       if (this.isReportingActive()) {
         relationsName.add(APConstants.PROJECT_DELIVERABLE_QUALITY_CHECK);
         relationsName.add(APConstants.PROJECT_DELIVERABLE_METADATA_ELEMENT);
@@ -1634,8 +1635,9 @@ public class DeliverableAction extends BaseAction {
 
       deliverable = deliverableManager.getDeliverableById(deliverableID);
       deliverable.setActiveSince(new Date());
-
-      deliverableManager.saveDeliverable(deliverable, this.getActionName(), relationsName);
+      deliverable.setCreatedBy(this.getCurrentUser());
+      deliverable.getDeliverableInfo(this.getActualPhase());
+      deliverableManager.saveDeliverable(deliverable, this.getActionName(), relationsName, this.getActualPhase());
       Path path = this.getAutoSaveFilePath();
 
       if (path.toFile().exists()) {

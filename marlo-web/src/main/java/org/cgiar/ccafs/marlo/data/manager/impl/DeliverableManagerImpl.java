@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 import org.cgiar.ccafs.marlo.data.dao.DeliverableDAO;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -72,8 +73,8 @@ public class DeliverableManagerImpl implements DeliverableManager {
   }
 
   @Override
-  public long saveDeliverable(Deliverable deliverable, String section, List<String> relationsName) {
-    return deliverableDAO.save(deliverable, section, relationsName);
+  public long saveDeliverable(Deliverable deliverable, String section, List<String> relationsName, Phase phase) {
+    return deliverableDAO.save(deliverable, section, relationsName, phase);
   }
 
 

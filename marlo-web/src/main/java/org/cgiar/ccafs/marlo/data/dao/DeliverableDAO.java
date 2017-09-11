@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.data.dao;
 
 import org.cgiar.ccafs.marlo.data.dao.mysql.DeliverableMySQLDAO;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -76,5 +77,5 @@ public interface DeliverableDAO {
    * @param relationsName - the model class relations of deliverables that save in the auditlog.
    * @return
    */
-  public long save(Deliverable deliverable, String section, List<String> relationsName);
+  public long save(Deliverable deliverable, String section, List<String> relationsName, Phase phase);
 }

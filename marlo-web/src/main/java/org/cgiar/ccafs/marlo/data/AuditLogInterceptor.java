@@ -355,7 +355,10 @@ public class AuditLogInterceptor extends EmptyInterceptor {
                       if (nameAtrribute.equals("phase")) {
                         phaseObject = (Phase) classMetadata.getPropertyValue(obj, nameAtrribute, EntityMode.POJO);
                         phaseObject = dao.find(Phase.class, (Serializable) phaseObject.getId());
-                        hasPhase = true;
+                        if (phaseObject != null) {
+                          hasPhase = true;
+                        }
+
                       }
                     }
                     /*
