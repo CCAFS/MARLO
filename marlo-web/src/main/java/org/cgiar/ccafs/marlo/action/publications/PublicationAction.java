@@ -723,7 +723,7 @@ public class PublicationAction extends BaseAction {
     // deliverable.setModifiedBy(this.getCurrentUser());
     // deliverable.setModificationJustification(this.getJustification());
 
-    deliverableManager.saveDeliverable(deliverable, this.getActionName(), relationsName);
+    deliverableManager.saveDeliverable(deliverable, this.getActionName(), relationsName, this.getActualPhase());
     Path path = this.getAutoSaveFilePath();
 
     if (path.toFile().exists()) {
