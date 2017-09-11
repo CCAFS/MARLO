@@ -86,7 +86,7 @@
         [#else]
           [#assign startExpectedYear = (deliverable.deliverableInfo.year)!currentCycleYear ]
         [/#if]
-        [@customForm.select name="deliverable.deliverableInfo.newExpectedYear"  label=""  listName="project.projectInfo.getYears(${startExpectedYear})" header=false  multiple=false required=true  className="yearNewExpected" editable=editable/]
+        [@customForm.select name="deliverable.deliverableInfo.newExpectedYear"  i18nkey="deliverable.newExpectedYear"  listName="project.projectInfo.getYears(${startExpectedYear})" header=false  multiple=false required=true  className="yearNewExpected" editable=editable/]
       [#else]
         <input type="hidden" name="deliverable.deliverableInfo.newExpectedYear" value="${(deliverable.deliverableInfo.newExpectedYear)!}"/>
         <div class="select">

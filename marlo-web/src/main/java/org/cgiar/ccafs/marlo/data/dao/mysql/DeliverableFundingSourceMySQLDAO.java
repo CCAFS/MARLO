@@ -34,6 +34,42 @@ public class DeliverableFundingSourceMySQLDAO implements DeliverableFundingSourc
     this.dao = dao;
   }
 
+  /**
+   * clone or update the deliverable funding sources for next phases
+   * 
+   * @param next the next phase to clone
+   * @param deliverableID the deliverable id we are working
+   * @param deliverableFundingSource the deliverable funding source to clone
+   */
+  private void addDeliverableFundingSourcePhase(Phase next, long deliverableID,
+    DeliverableFundingSource deliverableFundingSource) {
+    Phase phase = dao.find(Phase.class, next.getId());
+
+    List<DeliverableFundingSource> deliverableFundingSources = phase.getDeliverableFundingSources().stream()
+      .filter(c -> c.isActive() && c.getDeliverable().getId().longValue() == deliverableID
+        && deliverableFundingSource.getFundingSource().getId().equals(c.getFundingSource().getId()))
+      .collect(Collectors.toList());
+    if (phase.getEditable() != null && phase.getEditable() && deliverableFundingSources.isEmpty()) {
+      DeliverableFundingSource deliverableFundingSourceAdd = new DeliverableFundingSource();
+      deliverableFundingSourceAdd.setActive(true);
+      deliverableFundingSourceAdd.setActiveSince(deliverableFundingSource.getActiveSince());
+      deliverableFundingSourceAdd.setCreatedBy(deliverableFundingSource.getCreatedBy());
+      deliverableFundingSourceAdd.setModificationJustification(deliverableFundingSource.getModificationJustification());
+      deliverableFundingSourceAdd.setModifiedBy(deliverableFundingSource.getModifiedBy());
+      deliverableFundingSourceAdd.setPhase(phase);
+      deliverableFundingSourceAdd.setDeliverable(deliverableFundingSource.getDeliverable());
+      deliverableFundingSourceAdd.setFundingSource(deliverableFundingSource.getFundingSource());
+      dao.save(deliverableFundingSourceAdd);
+    }
+
+    if (phase.getNext() != null) {
+      this.addDeliverableFundingSourcePhase(phase.getNext(), deliverableID, deliverableFundingSource);
+    }
+
+
+  }
+
+
   @Override
   public boolean deleteDeliverableFundingSource(long deliverableFundingSourceId) {
     DeliverableFundingSource deliverableFundingSource = this.find(deliverableFundingSourceId);
@@ -58,7 +94,8 @@ public class DeliverableFundingSourceMySQLDAO implements DeliverableFundingSourc
     if (phase.getEditable() != null && phase.getEditable()) {
 
       List<DeliverableFundingSource> fundingSources = phase.getDeliverableFundingSources().stream()
-        .filter(c -> c.isActive() && c.getDeliverable().getId().longValue() == deliverableID)
+        .filter(c -> c.isActive() && c.getDeliverable().getId().longValue() == deliverableID
+          && deliverableFundingSource.getFundingSource().getId().equals(c.getFundingSource().getId()))
         .collect(Collectors.toList());
 
       for (DeliverableFundingSource deFundingSource : fundingSources) {
@@ -108,7 +145,10 @@ public class DeliverableFundingSourceMySQLDAO implements DeliverableFundingSourc
       dao.update(deliverableFundingSource);
     }
 
-
+    if (deliverableFundingSource.getPhase().getNext() != null) {
+      this.addDeliverableFundingSourcePhase(deliverableFundingSource.getPhase().getNext(),
+        deliverableFundingSource.getDeliverable().getId(), deliverableFundingSource);
+    }
     return deliverableFundingSource.getId();
   }
 

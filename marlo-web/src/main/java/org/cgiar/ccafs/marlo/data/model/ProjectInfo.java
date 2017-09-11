@@ -76,10 +76,8 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
   @Expose
   private Boolean locationRegional;
 
-
   public ProjectInfo() {
   }
-
 
   public ProjectInfo(LiaisonInstitution liaisonInstitution, LiaisonUser liaisonUser, Phase phase, Project project,
     User user, String title, String summary, Date startDate, Date endDate, String type, boolean isCofinancing,
@@ -117,13 +115,13 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
     this.reporting = reporting;
   }
 
+
   public ProjectInfo(User user, boolean isCofinancing, String modificationJustification, int scale) {
     this.modifiedBy = user;
     this.cofinancing = isCofinancing;
     this.modificationJustification = modificationJustification;
     this.scale = scale;
   }
-
 
   public Boolean getAdministrative() {
     return administrative;
@@ -159,6 +157,7 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
     return crossCuttingCapacity;
   }
 
+
   public Boolean getCrossCuttingGender() {
     return crossCuttingGender;
   }
@@ -166,7 +165,6 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
   public Boolean getCrossCuttingNa() {
     return crossCuttingNa;
   }
-
 
   public Boolean getCrossCuttingYouth() {
     return crossCuttingYouth;
@@ -187,11 +185,11 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
     return genderAnalysis;
   }
 
+
   @Override
   public Long getId() {
     return id;
   }
-
 
   public String getLeaderResponsabilities() {
     return leaderResponsabilities;
@@ -310,6 +308,26 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
 
   public String getType() {
     return type;
+  }
+
+
+  public List<Integer> getYears(int year) {
+    List<Integer> allYears = new ArrayList<>();
+    if (startDate != null && endDate != null) {
+
+      Calendar calendarEnd = Calendar.getInstance();
+      calendarEnd.setTime(endDate);
+
+      while (year < calendarEnd.get(Calendar.YEAR)) {
+        year++;
+        // Adding the year to the list.
+        allYears.add(year);
+        // Adding a year (365 days) to the start date.
+
+      }
+    }
+
+    return allYears;
   }
 
 
