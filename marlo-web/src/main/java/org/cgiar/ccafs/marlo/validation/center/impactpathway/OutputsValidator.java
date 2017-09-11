@@ -62,7 +62,7 @@ public class OutputsValidator extends BaseValidator {
       Path path = this.getAutoSaveFilePath(output, baseAction.getCenterID());
 
       if (path.toFile().exists()) {
-        this.addMissingField("output.action.draft");
+        this.addMissingField(baseAction.getText("output.action.draft"));
       }
     }
 
@@ -92,7 +92,13 @@ public class OutputsValidator extends BaseValidator {
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    if (nextUser.getNextuserType().getId() == -1) {
+    if (nextUser.getNextuserType() != null) {
+      if (nextUser.getNextuserType().getId() == -1) {
+        this.addMessage(baseAction.getText("output.action.nextusers.subType", params));
+        baseAction.getInvalidFields().put("input-output.nextUsers[" + i + "].nextuserType.id",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+    } else {
       this.addMessage(baseAction.getText("output.action.nextusers.subType", params));
       baseAction.getInvalidFields().put("input-output.nextUsers[" + i + "].nextuserType.id",
         InvalidFieldsMessages.EMPTYFIELD);

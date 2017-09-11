@@ -86,11 +86,15 @@ public class SummaryListAction extends BaseAction {
     loggedCenter = (Center) this.getSession().get(APConstants.SESSION_CENTER);
     loggedCenter = centerService.getCrpById(loggedCenter.getId());
 
-    allProjects = new ArrayList<CenterProject>(
-      projectService.findAll().stream().filter(p -> p.isActive()).collect(Collectors.toList()));
+    if (projectService.findAll() != null) {
+      allProjects = new ArrayList<CenterProject>(
+        projectService.findAll().stream().filter(p -> p.isActive()).collect(Collectors.toList()));
+    }
 
-    programs =
-      new ArrayList<>(programService.findAll().stream().filter(p -> p.isActive()).collect(Collectors.toList()));
+    if (programService.findAll() != null) {
+      programs =
+        new ArrayList<>(programService.findAll().stream().filter(p -> p.isActive()).collect(Collectors.toList()));
+    }
 
     researchAreas = new ArrayList<CenterArea>(
       researchAreaService.findAll().stream().filter(ra -> ra.isActive()).collect(Collectors.toList()));

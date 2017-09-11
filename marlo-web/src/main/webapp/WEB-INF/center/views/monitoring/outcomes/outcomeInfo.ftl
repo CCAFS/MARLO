@@ -52,10 +52,13 @@
         <div class="col-md-6">
           <label for="">Outcome statement:  </label>
           <p>${(outcome.description)!}</p>
+          <input type="hidden" class="outcomeDescription" name="outcome.description" value="${(outcome.description)!}" />
         </div>
         <div class="col-md-2">
           <label for="">Expected for ${(outcome.targetYear)!"null"}:  </label>
           <p>${(outcome.value)!"Not Applicable"}</p>
+          <input type="hidden" class="outcomeValue" name="outcome.value" value="${(outcome.value)!}" />
+          <input type="hidden" class="outcomeTargetYear" name="outcome.targetYear" value="${(outcome.targetYear)!"null"}" />
         </div>
       </div> 
       [#-- View Porjects contributions --]

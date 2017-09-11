@@ -36,11 +36,11 @@
     <listener-class>org.cgiar.ccafs.marlo.config.HibernateListener</listener-class>
   </listener>
   
-  <!--  
+
     <listener>
     <listener-class>org.cgiar.ccafs.marlo.config.PentahoListener</listener-class>
   </listener>
-  -->
+
   
   
   <filter>
@@ -57,9 +57,6 @@
     <filter-name>guice</filter-name>
     <filter-class>com.google.inject.servlet.GuiceFilter</filter-class>
   </filter>
-  
-
-
   
   <!-- Google Guice configuration for all requests -->
   <filter-mapping>

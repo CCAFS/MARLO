@@ -184,9 +184,9 @@ public class GraphByAreaAction extends BaseAction {
         dataTopicDetail.put("id", "T" + topic.getId());
         dataTopicDetail.put("parent", "P" + topic.getResearchProgram().getId());
         dataTopicDetail.put("label",
-          this.isShortName(topic.getShortName()) ? topic.getShortName() : "Research Topic " + topic.getId());
+          this.isShortName(topic.getShortName()) ? topic.getShortName() : "Research Topic - R" + topic.getId());
         dataTopicDetail.put("title", this.isShortName(topic.getShortName()) ? "Research Topic - " + topic.getShortName()
-          : "Research Topic " + topic.getId());
+          : "Research Topic - R" + topic.getId());
         dataTopicDetail.put("description", topic.getResearchTopic());
         dataTopicDetail.put("color", topic.getColor());
         dataTopicDetail.put("type", "T");
@@ -204,9 +204,9 @@ public class GraphByAreaAction extends BaseAction {
           dataOutcomeDetail.put("id", "OC" + outcome.getId());
           dataOutcomeDetail.put("parent", "T" + outcome.getResearchTopic().getId());
           dataOutcomeDetail.put("label",
-            this.isShortName(outcome.getShortName()) ? outcome.getShortName() : "Outcome " + outcome.getId());
+            this.isShortName(outcome.getShortName()) ? outcome.getShortName() : "Outcome - OC" + outcome.getId());
           dataOutcomeDetail.put("title", this.isShortName(outcome.getShortName())
-            ? "Outcome - " + outcome.getShortName() : "Outcome " + outcome.getId());
+            ? "Outcome - " + outcome.getShortName() : "Outcome - OC" + outcome.getId());
           dataOutcomeDetail.put("description", outcome.getDescription());
           dataOutcomeDetail.put("color", outcome.getResearchImpact().getColor());
           dataOutcomeDetail.put("type", "OC");
@@ -234,9 +234,9 @@ public class GraphByAreaAction extends BaseAction {
             dataOutputDetail.put("id", "OP" + output.getId());
             dataOutputDetail.put("parent", "T" + output.getResearchOutcome().getResearchTopic().getId());
             dataOutputDetail.put("label",
-              this.isShortName(output.getShortName()) ? output.getShortName() : "Output " + output.getId());
+              this.isShortName(output.getShortName()) ? output.getShortName() : "Output - O" + output.getId());
             dataOutputDetail.put("title", this.isShortName(output.getShortName()) ? "Output - " + output.getShortName()
-              : "Output " + output.getId());
+              : "Output - O" + output.getId());
             dataOutputDetail.put("description", output.getTitle());
             dataOutputDetail.put("color", output.getResearchOutcome().getResearchImpact().getColor());
             dataOutputDetail.put("type", "OP");
