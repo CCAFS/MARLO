@@ -45,6 +45,18 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableInfo" />
         </set>
+        <set name="deliverableFundingSources" table="deliverable_funding_sources" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="id_phase" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource" />
+        </set>
+        <set name="deliverablePartnerships" table="deliverable_partnerships" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="id_phase" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverablePartnership" />
+        </set>
         <set name="projectInfos" table="projects_info" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="id_phase" not-null="true" />

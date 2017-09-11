@@ -2,31 +2,9 @@
 [#assign title = "Unauthorized Access!" /]
 [#assign customJS = ["${baseUrlMedia}/js/home/login.js" ] /]
 
-[#if !errorPage??]
-
-  [#if crpSession??]
-    [#include "/WEB-INF/global/pages/header.ftl" /]
-    [#include "/WEB-INF/global/pages/main-menu.ftl" /]
-    [#import "/WEB-INF/global/macros/forms.ftl" as customForm /]
-  [/#if]
-  
-  [#if centerSession??]
-    [#include "/WEB-INF/center/global/pages/header.ftl" /]
-    [#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
-    [#import "/WEB-INF/center/global/macros/forms.ftl" as customForm /]
-  [/#if]
-  
-[#else]
-
-  [#include "/WEB-INF/global/pages/header.ftl" /]
-  [#include "/WEB-INF/global/pages/main-menu.ftl" /]
-  [#import "/WEB-INF/global/macros/forms.ftl" as customForm /]
-  
-[/#if]
-
-
-
-
+[#include "/WEB-INF/${headerPath}global/pages/header.ftl" /]
+[#include "/WEB-INF/${headerPath}global/pages/main-menu.ftl" /]
+[#import "/WEB-INF/${headerPath}global/macros/forms.ftl" as customForm /]
 
 <section class="content">
     <div class="container"> 
@@ -40,14 +18,4 @@
     </div>
 </section>
 
-[#if !errorPage??]
-  [#if crpSession??]
-    [#include "/WEB-INF/global/pages/footer.ftl"]
-  [/#if]
-  
-  [#if centerSession??]
-    [#include "/WEB-INF/center/global/pages/footer.ftl"]
-  [/#if]
-[#else]
-  [#include "/WEB-INF/global/pages/footer.ftl"]
-[/#if]
+[#include "/WEB-INF/${headerPath}global/pages/footer.ftl"]

@@ -109,19 +109,19 @@ public class DeliverableInfo implements java.io.Serializable, IAuditLog {
     return allowModifications;
   }
 
-
   public Boolean getCrossCuttingCapacity() {
     return crossCuttingCapacity;
   }
+
 
   public Boolean getCrossCuttingGender() {
     return crossCuttingGender;
   }
 
-
   public Boolean getCrossCuttingNa() {
     return crossCuttingNa;
   }
+
 
   public Boolean getCrossCuttingYouth() {
     return crossCuttingYouth;
@@ -130,7 +130,6 @@ public class DeliverableInfo implements java.io.Serializable, IAuditLog {
   public CrpClusterKeyOutput getCrpClusterKeyOutput() {
     return crpClusterKeyOutput;
   }
-
 
   public CrpProgramOutcome getCrpProgramOutcome() {
     return crpProgramOutcome;
@@ -406,6 +405,28 @@ public class DeliverableInfo implements java.io.Serializable, IAuditLog {
 
   public void setYear(int year) {
     this.year = year;
+  }
+
+
+  public void updateDeliverableInfo(DeliverableInfo update) {
+    this.setAdoptedLicense(update.getAdoptedLicense());
+    this.setAllowModifications(update.getAllowModifications());
+    this.setCrossCuttingCapacity(update.getCrossCuttingCapacity());
+    this.setCrossCuttingNa(update.getCrossCuttingNa());
+    this.setCrossCuttingYouth(update.getCrossCuttingYouth());
+    this.setCrpClusterKeyOutput(update.getCrpClusterKeyOutput());
+    this.setCrpProgramOutcome(update.getCrpProgramOutcome());
+    this.setDeliverable(update.getDeliverable());
+    this.setDescription(update.getDescription());
+    this.setLicense(update.getLicense());
+    this.setModificationJustification(update.getModificationJustification());
+    this.setModifiedBy(update.getModifiedBy());
+    this.setNewExpectedYear(update.getNewExpectedYear());
+    this.setOtherLicense(update.getOtherLicense());
+    this.setStatus(update.getStatus());
+    this.setTitle(update.getTitle());
+    this.setTypeOther(update.getTypeOther());
+
   }
 
 

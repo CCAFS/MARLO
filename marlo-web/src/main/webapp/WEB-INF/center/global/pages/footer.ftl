@@ -48,6 +48,7 @@
       var debugMode = ${config.debug?string};
       var editable = ${editable?string};
       var canEdit = ${canEdit?string};
+      var draft = ${draft?string};
       var autoSaveActive = ${((currentUser.autoSave)!false)?string};
       var currentCenterID=${(centerID)!'-1'};
       var currentCycleYear = ${(currentCycleYear)!1999};
@@ -100,6 +101,9 @@
     [/#if]
     [#-- import the custom JS and CSS --]
     [#if customJS??][#list customJS as js]<script src="${js}"></script>[/#list][/#if]
+    
+    [#-- Changes on Save --]
+    <script type="text/javascript" src="${baseUrlMedia}/js/global/changes.js" ></script>
     
     [/#compress]
     

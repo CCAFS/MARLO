@@ -18,9 +18,11 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.DeliverableDAO;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 
@@ -86,7 +88,31 @@ public class DeliverableMySQLDAO implements DeliverableDAO {
     } else {
       dao.update(deliverable, section, relationsName, phase);
     }
+
+    if (deliverable.getDeliverableInfo().getPhase().getNext() != null) {
+      this.saveDeliverablePhase(deliverable.getDeliverableInfo().getPhase().getNext(), deliverable.getId(),
+        deliverable);
+    }
+
     return deliverable.getId();
+  }
+
+  public void saveDeliverablePhase(Phase next, long deliverableID, Deliverable deliverable) {
+    Phase phase = dao.find(Phase.class, next.getId());
+    if (phase.getEditable() != null && phase.getEditable()) {
+      List<DeliverableInfo> deliverablesInfo = phase.getDeliverableInfos().stream()
+        .filter(c -> c.isActive() && c.getDeliverable().getId().longValue() == deliverableID)
+        .collect(Collectors.toList());
+      for (DeliverableInfo deliverableInfo : deliverablesInfo) {
+        deliverableInfo.updateDeliverableInfo(deliverable.getDeliverableInfo());
+        dao.update(deliverableInfo);
+      }
+
+
+    }
+    if (phase.getNext() != null) {
+      this.saveDeliverablePhase(phase.getNext(), deliverableID, deliverable);
+    }
   }
 
 

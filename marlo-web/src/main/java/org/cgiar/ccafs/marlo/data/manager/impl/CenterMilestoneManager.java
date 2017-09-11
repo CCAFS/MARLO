@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.manager.ICenterMilestoneManager;
 import org.cgiar.ccafs.marlo.data.model.CenterMilestone;
 
 import java.util.List;
+import java.util.Map;
 
 import com.google.inject.Inject;
 
@@ -69,6 +70,16 @@ public class CenterMilestoneManager implements ICenterMilestoneManager {
   @Override
   public List<CenterMilestone> getCenterMilestonesByUserId(Long userId) {
     return centerMilestoneDAO.getCenterMilestonesByUserId(userId);
+  }
+
+  @Override
+  public List<Map<String, Object>> getCountTargetUnit(long programID) {
+    return centerMilestoneDAO.getCountTargetUnit(programID);
+  }
+
+  @Override
+  public List<Map<String, Object>> getMonitoringMilestones(long programID) {
+    return centerMilestoneDAO.getMonitoringMilestones(programID);
   }
 
   @Override

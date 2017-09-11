@@ -38,6 +38,7 @@ import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -343,7 +344,7 @@ public class ImpactSubmissionSummaryAction extends BaseAction implements Summary
     }
 
     // Get CIAT imgage URL from repo
-    String imageUrl = this.getBaseUrl() + "center/images/global/centers/CIAT.png";
+    String imageUrl = this.getBaseUrl() + "/center/images/global/centers/CIAT.png";
 
     model.addRow(new Object[] {title, currentDate, impactSubmission, imageUrl});
     return model;
@@ -358,9 +359,13 @@ public class ImpactSubmissionSummaryAction extends BaseAction implements Summary
         Boolean.class, Long.class});
 
 
+    List<CenterTopic> researchTopics = researchProgram.getResearchTopics().stream()
+      .filter(rt -> rt.isActive() && rt.getResearchOutcomes().size() > 0).collect(Collectors.toList());
+
+    Collections.sort(researchTopics, (ra1, ra2) -> ra1.getOrder().compareTo(ra2.getOrder()));
+
     // Get research topics and then outcomes
-    for (CenterTopic researchTopic : researchProgram.getResearchTopics().stream()
-      .filter(rt -> rt.isActive() && rt.getResearchOutcomes().size() > 0).collect(Collectors.toList())) {
+    for (CenterTopic researchTopic : researchTopics) {
       String researchTopicTitle = "";
       Boolean showResearchTopic;
       int countOutcome = 0;
@@ -427,7 +432,11 @@ public class ImpactSubmissionSummaryAction extends BaseAction implements Summary
           targetValue = "&lt;Not Defined&gt;";
         }
         if (researchOutcome.getTargetYear() != null) {
-          targetYear = researchOutcome.getTargetYear().toString();
+          if (researchOutcome.getTargetYear() != -1) {
+            targetYear = researchOutcome.getTargetYear().toString();
+          } else {
+            targetYear = "&lt;Not Defined&gt;";
+          }
         }
         if (targetYear.isEmpty()) {
           targetYear = "&lt;Not Defined&gt;";
@@ -449,9 +458,10 @@ public class ImpactSubmissionSummaryAction extends BaseAction implements Summary
     TypedTableModel model =
       new TypedTableModel(new String[] {"shortName", "title", "research_topic", "outcome", "showResearchTopic", "id"},
         new Class[] {String.class, String.class, String.class, String.class, Boolean.class, Long.class});
-
-    for (CenterTopic researchTopic : researchProgram.getResearchTopics().stream().filter(rt -> rt.isActive())
-      .collect(Collectors.toList())) {
+    List<CenterTopic> researchTopics = researchProgram.getResearchTopics().stream()
+      .filter(rt -> rt.isActive() && rt.getResearchOutcomes().size() > 0).collect(Collectors.toList());
+    Collections.sort(researchTopics, (ra1, ra2) -> ra1.getOrder().compareTo(ra2.getOrder()));
+    for (CenterTopic researchTopic : researchTopics) {
       String researchTopicTitle = "";
       Boolean showResearchTopic;
       int countOutcome = 0;
@@ -559,21 +569,6 @@ public class ImpactSubmissionSummaryAction extends BaseAction implements Summary
 
   public CenterProgram getResearchProgram() {
     return researchProgram;
-  }
-
-  private TypedTableModel getResearchTopicsTableModel() {
-    // Initialization of Model
-    TypedTableModel model = new TypedTableModel(new String[] {"name", "id"}, new Class[] {String.class, String.class});
-    String name = "";
-    String id = "";
-
-    for (CenterTopic researchTopic : researchProgram.getResearchTopics().stream()
-      .filter(rt -> rt.isActive() && rt.getResearchTopic() != null).collect(Collectors.toList())) {
-      name = researchTopic.getResearchTopic();
-      id = researchTopic.getId().toString();
-      model.addRow(new Object[] {name, id});
-    }
-    return model;
   }
 
   @Override

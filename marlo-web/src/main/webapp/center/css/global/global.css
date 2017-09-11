@@ -167,6 +167,28 @@ input.disabled {
   display: block;
 }
 
+/* MODAL */
+
+.modal {
+  text-align: center;
+}
+
+@media screen and (min-width: 768px) { 
+  .modal:before {
+    display: inline-block;
+    vertical-align: middle;
+    content: " ";
+    height: 100%;
+  }
+}
+
+.modal-dialog {
+  display: inline-block;
+  text-align: left;
+  vertical-align: middle;
+}
+
+
 div.disabled {/* Required for IE 5, 6, 7 */
   /* ...or something to trigger hasLayout, like zoom: 1; */
   width: 100%;/* Theoretically for IE 8 & 9 (more valid) *//* ...but not required as filter works too *//* should come BEFORE filter */
@@ -6274,4 +6296,10 @@ p.title{
     padding: 3px 10px;
     border-radius: 4px;
     text-align:center;
+}
+
+span.hint{
+  color:#81af81;
+  font-style: italic;
+  letter-spacing: 1px;
 }

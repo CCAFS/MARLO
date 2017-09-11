@@ -61,13 +61,6 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectBudget" />
 		</set>
-		<set name="branches" table="institutions" inverse="true" lazy="true"
-			fetch="select">
-			<key>
-				<column name="headquarter" />
-			</key>
-			<one-to-many class="org.cgiar.ccafs.marlo.data.model.Institution" />
-		</set>
 		<set name="projectPartnerPersons" table="project_partner_persons"
 			inverse="true" lazy="true" fetch="select">
 			<key>

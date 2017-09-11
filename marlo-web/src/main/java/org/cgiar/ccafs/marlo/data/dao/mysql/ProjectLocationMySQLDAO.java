@@ -93,14 +93,14 @@ public class ProjectLocationMySQLDAO implements ProjectLocationDAO {
     long result = this.save(projectLocation);
 
     if (projectLocation.getPhase().getNext() != null) {
-      this.deletProjectLocationPhase(projectLocation.getPhase().getNext(), projectLocation.getProject().getId(),
+      this.deleteProjectLocationPhase(projectLocation.getPhase().getNext(), projectLocation.getProject().getId(),
         projectLocation);
     }
     return result > 0;
 
   }
 
-  public void deletProjectLocationPhase(Phase next, long projecID, ProjectLocation projectLocation) {
+  public void deleteProjectLocationPhase(Phase next, long projectID, ProjectLocation projectLocation) {
     Phase phase = dao.find(Phase.class, next.getId());
     boolean hasLocElement = false;
     if (projectLocation.getLocElement() != null) {
@@ -112,12 +112,12 @@ public class ProjectLocationMySQLDAO implements ProjectLocationDAO {
 
       if (hasLocElement) {
         locations.addAll(phase.getProjectLocations().stream()
-          .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID && c.getLocElement() != null
+          .filter(c -> c.isActive() && c.getProject().getId().longValue() == projectID && c.getLocElement() != null
             && projectLocation.getLocElement().getId().longValue() == c.getLocElement().getId().longValue())
           .collect(Collectors.toList()));
       } else {
         locations.addAll(phase.getProjectLocations().stream()
-          .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID && c.getLocElementType() != null
+          .filter(c -> c.isActive() && c.getProject().getId().longValue() == projectID && c.getLocElementType() != null
             && projectLocation.getLocElementType().getId().longValue() == c.getLocElementType().getId().longValue())
           .collect(Collectors.toList()));
       }
@@ -126,7 +126,7 @@ public class ProjectLocationMySQLDAO implements ProjectLocationDAO {
       }
     } else {
       if (phase.getNext() != null) {
-        this.deletProjectLocationPhase(phase.getNext(), projecID, projectLocation);
+        this.deleteProjectLocationPhase(phase.getNext(), projectID, projectLocation);
       }
     }
 
