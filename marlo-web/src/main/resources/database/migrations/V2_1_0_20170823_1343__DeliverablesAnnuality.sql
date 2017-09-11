@@ -1,4 +1,8 @@
 SET FOREIGN_KEY_CHECKS = 0;
+
+DROP TABLE
+IF EXISTS `deliverables_info`;
+
 CREATE TABLE `deliverables_info` (
 `id`  bigint(20) NOT NULL AUTO_INCREMENT ,
 `title`  text CHARACTER SET utf8 COLLATE utf8_general_ci NULL ,

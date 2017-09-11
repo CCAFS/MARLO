@@ -1,6 +1,65 @@
 
 SET FOREIGN_KEY_CHECKS = 0;
 
+
+INSERT INTO `phases` (`description`, `year`, `crp_id`) select'Reporting', '2017',id from crps where is_marlo=1 and is_active=1;
+INSERT INTO `phases` (`description`, `year`, `crp_id`) select'Planning', '2018',id from crps where is_marlo=1 and is_active=1;
+INSERT INTO `phases` (`description`, `year`, `crp_id`) select'Reporting', '2018',id from crps where is_marlo=1 and is_active=1;
+INSERT INTO `phases` (`description`, `year`, `crp_id`) select'Planning', '2019',id from crps where is_marlo=1 and is_active=1;
+INSERT INTO `phases` (`description`, `year`, `crp_id`) select'Reporting', '2019',id from crps where is_marlo=1 and is_active=1;
+INSERT INTO `phases` (`description`, `year`, `crp_id`) select'Planning', '2020',id from crps where is_marlo=1 and is_active=1;
+INSERT INTO `phases` (`description`, `year`, `crp_id`) select'Reporting', '2020',id from crps where is_marlo=1 and is_active=1;
+INSERT INTO `phases` (`description`, `year`, `crp_id`) select'Planning', '2021',id from crps where is_marlo=1 and is_active=1;
+INSERT INTO `phases` (`description`, `year`, `crp_id`) select'Reporting', '2021',id from crps where is_marlo=1 and is_active=1;
+INSERT INTO `phases` (`description`, `year`, `crp_id`) select'Planning', '2022',id from crps where is_marlo=1 and is_active=1;
+INSERT INTO `phases` (`description`, `year`, `crp_id`) select'Reporting', '2022',id from crps where is_marlo=1 and is_active=1;
+
+
+
+
+
+
+
+select * from projects p 
+inner join phases ph on p.crp_id=ph.crp_id
+where p.is_active=1 
+and (select COUNT('x') from project_phases fa where fa.project_id=p.id and fa.id_phase in (1,
+2,
+4,
+5,
+6,
+7,
+8))>0
+and ph.id not in (1,
+2,3,
+4,
+5,
+6,
+7,
+8) AND YEAR(p.end_date)>=ph.`year`;
+
+
+
+insert into project_phases (id_phase
+,project_id
+)
+select ph.id,p.id from projects p 
+inner join phases ph on p.crp_id=ph.crp_id
+where p.is_active=1 
+and (select COUNT('x') from project_phases fa where fa.project_id=p.id and fa.id_phase in (1,
+2,
+4,
+5,
+6,
+7,
+8))>0
+and ph.id not in (1,
+2,3,
+4,
+5,
+6,
+7,
+8) AND YEAR(p.end_date)>=ph.`year` ;
 -- ----------------------------
 -- Table structure for projects
 -- ----------------------------
