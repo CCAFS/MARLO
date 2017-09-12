@@ -236,15 +236,15 @@ public class CapacityDevelopmentValidator extends BaseValidator {
         baseAction.getInvalidFields().put("input-participant.personalEmail", InvalidFieldsMessages.EMPTYFIELD);
       }
     }
-    if (participant.getInstitutions().getId() == -1) {
-      this.addMessage(baseAction.getText("capdev.action.participant.institution"));
-      baseAction.getInvalidFields().put("input-participant.institutions.id", InvalidFieldsMessages.EMPTYFIELD);
-    }
-    if (participant.getLocElementsByCountryOfInstitucion().getId() == -1) {
-      this.addMessage(baseAction.getText("capdev.action.participant.countryOfInstitucion"));
-      baseAction.getInvalidFields().put("input-participant.locElementsByCountryOfInstitucion.id",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
+    // if (participant.getInstitutions().getId() == -1) {
+    // this.addMessage(baseAction.getText("capdev.action.participant.institution"));
+    // baseAction.getInvalidFields().put("input-participant.institutions.id", InvalidFieldsMessages.EMPTYFIELD);
+    // }
+    // if (participant.getLocElementsByCountryOfInstitucion().getId() == -1) {
+    // this.addMessage(baseAction.getText("capdev.action.participant.countryOfInstitucion"));
+    // baseAction.getInvalidFields().put("input-participant.locElementsByCountryOfInstitucion.id",
+    // InvalidFieldsMessages.EMPTYFIELD);
+    // }
     if (participant.getSupervisor().equalsIgnoreCase("")) {
       this.addMessage(baseAction.getText("capdev.action.participant.supervisor"));
       baseAction.getInvalidFields().put("input-participant.supervisor", InvalidFieldsMessages.EMPTYFIELD);
