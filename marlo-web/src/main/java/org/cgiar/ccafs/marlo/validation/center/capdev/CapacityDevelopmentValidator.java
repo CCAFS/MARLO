@@ -94,31 +94,61 @@ public class CapacityDevelopmentValidator extends BaseValidator {
       this.addMessage(baseAction.getText("capdev.action.duration"));
       baseAction.getInvalidFields().put("input-capdev.duration", InvalidFieldsMessages.EMPTYFIELD);
     }
+
+    if ((capdev.getDuration() != null) && (capdev.getDurationUnit() != null)) {
+      if (capdev.getDurationUnit().equals("-1")) {
+        this.addMessage(baseAction.getText("capdev.action.durationUnit"));
+        baseAction.getInvalidFields().put("input-capdev.durationUnit", InvalidFieldsMessages.EMPTYFIELD);
+      }
+
+    }
+
     if (this.bolValue(capdev.getsGlobal()) == null) {
       this.addMessage(baseAction.getText("capdev.action.global"));
       baseAction.getInvalidFields().put("input-capdev.sGlobal", InvalidFieldsMessages.EMPTYFIELD);
-    }
-
-    if (countries.get(0) == -1) {
-      countries.remove(0);
-    }
-    if (countries.isEmpty() && (capdev.getCapDevCountries() == null)) {
-      this.addMessage(baseAction.getText("capdev.action.countries"));
-      baseAction.getInvalidFields().put("list-capdev.countries", baseAction.getText(InvalidFieldsMessages.EMPTYLIST,
-        new String[] {"Capacity Development Intervention Countries"}));
-
-    } else if (countries.isEmpty()
-      && capdev.getCapDevCountries().stream().filter(c -> c.isActive()).collect(Collectors.toList()).isEmpty()) {
-      this.addMessage(baseAction.getText("capdev.action.countries"));
-      baseAction.getInvalidFields().put("list-capdev.countries", baseAction.getText(InvalidFieldsMessages.EMPTYLIST,
-        new String[] {"Capacity Development Intervention Countries"}));
-
     }
 
     if (this.bolValue(capdev.getsRegional()) == null) {
       this.addMessage(baseAction.getText("capdev.action.region"));
       baseAction.getInvalidFields().put("input-capdev.sRegional", InvalidFieldsMessages.EMPTYFIELD);
     }
+
+
+    if (countries.get(0) == -1) {
+      countries.remove(0);
+    }
+
+    if ((this.bolValue(capdev.getsRegional()) == null) && countries.isEmpty()
+      && (capdev.getCapDevCountries() == null)) {
+      this.addMessage(baseAction.getText("capdev.action.countries"));
+      baseAction.getInvalidFields().put("list-capdev.countries", baseAction.getText(InvalidFieldsMessages.EMPTYLIST,
+        new String[] {"Capacity Development Intervention Countries"}));
+
+    } else {
+      if (!this.bolValue(capdev.getsRegional()) && countries.isEmpty() && (capdev.getCapDevCountries() == null)) {
+        this.addMessage(baseAction.getText("capdev.action.countries"));
+        baseAction.getInvalidFields().put("list-capdev.countries", baseAction.getText(InvalidFieldsMessages.EMPTYLIST,
+          new String[] {"Capacity Development Intervention Countries"}));
+      }
+      if (capdev.getCapDevCountries() != null) {
+        if (capdev.getCapDevCountries().stream().filter(c -> c.isActive()).collect(Collectors.toList()).isEmpty()) {
+          this.addMessage(baseAction.getText("capdev.action.countries"));
+          baseAction.getInvalidFields().put("list-capdev.countries", baseAction.getText(InvalidFieldsMessages.EMPTYLIST,
+            new String[] {"Capacity Development Intervention Countries"}));
+        }
+      }
+
+    }
+
+    // else if ((this.bolValue(capdev.getsRegional()) == null) && countries.isEmpty()
+    // && (capdev.getCapDevCountries() != null)) {
+    // if (capdev.getCapDevCountries().stream().filter(c -> c.isActive()).collect(Collectors.toList()).isEmpty()) {
+    // this.addMessage(baseAction.getText("capdev.action.countries"));
+    // baseAction.getInvalidFields().put("list-capdev.countries", baseAction.getText(InvalidFieldsMessages.EMPTYLIST,
+    // new String[] {"Capacity Development Intervention Countries"}));
+    // }
+    // }
+
 
     if (regions.get(0) == -1) {
       regions.remove(0);
@@ -204,7 +234,8 @@ public class CapacityDevelopmentValidator extends BaseValidator {
   }
 
   public void validateParticipant(Participant participant, BaseAction baseAction) {
-    if (participant.getCode() == 0) {
+    System.out.println(participant.getCode());
+    if (participant.getCode() == null) {
       this.addMessage(baseAction.getText("capdev.action.participant.code"));
       baseAction.getInvalidFields().put("input-participant.code", InvalidFieldsMessages.EMPTYFIELD);
     }

@@ -73,6 +73,21 @@ public class CapacityDevelopmentAction extends BaseAction {
   }
 
 
+  public void bubbleSort(List<CapacityDevelopment> list) {
+    final int n = list.size();
+    for (int i = 0; i < (n - 1); i++) {
+      for (int j = 0; j < (n - i - 1); j++) {
+        if (list.get(j).getId() > list.get(j + 1).getId()) {
+          // swap temp and arr[i]
+          final CapacityDevelopment temp = list.get(j);
+          list.add(j, list.get(j + 1));
+          list.add(j + 1, temp);
+        }
+      }
+    }
+  }
+
+
   @Override
   public String delete() {
     // System.out.println("delete capdev intervention --> " + capdevID);
@@ -109,12 +124,11 @@ public class CapacityDevelopmentAction extends BaseAction {
     return SUCCESS;
   }
 
-
   @Override
   public void prepare() throws Exception {
     if (capdevService.findAll() != null) {
       capDevs = capdevService.findAll().stream().filter(cdl -> cdl.isActive()).collect(Collectors.toList());
-      Collections.sort(capDevs, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
+      Collections.sort(capDevs, (ra1, ra2) -> ra2.getId().compareTo(ra1.getId()));
     }
 
 

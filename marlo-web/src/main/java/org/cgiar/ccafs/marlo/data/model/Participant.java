@@ -20,7 +20,7 @@ public class Participant implements java.io.Serializable {
   private Long id;
   private User usersByModifiedBy;
   private User usersByCreatedBy;
-  private long code;
+  private Long code;
   private String name;
   private String middleName;
   private String lastName;
@@ -43,7 +43,7 @@ public class Participant implements java.io.Serializable {
   }
 
 
-  public Participant(User usersByCreatedBy, long code, String name, String middleName, String lastName, String gender,
+  public Participant(User usersByCreatedBy, Long code, String name, String middleName, String lastName, String gender,
     LocElement locElementsByCitizenship, String email, String personalEmail, boolean active) {
     this.usersByCreatedBy = usersByCreatedBy;
     this.code = code;
@@ -57,7 +57,7 @@ public class Participant implements java.io.Serializable {
     this.active = active;
   }
 
-  public Participant(User usersByModifiedBy, User usersByCreatedBy, long code, String name, String middleName,
+  public Participant(User usersByModifiedBy, User usersByCreatedBy, Long code, String name, String middleName,
     String lastName, String gender, LocElement locElementsByCountryOfInstitucion, Institution institutions,
     LocElement locElementsByCitizenship, CapdevHighestDegree highestDegree, String email, String personalEmail,
     String reference, String supervisor, CapdevFoundingType fellowship, boolean active, Date aciveSince,
@@ -93,7 +93,7 @@ public class Participant implements java.io.Serializable {
   }
 
 
-  public long getCode() {
+  public Long getCode() {
     return this.code;
   }
 
@@ -186,7 +186,7 @@ public class Participant implements java.io.Serializable {
     this.capdevParticipants = capdevParticipants;
   }
 
-  public void setCode(long code) {
+  public void setCode(Long code) {
     this.code = code;
   }
 

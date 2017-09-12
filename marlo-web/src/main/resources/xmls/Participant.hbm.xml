@@ -29,8 +29,8 @@
 			class="org.cgiar.ccafs.marlo.data.model.LocElement" fetch="select">
 			<column name="citizenship" />
 		</many-to-one>
-		<property name="code" type="long">
-			<column name="code" not-null="true" />
+		<property name="code" type="java.lang.Long">
+			<column name="code"  />
 		</property>
 		<property name="name" type="string">
 			<column name="name" length="200" />
@@ -42,7 +42,7 @@
 			<column name="last_name" length="200" />
 		</property>
 		<property name="gender" type="string">
-			<column name="gender" not-null="true" />
+			<column name="gender"  length="10"/>
 		</property>
 		<many-to-one name="highestDegree"
 			class="org.cgiar.ccafs.marlo.data.model.CapdevHighestDegree" fetch="select">

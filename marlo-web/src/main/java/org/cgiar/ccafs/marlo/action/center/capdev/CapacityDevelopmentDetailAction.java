@@ -573,7 +573,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     capdevDB.setStartDate(capdev.getStartDate());
     capdevDB.setEndDate(capdev.getEndDate());
     capdevDB.setDuration(capdev.getDuration());
-    capdevDB.setDurationUnit(capdev.getDurationUnit());
     capdevDB.setGlobal(this.bolValue(capdev.getsGlobal()));
     capdevDB.setRegional(this.bolValue(capdev.getsRegional()));
 
@@ -584,8 +583,16 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       capdevDB.setCapdevType(capdev.getCapdevType());
     }
 
+    System.out.println(capdev.getDurationUnit());
+    if (capdev.getDurationUnit() != null) {
+      if (!capdev.getDurationUnit().equals("-1")) {
+        capdevDB.setDurationUnit(capdev.getDurationUnit());
+      }
+    }
+
     // if capdev is individual
     if (capdevDB.getCategory() == 1) {
+
       capdevDB.setNumParticipants(1);
       if (participant.getGender().equals("M")) {
         capdevDB.setNumMen(1);
@@ -595,15 +602,14 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       }
 
       capdevService.saveCapacityDevelopment(capdevDB);
-      // verifica si se ingreso la info de un participante para hacer el save del participante.
-      if (participant.getCode() != 0) {
-        this.saveParticipant(participant);
 
-        // verifica si la capdev tiene algun participante registrado, sino registra el capdevParticipant
-        if (capdevDB.getCapdevParticipants().isEmpty()) {
-          this.saveCapDevParticipan(participant, capdevDB);
-        }
+      this.saveParticipant(participant);
+
+      // verifica si la capdev tiene algun participante registrado, sino registra el capdevParticipant
+      if (capdevDB.getCapdevParticipants().isEmpty()) {
+        this.saveCapDevParticipan(participant, capdevDB);
       }
+
 
     }
 
@@ -740,7 +746,10 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   public void saveParticipant(Participant participant) {
     final Session session = SecurityUtils.getSubject().getSession();
     final User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
-    System.out.println("highest degree " + participant.getHighestDegree().getId());
+    // System.out.println("highest degree " + participant.getHighestDegree().getId());
+    if (participant.getCode() == null) {
+      participant.setCode(null);
+    }
     if ((participant.getLocElementsByCitizenship() == null)
       || (participant.getLocElementsByCitizenship().getId() == -1)) {
       participant.setLocElementsByCitizenship(null);

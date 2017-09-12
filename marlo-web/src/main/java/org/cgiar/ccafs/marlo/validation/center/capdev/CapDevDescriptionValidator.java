@@ -79,8 +79,15 @@ public class CapDevDescriptionValidator extends BaseValidator {
       this.addMessage(baseAction.getText("capdev.action.partners"));
       baseAction.getInvalidFields().put("list-capdev.partners",
         baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Partners"}));
+
     }
 
+    if (capdev.getResearchArea().getId() == -1) {
+      this.addMessage(baseAction.getText("capdev.action.researchArea"));
+      baseAction.getInvalidFields().put("input-capdev.researchArea.id", InvalidFieldsMessages.EMPTYFIELD);
+      // baseAction.getInvalidFields().put("list-capdev.researcharea",
+      // baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Research Area"}));
+    }
 
     if (outputs.isEmpty()
       && capdev.getCapdevOutputses().stream().filter(cd -> cd.isActive()).collect(Collectors.toList()).isEmpty()) {

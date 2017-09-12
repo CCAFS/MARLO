@@ -2,6 +2,8 @@
 
 [#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css"] /]
 [#assign customCSS = ["${baseUrlMedia}/css/capDev/capacityDevelopment.css"] /]
+
+[#assign pageLibs = ["select2","flat-flags"] /]
 [#assign customJS = ["${baseUrlMedia}/js/capDev/capacityDevelopment.js", "${baseUrlMedia}/js/global/fieldsValidation.js"] /]
 
 [#assign currentStage = "capdevIntervention" /]
@@ -115,7 +117,7 @@
 
 					<div class="col-md-3 durationUnitSelect">
 						<input type="hidden" name="" value="${(capdev.durationUnit)!}" class="durationUnitaInput"/>
-						[@customForm.select name="capdev.durationUnit" listName="durationUnit" keyFieldName="value" displayFieldName="displayName" help="" i18nkey="capdev.form.durationUnit"  placeholder="capdev.select"  editable=true className=""/]
+						[@customForm.select name="capdev.durationUnit" listName="durationUnit" keyFieldName="value" displayFieldName="displayName" help="" i18nkey="capdev.form.durationUnit"  placeholder="capdev.select"  editable=true className="dUnitSelect"/]
 					</div>
 				</div>
 

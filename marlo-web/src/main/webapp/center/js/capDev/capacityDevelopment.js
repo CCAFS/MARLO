@@ -8,6 +8,7 @@
   $(document).ready(init);
 
   function init(){
+    
     $('.numParticipants').integerInput();
     $('.numMen').integerInput();
     $('.numMen').integerInput();
@@ -44,44 +45,44 @@
     });
 
    //close search contact person dialog
-   $('.close-dialog').on('click', function() {
+    $('.close-dialog').on('click', function() {
     dialog.dialog("close");
     $dialogContent.find(".panel-body ul").empty();
 
-  });
+    });
 
 
-  //Event to find an user according to search field
-  $dialogContent.find(".searchcontact-content input").on("keyup", searchUsersEvent);
+    //Event to find an user according to search field
+    $dialogContent.find(".searchcontact-content input").on("keyup", searchUsersEvent);
 
 
-    // Event when the user select the contact person from AD
-  $(".selectADUser").on("click", function() {
-    console.log("span.select")
-    var firstName = $(this).parent().find(".firstname").text();
-    var lastName = $(this).parent().find(".lastname").text();
-    var email = $(this).parent().find(".email").text();
-    var composedName = firstName +", " + lastName +" "+ email;
-
-    console.log(email)
-    console.log(composedName)
-    // Add user
-    addUser(composedName, firstName, lastName, email);
-  });
-
-  
-  //event when the user add a new contact person
-  $dialogContent.find(".addContactPerson").on("click", function(){
-     var firstName = $(".ct_FirstName").val();
-      var lastName = $(".ct_LastName").val();
-      var email = $(".ct_Email").val();
-      var composedName = firstName +", " + lastName +" <"+ email+">";
+      // Event when the user select the contact person from AD
+    $(".selectADUser").on("click", function() {
+      console.log("span.select")
+      var firstName = $(this).parent().find(".firstname").text();
+      var lastName = $(this).parent().find(".lastname").text();
+      var email = $(this).parent().find(".email").text();
+      var composedName = firstName +", " + lastName +" "+ email;
 
       console.log(email)
       console.log(composedName)
       // Add user
       addUser(composedName, firstName, lastName, email);
-  });
+    });
+
+  
+    //event when the user add a new contact person
+    $dialogContent.find(".addContactPerson").on("click", function(){
+       var firstName = $(".ct_FirstName").val();
+        var lastName = $(".ct_LastName").val();
+        var email = $(".ct_Email").val();
+        var composedName = firstName +", " + lastName +" <"+ email+">";
+
+        console.log(email)
+        console.log(composedName)
+        // Add user
+        addUser(composedName, firstName, lastName, email);
+    });
 
 
    //set contact person 
@@ -101,24 +102,24 @@
 
    
 
-  //display individual or group intervention form
-  (function() {
-    var value = $(".radioButton").val();
-    
-    if (value == 1) {
-    $(".fullForm").show();
-    $(".individualparticipantForm").show();
-    $(".grupsParticipantsForm ").hide();
-    $(".individual ").show();
-    $(".group").hide();
-  }
-  else if (value == 2) {
-    $(".fullForm").show();
-    $(".grupsParticipantsForm ").show();
-    $(".individualparticipantForm").hide();
-    $(".group").show();
-  }
-  })();
+    //display individual or group intervention form
+    (function() {
+      var value = $(".radioButton").val();
+      
+      if (value == 1) {
+      $(".fullForm").show();
+      $(".individualparticipantForm").show();
+      $(".grupsParticipantsForm ").hide();
+      $(".individual ").show();
+      $(".group").hide();
+    }
+    else if (value == 2) {
+      $(".fullForm").show();
+      $(".grupsParticipantsForm ").show();
+      $(".individualparticipantForm").hide();
+      $(".group").show();
+    }
+    })();
 
 
     
@@ -148,39 +149,61 @@
 
 
 
-(function(){
-  //  this capdev has a regional dimension
-  var valueSelected = $(".regional .onoffswitch-radio").val();
-  if(valueSelected) {
-    $(".regionsBox").show("slow");
-  } 
-})();
-
-
-  
-
-    //remove default option  from duration Unit Select
-  $(".durationUnitSelect option[value='-1']").remove();
-
-
-    //set value to duartion unit field
   (function(){
-    var durationUnit = $(".durationUnitaInput").val();
-    
-
-    $(".durationUnitSelect select option").each(function() {
-      if($(this).val() == durationUnit){
-        $(this).attr( "selected" , "selected");
-      }
-      });
-
+    //  this capdev has a regional dimension
+    var valueSelected = $(".regional .onoffswitch-radio").val();
+    if(valueSelected) {
+      $(".regionsBox").show("slow");
+    } 
   })();
 
 
   
 
+      //remove default option  from duration Unit Select
+    $(".durationUnitSelect option[value='-1']").remove();
+
+
+      //set value to duartion unit field
+    (function(){
+      var durationUnit = $(".durationUnitaInput").val();
+      
+
+      $(".durationUnitSelect select option").each(function() {
+        if($(this).val() == durationUnit){
+          $(this).attr( "selected" , "selected");
+        }
+        });
+
+    })();
+
+
+    $(".dUnitSelect").append('<option value=-1 selected>select option</option>');
+
+    //disable the duration unit field 
+    (function(){
+      var duration = $(".capdevDuration").val();
+      if(!duration){
+        $(".dUnitSelect").attr('disabled','disabled');
+      }
+      else{
+        $('.dUnitSelect').removeAttr('disabled');
+      }
+    })();
+
 
   }
+
+  //enable the duration unit field whe user press a key
+  $(".capdevDuration").on('keyup',function(){
+    var query = $(this).val();
+    if(query.length > 0) {
+      $('.dUnitSelect').removeAttr('disabled');
+    } else {
+     $(".dUnitSelect").attr('disabled','disabled');
+    }
+  })
+
 
 
 
@@ -359,36 +382,6 @@
   });
 
 
- /* // add discipline
-  $( ".disciplines" ).change(function() {
-  	console.log("cambio");
-    var $list = $(".approachesList");
-    var $item = $("#approach-template").clone(true).removeAttr("id");
-    $list.append($item);
-    $item.show('slow', function() {
-     width: "50%"
-   });
-
-    updateDisciplineList($list);
-
-  });
-
-
-
-  //remove discipline
-  $(".removeDiscipline").on("click", function () {
-    var $list = $(this).parents('.approachesList');
-    var $item = $(this).parents('.approach');
-    $item.hide(1000, function() {
-      $item.remove();
-      updateDisciplineList($list);
-      //updateFundingSource();
-    });
-
-  });*/
-
-
-
 
  //add country
   $(".capdevCountriesSelect").change(function() {
@@ -420,7 +413,9 @@
 
       // Remove option from select
       option.remove();
+       //option.prop('disabled', true);
       $(this).trigger("change.select2");
+      //$('.capdevRegionsSelect').select2();
 
     });
 
@@ -664,7 +659,7 @@
   function addCountry(option) {
     
     var canAdd = true;
-    console.log(option);
+    console.log(option.val());
     if(option.val() == "-1") {
       canAdd = false;
     }
@@ -688,7 +683,7 @@
 
   // Set country parameters
     $item.find(".name").attr("title", $(option).text());
-    var $state = $('<span> <i class="flag-sm flag-sm-' + option.val() + '"></i>  ' + v + '</span>');
+    var $state = $('<span>' + v + '</span>');
     $item.find(".name").html($state);
     $item.find(".cId").val(option.val());
     //$item.find(".id").val(-1);
@@ -777,12 +772,10 @@
     updateRegionList($list);
     checkRegionList($list);
 
-    filterCountry(optionValue)
 
   }
 
   function removeRegion() {
-    console.log("removeRegion")
     var $list = $(this).parents('.list');
     var $item = $(this).parents('.capdevRegion');
     var value = $item.find(".rId").val();
@@ -795,11 +788,13 @@
       updateRegionList($list);
     });
     var option = $select.find("option[value='" + value + "']");
-    console.log(option);
-    option.prop('disabled', false);
+    //console.log(option);
+    //option.prop('disabled', false);
+    $select.append(option);
+    $('.capdevRegionsSelect').append('<option value= '+value+'>'+name+'</option>');
     //$('.capdevRegionsSelect').select2();
 
-    filterCountry(-1)
+    
 
   }
 
@@ -809,6 +804,7 @@
   // Set regions indexes
       $(e).setNameIndexes(1, i);
     });
+    verifiedRegionList($list)
   }
 
   function checkRegionList(block) {
@@ -870,35 +866,46 @@
   }
 
 
+function verifiedRegionList(regionsList){
+  var length = regionsList.find('.capdevRegion').length;
+  $('.capdevCountriesSelect').empty();
+  $('.capdevCountriesSelect').append('<option value= -1>select option... </option>');
+  if(length > 0){
+    regionsList.find('.capdevRegion').each(function(i,e) {
+      var regionID = $(e).find('input.rId').val();
+      filterCountry(regionID);
+    });
+  }
+  else{
+  filterCountry(-1);
+  }
+}
+
+
+
+
   //filter countries according region selected
 function filterCountry(regionID){
-  
-   $.ajax({
-    'url': baseURL + '/filterCountry.do',
-    'data': {
-      q: regionID
-    },
-    'dataType': "json",
-    beforeSend: function() {
-    },
-    success: function(data) {
-      var length = data.length;
-      $('.capdevCountriesSelect').empty();
-      $('.capdevCountriesSelect').append('<option value= -1>select option... </option>');
-      for (var i = 0; i < length; i++) {
-        $('.capdevCountriesSelect').append('<option value=' + data[i]['countryID'] + '>' + data[i]['countryName'] + '</option>');
+  $.ajax({
+      'url': baseURL + '/filterCountry.do',
+      'data': {
+        q: regionID
+      },
+      'dataType': "json",
+      beforeSend: function() {
+      },
+      success: function(data) {
+        var length = data.length;
+        for (var i = 0; i < length; i++) {
+          $('.capdevCountriesSelect').append('<option value=' + data[i]['countryID'] + '>' + data[i]['countryName'] + '</option>');
+        }
+      },
+      error: function() {
+      },
+      complete: function() {
+        
       }
-    },
-    error: function() {
-    },
-    complete: function() {
-      /*$(".project select option").each(function() {
-      if($(this).val() == projectSelected){
-        $(this).attr( "selected" , "selected");
-      }
-      });*/
-    }
-  })
+    })
   
   
 }

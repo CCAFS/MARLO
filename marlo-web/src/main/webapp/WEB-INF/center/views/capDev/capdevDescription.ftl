@@ -69,7 +69,7 @@
 				<!-- Disciplines-->
 				<div class="form-group row ">
 					<div class="col-md-12 newCapdevField approachesListTitle" listname="capdev.disciplines">
-						[@s.text name="capdev.form.listOfApproaches"][/@s.text] 
+						[@s.text name="capdev.form.listOfApproaches"][/@s.text] [@customForm.req/]
 					</div>
 				</div>
 				<div class="form-group row approachesListContainer" >
@@ -137,9 +137,9 @@
 				
 				<!-- research Area-->
 				<div class="row">
-					<div class="col-md-12 newCapdevField">
-						<div class="col-md-6 ">
-							[@customForm.select name="capdev.researchArea.id" listName="researchAreas" keyFieldName="id" displayFieldName="name"  className="capdevResearchArea" i18nkey="capdev.form.researchArea" placeholder="capdev.select" help="capdev.help.researchArea" /]
+					<div class="col-md-12 newCapdevField " >
+						<div class="col-md-6 " listname="capdev.researcharea">
+							[@customForm.select name="capdev.researchArea.id" listName="researchAreas" keyFieldName="id" displayFieldName="name"  required=true className="capdevResearchArea" i18nkey="capdev.form.researchArea" placeholder="capdev.select" help="capdev.help.researchArea" /]
 						</div>
 
 						<!-- research program-->
