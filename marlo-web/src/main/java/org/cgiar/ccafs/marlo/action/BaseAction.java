@@ -733,6 +733,78 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+  /**
+   * ***********************CENTER METHOD********************
+   * Check if the capDev section is Active
+   * ************************************************************
+   * 
+   * @return true if the section is Active.
+   */
+  public boolean centerCapDevActive() {
+    try {
+      boolean sectionActive = Boolean.parseBoolean(this.getSession().get(APConstants.CENTER_CAPDEV_ACTIVE).toString());
+      return sectionActive;
+    } catch (Exception e) {
+      return false;
+    }
+
+  }
+
+  /**
+   * ***********************CENTER METHOD********************
+   * Check if the Impact Pathway section is Active
+   * ************************************************************
+   * 
+   * @return true if the section is Active.
+   */
+  public boolean centerImpactPathwayActive() {
+    try {
+      boolean sectionActive =
+        Boolean.parseBoolean(this.getSession().get(APConstants.CENTER_IMPACT_PATHWAY_ACTIVE).toString());
+      return sectionActive;
+    } catch (Exception e) {
+      return false;
+    }
+
+  }
+
+  /**
+   * ***********************CENTER METHOD********************
+   * Check if the Monitoring section is Active
+   * ************************************************************
+   * 
+   * @return true if the section is Active.
+   */
+  public boolean centerMonitoringActive() {
+    try {
+      boolean sectionActive =
+        Boolean.parseBoolean(this.getSession().get(APConstants.CENTER_MONITORING_ACTIVE).toString());
+      return sectionActive;
+    } catch (Exception e) {
+      return false;
+    }
+
+  }
+
+  /**
+   * ***********************CENTER METHOD********************
+   * Check if the Summaries section is Active
+   * ************************************************************
+   * 
+   * @return true if the section is Active.
+   */
+  public boolean centerSummariesActive() {
+    try {
+      boolean sectionActive =
+        Boolean.parseBoolean(this.getSession().get(APConstants.CENTER_SUMMARIES_ACTIVE).toString());
+      return sectionActive;
+    } catch (Exception e) {
+      return false;
+    }
+
+  }
+
+
   public HistoryDifference changedField(String field) {
 
 
@@ -756,10 +828,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       .clearCachedAuthorizationInfo(securityContext.getSubject().getPrincipals());
   }
 
+
   public String crpActivitesModule() {
     return APConstants.CRP_ACTIVITES_MODULE;
   }
-
 
   /* Override this method depending of the delete action. */
   public String delete() {
@@ -1004,9 +1076,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         return this.validateCenterImpact(program, section);
       case TOPIC:
         return this.validateCenterTopic(program, section);
-      case OUTCOME:
+      case OUTCOMES:
         return this.validateCenterOutcome(program);
-      case OUTPUT:
+      case OUTPUTS:
         return this.validateCenterOutput(program);
     }
 
@@ -1599,7 +1671,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                     || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
                     || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
                       || a.getStatus().intValue() == 0 || a.getStatus().intValue() == -1))))
-            .collect(Collectors.toList());
+              .collect(Collectors.toList());
         } else {
           openA = deliverables.stream()
             .filter(a -> a.isActive()
@@ -2727,6 +2799,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public boolean isReportingActive() {
 
+    if (this.getSession().containsKey(APConstants.TEMP_CYCLE)) {
+      return true;
+    }
     return Boolean.parseBoolean(this.getSession().get(APConstants.CRP_REPORTING_ACTIVE).toString());
 
   }
@@ -2742,7 +2817,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       project
         .getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
           && c.getYear().intValue() == year && (c.isUnSubmit() == null || !c.isUnSubmit()))
-      .collect(Collectors.toList());
+        .collect(Collectors.toList());
     if (submissions.isEmpty()) {
       return false;
     }

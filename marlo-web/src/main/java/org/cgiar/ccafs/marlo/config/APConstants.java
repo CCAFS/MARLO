@@ -132,6 +132,8 @@ public final class APConstants {
   public static final String FUNDING_SOURCES_BUDGETS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.FundingSource.fundingSourceBudgets)";
 
+  public static final String TEMP_CYCLE = "temp_cycle";
+  public static final String TEMP_YEAR = "temp_year";
 
   public static final String FUNDING_SOURCES_INSTITUTIONS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.FundingSource.fundingInstitutions)";
@@ -150,6 +152,7 @@ public final class APConstants {
   public static final long INSTITUTION_DONOR_TYPE = 5;
   public static final String INSTITUTION_REQUEST_ID = "institutionID";
   public static final String INSTITUTION_TYPE_REQUEST_ID = "institutionTypeID";
+  public static final String PARTNER_REQUEST_ID = "requestID";
   public static final String IPLIAISON_INDICATORS_REPORT =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution.crpIndicatorReportses)";
   public static final String IPPROGRAM_LESSONS_RELATION =
@@ -373,6 +376,11 @@ public final class APConstants {
   public static final String CENTER_LANGUAGE = "center_language";
   public static final String CENTER_CUSTOM_FILE = "center_custom_file";
   public static final String CENTER_COORD_ROLE = "center_coord_role";
+  public static final String CENTER_PROGRAM_TYPE = "center_program_type";
+  public static final String CENTER_IMPACT_PATHWAY_ACTIVE = "center_impact_pathway_active";
+  public static final String CENTER_MONITORING_ACTIVE = "center_monitoring_active";
+  public static final String CENTER_SUMMARIES_ACTIVE = "center_summaries_active";
+  public static final String CENTER_CAPDEV_ACTIVE = "center_summaries_active";
 
   public static final String CENTER_DELIVERABLE_ID = "deliverableID";
   public static final String CENTER_PROGRAM_ID = "programID";

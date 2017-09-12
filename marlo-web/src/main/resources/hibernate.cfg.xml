@@ -141,6 +141,7 @@
 		<mapping resource="xmls/IpLiaisonUsers.hbm.xml" />
 		<mapping resource="xmls/DeliverableLeaders.hbm.xml" />
 		<mapping resource="xmls/DeliverablePrograms.hbm.xml" />
+		<mapping resource="xmls/PartnerRequests.hbm.xml" />		
     <mapping resource="xmls/Phases.hbm.xml" />
     <mapping resource="xmls/ProjectPhases.hbm.xml" />		
 	  <mapping resource="xmls/GenderTypes.hbm.xml" />
@@ -200,7 +201,7 @@
     <mapping resource="xmls/CenterImpactStatement.hbm.xml" /> 
     <mapping resource="xmls/CapacityDevelopment.hbm.xml" />
 		<mapping resource="xmls/CapacityDevelopmentTypes.hbm.xml" />
-		<mapping resource="xmls/CapDevLocations.hbm.xml" />
+		<mapping resource="xmls/CapdevLocations.hbm.xml" />
 		<mapping resource="xmls/Disciplines.hbm.xml" />
 		<mapping resource="xmls/CapdevDiscipline.hbm.xml" />
 		<mapping resource="xmls/TargetGroups.hbm.xml" />

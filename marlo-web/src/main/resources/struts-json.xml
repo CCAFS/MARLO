@@ -375,6 +375,24 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		
+		<action name="rejectPartnerRequest"
+      class="org.cgiar.ccafs.marlo.action.json.superadmin.RejectPartnerRequestAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
+    
+		<action name="editPartnerRequest"
+      class="org.cgiar.ccafs.marlo.action.json.superadmin.EditPartnerRequestAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
+    
+		
 
 		<!-- **************************************** JSON CENTER ACTIONS ************************************************** -->
 
