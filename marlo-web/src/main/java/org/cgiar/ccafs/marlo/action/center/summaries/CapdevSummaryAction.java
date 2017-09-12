@@ -250,9 +250,9 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
     // Initialization of Model
     final TypedTableModel model = new TypedTableModel(
       new String[] {"title", "type", "category", "numParticipants", "numMen", "numWomen", "researchArea",
-        "researchProgram", "duration", "duration_unit", "num_supporting_docs"},
+        "researchProgram", "startDate", "endDate", "duration", "duration_unit", "num_supporting_docs"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, Integer.class});
+        String.class, Date.class, Date.class, String.class, String.class, Integer.class});
 
     for (final CapacityDevelopment capdev : capDevs) {
 
@@ -299,6 +299,17 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
           researchProgram = capdev.getResearchProgram().getName();
         }
 
+        Date startDate = null;
+        if (capdev.getStartDate() != null) {
+          startDate = capdev.getStartDate();
+          System.out.println(startDate);
+        }
+
+        Date endDate = null;
+        if (capdev.getEndDate() != null) {
+          endDate = capdev.getEndDate();
+        }
+
         String duration = null;
         String durationUnit = null;
         if (capdev.getDuration() != null) {
@@ -313,7 +324,7 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
         }
 
         model.addRow(new Object[] {title, type, category, numParticipants, numMen, numWomen, researcharea,
-          researchProgram, duration, durationUnit, numSupportingDocs});
+          researchProgram, startDate, endDate, duration, durationUnit, numSupportingDocs});
 
       }
 
