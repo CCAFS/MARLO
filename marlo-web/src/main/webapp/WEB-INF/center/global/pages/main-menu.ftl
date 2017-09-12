@@ -6,7 +6,7 @@
   
   { 'slug': 'projects', 'name': 'menu.monitoring.projects',      'namespace': '/monitoring',       'action': '${(centerSession)!}/projectList',    'visible': (logged && action.centerMonitoringActive()), 'active': true, 'param':(programID)! },
   { 'slug': 'outcomes', 'name': 'menu.monitoring.outcomes',      'namespace': '/monitoring',       'action': '${(centerSession)!}/monitoringOutcomesList',    'visible': (logged && action.centerMonitoringActive()), 'active': true, 'param':(programID)! },
-  { 'slug': 'capdev', 'name': 'menu.capdev',      'namespace': '',       'action': '',    'visible': (logged && action.centerCapDevActive()), 'active':false },
+  { 'slug': 'capdev', 'name': 'menu.capdev',      'namespace': '/capdev',       'action': '${(centerSession)!}/capdev',    'visible': (logged && action.centerCapDevActive()), 'active':false },
   { 'slug': 'summaries', 'name': 'menu.monitoring.summaries',      'namespace': '/centerSummaries',       'action': '${(centerSession)!}/summaries',    'visible': (logged && action.centerSummariesActive()), 'active': true }]
 
   /]

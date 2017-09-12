@@ -133,17 +133,6 @@ public class Clone {
      */
 
 
-<<<<<<< HEAD
-    final String[] model = {"CapdevFoundingType"
-
-    };
-    for (final String element : model) {
-      generateDao(element);
-      generateMysqlDao(element);
-      generateManager(element);
-      generateManagerImpl(element);
-      System.out.println("generado para " + element);
-=======
     String[] model = {"CenterAllTypes"};
     for (int i = 0; i < model.length; i++) {
       generateDao(model[i]);
@@ -151,7 +140,6 @@ public class Clone {
       generateManager(model[i]);
       generateManagerImpl(model[i]);
       System.out.println("generado para " + model[i]);
->>>>>>> refs/remotes/origin/dev-merge_marlo_ciat
     }
 
   }
