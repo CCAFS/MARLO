@@ -196,6 +196,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   protected boolean cancel;
 
   private boolean canEdit; // If user is able to edit the form.
+
   private boolean canSwitchProject; // If user is able to Switch Project. (generally is a project leader)
 
 

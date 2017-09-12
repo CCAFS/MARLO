@@ -271,15 +271,11 @@ public class ProjectPartnerAction extends BaseAction {
   }
 
   public List<Activity> getActivitiesLedByUser(long userID) {
-
-
     Project project = projectManager.getProjectById(projectID);
-    List<Activity> activities =
-      project.getActivities().stream().filter(c -> c.isActive() && c.getProjectPartnerPerson() != null
-        && c.getProjectPartnerPerson().getId().longValue() == userID).collect(Collectors.toList());
-
-    System.out.println(activities);
-
+    List<Activity> activities = project.getActivities().stream()
+      .filter(c -> c.isActive() && c.getProjectPartnerPerson() != null
+        && c.getProjectPartnerPerson().getId().longValue() == userID && c.getPhase().equals(this.getActualPhase()))
+      .collect(Collectors.toList());
     return activities;
 
   }
@@ -322,9 +318,11 @@ public class ProjectPartnerAction extends BaseAction {
     List<Deliverable> deliverables =
       project.getDeliverables().stream().filter(c -> c.isActive()).collect(Collectors.toList());
     for (Deliverable deliverable : deliverables) {
-      if (!deliverable.getDeliverablePartnerships().stream().filter(c -> c.isActive()
-        && c.getProjectPartnerPerson() != null && c.getProjectPartnerPerson().getId().longValue() == userID)
+      if (!deliverable.getDeliverablePartnerships()
+        .stream().filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())
+          && c.getProjectPartnerPerson() != null && c.getProjectPartnerPerson().getId().longValue() == userID)
         .collect(Collectors.toList()).isEmpty()) {
+        deliverable.setDeliverableInfo(deliverable.getDeliverableInfo(this.getActualPhase()));
         deliverablesLeads.add(deliverable);
       }
     }
@@ -566,9 +564,12 @@ public class ProjectPartnerAction extends BaseAction {
     StringBuilder message = new StringBuilder();
     // Building the Email message:
     message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
-    message.append(this.getText("email.project.assigned",
-      new String[] {projectRole, loggedCrp.getAcronym(), project.getProjecInfoPhase(this.getActualPhase()).getTitle(),
-        project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)}));
+    message
+      .append(
+        this.getText("email.project.assigned",
+          new String[] {projectRole, loggedCrp.getAcronym(),
+            project.getProjecInfoPhase(this.getActualPhase()).getTitle(),
+            project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)}));
 
     if (role.getId() == plRole.getId()) {
       message.append(this.getText("email.project.leader.responsabilities"));
@@ -686,8 +687,8 @@ public class ProjectPartnerAction extends BaseAction {
       projectRole = this.getText("email.project.assigned.PC");
     }
 
-    String subject = this.getText("email.project.unAssigned.subject",
-      new String[] {projectRole, loggedCrp.getAcronym(), project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)});
+    String subject = this.getText("email.project.unAssigned.subject", new String[] {projectRole, loggedCrp.getAcronym(),
+      project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)});
 
 
     userUnassigned = userManager.getUser(userUnassigned.getId());
@@ -699,18 +700,16 @@ public class ProjectPartnerAction extends BaseAction {
 
     if (role.getId() == plRole.getId().longValue()) {
       message
-        .append(
-          this.getText("email.project.leader.unAssigned",
-            new String[] {projectRole, loggedCrp.getAcronym(),
-              project.getProjecInfoPhase(this.getActualPhase()).getTitle(),
-              project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)}));
+        .append(this.getText("email.project.leader.unAssigned",
+          new String[] {projectRole, loggedCrp.getAcronym(),
+            project.getProjecInfoPhase(this.getActualPhase()).getTitle(),
+            project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)}));
     } else {
       message
-        .append(
-          this.getText("email.project.coordinator.unAssigned",
-            new String[] {projectRole, loggedCrp.getAcronym(),
-              project.getProjecInfoPhase(this.getActualPhase()).getTitle(),
-              project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)}));
+        .append(this.getText("email.project.coordinator.unAssigned",
+          new String[] {projectRole, loggedCrp.getAcronym(),
+            project.getProjecInfoPhase(this.getActualPhase()).getTitle(),
+            project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)}));
     }
 
     message.append(this.getText("email.support", new String[] {crpAdmins}));
@@ -773,7 +772,7 @@ public class ProjectPartnerAction extends BaseAction {
               .addAll(historyComparator.getDifferencesList(projectPartnerContribution, transaction, specialList,
                 "project.partners[" + i + "].partnerContributors[" + k + "]", "project.partnerContributors", 2));
             k++;
-          } ;
+          };
 
           List<ProjectPartnerOverall> overalls =
             projectPartner.getProjectPartnerOveralls().stream().filter(c -> c.isActive()).collect(Collectors.toList());
