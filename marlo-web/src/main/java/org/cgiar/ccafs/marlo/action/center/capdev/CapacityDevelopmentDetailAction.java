@@ -63,7 +63,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
 
   public enum DurationUnits {
-    HOURS, DAYS
+    Hours, Days, Weeks, Years
   }
 
   private static final long serialVersionUID = 1L;

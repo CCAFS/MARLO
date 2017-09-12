@@ -163,16 +163,18 @@
 				  	</tbody>
 				</table>
 			
-		<div class="row">
+		<div class="row ">
 		
 
-			<div class="addButtons">
+			<div class="addButtons botones">
 				
-	        	<div >        
+	        	<div class="buttons-content addgroupItem" >        
 		          	<a class="addButton" href="[@s.url action='${centerSession}/addCapdev'][@s.param name='capdevID']${capdevID}[/@s.param][@s.param name='capdevCategory']2[/@s.param][/@s.url]">[@s.text name="capdev.addgroupItem" /]</a>
+		          	
 	        	</div>
-	        	<div>        
+	        	<div class="buttons-content addindividualItem" >        
 		          	<a class="addButton" href="[@s.url action='${centerSession}/addCapdev' ][@s.param name='capdevID']${capdevID}[/@s.param][@s.param name='capdevCategory']1[/@s.param][/@s.url]">[@s.text name="capdev.addindividualItem" /]</a>
+
 	        	</div>
 			</div>
 	    		

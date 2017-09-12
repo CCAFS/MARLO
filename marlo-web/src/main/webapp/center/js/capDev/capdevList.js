@@ -1,6 +1,50 @@
 $(document).ready(function() {
 console.log("hola");
 
+  var $buttons = $('.botones');
+     console.log($buttons[0])     
+  if($buttons.exists()) {
+    var menuOffset = function() {
+      return $(document).height() - ($buttons.offset().top + $buttons.height());
+    }
+
+    console.log('pantalla');
+    console.log($(document).width());
+    console.log('derecha');
+    console.log($buttons.offset().right);
+    console.log('izq');
+    console.log($buttons.offset().left);
+    console.log('botones');
+    console.log($buttons.width());
+
+    $buttons.find('.addgroupItem').css({
+      right: $(document).width() - ($buttons.offset().left + $buttons.width() + 6) /*360.5px*/
+    });
+    $buttons.find('.addindividualItem').css({
+      right: $(document).width() - ($buttons.offset().left + $buttons.width() - 190)/*555.5px*/
+    });
+
+    setTimeout(function() {
+      setFixedElement($(window).scrollBottom() >= menuOffset());
+    }, 500);
+
+    $(document).on('updateComponent', function() {
+      setFixedElement($(window).scrollBottom() >= menuOffset());
+    });
+
+    $(window).scroll(function() {
+      setFixedElement($(window).scrollBottom() >= menuOffset());
+    });
+  }
+
+  function setFixedElement(isFixed) {
+    if(isFixed) {
+      $buttons.find('.buttons-content').addClass('positionFixedBot animated flipInX');
+    } else {
+      $buttons.find('.buttons-content').removeClass('positionFixedBot animated flipInX');
+    }
+  }
+
  
 
 });
