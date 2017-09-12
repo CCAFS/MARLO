@@ -223,6 +223,8 @@ public class ProjectListAction extends BaseAction {
       project.setActive(true);
       project.setActiveSince(new Date());
       project.setCrp(loggedCrp);
+      project.setCreateDate(new Date());
+      project.setModifiedBy(this.getCurrentUser());
       projectID = projectManager.saveProject(project);
 
       ProjectInfo projectInfo = new ProjectInfo();
@@ -271,8 +273,10 @@ public class ProjectListAction extends BaseAction {
       Project project = new Project();
       project.setCreatedBy(this.getCurrentUser());
       project.setActive(true);
+      project.setModifiedBy(this.getCurrentUser());
       project.setActiveSince(new Date());
       project.setCrp(loggedCrp);
+      project.setCreateDate(new Date());
       projectID = projectManager.saveProject(project);
 
       ProjectInfo projectInfo = new ProjectInfo();
@@ -391,12 +395,14 @@ public class ProjectListAction extends BaseAction {
       List<CrpProgram> programs = new ArrayList<>();
       List<CrpProgram> regions = new ArrayList<>();
       for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-        .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+        .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())
+          && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
         .collect(Collectors.toList())) {
         programs.add(projectFocuses.getCrpProgram());
       }
       for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-        .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+        .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())
+          && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
         .collect(Collectors.toList())) {
         regions.add(projectFocuses.getCrpProgram());
       }

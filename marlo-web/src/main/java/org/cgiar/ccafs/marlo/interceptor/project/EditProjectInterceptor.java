@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
+import org.cgiar.ccafs.marlo.utils.NoPhaseException;
 
 import java.io.Serializable;
 import java.util.List;
@@ -63,7 +64,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
   }
 
   @Override
-  public String intercept(ActionInvocation invocation) throws Exception {
+  public String intercept(ActionInvocation invocation) throws NoPhaseException {
 
     parameters = invocation.getInvocationContext().getParameters();
     session = invocation.getInvocationContext().getSession();
@@ -77,7 +78,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
     }
   }
 
-  void setPermissionParameters(ActionInvocation invocation) {
+  void setPermissionParameters(ActionInvocation invocation) throws Exception {
     BaseAction baseAction = (BaseAction) invocation.getAction();
     baseAction.setBasePermission(null);
     loggedCrp = (Crp) session.get(APConstants.SESSION_CRP);
@@ -136,11 +137,6 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
           && !baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
           canEdit = false;
         }
-        if (phase.getProjectPhases().stream()
-          .filter(c -> c.isActive() && c.getProject().getId().longValue() == projectId).collect(Collectors.toList())
-          .isEmpty()) {
-          canEdit = false;
-        }
 
 
         if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
@@ -174,6 +170,12 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
        */ String actionName = baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "");
       if (baseAction.isReportingActive() && actionName.equalsIgnoreCase(ProjectSectionStatusEnum.BUDGET.getStatus())) {
         canEdit = false;
+      }
+
+      if (phase.getProjectPhases().stream().filter(c -> c.isActive() && c.getProject().getId().longValue() == projectId)
+        .collect(Collectors.toList()).isEmpty()) {
+        canEdit = false;
+        throw new NoPhaseException();
       }
       String paramsPermissions[] = {loggedCrp.getAcronym(), project.getId() + ""};
       baseAction

@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
+import org.cgiar.ccafs.marlo.utils.NoPhaseException;
 
 import java.io.Serializable;
 import java.util.List;
@@ -78,7 +79,7 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
     }
   }
 
-  void setPermissionParameters(ActionInvocation invocation) {
+  void setPermissionParameters(ActionInvocation invocation) throws NoPhaseException {
     BaseAction baseAction = (BaseAction) invocation.getAction();
     User user = (User) session.get(APConstants.SESSION_USER);
 
@@ -158,6 +159,12 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
         canEdit = false;
       }
 
+      if (phase.getProjectPhases().stream()
+        .filter(c -> c.isActive() && c.getProject().getId().longValue() == project.getId().longValue())
+        .collect(Collectors.toList()).isEmpty()) {
+        canEdit = false;
+        throw new NoPhaseException();
+      }
       // Set the variable that indicates if the user can edit the section
       baseAction.setEditableParameter(hasPermissionToEdit && canEdit);
       baseAction.setCanEdit(canEdit);

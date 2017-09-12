@@ -19,17 +19,21 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
+import org.cgiar.ccafs.marlo.utils.NoPhaseException;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import com.opensymphony.xwork2.ActionInvocation;
@@ -47,15 +51,17 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
   private Map<String, Object> session;
   private Crp crp;
   private long deliverableId = 0;
-
+  private Phase phase;
+  private PhaseManager phaseManager;
   private DeliverableManager deliverableManager;
   private ProjectManager projectManager;
   private CrpManager crpManager;
 
   @Inject
   public EditDeliverableInterceptor(DeliverableManager deliverableManager, ProjectManager projectManager,
-    CrpManager crpManager) {
+    PhaseManager phaseManager, CrpManager crpManager) {
     this.crpManager = crpManager;
+    this.phaseManager = phaseManager;
     this.projectManager = projectManager;
     this.deliverableManager = deliverableManager;
   }
@@ -76,7 +82,7 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
     }
   }
 
-  void setPermissionParameters(ActionInvocation invocation) {
+  void setPermissionParameters(ActionInvocation invocation) throws NoPhaseException {
 
     User user = (User) session.get(APConstants.SESSION_USER);
     BaseAction baseAction = (BaseAction) invocation.getAction();
@@ -86,7 +92,8 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
     boolean canSwitchProject = false;
     baseAction.setSession(session);
     String projectParameter = ((String[]) parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID))[0];
-
+    phase = baseAction.getActualPhase(session, crp.getId());
+    phase = phaseManager.getPhaseById(phase.getId());
     deliverableId = Long.parseLong(projectParameter);
 
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableId);
@@ -173,7 +180,12 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
         canEdit = true;
       }
 
-
+      if (phase.getProjectPhases().stream()
+        .filter(c -> c.isActive() && c.getProject().getId().longValue() == deliverable.getProject().getId().longValue())
+        .collect(Collectors.toList()).isEmpty()) {
+        canEdit = false;
+        throw new NoPhaseException();
+      }
       // Set the variable that indicates if the user can edit the section
       baseAction.setEditableParameter(hasPermissionToEdit && canEdit);
       baseAction.setCanEdit(canEdit);
