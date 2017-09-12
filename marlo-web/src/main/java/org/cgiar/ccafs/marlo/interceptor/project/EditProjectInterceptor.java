@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -157,25 +158,22 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
 
       }
-      if (!baseAction.getActualPhase().getEditable()) {
-        canEdit = false;
-      }
-      /*
-       * session.remove(APConstants.TEMP_CYCLE);
-       * if (project.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-       * || project.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
-       * session.put(APConstants.TEMP_CYCLE, APConstants.REPORTING);
-       * session.put(APConstants.TEMP_YEAR, baseAction.getReportingYear());
-       * }
-       */ String actionName = baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "");
+
+      String actionName = baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "");
       if (baseAction.isReportingActive() && actionName.equalsIgnoreCase(ProjectSectionStatusEnum.BUDGET.getStatus())) {
         canEdit = false;
       }
 
       if (phase.getProjectPhases().stream().filter(c -> c.isActive() && c.getProject().getId().longValue() == projectId)
         .collect(Collectors.toList()).isEmpty()) {
+        List<ProjectInfo> infos =
+          project.getProjectInfos().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+        infos.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
+
+        baseAction.setActualPhase(infos.get(infos.size() - 1).getPhase());
+      }
+      if (!baseAction.getActualPhase().getEditable()) {
         canEdit = false;
-        throw new NoPhaseException();
       }
       String paramsPermissions[] = {loggedCrp.getAcronym(), project.getId() + ""};
       baseAction

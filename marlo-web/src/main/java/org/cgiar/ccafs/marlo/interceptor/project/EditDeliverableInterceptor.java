@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -181,10 +182,16 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
       }
 
       if (phase.getProjectPhases().stream()
-        .filter(c -> c.isActive() && c.getProject().getId().longValue() == deliverable.getProject().getId().longValue())
+        .filter(c -> c.isActive() && c.getProject().getId().longValue() == deliverable.getProject().getId())
         .collect(Collectors.toList()).isEmpty()) {
+        List<ProjectInfo> infos =
+          deliverable.getProject().getProjectInfos().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+        infos.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
+
+        baseAction.setActualPhase(infos.get(infos.size() - 1).getPhase());
+      }
+      if (!baseAction.getActualPhase().getEditable()) {
         canEdit = false;
-        throw new NoPhaseException();
       }
       // Set the variable that indicates if the user can edit the section
       baseAction.setEditableParameter(hasPermissionToEdit && canEdit);

@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -150,9 +151,7 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
       if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
         canSwitchProject = true;
       }
-      if (!baseAction.getActualPhase().getEditable()) {
-        canEdit = false;
-      }
+
       if (phase.getProjectPhases().stream()
         .filter(c -> c.isActive() && c.getProject().getId().longValue() == project.getProject().getId())
         .collect(Collectors.toList()).isEmpty()) {
@@ -160,10 +159,16 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
       }
 
       if (phase.getProjectPhases().stream()
-        .filter(c -> c.isActive() && c.getProject().getId().longValue() == project.getId().longValue())
+        .filter(c -> c.isActive() && c.getProject().getId().longValue() == project.getProject().getId())
         .collect(Collectors.toList()).isEmpty()) {
+        List<ProjectInfo> infos =
+          project.getProject().getProjectInfos().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+        infos.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
+
+        baseAction.setActualPhase(infos.get(infos.size() - 1).getPhase());
+      }
+      if (!baseAction.getActualPhase().getEditable()) {
         canEdit = false;
-        throw new NoPhaseException();
       }
       // Set the variable that indicates if the user can edit the section
       baseAction.setEditableParameter(hasPermissionToEdit && canEdit);
