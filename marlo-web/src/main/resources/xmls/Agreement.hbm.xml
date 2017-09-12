@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Generated Sep 8, 2017 2:12:52 PM by Hibernate Tools 5.2.5.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping >
-    <class  name="org.cgiar.ccafs.marlo.data.model.Agreements" optimistic-lock="version"  table="agreements">
+    <class  name="org.cgiar.ccafs.marlo.data.model.Agreement" optimistic-lock="version"  table="agreements">
         <id name="id" type="string">
             <column length="20" name="id"/>
             <generator class="assigned"/>
@@ -64,19 +64,19 @@
             <key on-delete="noaction">
                 <column length="20" name="agreement_id" not-null="true"/>
             </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CountriesAgreement" embed-xml="true" not-found="exception"/>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CountryAgreement" embed-xml="true" not-found="exception"/>
         </set>
         <set embed-xml="true" fetch="select" inverse="true" lazy="true" mutable="true" name="fundingSourcesAgreementses" optimistic-lock="true" sort="unsorted" table="funding_sources_agreements">
             <key on-delete="noaction">
                 <column length="20" name="agreement_id" not-null="true"/>
             </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.FundingSourcesAgreements" embed-xml="true" not-found="exception"/>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.FundingSourceAgreement" embed-xml="true" not-found="exception"/>
         </set>
         <set embed-xml="true" fetch="select" inverse="true" lazy="true" mutable="true" name="crpsAgreements" optimistic-lock="true" sort="unsorted" table="crps_agreement">
             <key on-delete="noaction">
                 <column length="20" name="agreement_id" not-null="true"/>
             </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpsAgreement" embed-xml="true" not-found="exception"/>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpAgreement" embed-xml="true" not-found="exception"/>
         </set>
     </class>
 </hibernate-mapping>

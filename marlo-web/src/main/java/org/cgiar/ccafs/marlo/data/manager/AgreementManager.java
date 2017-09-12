@@ -17,18 +17,18 @@
 package org.cgiar.ccafs.marlo.data.manager;
 
 import org.cgiar.ccafs.marlo.data.manager.impl.AgreementManagerImpl;
-import org.cgiar.ccafs.marlo.data.model.Agreements;
+import org.cgiar.ccafs.marlo.data.model.Agreement;
 
 import com.google.inject.ImplementedBy;
 
 @ImplementedBy(AgreementManagerImpl.class)
 public interface AgreementManager {
 
-  public Agreements find(String id);
+  public Agreement find(String id);
 
-  public String save(Agreements agreement);
+  public String save(Agreement agreement);
 
-  public String update(Agreements agreement);
+  public String update(Agreement agreement);
 
 
 }

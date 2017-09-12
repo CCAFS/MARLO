@@ -18,7 +18,7 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.AgreementDAO;
 import org.cgiar.ccafs.marlo.data.manager.AgreementManager;
-import org.cgiar.ccafs.marlo.data.model.Agreements;
+import org.cgiar.ccafs.marlo.data.model.Agreement;
 
 
 public class AgreementManagerImpl implements AgreementManager {
@@ -26,17 +26,17 @@ public class AgreementManagerImpl implements AgreementManager {
   private AgreementDAO agreementDAO;
 
   @Override
-  public Agreements find(String id) {
+  public Agreement find(String id) {
     return this.agreementDAO.find(id);
   }
 
   @Override
-  public String save(Agreements agreement) {
+  public String save(Agreement agreement) {
     return this.agreementDAO.save(agreement);
   }
 
   @Override
-  public String update(Agreements agreement) {
+  public String update(Agreement agreement) {
     return this.agreementDAO.update(agreement);
   }
 

@@ -16,18 +16,18 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.model.Agreements;
+import org.cgiar.ccafs.marlo.data.model.Agreement;
 
 import com.google.inject.ImplementedBy;
 
-@ImplementedBy(Agreements.class)
+@ImplementedBy(Agreement.class)
 public interface AgreementDAO {
 
-  public Agreements find(String id);
+  public Agreement find(String id);
 
-  public String save(Agreements agreement);
+  public String save(Agreement agreement);
 
-  public String update(Agreements agreement);
+  public String update(Agreement agreement);
 
 
 }

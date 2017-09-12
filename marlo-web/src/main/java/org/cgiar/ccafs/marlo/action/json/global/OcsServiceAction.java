@@ -18,7 +18,7 @@ package org.cgiar.ccafs.marlo.action.json.global;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AgreementManager;
-import org.cgiar.ccafs.marlo.data.model.Agreements;
+import org.cgiar.ccafs.marlo.data.model.Agreement;
 import org.cgiar.ccafs.marlo.ocs.model.AgreementOCS;
 import org.cgiar.ccafs.marlo.ocs.model.CountryOCS;
 import org.cgiar.ccafs.marlo.ocs.model.CrpOCS;
@@ -32,12 +32,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author Christian Garcia - CIAT/CCAFS
+ * @author Julián Rodríguez - CIAT/CCAFS
  */
 public class OcsServiceAction extends BaseAction {
 
@@ -67,7 +70,7 @@ public class OcsServiceAction extends BaseAction {
   @Override
   public String execute() throws Exception {
 
-    Agreements agreement = agreementManager.find(ocsCode);
+    Agreement agreement = agreementManager.find(ocsCode);
 
     if (agreement != null) {
 
@@ -79,10 +82,17 @@ public class OcsServiceAction extends BaseAction {
 
       } else {
         json = ocsClient.getagreement(ocsCode);
+
+        Agreement theAgreement = this.returnAgreement(json);
+        agreementManager.update(theAgreement);
       }
 
     } else {
       json = ocsClient.getagreement(ocsCode);
+
+      Agreement theAgreement = this.returnAgreement(json);
+      agreementManager.save(theAgreement);
+
     }
 
 
@@ -101,17 +111,18 @@ public class OcsServiceAction extends BaseAction {
     ocsCode = (StringUtils.trim(((String[]) parameters.get(APConstants.OCS_CODE_REQUEST_ID))[0]));
   }
 
+
   /**
-   * return an Agreements Object Type given an AgreementOCS type
+   * return an Agreement Object Type given an AgreementOCS type
    * 
    * @author Julián Rodríguez CCAFS/CIAT
    * @param agreementOCS this is the object from the service
    * @since 11/09/2017
-   * @return
+   * @return an Agreement Object
    */
-  private Agreements returnAgreement(AgreementOCS agreementOCS) {
+  private Agreement returnAgreement(AgreementOCS agreementOCS) {
 
-    Agreements agreement = new Agreements();
+    Agreement agreement = new Agreement();
     agreement.setId(agreementOCS.getId());
     agreement.setDescription(agreementOCS.getDescription());
     agreement.setShortTitle(agreementOCS.getShortTitle());
@@ -129,35 +140,28 @@ public class OcsServiceAction extends BaseAction {
     agreement.setResearchId(agreementOCS.getResearcher().getId());
     agreement.setReasearchName(agreementOCS.getResearcher().getName());
 
+    Set<CountryOCS> countries = agreementOCS.getCountries().stream().collect(Collectors.toSet());
+    agreement.setCountriesAgreements(countries);
 
-    /*
-     * agreementOCS.setResearcher(researcher);
-     * List<CountryOCS> countries = new ArrayList<CountryOCS>();
-     * countries.addAll(agreement.getCountriesAgreements());
-     * agreementOCS.setCountries(countries);
-     * List<CrpOCS> crps = new ArrayList<CrpOCS>();
-     * crps.addAll(agreement.getCrpsAgreements());
-     * agreementOCS.setCrps(crps);
-     * List<PlaOCS> plas = new ArrayList<PlaOCS>();
-     * plas.addAll(agreement.getPlasAgreements());
-     * agreementOCS.setPlas(plas);
-     */
+    Set<CrpOCS> crps = agreementOCS.getCrps().stream().collect(Collectors.toSet());
+    agreement.setCrpsAgreements(crps);
 
+    Set<PlaOCS> plas = agreementOCS.getPlas().stream().collect(Collectors.toSet());
+    agreement.setPlasAgreements(plas);
 
     return agreement;
 
   }
 
-
   /**
-   * return an object type AgreementOCS given an Agreements type
+   * return an object type AgreementOCS given an Agreement type
    * 
    * @author Julián Rodríguez CCAFS/CIAT
    * @param agreement this is the object store in Database
    * @since 11/09/2017
    * @return an AgreementOCS
    */
-  private AgreementOCS returnOCS(Agreements agreement) {
+  private AgreementOCS returnOCS(Agreement agreement) {
 
     AgreementOCS agreementOCS = new AgreementOCS();
     agreementOCS.setId(agreement.getId());
