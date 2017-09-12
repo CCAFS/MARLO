@@ -154,6 +154,7 @@ public class CapacityDevelopmentValidator extends BaseValidator {
       }
       if (uploadFile != null) {
         if (!uploadFileContentType.equals("application/vnd.ms-excel")
+          && !uploadFileContentType.equals("application/vnd.ms-excel.sheet.macroEnabled.12")
           && !uploadFileContentType.equals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")) {
           System.out.println("formato incorrecto");
           this.addMessage(baseAction.getText("capdev.action.file"));

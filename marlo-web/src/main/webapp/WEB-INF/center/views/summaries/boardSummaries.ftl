@@ -2,7 +2,12 @@
 [#assign title = "Summaries Section" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["select2","font-awesome","jsUri"] /]
-[#assign customJS = ["${baseUrlMedia}/js/global/utils.js", "${baseUrlMedia}/js/summaries/boardSummaries.js", "${baseUrlMedia}/js/capDev/capdevSummaries.js"] /]
+
+[#assign customJS = ["${baseUrlMedia}/js/global/utils.js", 
+                    "${baseUrlMedia}/js/summaries/boardSummaries.js", 
+                    "${baseUrlMedia}/js/capDev/capdevSummaries.js", 
+                    "${baseUrlMedia}/js/capDev/year-select.js"] /]
+
 [#assign customCSS = ["${baseUrlMedia}/css/summaries/summaries.css"] /]
 [#assign currentSection = "summaries" /]
 
@@ -163,9 +168,9 @@
               <div class="col-md-6 ">
                 [@customForm.select name="" header=false   label=""  i18nkey="Select a Research Area"  listName="researchAreas"  keyFieldName="id"  displayFieldName="name" className="researchAreasSelect"   multiple=false required=true placeholder="ALL"  editable=true/]
               </div>
-              <div class="col-md-6">
-                <!-- [@customForm.select name="" header=false   label=""  i18nkey="Select a Year"  listName=""  keyFieldName=""  displayFieldName="" className="allPrograms"   multiple=false required=true   editable=true/] -->
-                [@customForm.input name="" type="text" help="" i18nkey="Select a Year"  required=true className="year" /]
+              <div class="col-md-6 capdevYearSelect">
+                [@customForm.select name="" header=false   label=""  i18nkey="Select a Year"  listName=""  keyFieldName=""  displayFieldName="" className="year"   multiple=false required=true   editable=true/]
+                <!-- [@customForm.input name="" type="text" help="" i18nkey="Select a Year"  required=true className="year" /] -->
               </div>
 
               

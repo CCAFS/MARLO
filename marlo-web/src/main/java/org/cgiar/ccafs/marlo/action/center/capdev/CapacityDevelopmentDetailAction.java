@@ -63,7 +63,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
 
   public enum DurationUnits {
-    HOURS, DAYS
+    Hours, Days, Weeks, Years
   }
 
   private static final long serialVersionUID = 1L;
@@ -360,29 +360,47 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       participant.setGender((String) data[i][3]);
 
       if (reader.sustraerId((String) data[i][4]) != null) {
-        participant.setLocElementsByCitizenship(
-          locElementService.getLocElementByISOCode((String) reader.sustraerId((String) data[i][4])));
+        if (locElementService.getLocElementByISOCode((String) reader.sustraerID((String) data[i][4])) != null) {
+          participant.setLocElementsByCitizenship(
+            locElementService.getLocElementByISOCode((String) reader.sustraerID((String) data[i][4])));
+        }
+
       }
       if (reader.sustraerId((String) data[i][5]) != null) {
-        participant.setHighestDegree(capdevHighestDegreeService
-          .getCapdevHighestDegreeById(Long.parseLong((String) reader.sustraerId((String) data[i][5]))));
+        if (capdevHighestDegreeService
+          .getCapdevHighestDegreeById(Long.parseLong((String) reader.sustraerId((String) data[i][5]))) != null) {
+          participant.setHighestDegree(capdevHighestDegreeService
+            .getCapdevHighestDegreeById(Long.parseLong((String) reader.sustraerId((String) data[i][5]))));
+        }
+
       }
       if (reader.sustraerId((String) data[i][6]) != null) {
         System.out.println("institution ID " + reader.sustraerId((String) data[i][6]).getClass());
-        participant.setInstitutions(
-          institutionService.getInstitutionById(Long.parseLong((String) (reader.sustraerId((String) data[i][6])))));
+        if (institutionService
+          .getInstitutionById(Long.parseLong((String) (reader.sustraerID((String) data[i][6])))) != null) {
+          participant.setInstitutions(
+            institutionService.getInstitutionById(Long.parseLong((String) (reader.sustraerID((String) data[i][6])))));
+        }
+
       }
       if (reader.sustraerId((String) data[i][7]) != null) {
-        participant.setLocElementsByCountryOfInstitucion(
-          locElementService.getLocElementByISOCode((String) reader.sustraerId((String) data[i][7])));
+        if (locElementService.getLocElementByISOCode((String) reader.sustraerID((String) data[i][7])) != null) {
+          participant.setLocElementsByCountryOfInstitucion(
+            locElementService.getLocElementByISOCode((String) reader.sustraerID((String) data[i][7])));
+        }
+
       }
 
       participant.setEmail((String) data[i][8]);
       participant.setReference((String) data[i][9]);
 
       if (reader.sustraerId((String) data[i][10]) != null) {
-        participant.setFellowship(capdevFoundingTypeService
-          .getCapdevFoundingTypeById(Long.parseLong((String) reader.sustraerId((String) data[i][10]))));
+        if (capdevFoundingTypeService
+          .getCapdevFoundingTypeById(Long.parseLong((String) reader.sustraerId((String) data[i][10]))) != null) {
+          participant.setFellowship(capdevFoundingTypeService
+            .getCapdevFoundingTypeById(Long.parseLong((String) reader.sustraerId((String) data[i][10]))));
+        }
+
       }
 
 
@@ -397,7 +415,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    System.out.println("prepare");
+    // System.out.println("prepare");
 
     // genders
     genders = new ArrayList<>();
@@ -597,6 +615,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       capdevDB.setCtEmail(capdev.getCtEmail());
       if (uploadFile != null) {
         if (uploadFileContentType.equals("application/vnd.ms-excel")
+          || uploadFileContentType.equals("application/vnd.ms-excel.sheet.macroEnabled.12")
           || (uploadFileContentType.equals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
             && (uploadFile.length() < 31457280))) {
 
@@ -722,19 +741,22 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     final Session session = SecurityUtils.getSubject().getSession();
     final User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
     System.out.println("highest degree " + participant.getHighestDegree().getId());
-    if (participant.getLocElementsByCitizenship().getId() == -1) {
+    if ((participant.getLocElementsByCitizenship() == null)
+      || (participant.getLocElementsByCitizenship().getId() == -1)) {
       participant.setLocElementsByCitizenship(null);
     }
-    if (participant.getHighestDegree().getId() == -1) {
+    if ((participant.getHighestDegree() == null) || (participant.getHighestDegree().getId() == -1)) {
       participant.setHighestDegree(null);
     }
-    if (participant.getInstitutions().getId() == -1) {
+    if ((participant.getInstitutions() == null) || (participant.getInstitutions().getId() == -1)) {
       participant.setInstitutions(null);
     }
-    if (participant.getLocElementsByCountryOfInstitucion().getId() == -1) {
+    if ((participant.getLocElementsByCountryOfInstitucion() == null)
+      || (participant.getLocElementsByCountryOfInstitucion().getId() == -1)) {
       participant.setLocElementsByCountryOfInstitucion(null);
     }
-    if (participant.getFellowship().getId() == -1) {
+    System.out.println(participant.getFellowship() == null);
+    if ((participant.getFellowship() == null) || (participant.getFellowship().getId() == -1)) {
       participant.setFellowship(null);
     }
     participant.setActive(true);

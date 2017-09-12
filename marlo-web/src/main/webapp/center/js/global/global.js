@@ -96,10 +96,12 @@ $(document)
 
           // Function that set the interface buttons always visible
           var $buttons = $('.buttons');
+          
           if($buttons.exists()) {
             var menuOffset = function() {
               return $(document).height() - ($buttons.offset().top + $buttons.height());
             }
+
             $buttons.find('.buttons-content').css({
               right: $(document).width() - ($buttons.offset().left + $buttons.width())
             });

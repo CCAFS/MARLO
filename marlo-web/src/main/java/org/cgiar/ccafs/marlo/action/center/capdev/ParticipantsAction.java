@@ -124,7 +124,9 @@ public class ParticipantsAction extends BaseAction implements ServletRequestAwar
     // System.out.println("dowmloadTemplate");
     try {
       final String path = new File(".").getCanonicalPath();
-      final String filePath = path + "/src/main/resources/template/participants-template.xlsx";
+      // final String filePath = path + "/src/main/resources/template/participants-template.xlsx"; // esta no es
+      // searchable
+      final String filePath = path + "/src/main/resources/template/participants-template.xlsm";
       final File file = new File(filePath);
       final FileInputStream fileInput = new FileInputStream(file);
       final XSSFWorkbook wb = new XSSFWorkbook(fileInput);
@@ -156,25 +158,27 @@ public class ParticipantsAction extends BaseAction implements ServletRequestAwar
         .collect(Collectors.toList()));
       Collections.sort(countryList, (c1, c2) -> c1.getName().compareTo(c2.getName()));
 
-      // arreglo usado para escribir la data al template
+      // arreglo usado para escribir la data de countries al template
       final String[] countries = new String[countryList.size()];
       for (int i = 0; i < countryList.size(); i++) {
-        countries[i] = countryList.get(i).getIsoAlpha2() + "- " + countryList.get(i).getName();
+        countries[i] = countryList.get(i).getName() + " - " + countryList.get(i).getIsoAlpha2();
       }
 
       final List<Institution> institutionsList =
         new ArrayList<>(institutionService.findAll().stream().filter(i -> i.isActive()).collect(Collectors.toList()));
       Collections.sort(institutionsList, (c1, c2) -> c1.getName().compareTo(c2.getName()));
 
+      // arreglo usado para escribir la data de institutions al template
       final String[] institutions = new String[institutionsList.size()];
       for (int i = 0; i < institutionsList.size(); i++) {
-        institutions[i] = institutionsList.get(i).getId() + "- " + institutionsList.get(i).getName();
+        institutions[i] = institutionsList.get(i).getName() + " - " + institutionsList.get(i).getId();
       }
 
       final List<CapdevHighestDegree> highestDegreeList = new ArrayList<>(
         capdevHighestDegreeService.findAll().stream().filter(h -> h.getName() != null).collect(Collectors.toList()));
       Collections.sort(highestDegreeList, (c1, c2) -> c1.getName().compareTo(c2.getName()));
 
+      // arreglo usado para escribir la data de highest degree al template
       final String[] highestDegree = new String[highestDegreeList.size()];
       for (int i = 0; i < highestDegreeList.size(); i++) {
         highestDegree[i] = highestDegreeList.get(i).getId() + "- " + highestDegreeList.get(i).getName() + " ("
@@ -186,6 +190,7 @@ public class ParticipantsAction extends BaseAction implements ServletRequestAwar
         capdevFoundingTypeService.findAll().stream().filter(f -> f.getName() != null).collect(Collectors.toList()));
       Collections.sort(fundingTypeList, (c1, c2) -> c1.getName().compareTo(c2.getName()));
 
+      // arreglo usado para escribir la data de funding type al template
       final String[] fundingtypes = new String[fundingTypeList.size()];
       for (int i = 0; i < fundingTypeList.size(); i++) {
         fundingtypes[i] = fundingTypeList.get(i).getId() + "- " + fundingTypeList.get(i).getName();

@@ -335,9 +335,16 @@
   text-decoration: underline;
 }
 
+div.fixed{
+	position: fixed;
+    bottom: 276px;
+    right: 400px;
+    width: 300px;
+    border: 3px solid #73AD21;
+}
+
 .addButtons > div {
-	display: inline-block;
-	
+	/*display: inline-block;*/
 	float: right;
 	margin: 0 2% 2% 2%;
 }

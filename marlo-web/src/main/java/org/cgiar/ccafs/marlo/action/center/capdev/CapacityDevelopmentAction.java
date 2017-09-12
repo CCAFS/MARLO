@@ -56,13 +56,13 @@ public class CapacityDevelopmentAction extends BaseAction {
   public String add() {
 
     capdevCategory = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter("capdevCategory")));
-    System.out.println("capdevCategory del add-->" + capdevCategory);
+    // System.out.println("capdevCategory del add-->" + capdevCategory);
     capdev = new CapacityDevelopment();
     capdev.setCategory(capdevCategory);
     capdev.setActive(true);
     capdev.setUsersByCreatedBy(this.getCurrentUser());
     capdevID = capdevService.saveCapacityDevelopment(capdev);
-    System.out.println("capDevID -->" + capdevID);
+    // System.out.println("capDevID -->" + capdevID);
     if (capdevID > 0) {
       return SUCCESS;
     } else {
@@ -75,7 +75,7 @@ public class CapacityDevelopmentAction extends BaseAction {
 
   @Override
   public String delete() {
-    System.out.println("delete capdev intervention --> " + capdevID);
+    // System.out.println("delete capdev intervention --> " + capdevID);
     capdev = capdevService.getCapacityDevelopmentById(capdevID);
     capdev.setActive(false);
     capdev.setUsersByModifiedBy(this.getCurrentUser());
