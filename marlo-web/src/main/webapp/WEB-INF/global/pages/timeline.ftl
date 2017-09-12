@@ -54,7 +54,8 @@
     <div id="timeline-phases" ></div>
   </div>
   [@components.js_imports libraryName="TimelineJS3" /]
-  [@components.js_imports libraryName="jsUri" /] 
+  [@components.js_imports libraryName="jsUri" /]
   [#assign customJS = [ "${baseUrlMedia}/js/global/timeline-phases.js"  ] + customJS  /]
+
  
 </div>

@@ -97,7 +97,11 @@
 
 [#if logged?? && logged]
 <div class="form-group">
-  [#include "/WEB-INF/global/pages/timeline.ftl" /]
+  [#attempt]
+    [#include "/WEB-INF/global/pages/timeline.ftl" /]
+  [#recover]
+    
+  [/#attempt]
   <div class="clearFix"></div>
 </div>
 [/#if]
