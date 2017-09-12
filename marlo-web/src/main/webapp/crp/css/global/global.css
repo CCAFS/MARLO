@@ -1398,7 +1398,7 @@ a#userLogOut {
 }
 
 #marlo-logo {
-  padding: 10px 0px;
+  padding: 10px 0 11px 0;
   font-weight: lighter;
   float: left;
   width: 66%;
@@ -6668,10 +6668,9 @@ img.removeInput {
 }
 
 .newsButton{
-  position:absolute; 
-  right:1%; 
-  bottom:10%; 
-  cursor:pointer;
+  /* position:absolute; */
+  margin-bottom: 5px;
+  /*cursor:pointer;*/
 }
 
 
