@@ -90,13 +90,13 @@ public class ProjectLocationMySQLDAO implements ProjectLocationDAO {
   public boolean deleteProjectLocation(long projectLocationId) {
     ProjectLocation projectLocation = this.find(projectLocationId);
     projectLocation.setActive(false);
-    long result = this.save(projectLocation);
+    boolean result = dao.update(projectLocation);
 
     if (projectLocation.getPhase().getNext() != null) {
       this.deleteProjectLocationPhase(projectLocation.getPhase().getNext(), projectLocation.getProject().getId(),
         projectLocation);
     }
-    return result > 0;
+    return result;
 
   }
 

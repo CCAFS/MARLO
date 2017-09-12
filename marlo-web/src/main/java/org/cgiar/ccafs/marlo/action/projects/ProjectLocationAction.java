@@ -679,7 +679,7 @@ public class ProjectLocationAction extends BaseAction {
         project.setLocationsData(this.getProjectLocationsData());
         project.setProjectRegions(new ArrayList<ProjectLocation>(project.getProjectLocations().stream()
           .filter(p -> p.isActive() && p.getLocElementType() == null && p.getLocElement() != null
-            && p.getLocElement().getLocElementType().getId().longValue() == 1
+            && p.getLocElement().getLocElementType().getId().longValue() == 1 && p.getPhase() != null
             && p.getPhase().equals(this.getActualPhase()))
           .collect(Collectors.toList())));
         project.getProjectRegions()
@@ -1353,7 +1353,7 @@ public class ProjectLocationAction extends BaseAction {
         projectLocationSave.setModifiedBy(this.getCurrentUser());
         projectLocationSave.setModificationJustification("");
         projectLocationSave.setProject(project);
-
+        projectLocationSave.setPhase(this.getActualPhase());
         if (!projectLocation.isScope()) {
           LocElement locElement = locElementManager.getLocElementById(projectLocation.getLocElement().getId());
 
@@ -1403,7 +1403,7 @@ public class ProjectLocationAction extends BaseAction {
       projectLocationSave.setModifiedBy(this.getCurrentUser());
       projectLocationSave.setModificationJustification("");
       projectLocationSave.setProject(project);
-
+      projectLocationSave.setPhase(this.getActualPhase());
       if (countryFundingSources.getLocElement() == null) {
         if (!regionsCustomSaved.contains(countryFundingSources.getLocElementType())
           && countryFundingSources.isSelected()) {

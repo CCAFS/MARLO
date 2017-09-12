@@ -135,7 +135,7 @@
                       
                   [#-- REGIONS SELECT --]
                   <div class="row">
-                  <div class="regionsBox form-group col-md-12" style="display:${(project.locationRegional?string("block","none"))!"none"};">
+                  <div class="regionsBox form-group col-md-12" style="display:${(project.projectInfo.locationRegional?string("block","none"))!"none"};">
                     <div class="panel tertiary col-md-12">
                      <div class="panel-head">
                        <label for=""> [@customForm.text name="projectCofunded.selectRegions" readText=!editable /]:[@customForm.req required=editable /]</label>
