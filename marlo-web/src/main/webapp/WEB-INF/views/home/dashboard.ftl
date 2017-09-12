@@ -25,6 +25,11 @@
   {"id":"9", "startDate":"02/27/2017", "endDate":"03/03/2017","what":"Flagship Program Leaders will be responsible to report on the CRP indicators, synthesis by MOG and synthesis by CCAFS Outcome based on the information reported by project leaders and Regional Program leaders.","who":""}
 ]/]
 
+[#if switchSession]
+  <script type="text/javascript">
+        location.reload();
+  </script>
+[/#if]
 
 <section class="marlo-content">
   <div class="container">

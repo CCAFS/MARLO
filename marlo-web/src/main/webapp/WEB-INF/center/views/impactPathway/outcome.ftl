@@ -161,7 +161,7 @@
       [#-- Target Value --]
       [#local showTargetValue = (milestone??) && (milestone.targetUnit??) && (milestone.targetUnit.id??) && (milestone.targetUnit.id != -1) /]
       <div class="col-md-4 targetValue-block" style="display:${showTargetValue?string('block', 'none')}">
-        [@customForm.input name="${milestoneCustomName}.value" type="text"  i18nkey="outcome.milestone.index.inputTargetValue" placeholder="outcome.milestone.index..placeholder" className="targetValue" required=true editable=editable /]
+        [@customForm.input name="${milestoneCustomName}.value" type="text"  i18nkey="outcome.milestone.index.inputTargetValue" placeholder="outcome.milestone.index.placeholder" className="targetValue" required=true editable=editable /]
       </div>
       [#-- Target Year --]
       <div class="col-md-4">

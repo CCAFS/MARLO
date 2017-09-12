@@ -33,6 +33,7 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
@@ -115,6 +116,32 @@ public class DeliverableListAction extends BaseAction {
     } else {
       return NOT_FOUND;
     }
+  }
+
+  @Override
+  public String delete() {
+    Map<String, Object> parameters = this.getParameters();
+    deliverableID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.CENTER_DELIVERABLE_ID))[0]));
+
+    CenterDeliverable deliverable = deliverableService.getDeliverableById(deliverableID);
+
+
+    if (deliverable != null) {
+      CenterProject project = deliverable.getProject();
+      projectID = project.getId();
+      programID = project.getResearchProgram().getId();
+      deliverable.setModificationJustification(
+        this.getJustification() == null ? "CenterDeliverable deleted" : this.getJustification());
+      deliverable.setModifiedBy(this.getCurrentUser());
+
+      deliverableService.saveDeliverable(deliverable);
+
+      deliverableService.deleteDeliverable(deliverable.getId());
+
+      this.addActionMessage("message:" + this.getText("deleting.success"));
+    }
+
+    return SUCCESS;
   }
 
   public long getAreaID() {

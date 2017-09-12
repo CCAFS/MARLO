@@ -37,7 +37,7 @@
         </div><div class="clearfix"></div>
         
         [@s.form action=actionName enctype="multipart/form-data" ]     
-          <div class="outcomes-list" listname="researchTopics">
+          <div id="researchTopics" class="outcomes-list" listname="researchTopics">
           [#if topics?has_content]
             [#list topics as topic]
               [@topicMacro element=topic name="topics" index=topic_index /]
@@ -72,8 +72,9 @@
 
 [#-- MACROS --]
 [#macro topicMacro element name index template=false]
-  <div id="researchTopic-${template?string('template','')}" class="borderBox researchTopic col-md-12" style="display:${template?string('none','block')}">
+  <div id="researchTopic-${template?string('template','')}" class="borderBox researchTopic" style="display:${template?string('none','block')}">
     [#local customName = "${name}[${index}]" /]
+    <div class="invisibleDrag"></div>
     [#-- Remove Button --]
     [#if editable]
     [#if element.id?has_content]
@@ -91,9 +92,9 @@
       <span class="index">${index+1}</span>
     </div>
     <br />
-            
+    [#--  Hidden inputs --]
     <input type="hidden" name="${customName}.id" value="${(element.id)!}"/>
-    
+    <input type="hidden" name="${customName}.order" value="${(index)!}" class="order-index"/>
     [#-- Research Topic Name --]
     <div class="form-group"> 
       <div class="row">

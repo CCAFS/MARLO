@@ -110,7 +110,7 @@ public class OutputsListAction extends BaseAction {
 
     output = outputService.saveResearchOutput(output);
     outputID = output.getId();
-    
+
     if (outputID > 0) {
       return SUCCESS;
     } else {
@@ -271,7 +271,7 @@ public class OutputsListAction extends BaseAction {
           programID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CENTER_PROGRAM_ID)));
         } catch (Exception ex) {
           User user = userService.getUser(this.getCurrentUser().getId());
-
+          // Check if the User is an Area Leader
           List<CenterLeader> userAreaLeads = new ArrayList<>(user.getResearchLeaders().stream()
             .filter(
               rl -> rl.isActive() && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue())
@@ -279,6 +279,7 @@ public class OutputsListAction extends BaseAction {
           if (!userAreaLeads.isEmpty()) {
             areaID = userAreaLeads.get(0).getResearchArea().getId();
           } else {
+            // Check if the User is a Program Leader
             List<CenterLeader> userProgramLeads = new ArrayList<>(user.getResearchLeaders().stream()
               .filter(rl -> rl.isActive()
                 && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_PROGRAM_LEADER_TYPE.getValue())
@@ -286,12 +287,21 @@ public class OutputsListAction extends BaseAction {
             if (!userProgramLeads.isEmpty()) {
               programID = userProgramLeads.get(0).getResearchProgram().getId();
             } else {
-              List<CenterProgram> rps = researchAreas.get(0).getResearchPrograms().stream().filter(r -> r.isActive())
-                .collect(Collectors.toList());
-              Collections.sort(rps, (rp1, rp2) -> rp1.getId().compareTo(rp2.getId()));
-              CenterProgram rp = rps.get(0);
-              programID = rp.getId();
-              areaID = rp.getResearchArea().getId();
+              // Check if the User is a Scientist Leader
+              List<CenterLeader> userScientistLeader = new ArrayList<>(user.getResearchLeaders().stream()
+                .filter(rl -> rl.isActive()
+                  && rl.getType().getId() == CenterLeaderTypeEnum.PROGRAM_SCIENTIST_LEADER_TYPE.getValue())
+                .collect(Collectors.toList()));
+              if (!userScientistLeader.isEmpty()) {
+                programID = userScientistLeader.get(0).getResearchProgram().getId();
+              } else {
+                List<CenterProgram> rps = researchAreas.get(0).getResearchPrograms().stream().filter(r -> r.isActive())
+                  .collect(Collectors.toList());
+                Collections.sort(rps, (rp1, rp2) -> rp1.getId().compareTo(rp2.getId()));
+                CenterProgram rp = rps.get(0);
+                programID = rp.getId();
+                areaID = rp.getResearchArea().getId();
+              }
             }
           }
         }
@@ -338,6 +348,8 @@ public class OutputsListAction extends BaseAction {
 
         researchTopics = new ArrayList<>(selectedProgram.getResearchTopics().stream()
           .filter(rt -> rt.isActive() && rt.getResearchTopic().trim().length() > 0).collect(Collectors.toList()));
+
+        Collections.sort(researchTopics, (ra1, ra2) -> ra1.getOrder().compareTo(ra2.getOrder()));
         try {
 
           topicID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.RESEARCH_TOPIC_ID)));
@@ -371,21 +383,21 @@ public class OutputsListAction extends BaseAction {
           } catch (Exception ex) {
 
             if (!researchTopics.isEmpty()) {
-              selectedResearchTopic = researchTopics.get(0);
+              outputs = this.allProgramOutput();
             }
 
-            if (selectedResearchTopic != null) {
-              if (selectedResearchTopic.getResearchOutcomes() != null) {
-                outcomes = selectedResearchTopic.getResearchOutcomes().stream()
-                  .filter(ro -> ro.isActive() && ro.getDescription() != null && ro.getTargetYear() != -1)
-                  .collect(Collectors.toList());
-
-                if (!outcomes.isEmpty()) {
-                  selectedResearchOutcome = outcomes.get(0);
-                }
-
-              }
-            }
+            // if (selectedResearchTopic != null) {
+            // if (selectedResearchTopic.getResearchOutcomes() != null) {
+            // outcomes = selectedResearchTopic.getResearchOutcomes().stream()
+            // .filter(ro -> ro.isActive() && ro.getDescription() != null && ro.getTargetYear() != -1)
+            // .collect(Collectors.toList());
+            //
+            // if (!outcomes.isEmpty()) {
+            // selectedResearchOutcome = outcomes.get(0);
+            // }
+            //
+            // }
+            // }
           }
         }
 

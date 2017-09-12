@@ -64,7 +64,7 @@ public class ProgramImpactsValidator extends BaseValidator {
       Path path = this.getAutoSaveFilePath(selectedProgram, baseAction.getCenterID());
 
       if (path.toFile().exists()) {
-        this.addMissingField("programImpact.action.draft");
+        this.addMissingField(baseAction.getText("programImpact.action.draft"));
       }
     }
 

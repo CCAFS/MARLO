@@ -41,7 +41,7 @@ $(document).ready(function() {
                 item += "<li><p class='text-muted'> Associated Outputs </p>";
                 item += "<ul>";
                 $.each(project.outputs, function(i,o) {
-                  var outputLink = baseURL + "/impactPathway/CIAT/outputs.do?outputID=" + o.id;
+                  var outputLink = baseURL + "/centerImpactPathway/CIAT/outputs.do?outputID=" + o.id;
                   item += "<li><a href='" + outputLink + "' target='_blank'>O" + o.id + "</a> - " + o.name;
                 });
                 item += "</ul></li>";

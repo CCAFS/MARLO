@@ -372,6 +372,24 @@ public class MonitoringOutcomeAction extends BaseAction {
               monitoringOutcomeService.getMonitoringOutcomeById(monitoringOutcome.getId());
             monitoringOutcome.setYear(outcome.getYear());
 
+
+            List<CenterMonitoringMilestone> centerMonitoringMilestones = new ArrayList<>();
+            if (monitoringOutcome.getMilestones() != null) {
+              for (CenterMonitoringMilestone centerMonitoringMilestone : monitoringOutcome.getMilestones()) {
+
+                CenterMilestone milestoneDb =
+                  milestoneService.getCenterMilestoneById(centerMonitoringMilestone.getResearchMilestone().getId());
+
+
+                centerMonitoringMilestone.getResearchMilestone().setActive(milestoneDb.isActive());
+
+                centerMonitoringMilestones.add(centerMonitoringMilestone);
+
+              }
+            }
+
+            monitoringOutcome.setMilestones(centerMonitoringMilestones);
+
             monitoringOutcomes.add(monitoringOutcome);
           }
 

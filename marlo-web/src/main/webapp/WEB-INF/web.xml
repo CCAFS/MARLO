@@ -31,9 +31,10 @@
     <listener-class>org.cgiar.ccafs.marlo.config.RulesListener</listener-class>
   </listener>
   
-  <listener>
+    <listener>
     <listener-class>org.cgiar.ccafs.marlo.config.PentahoListener</listener-class>
   </listener>
+
   
   <!-- Google Guice integration with our web application.  Other filters are configured in Guice Module-->
   <filter>
@@ -41,7 +42,7 @@
     <filter-class>com.google.inject.servlet.GuiceFilter</filter-class>
   </filter>
   
-<!-- Google Guice configuration for all requests -->
+  <!-- Google Guice configuration for all requests -->
   <filter-mapping>
     <filter-name>guice</filter-name>
     <url-pattern>/*</url-pattern>

@@ -56,6 +56,7 @@ public class CenterTopic implements Serializable, IAuditLog {
   @Expose
   private boolean active;
 
+
   @Expose
   private Date activeSince;
 
@@ -66,10 +67,8 @@ public class CenterTopic implements Serializable, IAuditLog {
   @Expose
   private User modifiedBy;
 
-
   @Expose
   private String modificationJustification;
-
 
   @Expose
   private String color;
@@ -77,6 +76,10 @@ public class CenterTopic implements Serializable, IAuditLog {
 
   @Expose
   private String shortName;
+
+
+  @Expose
+  private Integer order;
 
 
   private Set<CenterOutcome> researchOutcomes = new HashSet<>(0);
@@ -127,7 +130,6 @@ public class CenterTopic implements Serializable, IAuditLog {
     return activeSince;
   }
 
-
   public String getColor() {
     return color;
   }
@@ -159,16 +161,21 @@ public class CenterTopic implements Serializable, IAuditLog {
     return modificationJustification;
   }
 
-
   @Override
   public User getModifiedBy() {
     return modifiedBy;
   }
 
 
+  public Integer getOrder() {
+    return order;
+  }
+
+
   public Set<CenterOutcome> getResearchOutcomes() {
     return researchOutcomes;
   }
+
 
   /**
    * @return the researchProgram
@@ -196,7 +203,6 @@ public class CenterTopic implements Serializable, IAuditLog {
     return result;
   }
 
-
   @Override
   public boolean isActive() {
     return active;
@@ -217,6 +223,7 @@ public class CenterTopic implements Serializable, IAuditLog {
     this.color = color;
   }
 
+
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
@@ -228,7 +235,6 @@ public class CenterTopic implements Serializable, IAuditLog {
     this.id = id;
   }
 
-
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
@@ -238,6 +244,10 @@ public class CenterTopic implements Serializable, IAuditLog {
     this.modifiedBy = modifiedBy;
   }
 
+
+  public void setOrder(Integer order) {
+    this.order = order;
+  }
 
   public void setResearchOutcomes(Set<CenterOutcome> researchOutcomes) {
     this.researchOutcomes = researchOutcomes;

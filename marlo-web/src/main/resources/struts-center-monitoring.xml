@@ -7,15 +7,15 @@
 		
 		<action name="{center}/projectList"
       class="org.cgiar.ccafs.marlo.action.center.monitoring.project.ProjectListAction">
-      <interceptor-ref name="centerSectionStack" />
-      <result name="input">/WEB-INF/center//views/monitoring/project/projectList.ftl
+      <interceptor-ref name="centerImpactPathwayStack" />
+      <result name="input">/WEB-INF/center/views/monitoring/project/projectList.ftl
       </result>
     </action>
     
     <action name="{center}/projectDescription"
       class="org.cgiar.ccafs.marlo.action.center.monitoring.project.ProjectDescriptionAction">
       <interceptor-ref name="centerProjectStack" />
-      <result name="input">/WEB-INF/center//views/monitoring/project/projectDescription.ftl
+      <result name="input">/WEB-INF/center/views/monitoring/project/projectDescription.ftl
       </result>
       <result name="success" type="redirectAction">
         <param name="actionName">${centerSession}/projectDescription</param>
@@ -27,13 +27,18 @@
         <param name="projectID">${projectID}</param>
         <param name="edit">true</param>
         <param name="cancel">true</param>
+      </result>
+      <result name="redirect" type="redirectAction">
+        <param name="actionName">${url}</param>
+        <param name="edit">true</param>
+        <param name="projectID">${projectID}</param>
       </result>
     </action>
     
     <action name="{center}/projectPartners"
       class="org.cgiar.ccafs.marlo.action.center.monitoring.project.ProjectPartnersAction">
       <interceptor-ref name="centerProjectStack" />
-      <result name="input">/WEB-INF/center//views/monitoring/partners/projectPartners.ftl
+      <result name="input">/WEB-INF/center/views/monitoring/partners/projectPartners.ftl
       </result>
       <result name="success" type="redirectAction">
         <param name="actionName">${centerSession}/projectPartners</param>
@@ -46,12 +51,17 @@
         <param name="edit">true</param>
         <param name="cancel">true</param>
       </result>
+      <result name="redirect" type="redirectAction">
+        <param name="actionName">${url}</param>
+        <param name="edit">true</param>
+        <param name="projectID">${projectID}</param>
+      </result>
     </action>
     
     <action name="{center}/addNewProject" method="add"
       class="org.cgiar.ccafs.marlo.action.center.monitoring.project.ProjectListAction">
-      <interceptor-ref name="centerSectionStack" />
-      <result name="input">/WEB-INF/center//views/monitoring/project/projectList.ftl
+      <interceptor-ref name="centerImpactPathwayStack" />
+      <result name="input">/WEB-INF/center/views/monitoring/project/projectList.ftl
       </result>
       <result name="success" type="redirectAction">
         <param name="actionName">${centerSession}/projectDescription</param>
@@ -62,7 +72,7 @@
     
     <action name="{center}/deleteProject" method="delete"
       class="org.cgiar.ccafs.marlo.action.center.monitoring.project.ProjectListAction">
-      <interceptor-ref name="centerSectionStack" />
+      <interceptor-ref name="centerImpactPathwayStack" />
       <result name="success" type="redirectAction">
         <param name="actionName">${centerSession}/projectList</param>
         <param name="programID">${programID}</param>
@@ -72,14 +82,14 @@
     <action name="{center}/deliverableList"
       class="org.cgiar.ccafs.marlo.action.center.monitoring.project.DeliverableListAction">
       <interceptor-ref name="centerProjectStack" />
-      <result name="input">/WEB-INF/center//views/monitoring/deliverable/deliverableList.ftl
+      <result name="input">/WEB-INF/center/views/monitoring/deliverable/deliverableList.ftl
       </result>
     </action>
     
     <action name="{center}/projectDeliverable"
       class="org.cgiar.ccafs.marlo.action.center.monitoring.project.ProjectDeliverableAction">
       <interceptor-ref name="centerDeliverableStack" />
-      <result name="input">/WEB-INF/center//views/monitoring/deliverable/projectDeliverable.ftl
+      <result name="input">/WEB-INF/center/views/monitoring/deliverable/projectDeliverable.ftl
       </result>
       <result name="success" type="redirectAction">
         <param name="actionName">${centerSession}/projectDeliverable</param>
@@ -92,12 +102,17 @@
         <param name="edit">true</param>
         <param name="cancel">true</param>
       </result>
+      <result name="redirect" type="redirectAction">
+        <param name="actionName">${url}</param>
+        <param name="edit">true</param>
+        <param name="deliverableID">${deliverableID}</param>
+      </result>
     </action>
     
     <action name="{center}/addNewDeliverable" method="add"
       class="org.cgiar.ccafs.marlo.action.center.monitoring.project.DeliverableListAction">
       <interceptor-ref name="centerProjectStack" />
-      <result name="input">/WEB-INF/center//views/monitoring/deliverable/projectDeliverable.ftl
+      <result name="input">/WEB-INF/center/views/monitoring/deliverable/projectDeliverable.ftl
       </result>
       <result name="success" type="redirectAction">
         <param name="actionName">${centerSession}/projectDeliverable</param>
@@ -106,17 +121,26 @@
       </result>     
     </action>
     
+    <action name="{center}/deleteDeliverable" method="delete"
+      class="org.cgiar.ccafs.marlo.action.center.monitoring.project.DeliverableListAction">
+      <interceptor-ref name="centerSectionStack" />
+      <result name="success" type="redirectAction">
+        <param name="actionName">${centerSession}/deliverableList</param>
+        <param name="projectID">${projectID}</param>
+      </result>
+    </action>
+    
     <action name="{center}/monitoringOutcomesList"
       class="org.cgiar.ccafs.marlo.action.center.monitoring.outcome.MonitoringOutcomesListAction">
       <interceptor-ref name="centerSectionStack" />
-      <result name="input">/WEB-INF/center//views/monitoring/outcomes/outcomeList.ftl
+      <result name="input">/WEB-INF/center/views/monitoring/outcomes/outcomeList.ftl
       </result>
     </action>
     
     <action name="{center}/monitoringOutcome"
       class="org.cgiar.ccafs.marlo.action.center.monitoring.outcome.MonitoringOutcomeAction">
       <interceptor-ref name="centerImpactPathwayStack" />
-      <result name="input">/WEB-INF/center//views/monitoring/outcomes/outcomeInfo.ftl
+      <result name="input">/WEB-INF/center/views/monitoring/outcomes/outcomeInfo.ftl
       </result>
       <result name="success" type="redirectAction">
         <param name="actionName">${centerSession}/monitoringOutcome</param>
@@ -135,7 +159,7 @@
     
     <action name="{center}/submitProject"
       class="org.cgiar.ccafs.marlo.action.center.monitoring.project.ProjectSubmissionAction">
-      <result name="input">/WEB-INF/center//views/monitoring/project/projectDescription.ftl
+      <result name="input">/WEB-INF/center/views/monitoring/project/projectDescription.ftl
       </result>
       <result name="success" type="redirectAction">
         <param name="actionName">${centerSession}/projectDescription</param>

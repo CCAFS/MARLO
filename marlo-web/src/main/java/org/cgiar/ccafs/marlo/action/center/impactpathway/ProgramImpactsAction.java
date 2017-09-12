@@ -265,6 +265,7 @@ public class ProgramImpactsAction extends BaseAction {
         } catch (Exception ex) {
           User user = userService.getUser(this.getCurrentUser().getId());
 
+          // Check if the User is an Area Leader
           List<CenterLeader> userAreaLeads = new ArrayList<>(user.getResearchLeaders().stream()
             .filter(
               rl -> rl.isActive() && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue())
@@ -272,6 +273,7 @@ public class ProgramImpactsAction extends BaseAction {
           if (!userAreaLeads.isEmpty()) {
             areaID = userAreaLeads.get(0).getResearchArea().getId();
           } else {
+            // Check if the User is a Program Leader
             List<CenterLeader> userProgramLeads = new ArrayList<>(user.getResearchLeaders().stream()
               .filter(rl -> rl.isActive()
                 && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_PROGRAM_LEADER_TYPE.getValue())
@@ -279,12 +281,21 @@ public class ProgramImpactsAction extends BaseAction {
             if (!userProgramLeads.isEmpty()) {
               programID = userProgramLeads.get(0).getResearchProgram().getId();
             } else {
-              List<CenterProgram> rps = researchAreas.get(0).getResearchPrograms().stream().filter(r -> r.isActive())
-                .collect(Collectors.toList());
-              Collections.sort(rps, (rp1, rp2) -> rp1.getId().compareTo(rp2.getId()));
-              CenterProgram rp = rps.get(0);
-              programID = rp.getId();
-              areaID = rp.getResearchArea().getId();
+              // Check if the User is a Scientist Leader
+              List<CenterLeader> userScientistLeader = new ArrayList<>(user.getResearchLeaders().stream()
+                .filter(rl -> rl.isActive()
+                  && rl.getType().getId() == CenterLeaderTypeEnum.PROGRAM_SCIENTIST_LEADER_TYPE.getValue())
+                .collect(Collectors.toList()));
+              if (!userScientistLeader.isEmpty()) {
+                programID = userScientistLeader.get(0).getResearchProgram().getId();
+              } else {
+                List<CenterProgram> rps = researchAreas.get(0).getResearchPrograms().stream().filter(r -> r.isActive())
+                  .collect(Collectors.toList());
+                Collections.sort(rps, (rp1, rp2) -> rp1.getId().compareTo(rp2.getId()));
+                CenterProgram rp = rps.get(0);
+                programID = rp.getId();
+                areaID = rp.getResearchArea().getId();
+              }
             }
           }
         }
@@ -634,7 +645,6 @@ public class ProgramImpactsAction extends BaseAction {
       selectedProgram.setActiveSince(new Date());
       selectedProgram.setModifiedBy(this.getCurrentUser());
       programService.saveProgram(selectedProgram, this.getActionName(), relationsName);
-      Collection<String> messages = this.getActionMessages();
 
       Path path = this.getAutoSaveFilePath();
 
@@ -642,20 +652,30 @@ public class ProgramImpactsAction extends BaseAction {
         path.toFile().delete();
       }
 
-      if (!this.getInvalidFields().isEmpty()) {
-        this.setActionMessages(null);
+      // check if there is a url to redirect
+      if (this.getUrl() == null || this.getUrl().isEmpty()) {
+        // check if there are missing field
+        if (!this.getInvalidFields().isEmpty()) {
+          this.setActionMessages(null);
+          // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
+          List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+          for (String key : keys) {
+            this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+          }
 
-        List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
-        for (String key : keys) {
-          this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+        } else {
+          this.addActionMessage("message:" + this.getText("saving.saved"));
         }
-
+        return SUCCESS;
       } else {
-        this.addActionMessage("message:" + this.getText("saving.saved"));
+        // No messages to next page
+
+        this.addActionMessage("");
+        this.setActionMessages(null);
+        // redirect the url select by user
+        return REDIRECT;
       }
 
-      messages = this.getActionMessages();
-      return SUCCESS;
     } else {
       this.setActionMessages(null);
       return NOT_AUTHORIZED;
