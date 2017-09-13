@@ -16,11 +16,12 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
+import org.cgiar.ccafs.marlo.data.dao.mysql.AgreementMySQLDAO;
 import org.cgiar.ccafs.marlo.data.model.Agreement;
 
 import com.google.inject.ImplementedBy;
 
-@ImplementedBy(Agreement.class)
+@ImplementedBy(AgreementMySQLDAO.class)
 public interface AgreementDAO {
 
   public Agreement find(String id);

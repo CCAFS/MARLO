@@ -480,7 +480,7 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
-
+    <!-- 
 		<action name="ocsService"
 			class="org.cgiar.ccafs.marlo.action.center.json.global.OcsServiceAction">
 			<result type="json">
@@ -488,6 +488,7 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		 -->
 
 		<!-- ************************************************************************************************************** -->
 

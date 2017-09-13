@@ -81,17 +81,23 @@ public class OcsServiceAction extends BaseAction {
         json = this.returnOCS(agreement);
 
       } else {
+
         json = ocsClient.getagreement(ocsCode);
 
-        Agreement theAgreement = this.returnAgreement(json);
-        agreementManager.update(theAgreement);
+        if (json != null) {
+          Agreement theAgreement = this.returnAgreement(json);
+          agreementManager.update(theAgreement);
+        }
       }
 
     } else {
       json = ocsClient.getagreement(ocsCode);
 
-      Agreement theAgreement = this.returnAgreement(json);
-      agreementManager.save(theAgreement);
+      if (json != null) {
+        Agreement theAgreement = this.returnAgreement(json);
+        agreementManager.save(theAgreement);
+      }
+
 
     }
 

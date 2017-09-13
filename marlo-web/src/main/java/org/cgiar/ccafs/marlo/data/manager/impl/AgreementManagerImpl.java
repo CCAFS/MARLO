@@ -20,10 +20,18 @@ import org.cgiar.ccafs.marlo.data.dao.AgreementDAO;
 import org.cgiar.ccafs.marlo.data.manager.AgreementManager;
 import org.cgiar.ccafs.marlo.data.model.Agreement;
 
+import com.google.inject.Inject;
+
 
 public class AgreementManagerImpl implements AgreementManager {
 
   private AgreementDAO agreementDAO;
+
+
+  @Inject
+  public AgreementManagerImpl(AgreementDAO agreementDAO) {
+    this.agreementDAO = agreementDAO;
+  }
 
   @Override
   public Agreement find(String id) {

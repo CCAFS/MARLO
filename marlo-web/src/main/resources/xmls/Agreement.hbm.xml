@@ -58,7 +58,7 @@
             <key on-delete="noaction">
                 <column length="20" name="agreement_id" not-null="true"/>
             </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.PlasAgreement" embed-xml="true" not-found="exception"/>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.PlaAgreement" embed-xml="true" not-found="exception"/>
         </set>
         <set embed-xml="true" fetch="select" inverse="true" lazy="true" mutable="true" name="countriesAgreements" optimistic-lock="true" sort="unsorted" table="countries_agreement">
             <key on-delete="noaction">
