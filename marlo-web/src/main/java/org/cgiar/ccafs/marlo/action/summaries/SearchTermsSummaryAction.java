@@ -15,18 +15,15 @@
 
 package org.cgiar.ccafs.marlo.action.summaries;
 
-import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
-import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
@@ -77,7 +74,7 @@ import org.slf4j.LoggerFactory;
  * @author Andrés Felipe Valencia Rivera. CCAFS
  */
 
-public class SearchTermsSummaryAction extends BaseAction implements Summary {
+public class SearchTermsSummaryAction extends BaseSummariesAction implements Summary {
 
   private static Logger LOG = LoggerFactory.getLogger(SearchTermsSummaryAction.class);
   /**
@@ -86,25 +83,15 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
   private static final long serialVersionUID = 1L;
 
   // Variables
-  private Crp loggedCrp;
   private long startTime;
-  private String cycle;
-  private int year;
   private Boolean hasW1W2Co;
   private Boolean hasRegions;
   // Keys to be searched
   List<String> keys = new ArrayList<String>();
-  private Phase selectedPhase;
 
 
   // Managers
-  private CrpManager crpManager;
-
-
   private CrpProgramManager programManager;
-
-
-  private PhaseManager phaseManager;
   // XLSX bytes
   private byte[] bytesXLSX;
   // Streams
@@ -113,9 +100,7 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
   @Inject
   public SearchTermsSummaryAction(APConfig config, CrpManager crpManager, CrpProgramManager programManager,
     PhaseManager phaseManager) {
-    super(config);
-    this.crpManager = crpManager;
-    this.phaseManager = phaseManager;
+    super(config, crpManager, phaseManager);
     this.programManager = programManager;
   }
 
@@ -177,7 +162,7 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
       Resource reportResource =
         manager.createDirectly(this.getClass().getResource("/pentaho/search_terms.prpt"), MasterReport.class);
       MasterReport masterReport = (MasterReport) reportResource.getResource();
-      String center = loggedCrp.getAcronym();
+      String center = this.getLoggedCrp().getAcronym();
       // Get datetime
       ZonedDateTime timezone = ZonedDateTime.now();
       DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
@@ -224,9 +209,9 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
     // Calculate time of generation
     long stopTime = System.currentTimeMillis();
     stopTime = stopTime - startTime;
-    LOG.info(
-      "Downloaded successfully: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
-        + ". CRP: " + this.loggedCrp.getAcronym() + ". Cycle: " + cycle + ". Time to generate: " + stopTime + "ms.");
+    LOG.info("Downloaded successfully: " + this.getFileName() + ". User: "
+      + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: "
+      + this.getSelectedCycle() + ". Time to generate: " + stopTime + "ms.");
     return SUCCESS;
   }
 
@@ -444,9 +429,6 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
     return "application/xlsx";
   }
 
-  public String getCycle() {
-    return cycle;
-  }
 
   private TypedTableModel getDeliverablesTableModel() {
     TypedTableModel model = new TypedTableModel(
@@ -563,7 +545,7 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
     fileName.append("SearchTermsSummary-");
-    fileName.append(this.year + "_");
+    fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
     return fileName.toString();
@@ -593,9 +575,6 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
     return inputStream;
   }
 
-  public Crp getLoggedCrp() {
-    return loggedCrp;
-  }
 
   private TypedTableModel getMasterTableModel(String center, String date) {
     // Initialization of Model
@@ -614,7 +593,8 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
       }
     }
     // set CIAT imgage URL from repo
-    String imageUrl = this.getBaseUrl() + "/images/global/crps/" + this.loggedCrp.getAcronym().toLowerCase() + ".png";
+    String imageUrl =
+      this.getBaseUrl() + "/images/global/crps/" + this.getLoggedCrp().getAcronym().toLowerCase() + ".png";
     model.addRow(
       new Object[] {center, date, keysString, hasRegions, hasW1W2Co, imageUrl, this.getSelectedPhase().getId()});
     return model;
@@ -788,17 +768,17 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
             // Set budgets
             // coFinancing 1: cofinancing+no cofinancing, 2: cofinancing 3: no cofinancing
             if (hasW1W2Co) {
-              w1w2 = this.getTotalYear(year, 1, project, 3);
-              w1w2Co = this.getTotalYear(year, 1, project, 2);
+              w1w2 = this.getTotalYear(this.getSelectedYear(), 1, project, 3);
+              w1w2Co = this.getTotalYear(this.getSelectedYear(), 1, project, 2);
             } else {
-              w1w2 = this.getTotalYear(year, 1, project, 1);
+              w1w2 = this.getTotalYear(this.getSelectedYear(), 1, project, 1);
               if (w1w2 == 0.0) {
                 w1w2 = null;
               }
             }
-            w3 = this.getTotalYear(year, 2, project, 1);
-            bilateral = this.getTotalYear(year, 3, project, 1);
-            center = this.getTotalYear(year, 4, project, 1);
+            w3 = this.getTotalYear(this.getSelectedYear(), 2, project, 1);
+            bilateral = this.getTotalYear(this.getSelectedYear(), 3, project, 1);
+            center = this.getTotalYear(this.getSelectedYear(), 4, project, 1);
             if (w1w2 != null && w1w2 == 0.0) {
               w1w2 = null;
             }
@@ -825,10 +805,6 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
       }
     }
     return model;
-  }
-
-  public Phase getSelectedPhase() {
-    return selectedPhase;
   }
 
   /**
@@ -883,49 +859,16 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
   }
 
 
-  public int getYear() {
-    return year;
-  }
-
-
   @Override
   public void prepare() {
-    // Get loggedCrp
-    try {
-      this.setLoggedCrp((Crp) this.getSession().get(APConstants.SESSION_CRP));
-      loggedCrp = crpManager.getCrpById(this.getLoggedCrp().getId());
-    } catch (Exception e) {
-      LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
-    }
-    // Get phase
-    this.setSelectedPhase(
-      phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), loggedCrp.getId().longValue()));
-
-
-    // Get parameters from URL
-    // Get year
-    try {
-      this.setYear(this.getSelectedPhase().getYear());
-    } catch (Exception e) {
-      LOG.warn("Failed to get " + APConstants.YEAR_REQUEST
-        + " parameter. Parameter will be set as CurrentCycleYear. Exception: " + e.getMessage());
-      this.setYear(this.getCurrentCycleYear());
-    }
-    // Get cycle
-    try {
-      this.setCycle(this.getSelectedPhase().getDescription());
-    } catch (Exception e) {
-      LOG.warn("Failed to get " + APConstants.CYCLE + " parameter. Parameter will be set as CurrentCycle. Exception: "
-        + e.getMessage());
-      this.setCycle(this.getCurrentCycle());
-    }
     hasW1W2Co = this.hasSpecificities(APConstants.CRP_FS_W1W2_COFINANCING);
     hasRegions = this.hasSpecificities(APConstants.CRP_HAS_REGIONS);
-    // Calculate time to generate report
-    startTime = System.currentTimeMillis();
+    this.setGeneralParameters();
     LOG.info(
       "Start report download: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
-        + ". CRP: " + this.loggedCrp.getAcronym() + ". Cycle: " + cycle);
+        + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: " + this.getSelectedCycle());
+    // Calculate time to generate report
+    startTime = System.currentTimeMillis();
   }
 
 
@@ -942,22 +885,5 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
     }
   }
 
-
-  public void setCycle(String cycle) {
-    this.cycle = cycle;
-  }
-
-  public void setLoggedCrp(Crp loggedCrp) {
-    this.loggedCrp = loggedCrp;
-  }
-
-  public void setSelectedPhase(Phase selectedPhase) {
-    this.selectedPhase = selectedPhase;
-  }
-
-
-  public void setYear(int year) {
-    this.year = year;
-  }
 
 }

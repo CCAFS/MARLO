@@ -15,11 +15,9 @@
 
 package org.cgiar.ccafs.marlo.action.summaries;
 
-import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectHighligthManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlightCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlightType;
@@ -38,13 +36,11 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import com.lowagie.text.BadElementException;
 import com.lowagie.text.Image;
-import org.apache.commons.lang3.StringUtils;
 import org.pentaho.reporting.engine.classic.core.Band;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
@@ -64,17 +60,14 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Andrés Valencia - CIAT/CCAFS
  */
-public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Summary {
+public class ProjectHighlightsPDFSummaryAction extends BaseSummariesAction implements Summary {
 
   private static final long serialVersionUID = 1L;
   private static Logger LOG = LoggerFactory.getLogger(ProjectHighlightsPDFSummaryAction.class);
   // Managers
-  private CrpManager crpManager;
   private ProjectHighligthManager projectHighLightManager;
   // Parameters
-  private Crp loggedCrp;
   private long startTime;
-  private int year;
   // XLSX bytes
   private byte[] bytesPDF;
   // Streams
@@ -82,9 +75,8 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
 
   @Inject
   public ProjectHighlightsPDFSummaryAction(APConfig config, CrpManager crpManager,
-    ProjectHighligthManager projectHighLightManager) {
-    super(config);
-    this.crpManager = crpManager;
+    ProjectHighligthManager projectHighLightManager, PhaseManager phaseManager) {
+    super(config, crpManager, phaseManager);
     this.projectHighLightManager = projectHighLightManager;
   }
 
@@ -129,7 +121,7 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
       Resource reportResource =
         manager.createDirectly(this.getClass().getResource("/pentaho/projectHighlightsPDF.prpt"), MasterReport.class);
       MasterReport masterReport = (MasterReport) reportResource.getResource();
-      String center = loggedCrp.getAcronym();
+      String center = this.getLoggedCrp().getAcronym();
       // Get datetime
       ZonedDateTime timezone = ZonedDateTime.now();
       DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
@@ -142,7 +134,7 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
       CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
       String masterQueryName = "main";
       TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
-      TypedTableModel model = this.getMasterTableModel(center, date, String.valueOf(year));
+      TypedTableModel model = this.getMasterTableModel(center, date, String.valueOf(this.getSelectedYear()));
       sdf.addTable(masterQueryName, model);
       masterReport.setDataFactory(cdf);
       // Set i8n for pentaho
@@ -168,7 +160,7 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
     stopTime = stopTime - startTime;
     LOG.info(
       "Downloaded successfully: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
-        + ". CRP: " + this.loggedCrp.getAcronym() + ". Time to generate: " + stopTime + "ms.");
+        + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Time to generate: " + stopTime + "ms.");
     return SUCCESS;
   }
 
@@ -264,7 +256,7 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
     fileName.append("ProjectHighlightsSummary-");
-    fileName.append(this.year + "_");
+    fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".pdf");
     return fileName.toString();
@@ -313,9 +305,6 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
     return inputStream;
   }
 
-  public Crp getLoggedCrp() {
-    return loggedCrp;
-  }
 
   private TypedTableModel getMasterTableModel(String center, String date, String year) {
     // Initialization of Model
@@ -337,9 +326,9 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
     for (ProjectHighlight projectHighlight : projectHighLightManager.findAll().stream()
       .sorted((h1, h2) -> Long.compare(h1.getId(), h2.getId()))
-      .filter(ph -> ph.isActive() && ph.getProject() != null && ph.getYear() == year
-        && ph.getProject().getCrp().getId().longValue() == loggedCrp.getId().longValue() && ph.getProject().isActive()
-        && ph.getProject().getProjecInfoPhase(this.getActualPhase()).getReporting())
+      .filter(ph -> ph.isActive() && ph.getProject() != null && ph.getYear() == this.getSelectedYear()
+        && ph.getProject().getCrp().getId().longValue() == this.getLoggedCrp().getId().longValue()
+        && ph.getProject().isActive() && ph.getProject().getProjecInfoPhase(this.getActualPhase()).getReporting())
       .collect(Collectors.toList())) {
       String title = null, author = null, subject = null, publisher = null, highlightsTypes = "",
         highlightsIsGlobal = null, startDate = null, endDate = null, keywords = null, countries = "", image = "",
@@ -476,27 +465,11 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
 
   @Override
   public void prepare() throws Exception {
-    // Get loggerCrp
-    try {
-      loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-      loggedCrp = crpManager.getCrpById(loggedCrp.getId());
-    } catch (Exception e) {
-      LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
-    }
-    // Get parameters from URL
-    // Get year
-    try {
-      Map<String, Object> parameters = this.getParameters();
-      year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
-    } catch (Exception e) {
-      LOG.warn("Failed to get " + APConstants.YEAR_REQUEST
-        + " parameter. Parameter will be set as CurrentCycleYear. Exception: " + e.getMessage());
-      year = this.getCurrentCycleYear();
-    }
+    this.setGeneralParameters();
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
     LOG.info("Start report download: " + this.getFileName() + ". User: "
-      + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.loggedCrp.getAcronym());
+      + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.getLoggedCrp().getAcronym());
   }
 
   public void setBytesPDF(byte[] bytesPDF) {
@@ -505,10 +478,6 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
 
   public void setInputStream(InputStream inputStream) {
     this.inputStream = inputStream;
-  }
-
-  public void setLoggedCrp(Crp loggedCrp) {
-    this.loggedCrp = loggedCrp;
   }
 
 }

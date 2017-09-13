@@ -15,17 +15,14 @@
 
 package org.cgiar.ccafs.marlo.action.summaries;
 
-import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Institution;
-import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
@@ -47,11 +44,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
-import org.apache.commons.lang3.StringUtils;
 import org.pentaho.reporting.engine.classic.core.Band;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
@@ -72,7 +67,7 @@ import org.slf4j.LoggerFactory;
  * @author Andrés Felipe Valencia Rivera. CCAFS
  */
 
-public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
+public class budgetByCoAsSummaryAction extends BaseSummariesAction implements Summary {
 
   /**
    * 
@@ -81,25 +76,15 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
   private static Logger LOG = LoggerFactory.getLogger(budgetByCoAsSummaryAction.class);
 
   // Parameters
-  private Crp loggedCrp;
-  private int year;
-  private String cycle;
   private long startTime;
 
-
   // Managers
-  private CrpManager crpManager;
-
-  private PhaseManager phaseManager;
-
   private CrpProgramManager programManager;
   private ProjectBudgetManager projectBudgetManager;
   private InstitutionManager institutionManager;
 
-
   // XLSX bytes
   private byte[] bytesXLSX;
-
 
   // Streams
   InputStream inputStream;
@@ -108,13 +93,12 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
   @Inject
   public budgetByCoAsSummaryAction(APConfig config, CrpManager crpManager, CrpProgramManager programManager,
     ProjectBudgetManager projectBudgetManager, InstitutionManager institutionManager, PhaseManager phaseManager) {
-    super(config);
-    this.crpManager = crpManager;
+    super(config, crpManager, phaseManager);
     this.programManager = programManager;
-    this.phaseManager = phaseManager;
     this.projectBudgetManager = projectBudgetManager;
     this.institutionManager = institutionManager;
   }
+
 
   /**
    * Method to add i8n parameters to masterReport in Pentaho
@@ -170,6 +154,7 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
     return masterReport;
   }
 
+
   @Override
   public String execute() throws Exception {
     ClassicEngineBoot.getInstance().start();
@@ -182,7 +167,7 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
         manager.createDirectly(this.getClass().getResource("/pentaho/budgetByCoAsSummary.prpt"), MasterReport.class);
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
-      String center = loggedCrp.getAcronym();
+      String center = this.getLoggedCrp().getAcronym();
 
       // Get datetime
       ZonedDateTime timezone = ZonedDateTime.now();
@@ -225,9 +210,9 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
     // Calculate time of generation
     long stopTime = System.currentTimeMillis();
     stopTime = stopTime - startTime;
-    LOG.info(
-      "Downloaded successfully: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
-        + ". CRP: " + this.loggedCrp.getAcronym() + ". Cycle: " + cycle + ". Time to generate: " + stopTime + "ms.");
+    LOG.info("Downloaded successfully: " + this.getFileName() + ". User: "
+      + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: "
+      + this.getSelectedCycle() + ". Time to generate: " + stopTime + "ms.");
     return SUCCESS;
   }
 
@@ -300,7 +285,7 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
   public ProjectBudgetsCluserActvity getBudgetbyCoa(Long activitiyId, long type, Project project) {
 
     for (ProjectBudgetsCluserActvity pb : project.getProjectBudgetsCluserActvities().stream()
-      .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getCrpClusterOfActivity() != null
+      .filter(pb -> pb.isActive() && pb.getYear() == this.getSelectedYear() && pb.getCrpClusterOfActivity() != null
         && pb.getCrpClusterOfActivity().getId() == activitiyId && type == pb.getBudgetType().getId())
       .collect(Collectors.toList())) {
       return pb;
@@ -318,10 +303,6 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
     return "application/xlsx";
   }
 
-  public String getCycle() {
-    return cycle;
-  }
-
 
   @SuppressWarnings("unused")
   private File getFile(String fileName) {
@@ -332,18 +313,18 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
 
   }
 
-
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
     fileName.append("BudgetByCoAsSummary-");
-    fileName.append(this.year + "_");
+    fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
 
     return fileName.toString();
 
   }
+
 
   private void getFooterSubreports(HashMap<String, Element> hm, ReportFooter reportFooter) {
 
@@ -372,9 +353,6 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
     return inputStream;
   }
 
-  public Crp getLoggedCrp() {
-    return loggedCrp;
-  }
 
   private TypedTableModel getMasterTableModel(String center, String date) {
     // Initialization of Model
@@ -412,8 +390,7 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
       centerPerGender = 0.0;
 
     List<Project> projects = new ArrayList<>();
-    Phase phase = phaseManager.findCycle(APConstants.PLANNING, year, loggedCrp.getId().longValue());
-    for (ProjectPhase projectPhase : phase.getProjectPhases()) {
+    for (ProjectPhase projectPhase : this.getSelectedPhase().getProjectPhases()) {
       projects.add((projectPhase.getProject()));
     }
     for (Project project : projects) {
@@ -432,20 +409,20 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
       centerPerGender = 0.0;
 
       // get total budget per year
-      totalW1w = this.getTotalYear(year, 1, project);
-      totalW3 = this.getTotalYear(year, 2, project);
-      totalBilateral = this.getTotalYear(year, 3, project);
-      totalCenter = this.getTotalYear(year, 4, project);
+      totalW1w = this.getTotalYear(this.getSelectedYear(), 1, project);
+      totalW3 = this.getTotalYear(this.getSelectedYear(), 2, project);
+      totalBilateral = this.getTotalYear(this.getSelectedYear(), 3, project);
+      totalCenter = this.getTotalYear(this.getSelectedYear(), 4, project);
 
       // get total gender per year
       for (ProjectPartner pp : project.getProjectPartners().stream().filter(pp -> pp.isActive())
         .collect(Collectors.toList())) {
         // System.out.println(pp.getInstitution().getComposedName());
         if (this.isPPA(pp.getInstitution())) {
-          totalW1w2Gender += this.getTotalGender(pp.getInstitution().getId(), year, 1, project, 1);
-          totalW3Gender += this.getTotalGender(pp.getInstitution().getId(), year, 2, project, 1);
-          totalBilateralGender += this.getTotalGender(pp.getInstitution().getId(), year, 3, project, 1);
-          totalCenterGender += this.getTotalGender(pp.getInstitution().getId(), year, 4, project, 1);
+          totalW1w2Gender += this.getTotalGender(pp.getInstitution().getId(), this.getSelectedYear(), 1, project, 1);
+          totalW3Gender += this.getTotalGender(pp.getInstitution().getId(), this.getSelectedYear(), 2, project, 1);
+          totalBilateralGender += this.getTotalGender(pp.getInstitution().getId(), this.getSelectedYear(), 3, project, 1);
+          totalCenterGender += this.getTotalGender(pp.getInstitution().getId(), this.getSelectedYear(), 4, project, 1);
         }
       }
 
@@ -661,6 +638,7 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
+
   /**
    * Get gender amount per institution, year and budet type
    * 
@@ -699,9 +677,6 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
     return total;
   }
 
-  public int getYear() {
-    return year;
-  }
 
   /**
    * Verify if an institution isPPA or not
@@ -729,50 +704,12 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
 
   @Override
   public void prepare() {
-    try {
-      loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-      loggedCrp = crpManager.getCrpById(loggedCrp.getId());
-    } catch (Exception e) {
-      LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
-    }
-    // Get parameters from URL
-    // Get year
-    try {
-      Map<String, Object> parameters = this.getParameters();
-      year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
-    } catch (Exception e) {
-      LOG.warn("Failed to get " + APConstants.YEAR_REQUEST
-        + " parameter. Parameter will be set as CurrentCycleYear. Exception: " + e.getMessage());
-      year = this.getCurrentCycleYear();
-    }
-    // Get cycle
-    try {
-      Map<String, Object> parameters = this.getParameters();
-      cycle = (StringUtils.trim(((String[]) parameters.get(APConstants.CYCLE))[0]));
-    } catch (Exception e) {
-      LOG.warn("Failed to get " + APConstants.CYCLE + " parameter. Parameter will be set as CurrentCycle. Exception: "
-        + e.getMessage());
-      cycle = this.getCurrentCycle();
-    }
+    this.setGeneralParameters();
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
     LOG.info(
       "Start report download: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
-        + ". CRP: " + this.loggedCrp.getAcronym() + ". Cycle: " + cycle);
-  }
-
-
-  public void setCycle(String cycle) {
-    this.cycle = cycle;
-  }
-
-  public void setLoggedCrp(Crp loggedCrp) {
-    this.loggedCrp = loggedCrp;
-  }
-
-
-  public void setYear(int year) {
-    this.year = year;
+        + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: " + this.getSelectedCycle());
   }
 
 }

@@ -15,12 +15,9 @@
 
 package org.cgiar.ccafs.marlo.action.summaries;
 
-import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
-import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.ByteArrayInputStream;
@@ -45,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * @author Andrés Felipe Valencia Rivera. CCAFS
  */
 
-public class InstitutionsLeadersSummaryAction extends BaseAction implements Summary {
+public class InstitutionsLeadersSummaryAction extends BaseSummariesAction implements Summary {
 
   /**
    * 
@@ -54,13 +51,7 @@ public class InstitutionsLeadersSummaryAction extends BaseAction implements Summ
   private static Logger LOG = LoggerFactory.getLogger(InstitutionsLeadersSummaryAction.class);
   // Parameters
   private long startTime;
-  private Crp loggedCrp;
-  private int year;
-  private String cycle;
-  private Phase selectedPhase;
   // Managers
-  private CrpManager crpManager;
-  private PhaseManager phaseManager;
   // XLSX bytes
   private byte[] bytesXLSX;
   // Streams
@@ -69,9 +60,7 @@ public class InstitutionsLeadersSummaryAction extends BaseAction implements Summ
 
   @Inject
   public InstitutionsLeadersSummaryAction(APConfig config, CrpManager crpManager, PhaseManager phaseManager) {
-    super(config);
-    this.crpManager = crpManager;
-    this.phaseManager = phaseManager;
+    super(config, crpManager, phaseManager);
   }
 
 
@@ -103,7 +92,7 @@ public class InstitutionsLeadersSummaryAction extends BaseAction implements Summ
       Resource reportResource =
         manager.createDirectly(this.getClass().getResource("/pentaho/institutions_leaders.prpt"), MasterReport.class);
       MasterReport masterReport = (MasterReport) reportResource.getResource();
-      Number idParam = loggedCrp.getId();
+      Number idParam = this.getLoggedCrp().getId();
       // Get datetime
       ZonedDateTime timezone = ZonedDateTime.now();
       DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
@@ -114,7 +103,7 @@ public class InstitutionsLeadersSummaryAction extends BaseAction implements Summ
       String currentDate = timezone.format(format) + "(GMT" + zone + ")";
       masterReport.getParameterValues().put("crp_id", idParam);
       masterReport.getParameterValues().put("date", currentDate);
-      masterReport.getParameterValues().put("cycle", cycle);
+      masterReport.getParameterValues().put("cycle", this.getSelectedCycle());
       masterReport.getParameterValues().put("showDescription",
         this.hasSpecificities(APConstants.CRP_REPORTS_DESCRIPTION));
       masterReport.getParameterValues().put("phaseID", this.getSelectedPhase().getId());
@@ -130,9 +119,9 @@ public class InstitutionsLeadersSummaryAction extends BaseAction implements Summ
     // Calculate time of generation
     long stopTime = System.currentTimeMillis();
     stopTime = stopTime - startTime;
-    LOG.info(
-      "Downloaded successfully: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
-        + ". CRP: " + this.loggedCrp.getAcronym() + ". Cycle: " + cycle + ". Time to generate: " + stopTime + "ms.");
+    LOG.info("Downloaded successfully: " + this.getFileName() + ". User: "
+      + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: "
+      + this.getSelectedCycle() + ". Time to generate: " + stopTime + "ms.");
     return SUCCESS;
 
   }
@@ -147,10 +136,6 @@ public class InstitutionsLeadersSummaryAction extends BaseAction implements Summ
     return "application/xlsx";
   }
 
-  public String getCycle() {
-    return cycle;
-  }
-
   @SuppressWarnings("unused")
   private File getFile(String fileName) {
     // Get file from resources folder
@@ -163,7 +148,7 @@ public class InstitutionsLeadersSummaryAction extends BaseAction implements Summ
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
     fileName.append("ProjectLeadingInstitutionsSummary-");
-    fileName.append(this.year + "_");
+    fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
     return fileName.toString();
@@ -177,67 +162,14 @@ public class InstitutionsLeadersSummaryAction extends BaseAction implements Summ
     return inputStream;
   }
 
-  public Crp getLoggedCrp() {
-    return loggedCrp;
-  }
-
-  public Phase getSelectedPhase() {
-    return selectedPhase;
-  }
-
-  public int getYear() {
-    return year;
-  }
-
   @Override
   public void prepare() {
-    // Get loggedCrp
-    try {
-      this.setLoggedCrp((Crp) this.getSession().get(APConstants.SESSION_CRP));
-      loggedCrp = crpManager.getCrpById(this.getLoggedCrp().getId());
-    } catch (Exception e) {
-      LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
-    }
-    // Get phase
-    this.setSelectedPhase(
-      phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), loggedCrp.getId().longValue()));
-    // Get parameters from URL
-    // Get year
-    try {
-      this.setYear(this.getSelectedPhase().getYear());
-    } catch (Exception e) {
-      LOG.warn("Failed to get " + APConstants.YEAR_REQUEST
-        + " parameter. Parameter will be set as CurrentCycleYear. Exception: " + e.getMessage());
-      this.setYear(this.getCurrentCycleYear());
-    }
-    // Get cycle
-    try {
-      this.setCycle(this.getSelectedPhase().getDescription());
-    } catch (Exception e) {
-      LOG.warn("Failed to get " + APConstants.CYCLE + " parameter. Parameter will be set as CurrentCycle. Exception: "
-        + e.getMessage());
-      this.setCycle(this.getCurrentCycle());
-    }
+    this.setGeneralParameters();
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
     LOG.info(
       "Start report download: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
-        + ". CRP: " + this.loggedCrp.getAcronym() + ". Cycle: " + cycle);
+        + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: " + this.getSelectedCycle());
   }
 
-  public void setCycle(String cycle) {
-    this.cycle = cycle;
-  }
-
-  public void setLoggedCrp(Crp loggedCrp) {
-    this.loggedCrp = loggedCrp;
-  }
-
-  public void setSelectedPhase(Phase selectedPhase) {
-    this.selectedPhase = selectedPhase;
-  }
-
-  public void setYear(int year) {
-    this.year = year;
-  }
 }

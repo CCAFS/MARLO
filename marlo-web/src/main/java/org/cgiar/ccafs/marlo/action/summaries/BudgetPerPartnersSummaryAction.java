@@ -15,17 +15,14 @@
 
 package org.cgiar.ccafs.marlo.action.summaries;
 
-import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Institution;
-import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
@@ -52,12 +49,10 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
-import org.apache.commons.lang3.StringUtils;
 import org.pentaho.reporting.engine.classic.core.Band;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
@@ -79,7 +74,7 @@ import org.slf4j.LoggerFactory;
  * @author Andrés Felipe Valencia Rivera. CCAFS
  */
 
-public class BudgetPerPartnersSummaryAction extends BaseAction implements Summary {
+public class BudgetPerPartnersSummaryAction extends BaseSummariesAction implements Summary {
 
   /**
    * 
@@ -88,29 +83,19 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
 
   private static Logger LOG = LoggerFactory.getLogger(BudgetPerPartnersSummaryAction.class);
   // Parameters
-  private Crp loggedCrp;
-  private int year;
-  private String cycle;
   private Boolean hasW1W2Co;
   private long startTime;
   private Boolean hasGender;
-
-
-  private PhaseManager phaseManager;
-
-
   // Store total projects
   Integer totalProjects = 0;
-
   // Store parters budgets HashMap<Institution, List<w1w2,w3bilateralcenter>>
   HashMap<Institution, List<Double>> allPartnersBudgets = new HashMap<Institution, List<Double>>();
-
   // Store projects budgets HashMap<Project, List<totalw1w2, totalw3bilateralcenter, totalw1w2Gender, totalw3Gender>>
   HashMap<Project, List<Double>> allProjectsBudgets = new HashMap<Project, List<Double>>();
-  private CrpManager crpManager;
+
+  // Managers
   private ProjectBudgetManager projectBudgetManager;
   private CrpProgramManager programManager;
-
   private InstitutionManager institutionManager;
   // XLSX bytes
   private byte[] bytesXLSX;
@@ -121,12 +106,10 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
   public BudgetPerPartnersSummaryAction(APConfig config, CrpManager crpManager,
     ProjectBudgetManager projectBudgetManager, CrpProgramManager programManager, InstitutionManager institutionManager,
     PhaseManager phaseManager) {
-    super(config);
-    this.crpManager = crpManager;
+    super(config, crpManager, phaseManager);
     this.projectBudgetManager = projectBudgetManager;
     this.programManager = programManager;
     this.institutionManager = institutionManager;
-    this.phaseManager = phaseManager;
   }
 
   /**
@@ -334,7 +317,6 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     return masterReport;
   }
 
-
   private HashMap<String, Long> calculateWidth(long width, int numColumns, String name, ArrayList<Integer> excludeIndex,
     long xPosition) {
     HashMap<String, Long> hm = new HashMap<String, Long>();
@@ -399,11 +381,12 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     // Calculate time of generation
     long stopTime = System.currentTimeMillis();
     stopTime = stopTime - startTime;
-    LOG.info(
-      "Downloaded successfully: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
-        + ". CRP: " + this.loggedCrp.getAcronym() + ". Cycle: " + cycle + ". Time to generate: " + stopTime + "ms.");
+    LOG.info("Downloaded successfully: " + this.getFileName() + ". User: "
+      + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: "
+      + this.getSelectedCycle() + ". Time to generate: " + stopTime + "ms.");
     return SUCCESS;
   }
+
 
   private void fillSubreport(SubReport subReport, String query) {
     CompoundDataFactory cdf = CompoundDataFactory.normalize(subReport.getDataFactory());
@@ -426,7 +409,6 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     sdf.addTable(query, model);
     subReport.setDataFactory(cdf);
   }
-
 
   /**
    * Get all subreports and store then in a hash map.
@@ -489,6 +471,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     }
   }
 
+
   private TypedTableModel getBudgetPerPartnersTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"projectId", "projectTitle", "ppaPartner", "flagships", "coas", "regions", "budgetW1W2",
@@ -501,8 +484,8 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
       0);
 
     List<Project> projects = new ArrayList<>();
-    Phase phase = phaseManager.findCycle(APConstants.PLANNING, year, loggedCrp.getId().longValue());
-    for (ProjectPhase projectPhase : phase.getProjectPhases()) {
+
+    for (ProjectPhase projectPhase : this.getSelectedPhase().getProjectPhases()) {
       projects.add((projectPhase.getProject()));
     }
     // sort projects by id
@@ -512,7 +495,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
       List<Institution> institutionsList = new ArrayList<>();
 
       for (ProjectBudget projectBudget : project.getProjectBudgets().stream().filter(pb -> pb.isActive()
-        && pb.getYear() == this.getYear() && pb.getInstitution() != null && pb.getInstitution().isActive())
+        && pb.getYear() == this.getSelectedYear() && pb.getInstitution() != null && pb.getInstitution().isActive())
         .collect(Collectors.toList())) {
         if (this.isPPA(projectBudget.getInstitution())) {
           institutionsList.add(projectBudget.getInstitution());
@@ -604,37 +587,49 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
           }
 
           if (hasW1W2Co) {
-            budgetW1W2 = Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 1, projectId, 3));
-            budgetW1W2Co = Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 1, projectId, 2));
+            budgetW1W2 = Double
+              .parseDouble(this.getTotalAmount(pp.getInstitution().getId(), this.getSelectedYear(), 1, projectId, 3));
+            budgetW1W2Co = Double
+              .parseDouble(this.getTotalAmount(pp.getInstitution().getId(), this.getSelectedYear(), 1, projectId, 2));
 
-            genderPeW1W2 = this.getTotalGenderPer(pp.getInstitution().getId(), year, 1, projectId, 3) / 100;
-            genderPeW1W2Co = this.getTotalGenderPer(pp.getInstitution().getId(), year, 1, projectId, 2) / 100;
+            genderPeW1W2 =
+              this.getTotalGenderPer(pp.getInstitution().getId(), this.getSelectedYear(), 1, projectId, 3) / 100;
+            genderPeW1W2Co =
+              this.getTotalGenderPer(pp.getInstitution().getId(), this.getSelectedYear(), 1, projectId, 2) / 100;
 
-            genderW1W2 = this.getTotalGender(pp.getInstitution().getId(), year, 1, projectId, 3);
-            genderW1W2Co = this.getTotalGender(pp.getInstitution().getId(), year, 1, projectId, 2);
+            genderW1W2 = this.getTotalGender(pp.getInstitution().getId(), this.getSelectedYear(), 1, projectId, 3);
+            genderW1W2Co = this.getTotalGender(pp.getInstitution().getId(), this.getSelectedYear(), 1, projectId, 2);
           } else {
-            budgetW1W2 = Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 1, projectId, 1));
-            genderPeW1W2 = this.getTotalGenderPer(pp.getInstitution().getId(), year, 1, projectId, 1) / 100;
-            genderW1W2 = this.getTotalGender(pp.getInstitution().getId(), year, 1, projectId, 1);
+            budgetW1W2 = Double
+              .parseDouble(this.getTotalAmount(pp.getInstitution().getId(), this.getSelectedYear(), 1, projectId, 1));
+            genderPeW1W2 =
+              this.getTotalGenderPer(pp.getInstitution().getId(), this.getSelectedYear(), 1, projectId, 1) / 100;
+            genderW1W2 = this.getTotalGender(pp.getInstitution().getId(), this.getSelectedYear(), 1, projectId, 1);
             budgetW1W2Co = 0.0;
             genderPeW1W2Co = 0.0;
             genderW1W2Co = 0.0;
           }
 
 
-          budgetW3 = Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 2, projectId, 1));
-          budgetBilateral = Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 3, projectId, 1));
-          budgetCenter = Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 4, projectId, 1));
+          budgetW3 = Double
+            .parseDouble(this.getTotalAmount(pp.getInstitution().getId(), this.getSelectedYear(), 2, projectId, 1));
+          budgetBilateral = Double
+            .parseDouble(this.getTotalAmount(pp.getInstitution().getId(), this.getSelectedYear(), 3, projectId, 1));
+          budgetCenter = Double
+            .parseDouble(this.getTotalAmount(pp.getInstitution().getId(), this.getSelectedYear(), 4, projectId, 1));
 
 
-          genderPeW3 = this.getTotalGenderPer(pp.getInstitution().getId(), year, 2, projectId, 1) / 100;
-          genderPeBilateral = this.getTotalGenderPer(pp.getInstitution().getId(), year, 3, projectId, 1) / 100;
-          genderPeCenter = this.getTotalGenderPer(pp.getInstitution().getId(), year, 4, projectId, 1) / 100;
+          genderPeW3 =
+            this.getTotalGenderPer(pp.getInstitution().getId(), this.getSelectedYear(), 2, projectId, 1) / 100;
+          genderPeBilateral =
+            this.getTotalGenderPer(pp.getInstitution().getId(), this.getSelectedYear(), 3, projectId, 1) / 100;
+          genderPeCenter =
+            this.getTotalGenderPer(pp.getInstitution().getId(), this.getSelectedYear(), 4, projectId, 1) / 100;
 
 
-          genderW3 = this.getTotalGender(pp.getInstitution().getId(), year, 2, projectId, 1);
-          genderBilateral = this.getTotalGender(pp.getInstitution().getId(), year, 3, projectId, 1);
-          genderCenter = this.getTotalGender(pp.getInstitution().getId(), year, 4, projectId, 1);
+          genderW3 = this.getTotalGender(pp.getInstitution().getId(), this.getSelectedYear(), 2, projectId, 1);
+          genderBilateral = this.getTotalGender(pp.getInstitution().getId(), this.getSelectedYear(), 3, projectId, 1);
+          genderCenter = this.getTotalGender(pp.getInstitution().getId(), this.getSelectedYear(), 4, projectId, 1);
 
           // Fill institutions and their budgets
           /**
@@ -718,7 +713,6 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     return model;
   }
 
-
   private TypedTableModel getBudgetPerProjectsTableModel() {
     // projectID,
     // projectTitle,totalw1w2,totalw1w2Co,totalw3bilateralcenter,totalw1w2Gender,genderBudgetW1W2Co,totalw1w2Gender,
@@ -774,12 +768,6 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     return "application/xlsx";
   }
 
-
-  public String getCycle() {
-    return cycle;
-  }
-
-
   @SuppressWarnings("unused")
   private File getFile(String fileName) {
     // Get file from resources folder
@@ -793,12 +781,13 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
     fileName.append("BudgetPerPartnersSummary-");
-    fileName.append(this.year + "_");
+    fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
     return fileName.toString();
 
   }
+
 
   private void getFooterSubreports(HashMap<String, Element> hm, ReportFooter reportFooter) {
 
@@ -818,9 +807,11 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     }
   }
 
+
   public Boolean getHasGender() {
     return hasGender;
   }
+
 
   private void getHeaderSubreports(HashMap<String, Element> hm, ReportHeader reportHeader) {
 
@@ -849,17 +840,13 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     return inputStream;
   }
 
-  public Crp getLoggedCrp() {
-    return loggedCrp;
-  }
-
   private TypedTableModel getMasterTableModel() {
     // Initialization of Model
     TypedTableModel model = new TypedTableModel(
       new String[] {"center", "date", "year", "crp_id", "regionalAvalaible", "hasW1W2Co", "hasGender"},
       new Class[] {String.class, String.class, Integer.class, Long.class, Boolean.class, Boolean.class, Boolean.class});
 
-    String center = loggedCrp.getAcronym();
+    String center = this.getLoggedCrp().getAcronym();
     // Get datetime
     ZonedDateTime timezone = ZonedDateTime.now();
     DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
@@ -868,8 +855,8 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
       zone = "+0";
     }
     String date = timezone.format(format) + "(GMT" + zone + ")";
-    model.addRow(new Object[] {center, date, this.getYear(), loggedCrp.getId(), this.hasProgramnsRegions(), hasW1W2Co,
-      this.hasGender});
+    model.addRow(new Object[] {center, date, this.getSelectedYear(), this.getLoggedCrp().getId(),
+      this.hasProgramnsRegions(), hasW1W2Co, this.hasGender});
     return model;
   }
 
@@ -926,6 +913,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     }
     return model;
   }
+
 
   /**
    * Get total amount per institution year and type
@@ -991,11 +979,6 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
   }
 
 
-  public int getYear() {
-    return year;
-  }
-
-
   /**
    * Verify if an institution isPPA or not
    * 
@@ -1020,39 +1003,13 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     return false;
   }
 
+
   @Override
   public void prepare() {
-    // Get loggerCrp
-    try {
-      loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-      loggedCrp = crpManager.getCrpById(loggedCrp.getId());
-    } catch (Exception e) {
-      LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
-    }
-    // Get parameters from URL
-    // Get year
-    try {
-      Map<String, Object> parameters = this.getParameters();
-      year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
-    } catch (Exception e) {
-      LOG.warn("Failed to get " + APConstants.YEAR_REQUEST
-        + " parameter. Parameter will be set as CurrentCycleYear. Exception: " + e.getMessage());
-      year = this.getCurrentCycleYear();
-    }
-    // Get cycle
-    try {
-      Map<String, Object> parameters = this.getParameters();
-      cycle = (StringUtils.trim(((String[]) parameters.get(APConstants.CYCLE))[0]));
-    } catch (Exception e) {
-      LOG.warn("Failed to get " + APConstants.CYCLE + " parameter. Parameter will be set as CurrentCycle. Exception: "
-        + e.getMessage());
-      cycle = this.getCurrentCycle();
-    }
+    this.setGeneralParameters();
     hasW1W2Co = this.hasSpecificities(APConstants.CRP_FS_W1W2_COFINANCING);
-
     try {
       hasGender = this.hasSpecificities(APConstants.CRP_BUDGET_GENDER);
-
     } catch (Exception e) {
       LOG.warn("Failed to get " + APConstants.CRP_BUDGET_GENDER + " parameter. Parameter was set null. Exception: "
         + e.getMessage());
@@ -1062,26 +1019,12 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     startTime = System.currentTimeMillis();
     LOG.info(
       "Start report download: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
-        + ". CRP: " + this.loggedCrp.getAcronym() + ". Cycle: " + cycle);
-  }
-
-  public void setCycle(String cycle) {
-    this.cycle = cycle;
+        + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: " + this.getSelectedCycle());
   }
 
   public void setHasGender(Boolean hasGender) {
     this.hasGender = hasGender;
   }
-
-  public void setLoggedCrp(Crp loggedCrp) {
-    this.loggedCrp = loggedCrp;
-  }
-
-
-  public void setYear(int year) {
-    this.year = year;
-  }
-
 
   /**
    * method that sort a map list alphabetical

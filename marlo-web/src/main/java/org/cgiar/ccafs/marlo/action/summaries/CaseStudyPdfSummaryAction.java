@@ -15,14 +15,12 @@
 
 package org.cgiar.ccafs.marlo.action.summaries;
 
-import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CaseStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.model.CaseStudy;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyIndicator;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -37,11 +35,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
-import org.apache.commons.lang3.StringUtils;
 import org.pentaho.reporting.engine.classic.core.Band;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
@@ -61,7 +57,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
+public class CaseStudyPdfSummaryAction extends BaseSummariesAction implements Summary {
 
 
   private static final long serialVersionUID = 1L;
@@ -69,7 +65,6 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
 
   // Managers
   private CaseStudyManager caseStudyManager;
-  private CrpManager crpManager;
 
   // XLSX bytes
   private byte[] bytesPDF;
@@ -77,15 +72,13 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
   InputStream inputStream;
 
   // Parameters
-  private int year;
   private long startTime;
-  private Crp loggedCrp;
 
   @Inject
-  public CaseStudyPdfSummaryAction(APConfig config, CaseStudyManager caseStudyManager, CrpManager crpManager) {
-    super(config);
+  public CaseStudyPdfSummaryAction(APConfig config, CaseStudyManager caseStudyManager, CrpManager crpManager,
+    PhaseManager phaseManager) {
+    super(config, crpManager, phaseManager);
     this.caseStudyManager = caseStudyManager;
-    this.crpManager = crpManager;
   }
 
   /**
@@ -133,7 +126,7 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
         manager.createDirectly(this.getClass().getResource("/pentaho/CaseStudy.prpt"), MasterReport.class);
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
-      String center = loggedCrp.getAcronym();
+      String center = this.getLoggedCrp().getAcronym();
 
 
       // Get datetime
@@ -149,7 +142,7 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
       CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
       String masterQueryName = "main";
       TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
-      TypedTableModel model = this.getMasterTableModel(center, date, String.valueOf(year));
+      TypedTableModel model = this.getMasterTableModel(center, date, String.valueOf(this.getSelectedYear()));
       sdf.addTable(masterQueryName, model);
       masterReport.setDataFactory(cdf);
       // Set i8n for pentaho
@@ -177,7 +170,7 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
     stopTime = stopTime - startTime;
     LOG.info(
       "Downloaded successfully: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
-        + ". CRP: " + this.loggedCrp.getAcronym() + ". Time to generate: " + stopTime + "ms.");
+        + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Time to generate: " + stopTime + "ms.");
     return SUCCESS;
   }
 
@@ -269,7 +262,7 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
     if (caseStudyManager.findAll() != null) {
 
       List<CaseStudy> caseStudies = new ArrayList<>(caseStudyManager.findAll().stream()
-        .filter(cs -> cs.isActive() && cs.getYear() == this.year).collect(Collectors.toList()));
+        .filter(cs -> cs.isActive() && cs.getYear() == this.getSelectedYear()).collect(Collectors.toList()));
 
       if (!caseStudies.isEmpty()) {
         for (CaseStudy caseStudy : caseStudies) {
@@ -340,7 +333,7 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
               }
             }
 
-            if (caseStudyProject.getProject().getCrp().getId().longValue() == loggedCrp.getId().longValue()) {
+            if (caseStudyProject.getProject().getCrp().getId().longValue() == this.getLoggedCrp().getId().longValue()) {
               add = true;
             }
           }
@@ -413,7 +406,7 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
     fileName.append("OutcomesCaseStudiesSummary-");
-    fileName.append(this.year + "_");
+    fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".pdf");
     return fileName.toString();
@@ -445,9 +438,6 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
     return inputStream;
   }
 
-  public Crp getLoggedCrp() {
-    return loggedCrp;
-  }
 
   private TypedTableModel getMasterTableModel(String center, String date, String year) {
     // Initialization of Model
@@ -460,28 +450,11 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
 
   @Override
   public void prepare() throws Exception {
-    // Get loggerCrp
-    try {
-      loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-      loggedCrp = crpManager.getCrpById(loggedCrp.getId());
-    } catch (Exception e) {
-      LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
-    }
-
-    // Get parameters from URL
-    // Get year
-    try {
-      Map<String, Object> parameters = this.getParameters();
-      year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
-    } catch (Exception e) {
-      LOG.warn("Failed to get " + APConstants.YEAR_REQUEST
-        + " parameter. Parameter will be set as CurrentCycleYear. Exception: " + e.getMessage());
-      year = this.getCurrentCycleYear();
-    }
+    this.setGeneralParameters();
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
     LOG.info("Start report download: " + this.getFileName() + ". User: "
-      + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.loggedCrp.getAcronym());
+      + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.getLoggedCrp().getAcronym());
   }
 
   public void setBytesPDF(byte[] bytesPDF) {
@@ -491,10 +464,5 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
   public void setInputStream(InputStream inputStream) {
     this.inputStream = inputStream;
   }
-
-  public void setLoggedCrp(Crp loggedCrp) {
-    this.loggedCrp = loggedCrp;
-  }
-
 
 }

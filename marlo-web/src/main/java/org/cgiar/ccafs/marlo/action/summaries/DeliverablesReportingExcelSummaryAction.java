@@ -15,15 +15,13 @@
 
 package org.cgiar.ccafs.marlo.action.summaries;
 
-import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectHighligthManager;
 import org.cgiar.ccafs.marlo.data.model.ChannelEnum;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile;
@@ -56,11 +54,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
-import org.apache.commons.lang3.StringUtils;
 import org.pentaho.reporting.engine.classic.core.Band;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
@@ -80,12 +76,11 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Andrés Valencia - CIAT/CCAFS
  */
-public class DeliverablesReportingExcelSummaryAction extends BaseAction implements Summary {
+public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction implements Summary {
 
 
   private static final long serialVersionUID = 1L;
   private static Logger LOG = LoggerFactory.getLogger(DeliverablesReportingExcelSummaryAction.class);
-  private CrpManager crpManager;
   private CrpProgramManager programManager;
   private DeliverableManager deliverableManager;
   private GenderTypeManager genderTypeManager;
@@ -94,17 +89,14 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
   private byte[] bytesXLSX;
   // Streams
   InputStream inputStream;
-
-  private int year;
+  // Parameters
   private long startTime;
-  private Crp loggedCrp;
 
   @Inject
   public DeliverablesReportingExcelSummaryAction(APConfig config, CrpManager crpManager,
     ProjectHighligthManager projectHighLightManager, CrpProgramManager programManager,
-    GenderTypeManager genderTypeManager, DeliverableManager deliverableManager) {
-    super(config);
-    this.crpManager = crpManager;
+    GenderTypeManager genderTypeManager, DeliverableManager deliverableManager, PhaseManager phaseManager) {
+    super(config, crpManager, phaseManager);
     this.genderTypeManager = genderTypeManager;
     this.programManager = programManager;
     this.deliverableManager = deliverableManager;
@@ -233,7 +225,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
         manager.createDirectly(this.getClass().getResource("/pentaho/deliverablesReporting.prpt"), MasterReport.class);
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
-      String center = loggedCrp.getAcronym();
+      String center = this.getLoggedCrp().getAcronym();
 
       ZonedDateTime timezone = ZonedDateTime.now();
       DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
@@ -246,7 +238,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
       CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
       String masterQueryName = "main";
       TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
-      TypedTableModel model = this.getMasterTableModel(center, date, String.valueOf(year));
+      TypedTableModel model = this.getMasterTableModel(center, date, String.valueOf(this.getSelectedYear()));
       sdf.addTable(masterQueryName, model);
       masterReport.setDataFactory(cdf);
       // Set i8n for pentaho
@@ -275,7 +267,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
     stopTime = stopTime - startTime;
     LOG.info(
       "Downloaded successfully: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
-        + ". CRP: " + this.loggedCrp.getAcronym() + ". Time to generate: " + stopTime + "ms.");
+        + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Time to generate: " + stopTime + "ms.");
     return SUCCESS;
   }
 
@@ -396,26 +388,26 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
     if (!deliverableManager.findAll().isEmpty()) {
 
       // get Reporting deliverables
-      List<Deliverable> deliverables = new ArrayList<>(deliverableManager.findAll().stream()
-        .filter(d -> d.isActive() && d.getProject() != null && d.getProject().isActive()
-          && d.getProject().getProjecInfoPhase(this.getActualPhase()).getReporting() != null
-          && d.getProject().getProjecInfoPhase(this.getActualPhase()).getReporting() && d.getProject().getCrp() != null
-          && d.getProject().getCrp().getId().equals(this.loggedCrp.getId())
-          && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-          && ((d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Complete.getStatusId())
-          && (d.getDeliverableInfo(this.getActualPhase()).getYear() >= this.year
-            || (d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null
-              && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear().intValue() >= this.year)))
+      List<Deliverable> deliverables = new ArrayList<>(deliverableManager.findAll().stream().filter(d -> d.isActive()
+        && d.getProject() != null && d.getProject().isActive()
+        && d.getProject().getProjecInfoPhase(this.getActualPhase()).getReporting() != null
+        && d.getProject().getProjecInfoPhase(this.getActualPhase()).getReporting() && d.getProject().getCrp() != null
+        && d.getProject().getCrp().getId().equals(this.getLoggedCrp().getId())
+        && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
+        && ((d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+          .parseInt(ProjectStatusEnum.Complete.getStatusId())
+          && (d.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getSelectedYear()
+            || (d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null && d
+              .getDeliverableInfo(this.getActualPhase()).getNewExpectedYear().intValue() >= this.getSelectedYear())))
           || (d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Extended.getStatusId())
             && (d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null
-              && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear().intValue() == this.year))
+              && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear().intValue() == this.getSelectedYear()))
           || (d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
-            && (d.getDeliverableInfo(this.getActualPhase()).getYear() == this.year
-              || (d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null
-                && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear().intValue() == this.year))))
+            && (d.getDeliverableInfo(this.getActualPhase()).getYear() == this.getSelectedYear()
+              || (d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null && d
+                .getDeliverableInfo(this.getActualPhase()).getNewExpectedYear().intValue() == this.getSelectedYear()))))
         && (d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
           .parseInt(ProjectStatusEnum.Extended.getStatusId())
           || d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
@@ -424,8 +416,9 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
             .parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
         .collect(Collectors.toList()));
 
-      deliverables.sort((p1, p2) -> p1.getDeliverableInfo(this.getActualPhase()).isRequieriedReporting(year)
-        .compareTo(p2.getDeliverableInfo(this.getActualPhase()).isRequieriedReporting(year)));
+      deliverables
+        .sort((p1, p2) -> p1.getDeliverableInfo(this.getActualPhase()).isRequieriedReporting(this.getSelectedYear())
+          .compareTo(p2.getDeliverableInfo(this.getActualPhase()).isRequieriedReporting(this.getSelectedYear())));
 
       HashSet<Deliverable> deliverablesHL = new HashSet<>();
       deliverablesHL.addAll(deliverables);
@@ -1161,11 +1154,13 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
       0);
 
 
-    if (!loggedCrp.getDeliverables().stream().filter(d -> d.getIsPublication() != null
-      && d.getIsPublication().booleanValue() && d.isActive() && d.getProject() == null).collect(Collectors.toList())
-      .isEmpty()) {
-      for (Deliverable deliverable : loggedCrp.getDeliverables().stream().filter(d -> d.getIsPublication() != null
+    if (!this
+      .getLoggedCrp().getDeliverables().stream().filter(d -> d.getIsPublication() != null
         && d.getIsPublication().booleanValue() && d.isActive() && d.getProject() == null)
+      .collect(Collectors.toList()).isEmpty()) {
+      for (Deliverable deliverable : this
+        .getLoggedCrp().getDeliverables().stream().filter(d -> d.getIsPublication() != null
+          && d.getIsPublication().booleanValue() && d.isActive() && d.getProject() == null)
         .collect(Collectors.toList())) {
         // System.out.println(deliverable.getId());
         // System.out.println("#" + i);
@@ -1684,7 +1679,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
     fileName.append("DeliverablesReportingSummary-");
-    fileName.append(this.year + "_");
+    fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
 
@@ -1729,10 +1724,6 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
     return inputStream;
   }
 
-  public Crp getLoggedCrp() {
-    return loggedCrp;
-  }
-
   private TypedTableModel getMasterTableModel(String center, String date, String year) {
     // Initialization of Model
     TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "year", "regionalAvalaible"},
@@ -1743,27 +1734,11 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
 
   @Override
   public void prepare() throws Exception {
-    // Get loggerCrp
-    try {
-      loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-      loggedCrp = crpManager.getCrpById(loggedCrp.getId());
-    } catch (Exception e) {
-      LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
-    }
-    // Get parameters from URL
-    // Get year
-    try {
-      Map<String, Object> parameters = this.getParameters();
-      year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
-    } catch (Exception e) {
-      LOG.warn("Failed to get " + APConstants.YEAR_REQUEST
-        + " parameter. Parameter will be set as CurrentCycleYear. Exception: " + e.getMessage());
-      year = this.getCurrentCycleYear();
-    }
+    this.setGeneralParameters();
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
     LOG.info("Start report download: " + this.getFileName() + ". User: "
-      + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.loggedCrp.getAcronym());
+      + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.getLoggedCrp().getAcronym());
   }
 
   private DeliverablePartnership responsiblePartner(Deliverable deliverable) {
@@ -1788,7 +1763,4 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
     this.inputStream = inputStream;
   }
 
-  public void setLoggedCrp(Crp loggedCrp) {
-    this.loggedCrp = loggedCrp;
-  }
 }
