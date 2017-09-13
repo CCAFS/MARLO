@@ -16,7 +16,6 @@
 
 package org.cgiar.ccafs.marlo.action.summaries;
 
-import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
@@ -31,7 +30,7 @@ import java.util.List;
 
 import com.google.inject.Inject;
 
-public class SummaryListAction extends BaseAction {
+public class SummaryListAction extends BaseSummariesAction {
 
   /**
    * 
@@ -48,7 +47,7 @@ public class SummaryListAction extends BaseAction {
 
   @Inject
   public SummaryListAction(APConfig config, PhaseManager phaseManager, CrpManager crpManager) {
-    super(config);
+    super(config, crpManager, phaseManager);
     this.crpManager = crpManager;
     this.phaseManager = phaseManager;
   }

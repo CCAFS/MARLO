@@ -15,13 +15,12 @@
 
 package org.cgiar.ccafs.marlo.action.summaries;
 
-import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableFundingSourceManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
@@ -47,12 +46,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
-import org.apache.commons.lang3.StringUtils;
 import org.pentaho.reporting.engine.classic.core.Band;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
@@ -73,7 +70,7 @@ import org.slf4j.LoggerFactory;
  * @author Andrés Felipe Valencia Rivera. CCAFS
  */
 
-public class FundingSourcesSummaryAction extends BaseAction implements Summary {
+public class FundingSourcesSummaryAction extends BaseSummariesAction implements Summary {
 
   private static final Logger LOG = LoggerFactory.getLogger(FundingSourcesSummaryAction.class);
   /**
@@ -82,15 +79,11 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
   private static final long serialVersionUID = 1L;
 
   // Variables
-  private Crp loggedCrp;
-  private int year;
-  private String cycle;
   private Boolean showPIEmail;
   private Boolean showIfpriDivision;
   private long startTime;
   private Boolean hasW1W2Co;
   // Managers
-  private CrpManager crpManager;
   private CrpProgramManager programManager;
   private ProjectManager projectManager;
   private DeliverableFundingSourceManager deliverableFundingSourceManager;
@@ -102,9 +95,9 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
 
   @Inject
   public FundingSourcesSummaryAction(APConfig config, CrpManager crpManager, CrpProgramManager programManager,
-    ProjectManager projectManager, DeliverableFundingSourceManager deliverableFundingSourceManager) {
-    super(config);
-    this.crpManager = crpManager;
+    ProjectManager projectManager, DeliverableFundingSourceManager deliverableFundingSourceManager,
+    PhaseManager phaseManager) {
+    super(config, crpManager, phaseManager);
     this.programManager = programManager;
     this.projectManager = projectManager;
     this.deliverableFundingSourceManager = deliverableFundingSourceManager;
@@ -131,11 +124,11 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
     masterReport.getParameterValues().put("i8nFundingWindow", this.getText("projectCofunded.type"));
     masterReport.getParameterValues().put("i8nDonor", this.getText("projectCofunded.donor"));
     masterReport.getParameterValues().put("i8nBudgetYear",
-      this.getText("fundingSource.budget", new String[] {String.valueOf(year)}));
+      this.getText("fundingSource.budget", new String[] {String.valueOf(this.getSelectedYear())}));
     masterReport.getParameterValues().put("i8nBudgetYearProjects",
-      this.getText("fundingSource.budgetYearAllocated", new String[] {String.valueOf(year)}));
+      this.getText("fundingSource.budgetYearAllocated", new String[] {String.valueOf(this.getSelectedYear())}));
     masterReport.getParameterValues().put("i8nDeliverableIDs",
-      this.getText("fundingSource.deliverableIDs", new String[] {String.valueOf(year)}));
+      this.getText("fundingSource.deliverableIDs", new String[] {String.valueOf(this.getSelectedYear())}));
     masterReport.getParameterValues().put("i8nProjects", this.getText("caseStudy.projects"));
     masterReport.getParameterValues().put("i8nCoas", this.getText("deliverable.coas"));
     masterReport.getParameterValues().put("i8nFlagships", this.getText("project.Flagships"));
@@ -165,7 +158,7 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
 
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
-      String center = loggedCrp.getAcronym();
+      String center = this.getLoggedCrp().getAcronym();
 
 
       // Get datetime
@@ -209,9 +202,9 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
     // Calculate time of generation
     long stopTime = System.currentTimeMillis();
     stopTime = stopTime - startTime;
-    LOG.info(
-      "Downloaded successfully: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
-        + ". CRP: " + this.loggedCrp.getAcronym() + ". Cycle: " + cycle + ". Time to generate: " + stopTime + "ms.");
+    LOG.info("Downloaded successfully: " + this.getFileName() + ". User: "
+      + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: "
+      + this.getSelectedCycle() + ". Time to generate: " + stopTime + "ms.");
     return SUCCESS;
 
   }
@@ -300,10 +293,6 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
     return "application/xlsx";
   }
 
-  public String getCycle() {
-    return cycle;
-  }
-
   /**
    * This method is used to get the file from resources. In this case the Pentaho *.prpt
    * 
@@ -318,12 +307,11 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
     return file;
   }
 
-
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
     fileName.append("FundingSourcesSummary-");
-    fileName.append(this.year + "_");
+    fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
 
@@ -355,6 +343,7 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
     return config.getDownloadURL() + "/" + this.getFundingSourceUrlPath().replace('\\', '/');
   }
 
+
   private TypedTableModel getFundingSourcesProjectsTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"fs_title", "fs_id", "finance_code", "lead_partner", "fs_window", "project_id", "total_budget",
@@ -363,7 +352,7 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
         String.class, String.class, String.class, String.class, String.class, String.class, String.class},
       0);
 
-    for (FundingSource fundingSource : loggedCrp.getFundingSources().stream()
+    for (FundingSource fundingSource : this.getLoggedCrp().getFundingSources().stream()
       .filter(fs -> fs.isActive() && fs.getBudgetType() != null).collect(Collectors.toList())) {
 
       String fsTitle = fundingSource.getTitle();
@@ -381,8 +370,8 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
       }
 
       for (ProjectBudget projectBudget : fundingSource.getProjectBudgets().stream()
-        .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getProject() != null && pb.getProject().isActive()
-          && pb.getProject().getProjecInfoPhase(this.getActualPhase()).getStatus() != null
+        .filter(pb -> pb.isActive() && pb.getYear() == this.getSelectedYear() && pb.getProject() != null
+          && pb.getProject().isActive() && pb.getProject().getProjecInfoPhase(this.getActualPhase()).getStatus() != null
           && pb.getProject().getProjecInfoPhase(this.getActualPhase()).getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
         .collect(Collectors.toList())) {
@@ -496,7 +485,7 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
 
-    for (FundingSource fundingSource : loggedCrp.getFundingSources().stream()
+    for (FundingSource fundingSource : this.getLoggedCrp().getFundingSources().stream()
       .filter(fs -> fs.isActive() && fs.getBudgetType() != null).collect(Collectors.toList())) {
 
       String fsTitle = fundingSource.getTitle();
@@ -574,7 +563,8 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
       String projectId = "";
       List<String> projectList = new ArrayList<String>();
       for (ProjectBudget projectBudget : fundingSource.getProjectBudgets().stream()
-        .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getProject() != null).collect(Collectors.toList())) {
+        .filter(pb -> pb.isActive() && pb.getYear() == this.getSelectedYear() && pb.getProject() != null)
+        .collect(Collectors.toList())) {
         projectList.add(projectBudget.getProject().getId().toString());
       }
 
@@ -637,13 +627,13 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
       Double totalBudgetProjects = 0.0;
 
       for (FundingSourceBudget fundingSourceBudget : fundingSource.getFundingSourceBudgets().stream()
-        .filter(fsb -> fsb.isActive() && fsb.getYear() != null && fsb.getYear().intValue() == year)
+        .filter(fsb -> fsb.isActive() && fsb.getYear() != null && fsb.getYear().intValue() == this.getSelectedYear())
         .collect(Collectors.toList())) {
         totalBudget += fundingSourceBudget.getBudget();
       }
 
       for (ProjectBudget projectBudget : fundingSource.getProjectBudgets().stream()
-        .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getProject().isActive()
+        .filter(pb -> pb.isActive() && pb.getYear() == this.getSelectedYear() && pb.getProject().isActive()
           && pb.getProject().getProjecInfoPhase(this.getActualPhase()).getStatus() != null
           && pb.getProject().getProjecInfoPhase(this.getActualPhase()).getStatus() == 2)
         .collect(Collectors.toList())) {
@@ -736,52 +726,19 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
     return inputStream;
   }
 
-  public Crp getLoggedCrp() {
-    return loggedCrp;
-  }
 
   private TypedTableModel getMasterTableModel(String center, String date) {
     // Initialization of Model
     TypedTableModel model =
       new TypedTableModel(new String[] {"center", "date", "managingPPAField", "year", "showPIEmail"},
         new Class[] {String.class, String.class, String.class, Integer.class, Boolean.class});
-    model.addRow(new Object[] {center, date, "Managing / PPA Partner", this.year, showPIEmail});
+    model.addRow(new Object[] {center, date, "Managing / PPA Partner", this.getSelectedYear(), showPIEmail});
     return model;
-  }
-
-
-  public int getYear() {
-    return year;
   }
 
   @Override
   public void prepare() {
-    // Get loggerCrp
-    try {
-      loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-      loggedCrp = crpManager.getCrpById(loggedCrp.getId());
-    } catch (Exception e) {
-      LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
-    }
-    // Get parameters from URL
-    // Get year
-    try {
-      Map<String, Object> parameters = this.getParameters();
-      year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
-    } catch (Exception e) {
-      LOG.warn("Failed to get " + APConstants.YEAR_REQUEST
-        + " parameter. Parameter will be set as CurrentCycleYear. Exception: " + e.getMessage());
-      year = this.getCurrentCycleYear();
-    }
-    // Get cycle
-    try {
-      Map<String, Object> parameters = this.getParameters();
-      cycle = (StringUtils.trim(((String[]) parameters.get(APConstants.CYCLE))[0]));
-    } catch (Exception e) {
-      LOG.warn("Failed to get " + APConstants.CYCLE + " parameter. Parameter will be set as CurrentCycle. Exception: "
-        + e.getMessage());
-      cycle = this.getCurrentCycle();
-    }
+    this.setGeneralParameters();
     // Get PIEmail crp_parameter
     try {
       this.showPIEmail = this.hasSpecificities(this.getText(APConstants.CRP_EMAIL_FUNDING_SOURCE));
@@ -803,21 +760,7 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
     startTime = System.currentTimeMillis();
     LOG.info(
       "Start report download: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
-        + ". CRP: " + this.loggedCrp.getAcronym() + ". Cycle: " + cycle);
-  }
-
-  public void setCycle(String cycle) {
-    this.cycle = cycle;
-  }
-
-
-  public void setLoggedCrp(Crp loggedCrp) {
-    this.loggedCrp = loggedCrp;
-  }
-
-
-  public void setYear(int year) {
-    this.year = year;
+        + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: " + this.getSelectedCycle());
   }
 
 }
