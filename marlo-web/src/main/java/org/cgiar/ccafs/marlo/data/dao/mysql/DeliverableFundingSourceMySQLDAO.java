@@ -16,6 +16,7 @@
 
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.DeliverableFundingSourceDAO;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -75,13 +76,16 @@ public class DeliverableFundingSourceMySQLDAO implements DeliverableFundingSourc
     DeliverableFundingSource deliverableFundingSource = this.find(deliverableFundingSourceId);
     deliverableFundingSource.setActive(false);
 
-    long result = this.save(deliverableFundingSource);
-
-    if (deliverableFundingSource.getPhase().getNext() != null) {
-      this.deleteDeliverableFundingSource(deliverableFundingSource.getPhase().getNext(),
-        deliverableFundingSource.getDeliverable().getId(), deliverableFundingSource);
+    boolean result = dao.update(deliverableFundingSource);
+    Phase currentPhase = dao.find(Phase.class, deliverableFundingSource.getPhase().getId());
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+      if (deliverableFundingSource.getPhase().getNext() != null) {
+        this.deleteDeliverableFundingSource(deliverableFundingSource.getPhase().getNext(),
+          deliverableFundingSource.getDeliverable().getId(), deliverableFundingSource);
+      }
     }
-    return result > 0;
+
+    return result;
 
 
   }
@@ -99,12 +103,13 @@ public class DeliverableFundingSourceMySQLDAO implements DeliverableFundingSourc
         .collect(Collectors.toList());
 
       for (DeliverableFundingSource deFundingSource : fundingSources) {
-        this.deleteDeliverableFundingSource(deFundingSource.getId());
+        deFundingSource.setActive(false);
+        dao.update(deFundingSource);
+
       }
-    } else {
-      if (phase.getNext() != null) {
-        this.deleteDeliverableFundingSource(phase.getNext(), deliverableID, deliverableFundingSource);
-      }
+    }
+    if (phase.getNext() != null) {
+      this.deleteDeliverableFundingSource(phase.getNext(), deliverableID, deliverableFundingSource);
     }
 
 
@@ -144,10 +149,12 @@ public class DeliverableFundingSourceMySQLDAO implements DeliverableFundingSourc
     } else {
       dao.update(deliverableFundingSource);
     }
-
-    if (deliverableFundingSource.getPhase().getNext() != null) {
-      this.addDeliverableFundingSourcePhase(deliverableFundingSource.getPhase().getNext(),
-        deliverableFundingSource.getDeliverable().getId(), deliverableFundingSource);
+    Phase currentPhase = dao.find(Phase.class, deliverableFundingSource.getPhase().getId());
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+      if (deliverableFundingSource.getPhase().getNext() != null) {
+        this.addDeliverableFundingSourcePhase(deliverableFundingSource.getPhase().getNext(),
+          deliverableFundingSource.getDeliverable().getId(), deliverableFundingSource);
+      }
     }
     return deliverableFundingSource.getId();
   }

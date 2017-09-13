@@ -16,6 +16,7 @@
 
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.InstitutionLocationDAO;
 import org.cgiar.ccafs.marlo.data.dao.LocElementDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectPartnerDAO;
@@ -130,6 +131,8 @@ public class ProjectPartnerMySQLDAO implements ProjectPartnerDAO {
     } else {
       if (phase.getEditable() != null && phase.getEditable()) {
         for (ProjectPartner projectPartnerPrev : partners) {
+          projectPartnerPrev.setResponsibilities(projectPartner.getResponsibilities());
+          dao.update(projectPartnerPrev);
           this.updateUsers(projectPartnerPrev, projectPartner);
           this.updateLocations(projectPartnerPrev, projectPartner);
         }
@@ -147,14 +150,19 @@ public class ProjectPartnerMySQLDAO implements ProjectPartnerDAO {
   public boolean deleteProjectPartner(long projectPartnerId) {
     ProjectPartner projectPartner = this.find(projectPartnerId);
     projectPartner.setActive(false);
-    long result = this.save(projectPartner);
+    boolean result = dao.update(projectPartner);
+    Phase currentPhase = dao.find(Phase.class, projectPartner.getPhase().getId());
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
 
-    if (projectPartner.getPhase().getNext() != null) {
-      this.deletProjectPartnerPhase(projectPartner.getPhase().getNext(), projectPartner.getProject().getId(),
-        projectPartner);
+      if (projectPartner.getPhase().getNext() != null) {
+        this.deletProjectPartnerPhase(projectPartner.getPhase().getNext(), projectPartner.getProject().getId(),
+          projectPartner);
+      }
     }
-    return result > 0;
+
+    return result;
   }
+
 
   public void deletProjectPartnerPhase(Phase next, long projecID, ProjectPartner projectPartner) {
     Phase phase = dao.find(Phase.class, next.getId());
@@ -164,12 +172,12 @@ public class ProjectPartnerMySQLDAO implements ProjectPartnerDAO {
           && projectPartner.getInstitution().getId().longValue() == c.getInstitution().getId().longValue())
         .collect(Collectors.toList());
       for (ProjectPartner partner : partners) {
-        this.deleteProjectPartner(partner.getId());
+        partner.setActive(false);
+        dao.update(partner);
       }
-    } else {
-      if (phase.getNext() != null) {
-        this.deletProjectPartnerPhase(phase.getNext(), projecID, projectPartner);
-      }
+    }
+    if (phase.getNext() != null) {
+      this.deletProjectPartnerPhase(phase.getNext(), projecID, projectPartner);
     }
 
 
@@ -210,11 +218,14 @@ public class ProjectPartnerMySQLDAO implements ProjectPartnerDAO {
     } else {
       dao.update(projectPartner);
     }
-
-    if (projectPartner.getPhase().getNext() != null) {
-      this.addProjectPartnerDAO(projectPartner.getPhase().getNext(), projectPartner.getProject().getId(),
-        projectPartner);
+    Phase currentPhase = dao.find(Phase.class, projectPartner.getPhase().getId());
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+      if (projectPartner.getPhase().getNext() != null) {
+        this.addProjectPartnerDAO(projectPartner.getPhase().getNext(), projectPartner.getProject().getId(),
+          projectPartner);
+      }
     }
+
     return projectPartner.getId();
   }
 

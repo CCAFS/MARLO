@@ -906,6 +906,7 @@ public class ProjectDescriptionAction extends BaseAction {
       project.getProjectInfo().setReporting(projectDB.getProjectInfo().getReporting());
       project.getProjectInfo().setAdministrative(projectDB.getProjectInfo().getAdministrative());
       project.getProjectInfo().setModificationJustification(this.getJustification());
+
       projectInfoManagerManager.saveProjectInfo(project.getProjectInfo());
       project.setModifiedBy(this.getCurrentUser());
       projectManager.saveProject(project, this.getActionName(), relationsName, this.getActualPhase());

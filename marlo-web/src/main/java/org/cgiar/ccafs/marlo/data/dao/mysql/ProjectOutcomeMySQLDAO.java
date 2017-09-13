@@ -16,6 +16,7 @@
 
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.ProjectOutcomeDAO;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
@@ -100,6 +101,7 @@ public class ProjectOutcomeMySQLDAO implements ProjectOutcomeDAO {
     }
   }
 
+
   /**
    * clone or update the project outcome for next phases
    * 
@@ -159,11 +161,41 @@ public class ProjectOutcomeMySQLDAO implements ProjectOutcomeDAO {
 
   }
 
+
   @Override
   public boolean deleteProjectOutcome(long projectOutcomeId) {
     ProjectOutcome projectOutcome = this.find(projectOutcomeId);
     projectOutcome.setActive(false);
-    return this.save(projectOutcome) > 0;
+    boolean result = dao.update(projectOutcome);
+    Phase currentPhase = dao.find(Phase.class, projectOutcome.getPhase().getId());
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+      if (projectOutcome.getPhase().getNext() != null) {
+        this.deletProjectOutcomePhase(projectOutcome.getPhase().getNext(), projectOutcome.getProject().getId(),
+          projectOutcome);
+      }
+    }
+
+    return result;
+  }
+
+  public void deletProjectOutcomePhase(Phase next, long projecID, ProjectOutcome projectOutcome) {
+    Phase phase = dao.find(Phase.class, next.getId());
+    if (phase.getEditable() != null && phase.getEditable()) {
+      List<ProjectOutcome> outcomes = phase.getProjectOutcomes().stream()
+        .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
+          && projectOutcome.getCrpProgramOutcome().getComposeID().equals(c.getCrpProgramOutcome().getComposeID()))
+        .collect(Collectors.toList());
+      for (ProjectOutcome outcome : outcomes) {
+        outcome.setActive(false);
+        dao.update(outcome);
+      }
+    }
+    if (phase.getNext() != null) {
+      this.deletProjectOutcomePhase(phase.getNext(), projecID, projectOutcome);
+
+    }
+
+
   }
 
   @Override
@@ -200,10 +232,12 @@ public class ProjectOutcomeMySQLDAO implements ProjectOutcomeDAO {
     } else {
       dao.update(projectOutcome);
     }
-
-    if (projectOutcome.getPhase().getNext() != null) {
-      this.addProjectOutcomePhase(projectOutcome.getPhase().getNext(), projectOutcome.getProject().getId(),
-        projectOutcome);
+    Phase currentPhase = dao.find(Phase.class, projectOutcome.getPhase().getId());
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+      if (projectOutcome.getPhase().getNext() != null) {
+        this.addProjectOutcomePhase(projectOutcome.getPhase().getNext(), projectOutcome.getProject().getId(),
+          projectOutcome);
+      }
     }
     return projectOutcome.getId();
   }

@@ -16,6 +16,7 @@
 
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.DeliverableDAO;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
@@ -88,11 +89,14 @@ public class DeliverableMySQLDAO implements DeliverableDAO {
     } else {
       dao.update(deliverable, section, relationsName, phase);
     }
-
-    if (deliverable.getDeliverableInfo().getPhase().getNext() != null) {
-      this.saveDeliverablePhase(deliverable.getDeliverableInfo().getPhase().getNext(), deliverable.getId(),
-        deliverable);
+    Phase currentPhase = dao.find(Phase.class, deliverable.getDeliverableInfo().getPhase().getId());
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+      if (deliverable.getDeliverableInfo().getPhase().getNext() != null) {
+        this.saveDeliverablePhase(deliverable.getDeliverableInfo().getPhase().getNext(), deliverable.getId(),
+          deliverable);
+      }
     }
+
 
     return deliverable.getId();
   }

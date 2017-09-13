@@ -97,7 +97,7 @@
             <div class="form-group ${reportingActive?string('fieldFocus','')}">
               <div class="form-group row">
                 <div class="col-md-6">
-                  [@customForm.select name="project.status" value="${(project.status)!}" i18nkey="project.status" className="description_project_status" listName="projectStatuses" header=false editable=editable /]
+                  [@customForm.select name="project.projectInfo.status" value="${(project.projectInfo.status)!}" i18nkey="project.status" className="description_project_status" listName="projectStatuses" header=false editable=editable /]
                 </div>
               </div>
               <div id="statusDescription" class="form-group" style="display:${project.projectInfo.statusJustificationRequired?string('block','none')}">
@@ -230,7 +230,7 @@
               
               [#-- If no gender dimension, then please explain why not --]
               <div id="gender-question" class="form-group" style="display:${((project.projectInfo.crossCuttingGender)!false)?string('none','block')}">
-                [@customForm.textArea name="project.projectInfo.dimension" required=true className=" limitWords-50" editable=editable /]
+                [@customForm.textArea name="project.projectInfo.dimension" i18nkey="project.dimension"  required=true className=" limitWords-50" editable=editable /]
               </div>
             [/#if]
           </div> 

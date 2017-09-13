@@ -16,6 +16,7 @@
 
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.DeliverablePartnershipDAO;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -81,13 +82,15 @@ public class DeliverablePartnershipMySQLDAO implements DeliverablePartnershipDAO
   public boolean deleteDeliverablePartnership(long deliverablePartnershipId) {
     DeliverablePartnership deliverablePartnership = this.find(deliverablePartnershipId);
     deliverablePartnership.setActive(false);
-    long result = this.save(deliverablePartnership);
-
-    if (deliverablePartnership.getPhase().getNext() != null) {
-      this.deleteDeliverablePartnership(deliverablePartnership.getPhase().getNext(),
-        deliverablePartnership.getDeliverable().getId(), deliverablePartnership);
+    boolean result = dao.update(deliverablePartnership);
+    Phase currentPhase = dao.find(Phase.class, deliverablePartnership.getPhase().getId());
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+      if (deliverablePartnership.getPhase().getNext() != null) {
+        this.deleteDeliverablePartnership(deliverablePartnership.getPhase().getNext(),
+          deliverablePartnership.getDeliverable().getId(), deliverablePartnership);
+      }
     }
-    return result > 0;
+    return result;
 
   }
 
@@ -103,12 +106,13 @@ public class DeliverablePartnershipMySQLDAO implements DeliverablePartnershipDAO
         .collect(Collectors.toList());
 
       for (DeliverablePartnership dePartnership : partnerships) {
-        this.deleteDeliverablePartnership(dePartnership.getId());
+        dePartnership.setActive(false);
+        dao.update(dePartnership);
+
       }
-    } else {
-      if (phase.getNext() != null) {
-        this.deleteDeliverablePartnership(phase.getNext(), deliverableID, deliverablePartnership);
-      }
+    }
+    if (phase.getNext() != null) {
+      this.deleteDeliverablePartnership(phase.getNext(), deliverableID, deliverablePartnership);
     }
 
 
@@ -170,10 +174,12 @@ public class DeliverablePartnershipMySQLDAO implements DeliverablePartnershipDAO
     } else {
       dao.update(deliverablePartnership);
     }
-
-    if (deliverablePartnership.getPhase().getNext() != null) {
-      this.addDeliverablePartnershipPhase(deliverablePartnership.getPhase().getNext(),
-        deliverablePartnership.getDeliverable().getId(), deliverablePartnership);
+    Phase currentPhase = dao.find(Phase.class, deliverablePartnership.getPhase().getId());
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+      if (deliverablePartnership.getPhase().getNext() != null) {
+        this.addDeliverablePartnershipPhase(deliverablePartnership.getPhase().getNext(),
+          deliverablePartnership.getDeliverable().getId(), deliverablePartnership);
+      }
     }
     return deliverablePartnership.getId();
   }

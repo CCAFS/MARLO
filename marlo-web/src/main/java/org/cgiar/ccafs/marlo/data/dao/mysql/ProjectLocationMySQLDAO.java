@@ -16,6 +16,7 @@
 
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.ProjectLocationDAO;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
@@ -91,10 +92,13 @@ public class ProjectLocationMySQLDAO implements ProjectLocationDAO {
     ProjectLocation projectLocation = this.find(projectLocationId);
     projectLocation.setActive(false);
     boolean result = dao.update(projectLocation);
+    Phase currentPhase = dao.find(Phase.class, projectLocation.getPhase().getId());
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
 
-    if (projectLocation.getPhase().getNext() != null) {
-      this.deleteProjectLocationPhase(projectLocation.getPhase().getNext(), projectLocation.getProject().getId(),
-        projectLocation);
+      if (projectLocation.getPhase().getNext() != null) {
+        this.deleteProjectLocationPhase(projectLocation.getPhase().getNext(), projectLocation.getProject().getId(),
+          projectLocation);
+      }
     }
     return result;
 
@@ -122,12 +126,13 @@ public class ProjectLocationMySQLDAO implements ProjectLocationDAO {
           .collect(Collectors.toList()));
       }
       for (ProjectLocation location : locations) {
-        this.deleteProjectLocation(location.getId());
+        location.setActive(false);
+        this.dao.update(location);
       }
-    } else {
-      if (phase.getNext() != null) {
-        this.deleteProjectLocationPhase(phase.getNext(), projectID, projectLocation);
-      }
+    }
+    if (phase.getNext() != null) {
+      this.deleteProjectLocationPhase(phase.getNext(), projectID, projectLocation);
+
     }
 
 
@@ -186,9 +191,12 @@ public class ProjectLocationMySQLDAO implements ProjectLocationDAO {
       dao.update(projectLocation);
     }
 
-    if (projectLocation.getPhase().getNext() != null) {
-      this.addProjectLoactionsDAO(projectLocation.getPhase().getNext(), projectLocation.getProject().getId(),
-        projectLocation);
+    Phase currentPhase = dao.find(Phase.class, projectLocation.getPhase().getId());
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+      if (projectLocation.getPhase().getNext() != null) {
+        this.addProjectLoactionsDAO(projectLocation.getPhase().getNext(), projectLocation.getProject().getId(),
+          projectLocation);
+      }
     }
     return projectLocation.getId();
 

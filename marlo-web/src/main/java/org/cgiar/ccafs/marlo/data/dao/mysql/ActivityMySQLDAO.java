@@ -16,6 +16,7 @@
 
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.ActivityDAO;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
@@ -82,11 +83,36 @@ public class ActivityMySQLDAO implements ActivityDAO {
     deliverableActivityAdd.setModifiedBy(activity.getModifiedBy());
   }
 
+  public void deletActivityPhase(Phase next, long projecID, Activity activity) {
+    Phase phase = dao.find(Phase.class, next.getId());
+    if (phase.getEditable() != null && phase.getEditable()) {
+      List<Activity> activities =
+        phase.getProjectActivites().stream().filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
+          && activity.getComposeID().equals(c.getComposeID())).collect(Collectors.toList());
+      for (Activity activityDB : activities) {
+        activityDB.setActive(false);
+        dao.update(activityDB);
+      }
+    }
+    if (phase.getNext() != null) {
+      this.deletActivityPhase(phase.getNext(), projecID, activity);
+
+    }
+  }
+
   @Override
   public boolean deleteActivity(long activityId) {
     Activity activity = this.find(activityId);
     activity.setActive(false);
-    return this.save(activity) > 0;
+    boolean result = dao.update(activity);
+    Phase currentPhase = dao.find(Phase.class, activity.getPhase().getId());
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+      if (activity.getPhase().getNext() != null) {
+        this.deletActivityPhase(activity.getPhase().getNext(), activity.getProject().getId(), activity);
+      }
+    }
+
+    return result;
   }
 
   @Override
@@ -123,10 +149,12 @@ public class ActivityMySQLDAO implements ActivityDAO {
     } else {
       dao.update(activity);
     }
-    if (activity.getPhase().getNext() != null) {
-      this.saveActvityPhase(activity.getPhase().getNext(), activity.getProject().getId(), activity);
+    Phase currentPhase = dao.find(Phase.class, activity.getPhase().getId());
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+      if (activity.getPhase().getNext() != null) {
+        this.saveActvityPhase(activity.getPhase().getNext(), activity.getProject().getId(), activity);
+      }
     }
-
     return activity.getId();
   }
 
@@ -183,11 +211,11 @@ public class ActivityMySQLDAO implements ActivityDAO {
 
       }
 
-    } else {
-      if (phase.getNext() != null) {
-        this.saveActvityPhase(phase.getNext(), projecID, activity);
-      }
     }
+    if (phase.getNext() != null) {
+      this.saveActvityPhase(phase.getNext(), projecID, activity);
+    }
+
 
   }
 }

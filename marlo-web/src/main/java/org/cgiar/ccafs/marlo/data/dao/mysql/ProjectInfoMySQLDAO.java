@@ -16,6 +16,7 @@
 
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.ProjectInfoDAO;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
@@ -75,8 +76,10 @@ public class ProjectInfoMySQLDAO implements ProjectInfoDAO {
       dao.update(projectInfo);
     }
 
-    if (projectInfo.getPhase().getNext() != null) {
-      this.saveInfoPhase(projectInfo.getPhase().getNext(), projectInfo.getProject().getId(), projectInfo);
+    if (projectInfo.getPhase().getDescription().equals(APConstants.PLANNING)) {
+      if (projectInfo.getPhase().getNext() != null) {
+        this.saveInfoPhase(projectInfo.getPhase().getNext(), projectInfo.getProject().getId(), projectInfo);
+      }
     }
 
 
@@ -90,12 +93,11 @@ public class ProjectInfoMySQLDAO implements ProjectInfoDAO {
         .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID).collect(Collectors.toList());
       for (ProjectInfo projectInfoPhase : projectInfos) {
         projectInfoPhase.updateProjectInfo(projectInfo);
-        this.save(projectInfoPhase);
+        dao.update(projectInfoPhase);
       }
-    } else {
-      if (phase.getNext() != null) {
-        this.saveInfoPhase(phase.getNext(), projecID, projectInfo);
-      }
+    }
+    if (phase.getNext() != null) {
+      this.saveInfoPhase(phase.getNext(), projecID, projectInfo);
     }
 
 
