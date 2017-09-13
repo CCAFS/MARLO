@@ -59,12 +59,16 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
   private boolean active;
   @Expose
   private FundingSource fundingSource;
-
   @Expose
   private Date activeSince;
 
   @Expose
+  private Phase phase;
+
+
+  @Expose
   private String modificationJustification;
+
 
   @Override
   public boolean equals(Object obj) {
@@ -116,7 +120,6 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
     return genderValue;
   }
 
-
   @Override
   public Long getId() {
     return id;
@@ -125,6 +128,7 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
   public Institution getInstitution() {
     return institution;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -143,10 +147,13 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
     return modifiedBy;
   }
 
+  public Phase getPhase() {
+    return phase;
+  }
+
   public Project getProject() {
     return project;
   }
-
 
   public int getYear() {
     return year;
@@ -160,6 +167,7 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
     result = prime * result + ((id == null) ? 0 : id.hashCode());
     return result;
   }
+
 
   @Override
   public boolean isActive() {
@@ -186,10 +194,10 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
     this.createdBy = createdBy;
   }
 
-
   public void setFundingSource(FundingSource fundingSource) {
     this.fundingSource = fundingSource;
   }
+
 
   public void setGenderPercentage(Double genderPercentage) {
     this.genderPercentage = genderPercentage;
@@ -213,6 +221,10 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
 
