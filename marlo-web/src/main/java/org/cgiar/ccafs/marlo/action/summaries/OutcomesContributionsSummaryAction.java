@@ -18,9 +18,6 @@ package org.cgiar.ccafs.marlo.action.summaries;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
-import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
-import org.cgiar.ccafs.marlo.data.model.CrpProgram;
-import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpTargetUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
@@ -309,36 +306,34 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
       new Class[] {String.class, String.class, String.class, String.class, String.class, Long.class, String.class,
         String.class, String.class},
       0);
-    for (CrpProgram crpProgram : this.getLoggedCrp().getCrpPrograms().stream().filter(cp -> cp.isActive())
+
+    for (Project project : this.getLoggedCrp().getProjects().stream()
+      .sorted((p1, p2) -> Long.compare(p1.getId(), p2.getId())).filter(p -> p.isActive())
       .collect(Collectors.toList())) {
-      for (CrpProgramOutcome crpProgramOutcome : crpProgram.getCrpProgramOutcomes().stream()
-        .filter(cpo -> cpo.isActive()).collect(Collectors.toList())) {
-        for (CrpMilestone crpMilestone : crpProgramOutcome.getCrpMilestones().stream().filter(cm -> cm.isActive())
-          .collect(Collectors.toList())) {
-          for (ProjectMilestone projectMilestone : crpMilestone.getProjectMilestones().stream()
-            .filter(pm -> pm.isActive()).collect(Collectors.toList())) {
-
-            if (projectMilestone.getProjectOutcome().isActive()) {
-              String projectId = "", title = "", flagship = "", outcome = "", projectUrl = "", milestone = "",
-                expectedUnit = "", narrativeTarget = "";
-              Long expectedValue = -1L;
-              projectId = projectMilestone.getProjectOutcome().getProject().getId().toString();
-              title =
-                projectMilestone.getProjectOutcome().getProject().getProjecInfoPhase(this.getActualPhase()).getTitle();
-              flagship = projectMilestone.getProjectOutcome().getCrpProgramOutcome().getCrpProgram().getAcronym();
-              outcome = projectMilestone.getProjectOutcome().getCrpProgramOutcome().getDescription();
-              projectUrl = "P" + projectMilestone.getProjectOutcome().getProject().getId().toString();
-              milestone = crpMilestone.getComposedName();
-              expectedValue = projectMilestone.getExpectedValue();
-              if (projectMilestone.getExpectedUnit() != null) {
-                expectedUnit = projectMilestone.getExpectedUnit().getName();
-              }
-              narrativeTarget = projectMilestone.getNarrativeTarget();
-              model.addRow(new Object[] {projectId, flagship, outcome, projectUrl, milestone, expectedValue,
-                expectedUnit, narrativeTarget, title});
-            }
+      System.out.println("Project milestone= " + project.getId());
+      for (ProjectOutcome projectOutcome : project.getProjectOutcomes().stream()
+        .sorted((po1, po2) -> Long.compare(po1.getId(), po2.getId()))
+        .filter(po -> po.isActive() && po.getPhase() != null && po.getPhase().equals(this.getSelectedPhase()))
+        .collect(Collectors.toList())) {
+        for (ProjectMilestone projectMilestone : projectOutcome.getProjectMilestones().stream()
+          .filter(pm -> pm.isActive()).collect(Collectors.toList())) {
+          String projectId = "", title = "", flagship = "", outcome = "", projectUrl = "", milestone = "",
+            expectedUnit = "", narrativeTarget = "";
+          Long expectedValue = -1L;
+          projectId = projectMilestone.getProjectOutcome().getProject().getId().toString();
+          title =
+            projectMilestone.getProjectOutcome().getProject().getProjecInfoPhase(this.getSelectedPhase()).getTitle();
+          flagship = projectMilestone.getProjectOutcome().getCrpProgramOutcome().getCrpProgram().getAcronym();
+          outcome = projectMilestone.getProjectOutcome().getCrpProgramOutcome().getDescription();
+          projectUrl = "P" + projectMilestone.getProjectOutcome().getProject().getId().toString();
+          milestone = projectMilestone.getCrpMilestone().getComposedName();
+          expectedValue = projectMilestone.getExpectedValue();
+          if (projectMilestone.getExpectedUnit() != null) {
+            expectedUnit = projectMilestone.getExpectedUnit().getName();
           }
-
+          narrativeTarget = projectMilestone.getNarrativeTarget();
+          model.addRow(new Object[] {projectId, flagship, outcome, projectUrl, milestone, expectedValue, expectedUnit,
+            narrativeTarget, title});
         }
       }
     }
@@ -353,9 +348,13 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
         String.class},
       0);
     for (Project project : this.getLoggedCrp().getProjects().stream()
-      .filter(p -> p.isActive() && p.getProjecInfoPhase(this.getActualPhase()).getStatus().intValue() == 2)
+      .sorted((p1, p2) -> Long.compare(p1.getId(), p2.getId()))
+      .filter(p -> p.isActive() && p.getProjecInfoPhase(this.getSelectedPhase()) != null
+        && p.getProjecInfoPhase(this.getSelectedPhase()).getStatus().intValue() == 2)
       .collect(Collectors.toList())) {
-      for (ProjectOutcome projectOutcome : project.getProjectOutcomes().stream().filter(po -> po.isActive())
+      for (ProjectOutcome projectOutcome : project.getProjectOutcomes().stream()
+        .sorted((po1, po2) -> Long.compare(po1.getId(), po2.getId()))
+        .filter(po -> po.isActive() && po.getPhase() != null && po.getPhase().equals(this.getSelectedPhase()))
         .collect(Collectors.toList())) {
         String projectId = "";
         String title = "";
@@ -367,7 +366,7 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
         String projectUrl = "";
         projectId = project.getId().toString();
         projectUrl = "P" + project.getId().toString();
-        title = project.getProjecInfoPhase(this.getActualPhase()).getTitle();
+        title = project.getProjecInfoPhase(this.getSelectedPhase()).getTitle();
         if (projectOutcome.getCrpProgramOutcome() != null) {
           if (projectOutcome.getCrpProgramOutcome().getCrpProgram() != null) {
             flagship = projectOutcome.getCrpProgramOutcome().getCrpProgram().getAcronym();
