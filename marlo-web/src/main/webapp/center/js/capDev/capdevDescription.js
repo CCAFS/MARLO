@@ -29,8 +29,33 @@ function init(){
       
     })();
 
+
+     (function(){
+      if($('input[type="checkbox"][name="otherDiscipline"]').is(":checked")){
+        $(".suggestDiscipline").show();
+      }
+      if($('input[type="checkbox"][name="otherTargetGroup"]').is(":checked")){
+        $(".suggestTagetGroup").show();
+      }
+      if($('input[type="checkbox"][name="otherPartner"]').is(":checked")){
+        $(".suggestPartner").show();
+      }
+    })();
+
     
 }
+
+  //limit number of caracter entered to the text area
+  $('.textarea').keypress(function(e) {
+    var tval = $('.textarea').val(),
+        tlength = tval.length,
+        set = 200,
+        remain = parseInt(set - tlength);
+    /*$('p').text(remain);*/
+    if (remain <= 0 && e.which !== 0 && e.charCode !== 0) {
+        $('.textarea').val((tval).substring(0, tlength - 1))
+    }
+})
 
 
   //event add discipline
@@ -52,6 +77,20 @@ function init(){
   $(".removeDiscipline-action").on("click", removeDisciplineAction);
 
 
+  //display suggest text area to discipline
+  $('input[type="checkbox"][name="otherDiscipline"]').change(function() {
+     if(this.checked) {
+       $(".suggestDiscipline").show();
+       $(".otherDisciplinecheck").val("1")
+     }
+     else{
+      $(".suggestDiscipline").hide();
+      $(".otherDisciplinecheck").val("0")
+      
+     }
+   });
+
+
   // Event add target group
 $(".targetGroupsSelect").on("change", function() {
       var option = $(this).find("option:selected");
@@ -70,6 +109,19 @@ $(".removeTargetGroup").on("click", removeTargetGroup);
 
 // remove target group action
 $(".removeTargetGroup-action").on("click", removeTargetGroupAction);
+
+//display suggest text area to target groups
+  $('input[type="checkbox"][name="otherTargetGroup"]').change(function() {
+     if(this.checked) {
+       $(".suggestTagetGroup").show();
+       $(".otherTargetcheck").val("1")
+     }
+     else{
+      $(".suggestTagetGroup").hide();
+      $(".otherTargetcheck").val("0")
+      
+     }
+   });
 
 
 
@@ -249,6 +301,19 @@ $(".removepartner").on("click", removePartner);
 
 //remove partner action
 $(".removepartner-action").on("click", removePartnerAction);
+
+//display suggest text area to partners
+  $('input[type="checkbox"][name="otherPartner"]').change(function() {
+     if(this.checked) {
+       $(".suggestPartner").show();
+       $(".otherPartnercheck").val("1")
+     }
+     else{
+      $(".suggestPartner").hide();
+      $(".otherPartnercheck").val("0")
+      
+     }
+   });
 
 
 //event add output
