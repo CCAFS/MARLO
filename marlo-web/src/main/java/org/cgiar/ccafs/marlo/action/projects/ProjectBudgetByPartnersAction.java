@@ -218,10 +218,19 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
       .clearCachedAuthorizationInfo(securityContext.getSubject().getPrincipals());
   }
 
+  /**
+   * The name of the autosave file is constructed and the path is searched
+   * 
+   * @return Auto save file path
+   */
   private Path getAutoSaveFilePath() {
+    // get the class simple name
     String composedClassName = project.getClass().getSimpleName();
+    // get the action name and replace / for _
     String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+    // concatane name and add the .json extension
+    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + this.getActualPhase().getDescription() + "_"
+      + this.getActualPhase().getYear() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
@@ -239,7 +248,8 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   public List<ProjectBudget> getBudgetsByPartner(Long institutionId, int year) {
     List<ProjectBudget> budgets = project.getBudgets().stream()
       .filter(c -> c != null && c.getInstitution() != null && c.getInstitution().getId() != null
-        && c.getInstitution().getId().longValue() == institutionId.longValue() && c.getYear() == year)
+        && c.getInstitution().getId().longValue() == institutionId.longValue() && c.getYear() == year
+        && c.getPhase().equals(this.getActualPhase()))
       .collect(Collectors.toList());
     return budgets;
   }
@@ -548,6 +558,8 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
         project = (Project) autoSaveReader.readFromJson(jReader);
         Project projectDb = projectManager.getProjectById(project.getId());
         project.setProjectInfo(projectDb.getProjecInfoPhase(this.getActualPhase()));
+        project.getProjectInfo()
+          .setProjectEditLeader(projectDb.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader());
         reader.close();
 
         if (project.getBudgets() != null) {
@@ -564,8 +576,9 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
       } else {
         this.setDraft(false);
 
-
-        project.setBudgets(project.getProjectBudgets().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
+        project.setBudgets(project.getProjectBudgets().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
 
 
         System.out.println("Size budgets" + project.getBudgets().size());
@@ -579,8 +592,8 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
       project.setProjectInfo(projectBD.getProjecInfoPhase(this.getActualPhase()));
 
 
-      project
-        .setPartners(projectBD.getProjectPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+      project.setPartners(projectBD.getProjectPartners().stream()
+        .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
 
       for (ProjectPartner projectPartner : project.getPartners()) {
         projectPartner.setPartnerPersons(
@@ -687,7 +700,8 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     Project projectDB = projectManager.getProjectById(projectID);
 
 
-    projectDB.setBudgets(projectDB.getProjectBudgets().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+    projectDB.setBudgets(projectDB.getProjectBudgets().stream()
+      .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
 
 
     for (ProjectBudget projectBudget : projectDB.getBudgets().stream().filter(c -> c.isActive())
@@ -724,11 +738,11 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
       projectBudget.setProject(project);
       projectBudget.setModifiedBy(this.getCurrentUser());
       projectBudget.setModificationJustification("");
-
+      projectBudget.setPhase(this.getActualPhase());
     } else {
       ProjectBudget ProjectBudgetDB = projectBudgetManager.getProjectBudgetById(projectBudget.getId());
       projectBudget.setCreatedBy(ProjectBudgetDB.getCreatedBy());
-
+      projectBudget.setPhase(this.getActualPhase());
       projectBudget.setActiveSince(ProjectBudgetDB.getActiveSince());
       projectBudget.setActive(true);
       projectBudget.setProject(project);

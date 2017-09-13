@@ -311,7 +311,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   }
 
 
-  public double getRemaining(int year) {
+  public double getRemaining(int year, Phase phase) {
     double used = 0;
     double total = 0;
     for (FundingSourceBudget fundingSourceBudget : this.getFundingSourceBudgets().stream()
@@ -323,7 +323,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
     }
     for (ProjectBudget projectBudget : this.getProjectBudgets().stream()
-      .filter(c -> c.isActive() && c.getYear() == year).collect(Collectors.toList())) {
+      .filter(c -> c.isActive() && c.getYear() == year && c.getPhase().equals(phase)).collect(Collectors.toList())) {
       used = used + projectBudget.getAmount().doubleValue();
     }
     return total - used;
@@ -337,7 +337,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
    * @param budgetID the budget id to exclud
    * @return
    */
-  public double getRemainingExcludeBudget(int year, long budgetID) {
+  public double getRemainingExcludeBudget(int year, long budgetID, Phase phase) {
     double used = 0;
     double total = 0;
     for (FundingSourceBudget fundingSourceBudget : this.getFundingSourceBudgets().stream()
@@ -349,7 +349,8 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
     }
     for (ProjectBudget projectBudget : this.getProjectBudgets().stream()
-      .filter(c -> c.isActive() && c.getYear() == year && c.getId().longValue() != budgetID)
+      .filter(
+        c -> c.isActive() && c.getYear() == year && c.getId().longValue() != budgetID && c.getPhase().equals(phase))
       .collect(Collectors.toList())) {
       used = used + projectBudget.getAmount().doubleValue();
     }

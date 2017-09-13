@@ -221,8 +221,8 @@
 
 [#-- Get if the year is editable--]
 [#function isYearEditable year]
-  [#if project.endDate??]
-    [#assign endDate = (project.endDate?string.yyyy)?number]
+  [#if project.projectInfo.endDate??]
+    [#assign endDate = (project.projectInfo.endDate?string.yyyy)?number]
     [#if reportingActive]
       [#return  (year gte currentCycleYear) ]
     [#else]

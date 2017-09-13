@@ -20,7 +20,7 @@
   <div style="display:none" class="helpMessage infoText">
     <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.jpg" />
     <p class="col-md-10">
-      [#if project.projectEditLeader] [@s.text name="projectBudgets.help2" /] [#else] [@s.text name="projectBudgets.help1" /] [/#if]
+      [#if project.projectInfo.projectEditLeader] [@s.text name="projectBudgets.help2" /] [#else] [@s.text name="projectBudgets.help1" /] [/#if]
     </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
@@ -43,10 +43,10 @@
           [#-- Section Title --]
           <h3 class="headTitle">[@s.text name="projectBudgetByPartners.title" /]</h3>
           
-          [#if project.startDate?? && project.endDate??]
+          [#if project.projectInfo.startDate?? && project.projectInfo.endDate??]
           
-            [#assign startYear = (project.startDate?string.yyyy)?number /]
-            [#assign endYear = (project.endDate?string.yyyy)?number /]
+            [#assign startYear = (project.projectInfo.startDate?string.yyyy)?number /]
+            [#assign endYear = (project.projectInfo.endDate?string.yyyy)?number /]
             
             [#if currentCycleYear gt endYear]
               [#assign selectedYear = endYear /]
@@ -190,7 +190,7 @@
             [/#list]
           </tr>
           [#-- Gender Budget Percentage --]
-          [#if project.projectEditLeader && action.hasSpecificities('crp_budget_gender')]
+          [#if project.projectInfo.projectEditLeader && action.hasSpecificities('crp_budget_gender')]
           <tr>
             <td class="amountType"> Gender %:</td>
             [#list budgetTypesList as budgetType]
@@ -251,7 +251,7 @@
     
     [#-- Project Title --]
     <p class="checked">
-      [#assign fsRemaining = ((element.fundingSource.getRemaining(selectedYear))!0)?number /]
+      [#assign fsRemaining = ((element.fundingSource.getRemaining(selectedYear,action.getActualPhase()))!0)?number /]
       <small>Funding source #<span class="titleId">${(element.fundingSource.id)!}</span></small> -
       <small class="grayLabel [#if fsRemaining lt 0]fieldError[/#if]"> (Remaining budget US$ <span class="projectAmount">${fsRemaining?string(",##0.00")}</span>) </small>
     </p> 
@@ -296,7 +296,7 @@
         </div>
       </div>
       <div class="col-md-4">
-        [#if project.projectEditLeader && action.hasSpecificities('crp_budget_gender')]
+        [#if project.projectInfo.projectEditLeader && action.hasSpecificities('crp_budget_gender')]
           <div class="row col-md-6"> <div class="row"><strong>Gender %:</strong></div> </div>
           <div class="row col-md-7">
           [#-- TODO: Allow to add funding sources when there is no aggregate (problem with permissions)  --]

@@ -111,10 +111,10 @@ public class ProjectBudgetsValidator extends BaseValidator {
                 // the year evaluated. If it is not new this budget is excluded from the calculation
                 double remaining = 0;
                 if (projectBudget.getId() == null) {
-                  remaining = fundingSource.getRemaining(projectBudget.getYear());
+                  remaining = fundingSource.getRemaining(projectBudget.getYear(), action.getActualPhase());
                 } else {
-                  remaining =
-                    fundingSource.getRemainingExcludeBudget(projectBudget.getYear(), projectBudget.getId().longValue());
+                  remaining = fundingSource.getRemainingExcludeBudget(projectBudget.getYear(),
+                    projectBudget.getId().longValue(), action.getActualPhase());
                 }
                 if (remaining - projectBudget.getAmount() < 0) {
                   this.addMessage(action.getText("projectBudgets.fundig"));
