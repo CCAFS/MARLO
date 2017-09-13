@@ -31,6 +31,7 @@ import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
@@ -49,7 +50,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -94,15 +94,19 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
   private Boolean hasRegions;
   // Keys to be searched
   List<String> keys = new ArrayList<String>();
+  private Phase selectedPhase;
+
 
   // Managers
   private CrpManager crpManager;
-  private CrpProgramManager programManager;
-  private PhaseManager phaseManager;
 
+
+  private CrpProgramManager programManager;
+
+
+  private PhaseManager phaseManager;
   // XLSX bytes
   private byte[] bytesXLSX;
-
   // Streams
   InputStream inputStream;
 
@@ -157,6 +161,7 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
       this.getText("project.deliverable.generalInformation.type"));
     masterReport.getParameterValues().put("i8nSearchTermsSubType",
       this.getText("project.deliverable.generalInformation.subType"));
+    masterReport.getParameterValues().put("i8nSearchTermsDeliverableLeader", this.getText("deliverable.individual"));
 
 
     return masterReport;
@@ -260,21 +265,25 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
       SimpleDateFormat dateFormatter = new SimpleDateFormat("MMM yyyy");
       // Search projects with activities
       List<Project> projects = new ArrayList<>();
-      Phase phase = phaseManager.findCycle(cycle, year, loggedCrp.getId().longValue());
-      if (phase != null) {
-
-        for (ProjectPhase projectPhase : phase.getProjectPhases()) {
+      if (this.getSelectedPhase() != null) {
+        for (ProjectPhase projectPhase : this.getSelectedPhase().getProjectPhases().stream()
+          .sorted((p1, p2) -> Long.compare(p1.getProject().getId(), p2.getProject().getId()))
+          .collect(Collectors.toList())) {
           projects.add((projectPhase.getProject()));
         }
         for (Project project : projects) {
+          ProjectInfo projectInfo = project.getProjecInfoPhase(this.getSelectedPhase());
           // Get active activities
-          for (Activity activity : project.getActivities().stream().filter(a -> a.isActive())
+          for (Activity activity : project.getActivities().stream()
+            .sorted((a1, a2) -> Long.compare(a1.getId(), a1.getId()))
+            .filter(a -> a.isActive() && a.getPhase() != null && a.getPhase().equals(this.getSelectedPhase()))
             .collect(Collectors.toList())) {
+
             String actTit = activity.getTitle();
             String actDesc = activity.getDescription();
             String startDate = null;
             String endDate = null;
-            String projectTitle = project.getProjecInfoPhase(this.getActualPhase()).getTitle();
+            String projectTitle = projectInfo.getTitle();
             String insLeader = "";
             String leader = "";
             // Search keys in activity title
@@ -329,9 +338,8 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
               } else {
                 endDate = "<font size=2 face='Segoe UI' color='#000000'></font>";
               }
-              if (project.getProjecInfoPhase(this.getActualPhase()).getTitle() != null) {
-                projectTitle = "<font size=2 face='Segoe UI' color='#000000'>"
-                  + project.getProjecInfoPhase(this.getActualPhase()).getTitle() + "</font>";
+              if (projectInfo.getTitle() != null) {
+                projectTitle = "<font size=2 face='Segoe UI' color='#000000'>" + projectInfo.getTitle() + "</font>";
               } else {
                 projectTitle = "<font size=2 face='Segoe UI' color='#000000'></font>";
               }
@@ -436,6 +444,10 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
     return "application/xlsx";
   }
 
+  public String getCycle() {
+    return cycle;
+  }
+
   private TypedTableModel getDeliverablesTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"project_id", "title", "dev_id", "dev_title", "dev_type", "dev_sub_type", "lead_ins", "leader",
@@ -445,14 +457,17 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
       0);
     if (!keys.isEmpty()) {
       List<Project> projects = new ArrayList<>();
-      Phase phase = phaseManager.findCycle(cycle, year, loggedCrp.getId().longValue());
-      if (phase != null) {
+      if (this.getSelectedPhase() != null) {
 
-        for (ProjectPhase projectPhase : phase.getProjectPhases()) {
+        for (ProjectPhase projectPhase : this.getSelectedPhase().getProjectPhases().stream()
+          .sorted((p1, p2) -> Long.compare(p1.getProject().getId(), p2.getProject().getId()))
+          .collect(Collectors.toList())) {
           projects.add((projectPhase.getProject()));
         }
         for (Project project : projects) {
-          for (Deliverable deliverable : project.getDeliverables().stream().filter(d -> d.isActive())
+          ProjectInfo projectInfo = project.getProjecInfoPhase(this.getSelectedPhase());
+          for (Deliverable deliverable : project.getDeliverables().stream()
+            .sorted((d1, d2) -> Long.compare(d1.getId(), d2.getId())).filter(d -> d.isActive())
             .collect(Collectors.toList())) {
             String devTitle = "";
             // Pattern case insensitive
@@ -461,9 +476,9 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
             // Search keys in deliverable title
             // count and store occurrences
             Set<String> matchesDelivTitle = new HashSet<>();
-            if (deliverable.getDeliverableInfo(this.getActualPhase()).getTitle() != null) {
+            if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getTitle() != null) {
               devTitle = "<font size=2 face='Segoe UI' color='#000000'>"
-                + deliverable.getDeliverableInfo(this.getActualPhase()).getTitle() + "</font>";
+                + deliverable.getDeliverableInfo(this.getSelectedPhase()).getTitle() + "</font>";
               // Find keys in title
               Matcher matcher = pattern.matcher(devTitle);
               // while are occurrences
@@ -482,7 +497,7 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
               String projectId =
                 "<font size=2 face='Segoe UI' color='#0000ff'>P" + project.getId().toString() + "</font>";
               String projectUrl = project.getId().toString();
-              String title = project.getProjecInfoPhase(this.getActualPhase()).getTitle();
+              String title = projectInfo.getTitle();
               String devId =
                 "<font size=2 face='Segoe UI' color='#0000ff'>D" + deliverable.getId().toString() + "</font>";
               String devUrl = deliverable.getId().toString();
@@ -490,23 +505,24 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
               String devSubType = "<font size=2 face='Segoe UI' color='#000000'></font>";
               String leadIns = "<font size=2 face='Segoe UI' color='#000000'></font>";
               String leader = "<font size=2 face='Segoe UI' color='#000000'></font>";
-              if (project.getProjecInfoPhase(this.getActualPhase()).getTitle() != null) {
-                title = "<font size=2 face='Segoe UI' color='#000000'>"
-                  + project.getProjecInfoPhase(this.getActualPhase()).getTitle() + "</font>";
+              if (projectInfo.getTitle() != null) {
+                title = "<font size=2 face='Segoe UI' color='#000000'>" + projectInfo.getTitle() + "</font>";
               } else {
                 title = "<font size=2 face='Segoe UI' color='#000000'></font>";
               }
-              if (deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType() != null) {
-                if (deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType()
+              if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType() != null) {
+                if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType()
                   .getDeliverableType() != null) {
                   devType = "<font size=2 face='Segoe UI' color='#000000'>" + deliverable
-                    .getDeliverableInfo(this.getActualPhase()).getDeliverableType().getDeliverableType().getName()
+                    .getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getDeliverableType().getName()
                     + "</font>";
                   devSubType = "<font size=2 face='Segoe UI' color='#000000'>"
-                    + deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getName() + "</font>";
+                    + deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getName()
+                    + "</font>";
                 } else {
                   devType = "<font size=2 face='Segoe UI' color='#000000'>D"
-                    + deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getName() + "</font>";
+                    + deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getName()
+                    + "</font>";
                 }
               }
               // Get partner responsible and institution
@@ -583,9 +599,9 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
 
   private TypedTableModel getMasterTableModel(String center, String date) {
     // Initialization of Model
-    TypedTableModel model =
-      new TypedTableModel(new String[] {"center", "date", "keys", "regionalAvailable", "hasW1W2Co", "imageUrl"},
-        new Class[] {String.class, String.class, String.class, Boolean.class, Boolean.class, String.class});
+    TypedTableModel model = new TypedTableModel(
+      new String[] {"center", "date", "keys", "regionalAvailable", "hasW1W2Co", "imageUrl", "phaseID"},
+      new Class[] {String.class, String.class, String.class, Boolean.class, Boolean.class, String.class, Long.class});
     String keysString = "";
     int countKeys = 0;
     for (String key : keys) {
@@ -599,7 +615,8 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
     }
     // set CIAT imgage URL from repo
     String imageUrl = this.getBaseUrl() + "/images/global/crps/" + this.loggedCrp.getAcronym().toLowerCase() + ".png";
-    model.addRow(new Object[] {center, date, keysString, hasRegions, hasW1W2Co, imageUrl});
+    model.addRow(
+      new Object[] {center, date, keysString, hasRegions, hasW1W2Co, imageUrl, this.getSelectedPhase().getId()});
     return model;
   }
 
@@ -618,15 +635,17 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
       SimpleDateFormat dateFormatter = new SimpleDateFormat("MMM yyyy");
       // Decimal format for budgets
       List<Project> projects = new ArrayList<>();
-      Phase phase = phaseManager.findCycle(cycle, year, loggedCrp.getId().longValue());
-      if (phase != null) {
+      if (this.getSelectedPhase() != null) {
 
-        for (ProjectPhase projectPhase : phase.getProjectPhases()) {
+        for (ProjectPhase projectPhase : this.getSelectedPhase().getProjectPhases().stream()
+          .sorted((p1, p2) -> Long.compare(p1.getProject().getId(), p2.getProject().getId()))
+          .collect(Collectors.toList())) {
           projects.add((projectPhase.getProject()));
         }
         for (Project project : projects) {
-          String title = project.getProjecInfoPhase(this.getActualPhase()).getTitle();
-          String summary = project.getProjecInfoPhase(this.getActualPhase()).getSummary();
+          ProjectInfo projectInfo = project.getProjecInfoPhase(this.getSelectedPhase());
+          String title = projectInfo.getTitle();
+          String summary = projectInfo.getSummary();
           String startDate = null;
           String endDate = null;
           String flagships = "";
@@ -641,9 +660,8 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
           // count and store occurrences
           Set<String> matchesTitle = new HashSet<>();
           Set<String> matchesSummary = new HashSet<>();
-          if (project.getProjecInfoPhase(this.getActualPhase()).getTitle() != null) {
-            title = "<font size=2 face='Segoe UI' color='#000000'>"
-              + project.getProjecInfoPhase(this.getActualPhase()).getTitle() + "</font>";
+          if (projectInfo.getTitle() != null) {
+            title = "<font size=2 face='Segoe UI' color='#000000'>" + projectInfo.getTitle() + "</font>";
             // Hash set list of matches, avoiding duplicates
             // Find keys in title
             Matcher matcher = pattern.matcher(title);
@@ -659,9 +677,8 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
           } else {
             title = "<font size=2 face='Segoe UI' color='#000000'></font>";
           }
-          if (project.getProjecInfoPhase(this.getActualPhase()).getSummary() != null) {
-            summary = "<font size=2 face='Segoe UI' color='#000000'>"
-              + project.getProjecInfoPhase(this.getActualPhase()).getSummary() + "</font>";
+          if (projectInfo.getSummary() != null) {
+            summary = "<font size=2 face='Segoe UI' color='#000000'>" + projectInfo.getSummary() + "</font>";
             // Hash set list of matches, avoiding duplicates
             // Find keys in title
             Matcher matcher = pattern.matcher(summary);
@@ -679,15 +696,15 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
           }
           if ((matchesSummary.size() + matchesTitle.size()) > 0) {
             // set dates
-            if (project.getProjecInfoPhase(this.getActualPhase()).getStartDate() != null) {
+            if (projectInfo.getStartDate() != null) {
               startDate = "<font size=2 face='Segoe UI' color='#000000'>"
-                + dateFormatter.format(project.getProjecInfoPhase(this.getActualPhase()).getStartDate()) + "</font>";
+                + dateFormatter.format(projectInfo.getStartDate()) + "</font>";
             } else {
               startDate = "<font size=2 face='Segoe UI' color='#000000'></font>";
             }
-            if (project.getProjecInfoPhase(this.getActualPhase()).getEndDate() != null) {
-              endDate = "<font size=2 face='Segoe UI' color='#000000'>"
-                + dateFormatter.format(project.getProjecInfoPhase(this.getActualPhase()).getEndDate()) + "</font>";
+            if (projectInfo.getEndDate() != null) {
+              endDate = "<font size=2 face='Segoe UI' color='#000000'>" + dateFormatter.format(projectInfo.getEndDate())
+                + "</font>";
             } else {
               endDate = "<font size=2 face='Segoe UI' color='#000000'></font>";
             }
@@ -696,7 +713,8 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
             for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
               .sorted((o1, o2) -> o1.getCrpProgram().getAcronym().compareTo(o2.getCrpProgram().getAcronym()))
               .filter(
-                c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+                c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+                  && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
               .collect(Collectors.toList())) {
               if (countFlagships == 0) {
                 flagships += "<font size=2 face='Segoe UI' color='#000000'>"
@@ -709,14 +727,13 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
               }
             }
             if (flagships.isEmpty()) {
-              flagships = "<font size=2 face='Segoe UI' color='#000000'></font>";
+              flagships = "<font size=2 face='Segoe UI' color='#000000'>&lt;Not Defined&gt;</font>";
             } else {
               flagships += "</font>";
             }
             // If has regions, add the regions to regionsArrayList, else do nothing
             if (hasRegions) {
-              if (project.getProjecInfoPhase(this.getActualPhase()).getNoRegional() != null
-                && project.getProjecInfoPhase(this.getActualPhase()).getNoRegional()) {
+              if (projectInfo.getNoRegional() != null && projectInfo.getNoRegional()) {
                 regions = "<font size=2 face='Segoe UI' color='#000000'>Global";
               } else {
                 // Get Regions related to the project sorted by acronym
@@ -724,7 +741,8 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
                 for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
                   .sorted((c1, c2) -> c1.getCrpProgram().getAcronym().compareTo(c2.getCrpProgram().getAcronym()))
                   .filter(c -> c.isActive()
-                    && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+                    && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()
+                    && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
                   .collect(Collectors.toList())) {
                   if (countRegions == 0) {
                     regions += "<font size=2 face='Segoe UI' color='#000000'>"
@@ -738,7 +756,7 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
                 }
               }
               if (regions.isEmpty()) {
-                regions = "<font size=2 face='Segoe UI' color='#000000'></font>";
+                regions = "<font size=2 face='Segoe UI' color='#000000'>&lt;Not Defined&gt;</font>";
               } else {
                 regions += "</font>";
               }
@@ -757,13 +775,12 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
               insLeader += "</font>";
             }
             // Set leader
-            if (project.getLeaderPerson(this.getActualPhase()) != null
-              && project.getLeaderPerson(this.getActualPhase()).getUser() != null) {
+            if (project.getLeaderPerson(this.getSelectedPhase()) != null
+              && project.getLeaderPerson(this.getSelectedPhase()).getUser() != null) {
               leader = "<font size=2 face='Segoe UI' color='#000000'>";
-              ProjectPartnerPerson ppp = project.getLeaderPerson(this.getActualPhase());
-              leader = "<font size=2 face='Segoe UI' color='#000000'>"
-                + project.getLeaderPerson(this.getActualPhase()).getUser().getComposedName() + "\n&lt;"
-                + project.getLeaderPerson(this.getActualPhase()).getUser().getEmail() + "&gt;</font>";
+              ProjectPartnerPerson ppp = project.getLeaderPerson(this.getSelectedPhase());
+              leader = "<font size=2 face='Segoe UI' color='#000000'>" + ppp.getUser().getComposedName() + "\n&lt;"
+                + ppp.getUser().getEmail() + "&gt;</font>";
             }
             if (leader.isEmpty()) {
               leader = "<font size=2 face='Segoe UI' color='#000000'></font>";
@@ -808,6 +825,10 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
       }
     }
     return model;
+  }
+
+  public Phase getSelectedPhase() {
+    return selectedPhase;
   }
 
   /**
@@ -861,33 +882,42 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
     return total;
   }
 
+
+  public int getYear() {
+    return year;
+  }
+
+
   @Override
   public void prepare() {
-    // Get loggerCrp
+    // Get loggedCrp
     try {
-      loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-      loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+      this.setLoggedCrp((Crp) this.getSession().get(APConstants.SESSION_CRP));
+      loggedCrp = crpManager.getCrpById(this.getLoggedCrp().getId());
     } catch (Exception e) {
       LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
     }
+    // Get phase
+    this.setSelectedPhase(
+      phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), loggedCrp.getId().longValue()));
+
+
     // Get parameters from URL
     // Get year
     try {
-      Map<String, Object> parameters = this.getParameters();
-      year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
+      this.setYear(this.getSelectedPhase().getYear());
     } catch (Exception e) {
       LOG.warn("Failed to get " + APConstants.YEAR_REQUEST
         + " parameter. Parameter will be set as CurrentCycleYear. Exception: " + e.getMessage());
-      year = this.getCurrentCycleYear();
+      this.setYear(this.getCurrentCycleYear());
     }
     // Get cycle
     try {
-      Map<String, Object> parameters = this.getParameters();
-      cycle = (StringUtils.trim(((String[]) parameters.get(APConstants.CYCLE))[0]));
+      this.setCycle(this.getSelectedPhase().getDescription());
     } catch (Exception e) {
       LOG.warn("Failed to get " + APConstants.CYCLE + " parameter. Parameter will be set as CurrentCycle. Exception: "
         + e.getMessage());
-      cycle = this.getCurrentCycle();
+      this.setCycle(this.getCurrentCycle());
     }
     hasW1W2Co = this.hasSpecificities(APConstants.CRP_FS_W1W2_COFINANCING);
     hasRegions = this.hasSpecificities(APConstants.CRP_HAS_REGIONS);
@@ -897,6 +927,7 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
       "Start report download: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
         + ". CRP: " + this.loggedCrp.getAcronym() + ". Cycle: " + cycle);
   }
+
 
   private DeliverablePartnership responsiblePartner(Deliverable deliverable) {
     try {
@@ -912,8 +943,21 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
   }
 
 
+  public void setCycle(String cycle) {
+    this.cycle = cycle;
+  }
+
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
+  }
+
+  public void setSelectedPhase(Phase selectedPhase) {
+    this.selectedPhase = selectedPhase;
+  }
+
+
+  public void setYear(int year) {
+    this.year = year;
   }
 
 }
