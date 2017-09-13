@@ -71,7 +71,8 @@ var table = $capdevList.DataTable({
             0
           ]
       }
-  ]
+  ],
+  "order": [[ 0, "desc" ]]
 });
 
 

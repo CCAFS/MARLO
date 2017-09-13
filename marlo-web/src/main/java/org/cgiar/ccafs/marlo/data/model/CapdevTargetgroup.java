@@ -20,6 +20,7 @@ public class CapdevTargetgroup implements java.io.Serializable {
   private User usersByCreatedBy;
   private CapacityDevelopment capacityDevelopment;
   private TargetGroup targetGroups;
+
   private Boolean active;
   private Date activeSince;
   private String modificationJustification;
@@ -58,9 +59,11 @@ public class CapdevTargetgroup implements java.io.Serializable {
     return this.modificationJustification;
   }
 
+
   public TargetGroup getTargetGroups() {
     return this.targetGroups;
   }
+
 
   public User getUsersByCreatedBy() {
     return this.usersByCreatedBy;
@@ -90,13 +93,16 @@ public class CapdevTargetgroup implements java.io.Serializable {
     this.modificationJustification = modificationJustification;
   }
 
+
   public void setTargetGroups(TargetGroup targetGroups) {
     this.targetGroups = targetGroups;
   }
 
+
   public void setUsersByCreatedBy(User usersByCreatedBy) {
     this.usersByCreatedBy = usersByCreatedBy;
   }
+
 
   public void setUsersByModifiedBy(User usersByModifiedBy) {
     this.usersByModifiedBy = usersByModifiedBy;

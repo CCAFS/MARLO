@@ -86,6 +86,24 @@
 		<property name="numWomen" type="java.lang.Integer">
 			<column name="num_women" />
 		</property>
+		<property name="otherDiscipline" type="string">
+			<column name="other_discipline" length="2"/>
+		</property>
+		<property name="disciplineSuggested" type="string">
+			<column name="discipline_suggested" length="200" />
+		</property>
+		<property name="otherTargetGroup" type="string">
+			<column name="other_target_group" length="2"/>
+		</property>
+		<property name="targetGroupSuggested" type="string">
+			<column name="target_group_suggested" length="200" />
+		</property>
+		<property name="otherPartner" type="string">
+			<column name="other_partner" length="2"/>
+		</property>
+		<property name="partnerSuggested" type="string">
+			<column name="partner_suggested" length="200" />
+		</property>
 		<set name="capdevLocations" table="capdev_locations" inverse="true"
 			lazy="true" fetch="select">
 			<key>

@@ -234,7 +234,6 @@ public class CapacityDevelopmentValidator extends BaseValidator {
   }
 
   public void validateParticipant(Participant participant, BaseAction baseAction) {
-    System.out.println(participant.getCode());
     if (participant.getCode() == null) {
       this.addMessage(baseAction.getText("capdev.action.participant.code"));
       baseAction.getInvalidFields().put("input-participant.code", InvalidFieldsMessages.EMPTYFIELD);

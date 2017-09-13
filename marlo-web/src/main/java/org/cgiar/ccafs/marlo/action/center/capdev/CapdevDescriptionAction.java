@@ -81,6 +81,9 @@ public class CapdevDescriptionAction extends BaseAction {
   private List<Institution> partners;
   private List<CenterOutput> outputs;
   private List<Long> capdevDisciplines;
+  private String otherDiscipline;
+  private String otherTargetGroup;
+  private String otherPartner;
   private List<Long> capdevTargetGroup;
   private List<Long> capdevPartners;
   private List<Long> capdevOutputs;
@@ -222,6 +225,20 @@ public class CapdevDescriptionAction extends BaseAction {
   }
 
 
+  public String getOtherDiscipline() {
+    return otherDiscipline;
+  }
+
+
+  public String getOtherPartner() {
+    return otherPartner;
+  }
+
+  public String getOtherTargetGroup() {
+    return otherTargetGroup;
+  }
+
+
   public List<CenterOutput> getOutputs() {
     return outputs;
   }
@@ -231,15 +248,14 @@ public class CapdevDescriptionAction extends BaseAction {
     return partners;
   }
 
+
   public List<CenterProject> getProjects() {
     return projects;
   }
 
-
   public List<CenterArea> getResearchAreas() {
     return researchAreas;
   }
-
 
   public List<CenterProgram> getResearchPrograms() {
     return researchPrograms;
@@ -302,7 +318,14 @@ public class CapdevDescriptionAction extends BaseAction {
 
 
     final CapacityDevelopment capdevDB = capdevService.getCapacityDevelopmentById(capdevID);
-    System.out.println("capdev.getResearchArea() " + capdev.getResearchArea().getId());
+    // System.out.println("capdev.getResearchArea() " + capdev.getResearchArea().getId());
+
+    capdevDB.setOtherDiscipline(otherDiscipline);
+    capdevDB.setDisciplineSuggested(capdev.getDisciplineSuggested());
+    capdevDB.setOtherTargetGroup(otherTargetGroup);
+    capdevDB.setTargetGroupSuggested(capdev.getTargetGroupSuggested());
+    capdevDB.setOtherPartner(otherPartner);
+    capdevDB.setPartnerSuggested(capdev.getPartnerSuggested());
 
 
     if (capdev.getResearchArea().getId() > -1) {
@@ -370,6 +393,7 @@ public class CapdevDescriptionAction extends BaseAction {
     }
   }
 
+
   public void saveCapdevOutputs(List<Long> outputs, CapacityDevelopment capdev) {
     CapdevOutputs capdevOutput = null;
     final Session session = SecurityUtils.getSubject().getSession();
@@ -389,6 +413,7 @@ public class CapdevDescriptionAction extends BaseAction {
       }
     }
   }
+
 
   public void saveCapdevPartners(List<Long> partners, CapacityDevelopment capdev) {
     CapdevPartners capdevPartner = null;
@@ -484,6 +509,20 @@ public class CapdevDescriptionAction extends BaseAction {
   }
 
 
+  public void setOtherDiscipline(String otherDiscipline) {
+    this.otherDiscipline = otherDiscipline;
+  }
+
+
+  public void setOtherPartner(String otherPartner) {
+    this.otherPartner = otherPartner;
+  }
+
+
+  public void setOtherTargetGroup(String otherTargetGroup) {
+    this.otherTargetGroup = otherTargetGroup;
+  }
+
   public void setOutputs(List<CenterOutput> outputs) {
     this.outputs = outputs;
   }
@@ -513,11 +552,12 @@ public class CapdevDescriptionAction extends BaseAction {
     this.targetGroups = targetGroups;
   }
 
+
   @Override
   public void validate() {
     if (save) {
       validator.validate(this, capdev, capdevDisciplines, capdevTargetGroup, capdevPartners, capdevOutputs);
     }
-
   }
+
 }

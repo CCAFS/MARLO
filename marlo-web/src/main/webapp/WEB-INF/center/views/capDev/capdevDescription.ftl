@@ -67,170 +67,194 @@
 			<div  class="fullForm borderBox" >
 
 				<!-- Disciplines-->
-				<div class="form-group row ">
-					<div class="col-md-12 newCapdevField approachesListTitle" listname="capdev.disciplines">
-						[@s.text name="capdev.form.listOfApproaches"][/@s.text] [@customForm.req/]
-					</div>
-				</div>
-				<div class="form-group row approachesListContainer" >
-					<div class="col-md-12 newCapdevField">
-						[@customForm.select name="capdevDisciplines" listName="disciplines" keyFieldName="id" displayFieldName="name"  i18nkey="capdev.form.selectApproach" className="disciplinesSelect" multiple=false placeholder="capdev.select" help="capdev.help.discipline" /]
-					</div>
-					<div id="disciplinesList" class="col-md-12 newCapdevField approachesList" listname="capdev.disciplines">
-						<ul class="list">
-							[#if capdev.capdevDisciplines?has_content]
-							[#list capdev.capdevDisciplines as discipline]
-							[#if discipline.active]
-							<li id="" class="discipline clearfix col-md-3">
-								<div class="removeDiscipline-action removeDiscipline removeIcon" title="Remove discipline"></div>
-								<input class="id" type="hidden" name="" value="${(discipline.id)!-1}" />
-								<input class="disciplineId" type="hidden" name="capdevDisciplines[-1]" value="${(discipline.disciplines.id)!}" />
-								<span class="name"> ${discipline.disciplines.name}</span>
-								<div class="clearfix"></div>
-							</li>
-							[#else]
+				<label>[@s.text name="capdev.form.listOfApproaches"][/@s.text] [@customForm.req/]</label>
+				<div class="simpleBox">
+					<div class="form-group row approachesListContainer" >
+						<div class="col-md-12 ">
+							[@customForm.select name="capdevDisciplines" listName="disciplines" keyFieldName="id" displayFieldName="name"  i18nkey="capdev.form.selectApproach" className="disciplinesSelect" multiple=false placeholder="capdev.select" help="capdev.help.discipline" /]
+						</div>
+						<div id="disciplinesList" class="col-md-12  approachesList" listname="capdev.disciplines">
+							<ul class="list">
+								[#if capdev.capdevDisciplines?has_content]
+								[#list capdev.capdevDisciplines as discipline]
+								[#if discipline.active]
+								<li id="" class="discipline clearfix col-md-3">
+									<div class="removeDiscipline-action removeDiscipline removeIcon" title="Remove discipline"></div>
+									<input class="id" type="hidden" name="" value="${(discipline.id)!-1}" />
+									<input class="disciplineId" type="hidden" name="capdevDisciplines[-1]" value="${(discipline.disciplines.id)!}" />
+									<span class="name"> ${discipline.disciplines.name}</span>
+									<div class="clearfix"></div>
+								</li>
+								[#else]
 
-							[/#if]
-							[/#list]
-							[#else]
-							<p class="emptyText"> [@s.text name="capdev.notDisciplines" /]</p>
-							
-								 
-							[/#if]
-						</ul>
+								[/#if]
+								[/#list]
+								[#else]
+								<p class="emptyText"> [@s.text name="capdev.notDisciplines" /]</p>
+								
+									 
+								[/#if]
+							</ul>
+						</div>
+					</div>
+					<div class="row ">
+						<div class="note participantMessage">
+							<p>If you don't find the discipline you are looking for, suggest it selecting <b>Other</b> then write the suggestion</p>
+						</div>
+					</div>
+					<div>
+						<label>Other <input type="checkbox" name="otherDiscipline" class="otherDisciplinecheck"   [#if (capdev.otherDiscipline)??]
+						[#if (capdev.otherDiscipline) == "1"] checked="checked" [/#if] value="${(capdev.otherDiscipline)!}"[/#if]> </label>
+						<div class="suggestDiscipline" style="display: none;">[@customForm.textArea name="capdev.disciplineSuggested" i18nkey="Suggest discipline"  className="textarea"  /]</div>
 					</div>
 				</div>
 
 				<!-- Targeted public-->
-				<div class="form-group row grupsParticipantsForm">
-					<div class="col-md-12 newCapdevField approachesListTitle" listname="capdev.targetgroup">
-						[@s.text name="capdev.targetgroup"][/@s.text] 
-					</div>
-				</div>
-				<div class="form-group row borderContainer grupsParticipantsForm" >
-					<div class="col-md-12 newCapdevField ">
-						[@customForm.select name="capdevTargetGroup" listName="targetGroups" keyFieldName="id" displayFieldName="name"  i18nkey="capdev.targetgroupselect" className="targetGroupsSelect" multiple=false placeholder="capdev.select" help="capdev.help.targetgroup" /]
-					</div>
-
-					<div id="targetGroupsList" class="col-md-12 newCapdevField" >
-						<ul class="list">
-							[#if capdev.capdevTargetgroups?has_content]
-							[#list capdev.capdevTargetgroups as targetGroup]
-							[#if targetGroup.active]
-								<li id="" class="targetGroup clearfix col-md-3">
-									<div class="removeTargetGroup-action removeTargetGroup removeIcon" title="Remove targetGroup"></div>
-									<input class="id" type="hidden" name="" value="${(targetGroup.id)!-1}" />
-									<input class="tgId" type="hidden" name="capdevTargetGroup[-1]" value="${(targetGroup.targetGroups.id)!-1}" />
-									<span class="name">${targetGroup.targetGroups.name}</span>
-									<div class="clearfix"></div>
-								</li>
-							[#else]
-							[/#if]
-							[/#list]
-							[#else]
-								<p class="emptyText"> [@s.text name="capdev.notTargetGroups" /]</p> 
-							[/#if]
-						</ul>
-					</div>
-				</div>
-
-				
-				<!-- research Area-->
-				<div class="row">
-					<div class="col-md-12 newCapdevField " >
-						<div class="col-md-6 " listname="capdev.researcharea">
-							[@customForm.select name="capdev.researchArea.id" listName="researchAreas" keyFieldName="id" displayFieldName="name"  required=true className="capdevResearchArea" i18nkey="capdev.form.researchArea" placeholder="capdev.select" help="capdev.help.researchArea" /]
+				<label class="grupsParticipantsForm">[@s.text name="capdev.targetgroup"][/@s.text]</label>
+				<div class="simpleBox grupsParticipantsForm">
+					<div class="form-group row borderContainer grupsParticipantsForm" >
+						<div class="col-md-12 newCapdevField ">
+							[@customForm.select name="capdevTargetGroup" listName="targetGroups" keyFieldName="id" displayFieldName="name"  i18nkey="capdev.targetgroupselect" className="targetGroupsSelect" multiple=false placeholder="capdev.select" help="capdev.help.targetgroup" /]
 						</div>
 
-						<!-- research program-->
-						<div class="col-md-6 researchProgram ">
-							[@customForm.select name="capdev.researchProgram.id" listName="researchPrograms" keyFieldName="id" displayFieldName="name"  i18nkey="capdev.form.researchProgram" placeholder="capdev.select" className="capdevResearchProgram" help="capdev.help.researchProgram" /]
+						<div id="targetGroupsList" class="col-md-12 newCapdevField" >
+							<ul class="list">
+								[#if capdev.capdevTargetgroups?has_content]
+								[#list capdev.capdevTargetgroups as targetGroup]
+								[#if targetGroup.active]
+									<li id="" class="targetGroup clearfix col-md-3">
+										<div class="removeTargetGroup-action removeTargetGroup removeIcon" title="Remove targetGroup"></div>
+										<input class="id" type="hidden" name="" value="${(targetGroup.id)!-1}" />
+										<input class="tgId" type="hidden" name="capdevTargetGroup[-1]" value="${(targetGroup.targetGroups.id)!-1}" />
+										<span class="name">${targetGroup.targetGroups.name}</span>
+										<div class="clearfix"></div>
+									</li>
+								[#else]
+								[/#if]
+								[/#list]
+								[#else]
+									<p class="emptyText"> [@s.text name="capdev.notTargetGroups" /]</p> 
+								[/#if]
+							</ul>
 						</div>
 					</div>
-				</div>
-				
-				<!-- CRP -->
-				<div class="row">
-					<div class="col-md-12 newCapdevField">
-						<div class="col-md-6 ">
-							[@customForm.select name="capdev.crp.id" listName="crps" keyFieldName="id" displayFieldName="name" i18nkey="capdev.form.crp" placeholder="capdev.select" help="capdev.help.crp" /]
+					<div class="row grupsParticipantsForm">
+						<div class="note participantMessage">
+							<p>If you don't find the target group you are looking for, suggest it selecting <b>Other</b> then write the suggestion</p>
 						</div>
-						
+					</div>
+					<div class="grupsParticipantsForm">
+						<label>Other <input type="checkbox" name="otherTargetGroup" class="otherTargetcheck"   [#if (capdev.otherTargetGroup)??]
+						[#if (capdev.otherTargetGroup) == "1"] checked="checked" [/#if] value="${(capdev.otherTargetGroup)!}"[/#if]> </label>
+						<div class="suggestTagetGroup" style="display: none;">[@customForm.textArea name="capdev.targetGroupSuggested" i18nkey="Suggest target group"  className="textarea"  /]</div>
 					</div>
 				</div>
 
-				<!-- project-->
-				<div class="form-group row newCapdevField ">
-					<div class="col-md-12 project" listname="capdev.project">
-						[@customForm.select name="capdev.project.id" listName="projects" keyFieldName="id" displayFieldName="name" i18nkey="capdev.form.project" placeholder="capdev.select" className="capdevProject" help="capdev.help.project" /]
+				<div class="simpleBox">
+					<!-- research Area-->
+					<div class="row">
+						<div class="col-md-12 newCapdevField " >
+							<div class="col-md-6 " listname="capdev.researcharea">
+								[@customForm.select name="capdev.researchArea.id" listName="researchAreas" keyFieldName="id" displayFieldName="name"  required=true className="capdevResearchArea" i18nkey="capdev.form.researchArea" placeholder="capdev.select" help="capdev.help.researchArea" /]
+							</div>
+
+							<!-- research program-->
+							<div class="col-md-6 researchProgram ">
+								[@customForm.select name="capdev.researchProgram.id" listName="researchPrograms" keyFieldName="id" displayFieldName="name"  i18nkey="capdev.form.researchProgram" placeholder="capdev.select" className="capdevResearchProgram" help="capdev.help.researchProgram" /]
+							</div>
+						</div>
+					</div>
+					
+					<!-- CRP -->
+					<div class="row">
+						<div class="col-md-12 newCapdevField">
+							<div class="col-md-6 ">
+								[@customForm.select name="capdev.crp.id" listName="crps" keyFieldName="id" displayFieldName="name" i18nkey="capdev.form.crp" placeholder="capdev.select" help="capdev.help.crp" /]
+							</div>
+							
+						</div>
+					</div>
+
+					<!-- project-->
+					<div class="form-group row newCapdevField ">
+						<div class="col-md-12 project" listname="capdev.project">
+							[@customForm.select name="capdev.project.id" listName="projects" keyFieldName="id" displayFieldName="name" i18nkey="capdev.form.project" placeholder="capdev.select" className="capdevProject" help="capdev.help.project" /]
+						</div>
 					</div>
 				</div>
 				
 				
 
 				<!-- Partners-->
-				<div class="form-group row grupsParticipantsForm">
-					<div class="col-md-12 newCapdevField approachesListTitle" listname="capdev.partners">
-						[@s.text name="capdev.partnerts"][/@s.text] 
+				<label class="grupsParticipantsForm">[@s.text name="capdev.partnerts"][/@s.text] </label>
+				<div class="simpleBox grupsParticipantsForm">
+					<div class="form-group row borderContainer grupsParticipantsForm" >
+						<div class="col-md-12 newCapdevField ">
+							[@customForm.select name="capdevPartners" listName="partners" keyFieldName="id" displayFieldName="name"  i18nkey="capdev.partnertSelect" className="capdevPartnerSelect" multiple=false placeholder="capdev.select" help="capdev.help.partner" /]
+						</div>
+						
+						<div id="capdevPartnersList" class=" partnersList" >
+							<ul class="list">
+								[#if capdev.capdevPartnerses?has_content]
+								[#list capdev.capdevPartnerses as partner]
+								[#if partner.active]
+									<li id="" class="capdevPartner clearfix col-md-12">
+										<div class="removepartner-action removepartner removeIcon" title="Remove partner"></div>
+										<input class="id" type="hidden" name="capdev.capdevPartnerses[${partner_index}].id" value="${(partner.id)!-1}" />
+										<input class="partnerId" type="hidden" name="capdev.capdevPartnerses[${partner_index}].id" value="${(partner.id)!}" />
+										${(partner.institutions.name)!}
+										<div class="clearfix"></div>
+									</li>
+								[#else]
+								[/#if]
+								[/#list] 
+								[#else]
+									<p class="emptyText"> [@s.text name="capdev.notPartners" /]</p> 
+								[/#if]
+							</ul>
+						</div>
 					</div>
-				</div>
-				<div class="form-group row borderContainer grupsParticipantsForm" >
-					<div class="col-md-12 newCapdevField ">
-						[@customForm.select name="capdevPartners" listName="partners" keyFieldName="id" displayFieldName="name"  i18nkey="capdev.partnertSelect" className="capdevPartnerSelect" multiple=false placeholder="capdev.select" help="capdev.help.partner" /]
+					<div class="row grupsParticipantsForm">
+						<div class="note participantMessage">
+							<p>If you don't find the partner you are looking for, suggest it selecting <b>Other</b> then write the suggestion</p>
+						</div>
 					</div>
-					
-					<div id="capdevPartnersList" class=" partnersList" >
-						<ul class="list">
-							[#if capdev.capdevPartnerses?has_content]
-							[#list capdev.capdevPartnerses as partner]
-							[#if partner.active]
-								<li id="" class="capdevPartner clearfix col-md-12">
-									<div class="removepartner-action removepartner removeIcon" title="Remove partner"></div>
-									<input class="id" type="hidden" name="capdev.capdevPartnerses[${partner_index}].id" value="${(partner.id)!-1}" />
-									<input class="partnerId" type="hidden" name="capdev.capdevPartnerses[${partner_index}].id" value="${(partner.id)!}" />
-									${(partner.institutions.name)!}
-									<div class="clearfix"></div>
-								</li>
-							[#else]
-							[/#if]
-							[/#list] 
-							[#else]
-								<p class="emptyText"> [@s.text name="capdev.notPartners" /]</p> 
-							[/#if]
-						</ul>
+					<div class="grupsParticipantsForm">
+						<label>Other <input type="checkbox" name="otherPartner" class="otherPartnercheck"   [#if (capdev.otherPartner)??]
+						[#if (capdev.otherPartner) == "1"] checked="checked" [/#if] value="${(capdev.otherPartner)!}"[/#if] > </label>
+						<div class="suggestPartner" style="display: none;">[@customForm.textArea name="capdev.partnerSuggested" i18nkey="Suggest Partner"  className="textarea"  /]</div>
 					</div>
 				</div>
 
 				<!-- OutPuts-->
-				<div class="form-group row">
-					<div class="col-md-12 newCapdevField objectivesTitle" listname="capdev.outputs">
-						[@s.text name="capdev.form.objectives"][/@s.text]
-					</div>
-				</div>
-				<div class="form-group row outComesContainer" >
-					<div class="col-md-12 newCapdevField">
-						[@customForm.select name="capdevOutputs" listName="outputs" keyFieldName="id" displayFieldName="title" i18nkey="capdev.form.selectOutcome" className="capdevOutputSelect" multiple=false placeholder="capdev.select" help="capdev.help.output" /]
-					</div>
+				
+				<label>[@s.text name="capdev.form.objectives"][/@s.text] </label>
+				<div class="simpleBox">
+					<div class="form-group row outComesContainer" >
+						<div class="col-md-12 newCapdevField">
+							[@customForm.select name="capdevOutputs" listName="outputs" keyFieldName="id" displayFieldName="title" i18nkey="capdev.form.selectOutcome" className="capdevOutputSelect" multiple=false placeholder="capdev.select" help="capdev.help.output" /]
+						</div>
 
-					<div id="capdevOutputsList" class="outputsList" >
-						<ul class="list">
-							[#if capdev.capdevOutputses?has_content]
-							[#list capdev.capdevOutputses as output]
-							[#if output.active]
-								<li id="" class="capdevOutput clearfix col-md-12">
-									<div class="removeOutput-action removeOutput removeIcon" title="Remove output"></div>
-									<input class="id" type="hidden" name="capdev.capdevOutputses[${output_index}].id" value="${(output.id)!-1}" />
-									<input class="outputId" type="hidden" name="capdev.capdevOutputses[${output_index}].id" value="${(output.id)!}" />
-									${(output.researchOutputs.title)!}
-									<div class="clearfix"></div>
-								</li>
-							[#else]
-							[/#if]
-							[/#list] 
-							[#else]
-								<p class="emptyText"> [@s.text name="capdev.notOutput" /]</p> 
-							[/#if]
-						</ul>
+						<div id="capdevOutputsList" class="outputsList" >
+							<ul class="list">
+								[#if capdev.capdevOutputses?has_content]
+								[#list capdev.capdevOutputses as output]
+								[#if output.active]
+									<li id="" class="capdevOutput clearfix col-md-12">
+										<div class="removeOutput-action removeOutput removeIcon" title="Remove output"></div>
+										<input class="id" type="hidden" name="capdev.capdevOutputses[${output_index}].id" value="${(output.id)!-1}" />
+										<input class="outputId" type="hidden" name="capdev.capdevOutputses[${output_index}].id" value="${(output.id)!}" />
+										${(output.researchOutputs.title)!}
+										<div class="clearfix"></div>
+									</li>
+								[#else]
+								[/#if]
+								[/#list] 
+								[#else]
+									<p class="emptyText"> [@s.text name="capdev.notOutput" /]</p> 
+								[/#if]
+							</ul>
+						</div>
 					</div>
 				</div>
 

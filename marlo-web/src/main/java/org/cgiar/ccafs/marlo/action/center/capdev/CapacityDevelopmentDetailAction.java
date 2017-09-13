@@ -85,6 +85,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   private List<Map<String, Object>> durationUnit;
   private List<Map<String, Object>> json;
   private String contact;
+  private String otherInstitucion;
   private File uploadFile;
   private String uploadFileName;
   private String uploadFileContentType;
@@ -136,7 +137,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
   @Override
   public String cancel() {
-    System.out.println("Se cancelo la operacion");
+    // System.out.println("Se cancelo la operacion");
     return super.cancel();
   }
 
@@ -145,7 +146,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     final Map<String, Object> parameters = this.getParameters();
     final long capDevCountryID =
       Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
-    System.out.println(capDevCountryID);
+    // System.out.println(capDevCountryID);
     final CapdevLocations capdev_country = capdevLocationService.getCapdevLocationsById(capDevCountryID);
     capdev_country.setActive(false);
     capdev_country.setUsersByModifiedBy(this.getCurrentUser());
@@ -176,11 +177,11 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
 
   public String deleteRegion() {
-    System.out.println("delete");
+    // System.out.println("delete");
     final Map<String, Object> parameters = this.getParameters();
     final long capDevRegionID =
       Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
-    System.out.println(capDevRegionID);
+    // System.out.println(capDevRegionID);
     final CapdevLocations capdev_region = capdevLocationService.getCapdevLocationsById(capDevRegionID);
     capdev_region.setActive(false);
     capdev_region.setUsersByModifiedBy(this.getCurrentUser());
@@ -268,9 +269,9 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     int numMen = 0;
     for (final Object[] element : data) {
       if (((String) element[3]).equalsIgnoreCase("M")) {
-        System.out.println("genero male -->" + element[3]);
+        // System.out.println("genero male -->" + element[3]);
         numMen++;
-        System.out.println("genero male -->" + numMen);
+        // System.out.println("genero male -->" + numMen);
       }
     }
     return numMen;
@@ -285,13 +286,18 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     int numWomen = 0;
     for (final Object[] element : data) {
       if (((String) element[3]).equalsIgnoreCase("F")) {
-        System.out.println("genero female -->" + element[3]);
+        // System.out.println("genero female -->" + element[3]);
         numWomen++;
-        System.out.println("genero female -->" + numWomen);
+        // System.out.println("genero female -->" + numWomen);
 
       }
     }
     return numWomen;
+  }
+
+
+  public String getOtherInstitucion() {
+    return otherInstitucion;
   }
 
 
@@ -339,7 +345,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     return uploadFileName;
   }
 
-
   /*
    * This method create a participant list from data got from excel file
    * @param data an object array that contain data from excel file
@@ -350,10 +355,10 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     final Session session = SecurityUtils.getSubject().getSession();
 
     final User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
-    System.out.println(reader.getTotalRows());
+    // System.out.println(reader.getTotalRows());
     for (int i = 0; i < reader.getTotalRows(); i++) {
       final Participant participant = new Participant();
-      System.out.println(data[i][0]);
+      // System.out.println(data[i][0]);
       participant.setCode(Math.round((double) data[i][0]));
       participant.setName((String) data[i][1]);
       participant.setLastName((String) data[i][2]);
@@ -375,7 +380,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
       }
       if (reader.sustraerId((String) data[i][6]) != null) {
-        System.out.println("institution ID " + reader.sustraerId((String) data[i][6]).getClass());
+        // System.out.println("institution ID " + reader.sustraerId((String) data[i][6]).getClass());
         if (institutionService
           .getInstitutionById(Long.parseLong((String) (reader.sustraerID((String) data[i][6])))) != null) {
           participant.setInstitutions(
@@ -412,6 +417,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
     return participantList;
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -537,7 +543,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
    * @return previewList is a JSON Object containing the data from excel file
    */
   public String previewExcelFile() throws Exception {
-    System.out.println("previewExcelFile");
+    // System.out.println("previewExcelFile");
 
     this.previewList = new ArrayList<>();
     previewListHeader = new ArrayList<>();
@@ -583,7 +589,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       capdevDB.setCapdevType(capdev.getCapdevType());
     }
 
-    System.out.println(capdev.getDurationUnit());
     if (capdev.getDurationUnit() != null) {
       if (!capdev.getDurationUnit().equals("-1")) {
         capdevDB.setDurationUnit(capdev.getDurationUnit());
@@ -602,6 +607,8 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       }
 
       capdevService.saveCapacityDevelopment(capdevDB);
+      System.out.println("otherInstitucion " + otherInstitucion);
+      participant.setOtherInstitution(otherInstitucion);
 
       this.saveParticipant(participant);
 
@@ -746,7 +753,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   public void saveParticipant(Participant participant) {
     final Session session = SecurityUtils.getSubject().getSession();
     final User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
-    // System.out.println("highest degree " + participant.getHighestDegree().getId());
+    System.out.println("other inst " + participant.getOtherInstitution());
     if (participant.getCode() == null) {
       participant.setCode(null);
     }
@@ -760,11 +767,16 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     if ((participant.getInstitutions() == null) || (participant.getInstitutions().getId() == -1)) {
       participant.setInstitutions(null);
     }
+
+    if ((participant.getOtherInstitution() == null)) {
+      participant.setOtherInstitution(null);
+    }
+
     if ((participant.getLocElementsByCountryOfInstitucion() == null)
       || (participant.getLocElementsByCountryOfInstitucion().getId() == -1)) {
       participant.setLocElementsByCountryOfInstitucion(null);
     }
-    System.out.println(participant.getFellowship() == null);
+    // System.out.println(participant.getFellowship() == null);
     if ((participant.getFellowship() == null) || (participant.getFellowship().getId() == -1)) {
       participant.setFellowship(null);
     }
@@ -845,6 +857,11 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   }
 
 
+  public void setOtherInstitucion(String otherInstitucion) {
+    this.otherInstitucion = otherInstitucion;
+  }
+
+
   public void setParticipant(Participant participant) {
     this.participant = participant;
   }
@@ -895,6 +912,8 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     this.setInvalidFields(new HashMap<>());
 
     if (save) {
+      // System.out.println("otherInstitucion " + otherInstitucion);
+
       validator.validate(this, capdev, participant, uploadFile, uploadFileContentType, capdevCountries, capdevRegions);
 
       // if (capdev.getTitle().equalsIgnoreCase("")) {

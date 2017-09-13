@@ -152,7 +152,7 @@
   (function(){
     //  this capdev has a regional dimension
     var valueSelected = $(".regional .onoffswitch-radio").val();
-    if(valueSelected) {
+    if(valueSelected == true) {
       $(".regionsBox").show("slow");
     } 
   })();
@@ -192,7 +192,18 @@
     })();
 
 
+
+    (function(){
+      if($('input[type="checkbox"][name="otherInstitucion"]').is(":checked")){
+        $(".suggestInstitution").show();
+      }
+    })();
+    
+
+
   }
+
+
 
   //enable the duration unit field whe user press a key
   $(".capdevDuration").on('keyup',function(){
@@ -203,6 +214,32 @@
      $(".dUnitSelect").attr('disabled','disabled');
     }
   })
+
+
+  //display suggest text area
+  $('input[type="checkbox"][name="otherInstitucion"]').change(function() {
+     if(this.checked) {
+       $(".suggestInstitution").show();
+       $(".otherInstcheck").val("1")
+     }
+     else{
+      $(".suggestInstitution").hide();
+      $(".otherInstcheck").val("0")
+      
+     }
+   });
+
+  //limit number of caracter entered to the text area
+  $('.textarea').keypress(function(e) {
+    var tval = $('.textarea').val(),
+        tlength = tval.length,
+        set = 200,
+        remain = parseInt(set - tlength);
+    /*$('p').text(remain);*/
+    if (remain <= 0 && e.which !== 0 && e.charCode !== 0) {
+        $('.textarea').val((tval).substring(0, tlength - 1))
+    }
+})
 
 
 

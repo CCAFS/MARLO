@@ -27,6 +27,8 @@ public class Participant implements java.io.Serializable {
   private String gender;
   private LocElement locElementsByCountryOfInstitucion;
   private Institution institutions;
+  private String otherInstitution;
+  private String institutionsSuggested;
   private LocElement locElementsByCitizenship;
   private CapdevHighestDegree highestDegree;
   private String email;
@@ -59,9 +61,10 @@ public class Participant implements java.io.Serializable {
 
   public Participant(User usersByModifiedBy, User usersByCreatedBy, Long code, String name, String middleName,
     String lastName, String gender, LocElement locElementsByCountryOfInstitucion, Institution institutions,
-    LocElement locElementsByCitizenship, CapdevHighestDegree highestDegree, String email, String personalEmail,
-    String reference, String supervisor, CapdevFoundingType fellowship, boolean active, Date aciveSince,
-    String modificationJustification, Set<CapdevParticipant> capdevParticipants) {
+    String otherInstitution, String institutionsSuggested, LocElement locElementsByCitizenship,
+    CapdevHighestDegree highestDegree, String email, String personalEmail, String reference, String supervisor,
+    CapdevFoundingType fellowship, boolean active, Date aciveSince, String modificationJustification,
+    Set<CapdevParticipant> capdevParticipants) {
     this.usersByModifiedBy = usersByModifiedBy;
     this.usersByCreatedBy = usersByCreatedBy;
     this.code = code;
@@ -73,6 +76,8 @@ public class Participant implements java.io.Serializable {
     this.locElementsByCountryOfInstitucion = locElementsByCountryOfInstitucion;
     this.highestDegree = highestDegree;
     this.institutions = institutions;
+    this.otherInstitution = otherInstitution;
+    this.institutionsSuggested = institutionsSuggested;
     this.email = email;
     this.personalEmail = personalEmail;
     this.reference = reference;
@@ -123,6 +128,10 @@ public class Participant implements java.io.Serializable {
     return institutions;
   }
 
+  public String getInstitutionsSuggested() {
+    return institutionsSuggested;
+  }
+
   public String getLastName() {
     return this.lastName;
   }
@@ -147,6 +156,10 @@ public class Participant implements java.io.Serializable {
     return this.name;
   }
 
+  public String getOtherInstitution() {
+    return otherInstitution;
+  }
+
   public String getPersonalEmail() {
     return personalEmail;
   }
@@ -159,9 +172,11 @@ public class Participant implements java.io.Serializable {
     return this.supervisor;
   }
 
+
   public User getUsersByCreatedBy() {
     return this.usersByCreatedBy;
   }
+
 
   public User getUsersByModifiedBy() {
     return this.usersByModifiedBy;
@@ -172,11 +187,9 @@ public class Participant implements java.io.Serializable {
     return this.active;
   }
 
-
   public void setAciveSince(Date aciveSince) {
     this.aciveSince = aciveSince;
   }
-
 
   public void setActive(boolean active) {
     this.active = active;
@@ -190,9 +203,11 @@ public class Participant implements java.io.Serializable {
     this.code = code;
   }
 
+
   public void setEmail(String email) {
     this.email = email;
   }
+
 
   public void setFellowship(CapdevFoundingType fellowship) {
     this.fellowship = fellowship;
@@ -219,15 +234,17 @@ public class Participant implements java.io.Serializable {
   }
 
 
+  public void setInstitutionsSuggested(String institutionsSuggested) {
+    this.institutionsSuggested = institutionsSuggested;
+  }
+
   public void setLastName(String lastName) {
     this.lastName = lastName;
   }
 
-
   public void setLocElementsByCitizenship(LocElement locElementsByCitizenship) {
     this.locElementsByCitizenship = locElementsByCitizenship;
   }
-
 
   public void setLocElementsByCountryOfInstitucion(LocElement locElementsByCountryOfInstitucion) {
     this.locElementsByCountryOfInstitucion = locElementsByCountryOfInstitucion;
@@ -237,13 +254,21 @@ public class Participant implements java.io.Serializable {
     this.middleName = middleName;
   }
 
+
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
 
+
   public void setName(String name) {
     this.name = name;
   }
+
+
+  public void setOtherInstitution(String otherInstitution) {
+    this.otherInstitution = otherInstitution;
+  }
+
 
   public void setPersonalEmail(String personalEmail) {
     this.personalEmail = personalEmail;

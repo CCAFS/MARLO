@@ -269,6 +269,17 @@
 					<div class="form-group row">
 						<div class="col-md-6">
 							[@customForm.select name="participant.institutions.id" listName="institutions" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.participant.Institution" className="" multiple=false placeholder="capdev.select"  /]
+
+							<div class="note participantMessage">
+								<p>If you don't find the institucion you are looking for, suggest it selecting <b>Other</b> </p>
+							</div>
+
+							<div>
+								<label>Other <input type="checkbox" name="otherInstitucion" class="otherInstcheck"   [#if (participant.otherInstitution)??]
+								[#if (participant.otherInstitution) == "1"] checked="checked" [/#if] value="${(participant.otherInstitution)!}"[/#if]> </label>
+								<div class="suggestInstitution" style="display: none;">[@customForm.textArea name="participant.institutionsSuggested" i18nkey="Suggest institution"  className="textarea"  /]</div>
+							</div>
+
 						</div>
 						<div class="col-md-6 pcountryOfInstitucionList">
 							[@customForm.select name="participant.locElementsByCountryOfInstitucion.id" listName="countryList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.participant.country" className="" multiple=false placeholder="capdev.select"  /]

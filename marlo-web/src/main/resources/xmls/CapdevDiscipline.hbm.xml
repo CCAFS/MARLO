@@ -34,5 +34,6 @@
 		<property name="modificationJustification" type="string">
 			<column name="modification_justification" length="65535" />
 		</property>
+		
 	</class>
 </hibernate-mapping>

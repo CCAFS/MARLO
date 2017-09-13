@@ -48,6 +48,12 @@
 			class="org.cgiar.ccafs.marlo.data.model.CapdevHighestDegree" fetch="select">
 			<column name="highest_degree" />
 		</many-to-one>
+		<property name="otherInstitution" type="string">
+			<column name="other_institution" length="2"/>
+		</property>
+		<property name="institutionsSuggested" type="string">
+			<column name="institutions_suggested" length="200" />
+		</property>
 		<property name="email" type="string">
 			<column name="email" length="200" />
 		</property>

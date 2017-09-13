@@ -49,6 +49,12 @@ public class CapacityDevelopment implements java.io.Serializable {
   private Integer numParticipants;
   private Integer numMen;
   private Integer numWomen;
+  private String otherDiscipline;
+  private String disciplineSuggested;
+  private String otherTargetGroup;
+  private String targetGroupSuggested;
+  private String otherPartner;
+  private String partnerSuggested;
   private Set<CapdevLocations> capdevLocations = new HashSet<CapdevLocations>(0);
   private List<CapdevLocations> capDevCountries;
   private List<CapdevLocations> capDevRegions;
@@ -67,9 +73,11 @@ public class CapacityDevelopment implements java.io.Serializable {
     CenterArea researchArea, Crp crp, CenterProgram researchProgram, String title, CapacityDevelopmentType capdevType,
     int category, boolean active, String modificationJustification, String ctFirstName, String ctLastName,
     String ctEmail, Date startDate, Date endDate, Long duration, String durationUnit, Boolean global, Boolean regional,
-    Integer numParticipants, Integer numMen, Integer numWomen, Set<CapdevLocations> capdevLocations,
-    Set<CapdevDiscipline> capdevDisciplines, Set<CapdevTargetgroup> capdevTargetgroups,
-    Set<CapdevParticipant> capdevParticipants, Set<CapdevOutputs> capdevOutputses, Set<CapdevPartners> capdevPartnerses,
+    Integer numParticipants, Integer numMen, Integer numWomen, String otherDiscipline, String disciplineSuggested,
+    String otherTargetGroup, String targetGroupSuggested, String otherPartner, String partnerSuggeste,
+    Set<CapdevLocations> capdevLocations, Set<CapdevDiscipline> capdevDisciplines,
+    Set<CapdevTargetgroup> capdevTargetgroups, Set<CapdevParticipant> capdevParticipants,
+    Set<CapdevOutputs> capdevOutputses, Set<CapdevPartners> capdevPartnerses,
     Set<CapdevSupportingDocs> capdevSupportingDocses) {
     this.project = project;
     this.usersByModifiedBy = usersByModifiedBy;
@@ -98,6 +106,12 @@ public class CapacityDevelopment implements java.io.Serializable {
     this.capdevParticipants = capdevParticipants;
     this.numMen = numMen;
     this.numWomen = numWomen;
+    this.otherDiscipline = otherDiscipline;
+    this.disciplineSuggested = disciplineSuggested;
+    this.otherTargetGroup = otherTargetGroup;
+    this.targetGroupSuggested = targetGroupSuggested;
+    this.otherPartner = otherPartner;
+    this.partnerSuggested = partnerSuggeste;
     this.capdevOutputses = capdevOutputses;
     this.capdevPartnerses = capdevPartnerses;
     this.capdevSupportingDocses = capdevSupportingDocses;
@@ -181,6 +195,10 @@ public class CapacityDevelopment implements java.io.Serializable {
     return this.ctLastName;
   }
 
+  public String getDisciplineSuggested() {
+    return disciplineSuggested;
+  }
+
   public Long getDuration() {
     return duration;
   }
@@ -227,6 +245,22 @@ public class CapacityDevelopment implements java.io.Serializable {
     return numWomen;
   }
 
+  public String getOtherDiscipline() {
+    return otherDiscipline;
+  }
+
+  public String getOtherPartner() {
+    return otherPartner;
+  }
+
+  public String getOtherTargetGroup() {
+    return otherTargetGroup;
+  }
+
+  public String getPartnerSuggested() {
+    return partnerSuggested;
+  }
+
   public CenterProject getProject() {
     return this.project;
   }
@@ -234,6 +268,7 @@ public class CapacityDevelopment implements java.io.Serializable {
   public Boolean getRegional() {
     return regional;
   }
+
 
   public CenterArea getResearchArea() {
     return this.researchArea;
@@ -243,6 +278,7 @@ public class CapacityDevelopment implements java.io.Serializable {
     return this.researchProgram;
   }
 
+
   public Set<CenterSectionStatus> getSectionStatuses() {
     return sectionStatuses;
   }
@@ -250,6 +286,7 @@ public class CapacityDevelopment implements java.io.Serializable {
   public String getsGlobal() {
     return sGlobal;
   }
+
 
   public String getsRegional() {
     return sRegional;
@@ -266,14 +303,21 @@ public class CapacityDevelopment implements java.io.Serializable {
     return date;
   }
 
+
   public Date getStartDate() {
     return this.startDate;
+  }
+
+
+  public String getTargetGroupSuggested() {
+    return targetGroupSuggested;
   }
 
 
   public String getTitle() {
     return this.title;
   }
+
 
   public User getUsersByCreatedBy() {
     return this.usersByCreatedBy;
@@ -349,7 +393,6 @@ public class CapacityDevelopment implements java.io.Serializable {
     this.category = category;
   }
 
-
   public void setCrp(Crp crp) {
     this.crp = crp;
   }
@@ -370,6 +413,11 @@ public class CapacityDevelopment implements java.io.Serializable {
   }
 
 
+  public void setDisciplineSuggested(String disciplineSuggested) {
+    this.disciplineSuggested = disciplineSuggested;
+  }
+
+
   public void setDuration(Long duration) {
     this.duration = duration;
   }
@@ -378,6 +426,7 @@ public class CapacityDevelopment implements java.io.Serializable {
   public void setDurationUnit(String durationUnit) {
     this.durationUnit = durationUnit;
   }
+
 
   public void setEndDate(Date endDate) {
     this.endDate = endDate;
@@ -411,6 +460,26 @@ public class CapacityDevelopment implements java.io.Serializable {
 
   public void setNumWomen(Integer numWomen) {
     this.numWomen = numWomen;
+  }
+
+
+  public void setOtherDiscipline(String otherDiscipline) {
+    this.otherDiscipline = otherDiscipline;
+  }
+
+
+  public void setOtherPartner(String otherPartner) {
+    this.otherPartner = otherPartner;
+  }
+
+
+  public void setOtherTargetGroup(String otherTargetGroup) {
+    this.otherTargetGroup = otherTargetGroup;
+  }
+
+
+  public void setPartnerSuggested(String partnerSuggested) {
+    this.partnerSuggested = partnerSuggested;
   }
 
 
@@ -451,6 +520,11 @@ public class CapacityDevelopment implements java.io.Serializable {
 
   public void setStartDate(Date startDate) {
     this.startDate = startDate;
+  }
+
+
+  public void setTargetGroupSuggested(String targetGroupSuggested) {
+    this.targetGroupSuggested = targetGroupSuggested;
   }
 
 

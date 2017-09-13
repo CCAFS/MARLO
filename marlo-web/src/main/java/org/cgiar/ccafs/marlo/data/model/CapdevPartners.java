@@ -64,6 +64,7 @@ public class CapdevPartners implements java.io.Serializable {
     return this.modificationJustification;
   }
 
+
   public User getUsersByCreatedBy() {
     return this.usersByCreatedBy;
   }
@@ -100,9 +101,11 @@ public class CapdevPartners implements java.io.Serializable {
     this.modificationJustification = modificationJustification;
   }
 
+
   public void setUsersByCreatedBy(User usersByCreatedBy) {
     this.usersByCreatedBy = usersByCreatedBy;
   }
+
 
   public void setUsersByModifiedBy(User usersByModifiedBy) {
     this.usersByModifiedBy = usersByModifiedBy;

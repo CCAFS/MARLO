@@ -56,6 +56,7 @@ public class CapdevDiscipline implements java.io.Serializable {
     return this.disciplines;
   }
 
+
   public Long getId() {
     return this.id;
   }
@@ -63,6 +64,7 @@ public class CapdevDiscipline implements java.io.Serializable {
   public String getModificationJustification() {
     return this.modificationJustification;
   }
+
 
   public User getUsersByCreatedBy() {
     return this.usersByCreatedBy;
@@ -92,17 +94,21 @@ public class CapdevDiscipline implements java.io.Serializable {
     this.disciplines = disciplines;
   }
 
+
   public void setId(Long id) {
     this.id = id;
   }
+
 
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
 
+
   public void setUsersByCreatedBy(User usersByCreatedBy) {
     this.usersByCreatedBy = usersByCreatedBy;
   }
+
 
   public void setUsersByModifiedBy(User usersByModifiedBy) {
     this.usersByModifiedBy = usersByModifiedBy;
