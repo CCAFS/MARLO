@@ -18,7 +18,9 @@ package org.cgiar.ccafs.marlo.action.summaries;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.ByteArrayInputStream;
@@ -29,10 +31,8 @@ import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
-import java.util.Map;
 
 import com.google.inject.Inject;
-import org.apache.commons.lang3.StringUtils;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.MasterReport;
 import org.pentaho.reporting.engine.classic.core.modules.output.table.xls.ExcelReportUtil;
@@ -57,18 +57,23 @@ public class InstitutionsLeadersSummaryAction extends BaseAction implements Summ
   private Crp loggedCrp;
   private int year;
   private String cycle;
+  private Phase selectedPhase;
   // Managers
   private CrpManager crpManager;
+  private PhaseManager phaseManager;
   // XLSX bytes
   private byte[] bytesXLSX;
   // Streams
   InputStream inputStream;
 
+
   @Inject
-  public InstitutionsLeadersSummaryAction(APConfig config, CrpManager crpManager) {
+  public InstitutionsLeadersSummaryAction(APConfig config, CrpManager crpManager, PhaseManager phaseManager) {
     super(config);
     this.crpManager = crpManager;
+    this.phaseManager = phaseManager;
   }
+
 
   /**
    * Method to add i8n parameters to masterReport in Pentaho
@@ -112,6 +117,7 @@ public class InstitutionsLeadersSummaryAction extends BaseAction implements Summ
       masterReport.getParameterValues().put("cycle", cycle);
       masterReport.getParameterValues().put("showDescription",
         this.hasSpecificities(APConstants.CRP_REPORTS_DESCRIPTION));
+      masterReport.getParameterValues().put("phaseID", this.getSelectedPhase().getId());
       // Set i8n for pentaho
       masterReport = this.addi8nParameters(masterReport);
       ExcelReportUtil.createXLSX(masterReport, os);
@@ -175,37 +181,42 @@ public class InstitutionsLeadersSummaryAction extends BaseAction implements Summ
     return loggedCrp;
   }
 
+  public Phase getSelectedPhase() {
+    return selectedPhase;
+  }
+
   public int getYear() {
     return year;
   }
 
   @Override
   public void prepare() {
-    // Get loggerCrp
+    // Get loggedCrp
     try {
-      loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-      loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+      this.setLoggedCrp((Crp) this.getSession().get(APConstants.SESSION_CRP));
+      loggedCrp = crpManager.getCrpById(this.getLoggedCrp().getId());
     } catch (Exception e) {
       LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
     }
+    // Get phase
+    this.setSelectedPhase(
+      phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), loggedCrp.getId().longValue()));
     // Get parameters from URL
     // Get year
     try {
-      Map<String, Object> parameters = this.getParameters();
-      year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
+      this.setYear(this.getSelectedPhase().getYear());
     } catch (Exception e) {
       LOG.warn("Failed to get " + APConstants.YEAR_REQUEST
         + " parameter. Parameter will be set as CurrentCycleYear. Exception: " + e.getMessage());
-      year = this.getCurrentCycleYear();
+      this.setYear(this.getCurrentCycleYear());
     }
     // Get cycle
     try {
-      Map<String, Object> parameters = this.getParameters();
-      cycle = (StringUtils.trim(((String[]) parameters.get(APConstants.CYCLE))[0]));
+      this.setCycle(this.getSelectedPhase().getDescription());
     } catch (Exception e) {
       LOG.warn("Failed to get " + APConstants.CYCLE + " parameter. Parameter will be set as CurrentCycle. Exception: "
         + e.getMessage());
-      cycle = this.getCurrentCycle();
+      this.setCycle(this.getCurrentCycle());
     }
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
@@ -220,6 +231,10 @@ public class InstitutionsLeadersSummaryAction extends BaseAction implements Summ
 
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
+  }
+
+  public void setSelectedPhase(Phase selectedPhase) {
+    this.selectedPhase = selectedPhase;
   }
 
   public void setYear(int year) {

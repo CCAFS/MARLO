@@ -2594,7 +2594,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     fileName.append("FullProjectReportSummary-");
     fileName.append(project.getCrp().getName() + "-");
     fileName.append("P" + projectID + "-");
-    fileName.append(this.year + "_");
+    fileName.append(this.getYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".pdf");
     return fileName.toString();
@@ -3668,8 +3668,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   public void prepare() {
     // Get loggedCrp
     try {
-      loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-      loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+      this.setLoggedCrp((Crp) this.getSession().get(APConstants.SESSION_CRP));
+      loggedCrp = crpManager.getCrpById(this.getLoggedCrp().getId());
     } catch (Exception e) {
       LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
     }
@@ -3683,34 +3683,33 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     }
     // Get project from DB
     try {
-      project = projectManager.getProjectById(projectID);
+      this.setProject(projectManager.getProjectById(this.getProjectID()));
     } catch (Exception e) {
       LOG.error("Failed to get project. Exception: " + e.getMessage());
     }
+    // Get phase
+    this.setSelectedPhase(
+      phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), loggedCrp.getId().longValue()));
+    this.setProjectInfo(project.getProjecInfoPhase(this.getSelectedPhase()));
+
+
     // Get parameters from URL
     // Get year
     try {
-      Map<String, Object> parameters = this.getParameters();
-      year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
+      this.setYear(this.getSelectedPhase().getYear());
     } catch (Exception e) {
       LOG.warn("Failed to get " + APConstants.YEAR_REQUEST
         + " parameter. Parameter will be set as CurrentCycleYear. Exception: " + e.getMessage());
-      year = this.getCurrentCycleYear();
+      this.setYear(this.getCurrentCycleYear());
     }
     // Get cycle
     try {
-      Map<String, Object> parameters = this.getParameters();
-      cycle = (StringUtils.trim(((String[]) parameters.get(APConstants.CYCLE))[0]));
+      this.setCycle(this.getSelectedPhase().getDescription());
     } catch (Exception e) {
       LOG.warn("Failed to get " + APConstants.CYCLE + " parameter. Parameter will be set as CurrentCycle. Exception: "
         + e.getMessage());
-      cycle = this.getCurrentCycle();
+      this.setCycle(this.getCurrentCycle());
     }
-
-    // Get phase
-    selectedPhase =
-      phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), loggedCrp.getId().longValue());
-    projectInfo = project.getProjecInfoPhase(this.getSelectedPhase());
 
   }
 
