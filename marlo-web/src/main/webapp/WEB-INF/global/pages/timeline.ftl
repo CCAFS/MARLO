@@ -44,9 +44,7 @@
       ]
     }
     var currenPhaseIndex = ${(currenPhaseIndex)!0};
-    
-    console.log(dataObject);
-    console.log(currenPhaseIndex);
+
   </script>
   
   <div style="width: 100%;height: 80px;">
