@@ -22,21 +22,22 @@ import org.cgiar.ccafs.marlo.data.model.CenterCustomParameter;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CenterCustomParameterDAO implements ICenterCustomParameterDAO {
+public class CenterCustomParameterDAO extends AbstractMarloDAO<CenterCustomParameter, Long>
+  implements ICenterCustomParameterDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CenterCustomParameterDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterCustomParameterDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteCenterCustomParameter(long centerCustomParameterId) {
+  public void deleteCenterCustomParameter(long centerCustomParameterId) {
     CenterCustomParameter centerCustomParameter = this.find(centerCustomParameterId);
     centerCustomParameter.setActive(false);
-    return this.save(centerCustomParameter) > 0;
+    this.save(centerCustomParameter);
   }
 
   @Override
@@ -51,14 +52,14 @@ public class CenterCustomParameterDAO implements ICenterCustomParameterDAO {
 
   @Override
   public CenterCustomParameter find(long id) {
-    return dao.find(CenterCustomParameter.class, id);
+    return super.find(CenterCustomParameter.class, id);
 
   }
 
   @Override
   public List<CenterCustomParameter> findAll() {
     String query = "from " + CenterCustomParameter.class.getName();
-    List<CenterCustomParameter> list = dao.findAll(query);
+    List<CenterCustomParameter> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,27 +70,27 @@ public class CenterCustomParameterDAO implements ICenterCustomParameterDAO {
   @Override
   public List<CenterCustomParameter> getCenterCustomParametersByUserId(long userId) {
     String query = "from " + CenterCustomParameter.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(CenterCustomParameter centerCustomParameter) {
+  public CenterCustomParameter save(CenterCustomParameter centerCustomParameter) {
     if (centerCustomParameter.getId() == null) {
-      dao.save(centerCustomParameter);
+      super.saveEntity(centerCustomParameter);
     } else {
-      dao.update(centerCustomParameter);
+      centerCustomParameter = super.update(centerCustomParameter);
     }
-    return centerCustomParameter.getId();
+    return centerCustomParameter;
   }
 
   @Override
-  public long save(CenterCustomParameter centerCustomParameter, String actionName, List<String> relationsName) {
+  public CenterCustomParameter save(CenterCustomParameter centerCustomParameter, String actionName, List<String> relationsName) {
     if (centerCustomParameter.getId() == null) {
-      dao.save(centerCustomParameter, actionName, relationsName);
+      super.saveEntity(centerCustomParameter, actionName, relationsName);
     } else {
-      dao.update(centerCustomParameter, actionName, relationsName);
+      centerCustomParameter = super.update(centerCustomParameter, actionName, relationsName);
     }
-    return centerCustomParameter.getId();
+    return centerCustomParameter;
   }
 
 

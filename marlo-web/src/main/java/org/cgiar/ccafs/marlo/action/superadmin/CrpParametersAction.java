@@ -17,6 +17,7 @@
 package org.cgiar.ccafs.marlo.action.superadmin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.action.publications.PublicationAction;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.ParameterManager;
@@ -33,6 +34,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CrpParametersAction extends BaseAction {
 
@@ -41,7 +44,8 @@ public class CrpParametersAction extends BaseAction {
    */
   private static final long serialVersionUID = 2672633110828731495L;
 
-
+  private final Logger LOG = LoggerFactory.getLogger(CrpParametersAction.class);
+  
   private CrpManager crpManager;
   private CustomParameterManager crpParameterManager;
   private ParameterManager parameterManager;
@@ -120,7 +124,7 @@ public class CrpParametersAction extends BaseAction {
         for (CustomParameter parameter : crpDB.getCustomParameters().stream().filter(c -> c.isActive())
           .collect(Collectors.toList())) {
           if (!crp.getParameters().contains(parameter)) {
-            System.out.println(parameter.getParameter().getKey());
+            LOG.debug("CRP Parameter key: " + parameter.getParameter().getKey());
             crpParameterManager.deleteCustomParameter(parameter.getId());
           }
         }

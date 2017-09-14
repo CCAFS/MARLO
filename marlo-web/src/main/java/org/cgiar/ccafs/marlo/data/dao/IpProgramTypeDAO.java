@@ -32,7 +32,7 @@ public interface IpProgramTypeDAO {
    * @param ipProgramTypeId is the ipProgramType identifier.
    * @return true if the ipProgramType was successfully deleted, false otherwise.
    */
-  public boolean deleteIpProgramType(long ipProgramTypeId);
+  public void deleteIpProgramType(long ipProgramTypeId);
 
   /**
    * This method validate if the ipProgramType identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface IpProgramTypeDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(IpProgramType ipProgramType);
+  public IpProgramType save(IpProgramType ipProgramType);
 }

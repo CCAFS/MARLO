@@ -34,7 +34,7 @@ public interface ICenterProjectStatusManager {
    * @param projectStatusId is the projectStatus identifier.
    * @return true if the projectStatus was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectStatus(long projectStatusId);
+  public void deleteProjectStatus(long projectStatusId);
 
 
   /**
@@ -78,7 +78,7 @@ public interface ICenterProjectStatusManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveProjectStatus(CenterProjectStatus projectStatus);
+  public CenterProjectStatus saveProjectStatus(CenterProjectStatus projectStatus);
 
 
 }

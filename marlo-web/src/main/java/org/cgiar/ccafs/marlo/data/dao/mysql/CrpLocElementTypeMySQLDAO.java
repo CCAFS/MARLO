@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.CrpLocElementType;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CrpLocElementTypeMySQLDAO implements CrpLocElementTypeDAO {
+public class CrpLocElementTypeMySQLDAO extends AbstractMarloDAO<CrpLocElementType, Long> implements CrpLocElementTypeDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CrpLocElementTypeMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CrpLocElementTypeMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteCrpLocElementType(long crpLocElementTypeId) {
+  public void deleteCrpLocElementType(long crpLocElementTypeId) {
     CrpLocElementType crpLocElementType = this.find(crpLocElementTypeId);
 
-    return dao.delete(crpLocElementType);
+    super.delete(crpLocElementType);
   }
 
   @Override
@@ -51,14 +51,15 @@ public class CrpLocElementTypeMySQLDAO implements CrpLocElementTypeDAO {
 
   @Override
   public CrpLocElementType find(long id) {
-    return dao.find(CrpLocElementType.class, id);
+    return super.find(CrpLocElementType.class, id);
 
   }
 
   @Override
   public List<CrpLocElementType> findAll() {
     String query = "from " + CrpLocElementType.class.getName() + " ";
-    List<CrpLocElementType> list = dao.findAll(query);
+
+    List<CrpLocElementType> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -70,7 +71,7 @@ public class CrpLocElementTypeMySQLDAO implements CrpLocElementTypeDAO {
   public CrpLocElementType getByLocElementTypeAndCrpId(long crpId, long locElementTypeID) {
     String query = "from " + CrpLocElementType.class.getName() + " where crp_id=" + crpId + " and loc_element_type_id="
       + locElementTypeID;
-    List<CrpLocElementType> list = dao.findAll(query);
+    List<CrpLocElementType> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
     }
@@ -78,15 +79,15 @@ public class CrpLocElementTypeMySQLDAO implements CrpLocElementTypeDAO {
   }
 
   @Override
-  public long save(CrpLocElementType crpLocElementType) {
+  public CrpLocElementType save(CrpLocElementType crpLocElementType) {
     if (crpLocElementType.getId() == null) {
-      dao.save(crpLocElementType);
+      super.saveEntity(crpLocElementType);
     } else {
-      dao.update(crpLocElementType);
+      crpLocElementType = super.update(crpLocElementType);
     }
 
 
-    return crpLocElementType.getId();
+    return crpLocElementType;
   }
 
 

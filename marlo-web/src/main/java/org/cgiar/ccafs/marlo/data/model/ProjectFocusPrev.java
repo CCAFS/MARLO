@@ -110,6 +110,12 @@ public class ProjectFocusPrev implements java.io.Serializable, IAuditLog {
     this.project = project;
   }
 
+  @Override
+  public String toString() {
+    return "ProjectFocusPrev [id=" + id + ", ipProgram=" + ipProgram + ", project=" + project + ", activeSince="
+      + activeSince + ", modificationJustification=" + modificationJustification + "]";
+  }
+
 
 }
 

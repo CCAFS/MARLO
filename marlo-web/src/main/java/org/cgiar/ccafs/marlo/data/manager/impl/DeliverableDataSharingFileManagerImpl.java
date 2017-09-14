@@ -41,9 +41,9 @@ public class DeliverableDataSharingFileManagerImpl implements DeliverableDataSha
   }
 
   @Override
-  public boolean deleteDeliverableDataSharingFile(long deliverableDataSharingFileId) {
+  public void deleteDeliverableDataSharingFile(long deliverableDataSharingFileId) {
 
-    return deliverableDataSharingFileDAO.deleteDeliverableDataSharingFile(deliverableDataSharingFileId);
+    deliverableDataSharingFileDAO.deleteDeliverableDataSharingFile(deliverableDataSharingFileId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class DeliverableDataSharingFileManagerImpl implements DeliverableDataSha
   }
 
   @Override
-  public long saveDeliverableDataSharingFile(DeliverableDataSharingFile deliverableDataSharingFile) {
+  public DeliverableDataSharingFile saveDeliverableDataSharingFile(DeliverableDataSharingFile deliverableDataSharingFile) {
 
     return deliverableDataSharingFileDAO.save(deliverableDataSharingFile);
   }

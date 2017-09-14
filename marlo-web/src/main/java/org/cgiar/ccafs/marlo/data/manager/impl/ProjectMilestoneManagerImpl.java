@@ -41,9 +41,9 @@ public class ProjectMilestoneManagerImpl implements ProjectMilestoneManager {
   }
 
   @Override
-  public boolean deleteProjectMilestone(long projectMilestoneId) {
+  public void deleteProjectMilestone(long projectMilestoneId) {
 
-    return projectMilestoneDAO.deleteProjectMilestone(projectMilestoneId);
+    projectMilestoneDAO.deleteProjectMilestone(projectMilestoneId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class ProjectMilestoneManagerImpl implements ProjectMilestoneManager {
   }
 
   @Override
-  public long saveProjectMilestone(ProjectMilestone projectMilestone) {
+  public ProjectMilestone saveProjectMilestone(ProjectMilestone projectMilestone) {
 
     return projectMilestoneDAO.save(projectMilestone);
   }

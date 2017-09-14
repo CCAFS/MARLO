@@ -271,7 +271,11 @@ public class PartnersSaveAction extends BaseAction {
       sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject, message.toString(),
         null, null, null, true);
     } catch (Exception e) {
-
+      LOG.error("unable to send mail", e);
+      /**
+       * Original code swallows the exception and didn't even log it. Now we at least log it,
+       * but we need to revisit to see if we should continue processing or re-throw the exception.
+       */
     }
     messageSent = true;
 

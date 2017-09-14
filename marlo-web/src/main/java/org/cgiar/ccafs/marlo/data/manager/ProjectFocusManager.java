@@ -34,7 +34,7 @@ public interface ProjectFocusManager {
    * @param projectFocusId is the projectFocus identifier.
    * @return true if the projectFocus was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectFocus(long projectFocusId);
+  public void deleteProjectFocus(long projectFocusId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface ProjectFocusManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveProjectFocus(ProjectFocus projectFocus);
+  public ProjectFocus saveProjectFocus(ProjectFocus projectFocus);
 
 
 }

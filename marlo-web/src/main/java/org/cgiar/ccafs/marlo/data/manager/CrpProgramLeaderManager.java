@@ -34,7 +34,7 @@ public interface CrpProgramLeaderManager {
    * @param crpProgramLeaderId is the crpProgramLeader identifier.
    * @return true if the crpProgramLeader was successfully deleted, false otherwise.
    */
-  public boolean deleteCrpProgramLeader(long crpProgramLeaderId);
+  public void deleteCrpProgramLeader(long crpProgramLeaderId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface CrpProgramLeaderManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveCrpProgramLeader(CrpProgramLeader crpProgramLeader);
+  public CrpProgramLeader saveCrpProgramLeader(CrpProgramLeader crpProgramLeader);
 
 
 }

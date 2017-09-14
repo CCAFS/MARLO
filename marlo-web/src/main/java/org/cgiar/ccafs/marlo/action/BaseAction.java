@@ -434,6 +434,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       if (clazz == UserRole.class) {
         UserRole userRole = userRoleManager.getUserRoleById(id);
         long cuId = Long.parseLong((String) this.getSession().get(APConstants.CRP_CU));
+        /** Optimize this to a SQL query that takes the userId and the LiasionInstitutionId as parameters **/
         List<LiaisonUser> liaisonUsers = liaisonUserManager.findAll().stream()
           .filter(c -> c.getUser().getId().longValue() == userRole.getUser().getId().longValue()
             && c.getLiaisonInstitution().getId().longValue() == cuId)
@@ -1196,7 +1197,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       }
     } catch (Exception e) {
-
+      LOG.error(
+        "I'm not exactly sure what exception this is supposed to catch!  If this statement ever gets printed, I will be surprised!",
+        e);
+      /**
+       * Original code swallows the exception and didn't even log it. Now we at least log it,
+       * but we need to revisit to see if we should continue processing or re-throw the exception.
+       */
     }
     return this.crpID;
   }
@@ -1383,12 +1390,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-  public boolean getFundingSourceStatus(long fundingSourceID) {
-    FundingSource fundingSource = fundingSourceManager.getFundingSourceById(fundingSourceID);
-
-    List<SectionStatus> sectionStatuses = fundingSource.getSectionStatuses().stream()
-
-      .collect(Collectors.toList());
+  private boolean getFundingSourceStatus(FundingSource fundingSource) {
+    List<SectionStatus> sectionStatuses = fundingSource.getSectionStatuses().stream().collect(Collectors.toList());
 
     if (!sectionStatuses.isEmpty()) {
       SectionStatus sectionStatus = sectionStatuses.get(0);
@@ -1398,10 +1401,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     } else {
       fundingSourceValidator.validate(this, fundingSource, false);
-      return this.getFundingSourceStatus(fundingSource.getId());
+      return this.getFundingSourceStatus(fundingSource);
     }
+  }
 
-
+  public boolean getFundingSourceStatus(long fundingSourceID) {
+    FundingSource fundingSource = fundingSourceManager.getFundingSourceById(fundingSourceID);
+    return this.getFundingSourceStatus(fundingSource);
   }
 
   /**

@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class ProjectOutcomeMySQLDAO implements ProjectOutcomeDAO {
+public class ProjectOutcomeMySQLDAO extends AbstractMarloDAO<ProjectOutcome, Long> implements ProjectOutcomeDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public ProjectOutcomeMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public ProjectOutcomeMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteProjectOutcome(long projectOutcomeId) {
+  public void deleteProjectOutcome(long projectOutcomeId) {
     ProjectOutcome projectOutcome = this.find(projectOutcomeId);
     projectOutcome.setActive(false);
-    return this.save(projectOutcome) > 0;
+    this.save(projectOutcome);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class ProjectOutcomeMySQLDAO implements ProjectOutcomeDAO {
 
   @Override
   public ProjectOutcome find(long id) {
-    return dao.find(ProjectOutcome.class, id);
+    return super.find(ProjectOutcome.class, id);
 
   }
 
   @Override
   public List<ProjectOutcome> findAll() {
     String query = "from " + ProjectOutcome.class.getName() + " where is_active=1";
-    List<ProjectOutcome> list = dao.findAll(query);
+    List<ProjectOutcome> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -67,27 +67,27 @@ public class ProjectOutcomeMySQLDAO implements ProjectOutcomeDAO {
   }
 
   @Override
-  public long save(ProjectOutcome projectOutcome) {
+  public ProjectOutcome save(ProjectOutcome projectOutcome) {
     if (projectOutcome.getId() == null) {
-      dao.save(projectOutcome);
+      super.saveEntity(projectOutcome);
     } else {
-      dao.update(projectOutcome);
+      projectOutcome = super.update(projectOutcome);
     }
 
 
-    return projectOutcome.getId();
+    return projectOutcome;
   }
 
   @Override
-  public long save(ProjectOutcome projectOutcome, String section, List<String> relationsName) {
+  public ProjectOutcome save(ProjectOutcome projectOutcome, String section, List<String> relationsName) {
     if (projectOutcome.getId() == null) {
-      dao.save(projectOutcome, section, relationsName);
+      super.saveEntity(projectOutcome, section, relationsName);
     } else {
-      dao.update(projectOutcome, section, relationsName);
+      projectOutcome = super.update(projectOutcome, section, relationsName);
     }
 
 
-    return projectOutcome.getId();
+    return projectOutcome;
   }
 
 

@@ -160,14 +160,14 @@ public class ProjectActivitiesAction extends BaseAction {
           }
 
 
-          Long activityID = activityManager.saveActivity(activityNew);
+          activityNew = activityManager.saveActivity(activityNew);
 
           if (activity.getDeliverables() != null) {
             for (DeliverableActivity deliverableActivity : activity.getDeliverables()) {
 
               DeliverableActivity deliverableActivityNew = new DeliverableActivity();
 
-              deliverableActivityNew.setActivity(activityManager.getActivityById(activityID));
+              deliverableActivityNew.setActivity(activityNew);
               deliverableActivityNew.setActive(true);
               deliverableActivityNew.setCreatedBy(this.getCurrentUser());
               deliverableActivityNew.setModifiedBy(this.getCurrentUser());
@@ -209,9 +209,7 @@ public class ProjectActivitiesAction extends BaseAction {
 
           activityUpdate.setProjectPartnerPerson(partnerPerson);
 
-          Long activityID = activityManager.saveActivity(activityUpdate);
-
-          activityUpdate = activityManager.getActivityById(activityID);
+          activityUpdate = activityManager.saveActivity(activityUpdate);
 
           if (activity.getDeliverables() != null) {
 
@@ -511,9 +509,6 @@ public class ProjectActivitiesAction extends BaseAction {
           partnerPersons.add(partnerPerson);
         }
       }
-
-      System.out.println("");
-
     }
 
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};

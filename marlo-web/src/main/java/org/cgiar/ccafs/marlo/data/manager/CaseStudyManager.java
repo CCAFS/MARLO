@@ -34,7 +34,7 @@ public interface CaseStudyManager {
    * @param caseStudyId is the caseStudy identifier.
    * @return true if the caseStudy was successfully deleted, false otherwise.
    */
-  public boolean deleteCaseStudy(long caseStudyId);
+  public void deleteCaseStudy(long caseStudyId);
 
 
   /**
@@ -70,9 +70,9 @@ public interface CaseStudyManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveCaseStudy(CaseStudy caseStudy);
+  public CaseStudy saveCaseStudy(CaseStudy caseStudy);
 
-  public long saveCaseStudy(CaseStudy caseStudy, String section, List<String> relationsName);
+  public CaseStudy saveCaseStudy(CaseStudy caseStudy, String section, List<String> relationsName);
 
 
 }

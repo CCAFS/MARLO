@@ -26,6 +26,8 @@ public class ProjectPartnerLocation implements java.io.Serializable, IAuditLog {
   private Date activeSince;
   @Expose
   private User createdBy;
+
+
   @Expose
   private User modifiedBy;
   @Expose
@@ -45,7 +47,6 @@ public class ProjectPartnerLocation implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
-
   public Date getActiveSince() {
     return activeSince;
   }
@@ -55,15 +56,16 @@ public class ProjectPartnerLocation implements java.io.Serializable, IAuditLog {
     return createdBy;
   }
 
+
   @Override
   public Long getId() {
     return id;
   }
 
-
   public InstitutionLocation getInstitutionLocation() {
     return institutionLocation;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -74,7 +76,6 @@ public class ProjectPartnerLocation implements java.io.Serializable, IAuditLog {
 
     return sb.toString();
   }
-
 
   @Override
   public String getModificationJustification() {
@@ -136,6 +137,13 @@ public class ProjectPartnerLocation implements java.io.Serializable, IAuditLog {
 
   public void setProjectPartner(ProjectPartner projectPartner) {
     this.projectPartner = projectPartner;
+  }
+
+
+  @Override
+  public String toString() {
+    return "ProjectPartnerLocation [id=" + id + ", institutionLocation=" + institutionLocation + ", projectPartner="
+      + projectPartner + "]";
   }
 
 

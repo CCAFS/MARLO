@@ -424,7 +424,9 @@ public class User implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return id.toString();
+    return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", username=" + username
+      + ", email=" + email + ", password=" + password + ", cgiarUser=" + cgiarUser + ", autoSave=" + autoSave
+      + ", lastLogin=" + lastLogin + "]";
   }
 }
 

@@ -32,7 +32,7 @@ public interface ProjectLocationElementTypeDAO {
    * @param projectLocationElementTypeId is the projectLocationElementType identifier.
    * @return true if the projectLocationElementType was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectLocationElementType(long projectLocationElementTypeId);
+  public void deleteProjectLocationElementType(long projectLocationElementTypeId);
 
   /**
    * This method validate if the projectLocationElementType identify with the given id exists in the system.
@@ -77,5 +77,5 @@ public interface ProjectLocationElementTypeDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(ProjectLocationElementType projectLocationElementType);
+  public ProjectLocationElementType save(ProjectLocationElementType projectLocationElementType);
 }

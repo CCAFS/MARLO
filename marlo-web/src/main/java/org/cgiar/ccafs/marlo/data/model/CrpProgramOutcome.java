@@ -309,7 +309,8 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return id.toString();
+    return "CrpProgramOutcome [id=" + id + ", crpProgram=" + crpProgram + ", srfTargetUnit=" + srfTargetUnit
+      + ", description=" + description + ", year=" + year + ", value=" + value + "]";
   }
 }
 

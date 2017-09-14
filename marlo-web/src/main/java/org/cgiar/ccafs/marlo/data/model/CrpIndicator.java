@@ -26,6 +26,8 @@ public class CrpIndicator implements java.io.Serializable, IAuditLog {
   private CrpIndicatorType crpIndicatorType;
   @Expose
   private String serial;
+
+
   @Expose
   private String name;
   @Expose
@@ -39,7 +41,6 @@ public class CrpIndicator implements java.io.Serializable, IAuditLog {
   public CrpIndicator() {
   }
 
-
   public CrpIndicator(CrpIndicatorType crpIndicatorType, String serial, String name, String description,
     boolean isActive, Date dateAdded) {
     this.crpIndicatorType = crpIndicatorType;
@@ -49,6 +50,7 @@ public class CrpIndicator implements java.io.Serializable, IAuditLog {
     this.active = isActive;
     this.dateAdded = dateAdded;
   }
+
 
   public CrpIndicator(CrpIndicatorType crpIndicatorType, String serial, String name, String description,
     boolean isActive, Date dateAdded, Set<CrpIndicatorReport> crpIndicatorReportses) {
@@ -60,7 +62,6 @@ public class CrpIndicator implements java.io.Serializable, IAuditLog {
     this.dateAdded = dateAdded;
     this.crpIndicatorReports = crpIndicatorReportses;
   }
-
 
   public Set<CrpIndicatorReport> getCrpIndicatorReports() {
     return crpIndicatorReports;
@@ -164,6 +165,13 @@ public class CrpIndicator implements java.io.Serializable, IAuditLog {
 
   public void setSerial(String serial) {
     this.serial = serial;
+  }
+
+
+  @Override
+  public String toString() {
+    return "CrpIndicator [id=" + id + ", crpIndicatorType=" + crpIndicatorType + ", serial=" + serial + ", name=" + name
+      + ", description=" + description + "]";
   }
 
 

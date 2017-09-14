@@ -32,7 +32,7 @@ public interface ICenterDeliverableDocumentDAO {
    * @param deliverableDocumentId is the deliverableDocument identifier.
    * @return true if the deliverableDocument was successfully deleted, false otherwise.
    */
-  public boolean deleteDeliverableDocument(long deliverableDocumentId);
+  public void deleteDeliverableDocument(long deliverableDocumentId);
 
   /**
    * This method validate if the deliverableDocument identify with the given id exists in the system.
@@ -74,5 +74,5 @@ public interface ICenterDeliverableDocumentDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterDeliverableDocument deliverableDocument);
+  public CenterDeliverableDocument save(CenterDeliverableDocument deliverableDocument);
 }

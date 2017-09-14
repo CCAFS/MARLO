@@ -34,7 +34,7 @@ public interface SrfSloIndicatorTargetManager {
    * @param srfSloIndicatorTargetId is the srfSloIndicatorTarget identifier.
    * @return true if the srfSloIndicatorTarget was successfully deleted, false otherwise.
    */
-  public boolean deleteSrfSloIndicatorTarget(long srfSloIndicatorTargetId);
+  public void deleteSrfSloIndicatorTarget(long srfSloIndicatorTargetId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface SrfSloIndicatorTargetManager {
    *         was updated
    *         or -1 is some error occurred.
    */
-  public long saveSrfSloIndicatorTarget(SrfSloIndicatorTarget srfSloIndicatorTarget);
+  public SrfSloIndicatorTarget saveSrfSloIndicatorTarget(SrfSloIndicatorTarget srfSloIndicatorTarget);
 
 
 }

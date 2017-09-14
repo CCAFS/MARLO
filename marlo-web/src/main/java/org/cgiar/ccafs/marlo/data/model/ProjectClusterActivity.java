@@ -23,6 +23,7 @@ public class ProjectClusterActivity implements java.io.Serializable, IAuditLog {
 
   @Expose
   private CrpClusterOfActivity crpClusterOfActivity;
+
   @Expose
   private Project project;
   @Expose
@@ -80,16 +81,15 @@ public class ProjectClusterActivity implements java.io.Serializable, IAuditLog {
     return createdBy;
   }
 
-
   public CrpClusterOfActivity getCrpClusterOfActivity() {
     return crpClusterOfActivity;
   }
+
 
   @Override
   public Long getId() {
     return this.id;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -102,6 +102,7 @@ public class ProjectClusterActivity implements java.io.Serializable, IAuditLog {
   }
 
 
+  @Override
   public String getModificationJustification() {
     return this.modificationJustification;
   }
@@ -152,10 +153,10 @@ public class ProjectClusterActivity implements java.io.Serializable, IAuditLog {
     this.crpClusterOfActivity = crpClusterOfActivity;
   }
 
+
   public void setId(Long id) {
     this.id = id;
   }
-
 
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
@@ -166,8 +167,15 @@ public class ProjectClusterActivity implements java.io.Serializable, IAuditLog {
     this.modifiedBy = modifiedBy;
   }
 
+
   public void setProject(Project project) {
     this.project = project;
+  }
+
+  @Override
+  public String toString() {
+    return "ProjectClusterActivity [id=" + id + ", crpClusterOfActivity=" + crpClusterOfActivity + ", project="
+      + project + "]";
   }
 
 

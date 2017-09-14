@@ -143,6 +143,7 @@ public class Activity implements java.io.Serializable, IAuditLog {
   }
 
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -157,7 +158,6 @@ public class Activity implements java.io.Serializable, IAuditLog {
   public Project getProject() {
     return project;
   }
-
 
   public ProjectPartnerPerson getProjectPartnerPerson() {
     return projectPartnerPerson;
@@ -248,6 +248,7 @@ public class Activity implements java.io.Serializable, IAuditLog {
     this.modifiedBy = modifiedBy;
   }
 
+
   public void setProject(Project project) {
     this.project = project;
   }
@@ -260,9 +261,14 @@ public class Activity implements java.io.Serializable, IAuditLog {
     this.startDate = startDate;
   }
 
-
   public void setTitle(String title) {
     this.title = title;
+  }
+
+
+  @Override
+  public String toString() {
+    return "Activity [id=" + id + ", title=" + title + ", description=" + description + "]";
   }
 
 

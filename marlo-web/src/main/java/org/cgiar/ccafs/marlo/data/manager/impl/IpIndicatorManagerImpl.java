@@ -18,7 +18,6 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 import org.cgiar.ccafs.marlo.data.dao.IpIndicatorDAO;
 import org.cgiar.ccafs.marlo.data.manager.IpIndicatorManager;
 import org.cgiar.ccafs.marlo.data.model.IpIndicator;
-import org.cgiar.ccafs.marlo.data.model.IpProjectIndicator;
 
 import java.util.List;
 
@@ -42,9 +41,9 @@ public class IpIndicatorManagerImpl implements IpIndicatorManager {
   }
 
   @Override
-  public boolean deleteIpIndicator(long ipIndicatorId) {
+  public void deleteIpIndicator(long ipIndicatorId) {
 
-    return ipIndicatorDAO.deleteIpIndicator(ipIndicatorId);
+    ipIndicatorDAO.deleteIpIndicator(ipIndicatorId);
   }
 
   @Override
@@ -84,12 +83,7 @@ public class IpIndicatorManagerImpl implements IpIndicatorManager {
   }
 
   @Override
-  public List<IpProjectIndicator> getProjectIndicators(int year, long indicator, long program, long midOutcome) {
-    return ipIndicatorDAO.getProjectIndicators(year, indicator, program, midOutcome);
-  }
-
-  @Override
-  public long saveIpIndicator(IpIndicator ipIndicator) {
+  public IpIndicator saveIpIndicator(IpIndicator ipIndicator) {
 
     return ipIndicatorDAO.save(ipIndicator);
   }

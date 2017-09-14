@@ -82,15 +82,15 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
     }
     fundingSourceID = Long.parseLong(projectParameter);
 
-    FundingSource project = fundingSourceManager.getFundingSourceById(fundingSourceID);
+    FundingSource fundingSource = fundingSourceManager.getFundingSourceById(fundingSourceID);
 
-    if (project != null) {
-      String params[] = {crp.getAcronym(), project.getId() + ""};
+    if (fundingSource != null) {
+      String params[] = {crp.getAcronym(), fundingSource.getId() + ""};
       if (baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin()) {
         canEdit = true;
       } else {
-        List<FundingSource> projects = fundingSourceManager.getFundingSource(user.getId(), crp.getAcronym());
-        if (projects.contains(project) && (baseAction
+        List<FundingSource> fundingSources = fundingSourceManager.getFundingSource(user.getId(), crp.getAcronym());
+        if (fundingSources.contains(fundingSource) && (baseAction
           .hasPermission(baseAction.generatePermission(Permission.PROJECT_FUNDING_SOURCE_BASE_PERMISSION, params))
           || baseAction
             .hasPermission(baseAction.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, params)))) {

@@ -66,6 +66,7 @@ public class CenterAllTypes implements Serializable {
     return className;
   }
 
+
   /**
    * @return the id
    */
@@ -99,6 +100,11 @@ public class CenterAllTypes implements Serializable {
    */
   public void setTypeName(String typeName) {
     this.typeName = typeName;
+  }
+
+  @Override
+  public String toString() {
+    return "CenterAllTypes [id=" + id + ", className=" + className + ", typeName=" + typeName + "]";
   }
 
 

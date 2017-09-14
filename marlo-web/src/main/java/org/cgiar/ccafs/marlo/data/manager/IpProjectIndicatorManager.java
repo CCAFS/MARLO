@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -34,7 +34,7 @@ public interface IpProjectIndicatorManager {
    * @param ipProjectIndicatorId is the ipProjectIndicator identifier.
    * @return true if the ipProjectIndicator was successfully deleted, false otherwise.
    */
-  public boolean deleteIpProjectIndicator(long ipProjectIndicatorId);
+  public void deleteIpProjectIndicator(long ipProjectIndicatorId);
 
 
   /**
@@ -63,6 +63,17 @@ public interface IpProjectIndicatorManager {
   public IpProjectIndicator getIpProjectIndicatorById(long ipProjectIndicatorID);
 
   /**
+   * This method saves the information of the given ipIndicator
+   * 
+   * @param ipIndicator - is the ipIndicator object with the new information to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the ipIndicator was
+   *         updated
+   *         or -1 is some error occurred.
+   */
+  public List<IpProjectIndicator> getProjectIndicators(int year, long indicator, Long program, long midOutcome);
+
+
+  /**
    * This method saves the information of the given ipProjectIndicator
    * 
    * @param ipProjectIndicator - is the ipProjectIndicator object with the new information to be added/updated.
@@ -70,7 +81,7 @@ public interface IpProjectIndicatorManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveIpProjectIndicator(IpProjectIndicator ipProjectIndicator);
+  public IpProjectIndicator saveIpProjectIndicator(IpProjectIndicator ipProjectIndicator);
 
 
 }

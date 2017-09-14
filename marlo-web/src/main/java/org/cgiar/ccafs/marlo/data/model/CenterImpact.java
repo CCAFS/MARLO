@@ -180,6 +180,7 @@ public class CenterImpact implements Serializable, IAuditLog {
     return sb.toString();
   }
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -356,7 +357,7 @@ public class CenterImpact implements Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return id.toString();
+    return "CenterImpact [id=" + id + ", description=" + description + ", researchProgram=" + researchProgram + "]";
   }
 
 

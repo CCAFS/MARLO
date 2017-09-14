@@ -34,7 +34,7 @@ public interface CrpPpaPartnerDAO {
    * @param crpPpaPartnerId is the CrpPpaPartner identifier.
    * @return true if the crpPpaPartner was successfully deleted, false otherwise.
    */
-  public boolean deleteCrpPpaPartner(long crpPpaPartnerId);
+  public void deleteCrpPpaPartner(long crpPpaPartnerId);
 
   /**
    * This method validate if the crpPpaPartner identify with the given id exists in the system.
@@ -67,6 +67,6 @@ public interface CrpPpaPartnerDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CrpPpaPartner crpPpaPartner);
+  public CrpPpaPartner save(CrpPpaPartner crpPpaPartner);
 
 }

@@ -34,7 +34,7 @@ public interface BudgetTypeManager {
    * @param budgetTypeId is the budgetType identifier.
    * @return true if the budgetType was successfully deleted, false otherwise.
    */
-  public boolean deleteBudgetType(long budgetTypeId);
+  public void deleteBudgetType(long budgetTypeId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface BudgetTypeManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveBudgetType(BudgetType budgetType);
+  public BudgetType saveBudgetType(BudgetType budgetType);
 
 
 }

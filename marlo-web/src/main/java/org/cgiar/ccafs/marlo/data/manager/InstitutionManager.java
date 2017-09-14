@@ -34,7 +34,7 @@ public interface InstitutionManager {
    * @param institutionId is the institution identifier.
    * @return true if the institution was successfully deleted, false otherwise.
    */
-  public boolean deleteInstitution(long institutionId);
+  public void deleteInstitution(long institutionId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface InstitutionManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveInstitution(Institution institution);
+  public Institution saveInstitution(Institution institution);
 
   /**
    * This method looks for the active Institutions that contains the

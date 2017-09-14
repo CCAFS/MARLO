@@ -32,7 +32,7 @@ public interface ProjectComponentLessonDAO {
    * @param projectComponentLessonId is the projectComponentLesson identifier.
    * @return true if the projectComponentLesson was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectComponentLesson(long projectComponentLessonId);
+  public void deleteProjectComponentLesson(long projectComponentLessonId);
 
   /**
    * This method validate if the projectComponentLesson identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface ProjectComponentLessonDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(ProjectComponentLesson projectComponentLesson);
+  public ProjectComponentLesson save(ProjectComponentLesson projectComponentLesson);
 }

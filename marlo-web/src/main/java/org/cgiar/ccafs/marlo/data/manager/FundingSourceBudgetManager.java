@@ -34,7 +34,7 @@ public interface FundingSourceBudgetManager {
    * @param fundingSourceBudgetId is the fundingSourceBudget identifier.
    * @return true if the fundingSourceBudget was successfully deleted, false otherwise.
    */
-  public boolean deleteFundingSourceBudget(long fundingSourceBudgetId);
+  public void deleteFundingSourceBudget(long fundingSourceBudgetId);
 
 
   /**
@@ -79,7 +79,7 @@ public interface FundingSourceBudgetManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveFundingSourceBudget(FundingSourceBudget fundingSourceBudget);
+  public FundingSourceBudget saveFundingSourceBudget(FundingSourceBudget fundingSourceBudget);
 
 
 }

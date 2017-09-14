@@ -26,13 +26,24 @@ import org.cgiar.ccafs.marlo.data.model.User;
 
 public interface IAuditLog {
 
+  public final String PRINCIPAL = "PRINCIPAL";
+
+  public final String ENTITY = "entity";
+
+  public final String RELATION_NAME = "relationName";
+
+  public final String SAVED = "Saved";
+
+  public final String UPDATED = "Updated";
+
+  public final String DELETED = "Deleted";
+
   /**
    * This method get the Entity id that is the primary key
    * 
    * @return a Object model id
    */
   public Object getId();
-
 
   /**
    * This method get a entity information detail to identify in the audit.
@@ -56,4 +67,5 @@ public interface IAuditLog {
    * @return true if the Entity is active or false if the Entity is not active.
    */
   public boolean isActive();
+
 }

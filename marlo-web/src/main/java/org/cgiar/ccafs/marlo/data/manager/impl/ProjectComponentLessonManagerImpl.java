@@ -41,9 +41,9 @@ public class ProjectComponentLessonManagerImpl implements ProjectComponentLesson
   }
 
   @Override
-  public boolean deleteProjectComponentLesson(long projectComponentLessonId) {
+  public void deleteProjectComponentLesson(long projectComponentLessonId) {
 
-    return projectComponentLessonDAO.deleteProjectComponentLesson(projectComponentLessonId);
+    projectComponentLessonDAO.deleteProjectComponentLesson(projectComponentLessonId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class ProjectComponentLessonManagerImpl implements ProjectComponentLesson
   }
 
   @Override
-  public long saveProjectComponentLesson(ProjectComponentLesson projectComponentLesson) {
+  public ProjectComponentLesson saveProjectComponentLesson(ProjectComponentLesson projectComponentLesson) {
 
     return projectComponentLessonDAO.save(projectComponentLesson);
   }

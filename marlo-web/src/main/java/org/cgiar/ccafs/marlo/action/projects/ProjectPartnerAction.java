@@ -278,7 +278,7 @@ public class ProjectPartnerAction extends BaseAction {
       project.getActivities().stream().filter(c -> c.isActive() && c.getProjectPartnerPerson() != null
         && c.getProjectPartnerPerson().getId().longValue() == userID).collect(Collectors.toList());
 
-    System.out.println(activities);
+    LOG.debug("Activities: " + activities);
 
     return activities;
 
@@ -1087,13 +1087,12 @@ public class ProjectPartnerAction extends BaseAction {
             projectPartnerManager.saveProjectPartner(projectPartner);
           } else {
             ProjectPartner projectPartnerDB = projectPartnerManager.getProjectPartnerById(projectPartner.getId());
-            projectPartner.setActive(true);
-            projectPartner.setProject(project);
-            projectPartner.setCreatedBy(projectPartnerDB.getCreatedBy());
-            projectPartner.setModifiedBy(this.getCurrentUser());
-            projectPartner.setModificationJustification("");
-            projectPartner.setActiveSince(projectPartnerDB.getActiveSince());
-            projectPartnerManager.saveProjectPartner(projectPartner);
+            projectPartnerDB.setActive(true);
+            projectPartnerDB.setProject(project);
+            projectPartnerDB.setModifiedBy(this.getCurrentUser());
+            projectPartnerDB.setModificationJustification("");
+            projectPartnerDB.setResponsibilities(projectPartner.getResponsibilities());
+            projectPartnerManager.saveProjectPartner(projectPartnerDB);
           }
 
 
@@ -1289,26 +1288,27 @@ public class ProjectPartnerAction extends BaseAction {
 
   public void saveLocations(ProjectPartner partner) {
 
-    if (partner.getSelectedLocations() == null) {
-      partner.setSelectedLocations(new ArrayList<>());
-    }
-    ProjectPartner projectPartnerBD = projectPartnerManager.getProjectPartnerById(partner.getId());
+    ProjectPartner projectPartnerBD =
+      projectPartnerManager.getProjectPartnerByIdAndEagerFetchLocations(partner.getId());
     List<ProjectPartnerLocation> locationsPrev =
       projectPartnerBD.getProjectPartnerLocations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
     for (ProjectPartnerLocation projectPartnerLocation : locationsPrev) {
-      if (partner.getSelectedLocations().stream()
-        .filter(c -> c.getLocElement().getIsoAlpha2()
-          .equals(projectPartnerLocation.getInstitutionLocation().getLocElement().getIsoAlpha2()))
+      String isoAlpha2 = projectPartnerLocation.getInstitutionLocation().getLocElement().getIsoAlpha2();
+      // Check to see if an element in the collection has the same isoAplha2 code
+      if (partner.getSelectedLocations().stream().filter(c -> c.getLocElement().getIsoAlpha2().equals(isoAlpha2))
         .collect(Collectors.toList()).isEmpty()) {
+        // The location does not exist anymore so delete it.
+        LOG.debug("Deleting : " + projectPartnerLocation);
         projectPartnerLocationManager.deleteProjectPartnerLocation(projectPartnerLocation.getId());
       }
     }
-    for (InstitutionLocation iso : partner.getSelectedLocations()) {
+    for (InstitutionLocation updatedInstitutionLocation : partner.getSelectedLocations()) {
+      String isoAlpha2 = updatedInstitutionLocation.getLocElement().getIsoAlpha2();
       if (locationsPrev.stream()
-        .filter(c -> c.isActive()
-          && c.getInstitutionLocation().getLocElement().getIsoAlpha2().equals(iso.getLocElement().getIsoAlpha2()))
+        .filter(c -> c.isActive() && isoAlpha2.equals(c.getInstitutionLocation().getLocElement().getIsoAlpha2()))
         .collect(Collectors.toList()).isEmpty()) {
-        LocElement locElement = locationManager.getLocElementByISOCode(iso.getLocElement().getIsoAlpha2());
+        LocElement locElement =
+          locationManager.getLocElementByISOCode(updatedInstitutionLocation.getLocElement().getIsoAlpha2());
         InstitutionLocation institutionLocation =
           institutionLocationManager.findByLocation(locElement.getId(), partner.getInstitution().getId());
         ProjectPartnerLocation partnerLocation = new ProjectPartnerLocation();
@@ -1320,6 +1320,7 @@ public class ProjectPartnerAction extends BaseAction {
         partnerLocation.setModifiedBy(this.getCurrentUser());
         partnerLocation.setProjectPartner(partner);
         projectPartnerLocationManager.saveProjectPartnerLocation(partnerLocation);
+        LOG.debug("Saving : " + partnerLocation);
       }
     }
 

@@ -622,9 +622,7 @@ public class ProjectDescriptionAction extends BaseAction {
         projectDB.setProjectLeader(projectLeader);
       }
 
-      long projectSaveID = projectService.saveCenterProject(projectDB);
-
-      projectDB = projectService.getCenterProjectById(projectSaveID);
+      projectDB = projectService.saveCenterProject(projectDB);
 
       if (project.getProjectCrosscutingTheme() != null) {
         this.saveCrossCuting(projectDB);

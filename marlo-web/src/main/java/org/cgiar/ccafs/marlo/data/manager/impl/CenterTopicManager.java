@@ -42,9 +42,9 @@ public class CenterTopicManager implements ICenterTopicManager {
   }
 
   @Override
-  public boolean deleteResearchTopic(long researchTopicId) {
+  public void deleteResearchTopic(long researchTopicId) {
 
-    return researchTopicDAO.deleteResearchTopic(researchTopicId);
+    researchTopicDAO.deleteResearchTopic(researchTopicId);
   }
 
   @Override
@@ -72,7 +72,7 @@ public class CenterTopicManager implements ICenterTopicManager {
   }
 
   @Override
-  public long saveResearchTopic(CenterTopic researchTopic) {
+  public CenterTopic saveResearchTopic(CenterTopic researchTopic) {
 
     return researchTopicDAO.save(researchTopic);
   }

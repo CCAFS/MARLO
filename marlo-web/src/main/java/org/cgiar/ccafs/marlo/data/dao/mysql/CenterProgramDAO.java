@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CenterProgramDAO implements ICenterProgramDAO {
+public class CenterProgramDAO extends AbstractMarloDAO<CenterProgram, Long> implements ICenterProgramDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CenterProgramDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterProgramDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteProgram(long programId) {
+  public void deleteProgram(long programId) {
     CenterProgram researchProgram = this.find(programId);
     researchProgram.setActive(false);
-    return this.save(researchProgram) > 0;
+    this.save(researchProgram);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class CenterProgramDAO implements ICenterProgramDAO {
 
   @Override
   public CenterProgram find(long id) {
-    return dao.find(CenterProgram.class, id);
+    return super.find(CenterProgram.class, id);
 
   }
 
   @Override
   public List<CenterProgram> findAll() {
     String query = "from " + CenterProgram.class.getName() + " where is_active=1";
-    List<CenterProgram> list = dao.findAll(query);
+    List<CenterProgram> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -73,7 +73,7 @@ public class CenterProgramDAO implements ICenterProgramDAO {
   public List<CenterProgram> findProgramsByResearchArea(Long researchAreaId) {
     String query =
       "from " + CenterProgram.class.getName() + " where research_area_id=" + researchAreaId + " and is_active=1";
-    List<CenterProgram> list = dao.findAll(query);
+    List<CenterProgram> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -84,7 +84,7 @@ public class CenterProgramDAO implements ICenterProgramDAO {
   public List<CenterProgram> findProgramsByType(long id, int programType) {
     String query = "from " + CenterProgram.class.getName() + " where research_area_id=" + id + " and program_type="
       + programType + " and is_active=1";
-    List<CenterProgram> list = dao.findAll(query);
+    List<CenterProgram> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -92,23 +92,23 @@ public class CenterProgramDAO implements ICenterProgramDAO {
   }
 
   @Override
-  public long save(CenterProgram researchProgram) {
+  public CenterProgram save(CenterProgram researchProgram) {
     if (researchProgram.getId() == null) {
-      dao.save(researchProgram);
+      super.saveEntity(researchProgram);
     } else {
-      dao.update(researchProgram);
+      researchProgram = super.update(researchProgram);
     }
-    return researchProgram.getId();
+    return researchProgram;
   }
 
   @Override
-  public long save(CenterProgram researchProgram, String actionName, List<String> relationsName) {
+  public CenterProgram save(CenterProgram researchProgram, String actionName, List<String> relationsName) {
     if (researchProgram.getId() == null) {
-      dao.save(researchProgram, actionName, relationsName);
+      super.saveEntity(researchProgram, actionName, relationsName);
     } else {
-      dao.update(researchProgram, actionName, relationsName);
+      researchProgram = super.update(researchProgram, actionName, relationsName);
     }
-    return researchProgram.getId();
+    return researchProgram;
   }
 
 

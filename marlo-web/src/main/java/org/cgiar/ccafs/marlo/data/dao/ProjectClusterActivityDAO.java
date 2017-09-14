@@ -32,7 +32,7 @@ public interface ProjectClusterActivityDAO {
    * @param projectClusterActivityId is the projectClusterActivity identifier.
    * @return true if the projectClusterActivity was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectClusterActivity(long projectClusterActivityId);
+  public void deleteProjectClusterActivity(long projectClusterActivityId);
 
   /**
    * This method validate if the projectClusterActivity identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface ProjectClusterActivityDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(ProjectClusterActivity projectClusterActivity);
+  public ProjectClusterActivity save(ProjectClusterActivity projectClusterActivity);
 }

@@ -32,7 +32,7 @@ public interface ProjectPartnerOverallDAO {
    * @param projectPartnerOverallId is the projectPartnerOverall identifier.
    * @return true if the projectPartnerOverall was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectPartnerOverall(long projectPartnerOverallId);
+  public void deleteProjectPartnerOverall(long projectPartnerOverallId);
 
   /**
    * This method validate if the projectPartnerOverall identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface ProjectPartnerOverallDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(ProjectPartnerOverall projectPartnerOverall);
+  public ProjectPartnerOverall save(ProjectPartnerOverall projectPartnerOverall);
 }

@@ -41,9 +41,9 @@ public class DeliverablePublicationMetadataManagerImpl implements DeliverablePub
   }
 
   @Override
-  public boolean deleteDeliverablePublicationMetadata(long deliverablePublicationMetadataId) {
+  public void deleteDeliverablePublicationMetadata(long deliverablePublicationMetadataId) {
 
-    return deliverablePublicationMetadataDAO.deleteDeliverablePublicationMetadata(deliverablePublicationMetadataId);
+    deliverablePublicationMetadataDAO.deleteDeliverablePublicationMetadata(deliverablePublicationMetadataId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class DeliverablePublicationMetadataManagerImpl implements DeliverablePub
   }
 
   @Override
-  public long saveDeliverablePublicationMetadata(DeliverablePublicationMetadata deliverablePublicationMetadata) {
+  public DeliverablePublicationMetadata saveDeliverablePublicationMetadata(DeliverablePublicationMetadata deliverablePublicationMetadata) {
 
     return deliverablePublicationMetadataDAO.save(deliverablePublicationMetadata);
   }

@@ -33,7 +33,7 @@ public interface ICenterDeliverableDAO {
    * @param deliverableId is the deliverable identifier.
    * @return true if the deliverable was successfully deleted, false otherwise.
    */
-  public boolean deleteDeliverable(long deliverableId);
+  public void deleteDeliverable(long deliverableId);
 
   /**
    * This method validate if the deliverable identify with the given id exists in the system.
@@ -75,7 +75,7 @@ public interface ICenterDeliverableDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterDeliverable deliverable);
+  public CenterDeliverable save(CenterDeliverable deliverable);
 
   /**
    * This method saves the information of the given deliverable
@@ -85,5 +85,5 @@ public interface ICenterDeliverableDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterDeliverable deliverable, String actionName, List<String> relationsName);
+  public CenterDeliverable save(CenterDeliverable deliverable, String actionName, List<String> relationsName);
 }

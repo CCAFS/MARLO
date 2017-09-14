@@ -22,21 +22,22 @@ import org.cgiar.ccafs.marlo.data.model.CenterOutputsNextUser;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CenterOutputsNextUserDAO implements ICenterOutputsNextUserDAO {
+public class CenterOutputsNextUserDAO extends AbstractMarloDAO<CenterOutputsNextUser, Long>
+  implements ICenterOutputsNextUserDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CenterOutputsNextUserDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterOutputsNextUserDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteResearchOutputsNextUser(long researchOutputsNextUserId) {
+  public void deleteResearchOutputsNextUser(long researchOutputsNextUserId) {
     CenterOutputsNextUser researchOutputsNextUser = this.find(researchOutputsNextUserId);
     researchOutputsNextUser.setActive(false);
-    return this.save(researchOutputsNextUser) > 0;
+    this.save(researchOutputsNextUser);
   }
 
   @Override
@@ -51,14 +52,14 @@ public class CenterOutputsNextUserDAO implements ICenterOutputsNextUserDAO {
 
   @Override
   public CenterOutputsNextUser find(long id) {
-    return dao.find(CenterOutputsNextUser.class, id);
+    return super.find(CenterOutputsNextUser.class, id);
 
   }
 
   @Override
   public List<CenterOutputsNextUser> findAll() {
     String query = "from " + CenterOutputsNextUser.class.getName();
-    List<CenterOutputsNextUser> list = dao.findAll(query);
+    List<CenterOutputsNextUser> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,17 +70,17 @@ public class CenterOutputsNextUserDAO implements ICenterOutputsNextUserDAO {
   @Override
   public List<CenterOutputsNextUser> getResearchOutputsNextUsersByUserId(long userId) {
     String query = "from " + CenterOutputsNextUser.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(CenterOutputsNextUser researchOutputsNextUser) {
+  public CenterOutputsNextUser save(CenterOutputsNextUser researchOutputsNextUser) {
     if (researchOutputsNextUser.getId() == null) {
-      dao.save(researchOutputsNextUser);
+      super.saveEntity(researchOutputsNextUser);
     } else {
-      dao.update(researchOutputsNextUser);
+      researchOutputsNextUser = super.update(researchOutputsNextUser);
     }
-    return researchOutputsNextUser.getId();
+    return researchOutputsNextUser;
   }
 
 

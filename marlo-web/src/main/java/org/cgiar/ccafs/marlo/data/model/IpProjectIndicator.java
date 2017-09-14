@@ -18,6 +18,7 @@ public class IpProjectIndicator implements java.io.Serializable, IAuditLog {
    * 
    */
   private static final long serialVersionUID = -8487278796647428448L;
+
   @Expose
   private Long id;
   @Expose
@@ -29,12 +30,12 @@ public class IpProjectIndicator implements java.io.Serializable, IAuditLog {
   private User modifiedBy;
   @Expose
   private String target;
-
   @Expose
   private String description;
 
   @Expose
   private String gender;
+
   @Expose
   private int year;
   @Expose
@@ -219,6 +220,13 @@ public class IpProjectIndicator implements java.io.Serializable, IAuditLog {
 
   public void setYear(int year) {
     this.year = year;
+  }
+
+  @Override
+  public String toString() {
+    return "IpProjectIndicator [id=" + id + ", ipIndicator=" + ipIndicator + ", project=" + project + ", target="
+      + target + ", description=" + description + ", gender=" + gender + ", year=" + year + ", outcomeId=" + outcomeId
+      + "]";
   }
 
 

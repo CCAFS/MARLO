@@ -34,7 +34,7 @@ public interface CrpOutcomeSubIdoManager {
    * @param crpOutcomeSubIdoId is the crpOutcomeSubIdo identifier.
    * @return true if the crpOutcomeSubIdo was successfully deleted, false otherwise.
    */
-  public boolean deleteCrpOutcomeSubIdo(long crpOutcomeSubIdoId);
+  public void deleteCrpOutcomeSubIdo(long crpOutcomeSubIdoId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface CrpOutcomeSubIdoManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveCrpOutcomeSubIdo(CrpOutcomeSubIdo crpOutcomeSubIdo);
+  public CrpOutcomeSubIdo saveCrpOutcomeSubIdo(CrpOutcomeSubIdo crpOutcomeSubIdo);
 
 
 }

@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class DeliverableQualityCheckMySQLDAO implements DeliverableQualityCheckDAO {
+public class DeliverableQualityCheckMySQLDAO extends AbstractMarloDAO<DeliverableQualityCheck, Long> implements DeliverableQualityCheckDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public DeliverableQualityCheckMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public DeliverableQualityCheckMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteDeliverableQualityCheck(long deliverableQualityCheckId) {
+  public void deleteDeliverableQualityCheck(long deliverableQualityCheckId) {
     DeliverableQualityCheck deliverableQualityCheck = this.find(deliverableQualityCheckId);
     deliverableQualityCheck.setActive(false);
-    return this.save(deliverableQualityCheck) > 0;
+    this.save(deliverableQualityCheck);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class DeliverableQualityCheckMySQLDAO implements DeliverableQualityCheckD
 
   @Override
   public DeliverableQualityCheck find(long id) {
-    return dao.find(DeliverableQualityCheck.class, id);
+    return super.find(DeliverableQualityCheck.class, id);
 
   }
 
   @Override
   public List<DeliverableQualityCheck> findAll() {
     String query = "from " + DeliverableQualityCheck.class.getName() + " where is_active=1";
-    List<DeliverableQualityCheck> list = dao.findAll(query);
+    List<DeliverableQualityCheck> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -70,7 +70,7 @@ public class DeliverableQualityCheckMySQLDAO implements DeliverableQualityCheckD
   public DeliverableQualityCheck findByDeliverable(long id) {
     String query =
       "from " + DeliverableQualityCheck.class.getName() + " where deliverable_id=" + id + " and is_active=1";
-    List<DeliverableQualityCheck> list = dao.findAll(query);
+    List<DeliverableQualityCheck> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
     }
@@ -78,15 +78,15 @@ public class DeliverableQualityCheckMySQLDAO implements DeliverableQualityCheckD
   }
 
   @Override
-  public long save(DeliverableQualityCheck deliverableQualityCheck) {
+  public DeliverableQualityCheck save(DeliverableQualityCheck deliverableQualityCheck) {
     if (deliverableQualityCheck.getId() == null) {
-      dao.save(deliverableQualityCheck);
+      super.saveEntity(deliverableQualityCheck);
     } else {
-      dao.update(deliverableQualityCheck);
+      deliverableQualityCheck = super.update(deliverableQualityCheck);
     }
 
 
-    return deliverableQualityCheck.getId();
+    return deliverableQualityCheck;
   }
 
 

@@ -1,6 +1,11 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * <<<<<<< HEAD
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
+ * =======
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
+ * >>>>>>> staging
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,21 +27,21 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class ProjectPartnerLocationMySQLDAO implements ProjectPartnerLocationDAO {
+public class ProjectPartnerLocationMySQLDAO extends AbstractMarloDAO<ProjectPartnerLocation, Long> implements ProjectPartnerLocationDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public ProjectPartnerLocationMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public ProjectPartnerLocationMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteProjectPartnerLocation(long projectPartnerLocationId) {
+  public void deleteProjectPartnerLocation(long projectPartnerLocationId) {
     ProjectPartnerLocation projectPartnerLocation = this.find(projectPartnerLocationId);
     projectPartnerLocation.setActive(false);
-    return this.save(projectPartnerLocation) > 0;
+    this.save(projectPartnerLocation);
   }
 
   @Override
@@ -51,14 +56,13 @@ public class ProjectPartnerLocationMySQLDAO implements ProjectPartnerLocationDAO
 
   @Override
   public ProjectPartnerLocation find(long id) {
-    return dao.find(ProjectPartnerLocation.class, id);
-
+    return super.find(ProjectPartnerLocation.class, id);
   }
 
   @Override
   public List<ProjectPartnerLocation> findAll() {
     String query = "from " + ProjectPartnerLocation.class.getName() + " where is_active=1";
-    List<ProjectPartnerLocation> list = dao.findAll(query);
+    List<ProjectPartnerLocation> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -67,15 +71,15 @@ public class ProjectPartnerLocationMySQLDAO implements ProjectPartnerLocationDAO
   }
 
   @Override
-  public long save(ProjectPartnerLocation projectPartnerLocation) {
+  public ProjectPartnerLocation save(ProjectPartnerLocation projectPartnerLocation) {
     if (projectPartnerLocation.getId() == null) {
-      dao.save(projectPartnerLocation);
+      super.saveEntity(projectPartnerLocation);
     } else {
-      dao.update(projectPartnerLocation);
+      projectPartnerLocation = super.update(projectPartnerLocation);
     }
 
 
-    return projectPartnerLocation.getId();
+    return projectPartnerLocation;
   }
 
 

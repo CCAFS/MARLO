@@ -41,9 +41,9 @@ public class CrpClusterKeyOutputOutcomeManagerImpl implements CrpClusterKeyOutpu
   }
 
   @Override
-  public boolean deleteCrpClusterKeyOutputOutcome(long crpClusterKeyOutputOutcomeId) {
+  public void deleteCrpClusterKeyOutputOutcome(long crpClusterKeyOutputOutcomeId) {
 
-    return crpClusterKeyOutputOutcomeDAO.deleteCrpClusterKeyOutputOutcome(crpClusterKeyOutputOutcomeId);
+    crpClusterKeyOutputOutcomeDAO.deleteCrpClusterKeyOutputOutcome(crpClusterKeyOutputOutcomeId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class CrpClusterKeyOutputOutcomeManagerImpl implements CrpClusterKeyOutpu
   }
 
   @Override
-  public long saveCrpClusterKeyOutputOutcome(CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome) {
+  public CrpClusterKeyOutputOutcome saveCrpClusterKeyOutputOutcome(CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome) {
 
     return crpClusterKeyOutputOutcomeDAO.save(crpClusterKeyOutputOutcome);
   }

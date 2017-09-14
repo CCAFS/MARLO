@@ -217,7 +217,8 @@ public class SrfIdo implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return id.toString();
+    return "SrfIdo [id=" + id + ", srfCrossCuttingIssue=" + srfCrossCuttingIssue + ", description=" + description
+      + ", isCrossCutting=" + isCrossCutting + "]";
   }
 }
 

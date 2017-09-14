@@ -366,12 +366,10 @@ public class ProjectSubmissionAction extends BaseAction {
     submission.setDateTime(new Date());
     submission.setProject(project);
 
-    long result = submissionManager.saveSubmission(submission);
+    submission = submissionManager.saveSubmission(submission);
     this.setSubmission(submission);
-    if (result > 0) {
-      submission.setId(result);
+    if (submission.getId() > 0) {
       this.sendNotficationEmail();
-
     }
   }
 

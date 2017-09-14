@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,7 +15,7 @@
 
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
-import org.cgiar.ccafs.marlo.data.dao.CredentialsDAO;
+import org.cgiar.ccafs.marlo.data.dao.UserDAO;
 import org.cgiar.ccafs.marlo.data.manager.AuthenticationManager;
 
 import com.google.inject.Inject;
@@ -27,17 +27,17 @@ import com.google.inject.Inject;
 public class AuthenticationManagerImp implements AuthenticationManager {
 
 
-  private CredentialsDAO credentialsDao;
+  private UserDAO userDao;
 
   @Inject
-  public AuthenticationManagerImp(CredentialsDAO credentialsDao) {
+  public AuthenticationManagerImp(UserDAO userDao) {
     super();
-    this.credentialsDao = credentialsDao;
+    this.userDao = userDao;
   }
 
   @Override
   public boolean veirifyCredentials(String email, String password) {
-    return credentialsDao.verifiyCredentials(email, password);
+    return userDao.verifiyCredentials(email, password);
   }
 
 }

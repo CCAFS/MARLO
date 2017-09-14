@@ -32,7 +32,7 @@ public interface IpElementTypeDAO {
    * @param ipElementTypeId is the ipElementType identifier.
    * @return true if the ipElementType was successfully deleted, false otherwise.
    */
-  public boolean deleteIpElementType(long ipElementTypeId);
+  public void deleteIpElementType(long ipElementTypeId);
 
   /**
    * This method validate if the ipElementType identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface IpElementTypeDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(IpElementType ipElementType);
+  public IpElementType save(IpElementType ipElementType);
 }

@@ -21,9 +21,9 @@ public class DeliverableProgram implements java.io.Serializable, IAuditLog {
 
   private Deliverable deliverable;
 
-
   @Expose
   private IpProgram ipProgram;
+
 
   public DeliverableProgram() {
   }
@@ -32,7 +32,6 @@ public class DeliverableProgram implements java.io.Serializable, IAuditLog {
     this.deliverable = deliverable;
     this.ipProgram = ipProgram;
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -61,6 +60,7 @@ public class DeliverableProgram implements java.io.Serializable, IAuditLog {
     return deliverable;
   }
 
+
   @Override
   public Long getId() {
     return id;
@@ -82,7 +82,6 @@ public class DeliverableProgram implements java.io.Serializable, IAuditLog {
 
     return "";
   }
-
 
   @Override
   public User getModifiedBy() {
@@ -107,6 +106,7 @@ public class DeliverableProgram implements java.io.Serializable, IAuditLog {
     return true;
   }
 
+
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
   }
@@ -117,6 +117,11 @@ public class DeliverableProgram implements java.io.Serializable, IAuditLog {
 
   public void setIpProgram(IpProgram ipProgram) {
     this.ipProgram = ipProgram;
+  }
+
+  @Override
+  public String toString() {
+    return "DeliverableProgram [id=" + id + ", deliverable=" + deliverable + ", ipProgram=" + ipProgram + "]";
   }
 
 

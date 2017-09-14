@@ -22,19 +22,19 @@ import org.cgiar.ccafs.marlo.data.model.CenterAllTypes;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CenterAllTypesMySQLDAO implements CenterAllTypesDAO {
-
-  private StandardDAO dao;
+public class CenterAllTypesMySQLDAO extends AbstractMarloDAO<CenterAllTypes, Long> implements CenterAllTypesDAO {
 
   @Inject
-  public CenterAllTypesMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterAllTypesMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteCenterAllTypes(long centerAllTypesId) {
-    return this.deleteCenterAllTypes(centerAllTypesId);
+  public void deleteCenterAllTypes(long centerAllTypesId) {
+    CenterAllTypes centerAllTypes = this.find(centerAllTypesId);
+    super.delete(centerAllTypes);
   }
 
   @Override
@@ -49,14 +49,14 @@ public class CenterAllTypesMySQLDAO implements CenterAllTypesDAO {
 
   @Override
   public CenterAllTypes find(long id) {
-    return dao.find(CenterAllTypes.class, id);
+    return super.find(CenterAllTypes.class, id);
 
   }
 
   @Override
   public List<CenterAllTypes> findAll() {
     String query = "from " + CenterAllTypes.class.getName() + " where is_active=1";
-    List<CenterAllTypes> list = dao.findAll(query);
+    List<CenterAllTypes> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -65,15 +65,15 @@ public class CenterAllTypesMySQLDAO implements CenterAllTypesDAO {
   }
 
   @Override
-  public long save(CenterAllTypes centerAllTypes) {
+  public CenterAllTypes save(CenterAllTypes centerAllTypes) {
     if (centerAllTypes.getId() == null) {
-      dao.save(centerAllTypes);
+      centerAllTypes = super.saveEntity(centerAllTypes);
     } else {
-      dao.update(centerAllTypes);
+      centerAllTypes = super.update(centerAllTypes);
     }
 
 
-    return centerAllTypes.getId();
+    return centerAllTypes;
   }
 
 

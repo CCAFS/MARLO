@@ -34,7 +34,7 @@ public interface ProjectLocationElementTypeManager {
    * @param projectLocationElementTypeId is the projectLocationElementType identifier.
    * @return true if the projectLocationElementType was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectLocationElementType(long projectLocationElementTypeId);
+  public void deleteProjectLocationElementType(long projectLocationElementTypeId);
 
 
   /**
@@ -81,7 +81,7 @@ public interface ProjectLocationElementTypeManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveProjectLocationElementType(ProjectLocationElementType projectLocationElementType);
+  public ProjectLocationElementType saveProjectLocationElementType(ProjectLocationElementType projectLocationElementType);
 
 
 }

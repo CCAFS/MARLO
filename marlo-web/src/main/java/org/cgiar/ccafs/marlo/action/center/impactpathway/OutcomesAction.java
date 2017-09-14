@@ -362,19 +362,14 @@ public class OutcomesAction extends BaseAction {
 
       outcomeDb.setResearchImpact(impact);
 
-      outcomeDb.setModifiedBy(this.getCurrentUser());
-      Long outcomeSaveId = outcomeService.saveResearchOutcome(outcomeDb);
-
-      CenterOutcome outcomeSave = outcomeService.getResearchOutcomeById(outcomeSaveId);
-
-      this.saveMilestones(outcomeSave);
+      this.saveMilestones(outcomeDb);
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.RESEARCH_OUTCOME_MILESTONE_RELATION);
-      outcome = outcomeService.getResearchOutcomeById(outcomeID);
-      outcome.setActiveSince(new Date());
-      outcome.setModifiedBy(this.getCurrentUser());
-      outcomeService.saveResearchOutcome(outcome, this.getActionName(), relationsName);
+
+      outcomeDb.setActiveSince(new Date());
+      outcomeDb.setModifiedBy(this.getCurrentUser());
+      outcomeDb = outcomeService.saveResearchOutcome(outcomeDb, this.getActionName(), relationsName);
 
       Path path = this.getAutoSaveFilePath();
 

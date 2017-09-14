@@ -32,7 +32,7 @@ public interface SrfTargetUnitDAO {
    * @param srfTargetUnitId is the srfTargetUnit identifier.
    * @return true if the srfTargetUnit was successfully deleted, false otherwise.
    */
-  public boolean deleteSrfTargetUnit(long srfTargetUnitId);
+  public void deleteSrfTargetUnit(long srfTargetUnitId);
 
   /**
    * This method validate if the srfTargetUnit identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface SrfTargetUnitDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(SrfTargetUnit srfTargetUnit);
+  public SrfTargetUnit save(SrfTargetUnit srfTargetUnit);
 }

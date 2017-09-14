@@ -42,9 +42,9 @@ public class CenterProjectTypeManager implements ICenterProjectTypeManager {
   }
 
   @Override
-  public boolean deleteProjectType(long projectTypeId) {
+  public void deleteProjectType(long projectTypeId) {
 
-    return projectTypeDAO.deleteProjectType(projectTypeId);
+    projectTypeDAO.deleteProjectType(projectTypeId);
   }
 
   @Override
@@ -72,13 +72,13 @@ public class CenterProjectTypeManager implements ICenterProjectTypeManager {
   }
 
   @Override
-  public long saveProjectType(CenterProjectType projectType) {
+  public CenterProjectType saveProjectType(CenterProjectType projectType) {
 
     return projectTypeDAO.save(projectType);
   }
 
   @Override
-  public long saveProjectType(CenterProjectType projectType, String actionName, List<String> relationsName) {
+  public CenterProjectType saveProjectType(CenterProjectType projectType, String actionName, List<String> relationsName) {
     return projectTypeDAO.save(projectType, actionName, relationsName);
   }
 

@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class PhaseMySQLDAO implements PhaseDAO {
+public class PhaseMySQLDAO extends AbstractMarloDAO<Phase, Long> implements PhaseDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public PhaseMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public PhaseMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deletePhase(long phaseId) {
+  public void deletePhase(long phaseId) {
     Phase phase = this.find(phaseId);
 
-    return this.dao.delete(phase);
+    super.delete(phase);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class PhaseMySQLDAO implements PhaseDAO {
 
   @Override
   public Phase find(long id) {
-    return dao.find(Phase.class, id);
+    return super.find(Phase.class, id);
 
   }
 
   @Override
   public List<Phase> findAll() {
     String query = "from " + Phase.class.getName() + " ";
-    List<Phase> list = dao.findAll(query);
+    List<Phase> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -70,7 +70,7 @@ public class PhaseMySQLDAO implements PhaseDAO {
   public Phase findCycle(String cylce, int year, long crpId) {
     String query =
       "from " + Phase.class.getName() + " where description='" + cylce + "' and year=" + year + " and crp_id=" + crpId;
-    List<Phase> list = dao.findAll(query);
+    List<Phase> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
     }
@@ -78,15 +78,15 @@ public class PhaseMySQLDAO implements PhaseDAO {
   }
 
   @Override
-  public long save(Phase phase) {
+  public Phase save(Phase phase) {
     if (phase.getId() == null) {
-      dao.save(phase);
+      super.saveEntity(phase);
     } else {
-      dao.update(phase);
+      phase = super.update(phase);
     }
 
 
-    return phase.getId();
+    return phase;
   }
 
 

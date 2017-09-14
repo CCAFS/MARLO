@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -34,7 +34,7 @@ public interface ProjectPartnerManager {
    * @param projectPartnerId is the projectPartner identifier.
    * @return true if the projectPartner was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectPartner(long projectPartnerId);
+  public void deleteProjectPartner(long projectPartnerId);
 
 
   /**
@@ -62,6 +62,11 @@ public interface ProjectPartnerManager {
    */
   public ProjectPartner getProjectPartnerById(long projectPartnerID);
 
+
+  public ProjectPartner getProjectPartnerByIdAndEagerFetchLocations(long projectPartnerID);
+
+  public List<ProjectPartner> getProjectPartnersForProjectWithActiveProjectPartnerPersons(long projectId);
+
   /**
    * This method saves the information of the given projectPartner
    * 
@@ -70,7 +75,5 @@ public interface ProjectPartnerManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveProjectPartner(ProjectPartner projectPartner);
-
-
+  public ProjectPartner saveProjectPartner(ProjectPartner projectPartner);
 }

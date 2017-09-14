@@ -291,7 +291,7 @@ public class Center implements Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return id.toString();
+    return "Center [id=" + id + ", name=" + name + "]";
   }
 
 }

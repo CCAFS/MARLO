@@ -60,7 +60,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
-import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -170,6 +169,7 @@ public class ProjectHighlightAction extends BaseAction {
     return SUCCESS;
   }
 
+  @Override
   public List<Integer> getAllYears() {
     return allYears;
   }
@@ -489,8 +489,7 @@ public class ProjectHighlightAction extends BaseAction {
       highlight.setCreatedBy(highlightDB.getCreatedBy());
       if (file != null) {
         highlight.setFile(this.getFileDB(highlightDB.getFile(), file, fileFileName, this.getHightlightImagePath()));
-        Log.info("HIGHTL IMAGE " + this.getHightlightImagePath() + "/" + fileFileName);
-        System.out.println("HIGHTL IMAGE " + this.getHightlightImagePath() + "/" + fileFileName);
+        LOG.info("HIGHTL IMAGE " + this.getHightlightImagePath() + "/" + fileFileName);
         FileManager.copyFile(file, this.getHightlightImagePath() + fileFileName);
 
       }

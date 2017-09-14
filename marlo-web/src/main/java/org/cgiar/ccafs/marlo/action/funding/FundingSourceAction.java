@@ -67,6 +67,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
@@ -536,14 +537,14 @@ public class FundingSourceAction extends BaseAction {
           List<FundingSourceLocation> countries =
             new ArrayList<>(fundingSource.getFundingSourceLocations().stream().filter(fl -> fl.isActive()
               && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 2)
-            .collect(Collectors.toList()));
+              .collect(Collectors.toList()));
 
           fundingSource.setFundingCountry(new ArrayList<>(countries));
 
           List<FundingSourceLocation> regions =
             new ArrayList<>(fundingSource.getFundingSourceLocations().stream().filter(fl -> fl.isActive()
               && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 1)
-            .collect(Collectors.toList()));
+              .collect(Collectors.toList()));
 
           List<FundingSourceLocation> regionsWScope = new ArrayList<>();
           if (regions.size() > 0) {
@@ -602,7 +603,7 @@ public class FundingSourceAction extends BaseAction {
         institutions.add(crpPpaPartner.getInstitution());
       }
 
-      if (fundingSource.getBudgetType() != null) {
+      if (fundingSource.getBudgetType() != null && fundingSource.getBudgetType().getId() != null) {
         // if the funding source is type center funds -- institutions are ppa
         if (fundingSource.getBudgetType().getId().longValue() == 4) {
           List<Institution> allInstitutions = null;
@@ -668,13 +669,11 @@ public class FundingSourceAction extends BaseAction {
     this.setBasePermission(this.getText(Permission.PROJECT_FUNDING_SOURCE_BASE_PERMISSION, params));
 
     if (this.isHttpPost()) {
-      fundingSource.setFile(null);
       if (fundingSource.getInstitutions() != null) {
         for (FundingSourceInstitution fundingSourceInstitution : fundingSource.getInstitutions()) {
           fundingSourceInstitution
-            .setInstitution(institutionManager.getInstitutionById(fundingSourceInstitution.getId()));
+            .setInstitution(institutionManager.getInstitutionById(fundingSourceInstitution.getInstitution().getId()));
         }
-        fundingSource.setW1w2(null);
         fundingSource.getInstitutions().clear();
       }
 
@@ -684,6 +683,9 @@ public class FundingSourceAction extends BaseAction {
 
       if (fundingSource.getFundingCountry() != null) {
         fundingSource.getFundingCountry().clear();
+      }
+      if (fundingSource.getBudgets() != null) {
+        fundingSource.getBudgets().clear();
       }
 
     }
@@ -736,7 +738,7 @@ public class FundingSourceAction extends BaseAction {
       fundingSourceDB.setDescription(fundingSource.getDescription());
 
 
-      if (fundingSource.getFile().getId() == null) {
+      if (fundingSource.getFile() == null) {
         fundingSourceDB.setFile(null);
       } else {
         fundingSourceDB.setFile(fundingSource.getFile());
@@ -758,6 +760,10 @@ public class FundingSourceAction extends BaseAction {
        */
 
       if (fundingSource.getBudgets() != null) {
+
+        // TODO find out why the fundingSource budgets are being set to null.
+        fundingSource.getBudgets().removeIf(Objects::isNull);
+
         for (FundingSourceBudget fundingSourceBudget : fundingSource.getBudgets()) {
           if (fundingSourceBudget.getId() == null) {
             fundingSourceBudget.setActive(true);

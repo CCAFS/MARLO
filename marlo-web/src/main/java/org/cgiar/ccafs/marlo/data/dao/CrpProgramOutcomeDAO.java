@@ -32,7 +32,7 @@ public interface CrpProgramOutcomeDAO {
    * @param crpProgramOutcomeId is the crpProgramOutcome identifier.
    * @return true if the crpProgramOutcome was successfully deleted, false otherwise.
    */
-  public boolean deleteCrpProgramOutcome(long crpProgramOutcomeId);
+  public void deleteCrpProgramOutcome(long crpProgramOutcomeId);
 
   /**
    * This method validate if the crpProgramOutcome identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface CrpProgramOutcomeDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CrpProgramOutcome crpProgramOutcome);
+  public CrpProgramOutcome save(CrpProgramOutcome crpProgramOutcome);
 }

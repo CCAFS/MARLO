@@ -42,9 +42,9 @@ public class CenterUserRoleManager implements ICenterUserRoleManager {
   }
 
   @Override
-  public boolean deleteUserRole(long userRoleId) {
+  public void deleteUserRole(long userRoleId) {
 
-    return userRoleDAO.deleteUserRole(userRoleId);
+    userRoleDAO.deleteUserRole(userRoleId);
   }
 
   @Override
@@ -72,7 +72,7 @@ public class CenterUserRoleManager implements ICenterUserRoleManager {
   }
 
   @Override
-  public long saveUserRole(CenterUserRole userRole) {
+  public CenterUserRole saveUserRole(CenterUserRole userRole) {
 
     return userRoleDAO.save(userRole);
   }

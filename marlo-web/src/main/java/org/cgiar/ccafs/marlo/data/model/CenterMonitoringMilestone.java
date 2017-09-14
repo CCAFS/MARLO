@@ -46,12 +46,12 @@ public class CenterMonitoringMilestone implements java.io.Serializable, IAuditLo
   @Expose
   private String modificationJustification;
 
-
   public CenterMonitoringMilestone() {
   }
 
 
-  public CenterMonitoringMilestone(CenterMonitoringOutcome monitoringOutcome, CenterMilestone researchMilestone, boolean active) {
+  public CenterMonitoringMilestone(CenterMonitoringOutcome monitoringOutcome, CenterMilestone researchMilestone,
+    boolean active) {
     this.monitoringOutcome = monitoringOutcome;
     this.researchMilestone = researchMilestone;
     this.active = active;
@@ -102,6 +102,7 @@ public class CenterMonitoringMilestone implements java.io.Serializable, IAuditLo
   }
 
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -111,6 +112,7 @@ public class CenterMonitoringMilestone implements java.io.Serializable, IAuditLo
   public User getModifiedBy() {
     return modifiedBy;
   }
+
 
   public CenterMonitoringOutcome getMonitoringOutcome() {
     return monitoringOutcome;
@@ -157,10 +159,10 @@ public class CenterMonitoringMilestone implements java.io.Serializable, IAuditLo
     this.modifiedBy = modifiedBy;
   }
 
-
   public void setMonitoringOutcome(CenterMonitoringOutcome monitoringOutcome) {
     this.monitoringOutcome = monitoringOutcome;
   }
+
 
   public void setNarrative(String narrative) {
     this.narrative = narrative;
@@ -168,6 +170,12 @@ public class CenterMonitoringMilestone implements java.io.Serializable, IAuditLo
 
   public void setResearchMilestone(CenterMilestone researchMilestone) {
     this.researchMilestone = researchMilestone;
+  }
+
+  @Override
+  public String toString() {
+    return "CenterMonitoringMilestone [id=" + id + ", monitoringOutcome=" + monitoringOutcome + ", achievedValue="
+      + achievedValue + "]";
   }
 
 }

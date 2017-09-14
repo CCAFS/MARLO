@@ -41,9 +41,9 @@ public class LocElementManagerImpl implements LocElementManager {
   }
 
   @Override
-  public boolean deleteLocElement(long locElementId) {
+  public void deleteLocElement(long locElementId) {
 
-    return locElementDAO.deleteLocElement(locElementId);
+    locElementDAO.deleteLocElement(locElementId);
   }
 
   @Override
@@ -78,7 +78,7 @@ public class LocElementManagerImpl implements LocElementManager {
   }
 
   @Override
-  public long saveLocElement(LocElement locElement) {
+  public LocElement saveLocElement(LocElement locElement) {
 
     return locElementDAO.save(locElement);
   }

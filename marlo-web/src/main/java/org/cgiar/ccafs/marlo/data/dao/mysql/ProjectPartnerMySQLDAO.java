@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,21 +22,22 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.Query;
+import org.hibernate.SessionFactory;
 
-public class ProjectPartnerMySQLDAO implements ProjectPartnerDAO {
+public class ProjectPartnerMySQLDAO extends AbstractMarloDAO<ProjectPartner, Long> implements ProjectPartnerDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public ProjectPartnerMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public ProjectPartnerMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteProjectPartner(long projectPartnerId) {
+  public void deleteProjectPartner(long projectPartnerId) {
     ProjectPartner projectPartner = this.find(projectPartnerId);
     projectPartner.setActive(false);
-    return this.save(projectPartner) > 0;
+    this.save(projectPartner);
   }
 
   @Override
@@ -51,14 +52,14 @@ public class ProjectPartnerMySQLDAO implements ProjectPartnerDAO {
 
   @Override
   public ProjectPartner find(long id) {
-    return dao.find(ProjectPartner.class, id);
+    return super.find(ProjectPartner.class, id);
 
   }
 
   @Override
   public List<ProjectPartner> findAll() {
     String query = "from " + ProjectPartner.class.getName() + " where is_active=1";
-    List<ProjectPartner> list = dao.findAll(query);
+    List<ProjectPartner> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -67,15 +68,40 @@ public class ProjectPartnerMySQLDAO implements ProjectPartnerDAO {
   }
 
   @Override
-  public long save(ProjectPartner projectPartner) {
+  public ProjectPartner getProjectPartnerByIdAndEagerFetchLocations(long projectPartnerID) {
+    String query = "select distinct pp from ProjectPartner pp left join fetch pp.projectPartnerLocations ppl "
+      + "where pp.id = :projectPartnerID";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("projectPartnerID", projectPartnerID);
+    Object findSingleResult = super.findSingleResult(ProjectPartner.class, createQuery);
+
+    ProjectPartner projectPartner = (ProjectPartner) findSingleResult;
+    projectPartner.getProjectPartnerLocations().size();
+    return projectPartner;
+  }
+
+  @Override
+  public List<ProjectPartner> getProjectPartnersForProjectWithActiveProjectPartnerPersons(long projectId) {
+
+    String query = "select distinct pp from ProjectPartner as pp inner join pp.project as project "
+      + "left join fetch pp.projectPartnerPersons as ppp where project.id = :projectId " + "and ppp.active = true";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("projectId", projectId);
+    List<ProjectPartner> projectPartners = createQuery.list();
+    return projectPartners;
+  }
+
+  @Override
+  public ProjectPartner save(ProjectPartner projectPartner) {
     if (projectPartner.getId() == null) {
-      dao.save(projectPartner);
+      super.saveEntity(projectPartner);
     } else {
-      dao.update(projectPartner);
+      projectPartner = super.update(projectPartner);
     }
 
 
-    return projectPartner.getId();
+    return projectPartner;
   }
 
 

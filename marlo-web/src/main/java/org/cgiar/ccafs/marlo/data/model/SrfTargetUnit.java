@@ -234,7 +234,7 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return id.toString();
+    return "SrfTargetUnit [id=" + id + ", name=" + name + ", checkCrp=" + checkCrp + "]";
   }
 }
 

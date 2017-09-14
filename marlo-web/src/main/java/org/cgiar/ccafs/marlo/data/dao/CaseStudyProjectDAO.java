@@ -32,7 +32,7 @@ public interface CaseStudyProjectDAO {
    * @param caseStudyProjectId is the caseStudyProject identifier.
    * @return true if the caseStudyProject was successfully deleted, false otherwise.
    */
-  public boolean deleteCaseStudyProject(long caseStudyProjectId);
+  public void deleteCaseStudyProject(long caseStudyProjectId);
 
   /**
    * This method validate if the caseStudyProject identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface CaseStudyProjectDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CaseStudyProject caseStudyProject);
+  public CaseStudyProject save(CaseStudyProject caseStudyProject);
 }
