@@ -443,10 +443,20 @@ public final class APConstants {
   public static final String DELIVERABLE_OUTPUTS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.CenterDeliverable.deliverableOutputs)";
 
+  /**
+   * -------------------------------------------------------------------------------
+   * *******************************************************************************
+   * Constants For Summaries
+   * *******************************************************************************
+   * -------------------------------------------------------------------------------
+   */
+  public static final String SUMMARY_FORMAT = "format";
+  public static final String SUMMARY_FORMAT_EXCEL = "Excel";
+  public static final String SUMMARY_FORMAT_PDF = "PDF";
+
   public static String getFilterBy() {
     return FILTER_BY;
   }
-
 
 }
 

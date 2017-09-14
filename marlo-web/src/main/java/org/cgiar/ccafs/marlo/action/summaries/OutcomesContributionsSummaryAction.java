@@ -310,7 +310,6 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
     for (Project project : this.getLoggedCrp().getProjects().stream()
       .sorted((p1, p2) -> Long.compare(p1.getId(), p2.getId())).filter(p -> p.isActive())
       .collect(Collectors.toList())) {
-      System.out.println("Project milestone= " + project.getId());
       for (ProjectOutcome projectOutcome : project.getProjectOutcomes().stream()
         .sorted((po1, po2) -> Long.compare(po1.getId(), po2.getId()))
         .filter(po -> po.isActive() && po.getPhase() != null && po.getPhase().equals(this.getSelectedPhase()))
