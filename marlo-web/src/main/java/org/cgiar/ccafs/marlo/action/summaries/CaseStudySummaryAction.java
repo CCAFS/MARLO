@@ -402,11 +402,7 @@ public class CaseStudySummaryAction extends BaseSummariesAction implements Summa
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    if (this.getSelectedFormat().equals(APConstants.SUMMARY_FORMAT_EXCEL)) {
-      fileName.append("OutcomesCaseStudiesSummary-");
-    } else {
-      fileName.append("OutcomesCaseStudiesSummary-");
-    }
+    fileName.append("OutcomesCaseStudiesSummary-");
     fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     if (this.getSelectedFormat().equals(APConstants.SUMMARY_FORMAT_EXCEL)) {
