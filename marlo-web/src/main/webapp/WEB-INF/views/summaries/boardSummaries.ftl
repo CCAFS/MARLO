@@ -84,8 +84,8 @@
       "formats": [ "Excel" ],
       "cycles": [ "Planning" ]
     },
-    { "title": "summaries.board.report.expectedDeliverables", 
-      "description": "summaries.board.report.expectedDeliverables.description",
+    { "title": "summaries.board.report.reportedDeliverables", 
+      "description": "summaries.board.report.reportedDeliverables.description",
       "namespace": "/projects",
       "action": "${crpSession}/DeliverablesReportingSummary",
       "formats": [ "Excel" ],
@@ -141,7 +141,7 @@
     <div class="summariesContent col-md-9">
       <h3 class="headTitle text-center">Summaries</h3>
       <div class="loading" style="display:none"></div>
-      <div class="summariesOptions borderBox">
+      <div class="summariesOptions">
         [#list reportsTypes as reportType]
         <div id="${reportType.slug}-contentOptions" class="" style="display: [#if reportType_index != 0]none[/#if];">
           [#list reportType.reportsList as report]
@@ -164,12 +164,18 @@
 
 [#macro reportMacro report]
 
-[#assign reportTags = report.cycles + report.formats /]
 <div class="summariesFiles simpleBox">
-  [#-- Title --]
   <div class="form-group">
-    <div class="tags pull-right">[#list reportTags as tag ]<span class="label label-default type-${tag?lower_case}">${tag}</span>[/#list] </div>
+    [#-- Tags --]
+    <div class="tags pull-right">
+      [#list report.cycles as tag ]<span class="label label-default type-${tag?lower_case}">${tag}</span>[/#list]
+      [#list report.formats as icon ]
+      <span class="label label-default type-${icon?lower_case}"><span class="fa fa-file-${icon?lower_case}-o ${icon?lower_case}Icon file"></span> ${icon}</span>
+      [/#list] 
+    </div>
+    [#-- Title --]
     <h4 class="title-file">[@s.text name=report.title /]</h4>
+    [#-- Description --]
     <p class="description">[@s.text name=report.description /]</p>
   </div>
   
@@ -179,6 +185,7 @@
     [@s.form  target="_blank" action=report.action  method="GET" namespace=report.namespace enctype="multipart/form-data" cssClass=""]
       [#-- Parameters --]
       <div class="form-group row">
+        [#-- Cycles (Planning/Reporting) --]
         [#if report.cycles?size > 1]
         <div class="col-md-4">
           <label for="">Cycle:</label>
@@ -188,24 +195,30 @@
             [/#list]  
           </select>
         </div>
+        [#else]
+          <input type="hidden" name="cycle" value="${report.cycles[0]}" />
         [/#if]
+        [#-- Years --]
         <div class="col-md-4">
-          <label for="">Format:</label>
+          <label for="">Year:</label>
           <select name="year" id="">
             [#list years as year ]
             <option value="${year}">${year}</option>
             [/#list]  
           </select>
         </div>
+        [#-- Formats (PDF/Excel) --]
         [#if report.formats?size > 1]
         <div class="col-md-4">
           <label for="">Format:</label>
           <select name="format" id="">
             [#list report.formats as format ]
             <option value="${format}">${format}</option>
-            [/#list]  
+            [/#list]
           </select>
         </div>
+        [#else]
+          <input type="hidden" name="format" value="${report.formats[0]}" />
         [/#if]
       </div>
       
@@ -221,19 +234,13 @@
       [#-- KeyWords--]
       [#if report.allowKeyWords??]
       <div class="form-group">
-        Keywords
+        <label for="">Keywords:</label>
       </div>
       [/#if]
       
       [#-- Generate --]
-      <button type="submit" class="btn btn-info"><span class="glyphicon glyphicon-download-alt"></span> Generate</button>
-    [/@s.form] 
-    
-    <div class="form-group debugBlock">
-      <br />
-      <label for="">URL: </label>
-      <a href=""></a>
-    </div>
+      <button type="submit" class="btn btn-info pull-right"><span class="glyphicon glyphicon-download-alt"></span> Generate</button> <div class="clearfix"></div>
+    [/@s.form]
   </div>
 </div>
 
