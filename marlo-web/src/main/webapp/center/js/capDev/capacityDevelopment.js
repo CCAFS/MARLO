@@ -8,6 +8,10 @@
   $(document).ready(init);
 
   function init(){
+
+    $('form select').select2({
+    width: "100%"
+    });
     
     $('.numParticipants').integerInput();
     $('.numMen').integerInput();

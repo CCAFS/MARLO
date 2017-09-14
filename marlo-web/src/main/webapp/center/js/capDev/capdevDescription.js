@@ -2,6 +2,11 @@ $(document).ready(init);
 
 
 function init(){
+
+  $('form select').select2({
+    width: "100%"
+    });
+  
     //filter research program list
     (function(){
       var researchAreaID = $(".capdevResearchArea").val();

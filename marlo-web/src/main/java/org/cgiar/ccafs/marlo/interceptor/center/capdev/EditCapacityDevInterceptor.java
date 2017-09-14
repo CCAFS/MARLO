@@ -84,10 +84,10 @@ public class EditCapacityDevInterceptor extends AbstractInterceptor implements S
 
       capdevID = capdev.getId();
 
-      // if (baseAction.canAccessSuperAdmin()) {
-      // canEdit = true;
-      // hasPermissionToEdit = true;
-      // }
+      if (baseAction.canAccessSuperAdmin()) {
+        canEdit = true;
+        hasPermissionToEdit = true;
+      }
 
       System.out.println("antes de equal user");
       System.out.println("capdev.getUsersByCreatedBy()" + capdev.getUsersByCreatedBy().getId() + " class "

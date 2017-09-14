@@ -1,10 +1,13 @@
 [#ftl]
 
-[#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
+
 
 [#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css",
 					  "${baseUrlMedia}/css/capDev/capacityDevelopment.css"] /]
 
+
+
+[#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
 [#assign customJS = ["${baseUrlMedia}/js/capDev/capacityDevelopment.js", 
 					 "${baseUrlMedia}/js/capDev/supportingDocuments.js"] /]
 
@@ -26,7 +29,6 @@
 <script src="${baseUrl}/bower_components/jquery/dist/jquery.min.js"></script>
 <!-- <script src="${baseUrlMedia}/js/capDev/capacityDevelopment.js"></script>
 <script src="${baseUrlMedia}/js/capDev/supportingDocuments.js"></script> -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.7.7/xlsx.core.min.js"></script>
 
 
 

@@ -2,7 +2,15 @@ $(document).ready(init);
 
 function init(){
   block();
+
+  $('form select').select2({
+    width: "100%"
+    });
+
 }
+
+
+   
 
 var $supportDocsList = $('table.supportDocsList');
 
