@@ -71,7 +71,7 @@
 				<div class="simpleBox">
 					<div class="form-group row approachesListContainer" >
 						<div class="col-md-12 ">
-							[@customForm.select name="capdevDisciplines" listName="disciplines" keyFieldName="id" displayFieldName="name"  i18nkey="capdev.form.selectApproach" className="disciplinesSelect" multiple=false placeholder="capdev.select" help="capdev.help.discipline" /]
+							[@customForm.select name="capdevDisciplines" listName="disciplines" keyFieldName="id" displayFieldName="name"  disabled=!editable i18nkey="capdev.form.selectApproach" className="disciplinesSelect" multiple=false placeholder="capdev.select" help="capdev.help.discipline" /]
 						</div>
 						<div id="disciplinesList" class="col-md-12  approachesList" listname="capdev.disciplines">
 							<ul class="list">
@@ -79,7 +79,9 @@
 								[#list capdev.capdevDisciplines as discipline]
 								[#if discipline.active]
 								<li id="" class="discipline clearfix col-md-3">
-									<div class="removeDiscipline-action removeDiscipline removeIcon" title="Remove discipline"></div>
+									[#if editable]
+										<div class="removeDiscipline-action removeDiscipline removeIcon" title="Remove discipline"></div>
+									[/#if]
 									<input class="id" type="hidden" name="" value="${(discipline.id)!-1}" />
 									<input class="disciplineId" type="hidden" name="capdevDisciplines[-1]" value="${(discipline.disciplines.id)!}" />
 									<span class="name"> ${discipline.disciplines.name}</span>
@@ -97,16 +99,18 @@
 							</ul>
 						</div>
 					</div>
-					<div class="row ">
-						<div class="note participantMessage">
-							<p>If you don't find the discipline you are looking for, suggest it selecting <b>Other</b> then write the suggestion</p>
+					[#if editable]
+						<div class="row ">
+							<div class="note participantMessage">
+								<p>If you don't find the discipline you are looking for, suggest it selecting <b>Other</b> then write the suggestion</p>
+							</div>
 						</div>
-					</div>
-					<div>
-						<label>Other <input type="checkbox" name="otherDiscipline" class="otherDisciplinecheck"   [#if (capdev.otherDiscipline)??]
-						[#if (capdev.otherDiscipline) == "1"] checked="checked" [/#if] value="${(capdev.otherDiscipline)!}"[/#if]> </label>
-						<div class="suggestDiscipline" style="display: none;">[@customForm.textArea name="capdev.disciplineSuggested" i18nkey="Suggest discipline"  className="textarea"  /]</div>
-					</div>
+						<div>
+							<label>Other <input type="checkbox" name="otherDiscipline" class="otherDisciplinecheck"   [#if (capdev.otherDiscipline)??]
+							[#if (capdev.otherDiscipline) == "1"] checked="checked" [/#if] value="${(capdev.otherDiscipline)!}"[/#if]> </label>
+							<div class="suggestDiscipline" style="display: none;">[@customForm.textArea name="capdev.disciplineSuggested" i18nkey="Suggest discipline"  className="textarea"  /]</div>
+						</div>
+					[/#if]
 				</div>
 
 				<!-- Targeted public-->
@@ -114,7 +118,7 @@
 				<div class="simpleBox grupsParticipantsForm">
 					<div class="form-group row borderContainer grupsParticipantsForm" >
 						<div class="col-md-12 newCapdevField ">
-							[@customForm.select name="capdevTargetGroup" listName="targetGroups" keyFieldName="id" displayFieldName="name"  i18nkey="capdev.targetgroupselect" className="targetGroupsSelect" multiple=false placeholder="capdev.select" help="capdev.help.targetgroup" /]
+							[@customForm.select name="capdevTargetGroup" listName="targetGroups" keyFieldName="id" displayFieldName="name"  disabled=!editable i18nkey="capdev.targetgroupselect" className="targetGroupsSelect" multiple=false placeholder="capdev.select" help="capdev.help.targetgroup" /]
 						</div>
 
 						<div id="targetGroupsList" class="col-md-12 newCapdevField" >
@@ -123,7 +127,9 @@
 								[#list capdev.capdevTargetgroups as targetGroup]
 								[#if targetGroup.active]
 									<li id="" class="targetGroup clearfix col-md-3">
-										<div class="removeTargetGroup-action removeTargetGroup removeIcon" title="Remove targetGroup"></div>
+										[#if editable]
+											<div class="removeTargetGroup-action removeTargetGroup removeIcon" title="Remove targetGroup"></div>
+										[/#if]
 										<input class="id" type="hidden" name="" value="${(targetGroup.id)!-1}" />
 										<input class="tgId" type="hidden" name="capdevTargetGroup[-1]" value="${(targetGroup.targetGroups.id)!-1}" />
 										<span class="name">${targetGroup.targetGroups.name}</span>
@@ -138,16 +144,18 @@
 							</ul>
 						</div>
 					</div>
-					<div class="row grupsParticipantsForm">
-						<div class="note participantMessage">
-							<p>If you don't find the target group you are looking for, suggest it selecting <b>Other</b> then write the suggestion</p>
+					[#if editable]
+						<div class="row grupsParticipantsForm">
+							<div class="note participantMessage">
+								<p>If you don't find the target group you are looking for, suggest it selecting <b>Other</b> then write the suggestion</p>
+							</div>
 						</div>
-					</div>
-					<div class="grupsParticipantsForm">
-						<label>Other <input type="checkbox" name="otherTargetGroup" class="otherTargetcheck"   [#if (capdev.otherTargetGroup)??]
-						[#if (capdev.otherTargetGroup) == "1"] checked="checked" [/#if] value="${(capdev.otherTargetGroup)!}"[/#if]> </label>
-						<div class="suggestTagetGroup" style="display: none;">[@customForm.textArea name="capdev.targetGroupSuggested" i18nkey="Suggest target group"  className="textarea"  /]</div>
-					</div>
+						<div class="grupsParticipantsForm">
+							<label>Other <input type="checkbox" name="otherTargetGroup" class="otherTargetcheck"   [#if (capdev.otherTargetGroup)??]
+							[#if (capdev.otherTargetGroup) == "1"] checked="checked" [/#if] value="${(capdev.otherTargetGroup)!}"[/#if]> </label>
+							<div class="suggestTagetGroup" style="display: none;">[@customForm.textArea name="capdev.targetGroupSuggested" i18nkey="Suggest target group"  className="textarea"  /]</div>
+						</div>
+					[/#if]
 				</div>
 
 				<div class="simpleBox">
@@ -155,12 +163,12 @@
 					<div class="row">
 						<div class="col-md-12 newCapdevField " >
 							<div class="col-md-6 " listname="capdev.researcharea">
-								[@customForm.select name="capdev.researchArea.id" listName="researchAreas" keyFieldName="id" displayFieldName="name"  required=true className="capdevResearchArea" i18nkey="capdev.form.researchArea" placeholder="capdev.select" help="capdev.help.researchArea" /]
+								[@customForm.select name="capdev.researchArea.id" listName="researchAreas" keyFieldName="id" displayFieldName="name"  required=true className="capdevResearchArea" i18nkey="capdev.form.researchArea" placeholder="capdev.select" help="capdev.help.researchArea" editable=editable/]
 							</div>
 
 							<!-- research program-->
 							<div class="col-md-6 researchProgram ">
-								[@customForm.select name="capdev.researchProgram.id" listName="researchPrograms" keyFieldName="id" displayFieldName="name"  i18nkey="capdev.form.researchProgram" placeholder="capdev.select" className="capdevResearchProgram" help="capdev.help.researchProgram" /]
+								[@customForm.select name="capdev.researchProgram.id" listName="researchPrograms" keyFieldName="id" displayFieldName="name"  editable=editable i18nkey="capdev.form.researchProgram" placeholder="capdev.select" className="capdevResearchProgram" help="capdev.help.researchProgram" /]
 							</div>
 						</div>
 					</div>
@@ -169,7 +177,7 @@
 					<div class="row">
 						<div class="col-md-12 newCapdevField">
 							<div class="col-md-6 ">
-								[@customForm.select name="capdev.crp.id" listName="crps" keyFieldName="id" displayFieldName="name" i18nkey="capdev.form.crp" placeholder="capdev.select" help="capdev.help.crp" /]
+								[@customForm.select name="capdev.crp.id" listName="crps" keyFieldName="id" displayFieldName="name" i18nkey="capdev.form.crp" placeholder="capdev.select" help="capdev.help.crp" editable=editable /]
 							</div>
 							
 						</div>
@@ -178,7 +186,7 @@
 					<!-- project-->
 					<div class="form-group row newCapdevField ">
 						<div class="col-md-12 project" listname="capdev.project">
-							[@customForm.select name="capdev.project.id" listName="projects" keyFieldName="id" displayFieldName="name" i18nkey="capdev.form.project" placeholder="capdev.select" className="capdevProject" help="capdev.help.project" /]
+							[@customForm.select name="capdev.project.id" listName="projects" keyFieldName="id" displayFieldName="name" i18nkey="capdev.form.project" placeholder="capdev.select" className="capdevProject" help="capdev.help.project" editable=editable /]
 						</div>
 					</div>
 				</div>
@@ -190,7 +198,7 @@
 				<div class="simpleBox grupsParticipantsForm">
 					<div class="form-group row borderContainer grupsParticipantsForm" >
 						<div class="col-md-12 newCapdevField ">
-							[@customForm.select name="capdevPartners" listName="partners" keyFieldName="id" displayFieldName="name"  i18nkey="capdev.partnertSelect" className="capdevPartnerSelect" multiple=false placeholder="capdev.select" help="capdev.help.partner" /]
+							[@customForm.select name="capdevPartners" listName="partners" keyFieldName="id" displayFieldName="name"  i18nkey="capdev.partnertSelect" className="capdevPartnerSelect" multiple=false placeholder="capdev.select" help="capdev.help.partner"  disabled=!editable /]
 						</div>
 						
 						<div id="capdevPartnersList" class=" partnersList" >
@@ -199,7 +207,9 @@
 								[#list capdev.capdevPartnerses as partner]
 								[#if partner.active]
 									<li id="" class="capdevPartner clearfix col-md-12">
-										<div class="removepartner-action removepartner removeIcon" title="Remove partner"></div>
+										[#if editable]
+											<div class="removepartner-action removepartner removeIcon" title="Remove partner"></div>
+										[/#if]
 										<input class="id" type="hidden" name="capdev.capdevPartnerses[${partner_index}].id" value="${(partner.id)!-1}" />
 										<input class="partnerId" type="hidden" name="capdev.capdevPartnerses[${partner_index}].id" value="${(partner.id)!}" />
 										${(partner.institutions.name)!}
@@ -214,16 +224,18 @@
 							</ul>
 						</div>
 					</div>
-					<div class="row grupsParticipantsForm">
-						<div class="note participantMessage">
-							<p>If you don't find the partner you are looking for, suggest it selecting <b>Other</b> then write the suggestion</p>
+					[#if editable]
+						<div class="row grupsParticipantsForm">
+							<div class="note participantMessage">
+								<p>If you don't find the partner you are looking for, suggest it selecting <b>Other</b> then write the suggestion</p>
+							</div>
 						</div>
-					</div>
-					<div class="grupsParticipantsForm">
-						<label>Other <input type="checkbox" name="otherPartner" class="otherPartnercheck"   [#if (capdev.otherPartner)??]
-						[#if (capdev.otherPartner) == "1"] checked="checked" [/#if] value="${(capdev.otherPartner)!}"[/#if] > </label>
-						<div class="suggestPartner" style="display: none;">[@customForm.textArea name="capdev.partnerSuggested" i18nkey="Suggest Partner"  className="textarea"  /]</div>
-					</div>
+						<div class="grupsParticipantsForm">
+							<label>Other <input type="checkbox" name="otherPartner" class="otherPartnercheck"   [#if (capdev.otherPartner)??]
+							[#if (capdev.otherPartner) == "1"] checked="checked" [/#if] value="${(capdev.otherPartner)!}"[/#if] > </label>
+							<div class="suggestPartner" style="display: none;">[@customForm.textArea name="capdev.partnerSuggested" i18nkey="Suggest Partner"  className="textarea"  /]</div>
+						</div>
+					[/#if]
 				</div>
 
 				<!-- OutPuts-->
@@ -232,7 +244,7 @@
 				<div class="simpleBox">
 					<div class="form-group row outComesContainer" >
 						<div class="col-md-12 newCapdevField">
-							[@customForm.select name="capdevOutputs" listName="outputs" keyFieldName="id" displayFieldName="title" i18nkey="capdev.form.selectOutcome" className="capdevOutputSelect" multiple=false placeholder="capdev.select" help="capdev.help.output" /]
+							[@customForm.select name="capdevOutputs" listName="outputs" keyFieldName="id" displayFieldName="title" i18nkey="capdev.form.selectOutcome" className="capdevOutputSelect" multiple=false placeholder="capdev.select" help="capdev.help.output" disabled=!editable/]
 						</div>
 
 						<div id="capdevOutputsList" class="outputsList" >
@@ -241,7 +253,9 @@
 								[#list capdev.capdevOutputses as output]
 								[#if output.active]
 									<li id="" class="capdevOutput clearfix col-md-12">
-										<div class="removeOutput-action removeOutput removeIcon" title="Remove output"></div>
+										[#if editable]
+											<div class="removeOutput-action removeOutput removeIcon" title="Remove output"></div>
+										[/#if]
 										<input class="id" type="hidden" name="capdev.capdevOutputses[${output_index}].id" value="${(output.id)!-1}" />
 										<input class="outputId" type="hidden" name="capdev.capdevOutputses[${output_index}].id" value="${(output.id)!}" />
 										${(output.researchOutputs.title)!}
@@ -265,14 +279,16 @@
 
 
 				<!-- buttons -->
-				<div class="col-md-12">
-					<div class="buttons">	
-			        	<div class="buttons-content">        
-				          	[@s.submit type="button" name="save" cssClass="button-save"]<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> [@s.text name="form.buttons.save" /] [/@s.submit]
-				        	<div class="clearfix"></div>
-			        	</div>
+				[#if editable]
+					<div class="col-md-12">
+						<div class="buttons">	
+				        	<div class="buttons-content">        
+					          	[@s.submit type="button" name="save" cssClass="button-save"]<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> [@s.text name="form.buttons.save" /] [/@s.submit]
+					        	<div class="clearfix"></div>
+				        	</div>
+						</div>
 					</div>
-				</div>
+				[/#if]
 
 			</div>
 

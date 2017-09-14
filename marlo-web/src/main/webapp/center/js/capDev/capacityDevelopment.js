@@ -152,7 +152,9 @@
   (function(){
     //  this capdev has a regional dimension
     var valueSelected = $(".regional .onoffswitch-radio").val();
-    if(valueSelected == true) {
+    console.log(valueSelected)
+    if(valueSelected == 'true') {
+      console.log('dentro del if')
       $(".regionsBox").show("slow");
     } 
   })();

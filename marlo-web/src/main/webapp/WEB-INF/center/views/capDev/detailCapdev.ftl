@@ -74,7 +74,7 @@
 				<!-- Title-->
 				<div class="form-group row " >
 					<div class="col-md-12 "> 
-						[@customForm.input name="capdev.title" type="text" help="capdev.help.title" i18nkey="capdev.form.title"  required=true  /]
+						[@customForm.input name="capdev.title" type="text" help="capdev.help.title" i18nkey="capdev.form.title"  required=true disabled=!editable editable=editable /]
 					</div>
 				</div>
 
@@ -82,12 +82,12 @@
 				<div class="form-group row">
 						<!-- type-->
 						<div class="col-md-6" > 
-							[@customForm.select name="capdev.capdevType.id" listName="capdevTypes" keyFieldName="id" displayFieldName="name" help="capdev.help.type" i18nkey="capdev.form.type"  placeholder="capdev.select" required=true editable=true/]
+							[@customForm.select name="capdev.capdevType.id" listName="capdevTypes" keyFieldName="id" displayFieldName="name" help="capdev.help.type" i18nkey="capdev.form.type"  placeholder="capdev.select" required=true editable=editable disabled=!editable/]
 						</div>
 
 						<!-- Contact person -->
 						<div class="col-md-6 contactField group individual">
-							[@customForm.input name="contact" i18nkey="capdev.form.contactPerson" type="text" help="capdev.help.contact" className='contact'  required=true  /]
+							[@customForm.input name="contact" i18nkey="capdev.form.contactPerson" type="text" help="capdev.help.contact" className='contact'  required=true  editable=editable /]
 							<input class="ctFirsName" type="hidden" name="capdev.ctFirstName" value="${(capdev.ctFirstName)!}" /> 
 							<input class="ctLastName" type="hidden" name="capdev.ctLastName" value="${(capdev.ctLastName)!}" /> 
 							<input class="ctEmail" type="hidden" name="capdev.ctEmail" value="${(capdev.ctEmail)!}" /> 
@@ -99,11 +99,11 @@
 					<!-- <div class="col-md-12 newCapdevField"> -->
 						<!-- Strart date-->
 						<div class="col-md-6 ">
-							[@customForm.input name="capdev.startDate" i18nkey="capdev.form.startDate" type="text"  help="capdev.help.startDate" required=true  editable=true className="capdevstartDate"/]
+							[@customForm.input name="capdev.startDate" i18nkey="capdev.form.startDate" type="text"  help="capdev.help.startDate" required=true  editable=editable className="capdevstartDate"/]
 						</div>
 						<!-- end date-->
 						<div class="col-md-6 ">
-							[@customForm.input name="capdev.endDate" i18nkey="capdev.form.endDate" type="text" help="capdev.help.endDate" editable=true /]
+							[@customForm.input name="capdev.endDate" i18nkey="capdev.form.endDate" type="text" help="capdev.help.endDate" editable=editable /]
 						</div>
 					<!-- </div> -->
 				</div>
@@ -112,12 +112,12 @@
 				<!-- Duration -->
 				<div class="form-group row ">
 					<div class="col-md-3">
-						[@customForm.input name="capdev.duration" i18nkey="capdev.form.duration" type="text"  help="capdev.help.duration"   editable=true className="capdevDuration"/] 
+						[@customForm.input name="capdev.duration" i18nkey="capdev.form.duration" type="text"  help="capdev.help.duration"   editable=editable className="capdevDuration"/] 
 					</div>
 
 					<div class="col-md-3 durationUnitSelect">
 						<input type="hidden" name="" value="${(capdev.durationUnit)!}" class="durationUnitaInput"/>
-						[@customForm.select name="capdev.durationUnit" listName="durationUnit" keyFieldName="value" displayFieldName="displayName" help="" i18nkey="capdev.form.durationUnit"  placeholder="capdev.select"  editable=true className="dUnitSelect"/]
+						[@customForm.select name="capdev.durationUnit" listName="durationUnit" keyFieldName="value" displayFieldName="displayName" help="" i18nkey="capdev.form.durationUnit"  placeholder="capdev.select"  editable=editable className="dUnitSelect"/]
 					</div>
 				</div>
 
@@ -132,11 +132,13 @@
 							<div class="capdev-participantslist-title">List of participants</div>
 							[@capdevList capdev.capdevParticipants /]
 							<div class="col-md-12">
-								<div class="pull-right">	
-						        	<button type="button" class="" title="Delete list of participants">
-						        		<a id="" class="removeCapdev" href="[@s.url action='${centerSession}/delete_list_of_participants'][@s.param name='capdevID']${capdevID}[/@s.param][@s.param name='capdevCategory']${capdevCategory}[/@s.param] [/@s.url]" title="" > Clear
-							            </a>
-						        	</button>
+								<div class="pull-right">
+									[#if editable]	
+							        	<button type="button" class="" title="Delete list of participants">
+							        		<a id="" class="removeCapdev" href="[@s.url action='${centerSession}/delete_list_of_participants'][@s.param name='capdevID']${capdevID}[/@s.param][@s.param name='capdevCategory']${capdevCategory}[/@s.param] [/@s.url]" title="" > Clear
+								            </a>
+							        	</button>
+							        	[/#if]
 			    				</div>
 							</div>
 						</div>
@@ -158,7 +160,7 @@
 							<div class="col-md-12  participantsBox " listname="capdev.uploadFile">
 								<!-- [@s.fielderror fieldName="upload_File" class="fileError" /] -->
 								<div class="col-md-12">
-									[@s.file id="uploadFile" name="uploadFile" label="Select a File to upload" size="40" class="uploadParticipants"/]
+									[@s.file id="uploadFile" name="uploadFile" label="Select a File to upload" size="40" class="uploadParticipants" editable=editable/]
 								</div>
 								
 
@@ -201,13 +203,13 @@
 					<div class="form-group row">
 						<div class="col-md-12 ">
 							<div class="col-md-4 group individual">
-								[@customForm.input name="capdev.numParticipants" i18nkey="capdev.form.numParticipants" type="text" help="capdev.help.numParticipants"  editable=true className="numParticipants" /]
+								[@customForm.input name="capdev.numParticipants" i18nkey="capdev.form.numParticipants" type="text" help="capdev.help.numParticipants"  editable=editable className="numParticipants" /]
 							</div>
 							<div class="col-md-4 group individual">
-								[@customForm.input name="capdev.numMen" i18nkey="capdev.form.numMen" help="capdev.help.numMen" type="text" className="numMen" /]
+								[@customForm.input name="capdev.numMen" i18nkey="capdev.form.numMen" help="capdev.help.numMen" type="text" className="numMen" editable=editable/]
 							</div>
 							<div class="col-md-4 group individual">
-								[@customForm.input name="capdev.numWomen" i18nkey="capdev.form.numWomen" help="capdev.help.numMen" type="text" className="numWomen" /]
+								[@customForm.input name="capdev.numWomen" i18nkey="capdev.form.numWomen" help="capdev.help.numMen" type="text" className="numWomen" editable=editable/]
 							</div>
 						</div>
 					</div>
@@ -228,70 +230,72 @@
 				<div class="row  individualparticipantForm simpleBox" style="display:none;">
 					<div class="form-group row">
 						<div class="col-md-12">
-							[@customForm.input name="participant.code" i18nkey="capdev.participant.code" type="text" required=true className="participant-code"  help="capdev.help.participant.code"/]
+							[@customForm.input name="participant.code" i18nkey="capdev.participant.code" type="text" required=true className="participant-code"  help="capdev.help.participant.code" editable=editable/]
 						</div>
 						
 					</div>
 					<div class="form-group row">
 						<div class="col-md-6">
-							[@customForm.input name="participant.name" i18nkey="capdev.participant.firstName" type="text" required=true /]
+							[@customForm.input name="participant.name" i18nkey="capdev.participant.firstName" type="text" required=true editable=editable/]
 						</div>
 						<div class=" col-md-6">
-							[@customForm.input name="participant.middleName" i18nkey="capdev.participant.middleName" type="text"  /]
+							[@customForm.input name="participant.middleName" i18nkey="capdev.participant.middleName" type="text"  editable=editable/]
 						</div>
 					</div>
 					<div class="form-group row ">
 						<div class="form-group col-md-6">
-							[@customForm.input name="participant.lastName" i18nkey="capdev.participant.lastName" type="text" required=true /]
+							[@customForm.input name="participant.lastName" i18nkey="capdev.participant.lastName" type="text" required=true editable=editable/]
 						</div>
 						<div class="form-group col-md-6 genderSelect">
 							<input type="hidden" name="" value="${(participant.gender)!}" class="genderInput"/>
-							[@customForm.select name="participant.gender" listName="genders" keyFieldName="value" displayFieldName="displayName" help="" i18nkey="capdev.participant.gender"  placeholder="capdev.select" required=true editable=true className=""/]
+							[@customForm.select name="participant.gender" listName="genders" keyFieldName="value" displayFieldName="displayName" help="" i18nkey="capdev.participant.gender"  placeholder="capdev.select" required=true editable=editable className=""/]
 						</div>
 					</div>
 					<div class="form-group row">
 						<div class="col-md-6 pCitizenshipcountriesList">
-							[@customForm.select name="participant.locElementsByCitizenship.id" listName="countryList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.participant.citizenship" className="" multiple=false placeholder="capdev.select" required=true /]
+							[@customForm.select name="participant.locElementsByCitizenship.id" listName="countryList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.participant.citizenship" className="" multiple=false placeholder="capdev.select" required=true editable=editable/]
 						</div>
 						<div class="col-md-6">
-							[@customForm.select name="participant.highestDegree.id" listName="highestDegrreList" keyFieldName="id" displayFieldName="name"  i18nkey="capdev.participant.Highestdegree"  multiple=false placeholder="capdev.select"  /]
+							[@customForm.select name="participant.highestDegree.id" listName="highestDegrreList" keyFieldName="id" displayFieldName="name"  i18nkey="capdev.participant.Highestdegree"  multiple=false placeholder="capdev.select"  editable=editable/]
 						</div>
 					</div>
 					<div class="form-group row  ">
 						
 						<div class="col-md-6">
-							[@customForm.input name="participant.personalEmail" i18nkey="capdev.participant.personalEmail" type="text" required=true /]
+							[@customForm.input name="participant.personalEmail" i18nkey="capdev.participant.personalEmail" type="text" required=true editable=editable/]
 						</div>
 						<div class="col-md-6">
-							[@customForm.input name="participant.email" i18nkey="capdev.participant.Email" type="text"  /]
+							[@customForm.input name="participant.email" i18nkey="capdev.participant.Email" type="text" editable=editable /]
 						</div>
 					</div>
 					<div class="form-group row">
 						<div class="col-md-6">
-							[@customForm.select name="participant.institutions.id" listName="institutions" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.participant.Institution" className="" multiple=false placeholder="capdev.select"  /]
+							[@customForm.select name="participant.institutions.id" listName="institutions" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.participant.Institution" className="" multiple=false placeholder="capdev.select" editable=editable /]
 
+						[#if (editable)!false]	
 							<div class="note participantMessage">
 								<p>If you don't find the institucion you are looking for, suggest it selecting <b>Other</b> </p>
 							</div>
 
 							<div>
 								<label>Other <input type="checkbox" name="otherInstitucion" class="otherInstcheck"   [#if (participant.otherInstitution)??]
-								[#if (participant.otherInstitution) == "1"] checked="checked" [/#if] value="${(participant.otherInstitution)!}"[/#if]> </label>
-								<div class="suggestInstitution" style="display: none;">[@customForm.textArea name="participant.institutionsSuggested" i18nkey="Suggest institution"  className="textarea"  /]</div>
+								[#if (participant.otherInstitution) == "1"] checked="checked" [/#if] value="${(participant.otherInstitution)!}"[/#if] > </label>
+								<div class="suggestInstitution" style="display: none;">[@customForm.textArea name="participant.institutionsSuggested" i18nkey="Suggest institution"  className="textarea" editable=editable /]</div>
 							</div>
+						[/#if]
 
 						</div>
 						<div class="col-md-6 pcountryOfInstitucionList">
-							[@customForm.select name="participant.locElementsByCountryOfInstitucion.id" listName="countryList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.participant.country" className="" multiple=false placeholder="capdev.select"  /]
+							[@customForm.select name="participant.locElementsByCountryOfInstitucion.id" listName="countryList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.participant.country" className="" multiple=false placeholder="capdev.select" editable=editable /]
 						</div>
 					</div>
 					<div class="form-group row">
 						<div class="col-md-6">
-							[@customForm.input name="participant.supervisor" i18nkey="capdev.participant.Supervisor" type="text" required=true /]
+							[@customForm.input name="participant.supervisor" i18nkey="capdev.participant.Supervisor" type="text" required=true editable=editable/]
 						</div>
 						<div class="col-md-6">
 							<!-- [@customForm.input name="participant.fellowship" i18nkey="capdev.participant.Fellowship" type="text" /] -->
-							[@customForm.select name="participant.fellowship.id" listName="foundingTypeList" keyFieldName="id" displayFieldName="name"  i18nkey="capdev.participant.Fellowship"  multiple=false placeholder="capdev.select"  /]
+							[@customForm.select name="participant.fellowship.id" listName="foundingTypeList" keyFieldName="id" displayFieldName="name"  i18nkey="capdev.participant.Fellowship"  multiple=false placeholder="capdev.select" editable=editable /]
 						</div>
 					</div>
 				</div>
@@ -303,9 +307,9 @@
 				<div class=" newCapdevField form-group">
 					<div class="simpleBox">
 						
-						<div class="form-group capdevDimension">[@customForm.yesNoInput  label="capdev.globalDimensionQuestion" name="capdev.sGlobal"  inverse=false  cssClass="global" /] </div>
+						<div class="form-group capdevDimension">[@customForm.yesNoInput  label="capdev.globalDimensionQuestion" name="capdev.sGlobal"  inverse=false  cssClass="global" editable=editable/] </div>
 
-						<div class="form-group capdevDimension">[@customForm.yesNoInput  label="capdev.regionDimensionQuestion" name="capdev.sRegional"  inverse=false  cssClass="regional" /] </div>
+						<div class="form-group capdevDimension">[@customForm.yesNoInput  label="capdev.regionDimensionQuestion" name="capdev.sRegional"  inverse=false  cssClass="regional" editable=editable/] </div>
 
 						
 						<!-- regions-->
@@ -313,12 +317,14 @@
 							<div class="panel tertiary" >
 								<div id="capdevRegionsList">
 									<div class=" panel-body" listname="capdev.regions">
-										[@customForm.select name="capdevRegions" listName="regionsList" keyFieldName="id" displayFieldName="name" help="capdev.help.region" i18nkey="capdev.form.region" className="capdevRegionsSelect" multiple=false placeholder="capdev.select"  /]
+										[@customForm.select name="capdevRegions" listName="regionsList" keyFieldName="id" displayFieldName="name" help="capdev.help.region" i18nkey="capdev.form.region" className="capdevRegionsSelect" multiple=false placeholder="capdev.select" disabled=!editable /]
 										<ul class="list">
 											[#if capdev.capDevRegions?has_content]
 											[#list capdev.capDevRegions as region]
 												<li id="" class="capdevRegion  clearfix col-md-3">
-													<div class="removeRegion-action removeRegion removeIcon" title="Remove region"></div>
+													[#if editable]
+														<div class="removeRegion-action removeRegion removeIcon" title="Remove region"></div>
+													[/#if]
 													<input class="id" type="hidden" name="capdev.capDevRegions[${region_index}].id" value="${(region.id)!-1}" />
 													<input class="rId" type="hidden" name="capdev.capDevRegions[${region_index}].locElement.id" value="${(region.locElement.id)!}" />
 													${region.locElement.name}
@@ -341,12 +347,14 @@
 							<div class="panel tertiary">
 								<div id="capdevCountriesList">
 									<div class="panel-body" listname="capdev.countries">
-										[@customForm.select name="capdevCountries" listName="countryList" keyFieldName="id" displayFieldName="name" help="capdev.help.country" i18nkey="capdev.form.country" className="capdevCountriesSelect" multiple=false placeholder="capdev.select"  /]
+										[@customForm.select name="capdevCountries" listName="countryList" keyFieldName="id" displayFieldName="name" help="capdev.help.country" i18nkey="capdev.form.country" className="capdevCountriesSelect" multiple=false placeholder="capdev.select"  disabled=!editable/]
 										<ul class="list">
 											[#if capdev.capDevCountries?has_content]
 											[#list capdev.capDevCountries as country]
 											<li id="" class="capdevCountry clearfix col-md-3">
-												<div class="removeCountry-action removeCountry removeIcon" title="Remove country"></div>
+												[#if editable]
+													<div class="removeCountry-action removeCountry removeIcon" title="Remove country"></div>
+												[/#if]
 												<input class="id" type="hidden" name="capdev.capDevCountries[${country_index}].id" value="${(country.id)!-1}" />
 												<input class="cId" type="hidden" name="capdev.capDevCountries[${country_index}].locElement.id" value="${(country.locElement.id)!}" />
 												${country.locElement.name}
@@ -376,14 +384,19 @@
 
 
 				<!-- buttons -->
-				<div class="col-md-12">
-						<div class="buttons">	
-				        	<div class="buttons-content">        
-					          	[@s.submit type="button" name="save" cssClass="button-save"]<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> [@s.text name="form.buttons.save" /] [/@s.submit]
-					        	<div class="clearfix"></div>
-				        	</div>
-	    				</div>
-				</div>
+				[#if editable]
+					<div class="col-md-12">
+							<div class="buttons">	
+					        	<div class="buttons-content">        
+						          	[@s.submit type="button" name="save" cssClass="button-save" ]<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> [@s.text name="form.buttons.save" /] [/@s.submit]
+						        	<div class="clearfix"></div>
+						        	
+					        	</div>
+					        	
+					        	
+		    				</div>
+					</div>
+				[/#if]
 
 			</div>
 

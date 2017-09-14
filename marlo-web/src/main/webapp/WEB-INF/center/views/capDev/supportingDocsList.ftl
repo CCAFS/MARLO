@@ -112,9 +112,13 @@
 											    [/#if]
 										    </td>
 											<td class="removeCol">
-									             <a  class="deleteDoc" href="#" data-href="[@s.url action='${centerSession}/deleteSupportingDoc'][@s.param name='capdevID']${capdev.id}[/@s.param] [@s.param name='supportingDocID']${supportDocs.id?c}[/@s.param] [/@s.url]" data-toggle="modal" data-target="#confirm-delete">
-									               <img src="${baseUrlMedia}/images/global/trash.png" title="[@s.text name="capdev.removeCapdev" /]" /> 
-									             </a>
+												[#if editable]
+										            <a  class="deleteDoc" href="#" data-href="[@s.url action='${centerSession}/deleteSupportingDoc'][@s.param name='capdevID']${capdev.id}[/@s.param] [@s.param name='supportingDocID']${supportDocs.id?c}[/@s.param] [/@s.url]" data-toggle="modal" data-target="#confirm-delete">
+										               <img src="${baseUrlMedia}/images/global/trash.png" title="[@s.text name="capdev.removeCapdev" /]" /> 
+										            </a>
+									             [#else]
+									             	<img src="${baseUrlMedia}/images/global/trash_disable.png" title="[@s.text name="capdev.removeCapdev" /]" /> 
+									             [/#if]
 								            </td>
 
 
@@ -131,15 +135,16 @@
 						<p class="text-center inf" style="display:${(capdev.capdevSupportingDocses?has_content)?string('none','block')}">[@s.text name="capdev.notSupportDocuments" /]</p>	
 
 					
-
-					<div class="col-md-12 newCapdevField">
-						<div class="pull-right">
-							<div class="buttons-content">        
-								<a class="addButton" href="[@s.url action='${centerSession}/addSupportingDoc'][@s.param name='supportingDocID']${supportingDocID}[/@s.param] [@s.param name='capdevID']${capdevID}[/@s.param][/@s.url]">[@s.text name="capdev.addSupportingDoc" /]</a>
-								<div class="clearfix"></div>
+					[#if editable]
+						<div class="col-md-12 newCapdevField">
+							<div class="pull-right">
+								<div class="buttons-content">        
+									<a class="addButton" href="[@s.url action='${centerSession}/addSupportingDoc'][@s.param name='supportingDocID']${supportingDocID}[/@s.param] [@s.param name='capdevID']${capdevID}[/@s.param][/@s.url]">[@s.text name="capdev.addSupportingDoc" /]</a>
+									<div class="clearfix"></div>
+								</div>
 							</div>
 						</div>
-					</div>
+					[/#if]
 				</div>
 
 

@@ -353,6 +353,11 @@ div.fixed{
 	margin: 34%;
 }
 
+.removeCol > img{
+	margin: 0 34% 0 34%;
+
+}
+
 div.icon {
     margin-left: 18px;
 }

@@ -140,16 +140,6 @@ public class CapacityDevelopmentValidator extends BaseValidator {
 
     }
 
-    // else if ((this.bolValue(capdev.getsRegional()) == null) && countries.isEmpty()
-    // && (capdev.getCapDevCountries() != null)) {
-    // if (capdev.getCapDevCountries().stream().filter(c -> c.isActive()).collect(Collectors.toList()).isEmpty()) {
-    // this.addMessage(baseAction.getText("capdev.action.countries"));
-    // baseAction.getInvalidFields().put("list-capdev.countries", baseAction.getText(InvalidFieldsMessages.EMPTYLIST,
-    // new String[] {"Capacity Development Intervention Countries"}));
-    // }
-    // }
-
-
     if (regions.get(0) == -1) {
       regions.remove(0);
     }
@@ -266,15 +256,7 @@ public class CapacityDevelopmentValidator extends BaseValidator {
         baseAction.getInvalidFields().put("input-participant.personalEmail", InvalidFieldsMessages.EMPTYFIELD);
       }
     }
-    // if (participant.getInstitutions().getId() == -1) {
-    // this.addMessage(baseAction.getText("capdev.action.participant.institution"));
-    // baseAction.getInvalidFields().put("input-participant.institutions.id", InvalidFieldsMessages.EMPTYFIELD);
-    // }
-    // if (participant.getLocElementsByCountryOfInstitucion().getId() == -1) {
-    // this.addMessage(baseAction.getText("capdev.action.participant.countryOfInstitucion"));
-    // baseAction.getInvalidFields().put("input-participant.locElementsByCountryOfInstitucion.id",
-    // InvalidFieldsMessages.EMPTYFIELD);
-    // }
+
     if (participant.getSupervisor().equalsIgnoreCase("")) {
       this.addMessage(baseAction.getText("capdev.action.participant.supervisor"));
       baseAction.getInvalidFields().put("input-participant.supervisor", InvalidFieldsMessages.EMPTYFIELD);

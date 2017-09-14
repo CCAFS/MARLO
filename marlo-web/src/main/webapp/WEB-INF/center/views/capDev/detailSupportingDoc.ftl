@@ -67,24 +67,24 @@
 				<!-- supporting documents -->
 				<div class="form-group row ">
 					<div class="col-md-12">
-						[@customForm.input name="capdevSupportingDocs.title" i18nkey="capdev.supportingDocs.title" type="text" help="" editable=true   required=true /]
+						[@customForm.input name="capdevSupportingDocs.title" i18nkey="capdev.supportingDocs.title" type="text" help="" editable=editable   required=true /]
 					</div>
 					
 				</div>
 				<div class="form-group row ">
 					<!-- supporting docs type -->
 					<div class="col-md-6">
-						 [@customForm.select name="capdevSupportingDocs.centerDeliverableTypes.id" listName="deliverablesList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.supportingDocs.type" className="capdevDeliverableType" placeholder="capdev.select" required=true editable=true/]
+						 [@customForm.select name="capdevSupportingDocs.centerDeliverableTypes.id" listName="deliverablesList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.supportingDocs.type" className="capdevDeliverableType" placeholder="capdev.select" required=true editable=editable/]
 					</div>
 					<!-- supporting docs subtypes -->
 					<div class="col-md-6">
-						[@customForm.select name="capdevSupportingDocs.deliverableSubtype.id" listName="deliverablesSubtypesList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.supportingDocs.subType" className="capdevDeliverableSubtype" placeholder="capdev.select" required=true editable=true/]
+						[@customForm.select name="capdevSupportingDocs.deliverableSubtype.id" listName="deliverablesSubtypesList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.supportingDocs.subType" className="capdevDeliverableSubtype" placeholder="capdev.select" required=true editable=editable/]
 					</div>
 				</div>
 
 				<div class="row">
 					<div class="col-md-12">
-						[@customForm.input name="capdevSupportingDocs.publicationDate" i18nkey="capdev.supportingDocs.publicationdate" type="text" help="" editable=true  required=true /]
+						[@customForm.input name="capdevSupportingDocs.publicationDate" i18nkey="capdev.supportingDocs.publicationdate" type="text" help="" editable=editable required=true /]
 					</div>
 				</div>
 					
@@ -101,10 +101,12 @@
 									
 									<div class="col-md-12 documents">
 								    	<input class="documentID" type="hidden" name="" value="${document.id}" />
-								    	<div class="removeCapdevsupportDocument-action removeCapdevsupportDocument removeIcon" title="Remove document"></div>
+								    	[#if editable]
+									    	<div class="removeCapdevsupportDocument-action removeCapdevsupportDocument removeIcon" title="Remove document"></div>
+								    	[/#if]
 										<div class="input input-" style="display:block;">
 											
-											[@customForm.input name="documents[${document_index}].link" i18nkey="capdev.supportingDocs.link" type="text" className="link"   /]
+											[@customForm.input name="documents[${document_index}].link" i18nkey="capdev.supportingDocs.link" type="text" className="link"  editable=editable /]
 											
 											
 										</div>
@@ -117,11 +119,13 @@
 							[/#if]
 							
 						</div>
-						<div class="col-md-12">
-							<div class="pull-right">
-								<div class="button-green addCapdevsupportDocument"><span class="glyphicon glyphicon-plus-sign"></span>[@s.text name="Add  document" /]</div>
+						[#if editable]
+							<div class="col-md-12">
+								<div class="pull-right">
+									<div class="button-green addCapdevsupportDocument"><span class="glyphicon glyphicon-plus-sign"></span>[@s.text name="Add  document" /]</div>
+								</div>
 							</div>
-						</div>
+						[/#if]
 						
 					</div>
 				</div>
@@ -131,11 +135,13 @@
 				<input  type="hidden" name="supportingDocID" value="${capdevSupportingDocs.id}" /> 
 
 				<!-- buttons -->
-				<div class="col-md-12">
-						<div class="pull-right">
-							[@s.submit type="button" name="save" cssClass="button-save"]<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> [@s.text name="form.buttons.save" /] [/@s.submit]
-						</div>
-				</div>
+				[#if editable]
+					<div class="col-md-12">
+							<div class="pull-right">
+								[@s.submit type="button" name="save" cssClass="button-save"]<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> [@s.text name="form.buttons.save" /] [/@s.submit]
+							</div>
+					</div>
+				[/#if]
 
 			</div>
 
