@@ -76,6 +76,7 @@ public class ProjectHighlightsExcelSummaryAction extends BaseSummariesAction imp
     this.projectHighLightManager = projectHighLightManager;
   }
 
+
   @Override
   public String execute() throws Exception {
     ClassicEngineBoot.getInstance().start();

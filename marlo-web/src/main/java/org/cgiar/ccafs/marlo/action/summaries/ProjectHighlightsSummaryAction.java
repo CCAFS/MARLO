@@ -15,6 +15,7 @@
 
 package org.cgiar.ccafs.marlo.action.summaries;
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectHighligthManager;
@@ -36,11 +37,13 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import com.lowagie.text.BadElementException;
 import com.lowagie.text.Image;
+import org.apache.commons.lang3.StringUtils;
 import org.pentaho.reporting.engine.classic.core.Band;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
@@ -60,21 +63,28 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Andrés Valencia - CIAT/CCAFS
  */
-public class ProjectHighlightsPDFSummaryAction extends BaseSummariesAction implements Summary {
+public class ProjectHighlightsSummaryAction extends BaseSummariesAction implements Summary {
 
   private static final long serialVersionUID = 1L;
-  private static Logger LOG = LoggerFactory.getLogger(ProjectHighlightsPDFSummaryAction.class);
+  private static Logger LOG = LoggerFactory.getLogger(ProjectHighlightsSummaryAction.class);
   // Managers
   private ProjectHighligthManager projectHighLightManager;
   // Parameters
   private long startTime;
+  private String selectedFormat;
+
   // XLSX bytes
   private byte[] bytesPDF;
+
+
+  // XLSX bytes
+  private byte[] bytesXLSX;
+
   // Streams
   InputStream inputStream;
 
   @Inject
-  public ProjectHighlightsPDFSummaryAction(APConfig config, CrpManager crpManager,
+  public ProjectHighlightsSummaryAction(APConfig config, CrpManager crpManager,
     ProjectHighligthManager projectHighLightManager, PhaseManager phaseManager) {
     super(config, crpManager, phaseManager);
     this.projectHighLightManager = projectHighLightManager;
@@ -107,9 +117,12 @@ public class ProjectHighlightsPDFSummaryAction extends BaseSummariesAction imple
     masterReport.getParameterValues().put("i8nResults", this.getText("highlight.results.readText"));
     masterReport.getParameterValues().put("i8nPartners", this.getText("highlight.partners.readText"));
     masterReport.getParameterValues().put("i8nLinks", this.getText("highlight.links.readText"));
-
+    masterReport.getParameterValues().put("i8nProjectHighlightsId",
+      this.getText("projectHighlights.projectHighlightsId"));
+    masterReport.getParameterValues().put("i8nImage", this.getText("highlight.image.readText"));
     return masterReport;
   }
+
 
   @Override
   public String execute() throws Exception {
@@ -234,6 +247,10 @@ public class ProjectHighlightsPDFSummaryAction extends BaseSummariesAction imple
     return bytesPDF;
   }
 
+  public byte[] getBytesXLSX() {
+    return bytesXLSX;
+  }
+
   @Override
   public int getContentLength() {
     return bytesPDF.length;
@@ -305,7 +322,6 @@ public class ProjectHighlightsPDFSummaryAction extends BaseSummariesAction imple
     return inputStream;
   }
 
-
   private TypedTableModel getMasterTableModel(String center, String date, String year) {
     // Initialization of Model
     TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "year"},
@@ -318,21 +334,23 @@ public class ProjectHighlightsPDFSummaryAction extends BaseSummariesAction imple
     TypedTableModel model = new TypedTableModel(
       new String[] {"id", "title", "author", "subject", "publisher", "year_reported", "highlights_types",
         "highlights_is_global", "start_date", "end_date", "keywords", "countries", "image", "highlight_desc",
-        "introduction", "results", "partners", "links", "width", "heigth", "project_id"},
+        "introduction", "results", "partners", "links", "width", "heigth", "project_id", "imageurl"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, Long.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, Integer.class, Integer.class, String.class},
+        String.class, String.class, String.class, Integer.class, Integer.class, String.class, String.class},
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
     for (ProjectHighlight projectHighlight : projectHighLightManager.findAll().stream()
       .sorted((h1, h2) -> Long.compare(h1.getId(), h2.getId()))
       .filter(ph -> ph.isActive() && ph.getProject() != null && ph.getYear() == this.getSelectedYear()
         && ph.getProject().getCrp().getId().longValue() == this.getLoggedCrp().getId().longValue()
-        && ph.getProject().isActive() && ph.getProject().getProjecInfoPhase(this.getActualPhase()).getReporting())
+        && ph.getProject().isActive() && ph.getProject().getProjecInfoPhase(this.getActualPhase()) != null
+        && ph.getProject().getProjecInfoPhase(this.getActualPhase()).getReporting())
       .collect(Collectors.toList())) {
       String title = null, author = null, subject = null, publisher = null, highlightsTypes = "",
-        highlightsIsGlobal = null, startDate = null, endDate = null, keywords = null, countries = "", image = "",
-        highlightDesc = null, introduction = null, results = null, partners = null, links = null, projectId = null;
+        highlightsIsGlobal = null, startDate = null, endDate = null, keywords = null, countries = "",
+        highlightDesc = null, introduction = null, results = null, partners = null, links = null, projectId = null,
+        image = null, imageurl = null;;
       Long yearReported = null;
       int width = 244;
       int heigth = 163;
@@ -392,6 +410,24 @@ public class ProjectHighlightsPDFSummaryAction extends BaseSummariesAction imple
       if (countries.isEmpty()) {
         countries = null;
       }
+      if (projectHighlight.getDescription() != null && !projectHighlight.getDescription().isEmpty()) {
+        highlightDesc = projectHighlight.getDescription();
+      }
+      if (projectHighlight.getObjectives() != null && !projectHighlight.getObjectives().isEmpty()) {
+        introduction = projectHighlight.getObjectives();
+      }
+      if (projectHighlight.getResults() != null && !projectHighlight.getResults().isEmpty()) {
+        results = projectHighlight.getResults();
+      }
+      if (projectHighlight.getPartners() != null && !projectHighlight.getPartners().isEmpty()) {
+        partners = projectHighlight.getPartners();
+      }
+      if (projectHighlight.getLinks() != null && !projectHighlight.getLinks().isEmpty()) {
+        links = projectHighlight.getLinks();
+      }
+      if (projectHighlight.getProject() != null) {
+        projectId = projectHighlight.getProject().getId().toString();
+      }
       if (projectHighlight.getFile() != null) {
         double pageWidth = 612 * 0.4;
         double pageHeigth = 792 * 0.4;
@@ -438,34 +474,47 @@ public class ProjectHighlightsPDFSummaryAction extends BaseSummariesAction imple
           image = "";
         }
       }
-      if (projectHighlight.getDescription() != null && !projectHighlight.getDescription().isEmpty()) {
-        highlightDesc = projectHighlight.getDescription();
-      }
-      if (projectHighlight.getObjectives() != null && !projectHighlight.getObjectives().isEmpty()) {
-        introduction = projectHighlight.getObjectives();
-      }
-      if (projectHighlight.getResults() != null && !projectHighlight.getResults().isEmpty()) {
-        results = projectHighlight.getResults();
-      }
-      if (projectHighlight.getPartners() != null && !projectHighlight.getPartners().isEmpty()) {
-        partners = projectHighlight.getPartners();
-      }
-      if (projectHighlight.getLinks() != null && !projectHighlight.getLinks().isEmpty()) {
-        links = projectHighlight.getLinks();
-      }
-      if (projectHighlight.getProject() != null) {
-        projectId = projectHighlight.getProject().getId().toString();
-      }
+      /*
+       * System.out.println("Method1 " + image);
+       * if (projectHighlight.getFile() != null) {
+       * image = projectHighlight.getFile().getFileName();
+       * imageurl = this.getHighlightsImagesUrl(projectHighlight.getProject().getId().toString())
+       * + projectHighlight.getFile().getFileName();
+       * File url;
+       * try {
+       * url = new File(imageurl);
+       * } catch (Exception e) {
+       * LOG.warn("Failed to get image File. Url was set to null. Exception: " + e.getMessage());
+       * url = null;
+       * imageurl = null;
+       * image = null;
+       * }
+       * if (url != null && url.exists()) {
+       * } else {
+       * imageurl = null;
+       * image = null;
+       * }
+       * }
+       * System.out.println("Method2 " + imageurl);
+       */
+
       model.addRow(new Object[] {projectHighlight.getId(), title, author, subject, publisher, yearReported,
         highlightsTypes, highlightsIsGlobal, startDate, endDate, keywords, countries, image, highlightDesc,
-        introduction, results, partners, links, width, heigth, projectId});
+        introduction, results, partners, links, width, heigth, projectId, imageurl});
     }
     return model;
   }
 
+  public String getSelectedFormat() {
+    return selectedFormat;
+  }
+
+
   @Override
   public void prepare() throws Exception {
+    Map<String, Object> parameters = this.getParameters();
     this.setGeneralParameters();
+    this.setSelectedFormat(StringUtils.trim(((String[]) parameters.get(APConstants.SUMMARY_FORMAT))[0]));
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
     LOG.info("Start report download: " + this.getFileName() + ". User: "
@@ -476,8 +525,16 @@ public class ProjectHighlightsPDFSummaryAction extends BaseSummariesAction imple
     this.bytesPDF = bytesPDF;
   }
 
+  public void setBytesXLSX(byte[] bytesXLSX) {
+    this.bytesXLSX = bytesXLSX;
+  }
+
   public void setInputStream(InputStream inputStream) {
     this.inputStream = inputStream;
+  }
+
+  public void setSelectedFormat(String selectedFormat) {
+    this.selectedFormat = selectedFormat;
   }
 
 }
