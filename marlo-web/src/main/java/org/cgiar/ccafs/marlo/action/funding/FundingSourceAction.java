@@ -537,14 +537,14 @@ public class FundingSourceAction extends BaseAction {
           List<FundingSourceLocation> countries =
             new ArrayList<>(fundingSource.getFundingSourceLocations().stream().filter(fl -> fl.isActive()
               && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 2)
-            .collect(Collectors.toList()));
+              .collect(Collectors.toList()));
 
           fundingSource.setFundingCountry(new ArrayList<>(countries));
 
           List<FundingSourceLocation> regions =
             new ArrayList<>(fundingSource.getFundingSourceLocations().stream().filter(fl -> fl.isActive()
               && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 1)
-            .collect(Collectors.toList()));
+              .collect(Collectors.toList()));
 
           List<FundingSourceLocation> regionsWScope = new ArrayList<>();
           if (regions.size() > 0) {
@@ -602,7 +602,7 @@ public class FundingSourceAction extends BaseAction {
       for (CrpPpaPartner crpPpaPartner : ppaPartners) {
         institutions.add(crpPpaPartner.getInstitution());
       }
-      
+
       if (fundingSource.getBudgetType() != null && fundingSource.getBudgetType().getId() != null) {
         // if the funding source is type center funds -- institutions are ppa
         if (fundingSource.getBudgetType().getId().longValue() == 4) {
@@ -672,7 +672,7 @@ public class FundingSourceAction extends BaseAction {
       if (fundingSource.getInstitutions() != null) {
         for (FundingSourceInstitution fundingSourceInstitution : fundingSource.getInstitutions()) {
           fundingSourceInstitution
-            .setInstitution(institutionManager.getInstitutionById(fundingSourceInstitution.getId()));
+            .setInstitution(institutionManager.getInstitutionById(fundingSourceInstitution.getInstitution().getId()));
         }
         fundingSource.getInstitutions().clear();
       }
@@ -760,8 +760,8 @@ public class FundingSourceAction extends BaseAction {
        */
 
       if (fundingSource.getBudgets() != null) {
-        
-        //TODO find out why the fundingSource budgets are being set to null.
+
+        // TODO find out why the fundingSource budgets are being set to null.
         fundingSource.getBudgets().removeIf(Objects::isNull);
 
         for (FundingSourceBudget fundingSourceBudget : fundingSource.getBudgets()) {
