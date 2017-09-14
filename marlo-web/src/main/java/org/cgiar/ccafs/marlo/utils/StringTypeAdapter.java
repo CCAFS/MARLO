@@ -13,7 +13,6 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-
 package org.cgiar.ccafs.marlo.utils;
 
 import java.io.IOException;
@@ -23,9 +22,10 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 
-public class StringTypeAdapter extends TypeAdapter<String>
-
-{
+/**
+ * @author Hermes Jiménez - CIAT/CCAFS
+ */
+public class StringTypeAdapter extends TypeAdapter<String> {
 
   @Override
   public String read(JsonReader jsonReader) throws IOException {
@@ -33,11 +33,25 @@ public class StringTypeAdapter extends TypeAdapter<String>
       jsonReader.nextNull();
       return null;
     }
+
     try {
       String value = jsonReader.nextString();
       return value;
-    } catch (Exception e) {
-      return null;
+
+    } catch (IllegalStateException e) {
+
+      String values = "";
+
+      jsonReader.beginArray();
+      while (jsonReader.hasNext()) {
+        if (values.length() < 1) {
+          values = jsonReader.nextString();
+        } else {
+          values = values + "," + jsonReader.nextString();
+        }
+      }
+      jsonReader.endArray();
+      return values;
     }
   }
 

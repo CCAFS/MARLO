@@ -81,7 +81,7 @@
       [#if element.crpTargetUnits?has_content]
         [#list element.crpTargetUnits as crpTargetUnit]
           [#if crpTargetUnit.active]
-          [${crpTargetUnit.crp.name}]   
+          [${crpTargetUnit.crp.acronym}]   
           [/#if]
         [/#list] 
 
