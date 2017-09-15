@@ -29,6 +29,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 import javax.servlet.http.HttpSession;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Protects from exposing session ids in URLs for security reasons.
  * Does the following:
@@ -38,6 +41,8 @@ import javax.servlet.http.HttpSession;
  * </ul>
  */
 public class RemoveSessionFromUrlFilter implements Filter {
+
+  private final Logger LOG = LoggerFactory.getLogger(RemoveSessionFromUrlFilter.class);
 
   @Override
   public void destroy() {
@@ -49,6 +54,7 @@ public class RemoveSessionFromUrlFilter implements Filter {
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
     throws IOException, ServletException {
+
 
     HttpServletRequest httpRequest = (HttpServletRequest) request;
     HttpServletResponse httpResponse = (HttpServletResponse) response;
@@ -90,6 +96,7 @@ public class RemoveSessionFromUrlFilter implements Filter {
 
   @Override
   public void init(FilterConfig config) throws ServletException {
+    LOG.debug("initializing RemoveSessionFromUrlFilter");
   }
 
   /**

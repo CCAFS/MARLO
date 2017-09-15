@@ -76,11 +76,11 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
     boolean hasPermissionToEdit = false;
     boolean editParameter = false;
 
-    String projectParameter = ((String[]) parameters.get(APConstants.FUNDING_SOURCE_REQUEST_ID))[0];
-    if (projectParameter == null) {
-      throw new NullPointerException();
+    String fundingSourceParameter = ((String[]) parameters.get(APConstants.FUNDING_SOURCE_REQUEST_ID))[0];
+    if (fundingSourceParameter == null) {
+      throw new IllegalArgumentException("fundingSourceParameter must not be null!");
     }
-    fundingSourceID = Long.parseLong(projectParameter);
+    fundingSourceID = Long.parseLong(fundingSourceParameter);
 
     FundingSource fundingSource = fundingSourceManager.getFundingSourceById(fundingSourceID);
 
@@ -129,7 +129,8 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
       baseAction.setCanEdit(canEdit);
 
     } else {
-      throw new NullPointerException();
+      throw new IllegalArgumentException(
+        "FundingSource with fundingSourceID: " + fundingSourceID + " , could not be found");
     }
   }
 

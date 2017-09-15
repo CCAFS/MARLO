@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
+import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
@@ -84,9 +85,9 @@ public class FundingSourceValidator extends BaseValidator {
     if (fundingSource.getInstitutions() != null) {
       for (FundingSourceInstitution fundingSourceInstitution : fundingSource.getInstitutions().stream()
         .filter(c -> c.isActive()).collect(Collectors.toList())) {
-        fundingSourceInstitution
-          .setInstitution(institutionManager.getInstitutionById(fundingSourceInstitution.getInstitution().getId()));
-        if (fundingSourceInstitution.getInstitution().getAcronym().equals("IFPRI")) {
+        Institution institution =
+          institutionManager.getInstitutionById(fundingSourceInstitution.getInstitution().getId());
+        if (institution.getAcronym().equals("IFPRI")) {
           return true;
         }
       }
