@@ -442,7 +442,18 @@ public class FundingSourceAction extends BaseAction {
 
     if (this.isHttpPost()) {
       fundingSource = fundingSourceManager.getFundingSourceById(fundingSourceID);
-      // This is a real hack to get around an issue caused by bug #1124.  We set this to null so that the
+      /**
+       * This is a real nasty hack to get around an issue caused by bug #1124. We set the istitution to null and rely on
+       * the save() method updating the institution regardless of whether or not the user actually changed this value.
+       * If we don't do this hibernate will think that we are modifying the id of a managed entity (i.e. the
+       * institution) when a user does actually update the institution. In this scenario hibernate will throw an
+       * exception saying that we are trying to modify the id of a managed entity when the validate method gets called
+       * (the validate method will perform a query on the funding source which triggers an auto-flush).
+       * A better solution would be to have a DTO (assuming we don't want to have our hibernate entities AND their child
+       * collections bound to the freemarker templates) and the freemarker template binds to that.
+       * The prepare method would map the database values to a FundingSourceDTO (or better call a mapper class to do
+       * this) and the save method would map the values from the FundingSourceDTO to the FundingSource hibernate entity.
+       */
       fundingSource.setInstitution(null);
       return;
     }
