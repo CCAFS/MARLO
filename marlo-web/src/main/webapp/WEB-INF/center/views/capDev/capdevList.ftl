@@ -175,11 +175,11 @@
 			<div class="addButtons botones">
 				
 	        	<div class="buttons-content addgroupItem" >        
-		          	<a class="addButton" href="[@s.url action='${centerSession}/addCapdev'][@s.param name='capdevID']${capdevID}[/@s.param][@s.param name='capdevCategory']2[/@s.param][/@s.url]" title="capdev.help.addgroupItem">[@s.text name="capdev.addgroupItem" /]</a>
+		          	<a class="addButton" href="[@s.url action='${centerSession}/addCapdev'][@s.param name='capdevID']${capdevID}[/@s.param][@s.param name='capdevCategory']2[/@s.param][/@s.url]" title="Add a capacity development intervention destinated  at a group of people ">[@s.text name="capdev.addgroupItem" /]</a>
 		          	
 	        	</div>
 	        	<div class="buttons-content addindividualItem" >        
-		          	<a class="addButton" href="[@s.url action='${centerSession}/addCapdev' ][@s.param name='capdevID']${capdevID}[/@s.param][@s.param name='capdevCategory']1[/@s.param][/@s.url]" title="capdev.help.addindividualItem">[@s.text name="capdev.addindividualItem" /]</a>
+		          	<a class="addButton" href="[@s.url action='${centerSession}/addCapdev' ][@s.param name='capdevID']${capdevID}[/@s.param][@s.param name='capdevCategory']1[/@s.param][/@s.url]" title="Add a capacity development intervention destinated  at one person">[@s.text name="capdev.addindividualItem" /]</a>
 
 	        	</div>
 			</div>
@@ -209,14 +209,6 @@
 			</div>
 		</div>
 	 </div>
-
-
-
-
-	 
-
-
-
 
 
 

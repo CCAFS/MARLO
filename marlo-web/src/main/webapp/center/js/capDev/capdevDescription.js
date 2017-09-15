@@ -47,6 +47,22 @@ function init(){
       }
     })();
 
+
+    //check discipline list
+    var $list = $("#disciplinesList").find(".list");
+    checkDisciplineList($list);
+
+    //check target groups list 
+    var $list = $("#targetGroupsList").find(".list");
+    checkTargetGroupList($list);
+
+    // check partners list
+    var $list = $("#capdevPartnersList").find(".list");
+    checkPartnerList($list);
+
+    //check outputs list
+    var $list = $("#capdevOutputsList").find(".list");
+    checkOutputList($list);
     
 }
 

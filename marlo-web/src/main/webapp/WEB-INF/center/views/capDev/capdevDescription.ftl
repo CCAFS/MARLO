@@ -70,12 +70,12 @@
 
 				<!-- Disciplines-->
 				<label>[@s.text name="capdev.form.listOfApproaches"][/@s.text] [@customForm.req/]</label>
-				<div class="simpleBox">
+				<div class="simpleBox" listname="capdev.disciplines">
 					<div class="form-group row approachesListContainer" >
 						<div class="col-md-12 ">
 							[@customForm.select name="capdevDisciplines" listName="disciplines" keyFieldName="id" displayFieldName="name"  disabled=!editable i18nkey="capdev.form.selectApproach" className="disciplinesSelect" multiple=false placeholder="capdev.select" help="capdev.help.discipline" /]
 						</div>
-						<div id="disciplinesList" class="col-md-12  approachesList" listname="capdev.disciplines">
+						<div id="disciplinesList" class="col-md-12  approachesList" >
 							<ul class="list">
 								[#if capdev.capdevDisciplines?has_content]
 								[#list capdev.capdevDisciplines as discipline]
@@ -94,10 +94,11 @@
 								[/#if]
 								[/#list]
 								[#else]
-								<p class="emptyText"> [@s.text name="capdev.notDisciplines" /]</p>
+								
 								
 									 
 								[/#if]
+								<p class="emptyText"> [@s.text name="capdev.notDisciplines" /]</p>
 							</ul>
 						</div>
 					</div>
@@ -117,7 +118,7 @@
 
 				<!-- Targeted public-->
 				<label class="grupsParticipantsForm">[@s.text name="capdev.targetgroup"][/@s.text]</label>
-				<div class="simpleBox grupsParticipantsForm">
+				<div class="simpleBox grupsParticipantsForm" listname="capdev.targetgroup">
 					<div class="form-group row borderContainer grupsParticipantsForm" >
 						<div class="col-md-12 newCapdevField ">
 							[@customForm.select name="capdevTargetGroup" listName="targetGroups" keyFieldName="id" displayFieldName="name"  disabled=!editable i18nkey="capdev.targetgroupselect" className="targetGroupsSelect" multiple=false placeholder="capdev.select" help="capdev.help.targetgroup" /]
@@ -141,8 +142,8 @@
 								[/#if]
 								[/#list]
 								[#else]
-									<p class="emptyText"> [@s.text name="capdev.notTargetGroups" /]</p> 
 								[/#if]
+								<p class="emptyText"> [@s.text name="capdev.notTargetGroups" /]</p> 
 							</ul>
 						</div>
 					</div>
@@ -197,7 +198,7 @@
 
 				<!-- Partners-->
 				<label class="grupsParticipantsForm">[@s.text name="capdev.partnerts"][/@s.text] </label>
-				<div class="simpleBox grupsParticipantsForm">
+				<div class="simpleBox grupsParticipantsForm" listname="capdev.partners">
 					<div class="form-group row borderContainer grupsParticipantsForm" >
 						<div class="col-md-12 newCapdevField ">
 							[@customForm.select name="capdevPartners" listName="partners" keyFieldName="id" displayFieldName="name"  i18nkey="capdev.partnertSelect" className="capdevPartnerSelect" multiple=false placeholder="capdev.select" help="capdev.help.partner"  disabled=!editable /]
@@ -243,7 +244,7 @@
 				<!-- OutPuts-->
 				
 				<label>[@s.text name="capdev.form.objectives"][/@s.text] </label>
-				<div class="simpleBox">
+				<div class="simpleBox" listname="capdev.outputs">
 					<div class="form-group row outComesContainer" >
 						<div class="col-md-12 newCapdevField">
 							[@customForm.select name="capdevOutputs" listName="outputs" keyFieldName="id" displayFieldName="title" i18nkey="capdev.form.selectOutcome" className="capdevOutputSelect" multiple=false placeholder="capdev.select" help="capdev.help.output" disabled=!editable/]
