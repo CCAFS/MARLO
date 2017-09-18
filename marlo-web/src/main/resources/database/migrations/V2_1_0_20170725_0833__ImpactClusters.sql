@@ -54,14 +54,24 @@ INNER JOIN crp_cluster_of_activities ppp ON pp.cluster_activity_id=ppp.id
 )
 ;
 
+CREATE TEMPORARY TABLE
+IF NOT EXISTS table_project_budgets_cluser_actvities AS (SELECT pp.*,ppp.identifier FROM project_budgets_cluser_actvities pp
+INNER JOIN crp_cluster_of_activities ppp ON pp.cluster_activity_id=ppp.id
+);
+
+
+
 
 TRUNCATE TABLE crp_cluster_of_activities;
 TRUNCATE TABLE crp_cluster_activity_leaders ;
 TRUNCATE TABLE crp_cluster_key_outputs ;
 TRUNCATE TABLE crp_cluster_key_outputs_outcome ;
 TRUNCATE TABLE project_cluster_activities ;
+TRUNCATE TABLE project_budgets_cluser_actvities;
 
 
+ALTER TABLE `project_budgets_cluser_actvities`
+ADD COLUMN `id_phase`  bigint(20) NULL AFTER `modification_justification`;
 
 ALTER TABLE `crp_cluster_of_activities`
 ADD COLUMN `id_phase`  bigint(20) NULL AFTER `modification_justification`;
@@ -213,3 +223,42 @@ from table_temp_project_clusters temp
 INNER JOIN crp_cluster_of_activities pp on pp.id_phase=temp.id_phase
 and pp.identifier =temp.identifier
 ;
+
+INSERT INTO project_budgets_cluser_actvities (
+project_id,
+amount,
+budget_type,
+year,
+cluster_activity_id,
+gender_percentage,
+is_active,
+active_since,
+created_by,
+modified_by,
+modification_justification,
+
+id_phase
+) SELECT 
+t2.project_id,
+t2.amount,
+t2.budget_type,
+t2.year,
+coa.id,
+t2.gender_percentage,
+t2.is_active,
+t2.active_since,
+t2.created_by,
+t2.modified_by,
+t2.modification_justification,
+
+
+ph.id
+FROM
+  table_project_budgets_cluser_actvities t2
+ 
+left JOIN project_phases pp ON pp.project_id = t2.project_id
+left JOIN phases ph ON ph.id = pp.id_phase
+ INNER JOIN crp_cluster_of_activities coa on coa.id_phase=pp.id_phase
+and coa.identifier =t2.identifier
+;
+

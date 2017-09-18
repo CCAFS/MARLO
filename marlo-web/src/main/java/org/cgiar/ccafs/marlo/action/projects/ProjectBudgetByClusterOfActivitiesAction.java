@@ -280,7 +280,8 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
 
 
     for (ProjectBudget projectBudget : projectBD.getProjectBudgets()) {
-      if (year == projectBudget.getYear() && type == projectBudget.getBudgetType().getId().longValue()) {
+      if (year == projectBudget.getYear() && type == projectBudget.getBudgetType().getId().longValue()
+        && projectBudget.getPhase().equals(this.getActualPhase()) && projectBudget.isActive()) {
         if (projectBudget.getGenderPercentage() != null && projectBudget.getAmount() != null) {
           total = (long) (total + (projectBudget.getAmount() * (projectBudget.getGenderPercentage() / 100)));
         }
@@ -298,7 +299,8 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
 
 
     for (ProjectBudget projectBudget : projectBD.getProjectBudgets()) {
-      if (year == projectBudget.getYear() && type == projectBudget.getBudgetType().getId().longValue()) {
+      if (year == projectBudget.getYear() && type == projectBudget.getBudgetType().getId().longValue()
+        && projectBudget.getPhase().equals(this.getActualPhase()) && projectBudget.isActive()) {
         if (projectBudget.getAmount() != null) {
           total = total + projectBudget.getAmount();
         }
@@ -317,8 +319,8 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
 
   public boolean hasBudgets(Long type, int year) {
     Project projectBD = projectManager.getProjectById(projectID);
-    List<ProjectBudget> budgets = projectBD.getProjectBudgets()
-      .stream().filter(c -> c.isActive() && c.getYear() == year
+    List<ProjectBudget> budgets = projectBD.getProjectBudgets().stream()
+      .filter(c -> c.isActive() && c.getYear() == year && c.getPhase().equals(this.getActualPhase())
         && c.getBudgetType().getId().longValue() == type.longValue() && (c.getAmount() != null && c.getAmount() > 0))
       .collect(Collectors.toList());
 

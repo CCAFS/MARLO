@@ -608,7 +608,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       .collect(Collectors.toList()) == null) {
       return false;
     }
-    if (project.getProjectClusterActivities().stream().filter(pc -> pc.isActive()).collect(Collectors.toList())
+    if (project.getProjectClusterActivities().stream()
+      .filter(pc -> pc.isActive() && pc.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())
       .size() > 1) {
       return true;
     } else {
