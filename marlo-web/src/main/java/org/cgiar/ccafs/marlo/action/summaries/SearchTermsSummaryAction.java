@@ -176,7 +176,7 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
         if (parameters.isEmpty()) {
           // Empty keys
         } else {
-          keys = Arrays.asList(parameters.split("~/"));
+          keys = Arrays.asList(parameters.split(","));
         }
       }
       // Set Main_Query

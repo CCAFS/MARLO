@@ -22,6 +22,7 @@
   [#if libraryName="intro.js" ]<link rel="stylesheet" href="${baseUrl}/bower_components/intro.js/introjs.css" />[/#if]
   [#if libraryName="font-awesome" ]<link rel="stylesheet" href="${baseUrl}/bower_components/font-awesome/css/font-awesome.css" />[/#if]
   [#if libraryName="TimelineJS3" ]<link rel="stylesheet" href="${baseUrl}/bower_components/TimelineJS3/compiled/css/timeline.css" />[/#if]
+  [#if libraryName="jquery-tag-editor" ]<link rel="stylesheet" href="${baseUrl}/bower_components/jquery-tag-editor/jquery.tag-editor.css" />[/#if]
   [#-- endbower --]
 [/#macro]
 
@@ -57,5 +58,7 @@
   [#if libraryName="google-diff-match-patch"]<script src="${baseUrl}/bower_components/google-diff-match-patch/diff_match_patch.js"></script>[/#if]
   [#if libraryName="jquery-pretty-text-diff"]<script src="${baseUrl}/bower_components/jquery-pretty-text-diff/jquery.pretty-text-diff.min.js"></script>[/#if]
   [#if libraryName="TimelineJS3"]<script src="${baseUrl}/bower_components/TimelineJS3/compiled/js/timeline.js"></script>[/#if]
+  [#if libraryName="caret"]<script src="${baseUrl}/bower_components/caret/jquery.caret.js"></script>[/#if]
+  [#if libraryName="jquery-tag-editor"]<script src="${baseUrl}/bower_components/jquery-tag-editor/jquery.tag-editor.min.js"></script>[/#if]
   [#-- endbower --]
 [/#macro]

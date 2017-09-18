@@ -1,13 +1,19 @@
-$(document).ready(init);
-var genderArray =
-    [
-        "Gender", "female", "male", "men", "elderly", "caste", "women", "equitable", "inequality", "equity",
-        "social differentiation", "social inclusion", "youth", "social class", "children", "child"
-    ];
+
 var termsArray = [];
 var reportYear = "2017";
+
+$(document).ready(init);
 function init() {
+  // Add Select2 Plugin
   addSelect2();
+  
+  // Add Tag Editor Plugin
+  $('.keywords').tagEditor({ 
+    delimiter: ",",
+    placeholder: "Enter keywords here ..."
+  });
+  
+  // Attach events
   attachEvents();
 }
 
@@ -19,6 +25,31 @@ function attachEvents() {
   $(".summariesFiles").on("click", selectReport);
   // Download
   $('.generateReport').on('click', generateReport);
+  
+  // Add predefined gender keywords
+  $('.addGenderKeys').on('click', addGenderKeys)
+  
+  // Remove all keywords
+  $('.removeAllTags').on('click', removeAllTags)
+}
+
+function addGenderKeys(){
+  // Gender Tags
+  var genderArray =
+    [
+      "Gender", "female", "male", "men", "elderly", "caste", "women", "equitable", "inequality", "equity",
+      "social differentiation", "social inclusion", "youth", "social class", "children", "child"
+      ];
+  $.each(genderArray, function(i,tag){
+    $('.keywords').tagEditor('addTag', tag);
+  });
+}
+
+function removeAllTags(){
+  var tags = $('.keywords').tagEditor('getTags')[0].tags;
+  for (i = 0; i < tags.length; i++) { 
+    $('.keywords').tagEditor('removeTag', tags[i]); 
+  }
 }
 
 function selectReport() {
