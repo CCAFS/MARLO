@@ -362,7 +362,8 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   }
 
   public String getTotalAmount(long institutionId, int year, long budgetType, Integer coFinancing) {
-    return projectBudgetManager.amountByBudgetType(institutionId, year, budgetType, projectID, coFinancing);
+    return projectBudgetManager.amountByBudgetType(institutionId, year, budgetType, projectID, coFinancing,
+      this.getActualPhase().getId());
   }
 
   public double getTotalGender(long institutionId, int year, long budgetType, Integer coFinancing) {
@@ -373,10 +374,13 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     double totalGender = 0;
     if (budgets != null) {
       for (ProjectBudget projectBudget : budgets) {
-        double amount = projectBudget.getAmount() != null ? projectBudget.getAmount() : 0;
-        double gender = projectBudget.getGenderPercentage() != null ? projectBudget.getGenderPercentage() : 0;
+        if (projectBudget.getPhase().equals(this.getActualPhase())) {
+          double amount = projectBudget.getAmount() != null ? projectBudget.getAmount() : 0;
+          double gender = projectBudget.getGenderPercentage() != null ? projectBudget.getGenderPercentage() : 0;
 
-        totalGender = totalGender + (amount * (gender / 100));
+          totalGender = totalGender + (amount * (gender / 100));
+        }
+
       }
     }
 
@@ -662,10 +666,12 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_BUDGETS_RELATION);
+      relationsName.add(APConstants.PROJECT_INFO_RELATION);
 
       project = projectManager.getProjectById(projectID);
       project.setActiveSince(new Date());
-      projectManager.saveProject(project, this.getActionName(), relationsName);
+      project.setModifiedBy(this.getCurrentUser());
+      projectManager.saveProject(project, this.getActionName(), relationsName, this.getActualPhase());
       Path path = this.getAutoSaveFilePath();
 
       if (path.toFile().exists()) {

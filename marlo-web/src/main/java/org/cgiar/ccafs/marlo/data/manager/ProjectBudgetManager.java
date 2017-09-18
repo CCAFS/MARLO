@@ -38,7 +38,8 @@ public interface ProjectBudgetManager {
    * @param coFinancing 1: cofinancing+no cofinancing, 2: cofinancing 3: no cofinancing
    * @return
    */
-  public String amountByBudgetType(long institutionId, int year, long budgetType, long projectId, Integer coFinancing);
+  public String amountByBudgetType(long institutionId, int year, long budgetType, long projectId, Integer coFinancing,
+    long idPhase);
 
 
   /**

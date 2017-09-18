@@ -35,26 +35,27 @@ public class ProjectBudgetMySQLDAO implements ProjectBudgetDAO {
   }
 
   @Override
-  public String amountByBudgetType(long institutionId, int year, long budgetType, long projectId, Integer coFinancing) {
+  public String amountByBudgetType(long institutionId, int year, long budgetType, long projectId, Integer coFinancing,
+    long idPhase) {
     String query = null;
 
     switch (coFinancing) {
       case 1:
-        query =
-          "select SUM(amount) as amount from project_budgets where institution_id= " + institutionId + " and year= "
-            + year + " and budget_type= " + budgetType + " and project_id= " + projectId + " and is_active=1";
+        query = "select SUM(amount) as amount from project_budgets where institution_id= " + institutionId
+          + " and year= " + year + " and budget_type= " + budgetType + " and project_id= " + projectId
+          + " and id_phase=" + idPhase + " and is_active=1";
         break;
       case 2:
         query =
           "select SUM(amount) as amount from project_budgets pb INNER JOIN funding_sources fs ON fs.id = pb.funding_source_id where pb.institution_id= "
             + institutionId + " and pb.year= " + year + " and pb.budget_type= " + budgetType + " and pb.project_id= "
-            + projectId + " and pb.is_active=1 AND fs.w1w2";
+            + projectId + " and pb.id_phase=" + idPhase + " and pb.is_active=1 AND fs.w1w2";
         break;
       case 3:
         query =
           "select SUM(amount) as amount from project_budgets pb INNER JOIN funding_sources fs ON fs.id = pb.funding_source_id where pb.institution_id= "
             + institutionId + " and pb.year= " + year + " and pb.budget_type= " + budgetType + " and pb.project_id= "
-            + projectId + " and pb.is_active=1 AND !fs.w1w2";
+            + projectId + " and pb.id_phase=" + idPhase + " and  pb.is_active=1 AND !fs.w1w2";
         break;
 
       default:

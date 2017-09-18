@@ -41,8 +41,9 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
   }
 
   @Override
-  public String amountByBudgetType(long institutionId, int year, long budgetType, long projectId, Integer coFinancing) {
-    return projectBudgetDAO.amountByBudgetType(institutionId, year, budgetType, projectId, coFinancing);
+  public String amountByBudgetType(long institutionId, int year, long budgetType, long projectId, Integer coFinancing,
+    long idPhase) {
+    return projectBudgetDAO.amountByBudgetType(institutionId, year, budgetType, projectId, coFinancing, idPhase);
   }
 
   @Override
