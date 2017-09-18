@@ -67,7 +67,7 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
     researchCenter = (Center) session.get(APConstants.SESSION_CENTER);
 
     try {
-      deliverableID = Long.parseLong(((String[]) parameters.get(APConstants.DELIVERABLE_ID))[0]);
+      deliverableID = Long.parseLong(((String[]) parameters.get(APConstants.CENTER_DELIVERABLE_ID))[0]);
     } catch (Exception e) {
       return BaseAction.NOT_FOUND;
     }

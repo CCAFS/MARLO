@@ -187,18 +187,18 @@ public class CenterProjectDescriptionValidator extends BaseValidator {
       baseAction.getInvalidFields().put("input-project.projectLeader.composedName", InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    // TODO project.getProjectCrosscutingTheme() Validation
-
-
-    if (project.getFundingSources() == null || project.getFundingSources().isEmpty()) {
-      this.addMessage(baseAction.getText("projectDescription.action.fundingSources"));
-      baseAction.getInvalidFields().put("list-project.fundingSources",
-        baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Funding source"}));
-    } else {
-      for (int i = 0; i < project.getFundingSources().size(); i++) {
-        this.validateFundingSource(baseAction, project.getFundingSources().get(i), i);
-      }
-    }
+    /*
+     * Temporally unavailable
+     * if (project.getFundingSources() == null || project.getFundingSources().isEmpty()) {
+     * this.addMessage(baseAction.getText("projectDescription.action.fundingSources"));
+     * baseAction.getInvalidFields().put("list-project.fundingSources",
+     * baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Funding source"}));
+     * } else {
+     * for (int i = 0; i < project.getFundingSources().size(); i++) {
+     * this.validateFundingSource(baseAction, project.getFundingSources().get(i), i);
+     * }
+     * }
+     */
 
     if (project.getOutputs() == null || project.getOutputs().isEmpty()) {
       this.addMessage(baseAction.getText("projectDescription.actio.outputs"));

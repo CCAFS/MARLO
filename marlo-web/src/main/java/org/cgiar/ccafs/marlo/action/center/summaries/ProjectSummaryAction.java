@@ -639,12 +639,12 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
       String partnerName = projectPartner.getInstitution().getComposedName();
       Long institution_id = projectPartner.getInstitution().getId();
       String partnerType = null;
-      if (projectPartner.isInternal()) {
-        partnerType = "Internal";
-      }
-      if (!projectPartner.isInternal()) {
-        partnerType = "External";
-      }
+      // if (projectPartner.isInternal()) {
+      // partnerType = "Internal";
+      // }
+      // if (!projectPartner.isInternal()) {
+      // partnerType = "External";
+      // }
       model.addRow(new Object[] {partnerName, partnerType, institution_id, project.getId()});
     }
     return model;

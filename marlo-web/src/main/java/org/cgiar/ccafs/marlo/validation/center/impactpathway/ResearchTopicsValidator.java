@@ -63,7 +63,7 @@ public class ResearchTopicsValidator extends BaseValidator {
       Path path = this.getAutoSaveFilePath(selectedProgram, baseAction.getCenterID());
 
       if (path.toFile().exists()) {
-        this.addMissingField("researchTopic.action.draft");
+        this.addMissingField(baseAction.getText("researchTopic.action.draft"));
       }
     }
 

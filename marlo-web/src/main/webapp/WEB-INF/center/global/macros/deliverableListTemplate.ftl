@@ -10,7 +10,7 @@
         <th id="deliverablesStartDate">[@s.text name="deliverableList.deliverablesStartDate" /]</th>
         <th id="deliverablesEndDate">[@s.text name="deliverableList.deliverablesEndDate" /]</th>
         <th id="deliverablesRF">[@s.text name="deliverableList.missingFields" /]</th>
-        <!-- <th id="deliverableDelete">[@s.text name="deliverableList.deliverablesRemove" /]</th>  -->
+        <th id="deliverableDelete">[@s.text name="deliverableList.deliverablesRemove" /]</th> 
       </tr>
     </thead>
     <tbody>
@@ -61,15 +61,18 @@
             [/#if]
           </td>
           
-          [#-- Delete Deliverable
-          [#--
+          [#-- Delete Deliverable--]
           <td class="text-center">
-              <a id="removeDeliverable-${deliverable.id}" class="removeDeliverable" href="${baseUrlMedia}/projects/${centerSession}/deleteDeliverable.do?deliverableID=${deliverable.id}" title="">
-                <img src="${baseUrlMedia}/images/global/trash.png" title="[@s.text name="project.deliverable.removeDeliverable" /]" /> 
+            [#if canEdit && action.centerCanBeDeleted(deliverable.id, deliverable.class.name)!false]
+              <a id="removeDeliverable-${deliverable.id}" class="removeDeliverable" href="#" title="">
+                <img src="${baseUrlMedia}/images/global/trash.png" title="[@s.text name="projectsList.removeProject" /]" /> 
               </a>
+            [#else]
+              <img src="${baseUrlMedia}/images/global/trash_disable.png" title="[@s.text name="projectsList.cannotDelete" /]" />
+            [/#if]
           </td>
         </tr>  
-        --]
+        
       [/#list]
     [/#if]
     </tbody>

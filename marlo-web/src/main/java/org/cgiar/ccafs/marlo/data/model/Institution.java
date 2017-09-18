@@ -16,7 +16,6 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -44,7 +43,6 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
   @Expose
   private String acronym;
-  private LocElement locElement;
 
 
   @Expose
@@ -67,8 +65,6 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
   private Set<FundingSource> fundingSources = new HashSet<FundingSource>(0);
   private Set<FundingSource> fundingSourcesDirectDonor = new HashSet<FundingSource>(0);
-
-  private Set<Institution> branches = new HashSet<Institution>(0);
 
   private Set<ProjectPartnerPerson> projectPartnerPersons = new HashSet<>(0);
 
@@ -135,32 +131,6 @@ public class Institution implements java.io.Serializable, IAuditLog {
     return this.added;
   }
 
-
-  public Set<Institution> getBranches() {
-    return branches;
-  }
-  /*
-   * public String getBranchName() {
-   * try {
-   * String composedAcronym = this.acronym != null ? this.acronym : "";
-   * if (this.headquarter == null) {
-   * // Verify if there exist a city to show
-   * if (this.city != null && this.city != "") {
-   * return "HQ: " + composedAcronym + " - " + this.city + ", " + this.locElement.getName();
-   * }
-   * return "HQ: " + composedAcronym + " - " + this.locElement.getName();
-   * } else {
-   * // Verify if there exist a city to show
-   * if (this.city != null && this.city != "") {
-   * return composedAcronym + " - " + this.city + ", " + this.locElement.getName();
-   * }
-   * return composedAcronym + " - " + this.locElement.getName();
-   * }
-   * } catch (Exception e) {
-   * return this.name;
-   * }
-   * }
-   */
 
 
   public String getComposedName() {
@@ -243,13 +213,6 @@ public class Institution implements java.io.Serializable, IAuditLog {
     return institutionType;
   }
 
-  public List<Institution> getInstitutuionsBranches() {
-    List<Institution> list = new ArrayList<Institution>();
-    list.add(this);
-    list.addAll(this.getBranches());
-    return list;
-  }
-
   public Set<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
   }
@@ -258,10 +221,6 @@ public class Institution implements java.io.Serializable, IAuditLog {
     return locations;
   }
 
-
-  public LocElement getLocElement() {
-    return locElement;
-  }
 
   @Override
   public String getLogDeatil() {
@@ -344,9 +303,6 @@ public class Institution implements java.io.Serializable, IAuditLog {
     this.added = added;
   }
 
-  public void setBranches(Set<Institution> branches) {
-    this.branches = branches;
-  }
 
   public void setCrpPpaPartners(Set<CrpPpaPartner> crpPpaPartners) {
     this.crpPpaPartners = crpPpaPartners;
@@ -381,11 +337,6 @@ public class Institution implements java.io.Serializable, IAuditLog {
   public void setLocations(List<InstitutionLocation> locations) {
     this.locations = locations;
   }
-
-  public void setLocElement(LocElement locElement) {
-    this.locElement = locElement;
-  }
-
 
   public void setName(String name) {
     this.name = name;

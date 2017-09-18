@@ -94,15 +94,23 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
         if (!userProgramLeads.isEmpty()) {
           programID = userProgramLeads.get(0).getResearchProgram().getId();
         } else {
-          List<CenterArea> ras =
-            loggedCenter.getResearchAreas().stream().filter(ra -> ra.isActive()).collect(Collectors.toList());
-          Collections.sort(ras, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
-          List<CenterProgram> rps =
-            ras.get(0).getResearchPrograms().stream().filter(r -> r.isActive()).collect(Collectors.toList());
-          Collections.sort(rps, (rp1, rp2) -> rp1.getId().compareTo(rp2.getId()));
-          CenterProgram rp = rps.get(0);
-          programID = rp.getId();
-          areaID = rp.getResearchArea().getId();
+          List<CenterLeader> userScientistLeader = new ArrayList<>(user.getResearchLeaders().stream()
+            .filter(rl -> rl.isActive()
+              && rl.getType().getId() == CenterLeaderTypeEnum.PROGRAM_SCIENTIST_LEADER_TYPE.getValue())
+            .collect(Collectors.toList()));
+          if (!userScientistLeader.isEmpty()) {
+            programID = userScientistLeader.get(0).getResearchProgram().getId();
+          } else {
+            List<CenterArea> ras =
+              loggedCenter.getResearchAreas().stream().filter(ra -> ra.isActive()).collect(Collectors.toList());
+            Collections.sort(ras, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
+            List<CenterProgram> rps =
+              ras.get(0).getResearchPrograms().stream().filter(r -> r.isActive()).collect(Collectors.toList());
+            Collections.sort(rps, (rp1, rp2) -> rp1.getId().compareTo(rp2.getId()));
+            CenterProgram rp = rps.get(0);
+            programID = rp.getId();
+            areaID = rp.getResearchArea().getId();
+          }
         }
       }
     }

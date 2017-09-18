@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.dao.mysql.CenterMilestoneDAO;
 import org.cgiar.ccafs.marlo.data.model.CenterMilestone;
 
 import java.util.List;
+import java.util.Map;
 
 import com.google.inject.ImplementedBy;
 
@@ -58,7 +59,6 @@ public interface ICenterMilestoneDAO {
    */
   public List<CenterMilestone> findAll();
 
-
   /**
    * This method gets a list of centerMilestones belongs of the user
    * 
@@ -66,6 +66,21 @@ public interface ICenterMilestoneDAO {
    * @return List of Projects or null if the user is invalid or not have roles.
    */
   public List<CenterMilestone> getCenterMilestonesByUserId(long userId);
+
+
+  /**
+   * This method gets a report of Impact Pathway Outcomes Target Unit count by program
+   * 
+   * @return a list of report of Impact Pathway Outcomes
+   */
+  public List<Map<String, Object>> getCountTargetUnit(long programID);
+
+  /**
+   * This method gets a report of Monitoring Milestones by research program
+   * 
+   * @return a list of report of Monitoring Milestones
+   */
+  public List<Map<String, Object>> getMonitoringMilestones(long programID);
 
   /**
    * This method saves the information of the given centerMilestone

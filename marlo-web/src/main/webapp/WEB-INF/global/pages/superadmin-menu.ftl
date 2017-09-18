@@ -23,6 +23,11 @@
             <span class="glyphicon glyphicon-chevron-down"></span> CRP (${(currentCrp.acronym)!})
           </a>
           <ul class="subMenu">
+          [#attempt] 
+            [#assign crpList = action.getCrpCategoryList("1") /]
+          [#recover]
+            [#assign crpList = [] /]
+          [/#attempt]
           [#if crpList?has_content]
             [#list crpList as crp]
               [#if crp.login]
@@ -30,10 +35,23 @@
                 <a href="[@s.url namespace="/" action="${crp.acronym?lower_case}/crpDashboard" ][@s.param name="edit" value="true"/][/@s.url]" title="">${crp.acronym}</a>
               </li>
               [/#if]
-            [/#list]
+            [/#list]              
+           [/#if]
+            <li text-align:center> --Centers-- </li>
+            [#if centersList?has_content]
+            [#list centersList as center]
+              [#if center.login]
+              <li class="[#if centerSession?? && centerSession == center.acronym?lower_case ]currentSection[/#if]">
+                <a href="[@s.url namespace="/" action="${center.acronym?lower_case}/centerDashboard" ][@s.param name="edit" value="true"/][/@s.url]">${center.name}</a>
+              </li>
+              [/#if]
+            [/#list]              
            [/#if]
           </ul>
+          
          </li>
+         
+         
          [/#if]
          <li class="pull-left"><span class="glyphicon glyphicon-th-list"></span> MARLO Admin Menu</li>
         <div class="clearfix"></div>

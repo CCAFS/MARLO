@@ -61,6 +61,7 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectBudget" />
 		</set>
+
 		<set name="branches" table="institutions" inverse="true" lazy="true"
 			fetch="select">
 			<key>

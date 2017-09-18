@@ -25,8 +25,8 @@ function init() {
         var option = $(this).find("option:selected");
         if(option.val() != "-1") {
           var url =
-              baseURL + "/impactPathway/" + centerSession + "/outcomesList.do?programID=" + programID + "&edit="
-                  + editable + "&topicID=" + option.val();
+              baseURL + "/centerImpactPathway/" + centerSession + "/outcomesList.do?programID=" + programID
+                  + "&edit=" + editable + "&topicID=" + option.val();
           window.location = url;
         }
       });

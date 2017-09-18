@@ -128,9 +128,9 @@ function init() {
     var valueSelected = $(this).hasClass('yes-button-label');
     var isChecekd = $(this).hasClass('radio-checked');
     if(!valueSelected || !isChecekd) {
-      $(".countriesBox").show("slow");
+      // $(".countriesBox").show("slow");
     } else {
-      $(".countriesBox").hide("slow");
+      // $(".countriesBox").hide("slow");
     }
   });
 
@@ -451,15 +451,16 @@ function checkOutputsToRemove() {
  * Attach to the date fields the datepicker plugin
  */
 function datePickerConfig(element) {
-  date($(element.startDate), $(element.endDate), $(element.extensionDate));
+  settingDate($(element.startDate), $(element.endDate), $(element.extensionDate));
 }
 
-function date(start,end,extension) {
+
+function settingDate(start,end,extension) {
   var dateFormat = "yy-mm-dd";
   var from = $(start).datepicker({
       dateFormat: dateFormat,
-      minDate: '2008-01-01',
-      maxDate: '2019-12-31',
+      minDate: '2005-01-01',
+      maxDate: '2030-12-31',
       changeMonth: true,
       numberOfMonths: 1,
       changeYear: true,
@@ -470,12 +471,14 @@ function date(start,end,extension) {
           $(end).datepicker("option", "minDate", selectedDate);
         }
       }
+  }).on('keydown', function(e){
+    e.preventDefault();
   });
 
   var to = $(end).datepicker({
       dateFormat: dateFormat,
-      minDate: '2008-01-01',
-      maxDate: '2019-12-31',
+      minDate: '2005-01-01',
+      maxDate: '2030-12-31',
       changeMonth: true,
       numberOfMonths: 1,
       changeYear: true,
@@ -486,12 +489,14 @@ function date(start,end,extension) {
           $(start).datepicker("option", "maxDate", selectedDate);
         }
       }
+  }).on('keydown', function(e){
+    e.preventDefault();
   });
 
   var to = $(extension).datepicker({
       dateFormat: dateFormat,
-      minDate: '2008-01-01',
-      maxDate: '2019-12-31',
+      minDate: '2005-01-01',
+      maxDate: '2030-12-31',
       changeMonth: true,
       numberOfMonths: 1,
       changeYear: true,
@@ -502,6 +507,8 @@ function date(start,end,extension) {
           $(start).datepicker("option", "maxDate", selectedDate);
         }
       }
+  }).on('keydown', function(e){
+    e.preventDefault();
   });
 
   function getDate(element) {
