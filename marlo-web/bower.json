@@ -43,7 +43,8 @@
     "blueimp-file-upload": "^9.14.1",
     "qtip2": "^2.2.1",
     "jquery-pretty-text-diff": "^1.0.5",
-    "TimelineJS3": "^3.3.9"
+    "TimelineJS3": "^3.3.9",
+    "jquery-tag-editor": "^1.0.20"
   },
   "overrides": {
     "jquery": {
@@ -94,6 +95,12 @@
     "font-awesome": {
       "main": [
         "css/font-awesome.css"
+      ]
+    },
+    "jquery-tag-editor": {
+      "main": [
+        "jquery.tag-editor.min.js",
+        "jquery.tag-editor.css"
       ]
     }
   }

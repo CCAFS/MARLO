@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "Summaries Section" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
-[#assign pageLibs = ["select2","font-awesome","jsUri"] /]
+[#assign pageLibs = ["select2","font-awesome","jsUri", "caret", "jquery-tag-editor"] /]
 [#assign customJS = ["${baseUrlMedia}/js/global/utils.js", "${baseUrlMedia}/js/summaries/boardSummaries_v2.js"] /]
 [#assign customCSS = ["${baseUrlMedia}/css/summaries/summaries.css"] /]
 [#assign currentSection = "summaries" /]
@@ -122,7 +122,7 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-[#assign years = ["2014","2015", "2016","2017" ]/]
+[#assign years = ["2014","2015", "2016","2017", "2018" ]/]
 
 <span class="hidden planningYear">${(action.getPlanningYear())!}</span>
 <span class="hidden reportingYear">${(action.getReportingYear())!}</span>
@@ -164,7 +164,8 @@
 
 [#macro reportMacro report]
 
-<div class="summariesFiles simpleBox">
+<div class="summariesFiles simpleBox ${(report.allowProjectID??)?string('allowProjectID','')}">
+  <div class="loading" style="display:none"></div>
   <div class="form-group">
     [#-- Tags --]
     <div class="tags pull-right">
@@ -182,43 +183,47 @@
   [#-- Options --]
   <div class="extraOptions" style="display: none;">
     <hr />
-    [@s.form  target="_blank" action=report.action  method="GET" namespace=report.namespace enctype="multipart/form-data" cssClass=""]
+    [@s.form  target="_blank" action=report.action  method="GET" namespace=report.namespace cssClass=""]
       [#-- Parameters --]
       <div class="form-group row">
         [#-- Cycles (Planning/Reporting) --]
-        [#if report.cycles?size > 1]
-        <div class="col-md-4">
-          <label for="">Cycle:</label>
-          <select name="cycle" id="">
-            [#list report.cycles as cycle ]
-            <option value="${cycle}">${cycle}</option>
-            [/#list]  
-          </select>
-        </div>
-        [#else]
-          <input type="hidden" name="cycle" value="${report.cycles[0]}" />
+        [#if report.cycles??]
+          [#if report.cycles?size > 1]
+          <div class="col-md-4">
+            <label for="">Cycle:</label>
+            <select name="cycle" id="">
+              [#list report.cycles as cycle ]
+              <option value="${cycle}" [#if (actualPhase.description == cycle)]selected[/#if]>${cycle}</option>
+              [/#list]  
+            </select>
+          </div>
+          [#else]
+            <input type="hidden" name="cycle" value="${report.cycles[0]}" />
+          [/#if]
         [/#if]
         [#-- Years --]
         <div class="col-md-4">
           <label for="">Year:</label>
           <select name="year" id="">
             [#list years as year ]
-            <option value="${year}">${year}</option>
+            <option value="${year}" [#if (actualPhase.year == year?number)]selected[/#if]>${year}</option>
             [/#list]  
           </select>
         </div>
         [#-- Formats (PDF/Excel) --]
-        [#if report.formats?size > 1]
-        <div class="col-md-4">
-          <label for="">Format:</label>
-          <select name="format" id="">
-            [#list report.formats as format ]
-            <option value="${format}">${format}</option>
-            [/#list]
-          </select>
-        </div>
-        [#else]
-          <input type="hidden" name="format" value="${report.formats[0]}" />
+        [#if report.formats??]
+          [#if report.formats?size > 1]
+          <div class="col-md-4">
+            <label for="">Format:</label>
+            <select name="format" id="">
+              [#list report.formats as format ]
+              <option value="${format}">${format}</option>
+              [/#list]
+            </select>
+          </div>
+          [#else]
+            <input type="hidden" name="format" value="${report.formats[0]}" />
+          [/#if]
         [/#if]
       </div>
       
@@ -226,7 +231,7 @@
       [#if report.allowProjectID??]
       <div class="form-group row">
         <div class="col-md-8">
-          [@customForm.select name=""   label=""  i18nkey="Select a project"  listName=""  keyFieldName="id"  displayFieldName="composedName" className="allProjects" /]
+          [@customForm.select name="projectID"   label=""  i18nkey="Select a project"  listName=""  keyFieldName="id"  displayFieldName="composedName" className="allProjectsSelect" /]
         </div>
       </div>
       [/#if]
@@ -234,11 +239,16 @@
       [#-- KeyWords--]
       [#if report.allowKeyWords??]
       <div class="form-group">
-        <label for="">Keywords:</label>
+        <div class="form-group">
+          <label for="">Keywords: </label> <i>(Separated by commas)</i>
+          <textarea name="keys" class="keywords" cols="30" rows="40"></textarea>
+        </div>
+        <div class="btn btn-default btn-xs addGenderKeys" role="button">Add predefined <strong>gender</strong> keywords</div>
+        <div class="btn btn-danger btn-xs removeAllTags" role="button">Remove all keywords</div>
       </div>
       [/#if]
       
-      [#-- Generate --]
+      [#-- Generate Button--]
       <button type="submit" class="btn btn-info pull-right"><span class="glyphicon glyphicon-download-alt"></span> Generate</button> <div class="clearfix"></div>
     [/@s.form]
   </div>
