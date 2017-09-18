@@ -89,14 +89,7 @@ public class EditCapacityDevInterceptor extends AbstractInterceptor implements S
         hasPermissionToEdit = true;
       }
 
-      System.out.println("antes de equal user");
-      System.out.println("capdev.getUsersByCreatedBy()" + capdev.getUsersByCreatedBy().getId() + " class "
-        + capdev.getUsersByCreatedBy().getId().getClass());
       final User currentUser = (User) session.get(APConstants.SESSION_USER);
-      System.out
-        .println(" baseAction.getCurrentUser()" + currentUser.getId() + " class " + currentUser.getId().getClass());
-      System.out.println(capdev.getUsersByCreatedBy().getId().equals(currentUser.getId()));
-
 
       if (capdev.getUsersByCreatedBy().getId().equals(currentUser.getId())) {
         System.out.println("equal user");
