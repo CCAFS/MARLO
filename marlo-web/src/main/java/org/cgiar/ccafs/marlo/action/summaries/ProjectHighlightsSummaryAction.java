@@ -54,6 +54,7 @@ import org.pentaho.reporting.engine.classic.core.ReportFooter;
 import org.pentaho.reporting.engine.classic.core.SubReport;
 import org.pentaho.reporting.engine.classic.core.TableDataFactory;
 import org.pentaho.reporting.engine.classic.core.modules.output.pageable.pdf.PdfReportUtil;
+import org.pentaho.reporting.engine.classic.core.modules.output.table.xls.ExcelReportUtil;
 import org.pentaho.reporting.engine.classic.core.util.TypedTableModel;
 import org.pentaho.reporting.libraries.resourceloader.Resource;
 import org.pentaho.reporting.libraries.resourceloader.ResourceManager;
@@ -131,8 +132,15 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
     ResourceManager manager = new ResourceManager();
     manager.registerDefaults();
     try {
-      Resource reportResource =
-        manager.createDirectly(this.getClass().getResource("/pentaho/projectHighlightsPDF.prpt"), MasterReport.class);
+      Resource reportResource;
+      if (this.getSelectedFormat().equals(APConstants.SUMMARY_FORMAT_EXCEL)) {
+        reportResource = manager.createDirectly(this.getClass().getResource("/pentaho/projectHighlightsExcel.prpt"),
+          MasterReport.class);
+      } else {
+        reportResource =
+          manager.createDirectly(this.getClass().getResource("/pentaho/projectHighlightsPDF.prpt"), MasterReport.class);
+      }
+
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       String center = this.getLoggedCrp().getAcronym();
       // Get datetime
@@ -161,11 +169,16 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
       // Uncomment to see which Subreports are detecting the method getAllSubreports
       // System.out.println("Pentaho SubReports: " + hm);
       this.fillSubreport((SubReport) hm.get("project_highlight"), "project_highlight");
-      PdfReportUtil.createPDF(masterReport, os);
-      bytesPDF = os.toByteArray();
+      if (this.getSelectedFormat().equals(APConstants.SUMMARY_FORMAT_EXCEL)) {
+        ExcelReportUtil.createXLSX(masterReport, os);
+        bytesXLSX = os.toByteArray();
+      } else {
+        PdfReportUtil.createPDF(masterReport, os);
+        bytesPDF = os.toByteArray();
+      }
       os.close();
     } catch (Exception e) {
-      LOG.error("Error generating ProjectHighlightsPDF " + e.getMessage());
+      LOG.error("Error generating ProjectHighlights" + this.getSelectedFormat() + ": " + e.getMessage());
       throw e;
     }
     // Calculate time of generation
@@ -253,12 +266,20 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
 
   @Override
   public int getContentLength() {
-    return bytesPDF.length;
+    if (this.getSelectedFormat().equals(APConstants.SUMMARY_FORMAT_EXCEL)) {
+      return bytesXLSX.length;
+    } else {
+      return bytesPDF.length;
+    }
   }
 
   @Override
   public String getContentType() {
-    return "application/pdf";
+    if (this.getSelectedFormat().equals(APConstants.SUMMARY_FORMAT_EXCEL)) {
+      return "application/xlsx";
+    } else {
+      return "application/pdf";
+    }
   }
 
   @SuppressWarnings("unused")
@@ -275,7 +296,11 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
     fileName.append("ProjectHighlightsSummary-");
     fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
-    fileName.append(".pdf");
+    if (this.getSelectedFormat().equals(APConstants.SUMMARY_FORMAT_EXCEL)) {
+      fileName.append(".xlsx");
+    } else {
+      fileName.append(".pdf");
+    }
     return fileName.toString();
   }
 
@@ -317,7 +342,11 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
   @Override
   public InputStream getInputStream() {
     if (inputStream == null) {
-      inputStream = new ByteArrayInputStream(bytesPDF);
+      if (this.getSelectedFormat().equals(APConstants.SUMMARY_FORMAT_EXCEL)) {
+        inputStream = new ByteArrayInputStream(bytesXLSX);
+      } else {
+        inputStream = new ByteArrayInputStream(bytesPDF);
+      }
     }
     return inputStream;
   }
@@ -334,10 +363,11 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
     TypedTableModel model = new TypedTableModel(
       new String[] {"id", "title", "author", "subject", "publisher", "year_reported", "highlights_types",
         "highlights_is_global", "start_date", "end_date", "keywords", "countries", "image", "highlight_desc",
-        "introduction", "results", "partners", "links", "width", "heigth", "project_id", "imageurl"},
+        "introduction", "results", "partners", "links", "width", "heigth", "project_id", "imageurl", "imageName"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, Long.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, Integer.class, Integer.class, String.class, String.class},
+        String.class, String.class, String.class, Integer.class, Integer.class, String.class, String.class,
+        String.class},
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
     for (ProjectHighlight projectHighlight : projectHighLightManager.findAll().stream()
@@ -350,7 +380,7 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
       String title = null, author = null, subject = null, publisher = null, highlightsTypes = "",
         highlightsIsGlobal = null, startDate = null, endDate = null, keywords = null, countries = "",
         highlightDesc = null, introduction = null, results = null, partners = null, links = null, projectId = null,
-        image = null, imageurl = null;;
+        image = null, imageurl = null, imageName = null;
       Long yearReported = null;
       int width = 244;
       int heigth = 163;
@@ -372,8 +402,14 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
       for (ProjectHighlightType projectHighlightType : projectHighlight.getProjectHighligthsTypes().stream()
         .filter(pht -> pht.isActive()).collect(Collectors.toList())) {
         if (ProjectHighligthsTypeEnum.getEnum(projectHighlightType.getIdType() + "") != null) {
-          highlightsTypes +=
-            "<br>● " + ProjectHighligthsTypeEnum.getEnum(projectHighlightType.getIdType() + "").getDescription();
+          if (this.getSelectedFormat().equals(APConstants.SUMMARY_FORMAT_EXCEL)) {
+            highlightsTypes +=
+              "\n● " + ProjectHighligthsTypeEnum.getEnum(projectHighlightType.getIdType() + "").getDescription();
+          } else {
+            highlightsTypes +=
+              "<br>● " + ProjectHighligthsTypeEnum.getEnum(projectHighlightType.getIdType() + "").getDescription();
+          }
+
         }
       }
       if (highlightsTypes.isEmpty()) {
@@ -435,6 +471,9 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
         double imageHeigth = 163;
         image =
           this.getHightlightImagePath(projectHighlight.getProject().getId()) + projectHighlight.getFile().getFileName();
+        imageurl = this.getHighlightsImagesUrl(projectHighlight.getProject().getId().toString())
+          + projectHighlight.getFile().getFileName();
+        imageName = projectHighlight.getFile().getFileName();
         Image imageFile = null;
         LOG.info("image.getURL.replace " + image);
         File url;
@@ -444,6 +483,8 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
           LOG.warn("Failed to get image File. Url was set to null. Exception: " + e.getMessage());
           url = null;
           image = "";
+          imageurl = "";
+          imageName = "";
         }
         if (url != null && url.exists()) {
           try {
@@ -463,44 +504,28 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
           } catch (BadElementException e) {
             LOG.warn("BadElementException getting image: " + e.getMessage());
             image = "";
+            imageurl = "";
+            imageName = "";
           } catch (MalformedURLException e) {
             LOG.warn("MalformedURLException getting image: " + e.getMessage());
             image = "";
+            imageurl = "";
+            imageName = "";
           } catch (IOException e) {
             LOG.warn("IOException getting image: " + e.getMessage());
             image = "";
+            imageurl = "";
+            imageName = "";
           }
         } else {
           image = "";
+          imageurl = "";
+          imageName = "";
         }
       }
-      /*
-       * System.out.println("Method1 " + image);
-       * if (projectHighlight.getFile() != null) {
-       * image = projectHighlight.getFile().getFileName();
-       * imageurl = this.getHighlightsImagesUrl(projectHighlight.getProject().getId().toString())
-       * + projectHighlight.getFile().getFileName();
-       * File url;
-       * try {
-       * url = new File(imageurl);
-       * } catch (Exception e) {
-       * LOG.warn("Failed to get image File. Url was set to null. Exception: " + e.getMessage());
-       * url = null;
-       * imageurl = null;
-       * image = null;
-       * }
-       * if (url != null && url.exists()) {
-       * } else {
-       * imageurl = null;
-       * image = null;
-       * }
-       * }
-       * System.out.println("Method2 " + imageurl);
-       */
-
       model.addRow(new Object[] {projectHighlight.getId(), title, author, subject, publisher, yearReported,
         highlightsTypes, highlightsIsGlobal, startDate, endDate, keywords, countries, image, highlightDesc,
-        introduction, results, partners, links, width, heigth, projectId, imageurl});
+        introduction, results, partners, links, width, heigth, projectId, imageurl, imageName});
     }
     return model;
   }
