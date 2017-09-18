@@ -305,12 +305,13 @@ ul.tag-editor {
   min-height: 60px;
 }
 
-.tag-editor li  {}
+.tag-editor li  {
+}
 
 .tag-editor .tag-editor-tag {
   background: #f1f1f1;
   color: #636363;
-  padding: 0 12px;
+  padding: 0 18px;
   /* border: 1px dashed #636363; */
   /* border-right-width: 0; */
 }

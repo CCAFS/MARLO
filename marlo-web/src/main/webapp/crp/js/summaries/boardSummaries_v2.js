@@ -1,7 +1,3 @@
-
-var termsArray = [];
-var reportYear = "2017";
-
 $(document).ready(init);
 function init() {
   // Add Select2 Plugin
@@ -10,6 +6,7 @@ function init() {
   // Add Tag Editor Plugin
   $('.keywords').tagEditor({ 
     delimiter: ",",
+    forceLowercase: false,
     placeholder: "Enter keywords here ..."
   });
   
@@ -21,16 +18,24 @@ function attachEvents() {
 
   // Select reports type
   $('.summariesSection a, .summariesSection span').on('click', selectSummariesSection);
+  
   // Select a report
   $(".summariesFiles").on("click", selectReport);
+  
   // Download
   $('.generateReport').on('click', generateReport);
   
   // Add predefined gender keywords
-  $('.addGenderKeys').on('click', addGenderKeys)
+  $('.addGenderKeys').on('click', addGenderKeys);
   
   // Remove all keywords
-  $('.removeAllTags').on('click', removeAllTags)
+  $('.removeAllTags').on('click', removeAllTags);
+  
+  // Update project List
+  $('[name="cycle"], [name="year"]').on('change', function(){
+    var $parent = $(this).parents('.summariesFiles');
+    getProjectsByCycleYear($parent, $parent.find('[name="cycle"]').val(), $parent.find('[name="year"]').val());
+  })
 }
 
 function addGenderKeys(){
@@ -56,7 +61,13 @@ function selectReport() {
   if($(this).hasClass('selected')){
     return
   }
-  console.log(this);
+  
+  // Update the project list if necessary
+  if($(this).hasClass('allowProjectID')){
+    var $parent = $(this);
+    getProjectsByCycleYear($parent, $parent.find('[name="cycle"]').val(), $parent.find('[name="year"]').val());
+  }
+    
   // Hide all reports
   $('.summariesFiles').removeClass("selected");
   $('.extraOptions').slideUp();
@@ -77,16 +88,8 @@ function selectSummariesSection(e) {
   $content.siblings().hide();
   $content.fadeIn();
 
-  // Uncheck from formOptions the option selected
-  $("input[name='projectID']").val("-1");
-  $("#selectProject").html("Click over me");
-  $('input[name=formOptions]').attr('checked', false);
   $(".summariesFiles").removeClass("selected");
   $(".extraOptions").slideUp();
-  $('.extraOptions').find('select, input').attr('disabled', true);
-  // Clean URL
-  $("#optionsPopUp").find(".projectSelectWrapper").hide("slow");
-  $("#projectID").val("-1");
 }
 
 function generateReport(e) {
@@ -99,24 +102,27 @@ function addSelect2() {
   });
 }
 
-function getProjectsByCycleYear() {
-  $(".allProjects").empty();
-  $(".allProjects").addOption("-1", "Select an option...");
+function getProjectsByCycleYear(parent, cycle, year) {
+
+  var $parent = $(parent);
+  
+  $parent.find(".allProjectsSelect").empty();
+  $parent.find('.loading').fadeIn();
   $.ajax({
       url: baseURL + "/projectList.do?",
       type: 'GET',
       data: {
-          cycle: $("input[name='cycle']:checked").val(),
-          year: $("select#reportYears").find("option:selected").val()
+        cycle: cycle,
+        year: year
       },
       success: function(m) {
         console.log(m);
         $.each(m.projects, function(i,e) {
-          $(".allProjects").addOption(e.id, "P" + e.id + "-" + e.description);
+          $parent.find(".allProjectsSelect").addOption(e.id, "P" + e.id + " - " + e.description);
         })
       },
-      error: function(e) {
-        console.log(e);
+      complete: function(e) {
+        $parent.find('.loading').fadeOut();
       }
   });
 }

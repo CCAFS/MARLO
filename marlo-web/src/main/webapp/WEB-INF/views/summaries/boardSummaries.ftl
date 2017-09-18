@@ -164,7 +164,8 @@
 
 [#macro reportMacro report]
 
-<div class="summariesFiles simpleBox">
+<div class="summariesFiles simpleBox ${(report.allowProjectID??)?string('allowProjectID','')}">
+  <div class="loading" style="display:none"></div>
   <div class="form-group">
     [#-- Tags --]
     <div class="tags pull-right">
@@ -230,7 +231,7 @@
       [#if report.allowProjectID??]
       <div class="form-group row">
         <div class="col-md-8">
-          [@customForm.select name=""   label=""  i18nkey="Select a project"  listName=""  keyFieldName="id"  displayFieldName="composedName" className="allProjectsSelect" /]
+          [@customForm.select name="projectID"   label=""  i18nkey="Select a project"  listName=""  keyFieldName="id"  displayFieldName="composedName" className="allProjectsSelect" /]
         </div>
       </div>
       [/#if]
