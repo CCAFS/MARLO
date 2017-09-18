@@ -603,7 +603,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   public Boolean canEditBudgetByCoAs(long projectID) {
     Project project = projectManager.getProjectById(projectID);
-    if (project.getProjectClusterActivities().stream().filter(pc -> pc.isActive())
+    if (project.getProjectClusterActivities().stream()
+      .filter(pc -> pc.isActive() && pc.getPhase().equals(this.getActualPhase()))
       .collect(Collectors.toList()) == null) {
       return false;
     }

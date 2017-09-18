@@ -145,8 +145,11 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
 
   private Path getAutoSaveFilePath() {
     String composedClassName = project.getClass().getSimpleName();
+    // get the action name and replace / for _
     String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+    // concatane name and add the .json extension
+    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + this.getActualPhase().getDescription() + "_"
+      + this.getActualPhase().getYear() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
@@ -369,6 +372,10 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
         project = (Project) autoSaveReader.readFromJson(jReader);
         Project projectDb = projectManager.getProjectById(project.getId());
         project.setProjectInfo(projectDb.getProjecInfoPhase(this.getActualPhase()));
+        project.getProjectInfo()
+          .setProjectEditLeader(projectDb.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader());
+        reader.close();
+
 
         reader.close();
 
@@ -377,8 +384,8 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
         this.setDraft(false);
 
 
-        project.setBudgetsCluserActvities(
-          project.getProjectBudgetsCluserActvities().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        project.setBudgetsCluserActvities(project.getProjectBudgetsCluserActvities().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
 
 
       }
@@ -390,7 +397,7 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
 
       List<CrpClusterOfActivity> activities = new ArrayList<CrpClusterOfActivity>();
       for (ProjectClusterActivity crpClusterOfActivity : projectBD.getProjectClusterActivities().stream()
-        .filter(c -> c.isActive()).collect(Collectors.toList())) {
+        .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
         activities.add(crpClusterOfActivity.getCrpClusterOfActivity());
       }
       project.setCrpActivities(activities);
@@ -439,10 +446,12 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_BUDGETS_ACTVITIES_RELATION);
+      relationsName.add(APConstants.PROJECT_INFO_RELATION);
 
       project = projectManager.getProjectById(projectID);
       project.setActiveSince(new Date());
-      projectManager.saveProject(project, this.getActionName(), relationsName);
+      project.setModifiedBy(this.getCurrentUser());
+      projectManager.saveProject(project, this.getActionName(), relationsName, this.getActualPhase());
       Path path = this.getAutoSaveFilePath();
 
       if (path.toFile().exists()) {
@@ -472,8 +481,8 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
     Project projectDB = projectManager.getProjectById(projectID);
 
 
-    projectDB.setBudgetsCluserActvities(
-      projectDB.getProjectBudgetsCluserActvities().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+    projectDB.setBudgetsCluserActvities(projectDB.getProjectBudgetsCluserActvities().stream()
+      .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
 
 
     for (ProjectBudgetsCluserActvity projectBudget : projectDB.getBudgetsCluserActvities().stream()
@@ -496,7 +505,7 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
         if (projectBudget != null) {
           if (projectBudget.getId() == null) {
             projectBudget.setCreatedBy(this.getCurrentUser());
-
+            projectBudget.setPhase(this.getActualPhase());
             projectBudget.setActiveSince(new Date());
             projectBudget.setActive(true);
             projectBudget.setProject(project);
@@ -507,7 +516,7 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
             ProjectBudgetsCluserActvity ProjectBudgetDB =
               projectBudgetsCluserActvityManager.getProjectBudgetsCluserActvityById(projectBudget.getId());
             projectBudget.setCreatedBy(ProjectBudgetDB.getCreatedBy());
-
+            projectBudget.setPhase(this.getActualPhase());
             projectBudget.setActiveSince(ProjectBudgetDB.getActiveSince());
             projectBudget.setActive(true);
             projectBudget.setProject(project);

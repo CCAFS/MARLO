@@ -15,8 +15,8 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-[#assign startYear = (project.startDate?string.yyyy)?number /]
-[#assign endYear = (project.endDate?string.yyyy)?number /]
+[#assign startYear = (project.projectInfo.startDate?string.yyyy)?number /]
+[#assign endYear = (project.projectInfo.endDate?string.yyyy)?number /]
 [#if currentCycleYear gt endYear][#assign selectedYear = endYear /][#else][#assign selectedYear = currentCycleYear /][/#if]
 [#assign budgetCounter = 0 /]
 [#assign type = { 
@@ -207,8 +207,8 @@
 
 [#-- Get if the year is required--]
 [#function isYearRequired year]
-  [#if project.endDate??]
-    [#assign endDate = (project.endDate?string.yyyy)?number]
+  [#if project.projectInfo.endDate??]
+    [#assign endDate = (project.projectInfo.endDate?string.yyyy)?number]
     [#if reportingActive]
       [#return  (year == currentCycleYear)  && (endDate gte year) ]
     [#else]

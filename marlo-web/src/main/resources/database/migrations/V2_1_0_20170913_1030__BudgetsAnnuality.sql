@@ -1,3 +1,4 @@
+SET FOREIGN_KEY_CHECKS = 0;
 
 CREATE TEMPORARY TABLE
 IF NOT EXISTS table_project_budgets AS (SELECT * FROM project_budgets);
