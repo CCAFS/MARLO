@@ -111,5 +111,12 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectLocation" />
         </set>
+           <set name="projectBudgets" table="project_budgets" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="id_phase" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectBudget" />
+        </set>
+        
     </class>
 </hibernate-mapping>

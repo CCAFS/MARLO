@@ -323,7 +323,8 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
     }
     for (ProjectBudget projectBudget : this.getProjectBudgets().stream()
-      .filter(c -> c.isActive() && c.getYear() == year && c.getPhase().equals(phase)).collect(Collectors.toList())) {
+      .filter(c -> c.isActive() && c.getPhase() != null && c.getYear() == year && c.getPhase().equals(phase))
+      .collect(Collectors.toList())) {
       used = used + projectBudget.getAmount().doubleValue();
     }
     return total - used;
@@ -348,9 +349,8 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
       }
 
     }
-    for (ProjectBudget projectBudget : this.getProjectBudgets().stream()
-      .filter(
-        c -> c.isActive() && c.getYear() == year && c.getId().longValue() != budgetID && c.getPhase().equals(phase))
+    for (ProjectBudget projectBudget : this.getProjectBudgets().stream().filter(c -> c.isActive() && c.getYear() == year
+      && c.getPhase() != null && c.getId().longValue() != budgetID && c.getPhase().equals(phase))
       .collect(Collectors.toList())) {
       used = used + projectBudget.getAmount().doubleValue();
     }

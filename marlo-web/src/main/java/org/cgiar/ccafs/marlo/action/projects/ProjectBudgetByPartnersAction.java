@@ -582,7 +582,8 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
         project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
         project.setBudgets(project.getProjectBudgets().stream()
-          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList()));
 
 
         System.out.println("Size budgets" + project.getBudgets().size());
@@ -728,7 +729,10 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     if (project.getBudgets() != null) {
       for (ProjectBudget projectBudget : project.getBudgets()) {
         if (projectBudget != null) {
-          this.saveBudget(projectBudget);
+          if (projectBudget.getYear() >= this.getActualPhase().getYear()) {
+            this.saveBudget(projectBudget);
+          }
+
         }
       }
     }

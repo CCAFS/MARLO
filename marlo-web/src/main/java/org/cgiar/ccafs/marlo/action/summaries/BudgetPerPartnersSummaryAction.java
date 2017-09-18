@@ -924,7 +924,8 @@ public class BudgetPerPartnersSummaryAction extends BaseSummariesAction implemen
    * @return String with the total amount.
    */
   public String getTotalAmount(long institutionId, int year, long budgetType, Long projectId, Integer coFinancing) {
-    return projectBudgetManager.amountByBudgetType(institutionId, year, budgetType, projectId, coFinancing);
+    return projectBudgetManager.amountByBudgetType(institutionId, year, budgetType, projectId, coFinancing,
+      this.getActualPhase().getId());
   }
 
 
