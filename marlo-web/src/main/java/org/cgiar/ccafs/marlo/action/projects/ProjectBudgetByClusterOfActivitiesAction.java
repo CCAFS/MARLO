@@ -154,7 +154,7 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-  public ProjectBudgetsCluserActvity getBudget(Long activitiyId, int year, long type) {
+  public ProjectBudgetsCluserActvity getBudget(String activitiyId, int year, long type) {
     if (project.getBudgetsCluserActvities() == null) {
       project.setBudgetsCluserActvities(new ArrayList<>());
     }
@@ -166,12 +166,13 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
   }
 
 
-  public int getIndexBudget(Long activitiyId, int year, long type) {
+  public int getIndexBudget(String activitiyId, int year, long type) {
+
     if (project.getBudgetsCluserActvities() != null) {
       int i = 0;
       for (ProjectBudgetsCluserActvity projectBudget : project.getBudgetsCluserActvities()) {
         if (projectBudget.getCrpClusterOfActivity() != null) {
-          if (projectBudget.getCrpClusterOfActivity().getId().longValue() == activitiyId.longValue()
+          if (projectBudget.getCrpClusterOfActivity().getIdentifier().equals(activitiyId)
             && year == projectBudget.getYear() && type == projectBudget.getBudgetType().getId().longValue()) {
             return i;
           }
@@ -185,7 +186,8 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
     }
 
     ProjectBudgetsCluserActvity projectBudget = new ProjectBudgetsCluserActvity();
-    projectBudget.setCrpClusterOfActivity(crpClusterOfActivityManager.getCrpClusterOfActivityById(activitiyId));
+    projectBudget.setCrpClusterOfActivity(
+      crpClusterOfActivityManager.getCrpClusterOfActivityByIdentifierPhase(activitiyId, this.getActualPhase()));
     projectBudget.setYear(year);
     projectBudget.setBudgetType(budgetTypeManager.getBudgetTypeById(type));
     project.getBudgetsCluserActvities().add(projectBudget);
@@ -526,8 +528,10 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
             projectBudget.setModificationJustification("");
           }
 
+          if (projectBudget.getYear() >= this.getActualPhase().getYear()) {
+            projectBudgetsCluserActvityManager.saveProjectBudgetsCluserActvity(projectBudget);
+          }
 
-          projectBudgetsCluserActvityManager.saveProjectBudgetsCluserActvity(projectBudget);
         }
 
       }

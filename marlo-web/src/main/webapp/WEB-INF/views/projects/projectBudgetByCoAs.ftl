@@ -157,8 +157,8 @@
               [#-- Budget Type--]
               [#if action.hasBudgets(budgetType.id, selectedYear)]
                 <td class="budgetColumn">
-                  [#assign budgetIndex= action.getIndexBudget(element.id,selectedYear, budgetType.id) /]
-                  [#assign budgetObject= action.getBudget(element.id,selectedYear, budgetType.id) /]
+                  [#assign budgetIndex= action.getIndexBudget(element.identifier,selectedYear, budgetType.id) /]
+                  [#assign budgetObject= action.getBudget(element.identifier,selectedYear, budgetType.id) /]
                   [#assign customName = "project.budgetsCluserActvities[${budgetIndex}]" /]
                   <input type="hidden" name="${customName}.id" value="${(budgetObject.id)!}"/>
                   <input type="hidden" name="${customName}.crpClusterOfActivity.id" value="${(element.id)!}"/>
@@ -183,8 +183,8 @@
               [#-- Budget Type--]
               [#if action.hasBudgets(budgetType.id, selectedYear)]
               <td class="budgetColumn">
-                [#assign budgetIndex= action.getIndexBudget(element.id,selectedYear, budgetType.id) /]
-                [#assign budgetObject= action.getBudget(element.id,selectedYear, budgetType.id) /]
+                [#assign budgetIndex= action.getIndexBudget(element.identifier,selectedYear, budgetType.id) /]
+                [#assign budgetObject= action.getBudget(element.identifier,selectedYear, budgetType.id) /]
                 [#assign customName = "project.budgetsCluserActvities[${budgetIndex}]" /]
                 [#if editable && isYearEditable(selectedYear)]
                   [@customForm.input name="${customName}.genderPercentage" i18nkey="budget.amount" showTitle=false className="percentageInput context-gender type-${budgetType.id}" required=true  /]
