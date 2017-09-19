@@ -39,7 +39,9 @@ function attachEvents() {
 
 function changePhaseParameters(){
   var $parent = $(this).parents('.summariesFiles');
-  getProjectsByCycleYear($parent, $parent.find('[name="cycle"]').val(), $parent.find('[name="year"]').val());
+  if($parent.hasClass('allowProjectID')){
+    getProjectsByCycleYear($parent, $parent.find('[name="cycle"]').val(), $parent.find('[name="year"]').val());
+  }
 }
 
 function addGenderKeys(){
@@ -66,8 +68,8 @@ function selectReport() {
     return
   }
   // Update the project list if necessary
-  if($(this).hasClass('allowProjectID')){
-    var $parent = $(this);
+  var $parent = $(this);
+  if($parent.hasClass('allowProjectID')){
     getProjectsByCycleYear($parent, $parent.find('[name="cycle"]').val(), $parent.find('[name="year"]').val());
   }
   // Hide all reports
@@ -77,7 +79,6 @@ function selectReport() {
   $(this).find('.extraOptions').slideDown();
   $(this).find('.extraOptions').find('select, input').attr('disabled', false).trigger("liszt:updated");
   $(this).addClass("selected");
-
 }
 
 function selectSummariesSection(e) {
