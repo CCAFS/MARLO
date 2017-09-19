@@ -1,7 +1,9 @@
 $(document).ready(init);
 function init() {
   // Add Select2 Plugin
-  addSelect2();
+  $('select').select2({
+    width: '100%'
+  });
   
   // Add Tag Editor Plugin
   $('.keywords').tagEditor({ 
@@ -14,16 +16,14 @@ function init() {
   attachEvents();
 }
 
-function attachEvents() {
+// *************************************************** Events ********************************************************//
 
+function attachEvents() {
   // Select reports type
   $('.summariesSection a, .summariesSection span').on('click', selectSummariesSection);
   
   // Select a report
   $(".summariesFiles").on("click", selectReport);
-  
-  // Download
-  $('.generateReport').on('click', generateReport);
   
   // Add predefined gender keywords
   $('.addGenderKeys').on('click', addGenderKeys);
@@ -32,10 +32,14 @@ function attachEvents() {
   $('.removeAllTags').on('click', removeAllTags);
   
   // Update project List
-  $('[name="cycle"], [name="year"]').on('change', function(){
-    var $parent = $(this).parents('.summariesFiles');
-    getProjectsByCycleYear($parent, $parent.find('[name="cycle"]').val(), $parent.find('[name="year"]').val());
-  })
+  $('[name="cycle"], [name="year"]').on('change', changePhaseParameters);
+}
+
+// ************************************************ Functions *******************************************************//
+
+function changePhaseParameters(){
+  var $parent = $(this).parents('.summariesFiles');
+  getProjectsByCycleYear($parent, $parent.find('[name="cycle"]').val(), $parent.find('[name="year"]').val());
 }
 
 function addGenderKeys(){
@@ -52,22 +56,20 @@ function addGenderKeys(){
 
 function removeAllTags(){
   var tags = $('.keywords').tagEditor('getTags')[0].tags;
-  for (i = 0; i < tags.length; i++) { 
-    $('.keywords').tagEditor('removeTag', tags[i]); 
-  }
+  $.each(tags, function(i,tag){
+    $('.keywords').tagEditor('removeTag', tag); 
+  });
 }
 
 function selectReport() {
   if($(this).hasClass('selected')){
     return
   }
-  
   // Update the project list if necessary
   if($(this).hasClass('allowProjectID')){
     var $parent = $(this);
     getProjectsByCycleYear($parent, $parent.find('[name="cycle"]').val(), $parent.find('[name="year"]').val());
   }
-    
   // Hide all reports
   $('.summariesFiles').removeClass("selected");
   $('.extraOptions').slideUp();
@@ -81,31 +83,25 @@ function selectReport() {
 function selectSummariesSection(e) {
   e.preventDefault();
   var $section = $(e.target).parents('.summariesSection');
-
   var $content = $('#' + $section.attr('id') + '-contentOptions');
   $section.siblings().removeClass('current');
   $section.addClass('current');
   $content.siblings().hide();
   $content.fadeIn();
-
   $(".summariesFiles").removeClass("selected");
   $(".extraOptions").slideUp();
 }
 
-function generateReport(e) {
-}
-
-// Activate the select plugin.
-function addSelect2() {
-  $('select').select2({
-    width: '100%'
-  });
-}
-
+/**
+ * Update Projects List
+ * 
+ * @param {DOM} parent - summariesFiles div
+ * @param {String} cycle - Planning/Reporting
+ * @param {Number} year
+ * @returns
+ */
 function getProjectsByCycleYear(parent, cycle, year) {
-
   var $parent = $(parent);
-  
   $parent.find(".allProjectsSelect").empty();
   $parent.find('.loading').fadeIn();
   $.ajax({
@@ -116,12 +112,11 @@ function getProjectsByCycleYear(parent, cycle, year) {
         year: year
       },
       success: function(m) {
-        console.log(m);
         $.each(m.projects, function(i,e) {
           $parent.find(".allProjectsSelect").addOption(e.id, "P" + e.id + " - " + e.description);
         })
       },
-      complete: function(e) {
+      complete: function() {
         $parent.find('.loading').fadeOut();
       }
   });
