@@ -138,7 +138,7 @@
       [/#list]
     </div>
     [#--  Reports Content --]
-    <div class="summariesContent col-md-9">
+    <div class="summariesContent col-md-9" style="min-height:550px;">
       <h3 class="headTitle text-center">Summaries</h3>
       <div class="loading" style="display:none"></div>
       <div class="summariesOptions">
