@@ -217,6 +217,7 @@ public class FundingSourceListAction extends BaseAction {
             && fs.getFundingSourceInfo(this.getActualPhase()).getPhase().equals(this.getActualPhase()))
           .collect(Collectors.toList());
 
+
         myProjects.addAll(fundingSourceManager.findAll().stream()
           .filter(fs -> fs.getCrp() == null && fs.getFundingSourceInfo(this.getActualPhase()).getPhase() != null
             && fs.getFundingSourceInfo(this.getActualPhase()).getPhase().equals(this.getActualPhase()))

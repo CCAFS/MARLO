@@ -13,8 +13,8 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-[#assign startYear = ((fundingSource.startDate?string.yyyy)?number)!currentCycleYear /]
-[#assign endYear = ((fundingSource.endDate?string.yyyy)?number)!startYear /]
+[#assign startYear = ((fundingSource.fundingSourceInfo.startDate?string.yyyy)?number)!currentCycleYear /]
+[#assign endYear = ((fundingSource.fundingSourceInfo.endDate?string.yyyy)?number)!startYear /]
     
 <section class="container">
   <article class="fullBlock col-md-12" id="mainInformation">
@@ -35,37 +35,37 @@
       [#-- Project title --]
       <div class="form-group">
         <div class="row">
-          <div class="col-md-12">[@customForm.input name="fundingSource.title" i18nkey="projectCofunded.title" className="limitWords-40" required=true editable=editable /] </div>
+          <div class="col-md-12">[@customForm.input name="fundingSource.fundingSourceInfo.title" i18nkey="projectCofunded.title" className="limitWords-40" required=true editable=editable /] </div>
         </div>
       </div>
       [#-- Project summary --]
       <div class="form-group">
         <div class="row">
-          <div class="col-md-12">[@customForm.textArea name="fundingSource.description" i18nkey="projectCofunded.description" className="limitWords-150" required=false editable=editable /] </div>
+          <div class="col-md-12">[@customForm.textArea name="fundingSource.fundingSourceInfo.description" i18nkey="projectCofunded.description" className="limitWords-150" required=false editable=editable /] </div>
         </div>
       </div>
       [#-- start date, end date and finance code --]
       <div class="form-group">
         <div class="dateErrorBox"></div>
         <div class="row">
-           <div class="col-md-4">[@customForm.input name="fundingSource.startDate" i18nkey="projectCofunded.startDate" required=true  editable=editable && action.canEditFundingSourceBudget() /] </div>
-           <div class="col-md-4">[@customForm.input name="fundingSource.endDate" i18nkey="projectCofunded.endDate" required=true  editable=editable && action.canEditFundingSourceBudget() /] </div>
-           <div class="col-md-4">[@customForm.input name="fundingSource.financeCode"  i18nkey="projectCofunded.financeCode" placeholder="projectCofunded.financeCode.placeholder" editable=editable/] </div>
+           <div class="col-md-4">[@customForm.input name="fundingSource.fundingSourceInfo.startDate" i18nkey="projectCofunded.startDate" required=true  editable=editable && action.canEditFundingSourceBudget() /] </div>
+           <div class="col-md-4">[@customForm.input name="fundingSource.fundingSourceInfo.endDate" i18nkey="projectCofunded.endDate" required=true  editable=editable && action.canEditFundingSourceBudget() /] </div>
+           <div class="col-md-4">[@customForm.input name="fundingSource.fundingSourceInfo.financeCode"  i18nkey="projectCofunded.financeCode" placeholder="projectCofunded.financeCode.placeholder" editable=editable/] </div>
         </div>
       </div>
       
       [#-- Upload bilateral contract --]
       <div class="form-group fileUploadContainer">
         <label>[@customForm.text name="fundingSource.uploadContract" readText=!editable /]:</label>
-        [#assign hasFile = fundingSource.file?? && fundingSource.file.id?? /]
-        <input id="fileID" type="hidden" name="fundingSource.file.id" value="${(fundingSource.file.id)!}" />
+        [#assign hasFile = fundingSource.fundingSourceInfo.file?? && fundingSource.fundingSourceInfo.file.id?? /]
+        <input id="fileID" type="hidden" name="fundingSource.file.id" value="${(fundingSource.fundingSourceInfo.file.id)!}" />
         [#-- Input File --]
         [#if editable]
         <div class="fileUpload" style="display:${hasFile?string('none','block')}"> <input class="upload" type="file" name="file" data-url="${baseUrl}/uploadFundingSource.do"></div>
         [/#if]
         [#-- Uploaded File --]
         <p class="fileUploaded textMessage checked" style="display:${hasFile?string('block','none')}">
-          <span class="contentResult">[#if fundingSource.file??]${(fundingSource.file.fileName)!('No file name')} [/#if]</span> 
+          <span class="contentResult">[#if fundingSource.fundingSourceInfo.file??]${(fundingSource.fundingSourceInfo.file.fileName)!('No file name')} [/#if]</span> 
           [#if editable]<span class="removeIcon"> </span> [/#if]
         </p>
       </div>
@@ -73,13 +73,13 @@
       [#-- Agreement status and total budget --]
       <div class="form-group">
         <div class="row">
-          <div class="col-md-6">[@customForm.select name="fundingSource.status" i18nkey="projectCofunded.agreementStatus" className="agreementStatus"  listName="status" keyFieldName=""  displayFieldName="" header=false editable=editable /] </div>
+          <div class="col-md-6">[@customForm.select name="fundingSource.fundingSourceInfo.status" i18nkey="projectCofunded.agreementStatus" className="agreementStatus"  listName="status" keyFieldName=""  displayFieldName="" header=false editable=editable /] </div>
           <div class="col-md-6">
-            [@customForm.select name="fundingSource.budgetType.id" i18nkey="projectCofunded.type" className="type" listName="budgetTypes" header=false required=true editable=editable && action.canEditType() /]
+            [@customForm.select name="fundingSource.fundingSourceInfo.budgetType.id" i18nkey="projectCofunded.type" className="type" listName="budgetTypes" header=false required=true editable=editable && action.canEditType() /]
             [#-- W1W2 Tag --]
             [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')]
-              [#assign isW1W2 = (fundingSource.budgetType.id == 1)!false /]
-              [#assign w1w2TagValue = (fundingSource.w1w2)!false /]
+              [#assign isW1W2 = (fundingSource.fundingSourceInfo.budgetType.id == 1)!false /]
+              [#assign w1w2TagValue = (fundingSource.fundingSourceInfo.w1w2)!false /]
               <div class="w1w2-tag" style="display:${isW1W2?string('block','none')};">
                 <div class="checkbox dottedBox">
                   <label for="w1w2-tag-input">
@@ -136,7 +136,7 @@
       [#if action.hasSpecificities('crp_division_fs')]
         <div class="form-group row divisionBlock division-${action.getIFPRIId()}"  style="display:${ifpriDivision?string('block','none')}">
           <div class="col-md-7">
-            [@customForm.select name="fundingSource.partnerDivision.id" i18nkey="projectCofunded.division" listName="divisions" keyFieldName="id" displayFieldName="composedName" required=true editable=editable /]
+            [@customForm.select name="fundingSource.fundingSourceInfo.partnerDivision.id" i18nkey="projectCofunded.division" listName="divisions" keyFieldName="id" displayFieldName="composedName" required=true editable=editable /]
           </div>
         </div>
       [/#if]
@@ -144,15 +144,15 @@
       [#-- Contact person name and email --]
       [#assign canSeePIEmail = action.hasSpecificities('crp_email_funding_source')]
       <div class="form-group row">
-          <div class="col-md-6">[@customForm.input name="fundingSource.contactPersonName" i18nkey="projectCofunded.contactName" className="contactName" required=true editable=editable /]</div>
-          <div class="col-md-6" style="display:${canSeePIEmail?string('block','none')}">[@customForm.input name="fundingSource.contactPersonEmail" i18nkey="projectCofunded.contactEmail" className="contactEmail" required=true editable=editable /]</div>
+          <div class="col-md-6">[@customForm.input name="fundingSource.fundingSourceInfo.contactPersonName" i18nkey="projectCofunded.contactName" className="contactName" required=true editable=editable /]</div>
+          <div class="col-md-6" style="display:${canSeePIEmail?string('block','none')}">[@customForm.input name="fundingSource.fundingSourceInfo.contactPersonEmail" i18nkey="projectCofunded.contactEmail" className="contactEmail" required=true editable=editable /]</div>
       </div>
 
       [#-- Donor --]
       <div class="form-group">
         <div class="row">
           <div class="col-md-12">
-            [@customForm.select name="fundingSource.institution.id" i18nkey="projectCofunded.donor" className="donor"  listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" required=true editable=editable /]
+            [@customForm.select name="fundingSource.fundingSourceInfo.institution.id" i18nkey="projectCofunded.donor" className="donor"  listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" required=true editable=editable /]
           </div>
         </div>
         
@@ -174,7 +174,7 @@
     [#-- GLOBAL DIMENSION --]
     [#if editable]
       <div class="form-group row ">
-        <div class="col-md-6">[@customForm.yesNoInput  label="projectCofunded.globalDimensionQuestion" name="fundingSource.global"  editable=editable inverse=false  cssClass="" /] </div>
+        <div class="col-md-6">[@customForm.yesNoInput  label="projectCofunded.globalDimensionQuestion" name="fundingSource.fundingSourceInfo.global"  editable=editable inverse=false  cssClass="" /] </div>
       </div>
       <hr />
       <div class="form-group row">
@@ -305,7 +305,7 @@
             [#assign budgetIndex = '-1' /]
           [/#attempt]
           
-          <small class="grayLabel pull-right"> (Remaining budget US$ <span class="projectAmount">${((fundingSource.getRemaining(year))!0)?number?string(",##0.00")}</span>) </small>
+          <small class="grayLabel pull-right"> (Remaining budget US$ <span class="projectAmount">${((fundingSource.getRemaining(year,base.actualPhase))!0)?number?string(",##0.00")}</span>) </small>
           
           <h5 class="sectionSubTitle">Budget Amount</h5>
           <div class="budgetsYear">

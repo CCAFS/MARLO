@@ -464,13 +464,13 @@ public class FundingSourceAction extends BaseAction {
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         fundingSource = (FundingSource) autoSaveReader.readFromJson(jReader);
-        FundingSource projectDb = fundingSourceManager.getFundingSourceById(fundingSource.getId());
         reader.close();
 
         this.setDraft(true);
         FundingSource fundingSourceDB = fundingSourceManager.getFundingSourceById(fundingSourceID);
-        fundingSource.setProjectBudgetsList(fundingSourceDB.getProjectBudgets().stream()
-          .filter(pb -> pb.isActive() && pb.getProject().isActive()).collect(Collectors.toList()));
+        fundingSource.setProjectBudgetsList(
+          fundingSourceDB.getProjectBudgets().stream().filter(pb -> pb.isActive() && pb.getProject().isActive()
+            && pb.getPhase() != null && pb.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
         if (fundingSource.getFundingSourceInfo().getFile() != null) {
           if (fundingSource.getFundingSourceInfo().getFile().getId() != null) {
             fundingSource.getFundingSourceInfo()
@@ -531,8 +531,9 @@ public class FundingSourceAction extends BaseAction {
         fundingSource.setInstitutions(new ArrayList<>(fundingSource.getFundingSourceInstitutions().stream()
           .filter(pb -> pb.isActive()).collect(Collectors.toList())));
 
-        fundingSource.setProjectBudgetsList(fundingSource.getProjectBudgets().stream()
-          .filter(pb -> pb.isActive() && pb.getProject().isActive()).collect(Collectors.toList()));
+        fundingSource.setProjectBudgetsList(
+          fundingSource.getProjectBudgets().stream().filter(pb -> pb.isActive() && pb.getProject().isActive()
+            && pb.getPhase() != null && pb.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
 
         /*
          * Funding source Locations

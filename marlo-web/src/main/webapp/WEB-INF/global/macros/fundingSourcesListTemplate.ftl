@@ -35,9 +35,9 @@
             [#-- Draft Tag --]
             [#if hasDraft]<strong class="text-info">[DRAFT]</strong>[/#if]
             
-            [#if project.title?has_content]
-              <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='fundingSourceID']${project.id}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]" title="${project.title}">
-              [#if project.title?length < 120] ${project.title}</a> [#else] [@utilities.wordCutter string=project.title maxPos=120 /]...</a> [/#if]
+            [#if project.fundingSourceInfo.title?has_content]
+              <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='fundingSourceID']${project.id}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]" title="${project.fundingSourceInfo.title}">
+              [#if project.fundingSourceInfo.title?length < 120] ${project.fundingSourceInfo.title}</a> [#else] [@utilities.wordCutter string=project.fundingSourceInfo.title maxPos=120 /]...</a> [/#if]
             [#else]
               <a href="[@s.url namespace=namespace action=defaultAction includeParams='get'] [@s.param name='fundingSourceID']${project.id}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url] ">
                 [@s.text name="projectsList.title.none" /]
@@ -46,12 +46,12 @@
           </td>
           [#-- Project Budget Type --]
           <td class=""> 
-            ${(project.budgetType.name)!'Not defined'} 
-            [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')] ${(project.w1w2?string('<br /> <span class="programTag">Co-Financing</span> ',''))!}[/#if]
+            ${(project.fundingSourceInfo.budgetType.name)!'Not defined'} 
+            [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')] ${(project.fundingSourceInfo.w1w2?string('<br /> <span class="programTag">Co-Financing</span> ',''))!}[/#if]
           </td>
           [#-- Finance Code --]
           <td>
-            [#if project.financeCode?has_content]${project.financeCode}[#else] <p class="text-muted">Not defined</p>  [/#if]
+            [#if project.fundingSourceInfo.financeCode?has_content]${project.fundingSourceInfo.financeCode}[#else] <p class="text-muted">Not defined</p>  [/#if]
           </td>
           [#-- Project Status --]
           <td>
@@ -74,7 +74,7 @@
           
           [#-- Donor --]
           <td class=""> 
-            ${(project.institution.composedNameLoc)!'Not defined'}
+            ${(project.fundingSourceInfo.institution.composedNameLoc)!'Not defined'}
           </td>
           
           [#-- Field Check --]

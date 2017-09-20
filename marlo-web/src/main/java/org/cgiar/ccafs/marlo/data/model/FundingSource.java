@@ -151,9 +151,9 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     if (this.getFundingSourceInfo() != null) {
       return this.getFundingSourceInfo();
     } else {
-      List<FundingSourceInfo> infos = fundingSourceInfos.stream().filter(
-        c -> c.getPhase() != null && c.getPhase().getId() != null && c.getPhase().getId().longValue() == phase.getId())
-        .collect(Collectors.toList());
+      List<FundingSourceInfo> infos =
+        fundingSourceInfos.stream().filter(c -> c.getPhase() != null && c.getPhase().getId() != null
+          && c.getPhase().getId().longValue() == phase.getId().longValue()).collect(Collectors.toList());
       if (!infos.isEmpty()) {
         this.setFundingSourceInfo(infos.get(0));
         return this.getFundingSourceInfo();
@@ -388,5 +388,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   public void setSectionStatuses(Set<SectionStatus> sectionStatuses) {
     this.sectionStatuses = sectionStatuses;
   }
+
 
 }
