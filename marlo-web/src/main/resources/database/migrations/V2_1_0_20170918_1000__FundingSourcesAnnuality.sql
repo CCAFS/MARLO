@@ -1,3 +1,4 @@
+SET FOREIGN_KEY_CHECKS = 0;
 /* CREATE: funding sources info table*/
 DROP TABLE
 IF EXISTS `funding_sources_info`;
@@ -116,7 +117,7 @@ UNION
 
 /*DROP: Foreign keys*/
 /*division_id -> partner_divisions*/
-ALTER TABLE `funding_sources` DROP FOREIGN KEY `funding_sources_division_id_fk`;
+ALTER TABLE `funding_sources` DROP FOREIGN KEY `funding_sources_ibfk_1`;
 
 /*donor -> institutions*/
 ALTER TABLE `funding_sources` DROP FOREIGN KEY `funding_sources_ibfk_2`;
@@ -128,7 +129,7 @@ ALTER TABLE `funding_sources` DROP FOREIGN KEY `funding_sources_ibfk_4`;
 ALTER TABLE `funding_sources` DROP FOREIGN KEY `funding_sources_ibfk_6`;
 
 /*file -> files*/
-ALTER TABLE `funding_sources` DROP FOREIGN KEY `funding_sources_ibfk_8`;
+ALTER TABLE `funding_sources` DROP FOREIGN KEY `funding_sources_ibfk_7`;
 
 /* DROP: remaining columns*/
 ALTER TABLE `funding_sources`

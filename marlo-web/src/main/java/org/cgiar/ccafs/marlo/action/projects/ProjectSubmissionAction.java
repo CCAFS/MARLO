@@ -362,11 +362,11 @@ public class ProjectSubmissionAction extends BaseAction {
   private void submitProject() {
     Submission submission = new Submission();
 
-    submission.setCycle(this.getCurrentCycle());
+    submission.setCycle(this.getActualPhase().getDescription());
     submission.setUser(this.getCurrentUser());
 
 
-    submission.setYear((short) this.getCurrentCycleYear());
+    submission.setYear((short) this.getActualPhase().getYear());
     submission.setDateTime(new Date());
     submission.setProject(project);
 
