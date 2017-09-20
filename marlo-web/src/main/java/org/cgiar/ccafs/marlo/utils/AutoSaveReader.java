@@ -213,7 +213,8 @@ public class AutoSaveReader {
       .registerTypeAdapter(Float.class, new FloatTypeAdapter())
       .registerTypeAdapter(Number.class, new IntegerTypeAdapter())
       .registerTypeAdapter(BigDecimal.class, new BigDecimalTypeAdapter())
-      .registerTypeAdapter(Date.class, new DateTypeAdapter()).create();
+      .registerTypeAdapter(Date.class, new DateTypeAdapter()).registerTypeAdapter(String.class, new StringTypeAdapter())
+      .create();
     HashMap<String, Object> jsonNew = this.convertJSONFormat(gson.toJson(jobj));
 
     jobj = gson.fromJson(gson.toJson(jsonNew), JsonObject.class);

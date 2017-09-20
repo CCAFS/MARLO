@@ -50,7 +50,7 @@
               <div class="crps" style="color: #9c9c9c; margin-left: 0px; font-size: 0.75em;" title="CRPs ">
                 [#if elementType.locElementType?? && elementType.locElementType.crpLocElementTypes?has_content]
                   [#list elementType.locElementType.crpLocElementTypes as crpLocElementType]
-                    [#if crpLocElementType.active][${crpLocElementType.crp.name}] [/#if]
+                    [#if crpLocElementType.active][${crpLocElementType.crp.acronym}] [/#if]
                   [/#list] 
                 [/#if]
               </div>

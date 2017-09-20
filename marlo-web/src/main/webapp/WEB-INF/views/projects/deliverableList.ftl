@@ -60,7 +60,7 @@
             </div>
           </div>
           <div id="diagramPopup" style="display:none; text-align:center;">
-            <img src="${baseUrlMedia}/images/global/FAIR_Principles_V2.png" alt="" width="100%" />
+            <img src="${baseUrlMedia}/images/global/FAIR_Principles_in_MARLO_20170919.png" alt="" width="100%" />
           </div>
           
            <h3 class="subTitle headTitle">On going deliverables</h3>

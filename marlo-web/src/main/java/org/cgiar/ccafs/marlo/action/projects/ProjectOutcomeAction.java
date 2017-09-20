@@ -692,6 +692,9 @@ public class ProjectOutcomeAction extends BaseAction {
       projectOutcome.setActiveSince(new Date());
       projectOutcome.setCrpProgramOutcome(crpProgramOutcome);
       projectOutcome.setProject(project);
+      if (projectOutcome.getExpectedUnit() != null && projectOutcome.getExpectedUnit().getId() == null) {
+        projectOutcome.setExpectedUnit(null);
+      }
       projectOutcome.setId(projectOutcomeID);
       projectOutcome.setModificationJustification("");
       projectOutcomeManager.saveProjectOutcome(projectOutcome);

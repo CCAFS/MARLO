@@ -70,118 +70,44 @@ public class ResearchManagementAction extends BaseAction {
    */
   private void checkChanges() {
     // Check changes
-    for (CenterArea centerArea : centerAreas) {
-      // Check if is a new one
-      if (centerArea.getId() == null || centerArea.getId() == -1) {
-        CenterArea newCenterArea = new CenterArea();
+    if (centerAreas != null) {
+      for (CenterArea centerArea : centerAreas) {
+        // Check if is a new one
+        if (centerArea.getId() == null || centerArea.getId() == -1) {
+          CenterArea newCenterArea = new CenterArea();
 
-        newCenterArea.setActive(true);
-        newCenterArea.setCreatedBy(this.getCurrentUser());
-        newCenterArea.setModifiedBy(this.getCurrentUser());
-        newCenterArea.setActiveSince(new Date());
-        newCenterArea.setName(centerArea.getName());
-        newCenterArea.setAcronym(centerArea.getAcronym());
-        newCenterArea.setResearchCenter(loggedCenter);
-        newCenterArea.setModificationJustification("");
-        centerAreaService.save(newCenterArea);
-        // save area leaders
-        List<CenterLeader> areaLeaders = newCenterArea.getLeaders();
-        for (CenterLeader areaLeader : areaLeaders) {
-          CenterLeader newareaLeader = new CenterLeader();
-          newareaLeader.setActive(true);
-          newareaLeader.setActiveSince(new Date());
-          newareaLeader.setCreatedBy(this.getCurrentUser());
-          newareaLeader.setModificationJustification("");
-          newareaLeader.setModifiedBy(this.getCurrentUser());
-          newareaLeader.setResearchArea(newCenterArea);
-          newareaLeader.setResearchCenter(loggedCenter);
-          newareaLeader.setType(
-            centerAllTypesService.getCenterAllTypesById(CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue()));
-          newareaLeader.setUser(areaLeader.getUser());
-          centerLeaderService.saveResearchLeader(newareaLeader);
-        }
-
-        // save new programs
-        List<CenterProgram> newCenterPrograms = newCenterArea.getResearchPrograms().stream()
-          .filter(cps -> cps.isActive() && cps.getResearchArea().getId() == centerArea.getId())
-          .collect(Collectors.toList());
-        for (CenterProgram centerProgram : newCenterPrograms) {
-          CenterProgram newCenterProgram = new CenterProgram();
-          // Save center program
-          newCenterProgram.setAcronym(centerProgram.getAcronym());
-          newCenterProgram.setName(centerProgram.getName());
-          newCenterProgram.setActive(true);
-          newCenterProgram.setActiveSince(new Date());
-          newCenterProgram.setCreatedBy(this.getCurrentUser());
-          newCenterProgram.setModificationJustification("");
-          newCenterProgram.setModifiedBy(this.getCurrentUser());
-          newCenterProgram.setProgramType(centerAllTypesService
-            .getCenterAllTypesById(Long.parseLong((String) this.getSession().get(APConstants.CRP_FPL_ROLE))));
-          newCenterProgram.setResearchArea(newCenterArea);
-          List<CenterLeader> programLeaders = centerProgram.getLeaders();
-          centerProgramService.saveProgram(newCenterProgram);
-          for (CenterLeader programLeader : programLeaders) {
-            CenterLeader newProgramLeader = new CenterLeader();
-            newProgramLeader.setActive(true);
-            newProgramLeader.setActiveSince(new Date());
-            newProgramLeader.setCreatedBy(this.getCurrentUser());
-            newProgramLeader.setModificationJustification("");
-            newProgramLeader.setModifiedBy(this.getCurrentUser());
-            newProgramLeader.setResearchCenter(loggedCenter);
-            newProgramLeader.setResearchProgram(newCenterProgram);
-            newProgramLeader.setType(centerAllTypesService
-              .getCenterAllTypesById(CenterLeaderTypeEnum.RESEARCH_PROGRAM_LEADER_TYPE.getValue()));
-            newProgramLeader.setUser(programLeader.getUser());
-            centerLeaderService.saveResearchLeader(newProgramLeader);
+          newCenterArea.setActive(true);
+          newCenterArea.setCreatedBy(this.getCurrentUser());
+          newCenterArea.setModifiedBy(this.getCurrentUser());
+          newCenterArea.setActiveSince(new Date());
+          newCenterArea.setName(centerArea.getName());
+          newCenterArea.setAcronym(centerArea.getAcronym());
+          newCenterArea.setResearchCenter(loggedCenter);
+          newCenterArea.setModificationJustification("");
+          centerAreaService.save(newCenterArea);
+          // save area leaders
+          List<CenterLeader> areaLeaders = centerArea.getLeaders();
+          if (areaLeaders != null) {
+            for (CenterLeader areaLeader : areaLeaders) {
+              CenterLeader newareaLeader = new CenterLeader();
+              newareaLeader.setActive(true);
+              newareaLeader.setActiveSince(new Date());
+              newareaLeader.setCreatedBy(this.getCurrentUser());
+              newareaLeader.setModificationJustification("");
+              newareaLeader.setModifiedBy(this.getCurrentUser());
+              newareaLeader.setResearchArea(newCenterArea);
+              newareaLeader.setResearchCenter(loggedCenter);
+              newareaLeader.setType(
+                centerAllTypesService.getCenterAllTypesById(CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue()));
+              newareaLeader.setUser(areaLeader.getUser());
+              centerLeaderService.saveResearchLeader(newareaLeader);
+            }
           }
-        }
-      } else {
-        // check center area changes
-        boolean hasChanges = false;
-        CenterArea centerAreaDB = centerAreaService.find(centerArea.getId());
-        if (!centerArea.getAcronym().equals(centerAreaDB.getAcronym())) {
-          centerAreaDB.setAcronym(centerArea.getAcronym());
-          hasChanges = true;
-        }
-        if (!centerArea.getName().equals(centerAreaDB.getName())) {
-          centerAreaDB.setName(centerArea.getName());
-          hasChanges = true;
-        }
-        if (hasChanges) {
-          centerAreaDB.setActive(true);
-          centerAreaDB.setModifiedBy(this.getCurrentUser());
-          centerAreaService.save(centerAreaDB);
-        }
 
-        // check if there are new area leaders
-        List<CenterLeader> newAreaLeaders = centerArea.getLeaders();
-        List<CenterLeader> areaLeadersDB =
-          centerAreaDB.getResearchLeaders().stream().filter(rl -> rl.isActive()).collect(Collectors.toList());
-        for (CenterLeader areaLeader : newAreaLeaders) {
-          // check new area leader
-          if (areaLeader.getId() == null || areaLeader.getId() == -1) {
-            CenterLeader newareaLeader = new CenterLeader();
-            newareaLeader.setActive(true);
-            newareaLeader.setActiveSince(new Date());
-            newareaLeader.setCreatedBy(this.getCurrentUser());
-            newareaLeader.setModificationJustification("");
-            newareaLeader.setModifiedBy(this.getCurrentUser());
-            newareaLeader.setResearchArea(centerAreaDB);
-            newareaLeader.setResearchCenter(loggedCenter);
-            newareaLeader.setType(
-              centerAllTypesService.getCenterAllTypesById(CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue()));
-            // TODO: set center leader?
-            newareaLeader.setUser(areaLeader.getUser());
-            centerLeaderService.saveResearchLeader(newareaLeader);
-            areaLeadersDB.add(newareaLeader);
-          }
-        }
-
-        // check new programs
-        if (centerArea.getPrograms() != null && centerArea.getPrograms().size() > 0) {
           // save new programs
-          for (CenterProgram centerProgram : centerArea.getPrograms()) {
-            if (centerProgram.getId() == null || centerProgram.getId() == -1) {
+          List<CenterProgram> newCenterPrograms = centerArea.getPrograms();
+          if (newCenterPrograms != null) {
+            for (CenterProgram centerProgram : newCenterPrograms) {
               CenterProgram newCenterProgram = new CenterProgram();
               // Save center program
               newCenterProgram.setAcronym(centerProgram.getAcronym());
@@ -193,61 +119,140 @@ public class ResearchManagementAction extends BaseAction {
               newCenterProgram.setModifiedBy(this.getCurrentUser());
               newCenterProgram.setProgramType(centerAllTypesService.getCenterAllTypesById(
                 Long.parseLong(this.getSession().get(APConstants.CENTER_PROGRAM_TYPE).toString())));
-              newCenterProgram.setResearchArea(centerArea);
+              newCenterProgram.setResearchArea(newCenterArea);
               List<CenterLeader> programLeaders = centerProgram.getLeaders();
               centerProgramService.saveProgram(newCenterProgram);
-              for (CenterLeader programLeader : programLeaders) {
-                CenterLeader newProgramLeader = new CenterLeader();
-                newProgramLeader.setActive(true);
-                newProgramLeader.setActiveSince(new Date());
-                newProgramLeader.setCreatedBy(this.getCurrentUser());
-                newProgramLeader.setModificationJustification("");
-                newProgramLeader.setModifiedBy(this.getCurrentUser());
-                newProgramLeader.setResearchCenter(loggedCenter);
-                newProgramLeader.setResearchProgram(newCenterProgram);
-                newProgramLeader.setType(centerAllTypesService
-                  .getCenterAllTypesById(CenterLeaderTypeEnum.RESEARCH_PROGRAM_LEADER_TYPE.getValue()));
-                newProgramLeader.setUser(programLeader.getUser());
-                centerLeaderService.saveResearchLeader(newProgramLeader);
-              }
-            } else {
-              // check programs changes
-              CenterProgram centerProgramDB = centerProgramService.getProgramById(centerProgram.getId());
-              boolean hasChangesProgram = false;
-              if (!centerProgram.getAcronym().equals(centerProgramDB.getAcronym())) {
-                centerProgramDB.setAcronym(centerProgram.getAcronym());
-                hasChangesProgram = true;
-              }
-              if (!centerProgram.getName().equals(centerProgramDB.getName())) {
-                centerProgramDB.setName(centerProgram.getName());
-                hasChangesProgram = true;
-              }
-              if (hasChangesProgram) {
-                centerProgramDB.setActive(true);
-                centerProgramDB.setModifiedBy(this.getCurrentUser());
-                centerProgramService.saveProgram(centerProgramDB);
-              }
-              // check if there are new program leaders
-
-              List<CenterLeader> newProgramLeaders = centerProgram.getLeaders();
-              List<CenterLeader> programLeadersDB =
-                centerProgramDB.getResearchLeaders().stream().filter(rl -> rl.isActive()).collect(Collectors.toList());
-              for (CenterLeader programLeader : newProgramLeaders) {
-                // check new area leader
-                if (programLeader.getId() == null || programLeader.getId() == -1) {
+              if (programLeaders != null) {
+                for (CenterLeader programLeader : programLeaders) {
                   CenterLeader newProgramLeader = new CenterLeader();
                   newProgramLeader.setActive(true);
                   newProgramLeader.setActiveSince(new Date());
                   newProgramLeader.setCreatedBy(this.getCurrentUser());
                   newProgramLeader.setModificationJustification("");
                   newProgramLeader.setModifiedBy(this.getCurrentUser());
-                  newProgramLeader.setResearchArea(centerAreaDB);
                   newProgramLeader.setResearchCenter(loggedCenter);
+                  newProgramLeader.setResearchProgram(newCenterProgram);
                   newProgramLeader.setType(centerAllTypesService
                     .getCenterAllTypesById(CenterLeaderTypeEnum.RESEARCH_PROGRAM_LEADER_TYPE.getValue()));
                   newProgramLeader.setUser(programLeader.getUser());
                   centerLeaderService.saveResearchLeader(newProgramLeader);
-                  areaLeadersDB.add(newProgramLeader);
+                }
+              }
+            }
+          }
+        } else {
+          // check center area changes
+          boolean hasChanges = false;
+          CenterArea centerAreaDB = centerAreaService.find(centerArea.getId());
+          if (!centerArea.getAcronym().equals(centerAreaDB.getAcronym())) {
+            centerAreaDB.setAcronym(centerArea.getAcronym());
+            hasChanges = true;
+          }
+          if (!centerArea.getName().equals(centerAreaDB.getName())) {
+            centerAreaDB.setName(centerArea.getName());
+            hasChanges = true;
+          }
+          if (hasChanges) {
+            centerAreaDB.setActive(true);
+            centerAreaDB.setModifiedBy(this.getCurrentUser());
+            centerAreaService.save(centerAreaDB);
+          }
+
+          // check if there are new area leaders
+          List<CenterLeader> newAreaLeaders = centerArea.getLeaders();
+          if (newAreaLeaders != null) {
+            for (CenterLeader areaLeader : newAreaLeaders) {
+              // check new area leader
+              if (areaLeader.getId() == null || areaLeader.getId() == -1) {
+                CenterLeader newareaLeader = new CenterLeader();
+                newareaLeader.setActive(true);
+                newareaLeader.setActiveSince(new Date());
+                newareaLeader.setCreatedBy(this.getCurrentUser());
+                newareaLeader.setModificationJustification("");
+                newareaLeader.setModifiedBy(this.getCurrentUser());
+                newareaLeader.setResearchArea(centerAreaDB);
+                newareaLeader.setResearchCenter(loggedCenter);
+                newareaLeader.setType(centerAllTypesService
+                  .getCenterAllTypesById(CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue()));
+                newareaLeader.setUser(areaLeader.getUser());
+                centerLeaderService.saveResearchLeader(newareaLeader);
+              }
+            }
+          }
+
+          // check new programs
+          if (centerArea.getPrograms() != null && centerArea.getPrograms().size() > 0) {
+            // save new programs
+            for (CenterProgram centerProgram : centerArea.getPrograms()) {
+              if (centerProgram.getId() == null || centerProgram.getId() == -1) {
+                CenterProgram newCenterProgram = new CenterProgram();
+                // Save center program
+                newCenterProgram.setAcronym(centerProgram.getAcronym());
+                newCenterProgram.setName(centerProgram.getName());
+                newCenterProgram.setActive(true);
+                newCenterProgram.setActiveSince(new Date());
+                newCenterProgram.setCreatedBy(this.getCurrentUser());
+                newCenterProgram.setModificationJustification("");
+                newCenterProgram.setModifiedBy(this.getCurrentUser());
+                newCenterProgram.setProgramType(centerAllTypesService.getCenterAllTypesById(
+                  Long.parseLong(this.getSession().get(APConstants.CENTER_PROGRAM_TYPE).toString())));
+                newCenterProgram.setResearchArea(centerArea);
+                List<CenterLeader> programLeaders = centerProgram.getLeaders();
+                centerProgramService.saveProgram(newCenterProgram);
+                if (programLeaders != null) {
+                  for (CenterLeader programLeader : programLeaders) {
+                    CenterLeader newProgramLeader = new CenterLeader();
+                    newProgramLeader.setActive(true);
+                    newProgramLeader.setActiveSince(new Date());
+                    newProgramLeader.setCreatedBy(this.getCurrentUser());
+                    newProgramLeader.setModificationJustification("");
+                    newProgramLeader.setModifiedBy(this.getCurrentUser());
+                    newProgramLeader.setResearchCenter(loggedCenter);
+                    newProgramLeader.setResearchProgram(newCenterProgram);
+                    newProgramLeader.setType(centerAllTypesService
+                      .getCenterAllTypesById(CenterLeaderTypeEnum.RESEARCH_PROGRAM_LEADER_TYPE.getValue()));
+                    newProgramLeader.setUser(programLeader.getUser());
+                    centerLeaderService.saveResearchLeader(newProgramLeader);
+                  }
+                }
+              } else {
+                // check programs changes
+                CenterProgram centerProgramDB = centerProgramService.getProgramById(centerProgram.getId());
+                boolean hasChangesProgram = false;
+                if (!centerProgram.getAcronym().equals(centerProgramDB.getAcronym())) {
+                  centerProgramDB.setAcronym(centerProgram.getAcronym());
+                  hasChangesProgram = true;
+                }
+                if (!centerProgram.getName().equals(centerProgramDB.getName())) {
+                  centerProgramDB.setName(centerProgram.getName());
+                  hasChangesProgram = true;
+                }
+                if (hasChangesProgram) {
+                  centerProgramDB.setActive(true);
+                  centerProgramDB.setModifiedBy(this.getCurrentUser());
+                  centerProgramService.saveProgram(centerProgramDB);
+                }
+                // check if there are new program leaders
+
+                List<CenterLeader> newProgramLeaders = centerProgram.getLeaders();
+                if (newProgramLeaders != null) {
+                  for (CenterLeader programLeader : newProgramLeaders) {
+                    // check new area leader
+                    if (programLeader.getId() == null || programLeader.getId() == -1) {
+                      CenterLeader newProgramLeader = new CenterLeader();
+                      newProgramLeader.setActive(true);
+                      newProgramLeader.setActiveSince(new Date());
+                      newProgramLeader.setCreatedBy(this.getCurrentUser());
+                      newProgramLeader.setModificationJustification("");
+                      newProgramLeader.setModifiedBy(this.getCurrentUser());
+                      newProgramLeader.setResearchArea(centerAreaDB);
+                      newProgramLeader.setResearchCenter(loggedCenter);
+                      newProgramLeader.setType(centerAllTypesService
+                        .getCenterAllTypesById(CenterLeaderTypeEnum.RESEARCH_PROGRAM_LEADER_TYPE.getValue()));
+                      newProgramLeader.setUser(programLeader.getUser());
+                      centerLeaderService.saveResearchLeader(newProgramLeader);
+                    }
+                  }
                 }
               }
             }
