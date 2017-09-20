@@ -73,6 +73,9 @@ public interface CrpClusterOfActivityManager {
    */
   public CrpClusterOfActivity getCrpClusterOfActivityById(long crpClusterOfActivityID);
 
+  public CrpClusterOfActivity getCrpClusterOfActivityByIdentifierPhase(String crpClusterOfActivityIdentefier,
+    Phase phase);
+
   /**
    * This method saves the information of the given crpClusterOfActivity
    * 

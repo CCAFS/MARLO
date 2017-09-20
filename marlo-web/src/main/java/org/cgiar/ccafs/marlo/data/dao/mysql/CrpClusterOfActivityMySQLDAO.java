@@ -203,6 +203,18 @@ public class CrpClusterOfActivityMySQLDAO implements CrpClusterOfActivityDAO {
   }
 
   @Override
+  public CrpClusterOfActivity getCrpClusterOfActivityByIdentifierPhase(String crpClusterOfActivityIdentefier,
+    Phase phase) {
+    String query = "from " + CrpClusterOfActivity.class.getName() + " where is_active=1 and identifier='"
+      + crpClusterOfActivityIdentefier + "' and id_phase=" + phase.getId();
+    List<CrpClusterOfActivity> list = dao.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+  }
+
+  @Override
   public Long save(CrpClusterOfActivity crpClusterOfActivity) {
     if (crpClusterOfActivity.getId() == null) {
       dao.save(crpClusterOfActivity);
