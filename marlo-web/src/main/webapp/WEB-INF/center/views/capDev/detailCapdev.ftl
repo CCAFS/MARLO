@@ -277,7 +277,7 @@
 
 						[#if (editable)!false]	
 							<div class="note participantMessage">
-								<p>If you don't find the institucion you are looking for, suggest it selecting <b>Other</b> </p>
+								<p>If you don't find the institution you are looking for, suggest it selecting <b>Other</b> </p>
 							</div>
 
 							<div>

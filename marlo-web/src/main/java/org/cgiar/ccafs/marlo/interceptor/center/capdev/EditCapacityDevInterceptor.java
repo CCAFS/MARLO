@@ -71,7 +71,7 @@ public class EditCapacityDevInterceptor extends AbstractInterceptor implements S
 
   public void setPermissionParameters(ActionInvocation invocation) throws Exception {
 
-    System.out.println("setPermissionParameters");
+    // System.out.println("setPermissionParameters");
 
     boolean canEdit = false;
     boolean hasPermissionToEdit = false;
@@ -92,7 +92,7 @@ public class EditCapacityDevInterceptor extends AbstractInterceptor implements S
       final User currentUser = (User) session.get(APConstants.SESSION_USER);
 
       if (capdev.getUsersByCreatedBy().getId().equals(currentUser.getId())) {
-        System.out.println("equal user");
+        // System.out.println("equal user");
         canEdit = true;
         hasPermissionToEdit = true;
       }
