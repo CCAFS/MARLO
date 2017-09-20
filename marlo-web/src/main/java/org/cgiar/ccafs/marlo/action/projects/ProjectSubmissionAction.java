@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.action.summaries.ReportingSummaryAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.SubmissionManager;
@@ -70,6 +71,7 @@ public class ProjectSubmissionAction extends BaseAction {
   private Crp loggedCrp;
   private String cycleName;
   private RoleManager roleManager;
+  private PhaseManager phaseManager;
 
 
   private boolean complete;
@@ -85,7 +87,8 @@ public class ProjectSubmissionAction extends BaseAction {
 
   @Inject
   public ProjectSubmissionAction(APConfig config, SubmissionManager submissionManager, ProjectManager projectManager,
-    CrpManager crpManager, SendMailS sendMail, LiaisonUserManager liasonUserManager, RoleManager roleManager) {
+    CrpManager crpManager, SendMailS sendMail, LiaisonUserManager liasonUserManager, RoleManager roleManager,
+    PhaseManager phaseManager) {
     super(config);
     this.submissionManager = submissionManager;
     this.projectManager = projectManager;
@@ -93,6 +96,7 @@ public class ProjectSubmissionAction extends BaseAction {
     this.sendMail = sendMail;
     this.liasonUserManager = liasonUserManager;
     this.roleManager = roleManager;
+    this.phaseManager = phaseManager;
   }
 
   @Override
@@ -206,7 +210,7 @@ public class ProjectSubmissionAction extends BaseAction {
         project
           .getCrp().getCrpPrograms().stream().filter(cp -> cp.getId() == project
             .getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram().getId())
-        .collect(Collectors.toList());
+          .collect(Collectors.toList());
       if (crpPrograms != null) {
         if (crpPrograms.size() > 1) {
           LOG.warn("Crp programs should be 1");
@@ -316,6 +320,9 @@ public class ProjectSubmissionAction extends BaseAction {
       reportingSummaryAction.setProjectID(projectID);
       reportingSummaryAction.setProject(projectManager.getProjectById(projectID));
       reportingSummaryAction.setCrpSession(loggedCrp.getAcronym());
+      reportingSummaryAction.setSelectedPhase(phaseManager.findCycle(reportingSummaryAction.getSelectedCycle(),
+        reportingSummaryAction.getSelectedYear(), loggedCrp.getId().longValue()));
+      reportingSummaryAction.setProjectInfo(project.getProjecInfoPhase(reportingSummaryAction.getSelectedPhase()));
       reportingSummaryAction.execute();
       // Getting the file data.
       //
