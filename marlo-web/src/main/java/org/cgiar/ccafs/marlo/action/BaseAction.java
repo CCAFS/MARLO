@@ -3090,25 +3090,63 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       String actionName = this.getActionName().replaceAll(crp.getAcronym() + "/", "");
 
-      projectOutcome.getProjectComponentLesson().setActive(true);
-      projectOutcome.getProjectComponentLesson().setActiveSince(new Date());
-      projectOutcome.getProjectComponentLesson().setComponentName(actionName);
-      projectOutcome.getProjectComponentLesson().setCreatedBy(this.getCurrentUser());
-      projectOutcome.getProjectComponentLesson().setModifiedBy(this.getCurrentUser());
-      projectOutcome.getProjectComponentLesson().setModificationJustification("");
-      projectOutcome.getProjectComponentLesson().setProjectOutcome(projectOutcome);
+      if (projectOutcome.getProjectComponentLesson() == null) {
+        LOG.debug("No lesson attached with projectOutcome");
+        return;
 
+      } else if (projectOutcome.getProjectComponentLesson().getId() == -1L) {
+        // Save a new entity
 
-      if (this.isReportingActive()) {
-        projectOutcome.getProjectComponentLesson().setCycle(APConstants.REPORTING);
-        projectOutcome.getProjectComponentLesson().setYear(this.getReportingYear());
+        ProjectComponentLesson projectComponenetLesson = projectOutcome.getProjectComponentLesson();
+        projectComponenetLesson.setId(null);
 
+        projectComponenetLesson.setActive(true);
+        projectComponenetLesson.setActiveSince(new Date());
+        projectComponenetLesson.setComponentName(actionName);
+        projectComponenetLesson.setCreatedBy(this.getCurrentUser());
+        projectComponenetLesson.setModifiedBy(this.getCurrentUser());
+        projectComponenetLesson.setModificationJustification("");
+        projectComponenetLesson.setProjectOutcome(projectOutcome);
+
+        if (this.isReportingActive()) {
+          projectComponenetLesson.setCycle(APConstants.REPORTING);
+          projectComponenetLesson.setYear(this.getReportingYear());
+
+        } else {
+          projectComponenetLesson.setCycle(APConstants.PLANNING);
+          projectComponenetLesson.setYear(this.getPlanningYear());
+        }
+        projectComponenetLesson = projectComponentLessonManager.saveProjectComponentLesson(projectComponenetLesson);
       } else {
-        projectOutcome.getProjectComponentLesson().setCycle(APConstants.PLANNING);
-        projectOutcome.getProjectComponentLesson().setYear(this.getPlanningYear());
+
+        ProjectComponentLesson projectComponenetLesson = projectOutcome.getProjectComponentLesson();
+
+        ProjectComponentLesson projectComponentDB =
+          projectComponentLessonManager.getProjectComponentLessonById(projectComponenetLesson.getId());;
+
+        projectComponentDB.setActive(true);
+        projectComponentDB.setComponentName(actionName);
+        projectComponentDB.setModifiedBy(this.getCurrentUser());
+        projectComponentDB.setModificationJustification("");
+
+        if (this.isReportingActive()) {
+          projectComponentDB.setCycle(APConstants.REPORTING);
+          projectComponentDB.setYear(this.getReportingYear());
+
+        } else {
+          projectComponentDB.setCycle(APConstants.PLANNING);
+          projectComponentDB.setYear(this.getPlanningYear());
+        }
+        projectComponentDB.setLessons(projectComponenetLesson.getLessons());
+        // project
+        // projectComponenetLesson.setComponentName(projectOutcome.getP);
+
+        projectComponentDB = projectComponentLessonManager.saveProjectComponentLesson(projectComponentDB);
+
+
       }
-      projectComponentLessonManager.saveProjectComponentLesson(projectOutcome.getProjectComponentLesson());
     }
+
   }
 
 
