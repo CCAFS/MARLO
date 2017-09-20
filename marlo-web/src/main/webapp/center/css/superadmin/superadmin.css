@@ -24,11 +24,11 @@ li.targetUnit {
 
 .srfSlo .blockTitle.opened {
   opacity: 0.5;
-  background-image: url(../../images/global/arrow-up.png);
+  background-image: url(../../global/images/arrow-up.png);
 }
 
 .srfSlo .blockTitle.closed {
-  background-image: url(../../images/global/arrow-down.png);
+  background-image: url(../../global/images/arrow-down.png);
 }
 
 .srfSlo .blockTitle small{
@@ -50,11 +50,11 @@ li.targetUnit {
 
 .srfIdo .blockTitle.opened {
   opacity: 0.5;
-  background-image: url(../../images/global/arrow-up.png);
+  background-image: url(../../global/images/arrow-up.png);
 }
 
 .srfIdo .blockTitle.closed {
-  background-image: url(../../images/global/arrow-down.png);
+  background-image: url(../../global/images/arrow-down.png);
 }
 
 .srfIdo .blockTitle small{

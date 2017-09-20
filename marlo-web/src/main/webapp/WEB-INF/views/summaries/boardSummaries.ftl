@@ -2,7 +2,11 @@
 [#assign title = "Summaries Section" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["select2","font-awesome","jsUri"] /]
-[#assign customJS = ["${baseUrlMedia}/js/global/utils.js", "${baseUrlMedia}/js/summaries/boardSummaries.js"] /]
+[#assign customJS = [
+  "${baseUrl}/global/js/utils.js", 
+  "${baseUrlMedia}/js/summaries/boardSummaries.js"
+  ] 
+/]
 [#assign customCSS = ["${baseUrlMedia}/css/summaries/summaries.css"] /]
 [#assign currentSection = "summaries" /]
 

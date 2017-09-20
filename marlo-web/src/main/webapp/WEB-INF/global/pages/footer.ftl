@@ -28,36 +28,12 @@
     [#if pageLibs??]
       [#list pageLibs as libraryName][@components.js_imports libraryName=libraryName/][/#list]
     [/#if]
+    
+    [#-- Importing JavaScript constants --]
+    [#include "/WEB-INF/global/pages/javascript-constants.ftl" /]
+    
     [#-- Second, import global javascripts and templates. --]
     <script type="text/javascript">
-      var currentPlanningYear, currentReportingYear;
-      var formBefore;
-      var justificationLimitWords = 100;
-      var errorMessages = [];
-      var hashScroll = true;
-      var forceChange = false;
-      
-      var GOOGLE_API_KEY="${config.googleApiKey}";
-      var PUSHER_KEY = "${config.pushApiKey}";
-      
-      var MIN_DATE = '2010-01-01';
-      var MAX_DATE = '2030-12-31';
-      
-      var actionName = "${actionName}";
-      var production = ${config.production?string};
-      var baseURL = "${baseUrl}";
-      var baseUrlMedia = "${baseUrlMedia}";
-      var debugMode = ${config.debug?string};
-      var editable = ${editable?string};
-      var canEdit = ${canEdit?string};
-      var draft = ${draft?string};
-      var autoSaveActive = ${((currentUser.autoSave)!false)?string};
-      var currentCrpID=${(crpID)!'-1'};
-      var currentCrpSession='${(crpSession)!'-1'}';
-      var currentCycleYear = ${(currentCycleYear)!1999};
-      var reportingActive= ${((reportingActive)!false)?string};
-      var projectPreSetting= ${((project.projectEditLeader)!false)?string('0','1')};
-      
       [#-- MARLO Develop ID as default --]
       [#assign tawktoSiteId = "57864c4b7e9d57372d381198"]
       [#if config.production]
@@ -68,17 +44,14 @@
           [#assign tawktoSiteId = (action.specificityValue('crp_taw_api'))!publicProductionKey]
         [/#if]
       [/#if]
-      
       [#-- User tag --]
       [#assign userTag][#if !config.production]([#if config.debug]Develop[#else]Testing[/#if])[/#if][/#assign]
-      
       [#-- Tawk.to Widget --]
       var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
       Tawk_LoadStart = new Date();
       Tawk_API.visitor = {
         'name': '${(userTag)!} ${(currentUser.composedCompleteName)!}',
       };
-      
       Tawk_API.onLoad = function() {
         Tawk_API.setAttributes({
             'fullName': '${(userTag)!} ${(currentUser.composedCompleteName)!"No Name"}',
@@ -88,7 +61,6 @@
             'userTags': '[${(roles)!}${(roles?has_content && liasons?has_content)?string(',','')}${(liasons)!}]'
             
         }, function(error) {
-           
         });
         [#--  Tawk_API.addTags(['MARLO', '${config.production?string('Production','Development')}', '${(crpSession)!}'], function(error){});--]
       };
@@ -99,9 +71,7 @@
         s1.charset = 'UTF-8';
         s1.setAttribute('crossorigin', '*');
         s0.parentNode.insertBefore(s1, s0);
-        
       })();
-      
     </script>
     
     
@@ -120,17 +90,17 @@
     [/#if]
     
     [#-- Global Javascript --]
-    <script type="text/javascript" src="${baseUrlMedia}/js/global/utils.js" ></script>
-    <script type="text/javascript" src="${baseUrlMedia}/js/global/global.js" ></script>
+    <script type="text/javascript" src="${baseUrl}/global/js/utils.js" ></script>
+    <script type="text/javascript" src="${baseUrl}/global/js/global.js" ></script>
     [#if logged]
       [#-- Pusher app --]
-      <script type="text/javascript" src="${baseUrlMedia}/js/global/pusher-app.js" ></script>
+      <script type="text/javascript" src="${baseUrl}/global/js/pusher-app.js" ></script>
     [/#if]
     [#-- import the custom JS and CSS --]
     [#if customJS??][#list customJS as js]<script src="${js}"></script>[/#list][/#if]
     
     [#-- Changes on Save --]
-    <script type="text/javascript" src="${baseUrlMedia}/js/global/changes.js" ></script>
+    <script type="text/javascript" src="${baseUrl}/global/js/changes.js" ></script>
     
     [/#compress]
     

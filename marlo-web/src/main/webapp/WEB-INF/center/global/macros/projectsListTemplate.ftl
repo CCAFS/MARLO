@@ -56,10 +56,10 @@
           <td class="text-center">
             [#if canEdit && action.centerCanBeDeleted(project.id, project.class.name)!false]
               <a id="removeProject-${project.id}" class="removeProject" href="#" title="">
-                <img src="${baseUrlMedia}/images/global/trash.png" title="[@s.text name="projectsList.removeProject" /]" /> 
+                <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="projectsList.removeProject" /]" /> 
               </a>
             [#else]
-              <img src="${baseUrlMedia}/images/global/trash_disable.png" title="[@s.text name="projectsList.cannotDelete" /]" />
+              <img src="${baseUrl}/global/images/trash_disable.png" title="[@s.text name="projectsList.cannotDelete" /]" />
             [/#if]
           </td> 
         </tr>  

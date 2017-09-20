@@ -2,8 +2,16 @@
 [#assign title = "Outcome" /]
 [#assign currentSectionString = "program-${actionName?replace('/','-')}-${outcomeID}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs","select2"] /]
-[#assign customJS = ["${baseUrlMedia}/js/global/usersManagement.js", "${baseUrlMedia}/js/impactPathway/outcome.js", "${baseUrlMedia}/js/global/fieldsValidation.js", "${baseUrlMedia}/js/global/autoSave.js"] /]
-[#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css","${baseUrlMedia}/css/impactPathway/outcomeList.css"] /]
+[#assign customJS = [
+  "${baseUrl}/global/js/usersManagement.js", 
+  "${baseUrl}/global/js/fieldsValidation.js", 
+  "${baseUrl}/global/js/autoSave.js", 
+  "${baseUrlMedia}/js/impactPathway/outcome.js" ]
+/]
+[#assign customCSS = [
+  "${baseUrl}/global/css/customDataTable.css",
+  "${baseUrlMedia}/css/impactPathway/outcomeList.css"] 
+/]
 [#assign currentSection = "impactPathway" /]
 [#assign currentStage = "outcomes" /]
 

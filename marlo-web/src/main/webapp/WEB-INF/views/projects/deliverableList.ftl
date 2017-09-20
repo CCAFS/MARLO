@@ -2,8 +2,15 @@
 [#assign title = "Project Deliverables" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
-[#assign customJS = ["${baseUrlMedia}/js/projects/deliverables/deliverableList.js","${baseUrlMedia}/js/global/fieldsValidation.js"] /] [#-- "${baseUrl}/js/global/autoSave.js" --]
-[#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css","${baseUrlMedia}/css/projects/projectDeliverable.css"] /]
+[#assign customJS = [
+  "${baseUrlMedia}/js/projects/deliverables/deliverableList.js",
+  "${baseUrl}/global/js/fieldsValidation.js"
+  [#-- "${baseUrl}/global/js/autoSave.js" --]
+  ] 
+/] 
+[#assign customCSS = [
+  "${baseUrl}/global/css/customDataTable.css",
+  "${baseUrlMedia}/css/projects/projectDeliverable.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "deliverableList" /]
 [#assign isListSection = true /]
@@ -20,7 +27,7 @@
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.jpg" />
     <p class="col-md-10">[#if reportingActive] [@s.text name="project.deliverableList.help2" /] [#else] [@s.text name="project.deliverableList.help1" /] [/#if] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
@@ -60,7 +67,7 @@
             </div>
           </div>
           <div id="diagramPopup" style="display:none; text-align:center;">
-            <img src="${baseUrlMedia}/images/global/FAIR_Principles_in_MARLO_20170919.png" alt="" width="100%" />
+            <img src="${baseUrl}/global/images/FAIR_Principles_in_MARLO_20170919.png" alt="" width="100%" />
           </div>
           
            <h3 class="subTitle headTitle">On going deliverables</h3>

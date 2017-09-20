@@ -2,8 +2,15 @@
 [#assign title = "MARLO - ${centerSession} - outcomes monitoring" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["select2","datatables.net", "datatables.net-bs"] /]
-[#assign customJS = ["${baseUrlMedia}/js/monitoring/outcomes/outcomesList.js" ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css","${baseUrlMedia}/css/impactPathway/outcomes.css"] /]
+[#assign customJS = [
+  "${baseUrlMedia}/js/monitoring/outcomes/outcomesList.js" 
+  ] 
+/]
+[#assign customCSS = [
+  "${baseUrl}/global/css/customDataTable.css",
+  "${baseUrlMedia}/css/impactPathway/outcomes.css"
+  ] 
+/]
 [#assign currentSection = "outcomes" /]
 
 
@@ -18,7 +25,7 @@
 [#-- Help text --]
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.png" />
+    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.png" />
     <p class="col-md-10"> [@s.text name="monitoring.outcomeList.help"][/@s.text] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>

@@ -2,7 +2,12 @@
 [#assign title = "Project Budget By Partners" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = ["select2", "dropzone", "blueimp-file-upload"] /]
-[#assign customJS = ["${baseUrlMedia}/js/projects/projectBudgetByPartners.js", "${baseUrlMedia}/js/global/autoSave.js","${baseUrlMedia}/js/global/fieldsValidation.js"] /]
+[#assign customJS = [
+  "${baseUrlMedia}/js/projects/projectBudgetByPartners.js", 
+  "${baseUrl}/global/js/autoSave.js",
+  "${baseUrl}/global/js/fieldsValidation.js"
+  ] 
+/]
 [#assign customCSS = ["${baseUrlMedia}/css/projects/projectBudgetByPartners.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "budgetByPartners" /]
@@ -18,7 +23,7 @@
 [#if !reportingActive]
 <div class="container helpText viewMore-block">
   <div style="display:none" class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.jpg" />
     <p class="col-md-10">
       [#if project.projectEditLeader] [@s.text name="projectBudgets.help2" /] [#else] [@s.text name="projectBudgets.help1" /] [/#if]
     </p>
@@ -81,7 +86,7 @@
                           <tr>
                           [#list budgetTypesList as budgetType]
                             [#-- Budget Type--]
-                            <td class=""><h5 class="subTitle"> ${budgetType.name} <img title="${budgetType.description}" src="${baseUrlMedia}/images/global/icon-help2.png" alt="" /> <br /> <small>US$ <span class="totalByYear year-${year} totalByYear-${budgetType.id}">${action.getTotalYear(year,budgetType.id)?number?string(",##0.00")}</span></small></h5></td>
+                            <td class=""><h5 class="subTitle"> ${budgetType.name} <img title="${budgetType.description}" src="${baseUrl}/global/images/icon-help2.png" alt="" /> <br /> <small>US$ <span class="totalByYear year-${year} totalByYear-${budgetType.id}">${action.getTotalYear(year,budgetType.id)?number?string(",##0.00")}</span></small></h5></td>
                           [/#list]
                           </tr>
                         </table>

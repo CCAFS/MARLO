@@ -2,7 +2,12 @@
 [#assign title = "Project Outcome Contribution to CRP" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectOutcomeID}" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = ["${baseUrlMedia}/js/projects/projectContributionCrp.js", "${baseUrlMedia}/js/global/autoSave.js","${baseUrlMedia}/js/global/fieldsValidation.js"] /] [#--  --]
+[#assign customJS = [
+  "${baseUrlMedia}/js/projects/projectContributionCrp.js", 
+  "${baseUrl}/global/js/autoSave.js",
+  "${baseUrl}/global/js/fieldsValidation.js"
+  ] 
+/]  
 [#assign customCSS = ["${baseUrlMedia}/css/projects/projectContributionCrp.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "contributionsCrpList" /]

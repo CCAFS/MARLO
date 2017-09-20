@@ -2,7 +2,10 @@
 [#assign title = "Locations" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = [ "select2", "flat-flags" ] /]
-[#assign customJS = [ "${baseUrlMedia}/js/admin/locations.js","${baseUrlMedia}/js/global/fieldsValidation.js" ] /]
+[#assign customJS = [ 
+  "${baseUrlMedia}/js/admin/locations.js",
+  "${baseUrl}/global/js/fieldsValidation.js" ] 
+/]
 [#assign customCSS = [ "${baseUrlMedia}/css/admin/locations.css" ] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "locations" /]
@@ -18,7 +21,7 @@
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.jpg" />
     <p class="col-md-10"> [@s.text name="crpLocations.help" /] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
@@ -80,7 +83,7 @@
         <div class="simpleBox col-md-12 col-sm-12">
         [#list regions as region]
           <span class="col-lg-3 col-md-4 col-sm-4" style="padding:5px 3px; cursor:pointer;" title="${(region.name)!}">
-          <img src="${baseUrlMedia}/images/global/icon-check.png" alt="" />
+          <img src="${baseUrl}/global/images/icon-check.png" alt="" />
            [@utilities.wordCutter string=(region.name) maxPos=20 substr=" "/]
           </span>
           [/#list]

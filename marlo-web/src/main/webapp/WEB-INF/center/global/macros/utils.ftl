@@ -22,7 +22,7 @@
   Specify the appropriate value for hlpInfo parameter in the corresponding ftl file. --] 
 <div class="container helpText viewMore-block">
   <div style="display:none;" class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.png" />
+    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.png" />
     <p class="col-md-10"> [@s.text name="${hlpInfo}" /] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>

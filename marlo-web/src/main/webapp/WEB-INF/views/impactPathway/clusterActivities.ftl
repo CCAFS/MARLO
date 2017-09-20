@@ -2,8 +2,20 @@
 [#assign title = "Impact Pathway - Cluster Of Activities" /]
 [#assign currentSectionString = "program-${actionName?replace('/','-')}-${crpProgramID}" /]
 [#assign pageLibs = ["cytoscape","cytoscape-panzoom","select2"] /]
-[#assign customJS = ["${baseUrlMedia}/js/global/usersManagement.js", "${baseUrlMedia}/js/impactPathway/programSubmit.js", "${baseUrlMedia}/js/global/autoSave.js", "${baseUrlMedia}/js/global/impactGraphic.js","${baseUrlMedia}/js/global/fieldsValidation.js", "${baseUrlMedia}/js/impactPathway/clusterActivities.js"] /]
-[#assign customCSS = [ "${baseUrlMedia}/css/impactPathway/clusterActivities.css","${baseUrlMedia}/css/global/impactGraphic.css" ] /]
+[#assign customJS = [
+  "${baseUrl}/global/js/usersManagement.js", 
+  "${baseUrlMedia}/js/impactPathway/programSubmit.js", 
+  "${baseUrl}/global/js/autoSave.js", 
+  "${baseUrl}/global/js/impactGraphic.js",
+  "${baseUrl}/global/js/fieldsValidation.js", 
+  "${baseUrlMedia}/js/impactPathway/clusterActivities.js"
+  ] 
+/]
+[#assign customCSS = [ 
+  "${baseUrlMedia}/css/impactPathway/clusterActivities.css",
+  "${baseUrlMedia}/css/impactPathway/impactGraphic.css" 
+  ] 
+/]
 [#assign currentSection = "impactPathway" /]
 [#assign currentStage = "clusterActivities" /]
 
@@ -22,7 +34,7 @@
 
 <div class="container helpText viewMore-block">
   <div style="display:none;" class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.jpg" />
     <p class="col-md-10">[@s.text name="cluster.help"][@s.param][@s.text name="global.sClusterOfActivities" /][/@s.param] [/@s.text] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>

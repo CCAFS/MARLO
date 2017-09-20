@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "Strategic Objectives" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
-[#assign customJS = ["${baseUrlMedia}/js/global/usersManagement.js"] /]
+[#assign customJS = ["${baseUrl}/global/js/usersManagement.js"] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "strategicObjectives" /]
 

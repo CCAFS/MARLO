@@ -3,11 +3,11 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = ["select2","flat-flags"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/global/fieldsValidation.js",
-  "${baseUrlMedia}/js/global/usersManagement.js", 
+  "${baseUrl}/global/js/fieldsValidation.js",
+  "${baseUrl}/global/js/usersManagement.js", 
   "${baseUrlMedia}/js/monitoring/projects/projectDescription.js",
   "${baseUrlMedia}/js/monitoring/projects/projectSync.js",
-  "${baseUrlMedia}/js/global/autoSave.js"
+  "${baseUrl}/global/js/autoSave.js"
   ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "description" /]
@@ -27,7 +27,7 @@
 [#-- Help text --]
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.png" />
+    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.png" />
     <p class="col-md-10"> [@s.text name="projectDescription.help"][/@s.text] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>

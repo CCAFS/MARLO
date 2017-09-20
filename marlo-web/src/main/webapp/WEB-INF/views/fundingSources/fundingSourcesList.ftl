@@ -3,7 +3,7 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
 [#assign customJS = ["${baseUrlMedia}/js/fundingSources/fundingSourcesList.js" ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css"] /]
+[#assign customCSS = ["${baseUrl}/global/css/customDataTable.css"] /]
 [#assign currentSection = "fundingSources" /] 
 
 [#assign breadCrumb = [

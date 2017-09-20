@@ -2,7 +2,12 @@
 [#assign title = "Management" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["vanilla-color-picker","intro.js"] /]
-[#assign customJS = ["${baseUrlMedia}/js/global/usersManagement.js", "${baseUrlMedia}/js/admin/management.js" ,"${baseUrlMedia}/js/global/fieldsValidation.js"] /]
+[#assign customJS = [
+  "${baseUrl}/global/js/usersManagement.js", 
+  "${baseUrlMedia}/js/admin/management.js" ,
+  "${baseUrl}/global/js/fieldsValidation.js"
+  ] 
+/]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "management" /]
 
@@ -16,7 +21,7 @@
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.jpg" />
     <p class="col-md-10"> [@s.text name="CrpProgram.help" /] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>

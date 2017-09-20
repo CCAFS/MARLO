@@ -2,8 +2,15 @@
 [#assign title = "MARLO Deliverables" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
-[#assign customJS = ["${baseUrlMedia}/js/monitoring/deliverable/deliverableList.js" ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css","${baseUrlMedia}/css/deliverable/projectDeliverable.css"] /]
+[#assign customJS = [
+  "${baseUrlMedia}/js/monitoring/deliverable/deliverableList.js" 
+  ] 
+/]
+[#assign customCSS = [
+  "${baseUrl}/global/css/customDataTable.css",
+  "${baseUrlMedia}/css/deliverable/projectDeliverable.css"
+  ] 
+  /]
 [#assign currentSection = "monitoring" /]
 [#assign currentStage = "deliverables" /]
 
@@ -19,7 +26,7 @@
 [#-- Help text --]
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.png" />
+    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.png" />
     <p class="col-md-10"> [@s.text name="deliverableList.help"][/@s.text] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>

@@ -7,8 +7,8 @@
   "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js", 
   "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js",
   "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js", 
-  "${baseUrlMedia}/js/global/autoSave.js",
-  "${baseUrlMedia}/js/global/fieldsValidation.js"
+  "${baseUrl}/global/js/autoSave.js",
+  "${baseUrl}/global/js/fieldsValidation.js"
 ] /]
 [#assign customCSS = [ "${baseUrlMedia}/css/publications/publication.css", "${baseUrlMedia}/css/projects/projectDeliverable.css" ] /]
 [#assign currentSection = "publications" /]

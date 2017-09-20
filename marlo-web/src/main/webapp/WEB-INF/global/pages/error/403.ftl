@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Permission denied!" /]
-[#assign customCSS = [ "${baseUrlMedia}/css/global/403.css" ] /]
+[#assign customCSS = [ "${baseUrl}/global/css/403.css" ] /]
 
 [#include "/WEB-INF/${headerPath}global/pages/header.ftl" /]
 [#include "/WEB-INF/${headerPath}global/pages/main-menu.ftl" /]

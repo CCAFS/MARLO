@@ -2,8 +2,17 @@
 [#assign title = "Impact Pathway - Research Topics" /]
 [#assign currentSectionString = "program-${actionName?replace('/','-')}-${programID}" /]
 [#assign pageLibs = ["cytoscape","cytoscape-panzoom","select2", "vanilla-color-picker"] /]
-[#assign customJS = ["${baseUrlMedia}/js/global/usersManagement.js", "${baseUrlMedia}/js/impactPathway/researchTopics.js", "${baseUrlMedia}/js/global/fieldsValidation.js", "${baseUrlMedia}/js/global/autoSave.js"] /]
-[#assign customCSS = [ "${baseUrlMedia}/css/impactPathway/clusterActivities.css" ] /]
+[#assign customJS = [
+  "${baseUrl}/global/js/usersManagement.js", 
+  "${baseUrlMedia}/js/impactPathway/researchTopics.js", 
+  "${baseUrl}/global/js/fieldsValidation.js", 
+  "${baseUrl}/global/js/autoSave.js"
+  ] 
+/]
+[#assign customCSS = [ 
+  "${baseUrlMedia}/css/impactPathway/clusterActivities.css" 
+  ] 
+/]
 [#assign currentSection = "impactPathway" /]
 [#assign currentStage = "researchTopics" /]
 

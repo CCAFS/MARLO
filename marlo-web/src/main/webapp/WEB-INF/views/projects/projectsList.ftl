@@ -4,7 +4,7 @@
 [#assign pageLibs = ["datatables.net", "datatables.net-bs","font-awesome"] /]
 [#assign customJS = ["${baseUrlMedia}/js/projects/projectsList.js" ] /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/global/customDataTable.css", 
+  "${baseUrl}/global/css/customDataTable.css", 
   "${baseUrlMedia}/css/projects/projectsList.css"] 
 /]
 [#assign currentSection = "projects" /]
@@ -22,7 +22,7 @@
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.jpg" />
     <p class="col-md-10"> [@s.text name="projectsList.help"][@s.param]${currentCycle}[/@s.param][/@s.text] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>

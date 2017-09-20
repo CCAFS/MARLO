@@ -59,10 +59,10 @@
           <td class="text-center">
             [#if canEdit && action.centerCanBeDeleted(outcome.id, outcome.class.name)!false]
               <a id="removeOutcome-${outcome.id}" class="removeOutcome" href="#" title="">
-                <img src="${baseUrlMedia}/images/global/trash.png" title="[@s.text name="programImpact.outcomeList.removeOutcome" /]" /> 
+                <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="programImpact.outcomeList.removeOutcome" /]" /> 
               </a>
             [#else]
-              <img src="${baseUrlMedia}/images/global/trash_disable.png" title="[@s.text name="programImpact.outcomeList.cannotDelete" /]" />
+              <img src="${baseUrl}/global/images/trash_disable.png" title="[@s.text name="programImpact.outcomeList.cannotDelete" /]" />
             [/#if]
           </td>          
         </tr>  

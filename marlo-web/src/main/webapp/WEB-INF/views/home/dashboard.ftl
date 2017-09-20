@@ -2,8 +2,17 @@
 [#assign title = "Welcome to MARLO" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["jQuery-Timelinr","cytoscape","cytoscape-panzoom","cytoscape-qtip","qtip2","datatables.net", "datatables.net-bs"] /]
-[#assign customJS = ["${baseUrlMedia}/js/home/dashboard.js","${baseUrlMedia}/js/global/impactGraphic.js"] /]
-[#assign customCSS = ["${baseUrlMedia}/css/home/dashboard.css","${baseUrlMedia}/css/global/customDataTable.css","${baseUrlMedia}/css/global/impactGraphic.css"] /]
+[#assign customJS = [
+  "${baseUrlMedia}/js/home/dashboard.js",
+  "${baseUrl}/global/js/impactGraphic.js"
+  ] 
+/]
+[#assign customCSS = [
+  "${baseUrlMedia}/css/home/dashboard.css",
+  "${baseUrl}/global/css/customDataTable.css",
+  "${baseUrl}/global/css/impactGraphic.css"
+  ] 
+/]
 [#assign currentSection = "home" /]
 [#assign breadCrumb = [
   {"label":"home", "nameSpace":"", "action":""}

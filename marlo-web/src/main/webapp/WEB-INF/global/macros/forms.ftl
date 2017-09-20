@@ -6,7 +6,7 @@
     [#assign labelTitle][#if i18nkey==""][@s.text name="${name}"][@s.param]${paramText}[/@s.param][/@s.text][#else][@s.text name="${i18nkey}"][@s.param]${paramText}[/@s.param][/@s.text][/#if][/#assign]
     [#if showTitle]
       <label for="${name}" class="${editable?string('editable', 'readOnly')}">${labelTitle}:[@req required=required && editable /]</label>
-      [#if help != ""]<img src="${baseUrlMedia}/images/global/icon-help2.png" title="[@s.text name="${help}"/]" />[/#if]
+      [#if help != ""]<img src="${baseUrl}/global/images/icon-help2.png" title="[@s.text name="${help}"/]" />[/#if]
     [/#if]
     [#if errorField==""][@s.fielderror cssClass="fieldError" fieldName="${name}"/][#else][@s.fielderror cssClass="fieldError" fieldName="${errorfield}"/][/#if]
     [#if editable]
@@ -33,7 +33,7 @@
     [#assign customValue][#if value=="-NULL"][@s.property value="${name}"/][#else]${value}[/#if][/#assign]
   	[#if showTitle]
       <label for="${name}" class="${editable?string('editable', 'readOnly')}"> [@s.text name="${customLabel}"][@s.param]${paramText}[/@s.param][/@s.text]:[@req required=required && editable /]</label>
-      [#if help != ""]<img src="${baseUrlMedia}/images/global/icon-help2.png" title="[@s.text name="${help}"/]" />[/#if]
+      [#if help != ""]<img src="${baseUrl}/global/images/icon-help2.png" title="[@s.text name="${help}"/]" />[/#if]
     [/#if]
     [#if errorfield==""][@s.fielderror cssClass="fieldError" fieldName="${name}"/][#else][@s.fielderror cssClass="fieldError" fieldName="${errorfield}"/][/#if]
     [#if editable]
@@ -64,7 +64,7 @@
         <input type="checkbox" id="${name}" class="${className}" name="${name}" value="${value}" [#if checked]checked="checked"[/#if] [#if disabled]disabled="disabled[/#if] />
         [#if i18nkey==""]${label}[#else][@s.text name="${i18nkey}" /][/#if] [@req required=required && editable /]
         <input type="hidden" id="__checkbox_${name}" name="__checkbox_${name}" value="${value}" />
-        [#if help != ""]<img src="${baseUrlMedia}/images/global/icon-help2.png" title="[@s.text name="${help}"/]" />[/#if]
+        [#if help != ""]<img src="${baseUrl}/global/images/icon-help2.png" title="[@s.text name="${help}"/]" />[/#if]
       </label>
     [#else]
       [#if checked]<p class="checked">[#if i18nkey==""]${label}[#else][@s.text name="${i18nkey}.readText" /][/#if]</p>[/#if]
@@ -127,7 +127,7 @@
     [#if showTitle]
     <label for="">
         [#if labelTitle != ""]${labelTitle}:[/#if][@req required=required && editable /]
-        [#if help != ""]<img src="${baseUrlMedia}/images/global/icon-help2.png" title="[@s.text name="${help}"/]" />[/#if]
+        [#if help != ""]<img src="${baseUrl}/global/images/icon-help2.png" title="[@s.text name="${help}"/]" />[/#if]
     </label>
     [/#if]
     [#if errorField==""][@s.fielderror cssClass="fieldError" fieldName="${name}"/][#else][@s.fielderror cssClass="fieldError" fieldName="${errorfield}"/][/#if]

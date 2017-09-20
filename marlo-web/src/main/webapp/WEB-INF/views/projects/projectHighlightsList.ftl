@@ -2,7 +2,11 @@
 [#assign title = "Project Highlights" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = [ "datatables.net", "datatables.net-bs"] /]
-[#assign customJS = ["${baseUrlMedia}/js/projects/projectHighlightsList.js","${baseUrlMedia}/js/global/fieldsValidation.js"] /]
+[#assign customJS = [
+  "${baseUrlMedia}/js/projects/projectHighlightsList.js",
+  "${baseUrl}/global/js/fieldsValidation.js"
+  ] 
+/]
 [#assign customCSS = ["${baseUrlMedia}/css/projects/projectHighlights.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "highlights" /]
@@ -19,7 +23,7 @@
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.jpg" />
     <p class="col-md-10"> [@s.text name="projectHighlights.help" /] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
@@ -91,10 +95,10 @@
             <td class="removeHighlight-row text-center">
               [#if canEdit  && (hl.year gte  currentCycleYear) ]
                 <a id="removeHighlight-${hl.id}" class="removeHighlight" href="#" title="" >
-                  <img src="${baseUrlMedia}/images/global/trash.png" title="[@s.text name="projectHighlights.removeHighlight" /]" /> 
+                  <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="projectHighlights.removeHighlight" /]" /> 
                 </a>
               [#else]
-                <img src="${baseUrlMedia}/images/global/trash_disable.png" title="[@s.text name="projectHighlights.cantDeleteHighlight" /]" />
+                <img src="${baseUrl}/global/images/trash_disable.png" title="[@s.text name="projectHighlights.cantDeleteHighlight" /]" />
               [/#if]
             </td> 
           </tr> 

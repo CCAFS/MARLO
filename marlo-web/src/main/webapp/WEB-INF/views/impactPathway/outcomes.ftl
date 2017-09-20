@@ -2,8 +2,19 @@
 [#assign title = "Impact Pathway - Outcomes" /]
 [#assign currentSectionString = "program-${actionName?replace('/','-')}-${crpProgramID}" /]
 [#assign pageLibs = ["select2","cytoscape","cytoscape-panzoom"] /]
-[#assign customJS = [ "${baseUrlMedia}/js/impactPathway/programSubmit.js", "${baseUrlMedia}/js/impactPathway/outcomes.js", "${baseUrlMedia}/js/global/autoSave.js", "${baseUrlMedia}/js/global/impactGraphic.js","${baseUrlMedia}/js/global/fieldsValidation.js" ] /]
-[#assign customCSS = [ "${baseUrlMedia}/css/impactPathway/outcomes.css","${baseUrlMedia}/css/global/impactGraphic.css" ] /]
+[#assign customJS = [ 
+  "${baseUrlMedia}/js/impactPathway/programSubmit.js", 
+  "${baseUrlMedia}/js/impactPathway/outcomes.js", 
+  "${baseUrl}/global/js/autoSave.js", 
+  "${baseUrl}/global/js/impactGraphic.js",
+  "${baseUrl}/global/js/fieldsValidation.js" 
+  ] 
+/]
+[#assign customCSS = [ 
+  "${baseUrlMedia}/css/impactPathway/outcomes.css",
+  "${baseUrl}/global/css/impactGraphic.css" 
+  ] 
+/]
 [#assign currentSection = "impactPathway" /]
 [#assign currentStage = "outcomes" /]
 
@@ -21,7 +32,7 @@
 
 <div class="container helpText viewMore-block">
   <div style="display:none;" class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.jpg" />
     <p class="col-md-10"> [@s.text name="outcomes.help" /] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>

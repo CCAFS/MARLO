@@ -2,7 +2,12 @@
 [#assign title = "Project Budget By Cluster of activities" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = ["${baseUrlMedia}/js/projects/projectBudgetByCoAs.js", "${baseUrlMedia}/js/global/autoSave.js","${baseUrlMedia}/js/global/fieldsValidation.js"] /]
+[#assign customJS = [
+  "${baseUrlMedia}/js/projects/projectBudgetByCoAs.js", 
+  "${baseUrl}/global/js/autoSave.js",
+  "${baseUrl}/global/js/fieldsValidation.js"
+  ] 
+/]
 [#assign customCSS = ["${baseUrlMedia}/css/projects/projectBudgetByCoAs.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "budgetByCoAs" /]
@@ -28,7 +33,7 @@
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.jpg" />
     <p class="col-md-10"> [@s.text name="projectBudgetByCoAs.help" /]</p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>

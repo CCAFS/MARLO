@@ -3,7 +3,11 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = [ "flat-flags", "google-diff-match-patch", "jquery-pretty-text-diff"] /]
 [#assign customJS = [ "${baseUrlMedia}/js/superadmin/marloInstitutions.js" ] /]
-[#assign customCSS = [ "${baseUrlMedia}/css/superadmin/superadmin.css","${baseUrlMedia}/css/global/customDataTable.css" ] /]
+[#assign customCSS = [ 
+  "${baseUrlMedia}/css/superadmin/superadmin.css",
+  "${baseUrl}/global/css/customDataTable.css" 
+  ] 
+/]
 [#assign currentSection = "superadmin" /]
 [#assign currentStage = "institutions" /]
 

@@ -2,7 +2,11 @@
 [#assign title = "MARLO - ${(centerSession)!} outcome information" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["select2","jsUri"] /]
-[#assign customJS = ["${baseUrlMedia}/js/monitoring/outcomes/outcomeInfo.js","${baseUrlMedia}/js/global/autoSave.js" ] /]
+[#assign customJS = [
+  "${baseUrlMedia}/js/monitoring/outcomes/outcomeInfo.js",
+  "${baseUrl}/global/js/autoSave.js" 
+  ] 
+/]
 [#assign customCSS = [""] /]
 [#assign currentSection = "outcomes" /]
 
@@ -20,7 +24,7 @@
 [#-- Help text --]
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.png" />
+    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.png" />
     <p class="col-md-10"> [@s.text name="monitoring.outcome.help"][/@s.text] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>

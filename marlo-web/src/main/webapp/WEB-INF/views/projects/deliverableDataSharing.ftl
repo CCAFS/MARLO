@@ -13,7 +13,7 @@
          <div class="fileName">${(file.name)!((file.link)!"Not defined")}</div>
          <div class="fileFormat">${(file.hosted)!'Untitled'}</div>
          <div class="fileSize">[#if file.size > 0]${(file.size/1024)?string("0.00")} KB[#else] <span title="Unknown size">- -</span> [/#if]</div>
-         [#if editable]<img class="removeInput" src="${baseUrlMedia}/images/global/icon-remove.png" alt="Remove"/>[/#if]
+         [#if editable]<img class="removeInput" src="${baseUrl}/global/images/icon-remove.png" alt="Remove"/>[/#if]
          <div class="clearfix"></div>
        </li>
       [/#list]

@@ -2,7 +2,12 @@
 [#assign title = "MARLO Funding Sources" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-${fundingSource.id}" /]
 [#assign pageLibs = ["select2", "blueimp-file-upload", "datatables.net", "datatables.net-bs","flat-flags"] /]
-[#assign customJS = ["${baseUrlMedia}/js/global/fieldsValidation.js","${baseUrlMedia}/js/fundingSources/fundingSource.js", "${baseUrlMedia}/js/global/autoSave.js" ] /]
+[#assign customJS = [
+  "${baseUrl}/global/js/fieldsValidation.js",
+  "${baseUrlMedia}/js/fundingSources/fundingSource.js", 
+  "${baseUrl}/global/js/autoSave.js" 
+  ] 
+/]
 [#assign customCSS = ["${baseUrlMedia}/css/fundingSources/fundingSource.css"] /]
 [#assign currentSection = "fundingSources" /]
 
@@ -86,7 +91,7 @@
                     [#if editable]
                     <input type="checkbox" name="fundingSource.w1w2" value="true" id="w1w2-tag-input" [#if w1w2TagValue]checked[/#if]/>
                     [#else]
-                       <img src="${baseUrlMedia}/images/global/checked-${w1w2TagValue?string}.png" /> 
+                       <img src="${baseUrl}/global/images/checked-${w1w2TagValue?string}.png" /> 
                     [/#if]
                     <small>[@customForm.text name="fundingSource.w1w2Tag" readText=!editable /]</small></label>
                 </div>

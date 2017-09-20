@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Page you requested was not found!" /]
-[#assign customCSS = [ "${baseUrlMedia}/css/global/404.css" ] /]
+[#assign customCSS = [ "${baseUrl}/global/css/404.css" ] /]
 
 [#include "/WEB-INF/${headerPath}global/pages/header.ftl" /]
 [#include "/WEB-INF/${headerPath}global/pages/main-menu.ftl" /]

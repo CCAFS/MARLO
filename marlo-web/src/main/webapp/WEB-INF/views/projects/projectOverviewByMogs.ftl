@@ -2,7 +2,12 @@
 [#assign title = "Overview by MOGs" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
-[#assign customJS = ["${baseUrlMedia}/js/projects/projectOverviewByMogs.js","${baseUrlMedia}/js/global/fieldsValidation.js","${baseUrlMedia}/js/global/autoSave.js"] /] [#-- "${baseUrl}/js/global/autoSave.js" --]
+[#assign customJS = [
+  "${baseUrlMedia}/js/projects/projectOverviewByMogs.js",
+  "${baseUrl}/global/js/fieldsValidation.js",
+  "${baseUrl}/global/js/autoSave.js"
+  ] 
+/]
 [#assign customCSS = ["${baseUrlMedia}/css/projects/projectBudgetByPartners.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "overviewByMogs" /]

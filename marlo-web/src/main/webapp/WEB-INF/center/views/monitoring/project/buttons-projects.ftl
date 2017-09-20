@@ -14,7 +14,7 @@
   <div class="buttons-content">
     [#-- History Log --]
     [#if recordsList?has_content]
-      [#import "/WEB-INF/center//global/macros/logHistory.ftl" as logHistory /]
+      [#import "/WEB-INF/center/global/macros/logHistory.ftl" as logHistory /]
       [@logHistory.logList list=recordsList itemName="projectID" itemId=project.id /]
       <a href="" onclick="return false" class="form-button button-history"><span class="glyphicon glyphicon-glyphicon glyphicon-list-alt" aria-hidden="true"></span> [@s.text name="form.buttons.history" /]</a>
     [/#if]

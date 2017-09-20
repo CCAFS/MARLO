@@ -2,7 +2,12 @@
 [#assign title = "Project CCAFS Outcomes" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = ["select2", "jsUri"] /]
-[#assign customJS = [ "${baseUrlMedia}/js/projects/projectCcafsOutcomes.js", "${baseUrlMedia}/js/global/autoSave.js", "${baseUrlMedia}/js/global/fieldsValidation.js"] /]
+[#assign customJS = [ 
+  "${baseUrlMedia}/js/projects/projectCcafsOutcomes.js", 
+  "${baseUrl}/global/js/autoSave.js", 
+  "${baseUrl}/global/js/fieldsValidation.js"
+  ] 
+/]
 [#assign customCSS = [ ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "ccafsOutcomes" /]
@@ -25,7 +30,7 @@
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.jpg" />
     <p class="col-md-10"> [@s.text name="projectCcafsOutcomes.help" /] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>

@@ -115,10 +115,10 @@
           <td class="text-center">
             [#if isDeliverableNew]
               <a id="removeDeliverable-${deliverable.id}" class="removeDeliverable" href="${baseUrl}/projects/${crpSession}/deleteDeliverable.do?deliverableID=${deliverable.id}" title="">
-                <img src="${baseUrlMedia}/images/global/trash.png" title="[@s.text name="project.deliverable.removeDeliverable" /]" /> 
+                <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="project.deliverable.removeDeliverable" /]" /> 
               </a>
             [#else]
-              <img src="${baseUrlMedia}/images/global/trash_disable.png" title="[@s.text name="project.deliverable.cannotDelete" /]" />
+              <img src="${baseUrl}/global/images/trash_disable.png" title="[@s.text name="project.deliverable.cannotDelete" /]" />
             [/#if]
           </td>
         </tr>  

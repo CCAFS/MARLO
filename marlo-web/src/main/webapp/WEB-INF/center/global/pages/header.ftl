@@ -9,7 +9,7 @@
   	<meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
   	[#-- Favicon --]
-    <link rel="shortcut icon" href="${baseUrlMedia}/images/global/MARLO_favicon.png" />
+    <link rel="shortcut icon" href="${baseUrl}/global/images/MARLO_favicon.png" />
     [#-- Keywords --]
     [#if pageKeywords??]<meta name="keywords" content="${pageKeywords}" />[/#if]
     [#-- Description --]
@@ -36,8 +36,9 @@
     <![endif]-->
     
     [#-- Second, import global javascripts and templates. --]
-    <link rel="stylesheet" type="text/css" href="${baseUrlMedia}/css/global/global.css" />
-    <link rel="stylesheet" type="text/css" href="${baseUrlMedia}/css/global/jquery-ui.custom.css" />
+    <link rel="stylesheet" type="text/css" href="${baseUrl}/global/css/global.css" />
+    <link rel="stylesheet" type="text/css" href="${baseUrlMedia}/css/global-center.css" />
+    <link rel="stylesheet" type="text/css" href="${baseUrl}/global/css/jquery-ui.custom.css" />
     
     [#-- Import the custom CSS --]
     [#if customCSS??][#list customCSS as css]<link rel="stylesheet" type="text/css" href="${css}" />[/#list][/#if] 
@@ -60,13 +61,13 @@
           </div>
           <!--
           [#if namespace?contains('superadmin')]
-            <img id="crp-image" src="${baseUrl}/images/global/cgiar.png" alt="" />
+            <img id="crp-image" src="${baseUrl}/global/images/cgiar.png" alt="" />
           [#else]
-            [#if centerSession??]<img id="crp-image" src="${baseUrl}/images/global/centers/${centerSession}.png" alt="${centerSession}" />[/#if]
+            [#if centerSession??]<img id="crp-image" src="${baseUrl}/global/images/centers/${centerSession}.png" alt="${centerSession}" />[/#if]
           [/#if]
           -->
           
-          <img id="crp-image" src="${baseUrlMedia}/images/global/centers/CIAT.png" alt="CIAT" />
+          <img id="crp-image" src="${baseUrl}/global/images/centers/CIAT.png" alt="CIAT" />
           
         </div>
       </header>

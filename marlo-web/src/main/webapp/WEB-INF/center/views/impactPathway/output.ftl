@@ -2,8 +2,17 @@
 [#assign title = "Output" /]
 [#assign currentSectionString = "program-${actionName?replace('/','-')}-${outputID}" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = ["${baseUrlMedia}/js/impactPathway/output.js", "${baseUrlMedia}/js/global/fieldsValidation.js", "${baseUrlMedia}/js/global/autoSave.js"] /]
-[#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css","${baseUrlMedia}/css/impactPathway/outputList.css"] /]
+[#assign customJS = [
+  "${baseUrlMedia}/js/impactPathway/output.js", 
+  "${baseUrl}/global/js/fieldsValidation.js", 
+  "${baseUrl}/global/js/autoSave.js"
+  ] 
+/]
+[#assign customCSS = [
+  "${baseUrl}/global/css/customDataTable.css",
+  "${baseUrlMedia}/css/impactPathway/outputList.css"
+  ] 
+/]
 [#assign currentSection = "impactPathway" /]
 [#assign currentStage = "outputs" /]
 [#assign currentSubStage = "mainInformation" /]

@@ -1,0 +1,45 @@
+.errorContent{
+	background-image:url("./../../global/images/error-page-403.jpg");
+	height: 490px;
+	background-size: 100% 100%;
+	background-repeat: no-repeat;
+}
+
+#info {
+    float: left;
+    width: 100%;
+    display: inline-block;
+    text-align: center;
+    padding-top: 12px;
+    font-family: sans-serif;
+}
+
+#info h2 {
+    color: #0277A2;
+    font-size: 4.3em;
+}
+
+#info span {
+    font-size: 2.3em;
+}
+
+#info p {
+    font-size: 1.8em;
+    color: #999;
+}
+
+.button-goBack {
+    font-size: 1.5em;
+    padding: 3px 8px 3px 8px;
+    margin-top: 4px;
+    text-align: center;
+    background: #0277a2;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+    display: inline-block;
+}
+
+.button-goBack:hover {
+    background: #57a7b5;
+}

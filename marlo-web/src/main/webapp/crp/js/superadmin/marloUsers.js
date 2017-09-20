@@ -56,12 +56,12 @@ function init() {
           }, {
               data: "isActive",
               render: function(data,type,full,meta) {
-                return '<div class="text-center"><img src="' + baseURL + '/images/global/checked-' + data + '.png" /></div>';
+                return '<div class="text-center"><img src="' + baseURL + '/global/images/checked-' + data + '.png" /></div>';
               }
           }, {
               data: "autoSaveActive",
               render: function(data,type,full,meta) {
-                return '<div class="text-center"><img src="' + baseURL + '/images/global/checked-' + data + '.png" /></div>';
+                return '<div class="text-center"><img src="' + baseURL + '/global/images/checked-' + data + '.png" /></div>';
               }
           }, {
               data: "lastLogin",

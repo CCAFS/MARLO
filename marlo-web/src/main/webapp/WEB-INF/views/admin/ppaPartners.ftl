@@ -2,7 +2,11 @@
 [#assign title = "PPA Partners" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = [ "${baseUrlMedia}/js/admin/ppaPartners.js","${baseUrlMedia}/js/global/fieldsValidation.js" ] /]
+[#assign customJS = [ 
+  "${baseUrlMedia}/js/admin/ppaPartners.js",
+  "${baseUrl}/global/js/fieldsValidation.js" 
+  ] 
+/]
 [#assign customCSS = [ "${baseUrlMedia}/css/admin/ppaPartners.css" ] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "ppaPartners" /]
@@ -17,7 +21,7 @@
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.jpg" />
     <p class="col-md-10"> [@s.text name="ppaPartners.help" /] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>

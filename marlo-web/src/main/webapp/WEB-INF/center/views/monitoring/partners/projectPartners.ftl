@@ -3,12 +3,16 @@
 [#assign currentSectionString = "program-${actionName?replace('/','-')}-${programID}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/global/usersManagement.js", 
+  "${baseUrl}/global/js/usersManagement.js", 
   "${baseUrlMedia}/js/impactPathway/output.js", 
-  "${baseUrlMedia}/js/global/fieldsValidation.js", 
-  "${baseUrlMedia}/js/global/autoSave.js"
-  ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/impactPathway/outputList.css"] /]
+  "${baseUrl}/global/js/fieldsValidation.js", 
+  "${baseUrl}/global/js/autoSave.js"
+  ] 
+/]
+[#assign customCSS = [
+  "${baseUrlMedia}/css/impactPathway/outputList.css"
+  ] 
+/]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "projectPartners" /]
 
@@ -17,13 +21,13 @@
   {"label":"projectPartners", "nameSpace":"/monitoring", "action":""}]/]
   
 [#assign leadersName = "leaders"/]
-[#include "/WEB-INF/center//global/pages/header.ftl" /]
-[#include "/WEB-INF/center//global/pages/main-menu.ftl" /]
-[#import "/WEB-INF/center//global/macros/utils.ftl" as utils /]
+[#include "/WEB-INF/center/global/pages/header.ftl" /]
+[#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
+[#import "/WEB-INF/center/global/macros/utils.ftl" as utils /]
 [#-- Help text --]
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.png" />
+    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.png" />
     <p class="col-md-10"> [@s.text name="projectPartner.help"][/@s.text] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>

@@ -188,7 +188,7 @@
               <h3>Activities</h3>
               <ul>
               [#list action.getActivitiesLedByUser(contact.id) as activity]
-                <li>${activity.title}  <a target="_blank" href="[@s.url namespace=namespace action='activities' ][@s.param name='${projectRequest}']${project.id?c}[/@s.param][/@s.url]#activity-${activity.id}"><img class="external-link" src="${baseUrl}/images/global/external-link.png" /></a></li>
+                <li>${activity.title}  <a target="_blank" href="[@s.url namespace=namespace action='activities' ][@s.param name='${projectRequest}']${project.id?c}[/@s.param][/@s.url]#activity-${activity.id}"><img class="external-link" src="${baseUrl}/global/images/external-link.png" /></a></li>
               [/#list]
               </ul>
             </div>
@@ -199,7 +199,7 @@
               <h3>Deliverables</h3>
               <ul>
               [#list action.getDeliverablesLedByUser(contact.id) as deliverable]
-                <li>${deliverable.title}  <a target="_blank" href="[@s.url namespace=namespace action='deliverable' ][@s.param name='deliverableID']${deliverable.id}[/@s.param][/@s.url]"><img class="external-link" src="${baseUrl}/images/global/external-link.png" /></a></li>
+                <li>${deliverable.title}  <a target="_blank" href="[@s.url namespace=namespace action='deliverable' ][@s.param name='deliverableID']${deliverable.id}[/@s.param][/@s.url]"><img class="external-link" src="${baseUrl}/global/images/external-link.png" /></a></li>
               [/#list]
               </ul>
             </div>
