@@ -421,7 +421,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    // System.out.println("prepare");
+    System.out.println("prepare capdev Detail");
 
     // genders
     genders = new ArrayList<>();
@@ -502,11 +502,11 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
         }
 
       }
+      System.out.println("---> " + participants.size());
       if (capdev.getCategory() == 2) {
-        if (!participants.isEmpty()) {
-          final Set<CapdevParticipant> capdevParticipants = new HashSet<CapdevParticipant>(participants);
-          capdev.setCapdevParticipants(capdevParticipants);
-        }
+        final Set<CapdevParticipant> capdevParticipants = new HashSet<CapdevParticipant>(participants);
+        capdev.setCapdevParticipants(capdevParticipants);
+
 
       }
 
