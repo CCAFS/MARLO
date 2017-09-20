@@ -16,7 +16,6 @@ package org.cgiar.ccafs.marlo.validation.projects;
 
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -88,13 +87,8 @@ public class ProjectHighLightValidator extends BaseValidator {
         .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
     }
 
-    if (action.isReportingActive()) {
-      this.saveMissingFields(project, highLigths, APConstants.REPORTING, action.getReportingYear(),
-        ProjectSectionStatusEnum.HIGHLIGHT.getStatus());
-    } else {
-      this.saveMissingFields(project, highLigths, APConstants.PLANNING, action.getPlanningYear(),
-        ProjectSectionStatusEnum.HIGHLIGHT.getStatus());
-    }
+    this.saveMissingFields(project, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
+      ProjectSectionStatusEnum.HIGHLIGHT.getStatus());
 
   }
 

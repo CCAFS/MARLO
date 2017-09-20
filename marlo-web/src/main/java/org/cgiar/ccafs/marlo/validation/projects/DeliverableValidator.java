@@ -387,13 +387,10 @@ public class DeliverableValidator extends BaseValidator {
       action
         .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
     }
-    if (action.isReportingActive()) {
-      this.saveMissingFields(deliverable, APConstants.REPORTING, action.getReportingYear(),
-        ProjectSectionStatusEnum.DELIVERABLES.getStatus());
-    } else {
-      this.saveMissingFields(deliverable, APConstants.PLANNING, action.getPlanningYear(),
-        ProjectSectionStatusEnum.DELIVERABLES.getStatus());
-    }
+
+    this.saveMissingFields(deliverable, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
+      ProjectSectionStatusEnum.DELIVERABLES.getStatus());
+
   }
 
 

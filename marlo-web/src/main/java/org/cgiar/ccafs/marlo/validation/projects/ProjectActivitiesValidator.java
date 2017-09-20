@@ -16,7 +16,6 @@
 package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Crp;
@@ -94,13 +93,10 @@ public class ProjectActivitiesValidator extends BaseValidator {
       action
         .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
     }
-    if (action.isReportingActive()) {
-      this.saveMissingFields(project, APConstants.REPORTING, action.getReportingYear(),
-        ProjectSectionStatusEnum.ACTIVITIES.getStatus());
-    } else {
-      this.saveMissingFields(project, APConstants.PLANNING, action.getPlanningYear(),
-        ProjectSectionStatusEnum.ACTIVITIES.getStatus());
-    }
+
+    this.saveMissingFields(project, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
+      ProjectSectionStatusEnum.ACTIVITIES.getStatus());
+
   }
 
   public void validateActivity(Activity activity, int index, String listName) {

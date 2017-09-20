@@ -96,22 +96,12 @@ public class ProjectOutcomeValidator extends BaseValidator {
           .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
       }
 
-      if (action.isReportingActive()) {
-        this.saveMissingFields(projectOutcome, APConstants.REPORTING, action.getReportingYear(),
-          ProjectSectionStatusEnum.OUTCOMES.getStatus());
-      } else {
-        this.saveMissingFields(projectOutcome, APConstants.PLANNING, action.getPlanningYear(),
-          ProjectSectionStatusEnum.OUTCOMES.getStatus());
-      }
+      this.saveMissingFields(projectOutcome, action.getActualPhase().getDescription(),
+        action.getActualPhase().getYear(), ProjectSectionStatusEnum.OUTCOMES.getStatus());
     } else {
       this.addMissingField("");
-      if (action.isReportingActive()) {
-        this.saveMissingFields(projectOutcome, APConstants.REPORTING, action.getReportingYear(),
-          ProjectSectionStatusEnum.OUTCOMES.getStatus());
-      } else {
-        this.saveMissingFields(projectOutcome, APConstants.PLANNING, action.getPlanningYear(),
-          ProjectSectionStatusEnum.OUTCOMES.getStatus());
-      }
+      this.saveMissingFields(projectOutcome, action.getActualPhase().getDescription(),
+        action.getActualPhase().getYear(), ProjectSectionStatusEnum.OUTCOMES.getStatus());
     }
 
 

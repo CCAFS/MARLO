@@ -1273,6 +1273,9 @@ public class ProjectPartnerAction extends BaseAction {
         project.getCoordinatorPersons(this.getActualPhase()), pcRole);
       project = projectManager.getProjectById(projectID);
       project.setActiveSince(new Date());
+      project.setCreatedBy(this.getCurrentUser());
+      project.setModifiedBy(this.getCurrentUser());
+
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_PARTNERS_RELATION);
       relationsName.add(APConstants.PROJECT_LESSONS_RELATION);

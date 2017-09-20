@@ -1728,8 +1728,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     switch (ProjectSectionStatusEnum.value(section.toUpperCase())) {
       case OUTCOMES:
         project = projectManager.getProjectById(projectID);
-        List<ProjectOutcome> projectOutcomes =
-          project.getProjectOutcomes().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+        List<ProjectOutcome> projectOutcomes = project.getProjectOutcomes().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
 
 
         project.setOutcomes(projectOutcomes);
@@ -1882,7 +1882,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         project = projectManager.getProjectById(projectID);
 
         project.setProjectActivities(new ArrayList<Activity>(project.getActivities().stream()
-          .filter(a -> a.isActive() && a.getActivityStatus() != null
+          .filter(a -> a.isActive() && a.getPhase().equals(this.getActualPhase()) && a.getActivityStatus() != null
             && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
               || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))))
           .collect(Collectors.toList())));
@@ -1907,7 +1907,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           return true;
         }
         project = projectManager.getProjectById(projectID);
-        if (project.getProjectBudgets().stream().filter(d -> d.isActive()).collect(Collectors.toList()).isEmpty()) {
+        if (project.getProjectBudgets().stream().filter(d -> d.isActive() && d.getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList()).isEmpty()) {
           return false;
         }
 
@@ -3127,14 +3128,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     if (this.isReportingActive()) {
 
       List<ProjectComponentLesson> lessons = projectDB.getProjectComponentLessons().stream()
-        .filter(c -> c.isActive() && c.getYear() == this.getReportingYear()
+        .filter(c -> c.isActive() && c.getYear() == this.getActualPhase().getYear()
           && c.getCycle().equals(APConstants.REPORTING) && c.getComponentName().equals(actionName))
         .collect(Collectors.toList());
       if (!lessons.isEmpty()) {
         project.setProjectComponentLesson(lessons.get(0));
       }
-      List<ProjectComponentLesson> lessonsPreview = projectDB.getProjectComponentLessons()
-        .stream().filter(c -> c.isActive() && c.getYear() == this.getReportingYear()
+      List<ProjectComponentLesson> lessonsPreview = projectDB.getProjectComponentLessons().stream()
+        .filter(c -> c.isActive() && c.getYear() == this.getActualPhase().getYear()
           && c.getCycle().equals(APConstants.PLANNING) && c.getComponentName().equals(actionName))
         .collect(Collectors.toList());
       if (!lessonsPreview.isEmpty()) {
@@ -3142,8 +3143,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
     } else {
 
-      List<ProjectComponentLesson> lessons = projectDB.getProjectComponentLessons()
-        .stream().filter(c -> c.isActive() && c.getYear() == this.getPlanningYear()
+      List<ProjectComponentLesson> lessons = projectDB.getProjectComponentLessons().stream()
+        .filter(c -> c.isActive() && c.getYear() == this.getActualPhase().getYear()
           && c.getCycle().equals(APConstants.PLANNING) && c.getComponentName().equals(actionName))
         .collect(Collectors.toList());
       if (!lessons.isEmpty()) {
@@ -3158,15 +3159,16 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     if (this.isReportingActive()) {
 
       List<ProjectComponentLesson> lessons = projectOutcomeDB.getProjectComponentLessons().stream()
-        .filter(
-          c -> c.isActive() && c.getYear() == this.getReportingYear() && c.getCycle().equals(APConstants.REPORTING)
-            && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
+        .filter(c -> c.isActive() && c.getYear() == this.getActualPhase().getYear()
+          && c.getCycle().equals(APConstants.REPORTING)
+          && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
         .collect(Collectors.toList());
       if (!lessons.isEmpty()) {
         projectOutcome.setProjectComponentLesson(lessons.get(0));
       }
       List<ProjectComponentLesson> lessonsPreview = projectOutcomeDB.getProjectComponentLessons().stream()
-        .filter(c -> c.isActive() && c.getYear() == this.getReportingYear() && c.getCycle().equals(APConstants.PLANNING)
+        .filter(c -> c.isActive() && c.getYear() == this.getActualPhase().getYear()
+          && c.getCycle().equals(APConstants.PLANNING)
           && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
         .collect(Collectors.toList());
       if (!lessonsPreview.isEmpty()) {
@@ -3175,7 +3177,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     } else {
 
       List<ProjectComponentLesson> lessons = projectOutcomeDB.getProjectComponentLessons().stream()
-        .filter(c -> c.isActive() && c.getYear() == this.getPlanningYear() && c.getCycle().equals(APConstants.PLANNING)
+        .filter(c -> c.isActive() && c.getYear() == this.getActualPhase().getYear()
+          && c.getCycle().equals(APConstants.PLANNING)
           && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
         .collect(Collectors.toList());
       if (!lessons.isEmpty()) {
@@ -3189,15 +3192,16 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     if (this.isReportingActive()) {
 
       List<ProjectComponentLesson> lessons = program.getProjectComponentLessons().stream()
-        .filter(
-          c -> c.isActive() && c.getYear() == this.getReportingYear() && c.getCycle().equals(APConstants.REPORTING)
-            && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
+        .filter(c -> c.isActive() && c.getYear() == this.getActualPhase().getYear()
+          && c.getCycle().equals(APConstants.REPORTING)
+          && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
         .collect(Collectors.toList());
       if (!lessons.isEmpty()) {
         program.setProjectComponentLesson(lessons.get(0));
       }
       List<ProjectComponentLesson> lessonsPreview = program.getProjectComponentLessons().stream()
-        .filter(c -> c.isActive() && c.getYear() == this.getReportingYear() && c.getCycle().equals(APConstants.PLANNING)
+        .filter(c -> c.isActive() && c.getYear() == this.getActualPhase().getYear()
+          && c.getCycle().equals(APConstants.PLANNING)
           && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
         .collect(Collectors.toList());
       if (!lessonsPreview.isEmpty()) {
@@ -3206,7 +3210,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     } else {
 
       List<ProjectComponentLesson> lessons = program.getProjectComponentLessons().stream()
-        .filter(c -> c.isActive() && c.getYear() == this.getPlanningYear() && c.getCycle().equals(APConstants.PLANNING)
+        .filter(c -> c.isActive() && c.getYear() == this.getActualPhase().getYear()
+          && c.getCycle().equals(APConstants.PLANNING)
           && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
         .collect(Collectors.toList());
       if (!lessons.isEmpty()) {

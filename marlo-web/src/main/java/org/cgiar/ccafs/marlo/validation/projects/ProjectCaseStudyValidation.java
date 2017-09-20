@@ -16,7 +16,6 @@
 package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.model.CaseStudy;
 import org.cgiar.ccafs.marlo.data.model.Crp;
@@ -153,10 +152,10 @@ public class ProjectCaseStudyValidation extends BaseValidator {
         .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
     }
 
-    if (action.isReportingActive()) {
-      this.saveMissingFields(project, caseStudy, APConstants.REPORTING, action.getReportingYear(),
-        ProjectSectionStatusEnum.CASESTUDIES.getStatus());
-    }
+    this.saveMissingFields(project, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
+      ProjectSectionStatusEnum.CASESTUDIES.getStatus());
+
+
   }
 
 
