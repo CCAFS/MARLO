@@ -98,27 +98,28 @@ public class FundingSourceValidator extends BaseValidator {
       }
     }
 
-    if (!this.isValidString(fundingSource.getTitle())) {
+    if (!this.isValidString(fundingSource.getFundingSourceInfo().getTitle())) {
       this.addMessage(action.getText("fundingSource.title"));
       action.getInvalidFields().put("input-fundingSource.title", InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    if (fundingSource.getStartDate() == null) {
+    if (fundingSource.getFundingSourceInfo().getStartDate() == null) {
       this.addMessage(action.getText("fundingSource.startDate"));
       action.getInvalidFields().put("input-fundingSource.startDate", InvalidFieldsMessages.EMPTYFIELD);
     }
-    if (fundingSource.getEndDate() == null) {
+    if (fundingSource.getFundingSourceInfo().getEndDate() == null) {
       this.addMessage(action.getText("fundingSource.endDate"));
       action.getInvalidFields().put("input-fundingSource.endDate", InvalidFieldsMessages.EMPTYFIELD);
     }
 
     // Validate the donor with id -1, beacause front end send this when there is not one selected
-    if (fundingSource.getInstitution() == null || fundingSource.getInstitution().getId() == null
-      || fundingSource.getInstitution().getId().longValue() == -1) {
+    if (fundingSource.getFundingSourceInfo().getInstitution() == null
+      || fundingSource.getFundingSourceInfo().getInstitution().getId() == null
+      || fundingSource.getFundingSourceInfo().getInstitution().getId().longValue() == -1) {
       this.addMessage(action.getText("fundingSource.institution.id"));
       action.getInvalidFields().put("input-fundingSource.institution.id", InvalidFieldsMessages.EMPTYFIELD);
     }
-    if (!this.isValidString(fundingSource.getContactPersonName())) {
+    if (!this.isValidString(fundingSource.getFundingSourceInfo().getContactPersonName())) {
       this.addMessage(action.getText("fundingSource.contactPersonName"));
       action.getInvalidFields().put("input-fundingSource.contactPersonName", InvalidFieldsMessages.EMPTYFIELD);
     }
@@ -126,16 +127,16 @@ public class FundingSourceValidator extends BaseValidator {
 
     if (this.hasIFPRI(fundingSource)) {
       if (action.hasSpecificities(APConstants.CRP_DIVISION_FS)) {
-        if (fundingSource.getPartnerDivision() == null) {
+        if (fundingSource.getFundingSourceInfo().getPartnerDivision() == null) {
           this.addMessage(action.getText("fundingSource.division"));
           action.getInvalidFields().put("input-fundingSource.partnerDivision.id", InvalidFieldsMessages.EMPTYFIELD);
         }
-        if (fundingSource.getPartnerDivision() != null) {
-          if (fundingSource.getPartnerDivision().getId() == null) {
+        if (fundingSource.getFundingSourceInfo().getPartnerDivision() != null) {
+          if (fundingSource.getFundingSourceInfo().getPartnerDivision().getId() == null) {
             this.addMessage(action.getText("fundingSource.division"));
             action.getInvalidFields().put("input-fundingSource.partnerDivision.id", InvalidFieldsMessages.EMPTYFIELD);
           } else {
-            if (fundingSource.getPartnerDivision().getId().longValue() == -1) {
+            if (fundingSource.getFundingSourceInfo().getPartnerDivision().getId().longValue() == -1) {
               this.addMessage(action.getText("fundingSource.division"));
               action.getInvalidFields().put("input-fundingSource.partnerDivision.id", InvalidFieldsMessages.EMPTYFIELD);
             }
@@ -147,7 +148,7 @@ public class FundingSourceValidator extends BaseValidator {
 
 
     if (action.hasSpecificities(APConstants.CRP_EMAIL_FUNDING_SOURCE)) {
-      if (!this.isValidString(fundingSource.getContactPersonEmail())) {
+      if (!this.isValidString(fundingSource.getFundingSourceInfo().getContactPersonEmail())) {
         this.addMessage(action.getText("fundingSource.contactPersonEmail"));
         action.getInvalidFields().put("input-fundingSource.contactPersonEmail", InvalidFieldsMessages.EMPTYFIELD);
       }

@@ -261,7 +261,8 @@ public class PartnersSaveAction extends BaseAction {
       message.append("Funding Source: (");
       message.append(fundingSourceID);
       message.append(") - ");
-      message.append(fundingSourceManager.getFundingSourceById(fundingSourceID).getTitle());
+      message.append(fundingSourceManager.getFundingSourceById(fundingSourceID)
+        .getFundingSourceInfo(this.getActualPhase()).getTitle());
     }
 
     message.append(".</br>");

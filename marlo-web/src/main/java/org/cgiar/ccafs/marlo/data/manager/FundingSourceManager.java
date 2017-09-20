@@ -83,7 +83,7 @@ public interface FundingSourceManager {
    * @param year - the year
    * @return the list of FundingSource
    */
-  public List<FundingSource> searchFundingSources(String query, int year, long crpID);
+  public List<FundingSource> searchFundingSources(String query, int year, long crpID, long phaseID);
 
   /**
    * This method get the list of FundingSource that like a specifics parameters.
@@ -93,7 +93,8 @@ public interface FundingSourceManager {
    * @param year - the year
    * @return the list of FundingSource
    */
-  public List<FundingSource> searchFundingSourcesByInstitution(String query, long institutionID, int year, long crpID);
+  public List<FundingSource> searchFundingSourcesByInstitution(String query, long institutionID, int year, long crpID,
+    long phaseID);
 
   /**
    * This method get the list of FundingSource that like a specifics parameters.

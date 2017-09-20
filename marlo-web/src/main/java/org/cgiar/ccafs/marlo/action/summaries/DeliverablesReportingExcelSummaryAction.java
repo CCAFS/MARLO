@@ -533,7 +533,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         // Get funding sources if exist
         for (DeliverableFundingSource dfs : deliverable.getDeliverableFundingSources().stream()
           .filter(d -> d.isActive()).collect(Collectors.toList())) {
-          fundingSources += "● " + dfs.getFundingSource().getTitle() + "\n";
+          fundingSources += "● " + dfs.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getTitle() + "\n";
         }
         if (fundingSources.isEmpty()) {
           fundingSources = null;

@@ -829,10 +829,11 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
         for (ProjectBudget pb : project.getProjectBudgets().stream()
           .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getBudgetType() != null
             && pb.getBudgetType().getId() == type && pb.getFundingSource() != null
-            && pb.getFundingSource().getW1w2() != null && pb.getFundingSource().getW1w2().booleanValue() == true)
+            && pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getW1w2() != null
+            && pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getW1w2().booleanValue() == true)
           .collect(Collectors.toList())) {
           FundingSource fsActual = pb.getFundingSource();
-          Boolean w1w2 = pb.getFundingSource().getW1w2();
+          Boolean w1w2 = pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getW1w2();
           total = total + pb.getAmount();
         }
         break;
@@ -840,12 +841,14 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
         for (ProjectBudget pb : project.getProjectBudgets().stream()
           .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getBudgetType() != null
             && pb.getBudgetType().getId() == type && pb.getFundingSource() != null
-            && pb.getFundingSource().getW1w2() != null && pb.getFundingSource().getW1w2().booleanValue() == false)
+            && pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getW1w2() != null
+            && pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getW1w2().booleanValue() == false)
           .collect(Collectors.toList())) {
           ProjectBudget pbActual = pb;
           FundingSource fsActual = pbActual.getFundingSource();
-          Boolean w1w2 = pb.getFundingSource().getW1w2();
-          Boolean validation = pb.getFundingSource().getW1w2().booleanValue() == false;
+          Boolean w1w2 = pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getW1w2();
+          Boolean validation =
+            pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getW1w2().booleanValue() == false;
 
           total = total + pb.getAmount();
         }

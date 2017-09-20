@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -60,6 +61,8 @@ public class FundingSourceListAction extends BaseAction {
   private InstitutionManager institutionManager;
   private ProjectBudgetManager projectBudgetManager;
   private FundingSourceBudgetManager fundingSourceBudgetManager;
+  private Phase phase;
+
 
   @Inject
   public FundingSourceListAction(APConfig config, FundingSourceManager fundingSourceManager,
@@ -73,6 +76,7 @@ public class FundingSourceListAction extends BaseAction {
     this.fundingSourceBudgetManager = fundingSourceBudgetManager;
   }
 
+
   @Override
   public String execute() throws Exception {
     sources = new ArrayList<>();
@@ -82,14 +86,15 @@ public class FundingSourceListAction extends BaseAction {
 
     Map<String, Object> source;
     if (institution == null) {
-      fundingSources = fundingSourceManager.searchFundingSources(queryParameter, year, this.getCrpID().longValue());
+      fundingSources = fundingSourceManager.searchFundingSources(queryParameter, year, this.getCrpID().longValue(),
+        this.getPhase().getId());
     } else {
       fundingSources = fundingSourceManager.searchFundingSourcesByInstitution(queryParameter, institution.getId(), year,
-        this.getCrpID());
+        this.getCrpID(), this.getPhase().getId());
 
 
-      fundingSources
-        .addAll(fundingSourceManager.searchFundingSources(queryParameter, year, this.getCrpID().longValue()));
+      fundingSources.addAll(fundingSourceManager.searchFundingSources(queryParameter, year, this.getCrpID().longValue(),
+        this.getPhase().getId()));
 
 
       // add elements to al, including duplicates
@@ -101,8 +106,10 @@ public class FundingSourceListAction extends BaseAction {
     }
 
     if (fundingSources != null) {
-      fundingSources = fundingSources.stream().filter(c -> c.getTitle() != null).collect(Collectors.toList());
-      fundingSources.sort((p1, p2) -> p1.getTitle().compareTo(p2.getTitle()));
+      fundingSources =
+        fundingSources.stream().filter(c -> c.getFundingSourceInfo().getTitle() != null).collect(Collectors.toList());
+      fundingSources
+        .sort((p1, p2) -> p1.getFundingSourceInfo().getTitle().compareTo(p2.getFundingSourceInfo().getTitle()));
     }
 
 
@@ -110,15 +117,16 @@ public class FundingSourceListAction extends BaseAction {
       if (fundingSource.isActive()) {
         source = new HashMap<>();
         source.put("id", fundingSource.getId());
-        source.put("name", fundingSource.getTitle());
-        source.put("type", fundingSource.getBudgetType().getName());
-        source.put("typeId", fundingSource.getBudgetType().getId());
+        source.put("name", fundingSource.getFundingSourceInfo().getTitle());
+        source.put("type", fundingSource.getFundingSourceInfo().getBudgetType().getName());
+        source.put("typeId", fundingSource.getFundingSourceInfo().getBudgetType().getId());
 
-        if ((fundingSource.getW1w2() != null) && (this.hasSpecificities(APConstants.CRP_FS_W1W2_COFINANCING))) {
-          source.put("w1w2", fundingSource.getW1w2().booleanValue());
+        if ((fundingSource.getFundingSourceInfo().getW1w2() != null)
+          && (this.hasSpecificities(APConstants.CRP_FS_W1W2_COFINANCING))) {
+          source.put("w1w2", fundingSource.getFundingSourceInfo().getW1w2().booleanValue());
         }
 
-        if (fundingSource.getBudgetType().getId().intValue() == 1) {
+        if (fundingSource.getFundingSourceInfo().getBudgetType().getId().intValue() == 1) {
 
           String permission =
             this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, loggedCrp.getAcronym());
@@ -149,6 +157,10 @@ public class FundingSourceListAction extends BaseAction {
     return SUCCESS;
   }
 
+  public Phase getPhase() {
+    return phase;
+  }
+
   public List<Map<String, Object>> getSources() {
     return sources;
   }
@@ -162,6 +174,11 @@ public class FundingSourceListAction extends BaseAction {
     }
     queryParameter = StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]);
     year = Integer.parseInt(StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0]));
+    phase = this.getActualPhase();
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
   public void setSources(List<Map<String, Object>> sources) {

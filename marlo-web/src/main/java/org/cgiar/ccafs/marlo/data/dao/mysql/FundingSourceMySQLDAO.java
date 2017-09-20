@@ -17,14 +17,13 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.FundingSourceDAO;
-import org.cgiar.ccafs.marlo.data.model.BudgetType;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.FundingSourceInfo;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 
@@ -60,6 +59,7 @@ public class FundingSourceMySQLDAO implements FundingSourceDAO {
     return dao.find(FundingSource.class, id);
 
   }
+
 
   @Override
   public List<FundingSource> findAll() {
@@ -108,45 +108,81 @@ public class FundingSourceMySQLDAO implements FundingSourceDAO {
   }
 
   @Override
-  public List<FundingSource> searchFundingSources(String query, int year, long crpID) {
+  public List<FundingSource> searchFundingSources(String query, int year, long crpID, long phaseID) {
     StringBuilder q = new StringBuilder();
-    q.append("from " + FundingSource.class.getName());
-    q.append(" where crp_id=" + crpID + " and (title like '%" + query + "%' ");
-    q.append("OR id like '%" + query + "%' or concat('FS',id) like '%" + query + "%' or (select name from "
-      + BudgetType.class.getName() + " where id=type) like '%" + query + "%') and is_active=1 and crp_id=" + crpID
-      + " and ( type=1)");
+    q.append("SELECT fsi.id AS id ");
+    q.append("FROM  funding_sources_info fsi ");
+    q.append("INNER JOIN funding_sources fs ON fs.id = fsi.funding_source_id ");
+    q.append("AND fs.is_active ");
+    q.append("AND fs.crp_id = " + crpID);
+    q.append(" WHERE ");
+    q.append("(fsi.title LIKE '%" + query + "%' ");
+    q.append("OR fsi.funding_source_id LIKE '%" + query + "%' ");
+    q.append("OR CONCAT('FS', fsi.funding_source_id) LIKE '%" + query + "%' ");
+    q.append("OR (SELECT NAME FROM budget_types bt WHERE bt.id = fsi.type) LIKE '%" + query + "%' )");
+    q.append("AND fsi.type = 1 ");
+    q.append("AND fsi.id_phase = " + phaseID);
+    q.append("AND fsi.end_date IS NOT NULL");
+    q.append("AND " + year + " <= YEAR(fsi.end_date) ");
 
-    List<FundingSource> fundingSources = dao.findAll(q.toString());
-    SimpleDateFormat df = new SimpleDateFormat("yyyy");
-    return fundingSources.stream()
-      .filter(c -> c.getEndDate() != null && year <= Integer.parseInt(df.format(c.getEndDate())))
-      .collect(Collectors.toList());
+    List<Map<String, Object>> rList = dao.findCustomQuery(q.toString());
+
+    List<FundingSource> fundingSources = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        FundingSourceInfo fundingSourceInfo =
+          dao.find(FundingSourceInfo.class, Long.parseLong(map.get("id").toString()));
+        fundingSourceInfo.getFundingSource().setFundingSourceInfo(fundingSourceInfo);
+        fundingSources.add(fundingSourceInfo.getFundingSource());
+      }
+    }
+
+    return fundingSources;
   }
 
   @Override
-  public List<FundingSource> searchFundingSourcesByInstitution(String query, long institutionID, int year, long crpID) {
+  public List<FundingSource> searchFundingSourcesByInstitution(String query, long institutionID, int year, long crpID,
+    long phaseID) {
     StringBuilder q = new StringBuilder();
-    q.append("from " + FundingSource.class.getName());
-    q.append(" where is_active=1 and (title like '%" + query + "%' ");
-    q.append("OR id like '%" + query + "%' or concat('FS',id) like '%" + query + "%' or (select name from "
-      + BudgetType.class.getName() + " where id=type) like '%" + query + "%') and crp_id=" + crpID);
+    q.append("SELECT fsi.id AS id ");
+    q.append("FROM  funding_sources_info fsi ");
+    q.append("INNER JOIN funding_sources fs ON fs.id = fsi.funding_source_id ");
+    q.append("AND fs.is_active ");
+    q.append("AND fs.crp_id = " + crpID);
+    q.append(" WHERE ");
+    q.append("(fsi.title LIKE '%" + query + "%' ");
+    q.append("OR fsi.funding_source_id LIKE '%" + query + "%' ");
+    q.append("OR CONCAT('FS', fsi.funding_source_id) LIKE '%" + query + "%' ");
+    q.append("OR (SELECT NAME FROM budget_types bt WHERE bt.id = fsi.type) LIKE '%" + query + "%' )");
+    q.append("AND fsi.type = 1 ");
+    q.append("AND fsi.id_phase = " + phaseID);
+    q.append("AND fsi.end_date IS NOT NULL");
+    q.append("AND " + year + " <= YEAR(fsi.end_date) ");
 
+    List<Map<String, Object>> rList = dao.findCustomQuery(q.toString());
 
-    List<FundingSource> fundingSources = dao.findAll(q.toString());
+    List<FundingSource> fundingSources = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        FundingSourceInfo fundingSourceInfo =
+          dao.find(FundingSourceInfo.class, Long.parseLong(map.get("id").toString()));
+        fundingSourceInfo.getFundingSource().setFundingSourceInfo(fundingSourceInfo);
+        fundingSources.add(fundingSourceInfo.getFundingSource());
+      }
+    }
+
     List<FundingSource> fundingSourcesReturn = new ArrayList<>();
     SimpleDateFormat df = new SimpleDateFormat("yyyy");
     for (FundingSource fundingSource : fundingSources) {
       try {
-        if (fundingSource.getEndDate() != null) {
-          if (year <= Integer.parseInt(df.format(fundingSource.getEndDate()))) {
-            if (fundingSource.getBudgetType().getId().intValue() != 1) {
-              if (fundingSource.hasInstitution(institutionID)) {
-                fundingSourcesReturn.add(fundingSource);
-              }
-            } else {
-              fundingSourcesReturn.add(fundingSource);
-            }
+        if (fundingSource.getFundingSourceInfo().getBudgetType().getId().intValue() != 1) {
+          if (fundingSource.hasInstitution(institutionID)) {
+            fundingSourcesReturn.add(fundingSource);
           }
+        } else {
+          fundingSourcesReturn.add(fundingSource);
         }
 
       } catch (Exception e) {

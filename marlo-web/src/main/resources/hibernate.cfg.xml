@@ -94,6 +94,7 @@
 		<mapping resource="xmls/CrpClusterKeyOutputsOutcome.hbm.xml" />
 		<mapping resource="xmls/ProjectLocationElementTypes.hbm.xml" />
 		<mapping resource="xmls/FundingSources.hbm.xml" />
+		<mapping resource="xmls/FundingSourceInfo.hbm.xml" />
 		<mapping resource="xmls/FundingSourceBudgets.hbm.xml" />
 		<mapping resource="xmls/DeliverableFundingSources.hbm.xml" />
 		<mapping resource="xmls/DeliverableGenderLevels.hbm.xml" />

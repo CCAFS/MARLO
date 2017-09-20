@@ -353,20 +353,22 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
       0);
 
     for (FundingSource fundingSource : this.getLoggedCrp().getFundingSources().stream()
-      .filter(fs -> fs.isActive() && fs.getBudgetType() != null).collect(Collectors.toList())) {
+      .filter(fs -> fs.isActive() && fs.getFundingSourceInfo(this.getSelectedPhase()).getBudgetType() != null)
+      .collect(Collectors.toList())) {
 
-      String fsTitle = fundingSource.getTitle();
+      String fsTitle = fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getTitle();
       Long fsId = fundingSource.getId();
-      String financeCode = fundingSource.getFinanceCode();
+      String financeCode = fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getFinanceCode();
       String donor = null;
 
 
-      String fsWindow = fundingSource.getBudgetType().getName();
-      if (hasW1W2Co && fundingSource.getW1w2() != null && fundingSource.getW1w2()) {
+      String fsWindow = fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getBudgetType().getName();
+      if (hasW1W2Co && fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getW1w2() != null
+        && fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getW1w2()) {
         fsWindow = "W1/W2 Co-Financing";
       }
-      if (fundingSource.getInstitution() != null) {
-        donor = fundingSource.getInstitution().getComposedName();
+      if (fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getInstitution() != null) {
+        donor = fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getInstitution().getComposedName();
       }
 
       for (ProjectBudget projectBudget : fundingSource.getProjectBudgets().stream()
@@ -421,7 +423,7 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
 
         // Funding sources locations
         String globalDimension = null;
-        globalDimension = fundingSource.isGlobal() ? "Yes" : "No";
+        globalDimension = fundingSource.getFundingSourceInfo(this.getSelectedPhase()).isGlobal() ? "Yes" : "No";
 
         String regionalDimension = "";
         // Regions
@@ -486,45 +488,47 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
 
     for (FundingSource fundingSource : this.getLoggedCrp().getFundingSources().stream()
-      .filter(fs -> fs.isActive() && fs.getBudgetType() != null).collect(Collectors.toList())) {
+      .filter(fs -> fs.isActive() && fs.getFundingSourceInfo(this.getSelectedPhase()).getBudgetType() != null)
+      .collect(Collectors.toList())) {
 
-      String fsTitle = fundingSource.getTitle();
+      String fsTitle = fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getTitle();
       Long fsId = fundingSource.getId();
-      String financeCode = fundingSource.getFinanceCode();
+      String financeCode = fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getFinanceCode();
       String leadPartner = "";
-      String summary = fundingSource.getDescription();
+      String summary = fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getDescription();
       String starDate = "";
-      if (fundingSource.getStartDate() != null) {
-        starDate = formatter.format(fundingSource.getStartDate());
+      if (fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getStartDate() != null) {
+        starDate = formatter.format(fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getStartDate());
       }
       String endDate = "";
 
-      if (fundingSource.getEndDate() != null) {
-        endDate = formatter.format(fundingSource.getEndDate());
+      if (fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getEndDate() != null) {
+        endDate = formatter.format(fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getEndDate());
       }
 
       String contract = "";
       String contractName = "";
 
-      if (fundingSource.getFile() != null) {
-        contract = this.getFundingSourceFileURL() + fundingSource.getFile().getFileName();
-        contractName = fundingSource.getFile().getFileName();
+      if (fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getFile() != null) {
+        contract = this.getFundingSourceFileURL()
+          + fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getFile().getFileName();
+        contractName = fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getFile().getFileName();
       }
 
       String status = "";
       status = fundingSource.getStatusName();
 
       String piName = "";
-      piName = fundingSource.getContactPersonName();
+      piName = fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getContactPersonName();
 
       String piEmail = "";
       // If PIEmail is shown, evaluate the PIEmail else isn't necesary
       if (showPIEmail) {
-        piEmail = fundingSource.getContactPersonEmail();
+        piEmail = fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getContactPersonEmail();
       }
       String donor = "";
-      if (fundingSource.getInstitution() != null) {
-        donor = fundingSource.getInstitution().getComposedName();
+      if (fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getInstitution() != null) {
+        donor = fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getInstitution().getComposedName();
       }
 
 
@@ -535,9 +539,12 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
           // Check IFPRI Division
           if (this.showIfpriDivision) {
             if (fsIns.getInstitution().getAcronym() != null && fsIns.getInstitution().getAcronym().equals("IFPRI")
-              && fundingSource.getPartnerDivision() != null && fundingSource.getPartnerDivision().getName() != null
-              && !fundingSource.getPartnerDivision().getName().trim().isEmpty()) {
-              leadPartner += " (" + fundingSource.getPartnerDivision().getName() + ")";
+              && fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getPartnerDivision() != null
+              && fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getPartnerDivision().getName() != null
+              && !fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getPartnerDivision().getName().trim()
+                .isEmpty()) {
+              leadPartner +=
+                " (" + fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getPartnerDivision().getName() + ")";
             }
           }
         } else {
@@ -545,15 +552,18 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
           // Check IFPRI Division
           if (this.showIfpriDivision) {
             if (fsIns.getInstitution().getAcronym() != null && fsIns.getInstitution().getAcronym().equals("IFPRI")
-              && fundingSource.getPartnerDivision().getName() != null
-              && !fundingSource.getPartnerDivision().getName().trim().isEmpty()) {
-              leadPartner += " (" + fundingSource.getPartnerDivision().getName() + ")";
+              && fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getPartnerDivision().getName() != null
+              && !fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getPartnerDivision().getName().trim()
+                .isEmpty()) {
+              leadPartner +=
+                " (" + fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getPartnerDivision().getName() + ")";
             }
           }
         }
       }
-      String fsWindow = fundingSource.getBudgetType().getName();
-      if (hasW1W2Co && fundingSource.getW1w2() != null && fundingSource.getW1w2()) {
+      String fsWindow = fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getBudgetType().getName();
+      if (hasW1W2Co && fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getW1w2() != null
+        && fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getW1w2()) {
         fsWindow = "W1/W2 Co-Financing";
       }
 
@@ -660,7 +670,7 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
 
       // Funding sources locations
       String globalDimension = null;
-      globalDimension = fundingSource.isGlobal() ? "Yes" : "No";
+      globalDimension = fundingSource.getFundingSourceInfo(this.getSelectedPhase()).isGlobal() ? "Yes" : "No";
 
       String regionalDimension = "";
       // Regions

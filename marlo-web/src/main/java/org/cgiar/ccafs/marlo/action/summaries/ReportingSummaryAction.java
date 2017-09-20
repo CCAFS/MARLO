@@ -1255,8 +1255,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         .filter(pb -> pb.isActive() && pb.getYear() == this.getSelectedYear() && pb.getBudgetType() != null)
         .collect(Collectors.toList())) {
 
-        if (pb.getBudgetType().getId() == 1 && pb.getFundingSource() != null && pb.getFundingSource().getW1w2() != null
-          && pb.getFundingSource().getW1w2()) {
+        if (pb.getBudgetType().getId() == 1 && pb.getFundingSource() != null
+          && pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getW1w2() != null
+          && pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getW1w2()) {
           w1w2CoFinancing = "100";
           w1w2CoFinancingGenderPer = "100";
         } else if (pb.getBudgetType().getId() == 1) {
@@ -1736,16 +1737,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       0);
     if (!project.getDeliverables().isEmpty()) {
       // get Reporting deliverables
-      List<Deliverable> deliverables =
-        new ArrayList<>(
-          project.getDeliverables().stream()
-            .filter(
-              d -> d.isActive() && d.getProject() != null && d.getProject().isActive()
-                && d.getProject().getProjecInfoPhase(this.getSelectedPhase()).getReporting() != null
-                && d.getProject().getProjecInfoPhase(this.getSelectedPhase()).getReporting()
-                && d.getProject().getCrp() != null
-                && d.getProject().getCrp().getId()
-                  .equals(this.getLoggedCrp().getId())
+      List<Deliverable> deliverables = new ArrayList<>(project.getDeliverables().stream().filter(d -> d.isActive()
+        && d.getProject() != null && d.getProject().isActive()
+        && d.getProject().getProjecInfoPhase(this.getSelectedPhase()).getReporting() != null
+        && d.getProject().getProjecInfoPhase(this.getSelectedPhase()).getReporting() && d.getProject().getCrp() != null
+        && d.getProject().getCrp().getId().equals(this.getLoggedCrp().getId())
         && d.getDeliverableInfo(this.getSelectedPhase()).getStatus() != null
         && ((d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
           .parseInt(ProjectStatusEnum.Complete.getStatusId())
@@ -1767,7 +1763,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           || d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Complete.getStatusId())
           || d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Cancelled.getStatusId()))).collect(Collectors.toList()));
+            .parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
+        .collect(Collectors.toList()));
       deliverables
         .sort((p1, p2) -> p1.getDeliverableInfo(this.getSelectedPhase()).isRequieriedReporting(this.getSelectedYear())
           .compareTo(p2.getDeliverableInfo(this.getSelectedPhase()).isRequieriedReporting(this.getSelectedYear())));
@@ -1859,7 +1856,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         // Get funding sources if exist
         for (DeliverableFundingSource dfs : deliverable.getDeliverableFundingSources().stream()
           .filter(d -> d.isActive()).collect(Collectors.toList())) {
-          fundingSources += "● " + dfs.getFundingSource().getTitle() + "<br>";
+          fundingSources +=
+            "● " + dfs.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getTitle() + "<br>";
         }
         if (fundingSources.isEmpty()) {
           fundingSources = null;
@@ -2372,8 +2370,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         for (DeliverableFundingSource dfs : deliverable.getDeliverableFundingSources().stream()
           .filter(d -> d.isActive() && d.getPhase() != null && d.getPhase().equals(this.getSelectedPhase()))
           .collect(Collectors.toList())) {
-          fundingSources +=
-            "● " + "(" + dfs.getFundingSource().getId() + ") - " + dfs.getFundingSource().getTitle() + "<br>";
+          fundingSources += "● " + "(" + dfs.getFundingSource().getId() + ") - "
+            + dfs.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getTitle() + "<br>";
         }
         if (fundingSources.isEmpty()) {
           fundingSources = null;
@@ -2490,7 +2488,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       for (ProjectBudget projectBudget : project.getProjectBudgets().stream()
         .filter(pb -> pb.isActive() && pb.getYear() == this.getSelectedYear() && pb.getFundingSource() != null)
         .collect(Collectors.toList())) {
-        typeList.add(projectBudget.getFundingSource().getBudgetType().getName());
+        typeList.add(
+          projectBudget.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getBudgetType().getName());
       }
       // Remove duplicates
       Set<String> s = new LinkedHashSet<String>(typeList);
@@ -2905,11 +2904,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   }
 
   private TypedTableModel getOtherContributionsDetailTableModel() {
-    TypedTableModel model =
-      new TypedTableModel(
-        new String[] {"region", "indicator", "contribution_description", "target_contribution",
-          "otherContributionyear"},
-        new Class[] {String.class, String.class, String.class, Integer.class, Integer.class}, 0);
+    TypedTableModel model = new TypedTableModel(
+      new String[] {"region", "indicator", "contribution_description", "target_contribution", "otherContributionyear"},
+      new Class[] {String.class, String.class, String.class, Integer.class, Integer.class}, 0);
     for (OtherContribution otherContribution : project.getOtherContributions().stream().filter(oc -> oc.isActive())
       .collect(Collectors.toList())) {
       String region = null, indicator = null, contributionDescription = null;
@@ -3592,7 +3589,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         for (ProjectBudget pb : project.getProjectBudgets().stream()
           .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getBudgetType() != null
             && pb.getBudgetType().getId() == type && pb.getFundingSource() != null
-            && pb.getFundingSource().getW1w2() != null && pb.getFundingSource().getW1w2().booleanValue() == true)
+            && pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getW1w2() != null
+            && pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getW1w2().booleanValue() == true)
           .collect(Collectors.toList())) {
           total = total + pb.getAmount();
         }
@@ -3601,7 +3599,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         for (ProjectBudget pb : project.getProjectBudgets().stream()
           .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getBudgetType() != null
             && pb.getBudgetType().getId() == type && pb.getFundingSource() != null
-            && pb.getFundingSource().getW1w2() != null && pb.getFundingSource().getW1w2().booleanValue() == false)
+            && pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getW1w2() != null
+            && pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getW1w2().booleanValue() == false)
           .collect(Collectors.toList())) {
           ProjectBudget pbActual = pb;
 

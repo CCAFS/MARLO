@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceBudgetManager;
+import org.cgiar.ccafs.marlo.data.manager.FundingSourceInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceLocationsManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
@@ -40,6 +41,7 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
+import org.cgiar.ccafs.marlo.data.model.FundingSourceInfo;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
 import org.cgiar.ccafs.marlo.data.model.Institution;
@@ -118,6 +120,7 @@ public class FundingSourceAction extends BaseAction {
   private long fundingSourceID;
   private FundingSourceInstitutionManager fundingSourceInstitutionManager;
   private FundingSourceManager fundingSourceManager;
+  private FundingSourceInfoManager fundingSourceInfoManager;
 
   private InstitutionManager institutionManager;
 
@@ -163,7 +166,7 @@ public class FundingSourceAction extends BaseAction {
     HistoryComparator historyComparator, FileDBManager fileDBManager, UserManager userManager,
     PartnerDivisionManager partnerDivisionManager, FundingSourceInstitutionManager fundingSourceInstitutionManager,
     LocElementManager locElementManager, FundingSourceLocationsManager fundingSourceLocationsManager,
-    LocElementTypeManager locElementTypeManager,
+    LocElementTypeManager locElementTypeManager, FundingSourceInfoManager fundingSourceInfoManager,
     /* TODO delete when fix the budget permissions */ RoleManager userRoleManager) {
     super(config);
     this.crpManager = crpManager;
@@ -185,6 +188,7 @@ public class FundingSourceAction extends BaseAction {
     this.locElementTypeManager = locElementTypeManager;
     // TODO delete when fix the budget permissions
     this.userRoleManager = userRoleManager;
+    this.fundingSourceInfoManager = fundingSourceInfoManager;
   }
 
   @Override
@@ -439,6 +443,7 @@ public class FundingSourceAction extends BaseAction {
       fundingSource = fundingSourceManager.getFundingSourceById(fundingSourceID);
     }
 
+    fundingSource.setFundingSourceInfo(fundingSource.getFundingSourceInfo(this.getActualPhase()));
 
     if (fundingSource != null) {
 
@@ -466,11 +471,12 @@ public class FundingSourceAction extends BaseAction {
         FundingSource fundingSourceDB = fundingSourceManager.getFundingSourceById(fundingSourceID);
         fundingSource.setProjectBudgetsList(fundingSourceDB.getProjectBudgets().stream()
           .filter(pb -> pb.isActive() && pb.getProject().isActive()).collect(Collectors.toList()));
-        if (fundingSource.getFile() != null) {
-          if (fundingSource.getFile().getId() != null) {
-            fundingSource.setFile(fileDBManager.getFileDBById(fundingSource.getFile().getId()));
+        if (fundingSource.getFundingSourceInfo().getFile() != null) {
+          if (fundingSource.getFundingSourceInfo().getFile().getId() != null) {
+            fundingSource.getFundingSourceInfo()
+              .setFile(fileDBManager.getFileDBById(fundingSource.getFundingSourceInfo().getFile().getId()));
           } else {
-            fundingSource.setFile(null);
+            fundingSource.getFundingSourceInfo().setFile(null);
           }
         }
 
@@ -536,14 +542,14 @@ public class FundingSourceAction extends BaseAction {
           List<FundingSourceLocation> countries =
             new ArrayList<>(fundingSource.getFundingSourceLocations().stream().filter(fl -> fl.isActive()
               && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 2)
-            .collect(Collectors.toList()));
+              .collect(Collectors.toList()));
 
           fundingSource.setFundingCountry(new ArrayList<>(countries));
 
           List<FundingSourceLocation> regions =
             new ArrayList<>(fundingSource.getFundingSourceLocations().stream().filter(fl -> fl.isActive()
               && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 1)
-            .collect(Collectors.toList()));
+              .collect(Collectors.toList()));
 
           List<FundingSourceLocation> regionsWScope = new ArrayList<>();
           if (regions.size() > 0) {
@@ -602,9 +608,9 @@ public class FundingSourceAction extends BaseAction {
         institutions.add(crpPpaPartner.getInstitution());
       }
 
-      if (fundingSource.getBudgetType() != null) {
+      if (fundingSource.getFundingSourceInfo().getBudgetType() != null) {
         // if the funding source is type center funds -- institutions are ppa
-        if (fundingSource.getBudgetType().getId().longValue() == 4) {
+        if (fundingSource.getFundingSourceInfo().getBudgetType().getId().longValue() == 4) {
           List<Institution> allInstitutions = null;
           institutionsDonors = new ArrayList<>();
           allInstitutions = institutionManager.findAll();
@@ -618,7 +624,7 @@ public class FundingSourceAction extends BaseAction {
 
         } else {
           // if the funding source is type w1 -- institutions are cgiar center
-          if (fundingSource.getBudgetType().getId().longValue() == 1) {
+          if (fundingSource.getFundingSourceInfo().getBudgetType().getId().longValue() == 1) {
             institutionsDonors = institutionManager.findAll().stream()
               .filter(i -> i.isActive() && i.getInstitutionType().getId().intValue() == 3).collect(Collectors.toList());
           } else {
@@ -668,13 +674,13 @@ public class FundingSourceAction extends BaseAction {
     this.setBasePermission(this.getText(Permission.PROJECT_FUNDING_SOURCE_BASE_PERMISSION, params));
 
     if (this.isHttpPost()) {
-      fundingSource.setFile(null);
+      fundingSource.getFundingSourceInfo().setFile(null);
       if (fundingSource.getInstitutions() != null) {
         for (FundingSourceInstitution fundingSourceInstitution : fundingSource.getInstitutions()) {
           fundingSourceInstitution
             .setInstitution(institutionManager.getInstitutionById(fundingSourceInstitution.getId()));
         }
-        fundingSource.setW1w2(null);
+        fundingSource.getFundingSourceInfo().setW1w2(null);
         fundingSource.getInstitutions().clear();
       }
 
@@ -695,54 +701,60 @@ public class FundingSourceAction extends BaseAction {
     if (this.hasPermission("canEdit")) {
 
       FundingSource fundingSourceDB = fundingSourceManager.getFundingSourceById(fundingSource.getId());
-      fundingSourceDB.setActive(true);
+      FundingSourceInfo funginsSourceInfoDB =
+        fundingSourceInfoManager.getFundingSourceInfoById(fundingSource.getFundingSourceInfo().getId());
       fundingSourceDB.setCreatedBy(fundingSourceDB.getCreatedBy());
       fundingSourceDB.setModifiedBy(this.getCurrentUser());
-      fundingSourceDB.setModificationJustification("");
       fundingSourceDB.setActiveSince(fundingSourceDB.getActiveSince());
 
+      funginsSourceInfoDB.setModifiedBy(this.getCurrentUser());
+      funginsSourceInfoDB.setModificationJustification("");
+
       // if donor has a select option, no option put donor null
-      if (fundingSource.getInstitution().getId().longValue() != -1) {
-        fundingSourceDB.setInstitution(fundingSource.getInstitution());
+      if (fundingSource.getFundingSourceInfo().getInstitution().getId().longValue() != -1) {
+        funginsSourceInfoDB.setInstitution(fundingSource.getFundingSourceInfo().getInstitution());
       } else {
-        fundingSourceDB.setInstitution(null);
+        funginsSourceInfoDB.setInstitution(null);
       }
 
 
-      fundingSourceDB.setTitle(fundingSource.getTitle());
-      fundingSourceDB.setStatus(fundingSource.getStatus());
-      fundingSourceDB.setStartDate(fundingSource.getStartDate());
-      fundingSourceDB.setEndDate(fundingSource.getEndDate());
-      fundingSourceDB.setGlobal(fundingSource.isGlobal());
+      funginsSourceInfoDB.setTitle(fundingSource.getFundingSourceInfo().getTitle());
+      funginsSourceInfoDB.setStatus(fundingSource.getFundingSourceInfo().getStatus());
+      funginsSourceInfoDB.setStartDate(fundingSource.getFundingSourceInfo().getStartDate());
+      funginsSourceInfoDB.setEndDate(fundingSource.getFundingSourceInfo().getEndDate());
+      funginsSourceInfoDB.setGlobal(fundingSource.getFundingSourceInfo().isGlobal());
 
-      fundingSourceDB.setFinanceCode(fundingSource.getFinanceCode());
-      fundingSourceDB.setContactPersonEmail(fundingSource.getContactPersonEmail());
-      fundingSourceDB.setContactPersonName(fundingSource.getContactPersonName());
+      funginsSourceInfoDB.setFinanceCode(fundingSource.getFundingSourceInfo().getFinanceCode());
+      funginsSourceInfoDB.setContactPersonEmail(fundingSource.getFundingSourceInfo().getContactPersonEmail());
+      funginsSourceInfoDB.setContactPersonName(fundingSource.getFundingSourceInfo().getContactPersonName());
+      funginsSourceInfoDB.setBudgetType(fundingSource.getFundingSourceInfo().getBudgetType());
+
       fundingSourceDB.setBudgets(fundingSource.getBudgets());
-      fundingSourceDB.setBudgetType(fundingSource.getBudgetType());
 
-      if (fundingSource.getPartnerDivision() == null || fundingSource.getPartnerDivision().getId() == null
-        || fundingSource.getPartnerDivision().getId().longValue() == -1) {
-        fundingSourceDB.setPartnerDivision(null);
+      if (fundingSource.getFundingSourceInfo().getPartnerDivision() == null
+        || fundingSource.getFundingSourceInfo().getPartnerDivision().getId() == null
+        || fundingSource.getFundingSourceInfo().getPartnerDivision().getId().longValue() == -1) {
+        funginsSourceInfoDB.setPartnerDivision(null);
       } else {
-        fundingSourceDB.setPartnerDivision(fundingSource.getPartnerDivision());
+        funginsSourceInfoDB.setPartnerDivision(fundingSource.getFundingSourceInfo().getPartnerDivision());
       }
 
-      if (fundingSource.getW1w2() == null) {
-        fundingSourceDB.setW1w2(false);
+      if (fundingSource.getFundingSourceInfo().getW1w2() == null) {
+        funginsSourceInfoDB.setW1w2(false);
       } else {
-        fundingSourceDB.setW1w2(true);
+        funginsSourceInfoDB.setW1w2(true);
       }
-      fundingSourceDB.setDescription(fundingSource.getDescription());
+      funginsSourceInfoDB.setDescription(fundingSource.getFundingSourceInfo().getDescription());
 
 
-      if (fundingSource.getFile().getId() == null) {
-        fundingSourceDB.setFile(null);
+      if (fundingSource.getFundingSourceInfo().getFile().getId() == null) {
+        funginsSourceInfoDB.setFile(null);
       } else {
-        fundingSourceDB.setFile(fundingSource.getFile());
+        funginsSourceInfoDB.setFile(fundingSource.getFundingSourceInfo().getFile());
       }
 
       fundingSourceManager.saveFundingSource(fundingSourceDB);
+      fundingSourceInfoManager.saveFundingSourceInfo(funginsSourceInfoDB);
       /*
        * if (file != null) {
        * fundingSourceDB
