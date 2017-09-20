@@ -865,19 +865,16 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           args.clear();
           this.fillSubreport((SubReport) hm.get("outcomes"), "outcomes_list", args);
         } else {
-
-          // // Subreport Project Outcomes
-          // args.clear();
-          //
-          // this.fillSubreport((SubReport) hm.get("project_outcomes"), "project_outcomes", args);
-          // this.fillSubreport((SubReport) hm.get("other_outcomes"), "other_outcomes", args);
-          // this.fillSubreport((SubReport) hm.get("ccafs_outcomes"), "ccafs_outcomes", args);
-          // this.fillSubreport((SubReport) hm.get("other_contributions"), "other_contributions", args);
-          // this.fillSubreport((SubReport) hm.get("other_contributions_detail"), "other_contributions_detail", args);
-          // this.fillSubreport((SubReport) hm.get("other_contributions_crps"), "other_contributions_crps", args);
-          // this.fillSubreport((SubReport) hm.get("case_studies"), "case_studies", args);
-          // this.fillSubreport((SubReport) hm.get("overview_by_mogs"), "overview_by_mogs", args);
-
+          // Subreport Project Outcomes
+          args.clear();
+          this.fillSubreport((SubReport) hm.get("project_outcomes"), "project_outcomes", args);
+          this.fillSubreport((SubReport) hm.get("other_outcomes"), "other_outcomes", args);
+          this.fillSubreport((SubReport) hm.get("ccafs_outcomes"), "ccafs_outcomes", args);
+          this.fillSubreport((SubReport) hm.get("other_contributions"), "other_contributions", args);
+          this.fillSubreport((SubReport) hm.get("other_contributions_detail"), "other_contributions_detail", args);
+          this.fillSubreport((SubReport) hm.get("other_contributions_crps"), "other_contributions_crps", args);
+          this.fillSubreport((SubReport) hm.get("case_studies"), "case_studies", args);
+          this.fillSubreport((SubReport) hm.get("overview_by_mogs"), "overview_by_mogs", args);
         }
 
         // Subreport Deliverables
@@ -886,9 +883,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           args.clear();
           this.fillSubreport((SubReport) hm.get("deliverables"), "deliverables_list", args);
         } else {
-          // args.clear();
-          // this.fillSubreport((SubReport) hm.get("deliverables"), "deliverables_list_reporting", args);
-          // this.fillSubreport((SubReport) hm.get("project_highlight"), "project_highlight", args);
+          args.clear();
+          this.fillSubreport((SubReport) hm.get("deliverables"), "deliverables_list_reporting", args);
+          this.fillSubreport((SubReport) hm.get("project_highlight"), "project_highlight", args);
         }
 
         // Subreport Activities
@@ -896,22 +893,22 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         if (this.getSelectedCycle().equals("Planning")) {
           this.fillSubreport((SubReport) hm.get("activities"), "activities_list", args);
         } else {
-          // this.fillSubreport((SubReport) hm.get("activities_reporting_list"), "activities_reporting_list", args);
+          this.fillSubreport((SubReport) hm.get("activities_reporting_list"), "activities_reporting_list", args);
         }
-        /*
-         * if (cycle.equals("Planning")) {
-         * // Subreport Budgets Summary
-         * args.clear();
-         * this.fillSubreport((SubReport) hm.get("budgets"), "budget_summary", args);
-         * // Subreport BudgetsbyPartners
-         * this.fillSubreport((SubReport) hm.get("budgets_by_partners"), "budgets_by_partners_list", args);
-         * // Subreport BudgetsbyCoas
-         * this.fillSubreport((SubReport) hm.get("budgets_by_coas"), "budgets_by_coas_list", args);
-         * } else {
-         * // Subreport Leverages for reporting
-         * this.fillSubreport((SubReport) hm.get("leverages"), "leverages", args);
-         * }
-         */
+
+        if (this.getSelectedCycle().equals("Planning")) {
+          // Subreport Budgets Summary
+          args.clear();
+          this.fillSubreport((SubReport) hm.get("budgets"), "budget_summary", args);
+          // Subreport BudgetsbyPartners
+          this.fillSubreport((SubReport) hm.get("budgets_by_partners"), "budgets_by_partners_list", args);
+          // Subreport BudgetsbyCoas
+          this.fillSubreport((SubReport) hm.get("budgets_by_coas"), "budgets_by_coas_list", args);
+        } else {
+          // Subreport Leverages for reporting
+          this.fillSubreport((SubReport) hm.get("leverages"), "leverages", args);
+        }
+
       }
       PdfReportUtil.createPDF(masterReport, os);
       bytesPDF = os.toByteArray();
@@ -1178,7 +1175,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   public ProjectBudgetsCluserActvity getBudgetbyCoa(Long activitiyId, int year, long type) {
     for (ProjectBudgetsCluserActvity pb : project.getProjectBudgetsCluserActvities().stream()
       .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getCrpClusterOfActivity() != null
-        && pb.getCrpClusterOfActivity().getId() == activitiyId && type == pb.getBudgetType().getId())
+        && pb.getCrpClusterOfActivity().getId() == activitiyId && type == pb.getBudgetType().getId()
+        && pb.getPhase() != null && pb.getPhase().equals(this.getSelectedPhase()))
       .collect(Collectors.toList())) {
       return pb;
     }
@@ -1198,7 +1196,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       0);
     Boolean hasW1W2CoTemp = false;
     List<ProjectClusterActivity> coAs = new ArrayList<>();
-    coAs = project.getProjectClusterActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+    coAs = project.getProjectClusterActivities().stream()
+      .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+      .collect(Collectors.toList());
     /*     */
     Double totalW1w2 = 0.0, totalW3 = 0.0, totalBilateral = 0.0, totalCenter = 0.0, totalW1w2Gender = 0.0,
       totalW3Gender = 0.0, totalBilateralGender = 0.0, totalCenterGender = 0.0, totalW1w2Co = 0.0,
@@ -1221,7 +1221,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     totalCenter = this.getTotalYear(this.getSelectedYear(), 4, project, 1);
 
     // get total gender per year
-    for (ProjectPartner pp : project.getProjectPartners().stream().filter(pp -> pp.isActive())
+    for (ProjectPartner pp : project.getProjectPartners().stream()
+      .filter(pp -> pp.isActive() && pp.getPhase() != null && pp.getPhase().equals(this.getSelectedPhase()))
       .collect(Collectors.toList())) {
       if (this.isPPA(pp.getInstitution())) {
         if (coAs.size() == 1 && this.hasW1W2Co) {
@@ -1251,8 +1252,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       String w1w2CoFinancingGenderPer = null;
 
       // Get types of funding sources
-      for (ProjectBudget pb : project.getProjectBudgets().stream()
-        .filter(pb -> pb.isActive() && pb.getYear() == this.getSelectedYear() && pb.getBudgetType() != null)
+      for (ProjectBudget pb : project
+        .getProjectBudgets().stream().filter(pb -> pb.isActive() && pb.getYear() == this.getSelectedYear()
+          && pb.getBudgetType() != null && pb.getPhase() != null && pb.getPhase().equals(this.getSelectedPhase()))
         .collect(Collectors.toList())) {
 
         if (pb.getBudgetType().getId() == 1 && pb.getFundingSource() != null
@@ -1370,7 +1372,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         String.class, String.class, String.class, String.class, String.class},
       0);
     // Get ppaPartners of project
-    for (ProjectPartner pp : project.getProjectPartners().stream().filter(pp -> pp.isActive())
+    for (ProjectPartner pp : project.getProjectPartners().stream()
+      .filter(pp -> pp.isActive() && pp.getPhase() != null && pp.getPhase().equals(this.getSelectedPhase()))
       .collect(Collectors.toList())) {
       if (this.isPPA(pp.getInstitution())) {
         DecimalFormat myFormatter = new DecimalFormat("###,###.00");
@@ -3489,7 +3492,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
    */
   public String getTotalAmount(long institutionId, int year, long budgetType, Long projectId, Integer coFinancing) {
     return projectBudgetManager.amountByBudgetType(institutionId, year, budgetType, projectId, coFinancing,
-      this.getActualPhase().getId());
+      this.getSelectedPhase().getId());
   }
 
   /**
@@ -3508,10 +3511,12 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     double totalGender = 0;
     if (budgets != null) {
       for (ProjectBudget projectBudget : budgets) {
-        double amount = projectBudget.getAmount() != null ? projectBudget.getAmount() : 0.0;
-        double gender = projectBudget.getGenderPercentage() != null ? projectBudget.getGenderPercentage() : 0.0;
+        if (projectBudget.getPhase().equals(this.getSelectedPhase())) {
+          double amount = projectBudget.getAmount() != null ? projectBudget.getAmount() : 0.0;
+          double gender = projectBudget.getGenderPercentage() != null ? projectBudget.getGenderPercentage() : 0.0;
 
-        totalGender = totalGender + (amount * (gender / 100));
+          totalGender = totalGender + (amount * (gender / 100));
+        }
       }
     }
 
@@ -3534,10 +3539,12 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     double totalGender = 0;
     if (budgets != null) {
       for (ProjectBudget projectBudget : budgets) {
-        double amount = projectBudget.getAmount() != null ? projectBudget.getAmount() : 0;
-        double gender = projectBudget.getGenderPercentage() != null ? projectBudget.getGenderPercentage() : 0;
+        if (projectBudget.getPhase().equals(this.getSelectedPhase())) {
+          double amount = projectBudget.getAmount() != null ? projectBudget.getAmount() : 0;
+          double gender = projectBudget.getGenderPercentage() != null ? projectBudget.getGenderPercentage() : 0;
 
-        totalGender = totalGender + (amount * (gender / 100));
+          totalGender = totalGender + (amount * (gender / 100));
+        }
       }
     }
 
@@ -3580,8 +3587,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
 
     switch (coFinancing) {
       case 1:
-        for (ProjectBudget pb : project.getProjectBudgets().stream().filter(pb -> pb.isActive() && pb.getYear() == year
-          && pb.getBudgetType() != null && pb.getBudgetType().getId() == type).collect(Collectors.toList())) {
+        for (ProjectBudget pb : project.getProjectBudgets().stream()
+          .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getBudgetType() != null
+            && pb.getBudgetType().getId() == type && pb.getPhase() != null
+            && pb.getPhase().equals(this.getSelectedPhase()))
+          .collect(Collectors.toList())) {
           total = total + pb.getAmount();
         }
         break;
@@ -3590,7 +3600,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getBudgetType() != null
             && pb.getBudgetType().getId() == type && pb.getFundingSource() != null
             && pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getW1w2() != null
-            && pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getW1w2().booleanValue() == true)
+            && pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getW1w2().booleanValue() == true
+            && pb.getPhase() != null && pb.getPhase().equals(this.getSelectedPhase()))
           .collect(Collectors.toList())) {
           total = total + pb.getAmount();
         }
@@ -3600,9 +3611,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getBudgetType() != null
             && pb.getBudgetType().getId() == type && pb.getFundingSource() != null
             && pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getW1w2() != null
-            && pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getW1w2().booleanValue() == false)
+            && pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getW1w2().booleanValue() == false
+            && pb.getPhase() != null && pb.getPhase().equals(this.getSelectedPhase()))
           .collect(Collectors.toList())) {
-          ProjectBudget pbActual = pb;
 
           total = total + pb.getAmount();
         }
