@@ -63,12 +63,12 @@ public class Phase implements java.io.Serializable, IAuditLog {
   private Set<DeliverablePartnership> deliverablePartnerships = new HashSet<DeliverablePartnership>(0);
   private Set<ProjectBudget> projectBudgets = new HashSet<ProjectBudget>(0);
   private Set<FundingSourceInfo> fundingSourceInfo = new HashSet<FundingSourceInfo>(0);
-private Set<ProjectBudgetsCluserActvity> projectBudgetsActivities = new HashSet<ProjectBudgetsCluserActvity>(0);
+
+  private Set<ProjectBudgetsCluserActvity> projectBudgetsActivities = new HashSet<ProjectBudgetsCluserActvity>(0);
 
 
   public Phase() {
   }
-
 
   public Phase(Crp crp, String description, int year) {
     this.crp = crp;
@@ -123,9 +123,11 @@ private Set<ProjectBudgetsCluserActvity> projectBudgetsActivities = new HashSet<
     return deliverableFundingSources;
   }
 
+
   public Set<DeliverableInfo> getDeliverableInfos() {
     return deliverableInfos;
   }
+
 
   public Set<DeliverablePartnership> getDeliverablePartnerships() {
     return deliverablePartnerships;
@@ -139,11 +141,9 @@ private Set<ProjectBudgetsCluserActvity> projectBudgetsActivities = new HashSet<
     return editable;
   }
 
-
   public Date getEndDate() {
     return endDate;
   }
-
 
   public Set<FundingSourceInfo> getFundingSourceInfo() {
     return fundingSourceInfo;
@@ -204,6 +204,11 @@ private Set<ProjectBudgetsCluserActvity> projectBudgetsActivities = new HashSet<
   }
 
 
+  public Set<ProjectBudgetsCluserActvity> getProjectBudgetsActivities() {
+    return projectBudgetsActivities;
+  }
+
+
   public Set<ProjectClusterActivity> getProjectClusters() {
     return projectClusters;
   }
@@ -218,6 +223,7 @@ private Set<ProjectBudgetsCluserActvity> projectBudgetsActivities = new HashSet<
     return projectInfos;
   }
 
+
   public Set<ProjectLocation> getProjectLocations() {
     return projectLocations;
   }
@@ -225,7 +231,6 @@ private Set<ProjectBudgetsCluserActvity> projectBudgetsActivities = new HashSet<
   public Set<ProjectOutcome> getProjectOutcomes() {
     return projectOutcomes;
   }
-
 
   public Set<ProjectPhase> getProjectPhases() {
     return this.projectPhases;
@@ -255,6 +260,7 @@ private Set<ProjectBudgetsCluserActvity> projectBudgetsActivities = new HashSet<
     return result;
   }
 
+
   @Override
   public boolean isActive() {
 
@@ -265,28 +271,28 @@ private Set<ProjectBudgetsCluserActvity> projectBudgetsActivities = new HashSet<
     return description.equals(APConstants.REPORTING);
   }
 
-
   public void setClusters(Set<CrpClusterOfActivity> clusters) {
     this.clusters = clusters;
   }
+
 
   public void setCrp(Crp crp) {
     this.crp = crp;
   }
 
-
   public void setDeliverableFundingSources(Set<DeliverableFundingSource> deliverableFundingSources) {
     this.deliverableFundingSources = deliverableFundingSources;
   }
+
 
   public void setDeliverableInfos(Set<DeliverableInfo> deliverableInfos) {
     this.deliverableInfos = deliverableInfos;
   }
 
-
   public void setDeliverablePartnerships(Set<DeliverablePartnership> deliverablePartnerships) {
     this.deliverablePartnerships = deliverablePartnerships;
   }
+
 
   public void setDescription(String description) {
     this.description = description;
@@ -296,10 +302,10 @@ private Set<ProjectBudgetsCluserActvity> projectBudgetsActivities = new HashSet<
     this.editable = editable;
   }
 
-
   public void setEndDate(Date endDate) {
     this.endDate = endDate;
   }
+
 
   public void setFundingSourceInfo(Set<FundingSourceInfo> fundingSourceInfo) {
     this.fundingSourceInfo = fundingSourceInfo;
@@ -327,6 +333,10 @@ private Set<ProjectBudgetsCluserActvity> projectBudgetsActivities = new HashSet<
 
   public void setProjectBudgets(Set<ProjectBudget> projectBudgets) {
     this.projectBudgets = projectBudgets;
+  }
+
+  public void setProjectBudgetsActivities(Set<ProjectBudgetsCluserActvity> projectBudgetsActivities) {
+    this.projectBudgetsActivities = projectBudgetsActivities;
   }
 
   public void setProjectClusters(Set<ProjectClusterActivity> projectClusters) {

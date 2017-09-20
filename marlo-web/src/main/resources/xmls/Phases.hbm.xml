@@ -123,7 +123,7 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectBudgetsCluserActvity" />
         </set>
-        <set name="fundingSourceInfos" table="funding_sources_info" inverse="true" lazy="true" fetch="select">
+        <set name="fundingSourceInfo" table="funding_sources_info" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="id_phase" not-null="true" />
             </key>
