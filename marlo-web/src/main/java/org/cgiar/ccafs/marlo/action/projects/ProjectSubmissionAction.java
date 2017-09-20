@@ -100,9 +100,9 @@ public class ProjectSubmissionAction extends BaseAction {
     complete = false;
     if (this.hasPermission("submitProject")) {
       if (this.isCompleteProject(projectID)) {
-        List<Submission> submissions = project.getSubmissions()
-          .stream().filter(c -> c.getCycle().equals(APConstants.PLANNING)
-            && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
+        List<Submission> submissions = project.getSubmissions().stream()
+          .filter(c -> c.getCycle().equals(APConstants.PLANNING)
+            && c.getYear().intValue() == this.getActualPhase().getYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
           .collect(Collectors.toList());
 
         if (submissions.isEmpty()) {
@@ -177,7 +177,7 @@ public class ProjectSubmissionAction extends BaseAction {
       String params[] = {crpManager.getCrpById(this.getCrpID()).getAcronym(), project.getId() + ""};
       this.setBasePermission(this.getText(Permission.PROJECT_MANAGE_BASE_PERMISSION, params));
       // Initializing Section Statuses:
-      // this.initializeProjectSectionStatuses(project, String.valueOf(this.getCurrentCycleYear()));
+      // this.initializeProjectSectionStatuses(project, String.valueOf(this.getActualPhase().getYear()));
     }
     cycleName = APConstants.PLANNING;
 
@@ -288,13 +288,13 @@ public class ProjectSubmissionAction extends BaseAction {
     values[1] = loggedCrp.getName();
     values[2] = project.getProjecInfoPhase(this.getActualPhase()).getTitle();
     values[3] = String.valueOf(project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER));
-    values[4] = String.valueOf(this.getCurrentCycleYear());
-    values[5] = this.getCurrentCycle().toLowerCase();
+    values[4] = String.valueOf(this.getActualPhase().getYear());
+    values[5] = this.getActualPhase().getDescription().toLowerCase();
     // Message to download the pdf
     /*
      * values[6] = config.getBaseUrl() + "/projects/" + this.getCurrentCrp().getAcronym() + "/reportingSummary.do?"
      * + APConstants.PROJECT_REQUEST_ID + "=" + projectID + "&" + APConstants.YEAR_REQUEST + "="
-     * + this.getCurrentCycleYear() + "&" + APConstants.CYCLE + "=" + this.getCurrentCycle();
+     * + this.getActualPhase().getYear() + "&" + APConstants.CYCLE + "=" + this.getActualPhase().getDescription();
      */
 
     message.append(this.getText("submit.email.message", values));
@@ -310,9 +310,9 @@ public class ProjectSubmissionAction extends BaseAction {
     try {
       // Set the parameters that are assigned in the prepare by reportingSummaryAction
       reportingSummaryAction.setSession(this.getSession());
-      reportingSummaryAction.setSelectedYear(this.getCurrentCycleYear());
+      reportingSummaryAction.setSelectedYear(this.getActualPhase().getYear());
       reportingSummaryAction.setLoggedCrp(loggedCrp);
-      reportingSummaryAction.setSelectedCycle(this.getCurrentCycle());
+      reportingSummaryAction.setSelectedCycle(this.getActualPhase().getDescription());
       reportingSummaryAction.setProjectID(projectID);
       reportingSummaryAction.setProject(projectManager.getProjectById(projectID));
       reportingSummaryAction.setCrpSession(loggedCrp.getAcronym());
