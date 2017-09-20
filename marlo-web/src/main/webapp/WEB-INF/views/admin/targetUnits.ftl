@@ -121,7 +121,7 @@
       [#if element.targetUnit?? && element.targetUnit.crpTargetUnits?has_content]
         [#list element.targetUnit.crpTargetUnits as crpTargetUnit]
           [#if crpTargetUnit.active]
-          [${crpTargetUnit.crp.name}] 
+          [${crpTargetUnit.crp.acronym}] 
           [/#if]
         [/#list] 
       [/#if]

@@ -53,7 +53,7 @@ function addNewOutcome() {
 function formatState(state) {
   if(state.id != "-1") {
     var text = state.text.split(":");
-    var $state = $("<span><strong>" + text[0] + ":</strong> " + text[1] + "</span>");
+    var $state = $("<span><strong>" + text.shift() + ":</strong> " + text.join(':') + "</span>");
     return $state;
   } else {
     var $state = $("<span>" + state.text + "</span>");
@@ -73,10 +73,7 @@ function attachReportingEvents() {
 function addOtherContribution() {
   var $item = $('#otherContribution-template').clone(true).removeAttr('id');
   var $list = $(this).parents('.tab-pane').find('.otherContributionsBlock');
-  console.log('asdasd');
-
   $list.append($item);
-
   $item.show('slow');
 
 }

@@ -142,9 +142,13 @@
   </li>
 </ul>
 
+[#-- Project roles descriptions --]
+<span class="contactPersonRole-PC" style="display:none">[@s.text name="projectPartners.contactPersonRolePC" /]</span>
+<span class="contactPersonRole-PL" style="display:none">[@s.text name="projectPartners.contactPersonRolePL" /]</span>
+<span class="contactPersonRole-CP" style="display:none">[@s.text name="projectPartners.contactPersonRoleCP" /]</span>
+
 [#-- allPPAInstitutions --]
 <input type="hidden" id="allPPAInstitutions" value="[[#if allPPAInstitutions??][#list allPPAInstitutions as item]${item.id}[#if item_has_next],[/#if][/#list][/#if]]"/>
-
 
 [#-- Can update PPA Partners --]
 <input type="hidden" id="canUpdatePPAPartners" value="${(action.hasPermission("ppa") || !project.projectEditLeader)?string}"/>
