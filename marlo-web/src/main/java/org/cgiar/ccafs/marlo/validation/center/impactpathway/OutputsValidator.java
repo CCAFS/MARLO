@@ -57,7 +57,7 @@ public class OutputsValidator extends BaseValidator {
 
   public void validate(BaseAction baseAction, CenterOutput output, CenterProgram selectedProgram, boolean saving) {
     baseAction.setInvalidFields(new HashMap<>());
-
+    this.missingFields.setLength(0);
     if (!saving) {
       Path path = this.getAutoSaveFilePath(output, baseAction.getCenterID());
 
@@ -121,7 +121,7 @@ public class OutputsValidator extends BaseValidator {
 
     if (output.getNextUsers() != null) {
       if (output.getNextUsers().size() == 0) {
-        this.addMissingField("nextUsers");
+
         this.addMessage(baseAction.getText("output.action.nextusers"));
         baseAction.getInvalidFields().put("list-output.nextUsers",
           baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"nextUsers"}));
@@ -132,7 +132,7 @@ public class OutputsValidator extends BaseValidator {
         }
       }
     } else {
-      this.addMissingField("nextUsers");
+
       this.addMessage(baseAction.getText("programImpact.action.beneficiary"));
       baseAction.getInvalidFields().put("list-output.nextUsers",
         baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"nextUsers"}));
