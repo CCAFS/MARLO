@@ -55,7 +55,7 @@ public class IPSubmissionAction extends BaseAction {
   private static final long serialVersionUID = 4882851743044518890L;
 
 
-  // LOG
+  /// LOG
   private static Logger LOG = LoggerFactory.getLogger(IPSubmissionAction.class);
   private ICenterSubmissionManager submissionService;
   private ICenterProgramManager programService;

@@ -173,9 +173,9 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
       if (baseAction.isReportingActive() && actionName.equalsIgnoreCase(ProjectSectionStatusEnum.BUDGET.getStatus())) {
         canEdit = false;
       }
-      String paramsPermissions[] = {loggedCrp.getAcronym(), project.getId() + ""};
-      baseAction
-        .setBasePermission(baseAction.getText(Permission.PROJECT_DESCRIPTION_BASE_PERMISSION, paramsPermissions));
+      // String paramsPermissions[] = {loggedCrp.getAcronym(), project.getId() + ""};
+      // baseAction
+      // .setBasePermission(baseAction.getText(Permission.PROJECT_DESCRIPTION_BASE_PERMISSION, paramsPermissions));
 
 
       // TODO Validate is the project is new
