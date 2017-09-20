@@ -287,6 +287,8 @@ public class ProjectDeliverableAction extends BaseAction {
         reader = new BufferedReader(new FileReader(path.toFile()));
         Gson gson = new GsonBuilder().create();
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+ 	      reader.close();
+ 	
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         deliverable = (CenterDeliverable) autoSaveReader.readFromJson(jReader);
@@ -315,7 +317,7 @@ public class ProjectDeliverableAction extends BaseAction {
           deliverable.setOutputs(new ArrayList<>(outputs));
         }
 
-        reader.close();
+      
         this.setDraft(true);
 
       } else {

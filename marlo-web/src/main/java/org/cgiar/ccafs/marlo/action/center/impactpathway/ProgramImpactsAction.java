@@ -380,6 +380,8 @@ public class ProgramImpactsAction extends BaseAction {
           reader = new BufferedReader(new FileReader(path.toFile()));
           Gson gson = new GsonBuilder().create();
           JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+ 	      reader.close();
+ 	
           AutoSaveReader autoSaveReader = new AutoSaveReader();
 
           selectedProgram = (CenterProgram) autoSaveReader.readFromJson(jReader);
@@ -428,7 +430,7 @@ public class ProgramImpactsAction extends BaseAction {
               }
             }
           }
-          reader.close();
+        
           this.setDraft(true);
         } else {
           this.setDraft(false);
