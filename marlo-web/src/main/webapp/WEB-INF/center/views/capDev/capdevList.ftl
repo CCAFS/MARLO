@@ -4,8 +4,8 @@
 [#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css", 
 					  "${baseUrlMedia}/css/capDev/capacityDevelopment.css"] /]
 
+
 [#assign customJS = [
-	"${baseUrlMedia}/js/capDev/capacityDevelopment.js",
  	"${baseUrlMedia}/js/capDev/capdevList.js"] 
 /]
 

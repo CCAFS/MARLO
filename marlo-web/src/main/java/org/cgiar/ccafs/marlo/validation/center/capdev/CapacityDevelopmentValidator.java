@@ -118,25 +118,33 @@ public class CapacityDevelopmentValidator extends BaseValidator {
       countries.remove(0);
     }
 
-    if ((this.bolValue(capdev.getsRegional()) == null) && countries.isEmpty()
-      && (capdev.getCapDevCountries() == null)) {
-      this.addMessage(baseAction.getText("capdev.action.countries"));
-      baseAction.getInvalidFields().put("list-capdev.countries", baseAction.getText(InvalidFieldsMessages.EMPTYLIST,
-        new String[] {"Capacity Development Intervention Countries"}));
-
-    } else {
-      if (!this.bolValue(capdev.getsRegional()) && countries.isEmpty() && (capdev.getCapDevCountries() == null)) {
+    if ((this.bolValue(capdev.getsRegional()) == null) && countries.isEmpty()) {
+      if ((capdev.getCapDevCountries() == null) || capdev.getCapDevCountries().isEmpty()) {
         this.addMessage(baseAction.getText("capdev.action.countries"));
         baseAction.getInvalidFields().put("list-capdev.countries", baseAction.getText(InvalidFieldsMessages.EMPTYLIST,
           new String[] {"Capacity Development Intervention Countries"}));
       }
-      if (capdev.getCapDevCountries() != null) {
-        if (capdev.getCapDevCountries().stream().filter(c -> c.isActive()).collect(Collectors.toList()).isEmpty()) {
-          this.addMessage(baseAction.getText("capdev.action.countries"));
-          baseAction.getInvalidFields().put("list-capdev.countries", baseAction.getText(InvalidFieldsMessages.EMPTYLIST,
-            new String[] {"Capacity Development Intervention Countries"}));
+
+
+    } else {
+
+      if (this.bolValue(capdev.getsRegional()) != null) {
+        if ((this.bolValue(capdev.getsRegional()) == false) && countries.isEmpty()) {
+          if ((capdev.getCapDevCountries() == null) || capdev.getCapDevCountries().isEmpty()) {
+            this.addMessage(baseAction.getText("capdev.action.countries"));
+            baseAction.getInvalidFields().put("list-capdev.countries", baseAction
+              .getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Capacity Development Intervention Countries"}));
+          } else {
+            if (capdev.getCapDevCountries().stream().filter(c -> c.isActive()).collect(Collectors.toList()).isEmpty()) {
+              this.addMessage(baseAction.getText("capdev.action.countries"));
+              baseAction.getInvalidFields().put("list-capdev.countries", baseAction.getText(
+                InvalidFieldsMessages.EMPTYLIST, new String[] {"Capacity Development Intervention Countries"}));
+            }
+          }
+
         }
       }
+
 
     }
 
