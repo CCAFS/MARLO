@@ -73,11 +73,11 @@
             <div class="form-group row">  
               [#-- Start Date --]
               <div class="col-md-6">
-                [@customForm.input name="project.projectInfo.startDate"  i18nkey="project.startDate" type="text" disabled=!editable  required=true editable=editable && action.hasPermission("startDate")  /]
+                [@customForm.input name="project.projectInfo.startDate" className="startDate" i18nkey="project.startDate" type="text" disabled=!editable  required=true editable=editable && action.hasPermission("startDate")  /]
               </div> 
               [#-- End Date --]
               <div class="col-md-6">
-                [@customForm.input name="project.projectInfo.endDate"  i18nkey="project.endDate" type="text" disabled=!editable required=true editable=editable && action.hasPermission("endDate")  /]
+                [@customForm.input name="project.projectInfo.endDate" className="endDate"  i18nkey="project.endDate" type="text" disabled=!editable required=true editable=editable && action.hasPermission("endDate")  /]
               </div>
             </div>
             <div class="form-group row">

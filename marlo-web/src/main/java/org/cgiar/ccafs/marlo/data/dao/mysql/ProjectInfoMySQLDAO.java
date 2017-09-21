@@ -20,7 +20,9 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.ProjectInfoDAO;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -91,10 +93,31 @@ public class ProjectInfoMySQLDAO implements ProjectInfoDAO {
     if (phase.getEditable() != null && phase.getEditable()) {
       List<ProjectInfo> projectInfos = phase.getProjectInfos().stream()
         .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID).collect(Collectors.toList());
-      for (ProjectInfo projectInfoPhase : projectInfos) {
-        projectInfoPhase.updateProjectInfo(projectInfo);
-        dao.update(projectInfoPhase);
+      if (!projectInfos.isEmpty()) {
+        for (ProjectInfo projectInfoPhase : projectInfos) {
+          projectInfoPhase.updateProjectInfo(projectInfo);
+          dao.update(projectInfoPhase);
+        }
+      } else {
+        if (projectInfo.getEndDate() != null) {
+          Calendar cal = Calendar.getInstance();
+          cal.setTime(projectInfo.getEndDate());
+          if (cal.get(Calendar.YEAR) >= phase.getYear()) {
+            ProjectInfo projectInfoPhaseAdd = new ProjectInfo();
+            projectInfoPhaseAdd.setProject(projectInfo.getProject());
+            projectInfoPhaseAdd.setPhase(phase);
+            projectInfoPhaseAdd.setProjectEditLeader(false);
+            projectInfoPhaseAdd.updateProjectInfo(projectInfo);
+            dao.save(projectInfoPhaseAdd);
+            ProjectPhase projectPhase = new ProjectPhase();
+            projectPhase.setPhase(phase);
+            projectPhase.setProject(projectInfo.getProject());
+            dao.save(projectPhase);
+          }
+        }
       }
+
+
     }
     if (phase.getNext() != null) {
       this.saveInfoPhase(phase.getNext(), projecID, projectInfo);

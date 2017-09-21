@@ -513,36 +513,42 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   public ProjectPartner getLeader(Phase phase) {
 
-    if (partners != null) {
-      for (ProjectPartner partner : partners.stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
+    try {
+      if (partners != null) {
+        for (ProjectPartner partner : partners.stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
 
-        if (partner.getPartnerPersons() != null) {
-          for (ProjectPartnerPerson person : partner.getPartnerPersons()) {
-            if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL)) {
-              return partner;
-            }
-          }
-        }
-
-      }
-    } else {
-      for (ProjectPartner partner : projectPartners.stream().filter(c -> c.isActive() && c.getPhase().equals(phase))
-        .collect(Collectors.toList())) {
-        if (partner.isActive()) {
-
-
-          for (ProjectPartnerPerson person : partner.getProjectPartnerPersons()) {
-            if (person.isActive()) {
-              if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL) && person.isActive()) {
+          if (partner.getPartnerPersons() != null) {
+            for (ProjectPartnerPerson person : partner.getPartnerPersons()) {
+              if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL)) {
                 return partner;
               }
             }
+          }
 
+        }
+      } else {
+        for (ProjectPartner partner : projectPartners.stream().filter(c -> c.isActive() && c.getPhase().equals(phase))
+          .collect(Collectors.toList())) {
+          if (partner.isActive()) {
+
+
+            for (ProjectPartnerPerson person : partner.getProjectPartnerPersons()) {
+              if (person.isActive()) {
+                if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL) && person.isActive()) {
+                  return partner;
+                }
+              }
+
+            }
           }
         }
+
+
       }
 
-
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
     return null;
   }

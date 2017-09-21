@@ -8,15 +8,15 @@ $(document).ready(function() {
 
   $statuses = $('.description_project_status');
   $statusDescription = $('#statusDescription');
-  $endDate = $('#project\\.endDate');
+  $endDate = $('.endDate');
   var implementationStatus = $statuses.find('option[value="2"]').text();
 
   liaisonUserSelected = $('#liaisonUserSelected').text();
   liaisonInstitutionsPrograms = jQuery.parseJSON($('#liaisonInstitutionsPrograms').text());
 
   datePickerConfig({
-      "startDate": "#project\\.startDate",
-      "endDate": "#project\\.endDate",
+      "startDate": ".startDate",
+      "endDate": ".endDate",
       defaultMinDateValue: $("#minDateValue").val(),
       defaultMaxDateValue: $("#maxDateValue").val()
   });
@@ -238,7 +238,7 @@ $(document).ready(function() {
     var d = new Date($(this).val());
     checkImplementationStatus(d.getFullYear());
   }
-  
+
   function checkImplementationStatus(year) {
     if(year <= currentReportingYear) {
       $statuses.removeOption(2);
