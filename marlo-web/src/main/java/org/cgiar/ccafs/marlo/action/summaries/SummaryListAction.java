@@ -16,20 +16,19 @@
 
 package org.cgiar.ccafs.marlo.action.summaries;
 
-import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
-import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
-import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.google.inject.Inject;
 
+/**
+ * When the reports information lives on the database. The class will be used to List the reports.
+ */
 public class SummaryListAction extends BaseSummariesAction {
 
   /**
@@ -59,16 +58,9 @@ public class SummaryListAction extends BaseSummariesAction {
 
   @Override
   public void prepare() throws Exception {
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
-    allProjects = new ArrayList<Project>();
-    Phase phase =
-      phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), loggedCrp.getId().longValue());
-    for (ProjectPhase projectPhase : phase.getProjectPhases()) {
-      allProjects.add((projectPhase.getProject()));
-    }
-
-
+    /*
+     * 
+     */
   }
 
   public void setAllProjects(List<Project> allProjects) {
