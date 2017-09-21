@@ -733,7 +733,6 @@ public class FundingSourceAction extends BaseAction {
       }
       fundingSourceDB.setDescription(fundingSource.getDescription());
 
-
       if (fundingSource.getFile() == null) {
         fundingSourceDB.setFile(null);
       } else {
