@@ -252,8 +252,8 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
       List<Project> projects = new ArrayList<>();
       if (this.getSelectedPhase() != null) {
         for (ProjectPhase projectPhase : this.getSelectedPhase().getProjectPhases().stream()
-          .sorted((p1, p2) -> Long.compare(p1.getProject().getId(), p2.getProject().getId()))
-          .collect(Collectors.toList())) {
+          .sorted((pf1, pf2) -> Long.compare(pf1.getProject().getId(), pf2.getProject().getId()))
+          .filter(pf -> pf.getProject() != null && pf.getProject().isActive()).collect(Collectors.toList())) {
           projects.add((projectPhase.getProject()));
         }
         for (Project project : projects) {
@@ -442,14 +442,16 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
       if (this.getSelectedPhase() != null) {
 
         for (ProjectPhase projectPhase : this.getSelectedPhase().getProjectPhases().stream()
-          .sorted((p1, p2) -> Long.compare(p1.getProject().getId(), p2.getProject().getId()))
-          .collect(Collectors.toList())) {
+          .sorted((pf1, pf2) -> Long.compare(pf1.getProject().getId(), pf2.getProject().getId()))
+          .filter(pf -> pf.getProject() != null && pf.getProject().isActive()).collect(Collectors.toList())) {
           projects.add((projectPhase.getProject()));
         }
         for (Project project : projects) {
           ProjectInfo projectInfo = project.getProjecInfoPhase(this.getSelectedPhase());
           for (Deliverable deliverable : project.getDeliverables().stream()
-            .sorted((d1, d2) -> Long.compare(d1.getId(), d2.getId())).filter(d -> d.isActive())
+            .sorted((d1, d2) -> Long.compare(d1.getId(), d2.getId()))
+            .filter(d -> d.isActive() && d.getDeliverableInfo(this.getSelectedPhase()) != null
+              && d.getDeliverableInfo(this.getSelectedPhase()).equals(this.getSelectedPhase()))
             .collect(Collectors.toList())) {
             String devTitle = "";
             // Pattern case insensitive
@@ -618,8 +620,8 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
       if (this.getSelectedPhase() != null) {
 
         for (ProjectPhase projectPhase : this.getSelectedPhase().getProjectPhases().stream()
-          .sorted((p1, p2) -> Long.compare(p1.getProject().getId(), p2.getProject().getId()))
-          .collect(Collectors.toList())) {
+          .sorted((f1, f2) -> Long.compare(f1.getProject().getId(), f2.getProject().getId()))
+          .filter(f -> f.getProject() != null && f.getProject().isActive()).collect(Collectors.toList())) {
           projects.add((projectPhase.getProject()));
         }
         for (Project project : projects) {

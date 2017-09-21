@@ -303,8 +303,10 @@ public class CaseStudySummaryAction extends BaseSummariesAction implements Summa
           referencesCase = caseStudy.getReferencesCase().trim().isEmpty() ? null : caseStudy.getReferencesCase();
           explainIndicatorRelation =
             caseStudy.getExplainIndicatorRelation().trim().isEmpty() ? null : caseStudy.getExplainIndicatorRelation();
-          List<CaseStudyProject> studyProjects = new ArrayList<>(
-            caseStudy.getCaseStudyProjects().stream().filter(csp -> csp.isActive()).collect(Collectors.toList()));
+          List<CaseStudyProject> studyProjects = new ArrayList<>(caseStudy.getCaseStudyProjects().stream()
+            .filter(csp -> csp.isActive() && csp.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
+              && csp.getProject().getProjecInfoPhase(this.getSelectedPhase()).getReporting())
+            .collect(Collectors.toList()));
           boolean add = false;
           owner = "";
           List<Project> projects = new ArrayList<>();

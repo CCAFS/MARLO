@@ -374,8 +374,8 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
       .sorted((h1, h2) -> Long.compare(h1.getId(), h2.getId()))
       .filter(ph -> ph.isActive() && ph.getProject() != null && ph.getYear() == this.getSelectedYear()
         && ph.getProject().getCrp().getId().longValue() == this.getLoggedCrp().getId().longValue()
-        && ph.getProject().isActive() && ph.getProject().getProjecInfoPhase(this.getActualPhase()) != null
-        && ph.getProject().getProjecInfoPhase(this.getActualPhase()).getReporting())
+        && ph.getProject().isActive() && ph.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
+        && ph.getProject().getProjectInfo().getReporting())
       .collect(Collectors.toList())) {
       String title = null, author = null, subject = null, publisher = null, highlightsTypes = "",
         highlightsIsGlobal = null, startDate = null, endDate = null, keywords = null, countries = "",

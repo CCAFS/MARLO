@@ -288,9 +288,9 @@ public class LeveragesReportingSummaryAction extends BaseSummariesAction impleme
       new Class[] {Long.class, String.class, String.class, Integer.class, String.class, Double.class, Long.class}, 0);
     for (ProjectLeverage projectLeverage : this.projectLeverageManager.findAll().stream()
       .filter(
-        l -> l.isActive() && l.getYear() != null && l.getYear() == this.getSelectedYear() && l.getProject() != null
-          && l.getProject().getCrp() != null && l.getProject().getCrp().getId().equals(this.getLoggedCrp().getId())
-          && l.getProject().isActive() && l.getProject().getProjecInfoPhase(this.getActualPhase()).getReporting())
+        pl -> pl.isActive() && pl.getYear() != null && pl.getYear() == this.getSelectedYear() && pl.getProject() != null
+          && pl.getProject().getCrp() != null && pl.getProject().getCrp().getId().equals(this.getLoggedCrp().getId())
+          && pl.getProject().isActive() && pl.getProject().getProjecInfoPhase(this.getSelectedPhase()).getReporting())
       .collect(Collectors.toList())) {
       String title = null, partnerName = null, flagship = null;
       Long projectID = null;
