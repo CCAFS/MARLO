@@ -308,7 +308,9 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
       0);
 
     for (Project project : this.getLoggedCrp().getProjects().stream()
-      .sorted((p1, p2) -> Long.compare(p1.getId(), p2.getId())).filter(p -> p.isActive())
+      .sorted((p1, p2) -> Long.compare(p1.getId(), p2.getId()))
+      .filter(p -> p.isActive() && p.getProjecInfoPhase(this.getSelectedPhase()) != null
+        && p.getProjecInfoPhase(this.getSelectedPhase()).equals(this.getSelectedPhase()))
       .collect(Collectors.toList())) {
       for (ProjectOutcome projectOutcome : project.getProjectOutcomes().stream()
         .sorted((po1, po2) -> Long.compare(po1.getId(), po2.getId()))
@@ -349,7 +351,8 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
     for (Project project : this.getLoggedCrp().getProjects().stream()
       .sorted((p1, p2) -> Long.compare(p1.getId(), p2.getId()))
       .filter(p -> p.isActive() && p.getProjecInfoPhase(this.getSelectedPhase()) != null
-        && p.getProjecInfoPhase(this.getSelectedPhase()).getStatus().intValue() == 2)
+        && p.getProjecInfoPhase(this.getSelectedPhase()).getStatus().intValue() == 2
+        && p.getProjecInfoPhase(this.getSelectedPhase()).equals(this.getSelectedPhase()))
       .collect(Collectors.toList())) {
       for (ProjectOutcome projectOutcome : project.getProjectOutcomes().stream()
         .sorted((po1, po2) -> Long.compare(po1.getId(), po2.getId()))
