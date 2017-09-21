@@ -1,5 +1,5 @@
 [#ftl]
-[#import "bowerComponents.ftl" as components /]
+[#import "/WEB-INF/global/pages/bowerComponents.ftl" as components /]
 [#import "/WEB-INF/center/global/macros/forms.ftl" as customForm /]
 [#assign globalLibs = ["jquery", "bootstrap", "jquery-ui", "pusher-websocket-iso", "noty", "countdown", "animate.css", "autogrow-textarea", "jReject","cytoscape","cytoscape-panzoom" ] /]
 <!doctype html>
@@ -45,11 +45,11 @@
     [/#compress]
   </head>
   <body>
-    [#include "/WEB-INF/center/global/pages/boardMessage.ftl" /]
+    [#include "/WEB-INF/global/pages/boardMessage.ftl" /]
     [#if !(avoidHeader!false)]
       <header class="clearfix">
         [#-- MARLO Admin Menu --]
-        [#include "/WEB-INF/center/global/pages/superadmin-menu.ftl" /]
+        [#include "/WEB-INF/global/pages/superadmin-menu.ftl" /]
         
         <div class="container">
           <div id="marlo-logo" class="animated fadeIn">
