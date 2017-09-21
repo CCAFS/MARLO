@@ -29,7 +29,6 @@ import org.cgiar.ccafs.marlo.ocs.ws.MarloOcsClient;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -70,36 +69,28 @@ public class OcsServiceAction extends BaseAction {
   @Override
   public String execute() throws Exception {
 
-    Agreement agreement = agreementManager.find(ocsCode);
-
-    if (agreement != null) {
-
-      Date today = new Date();
-
-      if (agreement.getSyncDate().compareTo(today) == 0) {
-
-        json = this.returnOCS(agreement);
-
-      } else {
-
-        json = ocsClient.getagreement(ocsCode);
-
-        if (json != null) {
-          Agreement theAgreement = this.returnAgreement(json);
-          agreementManager.update(theAgreement);
-        }
-      }
-
-    } else {
-      json = ocsClient.getagreement(ocsCode);
-
-      if (json != null) {
-        Agreement theAgreement = this.returnAgreement(json);
-        agreementManager.save(theAgreement);
-      }
-
-
-    }
+    /*
+     * Agreement agreement = agreementManager.find(ocsCode);
+     * if (agreement != null) {
+     * Date today = new Date();
+     * if (agreement.getSyncDate().compareTo(today) == 0) {
+     * json = this.returnOCS(agreement);
+     * } else {
+     * json = ocsClient.getagreement(ocsCode);
+     * if (json != null) {
+     * Agreement theAgreement = this.returnAgreement(json);
+     * agreementManager.update(theAgreement);
+     * }
+     * }
+     * } else {
+     * json = ocsClient.getagreement(ocsCode);
+     * if (json != null) {
+     * Agreement theAgreement = this.returnAgreement(json);
+     * agreementManager.save(theAgreement);
+     * }
+     * }
+     */
+    json = ocsClient.getagreement(ocsCode);
 
 
     return SUCCESS;

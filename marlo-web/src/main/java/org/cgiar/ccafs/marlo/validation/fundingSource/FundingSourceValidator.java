@@ -165,37 +165,40 @@ public class FundingSourceValidator extends BaseValidator {
      * @date 06/09/2017
      */
 
-    if (fundingSource.getSynced()) {
 
-      if (fundingSource.getBudgetType().getId() != APConstants.BUDGET_TYPE) {
+    if (fundingSource.getSynced() != null) {
+      if (fundingSource.getSynced()) {
 
-        Double grantAmount = fundingSource.getGrantAmount();
-        List<FundingSourceBudget> budgets = fundingSource.getBudgets();
-        double currentBudget = 0;
+        if (fundingSource.getBudgetType().getId() != APConstants.BUDGET_TYPE) {
 
-        for (FundingSourceBudget fundingSourceBudget : budgets) {
-          if (fundingSourceBudget.getBudget() != null) {
-            currentBudget += fundingSourceBudget.getBudget();
-          }
+          Double grantAmount = fundingSource.getGrantAmount();
+          List<FundingSourceBudget> budgets = fundingSource.getBudgets();
+          double currentBudget = 0;
 
-        }
-
-        if (currentBudget > grantAmount) {
-
-
-          for (int i = 0; i < budgets.size(); i++) {
-            this.addMessage(action.getText("fundingSource.budgetWrongValue"));
-            action.getInvalidFields().put("input-fundingSource.budgets[" + i + "].budget",
-              InvalidFieldsMessages.WRONGVALUE);
+          for (FundingSourceBudget fundingSourceBudget : budgets) {
+            if (fundingSourceBudget.getBudget() != null) {
+              currentBudget += fundingSourceBudget.getBudget();
+            }
 
           }
+
+          if (currentBudget > grantAmount) {
+
+
+            for (int i = 0; i < budgets.size(); i++) {
+              this.addMessage(action.getText("fundingSource.budgetWrongValue"));
+              action.getInvalidFields().put("input-fundingSource.budgets[" + i + "].budget",
+                InvalidFieldsMessages.WRONGVALUE);
+
+            }
+
+          }
+
 
         }
 
 
       }
-
-
     }
 
 
