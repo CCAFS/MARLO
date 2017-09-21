@@ -25,7 +25,7 @@
 
 [#include "/WEB-INF/center/global/pages/header.ftl" /]
 [#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
-[#import "/WEB-INF/center/global/macros/utils.ftl" as utils /]
+[#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 [#import "/WEB-INF/center/global/macros/forms.ftl" as customForm /]
 [#import "/WEB-INF/center/views/impactPathway/outputListTemplate.ftl" as outputsList /]
 [#--  Research Outputs Help Text--] 

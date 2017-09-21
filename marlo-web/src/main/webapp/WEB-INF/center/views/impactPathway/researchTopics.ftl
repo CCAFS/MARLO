@@ -22,7 +22,7 @@
 [#assign leadersName = "leaders"/]
 [#include "/WEB-INF/center//global/pages/header.ftl" /]
 [#include "/WEB-INF/center//global/pages/main-menu.ftl" /]
-[#import "/WEB-INF/center//global/macros/utils.ftl" as utils /]
+[#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 [#--  Research Topics Help Text--] 
 [@utils.helpInfos hlpInfo="researchTopics.help" /]
 [#--  marlo cluster of activities--]

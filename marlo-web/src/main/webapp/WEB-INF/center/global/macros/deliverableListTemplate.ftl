@@ -1,5 +1,5 @@
 [#ftl]
-[#import "/WEB-INF/center/global/macros/utils.ftl" as utilities/]
+[#import "/WEB-INF/global/macros/utils.ftl" as utilities/]
 [#macro deliverableList deliverables={} owned=true canValidate=false canEdit=false isPlanning=false namespace="/" defaultAction="projectDeliverable"]
   <table class="deliverablesList" id="deliverables">
     <thead>
