@@ -134,6 +134,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       masterReport.getParameterValues().put("regionalAvalaible", this.hasProgramnsRegions());
       masterReport.getParameterValues().put("showDescription",
         this.hasSpecificities(APConstants.CRP_REPORTS_DESCRIPTION));
+      masterReport.getParameterValues().put("phaseID", this.getSelectedPhase().getId());
       // Set i8n for pentaho
       masterReport = this.addi8nParameters(masterReport);
       ExcelReportUtil.createXLSX(masterReport, os);
