@@ -21,7 +21,7 @@
 
 [#include "/WEB-INF/center/global/pages/header.ftl" /]
 [#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
-[#import "/WEB-INF/center/global/macros/deliverableListTemplate.ftl" as deliverableList /]
+[#import "/WEB-INF/global/macros/deliverableListTemplate-center.ftl" as deliverableList /]
 [#-- Help text --]
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">

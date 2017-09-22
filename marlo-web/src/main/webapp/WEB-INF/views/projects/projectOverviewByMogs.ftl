@@ -18,12 +18,8 @@
   {"label":"overviewByMogs", "nameSpace":"/overviewByMogs", "action":"overviewByMogs"}
 ]/]
 
-
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
-[#import "/WEB-INF/global/macros/deliverableListTemplate.ftl" as deliverableList /]
-
-
     
 <section class="container">
     <div class="row">
@@ -41,7 +37,7 @@
         [#-- Section Title --]
           <h3 class="headTitle">[@s.text name="breadCrumb.menu.overviewByMogs" /]</h3>
         [#assign selectedYear = "2015" /]
-    [#-- Year Tabs --]
+        [#-- Year Tabs --]
             <ul class="nav nav-tabs budget-tabs" role="tablist">
               [#list allYears as year]
               [#if year <=currentCycleYear]

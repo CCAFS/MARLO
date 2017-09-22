@@ -163,10 +163,10 @@
 </section>
 
 [#-- Outcome Projects Popup --]
-[#include "/WEB-INF/center/global/macros/outcomeProjectsPopup.ftl" /]
+[#include "/WEB-INF/global/macros/outcomeProjectsPopup-center.ftl" /]
 
 [#-- Bilateral Co-Funded Project Popup --]
-[#include "/WEB-INF/center/global/macros/milestonePopup.ftl"]
+[#include "/WEB-INF/global/macros/milestonePopup-center.ftl"]
 
 [#-- Milestone macro --]
 [@milestoneMacro milestone={} name="outcome.monitorings[-1].milestones" index=-1 isTemplate=true /]
