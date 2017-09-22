@@ -61,7 +61,7 @@ public class FundingSourceValidator extends BaseValidator {
   private void checkFileIsValid(FundingSource fundingSource) {
     FileDB file = fundingSource.getFile();
     if (file != null) {
-      if (file.getFileName() == null && file.getTokenId() == null) {
+      if (file.getId() == null) {
         // The UI component has instantiated an empty file object instead of null.
         fundingSource.setFile(null);
       }
