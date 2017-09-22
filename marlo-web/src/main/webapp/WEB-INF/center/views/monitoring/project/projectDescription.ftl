@@ -21,7 +21,7 @@
 [#include "/WEB-INF/center/global/pages/header.ftl" /]
 [#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
 [#-- Search users Interface --]
-[#import "/WEB-INF/center/global/macros/usersPopup.ftl" as usersForm/]
+[#import "/WEB-INF/global/macros/usersPopup.ftl" as usersForm/]
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities /]
 
 [#-- Help text --]

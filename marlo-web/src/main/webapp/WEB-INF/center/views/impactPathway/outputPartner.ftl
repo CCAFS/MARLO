@@ -101,7 +101,7 @@
 </section>
 
 [#-- Search users Interface --]
-[#import "/WEB-INF/center/global/macros/usersPopup.ftl" as usersForm/]
+[#import "/WEB-INF/global/macros/usersPopup.ftl" as usersForm/]
 [@usersForm.searchUsers/]
 
 [#-- Partner Template --]
