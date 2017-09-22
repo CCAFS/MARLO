@@ -785,7 +785,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         // method to get all the subreports in the prpt and store in the HashMap
         this.getAllSubreports(hm, masteritemBand);
         // Uncomment to see which Subreports are detecting the method getAllSubreports
-        System.out.println("Pentaho SubReports: " + hm);
+        // System.out.println("Pentaho SubReports: " + hm);
         // get project leader
         ProjectPartner projectLeader = project.getLeader(this.getSelectedPhase());
         // get Flagships related to the project sorted by acronym
@@ -883,7 +883,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           args.clear();
           this.fillSubreport((SubReport) hm.get("deliverables"), "deliverables_list", args);
         } else {
-          args.clear();
+          // args.clear();
           this.fillSubreport((SubReport) hm.get("deliverables"), "deliverables_list_reporting", args);
           this.fillSubreport((SubReport) hm.get("project_highlight"), "project_highlight", args);
         }
@@ -1043,7 +1043,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       for (Activity activity : project.getActivities().stream().sorted((d1, d2) -> Long.compare(d1.getId(), d2.getId()))
         .filter(a -> a.isActive() && a.getActivityStatus() != null
           && (a.getActivityStatus() == 2 || a.getActivityStatus() == 4 || a.getActivityStatus() == 3)
-          && a.getStartDate() != null && a.getEndDate() != null)
+          && a.getStartDate() != null && a.getEndDate() != null && a.getPhase() != null
+          && a.getPhase().equals(this.getSelectedPhase()))
         .collect(Collectors.toList())) {
         // Filter by date
         Calendar cal = Calendar.getInstance();
@@ -1063,7 +1064,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           if (activity.getEndDate() != null) {
             endDate = formatter.format(activity.getEndDate());
           }
-          if (activity.getProjectPartnerPerson() != null) {
+          if (activity.getProjectPartnerPerson() != null && activity.getProjectPartnerPerson().isActive()) {
             institution = activity.getProjectPartnerPerson().getProjectPartner().getInstitution().getComposedName();
             activityLeader = activity.getProjectPartnerPerson().getUser().getComposedName() + "\n&lt;"
               + activity.getProjectPartnerPerson().getUser().getEmail() + "&gt;";
@@ -3441,7 +3442,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       for (ProjectComponentLesson pcl : project.getProjectComponentLessons().stream()
         .sorted((p1, p2) -> p1.getYear() - p2.getYear())
         .filter(pcl -> pcl.isActive() && pcl.getComponentName().equals("outcomesPandR")
-          && pcl.getCycle().equals(this.getSelectedCycle()) && pcl.getYear() == this.getSelectedYear())
+          && pcl.getPhase().equals(this.getSelectedPhase()) && pcl.getCycle().equals(this.getSelectedCycle())
+          && pcl.getYear() == this.getSelectedYear())
         .collect(Collectors.toList())) {
         if (pcl.getLessons() != null) {
           if (!pcl.getLessons().isEmpty()) {
