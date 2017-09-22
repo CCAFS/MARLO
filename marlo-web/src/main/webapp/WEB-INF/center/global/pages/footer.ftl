@@ -33,37 +33,8 @@
     [#-- Importing JavaScript constants --]
     [#include "/WEB-INF/global/pages/javascript-constants.ftl" /]
     
-    [#-- Second, import global javascripts and templates. --]
-    <script type="text/javascript">
-      [#-- MARLO Develop ID as default --]
-      [#assign tawktoSiteId = "583c8368de6cd808f31aee05"]
-      [#-- Tawk.to Widget --]
-      var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-      Tawk_LoadStart = new Date();
-      Tawk_API.visitor = {
-        'name': '${(currentUser.composedCompleteName)!}',
-      };
-      Tawk_API.onLoad = function() {
-        Tawk_API.setAttributes({
-            'fullName': '${(currentUser.composedCompleteName)!}',
-            'userName' : '${(currentUser.username)!}',
-            'userId': '${(currentUser.id)!}',
-            'roles': '',
-            'liaisonInstitutions': ''
-            
-        }, function(error) {
-        });
-        Tawk_API.addTags(['MARLO', '${config.production?string('Production','Development')}', '${(centerSession)!}'], function(error){});
-      };
-      (function() {
-        var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
-        s1.async = true;
-        s1.src = 'https://embed.tawk.to/${tawktoSiteId}/default';
-        s1.charset = 'UTF-8';
-        s1.setAttribute('crossorigin', '*');
-        s0.parentNode.insertBefore(s1, s0);
-      })();
-    </script>
+    [#-- Importing Tawk.to Widget configuration --]
+    [#include "/WEB-INF/global/pages/tawkto-widget.ftl" /]
   
     [#-- Global Javascript --]
     <script type="text/javascript" src="${baseUrl}/global/js/utils.js" ></script>
