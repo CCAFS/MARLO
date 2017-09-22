@@ -841,6 +841,8 @@ public class DeliverableAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+ 	      reader.close();
+        	
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
@@ -852,7 +854,6 @@ public class DeliverableAction extends BaseAction {
         deliverable.setProject(deliverableDb.getProject());
         project.setProjectEditLeader(deliverableDb.getProject().isProjectEditLeader());
         project.setProjectLocations(deliverableDb.getProject().getProjectLocations());
-        reader.close();
 
 
         if (deliverable.getNewExpectedYear() == null) {
@@ -1407,9 +1408,10 @@ public class DeliverableAction extends BaseAction {
         && deliverablePrew.getDeliverablePartnerships().size() > 0) {
 
         try {
-          partnershipResponsible = deliverablePrew.getDeliverablePartnerships().stream()
-            .filter(
-              dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
+          partnershipResponsible =
+            deliverablePrew.getDeliverablePartnerships().stream()
+              .filter(dp -> dp.isActive()
+                && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
             .collect(Collectors.toList()).get(0);
         } catch (Exception e) {
           partnershipResponsible = null;

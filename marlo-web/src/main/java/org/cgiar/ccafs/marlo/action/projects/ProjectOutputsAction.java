@@ -306,11 +306,13 @@ public class ProjectOutputsAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+ 	      reader.close();
+ 	
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         project = (Project) autoSaveReader.readFromJson(jReader);
-        reader.close();
+      
 
         if (project.getOverviews() == null) {
 
