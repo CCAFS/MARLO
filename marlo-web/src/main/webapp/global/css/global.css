@@ -3857,10 +3857,10 @@ span.projectType.ppa {
   top: 0;
   right: 0;
   cursor: pointer;
-  background: url(../../global/images/arrow-up.png);
+  background: url(../../../global/images/arrow-up.png);
 } 
 .handlediv.down{
-  background: url(../../global/images/arrow-down.png);
+  background: url(../../../global/images/arrow-down.png);
 }
 
 .budgetPartnerTitle.down {

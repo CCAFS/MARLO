@@ -37,11 +37,11 @@ li.targetUnit {
 
 .srfSlo .blockTitle.opened, .crpParameters .blockTitle.opened {
   opacity: 0.5;
-  background-image: url(../../global/images/arrow-up.png);
+  background-image: url(../../../global/images/arrow-up.png);
 }
 
 .srfSlo .blockTitle.closed, .crpParameters .blockTitle.closed {
-  background-image: url(../../global/images/arrow-down.png);
+  background-image: url(../../../global/images/arrow-down.png);
 }
 
 .srfSlo .blockTitle small, .crpParameters .blockTitle small {
@@ -62,11 +62,11 @@ li.targetUnit {
 
 .srfIdo .blockTitle.opened {
   opacity: 0.5;
-  background-image: url(../../global/images/arrow-up.png);
+  background-image: url(../../../global/images/arrow-up.png);
 }
 
 .srfIdo .blockTitle.closed {
-  background-image: url(../../global/images/arrow-down.png);
+  background-image: url(../../../global/images/arrow-down.png);
 }
 
 .srfIdo .blockTitle small {
