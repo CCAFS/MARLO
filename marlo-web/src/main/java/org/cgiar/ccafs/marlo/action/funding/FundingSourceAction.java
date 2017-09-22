@@ -455,6 +455,8 @@ public class FundingSourceAction extends BaseAction {
        * this) and the save method would map the values from the FundingSourceDTO to the FundingSource hibernate entity.
        */
       fundingSource.setInstitution(null);
+
+      fundingSource.setFile(null);
       return;
     }
 
