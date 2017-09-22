@@ -6711,3 +6711,6 @@ img#crpSelectedImage {
   max-width: 300px;
   width: 100%;
 }
+
+img.hint-img {
+}

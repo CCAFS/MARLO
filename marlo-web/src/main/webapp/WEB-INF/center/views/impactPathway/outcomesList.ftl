@@ -25,7 +25,6 @@
 [#include "/WEB-INF/center/global/pages/header.ftl" /]
 [#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
-[#import "/WEB-INF/center/global/macros/forms.ftl" as customForm /]
 [#import "/WEB-INF/center/views/impactPathway/outcomeListTemplate.ftl" as outcomesList /]
 [#--  Research Otcomes Help Text--] 
 [@utils.helpInfos hlpInfo="researchOutcomesList.help" /]
@@ -129,7 +128,7 @@
   </div>
 </section>
 
-[@customForm.confirmJustification action="deleteOutcome.do" namespace="/${currentSection}" title="Remove Outcome" /]
+[@customForm.confirmJustificationOutcome action="deleteOutcome.do" namespace="/${currentSection}" title="Remove Outcome" /]
 
 [#include "/WEB-INF/center/global/pages/footer.ftl" /]
 

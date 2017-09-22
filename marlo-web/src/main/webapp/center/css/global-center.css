@@ -6282,5 +6282,12 @@ p.title{
 span.hint{
   color:#81af81;
   font-style: italic;
-  letter-spacing: 1px;
+  /* letter-spacing: 1px; */
+  display: inline !important;
+  font-size: 0.9em;
+  font-weight: normal;
+}
+
+img.hint-img {
+  display: none !important;
 }

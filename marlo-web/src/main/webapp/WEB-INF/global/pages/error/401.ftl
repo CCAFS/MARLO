@@ -4,7 +4,6 @@
 
 [#include "/WEB-INF/${headerPath}global/pages/header.ftl" /]
 [#include "/WEB-INF/${headerPath}global/pages/main-menu.ftl" /]
-[#import "/WEB-INF/${headerPath}global/macros/forms.ftl" as customForm /]
 
 <section class="content">
     <div class="container"> 

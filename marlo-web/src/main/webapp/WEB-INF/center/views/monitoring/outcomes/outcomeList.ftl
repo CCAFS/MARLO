@@ -20,7 +20,6 @@
 
 [#include "/WEB-INF/center/global/pages/header.ftl" /]
 [#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
-[#import "/WEB-INF/center/global/macros/forms.ftl" as customForm /]
 [#import "/WEB-INF/center/views/impactPathway/outcomeListTemplate.ftl" as outcomesListMonitoring /]
 [#-- Help text --]
 <div class="container helpText viewMore-block">

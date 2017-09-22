@@ -32,8 +32,12 @@
     [#assign customLabel][#if !editable]${customName}.readText[#else]${customName}[/#if][/#assign]
     [#assign customValue][#if value=="-NULL"][@s.property value="${name}"/][#else]${value}[/#if][/#assign]
   	[#if showTitle]
-      <label for="${name}" class="${editable?string('editable', 'readOnly')}"> [@s.text name="${customLabel}"][@s.param]${paramText}[/@s.param][/@s.text]:[@req required=required && editable /]</label>
-      [#if help != ""]<img src="${baseUrl}/global/images/icon-help2.png" title="[@s.text name="${help}"/]" />[/#if]
+      <label for="${name}" class="${editable?string('editable', 'readOnly')}"> [@s.text name="${customLabel}"][@s.param]${paramText}[/@s.param][/@s.text]:[@req required=required && editable /]
+        [#if help != ""]
+          <img  class="hint-img" src="${baseUrl}/global/images/icon-help2.png" title="[@s.text name="${help}"/]" style="display:inline-block" />
+          <span class="hint" style="display:none" title="[@s.text name="${help}"/]"> [HINT] </span>
+        [/#if]
+      </label>
     [/#if]
     [#if errorfield==""][@s.fielderror cssClass="fieldError" fieldName="${name}"/][#else][@s.fielderror cssClass="fieldError" fieldName="${errorfield}"/][/#if]
     [#if editable]
@@ -238,6 +242,71 @@
           <input class="nameId" name="${nameId}" type="hidden" value="-1" />
         [/#if]
         <input name="projectID" type="hidden" value="${projectID}" />
+        <!-- Allow form submission with keyboard without duplicating the dialog button -->
+        <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+      [/@s.form]
+    </div>  
+  </div>
+[/#macro]
+
+[#macro confirmJustificationOutcome action="" namespace="/" nameId="" title="" outcomeID=""]
+  <div id="dialog-justification" title="${title}" style="display:none"> 
+    <div class="dialog-content"> 
+      [@s.form action=action namespace="${namespace}" cssClass="pure-form"]
+        [@textArea name="justification" i18nkey="saving.justification.outcome" required=true className="justification"/]
+        [#if nameId != ""]
+          <input name="${nameId}" type="hidden" value="-1" />
+        [/#if]
+        <input name="outcomeID" type="hidden" value="${outcomeID}" />
+        <!-- Allow form submission with keyboard without duplicating the dialog button -->
+        <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+      [/@s.form]
+    </div>  
+  </div>
+[/#macro]
+
+
+[#macro confirmJustificationOut action="" namespace="/" nameId="" title="" outputID=""]
+  <div id="dialog-justification" title="${title}" style="display:none"> 
+    <div class="dialog-content"> 
+      [@s.form action=action namespace="${namespace}" cssClass="pure-form"]
+        [@textArea name="justification" i18nkey="saving.justification.output" required=true className="justification"/]
+        [#if nameId != ""]
+          <input name="${nameId}" type="hidden" value="-1" />
+        [/#if]
+        <input name="outputID" type="hidden" value="${outputID}" />
+        <!-- Allow form submission with keyboard without duplicating the dialog button -->
+        <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+      [/@s.form]
+    </div>  
+  </div>
+[/#macro]
+
+[#macro confirmJustificationProject action="" namespace="/" nameId="" title="" projectID=""]
+  <div id="dialog-justification" title="${title}" style="display:none"> 
+    <div class="dialog-content"> 
+      [@s.form action=action namespace="${namespace}" cssClass="pure-form"]
+        [@textArea name="justification" i18nkey="saving.justification.project" required=true className="justification"/]
+        [#if nameId != ""]
+          <input name="${nameId}" type="hidden" value="-1" />
+        [/#if]
+        <input name="projectID" type="hidden" value="${projectID}" />
+        <!-- Allow form submission with keyboard without duplicating the dialog button -->
+        <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+      [/@s.form]
+    </div>  
+  </div>
+[/#macro]
+
+[#macro confirmJustificationDeliverable action="" namespace="/" nameId="" title="" deliverableID=""]
+  <div id="dialog-justification" title="${title}" style="display:none"> 
+    <div class="dialog-content"> 
+      [@s.form action=action namespace="${namespace}" cssClass="pure-form"]
+        [@textArea name="justification" i18nkey="saving.justification.deliverable" required=true className="justification"/]
+        [#if nameId != ""]
+          <input name="${nameId}" type="hidden" value="-1" />
+        [/#if]
+        <input name="deliverableID" type="hidden" value="${deliverableID}" />
         <!-- Allow form submission with keyboard without duplicating the dialog button -->
         <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
       [/@s.form]

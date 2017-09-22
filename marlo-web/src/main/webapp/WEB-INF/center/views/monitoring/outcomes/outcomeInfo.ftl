@@ -19,7 +19,6 @@
 
 [#include "/WEB-INF/center/global/pages/header.ftl" /]
 [#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
-[#import "/WEB-INF/center/global/macros/forms.ftl" as customForm /]
 
 [#-- Help text --]
 <div class="container helpText viewMore-block">

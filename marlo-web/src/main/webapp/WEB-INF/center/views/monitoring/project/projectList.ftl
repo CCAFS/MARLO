@@ -12,10 +12,9 @@
   {"label":"projectsList", "nameSpace":"/monitoring", "action":"${(centerSession)!}/projectList"}
 ]/]
 
-[#include "/WEB-INF/center//global/pages/header.ftl" /]
-[#include "/WEB-INF/center//global/pages/main-menu.ftl" /]
-[#import "/WEB-INF/center//global/macros/forms.ftl" as customForm /]
-[#import "/WEB-INF/center//global/macros/projectsListTemplate.ftl" as projectList /]
+[#include "/WEB-INF/center/global/pages/header.ftl" /]
+[#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
+[#import "/WEB-INF/center/global/macros/projectsListTemplate.ftl" as projectList /]
 [#-- Help text --]
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
