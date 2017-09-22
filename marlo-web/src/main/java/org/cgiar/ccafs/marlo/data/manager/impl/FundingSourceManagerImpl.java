@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 import org.cgiar.ccafs.marlo.data.dao.FundingSourceDAO;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -92,9 +93,10 @@ public class FundingSourceManagerImpl implements FundingSourceManager {
   }
 
   @Override
-  public long saveFundingSource(FundingSource fundingSource, String sectionName, List<String> relationsName) {
+  public long saveFundingSource(FundingSource fundingSource, String sectionName, List<String> relationsName,
+    Phase phase) {
 
-    return fundingSourceDAO.save(fundingSource, sectionName, relationsName);
+    return fundingSourceDAO.save(fundingSource, sectionName, relationsName, phase);
   }
 
   @Override

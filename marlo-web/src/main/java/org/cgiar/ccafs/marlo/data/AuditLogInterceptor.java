@@ -190,8 +190,13 @@ public class AuditLogInterceptor extends EmptyInterceptor {
         this.loadRelations(entity, true, 1);
         String json = gson.toJson(entity);
 
-        dao.logIt(function, entity, json, entity.getModifiedBy().getId(), this.transactionId,
-          new Long(map.get(PRINCIPAL).toString()), null, actionName, phase);
+        try {
+          dao.logIt(function, entity, json, entity.getModifiedBy().getId(), this.transactionId,
+            new Long(map.get(PRINCIPAL).toString()), null, actionName, phase);
+        } catch (Exception e) {
+          System.out.println(entity.getClass().getName());
+          // e.printStackTrace();
+        }
 
       } else {
         Set<IAuditLog> set = (Set<IAuditLog>) map.get(ENTITY);

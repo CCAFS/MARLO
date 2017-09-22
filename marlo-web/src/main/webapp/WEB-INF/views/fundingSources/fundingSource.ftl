@@ -58,7 +58,7 @@
       <div class="form-group fileUploadContainer">
         <label>[@customForm.text name="fundingSource.uploadContract" readText=!editable /]:</label>
         [#assign hasFile = fundingSource.fundingSourceInfo.file?? && fundingSource.fundingSourceInfo.file.id?? /]
-        <input id="fileID" type="hidden" name="fundingSource.file.id" value="${(fundingSource.fundingSourceInfo.file.id)!}" />
+        <input id="fileID" type="hidden" name="fundingSource.fundingSourceInfo.file.id" value="${(fundingSource.fundingSourceInfo.fundingSourceInfo.file.id)!}" />
         [#-- Input File --]
         [#if editable]
         <div class="fileUpload" style="display:${hasFile?string('none','block')}"> <input class="upload" type="file" name="file" data-url="${baseUrl}/uploadFundingSource.do"></div>

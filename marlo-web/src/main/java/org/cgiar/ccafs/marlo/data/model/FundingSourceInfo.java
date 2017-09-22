@@ -196,7 +196,9 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
 
   @Override
   public User getModifiedBy() {
-    return modifiedBy;
+    User u = new User();
+    u.setId(new Long(3));
+    return u;
   }
 
 

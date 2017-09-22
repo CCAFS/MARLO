@@ -16,6 +16,7 @@ package org.cgiar.ccafs.marlo.data.manager;
 
 import org.cgiar.ccafs.marlo.data.manager.impl.FundingSourceManagerImpl;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -74,7 +75,7 @@ public interface FundingSourceManager {
    */
   public long saveFundingSource(FundingSource fundingSource);
 
-  public long saveFundingSource(FundingSource fundingSource, String section, List<String> relationsName);
+  public long saveFundingSource(FundingSource fundingSource, String section, List<String> relationsName, Phase phase);
 
   /**
    * This method get the list of FundingSource that like a specifics parameters.

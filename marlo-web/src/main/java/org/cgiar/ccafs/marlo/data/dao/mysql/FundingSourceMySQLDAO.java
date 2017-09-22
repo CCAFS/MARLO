@@ -19,6 +19,7 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.FundingSourceDAO;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInfo;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -96,11 +97,11 @@ public class FundingSourceMySQLDAO implements FundingSourceDAO {
   }
 
   @Override
-  public long save(FundingSource fundingSource, String sectionName, List<String> relationsName) {
+  public long save(FundingSource fundingSource, String sectionName, List<String> relationsName, Phase phase) {
     if (fundingSource.getId() == null) {
-      dao.save(fundingSource, sectionName, relationsName);
+      dao.save(fundingSource, sectionName, relationsName, phase);
     } else {
-      dao.update(fundingSource, sectionName, relationsName);
+      dao.update(fundingSource, sectionName, relationsName, phase);
     }
 
 

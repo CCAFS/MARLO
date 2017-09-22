@@ -144,6 +144,9 @@ public final class APConstants {
 
   public static final String FUNDING_SOURCES_LOCATIONS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.FundingSource.fundingSourceLocations)";
+
+  public static final String FUNDING_SOURCES_INFO =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.FundingSource.fundingSourceInfos)";
   public static final int GLOBAL_PROGRAM = 11;
   public static final String HIGHLIGHT_REQUEST_ID = "highlightID";
   public static final String ID = "id";

@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.data.dao;
 
 import org.cgiar.ccafs.marlo.data.dao.mysql.FundingSourceMySQLDAO;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 import java.util.Map;
@@ -72,7 +73,7 @@ public interface FundingSourceDAO {
    */
   public long save(FundingSource fundingSource);
 
-  public long save(FundingSource fundingSource, String section, List<String> relationsName);
+  public long save(FundingSource fundingSource, String section, List<String> relationsName, Phase phase);
 
   /**
    * This method get the list of FundingSource that like a specifics parameters.
