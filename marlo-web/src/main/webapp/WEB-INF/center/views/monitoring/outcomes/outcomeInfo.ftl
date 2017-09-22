@@ -17,8 +17,8 @@
 
 
 
-[#include "/WEB-INF/center/global/pages/header.ftl" /]
-[#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
+[#include "/WEB-INF/center/pages/header.ftl" /]
+[#include "/WEB-INF/center/pages/main-menu.ftl" /]
 
 [#-- Help text --]
 <div class="container helpText viewMore-block">
@@ -174,7 +174,7 @@
 [#-- Evidence macro --]
 [@evidenceMacro evidence={} name="outcome.monitorings[-1].evidences" index=-1 isTemplate=true /]
 
-[#include "/WEB-INF/center/global/pages/footer.ftl"]
+[#include "/WEB-INF/center/pages/footer.ftl"]
 
 [#macro milestoneMacro milestone name index isTemplate=false]
   [#local editable = ((editable) && (milestone.researchMilestone.active))!true /]

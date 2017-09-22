@@ -143,7 +143,7 @@
 [#-- Key output Template --]
 [@crpItem element={} index=-1 name="user.crpUser"  isTemplate=true /]
 
-[#include "/WEB-INF/global/pages/footer.ftl" /]
+[#include "/WEB-INF/crp/pages/footer.ftl" /]
 
 [#macro crpItem element index name  isTemplate=false]
   [#local customName = "${name}[${index}]" /]

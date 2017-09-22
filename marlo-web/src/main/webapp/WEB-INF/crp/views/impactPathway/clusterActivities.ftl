@@ -28,8 +28,8 @@
 [#assign keyOutputsName = "keyOutputs"/]
 [#assign outcomesName = "keyOutputOutcomes"/]
 
-[#include "/WEB-INF/global/pages/header.ftl" /]
-[#include "/WEB-INF/global/pages/main-menu.ftl" /]
+[#include "/WEB-INF/crp/pages/header.ftl" /]
+[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 
 <div class="container helpText viewMore-block">
@@ -115,7 +115,7 @@
 <input type="hidden" id="keyOutputName" value="${keyOutputsName}" />
 <input type="hidden" id="outcomesName" value="${outcomesName}" />
 
-[#include "/WEB-INF/global/pages/footer.ftl" /]
+[#include "/WEB-INF/crp/pages/footer.ftl" /]
 
 
 [#macro clusterMacro cluster name index isTemplate=false]

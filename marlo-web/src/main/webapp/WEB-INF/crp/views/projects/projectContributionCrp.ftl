@@ -19,8 +19,8 @@
 ] /]
 
 
-[#include "/WEB-INF/global/pages/header.ftl" /]
-[#include "/WEB-INF/global/pages/main-menu.ftl" /]
+[#include "/WEB-INF/crp/pages/header.ftl" /]
+[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
 
 [#assign startYear = (project.startDate?string.yyyy)?number /]
 [#assign endYear = (project.endDate?string.yyyy)?number /]
@@ -277,7 +277,7 @@
 [#-- Next user Template --]
 [@nextUserMacro element={} name="projectOutcome.nextUsers" index="-1" isTemplate=true /]
   
-[#include "/WEB-INF/global/pages/footer.ftl"]
+[#include "/WEB-INF/crp/pages/footer.ftl"]
 
 
 [#macro milestoneMacro element name index isTemplate=false]

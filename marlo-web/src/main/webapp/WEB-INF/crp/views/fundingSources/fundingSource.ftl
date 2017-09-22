@@ -15,8 +15,8 @@
   {"label":"fundingSourcesList", "nameSpace":"/fundingSources", "action":""}
 ]/]
 
-[#include "/WEB-INF/global/pages/header.ftl" /]
-[#include "/WEB-INF/global/pages/main-menu.ftl" /]
+[#include "/WEB-INF/crp/pages/header.ftl" /]
+[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
 
 [#assign startYear = ((fundingSource.startDate?string.yyyy)?number)!currentCycleYear /]
 [#assign endYear = ((fundingSource.endDate?string.yyyy)?number)!startYear /]
@@ -427,4 +427,4 @@
 
 <span class="hidden cgiarConsortium">${action.getCGIARInstitution()}</span>
 
-[#include "/WEB-INF/global/pages/footer.ftl"]
+[#include "/WEB-INF/crp/pages/footer.ftl"]

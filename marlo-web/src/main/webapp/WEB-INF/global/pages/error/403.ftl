@@ -2,8 +2,8 @@
 [#assign title = "Permission denied!" /]
 [#assign customCSS = [ "${baseUrl}/global/css/403.css" ] /]
 
-[#include "/WEB-INF/${headerPath}global/pages/header.ftl" /]
-[#include "/WEB-INF/${headerPath}global/pages/main-menu.ftl" /]
+[#include "/WEB-INF/${headerPath}/pages/header.ftl" /]
+[#include "/WEB-INF/${headerPath}/pages/main-menu.ftl" /]
 
 <section class="content">
   <br />

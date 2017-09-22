@@ -21,10 +21,10 @@
   {"label":"outcome", "nameSpace":"", "action":""}
 ]/]
 [#assign leadersName = "leaders"/]
-[#include "/WEB-INF/center/global/pages/header.ftl" /]
-[#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
-[#import "/WEB-INF/global/macros/utils.ftl" as utils /]
+[#include "/WEB-INF/center/pages/header.ftl" /]
+[#include "/WEB-INF/center/pages/main-menu.ftl" /]
 [#import "/WEB-INF/center/views/impactPathway/outcomeListTemplate.ftl" as outcomesList /]
+[#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 [#--  Research Otcomes Help Text--] 
 [@utils.helpInfos hlpInfo="researchOutcomes.help" /]
 [#--  marlo cluster of activities--]
@@ -140,7 +140,7 @@
 [#-- Milestone Template --]
 [@milestoneMacro milestone={} name="${outcomeCustomName}.milestones" index=-1 isTemplate=true /]
 
-[#include "/WEB-INF/center/global/pages/footer.ftl" /]
+[#include "/WEB-INF/center/pages/footer.ftl" /]
 
 
 [#macro milestoneMacro milestone name index isTemplate=false]

@@ -17,8 +17,8 @@
   {"label":"projectBudgetByPartners", "nameSpace":"/projects", "action":""}
 ] /]
 
-[#include "/WEB-INF/global/pages/header.ftl" /]
-[#include "/WEB-INF/global/pages/main-menu.ftl" /]
+[#include "/WEB-INF/crp/pages/header.ftl" /]
+[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
 
 [#if !reportingActive]
 <div class="container helpText viewMore-block">
@@ -148,7 +148,7 @@
 [@fundingSourceMacro element={} name="project.budgets" selectedYear=-1 index=-1  isTemplate=true /]
 
 
-[#include "/WEB-INF/global/pages/footer.ftl"]
+[#include "/WEB-INF/crp/pages/footer.ftl"]
 
 
 [#macro projectPartnerMacro element name index=-1 selectedYear=0 isTemplate=false]

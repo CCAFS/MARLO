@@ -63,4 +63,4 @@
 </section>
 
 
-[#include "/WEB-INF/global/pages/footer.ftl" /]
+[#include "/WEB-INF/crp/pages/footer.ftl" /]

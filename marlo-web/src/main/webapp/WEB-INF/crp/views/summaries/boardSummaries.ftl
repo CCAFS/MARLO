@@ -15,8 +15,8 @@
 ]/]
 
 
-[#include "/WEB-INF/global/pages/header.ftl" /]
-[#include "/WEB-INF/global/pages/main-menu.ftl" /]
+[#include "/WEB-INF/crp/pages/header.ftl" /]
+[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
 
 [#assign years = ["2014","2015", "2016","2017" ]/]
 
@@ -382,4 +382,4 @@
   <span class="text"></span><span class="removeTerm glyphicon glyphicon-remove"></span>
 </div>
 
-[#include "/WEB-INF/global/pages/footer.ftl"]
+[#include "/WEB-INF/crp/pages/footer.ftl"]

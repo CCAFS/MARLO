@@ -12,8 +12,8 @@
   {"label":"targetUnits", "nameSpace":"", "action":""}
 ]/]
 
-[#include "/WEB-INF/global/pages/header.ftl" /]
-[#include "/WEB-INF/global/pages/main-menu.ftl" /]
+[#include "/WEB-INF/crp/pages/header.ftl" /]
+[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
@@ -98,7 +98,7 @@
 [#-- Unit Target Template --]
 [@targetUnitMacro element={} name="loggedCrp.targetUnits" index=-1 isTemplate=true /]
 
-[#include "/WEB-INF/global/pages/footer.ftl" /]
+[#include "/WEB-INF/crp/pages/footer.ftl" /]
 
 [#macro targetUnitMacro element name index isTemplate=false]
   <li id="targetUnit-${isTemplate?string('template',index)}" class="li-item targetUnitAdmin" style="float:left; width:48%; margin-right:5px; display:${isTemplate?string('none','block')}">

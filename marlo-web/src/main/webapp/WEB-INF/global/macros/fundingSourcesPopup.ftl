@@ -177,5 +177,5 @@
 <span class="hidden cgiarConsortium">${action.getCGIARInstitution()}</span>
 </div>
 [#--  Funding Source Popup JS --]
-[#assign customJS =  [ "${baseUrlMedia}/js/global/fundingSourcesPopup.js" ]  + customJS/]
+[#assign customJS =  [ "${baseUrl}/global/js/fundingSourcesPopup.js" ]  + customJS/]
   

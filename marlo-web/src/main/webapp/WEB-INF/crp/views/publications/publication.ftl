@@ -18,8 +18,8 @@
   {"label":"publication", "nameSpace":"publications", "action":""}
 ]/]
 
-[#include "/WEB-INF/global/pages/header.ftl" /]
-[#include "/WEB-INF/global/pages/main-menu.ftl" /]
+[#include "/WEB-INF/crp/pages/header.ftl" /]
+[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
 [#import "/WEB-INF/global/macros/deliverableMacros.ftl" as deliverableMacros /]
 
 [#assign customName = "deliverable" /]
@@ -204,7 +204,7 @@
 [@deliverableMacros.authorMacro element={} index="-1" name="${customName}.users"  isTemplate=true /]
 
 
-[#include "/WEB-INF/global/pages/footer.ftl"]
+[#include "/WEB-INF/crp/pages/footer.ftl"]
 
 [#macro leadPartnerMacro element name index isTemplate=false]
   <li id="leadPartner-${isTemplate?string('template', index)}" class="leadPartner" style="display:${isTemplate?string('none','block')}">

@@ -8,8 +8,8 @@
 [#assign currentCycleSection = "glossary" /]
 [#assign currentStage = "glossary" /]
 
-[#include "/WEB-INF/global/pages/header.ftl" /]
-[#include "/WEB-INF/global/pages/main-menu.ftl" /]
+[#include "/WEB-INF/crp/pages/header.ftl" /]
+[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
 
 
 [#assign glossaryContent= [ 
@@ -90,4 +90,4 @@
  </div>
 [/#macro]
 
-[#include "/WEB-INF/global/pages/footer.ftl"]
+[#include "/WEB-INF/crp/pages/footer.ftl"]

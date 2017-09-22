@@ -61,7 +61,7 @@
 [#-- Sub-IDO Template --]
 [@srfSubIdoMacro element={} name="idosList[-1].srfSubIdos[-1]" index=-1 isTemplate=true /]
 
-[#include "/WEB-INF/global/pages/footer.ftl" /]
+[#include "/WEB-INF/crp/pages/footer.ftl" /]
 
 [#macro srfIdoMacro element name index isTemplate=false]
   <div id="srfIdo-${isTemplate?string('template',index)}" class="srfIdo borderBox" style="display:${isTemplate?string('none','block')}">

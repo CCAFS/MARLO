@@ -10,8 +10,8 @@
   {"label":"superadmin.coordination", "nameSpace":"", "action":""}
 ]/]
 
-[#include "/WEB-INF/center/global/pages/header.ftl" /]
-[#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
+[#include "/WEB-INF/center/pages/header.ftl" /]
+[#include "/WEB-INF/center/pages/main-menu.ftl" /]
 
 <section class="marlo-content">
   <div class="container"> 
@@ -72,7 +72,7 @@
 
 [@programCoordinator element={} name="coordinators" index=-1 template=true/]
 
-[#include "/WEB-INF/center/global/pages/footer.ftl" /]
+[#include "/WEB-INF/center/pages/footer.ftl" /]
 
 [#macro programCoordinator element name index template=false]
   [#local customName = "${name}[${index}]" /]

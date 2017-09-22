@@ -29,4 +29,7 @@
   var reportingActive= ${((reportingActive)!false)?string};
   var projectPreSetting= ${((project.projectEditLeader)!false)?string('0','1')};
   
+  var currentCenterID=${(centerID)!'-1'};
+  var centerSession="${(centerSession)!}";
+  
 </script>

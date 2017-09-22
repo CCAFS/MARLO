@@ -21,8 +21,8 @@
   }
 /] 
 
-[#include "/WEB-INF/global/pages/header.ftl" /]
-[#include "/WEB-INF/global/pages/main-menu.ftl" /]
+[#include "/WEB-INF/crp/pages/header.ftl" /]
+[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
 
 
 <div class="container helpText viewMore-block">
@@ -75,7 +75,7 @@
 
 [@customForm.confirmJustification action="${crpSession}/deleteCaseStudy.do" namespace="/projects" nameId="caseStudyID" projectID="${projectID}" title="Remove outcomes case study" /]
 
-[#include "/WEB-INF/global/pages/footer.ftl"]
+[#include "/WEB-INF/crp/pages/footer.ftl"]
 
 [#-- -- MACROS -- --]
 

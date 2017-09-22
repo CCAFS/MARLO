@@ -21,8 +21,8 @@
 ]/]
 
 
-[#include "/WEB-INF/global/pages/header.ftl" /]
-[#include "/WEB-INF/global/pages/main-menu.ftl" /]
+[#include "/WEB-INF/crp/pages/header.ftl" /]
+[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
 [#import "/WEB-INF/global/macros/deliverableListTemplate.ftl" as deliverableList /]
 
 <div class="container helpText viewMore-block">
@@ -101,4 +101,4 @@
 </section>
 
   
-[#include "/WEB-INF/global/pages/footer.ftl"]
+[#include "/WEB-INF/crp/pages/footer.ftl"]

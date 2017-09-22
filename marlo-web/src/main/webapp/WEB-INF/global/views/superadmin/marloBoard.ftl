@@ -66,7 +66,7 @@
 [#-- Unit Target Template --]
 [@targetUnitMacro element={} name="targetUnitList" index=-1 isTemplate=true canDelete=true /]
 
-[#include "/WEB-INF/global/pages/footer.ftl" /]
+[#include "/WEB-INF/crp/pages/footer.ftl" /]
 
 [#macro targetUnitMacro element name index isTemplate=false canDelete=false]
   <li id="targetUnit-${isTemplate?string('template',index)}" class="li-item targetUnit" style="display:${isTemplate?string('none','block')}">

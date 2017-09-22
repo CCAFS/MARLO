@@ -17,8 +17,8 @@
 ] /]
 
 
-[#include "/WEB-INF/global/pages/header.ftl" /]
-[#include "/WEB-INF/global/pages/main-menu.ftl" /]
+[#include "/WEB-INF/crp/pages/header.ftl" /]
+[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
 
 
 <div class="container helpText viewMore-block">
@@ -68,7 +68,7 @@
   
 [@customForm.confirmJustification action="${crpSession}/deleteHighLight.do" namespace="/projects" nameId="higlightID" projectID="${projectID}" title="Remove project highlights" /]
 
-[#include "/WEB-INF/global/pages/footer.ftl"]
+[#include "/WEB-INF/crp/pages/footer.ftl"]
 
  
 [#macro highlightsList highlights ]

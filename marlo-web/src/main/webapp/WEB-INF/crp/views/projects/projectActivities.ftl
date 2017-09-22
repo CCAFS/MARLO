@@ -17,8 +17,8 @@
 ] /]
 
 
-[#include "/WEB-INF/global/pages/header.ftl" /]
-[#include "/WEB-INF/global/pages/main-menu.ftl" /]
+[#include "/WEB-INF/crp/pages/header.ftl" /]
+[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
@@ -87,7 +87,7 @@
 
 
   
-[#include "/WEB-INF/global/pages/footer.ftl"]
+[#include "/WEB-INF/crp/pages/footer.ftl"]
 
 [#macro projectActivityMacro element name index=0 isTemplate=false isActive=false]
   [#assign customName = "${name}[${index}]" /]

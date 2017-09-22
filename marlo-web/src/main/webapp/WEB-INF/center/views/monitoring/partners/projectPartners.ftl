@@ -21,8 +21,8 @@
   {"label":"projectPartners", "nameSpace":"/monitoring", "action":""}]/]
   
 [#assign leadersName = "leaders"/]
-[#include "/WEB-INF/center/global/pages/header.ftl" /]
-[#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
+[#include "/WEB-INF/center/pages/header.ftl" /]
+[#include "/WEB-INF/center/pages/main-menu.ftl" /]
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 [#-- Help text --]
 <div class="container helpText viewMore-block">
@@ -103,7 +103,7 @@
 [#-- UserItem Template --]
 [@userItem element={} name="project.partners[-1].users" index="-1" template=true /]
 
-[#include "/WEB-INF/center//global/pages/footer.ftl" /]
+[#include "/WEB-INF/center/pages/footer.ftl" /]
 
 [#macro partnerMacro element name index isTemplate=false]
   <div id="partner-${isTemplate?string('template', index)}" class="partner borderBox" style="display:${isTemplate?string('none','block')}">

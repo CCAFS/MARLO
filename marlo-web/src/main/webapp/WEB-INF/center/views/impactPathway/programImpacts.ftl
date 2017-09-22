@@ -15,8 +15,8 @@
   {"label":"programImpacts", "nameSpace":"", "action":"programimpacts"}
 ]/]
 [#assign leadersName = "leaders"/]
-[#include "/WEB-INF/center//global/pages/header.ftl" /]
-[#include "/WEB-INF/center//global/pages/main-menu.ftl" /]
+[#include "/WEB-INF/center/pages/header.ftl" /]
+[#include "/WEB-INF/center/pages/main-menu.ftl" /]
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 [#--  Program Impacts Help Text--]
 [@utils.helpInfos hlpInfo="programImpact.help" /]
@@ -71,7 +71,7 @@
 
 [@beneficiaryMacro beneficiary={} name="impacts[-1].beneficiaries" index=-1 template=true/]
 
-[#include "/WEB-INF/center//global/pages/footer.ftl" /]
+[#include "/WEB-INF/center/pages/footer.ftl" /]
 
 [#macro programImpactMacro element name index template=false]
   <div id="programImpact-${template?string('template','')}" class="borderBox programImpact" style="display:${template?string('none','block')}">

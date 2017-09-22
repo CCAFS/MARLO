@@ -4,8 +4,8 @@
 [#assign customJS = ["${baseUrlMedia}/js/home/login.js" ] /]
 [#assign currentSection = "home" /]
 
-[#include "/WEB-INF/global/pages/header.ftl" /]
-[#include "/WEB-INF/global/pages/main-menu.ftl" /]
+[#include "/WEB-INF/crp/pages/header.ftl" /]
+[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
 
 <section> 
   <div class="container">
@@ -20,4 +20,4 @@
   </div>
 </section>
 
-[#include "/WEB-INF/global/pages/footer.ftl" /]
+[#include "/WEB-INF/crp/pages/footer.ftl" /]

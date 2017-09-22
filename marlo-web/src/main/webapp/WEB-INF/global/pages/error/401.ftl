@@ -2,8 +2,8 @@
 [#assign title = "Unauthorized Access!" /]
 [#assign customJS = ["${baseUrlMedia}/js/home/login.js" ] /]
 
-[#include "/WEB-INF/${headerPath}global/pages/header.ftl" /]
-[#include "/WEB-INF/${headerPath}global/pages/main-menu.ftl" /]
+[#include "/WEB-INF/${headerPath}/pages/header.ftl" /]
+[#include "/WEB-INF/${headerPath}/pages/main-menu.ftl" /]
 
 <section class="content">
     <div class="container"> 

@@ -17,8 +17,8 @@
   {"label":"deliverables", "nameSpace":"/monitoring", "action":"${(centerSession)!}/deliverableList"}
 ] /]
 
-[#include "/WEB-INF/center/global/pages/header.ftl" /]
-[#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
+[#include "/WEB-INF/center/pages/header.ftl" /]
+[#include "/WEB-INF/center/pages/main-menu.ftl" /]
 
 [#-- Help text --]
 <div class="container helpText viewMore-block">
@@ -169,7 +169,7 @@
 [@documentMacro element={} name="deliverable.documents"  index=-1 isTemplate=true /]
 [@outputMacro element={} name="deliverable.outputs"  index=-1 isTemplate=true /]
   
-[#include "/WEB-INF/center//global/pages/footer.ftl"]
+[#include "/WEB-INF/center/pages/footer.ftl"]
 
 
 [#macro documentMacro element name index=-1 isTemplate=false]

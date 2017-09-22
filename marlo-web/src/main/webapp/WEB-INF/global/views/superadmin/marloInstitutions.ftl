@@ -67,7 +67,7 @@
 </div>
 
 
-[#include "/WEB-INF/global/pages/footer.ftl" /]
+[#include "/WEB-INF/crp/pages/footer.ftl" /]
 
 
 [#macro partnersList partners={} canEdit=false  namespace="/" defaultAction=""]

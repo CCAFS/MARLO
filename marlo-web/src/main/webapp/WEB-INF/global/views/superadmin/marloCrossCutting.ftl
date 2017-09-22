@@ -64,7 +64,7 @@
 [#-- Cross-Cutting Template --]
 [@srfCCIssueMacro element={} name="srfCrossCuttingIssues[-1]" index=-1 isTemplate=true /]
 
-[#include "/WEB-INF/global/pages/footer.ftl" /]
+[#include "/WEB-INF/crp/pages/footer.ftl" /]
 
 [#macro srfSloMacro element name index isTemplate=false]
   <div id="srfSlo-${isTemplate?string('template',index)}" class="srfSlo borderBox" style="display:${isTemplate?string('none','block')}">

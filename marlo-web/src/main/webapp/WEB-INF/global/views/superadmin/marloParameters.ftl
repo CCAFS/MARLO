@@ -53,7 +53,7 @@
   </div>
 </section>
 
-[#include "/WEB-INF/global/pages/footer.ftl" /]
+[#include "/WEB-INF/crp/pages/footer.ftl" /]
 
 [#-- MACROS --]
 [#macro crpParametersMacro element name index isTemplate=false]

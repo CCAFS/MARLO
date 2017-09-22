@@ -17,8 +17,8 @@
 [#assign breadCrumb = [
   {"label":"home", "nameSpace":"", "action":""}
 ]/]
-[#include "/WEB-INF/global/pages/header.ftl" /]
-[#include "/WEB-INF/global/pages/main-menu.ftl" /]
+[#include "/WEB-INF/crp/pages/header.ftl" /]
+[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
 [#import "/WEB-INF/global/macros/projectsListTemplate.ftl" as projectList /]
 
 [#assign timeline = [
@@ -164,4 +164,4 @@
  
 </section>
 
-[#include "/WEB-INF/global/pages/footer.ftl" /]
+[#include "/WEB-INF/crp/pages/footer.ftl" /]

@@ -15,8 +15,8 @@
   {"label":"locations", "nameSpace":"", "action":""}
 ]/]
 
-[#include "/WEB-INF/global/pages/header.ftl" /]
-[#include "/WEB-INF/global/pages/main-menu.ftl" /]
+[#include "/WEB-INF/crp/pages/header.ftl" /]
+[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities/]
 
 <div class="container helpText viewMore-block">
@@ -141,7 +141,7 @@
   [@locElementMacro element={} name="loggedCrp.locationCustomElementTypes[-1].locationElements" index=-1 isTemplate=true locationType=false /]
 </ul>
 
-[#include "/WEB-INF/global/pages/footer.ftl" /]
+[#include "/WEB-INF/crp/pages/footer.ftl" /]
 
 [#macro locationLevelMacro locLevel name index isTemplate=false locationType=true ]
   <div id="locationLevel-${locationType?string('location', 'scope')}-${isTemplate?string('template', index)}" class="locationLevel borderBox" style="display:${isTemplate?string('none','block')}">

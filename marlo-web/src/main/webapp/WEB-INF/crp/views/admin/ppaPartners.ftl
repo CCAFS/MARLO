@@ -16,8 +16,8 @@
   {"label":"ppaPartners", "nameSpace":"", "action":""}
 ]/]
 
-[#include "/WEB-INF/global/pages/header.ftl" /]
-[#include "/WEB-INF/global/pages/main-menu.ftl" /]
+[#include "/WEB-INF/crp/pages/header.ftl" /]
+[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
@@ -85,7 +85,7 @@
 [#-- Partner institution --]
 [@intitutionMacro ppaPartners={} isTemplate=true /]
 
-[#include "/WEB-INF/global/pages/footer.ftl" /]
+[#include "/WEB-INF/crp/pages/footer.ftl" /]
 
 [#macro intitutionMacro ppaPartners index=0 isTemplate=false]
 	<div id="institution-${isTemplate?string('template','')}" class="institution" style="display:${isTemplate?string('none','block')}">

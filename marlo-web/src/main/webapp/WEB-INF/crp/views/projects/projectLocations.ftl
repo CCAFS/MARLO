@@ -22,8 +22,8 @@
 [#assign locationName = "locElements"/]
 [#assign countID = 0/]
 
-[#include "/WEB-INF/global/pages/header.ftl" /]
-[#include "/WEB-INF/global/pages/main-menu.ftl" /]
+[#include "/WEB-INF/crp/pages/header.ftl" /]
+[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities/]
 
 <div class="container helpText viewMore-block">
@@ -348,7 +348,7 @@
 <span class="hidden qCountry">[@s.text name="projectLocations.selectAllCountries" /]</span>
 <span class="hidden qCmvSites">[@s.text name="projectLocations.selectAllCmvs" /]</span>
   
-[#include "/WEB-INF/global/pages/footer.ftl"]
+[#include "/WEB-INF/crp/pages/footer.ftl"]
 
 [#macro locationLevel element  name index template=false list=false]
   [#local customName = "${name}[${index}]" /]

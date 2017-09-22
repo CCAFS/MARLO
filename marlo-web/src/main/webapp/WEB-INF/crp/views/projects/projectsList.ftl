@@ -15,8 +15,8 @@
   {"label":"projectsList", "nameSpace":"/projects", "action":""}
 ]/]
 
-[#include "/WEB-INF/global/pages/header.ftl" /]
-[#include "/WEB-INF/global/pages/main-menu.ftl" /]
+[#include "/WEB-INF/crp/pages/header.ftl" /]
+[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
 [#import "/WEB-INF/global/macros/projectsListTemplate.ftl" as projectList /]
 
 <div class="container helpText viewMore-block">
@@ -82,4 +82,4 @@
 [@customForm.confirmJustification action="deleteProject.do" namespace="/${currentSection}" title="Remove Project" /]
 
 
-[#include "/WEB-INF/global/pages/footer.ftl"]
+[#include "/WEB-INF/crp/pages/footer.ftl"]
