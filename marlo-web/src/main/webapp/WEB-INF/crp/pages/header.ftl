@@ -78,9 +78,9 @@
             
             [#-- Image/Logo--]
             [#if namespace?contains('superadmin')]
-              <img id="crp-image" src="${baseUrlMedia}/images/global/cgiar.png" alt="" />
+              <img id="crp-image" src="${baseUrl}/global/images/cgiar.png" alt="" />
             [#else]
-              [#if crpSession??]<img id="crp-image" src="${baseUrlMedia}/images/global/crps/${crpSession}.png" alt="${crpSession}" />[/#if]
+              [#if crpSession??]<img id="crp-image" src="${baseUrl}/global/images/crps/${crpSession}.png" alt="${crpSession}" />[/#if]
             [/#if]
             <div class="clearfix"></div>
           </div>

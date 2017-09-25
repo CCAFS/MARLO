@@ -3,7 +3,7 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["select2","font-awesome","jsUri", "caret", "jquery-tag-editor"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/global/js/utils.js", 
+  "${baseUrl}/global/js/utils.js", 
   "${baseUrlMedia}/js/summaries/boardSummaries_v2.js"
   ] 
 /]
@@ -159,7 +159,7 @@
   </article>
 </section>
 
-[#include "/WEB-INF/global/pages/footer.ftl"]
+[#include "/WEB-INF/crp/pages/footer.ftl"]
 
 
 [#macro reportMacro report]
