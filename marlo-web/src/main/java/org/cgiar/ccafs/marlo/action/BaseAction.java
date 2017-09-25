@@ -1464,7 +1464,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public boolean getFundingSourceStatus(long fundingSourceID) {
     FundingSource fundingSource = fundingSourceManager.getFundingSourceById(fundingSourceID);
-
+    fundingSource.setFundingSourceInfo(fundingSource.getFundingSourceInfo(this.getActualPhase()));
     List<SectionStatus> sectionStatuses = fundingSource.getSectionStatuses().stream()
       .filter(c -> c.getCycle().equals(this.getActualPhase().getDescription())
         && c.getYear() == this.getActualPhase().getYear())
@@ -1478,7 +1478,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           ProjectSectionStatusEnum.FUNDINGSOURCE.getStatus(), fundingSource.getId());
 
     } else {
-      fundingSource.setFundingSourceInfo(fundingSource.getFundingSourceInfo(this.getActualPhase()));
+
       fundingSourceValidator.validate(this, fundingSource, false);
       return this.getFundingSourceStatus(fundingSource.getId());
     }

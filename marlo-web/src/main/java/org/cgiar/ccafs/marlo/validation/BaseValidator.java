@@ -312,8 +312,7 @@ public class BaseValidator {
    */
   protected void saveMissingFields(FundingSource fundingSource, String cycle, Integer year, String sectionName) {
     // Reporting missing fields into the database.
-    int a = 0;
-    System.out.println(a);
+
     SectionStatus status =
       sectionStatusManager.getSectionStatusByFundingSource(fundingSource.getId(), cycle, year, sectionName);
     if (status == null) {
