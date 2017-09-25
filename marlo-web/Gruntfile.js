@@ -48,5 +48,5 @@ module.exports = function(grunt) {
 
 
 function getName(filePath){
-  return filePath.split('/')[1]
+  return filePath.split('/')[2]
 }
