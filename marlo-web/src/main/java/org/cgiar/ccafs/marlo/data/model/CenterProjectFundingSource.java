@@ -11,13 +11,17 @@ import com.google.gson.annotations.Expose;
  */
 public class CenterProjectFundingSource implements java.io.Serializable {
 
+
   private static final long serialVersionUID = 5708773221894420200L;
+
 
   @Expose
   private Long id;
 
+
   @Expose
   private User modifiedBy;
+
 
   @Expose
   private User createdBy;
@@ -62,6 +66,12 @@ public class CenterProjectFundingSource implements java.io.Serializable {
   private Double totalAmount;
 
   @Expose
+  private boolean sync;
+
+  @Expose
+  private Date syncDate;
+
+  @Expose
   private boolean active;
 
   @Expose
@@ -70,20 +80,16 @@ public class CenterProjectFundingSource implements java.io.Serializable {
   @Expose
   private String modificationJustification;
 
-
   public CenterProjectFundingSource() {
   }
-
 
   public Date getActiveSince() {
     return activeSince;
   }
 
-
   public CenterFundingSourceType getCenterFundingSourceType() {
     return centerFundingSourceType;
   }
-
 
   public CenterFundingSyncType getCenterFundingSyncType() {
     return centerFundingSyncType;
@@ -155,6 +161,11 @@ public class CenterProjectFundingSource implements java.io.Serializable {
   }
 
 
+  public Date getSyncDate() {
+    return syncDate;
+  }
+
+
   public String getTitle() {
     return title;
   }
@@ -164,9 +175,16 @@ public class CenterProjectFundingSource implements java.io.Serializable {
     return totalAmount;
   }
 
+
   public boolean isActive() {
     return active;
   }
+
+
+  public boolean isSync() {
+    return sync;
+  }
+
 
   public void setActive(boolean active) {
     this.active = active;
@@ -234,6 +252,14 @@ public class CenterProjectFundingSource implements java.io.Serializable {
 
   public void setStartDate(Date startDate) {
     this.startDate = startDate;
+  }
+
+  public void setSync(boolean sync) {
+    this.sync = sync;
+  }
+
+  public void setSyncDate(Date syncDate) {
+    this.syncDate = syncDate;
   }
 
   public void setTitle(String title) {

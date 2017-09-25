@@ -371,6 +371,7 @@
   <div id="fundingSource-${isTemplate?string('template',(element.id)!)}" class="fundingSources  borderBox row"  style="display:${isTemplate?string('none','block')}">
     [#if editable]<div class="removeFundingSource removeIcon" title="Remove funding source"></div>[/#if] 
     <input class="id" type="hidden" name="${fundingSourceCustomName}.id" value="${(element.id)!-1}" />    
+    
     <div class="col-md-4">
       [@customForm.select name="${fundingSourceCustomName}.fundingSourceType.id" label=""  i18nkey="Funding source" listName="fundingSourceTypes" keyFieldName="id"  displayFieldName="name"  multiple=false required=true header=false className="" editable=editable/]
     </div>

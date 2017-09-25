@@ -44,6 +44,9 @@
         <property name="extensionDate" type="timestamp">
             <column name="extension_date" length="19" />
         </property>
+        <property name="syncDate" type="timestamp">
+            <column name="sync_date" length="19" />
+        </property>
         <property name="originalDonor" type="string">
             <column name="original_donor" length="65535" />
         </property>
@@ -55,6 +58,9 @@
         </property>
         <property name="active" type="boolean">
             <column name="is_active" not-null="true" />
+        </property>
+        <property name="sync" type="boolean">
+            <column name="sync" not-null="true" />
         </property>
         <property name="activeSince" type="timestamp">
             <column name="active_since" length="19" />
