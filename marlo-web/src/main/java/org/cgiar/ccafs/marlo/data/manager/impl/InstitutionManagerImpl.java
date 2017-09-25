@@ -52,6 +52,11 @@ public class InstitutionManagerImpl implements InstitutionManager {
   }
 
   @Override
+  public List<Institution> findPPAInstitutions(long crpID) {
+    return institutionDao.findPPAInstitutions(crpID);
+  }
+
+  @Override
   public Institution getInstitutionById(long institutionId) {
     return institutionDao.find(institutionId);
   }

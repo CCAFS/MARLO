@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.model.Institution;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
@@ -65,6 +66,21 @@ public class InstitutionMySQLDAO implements InstitutionDAO {
       return list;
     }
     return null;
+  }
+
+  @Override
+  public List<Institution> findPPAInstitutions(long crpID) {
+    StringBuilder query = new StringBuilder();
+    query.append("select inst.id from institutions inst INNER JOIN crp_ppa_partners ppa on ppa.institution_id=inst.id");
+    query.append(" where ppa.crp_id=");
+    query.append(crpID);
+    query.append("  and ppa.is_active=1");
+    List<Institution> institutions = new ArrayList<>();
+    List<Map<String, Object>> queryValue = dao.findCustomQuery(query.toString());
+    for (Map<String, Object> map : queryValue) {
+      institutions.add(this.find(Long.parseLong(map.get("id").toString())));
+    }
+    return institutions;
   }
 
   @Override
