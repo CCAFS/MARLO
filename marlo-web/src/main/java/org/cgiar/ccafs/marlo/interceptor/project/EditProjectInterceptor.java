@@ -166,7 +166,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
         session.put(APConstants.TEMP_CYCLE, APConstants.REPORTING);
         session.put(APConstants.TEMP_YEAR, baseAction.getReportingYear());
-
+        editParameter = false;
         canEdit = false;
       }
       String actionName = baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "");
