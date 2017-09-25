@@ -177,7 +177,7 @@
                 <div class="form-group projectsGlobal">[@customForm.yesNoInput  label="projectDescription.globalDimensionQuestion" name="project.sGlobal" editable=editable inverse=false  cssClass="isGlobal" /] </div>
                 <hr />
                 [#else]
-                <div class="form-group"><label for="">[@s.text name="projectDescription.globalDimension${((project.sGlobal)!false)?string('Yes',No)}" /]</label></div>
+                <div class="form-group"><label for="">[@s.text name="projectDescription.globalDimension${((project.sGlobal == 'true')!false)?string('Yes','No')}" /]</label></div>
                 [/#if]
                 
                 [#-- YES/NO Regional Dimension --]
@@ -185,7 +185,7 @@
                 <div class="form-group projectsRegion">[@customForm.yesNoInput  label="projectDescription.regionalDimensionQuestion" name="project.sRegion" editable=editable inverse=false  cssClass="isRegional" /]</div>
                 <hr />
                 [#else]
-                <div class="form-group"><label for="">[@s.text name="projectDescription.regionallDimension${((project.sGlobal)!false)?string('Yes',No)}" /]</label></div>
+                <div class="form-group"><label for="">[@s.text name="projectDescription.regionallDimension${((project.sRegion == 'true')!false)?string('Yes','No')}" /]</label></div>
                 [/#if]
                 
                 [#-- REGIONAL SELECT --]

@@ -55,8 +55,7 @@
 
 .summariesSection a {display: block;line-height: 50px;text-decoration: none;color: #5F5F5F;font-size: 1.2em;}
 
-.summariesSection.current {
-background-color: #1DA5CE;}
+.summariesSection.current {background-color: #309867;}
 
 .summariesSection.current a {
 color: #fff;font-weight: bold;}
