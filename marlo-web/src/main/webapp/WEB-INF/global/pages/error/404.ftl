@@ -2,8 +2,8 @@
 [#assign title = "Page you requested was not found!" /]
 [#assign customCSS = [ "${baseUrl}/global/css/404.css" ] /]
 
-[#include "/WEB-INF/${headerPath}/pages/header.ftl" /]
-[#include "/WEB-INF/${headerPath}/pages/main-menu.ftl" /]
+[#include "/WEB-INF/${(headerPath)!'crp'}/pages/header.ftl" /]
+[#include "/WEB-INF/${(headerPath)!'crp'}/pages/main-menu.ftl" /]
 
 <section class="content">
   <br />
@@ -25,4 +25,4 @@
   </article>
 </section>
 
-[#include "/WEB-INF/${headerPath}global/pages/footer.ftl"]
+[#include "/WEB-INF/${(headerPath)!'crp'}/pages/footer.ftl"]

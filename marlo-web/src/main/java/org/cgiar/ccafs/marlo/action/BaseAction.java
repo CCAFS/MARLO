@@ -1411,13 +1411,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   public String getHeaderPath() {
     if (this.getCurrentCrp() != null) {
-      return "";
+      return "crp/";
     }
 
     if (this.getCurrentCenter() != null) {
       return "center/";
     }
-    return "";
+    return null;
   }
 
   public long getIFPRIId() {
