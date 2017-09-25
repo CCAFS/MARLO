@@ -57,6 +57,6 @@
 </section>
 
 [#-- Outcome Projects Popup --]
-[#include "/WEB-INF/global/macros/outcomeProjectsPopup-center.ftl" /]
+[#include "/WEB-INF/center/macros/outcomeProjectsPopup-center.ftl" /]
 
 [#include "/WEB-INF/center/pages/footer.ftl"]

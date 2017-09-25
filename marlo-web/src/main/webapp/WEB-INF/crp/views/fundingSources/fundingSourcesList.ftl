@@ -12,7 +12,7 @@
 
 [#include "/WEB-INF/crp/pages/header.ftl" /]
 [#include "/WEB-INF/crp/pages/main-menu.ftl" /]
-[#import "/WEB-INF/global/macros/fundingSourcesListTemplate.ftl" as fundingSourcesList /]
+[#import "/WEB-INF/crp/macros/fundingSourcesListTemplate.ftl" as fundingSourcesList /]
     
 <section class="container">
   <article class="fullBlock" id="mainInformation">

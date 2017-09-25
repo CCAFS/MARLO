@@ -17,7 +17,7 @@
 
 [#include "/WEB-INF/crp/pages/header.ftl" /]
 [#include "/WEB-INF/crp/pages/main-menu.ftl" /]
-[#import "/WEB-INF/global/macros/projectsListTemplate.ftl" as projectList /]
+[#import "/WEB-INF/crp/macros/projectsListTemplate.ftl" as projectList /]
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">

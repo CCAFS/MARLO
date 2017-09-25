@@ -19,7 +19,7 @@
 ]/]
 [#include "/WEB-INF/crp/pages/header.ftl" /]
 [#include "/WEB-INF/crp/pages/main-menu.ftl" /]
-[#import "/WEB-INF/global/macros/projectsListTemplate.ftl" as projectList /]
+[#import "/WEB-INF/crp/macros/projectsListTemplate.ftl" as projectList /]
 
 [#assign timeline = [
   {"id":"1", "startDate":"11/28/2016", "endDate":"11/30/2016","what":"MARLO opens for Impact Pathway","who":"Flagship Leaders"},

@@ -18,7 +18,7 @@
 
 [#include "/WEB-INF/crp/pages/header.ftl" /]
 [#include "/WEB-INF/crp/pages/main-menu.ftl" /]
-[#import "/WEB-INF/global/macros/publicationsListTemplate.ftl" as publicationsList /]
+[#import "/WEB-INF/crp/macros/publicationsListTemplate.ftl" as publicationsList /]
 
 
 <section class="container">
