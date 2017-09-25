@@ -1,45 +1,66 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated May 24, 2017 8:20:55 AM by Hibernate Tools 3.4.0.CR1 -->
+<!-- Generated Sep 25, 2017 11:50:22 AM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
-	<class name="org.cgiar.ccafs.marlo.data.model.CenterProjectFundingSource"
-		table="center_project_funding_sources" optimistic-lock="version">
-		<id name="id" type="java.lang.Long">
-			<column name="id" />
-			<generator class="identity" />
-		</id>
-		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
-			fetch="select">
-			<column name="modified_by" />
-		</many-to-one>
-		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
-			fetch="select">
-			<column name="created_by" />
-		</many-to-one>
-		<many-to-one name="crp" class="org.cgiar.ccafs.marlo.data.model.Crp"
-			fetch="select">
-			<column name="crp_id" />
-		</many-to-one>
-		<many-to-one name="project"
-			class="org.cgiar.ccafs.marlo.data.model.CenterProject" fetch="select">
-			<column name="project_id" not-null="true" />
-		</many-to-one>
-		<property name="title" type="string">
-			<column name="title" length="65535" />
-		</property>
-		<many-to-one name="fundingSourceType"
-			class="org.cgiar.ccafs.marlo.data.model.CenterFundingSourceType" fetch="select">
-			<column name="funding_source_type_id" not-null="true" />
-		</many-to-one>
-		<property name="active" type="boolean">
-			<column name="is_active" not-null="true" />
-		</property>
-		<property name="activeSince" type="timestamp">
-			<column name="active_since" length="19" />
-		</property>
-		<property name="modificationJustification" type="string">
-			<column name="modification_justification" length="65535" />
-		</property>
-	</class>
+    <class name="org.cgiar.ccafs.marlo.data.model.CenterProjectFundingSource" table="center_project_funding_sources" optimistic-lock="version">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="modifiedBy" class="dorg.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="modified_by" />
+        </many-to-one>
+        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="created_by" />
+        </many-to-one>
+        <many-to-one name="centerFundingSyncType" class="org.cgiar.ccafs.marlo.data.model.CenterFundingSyncType" fetch="select">
+            <column name="funding_source_sync_type_id" />
+        </many-to-one>
+        <many-to-one name="centerFundingSourceType" class="org.cgiar.ccafs.marlo.data.model.CenterFundingSourceType" fetch="select">
+            <column name="funding_source_type_id" not-null="true" />
+        </many-to-one>
+        <many-to-one name="crp" class="org.cgiar.ccafs.marlo.data.model.Crp" fetch="select">
+            <column name="crp_id" />
+        </many-to-one>
+        <many-to-one name="centerProject" class="org.cgiar.ccafs.marlo.data.model.CenterProject" fetch="select">
+            <column name="project_id" not-null="true" />
+        </many-to-one>
+        <property name="code" type="string">
+            <column name="code" length="65535" />
+        </property>
+        <property name="title" type="string">
+            <column name="title" length="65535" />
+        </property>
+        <property name="description" type="string">
+            <column name="description" length="65535" />
+        </property>
+        <property name="startDate" type="timestamp">
+            <column name="start_date" length="19" />
+        </property>
+        <property name="endDate" type="timestamp">
+            <column name="end_date" length="19" />
+        </property>
+        <property name="extensionDate" type="timestamp">
+            <column name="extension_date" length="19" />
+        </property>
+        <property name="originalDonor" type="string">
+            <column name="original_donor" length="65535" />
+        </property>
+        <property name="directDonor" type="string">
+            <column name="direct_donor" length="65535" />
+        </property>
+        <property name="totalAmount" type="java.lang.Double">
+            <column name="total_amount" precision="30" />
+        </property>
+        <property name="active" type="boolean">
+            <column name="is_active" not-null="true" />
+        </property>
+        <property name="activeSince" type="timestamp">
+            <column name="active_since" length="19" />
+        </property>
+        <property name="modificationJustification" type="string">
+            <column name="modification_justification" length="65535" />
+        </property>
+    </class>
 </hibernate-mapping>

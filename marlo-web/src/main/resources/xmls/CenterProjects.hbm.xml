@@ -37,23 +37,8 @@
 			class="org.cgiar.ccafs.marlo.data.model.CenterProgram" fetch="select">
 			<column name="program_id" />
 		</many-to-one>
-		<property name="ocsCode" type="string">
-			<column name="ocs_code" length="65535" />
-		</property>
 		<property name="description" type="string">
 			<column name="description" length="65535" />
-		</property>
-		<property name="extensionDate" type="timestamp">
-			<column name="extension_date" length="19" />
-		</property>
-		<property name="originalDonor" type="string">
-			<column name="original_donor" length="65535" />
-		</property>
-		<property name="directDonor" type="string">
-			<column name="direct_donor" length="65535" />
-		</property>
-		<property name="totalAmount" type="java.lang.Double">
-			<column name="total_amount" precision="30" />
 		</property>
 		<property name="name" type="string">
 			<column name="name" length="65535" />
