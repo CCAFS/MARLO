@@ -35,6 +35,7 @@
       [#-- Project title --]
       <div class="form-group">
         <div class="row">
+        <input class="id" type="hidden" name="fundingSource.fundingSourceInfo.id" value="${fundingSource.fundingSourceInfo.id}" />
           <div class="col-md-12">[@customForm.input name="fundingSource.fundingSourceInfo.title" i18nkey="projectCofunded.title" className="limitWords-40" required=true editable=editable /] </div>
         </div>
       </div>
@@ -48,8 +49,8 @@
       <div class="form-group">
         <div class="dateErrorBox"></div>
         <div class="row">
-           <div class="col-md-4">[@customForm.input name="fundingSource.fundingSourceInfo.startDate" i18nkey="projectCofunded.startDate" required=true  editable=editable && action.canEditFundingSourceBudget() /] </div>
-           <div class="col-md-4">[@customForm.input name="fundingSource.fundingSourceInfo.endDate" i18nkey="projectCofunded.endDate" required=true  editable=editable && action.canEditFundingSourceBudget() /] </div>
+           <div class="col-md-4">[@customForm.input name="fundingSource.fundingSourceInfo.startDate" i18nkey="projectCofunded.startDate" className="startDate" required=true  editable=editable && action.canEditFundingSourceBudget() /] </div>
+           <div class="col-md-4">[@customForm.input name="fundingSource.fundingSourceInfo.endDate" i18nkey="projectCofunded.endDate" className="endDate" required=true  editable=editable && action.canEditFundingSourceBudget() /] </div>
            <div class="col-md-4">[@customForm.input name="fundingSource.fundingSourceInfo.financeCode"  i18nkey="projectCofunded.financeCode" placeholder="projectCofunded.financeCode.placeholder" editable=editable/] </div>
         </div>
       </div>

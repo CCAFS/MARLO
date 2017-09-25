@@ -20,8 +20,10 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 
@@ -41,14 +43,17 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
   private Map<String, Object> session;
   private Crp crp;
   private long fundingSourceID = 0;
-
+  private Phase phase;
+  private PhaseManager phaseManager;
   private CrpManager crpManager;
   private FundingSourceManager fundingSourceManager;
 
   @Inject
-  public FundingSourceInterceptor(CrpManager crpManager, FundingSourceManager fundingSourceManager) {
+  public FundingSourceInterceptor(CrpManager crpManager, FundingSourceManager fundingSourceManager,
+    PhaseManager phaseManager) {
     this.crpManager = crpManager;
     this.fundingSourceManager = fundingSourceManager;
+    this.phaseManager = phaseManager;
   }
 
   @Override
@@ -62,6 +67,7 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
       this.setPermissionParameters(invocation);
       return invocation.invoke();
     } catch (Exception e) {
+      e.printStackTrace();
       BaseAction action = (BaseAction) invocation.getAction();
       return action.NOT_FOUND;
     }
@@ -70,7 +76,7 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
   void setPermissionParameters(ActionInvocation invocation) {
     BaseAction baseAction = (BaseAction) invocation.getAction();
     User user = (User) session.get(APConstants.SESSION_USER);
-
+    baseAction.setSession(session);
 
     boolean canEdit = false;
     boolean hasPermissionToEdit = false;
@@ -82,15 +88,15 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
     }
     fundingSourceID = Long.parseLong(projectParameter);
 
-    FundingSource project = fundingSourceManager.getFundingSourceById(fundingSourceID);
+    FundingSource fundingSource = fundingSourceManager.getFundingSourceById(fundingSourceID);
 
-    if (project != null) {
-      String params[] = {crp.getAcronym(), project.getId() + ""};
+    if (fundingSource != null) {
+      String params[] = {crp.getAcronym(), fundingSource.getId() + ""};
       if (baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin()) {
         canEdit = true;
       } else {
         List<FundingSource> projects = fundingSourceManager.getFundingSource(user.getId(), crp.getAcronym());
-        if (projects.contains(project) && (baseAction
+        if (projects.contains(fundingSource) && (baseAction
           .hasPermission(baseAction.generatePermission(Permission.PROJECT_FUNDING_SOURCE_BASE_PERMISSION, params))
           || baseAction
             .hasPermission(baseAction.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, params)))) {
@@ -122,7 +128,11 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
             || baseAction
               .hasPermission(baseAction.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, params)));
       }
-
+      phase = baseAction.getActualPhase();
+      phase = phaseManager.getPhaseById(phase.getId());
+      if (fundingSource.getFundingSourceInfo(phase) == null) {
+        throw new NullPointerException();
+      }
 
       // Set the variable that indicates if the user can edit the section
       baseAction.setEditableParameter(hasPermissionToEdit && canEdit);

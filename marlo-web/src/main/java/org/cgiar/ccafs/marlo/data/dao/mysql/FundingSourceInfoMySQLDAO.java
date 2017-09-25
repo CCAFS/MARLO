@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.dao.FundingSourceInfoDAO;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInfo;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -91,10 +92,25 @@ public class FundingSourceInfoMySQLDAO implements FundingSourceInfoDAO {
     if (phase.getEditable() != null && phase.getEditable()) {
       List<FundingSourceInfo> fundingSourcesInfos = phase.getFundingSourceInfo().stream()
         .filter(c -> c.getFundingSource().getId().longValue() == fundingSourceID).collect(Collectors.toList());
-      for (FundingSourceInfo fundingSourceInfoPhase : fundingSourcesInfos) {
-        fundingSourceInfoPhase.updateFundingSourceInfo(fundingSourceInfo);
-        dao.update(fundingSourceInfoPhase);
+      if (!fundingSourcesInfos.isEmpty()) {
+        for (FundingSourceInfo fundingSourceInfoPhase : fundingSourcesInfos) {
+          fundingSourceInfoPhase.updateFundingSourceInfo(fundingSourceInfo);
+          dao.update(fundingSourceInfoPhase);
+        }
+      } else {
+        if (fundingSourceInfo.getEndDate() != null) {
+          Calendar cal = Calendar.getInstance();
+          cal.setTime(fundingSourceInfo.getEndDate());
+          if (cal.get(Calendar.YEAR) >= phase.getYear()) {
+            FundingSourceInfo fundingSourceInfoAdd = new FundingSourceInfo();
+            fundingSourceInfoAdd.setFundingSource(fundingSourceInfo.getFundingSource());
+            fundingSourceInfoAdd.updateFundingSourceInfo(fundingSourceInfo);
+            fundingSourceInfoAdd.setPhase(phase);
+            dao.save(fundingSourceInfoAdd);
+          }
+        }
       }
+
     }
     if (phase.getNext() != null) {
       this.saveInfoPhase(phase.getNext(), fundingSourceID, fundingSourceInfo);

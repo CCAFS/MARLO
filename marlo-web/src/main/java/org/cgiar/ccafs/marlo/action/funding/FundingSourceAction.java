@@ -449,7 +449,7 @@ public class FundingSourceAction extends BaseAction {
     }
 
     fundingSource.setFundingSourceInfo(fundingSource.getFundingSourceInfo(this.getActualPhase()));
-
+    System.out.println(fundingSource.getFundingSourceInfo().getId());
     if (fundingSource != null) {
 
 

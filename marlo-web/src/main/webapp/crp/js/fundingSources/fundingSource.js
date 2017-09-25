@@ -1,19 +1,19 @@
 $(document).ready(init);
 
 function init() {
-  
+
   /** Check region option * */
   $("#regionList").find(".region").each(function(i,e){
     var option=$("#regionSelect").find("option[value='"+$(e).find("input.rId").val()+"-"+$(e).find("input.regionScope").val()+"']");
     option.prop('disabled', true);
     // option.hide();
   });
-  
+
   // Agreement status & Donor
   $('form select').select2({
     width: "100%"
   });
-  
+
   // Popup
   popups();
 
@@ -32,7 +32,7 @@ function init() {
   });
 
   $(".removeLeadPartner").on("click", removeLeadPartner);
-  
+
 // Country item
   $(".countriesSelect").on("change", function() {
     var option = $(this).find("option:selected");
@@ -44,7 +44,7 @@ function init() {
     $(this).trigger("change.select2");
   });
   $(".removeCountry").on("click", removeCountry);
-  
+
 // REGION item
 // $("#regionSelect").select2('destroy');
   $("#regionSelect").on("change", function() {
@@ -62,9 +62,9 @@ function init() {
 
   // Setting Currency Inputs
   $('.currencyInput').currencyInput();
-  date("form #fundingSource\\.startDate", "form #fundingSource\\.endDate");
+  date("form .startDate", "form .endDate");
 
-  
+
   /* Select2 multiple for country and region select */
   $('.countriesSelect').select2({
       placeholder: "Select a country(ies)...",
@@ -72,12 +72,12 @@ function init() {
       templateSelection: formatState,
       width: '100%'
   });
-  
+
   changeDonorByFundingType($(".type").val(), $(".donor"))
-  
+
   // Check Funding type
   onChangeFundingType($(".type").val());
-  
+
   // Funding Window / Budget type
   $("select.type").select2({
       templateResult: function(state) {
@@ -87,12 +87,12 @@ function init() {
         return $state;
       }
   });
-  
+
 
   // When select center as Funding Window
   var lastDonor = -1;
   $("select.type").on("change", function() {
-    
+
     var option = $(this).find("option:selected");
     var url = baseURL + "/institutionsByBudgetType.do";
     var data = {
@@ -100,10 +100,10 @@ function init() {
     };
     // Change Donor list
     ajaxService(url, data);
-    
+
     // Event on change
     onChangeFundingType(option.val());
-     
+
   });
 
   // Set file upload (blueimp-tmpl)
@@ -142,14 +142,14 @@ function init() {
 
   // Principal investigator auto-complete
   addContactAutoComplete();
-  
-  
+
+
   // Disabled Auto save AJAX if click Save
   $('[name=save]').on('click', function(e) {
     // Cancel Auto Save
     autoSaveActive = false;
   });
-  
+
   $(".button-label").on("click", function() {
     var valueSelected = $(this).hasClass('yes-button-label');
     var $input = $(this).parent().find('input');
@@ -157,7 +157,7 @@ function init() {
     $(this).parent().find("label").removeClass("radio-checked");
     $(this).addClass("radio-checked");
   });
-  
+
 // Is this deliverable Open Access
   $(".isRegional .button-label").on("click", function() {
     var valueSelected = $(this).hasClass('yes-button-label');
@@ -171,13 +171,13 @@ function init() {
 
 /**
  * Check Agreement status
- * 
+ *
  * @param {number} typeID - Funding budget type
  */
 function onChangeFundingType(typeID){
   var W1W2 = 1;
   var ON_GOING = 2;
-  
+
   // Change Agreement Status when is (W1W2 Type => 1)
   var $agreementStatus = $('select.agreementStatus');
   // 3 => Concept Note/Pipeline
@@ -194,13 +194,13 @@ function onChangeFundingType(typeID){
   }
   $agreementStatus.select2("destroy");
   $agreementStatus.select2();
-  
-  
+
+
   // Check W1/W2 - Tag
   if(typeID == W1W2){
     $('.w1w2-tag').show();
   }else{
-    $('.w1w2-tag').hide(); 
+    $('.w1w2-tag').hide();
   }
 }
 
@@ -545,7 +545,7 @@ function date(start,end) {
         yearConflicts.push(i);
       }
     }
-    
+
     if(yearConflicts.length > 0) {
       // Noty Message
       var message = "Date cannot be changed as this funding source has at least one budget allocation in <b>" + yearConflicts.join(', ') +"</b>";
@@ -558,7 +558,7 @@ function date(start,end) {
         speed: 500 // unavailable - no need
       };
       $('.dateErrorBox').noty(notyOptions);
-      
+
       return true;
     }
     return false;
@@ -572,7 +572,7 @@ function date(start,end) {
     // Clear tabs & content
     $('.budgetByYears .nav-tabs').empty();
     $('.budgetByYears .tab-content .tab-pane').removeClass('active going');
-    
+
     var index = 0;
     while(startYear <= endYear) {
 
@@ -609,13 +609,13 @@ function date(start,end) {
       index++;
       years.push(startYear++);
     }
-    
+
     // Clear unused content names
     $('.budgetByYears .tab-content .tab-pane').not('.going').each(function(i,content){
       $(content).setNameIndexes(1, index+i);
     });
-    
-    
+
+
     // Set active tab & content
     if(years.indexOf(parseInt(currentCycleYear)) == -1) {
       $('.budgetByYears .nav-tabs li').last().addClass('active');
@@ -678,7 +678,7 @@ function ajaxService(url,data) {
           $select.addOption(e.id, e.name);
         });
         changeDonorByFundingType(data.budgetTypeID, $select)
-        
+
       },
       error: function(e) {
         console.log(e);
