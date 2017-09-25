@@ -615,7 +615,7 @@ public class DeliverableAction extends BaseAction {
         deliverable.getDeliverablePartnerships().stream()
           .filter(dp -> dp.isActive() && dp.getPhase().equals(this.getActualPhase())
             && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-          .collect(Collectors.toList());
+        .collect(Collectors.toList());
 
 
       return list;
@@ -770,7 +770,7 @@ public class DeliverableAction extends BaseAction {
         deliverablePrew.getDeliverablePartnerships().stream()
           .filter(dp -> dp.isActive() && dp.getPhase().equals(this.getActualPhase())
             && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-          .collect(Collectors.toList());
+        .collect(Collectors.toList());
 
       if (deliverable.getOtherPartners() == null) {
         deliverable.setOtherPartners(new ArrayList<>());
@@ -883,6 +883,7 @@ public class DeliverableAction extends BaseAction {
             if (fundingSource != null && fundingSource.getFundingSource() != null) {
               fundingSource
                 .setFundingSource(fundingSourceManager.getFundingSourceById(fundingSource.getFundingSource().getId()));
+              fundingSource.getFundingSource().getFundingSourceInfo(this.getActualPhase());
             }
 
           }
@@ -934,8 +935,10 @@ public class DeliverableAction extends BaseAction {
         deliverable.setResponsiblePartner(this.responsiblePartner());
         deliverable.setOtherPartners(this.otherPartners());
 
-        deliverable.setFundingSources(deliverable.getDeliverableFundingSources().stream()
-          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+        deliverable
+          .setFundingSources(deliverable.getDeliverableFundingSources().stream()
+            .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
+              && c.getFundingSource().getFundingSourceInfo(this.getActualPhase()) != null)
           .collect(Collectors.toList()));
 
         deliverable.setGenderLevels(deliverable.getDeliverableGenderLevels().stream()
@@ -1125,8 +1128,8 @@ public class DeliverableAction extends BaseAction {
       partners = new ArrayList<>();
       for (ProjectPartner partner : projectPartnerManager.findAll().stream()
         .filter(pp -> pp.isActive() && (pp.getProject().getId() == projectID
-          && pp.getPhase().equals(this.getActualPhase()) && !pp.getProjectPartnerPersons().stream()
-            .filter(c -> c.isActive()).collect(Collectors.toList()).isEmpty()))
+          && pp.getPhase().equals(this.getActualPhase())
+          && !pp.getProjectPartnerPersons().stream().filter(c -> c.isActive()).collect(Collectors.toList()).isEmpty()))
         .collect(Collectors.toList())) {
         partners.add(partner);
       }
@@ -1146,9 +1149,11 @@ public class DeliverableAction extends BaseAction {
       }
 
       this.fundingSources = new ArrayList<>();
-      List<FundingSource> fundingSources =
-        fundingSourceManager.findAll().stream().filter(fs -> fs.isActive()).collect(Collectors.toList());
+      List<FundingSource> fundingSources = fundingSourceManager.findAll().stream()
+        .filter(fs -> fs.isActive() && fs.getFundingSourceInfo(this.getActualPhase()) != null)
+        .collect(Collectors.toList());
       for (FundingSource fundingSource : fundingSources) {
+        fundingSource.setFundingSourceInfo(fundingSource.getFundingSourceInfo(this.getActualPhase()));
         for (ProjectBudget budget : fundingSource.getProjectBudgets().stream().filter(c -> c.isActive())
           .collect(Collectors.toList())) {
           if (budget.getProject().getId().longValue() == deliverable.getProject().getId()) {
@@ -1162,9 +1167,11 @@ public class DeliverableAction extends BaseAction {
       this.fundingSources.clear();
       this.fundingSources.addAll(hs);
       this.fundingSources.sort((o1, o2) -> {
-        if (o1.getFundingSourceInfo(this.getActualPhase()).getBudgetType() != null
+        if (o1.getFundingSourceInfo(this.getActualPhase()) != null
+          && o2.getFundingSourceInfo(this.getActualPhase()) != null &&
+
+        o1.getFundingSourceInfo(this.getActualPhase()).getBudgetType() != null
           && o2.getFundingSourceInfo(this.getActualPhase()).getBudgetType() != null
-          && o1.getFundingSourceInfo(this.getActualPhase()).getTitle() != null
           && o2.getFundingSourceInfo(this.getActualPhase()).getTitle() != null) {
 
           int cmp = o1.getFundingSourceInfo(this.getActualPhase()).getBudgetType().getId()

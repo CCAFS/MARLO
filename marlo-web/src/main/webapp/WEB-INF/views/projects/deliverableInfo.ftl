@@ -136,7 +136,7 @@
             [#if editable]<div class="removeFundingSource removeIcon" title="Remove funding source"></div>[/#if] 
             <input class="id" type="hidden" name="deliverable.fundingSources[${element_index}].id" value="${(element.id)!}" />
             <input class="fId" type="hidden" name="deliverable.fundingSources[${element_index}].fundingSource.id" value="${(element.fundingSource.id)!}" />
-            <span title="${(element.fundingSource.composedName)!'undefined'}" class="name">[@utils.wordCutter string=(element.fundingSource.composedName)!"undefined" maxPos=100 substr=" "/]</span>
+            <span title="${(element.fundingSource.fundingSourceInfo.composedName)!'undefined'}" class="name">[@utils.wordCutter string=(element.fundingSource.fundingSourceInfo.composedName)!"undefined" maxPos=100 substr=" "/]</span>
             <div class="clearfix"></div>
           </li>
         [/#list]
