@@ -2,9 +2,9 @@
 [#assign title = "MARLO Admin" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = [ "flat-flags", "google-diff-match-patch", "jquery-pretty-text-diff"] /]
-[#assign customJS = [ "${baseUrlMedia}/js/superadmin/marloInstitutions.js" ] /]
+[#assign customJS = [ "${baseUrl}/global/js/superadmin/marloInstitutions.js" ] /]
 [#assign customCSS = [ 
-  "${baseUrlMedia}/css/superadmin/superadmin.css",
+  "${baseUrl}/global/css/superadmin/superadmin.css",
   "${baseUrl}/global/css/customDataTable.css" 
   ] 
 /]
@@ -16,7 +16,7 @@
   {"label":"institutions", "nameSpace":"", "action":""}
 ]/]
 
-[#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/crp/pages/header.ftl" /]
 <hr />
 
 <div class="container">

@@ -2,8 +2,8 @@
 [#assign title = "MARLO IDOs" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = [] /]
-[#assign customJS = [ "${baseUrlMedia}/js/superadmin/marloIDOs.js" ] /]
-[#assign customCSS = [ "${baseUrlMedia}/css/superadmin/superadmin.css" ] /]
+[#assign customJS = [ "${baseUrl}/global/js/superadmin/marloIDOs.js" ] /]
+[#assign customCSS = [ "${baseUrl}/global/css/superadmin/superadmin.css" ] /]
 [#assign currentSection = "superadmin" /]
 [#assign currentStage = "idos" /]
 
@@ -12,7 +12,7 @@
   {"label":"marloIDOs", "nameSpace":"", "action":""}
 ]/]
 
-[#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/crp/pages/header.ftl" /]
 <hr />
 
 <div class="container">
