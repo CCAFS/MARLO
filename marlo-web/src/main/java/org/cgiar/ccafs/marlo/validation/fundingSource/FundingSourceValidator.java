@@ -166,7 +166,8 @@ public class FundingSourceValidator extends BaseValidator {
         .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
     }
 
-    this.saveMissingFields(fundingSource, null, null, ProjectSectionStatusEnum.FUNDINGSOURCE.getStatus());
+    this.saveMissingFields(fundingSource, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
+      ProjectSectionStatusEnum.FUNDINGSOURCE.getStatus());
 
 
   }
