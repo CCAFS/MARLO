@@ -117,7 +117,7 @@ UNION
 
 /*DROP: Foreign keys*/
 /*division_id -> partner_divisions*/
-ALTER TABLE `funding_sources` DROP FOREIGN KEY `funding_sources_ibfk_1`;
+ALTER TABLE `funding_sources` DROP FOREIGN KEY `funding_sources_division_id_fk`;
 
 /*donor -> institutions*/
 ALTER TABLE `funding_sources` DROP FOREIGN KEY `funding_sources_ibfk_2`;
@@ -129,7 +129,7 @@ ALTER TABLE `funding_sources` DROP FOREIGN KEY `funding_sources_ibfk_4`;
 ALTER TABLE `funding_sources` DROP FOREIGN KEY `funding_sources_ibfk_6`;
 
 /*file -> files*/
-ALTER TABLE `funding_sources` DROP FOREIGN KEY `funding_sources_ibfk_7`;
+ALTER TABLE `funding_sources` DROP FOREIGN KEY `funding_sources_ibfk_8`;
 
 /* DROP: remaining columns*/
 ALTER TABLE `funding_sources`
