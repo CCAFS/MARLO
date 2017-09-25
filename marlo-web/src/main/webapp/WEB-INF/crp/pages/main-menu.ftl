@@ -5,8 +5,8 @@
   { 'slug': 'impactPathway',  'name': 'menu.impactPathway', 'namespace': '/impactPathway',  'action': '${(crpSession)!}/outcomes',                          'visible': action.canAcessImpactPathway(), 'active': true },
   { 'slug': 'projects',       'name': 'menu.projects',      'namespace': '/projects',       'action': '${(crpSession)!}/projectsList',                      'visible': logged, 'active': true },
   { 'slug': 'fundingSources', 'name': 'menu.fundingSources',      'namespace': '/fundingSources',       'action': '${(crpSession)!}/fundingSourcesList',    'visible': logged, 'active': true },
-  { 'slug': 'publications', 'name': 'menu.publications',      'namespace': '/publications',       'action': '${(crpSession)!}/publicationsList',    'visible': logged && reportingActive, 'active': action.canAcessPublications() , 'help': true },
-  { 'slug': 'synthesis', 'name': 'menu.synthesis',      'namespace': '/synthesis',       'action': '${(crpSession)!}/crpIndicators',    'visible': logged && reportingActive, 'active': action.canAcessCrp() || action.canAcessSynthesisMog(),
+  { 'slug': 'publications', 'name': 'menu.publications',      'namespace': '/publications',       'action': '${(crpSession)!}/publicationsList',    'visible': logged && reportingActiveMenu, 'active': action.canAcessPublications() , 'help': true },
+  { 'slug': 'synthesis', 'name': 'menu.synthesis',      'namespace': '/synthesis',       'action': '${(crpSession)!}/crpIndicators',    'visible': logged && reportingActiveMenu, 'active': action.canAcessCrp() || action.canAcessSynthesisMog(),
     'subItems' : [
       { 'slug': 'crpIndicators', 'name': 'menu.synthesis.crpIndicators', 'namespace': '/synthesis',  'action': '${(crpSession)!}/crpIndicators',  'visible': logged, 'active': action.canAcessCrp()},
       [#-- PHASE 1 --]
