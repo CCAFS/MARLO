@@ -556,6 +556,8 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+        reader.close();
+
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
@@ -565,7 +567,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
         project.getProjectInfo()
           .setProjectEditLeader(projectDb.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader());
         reader.close();
-
         if (project.getBudgets() != null) {
           for (ProjectBudget projectBudget : project.getBudgets()) {
             if (projectBudget != null && projectBudget.getFundingSource() != null) {

@@ -272,7 +272,7 @@ li.select2-search.select2-search--inline{
   width:20px;
   height:20px;
   cursor:pointer;
-  background-image:url(../../images/global/icon-check.png);
+  background-image:url(../../global/images/icon-check.png);
   background-repeat: no-repeat;
 }
 
@@ -283,7 +283,7 @@ li.select2-search.select2-search--inline{
   width:20px;
   height:20px;
   cursor:pointer;
-  background-image:url(../../images/global/icon-check.png);
+  background-image:url(../../global/images/icon-check.png);
   background-repeat: no-repeat;
   opacity:0.2;
 }

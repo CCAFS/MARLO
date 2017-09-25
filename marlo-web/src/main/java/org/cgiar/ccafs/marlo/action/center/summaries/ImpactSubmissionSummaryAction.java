@@ -340,11 +340,11 @@ public class ImpactSubmissionSummaryAction extends BaseAction implements Summary
         + " cycle " + fisrtSubmission.getYear() + ")";
     } else {
       impactSubmission =
-        "CenterSubmission for " + researchCycle.getName() + " cycle " + this.getCenterYear() + ": &lt;pending&gt;";
+        "Center Submission for " + researchCycle.getName() + " cycle " + this.getCenterYear() + ": &lt;pending&gt;";
     }
 
     // Get CIAT imgage URL from repo
-    String imageUrl = this.getBaseUrl() + "/center/images/global/centers/CIAT.png";
+    String imageUrl = this.getBaseUrl() + "/global/images/centers/CIAT.png";
 
     model.addRow(new Object[] {title, currentDate, impactSubmission, imageUrl});
     return model;

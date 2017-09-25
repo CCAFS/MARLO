@@ -5,7 +5,7 @@
     "Sebastian Amariles <sebas932@gmail.com>"
   ],
   "description": "",
-  "main": "src/main/webapp/css/style.css",
+  "main": "src/main/webapp/global/css/global.css",
   "license": "GPL",
   "private": true,
   "ignore": [

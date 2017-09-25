@@ -306,11 +306,13 @@ public class ProjectCaseStudyAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+ 	      reader.close();
+ 	
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         caseStudy = (CaseStudy) autoSaveReader.readFromJson(jReader);
-        reader.close();
+      
         if (caseStudy.getProjects() != null) {
           for (CaseStudyProject caseStudyProject : caseStudy.getProjects()) {
             caseStudyProject.setProject(projectManager.getProjectById(caseStudyProject.getProject().getId()));

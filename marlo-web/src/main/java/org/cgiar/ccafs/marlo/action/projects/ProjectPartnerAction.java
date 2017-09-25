@@ -825,6 +825,8 @@ public class ProjectPartnerAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+ 	      reader.close();
+ 	
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
@@ -893,7 +895,7 @@ public class ProjectPartnerAction extends BaseAction {
 
 
         }
-        reader.close();
+      
         this.setDraft(true);
       } else {
 

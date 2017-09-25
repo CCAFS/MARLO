@@ -2,9 +2,8 @@
 [#assign title = "Unauthorized Access!" /]
 [#assign customJS = ["${baseUrlMedia}/js/home/login.js" ] /]
 
-[#include "/WEB-INF/${headerPath}global/pages/header.ftl" /]
-[#include "/WEB-INF/${headerPath}global/pages/main-menu.ftl" /]
-[#import "/WEB-INF/${headerPath}global/macros/forms.ftl" as customForm /]
+[#include "/WEB-INF/${(headerPath)!'crp'}/pages/header.ftl" /]
+[#include "/WEB-INF/${(headerPath)!'crp'}/pages/main-menu.ftl" /]
 
 <section class="content">
     <div class="container"> 
@@ -18,4 +17,4 @@
     </div>
 </section>
 
-[#include "/WEB-INF/${headerPath}global/pages/footer.ftl"]
+[#include "/WEB-INF/${(headerPath)!'crp'}/pages/footer.ftl"]

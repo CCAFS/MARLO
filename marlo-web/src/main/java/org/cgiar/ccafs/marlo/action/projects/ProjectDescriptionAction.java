@@ -457,6 +457,8 @@ public class ProjectDescriptionAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+ 	      reader.close();
+ 	
         // instance class AutoSaveReader (made by US)
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
@@ -525,7 +527,7 @@ public class ProjectDescriptionAction extends BaseAction {
         }
         project.setFlagships(programs);
         project.setRegions(regions);
-        reader.close();
+      
 
         // We change this variable so that the user knows that he is working on a draft version
 

@@ -465,6 +465,8 @@ public class FundingSourceAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+        reader.close();
+
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
@@ -548,14 +550,14 @@ public class FundingSourceAction extends BaseAction {
           List<FundingSourceLocation> countries =
             new ArrayList<>(fundingSource.getFundingSourceLocations().stream().filter(fl -> fl.isActive()
               && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 2)
-            .collect(Collectors.toList()));
+              .collect(Collectors.toList()));
 
           fundingSource.setFundingCountry(new ArrayList<>(countries));
 
           List<FundingSourceLocation> regions =
             new ArrayList<>(fundingSource.getFundingSourceLocations().stream().filter(fl -> fl.isActive()
               && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 1)
-            .collect(Collectors.toList()));
+              .collect(Collectors.toList()));
 
           List<FundingSourceLocation> regionsWScope = new ArrayList<>();
           if (regions.size() > 0) {
@@ -684,7 +686,7 @@ public class FundingSourceAction extends BaseAction {
       if (fundingSource.getInstitutions() != null) {
         for (FundingSourceInstitution fundingSourceInstitution : fundingSource.getInstitutions()) {
           fundingSourceInstitution
-            .setInstitution(institutionManager.getInstitutionById(fundingSourceInstitution.getId()));
+            .setInstitution(institutionManager.getInstitutionById(fundingSourceInstitution.getInstitution().getId()));
         }
         fundingSource.getFundingSourceInfo().setW1w2(null);
         fundingSource.getInstitutions().clear();

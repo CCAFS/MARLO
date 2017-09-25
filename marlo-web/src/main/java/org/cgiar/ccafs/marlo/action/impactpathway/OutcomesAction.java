@@ -420,6 +420,8 @@ public class OutcomesAction extends BaseAction {
 
 
           JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+ 	      reader.close();
+ 	
 
           AutoSaveReader autoSaveReader = new AutoSaveReader();
 
@@ -442,7 +444,7 @@ public class OutcomesAction extends BaseAction {
             }
           }
 
-          reader.close();
+        
           this.setDraft(true);
         } else {
           this.loadInfo();

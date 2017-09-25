@@ -7,7 +7,7 @@
 		<action name="marloBoard"
 			class="org.cgiar.ccafs.marlo.action.superadmin.BoardAction">
 			<interceptor-ref name="superAdminStack" />
-			<result name="input">/WEB-INF/views/superadmin/marloBoard.ftl</result>
+			<result name="input">/WEB-INF/global/views/superadmin/marloBoard.ftl</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">marloBoard</param>
 				<param name="edit">true</param>
@@ -18,7 +18,7 @@
 		<action name="marloSLOs"
 			class="org.cgiar.ccafs.marlo.action.superadmin.SLOsAction">
 			<interceptor-ref name="superAdminStack" />
-			<result name="input">/WEB-INF/views/superadmin/marloSLOs.ftl</result>
+			<result name="input">/WEB-INF/global/views/superadmin/marloSLOs.ftl</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">marloSLOs</param>
 				<param name="edit">true</param>
@@ -28,7 +28,7 @@
 		<action name="guestUser"
 			class="org.cgiar.ccafs.marlo.action.superadmin.GuestUsersAction">
 			<interceptor-ref name="superAdminStack" />
-			<result name="input">/WEB-INF/views/superadmin/marloUsers.ftl</result>
+			<result name="input">/WEB-INF/global/views/superadmin/marloUsers.ftl</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">guestUser</param>
 				<param name="userID">${userID}</param>
@@ -39,7 +39,7 @@
 		<action name="marloCrossCutting"
 			class="org.cgiar.ccafs.marlo.action.superadmin.SLOsAction">
 			<interceptor-ref name="superAdminStack" />
-			<result name="input">/WEB-INF/views/superadmin/marloCrossCutting.ftl
+			<result name="input">/WEB-INF/global/views/superadmin/marloCrossCutting.ftl
 			</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">marloCrossCutting</param>
@@ -50,7 +50,7 @@
 		<action name="marloIDOs"
 			class="org.cgiar.ccafs.marlo.action.superadmin.IDOsAction">
 			<interceptor-ref name="superAdminStack" />
-			<result name="input">/WEB-INF/views/superadmin/marloIDOs.ftl</result>
+			<result name="input">/WEB-INF/global/views/superadmin/marloIDOs.ftl</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">marloIDOs</param>
 				<param name="edit">true</param>
@@ -60,7 +60,7 @@
 		<action name="marloSiteIntegration"
 			class="org.cgiar.ccafs.marlo.action.superadmin.SiteIntegrationAction">
 			<interceptor-ref name="superAdminStack" />
-			<result name="input">/WEB-INF/views/superadmin/marloSiteIntegration.ftl
+			<result name="input">/WEB-INF/global/views/superadmin/marloSiteIntegration.ftl
 			</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">marloSiteIntegration</param>
@@ -70,7 +70,7 @@
 
 		<action name="notifications" class="org.cgiar.ccafs.marlo.action.BaseAction">
 			<interceptor-ref name="superAdminStack" />
-			<result name="input">/WEB-INF/views/superadmin/marloNotifications.ftl
+			<result name="input">/WEB-INF/global/views/superadmin/marloNotifications.ftl
 			</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">notifications</param>
@@ -81,7 +81,7 @@
 		<action name="marloParameters"
 			class="org.cgiar.ccafs.marlo.action.superadmin.CrpParametersAction">
 			<interceptor-ref name="superAdminStack" />
-			<result name="input">/WEB-INF/views/superadmin/marloParameters.ftl
+			<result name="input">/WEB-INF/global/views/superadmin/marloParameters.ftl
 			</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">marloParameters</param>
@@ -92,7 +92,7 @@
 		<action name="marloInstitutions"
 			class="org.cgiar.ccafs.marlo.action.superadmin.PartnerRequestAction">
 			<interceptor-ref name="superAdminStack" />
-			<result name="input">/WEB-INF/views/superadmin/marloInstitutions.ftl
+			<result name="input">/WEB-INF/global/views/superadmin/marloInstitutions.ftl
 			</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">marloInstitutions</param>
@@ -103,7 +103,7 @@
 		<action name="addPartner" method="addPartner"
 			class="org.cgiar.ccafs.marlo.action.superadmin.PartnerRequestAction">
 			<interceptor-ref name="superAdminStack" />
-			<result name="input">/WEB-INF/views/superadmin/marloInstitutions.ftl
+			<result name="input">/WEB-INF/global/views/superadmin/marloInstitutions.ftl
 			</result>
 			<result name="success" type="redirectAction">
         <param name="actionName">marloInstitutions</param>
@@ -114,7 +114,7 @@
     
 		<action name="customLocations" class="org.cgiar.ccafs.marlo.action.superadmin.CustomLocationsAdminAction">
       <interceptor-ref name="superAdminStack" />   
-      <result name="input">/WEB-INF/views/superadmin/marloLocations.ftl</result>
+      <result name="input">/WEB-INF/global/views/superadmin/marloLocations.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">customLocations</param>
         <param name="edit">true</param>

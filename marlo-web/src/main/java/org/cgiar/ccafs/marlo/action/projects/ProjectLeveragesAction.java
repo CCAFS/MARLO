@@ -289,11 +289,13 @@ public class ProjectLeveragesAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+ 	      reader.close();
+ 	
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         project = (Project) autoSaveReader.readFromJson(jReader);
-        reader.close();
+      
         Project projectDb = projectManager.getProjectById(project.getId());
         project.setProjectInfo(projectDb.getProjecInfoPhase(this.getActualPhase()));
 

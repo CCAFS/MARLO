@@ -94,8 +94,8 @@ public class ValidSessionCrpInterceptor extends AbstractInterceptor {
           session.put(APConstants.SESSION_CRP, loggedCrp);
 
           if (session.containsKey(APConstants.SESSION_CENTER)) {
-            Center center = (Center) session.get(APConstants.SESSION_CRP);
-            center = centerService.findCrpByAcronym(enteredCrp);
+            Center center = (Center) session.get(APConstants.SESSION_CENTER);
+
             // remove the center parameters
             for (CenterCustomParameter parameter : center.getCenterCustomParameters()) {
               if (parameter.isActive()) {

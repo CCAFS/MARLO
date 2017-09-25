@@ -76,7 +76,7 @@
 }
 
 .summariesSection span {
-  background-image: url(../../images/summaries/summaries-icons.png);
+  background-image: url(../../../global/images/summaries/summaries-icons.png);
   background-repeat: no-repeat;
   width: 60px;
   height: 50px;

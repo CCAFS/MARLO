@@ -361,6 +361,8 @@ public class MonitoringOutcomeAction extends BaseAction {
         reader = new BufferedReader(new FileReader(path.toFile()));
         Gson gson = new GsonBuilder().create();
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+ 	      reader.close();
+ 	
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         outcome = (CenterOutcome) autoSaveReader.readFromJson(jReader);
@@ -398,7 +400,7 @@ public class MonitoringOutcomeAction extends BaseAction {
           outcome.setMonitorings(new ArrayList<>(monitoringOutcomes));
         }
 
-        reader.close();
+      
         this.setDraft(true);
 
       } else {

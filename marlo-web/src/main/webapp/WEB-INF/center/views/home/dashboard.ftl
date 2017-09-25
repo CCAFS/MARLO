@@ -2,14 +2,18 @@
 [#assign title = "Welcome to MARLO" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["jQuery-Timelinr","cytoscape","cytoscape-panzoom","cytoscape-qtip","qtip2","datatables.net", "datatables.net-bs"] /]
-[#assign customJS = ["${baseUrlMedia}/js/home/dashboard.js","${baseUrlMedia}/js/global/impactGraphic.js"] /]
-[#assign customCSS = ["${baseUrlMedia}/css/home/dashboard.css","${baseUrlMedia}/css/global/customDataTable.css"] /]
+[#assign customJS = [
+  "${baseUrlMedia}/js/home/dashboard.js",
+  "${baseUrlMedia}/js/impactPathway/impactGraphic.js"
+  ] 
+/]
+[#assign customCSS = ["${baseUrlMedia}/css/home/dashboard.css","${baseUrl}/global/css/customDataTable.css"] /]
 [#assign currentSection = "home" /]
 [#assign breadCrumb = [
   {"label":"home", "nameSpace":"", "action":""}
 ]/]
-[#include "/WEB-INF/center/global/pages/header.ftl" /]
-[#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
+[#include "/WEB-INF/center/pages/header.ftl" /]
+[#include "/WEB-INF/center/pages/main-menu.ftl" /]
 
 [#if switchSession]
   <script type="text/javascript">
@@ -53,4 +57,4 @@
     </div>
 </section>
 
-[#include "/WEB-INF/center/global/pages/footer.ftl" /]
+[#include "/WEB-INF/center/pages/footer.ftl" /]

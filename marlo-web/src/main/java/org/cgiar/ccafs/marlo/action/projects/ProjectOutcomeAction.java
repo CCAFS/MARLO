@@ -352,13 +352,15 @@ public class ProjectOutcomeAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+ 	      reader.close();
+ 	
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         projectOutcome = (ProjectOutcome) autoSaveReader.readFromJson(jReader);
 
 
-        reader.close();
+      
         this.setDraft(true);
         project = projectManager.getProjectById(projectOutcome.getProject().getId());
         projectID = project.getId();
@@ -700,6 +702,9 @@ public class ProjectOutcomeAction extends BaseAction {
       projectOutcome.setActiveSince(new Date());
       projectOutcome.setCrpProgramOutcome(crpProgramOutcome);
       projectOutcome.setProject(project);
+      if (projectOutcome.getExpectedUnit() != null && projectOutcome.getExpectedUnit().getId() == null) {
+        projectOutcome.setExpectedUnit(null);
+      }
       projectOutcome.setId(projectOutcomeID);
       projectOutcome.setPhase(this.getActualPhase());
       projectOutcome.setModificationJustification("");

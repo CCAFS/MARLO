@@ -368,11 +368,13 @@ public class ProjectOutcomesPandRAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+ 	      reader.close();
+ 	
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         project = (Project) autoSaveReader.readFromJson(jReader);
-        reader.close();
+      
 
         if (project.getOutcomesPandr() == null) {
 

@@ -615,7 +615,7 @@ public class DeliverableAction extends BaseAction {
         deliverable.getDeliverablePartnerships().stream()
           .filter(dp -> dp.isActive() && dp.getPhase().equals(this.getActualPhase())
             && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-        .collect(Collectors.toList());
+          .collect(Collectors.toList());
 
 
       return list;
@@ -770,7 +770,7 @@ public class DeliverableAction extends BaseAction {
         deliverablePrew.getDeliverablePartnerships().stream()
           .filter(dp -> dp.isActive() && dp.getPhase().equals(this.getActualPhase())
             && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-        .collect(Collectors.toList());
+          .collect(Collectors.toList());
 
       if (deliverable.getOtherPartners() == null) {
         deliverable.setOtherPartners(new ArrayList<>());
@@ -858,6 +858,8 @@ public class DeliverableAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+        reader.close();
+
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
@@ -869,7 +871,6 @@ public class DeliverableAction extends BaseAction {
         deliverable.setProject(deliverableDb.getProject());
         project.setProjectInfo(deliverableDb.getProject().getProjecInfoPhase(this.getActualPhase()));
         project.setProjectLocations(deliverableDb.getProject().getProjectLocations());
-        reader.close();
 
 
         if (deliverable.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() == null) {
@@ -939,7 +940,7 @@ public class DeliverableAction extends BaseAction {
           .setFundingSources(deliverable.getDeliverableFundingSources().stream()
             .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
               && c.getFundingSource().getFundingSourceInfo(this.getActualPhase()) != null)
-          .collect(Collectors.toList()));
+            .collect(Collectors.toList()));
 
         deliverable.setGenderLevels(deliverable.getDeliverableGenderLevels().stream()
           .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
@@ -1128,8 +1129,8 @@ public class DeliverableAction extends BaseAction {
       partners = new ArrayList<>();
       for (ProjectPartner partner : projectPartnerManager.findAll().stream()
         .filter(pp -> pp.isActive() && (pp.getProject().getId() == projectID
-          && pp.getPhase().equals(this.getActualPhase())
-          && !pp.getProjectPartnerPersons().stream().filter(c -> c.isActive()).collect(Collectors.toList()).isEmpty()))
+          && pp.getPhase().equals(this.getActualPhase()) && !pp.getProjectPartnerPersons().stream()
+            .filter(c -> c.isActive()).collect(Collectors.toList()).isEmpty()))
         .collect(Collectors.toList())) {
         partners.add(partner);
       }
@@ -1170,7 +1171,7 @@ public class DeliverableAction extends BaseAction {
         if (o1.getFundingSourceInfo(this.getActualPhase()) != null
           && o2.getFundingSourceInfo(this.getActualPhase()) != null &&
 
-        o1.getFundingSourceInfo(this.getActualPhase()).getBudgetType() != null
+          o1.getFundingSourceInfo(this.getActualPhase()).getBudgetType() != null
           && o2.getFundingSourceInfo(this.getActualPhase()).getBudgetType() != null
           && o2.getFundingSourceInfo(this.getActualPhase()).getTitle() != null) {
 
