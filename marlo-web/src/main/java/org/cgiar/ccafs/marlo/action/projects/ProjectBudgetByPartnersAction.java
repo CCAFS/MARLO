@@ -248,6 +248,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   public List<ProjectBudget> getBudgetsByPartner(Long institutionId, int year) {
     List<ProjectBudget> budgets = project.getBudgets().stream()
       .filter(c -> c != null && c.getInstitution() != null && c.getInstitution().getId() != null
+        && c.getFundingSource().getFundingSourceInfo(this.getActualPhase()) != null
         && c.getInstitution().getId().longValue() == institutionId.longValue() && c.getYear() == year
         && c.getPhase().equals(this.getActualPhase()))
       .collect(Collectors.toList());
@@ -274,7 +275,8 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
             if (projectBudget.getInstitution().getId().longValue() == institutionId && year == projectBudget.getYear()
               && projectBudget.getBudgetType().getId() != null
               && type == projectBudget.getBudgetType().getId().longValue()
-              && projectBudget.getFundingSource().getId().longValue() == fundingSourceID) {
+              && projectBudget.getFundingSource().getId().longValue() == fundingSourceID
+              && projectBudget.getFundingSource().getFundingSourceInfo(this.getActualPhase()) != null) {
               return i;
             }
 
@@ -293,6 +295,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     projectBudget.setYear(year);
     projectBudget.setFundingSource(fundingSourceManager.getFundingSourceById(fundingSourceID));;
     projectBudget.setBudgetType(budgetTypeManager.getBudgetTypeById(type));
+    projectBudget.getFundingSource().getFundingSourceInfo(this.getActualPhase());
     project.getBudgets().add(projectBudget);
 
     return this.getIndexBudget(institutionId, year, type);
@@ -306,6 +309,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
         if (projectBudget != null) {
           if (projectBudget.getInstitution() != null) {
             if (projectBudget.getInstitution().getId().longValue() == institutionId.longValue()
+              && projectBudget.getFundingSource().getFundingSourceInfo(this.getActualPhase()) != null
               && year == projectBudget.getYear() && type == projectBudget.getBudgetType().getId().longValue()) {
               return i;
             }

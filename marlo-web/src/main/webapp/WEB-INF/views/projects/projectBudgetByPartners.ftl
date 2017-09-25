@@ -215,7 +215,7 @@
           [#attempt]
             [#list action.getBudgetsByPartner(element.institution.id,selectedYear) as budget ]
                 [#assign fundingSources++ /]
-                [#local indexBudgetfundingSource=action.getIndexBudget(element.institution.id,selectedYear,budget.fundingSource.budgetType.id,budget.fundingSource.id) ]
+                [#local indexBudgetfundingSource=action.getIndexBudget(element.institution.id,selectedYear,budget.fundingSource.fundingSourceInfo.budgetType.id,budget.fundingSource.id) ]
                 [@fundingSourceMacro element=budget name="project.budgets" selectedYear=selectedYear  index=indexBudgetfundingSource /]
             [/#list]
           [#recover]
