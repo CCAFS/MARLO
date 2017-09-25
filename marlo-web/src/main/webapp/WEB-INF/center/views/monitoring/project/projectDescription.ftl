@@ -54,50 +54,9 @@
           </a>
         </div>
           
-          <h3 class="headTitle">${selectedProgram.name} - [@s.text name="projectDescription.title" /]</h3>  
-          <div id="projectDescription" class="borderBox">
-          
-            [#-- Finance code --]
-            <div class="form-group row">
-              <div id="disseminationUrl" class="col-md-offset-6 col-md-6">
-                <div class="url-field">
-                  [@customForm.input name="project.ocsCode" i18nkey="projectDescription.ocsCode" className="financeCode" type="text" disabled=!editable  required=true editable=editable /]
-                  <span class="financeCode-message"></span>
-                </div>
-                <div class="buttons-field">
-                  [#if editable]
-                    [#assign isSynced = false ]
-                    <div id="fillMetadata">
-                      <input type="hidden" name="fundingSource.synced" value="${isSynced?string}" />
-                      [#-- Sync Button --]
-                      <div class="checkButton" style="display:${isSynced?string('none','block')};">[@s.text name="form.buttons.sync" /]</div>
-                      <div class="unSyncBlock" style="display:${isSynced?string('block','none')};">
-                        [#-- Update Button --]
-                        <div class="updateButton">[@s.text name="form.buttons.update" /]</div>
-                        [#-- Unsync Button --]
-                        <div class="uncheckButton">[@s.text name="form.buttons.unsync" /]</div>
-                      </div>
-                    </div>
-                  [/#if]
-                </div>
-              </div>
-              <div id="metadata-output"></div>
-            </div>
+            <h3 class="headTitle">${selectedProgram.name} - [@s.text name="projectDescription.title" /]</h3>  
+            <div id="projectDescription" class="borderBox">
             
-            [#-- Principal Investigator --]
-            <div class="form-group row">
-              <div class="col-md-6">
-                [@customForm.input name="principalInvestigator" i18nkey="projectDescription.pl" type="text" disabled=!editable  required=true editable=false /]
-              </div>
-            [#-- Project Status --]  
-              <div class="col-md-3">
-                [@customForm.select name="project.projectStatus.id" label=""  i18nkey="projectsList.status" listName="status" keyFieldName="id"  displayFieldName="name"  multiple=false required=true header=false className="" editable=editable/]
-              </div>  
-            [#-- Project Type --]  
-              <div class="col-md-3">
-                [@customForm.select name="project.projectType.id" label=""  i18nkey="Type" listName="projectTypes" keyFieldName="id"  displayFieldName="name"  multiple=false required=true header=false className="" editable=editable/]
-              </div>
-            </div>   
             [#-- Project Title --]
             <div class="form-group metadataElement-description">
               [@customForm.textArea name="project.name" i18nkey="projectDescription.name" required=true className="project-title metadataValue" editable=editable && action.hasPermission("title") /]
@@ -109,7 +68,17 @@
             [#-- Project Description --]
             <div class="form-group metadataElement-objectives">
               [@customForm.textArea name="project.description" i18nkey="projectDescription.description" required=true className="metadataValue" editable=editable && action.hasPermission("title") /]
-            </div>            
+            </div> 
+          
+           
+            <div class="form-group row">              
+            [#-- Project Status --]  
+              <div class="col-md-3">
+                [@customForm.select name="project.projectStatus.id" label=""  i18nkey="projectsList.status" listName="status" keyFieldName="id"  displayFieldName="name"  multiple=false required=true header=false className="" editable=editable/]
+              </div>  
+   
+            </div>   
+                       
             <div class="form-group row">  
               [#-- Start Date --]
               <div class="col-md-4 metadataElement-startDate">
@@ -119,11 +88,16 @@
               <div class="col-md-4 metadataElement-endDate">
                 [@customForm.input name="project.endDate" i18nkey="projectDescription.endDate" className="metadataValue" type="text" disabled=!editable required=false editable=editable /]
               </div>
-              [#-- Extension Date --]
-              <div class="col-md-4 metadataElement-extensionDate">
-                [@customForm.input name="project.extensionDate" i18nkey="projectDescription.extensionDate" className="metadataValue"  type="text" disabled=!editable required=false editable=editable /]
-              </div>
             </div>
+            
+            
+            [#-- Principal Investigator --]
+            <!--
+              <div class="col-md-12">
+                [@customForm.input name="principalInvestigator" i18nkey="projectDescription.pl" type="text" disabled=!editable  required=true editable=false /]
+              </div>
+              -->
+            
             <div class="form-group metadataElement-pInvestigator">
               [#-- Project contact --]
               <div class="partnerPerson-email userField" style="position: relative;">
@@ -135,20 +109,7 @@
               <span class="text-warning metadataSuggested"></span><br />
             </div>
             
-            [#-- Budget Information --]
-            <h4 class="headTitle">Budget Information</h4> 
-             [#-- Original Donor --]
-            <div class="form-group metadataElement-donorName">
-              [@customForm.input name="project.originalDonor" i18nkey="projectDescription.originalDonor" className="metadataValue" type="text" required=true  editable=editable/]
-            </div>
-            [#-- Customer Donor --]
-            <div class="form-group metadataElement-directDonorName">
-              [@customForm.input name="project.directDonor" i18nkey="projectDescription.customerDonor" type="text" required=false  editable=editable/]
-            </div>
-            [#-- Total Amount --]
-            <div class="form-group metadataElement-grantAmount">
-              [@customForm.input name="project.totalAmount" className="metadataValue amount" i18nkey="projectDescription.totalAmount" type="text" required=true  editable=editable/]
-            </div>
+           
            
             [#-- CRP Project Contributions --]
             <div class="form-group ">
@@ -409,15 +370,33 @@
   [#assign fundingSourceCustomName = "${name}[${index}]" /]
   <div id="fundingSource-${isTemplate?string('template',(element.id)!)}" class="fundingSources  borderBox row"  style="display:${isTemplate?string('none','block')}">
     [#if editable]<div class="removeFundingSource removeIcon" title="Remove funding source"></div>[/#if] 
-    <input class="id" type="hidden" name="${fundingSourceCustomName}.id" value="${(element.id)!-1}" />     
-    <div class="col-md-4">
-      [@customForm.select name="${fundingSourceCustomName}.crp.id" label=""  i18nkey="CRP" listName="crps" keyFieldName="id"  displayFieldName="name"  multiple=false required=true header=false className="" editable=editable/]
-    </div>
+    <input class="id" type="hidden" name="${fundingSourceCustomName}.id" value="${(element.id)!-1}" />    
     <div class="col-md-4">
       [@customForm.select name="${fundingSourceCustomName}.fundingSourceType.id" label=""  i18nkey="Funding source" listName="fundingSourceTypes" keyFieldName="id"  displayFieldName="name"  multiple=false required=true header=false className="" editable=editable/]
     </div>
+    <div class="col-md-4">
+      [@customForm.select name="${fundingSourceCustomName}.crp.id" label=""  i18nkey="CRP" listName="crps" keyFieldName="id"  displayFieldName="acronym"  multiple=false required=true header=false className="" editable=editable/]
+    </div>
     <div class="col-md-12">
-      [@customForm.input name="${fundingSourceCustomName}.title" i18nkey="CRP Project Title" type="text" disabled=!editable required=false editable=editable /]
+      [@customForm.input name="${fundingSourceCustomName}.title" i18nkey="Project Title" type="text" disabled=!editable required=false editable=editable /]
+    </div>
+    <div class="col-md-12">
+      [@customForm.input name="${fundingSourceCustomName}.description" i18nkey="Project Description" type="text" disabled=!editable required=false editable=editable /]
+    </div>
+    <div class="col-md-4 metadataElement-startDate">
+      [@customForm.input name="${fundingSourceCustomName}.startDate" i18nkey="Start Date" className="metadataValue" type="text" disabled=!editable  required=true editable=editable /]
+    </div> 
+    <div class="col-md-4 metadataElement-endDate">
+      [@customForm.input name="${fundingSourceCustomName}.endDate" i18nkey="End Date" className="metadataValue" type="text" disabled=!editable required=false editable=editable /]
+    </div>
+    <div class="col-md-4 metadataElement-endDate">
+      [@customForm.input name="${fundingSourceCustomName}.extensionDate" i18nkey="Extension Date" className="metadataValue" type="text" disabled=!editable required=false editable=editable /]
+    </div>
+    <div class="col-md-12">
+      [@customForm.input name="${fundingSourceCustomName}.originalDonor" i18nkey="Original Donor" type="text" disabled=!editable required=false editable=editable /]
+    </div>
+    <div class="col-md-12">
+      [@customForm.input name="${fundingSourceCustomName}.directDonor" i18nkey="Direct Donor" type="text" disabled=!editable required=false editable=editable /]
     </div>
     <div class="clearfix"></div>
   </div>

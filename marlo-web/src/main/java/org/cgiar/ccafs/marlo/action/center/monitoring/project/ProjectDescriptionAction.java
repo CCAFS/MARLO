@@ -594,16 +594,11 @@ public class ProjectDescriptionAction extends BaseAction {
       CenterProject projectDB = projectService.getCenterProjectById(projectID);
 
       projectDB.setName(project.getName());
-      projectDB.setOcsCode(project.getOcsCode());
       projectDB.setStartDate(project.getStartDate());
       projectDB.setEndDate(project.getEndDate());
-      projectDB.setExtensionDate(project.getExtensionDate());
       projectDB.setDescription(project.getDescription());
       projectDB.setGlobal(this.bolValue(project.getsGlobal()));
       projectDB.setRegion(this.bolValue(project.getsRegion()));
-      projectDB.setDirectDonor(project.getDirectDonor());
-      projectDB.setOriginalDonor(project.getOriginalDonor());
-      projectDB.setTotalAmount(project.getTotalAmount());
       projectDB.setSuggestedName(project.getSuggestedName());
 
       if (project.getProjectType().getId() != null) {
@@ -723,13 +718,13 @@ public class ProjectDescriptionAction extends BaseAction {
           CenterProjectFundingSource fundingSourceSave = new CenterProjectFundingSource();
 
           CenterFundingSourceType fundingSourceType =
-            fundingSourceService.getFundingSourceTypeById(projectFundingSource.getFundingSourceType().getId());
+            fundingSourceService.getFundingSourceTypeById(projectFundingSource.getCenterFundingSourceType().getId());
           CenterProject project = projectService.getCenterProjectById(projectID);
           Crp crp = crpService.getCrpById(projectFundingSource.getCrp().getId());
 
-          fundingSourceSave.setProject(project);
+          fundingSourceSave.setCenterProject(project);
           fundingSourceSave.setCrp(crp);
-          fundingSourceSave.setFundingSourceType(fundingSourceType);
+          fundingSourceSave.setCenterFundingSourceType(fundingSourceType);
           fundingSourceSave.setTitle(projectFundingSource.getTitle());
           fundingSourceSave.setActive(true);
           fundingSourceSave.setActiveSince(new Date());
@@ -744,11 +739,12 @@ public class ProjectDescriptionAction extends BaseAction {
           CenterProjectFundingSource fundingSourcePrew =
             projectFundingSourceService.getProjectFundingSourceById(projectFundingSource.getId());
 
-          if (!fundingSourcePrew.getFundingSourceType().equals(projectFundingSource.getFundingSourceType())) {
+          if (!fundingSourcePrew.getCenterFundingSourceType()
+            .equals(projectFundingSource.getCenterFundingSourceType())) {
             hasChanges = true;
             CenterFundingSourceType fundingSourceType =
-              fundingSourceService.getFundingSourceTypeById(projectFundingSource.getFundingSourceType().getId());
-            fundingSourcePrew.setFundingSourceType(fundingSourceType);
+              fundingSourceService.getFundingSourceTypeById(projectFundingSource.getCenterFundingSourceType().getId());
+            fundingSourcePrew.setCenterFundingSourceType(fundingSourceType);
           }
 
           if (hasChanges) {
