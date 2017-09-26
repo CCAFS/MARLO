@@ -193,7 +193,7 @@
             <label for="">Cycle:</label>
             <select name="cycle" id="">
               [#list report.cycles as cycle ]
-              <option value="${cycle}" [#if (actualPhase.description == cycle)]selected[/#if]>${cycle}</option>
+              <option value="${cycle}" [#if (actualPhase.description == cycle)!false]selected[/#if]>${cycle}</option>
               [/#list]  
             </select>
           </div>
@@ -206,7 +206,7 @@
           <label for="">Year:</label>
           <select name="year" id="">
             [#list years as year ]
-            <option value="${year}" [#if (actualPhase.year == year?number)]selected[/#if]>${year}</option>
+            <option value="${year}" [#if (actualPhase.year == year?number)!false]selected[/#if]>${year}</option>
             [/#list]  
           </select>
         </div>

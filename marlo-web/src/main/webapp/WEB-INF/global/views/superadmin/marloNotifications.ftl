@@ -2,7 +2,7 @@
 [#assign title = "MARLO Admin" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = [] /]
-[#assign customJS = [ "${baseUrlMedia}/js/superadmin/notifications.js" ] /]
+[#assign customJS = [ "${baseUrl}/global/js/superadmin/notifications.js" ] /]
 [#assign currentSection = "superadmin" /]
 [#assign currentStage = "notifications" /]
 
@@ -11,7 +11,7 @@
   {"label":"notifications", "nameSpace":"", "action":""}
 ]/]
 
-[#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/crp/pages/header.ftl" /]
 <hr />
 
 <div class="container">

@@ -2,8 +2,8 @@
 [#assign title = "MARLO Users" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["select2", "datatables.net", "datatables.net-bs"] /]
-[#assign customJS = [ "${baseUrlMedia}/js/superadmin/marloUsers.js" ] /]
-[#assign customCSS = [ "${baseUrlMedia}/css/superadmin/superadmin.css" ] /]
+[#assign customJS = [ "${baseUrl}/global/js/superadmin/marloUsers.js" ] /]
+[#assign customCSS = [ "${baseUrl}/global/css/superadmin/superadmin.css" ] /]
 [#assign currentSection = "superadmin" /]
 [#assign currentStage = "users" /]
 
@@ -13,7 +13,7 @@
 ]/]
 
  
-[#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/crp/pages/header.ftl" /]
 <hr />
 
 <div class="container">

@@ -7,6 +7,7 @@
   <script type="text/javascript">
     var dataObject = {
       "events": [
+      [#if phases??]
       [#if phases?size > 1]
         [#list phases as phase]
           [#-- [#if (actualPhase.id == phase.id)](Current)[/#if] --]
@@ -40,6 +41,7 @@
               "unique_id": "phase-${(phase.id)!}"
           },
         [/#list]
+      [/#if]
       [/#if]
       ]
     }

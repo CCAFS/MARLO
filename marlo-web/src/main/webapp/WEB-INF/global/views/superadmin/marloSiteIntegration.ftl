@@ -2,8 +2,8 @@
 [#assign title = "MARLO Sites Integration" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["flat-flags"] /]
-[#assign customJS = [ "${baseUrlMedia}/js/superadmin/marloSLOs.js" ] /]
-[#assign customCSS = [ "${baseUrlMedia}/css/superadmin/superadmin.css" ] /]
+[#assign customJS = [ "${baseUrl}/global/js/superadmin/marloSLOs.js" ] /]
+[#assign customCSS = [ "${baseUrl}/global/css/superadmin/superadmin.css" ] /]
 [#assign currentSection = "superadmin" /]
 [#assign currentStage = "siteIntegration" /]
 
@@ -12,7 +12,7 @@
   {"label":"marloSiteIntegration", "nameSpace":"", "action":""}
 ]/]
 
-[#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/crp/pages/header.ftl" /]
 <hr />
 
 <div class="container">
