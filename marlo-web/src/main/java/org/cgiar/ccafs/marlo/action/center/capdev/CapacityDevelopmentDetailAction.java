@@ -470,6 +470,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       capdevID = -1;
     }
 
+    // TODO - implentation The transsaction ID (The if see line 330 in ProgramImpactsAction)
     capdev = capdevService.getCapacityDevelopmentById(capdevID);
 
 
