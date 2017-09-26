@@ -505,6 +505,9 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     for (ProjectPhase projectPhase : phase.getProjectPhases()) {
       projects.add((projectPhase.getProject()));
     }
+    if (projects.isEmpty()) {
+      projects = loggedCrp.getProjects().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+    }
     // sort projects by id
     projects.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
     for (Project project : projects) {
