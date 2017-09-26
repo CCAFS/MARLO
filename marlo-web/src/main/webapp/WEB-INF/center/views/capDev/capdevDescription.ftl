@@ -84,8 +84,8 @@
 									[#if editable]
 										<div class="removeDiscipline-action removeDiscipline removeIcon" title="Remove discipline"></div>
 									[/#if]
-									<input class="id" type="hidden" name="" value="${(discipline.id)!-1}" />
-									<input class="disciplineId" type="hidden" name="capdevDisciplines[-1]" value="${(discipline.disciplines.id)!}" />
+									<input class="id" type="hidden"  value="${(discipline.id)!-1}" />
+									<input class="disciplineId" type="hidden"  value="${(discipline.disciplines.id)!}" />
 									<span class="name"> ${discipline.disciplines.name}</span>
 									<div class="clearfix"></div>
 								</li>
@@ -134,7 +134,7 @@
 											<div class="removeTargetGroup-action removeTargetGroup removeIcon" title="Remove targetGroup"></div>
 										[/#if]
 										<input class="id" type="hidden" name="" value="${(targetGroup.id)!-1}" />
-										<input class="tgId" type="hidden" name="capdevTargetGroup[-1]" value="${(targetGroup.targetGroups.id)!-1}" />
+										<input class="tgId" type="hidden"  value="${(targetGroup.targetGroups.id)!-1}" />
 										<span class="name">${targetGroup.targetGroups.name}</span>
 										<div class="clearfix"></div>
 									</li>
@@ -312,7 +312,7 @@
   <li id="disciplineTemplate" class="discipline clearfix col-md-4">
       <div class="removeDiscipline removeIcon" title="Remove discipline"></div>
       <input class="id" type="hidden" name="" value="" />
-      <input class="disciplineId" type="hidden" name="capdevDisciplines[-1]" value="" />
+      <input class="disciplineId" type="hidden" name="capdevDisciplines[0]" value="" />
       <span class="name"></span>
       <div class="clearfix"></div>
     </li>

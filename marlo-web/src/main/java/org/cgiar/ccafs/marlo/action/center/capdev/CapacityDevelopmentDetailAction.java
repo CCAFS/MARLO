@@ -137,16 +137,13 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
   @Override
   public String cancel() {
-    // System.out.println("Se cancelo la operacion");
     return super.cancel();
   }
 
   public String deleteCountry() {
-    System.out.println("delete country");
     final Map<String, Object> parameters = this.getParameters();
     final long capDevCountryID =
       Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
-    // System.out.println(capDevCountryID);
     final CapdevLocations capdev_country = capdevLocationService.getCapdevLocationsById(capDevCountryID);
     capdev_country.setActive(false);
     capdev_country.setUsersByModifiedBy(this.getCurrentUser());
@@ -177,11 +174,9 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
 
   public String deleteRegion() {
-    // System.out.println("delete");
     final Map<String, Object> parameters = this.getParameters();
     final long capDevRegionID =
       Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
-    // System.out.println(capDevRegionID);
     final CapdevLocations capdev_region = capdevLocationService.getCapdevLocationsById(capDevRegionID);
     capdev_region.setActive(false);
     capdev_region.setUsersByModifiedBy(this.getCurrentUser());
@@ -269,9 +264,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     int numMen = 0;
     for (final Object[] element : data) {
       if (((String) element[3]).equalsIgnoreCase("M")) {
-        // System.out.println("genero male -->" + element[3]);
         numMen++;
-        // System.out.println("genero male -->" + numMen);
       }
     }
     return numMen;
@@ -286,9 +279,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     int numWomen = 0;
     for (final Object[] element : data) {
       if (((String) element[3]).equalsIgnoreCase("F")) {
-        // System.out.println("genero female -->" + element[3]);
         numWomen++;
-        // System.out.println("genero female -->" + numWomen);
 
       }
     }
@@ -355,10 +346,8 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     final Session session = SecurityUtils.getSubject().getSession();
 
     final User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
-    // System.out.println(reader.getTotalRows());
     for (int i = 0; i < reader.getTotalRows(); i++) {
       final Participant participant = new Participant();
-      // System.out.println(data[i][0]);
       participant.setCode(Math.round((double) data[i][0]));
       participant.setName((String) data[i][1]);
       participant.setLastName((String) data[i][2]);
@@ -380,7 +369,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
       }
       if (reader.sustraerId((String) data[i][6]) != null) {
-        // System.out.println("institution ID " + reader.sustraerId((String) data[i][6]).getClass());
         if (institutionService
           .getInstitutionById(Long.parseLong((String) (reader.sustraerID((String) data[i][6])))) != null) {
           participant.setInstitutions(
@@ -421,7 +409,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    System.out.println("prepare capdev Detail");
 
     // genders
     genders = new ArrayList<>();
@@ -502,7 +489,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
         }
 
       }
-      System.out.println("---> " + participants.size());
       if (capdev.getCategory() == 2) {
         final Set<CapdevParticipant> capdevParticipants = new HashSet<CapdevParticipant>(participants);
         capdev.setCapdevParticipants(capdevParticipants);
@@ -543,7 +529,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
    * @return previewList is a JSON Object containing the data from excel file
    */
   public String previewExcelFile() throws Exception {
-    // System.out.println("previewExcelFile");
 
     this.previewList = new ArrayList<>();
     previewListHeader = new ArrayList<>();
@@ -607,7 +592,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       }
 
       capdevService.saveCapacityDevelopment(capdevDB);
-      System.out.println("otherInstitucion " + otherInstitucion);
       participant.setOtherInstitution(otherInstitucion);
 
       this.saveParticipant(participant);
@@ -753,7 +737,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   public void saveParticipant(Participant participant) {
     final Session session = SecurityUtils.getSubject().getSession();
     final User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
-    System.out.println("other inst " + participant.getOtherInstitution());
     if (participant.getCode() == null) {
       participant.setCode(null);
     }
@@ -776,7 +759,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       || (participant.getLocElementsByCountryOfInstitucion().getId() == -1)) {
       participant.setLocElementsByCountryOfInstitucion(null);
     }
-    // System.out.println(participant.getFellowship() == null);
     if ((participant.getFellowship() == null) || (participant.getFellowship().getId() == -1)) {
       participant.setFellowship(null);
     }
@@ -910,114 +892,8 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   @Override
   public void validate() {
     this.setInvalidFields(new HashMap<>());
-
     if (save) {
-      // System.out.println("otherInstitucion " + otherInstitucion);
-
       validator.validate(this, capdev, participant, uploadFile, uploadFileContentType, capdevCountries, capdevRegions);
-
-      // if (capdev.getTitle().equalsIgnoreCase("")) {
-      // this.addFieldError("capdev.title", "Title is required.");
-      // }
-      // if (capdev.getTitle().length() > 500) {
-      // this.addFieldError("capdev.title", "Title is very length.");
-      // }
-      // if (capdev.getCapdevType().getId() == -1) {
-      // this.addFieldError("capdev.capdevType.id", "Type is required.");
-      // this.getInvalidFields().put("capdev.capdevType.id", InvalidFieldsMessages.EMPTYFIELD);
-      // }
-      // if (capdev.getStartDate() == null) {
-      // this.addFieldError("capdev.startDate", "Start Date is required.");
-      // this.getInvalidFields().put("capdev.startDate", InvalidFieldsMessages.EMPTYFIELD);
-      // }
-      //
-      // if (capdev.getCategory() == 1) {
-      //
-      // System.out.println("highest degree " + participant.getHighestDegree().getId());
-      //
-      // if (participant.getCode() == 0) {
-      // this.addFieldError("participant.code", "Code is required.");
-      // }
-      // if (participant.getName().equalsIgnoreCase("")) {
-      // this.addFieldError("participant.name", "First name is required.");
-      // }
-      // if (participant.getName().length() > 100) {
-      // this.addFieldError("participant.name", "First name is very length.");
-      // }
-      // if (participant.getLastName().equalsIgnoreCase("")) {
-      // this.addFieldError("participant.lastName", "Last name is required.");
-      // }
-      // if (participant.getLastName().length() > 100) {
-      // this.addFieldError("participant.lastName", "Last name is very length.");
-      // }
-      // if (participant.getGender().equalsIgnoreCase("-1")) {
-      // this.addFieldError("participant.gender", "Gender is required.");
-      // }
-      // System.out.println(
-      // "participant.getLocElementsByCitizenship().getId() " + participant.getLocElementsByCitizenship().getId());
-      // if (participant.getLocElementsByCitizenship().getId() == -1) {
-      // this.addFieldError("participant.locElementsByCitizenship.id", "Citizenship is required.");
-      // }
-      // if (participant.getPersonalEmail().equalsIgnoreCase("")) {
-      // this.addFieldError("participant.personalEmail", "Email is required.");
-      // }
-      // if (!participant.getPersonalEmail().equalsIgnoreCase("")) {
-      // final boolean validEmail = validator.validateEmail(participant.getPersonalEmail());
-      // if (!validEmail) {
-      // System.out.println("Email no valido");
-      // this.addFieldError("participant.personalEmail", "enter a valid email address.");
-      // }
-      // }
-      // if (participant.getInstitutions().getId() == -1) {
-      // this.addFieldError("participant.institutions.id", "institution required.");
-      // }
-      // if (participant.getLocElementsByCountryOfInstitucion().getId() == -1) {
-      // this.addFieldError("participant.locElementsByCountryOfInstitucion.id", "Country of institution is required.");
-      // }
-      // if (participant.getSupervisor().equalsIgnoreCase("")) {
-      // this.addFieldError("participant.supervisor", "Supervisor is required.");
-      // }
-      // if (participant.getSupervisor().length() > 100) {
-      // this.addFieldError("participant.supervisor", "Supervisor is very length.");
-      // }
-      //
-      //
-      // }
-      //
-      // if (capdev.getCategory() == 2) {
-      // if (capdev.getCtFirstName().equalsIgnoreCase("") || capdev.getCtLastName().equalsIgnoreCase("")
-      // || capdev.getCtEmail().equalsIgnoreCase("")) {
-      // this.addFieldError("contact", "Contact person is required.");
-      // }
-      // if (!capdev.getCtEmail().equalsIgnoreCase("")) {
-      // final boolean validEmail = validator.validateEmail(capdev.getCtEmail());
-      // if (!validEmail) {
-      // System.out.println("Email no valido");
-      // this.addFieldError("contact", "enter a valid email address.");
-      // }
-      // }
-      //
-      // if ((uploadFile == null) && (capdev.getNumParticipants() == null)) {
-      // this.addFieldError("upload_File", "File or number of participants are required.");
-      // this.addFieldError("capdev.numParticipants", "Num participants or a file are required.");
-      // }
-      // if (uploadFile != null) {
-      // if (!uploadFileContentType.equals("application/vnd.ms-excel")
-      // && !uploadFileContentType.equals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")) {
-      // System.out.println("formato incorrecto");
-      // this.addFieldError("upload_File", "Only excel files(.xls, xlsx) are allowed.");
-      // }
-      // if (uploadFile.length() > 31457280) {
-      // System.out.println("file muy pesado");
-      // this.addFieldError("upload_File", "capdev.fileSize");
-      // }
-      // if (!reader.validarExcelFile(uploadFile)) {
-      // System.out.println("el archivo no coincide con la plantilla");
-      // this.addFieldError("upload_File", "file wrong, the file does not match the template.");
-      // }
-
-      // }
-      // }
     }
 
 

@@ -71,9 +71,7 @@ public class CapdevSupportingDocsAction extends BaseAction {
 
   @Override
   public String delete() {
-    System.out.println("deleted");
     final long supportingDocID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter("supportingDocID")));
-    System.out.println(supportingDocID);
     final CapdevSupportingDocs capdevSupportingDocs =
       capdevsupportingDocsService.getCapdevSupportingDocsById(supportingDocID);
     capdevSupportingDocs.setActive(false);

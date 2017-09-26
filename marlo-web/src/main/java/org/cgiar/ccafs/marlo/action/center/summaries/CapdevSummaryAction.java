@@ -108,7 +108,6 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
     // method to get all the subreports in the prpt and store in the HashMap
     this.getAllSubreports(hm, masteritemBand);
     // Uncomment to see which Subreports are detecting the method getAllSubreports
-    // System.out.println("Pentaho SubReports: " + hm);
 
 
     // Subreport list of capdev
@@ -302,7 +301,6 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
         Date startDate = null;
         if (capdev.getStartDate() != null) {
           startDate = capdev.getStartDate();
-          System.out.println(startDate);
         }
 
         Date endDate = null;
@@ -364,7 +362,6 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
     for (final CapacityDevelopment capdev : capDevs) {
       for (final CapdevParticipant participant : capdev.getCapdevParticipants()) {
         if (participant.getParticipant().getLocElementsByCitizenship() != null) {
-          // System.out.println(participant.getParticipant().getLocElementsByCitizenship().getName());
           if (countries.containsKey(participant.getParticipant().getLocElementsByCitizenship())) {
             final int quantity = countries.get(participant.getParticipant().getLocElementsByCitizenship()) + 1;
             countries.put(participant.getParticipant().getLocElementsByCitizenship(), quantity);
@@ -376,7 +373,6 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
       }
     }
 
-    // countries.forEach((k, v) -> System.out.println("Key: " + k.getName() + ": Value: " + v));
     for (final Map.Entry<LocElement, Integer> entry : countries.entrySet()) {
       model.addRow(new Object[] {entry.getKey().getName(), entry.getValue()});
     }
@@ -405,7 +401,6 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
     final Map<Discipline, Integer> disciplinas = new HashMap<>();
     for (final CapacityDevelopment capdev : capDevs) {
       for (final CapdevDiscipline discipline : capdev.getCapdevDisciplines()) {
-        // System.out.println(discipline.getDisciplines().getName());
         if (disciplinas.containsKey(discipline.getDisciplines())) {
           final int quantity = disciplinas.get(discipline.getDisciplines()) + 1;
           disciplinas.put(discipline.getDisciplines(), quantity);
@@ -416,7 +411,6 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
       }
     }
 
-    // disciplinas.forEach((k, v) -> System.out.println("Key: " + k.getName() + ": Value: " + v));
     for (final Map.Entry<Discipline, Integer> entry : disciplinas.entrySet()) {
       model.addRow(new Object[] {entry.getKey().getName(), entry.getValue()});
     }
@@ -467,7 +461,6 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
     for (final CapacityDevelopment capdev : capDevs) {
       for (final CapdevParticipant participant : capdev.getCapdevParticipants()) {
         if (participant.getParticipant().getFellowship() != null) {
-          // System.out.println(participant.getParticipant().getFellowship().getName());
           model.addRow(new Object[] {participant.getParticipant().getFellowship().getName(), 1,
             participant.getParticipant().getFellowship().getName()});
         }
@@ -502,7 +495,6 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
     for (final CapacityDevelopment capdev : capDevs) {
       for (final CapdevParticipant participant : capdev.getCapdevParticipants()) {
         if (participant.getParticipant().getHighestDegree() != null) {
-          // System.out.println(participant.getParticipant().getHighestDegree().getName());
           model.addRow(new Object[] {participant.getParticipant().getHighestDegree().getName(), 1,
             participant.getParticipant().getHighestDegree().getName(),
             participant.getParticipant().getHighestDegree().getName()});
@@ -523,7 +515,6 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
     final List<CapacityDevelopment> individuals =
       capDevs.stream().filter(i -> i.getCategory() == 1).collect(Collectors.toList());
 
-    // System.out.println("individuales " + individuals.size());
     for (final CapacityDevelopment capdev : individuals) {
       if (capdev.getCapdevType() != null) {
 
@@ -577,7 +568,6 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
 
     for (final CapacityDevelopment capdev : capDevs) {
       if (capdev.getResearchProgram() != null) {
-        // System.out.println(capdev.getResearchProgram().getName());
         model.addRow(new Object[] {capdev.getResearchProgram().getName(), 1, capdev.getResearchProgram().getName()});
       }
     }
@@ -626,7 +616,6 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
 
   @Override
   public void prepare() throws Exception {
-    System.out.println("prepare");
 
     try {
       researchAreaID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter("raID")));
@@ -637,21 +626,18 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
         capDevs = capdevService.findAll().stream().filter(
           cdl -> cdl.isActive() && (cdl.getResearchArea() != null) && (cdl.getResearchArea().getId() == researchAreaID))
           .collect(Collectors.toList());
-        System.out.println("capDevs.size " + capDevs.size());
       }
 
       if ((researchAreaID == -1) && (year != 0)) {
         capDevs = capdevService.findAll().stream()
           .filter(cdl -> cdl.isActive() && (cdl.getStartDate() != null) && (cdl.getStartDate().getYear() == year))
           .collect(Collectors.toList());
-        System.out.println("capDevs.size " + capDevs.size());
       }
       if ((researchAreaID != -1) && (year != 0)) {
         capDevs = capdevService.findAll().stream().filter(
           cdl -> cdl.isActive() && (cdl.getResearchArea() != null) && ((cdl.getResearchArea().getId() == researchAreaID)
             && (cdl.getStartDate() != null) && (cdl.getStartDate().getYear() == year)))
           .collect(Collectors.toList());
-        System.out.println("capDevs.size " + capDevs.size());
 
       }
       if ((researchAreaID == -1) && (year == 0)) {

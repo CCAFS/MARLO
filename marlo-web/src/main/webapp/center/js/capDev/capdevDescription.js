@@ -555,14 +555,14 @@ function checkOutputList(block) {
   function addDiscipline(option){
 
     var canAdd = true;
-    console.log(option);
+    console.log(option.val());
     if(option.val() == "-1") {
       canAdd = false;
     }
 
     var $list = $("#disciplinesList").find(".list");
     var $item = $("#disciplineTemplate").clone(true).removeAttr("id");
-    var v = $(option).text().length > 30 ? $(option).text().substr(0, 20) + ' ... ' : $(option).text();
+    var name = $(option).text().length > 30 ? $(option).text().substr(0, 20) + ' ... ' : $(option).text();
 
     
 
@@ -579,7 +579,7 @@ function checkOutputList(block) {
 
   // Set discipline parameters
     $item.find(".name").attr("title", $(option).text());
-    $item.find(".name").html(v);
+    $item.find(".name").html(name);
     $item.find(".disciplineId").val(option.val());
     $item.find(".id").val(-1);
     $list.append($item);

@@ -121,10 +121,8 @@ public class ParticipantsAction extends BaseAction implements ServletRequestAwar
   }
 
   public String dowmloadTemplate() {
-    // System.out.println("dowmloadTemplate");
     try {
       final String path = new File(".").getCanonicalPath();
-      // final String filePath = path + "/src/main/resources/template/participants-template.xlsx"; // esta no es
       // searchable
       final String filePath = path + "/src/main/resources/template/participants-template.xlsm";
       final File file = new File(filePath);
@@ -286,9 +284,7 @@ public class ParticipantsAction extends BaseAction implements ServletRequestAwar
    * antes de enviar el formulario completo
    */
   public String preLoadExcelFile() {
-    System.out.println("previewExcelFile");
     request = ServletActionContext.getRequest();
-    System.out.println(request.getContentType());
 
     try {
       final InputStream input = request.getInputStream();
@@ -299,8 +295,6 @@ public class ParticipantsAction extends BaseAction implements ServletRequestAwar
       final Row firstRow = sheet.getRow(0);
       final int totalRows = sheet.getLastRowNum();
       final int totalColumns = firstRow.getLastCellNum();
-      System.out.println(totalRows);
-      System.out.println(totalColumns);
 
       input.close();
 

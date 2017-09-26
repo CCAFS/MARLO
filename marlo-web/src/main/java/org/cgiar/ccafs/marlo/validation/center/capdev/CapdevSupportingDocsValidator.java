@@ -71,7 +71,6 @@ public class CapdevSupportingDocsValidator extends BaseValidator {
   }
 
   public void valideDocument(BaseAction baseAction, String link, int i) {
-    // System.out.println(link + " " + i);
     if ((link == null) || link.equals("")) {
       this.addMessage(baseAction.getText("capdev.action.supportingDocs.link"));
       baseAction.getInvalidFields().put("input-documents[" + i + "].link", InvalidFieldsMessages.EMPTYFIELD);

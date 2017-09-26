@@ -184,26 +184,22 @@ public class CapacityDevelopmentValidator extends BaseValidator {
         if (!uploadFileContentType.equals("application/vnd.ms-excel")
           && !uploadFileContentType.equals("application/vnd.ms-excel.sheet.macroEnabled.12")
           && !uploadFileContentType.equals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")) {
-          System.out.println("formato incorrecto");
           this.addMessage(baseAction.getText("capdev.action.file"));
           baseAction.getInvalidFields().put("list-capdev.uploadFile",
             baseAction.getText(InvalidFieldsMessages.INVALID_FORMAT, new String[] {""}));
         } else {
           if (!reader.validarExcelFile(uploadFile)) {
-            System.out.println("el archivo no coincide con la plantilla");
             this.addMessage(baseAction.getText("capdev.action.file"));
             baseAction.getInvalidFields().put("list-capdev.uploadFile",
               baseAction.getText(InvalidFieldsMessages.WRONG_FILE, new String[] {""}));
           }
           if (!reader.validarExcelFileData(uploadFile)) {
-            System.out.println("el archivo esta vacio o tiene campos nulos");
             this.addMessage(baseAction.getText("capdev.action.file"));
             baseAction.getInvalidFields().put("list-capdev.uploadFile",
               baseAction.getText(InvalidFieldsMessages.EMPTY_FILE, new String[] {""}));
           }
         }
         if (uploadFile.length() > 31457280) {
-          System.out.println("file muy pesado");
           this.addMessage(baseAction.getText("capdev.action.file"));
           baseAction.getInvalidFields().put("list-capdev.uploadFile",
             baseAction.getText(InvalidFieldsMessages.FILE_SIZE, new String[] {""}));

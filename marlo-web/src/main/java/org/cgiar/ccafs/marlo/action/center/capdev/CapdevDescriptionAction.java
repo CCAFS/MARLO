@@ -128,11 +128,9 @@ public class CapdevDescriptionAction extends BaseAction {
 
 
   public String deleteDiscipline() {
-    System.out.println("delete discipline");
     final Map<String, Object> parameters = this.getParameters();
     final long capdevDisciplineID =
       Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
-    System.out.println(capdevDisciplineID);
     final CapdevDiscipline capdev_discipline = capdevDisciplineService.getCapdevDisciplineById(capdevDisciplineID);
     capdev_discipline.setActive(false);
     capdevDisciplineService.saveCapdevDiscipline(capdev_discipline);
@@ -140,11 +138,9 @@ public class CapdevDescriptionAction extends BaseAction {
   }
 
   public String deleteOutput() {
-    System.out.println("delete outputs");
     final Map<String, Object> parameters = this.getParameters();
     final long capdevoutputID =
       Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
-    System.out.println(capdevoutputID);
     final CapdevOutputs capdev_output = capdevOutputService.getCapdevOutputsById(capdevoutputID);
     capdev_output.setActive(false);
     capdev_output.setUsersByModifiedBy(this.getCurrentUser());
@@ -153,11 +149,9 @@ public class CapdevDescriptionAction extends BaseAction {
   }
 
   public String deletePartnert() {
-    System.out.println("delete partner");
     final Map<String, Object> parameters = this.getParameters();
     final long capdevpartnerID =
       Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
-    System.out.println(capdevpartnerID);
     final CapdevPartners capdev_partner = capdevPartnerService.getCapdevPartnersById(capdevpartnerID);
     capdev_partner.setActive(false);
     capdevPartnerService.saveCapdevPartners(capdev_partner);
@@ -165,11 +159,9 @@ public class CapdevDescriptionAction extends BaseAction {
   }
 
   public String deleteTargetGroup() {
-    System.out.println("delete target groups");
     final Map<String, Object> parameters = this.getParameters();
     final long capdevtargetgroupID =
       Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
-    System.out.println(capdevtargetgroupID);
     final CapdevTargetgroup capdev_targetgroup = capdevTargetgroupService.getCapdevTargetgroupById(capdevtargetgroupID);
     capdev_targetgroup.setActive(false);
     capdevTargetgroupService.saveCapdevTargetgroup(capdev_targetgroup);
@@ -318,7 +310,6 @@ public class CapdevDescriptionAction extends BaseAction {
 
 
     final CapacityDevelopment capdevDB = capdevService.getCapacityDevelopmentById(capdevID);
-    // System.out.println("capdev.getResearchArea() " + capdev.getResearchArea().getId());
 
     capdevDB.setOtherDiscipline(otherDiscipline);
     capdevDB.setDisciplineSuggested(capdev.getDisciplineSuggested());
@@ -332,13 +323,11 @@ public class CapdevDescriptionAction extends BaseAction {
       capdevDB.setResearchArea(capdev.getResearchArea());
 
       if (capdev.getResearchProgram() != null) {
-        System.out.println("capdev.getResearchProgram() " + capdev.getResearchProgram().getId());
         if (capdev.getResearchProgram().getId() != -1) {
           capdevDB.setResearchProgram(capdev.getResearchProgram());
         }
       }
       if (capdev.getProject() != null) {
-        System.out.println("capdev.getProject() " + capdev.getProject().getId());
         if (capdev.getProject().getId() != -1) {
           capdevDB.setProject(capdev.getProject());
         }
@@ -378,16 +367,19 @@ public class CapdevDescriptionAction extends BaseAction {
     final User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
     if (!disciplines.isEmpty()) {
       for (final Long iterator : disciplines) {
-        final Discipline discipline = disciplineService.getDisciplineById(iterator);
-        if (discipline != null) {
-          capdevDiscipline = new CapdevDiscipline();
-          capdevDiscipline.setCapacityDevelopment(capdev);
-          capdevDiscipline.setDisciplines(discipline);
-          capdevDiscipline.setActive(true);
-          capdevDiscipline.setActiveSince(new Date());
-          capdevDiscipline.setUsersByCreatedBy(currentUser);
-          capdevDisciplineService.saveCapdevDiscipline(capdevDiscipline);
+        if (iterator != null) {
+          final Discipline discipline = disciplineService.getDisciplineById(iterator);
+          if (discipline != null) {
+            capdevDiscipline = new CapdevDiscipline();
+            capdevDiscipline.setCapacityDevelopment(capdev);
+            capdevDiscipline.setDisciplines(discipline);
+            capdevDiscipline.setActive(true);
+            capdevDiscipline.setActiveSince(new Date());
+            capdevDiscipline.setUsersByCreatedBy(currentUser);
+            capdevDisciplineService.saveCapdevDiscipline(capdevDiscipline);
+          }
         }
+
 
       }
     }
@@ -443,16 +435,19 @@ public class CapdevDescriptionAction extends BaseAction {
     final User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
     if (!targetGroups.isEmpty()) {
       for (final Long iterator : targetGroups) {
-        final TargetGroup targetGroup = targetGroupService.getTargetGroupById(iterator);
-        if (targetGroup != null) {
-          capdevTargetgroup = new CapdevTargetgroup();
-          capdevTargetgroup.setCapacityDevelopment(capdev);
-          capdevTargetgroup.setTargetGroups(targetGroup);
-          capdevTargetgroup.setActive(true);
-          capdevTargetgroup.setActiveSince(new Date());
-          capdevTargetgroup.setUsersByCreatedBy(currentUser);
-          capdevTargetgroupService.saveCapdevTargetgroup(capdevTargetgroup);
+        if (iterator != null) {
+          final TargetGroup targetGroup = targetGroupService.getTargetGroupById(iterator);
+          if (targetGroup != null) {
+            capdevTargetgroup = new CapdevTargetgroup();
+            capdevTargetgroup.setCapacityDevelopment(capdev);
+            capdevTargetgroup.setTargetGroups(targetGroup);
+            capdevTargetgroup.setActive(true);
+            capdevTargetgroup.setActiveSince(new Date());
+            capdevTargetgroup.setUsersByCreatedBy(currentUser);
+            capdevTargetgroupService.saveCapdevTargetgroup(capdevTargetgroup);
+          }
         }
+
 
       }
     }

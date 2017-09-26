@@ -72,7 +72,6 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
     final Map<String, Object> parameters = this.getParameters();
     final long documentID =
       Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
-    System.out.println(documentID);
     final CapdevSuppDocsDocuments document = capdevSuppDocsDocumentsService.getCapdevSuppDocsDocumentsById(documentID);
     document.setActive(false);
     document.setUsersByModifiedBy(this.getCurrentUser());
@@ -209,7 +208,6 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
 
     if (!documents.isEmpty()) {
       for (final CapdevSuppDocsDocuments document : documents) {
-        System.out.println(document.getLink());
         CapdevSuppDocsDocuments documentSave = null;
         if (document.getId() == null) {
 

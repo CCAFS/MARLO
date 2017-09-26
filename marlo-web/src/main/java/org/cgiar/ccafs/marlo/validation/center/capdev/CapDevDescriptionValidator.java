@@ -54,7 +54,6 @@ public class CapDevDescriptionValidator extends BaseValidator {
     }
     if (disciplines.isEmpty()
       && capdev.getCapdevDisciplines().stream().filter(cd -> cd.isActive()).collect(Collectors.toList()).isEmpty()) {
-      System.out.println("entro");
       this.addMessage(baseAction.getText("capdev.action.disciplines"));
       baseAction.getInvalidFields().put("list-capdev.disciplines",
         baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Disciplines"}));

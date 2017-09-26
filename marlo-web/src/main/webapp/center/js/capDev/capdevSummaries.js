@@ -17,7 +17,7 @@ function init(){
 
     })
 
-    $('.year').append('<option value=0 selected>Select a year </option>');
+    $('.year').append('<option value=0 selected>All years</option>');
 
     
 
