@@ -433,6 +433,10 @@ public final class APConstants {
   public static final String DELIVERABLE_OUTPUTS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.CenterDeliverable.deliverableOutputs)";
 
+  // Cap-Dev Relations
+  public static final String CAPDEV_LOCATIONS =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapacityDevelopment.capdevLocations)";
+
   public static String getFilterBy() {
     return FILTER_BY;
   }

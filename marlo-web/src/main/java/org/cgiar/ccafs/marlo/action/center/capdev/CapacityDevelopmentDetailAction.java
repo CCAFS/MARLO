@@ -591,7 +591,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
         capdevDB.setNumWomen(1);
       }
 
-      capdevService.saveCapacityDevelopment(capdevDB);
+
       participant.setOtherInstitution(otherInstitucion);
 
       this.saveParticipant(participant);
@@ -600,7 +600,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       if (capdevDB.getCapdevParticipants().isEmpty()) {
         this.saveCapDevParticipan(participant, capdevDB);
       }
-
 
     }
 
@@ -644,7 +643,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
 
       }
-      capdevService.saveCapacityDevelopment(capdevDB);
+
       for (final Participant participant : participantList) {
         this.saveParticipant(participant);
         this.saveCapDevParticipan(participant, capdevDB);
@@ -655,6 +654,14 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
     this.saveCapDevRegions(capdevRegions, capdevDB);
     this.saveCapDevCountries(capdevCountries, capdevDB);
+
+    // Save CapDev with History
+    List<String> relationsName = new ArrayList<>();
+    relationsName.add(APConstants.CAPDEV_LOCATIONS);
+    // TODO - CHANGE to modifiedBy - And Create ActiveSince
+    capdevDB.setUsersByModifiedBy(this.getCurrentUser());
+
+    capdevService.saveCapacityDevelopment(capdevDB);
 
 
     if (!this.getInvalidFields().isEmpty()) {
