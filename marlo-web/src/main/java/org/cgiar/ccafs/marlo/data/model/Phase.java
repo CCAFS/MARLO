@@ -63,12 +63,15 @@ public class Phase implements java.io.Serializable, IAuditLog {
   private Set<DeliverablePartnership> deliverablePartnerships = new HashSet<DeliverablePartnership>(0);
   private Set<ProjectBudget> projectBudgets = new HashSet<ProjectBudget>(0);
   private Set<FundingSourceInfo> fundingSourceInfo = new HashSet<FundingSourceInfo>(0);
-
+  private Set<FundingSourceInstitution> fundingSourceInstitutions = new HashSet<FundingSourceInstitution>(0);
+  private Set<FundingSourceLocation> fundingSourceLocations = new HashSet<FundingSourceLocation>(0);
+  private Set<FundingSourceBudget> fundingSourceBudgets = new HashSet<FundingSourceBudget>(0);
   private Set<ProjectBudgetsCluserActvity> projectBudgetsActivities = new HashSet<ProjectBudgetsCluserActvity>(0);
 
 
   public Phase() {
   }
+
 
   public Phase(Crp crp, String description, int year) {
     this.crp = crp;
@@ -108,7 +111,6 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return clusters;
   }
 
-
   public String getComposedName() {
     return this.description + " - " + year;
   }
@@ -117,7 +119,6 @@ public class Phase implements java.io.Serializable, IAuditLog {
   public Crp getCrp() {
     return this.crp;
   }
-
 
   public Set<DeliverableFundingSource> getDeliverableFundingSources() {
     return deliverableFundingSources;
@@ -133,28 +134,44 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return deliverablePartnerships;
   }
 
+
   public String getDescription() {
     return this.description;
   }
+
 
   public Boolean getEditable() {
     return editable;
   }
 
+
   public Date getEndDate() {
     return endDate;
   }
+
+
+  public Set<FundingSourceBudget> getFundingSourceBudgets() {
+    return fundingSourceBudgets;
+  }
+
 
   public Set<FundingSourceInfo> getFundingSourceInfo() {
     return fundingSourceInfo;
   }
 
 
+  public Set<FundingSourceInstitution> getFundingSourceInstitutions() {
+    return fundingSourceInstitutions;
+  }
+
+  public Set<FundingSourceLocation> getFundingSourceLocations() {
+    return fundingSourceLocations;
+  }
+
   @Override
   public Long getId() {
     return this.id;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -162,7 +179,6 @@ public class Phase implements java.io.Serializable, IAuditLog {
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
-
 
   @Override
   public String getModificationJustification() {
@@ -228,9 +244,11 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return projectLocations;
   }
 
+
   public Set<ProjectOutcome> getProjectOutcomes() {
     return projectOutcomes;
   }
+
 
   public Set<ProjectPhase> getProjectPhases() {
     return this.projectPhases;
@@ -241,11 +259,9 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return startDate;
   }
 
-
   public Boolean getVisible() {
     return visible;
   }
-
 
   public int getYear() {
     return this.year;
@@ -267,9 +283,11 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return true;
   }
 
+
   public Boolean isReporting() {
     return description.equals(APConstants.REPORTING);
   }
+
 
   public void setClusters(Set<CrpClusterOfActivity> clusters) {
     this.clusters = clusters;
@@ -284,19 +302,19 @@ public class Phase implements java.io.Serializable, IAuditLog {
     this.deliverableFundingSources = deliverableFundingSources;
   }
 
-
   public void setDeliverableInfos(Set<DeliverableInfo> deliverableInfos) {
     this.deliverableInfos = deliverableInfos;
   }
+
 
   public void setDeliverablePartnerships(Set<DeliverablePartnership> deliverablePartnerships) {
     this.deliverablePartnerships = deliverablePartnerships;
   }
 
-
   public void setDescription(String description) {
     this.description = description;
   }
+
 
   public void setEditable(Boolean editable) {
     this.editable = editable;
@@ -307,8 +325,21 @@ public class Phase implements java.io.Serializable, IAuditLog {
   }
 
 
+  public void setFundingSourceBudgets(Set<FundingSourceBudget> fundingSourceBudgets) {
+    this.fundingSourceBudgets = fundingSourceBudgets;
+  }
+
   public void setFundingSourceInfo(Set<FundingSourceInfo> fundingSourceInfo) {
     this.fundingSourceInfo = fundingSourceInfo;
+  }
+
+  public void setFundingSourceInstitutions(Set<FundingSourceInstitution> fundingSourceInstitutions) {
+    this.fundingSourceInstitutions = fundingSourceInstitutions;
+  }
+
+
+  public void setFundingSourceLocations(Set<FundingSourceLocation> fundingSourceLocations) {
+    this.fundingSourceLocations = fundingSourceLocations;
   }
 
   public void setId(Long id) {

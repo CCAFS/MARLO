@@ -129,7 +129,24 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.FundingSourceInfo" />
         </set>
-        
+         <set name="fundingSourceInstitutions" table="funding_source_institutions" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="id_phase" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution" />
+        </set>
+         <set name="fundingSourceLocations" table="funding_source_locations" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="id_phase" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.FundingSourceInfo" />
+        </set>
+         <set name="fundingSourceBudgets" table="funding_source_budgets" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="id_phase" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.FundingSourceBudget" />
+        </set>
         
     </class>
 </hibernate-mapping>
