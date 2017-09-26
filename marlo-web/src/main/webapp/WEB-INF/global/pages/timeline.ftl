@@ -1,13 +1,13 @@
 [#ftl]  
+[#if phases??]
 <div class="container">
   [#-- Phases Timeline --]
   [@components.css_imports libraryName="TimelineJS3" /]
-  <link rel="stylesheet" type="text/css" href="${baseUrlMedia}/css/global/timeline-phases.css" />
+  <link rel="stylesheet" type="text/css" href="${baseUrl}/global/css/timeline-phases.css" />
   
   <script type="text/javascript">
     var dataObject = {
       "events": [
-      [#if phases??]
       [#if phases?size > 1]
         [#list phases as phase]
           [#-- [#if (actualPhase.id == phase.id)](Current)[/#if] --]
@@ -42,7 +42,6 @@
           },
         [/#list]
       [/#if]
-      [/#if]
       ]
     }
     var currenPhaseIndex = ${(currenPhaseIndex)!0};
@@ -55,7 +54,7 @@
   </div>
   [@components.js_imports libraryName="TimelineJS3" /]
   [@components.js_imports libraryName="jsUri" /]
-  [#assign customJS = [ "${baseUrlMedia}/js/global/timeline-phases.js"  ] + customJS  /]
+  [#assign customJS = [ "${baseUrl}/global/js/timeline-phases.js"  ] + customJS  /]
 
- 
+[/#if]
 </div>
