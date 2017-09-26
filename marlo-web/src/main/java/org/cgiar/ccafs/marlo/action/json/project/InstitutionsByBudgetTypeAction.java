@@ -64,20 +64,10 @@ public class InstitutionsByBudgetTypeAction extends BaseAction {
     institutions = new ArrayList<>();
     Map<String, Object> institution;
     List<Institution> institutionsType = new ArrayList<>();
-    List<Institution> allInstitutions = null;
 
 
     if (budgetTypeID == 4) {
-      allInstitutions = institutionManager.findAll();
-      for (Institution institutionObject : allInstitutions) {
-        // validate if the institutions is PPA
-        if (this.isPPA(institutionObject)) {
-          institutionsType.add(institutionObject);
-        }
-
-      }
-
-
+      institutionsType = institutionManager.findPPAInstitutions(this.getCrpID());
     } else {
 
       if (budgetTypeID == 1) {

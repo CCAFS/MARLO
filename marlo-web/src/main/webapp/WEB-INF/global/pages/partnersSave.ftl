@@ -8,7 +8,7 @@
 [#assign currentSection = "projects" /]
 [#assign currentStage = "partners" /]
 
-[#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/crp/pages/header.ftl" /]
 
   <section> 
     <article>
