@@ -17,7 +17,21 @@ package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
+import org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel;
+import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
+import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
+import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
+import org.cgiar.ccafs.marlo.data.model.ProgramType;
+import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
+import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.ByteArrayInputStream;
@@ -28,11 +42,22 @@ import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
+import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
+import org.pentaho.reporting.engine.classic.core.Element;
+import org.pentaho.reporting.engine.classic.core.ItemBand;
 import org.pentaho.reporting.engine.classic.core.MasterReport;
+import org.pentaho.reporting.engine.classic.core.SubReport;
+import org.pentaho.reporting.engine.classic.core.TableDataFactory;
 import org.pentaho.reporting.engine.classic.core.modules.output.table.xls.ExcelReportUtil;
+import org.pentaho.reporting.engine.classic.core.util.TypedTableModel;
 import org.pentaho.reporting.libraries.resourceloader.Resource;
 import org.pentaho.reporting.libraries.resourceloader.ResourceManager;
 import org.slf4j.Logger;
@@ -54,15 +79,21 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
   private long startTime;
 
   // Managers
-
+  private GenderTypeManager genderTypeManager;
+  private CrpProgramManager crpProgramManager;
+  private DeliverableManager deliverableManager;
   // XLS bytes
   private byte[] bytesXLSX;
   // Streams
   InputStream inputStream;
 
   @Inject
-  public ExpectedDeliverablesSummaryAction(APConfig config, CrpManager crpManager, PhaseManager phaseManager) {
+  public ExpectedDeliverablesSummaryAction(APConfig config, CrpManager crpManager, PhaseManager phaseManager,
+    GenderTypeManager genderTypeManager, CrpProgramManager crpProgramManager, DeliverableManager deliverableManager) {
     super(config, crpManager, phaseManager);
+    this.genderTypeManager = genderTypeManager;
+    this.crpProgramManager = crpProgramManager;
+    this.deliverableManager = deliverableManager;
   }
 
 
@@ -116,27 +147,28 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
 
-      Number idParam = this.getLoggedCrp().getId();
 
-
-      // Get datetime
-      ZonedDateTime timezone = ZonedDateTime.now();
-      DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
-      String zone = timezone.getOffset() + "";
-      if (zone.equals("Z")) {
-        zone = "+0";
-      }
-      String currentDate = timezone.format(format) + "(GMT" + zone + ")";
-
-      masterReport.getParameterValues().put("crp_id", idParam);
-      masterReport.getParameterValues().put("year", this.getSelectedYear());
-      masterReport.getParameterValues().put("date", currentDate);
-      masterReport.getParameterValues().put("regionalAvalaible", this.hasProgramnsRegions());
-      masterReport.getParameterValues().put("showDescription",
-        this.hasSpecificities(APConstants.CRP_REPORTS_DESCRIPTION));
-      masterReport.getParameterValues().put("phaseID", this.getSelectedPhase().getId());
+      // Set Main_Query
+      CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
+      String masterQueryName = "main";
+      TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
+      TypedTableModel model = this.getMasterTableModel();
+      sdf.addTable(masterQueryName, model);
+      masterReport.setDataFactory(cdf);
       // Set i8n for pentaho
       masterReport = this.addi8nParameters(masterReport);
+      // Get details band
+      ItemBand masteritemBand = masterReport.getItemBand();
+      // Create new empty subreport hash map
+      HashMap<String, Element> hm = new HashMap<String, Element>();
+      // method to get all the subreports in the prpt and store in the HashMap
+      this.getAllSubreports(hm, masteritemBand);
+      // Uncomment to see which Subreports are detecting the method getAllSubreports
+      // System.out.println("Pentaho SubReports: " + hm);
+      this.fillSubreport((SubReport) hm.get("details"), "details");
+      // masterReport.getParameterValues().put("total_deliv", idParam);
+      // masterReport.getParameterValues().put("total_projects", idParam);
+      this.fillSubreport((SubReport) hm.get("summary"), "summary");
       ExcelReportUtil.createXLSX(masterReport, os);
       bytesXLSX = os.toByteArray();
       os.close();
@@ -154,14 +186,370 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 
   }
 
+  private void fillSubreport(SubReport subReport, String query) {
+    CompoundDataFactory cdf = CompoundDataFactory.normalize(subReport.getDataFactory());
+    TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(query);
+    TypedTableModel model = null;
+    switch (query) {
+      case "details":
+        model = this.getDeliverablesDetailsTableModel();
+        break;
+
+    }
+    sdf.addTable(query, model);
+    subReport.setDataFactory(cdf);
+  }
+
   @Override
   public int getContentLength() {
     return bytesXLSX.length;
   }
 
+
   @Override
   public String getContentType() {
     return "application/xlsx";
+  }
+
+
+  private TypedTableModel getDeliverablesDetailsTableModel() {
+    TypedTableModel model = new TypedTableModel(
+      new String[] {"deliverableId", "deliverableTitle", "completionYear", "deliverableType", "deliverableSubType",
+        "crossCutting", "genderLevels", "keyOutput", "delivStatus", "delivNewYear", "projectID", "projectTitle",
+        "projectClusterActivities", "flagships", "regions", "individual", "ppaRespondible", "shared", "FS",
+        "fsWindows"},
+      new Class[] {Long.class, String.class, Integer.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, Integer.class, Long.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class, String.class, String.class},
+      0);
+
+    for (Deliverable deliverable : deliverableManager.findAll().stream()
+      .filter(d -> d.isActive() && d.getProject() != null && d.getProject().isActive()
+        && d.getProject().getCrp() != null && d.getProject().getCrp().getId().equals(this.getLoggedCrp().getId())
+        && d.getDeliverableInfo(this.getSelectedPhase()) != null
+        && d.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
+        && d.getProject().getProjectInfo().getStatus().toString().equals(ProjectStatusEnum.Ongoing.getStatusId())
+        && ((d.getDeliverableInfo().getNewExpectedYear() != null
+          && d.getDeliverableInfo().getNewExpectedYear() >= this.getSelectedYear())
+          || d.getDeliverableInfo().getYear() >= this.getSelectedYear()))
+      .collect(Collectors.toList())) {
+
+      DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(this.getSelectedPhase());
+
+      Long deliverableId = deliverable.getId();
+      String deliverableTitle = (deliverableInfo.getTitle() != null && !deliverableInfo.getTitle().isEmpty())
+        ? deliverableInfo.getTitle() : null;
+      Integer completionYear = deliverableInfo.getYear();
+      String deliverableSubType =
+        (deliverableInfo.getDeliverableType() != null && deliverableInfo.getDeliverableType().getName() != null
+          && !deliverableInfo.getDeliverableType().getName().isEmpty()) ? deliverableInfo.getDeliverableType().getName()
+            : null;
+      String deliverableType = (deliverableInfo.getDeliverableType() != null
+        && deliverableInfo.getDeliverableType().getDeliverableType() != null
+        && deliverableInfo.getDeliverableType().getDeliverableType().getName() != null
+        && !deliverableInfo.getDeliverableType().getDeliverableType().getName().isEmpty())
+          ? deliverableInfo.getDeliverableType().getDeliverableType().getName() : null;
+
+      // Get cross_cutting dimension
+      String crossCutting = "";
+      if (deliverableInfo.getCrossCuttingNa() != null) {
+        if (deliverableInfo.getCrossCuttingNa() == true) {
+          crossCutting += "N/A";
+        }
+      }
+      if (deliverableInfo.getCrossCuttingGender() != null) {
+        if (deliverableInfo.getCrossCuttingGender() == true) {
+          if (crossCutting.isEmpty()) {
+            crossCutting += "Gender";
+          } else {
+            crossCutting += ", Gender";
+          }
+        }
+      }
+      if (deliverableInfo.getCrossCuttingYouth() != null) {
+        if (deliverableInfo.getCrossCuttingYouth() == true) {
+          if (crossCutting.isEmpty()) {
+            crossCutting += "Youth";
+          } else {
+            crossCutting += ", Youth";
+          }
+        }
+      }
+      if (deliverableInfo.getCrossCuttingCapacity() != null) {
+        if (deliverableInfo.getCrossCuttingCapacity() == true) {
+          if (crossCutting.isEmpty()) {
+            crossCutting += "Capacity Development";
+          } else {
+            crossCutting += ", Capacity Development";
+          }
+
+        }
+      }
+
+      if (crossCutting.isEmpty()) {
+        crossCutting = null;
+      }
+      String genderLevels = "";
+
+      int countGender = 0;
+      if (deliverableInfo.getCrossCuttingGender() != null) {
+        if (deliverableInfo.getCrossCuttingGender() == true) {
+          if (deliverable.getDeliverableGenderLevels() == null || deliverable.getDeliverableGenderLevels().isEmpty()) {
+            genderLevels += "Gender level(s): &lt;Not Defined&gt;";
+          } else {
+            genderLevels += "Gender level(s): ";
+            for (DeliverableGenderLevel dgl : deliverable.getDeliverableGenderLevels().stream()
+              .filter(dgl -> dgl.isActive() && dgl.getPhase().equals(this.getSelectedPhase()))
+              .collect(Collectors.toList())) {
+              if (dgl.getGenderLevel() != 0.0) {
+                if (countGender == 0) {
+                  genderLevels += genderTypeManager.getGenderTypeById(dgl.getGenderLevel()).getDescription();
+                } else {
+                  genderLevels += ", " + genderTypeManager.getGenderTypeById(dgl.getGenderLevel()).getDescription();
+                }
+                countGender++;
+              }
+            }
+          }
+        }
+      }
+      if (genderLevels.isEmpty()) {
+        genderLevels = null;
+      }
+      String keyOutput = "";
+
+      if (deliverableInfo.getCrpClusterKeyOutput() != null) {
+        keyOutput += "● ";
+
+        if (deliverableInfo.getCrpClusterKeyOutput().getCrpClusterOfActivity().getCrpProgram() != null) {
+          keyOutput +=
+            deliverableInfo.getCrpClusterKeyOutput().getCrpClusterOfActivity().getCrpProgram().getAcronym() + " - ";
+        }
+        keyOutput += deliverableInfo.getCrpClusterKeyOutput().getKeyOutput();
+      }
+      if (keyOutput.isEmpty()) {
+        keyOutput = null;
+      }
+
+      String delivStatus = (deliverableInfo.getStatusName() != null && !deliverableInfo.getStatusName().isEmpty())
+        ? deliverableInfo.getStatusName() : null;
+      Integer delivNewYear = deliverableInfo.getNewExpectedYear() != null && deliverableInfo.getNewExpectedYear() != -1
+        ? deliverableInfo.getNewExpectedYear() : null;
+      Long projectID = null;
+      String projectTitle = null;
+
+      if (deliverable.getProject() != null) {
+        projectID = deliverable.getProject().getId();
+        if (deliverable.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
+          && deliverable.getProject().getProjectInfo().getTitle() != null
+          && !deliverable.getProject().getProjectInfo().getTitle().trim().isEmpty()) {
+          projectTitle = deliverable.getProject().getProjectInfo().getTitle();
+        }
+      }
+      String projectClusterActivities = "";
+      if (deliverable.getProject() != null && deliverable.getProject().getProjectClusterActivities() != null) {
+        for (ProjectClusterActivity projectClusterActivity : deliverable.getProject().getProjectClusterActivities()
+          .stream().filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+          .collect(Collectors.toList())) {
+          if (projectClusterActivities.isEmpty()) {
+            projectClusterActivities += projectClusterActivity.getCrpClusterOfActivity().getIdentifier();
+          } else {
+            projectClusterActivities += ", " + projectClusterActivity.getCrpClusterOfActivity().getIdentifier();
+          }
+        }
+      }
+      if (projectClusterActivities.isEmpty()) {
+        projectClusterActivities = null;
+      }
+
+
+      String flagships = null;
+      // get Flagships related to the project sorted by acronym
+      for (ProjectFocus projectFocuses : deliverable.getProject().getProjectFocuses().stream()
+        .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())
+          && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+        .sorted((o1, o2) -> o1.getCrpProgram().getAcronym().compareTo(o2.getCrpProgram().getAcronym()))
+        .collect(Collectors.toList())) {
+        if (flagships == null || flagships.isEmpty()) {
+          flagships = crpProgramManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
+        } else {
+          flagships += ", " + crpProgramManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
+        }
+      }
+      String regions = null;
+      // If has regions, add the regions to regionsArrayList
+      // Get Regions related to the project sorted by acronym
+      if (this.hasProgramnsRegions()) {
+        for (ProjectFocus projectFocuses : deliverable.getProject().getProjectFocuses().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())
+            && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+          .sorted((c1, c2) -> c1.getCrpProgram().getAcronym().compareTo(c2.getCrpProgram().getAcronym()))
+          .collect(Collectors.toList())) {
+          if (regions == null || regions.isEmpty()) {
+            regions = crpProgramManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
+          } else {
+            regions += ", " + crpProgramManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
+          }
+        }
+        if (deliverable.getProject().getProjecInfoPhase(this.getSelectedPhase()).getNoRegional() != null
+          && deliverable.getProject().getProjectInfo().getNoRegional()) {
+          if (regions != null && !regions.isEmpty()) {
+            LOG.warn("Project is global and has regions selected");
+          }
+          regions = "Global";
+        }
+      } else {
+        regions = null;
+      }
+      // Store Institution and PartnerPerson
+      String individual = "";
+      // Store Institution
+      String ppaRespondible = "";
+      Set<String> ppaResponsibleList = new HashSet<>();
+      int managingCount = 0;
+      // Get partner responsible
+
+      List<DeliverablePartnership> partnershipsList = deliverable.getDeliverablePartnerships().stream()
+        .filter(dp -> dp.isActive() && dp.getPhase().equals(this.getSelectedPhase())).collect(Collectors.toList());
+      // Set responible;
+      DeliverablePartnership responisble = null;
+      if (partnershipsList.stream()
+        .filter(dp -> dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
+        .collect(Collectors.toList()).size() > 0) {
+        responisble = partnershipsList.stream()
+          .filter(dp -> dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
+          .collect(Collectors.toList()).get(0);
+      }
+
+      if (responisble != null) {
+        if (responisble.getProjectPartnerPerson() != null) {
+          individual += "<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>";
+          ProjectPartnerPerson responsibleppp = responisble.getProjectPartnerPerson();
+          if (responsibleppp.getProjectPartner() != null) {
+            if (responsibleppp.getProjectPartner().getInstitution() != null) {
+              if (responsibleppp.getProjectPartner().getInstitution().getAcronym() != null
+                && !responsibleppp.getProjectPartner().getInstitution().getAcronym().isEmpty()) {
+                individual += responsibleppp.getProjectPartner().getInstitution().getAcronym() + " - ";
+                ppaRespondible += "<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>"
+                  + responsibleppp.getProjectPartner().getInstitution().getAcronym() + "</span>";
+              } else {
+                individual += responsibleppp.getProjectPartner().getInstitution().getName() + " - ";
+                ppaRespondible += "<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>"
+                  + responsibleppp.getProjectPartner().getInstitution().getName() + "</span>";
+              }
+            }
+          }
+          individual += responsibleppp.getUser().getComposedName();
+          managingCount++;
+          if (responisble.getPartnerDivision() != null && responisble.getPartnerDivision().getAcronym() != null
+            && !responisble.getPartnerDivision().getAcronym().isEmpty()) {
+            individual += " (" + responisble.getPartnerDivision().getAcronym() + ")";
+          }
+          individual += "</span>";
+        }
+      }
+      // Get partner others
+      List<DeliverablePartnership> othersPartnerships = null;
+      if (partnershipsList.stream()
+        .filter(dp -> dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
+        .collect(Collectors.toList()).size() > 0) {
+        othersPartnerships = partnershipsList.stream()
+          .filter(dp -> dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
+          .collect(Collectors.toList());
+      }
+      if (othersPartnerships != null) {
+        for (DeliverablePartnership deliverablePartnership : othersPartnerships) {
+          if (deliverablePartnership.getProjectPartnerPerson() != null) {
+            individual += ", <span style='font-family: Segoe UI;font-size: 10'>";
+            ProjectPartnerPerson responsibleppp = deliverablePartnership.getProjectPartnerPerson();
+            if (responsibleppp.getProjectPartner() != null) {
+              if (responsibleppp.getProjectPartner().getInstitution() != null) {
+                if (responsibleppp.getProjectPartner().getInstitution().getAcronym() != null
+                  && !responsibleppp.getProjectPartner().getInstitution().getAcronym().isEmpty()) {
+                  individual += responsibleppp.getProjectPartner().getInstitution().getAcronym() + " - ";
+                  ppaResponsibleList.add(responsibleppp.getProjectPartner().getInstitution().getAcronym());
+                } else {
+                  individual += responsibleppp.getProjectPartner().getInstitution().getName() + " - ";
+                  ppaResponsibleList.add(responsibleppp.getProjectPartner().getInstitution().getName());
+                }
+              }
+            }
+            individual += responsibleppp.getUser().getComposedName();
+            if (deliverablePartnership.getPartnerDivision() != null
+              && deliverablePartnership.getPartnerDivision().getAcronym() != null
+              && !deliverablePartnership.getPartnerDivision().getAcronym().isEmpty()) {
+              individual += " (" + deliverablePartnership.getPartnerDivision().getAcronym() + ")";
+            }
+            individual += "</span>";
+          }
+        }
+      }
+
+      if (individual.isEmpty()) {
+        individual = null;
+      }
+
+      for (String ppaOher : ppaResponsibleList) {
+        managingCount++;
+        if (ppaRespondible.isEmpty()) {
+          ppaRespondible += "<span style='font-family: Segoe UI;font-size: 10'>" + ppaOher + "</span>";
+        } else {
+          ppaRespondible += ", <span style='font-family: Segoe UI;font-size: 10'>" + ppaOher + "</span>";
+        }
+      }
+      if (ppaRespondible.isEmpty()) {
+        ppaRespondible = null;
+      }
+      String shared = null;
+      if (managingCount == 0) {
+        shared = "Not Defined";
+      }
+      if (managingCount == 1) {
+        shared = "No";
+      }
+      if (managingCount > 1) {
+        shared = "Yes";
+      }
+
+      String FS = "";
+      Set<String> fsWindowsSet = new HashSet<String>();
+
+      for (DeliverableFundingSource deliverableFundingSource : deliverable.getDeliverableFundingSources().stream()
+        .filter(df -> df.isActive() && df.getPhase().equals(this.getSelectedPhase())).collect(Collectors.toList())) {
+        if (FS.isEmpty()) {
+          FS += "FS" + deliverableFundingSource.getFundingSource().getId();
+        } else {
+          FS += ", FS" + deliverableFundingSource.getFundingSource().getId();
+        }
+
+        if (deliverableFundingSource.getFundingSource() != null
+          && deliverableFundingSource.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()) != null
+          && deliverableFundingSource.getFundingSource().getFundingSourceInfo().getBudgetType() != null) {
+          fsWindowsSet
+            .add(deliverableFundingSource.getFundingSource().getFundingSourceInfo().getBudgetType().getName());
+        }
+      }
+      if (FS.isEmpty()) {
+        FS = null;
+      }
+
+      String fsWindows = "";
+      for (String fsType : fsWindowsSet.stream().sorted((s1, s2) -> s1.compareTo(s2)).collect(Collectors.toList())) {
+        if (fsWindows.isEmpty()) {
+          fsWindows += fsType;
+        } else {
+          fsWindows += ", " + fsType;
+        }
+      }
+      if (fsWindows.isEmpty()) {
+        fsWindows = null;
+      }
+
+      model.addRow(new Object[] {deliverableId, deliverableTitle, completionYear, deliverableType, deliverableSubType,
+        crossCutting, genderLevels, keyOutput, delivStatus, delivNewYear, projectID, projectTitle,
+        projectClusterActivities, flagships, regions, individual, ppaRespondible, shared, FS, fsWindows});
+    }
+    return model;
   }
 
   @SuppressWarnings("unused")
@@ -184,12 +572,33 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 
   }
 
+
   @Override
   public InputStream getInputStream() {
     if (inputStream == null) {
       inputStream = new ByteArrayInputStream(bytesXLSX);
     }
     return inputStream;
+  }
+
+  private TypedTableModel getMasterTableModel() {
+    // Initialization of Model
+    TypedTableModel model =
+      new TypedTableModel(new String[] {"center", "date", "year", "regionalAvalaible", "showDescription"},
+        new Class[] {String.class, String.class, String.class, Boolean.class, Boolean.class});
+    String center = this.getLoggedCrp().getAcronym();
+
+    ZonedDateTime timezone = ZonedDateTime.now();
+    DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
+    String zone = timezone.getOffset() + "";
+    if (zone.equals("Z")) {
+      zone = "+0";
+    }
+    String date = timezone.format(format) + "(GMT" + zone + ")";
+    String year = this.getSelectedYear() + "";
+    model.addRow(new Object[] {center, date, year, this.hasProgramnsRegions(),
+      this.hasSpecificities(APConstants.CRP_REPORTS_DESCRIPTION)});
+    return model;
   }
 
 
