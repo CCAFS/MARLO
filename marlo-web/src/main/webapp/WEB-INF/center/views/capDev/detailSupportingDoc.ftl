@@ -4,7 +4,7 @@
 [#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css", 
 					  "${baseUrlMedia}/css/capDev/capacityDevelopment.css"] /]
 
-[#assign pageLibs = ["select2","flat-flags"] /]
+[#assign pageLibs = ["datatables.net", "datatables.net-bs","select2","flat-flags"] /]
 
 [#assign customJS = ["${baseUrlMedia}/js/capDev/supportingDocuments.js",
 					 "${baseUrlMedia}/js/global/fieldsValidation.js", 

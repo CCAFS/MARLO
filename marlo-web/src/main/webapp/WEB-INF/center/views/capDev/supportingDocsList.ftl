@@ -7,9 +7,8 @@
 
 
 
-[#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
-[#assign customJS = ["${baseUrlMedia}/js/capDev/capacityDevelopment.js", 
-					 "${baseUrlMedia}/js/capDev/supportingDocuments.js"] /]
+[#assign pageLibs = ["datatables.net", "datatables.net-bs","select2","flat-flags"] /]
+[#assign customJS = ["${baseUrlMedia}/js/capDev/supportingDocuments.js"] /]
 
 
 [#assign currentStage = "supportingDocuments" /]

@@ -166,25 +166,26 @@
 
   
 
-      //remove default option  from duration Unit Select
-    $(".durationUnitSelect option[value='-1']").remove();
+    
 
 
       //set value to duartion unit field
     (function(){
       var durationUnit = $(".durationUnitaInput").val();
       
-
+      //console.log(durationUnit)
       $(".durationUnitSelect select option").each(function() {
-        if($(this).val() == durationUnit){
-          $(this).attr( "selected" , "selected");
+        if($(this).val() === durationUnit){
+          console.log("option selected")
+          console.log($(this).val())
+          $(this).attr( "selected" , true);
         }
         });
 
     })();
 
 
-    $(".dUnitSelect").append('<option value=-1 selected>select option</option>');
+    
 
     //disable the duration unit field 
     (function(){

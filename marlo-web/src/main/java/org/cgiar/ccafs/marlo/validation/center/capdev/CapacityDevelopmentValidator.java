@@ -209,9 +209,9 @@ public class CapacityDevelopmentValidator extends BaseValidator {
       if (capdev.getNumParticipants() != null) {
         final int totalParticipants = capdev.getNumMen() + capdev.getNumWomen();
         if ((capdev.getNumParticipants() < totalParticipants) || (capdev.getNumParticipants() > totalParticipants)) {
-          baseAction.getInvalidFields().put("input-capdev.numParticipants", "La suma no coincide");
-          baseAction.getInvalidFields().put("input-capdev.numMen", "La suma no coincide");
-          baseAction.getInvalidFields().put("input-capdev.numWomen", "La suma no coincide");
+          baseAction.getInvalidFields().put("input-capdev.numParticipants", "The sum no match");
+          baseAction.getInvalidFields().put("input-capdev.numMen", "The sum no match");
+          baseAction.getInvalidFields().put("input-capdev.numWomen", "The sum no match");
         }
       }
     }

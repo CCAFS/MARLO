@@ -135,12 +135,40 @@
 								<div class="pull-right">
 									[#if editable]	
 							        	<button type="button" class="" title="Delete list of participants">
-							        		<a id="" class="removeCapdev" href="[@s.url action='${centerSession}/delete_list_of_participants'][@s.param name='capdevID']${capdevID}[/@s.param][@s.param name='capdevCategory']${capdevCategory}[/@s.param] [/@s.url]" title="" > Clear
+							        		<a id="" class="removeCapdev" data-href=""  data-toggle="modal" data-target="#confirm-clear-participantList"> Clear
 								            </a>
 							        	</button>
-							        	[/#if]
+
+							        	<div class="modal fade" id="confirm-clear-participantList" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+								        <div class="modal-dialog">
+								            <div class="modal-content">
+								            
+								                <div class="modal-header">
+								                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+								                    <h4 class="modal-title" id="myModalLabel">Confirm Clear</h4>
+								                </div>
+								            
+								                <div class="modal-body">
+								                    <p>You are about to clear the list of participants, this procedure is irreversible.</p>
+								                    <p>Do you want to proceed?</p>
+								                    <p class="debug-url"></p>
+								                </div>
+								                
+								                <div class="modal-footer">
+								                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+								                    <a class="btn btn-danger btn-ok" href="[@s.url action='${centerSession}/delete_list_of_participants'][@s.param name='capdevID']${capdevID}[/@s.param][@s.param name='capdevCategory']${capdevCategory}[/@s.param] [/@s.url]">Clear</a>
+								                </div>
+								            </div>
+								        </div>
+								    </div>
+
+							        [/#if]
 			    				</div>
 							</div>
+
+
+								     
+
 						</div>
 					[#else]
 						<div class="form-group col-md-12 newCapdevField participantsheader">
