@@ -532,11 +532,11 @@ public class FundingSourceAction extends BaseAction {
 
       } else {
         this.setDraft(false);
-        fundingSource.setBudgets(
-          fundingSource.getFundingSourceBudgets().stream().filter(pb -> pb.isActive()).collect(Collectors.toList()));
+        fundingSource.setBudgets(fundingSource.getFundingSourceBudgets().stream()
+          .filter(pb -> pb.isActive() && pb.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
 
         fundingSource.setInstitutions(new ArrayList<>(fundingSource.getFundingSourceInstitutions().stream()
-          .filter(pb -> pb.isActive()).collect(Collectors.toList())));
+          .filter(pb -> pb.isActive() && pb.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
 
         fundingSource.setProjectBudgetsList(
           fundingSource.getProjectBudgets().stream().filter(pb -> pb.isActive() && pb.getProject().isActive()
@@ -547,17 +547,17 @@ public class FundingSourceAction extends BaseAction {
          */
         if (fundingSource.getFundingSourceLocations() != null) {
 
-          List<FundingSourceLocation> countries =
-            new ArrayList<>(fundingSource.getFundingSourceLocations().stream().filter(fl -> fl.isActive()
+          List<FundingSourceLocation> countries = new ArrayList<>(fundingSource.getFundingSourceLocations()
+            .stream().filter(fl -> fl.isActive() && fl.getPhase().equals(this.getActualPhase())
               && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 2)
-              .collect(Collectors.toList()));
+            .collect(Collectors.toList()));
 
           fundingSource.setFundingCountry(new ArrayList<>(countries));
 
-          List<FundingSourceLocation> regions =
-            new ArrayList<>(fundingSource.getFundingSourceLocations().stream().filter(fl -> fl.isActive()
+          List<FundingSourceLocation> regions = new ArrayList<>(fundingSource.getFundingSourceLocations()
+            .stream().filter(fl -> fl.isActive() && fl.getPhase().equals(this.getActualPhase())
               && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 1)
-              .collect(Collectors.toList()));
+            .collect(Collectors.toList()));
 
           List<FundingSourceLocation> regionsWScope = new ArrayList<>();
           if (regions.size() > 0) {
@@ -568,8 +568,9 @@ public class FundingSourceAction extends BaseAction {
             }
           }
 
-          regions = new ArrayList<>(fundingSource.getFundingSourceLocations().stream()
-            .filter(fl -> fl.isActive() && fl.getLocElementType() != null && fl.getLocElement() == null)
+          regions = new ArrayList<>(fundingSource
+            .getFundingSourceLocations().stream().filter(fl -> fl.isActive() && fl.getLocElementType() != null
+              && fl.getLocElement() == null && fl.getPhase().equals(this.getActualPhase()))
             .collect(Collectors.toList()));
 
           if (regions.size() > 0) {
