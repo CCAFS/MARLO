@@ -6545,10 +6545,10 @@ img.removeInput {
 }
 
 .pdfIcon {
-    cursor: pointer;
-    color: red;
-    font-size: 1.8em;
-    margin: 5px 0 0 0px;
+    /* cursor: pointer; */
+    /* color: red; */
+    /* font-size: 1.8em; */
+    /* margin: 5px 0 0 0px; */
 }
 
 .usersFound{
