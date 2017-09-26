@@ -50,9 +50,13 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
   private String modificationJustification;
 
   private boolean scope;
+  @Expose
+  private Phase phase;
+
 
   public FundingSourceLocation() {
   }
+
 
   public FundingSourceLocation(Long id, LocElement locElement, User modifiedBy, User createdBy,
     FundingSource fundingSource, boolean active, Date activeSince, String modificationJustification) {
@@ -98,12 +102,10 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
     return fundingSource;
   }
 
-
   @Override
   public Long getId() {
     return id;
   }
-
 
   public LocElement getLocElement() {
     return locElement;
@@ -135,6 +137,11 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
   }
 
 
+  public Phase getPhase() {
+    return phase;
+  }
+
+
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -148,6 +155,7 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
   public boolean isActive() {
     return active;
   }
+
 
   public boolean isScope() {
     return scope;
@@ -169,10 +177,10 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
     this.fundingSource = fundingSource;
   }
 
-
   public void setId(Long id) {
     this.id = id;
   }
+
 
   public void setLocElement(LocElement locElement) {
     this.locElement = locElement;
@@ -188,6 +196,10 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
 

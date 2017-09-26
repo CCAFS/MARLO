@@ -25,14 +25,18 @@ public class FundingSourceInstitution implements java.io.Serializable, IAuditLog
   @Expose
   private Institution institution;
 
+  @Expose
+  private Phase phase;
+
+
   public FundingSourceInstitution() {
   }
+
 
   public FundingSourceInstitution(FundingSource fundingSource, Institution institution) {
     this.fundingSource = fundingSource;
     this.institution = institution;
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -59,6 +63,7 @@ public class FundingSourceInstitution implements java.io.Serializable, IAuditLog
   public FundingSource getFundingSource() {
     return this.fundingSource;
   }
+
 
   @Override
   public Long getId() {
@@ -89,6 +94,10 @@ public class FundingSourceInstitution implements java.io.Serializable, IAuditLog
     return u;
   }
 
+  public Phase getPhase() {
+    return phase;
+  }
+
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -113,6 +122,10 @@ public class FundingSourceInstitution implements java.io.Serializable, IAuditLog
 
   public void setInstitution(Institution institution) {
     this.institution = institution;
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
 
