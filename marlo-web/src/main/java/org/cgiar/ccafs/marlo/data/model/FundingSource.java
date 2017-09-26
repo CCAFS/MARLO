@@ -223,7 +223,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     double used = 0;
     double total = 0;
     for (FundingSourceBudget fundingSourceBudget : this.getFundingSourceBudgets().stream()
-      .filter(c -> c.isActive() && c.getYear() != null && c.getYear().intValue() == year)
+      .filter(c -> c.isActive() && c.getYear() != null && c.getYear().intValue() == year && c.getPhase().equals(phase))
       .collect(Collectors.toList())) {
       if (fundingSourceBudget.getBudget() != null) {
         total = total + fundingSourceBudget.getBudget().doubleValue();
@@ -250,7 +250,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     double used = 0;
     double total = 0;
     for (FundingSourceBudget fundingSourceBudget : this.getFundingSourceBudgets().stream()
-      .filter(c -> c.isActive() && c.getYear() != null && c.getYear().intValue() == year)
+      .filter(c -> c.isActive() && c.getYear() != null && c.getYear().intValue() == year && c.getPhase().equals(phase))
       .collect(Collectors.toList())) {
       if (fundingSourceBudget.getBudget() != null) {
         total = total + fundingSourceBudget.getBudget().doubleValue();
@@ -290,10 +290,11 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return result;
   }
 
-  public boolean hasInstitution(long institutionID) {
+  public boolean hasInstitution(long institutionID, long idPhase) {
 
     for (FundingSourceInstitution fundingSourceInstitution : fundingSourceInstitutions) {
-      if (fundingSourceInstitution.getInstitution().getId().longValue() == institutionID) {
+      if (fundingSourceInstitution.getInstitution().getId().longValue() == institutionID
+        && fundingSourceInstitution.getPhase().getId().longValue() == idPhase) {
         return true;
       }
     }
