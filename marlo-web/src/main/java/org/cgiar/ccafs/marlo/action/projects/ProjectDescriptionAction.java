@@ -674,6 +674,10 @@ public class ProjectDescriptionAction extends BaseAction {
         project.getClusterActivities().clear();
 
       }
+
+      project.setLiaisonInstitution(null);
+      project.setLiaisonUser(null);
+
       project.setNoRegional(null);
       project.setCrossCuttingGender(null);
       project.setCrossCuttingCapacity(null);
