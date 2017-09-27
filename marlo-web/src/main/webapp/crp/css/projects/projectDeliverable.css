@@ -230,7 +230,7 @@ p.noChecked {
     opacity: 1;
 }
 
-.fairCompliant.achieved p{background: url(../../images/global/icon-check-tiny.png) no-repeat 0;opacity: 1;padding-left: 20px;}
+.fairCompliant.achieved p{background: url(../../global/images/icon-check-tiny.png) no-repeat 0;opacity: 1;padding-left: 20px;}
 
 .hideInfo {
   -webkit-animation: bgcolorchange 2s infinite; /* Chrome, Safari, Opera */ 
@@ -268,7 +268,7 @@ p.noChecked {
 
 
 #box-out{
-  background-image: url(./../../images/global/semaforo.png);
+  background-image: url(./../../global/images/semaforo.png);
   background-size: 100% 96%;
   width: 55px;
   height: 86px;

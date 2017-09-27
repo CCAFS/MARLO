@@ -646,6 +646,8 @@ public class ClusterActivitiesAction extends BaseAction {
 
 
           JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+ 	      reader.close();
+ 	
 
           try {
             AutoSaveReader autoSaveReader = new AutoSaveReader();
@@ -688,7 +690,7 @@ public class ClusterActivitiesAction extends BaseAction {
             e.printStackTrace();
           }
 
-          reader.close();
+        
           this.setDraft(true);
         } else {
           this.setDraft(false);

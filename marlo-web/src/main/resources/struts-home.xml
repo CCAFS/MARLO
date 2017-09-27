@@ -6,7 +6,7 @@
 
 		<action name="login" class="org.cgiar.ccafs.marlo.action.home.LoginAction"
 			method="login">
-			<result name="input">/WEB-INF/views/home/login.ftl</result>
+			<result name="input">/WEB-INF/crp/views/home/login.ftl</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">${crpSession}/crpDashboard</param>
 			</result>
@@ -22,14 +22,14 @@
 
 		<action name="logout" class="org.cgiar.ccafs.marlo.action.home.LoginAction"
 			method="logout">
-			<result name="success">/WEB-INF/views/home/login.ftl</result>
+			<result name="success">/WEB-INF/crp/views/home/login.ftl</result>
 		</action>
 
 		<action name="{*}/crpDashboard"
 			class="org.cgiar.ccafs.marlo.action.home.DashboardAction">
 			<!-- interceptor-ref name="autoLogin" / -->
 			<interceptor-ref name="homeStack" />
-			<result name="input">/WEB-INF/views/home/dashboard.ftl</result>
+			<result name="input">/WEB-INF/crp/views/home/dashboard.ftl</result>
 		</action>
 	</package>
 

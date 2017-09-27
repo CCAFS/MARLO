@@ -325,7 +325,6 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
 
               researchOutput.setNextUsers(new ArrayList<>(researchOutput.getResearchOutputsNextUsers().stream()
                 .filter(nu -> nu.isActive()).collect(Collectors.toList())));
-
               outputValidator.validate(this, researchOutput, program, false);
             }
 

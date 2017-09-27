@@ -2,8 +2,16 @@
 [#assign title = "Outcome" /]
 [#assign currentSectionString = "program-${actionName?replace('/','-')}-${outcomeID}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs","select2"] /]
-[#assign customJS = ["${baseUrlMedia}/js/global/usersManagement.js", "${baseUrlMedia}/js/impactPathway/outcome.js", "${baseUrlMedia}/js/global/fieldsValidation.js", "${baseUrlMedia}/js/global/autoSave.js"] /]
-[#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css","${baseUrlMedia}/css/impactPathway/outcomeList.css"] /]
+[#assign customJS = [
+  "${baseUrl}/global/js/usersManagement.js", 
+  "${baseUrl}/global/js/fieldsValidation.js", 
+  "${baseUrl}/global/js/autoSave.js", 
+  "${baseUrlMedia}/js/impactPathway/outcome.js" ]
+/]
+[#assign customCSS = [
+  "${baseUrl}/global/css/customDataTable.css",
+  "${baseUrlMedia}/css/impactPathway/outcomeList.css"] 
+/]
 [#assign currentSection = "impactPathway" /]
 [#assign currentStage = "outcomes" /]
 
@@ -13,10 +21,10 @@
   {"label":"outcome", "nameSpace":"", "action":""}
 ]/]
 [#assign leadersName = "leaders"/]
-[#include "/WEB-INF/center/global/pages/header.ftl" /]
-[#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
-[#import "/WEB-INF/center/global/macros/utils.ftl" as utils /]
+[#include "/WEB-INF/center/pages/header.ftl" /]
+[#include "/WEB-INF/center/pages/main-menu.ftl" /]
 [#import "/WEB-INF/center/views/impactPathway/outcomeListTemplate.ftl" as outcomesList /]
+[#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 [#--  Research Otcomes Help Text--] 
 [@utils.helpInfos hlpInfo="researchOutcomes.help" /]
 [#--  marlo cluster of activities--]
@@ -132,7 +140,7 @@
 [#-- Milestone Template --]
 [@milestoneMacro milestone={} name="${outcomeCustomName}.milestones" index=-1 isTemplate=true /]
 
-[#include "/WEB-INF/center/global/pages/footer.ftl" /]
+[#include "/WEB-INF/center/pages/footer.ftl" /]
 
 
 [#macro milestoneMacro milestone name index isTemplate=false]

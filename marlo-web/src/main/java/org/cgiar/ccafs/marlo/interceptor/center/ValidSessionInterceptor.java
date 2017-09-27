@@ -92,7 +92,7 @@ public class ValidSessionInterceptor extends AbstractInterceptor {
           if (session.containsKey(APConstants.SESSION_CRP)) {
 
             Crp crp = (Crp) session.get(APConstants.SESSION_CRP);
-            crp = crpManager.findCrpByAcronym(enteredCrp);
+
             // remove the crp parameters
             for (CustomParameter parameter : crp.getCustomParameters()) {
               if (parameter.isActive()) {
