@@ -15,9 +15,9 @@
   {"label":"fundingSourcesList", "nameSpace":"/fundingSources", "action":""}
 ]/]
 
+[#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 [#include "/WEB-INF/crp/pages/header.ftl" /]
 [#include "/WEB-INF/crp/pages/main-menu.ftl" /]
-
 [#assign startYear = ((fundingSource.startDate?string.yyyy)?number)!currentCycleYear /]
 [#assign endYear = ((fundingSource.endDate?string.yyyy)?number)!startYear /]
 [#assign extensionYear = ((fundingSource.extensionDate?string.yyyy)?number)!endYear /]
