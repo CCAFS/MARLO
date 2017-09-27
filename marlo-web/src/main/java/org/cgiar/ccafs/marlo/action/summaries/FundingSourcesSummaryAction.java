@@ -151,8 +151,8 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
     ResourceManager manager = new ResourceManager();
     manager.registerDefaults();
     try {
-      Resource reportResource =
-        manager.createDirectly(this.getClass().getResource("/pentaho/FundingSourcesSummary.prpt"), MasterReport.class);
+      Resource reportResource = manager.createDirectly(
+        this.getClass().getResource("/pentaho/FundingSourcesSummary-Annualization.prpt"), MasterReport.class);
 
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();

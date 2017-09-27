@@ -131,11 +131,11 @@ public class CaseStudySummaryAction extends BaseSummariesAction implements Summa
     try {
       Resource reportResource;
       if (this.getSelectedFormat().equals(APConstants.SUMMARY_FORMAT_EXCEL)) {
-        reportResource =
-          manager.createDirectly(this.getClass().getResource("/pentaho/CaseStudies.prpt"), MasterReport.class);
+        reportResource = manager.createDirectly(this.getClass().getResource("/pentaho/CaseStudies-Annualization.prpt"),
+          MasterReport.class);
       } else {
-        reportResource =
-          manager.createDirectly(this.getClass().getResource("/pentaho/CaseStudy.prpt"), MasterReport.class);
+        reportResource = manager.createDirectly(this.getClass().getResource("/pentaho/CaseStudy-Annualization.prpt"),
+          MasterReport.class);
       }
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       String center = this.getLoggedCrp().getAcronym();
