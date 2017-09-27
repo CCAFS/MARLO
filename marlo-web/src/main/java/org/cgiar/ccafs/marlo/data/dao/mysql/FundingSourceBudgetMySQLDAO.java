@@ -16,10 +16,14 @@
 
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.FundingSourceBudgetDAO;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 
@@ -32,11 +36,51 @@ public class FundingSourceBudgetMySQLDAO implements FundingSourceBudgetDAO {
     this.dao = dao;
   }
 
+  public void cloneFundingSourceBudget(FundingSourceBudget fundingSourceBudgetAdd,
+    FundingSourceBudget fundingSourceBudget, Phase phase) {
+    fundingSourceBudgetAdd.setFundingSource(fundingSourceBudget.getFundingSource());
+    fundingSourceBudgetAdd.setActive(true);
+    fundingSourceBudgetAdd.setActiveSince(new Date());
+    fundingSourceBudgetAdd.setCreatedBy(fundingSourceBudget.getCreatedBy());
+    fundingSourceBudgetAdd.setModificationJustification(fundingSourceBudget.getModificationJustification());
+    fundingSourceBudgetAdd.setYear(fundingSourceBudget.getYear());
+    fundingSourceBudgetAdd.setPhase(phase);
+
+  }
+
   @Override
   public boolean deleteFundingSourceBudget(long fundingSourceBudgetId) {
     FundingSourceBudget fundingSourceBudget = this.find(fundingSourceBudgetId);
     fundingSourceBudget.setActive(false);
-    return this.save(fundingSourceBudget) > 0;
+    boolean result = dao.update(fundingSourceBudget);
+    Phase currentPhase = dao.find(Phase.class, fundingSourceBudget.getPhase().getId());
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+
+      if (fundingSourceBudget.getPhase().getNext() != null) {
+        this.deletFundingSourceBudgetPhase(fundingSourceBudget.getPhase().getNext(),
+          fundingSourceBudget.getFundingSource().getId(), fundingSourceBudget);
+      }
+    }
+    return result;
+
+  }
+
+  public void deletFundingSourceBudgetPhase(Phase next, long fundingSourceID, FundingSourceBudget fundingSourceBudget) {
+    Phase phase = dao.find(Phase.class, next.getId());
+    if (phase.getEditable() != null && phase.getEditable()) {
+      List<FundingSourceBudget> budgets = phase.getFundingSourceBudgets().stream()
+        .filter(c -> c.isActive() && c.getFundingSource().getId().longValue() == fundingSourceID
+          && c.getYear().equals(fundingSourceBudget.getYear()))
+        .collect(Collectors.toList());
+      for (FundingSourceBudget fundingSourceBudgetDB : budgets) {
+        fundingSourceBudgetDB.setActive(false);
+        dao.update(fundingSourceBudgetDB);
+      }
+    }
+    if (phase.getNext() != null) {
+      this.deletFundingSourceBudgetPhase(phase.getNext(), fundingSourceID, fundingSourceBudget);
+
+    }
   }
 
   @Override
@@ -90,10 +134,39 @@ public class FundingSourceBudgetMySQLDAO implements FundingSourceBudgetDAO {
     } else {
       dao.save(fundingSourceBudget);
     }
-
+    Phase currentPhase = dao.find(Phase.class, fundingSourceBudget.getPhase().getId());
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+      if (fundingSourceBudget.getPhase().getNext() != null) {
+        this.saveFundingSourceBudgetPhase(fundingSourceBudget.getPhase().getNext(),
+          fundingSourceBudget.getFundingSource().getId(), fundingSourceBudget);
+      }
+    }
 
     return fundingSourceBudget.getId();
   }
 
+  public void saveFundingSourceBudgetPhase(Phase next, long fundingSourceID, FundingSourceBudget fundingSourceBudget) {
+    Phase phase = dao.find(Phase.class, next.getId());
+    if (phase.getEditable() != null && phase.getEditable()) {
+      List<FundingSourceBudget> budgets = phase.getFundingSourceBudgets().stream()
+        .filter(c -> c.isActive() && c.getFundingSource().getId().longValue() == fundingSourceID
+          && c.getYear().intValue() == fundingSourceBudget.getYear().intValue())
+        .collect(Collectors.toList());
+      if (budgets.isEmpty()) {
+        FundingSourceBudget fundingSourceBudgetAdd = new FundingSourceBudget();
+        this.cloneFundingSourceBudget(fundingSourceBudget, fundingSourceBudgetAdd, phase);
+        dao.save(fundingSourceBudgetAdd);
+      } else {
+        FundingSourceBudget fundingSourceBudgetAdd = budgets.get(0);
+        this.cloneFundingSourceBudget(fundingSourceBudget, fundingSourceBudgetAdd, phase);
+        dao.update(fundingSourceBudgetAdd);
+      }
 
+    }
+    if (phase.getNext() != null) {
+      this.saveFundingSourceBudgetPhase(phase.getNext(), fundingSourceID, fundingSourceBudget);
+    }
+
+
+  }
 }
