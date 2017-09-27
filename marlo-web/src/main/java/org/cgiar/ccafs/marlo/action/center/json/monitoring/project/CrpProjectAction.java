@@ -55,7 +55,11 @@ public class CrpProjectAction extends BaseAction {
 
     if (project != null) {
       projectInfo.put("id", project.getId());
-      projectInfo.put("id", project.getId());
+      projectInfo.put("title", project.getTitle());
+      projectInfo.put("description", project.getSummary());
+      projectInfo.put("startDate", project.getStartDate());
+      projectInfo.put("endDate", project.getEndDate());
+
     }
 
 
