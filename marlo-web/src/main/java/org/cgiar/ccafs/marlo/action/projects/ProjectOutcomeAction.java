@@ -756,6 +756,11 @@ public class ProjectOutcomeAction extends BaseAction {
         projectOutcomeDB.setExpectedUnit(projectOutcome.getExpectedUnit());
       }
 
+      projectOutcomeDB.setExpectedValue(projectOutcome.getExpectedValue());
+      projectOutcomeDB.setGenderDimenssion(projectOutcome.getGenderDimenssion());
+      projectOutcomeDB.setYouthComponent(projectOutcome.getYouthComponent());
+      projectOutcomeDB.setNarrativeTarget(projectOutcome.getNarrativeTarget());
+
       projectOutcomeDB.setModificationJustification("");
       projectOutcomeDB = projectOutcomeManager.saveProjectOutcome(projectOutcomeDB);
 
