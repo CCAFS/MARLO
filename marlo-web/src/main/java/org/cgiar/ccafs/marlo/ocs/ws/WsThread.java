@@ -102,7 +102,13 @@ public class WsThread implements Runnable {
         DonorOCS donorOCS = new DonorOCS();
         donorOCS.setId(myAgree.getDonor());
         donorOCS.setName(myAgree.getDonorText());
-        agreementOCS.setDonor(donorOCS);
+        agreementOCS.setDirectDonor(donorOCS);
+        if (myAgree.getOriginalDonor() != null) {
+          DonorOCS donorDirectOCS = new DonorOCS();
+          donorDirectOCS.setId(myAgree.getOriginalDonor());
+          donorDirectOCS.setName(myAgree.getOriginalDonorText());
+          agreementOCS.setOriginalDonor(donorDirectOCS);
+        }
         agreementOCS.setEndDate(formatter.parse(myAgree.getEndDate().split("\\+")[0]));
         agreementOCS.setStartDate(formatter.parse(myAgree.getStartDate().split("\\+")[0]));
         agreementOCS.setExtensionDate(formatter.parse(myAgree.getExtentionDate().split("\\+")[0]));
@@ -174,6 +180,7 @@ public class WsThread implements Runnable {
         PlaOCS plaOCS = new PlaOCS();
         plaOCS.setDescription(tWsMarloPla.getDescription());
         plaOCS.setId(tWsMarloPla.getPlaId());
+        plaOCS.setAmmount(tWsMarloPla.getAmountUsd().doubleValue());
         plaOCS.setCountries(new ArrayList<>());
         plaOCS.setPartners(new ArrayList<>());
         List<TWsMarloPlaCountry> agreesCountries = this.getWSClient().getMarloPlaCountry(plaOCS.getId());

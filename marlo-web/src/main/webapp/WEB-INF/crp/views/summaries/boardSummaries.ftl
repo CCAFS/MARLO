@@ -280,7 +280,8 @@
             <span class="description col-md-12">[@s.text name="summaries.board.report.powb.description" /]</span>
             <div class="extraOptions" style="display:none"> 
             <span class="hidden forPlanningCycle forCycle"></span>
-            <span class="hidden fileTypes excelType">budgetPerPartnersSummary-budgetPerPartnersSummary</span> 
+            <span class="hidden fileTypes excelType">budgetPerPartnersSummary-budgetPerPartnersSummary</span>
+            <span class="hidden specificYears">2016-2017-2018</span> 
               <div class="pull-right">
                 <a style="display:none;" target="_blank" class="generateReport addButton pull-right" style="" href="#">[@s.text name="form.buttons.generate" /]</a>
               </div>
