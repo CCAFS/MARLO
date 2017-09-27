@@ -6718,7 +6718,7 @@ img#crpSelectedImage {
   height: 1.8em;
   line-height: 0.95em;
   text-align: left;
-  background: url(../../images/global/calendar.png) no-repeat scroll 99% 2px;
+  background: url(../../global/images/calendar.png) no-repeat scroll 99% 2px;
 }
 
 .dateLabel.disabled {
