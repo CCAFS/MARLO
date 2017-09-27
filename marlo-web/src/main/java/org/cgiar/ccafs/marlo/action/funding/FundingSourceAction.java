@@ -455,12 +455,14 @@ public class FundingSourceAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+ 	      reader.close();
+ 	
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         fundingSource = (FundingSource) autoSaveReader.readFromJson(jReader);
         FundingSource projectDb = fundingSourceManager.getFundingSourceById(fundingSource.getId());
-        reader.close();
+      
 
         this.setDraft(true);
         FundingSource fundingSourceDB = fundingSourceManager.getFundingSourceById(fundingSourceID);

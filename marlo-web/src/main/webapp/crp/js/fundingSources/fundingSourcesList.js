@@ -41,7 +41,7 @@ $(document).ready(function() {
     // Turn add button in adding button
     $(this).addClass('disabled animated flipInY');
     $(this).find('.glyphicon').hide();
-    $(this).find('.saveText').html('Adding ... <img src="' + baseUrlMedia + '/images/global/loading_3.gif" />&nbsp;');
+    $(this).find('.saveText').html('Adding ... <img src="' + baseUrl + '/global/images/loading_3.gif" />&nbsp;');
   });
 
   $('.loadingBlock').hide().next().fadeIn(1000);

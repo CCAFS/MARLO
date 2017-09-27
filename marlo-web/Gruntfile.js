@@ -34,17 +34,7 @@ module.exports = function(grunt) {
     },
     jsdoc : {
       dist : {
-          src: ['src/main/webapp/js/global/*.js', 
-                'src/main/webapp/js/admin/*.js',
-                'src/main/webapp/js/fundingSources/*.js',
-                'src/main/webapp/js/home/*.js',
-                'src/main/webapp/js/impactPathway/*.js',
-                'src/main/webapp/js/projects/*.js',
-                'src/main/webapp/js/publications/*.js',
-                'src/main/webapp/js/summaries/*.js',
-                'src/main/webapp/js/superadmin/*.js',
-                'src/main/webapp/js/synthesis/*.js',
-                'src/main/webapp/js/user/*.js',
+          src: ['src/main/webapp/global/js/*.js'
                ],
           options: {
               destination: 'src/main/webapp/jsdoc'
@@ -58,5 +48,5 @@ module.exports = function(grunt) {
 
 
 function getName(filePath){
-  return filePath.split('/')[1]
+  return filePath.split('/')[2]
 }

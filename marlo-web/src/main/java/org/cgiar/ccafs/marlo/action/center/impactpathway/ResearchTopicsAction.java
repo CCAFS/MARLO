@@ -320,13 +320,15 @@ public class ResearchTopicsAction extends BaseAction {
           reader = new BufferedReader(new FileReader(path.toFile()));
           Gson gson = new GsonBuilder().create();
           JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+ 	      reader.close();
+ 	
           AutoSaveReader autoSaveReader = new AutoSaveReader();
 
           selectedProgram = (CenterProgram) autoSaveReader.readFromJson(jReader);
 
           topics = new ArrayList<>(selectedProgram.getTopics());
 
-          reader.close();
+        
           this.setDraft(true);
         } else {
           this.setDraft(false);

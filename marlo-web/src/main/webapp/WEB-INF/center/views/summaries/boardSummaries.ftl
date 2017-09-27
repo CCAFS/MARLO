@@ -2,7 +2,11 @@
 [#assign title = "Summaries Section" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["select2","font-awesome","jsUri"] /]
-[#assign customJS = ["${baseUrlMedia}/js/global/utils.js", "${baseUrlMedia}/js/summaries/boardSummaries.js"] /]
+[#assign customJS = [ 
+  "${baseUrl}/global/js/utils.js", 
+  "${baseUrlMedia}/js/summaries/boardSummaries.js"
+  ] 
+/]
 [#assign customCSS = ["${baseUrlMedia}/css/summaries/summaries.css"] /]
 [#assign currentSection = "summaries" /]
 
@@ -11,8 +15,8 @@
 ]/]
 
 
-[#include "/WEB-INF/center/global/pages/header.ftl" /]
-[#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
+[#include "/WEB-INF/center/pages/header.ftl" /]
+[#include "/WEB-INF/center/pages/main-menu.ftl" /]
 
 [#assign years = ["2014","2015", "2016","2017" ]/]
     
@@ -211,4 +215,4 @@
   <span class="text"></span><span class="removeTerm glyphicon glyphicon-remove"></span>
 </div>
 
-[#include "/WEB-INF/center//global/pages/footer.ftl"]
+[#include "/WEB-INF/center/pages/footer.ftl"]
