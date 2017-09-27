@@ -503,11 +503,16 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
 
     List<Project> projects = new ArrayList<>();
     Phase phase = phaseManager.findCycle(APConstants.PLANNING, year, loggedCrp.getId().longValue());
-    for (ProjectPhase projectPhase : phase.getProjectPhases().stream()
-      .filter(ph -> ph.getProject() != null
-        && ph.getProject().getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
-      .collect(Collectors.toList())) {
-      projects.add((projectPhase.getProject()));
+   
+
+ if (phase != null) {
+      for (ProjectPhase projectPhase : phase.getProjectPhases()) {
+        projects.add((projectPhase.getProject()));
+      }
+    }
+
+    if (projects.isEmpty()) {
+      projects = loggedCrp.getProjects().stream().filter(c -> c.isActive()).collect(Collectors.toList());
     }
 
     // Get PPA institutions with budgets
