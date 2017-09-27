@@ -219,8 +219,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
     ResourceManager manager = new ResourceManager();
     manager.registerDefaults();
     try {
-      Resource reportResource =
-        manager.createDirectly(this.getClass().getResource("/pentaho/deliverablesReporting.prpt"), MasterReport.class);
+      Resource reportResource = manager.createDirectly(
+        this.getClass().getResource("/pentaho/deliverablesReporting-Annualization.prpt"), MasterReport.class);
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       String center = this.getLoggedCrp().getAcronym();

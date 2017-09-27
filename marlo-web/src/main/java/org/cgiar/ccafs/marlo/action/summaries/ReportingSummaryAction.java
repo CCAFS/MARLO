@@ -765,10 +765,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       Resource reportResource;
       if (this.getSelectedCycle().equals("Planning")) {
         reportResource = manager.createDirectly(
-          this.getClass().getResource("/pentaho/project-description(Planning).prpt"), MasterReport.class);
+          this.getClass().getResource("/pentaho/project-description(Planning)-Annualization.prpt"), MasterReport.class);
       } else {
         reportResource = manager.createDirectly(
-          this.getClass().getResource("/pentaho/project-description(Reporting).prpt"), MasterReport.class);
+          this.getClass().getResource("/pentaho/project-description(Reporting)-Annualization.prpt"),
+          MasterReport.class);
       }
       // Get main report
       MasterReport masterReport = (MasterReport) reportResource.getResource();

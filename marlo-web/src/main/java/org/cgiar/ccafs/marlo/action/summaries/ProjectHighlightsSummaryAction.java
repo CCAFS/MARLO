@@ -132,11 +132,11 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
     try {
       Resource reportResource;
       if (this.getSelectedFormat().equals(APConstants.SUMMARY_FORMAT_EXCEL)) {
-        reportResource = manager.createDirectly(this.getClass().getResource("/pentaho/projectHighlightsExcel.prpt"),
-          MasterReport.class);
+        reportResource = manager.createDirectly(
+          this.getClass().getResource("/pentaho/projectHighlightsExcel-Annualization.prpt"), MasterReport.class);
       } else {
-        reportResource =
-          manager.createDirectly(this.getClass().getResource("/pentaho/projectHighlightsPDF.prpt"), MasterReport.class);
+        reportResource = manager.createDirectly(
+          this.getClass().getResource("/pentaho/projectHighlightsPDF-Annualization.prpt"), MasterReport.class);
       }
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
