@@ -372,6 +372,35 @@
     [#if editable]<div class="removeFundingSource removeIcon" title="Remove funding source"></div>[/#if] 
     <input class="id" type="hidden" name="${fundingSourceCustomName}.id" value="${(element.id)!-1}" />    
     
+    
+    [#-- Finance code --]
+            <div class="form-group row">
+              <div id="disseminationUrl" class="col-md-offset-6 col-md-6">
+                <div class="url-field">
+                  [@customForm.input name="${fundingSourceCustomName}.code" i18nkey="Code" className="financeCode" type="text" disabled=!editable  required=true editable=editable /]
+                  <span class="financeCode-message"></span>
+                </div>
+                <div class="buttons-field">
+                  [#if editable]
+                    [#assign isSynced = false ]
+                    <div id="fillMetadata">
+                      <input type="hidden" name="fundingSource.synced" value="${isSynced?string}" />
+                      [#-- Sync Button --]
+                      <div class="checkButton" style="display:${isSynced?string('none','block')};">[@s.text name="form.buttons.sync" /]</div>
+                      <div class="unSyncBlock" style="display:${isSynced?string('block','none')};">
+                        [#-- Update Button --]
+                        <div class="updateButton">[@s.text name="form.buttons.update" /]</div>
+                        [#-- Unsync Button --]
+                        <div class="uncheckButton">[@s.text name="form.buttons.unsync" /]</div>
+                      </div>
+                    </div>
+                  [/#if]
+                </div>
+              </div>
+              <div id="metadata-output"></div>
+            </div>
+    
+    
     <div class="col-md-4">
       [@customForm.select name="${fundingSourceCustomName}.fundingSourceType.id" label=""  i18nkey="Funding source" listName="fundingSourceTypes" keyFieldName="id"  displayFieldName="name"  multiple=false required=true header=false className="" editable=editable/]
     </div>
