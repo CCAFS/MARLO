@@ -19,6 +19,7 @@ package org.cgiar.ccafs.marlo.action.center.capdev;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.ICapacityDevelopmentTypeDAO;
+import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CapdevFoundingTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.CapdevHighestDegreeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICapacityDevelopmentService;
@@ -106,6 +107,9 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   private List<String> previewListHeader;
   private List<Map<String, Object>> previewListContent;
 
+  private String transaction;
+  private final AuditLogManager auditLogService;
+
 
   @Inject
   public CapacityDevelopmentDetailAction(APConfig config, ICapacityDevelopmentService capdevService,
@@ -113,7 +117,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     ICapdevLocationsService capdevLocationService, IParticipantService participantService,
     ICapdevParticipantService capdevParicipantService, CapacityDevelopmentValidator validator,
     InstitutionManager institutionService, CapdevHighestDegreeManager capdevHighestDegreeService,
-    CapdevFoundingTypeManager capdevFoundingTypeService) {
+    CapdevFoundingTypeManager capdevFoundingTypeService, AuditLogManager auditLogService) {
     super(config);
     this.capdevService = capdevService;
     this.capdevTypeService = capdevTypeService;
@@ -125,6 +129,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     this.institutionService = institutionService;
     this.capdevHighestDegreeService = capdevHighestDegreeService;
     this.capdevFoundingTypeService = capdevFoundingTypeService;
+    this.auditLogService = auditLogService;
   }
 
 
@@ -146,7 +151,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
     final CapdevLocations capdev_country = capdevLocationService.getCapdevLocationsById(capDevCountryID);
     capdev_country.setActive(false);
-    capdev_country.setUsersByModifiedBy(this.getCurrentUser());
+    capdev_country.setModifiedBy(this.getCurrentUser());
     capdevLocationService.saveCapdevLocations(capdev_country);
     return SUCCESS;
   }
@@ -160,7 +165,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       capdevParicipantService.saveCapdevParticipant(obj);
       final Participant participant = obj.getParticipant();
       participant.setActive(false);
-      participant.setUsersByModifiedBy(this.getCurrentUser());
+      participant.setModifiedBy(this.getCurrentUser());
       participantService.saveParticipant(participant);
     }
     capdev.setNumParticipants(null);
@@ -179,7 +184,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
     final CapdevLocations capdev_region = capdevLocationService.getCapdevLocationsById(capDevRegionID);
     capdev_region.setActive(false);
-    capdev_region.setUsersByModifiedBy(this.getCurrentUser());
+    capdev_region.setModifiedBy(this.getCurrentUser());
     capdevLocationService.saveCapdevLocations(capdev_region);
     return SUCCESS;
   }
@@ -322,6 +327,11 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   }
 
 
+  public String getTransaction() {
+    return transaction;
+  }
+
+
   public File getUploadFile() {
     return uploadFile;
   }
@@ -331,10 +341,10 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     return uploadFileContentType;
   }
 
-
   public String getUploadFileName() {
     return uploadFileName;
   }
+
 
   /*
    * This method create a participant list from data got from excel file
@@ -398,7 +408,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
 
       participant.setActive(true);
-      participant.setUsersByCreatedBy(currentUser);
+      participant.setCreatedBy(currentUser);
 
       participantList.add(participant);
     }
@@ -415,12 +425,18 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     final Map<String, Object> genderM = new HashMap<>();
     genderM.put("displayName", "Male");
     genderM.put("value", "M");
+
     final Map<String, Object> genderF = new HashMap<>();
     genderF.put("displayName", "Female");
     genderF.put("value", "F");
 
+    final Map<String, Object> genderX = new HashMap<>();
+    genderX.put("displayName", "Other");
+    genderX.put("value", "Other");
+
     genders.add(genderM);
     genders.add(genderF);
+    genders.add(genderX);
 
 
     // Unit duration
@@ -470,8 +486,22 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       capdevID = -1;
     }
 
-    // TODO - implentation The transsaction ID (The if see line 330 in ProgramImpactsAction)
-    capdev = capdevService.getCapacityDevelopmentById(capdevID);
+    if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
+
+      transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
+      final CapacityDevelopment history = (CapacityDevelopment) auditLogService.getHistory(transaction);
+
+      if (history != null) {
+        capdev = history;
+
+
+      } else {
+        this.transaction = null;
+        this.setTransaction("-1");
+      }
+    } else {
+      capdev = capdevService.getCapacityDevelopmentById(capdevID);
+    }
 
 
     if (capdev != null) {
@@ -561,7 +591,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
     final CapacityDevelopment capdevDB = capdevService.getCapacityDevelopmentById(capdevID);
 
-    capdevDB.setUsersByCreatedBy(currentUser);
+    capdevDB.setCreatedBy(currentUser);
     capdevDB.setStartDate(capdev.getStartDate());
     capdevDB.setEndDate(capdev.getEndDate());
     capdevDB.setDuration(capdev.getDuration());
@@ -657,12 +687,13 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     this.saveCapDevCountries(capdevCountries, capdevDB);
 
     // Save CapDev with History
-    List<String> relationsName = new ArrayList<>();
+    final List<String> relationsName = new ArrayList<>();
     relationsName.add(APConstants.CAPDEV_LOCATIONS);
-    // TODO - CHANGE to modifiedBy - And Create ActiveSince
-    capdevDB.setUsersByModifiedBy(this.getCurrentUser());
+    relationsName.add(APConstants.CAPDEV_PARTICIPANTS);
+    capdevDB.setActiveSince(new Date());
+    capdevDB.setModifiedBy(this.getCurrentUser());
 
-    capdevService.saveCapacityDevelopment(capdevDB);
+    capdevService.saveCapacityDevelopment(capdevDB, this.getActionName(), relationsName);
 
 
     if (!this.getInvalidFields().isEmpty()) {
@@ -694,7 +725,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
           capdevLocations.setLocElement(country);
           capdevLocations.setActive(true);
           capdevLocations.setActiveSince(new Date());
-          capdevLocations.setUsersByCreatedBy(currentUser);
+          capdevLocations.setCreatedBy(currentUser);
           capdevLocationService.saveCapdevLocations(capdevLocations);
         }
 
@@ -733,7 +764,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
           capdevLocations.setLocElement(region);
           capdevLocations.setActive(true);
           capdevLocations.setActiveSince(new Date());
-          capdevLocations.setUsersByCreatedBy(currentUser);
+          capdevLocations.setCreatedBy(currentUser);
           capdevLocationService.saveCapdevLocations(capdevLocations);
         }
 
@@ -772,7 +803,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     }
     participant.setActive(true);
     participant.setAciveSince(new Date());
-    participant.setUsersByCreatedBy(currentUser);
+    participant.setCreatedBy(currentUser);
     participantService.saveParticipant(participant);
   }
 
@@ -879,6 +910,11 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
   public void setRegionsList(List<LocElement> regionsList) {
     this.regionsList = regionsList;
+  }
+
+
+  public void setTransaction(String transaction) {
+    this.transaction = transaction;
   }
 
 

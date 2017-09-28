@@ -19,6 +19,7 @@ package org.cgiar.ccafs.marlo.action.center.capdev;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.ICenterProgramDAO;
+import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ICapacityDevelopmentService;
 import org.cgiar.ccafs.marlo.data.manager.ICapdevDisciplineService;
@@ -101,6 +102,9 @@ public class CapdevDescriptionAction extends BaseAction {
   private final ICapdevPartnersService capdevPartnerService;
   private final ICapdevOutputsService capdevOutputService;
 
+  private String transaction;
+  private final AuditLogManager auditLogService;
+
   @Inject
   public CapdevDescriptionAction(APConfig config, ICenterAreaManager researchAreaService,
     ICenterProgramDAO researchProgramSercive, ICenterProjectManager projectService, CrpManager crpService,
@@ -108,7 +112,7 @@ public class CapdevDescriptionAction extends BaseAction {
     ICapacityDevelopmentService capdevService, ICapdevDisciplineService capdevDisciplineService,
     ICapdevTargetgroupService capdevTargetgroupService, InstitutionManager institutionService,
     ICenterOutputManager researchOutputService, ICapdevPartnersService capdevPartnerService,
-    ICapdevOutputsService capdevOutputService, CapDevDescriptionValidator validator) {
+    ICapdevOutputsService capdevOutputService, CapDevDescriptionValidator validator, AuditLogManager auditLogService) {
     super(config);
     this.researchAreaService = researchAreaService;
     this.researchProgramSercive = researchProgramSercive;
@@ -124,6 +128,7 @@ public class CapdevDescriptionAction extends BaseAction {
     this.capdevPartnerService = capdevPartnerService;
     this.capdevOutputService = capdevOutputService;
     this.validator = validator;
+    this.auditLogService = auditLogService;
   }
 
 
@@ -258,6 +263,10 @@ public class CapdevDescriptionAction extends BaseAction {
     return targetGroups;
   }
 
+  public String getTransaction() {
+    return transaction;
+  }
+
   @Override
   public void prepare() throws Exception {
 
@@ -300,10 +309,26 @@ public class CapdevDescriptionAction extends BaseAction {
     } catch (final Exception e) {
       capdevID = -1;
     }
-    capdev = capdevService.getCapacityDevelopmentById(capdevID);
+
+    if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
+
+      transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
+      final CapacityDevelopment history = (CapacityDevelopment) auditLogService.getHistory(transaction);
+
+      if (history != null) {
+        capdev = history;
+
+      } else {
+        this.transaction = null;
+        this.setTransaction("-1");
+      }
+    } else {
+      capdev = capdevService.getCapacityDevelopmentById(capdevID);
+    }
 
 
   }
+
 
   @Override
   public String save() {
@@ -339,12 +364,20 @@ public class CapdevDescriptionAction extends BaseAction {
     }
 
 
-    capdevService.saveCapacityDevelopment(capdevDB);
     this.saveCapDevDisciplines(capdevDisciplines, capdevDB);
     this.saveCapdevTargetGroups(capdevTargetGroup, capdevDB);
     this.saveCapdevPartners(capdevPartners, capdevDB);
     this.saveCapdevOutputs(capdevOutputs, capdevDB);
 
+    final List<String> relationsName = new ArrayList<>();
+    relationsName.add(APConstants.CAPDEV_DISCIPLINES);
+    relationsName.add(APConstants.CAPDEV_TARGETGROUPS);
+    relationsName.add(APConstants.CAPDEV_PARTNERS);
+    relationsName.add(APConstants.CAPDEV_OUTPUTS);
+    capdevDB.setActiveSince(new Date());
+    capdevDB.setModifiedBy(this.getCurrentUser());
+
+    capdevService.saveCapacityDevelopment(capdevDB, this.getActionName(), relationsName);
 
     if (!this.getInvalidFields().isEmpty()) {
       this.setActionMessages(null);
@@ -513,10 +546,10 @@ public class CapdevDescriptionAction extends BaseAction {
     this.otherPartner = otherPartner;
   }
 
-
   public void setOtherTargetGroup(String otherTargetGroup) {
     this.otherTargetGroup = otherTargetGroup;
   }
+
 
   public void setOutputs(List<CenterOutput> outputs) {
     this.outputs = outputs;
@@ -545,6 +578,11 @@ public class CapdevDescriptionAction extends BaseAction {
 
   public void setTargetGroups(List<TargetGroup> targetGroups) {
     this.targetGroups = targetGroups;
+  }
+
+
+  public void setTransaction(String transaction) {
+    this.transaction = transaction;
   }
 
 

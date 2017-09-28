@@ -18,11 +18,11 @@
 			class="org.cgiar.ccafs.marlo.data.model.CenterProject" fetch="select">
 			<column name="project" not-null="false" />
 		</many-to-one>
-		<many-to-one name="usersByModifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
+		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
 			fetch="select">
 			<column name="modified_by" />
 		</many-to-one>
-		<many-to-one name="usersByCreatedBy" class="org.cgiar.ccafs.marlo.data.model.User"
+		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
 			fetch="select">
 			<column name="created_by" />
 		</many-to-one>
@@ -46,6 +46,9 @@
 		</property>
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
+		</property>
+		<property name="activeSince" type="timestamp">
+			<column name="active_since" length="19" not-null="true" />
 		</property>
 		<property name="global" type="java.lang.Boolean">
 			<column name="is_global" />

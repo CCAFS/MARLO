@@ -70,13 +70,13 @@
 
 
 					  <tr >
-					    <td><a href="[@s.url action='${centerSession}/detailCapdev'][@s.param name='capdevID']${i.id?c}[/@s.param][/@s.url]">C${i.id}</a></td>
+					    <td><a href="[@s.url action='${centerSession}/detailCapdev'][@s.param name='capdevID']${i.id?c}[/@s.param][@s.param name='edit' value="true" /][/@s.url]">C${i.id}</a></td>
 					     
 					    <td>
 						    [#if i.title?has_content]
-						    	<a href="[@s.url action='${centerSession}/detailCapdev'][@s.param name='capdevID']${i.id?c}[/@s.param][/@s.url]">${i.title}</a>
+						    	<a href="[@s.url action='${centerSession}/detailCapdev'][@s.param name='capdevID']${i.id?c}[/@s.param][@s.param name='edit' value="true" /][/@s.url]">${i.title}</a>
 						    [#else]
-						    	<a href="[@s.url action='${centerSession}/detailCapdev'][@s.param name='capdevID']${i.id?c}[/@s.param][/@s.url]">Not defined</a>
+						    	<a href="[@s.url action='${centerSession}/detailCapdev'][@s.param name='capdevID']${i.id?c}[/@s.param][@s.param name='edit' value="true" /][/@s.url]">Not defined</a>
 						    [/#if]
 					    </td> 
 					    <td>

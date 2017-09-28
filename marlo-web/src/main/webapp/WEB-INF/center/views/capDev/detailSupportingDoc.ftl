@@ -48,6 +48,8 @@
 	
 	<div class="col-md-9 ">
 
+		
+
 		<div class="col-md-12">
 			<div class="pull-right">
 				<a class="" href="[@s.url action='${centerSession}/supportingDocs'] [@s.param name='capdevID']${capdevID}[/@s.param] [/@s.url]"><span class="glyphicon glyphicon-circle-arrow-left"></span>[@s.text name="capdev.supportingDocs.goBack" /]</a> 

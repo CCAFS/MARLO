@@ -738,7 +738,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         final CapacityDevelopment capdev = capacityDevelopmentService.getCapacityDevelopmentById(id);
 
         if (capdev != null) {
-          if (!capdev.getUsersByCreatedBy().getId().equals(this.getCurrentUser().getId())) {
+          if (!capdev.getCreatedBy().getId().equals(this.getCurrentUser().getId())) {
             return false;
           }
         }

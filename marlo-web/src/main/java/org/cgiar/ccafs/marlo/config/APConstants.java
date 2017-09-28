@@ -437,6 +437,24 @@ public final class APConstants {
   public static final String CAPDEV_LOCATIONS =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapacityDevelopment.capdevLocations)";
 
+  public static final String CAPDEV_PARTICIPANTS =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapacityDevelopment.capdevParticipants)";
+
+  public static final String CAPDEV_DISCIPLINES =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapacityDevelopment.capdevDisciplines)";
+
+  public static final String CAPDEV_TARGETGROUPS =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapacityDevelopment.capdevTargetgroups)";
+
+  public static final String CAPDEV_PARTNERS =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapacityDevelopment.capdevPartnerses)";
+
+  public static final String CAPDEV_OUTPUTS =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapacityDevelopment.capdevOutputses)";
+
+  public static final String CAPDEV_SUPPORTTINGDOCS =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapacityDevelopment.capdevSupportingDocses)";
+
   public static String getFilterBy() {
     return FILTER_BY;
   }

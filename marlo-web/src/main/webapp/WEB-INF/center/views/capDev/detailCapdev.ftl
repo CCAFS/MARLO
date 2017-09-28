@@ -1,5 +1,7 @@
 [#ftl]
 
+[#assign title = "Capacity Development" /]
+
 [#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css"] /]
 [#assign customCSS = ["${baseUrlMedia}/css/capDev/capacityDevelopment.css"] /]
 
@@ -42,33 +44,39 @@
 	
 	
 	<div class="col-md-9 ">
+
+		
 	
-		<div class="col-md-12">
+		
+			[#-- Section Messages --]
+	        [#include "/WEB-INF/center/views/capDev/messages-capdev.ftl" /]
+	        <br />
+
 			<div class="pull-right">
 				<a class="" href="[@s.url action='${centerSession}/capdev' /] "><span class="glyphicon glyphicon-circle-arrow-left"></span>[@s.text name="capdev.gotoBack" /]</a> 
 			</div>
-		</div>
 		
-		<div class="col-md-12 form-group "> 
+		
+		<div class=" form-group "> 
 
 			[@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
 			<!-- Radio Buttons-->
-			<div class=" row newCapdevField" > 
-				
-				<div class="col-md-12">
-					<div class="col-md-3">
-						<div class="radio">
-						  <label><input  id="individual" type="radio" hidden="true" name="capdev.category" class="radioButton" value="${capdev.category}"  /></label>
-						</div>
-					</div>
-					<div class="col-md-3">
-						<div class="radio">
-						  <label><input id="gruops" type="radio" hidden="true" name="capdev.category" class="radioButton"  value="${capdev.category}" /> </label>
-						</div>
-					</div>
-					
-				</div>
+			
+			<div class="radio">
+			  <label><input  id="individual" type="radio" hidden="true" name="capdev.category" class="radioButton" value="${capdev.category}"  /></label>
 			</div>
+		
+		
+			<div class="radio">
+			  <label><input id="gruops" type="radio" hidden="true" name="capdev.category" class="radioButton"  value="${capdev.category}" /> </label>
+			</div>	
+				
+					
+						
+					
+					
+				
+			
 
 			<div  class="fullForm borderBox" >
 				<!-- Title-->
@@ -259,12 +267,13 @@
 						<p>Please complete the information of the trainee who received the individual capdev intervention </p>
 					</div>
 				<div class="row  individualparticipantForm simpleBox" style="display:none;">
+					<!-- participant code -->
 					<div class="form-group row">
 						<div class="col-md-12">
 							[@customForm.input name="participant.code" i18nkey="capdev.participant.code" type="text" required=true className="participant-code"  help="capdev.help.participant.code" editable=editable/]
 						</div>
-						
 					</div>
+					<!-- participant name and middle name -->
 					<div class="form-group row">
 						<div class="col-md-6">
 							[@customForm.input name="participant.name" i18nkey="capdev.participant.firstName" type="text" required=true editable=editable/]
@@ -273,6 +282,7 @@
 							[@customForm.input name="participant.middleName" i18nkey="capdev.participant.middleName" type="text"  editable=editable/]
 						</div>
 					</div>
+					<!-- participant last name and gender -->
 					<div class="form-group row ">
 						<div class="form-group col-md-6">
 							[@customForm.input name="participant.lastName" i18nkey="capdev.participant.lastName" type="text" required=true editable=editable/]
@@ -282,6 +292,7 @@
 							[@customForm.select name="participant.gender" listName="genders" keyFieldName="value" displayFieldName="displayName" help="" i18nkey="capdev.participant.gender"  placeholder="capdev.select" required=true editable=editable className=""/]
 						</div>
 					</div>
+					<!-- participant citizenship and highest degree -->
 					<div class="form-group row">
 						<div class="col-md-6 pCitizenshipcountriesList">
 							[@customForm.select name="participant.locElementsByCitizenship.id" listName="countryList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.participant.citizenship" className="" multiple=false placeholder="capdev.select" required=true editable=editable/]
@@ -290,8 +301,8 @@
 							[@customForm.select name="participant.highestDegree.id" listName="highestDegrreList" keyFieldName="id" displayFieldName="name"  i18nkey="capdev.participant.Highestdegree"  multiple=false placeholder="capdev.select"  editable=editable/]
 						</div>
 					</div>
+					<!-- participant personal email and job email -->
 					<div class="form-group row  ">
-						
 						<div class="col-md-6">
 							[@customForm.input name="participant.personalEmail" i18nkey="capdev.participant.personalEmail" type="text" required=true editable=editable/]
 						</div>
@@ -299,6 +310,7 @@
 							[@customForm.input name="participant.email" i18nkey="capdev.participant.Email" type="text" editable=editable /]
 						</div>
 					</div>
+					<!-- intitucion and country of institution -->
 					<div class="form-group row">
 						<div class="col-md-6">
 							[@customForm.select name="participant.institutions.id" listName="institutions" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.participant.Institution" className="" multiple=false placeholder="capdev.select" editable=editable /]
@@ -320,6 +332,7 @@
 							[@customForm.select name="participant.locElementsByCountryOfInstitucion.id" listName="countryList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.participant.country" className="" multiple=false placeholder="capdev.select" editable=editable /]
 						</div>
 					</div>
+					<!-- supervisor and funding type -->
 					<div class="form-group row">
 						<div class="col-md-6">
 							[@customForm.input name="participant.supervisor" i18nkey="capdev.participant.Supervisor" type="text" required=true editable=editable/]
@@ -415,19 +428,8 @@
 
 
 				<!-- buttons -->
-				[#if editable]
-					<div class="col-md-12">
-							<div class="buttons">	
-					        	<div class="buttons-content">        
-						          	[@s.submit type="button" name="save" cssClass="button-save" ]<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> [@s.text name="form.buttons.save" /] [/@s.submit]
-						        	<div class="clearfix"></div>
-						        	
-					        	</div>
-					        	
-					        	
-		    				</div>
-					</div>
-				[/#if]
+				[#include "/WEB-INF/center/views/capDev/capdev-buttons.ftl" /]
+
 
 			</div>
 

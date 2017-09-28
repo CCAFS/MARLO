@@ -132,7 +132,9 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
       supportingDocID = -1;
     }
 
+
     capdevSupportingDocs = capdevsupportingDocsService.getCapdevSupportingDocsById(supportingDocID);
+
 
     if (capdevSupportingDocs != null) {
       if (capdevSupportingDocs.getCenterDeliverableTypes() != null) {
@@ -284,19 +286,6 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
   public void validate() {
     if (save) {
       validator.validate(this, capdevSupportingDocs, documents);
-
-      // if (capdevSupportingDocs.getTitle().equalsIgnoreCase("")) {
-      // this.addFieldError("capdevSupportingDocs.title", "Title is required.");
-      // }
-      // if (capdevSupportingDocs.getCenterDeliverableTypes().getId() == -1) {
-      // this.addFieldError("capdevSupportingDocs.centerDeliverableTypes.id", "Type is required.");
-      // }
-      // if (capdevSupportingDocs.getDeliverableSubtype().getId() == -1) {
-      // this.addFieldError("capdevSupportingDocs.deliverableSubtype.id", "Subtype is required.");
-      // }
-      // if (capdevSupportingDocs.getPublicationDate() == null) {
-      // this.addFieldError("capdevSupportingDocs.publicationDate", "Publication date is required.");
-      // }
 
 
     }

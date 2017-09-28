@@ -41,6 +41,11 @@
 	</div>
 	
 	<div class="col-md-9 ">
+
+		[#-- Section Messages --]
+        [#include "/WEB-INF/center/views/capDev/messages-capdev.ftl" /]
+        <br />
+        
 		<div class="col-md-12">
 			<div class="pull-right">
 				<a class="" href="[@s.url action='${centerSession}/capdev' /] "><span class="glyphicon glyphicon-circle-arrow-left"></span>[@s.text name="capdev.gotoBack" /]</a> 
@@ -282,16 +287,7 @@
 
 
 				<!-- buttons -->
-				[#if editable]
-					<div class="col-md-12">
-						<div class="buttons">	
-				        	<div class="buttons-content">        
-					          	[@s.submit type="button" name="save" cssClass="button-save"]<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> [@s.text name="form.buttons.save" /] [/@s.submit]
-					        	<div class="clearfix"></div>
-				        	</div>
-						</div>
-					</div>
-				[/#if]
+				[#include "/WEB-INF/center/views/capDev/capdev-buttons.ftl" /]
 
 			</div>
 

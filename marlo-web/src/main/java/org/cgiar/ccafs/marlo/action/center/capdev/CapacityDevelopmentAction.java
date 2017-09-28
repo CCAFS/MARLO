@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -59,7 +60,8 @@ public class CapacityDevelopmentAction extends BaseAction {
     capdev = new CapacityDevelopment();
     capdev.setCategory(capdevCategory);
     capdev.setActive(true);
-    capdev.setUsersByCreatedBy(this.getCurrentUser());
+    capdev.setActiveSince(new Date());
+    capdev.setCreatedBy(this.getCurrentUser());
     capdevID = capdevService.saveCapacityDevelopment(capdev);
     if (capdevID > 0) {
       return SUCCESS;
@@ -75,7 +77,7 @@ public class CapacityDevelopmentAction extends BaseAction {
   public String delete() {
     capdev = capdevService.getCapacityDevelopmentById(capdevID);
     capdev.setActive(false);
-    capdev.setUsersByModifiedBy(this.getCurrentUser());
+    capdev.setModifiedBy(this.getCurrentUser());
     capdevService.saveCapacityDevelopment(capdev);
 
     return SUCCESS;

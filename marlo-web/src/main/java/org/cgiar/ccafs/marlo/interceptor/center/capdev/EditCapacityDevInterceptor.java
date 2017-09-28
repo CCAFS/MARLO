@@ -19,7 +19,6 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.ICapacityDevelopmentService;
 import org.cgiar.ccafs.marlo.data.model.CapacityDevelopment;
-import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.User;
 
 import java.io.Serializable;
@@ -40,7 +39,7 @@ public class EditCapacityDevInterceptor extends AbstractInterceptor implements S
   private final ICapacityDevelopmentService capacityDevelopmentService;
   private Map<String, Object> session;
 
-  private Center researchCenter;
+
   private long capdevID = -1;
 
   @Inject
@@ -52,7 +51,7 @@ public class EditCapacityDevInterceptor extends AbstractInterceptor implements S
   public String intercept(ActionInvocation invocation) throws Exception {
     parameters = invocation.getInvocationContext().getParameters();
     session = invocation.getInvocationContext().getSession();
-    researchCenter = (Center) session.get(APConstants.SESSION_CENTER);
+
 
     try {
       capdevID = Long.parseLong(((String[]) parameters.get(APConstants.CAPDEV_ID))[0]);
@@ -84,14 +83,14 @@ public class EditCapacityDevInterceptor extends AbstractInterceptor implements S
 
       if (baseAction.canAccessSuperAdmin()) {
         canEdit = true;
-        hasPermissionToEdit = true;
+        // hasPermissionToEdit = true;
       }
 
       final User currentUser = (User) session.get(APConstants.SESSION_USER);
 
-      if (capdev.getUsersByCreatedBy().getId().equals(currentUser.getId())) {
+      if (capdev.getCreatedBy().getId().equals(currentUser.getId())) {
         canEdit = true;
-        hasPermissionToEdit = true;
+        // hasPermissionToEdit = true;
       }
 
 
@@ -104,6 +103,10 @@ public class EditCapacityDevInterceptor extends AbstractInterceptor implements S
         }
       }
 
+      // Check the permission if user want to edit or save the form
+      if (editParameter || (parameters.get("save") != null)) {
+        hasPermissionToEdit = (baseAction.isAdmin()) ? true : capdev.getCreatedBy().getId().equals(currentUser.getId());
+      }
 
       // Set the variable that indicates if the user can edit the section
       baseAction.setEditableParameter(hasPermissionToEdit && canEdit);
