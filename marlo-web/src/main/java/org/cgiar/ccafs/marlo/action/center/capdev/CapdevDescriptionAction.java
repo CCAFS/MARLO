@@ -370,10 +370,10 @@ public class CapdevDescriptionAction extends BaseAction {
     this.saveCapdevOutputs(capdevOutputs, capdevDB);
 
     final List<String> relationsName = new ArrayList<>();
-    relationsName.add(APConstants.CAPDEV_DISCIPLINES);
-    relationsName.add(APConstants.CAPDEV_TARGETGROUPS);
-    relationsName.add(APConstants.CAPDEV_PARTNERS);
-    relationsName.add(APConstants.CAPDEV_OUTPUTS);
+    relationsName.add(APConstants.CAPDEV_DISCIPLINES_RELATION);
+    relationsName.add(APConstants.CAPDEV_TARGETGROUPS_RELATION);
+    relationsName.add(APConstants.CAPDEV_PARTNERS_RELATION);
+    relationsName.add(APConstants.CAPDEV_OUTPUTS_RELATION);
     capdevDB.setActiveSince(new Date());
     capdevDB.setModifiedBy(this.getCurrentUser());
 

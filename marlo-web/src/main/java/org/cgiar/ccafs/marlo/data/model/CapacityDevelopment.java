@@ -349,6 +349,7 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
     return otherTargetGroup;
   }
 
+
   public String getPartnerSuggested() {
     return partnerSuggested;
   }
@@ -366,6 +367,7 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
   public CenterArea getResearchArea() {
     return this.researchArea;
   }
+
 
   public CenterProgram getResearchProgram() {
     return this.researchProgram;
@@ -618,7 +620,6 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
     this.sRegional = sRegional;
   }
 
-
   public void setStartDate(Date startDate) {
     this.startDate = startDate;
   }
@@ -627,6 +628,7 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
   public void setTargetGroupSuggested(String targetGroupSuggested) {
     this.targetGroupSuggested = targetGroupSuggested;
   }
+
 
   public void setTitle(String title) {
     this.title = title;

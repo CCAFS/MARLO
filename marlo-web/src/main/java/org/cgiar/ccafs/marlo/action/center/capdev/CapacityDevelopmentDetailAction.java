@@ -493,8 +493,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
       if (history != null) {
         capdev = history;
-
-
+        System.out.println("lacations --> " + capdev.getCapdevLocations().size());
       } else {
         this.transaction = null;
         this.setTransaction("-1");
@@ -590,6 +589,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     final User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
 
     final CapacityDevelopment capdevDB = capdevService.getCapacityDevelopmentById(capdevID);
+
 
     capdevDB.setCreatedBy(currentUser);
     capdevDB.setStartDate(capdev.getStartDate());
@@ -688,13 +688,10 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
     // Save CapDev with History
     final List<String> relationsName = new ArrayList<>();
-    relationsName.add(APConstants.CAPDEV_LOCATIONS);
-    relationsName.add(APConstants.CAPDEV_PARTICIPANTS);
+    relationsName.add(APConstants.CAPDEV_LOCATIONS_RELATION);
+    relationsName.add(APConstants.CAPDEV_PARTICIPANTS_RELATION);
     capdevDB.setActiveSince(new Date());
     capdevDB.setModifiedBy(this.getCurrentUser());
-
-    System.out.println("ralaations --> " + relationsName.size());
-    System.out.println("action Name --> " + this.getActionName());
 
     capdevService.saveCapacityDevelopment(capdevDB, this.getActionName(), relationsName);
 

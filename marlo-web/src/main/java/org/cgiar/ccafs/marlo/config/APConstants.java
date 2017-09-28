@@ -434,25 +434,25 @@ public final class APConstants {
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.CenterDeliverable.deliverableOutputs)";
 
   // Cap-Dev Relations
-  public static final String CAPDEV_LOCATIONS =
+  public static final String CAPDEV_LOCATIONS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapacityDevelopment.capdevLocations)";
 
-  public static final String CAPDEV_PARTICIPANTS =
+  public static final String CAPDEV_PARTICIPANTS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapacityDevelopment.capdevParticipants)";
 
-  public static final String CAPDEV_DISCIPLINES =
+  public static final String CAPDEV_DISCIPLINES_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapacityDevelopment.capdevDisciplines)";
 
-  public static final String CAPDEV_TARGETGROUPS =
+  public static final String CAPDEV_TARGETGROUPS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapacityDevelopment.capdevTargetgroups)";
 
-  public static final String CAPDEV_PARTNERS =
+  public static final String CAPDEV_PARTNERS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapacityDevelopment.capdevPartnerses)";
 
-  public static final String CAPDEV_OUTPUTS =
+  public static final String CAPDEV_OUTPUTS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapacityDevelopment.capdevOutputses)";
 
-  public static final String CAPDEV_SUPPORTTINGDOCS =
+  public static final String CAPDEV_SUPPORTTINGDOCS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapacityDevelopment.capdevSupportingDocses)";
 
   public static String getFilterBy() {
