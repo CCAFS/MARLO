@@ -693,6 +693,9 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     capdevDB.setActiveSince(new Date());
     capdevDB.setModifiedBy(this.getCurrentUser());
 
+    System.out.println("ralaations --> " + relationsName.size());
+    System.out.println("action Name --> " + this.getActionName());
+
     capdevService.saveCapacityDevelopment(capdevDB, this.getActionName(), relationsName);
 
 
