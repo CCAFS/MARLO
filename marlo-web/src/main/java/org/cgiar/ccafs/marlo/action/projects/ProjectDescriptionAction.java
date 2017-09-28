@@ -826,6 +826,8 @@ public class ProjectDescriptionAction extends BaseAction {
           if (!project.getClusterActivities().contains(projectClusterActivity)) {
             projectClusterActivityManager.deleteProjectClusterActivity(projectClusterActivity.getId());
 
+            // Issue Need to remove ProjectBudgetsCluserActvity (if any) that reference this CoA.
+
           }
         }
         // Add Project Cluster Activities
