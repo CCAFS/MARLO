@@ -718,15 +718,17 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     final User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
     if (!capdevCountries.isEmpty()) {
       for (final Long iterator : capdevCountries) {
-        final LocElement country = locElementService.getLocElementById(iterator);
-        if (country != null) {
-          capdevLocations = new CapdevLocations();
-          capdevLocations.setCapacityDevelopment(capdev);
-          capdevLocations.setLocElement(country);
-          capdevLocations.setActive(true);
-          capdevLocations.setActiveSince(new Date());
-          capdevLocations.setCreatedBy(currentUser);
-          capdevLocationService.saveCapdevLocations(capdevLocations);
+        if (iterator != null) {
+          final LocElement country = locElementService.getLocElementById(iterator);
+          if (country != null) {
+            capdevLocations = new CapdevLocations();
+            capdevLocations.setCapacityDevelopment(capdev);
+            capdevLocations.setLocElement(country);
+            capdevLocations.setActive(true);
+            capdevLocations.setActiveSince(new Date());
+            capdevLocations.setCreatedBy(currentUser);
+            capdevLocationService.saveCapdevLocations(capdevLocations);
+          }
         }
 
       }
@@ -757,15 +759,17 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
       final User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
       for (final Long iterator : capdevRegions) {
-        final LocElement region = locElementService.getLocElementById(iterator);
-        if (region != null) {
-          capdevLocations = new CapdevLocations();
-          capdevLocations.setCapacityDevelopment(capdev);
-          capdevLocations.setLocElement(region);
-          capdevLocations.setActive(true);
-          capdevLocations.setActiveSince(new Date());
-          capdevLocations.setCreatedBy(currentUser);
-          capdevLocationService.saveCapdevLocations(capdevLocations);
+        if (iterator != null) {
+          final LocElement region = locElementService.getLocElementById(iterator);
+          if (region != null) {
+            capdevLocations = new CapdevLocations();
+            capdevLocations.setCapacityDevelopment(capdev);
+            capdevLocations.setLocElement(region);
+            capdevLocations.setActive(true);
+            capdevLocations.setActiveSince(new Date());
+            capdevLocations.setCreatedBy(currentUser);
+            capdevLocationService.saveCapdevLocations(capdevLocations);
+          }
         }
 
       }
