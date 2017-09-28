@@ -46,6 +46,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
@@ -86,6 +88,11 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
   private byte[] bytesXLSX;
   // Streams
   InputStream inputStream;
+  // Store deliverables with year and type HashMap<Deliverable, List<year, type>>
+  HashMap<Integer, Set<Deliverable>> deliverablePerYearList = new HashMap<Integer, Set<Deliverable>>();
+  HashMap<String, Set<Deliverable>> deliverablePerTypeList = new HashMap<String, Set<Deliverable>>();
+  Set<Long> projectsList = new HashSet<Long>();
+  Set<Long> deliverablesList = new HashSet<Long>();
 
   @Inject
   public ExpectedDeliverablesSummaryAction(APConfig config, CrpManager crpManager, PhaseManager phaseManager,
@@ -167,9 +174,10 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       // Uncomment to see which Subreports are detecting the method getAllSubreports
       // System.out.println("Pentaho SubReports: " + hm);
       this.fillSubreport((SubReport) hm.get("details"), "details");
-      // masterReport.getParameterValues().put("total_deliv", idParam);
-      // masterReport.getParameterValues().put("total_projects", idParam);
+      masterReport.getParameterValues().put("total_deliv", deliverablesList.size());
+      masterReport.getParameterValues().put("total_projects", projectsList.size());
       this.fillSubreport((SubReport) hm.get("summary"), "summary");
+      this.fillSubreport((SubReport) hm.get("summaryPerType"), "summaryPerType");
       ExcelReportUtil.createXLSX(masterReport, os);
       bytesXLSX = os.toByteArray();
       os.close();
@@ -194,6 +202,12 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
     switch (query) {
       case "details":
         model = this.getDeliverablesDetailsTableModel();
+        break;
+      case "summary":
+        model = this.getDeliverablesPerYearTableModel();
+        break;
+      case "summaryPerType":
+        model = this.getDeliverablesPerTypeTableModel();
         break;
 
     }
@@ -233,7 +247,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         && ((d.getDeliverableInfo().getNewExpectedYear() != null
           && d.getDeliverableInfo().getNewExpectedYear() >= this.getSelectedYear())
           || d.getDeliverableInfo().getYear() >= this.getSelectedYear()))
-      .collect(Collectors.toList())) {
+      .sorted((d1, d2) -> d1.getId().compareTo(d2.getId())).collect(Collectors.toList())) {
 
       DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(this.getSelectedPhase());
 
@@ -549,6 +563,64 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       model.addRow(new Object[] {deliverableId, deliverableTitle, completionYear, deliverableType, deliverableSubType,
         crossCutting, genderLevels, keyOutput, delivStatus, delivNewYear, projectID, projectTitle,
         projectClusterActivities, flagships, regions, individual, ppaRespondible, shared, FS, fsWindows});
+
+      if (completionYear != null) {
+        if (deliverablePerYearList.containsKey(completionYear)) {
+          Set<Deliverable> deliverableSet = deliverablePerYearList.get(completionYear);
+          deliverableSet.add(deliverable);
+          deliverablePerYearList.put(completionYear, deliverableSet);
+        } else {
+          Set<Deliverable> deliverableSet = new HashSet<>();
+          deliverableSet.add(deliverable);
+          deliverablePerYearList.put(completionYear, deliverableSet);
+        }
+      }
+      if (deliverableType != null) {
+        if (deliverablePerTypeList.containsKey(deliverableType)) {
+          Set<Deliverable> deliverableSet = deliverablePerTypeList.get(deliverableType);
+          deliverableSet.add(deliverable);
+          deliverablePerTypeList.put(deliverableType, deliverableSet);
+        } else {
+          Set<Deliverable> deliverableSet = new HashSet<>();
+          deliverableSet.add(deliverable);
+          deliverablePerTypeList.put(deliverableType, deliverableSet);
+        }
+      }
+
+      if (projectID != null) {
+        projectsList.add(projectID);
+      }
+      if (deliverableId != null) {
+        deliverablesList.add(deliverableId);
+      }
+    }
+    return model;
+  }
+
+
+  private TypedTableModel getDeliverablesPerTypeTableModel() {
+    TypedTableModel model = new TypedTableModel(new String[] {"deliverableType", "delivetableTotal"},
+      new Class[] {String.class, Integer.class}, 0);
+    Integer grandTotalTypes = 0;
+    for (String type : deliverablePerTypeList.keySet()) {
+      grandTotalTypes += deliverablePerTypeList.get(type).size();
+    }
+    SortedSet<String> keys = new TreeSet<String>(deliverablePerTypeList.keySet());
+    for (String type : keys) {
+      Integer totalType = deliverablePerTypeList.get(type).size();
+      Float percentageOfTotal = (totalType * 100f) / grandTotalTypes;
+      model.addRow(type + " - " + String.format("%.02f", percentageOfTotal) + "%", totalType);
+    }
+    return model;
+  }
+
+
+  private TypedTableModel getDeliverablesPerYearTableModel() {
+    TypedTableModel model = new TypedTableModel(new String[] {"deliverableYear", "delivetableTotal"},
+      new Class[] {String.class, Integer.class}, 0);
+    SortedSet<Integer> keys = new TreeSet<Integer>(deliverablePerYearList.keySet());
+    for (Integer year : keys) {
+      model.addRow(year, deliverablePerYearList.get(year).size());
     }
     return model;
   }
