@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel;
@@ -231,11 +232,11 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
     TypedTableModel model = new TypedTableModel(
       new String[] {"deliverableId", "deliverableTitle", "completionYear", "deliverableType", "deliverableSubType",
         "crossCutting", "genderLevels", "keyOutput", "delivStatus", "delivNewYear", "projectID", "projectTitle",
-        "projectClusterActivities", "flagships", "regions", "individual", "ppaRespondible", "shared", "FS",
-        "fsWindows"},
+        "projectClusterActivities", "flagships", "regions", "individual", "ppaRespondible", "shared", "FS", "fsWindows",
+        "outcomes"},
       new Class[] {Long.class, String.class, Integer.class, String.class, String.class, String.class, String.class,
         String.class, String.class, Integer.class, Long.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, String.class},
       0);
 
     for (Deliverable deliverable : deliverableManager.findAll().stream()
@@ -332,15 +333,27 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         genderLevels = null;
       }
       String keyOutput = "";
+      String outcomes = "";
 
       if (deliverableInfo.getCrpClusterKeyOutput() != null) {
-        keyOutput += "● ";
+        keyOutput += "• ";
 
         if (deliverableInfo.getCrpClusterKeyOutput().getCrpClusterOfActivity().getCrpProgram() != null) {
           keyOutput +=
             deliverableInfo.getCrpClusterKeyOutput().getCrpClusterOfActivity().getCrpProgram().getAcronym() + " - ";
         }
         keyOutput += deliverableInfo.getCrpClusterKeyOutput().getKeyOutput();
+        // Get Outcomes Related to the KeyOutput
+        for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome : deliverableInfo.getCrpClusterKeyOutput()
+          .getCrpClusterKeyOutputOutcomes().stream().filter(ko -> ko.isActive() && ko.getCrpProgramOutcome() != null)
+          .collect(Collectors.toList())) {
+          outcomes += " • ";
+          if (crpClusterKeyOutputOutcome.getCrpProgramOutcome().getCrpProgram() != null
+            && !crpClusterKeyOutputOutcome.getCrpProgramOutcome().getCrpProgram().getAcronym().isEmpty()) {
+            outcomes += crpClusterKeyOutputOutcome.getCrpProgramOutcome().getCrpProgram().getAcronym() + " Outcome: ";
+          }
+          outcomes += crpClusterKeyOutputOutcome.getCrpProgramOutcome().getDescription() + "\n";
+        }
       }
       if (keyOutput.isEmpty()) {
         keyOutput = null;
@@ -562,7 +575,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 
       model.addRow(new Object[] {deliverableId, deliverableTitle, completionYear, deliverableType, deliverableSubType,
         crossCutting, genderLevels, keyOutput, delivStatus, delivNewYear, projectID, projectTitle,
-        projectClusterActivities, flagships, regions, individual, ppaRespondible, shared, FS, fsWindows});
+        projectClusterActivities, flagships, regions, individual, ppaRespondible, shared, FS, fsWindows, outcomes});
 
       if (completionYear != null) {
         if (deliverablePerYearList.containsKey(completionYear)) {
