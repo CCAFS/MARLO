@@ -11,17 +11,13 @@ import com.google.gson.annotations.Expose;
  */
 public class CenterProjectFundingSource implements java.io.Serializable {
 
-
   private static final long serialVersionUID = 5708773221894420200L;
-
 
   @Expose
   private Long id;
 
-
   @Expose
   private User modifiedBy;
-
 
   @Expose
   private User createdBy;

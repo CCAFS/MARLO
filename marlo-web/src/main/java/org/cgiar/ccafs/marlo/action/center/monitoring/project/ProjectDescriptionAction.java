@@ -387,8 +387,8 @@ public class ProjectDescriptionAction extends BaseAction {
         reader = new BufferedReader(new FileReader(path.toFile()));
         Gson gson = new GsonBuilder().create();
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
- 	      reader.close();
- 	
+        reader.close();
+
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         project = (CenterProject) autoSaveReader.readFromJson(jReader);
@@ -445,7 +445,7 @@ public class ProjectDescriptionAction extends BaseAction {
           }
         }
 
-      
+
         this.setDraft(true);
       } else {
         this.setDraft(false);
@@ -727,7 +727,15 @@ public class ProjectDescriptionAction extends BaseAction {
           fundingSourceSave.setCenterProject(project);
           fundingSourceSave.setCrp(crp);
           fundingSourceSave.setCenterFundingSourceType(fundingSourceType);
+          fundingSourceSave.setCode(projectFundingSource.getCode());
           fundingSourceSave.setTitle(projectFundingSource.getTitle());
+          fundingSourceSave.setDescription(projectFundingSource.getDescription());
+          fundingSourceSave.setStartDate(projectFundingSource.getStartDate());
+          fundingSourceSave.setEndDate(projectFundingSource.getEndDate());
+          fundingSourceSave.setExtensionDate(projectFundingSource.getExtensionDate());
+          fundingSourceSave.setDirectDonor(projectFundingSource.getDirectDonor());
+          fundingSourceSave.setOriginalDonor(projectFundingSource.getOriginalDonor());
+          fundingSourceSave.setTotalAmount(projectFundingSource.getTotalAmount());
           fundingSourceSave.setActive(true);
           fundingSourceSave.setActiveSince(new Date());
           fundingSourceSave.setCreatedBy(this.getCurrentUser());
