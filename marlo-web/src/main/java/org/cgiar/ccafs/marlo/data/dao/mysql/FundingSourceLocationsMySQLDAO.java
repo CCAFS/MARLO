@@ -37,6 +37,54 @@ public class FundingSourceLocationsMySQLDAO implements FundingSourceLocationsDAO
   }
 
 
+  private void addFundingSouceLocationPhase(Phase next, long fundingSourceID,
+    FundingSourceLocation fundingSourceLocation) {
+    Phase phase = dao.find(Phase.class, next.getId());
+    boolean hasLocElement = false;
+    if (fundingSourceLocation.getLocElementType() == null) {
+      hasLocElement = true;
+    }
+    List<FundingSourceLocation> locations = new ArrayList<FundingSourceLocation>();
+
+    if (hasLocElement) {
+      locations
+        .addAll(phase.getFundingSourceLocations().stream()
+          .filter(c -> c.isActive() && c.getFundingSource().getId().longValue() == fundingSourceID
+            && c.getLocElement() != null
+            && fundingSourceLocation.getLocElement().getId().longValue() == c.getLocElement().getId().longValue())
+        .collect(Collectors.toList()));
+    } else {
+      locations.addAll(phase.getFundingSourceLocations().stream()
+        .filter(c -> c.isActive() && c.getFundingSource().getId().longValue() == fundingSourceID
+          && c.getLocElementType() != null
+          && fundingSourceLocation.getLocElementType().getId().longValue() == c.getLocElementType().getId().longValue())
+        .collect(Collectors.toList()));
+    }
+
+
+    if (phase.getEditable() != null && phase.getEditable() && locations.isEmpty()) {
+      FundingSourceLocation fundingSourceLocationAdd = new FundingSourceLocation();
+      fundingSourceLocationAdd.setActive(true);
+      fundingSourceLocationAdd.setActiveSince(fundingSourceLocation.getActiveSince());
+      fundingSourceLocationAdd.setCreatedBy(fundingSourceLocation.getCreatedBy());
+      fundingSourceLocationAdd.setLocElement(fundingSourceLocation.getLocElement());
+      fundingSourceLocationAdd.setLocElementType(fundingSourceLocation.getLocElementType());
+      fundingSourceLocationAdd.setModificationJustification(fundingSourceLocation.getModificationJustification());
+      fundingSourceLocationAdd.setModifiedBy(fundingSourceLocation.getModifiedBy());
+      fundingSourceLocationAdd.setPhase(phase);
+      fundingSourceLocationAdd.setFundingSource(fundingSourceLocation.getFundingSource());
+      dao.save(fundingSourceLocationAdd);
+
+    }
+
+    if (phase.getNext() != null) {
+      this.addFundingSouceLocationPhase(phase.getNext(), fundingSourceID, fundingSourceLocation);
+    }
+
+
+  }
+
+
   public void deleteFundingSourceLocationPhase(Phase next, long fundingSourceID,
     FundingSourceLocation fundingSourceLocation) {
     Phase phase = dao.find(Phase.class, next.getId());
@@ -72,7 +120,6 @@ public class FundingSourceLocationsMySQLDAO implements FundingSourceLocationsDAO
 
 
   }
-
 
   @Override
   public boolean deleteFundingSourceLocations(long fundingSourceLocationsId) {
@@ -124,10 +171,15 @@ public class FundingSourceLocationsMySQLDAO implements FundingSourceLocationsDAO
     } else {
       dao.update(fundingSourceLocations);
     }
-
+    Phase currentPhase = dao.find(Phase.class, fundingSourceLocations.getPhase().getId());
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+      if (fundingSourceLocations.getPhase().getNext() != null) {
+        this.addFundingSouceLocationPhase(fundingSourceLocations.getPhase().getNext(),
+          fundingSourceLocations.getFundingSource().getId(), fundingSourceLocations);
+      }
+    }
 
     return fundingSourceLocations.getId();
   }
-
 
 }

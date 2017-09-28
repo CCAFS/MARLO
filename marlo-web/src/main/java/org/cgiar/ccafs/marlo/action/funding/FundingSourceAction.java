@@ -787,6 +787,7 @@ public class FundingSourceAction extends BaseAction {
             fundingSourceBudget.setModificationJustification("");
             fundingSourceBudget.setFundingSource(fundingSource);
             fundingSourceBudget.setActiveSince(new Date());
+            fundingSourceBudget.setPhase(this.getActualPhase());
             fundingSourceBudgetManager.saveFundingSourceBudget(fundingSourceBudget);
           } else {
             FundingSourceBudget fundingSourceBudgetBD =
@@ -797,6 +798,7 @@ public class FundingSourceAction extends BaseAction {
             fundingSourceBudget.setModifiedBy(this.getCurrentUser());
             fundingSourceBudget.setModificationJustification("");
             fundingSourceBudget.setActiveSince(fundingSourceDB.getActiveSince());
+            fundingSourceBudget.setPhase(this.getActualPhase());
             fundingSourceBudgetManager.saveFundingSourceBudget(fundingSourceBudget);
           }
 
@@ -808,7 +810,8 @@ public class FundingSourceAction extends BaseAction {
       if (fundingSource.getInstitutions() != null) {
 
 
-        for (FundingSourceInstitution fundingSourceInstitution : fundingSourceDB.getFundingSourceInstitutions()) {
+        for (FundingSourceInstitution fundingSourceInstitution : fundingSourceDB.getFundingSourceInstitutions().stream()
+          .filter(c -> c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
           if (!fundingSource.getInstitutions().contains(fundingSourceInstitution)) {
             fundingSourceInstitutionManager.deleteFundingSourceInstitution(fundingSourceInstitution.getId());
             instituionsEdited = true;
@@ -819,7 +822,7 @@ public class FundingSourceAction extends BaseAction {
 
             fundingSourceInstitution.setId(null);
             fundingSourceInstitution.setFundingSource(fundingSource);
-
+            fundingSourceInstitution.setPhase(this.getActualPhase());
             fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
             instituionsEdited = true;
           }
@@ -878,9 +881,9 @@ public class FundingSourceAction extends BaseAction {
 
     if (fundingSource.getFundingRegions() != null) {
 
-      List<FundingSourceLocation> regions = new ArrayList<>(fundingSourceDB.getFundingSourceLocations().stream()
-        .filter(
-          fl -> fl.isActive() && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 1)
+      List<FundingSourceLocation> regions = new ArrayList<>(fundingSourceDB.getFundingSourceLocations()
+        .stream().filter(fl -> fl.isActive() && fl.getPhase().equals(this.getActualPhase())
+          && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 1)
         .collect(Collectors.toList()));
 
       if (regions != null && regions.size() > 0) {
@@ -898,8 +901,8 @@ public class FundingSourceAction extends BaseAction {
         }
       }
 
-      regions = new ArrayList<>(fundingSourceDB.getFundingSourceLocations().stream()
-        .filter(fl -> fl.isActive() && fl.getLocElementType() != null && fl.getLocElement() == null)
+      regions = new ArrayList<>(fundingSourceDB.getFundingSourceLocations().stream().filter(fl -> fl.isActive()
+        && fl.getPhase().equals(this.getActualPhase()) && fl.getLocElementType() != null && fl.getLocElement() == null)
         .collect(Collectors.toList()));
 
       if (regions != null && regions.size() > 0) {
@@ -928,7 +931,7 @@ public class FundingSourceAction extends BaseAction {
           fundingSourceLocationSave.setModifiedBy(this.getCurrentUser());
           fundingSourceLocationSave.setModificationJustification("");
           fundingSourceLocationSave.setFundingSource(fundingSourceDB);
-
+          fundingSourceLocationSave.setPhase(this.getActualPhase());
           if (!fundingSourceLocation.isScope()) {
             LocElement locElement = locElementManager.getLocElementById(fundingSourceLocation.getLocElement().getId());
 
@@ -949,9 +952,9 @@ public class FundingSourceAction extends BaseAction {
 
     if (fundingSource.getFundingCountry() != null) {
 
-      List<FundingSourceLocation> countries = new ArrayList<>(fundingSourceDB.getFundingSourceLocations().stream()
-        .filter(
-          fl -> fl.isActive() && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 2)
+      List<FundingSourceLocation> countries = new ArrayList<>(fundingSourceDB.getFundingSourceLocations()
+        .stream().filter(fl -> fl.isActive() && fl.getPhase().equals(this.getActualPhase())
+          && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 2)
         .collect(Collectors.toList()));
 
       if (countries != null && countries.size() > 0) {
@@ -974,7 +977,7 @@ public class FundingSourceAction extends BaseAction {
           fundingSourceLocationSave.setModifiedBy(this.getCurrentUser());
           fundingSourceLocationSave.setModificationJustification("");
           fundingSourceLocationSave.setFundingSource(fundingSourceDB);
-
+          fundingSourceLocationSave.setPhase(this.getActualPhase());
           LocElement locElement =
             locElementManager.getLocElementByISOCode(fundingSourceLocation.getLocElement().getIsoAlpha2());
 
