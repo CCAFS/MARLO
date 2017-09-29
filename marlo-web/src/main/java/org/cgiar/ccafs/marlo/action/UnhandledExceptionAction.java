@@ -75,7 +75,8 @@ public class UnhandledExceptionAction extends BaseAction {
     message.append("has experienced an exception on the platform. </br>");
     message.append("This execption occurs in the server: " + config.getBaseUrl() + ".</br>");
     if (crp != null) {
-      message.append("In the CRP : " + crp.getAcronym() + ".</br>");
+      message.append("In the CRP : " + crp.getAcronym() != null && !crp.getAcronym().isEmpty() ? crp.getAcronym()
+        : crp.getName() + ".</br>");
     }
     message.append("The exception message was: </br></br>");
     message.append(writer.toString());

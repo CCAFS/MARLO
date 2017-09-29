@@ -305,11 +305,13 @@ public class CrpSiteIntegrationAction extends BaseAction {
         ccEmail = this.getCurrentUser().getEmail();
       }
     }
+    String crp = loggedCrp.getAcronym() != null && !loggedCrp.getAcronym().isEmpty() ? loggedCrp.getAcronym()
+      : loggedCrp.getName();
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
     sendMail.send(toEmail, ccEmail, bbcEmails,
       this.getText("email.siteIntegration.assigned.subject",
-        new String[] {loggedCrp.getAcronym(), siteRoleAcronym, crpsSiteIntegration.getLocElement().getName()}),
+        new String[] {crp, siteRoleAcronym, crpsSiteIntegration.getLocElement().getName()}),
       message.toString(), null, null, null, true);
   }
 
