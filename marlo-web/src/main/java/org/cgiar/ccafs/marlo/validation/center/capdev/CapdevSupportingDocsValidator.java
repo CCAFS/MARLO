@@ -59,7 +59,7 @@ public class CapdevSupportingDocsValidator extends BaseValidator {
       this.addMessage(baseAction.getText("capdev.action.supportingDocs.publicationdate"));
       baseAction.getInvalidFields().put("input-capdevSupportingDocs.publicationDate", InvalidFieldsMessages.EMPTYFIELD);
     }
-    if (links.isEmpty() && capdevSupportingDocs.getCapdevSuppDocsDocumentses().stream().filter(docs -> docs.getActive())
+    if (links.isEmpty() && capdevSupportingDocs.getCapdevSuppDocsDocumentses().stream().filter(docs -> docs.isActive())
       .collect(Collectors.toList()).isEmpty()) {
       this.addMessage(baseAction.getText("capdev.action.supportingDocs.supportingDocs"));
       baseAction.getInvalidFields().put("list-capdev.supportingDocs",

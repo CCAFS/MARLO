@@ -62,6 +62,7 @@ public class CapacityDevelopmentAction extends BaseAction {
     capdev.setActive(true);
     capdev.setActiveSince(new Date());
     capdev.setCreatedBy(this.getCurrentUser());
+    capdev.setModifiedBy(this.getCurrentUser());
     capdevID = capdevService.saveCapacityDevelopment(capdev);
     if (capdevID > 0) {
       return SUCCESS;

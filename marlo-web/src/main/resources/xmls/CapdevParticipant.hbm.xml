@@ -13,11 +13,11 @@
 			class="org.cgiar.ccafs.marlo.data.model.Participant" fetch="select">
 			<column name="participant_id" />
 		</many-to-one>
-		<many-to-one name="usersByModifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
+		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
 			fetch="select">
 			<column name="modified_by" />
 		</many-to-one>
-		<many-to-one name="usersByCreatedBy" class="org.cgiar.ccafs.marlo.data.model.User"
+		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
 			fetch="select">
 			<column name="created_by" not-null="true" />
 		</many-to-one>

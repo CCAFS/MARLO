@@ -62,7 +62,7 @@ public class CapdevSupportingDocsAction extends BaseAction {
     capdevSupportingDocs.setCapacityDevelopment(capdev);
     capdevSupportingDocs.setActive(true);
     capdevSupportingDocs.setActiveSince(new Date());
-    capdevSupportingDocs.setUsersByCreatedBy(this.getCurrentUser());
+    capdevSupportingDocs.setCreatedBy(this.getCurrentUser());
     supportingDocID = capdevsupportingDocsService.saveCapdevSupportingDocs(capdevSupportingDocs);
 
     return SUCCESS;
@@ -75,7 +75,7 @@ public class CapdevSupportingDocsAction extends BaseAction {
     final CapdevSupportingDocs capdevSupportingDocs =
       capdevsupportingDocsService.getCapdevSupportingDocsById(supportingDocID);
     capdevSupportingDocs.setActive(false);
-    capdevSupportingDocs.setUsersByModifiedBy(this.getCurrentUser());
+    capdevSupportingDocs.setModifiedBy(this.getCurrentUser());
     capdevsupportingDocsService.saveCapdevSupportingDocs(capdevSupportingDocs);
     return SUCCESS;
   }
@@ -105,7 +105,7 @@ public class CapdevSupportingDocsAction extends BaseAction {
     capdev = capdevService.getCapacityDevelopmentById(capdevID);
     if (!capdev.getCapdevSupportingDocses().isEmpty()) {
       final List<CapdevSupportingDocs> documentesDB = new ArrayList<>(
-        capdev.getCapdevSupportingDocses().stream().filter(d -> d.getActive()).collect(Collectors.toList()));
+        capdev.getCapdevSupportingDocses().stream().filter(d -> d.isActive()).collect(Collectors.toList()));
       Collections.sort(documentesDB, (r1, r2) -> r1.getId().compareTo(r2.getId()));
       capdev.setCapdevSupportingDocses(new HashSet<CapdevSupportingDocs>(documentesDB));
     }

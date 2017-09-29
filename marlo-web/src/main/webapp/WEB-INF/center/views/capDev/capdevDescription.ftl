@@ -91,7 +91,9 @@
 									[/#if]
 									<input class="id" type="hidden"  value="${(discipline.id)!-1}" />
 									<input class="disciplineId" type="hidden"  value="${(discipline.disciplines.id)!}" />
+									
 									<span class="name"> ${discipline.disciplines.name}</span>
+									
 									<div class="clearfix"></div>
 								</li>
 								[#else]

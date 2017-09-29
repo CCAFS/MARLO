@@ -74,7 +74,7 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
       Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
     final CapdevSuppDocsDocuments document = capdevSuppDocsDocumentsService.getCapdevSuppDocsDocumentsById(documentID);
     document.setActive(false);
-    document.setUsersByModifiedBy(this.getCurrentUser());
+    document.setModifiedBy(this.getCurrentUser());
     capdevSuppDocsDocumentsService.saveCapdevSuppDocsDocuments(document);
     return SUCCESS;
   }
@@ -148,7 +148,7 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
       }
 
       if (capdevSupportingDocs.getCapdevSuppDocsDocumentses() != null) {
-        documents = capdevSupportingDocs.getCapdevSuppDocsDocumentses().stream().filter(d -> d.getActive())
+        documents = capdevSupportingDocs.getCapdevSuppDocsDocumentses().stream().filter(d -> d.isActive())
           .collect(Collectors.toList());
 
         Collections.sort(documents, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
@@ -199,7 +199,7 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
     if ((capdevSupportingDocsDB.getCapdevSuppDocsDocumentses() != null)
       && (capdevSupportingDocsDB.getCapdevSuppDocsDocumentses().size() > 0)) {
       final List<CapdevSuppDocsDocuments> documentsDB = new ArrayList<>(capdevSupportingDocsDB
-        .getCapdevSuppDocsDocumentses().stream().filter(d -> d.getActive()).collect(Collectors.toList()));
+        .getCapdevSuppDocsDocumentses().stream().filter(d -> d.isActive()).collect(Collectors.toList()));
 
       for (final CapdevSuppDocsDocuments document : documentsDB) {
         if (!documents.contains(document)) {
@@ -218,7 +218,7 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
           documentSave.setActiveSince(new Date());
           documentSave.setLink(document.getLink());
           documentSave.setCapdevSupportingDocs(capdevSupportingDocsDB);
-          documentSave.setUsersByCreatedBy(this.getCurrentUser());
+          documentSave.setCreatedBy(this.getCurrentUser());
           capdevSuppDocsDocumentsService.saveCapdevSuppDocsDocuments(documentSave);
         } else {
           boolean hasChanges = false;
@@ -230,7 +230,7 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
           }
 
           if (hasChanges) {
-            documentprevio.setUsersByModifiedBy(this.getCurrentUser());
+            documentprevio.setModifiedBy(this.getCurrentUser());
             documentprevio.setActiveSince(new Date());
             capdevSuppDocsDocumentsService.saveCapdevSuppDocsDocuments(documentprevio);
           }

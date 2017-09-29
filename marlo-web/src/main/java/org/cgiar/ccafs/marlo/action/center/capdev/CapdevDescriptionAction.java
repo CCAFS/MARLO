@@ -148,7 +148,7 @@ public class CapdevDescriptionAction extends BaseAction {
       Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
     final CapdevOutputs capdev_output = capdevOutputService.getCapdevOutputsById(capdevoutputID);
     capdev_output.setActive(false);
-    capdev_output.setUsersByModifiedBy(this.getCurrentUser());
+    capdev_output.setModifiedBy(this.getCurrentUser());
     capdevOutputService.saveCapdevOutputs(capdev_output);
     return SUCCESS;
   }
@@ -318,6 +318,8 @@ public class CapdevDescriptionAction extends BaseAction {
       if (history != null) {
         capdev = history;
 
+        System.out.println("disciplines " + capdev.getCapdevDisciplines().size());
+
       } else {
         this.transaction = null;
         this.setTransaction("-1");
@@ -408,7 +410,8 @@ public class CapdevDescriptionAction extends BaseAction {
             capdevDiscipline.setDisciplines(discipline);
             capdevDiscipline.setActive(true);
             capdevDiscipline.setActiveSince(new Date());
-            capdevDiscipline.setUsersByCreatedBy(currentUser);
+            capdevDiscipline.setCreatedBy(currentUser);
+            capdevDiscipline.setModifiedBy(currentUser);
             capdevDisciplineService.saveCapdevDiscipline(capdevDiscipline);
           }
         }
@@ -432,7 +435,8 @@ public class CapdevDescriptionAction extends BaseAction {
           capdevOutput.setResearchOutputs(output);
           capdevOutput.setActive(true);
           capdevOutput.setActiveSince(new Date());
-          capdevOutput.setUsersByCreatedBy(currentUser);
+          capdevOutput.setCreatedBy(currentUser);
+          capdevOutput.setModifiedBy(currentUser);
           capdevOutputService.saveCapdevOutputs(capdevOutput);
         }
       }
@@ -453,7 +457,8 @@ public class CapdevDescriptionAction extends BaseAction {
           capdevPartner.setInstitutions(institution);;
           capdevPartner.setActive(true);
           capdevPartner.setActiveSince(new Date());
-          capdevPartner.setUsersByCreatedBy(currentUser);
+          capdevPartner.setCreatedBy(currentUser);
+          capdevPartner.setModifiedBy(currentUser);
           capdevPartnerService.saveCapdevPartners(capdevPartner);
         }
       }
@@ -476,7 +481,8 @@ public class CapdevDescriptionAction extends BaseAction {
             capdevTargetgroup.setTargetGroups(targetGroup);
             capdevTargetgroup.setActive(true);
             capdevTargetgroup.setActiveSince(new Date());
-            capdevTargetgroup.setUsersByCreatedBy(currentUser);
+            capdevTargetgroup.setCreatedBy(currentUser);
+            capdevTargetgroup.setModifiedBy(currentUser);
             capdevTargetgroupService.saveCapdevTargetgroup(capdevTargetgroup);
           }
         }

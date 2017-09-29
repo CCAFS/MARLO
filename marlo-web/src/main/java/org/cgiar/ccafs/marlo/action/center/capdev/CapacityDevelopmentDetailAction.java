@@ -161,7 +161,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     final List<CapdevParticipant> listOfParticipants = new ArrayList<>(capdev.getCapdevParticipants());
     for (final CapdevParticipant obj : listOfParticipants) {
       obj.setActive(false);
-      obj.setUsersByModifiedBy(this.getCurrentUser());
+      obj.setModifiedBy(this.getCurrentUser());
       capdevParicipantService.saveCapdevParticipant(obj);
       final Participant participant = obj.getParticipant();
       participant.setActive(false);
@@ -693,6 +693,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     capdevDB.setActiveSince(new Date());
     capdevDB.setModifiedBy(this.getCurrentUser());
 
+
     capdevService.saveCapacityDevelopment(capdevDB, this.getActionName(), relationsName);
 
 
@@ -727,6 +728,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
             capdevLocations.setActive(true);
             capdevLocations.setActiveSince(new Date());
             capdevLocations.setCreatedBy(currentUser);
+            capdevLocations.setModifiedBy(currentUser);
             capdevLocationService.saveCapdevLocations(capdevLocations);
           }
         }
@@ -745,7 +747,8 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     capdevParticipant.setParticipant(participant);
     capdevParticipant.setActive(true);
     capdevParticipant.setActiveSince(new Date());
-    capdevParticipant.setUsersByCreatedBy(currentUser);
+    capdevParticipant.setCreatedBy(currentUser);
+    capdevParticipant.setModifiedBy(currentUser);
 
     capdevParicipantService.saveCapdevParticipant(capdevParticipant);
   }
@@ -768,6 +771,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
             capdevLocations.setActive(true);
             capdevLocations.setActiveSince(new Date());
             capdevLocations.setCreatedBy(currentUser);
+            capdevLocations.setModifiedBy(currentUser);
             capdevLocationService.saveCapdevLocations(capdevLocations);
           }
         }
@@ -808,6 +812,8 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     participant.setActive(true);
     participant.setAciveSince(new Date());
     participant.setCreatedBy(currentUser);
+    participant.setModifiedBy(currentUser);
+
     participantService.saveParticipant(participant);
   }
 

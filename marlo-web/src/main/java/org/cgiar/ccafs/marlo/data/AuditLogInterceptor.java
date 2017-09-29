@@ -54,10 +54,10 @@ public class AuditLogInterceptor extends EmptyInterceptor {
   public static Logger LOG = LoggerFactory.getLogger(AuditLogInterceptor.class);
   private static final long serialVersionUID = -900829831186014812L;
   Session session;
-  private Set<Map<String, Object>> inserts;
-  private Set<Map<String, Object>> updates;
-  private Set<Map<String, Object>> deletes;
-  private StandardDAO dao;
+  private final Set<Map<String, Object>> inserts;
+  private final Set<Map<String, Object>> updates;
+  private final Set<Map<String, Object>> deletes;
+  private final StandardDAO dao;
   private final String PRINCIPAL = "PRINCIPAL";
   private final String ENTITY = "entity";
   private final String RELATION_NAME = "relationName";
@@ -87,29 +87,29 @@ public class AuditLogInterceptor extends EmptyInterceptor {
 
 
   public Set<HashMap<String, Object>> loadList(IAuditLog entity) {
-    Set<HashMap<String, Object>> setRelations = new HashSet<>();
+    final Set<HashMap<String, Object>> setRelations = new HashSet<>();
 
-    ClassMetadata classMetadata = session.getSessionFactory().getClassMetadata(entity.getClass());
-    String[] propertyNames = classMetadata.getPropertyNames();
-    for (String name : propertyNames) {
+    final ClassMetadata classMetadata = session.getSessionFactory().getClassMetadata(entity.getClass());
+    final String[] propertyNames = classMetadata.getPropertyNames();
+    for (final String name : propertyNames) {
 
-      Object propertyValue = classMetadata.getPropertyValue(entity, name, EntityMode.POJO);
-      Type propertyType = classMetadata.getPropertyType(name);
+      final Object propertyValue = classMetadata.getPropertyValue(entity, name, EntityMode.POJO);
+      final Type propertyType = classMetadata.getPropertyType(name);
 
-      if (propertyValue != null && (propertyType instanceof OrderedSetType || propertyType instanceof SetType)) {
-        HashMap<String, Object> objects = new HashMap<>();
-        Set<IAuditLog> listRelation = new HashSet<>();
+      if ((propertyValue != null) && ((propertyType instanceof OrderedSetType) || (propertyType instanceof SetType))) {
+        final HashMap<String, Object> objects = new HashMap<>();
+        final Set<IAuditLog> listRelation = new HashSet<>();
 
-        Set<IAuditLog> entityRelation = (Set<IAuditLog>) propertyValue;
+        final Set<IAuditLog> entityRelation = (Set<IAuditLog>) propertyValue;
         try {
-          for (IAuditLog iAuditLog : entityRelation) {
+          for (final IAuditLog iAuditLog : entityRelation) {
 
             if (iAuditLog.isActive()) {
 
               listRelation.add(iAuditLog);
             }
           }
-        } catch (Exception e) {
+        } catch (final Exception e) {
 
         }
 
@@ -127,31 +127,31 @@ public class AuditLogInterceptor extends EmptyInterceptor {
 
 
   public void loadRelations(IAuditLog entity, boolean loadUsers, int level) {
-    ClassMetadata classMetadata = session.getSessionFactory().getClassMetadata(entity.getClass());
+    final ClassMetadata classMetadata = session.getSessionFactory().getClassMetadata(entity.getClass());
 
 
-    String[] propertyNames = classMetadata.getPropertyNames();
-    for (String name : propertyNames) {
-      Object propertyValue = classMetadata.getPropertyValue(entity, name, EntityMode.POJO);
+    final String[] propertyNames = classMetadata.getPropertyNames();
+    for (final String name : propertyNames) {
+      final Object propertyValue = classMetadata.getPropertyValue(entity, name, EntityMode.POJO);
 
-      if (propertyValue != null && propertyValue instanceof IAuditLog) {
-        Type propertyType = classMetadata.getPropertyType(name);
+      if ((propertyValue != null) && (propertyValue instanceof IAuditLog)) {
+        final Type propertyType = classMetadata.getPropertyType(name);
 
-        if (propertyValue != null && propertyType instanceof ManyToOneType) {
+        if ((propertyValue != null) && (propertyType instanceof ManyToOneType)) {
 
           if (loadUsers) {
-            IAuditLog entityRelation = (IAuditLog) propertyValue;
+            final IAuditLog entityRelation = (IAuditLog) propertyValue;
 
 
-            Object obj = dao.find(propertyType.getReturnedClass(), (Serializable) entityRelation.getId());
+            final Object obj = dao.find(propertyType.getReturnedClass(), (Serializable) entityRelation.getId());
 
             this.loadRelations((IAuditLog) obj, false, 2);
             classMetadata.setPropertyValue(entity, name, obj, EntityMode.POJO);
           } else {
             if (!(name.equals("createdBy") || name.equals("modifiedBy"))) {
-              IAuditLog entityRelation = (IAuditLog) propertyValue;
+              final IAuditLog entityRelation = (IAuditLog) propertyValue;
 
-              Object obj = dao.find(propertyType.getReturnedClass(), (Serializable) entityRelation.getId());
+              final Object obj = dao.find(propertyType.getReturnedClass(), (Serializable) entityRelation.getId());
               if (level == 2) {
                 this.loadRelations((IAuditLog) obj, false, 3);
               }
@@ -172,25 +172,25 @@ public class AuditLogInterceptor extends EmptyInterceptor {
 
 
   public void logSaveAndUpdate(String function, Set<Map<String, Object>> elements) {
-    Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+    final Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 
 
-    for (Iterator<Map<String, Object>> it = elements.iterator(); it.hasNext();) {
-      Map<String, Object> map = it.next();
+    for (final Map<String, Object> map : elements) {
       if (map.get(PRINCIPAL).toString().equals("1")) {
-        IAuditLog entity = (IAuditLog) map.get(ENTITY);
+        final IAuditLog entity = (IAuditLog) map.get(ENTITY);
         this.loadRelations(entity, true, 1);
-        String json = gson.toJson(entity);
+        final String json = gson.toJson(entity);
 
         dao.logIt(function, entity, json, entity.getModifiedBy().getId(), this.transactionId,
           new Long(map.get(PRINCIPAL).toString()), null, actionName);
 
       } else {
-        Set<IAuditLog> set = (Set<IAuditLog>) map.get(ENTITY);
-        for (IAuditLog iAuditLog : set) {
+        final Set<IAuditLog> set = (Set<IAuditLog>) map.get(ENTITY);
+        for (final IAuditLog iAuditLog : set) {
           this.loadRelations(iAuditLog, false, 2);
           if (iAuditLog.isActive()) {
-            String json = gson.toJson(iAuditLog);
+            final String json = gson.toJson(iAuditLog);
+
 
             dao.logIt("Updated", iAuditLog, json, iAuditLog.getModifiedBy().getId(), this.transactionId,
               new Long(map.get(PRINCIPAL).toString()), map.get(RELATION_NAME).toString(), actionName);
@@ -211,7 +211,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
   @Override
   public void onDelete(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
 
-    HashMap<String, Object> objects = new HashMap<>();
+    final HashMap<String, Object> objects = new HashMap<>();
 
     if (entity instanceof IAuditLog) {
       objects.put(ENTITY, entity);
@@ -229,7 +229,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
   @Override
   public boolean onFlushDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState,
     String[] propertyNames, Type[] types) throws CallbackException {
-    HashMap<String, Object> objects = new HashMap<>();
+    final HashMap<String, Object> objects = new HashMap<>();
     if (entity instanceof IAuditLog) {
       if (!((IAuditLog) entity).isActive()) {
         objects.put(ENTITY, entity);
@@ -256,7 +256,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
   @Override
   public boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types)
     throws CallbackException {
-    HashMap<String, Object> objects = new HashMap<>();
+    final HashMap<String, Object> objects = new HashMap<>();
     if (entity instanceof IAuditLog) {
       objects.put(ENTITY, entity);
       objects.put(PRINCIPAL, new Long(1));
@@ -282,7 +282,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
       this.logSaveAndUpdate("Saved", inserts);
       this.logSaveAndUpdate("Updated", updates);
       // this.logSaveAndUpdate("Deleted", deletes);
-    } catch (Exception e) {
+    } catch (final Exception e) {
       e.printStackTrace();
       LOG.error(e.getLocalizedMessage());
     } finally {
@@ -306,40 +306,40 @@ public class AuditLogInterceptor extends EmptyInterceptor {
   public Set<HashMap<String, Object>> relations(Object[] state, Type[] types, String[] propertyNames, Object id,
     boolean firstRelations) {
 
-    Set<HashMap<String, Object>> relations = new HashSet<>();
+    final Set<HashMap<String, Object>> relations = new HashSet<>();
     int i = 0;
     String parentId = "";
     try {
       parentId = id.toString();
-    } catch (Exception e1) {
+    } catch (final Exception e1) {
       parentId = "";
     }
-    for (Type type : types) {
-      HashMap<String, Object> objects = new HashMap<>();
+    for (final Type type : types) {
+      final HashMap<String, Object> objects = new HashMap<>();
 
-      if (type instanceof OrderedSetType || type instanceof SetType) {
+      if ((type instanceof OrderedSetType) || (type instanceof SetType)) {
 
         if (relationsName.contains(type.getName())) {
-          Set<IAuditLog> listRelation = new HashSet<>();
-          Set<Object> set = (Set<Object>) state[i];
+          final Set<IAuditLog> listRelation = new HashSet<>();
+          final Set<Object> set = (Set<Object>) state[i];
           if (set != null) {
-            for (Object iAuditLog : set) {
+            for (final Object iAuditLog : set) {
               if (iAuditLog instanceof IAuditLog) {
-                IAuditLog audit = (IAuditLog) iAuditLog;
+                final IAuditLog audit = (IAuditLog) iAuditLog;
                 if (audit.isActive()) {
                   try {
-                    String name = audit.getClass().getName();
-                    Class<?> className = Class.forName(name);
+                    final String name = audit.getClass().getName();
+                    final Class<?> className = Class.forName(name);
 
-                    Object obj = dao.find(className, (Serializable) audit.getId());
+                    final Object obj = dao.find(className, (Serializable) audit.getId());
 
 
                     listRelation.add((IAuditLog) obj);
-                    Set<HashMap<String, Object>> loadList = this.loadList((IAuditLog) obj);
-                    for (HashMap<String, Object> hashMap : loadList) {
-                      HashSet<IAuditLog> relationAudit = (HashSet<IAuditLog>) hashMap.get(ENTITY);
-                      for (IAuditLog iAuditLog2 : relationAudit) {
-                        Set<HashMap<String, Object>> loadListRelations = this.loadList(iAuditLog2);
+                    final Set<HashMap<String, Object>> loadList = this.loadList((IAuditLog) obj);
+                    for (final HashMap<String, Object> hashMap : loadList) {
+                      final HashSet<IAuditLog> relationAudit = (HashSet<IAuditLog>) hashMap.get(ENTITY);
+                      for (final IAuditLog iAuditLog2 : relationAudit) {
+                        final Set<HashMap<String, Object>> loadListRelations = this.loadList(iAuditLog2);
 
                         relations.addAll(loadListRelations);
                       }
@@ -347,7 +347,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
 
 
                     relations.addAll(loadList);
-                  } catch (ClassNotFoundException e) {
+                  } catch (final ClassNotFoundException e) {
 
                     LOG.error(e.getLocalizedMessage());
                   }

@@ -9,10 +9,10 @@
 			<column name="id" />
 			<generator class="identity" />
 		</id>
-		<many-to-one name="usersByModifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
 			<column name="modified_by" />
 		</many-to-one>
-		<many-to-one name="usersByCreatedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
 			<column name="created_by" />
 		</many-to-one>
 		<many-to-one name="capacityDevelopment" class="org.cgiar.ccafs.marlo.data.model.CapacityDevelopment"
@@ -23,7 +23,7 @@
 			fetch="select">
 			<column name="target_group_id" />
 		</many-to-one>
-		<property name="active" type="java.lang.Boolean">
+		<property name="active" type="boolean">
 			<column name="is_active" />
 		</property>
 		<property name="activeSince" type="timestamp">

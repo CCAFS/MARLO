@@ -21,6 +21,7 @@
 			<result name="success" type="redirectAction">
 				<param name="actionName">${centerSession}/detailCapdev</param>
 				<param name="capdevID">${capdevID}</param>
+				<param name="edit">true</param>
 			</result>
 		</action>
 
