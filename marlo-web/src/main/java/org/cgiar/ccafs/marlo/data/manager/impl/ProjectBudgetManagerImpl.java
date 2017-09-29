@@ -67,8 +67,8 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
 
   @Override
   public List<ProjectBudget> getByParameters(long institutionID, int year, long budgetTypeId, long projectId,
-    Integer coFinancing) {
-    return projectBudgetDAO.getByParameters(institutionID, year, budgetTypeId, projectId, coFinancing);
+    Integer coFinancing, long idPhase) {
+    return projectBudgetDAO.getByParameters(institutionID, year, budgetTypeId, projectId, coFinancing, idPhase);
   }
 
   @Override
@@ -78,8 +78,8 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
   }
 
   @Override
-  public double getReaminingAmount(long fundingSourceID, int year, double budget) {
-    String amount = projectBudgetDAO.amountByFundingSource(fundingSourceID, year);
+  public double getReaminingAmount(long fundingSourceID, int year, double budget, long idPhase) {
+    String amount = projectBudgetDAO.amountByFundingSource(fundingSourceID, year, idPhase);
     if (amount != null) {
       double dAmount = Double.parseDouble(amount);
       return budget - dAmount;

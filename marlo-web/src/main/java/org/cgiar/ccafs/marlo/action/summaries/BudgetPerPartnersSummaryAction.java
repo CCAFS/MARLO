@@ -427,11 +427,13 @@ public class BudgetPerPartnersSummaryAction extends BaseSummariesAction implemen
     // sort projects by id
     projects.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
     for (Project project : projects) {
+      System.out.println(project.getId());
       // Get PPA institutions with budgets
       List<Institution> institutionsList = new ArrayList<>();
 
-      for (ProjectBudget projectBudget : project.getProjectBudgets().stream().filter(pb -> pb.isActive()
-        && pb.getYear() == this.getSelectedYear() && pb.getInstitution() != null && pb.getInstitution().isActive())
+      for (ProjectBudget projectBudget : project.getProjectBudgets().stream()
+        .filter(pb -> pb.isActive() && pb.getYear() == this.getSelectedYear() && pb.getInstitution() != null
+          && pb.getInstitution().isActive() && pb.getPhase() != null && pb.getPhase().equals(this.getSelectedPhase()))
         .collect(Collectors.toList())) {
         if (this.isPPA(projectBudget.getInstitution())) {
           institutionsList.add(projectBudget.getInstitution());
@@ -444,7 +446,8 @@ public class BudgetPerPartnersSummaryAction extends BaseSummariesAction implemen
       }
       for (Institution institution : institutions) {
         for (ProjectPartner pp : project.getProjectPartners().stream()
-          .filter(pp -> pp.isActive() && pp.getInstitution().getId().equals(institution.getId()))
+          .filter(pp -> pp.isActive() && pp.getInstitution().getId().equals(institution.getId())
+            && pp.getPhase() != null && pp.getPhase().equals(this.getSelectedPhase()))
           .collect(Collectors.toList())) {
           String projectTitle = null, ppaPartner = null, flagships = "", coas = "", regions = "";
           Long projectId = null;
@@ -454,14 +457,15 @@ public class BudgetPerPartnersSummaryAction extends BaseSummariesAction implemen
             genderW1W2Co = null;
 
           projectId = project.getId();
-          projectTitle = project.getProjecInfoPhase(this.getActualPhase()).getTitle();
+          projectTitle = project.getProjecInfoPhase(this.getSelectedPhase()).getTitle();
           ppaPartner = pp.getComposedName();
 
           // get Flagships related to the project sorted by acronym
           for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
             .sorted((o1, o2) -> o1.getCrpProgram().getAcronym().compareTo(o2.getCrpProgram().getAcronym()))
             .filter(
-              c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+              c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+                && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
             .collect(Collectors.toList())) {
             if (flagships == null || flagships.isEmpty()) {
               flagships = programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
@@ -472,7 +476,8 @@ public class BudgetPerPartnersSummaryAction extends BaseSummariesAction implemen
           // get CoAs related to the project sorted by acronym
           if (project.getProjectClusterActivities() != null) {
             for (ProjectClusterActivity projectClusterActivity : project.getProjectClusterActivities().stream()
-              .filter(c -> c.isActive()).collect(Collectors.toList())) {
+              .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+              .collect(Collectors.toList())) {
               if (coas == null || coas.isEmpty()) {
                 coas = projectClusterActivity.getCrpClusterOfActivity().getIdentifier();
               } else {
@@ -489,14 +494,14 @@ public class BudgetPerPartnersSummaryAction extends BaseSummariesAction implemen
               for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
                 .sorted((c1, c2) -> c1.getCrpProgram().getAcronym().compareTo(c2.getCrpProgram().getAcronym()))
                 .filter(c -> c.isActive()
-                  && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+                  && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()
+                  && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
                 .collect(Collectors.toList())) {
                 regionsList.add(programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()));
               }
             }
 
-            if (project.getProjecInfoPhase(this.getActualPhase()).getNoRegional() != null
-              && project.getProjecInfoPhase(this.getActualPhase()).getNoRegional()) {
+            if (project.getProjectInfo().getNoRegional() != null && project.getProjectInfo().getNoRegional()) {
               regions = "Global";
               if (regionsList.size() > 0) {
                 LOG.warn("Project is global and has regions selected");
@@ -673,9 +678,8 @@ public class BudgetPerPartnersSummaryAction extends BaseSummariesAction implemen
     for (Project project : allProjectsBudgets.keySet()) {
       String projectID = project.getId().toString();
       String projectTitle = null;
-      if (project.getProjecInfoPhase(this.getActualPhase()).getTitle() != null
-        && !project.getProjecInfoPhase(this.getActualPhase()).getTitle().trim().isEmpty()) {
-        projectTitle = project.getProjecInfoPhase(this.getActualPhase()).getTitle();
+      if (project.getProjectInfo().getTitle() != null && !project.getProjectInfo().getTitle().trim().isEmpty()) {
+        projectTitle = project.getProjectInfo().getTitle();
       }
 
       Double budgetw1w2 = allProjectsBudgets.get(project).get(0);
@@ -822,7 +826,7 @@ public class BudgetPerPartnersSummaryAction extends BaseSummariesAction implemen
    */
   public String getTotalAmount(long institutionId, int year, long budgetType, Long projectId, Integer coFinancing) {
     return projectBudgetManager.amountByBudgetType(institutionId, year, budgetType, projectId, coFinancing,
-      this.getActualPhase().getId());
+      this.getSelectedPhase().getId());
   }
 
 
@@ -836,8 +840,8 @@ public class BudgetPerPartnersSummaryAction extends BaseSummariesAction implemen
    */
   public double getTotalGender(long institutionId, int year, long budgetType, long projectID, Integer coFinancing) {
 
-    List<ProjectBudget> budgets =
-      projectBudgetManager.getByParameters(institutionId, year, budgetType, projectID, coFinancing);
+    List<ProjectBudget> budgets = projectBudgetManager.getByParameters(institutionId, year, budgetType, projectID,
+      coFinancing, this.getSelectedPhase().getId());
 
     double totalGender = 0;
     if (budgets != null) {

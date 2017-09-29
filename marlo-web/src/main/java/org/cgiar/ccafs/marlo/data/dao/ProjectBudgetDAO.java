@@ -45,7 +45,7 @@ public interface ProjectBudgetDAO {
    * @param year - Specific year
    * @return a Budget amount.
    */
-  public String amountByFundingSource(long fundingSourceID, int year);
+  public String amountByFundingSource(long fundingSourceID, int year, long idPhase);
 
   /**
    * This method removes a specific projectBudget value from the database.
@@ -89,7 +89,7 @@ public interface ProjectBudgetDAO {
    * @return a list from ProjectBudget null if no exist records
    */
   public List<ProjectBudget> getByParameters(long institutionID, int year, long budgetTypeId, long projectId,
-    Integer coFinancing);
+    Integer coFinancing, long idPhase);
 
   /**
    * This method saves the information of the given projectBudget

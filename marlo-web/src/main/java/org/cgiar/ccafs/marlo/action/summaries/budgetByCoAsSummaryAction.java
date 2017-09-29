@@ -577,8 +577,8 @@ public class budgetByCoAsSummaryAction extends BaseSummariesAction implements Su
    */
   public double getTotalGender(long institutionId, int year, long budgetType, Project project, Integer coFinancing) {
 
-    List<ProjectBudget> budgets =
-      projectBudgetManager.getByParameters(institutionId, year, budgetType, project.getId(), coFinancing);
+    List<ProjectBudget> budgets = projectBudgetManager.getByParameters(institutionId, year, budgetType, project.getId(),
+      coFinancing, this.getSelectedPhase().getId());
 
     double totalGender = 0;
     if (budgets != null) {
