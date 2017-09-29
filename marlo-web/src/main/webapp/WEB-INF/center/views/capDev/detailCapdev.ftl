@@ -164,7 +164,7 @@
 								                
 								                <div class="modal-footer">
 								                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-								                    <a class="btn btn-danger btn-ok" href="[@s.url action='${centerSession}/delete_list_of_participants'][@s.param name='capdevID']${capdevID}[/@s.param][@s.param name='capdevCategory']${capdevCategory}[/@s.param] [/@s.url]">Clear</a>
+								                    <a class="btn btn-danger btn-ok" href="[@s.url action='${centerSession}/delete_list_of_participants'][@s.param name='capdevID']${capdevID}[/@s.param][@s.param name='capdevCategory']${capdevCategory}[/@s.param] [@s.param name='edit' value="true" /][/@s.url]">Clear</a>
 								                </div>
 								            </div>
 								        </div>
@@ -179,59 +179,61 @@
 
 						</div>
 					[#else]
-						<div class="form-group col-md-12 newCapdevField participantsheader">
-							<div class="col-md-6  ">
-								<!-- [@s.label key="capdev.form.participants" /] -->
-							</div>
-							<div class="col-md-6 ">
-								<div class="pull-right">
-									<button type="button" class="capdevButtons" aria-label="Left Align" title="Download template to upload the list of participants">
-										<a class="downloadButton" href="[@s.url action='${centerSession}/downloadFile' /] ">[@s.text name="capdev.downloadTemplate" /]</a> 
-									</button>
+						[#if editable]
+							<div class="form-group col-md-12 newCapdevField participantsheader">
+								<div class="col-md-6 ">
+									<div class="pull-right">
+										<button type="button" class="capdevButtons" aria-label="Left Align" title="Download template to upload the list of participants">
+											<a class="downloadButton" href="[@s.url action='${centerSession}/downloadFile' /] ">[@s.text name="capdev.downloadTemplate" /]</a>
+										</button>
+									</div>
 								</div>
 							</div>
-						</div>
 
-						<div class="form-group row ">
-							<div class="col-md-12  participantsBox " listname="capdev.uploadFile">
-								<!-- [@s.fielderror fieldName="upload_File" class="fileError" /] -->
-								<div class="col-md-12">
-									[@s.file id="uploadFile" name="uploadFile" label="Select a File to upload" size="40" class="uploadParticipants" editable=editable/]
+							<div class="form-group row ">
+								<div class="col-md-12  participantsBox " listname="capdev.uploadFile">
+									<!-- [@s.fielderror fieldName="upload_File" class="fileError" /] -->
+									
+									
+									<div class="col-md-12">
+										[@s.file id="uploadFile" name="uploadFile" label="Select a File to upload" size="40" class="uploadParticipants" editable=editable/]
+									</div>
+									
+
+									<div class="col-md-12" style="margin-top: 10px;">
+									<div class="btnPreview">
+										<button type="button"  id="btnDisplay" class="capdevButtons" aria-label="Left Align" data-toggle="modal" data-target="#myModa"       title="Take a look to list of participants uploaded" >
+											preview 
+										</button>
+									</div>
+
+									
+
+									<div id="filewarning" class="warning" style="display: none; margin-top: 10px;">
+									</div>
+									<div class="loader" style="display:none;"><img src="${baseUrlMedia}/images/global/loading_2.gif" width="80" height="30"></div>
+
+									<div class="modal fade bd-example-modal-lg" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+									  <div class="modal-dialog modal-lg" role="document">
+									    <div class="modal-content highlight">
+									      <div class="modal-header">
+									      	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									          <span aria-hidden="true">&times;</span>
+									        </button>
+									        <h5 class="modal-title" id="exampleModalLabel">Preview participants file</h5>
+									        
+									      </div>
+									      <div id="participantsTable"  class="modal-body">
+									        
+									      </div>
+									     
+									    </div>
+									  </div>
+									</div>
 								</div>
-								
-
-								<div class="col-md-12" style="margin-top: 10px;">
-								<div class="btnPreview">
-									<button type="button"  id="btnDisplay" class="capdevButtons" aria-label="Left Align" data-toggle="modal" data-target="#myModa"       title="Take a look to list of participants uploaded">
-										preview
-									</button>
-								</div>
-								
-
-								<div id="filewarning" class="warning" style="display: none; margin-top: 10px;">
-								</div>
-								<div class="loader" style="display:none;"><img src="${baseUrlMedia}/images/global/loading_2.gif" width="80" height="30"></div>
-
-								<div class="modal fade bd-example-modal-lg" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-								  <div class="modal-dialog modal-lg" role="document">
-								    <div class="modal-content highlight">
-								      <div class="modal-header">
-								      	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-								          <span aria-hidden="true">&times;</span>
-								        </button>
-								        <h5 class="modal-title" id="exampleModalLabel">Preview participants file</h5>
-								        
-								      </div>
-								      <div id="participantsTable"  class="modal-body">
-								        
-								      </div>
-								     
-								    </div>
-								  </div>
 								</div>
 							</div>
-							</div>
-						</div>
+						[/#if]
 
 					[/#if]
 
