@@ -962,7 +962,7 @@ UNION
                       FROM
                         users u
                       INNER JOIN user_roles urol ON urol.user_id = u.id
-                      INNER JOIN ROLES ro ON ro.id = urol.role_id
+                      INNER JOIN roles ro ON ro.id = urol.role_id
                       AND ro.acronym = 'FM'
                       INNER JOIN crp_users cpu ON cpu.user_id = u.id
                       AND cpu.is_active = 1
@@ -1001,7 +1001,7 @@ UNION
                         FROM
                           users u
                         INNER JOIN user_roles urol ON urol.user_id = u.id
-                        INNER JOIN ROLES ro ON ro.id = urol.role_id
+                        INNER JOIN roles ro ON ro.id = urol.role_id
                         AND ro.acronym = 'FM'
                         INNER JOIN crp_users cpu ON cpu.user_id = u.id
                         AND cpu.is_active = 1
@@ -1044,7 +1044,7 @@ UNION
                           FROM
                             users u
                           INNER JOIN user_roles urol ON urol.user_id = u.id
-                          INNER JOIN ROLES ro ON ro.id = urol.role_id
+                          INNER JOIN roles ro ON ro.id = urol.role_id
                           AND ro.acronym = 'FM'
                           INNER JOIN crp_users cpu ON cpu.user_id = u.id
                           AND cpu.is_active = 1
