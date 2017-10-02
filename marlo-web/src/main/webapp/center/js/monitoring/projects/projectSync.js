@@ -14,7 +14,7 @@ function initSync() {
     // Set Datepicker
     settingDate(".startDateInput", ".endDateInput", ".extensionDateInput");
   }
-  
+
   // Harvest metadata from URL
   $syncButtons.on("click", syncMetadata);
 
@@ -82,6 +82,7 @@ function syncFundingSource() {
   $fsSelected.find('.fillMetadata .unSyncBlock').show();
   // Hide some components
   $fsSelected.find('.syncVisibles').hide();
+  $fsSelected.find('.unsyncVisibles').show();
   // Set hidden inputs
   $fsSelected.find('.fillMetadata input:hidden').val(true);
   // Dissemination URL
@@ -91,23 +92,23 @@ function syncFundingSource() {
   // Update Funding source last update
   var today = new Date();
   var dd = today.getDate();
-  var mm = today.getMonth()+1; // January is 0!
+  var mm = today.getMonth() + 1; // January is 0!
 
   var yyyy = today.getFullYear();
-  if(dd<10){
-      dd='0'+dd;
-  } 
-  if(mm<10){
-      mm='0'+mm;
-  } 
-  $fsSelected.find('.fundingSourceSyncedDate').val(yyyy+'-'+mm+'-'+dd);
+  if(dd < 10) {
+    dd = '0' + dd;
+  }
+  if(mm < 10) {
+    mm = '0' + mm;
+  }
+  $fsSelected.find('.fundingSourceSyncedDate').val(yyyy + '-' + mm + '-' + dd);
   $fsSelected.find('.lastDaySync').show();
-  $fsSelected.find('.lastDaySync span').html($.datepicker.formatDate( "M dd, yy", new Date(yyyy, mm -1, dd) ));
+  $fsSelected.find('.lastDaySync span').html($.datepicker.formatDate("M dd, yy", new Date(yyyy, mm - 1, dd)));
   // Hide Date labels
   $fsSelected.find('.dateLabel').addClass('disabled');
   // Update component
   $(document).trigger('updateComponent');
-  
+
   // Set isSynced parameter
   isSynced = true;
 }
@@ -147,6 +148,7 @@ function unSyncFundingSource() {
   $fsSelected.find('#grantTotalAmount').hide();
   // Show some components
   $fsSelected.find('.syncVisibles').show();
+  $fsSelected.find('.unsyncVisibles').hide();
   // Set hidden inputs
   $fsSelected.find('.fillMetadata input:hidden').val(false);
   // Dissemination URL
@@ -160,28 +162,42 @@ function unSyncFundingSource() {
 
   // Update component
   $(document).trigger('updateComponent');
-  
+
   // Set isSynced parameter
   isSynced = false;
 }
 
-function getOCSMetadata() { 
+function getOCSMetadata() {
   var currentCode = $fsSelected.find('input.financeCode').val();
-  if(!currentCode || syncing){
+  var source = $fsSelected.find('.radioSyncType:checked').val();
+  var serviceURL = baseURL;
+  if(!currentCode || syncing) {
     notificationError("You must enter a finance code.");
-    return
+    return
+    
+
+  }
+  // Setting source
+  if(source == 1) {
+    // OCS
+    currentCode.toUpperCase();
+    serviceURL += '/ocsService.do'
+  }else if(source == 2){
+    // MARLO CRPs
+    currentCode.replace(/\D/g,''); // Remove all non-digits
+    serviceURL += '/projectSync.do'
   }
   
-  // Ajax to service
+ // Ajax to service
   $.ajax({
-      'url': baseURL + '/ocsService.do',
+      'url': serviceURL,
       'data': {
         ocsCode: currentCode
       },
       beforeSend: function() {
-        
-        $fsSelected.find('.loading.syncBlock').show(); 
-        
+
+        $fsSelected.find('.loading.syncBlock').show();
+
         $fsSelected.find(".financeCode").addClass('input-loading');
         $fsSelected.find('.financeCode-message').text("");
         // $syncButtons.addClass('button-disabled');
@@ -192,16 +208,16 @@ function getOCSMetadata() {
           var agreement = data.json;
           console.log(agreement);
           // Extension date validation
-          if(!allowExtensionDate){
+          if(!allowExtensionDate) {
             agreement.endDate = agreement.extensionDate;
           }
           // Principal Investigator
           agreement.pInvestigator = agreement.researcher.name;
           // Donors
-          if(agreement.originalDonor){
+          if(agreement.originalDonor) {
             agreement.originalDonorName = agreement.originalDonor.name;
           }
-          if(agreement.directDonor){
+          if(agreement.directDonor) {
             agreement.directDonorName = agreement.directDonor.name;
           }
 
@@ -243,7 +259,7 @@ function getOCSMetadata() {
         }
       },
       complete: function() {
-        $fsSelected.find('.loading.syncBlock').hide(); 
+        $fsSelected.find('.loading.syncBlock').hide();
         $fsSelected.find(".financeCode").removeClass('input-loading');
         $syncButtons.removeClass('button-disabled');
         syncing = false;

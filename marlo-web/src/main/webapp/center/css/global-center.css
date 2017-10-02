@@ -800,14 +800,6 @@ img.icon {
 }
 
 .loading {
-  width: 100%;
-  height: 100%;
-  background: url(../../global/images/loading.gif) #FFF no-repeat 50%;
-  position: absolute;
-  z-index: 99;
-  opacity: 0.5;
-  top: 0;
-  left: 0;
 }
 
 .loadingBlock {

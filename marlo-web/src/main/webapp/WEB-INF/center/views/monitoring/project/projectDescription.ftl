@@ -388,13 +388,14 @@
     [#-- Finance code --]
     <div class="form-group row">
       <div class="col-md-6">
+        <div class="syncedBlock unsyncVisibles" style="display:${isSynced?string('block','none')};"></div>
         <label for="">The project contains information from:[@customForm.req required=editable /]</label>
         <div class="form-group">
         [#if syncTypes??]
           [#list syncTypes as syncType]
             [#assign syncCustomID = "radio-${syncType.id}-${index}"]
             <div class="radioFlat radio-inline">
-              <input id="${syncCustomID}" class="radio-input" type="radio" name="${customName}.centerFundingSyncType.id" value="${syncType.id}" [#if element.centerFundingSyncType??][#if (element.centerFundingSyncType.id == syncType.id)!false]checked[/#if][#else][#if syncType_index = 0]checked[/#if][/#if] />
+              <input id="${syncCustomID}" class="radio-input radioSyncType" type="radio" name="${customName}.centerFundingSyncType.id" value="${syncType.id}" [#if element.centerFundingSyncType??][#if (element.centerFundingSyncType.id == syncType.id)!false]checked[/#if][#else][#if syncType_index = 0]checked[/#if][/#if] />
               <label for="${syncCustomID}" class="radio-label"> ${(syncType.syncName)!'{sync_name}'} </label>
             </div>
           [/#list]
