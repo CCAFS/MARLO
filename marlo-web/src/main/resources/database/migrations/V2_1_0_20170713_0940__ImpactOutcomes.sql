@@ -76,11 +76,12 @@ CREATE TEMPORARY TABLE
 IF NOT EXISTS table_temp_project_milestones AS (
 
 SELECT
- pp.*,ppp.outcome_id,ppp.project_id,outc.composed_id
+ pp.*,ppp.outcome_id,ppp.project_id,outc.composed_id,mile.composed_id 'mile_composed_id'
 FROM
   project_milestones pp
 INNER JOIN project_outcomes ppp ON pp.project_outcome_id=ppp.id
 INNER JOIN crp_program_outcomes outc ON ppp.outcome_id=outc.id
+INNER JOIN crp_milestones mile ON ppp.crp_milestone_id=mile.id
 
 )
 ;
@@ -326,12 +327,10 @@ achieved_value,
 narrative_target,
 narrative_achieved,
 year
-
-
 )
 select distinct 
 pp.id,
-temp.crp_milestone_id,
+mil.id,
 temp.is_active,
 temp.active_since,
 temp.created_by,
@@ -347,6 +346,7 @@ temp.year
 from table_temp_project_milestones temp 
 INNER JOIN project_outcomes pp on pp.project_id=temp.project_id
 INNER JOIN crp_program_outcomes ppp on ppp.composed_id =temp.composed_id and ppp.id=pp.outcome_id
+inner join crp_milestones mil on mil.composed_id=temp.mile_composed_id
 ;
 
 insert into project_nextusers (
