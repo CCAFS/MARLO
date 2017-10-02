@@ -543,7 +543,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       Set<String> fsWindowsSet = new HashSet<String>();
 
       for (DeliverableFundingSource deliverableFundingSource : deliverable.getDeliverableFundingSources().stream()
-        .filter(df -> df.isActive() && df.getPhase().equals(this.getSelectedPhase())).collect(Collectors.toList())) {
+        .filter(df -> df.isActive() && df.getPhase() != null && df.getPhase().equals(this.getSelectedPhase()))
+        .collect(Collectors.toList())) {
         if (FS.isEmpty()) {
           FS += "FS" + deliverableFundingSource.getFundingSource().getId();
         } else {

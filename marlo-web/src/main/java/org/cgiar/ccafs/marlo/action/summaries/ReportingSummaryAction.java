@@ -1805,7 +1805,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         }
         // Get funding sources if exist
         for (DeliverableFundingSource dfs : deliverable.getDeliverableFundingSources().stream()
-          .filter(d -> d.isActive()).collect(Collectors.toList())) {
+          .filter(d -> d.isActive() && d.getPhase() != null && d.getPhase().equals(this.getSelectedPhase()))
+          .collect(Collectors.toList())) {
           fundingSources +=
             "● " + dfs.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getTitle() + "<br>";
         }
@@ -2435,8 +2436,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       // Get type from funding sources
       String type = "";
       List<String> typeList = new ArrayList<String>();
-      for (ProjectBudget projectBudget : project.getProjectBudgets().stream()
-        .filter(pb -> pb.isActive() && pb.getYear() == this.getSelectedYear() && pb.getFundingSource() != null)
+      for (ProjectBudget projectBudget : project
+        .getProjectBudgets().stream().filter(pb -> pb.isActive() && pb.getYear() == this.getSelectedYear()
+          && pb.getFundingSource() != null && pb.getPhase() != null && pb.getPhase().equals(this.getSelectedPhase()))
         .collect(Collectors.toList())) {
         typeList.add(
           projectBudget.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getBudgetType().getName());

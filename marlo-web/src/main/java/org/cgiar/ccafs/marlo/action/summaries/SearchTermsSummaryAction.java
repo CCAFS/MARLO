@@ -758,8 +758,10 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
         break;
       case 2:
         for (ProjectBudget pb : project.getProjectBudgets().stream()
-          .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getBudgetType() != null
-            && pb.getBudgetType().getId() == type && pb.getFundingSource() != null
+          .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getBudgetType() != null && pb.getPhase() != null
+            && pb.getPhase().equals(this.getSelectedPhase()) && pb.getBudgetType().getId() == type
+            && pb.getFundingSource() != null
+            && pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()) != null
             && pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getW1w2() != null
             && pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getW1w2().booleanValue() == true)
           .collect(Collectors.toList())) {
@@ -770,8 +772,10 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
         break;
       case 3:
         for (ProjectBudget pb : project.getProjectBudgets().stream()
-          .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getBudgetType() != null
-            && pb.getBudgetType().getId() == type && pb.getFundingSource() != null
+          .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getBudgetType() != null && pb.getPhase() != null
+            && pb.getPhase().equals(this.getSelectedPhase()) && pb.getBudgetType().getId() == type
+            && pb.getFundingSource() != null
+            && pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()) != null
             && pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getW1w2() != null
             && pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getW1w2().booleanValue() == false)
           .collect(Collectors.toList())) {
