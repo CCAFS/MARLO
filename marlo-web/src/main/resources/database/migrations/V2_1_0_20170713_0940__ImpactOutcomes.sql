@@ -76,10 +76,12 @@ CREATE TEMPORARY TABLE
 IF NOT EXISTS table_temp_project_milestones AS (
 
 SELECT
- pp.*,ppp.outcome_id,ppp.project_id
+ pp.*,ppp.outcome_id,ppp.project_id,outc.composed_id
 FROM
   project_milestones pp
 INNER JOIN project_outcomes ppp ON pp.project_outcome_id=ppp.id
+INNER JOIN crp_program_outcomes outc ON ppp.outcome_id=outc.id
+
 )
 ;
 
@@ -97,10 +99,12 @@ CREATE TEMPORARY TABLE
 IF NOT EXISTS table_temp_project_nextusers AS (
 
 SELECT
- pp.*,ppp.project_id,ppp.outcome_id
+ pp.*,ppp.project_id,ppp.outcome_id,outc.composed_id
 FROM
   project_nextusers pp
 INNER JOIN project_outcomes ppp ON pp.project_outcome_id=ppp.id
+INNER JOIN crp_program_outcomes outc ON ppp.outcome_id=outc.id
+
 )
 ;
 
@@ -285,7 +289,7 @@ id_phase
 )
 select distinct 
 temp.project_id,
-outcome_id,
+pp.id,
 temp.expected_value,
 temp.expected_unit,
 temp.achieved_value,
@@ -342,7 +346,8 @@ temp.year
 
 from table_temp_project_milestones temp 
 INNER JOIN project_outcomes pp on pp.project_id=temp.project_id
-and pp.outcome_id =temp.outcome_id
+
+INNER JOIN crp_program_outcomes ppp on ppp.outcome_id =temp.composed_id
 ;
 
 insert into project_nextusers (
@@ -373,5 +378,6 @@ temp.modification_justification,
 temp.composed_id
 from table_temp_project_nextusers temp 
 INNER JOIN project_outcomes pp on pp.project_id=temp.project_id
-and pp.outcome_id =temp.outcome_id
+INNER JOIN crp_program_outcomes ppp on ppp.outcome_id =temp.composed_id
+
 ;

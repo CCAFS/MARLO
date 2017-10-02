@@ -143,7 +143,7 @@ division_id,
 
 id_phase
 ) SELECT 
-
+distinct
 t2.deliverable_id,
 ppp.id,
 t2.partner_type,
