@@ -347,7 +347,7 @@ temp.year
 from table_temp_project_milestones temp 
 INNER JOIN project_outcomes pp on pp.project_id=temp.project_id
 
-INNER JOIN crp_program_outcomes ppp on ppp.outcome_id =temp.composed_id
+INNER JOIN crp_program_outcomes ppp on ppp.id =temp.composed_id
 ;
 
 insert into project_nextusers (
@@ -378,6 +378,6 @@ temp.modification_justification,
 temp.composed_id
 from table_temp_project_nextusers temp 
 INNER JOIN project_outcomes pp on pp.project_id=temp.project_id
-INNER JOIN crp_program_outcomes ppp on ppp.outcome_id =temp.composed_id_outcome
+INNER JOIN crp_program_outcomes ppp on ppp.id =temp.composed_id_outcome
 
 ;
