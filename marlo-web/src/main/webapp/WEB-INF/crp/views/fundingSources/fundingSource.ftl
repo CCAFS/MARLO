@@ -311,7 +311,7 @@
             [#assign budgetIndex = '-1' /]
           [/#attempt]
           
-          <small class="grayLabel pull-right"> (Remaining budget US$ <span class="projectAmount">${((fundingSource.getRemaining(year,base.actualPhase))!0)?number?string(",##0.00")}</span>) </small>
+          <small class="grayLabel pull-right"> (Remaining budget US$ <span class="projectAmount">${((fundingSource.getRemaining(year,action.getActualPhase()))!0)?number?string(",##0.00")}</span>) </small>
           
           <h5 class="sectionSubTitle">Budget Amount</h5>
           <div class="budgetsYear">

@@ -86,15 +86,15 @@ public class FundingSourceListAction extends BaseAction {
 
     Map<String, Object> source;
     if (institution == null) {
-      fundingSources = fundingSourceManager.searchFundingSources(queryParameter, year, this.getCrpID().longValue(),
-        this.getPhase().getId());
+      fundingSources =
+        fundingSourceManager.searchFundingSources(queryParameter, year, this.getCrpID().longValue(), phase.getId());
     } else {
       fundingSources = fundingSourceManager.searchFundingSourcesByInstitution(queryParameter, institution.getId(), year,
-        this.getCrpID(), this.getPhase().getId());
+        this.getCrpID(), phase.getId());
 
 
-      fundingSources.addAll(fundingSourceManager.searchFundingSources(queryParameter, year, this.getCrpID().longValue(),
-        this.getPhase().getId()));
+      fundingSources.addAll(
+        fundingSourceManager.searchFundingSources(queryParameter, year, this.getCrpID().longValue(), phase.getId()));
 
 
       // add elements to al, including duplicates
@@ -144,8 +144,8 @@ public class FundingSourceListAction extends BaseAction {
           fundingSourceBudgetManager.getByFundingSourceAndYear(fundingSource.getId(), year);
         double remainingAmount = 0;
         if (fundingSourceBudget != null && fundingSourceBudget.getBudget() != null) {
-          remainingAmount =
-            projectBudgetManager.getReaminingAmount(fundingSource.getId(), year, fundingSourceBudget.getBudget());
+          remainingAmount = projectBudgetManager.getReaminingAmount(fundingSource.getId(), year,
+            fundingSourceBudget.getBudget(), this.getActualPhase().getId());
         }
 
         source.put("amount", remainingAmount);
@@ -157,9 +157,6 @@ public class FundingSourceListAction extends BaseAction {
     return SUCCESS;
   }
 
-  public Phase getPhase() {
-    return phase;
-  }
 
   public List<Map<String, Object>> getSources() {
     return sources;
@@ -177,9 +174,6 @@ public class FundingSourceListAction extends BaseAction {
     phase = this.getActualPhase();
   }
 
-  public void setPhase(Phase phase) {
-    this.phase = phase;
-  }
 
   public void setSources(List<Map<String, Object>> sources) {
     this.sources = sources;

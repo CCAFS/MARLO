@@ -372,8 +372,8 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
   public double getTotalGender(long institutionId, int year, long budgetType, Integer coFinancing) {
 
-    List<ProjectBudget> budgets =
-      projectBudgetManager.getByParameters(institutionId, year, budgetType, projectID, coFinancing);
+    List<ProjectBudget> budgets = projectBudgetManager.getByParameters(institutionId, year, budgetType, projectID,
+      coFinancing, this.getActualPhase().getId());
 
     double totalGender = 0;
     if (budgets != null) {

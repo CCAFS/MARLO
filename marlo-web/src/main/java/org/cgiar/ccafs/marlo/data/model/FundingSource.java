@@ -221,6 +221,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   public double getRemaining(int year, Phase phase) {
     double used = 0;
+
     double total = 0;
     for (FundingSourceBudget fundingSourceBudget : this.getFundingSourceBudgets().stream()
       .filter(c -> c.isActive() && c.getYear() != null && c.getYear().intValue() == year && c.getPhase().equals(phase))

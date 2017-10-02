@@ -78,7 +78,7 @@ public interface ProjectBudgetManager {
    * @return a list from ProjectBudget null if no exist records
    */
   public List<ProjectBudget> getByParameters(long institutionID, int year, long budgetTypeId, long projectId,
-    Integer coFinancing);
+    Integer coFinancing, long idPhase);
 
   /**
    * This method gets a projectBudget object by a given projectBudget identifier.
@@ -95,7 +95,7 @@ public interface ProjectBudgetManager {
    * @param year - Specific year
    * @return a remaining Budget amount.
    */
-  public double getReaminingAmount(long fundingSourceID, int year, double budget);
+  public double getReaminingAmount(long fundingSourceID, int year, double budget, long idPhase);
 
   /**
    * This method saves the information of the given projectBudget
