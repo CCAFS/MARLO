@@ -277,29 +277,31 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
       0);
 
     for (FundingSource fundingSource : this.getLoggedCrp().getFundingSources().stream()
-      .filter(fs -> fs.isActive() && fs.getFundingSourceInfo(this.getSelectedPhase()).getBudgetType() != null)
+      .filter(fs -> fs.isActive() && fs.getFundingSourceInfo(this.getSelectedPhase()) != null
+        && fs.getFundingSourceInfo(this.getSelectedPhase()).getBudgetType() != null)
       .collect(Collectors.toList())) {
 
-      String fsTitle = fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getTitle();
+      String fsTitle = fundingSource.getFundingSourceInfo().getTitle();
       Long fsId = fundingSource.getId();
-      String financeCode = fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getFinanceCode();
+      String financeCode = fundingSource.getFundingSourceInfo().getFinanceCode();
       String donor = null;
 
 
-      String fsWindow = fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getBudgetType().getName();
-      if (hasW1W2Co && fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getW1w2() != null
-        && fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getW1w2()) {
+      String fsWindow = fundingSource.getFundingSourceInfo().getBudgetType().getName();
+      if (hasW1W2Co && fundingSource.getFundingSourceInfo().getW1w2() != null
+        && fundingSource.getFundingSourceInfo().getW1w2()) {
         fsWindow = "W1/W2 Co-Financing";
       }
-      if (fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getInstitution() != null) {
-        donor = fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getInstitution().getComposedName();
+      if (fundingSource.getFundingSourceInfo().getInstitution() != null) {
+        donor = fundingSource.getFundingSourceInfo().getInstitution().getComposedName();
       }
 
       for (ProjectBudget projectBudget : fundingSource.getProjectBudgets().stream()
-        .filter(pb -> pb.isActive() && pb.getYear() == this.getSelectedYear() && pb.getProject() != null
-          && pb.getProject().isActive() && pb.getProject().getProjecInfoPhase(this.getActualPhase()).getStatus() != null
-          && pb.getProject().getProjecInfoPhase(this.getActualPhase()).getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
+        .filter(pb -> pb.isActive() && pb.getPhase() != null && pb.getPhase().equals(this.getSelectedPhase())
+          && pb.getYear() == this.getSelectedYear() && pb.getProject() != null && pb.getProject().isActive()
+          && pb.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
+          && pb.getProject().getProjectInfo().getStatus() != null && pb.getProject().getProjectInfo().getStatus()
+            .intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
         .collect(Collectors.toList())) {
         String leadPartner = "";
         String projectId = "";
@@ -313,7 +315,8 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
           for (ProjectFocus projectFocuses : projectBudget.getProject().getProjectFocuses().stream()
             .sorted((o1, o2) -> o1.getCrpProgram().getAcronym().compareTo(o2.getCrpProgram().getAcronym()))
             .filter(
-              c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+              c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+                && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
             .collect(Collectors.toList())) {
             if (flagships == null || flagships.isEmpty()) {
               flagships = programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
@@ -326,7 +329,9 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
           // get CoAs related to the project sorted by acronym
           if (projectBudget.getProject().getProjectClusterActivities() != null) {
             for (ProjectClusterActivity projectClusterActivity : projectBudget.getProject()
-              .getProjectClusterActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
+              .getProjectClusterActivities().stream()
+              .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+              .collect(Collectors.toList())) {
               if (coas == null || coas.isEmpty()) {
                 coas = projectClusterActivity.getCrpClusterOfActivity().getIdentifier();
               } else {
@@ -347,12 +352,14 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
 
         // Funding sources locations
         String globalDimension = null;
-        globalDimension = fundingSource.getFundingSourceInfo(this.getSelectedPhase()).isGlobal() ? "Yes" : "No";
+        globalDimension = fundingSource.getFundingSourceInfo().isGlobal() ? "Yes" : "No";
 
         String regionalDimension = "";
         // Regions
-        for (FundingSourceLocation fundingSourceLocation : fundingSource.getFundingSourceLocations().stream().filter(
-          fl -> fl.isActive() && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 1)
+        for (FundingSourceLocation fundingSourceLocation : fundingSource.getFundingSourceLocations().stream()
+          .filter(
+            fl -> fl.isActive() && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 1
+              && fl.getPhase() != null && fl.getPhase().equals(this.getSelectedPhase()))
           .collect(Collectors.toList())) {
           if (regionalDimension.isEmpty()) {
             regionalDimension += fundingSourceLocation.getLocElement().getName();
@@ -361,8 +368,9 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
           }
         }
         // Scope Regions
-        for (FundingSourceLocation fundingSourceLocation : fundingSource.getFundingSourceLocations().stream()
-          .filter(fl -> fl.isActive() && fl.getLocElementType() != null && fl.getLocElement() == null)
+        for (FundingSourceLocation fundingSourceLocation : fundingSource
+          .getFundingSourceLocations().stream().filter(fl -> fl.isActive() && fl.getLocElementType() != null
+            && fl.getLocElement() == null && fl.getPhase() != null && fl.getPhase().equals(this.getSelectedPhase()))
           .collect(Collectors.toList())) {
           if (regionalDimension.isEmpty()) {
             regionalDimension += fundingSourceLocation.getLocElementType().getName();
@@ -376,8 +384,10 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
         }
 
         String specificCountries = "";
-        for (FundingSourceLocation fundingSourceLocation : fundingSource.getFundingSourceLocations().stream().filter(
-          fl -> fl.isActive() && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 2)
+        for (FundingSourceLocation fundingSourceLocation : fundingSource.getFundingSourceLocations().stream()
+          .filter(
+            fl -> fl.isActive() && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 2
+              && fl.getPhase() != null && fl.getPhase().equals(this.getSelectedPhase()))
           .collect(Collectors.toList())) {
           if (specificCountries.isEmpty()) {
             specificCountries += fundingSourceLocation.getLocElement().getName();
@@ -411,64 +421,62 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
 
-    for (FundingSource fundingSource : this.getLoggedCrp().getFundingSources().stream()
-      .filter(fs -> fs.isActive() && fs.getFundingSourceInfo(this.getSelectedPhase()).getBudgetType() != null)
+    for (FundingSource fundingSource : this.getLoggedCrp().getFundingSources().stream().filter(fs -> fs.isActive()
+      && fs.getFundingSourceInfo(this.getSelectedPhase()) != null && fs.getFundingSourceInfo().getBudgetType() != null)
       .collect(Collectors.toList())) {
 
-      String fsTitle = fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getTitle();
+      String fsTitle = fundingSource.getFundingSourceInfo().getTitle();
       Long fsId = fundingSource.getId();
-      String financeCode = fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getFinanceCode();
+      String financeCode = fundingSource.getFundingSourceInfo().getFinanceCode();
       String leadPartner = "";
-      String summary = fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getDescription();
+      String summary = fundingSource.getFundingSourceInfo().getDescription();
       String starDate = "";
-      if (fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getStartDate() != null) {
-        starDate = formatter.format(fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getStartDate());
+      if (fundingSource.getFundingSourceInfo().getStartDate() != null) {
+        starDate = formatter.format(fundingSource.getFundingSourceInfo().getStartDate());
       }
       String endDate = "";
 
-      if (fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getEndDate() != null) {
-        endDate = formatter.format(fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getEndDate());
+      if (fundingSource.getFundingSourceInfo().getEndDate() != null) {
+        endDate = formatter.format(fundingSource.getFundingSourceInfo().getEndDate());
       }
 
       String contract = "";
       String contractName = "";
 
-      if (fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getFile() != null) {
-        contract = this.getFundingSourceFileURL()
-          + fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getFile().getFileName();
-        contractName = fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getFile().getFileName();
+      if (fundingSource.getFundingSourceInfo().getFile() != null) {
+        contract = this.getFundingSourceFileURL() + fundingSource.getFundingSourceInfo().getFile().getFileName();
+        contractName = fundingSource.getFundingSourceInfo().getFile().getFileName();
       }
 
       String status = "";
       status = fundingSource.getStatusName();
 
       String piName = "";
-      piName = fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getContactPersonName();
+      piName = fundingSource.getFundingSourceInfo().getContactPersonName();
 
       String piEmail = "";
       // If PIEmail is shown, evaluate the PIEmail else isn't necesary
       if (showPIEmail) {
-        piEmail = fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getContactPersonEmail();
+        piEmail = fundingSource.getFundingSourceInfo().getContactPersonEmail();
       }
       String donor = "";
-      if (fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getInstitution() != null) {
-        donor = fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getInstitution().getComposedName();
+      if (fundingSource.getFundingSourceInfo().getInstitution() != null) {
+        donor = fundingSource.getFundingSourceInfo().getInstitution().getComposedName();
       }
 
 
       for (FundingSourceInstitution fsIns : fundingSource.getFundingSourceInstitutions().stream()
-        .filter(fsi -> fsi.isActive()).collect(Collectors.toList())) {
+        .filter(fsi -> fsi.isActive() && fsi.getPhase() != null && fsi.getPhase().equals(this.getSelectedPhase()))
+        .collect(Collectors.toList())) {
         if (leadPartner.isEmpty()) {
           leadPartner = fsIns.getInstitution().getComposedName();
           // Check IFPRI Division
           if (this.showIfpriDivision) {
             if (fsIns.getInstitution().getAcronym() != null && fsIns.getInstitution().getAcronym().equals("IFPRI")
-              && fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getPartnerDivision() != null
-              && fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getPartnerDivision().getName() != null
-              && !fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getPartnerDivision().getName().trim()
-                .isEmpty()) {
-              leadPartner +=
-                " (" + fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getPartnerDivision().getName() + ")";
+              && fundingSource.getFundingSourceInfo().getPartnerDivision() != null
+              && fundingSource.getFundingSourceInfo().getPartnerDivision().getName() != null
+              && !fundingSource.getFundingSourceInfo().getPartnerDivision().getName().trim().isEmpty()) {
+              leadPartner += " (" + fundingSource.getFundingSourceInfo().getPartnerDivision().getName() + ")";
             }
           }
         } else {
@@ -476,26 +484,25 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
           // Check IFPRI Division
           if (this.showIfpriDivision) {
             if (fsIns.getInstitution().getAcronym() != null && fsIns.getInstitution().getAcronym().equals("IFPRI")
-              && fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getPartnerDivision().getName() != null
-              && !fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getPartnerDivision().getName().trim()
-                .isEmpty()) {
-              leadPartner +=
-                " (" + fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getPartnerDivision().getName() + ")";
+              && fundingSource.getFundingSourceInfo().getPartnerDivision().getName() != null
+              && !fundingSource.getFundingSourceInfo().getPartnerDivision().getName().trim().isEmpty()) {
+              leadPartner += " (" + fundingSource.getFundingSourceInfo().getPartnerDivision().getName() + ")";
             }
           }
         }
       }
-      String fsWindow = fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getBudgetType().getName();
-      if (hasW1W2Co && fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getW1w2() != null
-        && fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getW1w2()) {
+      String fsWindow = fundingSource.getFundingSourceInfo().getBudgetType().getName();
+      if (hasW1W2Co && fundingSource.getFundingSourceInfo().getW1w2() != null
+        && fundingSource.getFundingSourceInfo().getW1w2()) {
         fsWindow = "W1/W2 Co-Financing";
       }
 
 
       String projectId = "";
       List<String> projectList = new ArrayList<String>();
-      for (ProjectBudget projectBudget : fundingSource.getProjectBudgets().stream()
-        .filter(pb -> pb.isActive() && pb.getYear() == this.getSelectedYear() && pb.getProject() != null)
+      for (ProjectBudget projectBudget : fundingSource
+        .getProjectBudgets().stream().filter(pb -> pb.isActive() && pb.getYear() == this.getSelectedYear()
+          && pb.getProject() != null && pb.getPhase() != null && pb.getPhase().equals(this.getSelectedPhase()))
         .collect(Collectors.toList())) {
         projectList.add(projectBudget.getProject().getId().toString());
       }
@@ -515,7 +522,8 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
         for (ProjectFocus projectFocuses : projectById.getProjectFocuses().stream()
           .sorted((o1, o2) -> o1.getCrpProgram().getAcronym().compareTo(o2.getCrpProgram().getAcronym()))
           .filter(
-            c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+            c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+              && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
           .collect(Collectors.toList())) {
           flagshipsList.add(programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym());
         }
@@ -523,7 +531,8 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
         // get CoAs related to the project sorted by acronym
         if (projectById.getProjectClusterActivities() != null) {
           for (ProjectClusterActivity projectClusterActivity : projectById.getProjectClusterActivities().stream()
-            .filter(c -> c.isActive()).collect(Collectors.toList())) {
+            .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+            .collect(Collectors.toList())) {
             coasList.add(projectClusterActivity.getCrpClusterOfActivity().getIdentifier());
           }
         }
@@ -559,15 +568,17 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
       Double totalBudgetProjects = 0.0;
 
       for (FundingSourceBudget fundingSourceBudget : fundingSource.getFundingSourceBudgets().stream()
-        .filter(fsb -> fsb.isActive() && fsb.getYear() != null && fsb.getYear().intValue() == this.getSelectedYear())
+        .filter(fsb -> fsb.isActive() && fsb.getYear() != null && fsb.getYear().intValue() == this.getSelectedYear()
+          && fsb.getPhase() != null && fsb.getPhase().equals(this.getSelectedPhase()))
         .collect(Collectors.toList())) {
         totalBudget += fundingSourceBudget.getBudget();
       }
 
       for (ProjectBudget projectBudget : fundingSource.getProjectBudgets().stream()
         .filter(pb -> pb.isActive() && pb.getYear() == this.getSelectedYear() && pb.getProject().isActive()
-          && pb.getProject().getProjecInfoPhase(this.getActualPhase()).getStatus() != null
-          && pb.getProject().getProjecInfoPhase(this.getActualPhase()).getStatus() == 2)
+          && pb.getPhase() != null && pb.getPhase().equals(this.getSelectedPhase())
+          && pb.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null && pb.getPhase() != null
+          && pb.getProject().getProjectInfo().getStatus() != null && pb.getProject().getProjectInfo().getStatus() == 2)
         .collect(Collectors.toList())) {
         totalBudgetProjects += projectBudget.getAmount();
       }
@@ -576,7 +587,8 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
       String deliverables = "";
       for (DeliverableFundingSource deliverableFundingSource : this.deliverableFundingSourceManager.findAll().stream()
         .filter(df -> df.getFundingSource().getId().longValue() == fundingSource.getId().longValue() && df.isActive()
-          && df.getDeliverable() != null && df.getDeliverable().isActive() && df.getDeliverable().getProject() != null
+          && df.getPhase() != null && df.getPhase().equals(this.getSelectedPhase()) && df.getDeliverable() != null
+          && df.getDeliverable().isActive() && df.getDeliverable().getProject() != null
           && df.getDeliverable().getProject().isActive())
         .sorted((df1, df2) -> Long.compare(df1.getDeliverable().getId(), df2.getDeliverable().getId()))
         .collect(Collectors.toList())) {
@@ -594,13 +606,14 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
 
       // Funding sources locations
       String globalDimension = null;
-      globalDimension = fundingSource.getFundingSourceInfo(this.getSelectedPhase()).isGlobal() ? "Yes" : "No";
+      globalDimension = fundingSource.getFundingSourceInfo().isGlobal() ? "Yes" : "No";
 
       String regionalDimension = "";
       // Regions
       for (FundingSourceLocation fundingSourceLocation : fundingSource.getFundingSourceLocations().stream()
         .filter(
-          fl -> fl.isActive() && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 1)
+          fl -> fl.isActive() && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 1
+            && fl.getPhase() != null && fl.getPhase().equals(this.getSelectedPhase()))
         .collect(Collectors.toList())) {
         if (regionalDimension.isEmpty()) {
           regionalDimension += fundingSourceLocation.getLocElement().getName();
@@ -609,8 +622,9 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
         }
       }
       // Scope Regions
-      for (FundingSourceLocation fundingSourceLocation : fundingSource.getFundingSourceLocations().stream()
-        .filter(fl -> fl.isActive() && fl.getLocElementType() != null && fl.getLocElement() == null)
+      for (FundingSourceLocation fundingSourceLocation : fundingSource
+        .getFundingSourceLocations().stream().filter(fl -> fl.isActive() && fl.getLocElementType() != null
+          && fl.getLocElement() == null && fl.getPhase() != null && fl.getPhase().equals(this.getSelectedPhase()))
         .collect(Collectors.toList())) {
         if (regionalDimension.isEmpty()) {
           regionalDimension += fundingSourceLocation.getLocElementType().getName();
@@ -626,7 +640,8 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
       String specificCountries = "";
       for (FundingSourceLocation fundingSourceLocation : fundingSource.getFundingSourceLocations().stream()
         .filter(
-          fl -> fl.isActive() && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 2)
+          fl -> fl.isActive() && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 2
+            && fl.getPhase() != null && fl.getPhase().equals(this.getSelectedPhase()))
         .collect(Collectors.toList())) {
         if (specificCountries.isEmpty()) {
           specificCountries += fundingSourceLocation.getLocElement().getName();
