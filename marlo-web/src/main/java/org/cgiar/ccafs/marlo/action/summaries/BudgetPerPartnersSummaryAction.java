@@ -427,7 +427,7 @@ public class BudgetPerPartnersSummaryAction extends BaseSummariesAction implemen
     // sort projects by id
     projects.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
     for (Project project : projects) {
-      System.out.println(project.getId());
+      // System.out.println(project.getId());
       // Get PPA institutions with budgets
       List<Institution> institutionsList = new ArrayList<>();
 

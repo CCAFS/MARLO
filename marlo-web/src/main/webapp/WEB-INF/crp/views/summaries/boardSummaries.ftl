@@ -116,7 +116,7 @@
     { "title": "summaries.board.report.fundingSourceSummary", 
       "description": "summaries.board.report.fundingSourceSummary.description",
       "namespace": "/projects",
-      "action": "${crpSession}/budgetByCoAsSummary",
+      "action": "${crpSession}/FundingSourcesSummary",
       "formats": [ "Excel" ],
       "cycles": [ "Planning" ]
     }

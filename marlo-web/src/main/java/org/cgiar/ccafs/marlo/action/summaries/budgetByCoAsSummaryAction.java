@@ -232,7 +232,8 @@ public class budgetByCoAsSummaryAction extends BaseSummariesAction implements Su
 
     for (ProjectBudgetsCluserActvity pb : project.getProjectBudgetsCluserActvities().stream()
       .filter(pb -> pb.isActive() && pb.getYear() == this.getSelectedYear() && pb.getCrpClusterOfActivity() != null
-        && pb.getCrpClusterOfActivity().getId() == activitiyId && type == pb.getBudgetType().getId())
+        && pb.getCrpClusterOfActivity().getId() == activitiyId && type == pb.getBudgetType().getId()
+        && pb.getPhase() != null && pb.getPhase().equals(this.getSelectedPhase()))
       .collect(Collectors.toList())) {
       return pb;
     }
@@ -342,7 +343,8 @@ public class budgetByCoAsSummaryAction extends BaseSummariesAction implements Su
       totalCenter = this.getTotalYear(this.getSelectedYear(), 4, project);
 
       // get total gender per year
-      for (ProjectPartner pp : project.getProjectPartners().stream().filter(pp -> pp.isActive())
+      for (ProjectPartner pp : project.getProjectPartners().stream()
+        .filter(pp -> pp.isActive() && pp.getPhase() != null && pp.getPhase().equals(this.getSelectedPhase()))
         .collect(Collectors.toList())) {
         // System.out.println(pp.getInstitution().getComposedName());
         if (this.isPPA(pp.getInstitution())) {
@@ -355,7 +357,9 @@ public class budgetByCoAsSummaryAction extends BaseSummariesAction implements Su
       }
 
       List<ProjectClusterActivity> coAs = new ArrayList<>();
-      coAs = project.getProjectClusterActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+      coAs = project.getProjectClusterActivities().stream()
+        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+        .collect(Collectors.toList());
 
       if (coAs.size() == 1) {
         String projectId = "", title = "", projectUrl = "", flagships = "", regions = "", coa = "";
@@ -368,7 +372,8 @@ public class budgetByCoAsSummaryAction extends BaseSummariesAction implements Su
         for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
           .sorted((o1, o2) -> o1.getCrpProgram().getAcronym().compareTo(o2.getCrpProgram().getAcronym()))
           .filter(
-            c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+            c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+              && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
           .collect(Collectors.toList())) {
           flagshipsList.add(programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()));
         }
@@ -389,13 +394,13 @@ public class budgetByCoAsSummaryAction extends BaseSummariesAction implements Su
             for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
               .sorted((c1, c2) -> c1.getCrpProgram().getAcronym().compareTo(c2.getCrpProgram().getAcronym()))
               .filter(
-                c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+                c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()
+                  && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
               .collect(Collectors.toList())) {
               regionsList.add(programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()));
             }
           }
-          if (project.getProjecInfoPhase(this.getActualPhase()).getNoRegional() != null
-            && project.getProjecInfoPhase(this.getActualPhase()).getNoRegional()) {
+          if (project.getProjectInfo().getNoRegional() != null && project.getProjectInfo().getNoRegional()) {
             regions = "Global";
             if (regionsList.size() > 0) {
               LOG.warn("Project is global and has regions selected");
@@ -468,13 +473,14 @@ public class budgetByCoAsSummaryAction extends BaseSummariesAction implements Su
           coa = clusterActivity.getCrpClusterOfActivity().getComposedName();
           projectId = project.getId().toString();
           projectUrl = "P" + project.getId().toString();
-          title = project.getProjecInfoPhase(this.getActualPhase()).getTitle();
+          title = project.getProjecInfoPhase(this.getSelectedPhase()).getTitle();
           // get Flagships related to the project sorted by acronym
           List<CrpProgram> flagshipsList = new ArrayList<>();
           for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
             .sorted((o1, o2) -> o1.getCrpProgram().getAcronym().compareTo(o2.getCrpProgram().getAcronym()))
             .filter(
-              c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+              c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+                && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
             .collect(Collectors.toList())) {
             flagshipsList.add(programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()));
           }
@@ -495,13 +501,13 @@ public class budgetByCoAsSummaryAction extends BaseSummariesAction implements Su
             for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
               .sorted((c1, c2) -> c1.getCrpProgram().getAcronym().compareTo(c2.getCrpProgram().getAcronym()))
               .filter(
-                c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+                c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()
+                  && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
               .collect(Collectors.toList())) {
               regionsList.add(programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()));
             }
           }
-          if (project.getProjecInfoPhase(this.getActualPhase()).getNoRegional() != null
-            && project.getProjecInfoPhase(this.getActualPhase()).getNoRegional()) {
+          if (project.getProjectInfo().getNoRegional() != null && project.getProjectInfo().getNoRegional()) {
             regions = "Global";
             if (regionsList.size() > 0) {
               LOG.warn("Project is global and has regions selected");
@@ -597,8 +603,8 @@ public class budgetByCoAsSummaryAction extends BaseSummariesAction implements Su
     double total = 0;
 
     for (ProjectBudget pb : project.getProjectBudgets().stream()
-      .filter(
-        pb -> pb.isActive() && pb.getYear() == year && pb.getBudgetType() != null && pb.getBudgetType().getId() == type)
+      .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getBudgetType() != null
+        && pb.getBudgetType().getId() == type && pb.getPhase() != null && pb.getPhase().equals(this.getSelectedPhase()))
       .collect(Collectors.toList())) {
       total = total + pb.getAmount();
     }
