@@ -1,4 +1,4 @@
-var isSynced, $syncButtons, $unSyncButtons, syncing;
+var isSynced, $syncButtons, $unSyncButtons, $fsSelected, syncing;
 var allowExtensionDate;
 $(document).ready(initSync);
 
@@ -7,8 +7,8 @@ function initSync() {
   syncing = false;
   allowExtensionDate = true;
   isSynced = $('#isSynced').val() === "true";
-  $syncButtons = $("#fillMetadata .checkButton, #fillMetadata .updateButton");
-  $unSyncButtons = $("#fillMetadata .uncheckButton");
+  $syncButtons = $(".fillMetadata .checkButton, .fillMetadata .updateButton");
+  $unSyncButtons = $(".fillMetadata .uncheckButton");
 
   if(!isSynced) {
     // Set Datepicker
@@ -27,6 +27,7 @@ function initSync() {
  */
 
 function syncMetadata() {
+  $fsSelected = $(this).parents('.fsSync');
   getOCSMetadata();
 }
 
@@ -34,11 +35,11 @@ function setMetadata(data) {
   console.log(data);
 
   // Clear inputs hidden from selects disabled
-  $('input.selectHiddenInput').remove();
+  $fsSelected.find('input.selectHiddenInput').remove();
 
   // Text area & Inputs fields
   $.each(data, function(key,value) {
-    var $parent = $('.metadataElement-' + key);
+    var $parent = $fsSelected.find('.metadataElement-' + key);
     var $input = $parent.find(".metadataValue");
     var $spanSuggested = $parent.find(".metadataSuggested");
     var $hide = $parent.find('.hide');
@@ -76,17 +77,17 @@ function setMetadata(data) {
 
 function syncFundingSource() {
   // Hide Sync Button & dissemination channel
-  $('#fillMetadata .checkButton, .disseminationChannelBlock').hide('slow');
+  $fsSelected.find('.fillMetadata .checkButton, .disseminationChannelBlock').hide('slow');
   // Show UnSync & Update Button
-  $('#fillMetadata .unSyncBlock').show();
+  $fsSelected.find('.fillMetadata .unSyncBlock').show();
   // Hide some components
-  $('.syncVisibles').hide();
+  $fsSelected.find('.syncVisibles').hide();
   // Set hidden inputs
-  $('#fillMetadata input:hidden').val(true);
+  $fsSelected.find('.fillMetadata input:hidden').val(true);
   // Dissemination URL
-  $('.financeCode').attr('readOnly', true);
+  $fsSelected.find('.financeCode').attr('readOnly', true);
   // Update Grant total amount triggering the currency inputs
-  $('.currencyInput').trigger('keyup');
+  $fsSelected.find('.currencyInput').trigger('keyup');
   // Update Funding source last update
   var today = new Date();
   var dd = today.getDate();
@@ -99,11 +100,11 @@ function syncFundingSource() {
   if(mm<10){
       mm='0'+mm;
   } 
-  $('.fundingSourceSyncedDate').val(yyyy+'-'+mm+'-'+dd);
-  $('.lastDaySync').show();
-  $('.lastDaySync span').html($.datepicker.formatDate( "M dd, yy", new Date(yyyy, mm -1, dd) ));
+  $fsSelected.find('.fundingSourceSyncedDate').val(yyyy+'-'+mm+'-'+dd);
+  $fsSelected.find('.lastDaySync').show();
+  $fsSelected.find('.lastDaySync span').html($.datepicker.formatDate( "M dd, yy", new Date(yyyy, mm -1, dd) ));
   // Hide Date labels
-  $('.dateLabel').addClass('disabled');
+  $fsSelected.find('.dateLabel').addClass('disabled');
   // Update component
   $(document).trigger('updateComponent');
   
@@ -112,8 +113,9 @@ function syncFundingSource() {
 }
 
 function unSyncFundingSource() {
+  $fsSelected = $(this).parents('.fsSync');
   // Show metadata
-  $('[class*="metadataElement"]').each(function(i,e) {
+  $fsSelected.find('[class*="metadataElement"]').each(function(i,e) {
     var $parent = $(e);
     var $input = $parent.find('.metadataValue');
     var $spanSuggested = $parent.find(".metadataSuggested");
@@ -138,21 +140,21 @@ function unSyncFundingSource() {
   });
 
   // Show Sync Button & dissemination channel
-  $('#fillMetadata .checkButton, .disseminationChannelBlock').show('slow');
+  $fsSelected.find('.fillMetadata .checkButton, .disseminationChannelBlock').show('slow');
   // Hide UnSync & Update Button
-  $('#fillMetadata .unSyncBlock').hide();
+  $fsSelected.find('.fillMetadata .unSyncBlock').hide();
   // Hide grand amount
-  $('#grantTotalAmount').hide();
+  $fsSelected.find('#grantTotalAmount').hide();
   // Show some components
-  $('.syncVisibles').show();
+  $fsSelected.find('.syncVisibles').show();
   // Set hidden inputs
-  $('#fillMetadata input:hidden').val(false);
+  $fsSelected.find('.fillMetadata input:hidden').val(false);
   // Dissemination URL
-  $('.financeCode').attr('readOnly', false);
+  $fsSelected.find('.financeCode').attr('readOnly', false);
   // show Date labels
-  $('.dateLabel').removeClass('disabled');
+  $fsSelected.find('.dateLabel').removeClass('disabled');
   // Hide Last update label
-  $('.lastDaySync').hide();
+  $fsSelected.find('.lastDaySync').hide();
   // Set datepicker
   settingDate(".startDateInput", ".endDateInput", ".extensionDateInput");
 
@@ -163,9 +165,10 @@ function unSyncFundingSource() {
   isSynced = false;
 }
 
-function getOCSMetadata() {
-  var currentCode = $('input.financeCode').val();
+function getOCSMetadata() { 
+  var currentCode = $fsSelected.find('input.financeCode').val();
   if(!currentCode || syncing){
+    notificationError("You must enter a finance code.");
     return
   }
   
@@ -173,13 +176,15 @@ function getOCSMetadata() {
   $.ajax({
       'url': baseURL + '/ocsService.do',
       'data': {
-        ocsCode: $('input.financeCode').val()
+        ocsCode: currentCode
       },
       beforeSend: function() {
-        $('.loading.syncBlock').show(); 
-        $(".financeCode").addClass('input-loading');
-        $('.financeCode-message').text("");
-        $syncButtons.addClass('button-disabled');
+        
+        $fsSelected.find('.loading.syncBlock').show(); 
+        
+        $fsSelected.find(".financeCode").addClass('input-loading');
+        $fsSelected.find('.financeCode-message').text("");
+        // $syncButtons.addClass('button-disabled');
         syncing = true;
       },
       success: function(data) {
@@ -199,9 +204,7 @@ function getOCSMetadata() {
           if(agreement.directDonor){
             agreement.directDonorName = agreement.directDonor.name;
           }
-          if(agreement.directDonor){
-            agreement.donorName = agreement.donor.name;
-          }
+
           // Validate extension date
           if(agreement.extensionDate == "1900-01-01") {
             agreement.extensionDate = "";
@@ -223,30 +226,30 @@ function getOCSMetadata() {
             agreement.contractStatusId = 2;
           }
           // Set Countries
-          $('#countryList ul').empty();
+          $fsSelected.find('#countryList ul').empty();
           $.each(agreement.countries, function(i,e) {
             addCountry(e.code, e.description, e.percentage);
           });
 
           // Set Grand Amount
-          $('#grantTotalAmount .amount').text(setCurrencyFormat(agreement.grantAmount));
-          $('#grantTotalAmount').show();
+          $fsSelected.find('#grantTotalAmount .amount').text(setCurrencyFormat(agreement.grantAmount));
+          $fsSelected.find('#grantTotalAmount').show();
 
           // Set Metadata
           setMetadata(agreement);
 
         } else {
-          $('.financeCode-message').text("Agreement " + currentCode + " not found");
+          $fsSelected.find('.financeCode-message').text("Agreement " + currentCode + " not found");
         }
       },
       complete: function() {
-        $('.loading.syncBlock').hide(); 
-        $(".financeCode").removeClass('input-loading');
+        $fsSelected.find('.loading.syncBlock').hide(); 
+        $fsSelected.find(".financeCode").removeClass('input-loading');
         $syncButtons.removeClass('button-disabled');
         syncing = false;
       },
       error: function() {
-        $('#metadata-output').empty().append("Invalid URL for searching metadata");
+        $fsSelected.find('.metadata-output').empty().append("Invalid URL for searching metadata");
       }
   });
 }

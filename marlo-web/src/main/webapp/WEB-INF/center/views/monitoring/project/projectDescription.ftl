@@ -111,21 +111,19 @@
             
            
            
-            [#-- CRP Project Contributions --]
-            <div class="form-group ">
-              <label>[@s.text name="projectDescription.crpCont" /]</label>
-              <div class="borderBox fundingSourceList" listname="project.fundingSources">
+            [#-- CRP Project Contributions List --]
+            <div class="form-group">
+              <label>[@s.text name="projectDescription.crpCont" /]:</label>
+              <div class="fundingSourceList" listname="project.fundingSources">
                 [#if project.fundingSources?has_content]
                   [#list project.fundingSources as fundingSource]
                     [@fundingSourceMacro element=fundingSource name="project.fundingSources"  index=fundingSource_index /]
                   [/#list]
                 [/#if]
-                <p class="text-center inf" style="display:${(project.fundingSources?has_content)?string('none','block')}">[@s.text name="projectDescription.notCrpCont" /]</p>
               </div>
+              [#-- Add contribution Button --]
               [#if editable]
-              <div class="text-right">
-                <div class="button-green addFundingSource"><span class="glyphicon glyphicon-plus-sign"></span>[@s.text name="Add Contribution" /]</div>
-              </div>
+                <div class="text-center"><div class="addFundingSource bigAddButton"><span class="glyphicon glyphicon-plus-sign"></span>[@s.text name="Add Contribution" /]</div></div>
               [/#if]
             </div>  
             
@@ -367,68 +365,98 @@
 
 
 [#macro fundingSourceMacro element name index=-1 isTemplate=false]  
-  [#assign fundingSourceCustomName = "${name}[${index}]" /]
-  <div id="fundingSource-${isTemplate?string('template',(element.id)!)}" class="fundingSources  borderBox row"  style="display:${isTemplate?string('none','block')}">
-    [#if editable]<div class="removeFundingSource removeIcon" title="Remove funding source"></div>[/#if] 
-    <input class="id" type="hidden" name="${fundingSourceCustomName}.id" value="${(element.id)!-1}" />    
+  [#local customName = "${name}[${index}]" /]
+  [#local isSynced = (element.sync)!false ]
+  [#local isOCS = (element.centerFundingSyncType.id == 1)!false ]
+  <div id="fundingSource-${isTemplate?string('template',(element.id)!)}" class="fundingSources fsSync simpleBox"  style="display:${isTemplate?string('none','block')}">
+    [#-- Loading block --]
+    <div class="loading syncBlock" style="display:none"></div>
     
+    [#-- Remove Button --]
+    [#if editable]<div class="removeFundingSource removeElement sm" title="Remove Milestone"></div>[/#if]
+
+    [#-- Index --]
+    <div class="leftHead sm">
+      <span class="index">${index+1}</span>
+      <span class="elementId"> Funding Source</span>
+    </div>
+    <br />
+
+    [#-- Hidden inputs --]
+    <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!-1}" />    
     
     [#-- Finance code --]
-            <div class="form-group row">
-              <div id="disseminationUrl" class="col-md-offset-6 col-md-6">
-                <div class="url-field">
-                  [@customForm.input name="${fundingSourceCustomName}.code" i18nkey="Code" className="financeCode" type="text" disabled=!editable  required=true editable=editable /]
-                  <span class="financeCode-message"></span>
-                </div>
-                <div class="buttons-field">
-                  [#if editable]
-                    [#assign isSynced = false ]
-                    <div id="fillMetadata">
-                      <input type="hidden" name="fundingSource.synced" value="${isSynced?string}" />
-                      [#-- Sync Button --]
-                      <div class="checkButton" style="display:${isSynced?string('none','block')};">[@s.text name="form.buttons.sync" /]</div>
-                      <div class="unSyncBlock" style="display:${isSynced?string('block','none')};">
-                        [#-- Update Button --]
-                        <div class="updateButton">[@s.text name="form.buttons.update" /]</div>
-                        [#-- Unsync Button --]
-                        <div class="uncheckButton">[@s.text name="form.buttons.unsync" /]</div>
-                      </div>
-                    </div>
-                  [/#if]
-                </div>
-              </div>
-              <div id="metadata-output"></div>
+    <div class="form-group row">
+      <div class="col-md-6">
+        <label for="">The project contains information from:[@customForm.req required=editable /]</label>
+        <div class="form-group">
+        [#if syncTypes??]
+          [#list syncTypes as syncType]
+            [#assign syncCustomID = "radio-${syncType.id}-${index}"]
+            <div class="radioFlat radio-inline">
+              <input id="${syncCustomID}" class="radio-input" type="radio" name="${customName}.centerFundingSyncType.id" value="${syncType.id}" [#if element.centerFundingSyncType??][#if (element.centerFundingSyncType.id == syncType.id)!false]checked[/#if][#else][#if syncType_index = 0]checked[/#if][/#if] />
+              <label for="${syncCustomID}" class="radio-label"> ${(syncType.syncName)!'{sync_name}'} </label>
             </div>
+          [/#list]
+        [/#if]
+        </div>
+      </div>
+      <div id="disseminationUrl" class="col-md-6">
+        <div class="url-field">
+          [@customForm.input name="${customName}.code" i18nkey="Code" className="financeCode" type="text" disabled=!editable  required=true readOnly=isSynced  editable=editable /]
+          <span class="financeCode-message"></span>
+        </div>
+        <div class="buttons-field">
+          [#if editable]
+            <div class="fillMetadata">
+              <input type="hidden" name="${customName}.sync" value="${isSynced?string}" />
+              [#-- Sync Button --]
+              <div class="checkButton" style="display:${isSynced?string('none','block')};">[@s.text name="form.buttons.sync" /]</div>
+              <div class="unSyncBlock" style="display:${isSynced?string('block','none')};">
+                [#-- Update Button --]
+                <div class="updateButton">[@s.text name="form.buttons.update" /]</div>
+                [#-- Unsync Button --]
+                <div class="uncheckButton">[@s.text name="form.buttons.unsync" /]</div>
+              </div>
+            </div>
+          [/#if]
+        </div>
+      </div>
+      <div class="metadata-output"></div>
+    </div>
     
     
-    <div class="col-md-4">
-      [@customForm.select name="${fundingSourceCustomName}.fundingSourceType.id" label=""  i18nkey="Funding source" listName="fundingSourceTypes" keyFieldName="id"  displayFieldName="name"  multiple=false required=true header=false className="" editable=editable/]
+    <div class="form-group row">
+      <div class="col-md-4 metadataElement-fundingTypeId">
+        [@customForm.select name="${customName}.fundingSourceType.id" label=""  i18nkey="Funding source" listName="fundingSourceTypes" keyFieldName="id"  displayFieldName="name"  multiple=false required=true header=false className="metadataValue" editable=editable/]
+      </div>
+      <div class="col-md-4">
+        [@customForm.select name="${customName}.crp.id" label=""  i18nkey="CRP" listName="crps" keyFieldName="id"  displayFieldName="acronym"  multiple=false required=true header=false className=""  editable=editable/]
+      </div>
     </div>
-    <div class="col-md-4">
-      [@customForm.select name="${fundingSourceCustomName}.crp.id" label=""  i18nkey="CRP" listName="crps" keyFieldName="id"  displayFieldName="acronym"  multiple=false required=true header=false className="" editable=editable/]
+    <div class="form-group metadataElement-description">
+      [@customForm.input name="${customName}.title" i18nkey="Project Title" className="metadataValue" disabled=!editable required=false readOnly=isSynced editable=editable /]
     </div>
-    <div class="col-md-12">
-      [@customForm.input name="${fundingSourceCustomName}.title" i18nkey="Project Title" type="text" disabled=!editable required=false editable=editable /]
+    <div class="form-group metadataElement-objectives">
+      [@customForm.textArea name="${customName}.description" i18nkey="Project Description" className="metadataValue" disabled=!editable required=false readOnly=isSynced editable=editable /]
     </div>
-    <div class="col-md-12">
-      [@customForm.input name="${fundingSourceCustomName}.description" i18nkey="Project Description" type="text" disabled=!editable required=false editable=editable /]
+    <div class="form-group row">
+      <div class="col-md-4 metadataElement-startDate">
+        [@customForm.input name="${customName}.startDate" i18nkey="Start Date" className="metadataValue"  disabled=!editable  required=true readOnly=isSynced editable=editable /]
+      </div> 
+      <div class="col-md-4 metadataElement-endDate">
+        [@customForm.input name="${customName}.endDate" i18nkey="End Date" className="metadataValue" disabled=!editable required=false readOnly=isSynced editable=editable /]
+      </div>
+      <div class="col-md-4 metadataElement-extensionDate">
+        [@customForm.input name="${customName}.extensionDate" i18nkey="Extension Date" className="metadataValue"  disabled=!editable required=false readOnly=isSynced editable=editable /]
+      </div>
     </div>
-    <div class="col-md-4 metadataElement-startDate">
-      [@customForm.input name="${fundingSourceCustomName}.startDate" i18nkey="Start Date" className="metadataValue" type="text" disabled=!editable  required=true editable=editable /]
-    </div> 
-    <div class="col-md-4 metadataElement-endDate">
-      [@customForm.input name="${fundingSourceCustomName}.endDate" i18nkey="End Date" className="metadataValue" type="text" disabled=!editable required=false editable=editable /]
+    <div class="form-group metadataElement-originalDonorName">
+      [@customForm.input name="${customName}.originalDonor" i18nkey="Original Donor" className="metadataValue" disabled=!editable required=false readOnly=isSynced editable=editable /]
     </div>
-    <div class="col-md-4 metadataElement-endDate">
-      [@customForm.input name="${fundingSourceCustomName}.extensionDate" i18nkey="Extension Date" className="metadataValue" type="text" disabled=!editable required=false editable=editable /]
+    <div class="form-group metadataElement-directDonorName">
+      [@customForm.input name="${customName}.directDonor" i18nkey="Direct Donor" className="metadataValue"  disabled=!editable required=false readOnly=isSynced editable=editable /]
     </div>
-    <div class="col-md-12">
-      [@customForm.input name="${fundingSourceCustomName}.originalDonor" i18nkey="Original Donor" type="text" disabled=!editable required=false editable=editable /]
-    </div>
-    <div class="col-md-12">
-      [@customForm.input name="${fundingSourceCustomName}.directDonor" i18nkey="Direct Donor" type="text" disabled=!editable required=false editable=editable /]
-    </div>
-    <div class="clearfix"></div>
   </div>
 [/#macro]
 

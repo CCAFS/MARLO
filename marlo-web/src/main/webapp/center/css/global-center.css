@@ -10,11 +10,6 @@ table{
 }
 
 label {
-  margin-bottom: 4px;
-  font-weight: 600;
-  line-height: 1.1em;
-  vertical-align: middle;
-  cursor: pointer;
 }
 
 .input-sm {
@@ -5508,9 +5503,6 @@ table.evaluationRank thead th{
 }
 
 .radio-label {
-    overflow: hidden;
-    cursor: pointer;
-    margin: 0 10px !important;
 }
 
 .radio-label .onoffswitch-radio:checked + label{ 
