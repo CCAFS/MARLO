@@ -99,7 +99,7 @@ CREATE TEMPORARY TABLE
 IF NOT EXISTS table_temp_project_nextusers AS (
 
 SELECT
- pp.*,ppp.project_id,ppp.outcome_id,outc.composed_id
+ pp.*,ppp.project_id,ppp.outcome_id,outc.composed_id 'composed_id_outcome' 
 FROM
   project_nextusers pp
 INNER JOIN project_outcomes ppp ON pp.project_outcome_id=ppp.id
@@ -378,6 +378,6 @@ temp.modification_justification,
 temp.composed_id
 from table_temp_project_nextusers temp 
 INNER JOIN project_outcomes pp on pp.project_id=temp.project_id
-INNER JOIN crp_program_outcomes ppp on ppp.outcome_id =temp.composed_id
+INNER JOIN crp_program_outcomes ppp on ppp.outcome_id =temp.composed_id_outcome
 
 ;
