@@ -85,24 +85,11 @@
         console.log(email)
         console.log(composedName)
         // Add user
-        addUser(composedName, firstName, lastName, email);
+        addUser(composedName, firstName, lastName, "<" + email + ">");
     });
 
 
-   //set contact person 
-   (function(){
-    var ctFirsName = $(".ctFirsName").val();
-    var ctLastName = $(".ctLastName").val();
-    var ctEmail  = $(".ctEmail").val();
-    if(!ctFirsName || !ctLastName || !ctEmail){
-      $(".contact").val(""); 
-    }
-    else{
-      var composedName = ctFirsName+" "+ctLastName+" <"+ctEmail+" >";
-      $(".contact").val(composedName);  
-    }
-    
-   })();
+   
 
    
 
@@ -127,14 +114,29 @@
 
 
     
-    //set value to gender field
+    //set value for gender field
     (function(){
       var gender = $(".genderInput").val();
-     $(".genderSelect select option").each(function() {
-      if($(this).val() == gender){
-        $(this).attr( "selected" , "selected");
-      }
+      var genderValue; 
+      $(".genderSelect select option").each(function() {
+          if($(this).val() == gender){
+            $(this).attr( "selected" , "selected");
+            genderValue = $(this).val();
+          }
       });
+
+      console.log(gender)
+
+     //set value for gender when is hostory is active
+      var p = $(".genderSelect .selectList p");
+      if(gender == "M"){
+        p.html("Male")
+      }if(gender == "F"){
+        p.html("Female")
+      }if(gender == "Other"){
+        p.html("Other")
+      }
+
 
      var citizenship = $(".citizenshipInput").val();
      $(".pCitizenshipcountriesList select option").each(function() {
@@ -156,9 +158,9 @@
   (function(){
     //  this capdev has a regional dimension
     var valueSelected = $(".regional .onoffswitch-radio").val();
-    console.log(valueSelected)
+    
     if(valueSelected == 'true') {
-      console.log('dentro del if')
+      
       $(".regionsBox").show("slow");
     } 
   })();
@@ -169,18 +171,25 @@
     
 
 
-      //set value to duartion unit field
+      //set value for duartion unit field
     (function(){
       var durationUnit = $(".durationUnitaInput").val();
       
       //console.log(durationUnit)
       $(".durationUnitSelect select option").each(function() {
         if($(this).val() === durationUnit){
-          console.log("option selected")
-          console.log($(this).val())
           $(this).attr( "selected" , true);
         }
         });
+
+
+      //set value for duration unit when is hostory is active
+      var p = $(".durationUnitSelect .selectList p");
+      if(durationUnit!= ""){
+        p.html(durationUnit)
+      }
+
+      
 
     })();
 

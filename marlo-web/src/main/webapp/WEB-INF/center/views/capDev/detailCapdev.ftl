@@ -95,7 +95,7 @@
 
 						<!-- Contact person -->
 						<div class="col-md-6 contactField group individual">
-							[@customForm.input name="contact" i18nkey="capdev.form.contactPerson" type="text" help="capdev.help.contact" className='contact'  required=true  editable=editable /]
+							[@customForm.input name="contact" i18nkey="capdev.form.contactPerson" type="text" help="capdev.help.contact" className='contact'  readOnly=true required=true  editable=editable /]
 							<input class="ctFirsName" type="hidden" name="capdev.ctFirstName" value="${(capdev.ctFirstName)!}" /> 
 							<input class="ctLastName" type="hidden" name="capdev.ctLastName" value="${(capdev.ctLastName)!}" /> 
 							<input class="ctEmail" type="hidden" name="capdev.ctEmail" value="${(capdev.ctEmail)!}" /> 
@@ -164,7 +164,7 @@
 								                
 								                <div class="modal-footer">
 								                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-								                    <a class="btn btn-danger btn-ok" href="[@s.url action='${centerSession}/delete_list_of_participants'][@s.param name='capdevID']${capdevID}[/@s.param][@s.param name='capdevCategory']${capdevCategory}[/@s.param] [@s.param name='edit' value="true" /][/@s.url]">Clear</a>
+								                    <a class="btn btn-danger btn-ok" href="[@s.url action='${centerSession}/delete_list_of_participants'][@s.param name='capdevID']${capdevID}[/@s.param][@s.param name='capdevCategory']${capdevCategory}[/@s.param] [@s.param name='edit' value='true' /][/@s.url]">Clear</a>
 								                </div>
 								            </div>
 								        </div>
@@ -181,12 +181,10 @@
 					[#else]
 						[#if editable]
 							<div class="form-group col-md-12 newCapdevField participantsheader">
-								<div class="col-md-6 ">
-									<div class="pull-right">
-										<button type="button" class="capdevButtons" aria-label="Left Align" title="Download template to upload the list of participants">
-											<a class="downloadButton" href="[@s.url action='${centerSession}/downloadFile' /] ">[@s.text name="capdev.downloadTemplate" /]</a>
-										</button>
-									</div>
+								<div class="pull-right">
+									<button type="button" class="capdevButtons" aria-label="Left Align" title="Download template to upload the list of participants">
+										<a class="downloadButton" href="[@s.url action='${centerSession}/downloadFile' /] ">[@s.text name="capdev.downloadTemplate" /]</a>
+									</button>
 								</div>
 							</div>
 
@@ -317,17 +315,18 @@
 						<div class="col-md-6">
 							[@customForm.select name="participant.institutions.id" listName="institutions" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.participant.Institution" className="" multiple=false placeholder="capdev.select" editable=editable /]
 
-						[#if (editable)!false]	
+						
 							<div class="note participantMessage">
 								<p>If you don't find the institution you are looking for, suggest it selecting <b>Other</b> </p>
 							</div>
 
 							<div>
+
 								<label>Other <input type="checkbox" name="otherInstitucion" class="otherInstcheck"   [#if (participant.otherInstitution)??]
-								[#if (participant.otherInstitution) == "1"] checked="checked" [/#if] value="${(participant.otherInstitution)!}"[/#if] > </label>
+								[#if (participant.otherInstitution) == "1"] checked="checked" [/#if] value="${(participant.otherInstitution)!}"[/#if]  [#if !editable] disabled="true"[/#if] > </label>
 								<div class="suggestInstitution" style="display: none;">[@customForm.textArea name="participant.institutionsSuggested" i18nkey="Suggest institution"  className="textarea" editable=editable /]</div>
 							</div>
-						[/#if]
+						
 
 						</div>
 						<div class="col-md-6 pcountryOfInstitucionList">

@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -29,7 +29,7 @@ import com.google.inject.Inject;
 public class CapdevSupportingDocsManagerImpl implements CapdevSupportingDocsManager {
 
 
-  private CapdevSupportingDocsDAO capdevSupportingDocsDAO;
+  private final CapdevSupportingDocsDAO capdevSupportingDocsDAO;
   // Managers
 
 
@@ -65,10 +65,17 @@ public class CapdevSupportingDocsManagerImpl implements CapdevSupportingDocsMana
     return capdevSupportingDocsDAO.find(capdevSupportingDocsID);
   }
 
+
   @Override
   public long saveCapdevSupportingDocs(CapdevSupportingDocs capdevSupportingDocs) {
 
     return capdevSupportingDocsDAO.save(capdevSupportingDocs);
+  }
+
+  @Override
+  public long saveCapdevSupportingDocs(CapdevSupportingDocs capdevSupportingDocs, String actionName,
+    List<String> relationsName) {
+    return capdevSupportingDocsDAO.save(capdevSupportingDocs, actionName, relationsName);
   }
 
 

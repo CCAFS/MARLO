@@ -455,6 +455,9 @@ public final class APConstants {
   public static final String CAPDEV_SUPPORTTINGDOCS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapacityDevelopment.capdevSupportingDocses)";
 
+  public static final String SUPPORTINGDOCS_DOCUMENTS_RALATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapdevSupportingDocs.capdevSuppDocsDocumentses)";
+
   public static String getFilterBy() {
     return FILTER_BY;
   }

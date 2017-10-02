@@ -117,7 +117,7 @@
 						</div>
 						<div>
 							<label>Other <input type="checkbox" name="otherDiscipline" class="otherDisciplinecheck"   [#if (capdev.otherDiscipline)??]
-							[#if (capdev.otherDiscipline) == "1"] checked="checked" [/#if] value="${(capdev.otherDiscipline)!}"[/#if]> </label>
+							[#if (capdev.otherDiscipline) == "1"] checked="checked" [/#if] value="${(capdev.otherDiscipline)!}"[/#if] [#if !editable] disabled="true"[/#if]> </label>
 							<div class="suggestDiscipline" style="display: none;">[@customForm.textArea name="capdev.disciplineSuggested" i18nkey="Suggest discipline"  className="textarea"  /]</div>
 						</div>
 					[/#if]
@@ -162,7 +162,7 @@
 						</div>
 						<div class="grupsParticipantsForm">
 							<label>Other <input type="checkbox" name="otherTargetGroup" class="otherTargetcheck"   [#if (capdev.otherTargetGroup)??]
-							[#if (capdev.otherTargetGroup) == "1"] checked="checked" [/#if] value="${(capdev.otherTargetGroup)!}"[/#if]> </label>
+							[#if (capdev.otherTargetGroup) == "1"] checked="checked" [/#if] value="${(capdev.otherTargetGroup)!}"[/#if] [#if !editable] disabled="true"[/#if]> </label>
 							<div class="suggestTagetGroup" style="display: none;">[@customForm.textArea name="capdev.targetGroupSuggested" i18nkey="Suggest target group"  className="textarea"  /]</div>
 						</div>
 					[/#if]
@@ -242,7 +242,7 @@
 						</div>
 						<div class="grupsParticipantsForm">
 							<label>Other <input type="checkbox" name="otherPartner" class="otherPartnercheck"   [#if (capdev.otherPartner)??]
-							[#if (capdev.otherPartner) == "1"] checked="checked" [/#if] value="${(capdev.otherPartner)!}"[/#if] > </label>
+							[#if (capdev.otherPartner) == "1"] checked="checked" [/#if] value="${(capdev.otherPartner)!}"[/#if] [#if !editable] disabled="true"[/#if]> </label>
 							<div class="suggestPartner" style="display: none;">[@customForm.textArea name="capdev.partnerSuggested" i18nkey="Suggest Partner"  className="textarea"  /]</div>
 						</div>
 					[/#if]

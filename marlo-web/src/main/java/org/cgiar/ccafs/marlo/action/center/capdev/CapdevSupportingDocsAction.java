@@ -63,6 +63,7 @@ public class CapdevSupportingDocsAction extends BaseAction {
     capdevSupportingDocs.setActive(true);
     capdevSupportingDocs.setActiveSince(new Date());
     capdevSupportingDocs.setCreatedBy(this.getCurrentUser());
+    capdevSupportingDocs.setModifiedBy(this.getCurrentUser());
     supportingDocID = capdevsupportingDocsService.saveCapdevSupportingDocs(capdevSupportingDocs);
 
     return SUCCESS;

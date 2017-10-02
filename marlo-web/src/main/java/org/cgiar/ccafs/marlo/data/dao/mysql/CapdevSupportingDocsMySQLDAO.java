@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -25,7 +25,7 @@ import com.google.inject.Inject;
 
 public class CapdevSupportingDocsMySQLDAO implements CapdevSupportingDocsDAO {
 
-  private StandardDAO dao;
+  private final StandardDAO dao;
 
   @Inject
   public CapdevSupportingDocsMySQLDAO(StandardDAO dao) {
@@ -34,14 +34,14 @@ public class CapdevSupportingDocsMySQLDAO implements CapdevSupportingDocsDAO {
 
   @Override
   public boolean deleteCapdevSupportingDocs(long capdevSupportingDocsId) {
-    CapdevSupportingDocs capdevSupportingDocs = this.find(capdevSupportingDocsId);
+    final CapdevSupportingDocs capdevSupportingDocs = this.find(capdevSupportingDocsId);
     capdevSupportingDocs.setActive(false);
     return this.save(capdevSupportingDocs) > 0;
   }
 
   @Override
   public boolean existCapdevSupportingDocs(long capdevSupportingDocsID) {
-    CapdevSupportingDocs capdevSupportingDocs = this.find(capdevSupportingDocsID);
+    final CapdevSupportingDocs capdevSupportingDocs = this.find(capdevSupportingDocsID);
     if (capdevSupportingDocs == null) {
       return false;
     }
@@ -57,8 +57,8 @@ public class CapdevSupportingDocsMySQLDAO implements CapdevSupportingDocsDAO {
 
   @Override
   public List<CapdevSupportingDocs> findAll() {
-    String query = "from " + CapdevSupportingDocs.class.getName() + " where is_active=1";
-    List<CapdevSupportingDocs> list = dao.findAll(query);
+    final String query = "from " + CapdevSupportingDocs.class.getName() + " where is_active=1";
+    final List<CapdevSupportingDocs> list = dao.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -75,6 +75,16 @@ public class CapdevSupportingDocsMySQLDAO implements CapdevSupportingDocsDAO {
     }
 
 
+    return capdevSupportingDocs.getId();
+  }
+
+  @Override
+  public long save(CapdevSupportingDocs capdevSupportingDocs, String actionName, List<String> relationsName) {
+    if (capdevSupportingDocs.getId() == null) {
+      dao.save(capdevSupportingDocs, actionName, relationsName);
+    } else {
+      dao.update(capdevSupportingDocs, actionName, relationsName);
+    }
     return capdevSupportingDocs.getId();
   }
 
