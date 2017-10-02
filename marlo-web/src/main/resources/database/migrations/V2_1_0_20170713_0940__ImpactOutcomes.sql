@@ -81,7 +81,7 @@ FROM
   project_milestones pp
 INNER JOIN project_outcomes ppp ON pp.project_outcome_id=ppp.id
 INNER JOIN crp_program_outcomes outc ON ppp.outcome_id=outc.id
-INNER JOIN crp_milestones mile ON ppp.crp_milestone_id=mile.id
+INNER JOIN crp_milestones mile ON pp.crp_milestone_id=mile.id
 
 )
 ;
