@@ -249,9 +249,11 @@
         [#--  <p class="text-center alertOutcome" style="display:${(element.keyOutputOutcomes?has_content)?string('none','block')}">[@s.text name="keyOutput.outcomesEmpty" /]</p> --]
         </div>
       </div>
+      [#if editable]
       <div class="form-group">
         [@customForm.select name="" label=""  i18nkey="keyOutput.selectOutcomes" listName="outcomes" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className=" outcomeList" disabled=!editable/]
       </div>
+      [/#if]
     </div>
   
   </div>
@@ -260,21 +262,19 @@
 
 [#macro outcomeByCluster element index name  isTemplate=false]
   [#local customName = "${name}[${index}]" /]
-  <div id="outcomeByCluster-${isTemplate?string('template',(element.id)!)}" class="outcomeByClusterItem  borderBox ${customForm.changedField('${customName}.id')}"  style="display:${isTemplate?string('none','block')}">
+  <div id="outcomeByCluster-${isTemplate?string('template',(element.id)!)}" class="outcomeByClusterItem  simpleBox ${customForm.changedField('${customName}.id')}"  style="display:${isTemplate?string('none','block')}">
     [#if editable] [#--&& (isTemplate) --]
       <div class="removeLink">
-        <div id="removeActivity" class="removeOutcome removeElement removeLink" title="[@s.text name='cluster.removeOutcome' /]"></div>
+        <div id="removeActivity" class="removeOutcome sm removeElement removeLink" title="[@s.text name='cluster.removeOutcome' /]"></div>
       </div>
     [/#if]    
       [#-- Statement --]
       <div class="form-group">
         <span title="${(element.crpProgramOutcome.composedName)!}" class="outcomeStatement">
-          <p>
-            <strong>${(element.crpProgramOutcome.crpProgram.acronym)!} Outcome:</strong> ${(element.crpProgramOutcome.description)!}
-            [#if action.hasSpecificities('crp_ip_outcome_indicator')]
-            <i class="indicatorText"><br /><strong>Indicator: </strong>${(element.crpProgramOutcome.indicator)!'No Indicator'}</i>
-            [/#if]
-          </p>
+          <strong>${(element.crpProgramOutcome.crpProgram.acronym)!} Outcome:</strong> ${(element.crpProgramOutcome.description)!}
+          [#if action.hasSpecificities('crp_ip_outcome_indicator')]
+          <i class="indicatorText"><br /><strong>Indicator: </strong>${(element.crpProgramOutcome.indicator)!'No Indicator'}</i>
+          [/#if]
         </span>
         <input class="outcomeContributionId" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
         <input class="outcomeId" type="hidden" name="${customName}.crpProgramOutcome.id" value="${(element.crpProgramOutcome.id)!}"/>

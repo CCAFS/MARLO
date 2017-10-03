@@ -64,7 +64,7 @@
               <strong>${(projectOutcome.crpProgramOutcome.crpProgram.acronym)!} - Outcome ${(projectOutcome.crpProgramOutcome.year)!}</strong>: ${projectOutcome.crpProgramOutcome.description}
               [#-- Outcome Indicator --]
               [#if action.hasSpecificities('crp_ip_outcome_indicator')]
-                <p>${(projectOutcome.crpProgramOutcome.indicator)!}</p>
+                <p><strong>Indicator: </strong>${(projectOutcome.crpProgramOutcome.indicator)!'No indicator'}</p>
               [/#if]
             </div>
             <div class="clearfix"></div>
