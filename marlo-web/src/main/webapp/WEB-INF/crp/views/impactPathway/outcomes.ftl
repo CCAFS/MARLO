@@ -165,7 +165,7 @@
       [@customForm.textArea name="${outcomeCustomName}.description"  i18nkey="outcome.statement" required=true className="outcome-statement limitWords-100" editable=editable /]
     </div>
     [#-- Outcome Indicator --]
-    [#if true]
+    [#if action.hasSpecificities('crp_ip_outcome_indicator')]
     <div class="form-group">
       [@customForm.textArea name="${outcomeCustomName}.inidicator"  i18nkey="outcome.inidicator" required=true className="outcome-inidicator limitWords-100" editable=editable /]
     </div>
