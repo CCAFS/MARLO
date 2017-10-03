@@ -163,6 +163,16 @@
       
       $(".regionsBox").show("slow");
     } 
+
+
+    var regional = $(".regional p")
+    var pValue = regional.html();
+    console.log(typeof(pValue))
+    console.log(pValue)
+    if(pValue === ' Yes'){
+      console.log("en el if del regional")
+      $(".regionsBox").show("slow");
+    }
   })();
 
 

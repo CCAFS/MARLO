@@ -48,7 +48,30 @@
 	
 	<div class="col-md-9 ">
 
+
 		
+        [#-- History Message --]
+		[#if transaction??]
+		  <div class="history-mode text-center animated flipInX">
+		    [#if transaction == "-1"]
+		      <p>[@s.text name="capdev.message.historyNotFound" /]</p>
+		    [#else]
+		      <p>[@s.text name="capdev.message.historyVersion" ]  
+		          [@s.param]<span>${capdev.modifiedBy.composedName?html}</span>[/@s.param]
+		          [@s.param]<span>${capdev.activeSince?datetime}</span>[/@s.param]
+		          [@s.param]<a href="[@s.url][@s.param name="capdevID" value=capdevID /][@s.param name="supportingDocID" value=supportingDocID /][@s.param name="edit" value="true"/][/@s.url]">here</a>[/@s.param]
+		         [/@s.text]
+		      </p>
+		      [#-- Differences --]
+		      [#include "/WEB-INF/global/macros/historyDiff.ftl" /]
+		      [#-- Justification --]
+		      <p><i>${(capdev.modificationJustification)!}</i></p>
+		    [/#if]
+		  </div>
+
+
+		[/#if]
+        <br />
 
 		<div class="col-md-12">
 			<div class="pull-right">
@@ -148,8 +171,8 @@
 
 					        	<div class="buttons-content">  
 					        		[#if recordsList?has_content]
-								      [#import "/WEB-INF/center//global/macros/logHistory.ftl" as logHistory /]
-								      [@logHistory.logList list=recordsList itemName="supportingDocID" itemId=capdevSupportingDocs.id /]
+								      [#import "/WEB-INF/center//views/capDev/logHistory.ftl" as logHistory /]
+								      [@logHistory.logList list=recordsList itemName1="capdevID" itemName2="supportingDocID" itemId1=capdevSupportingDocs.capacityDevelopment.id itemId2=capdevSupportingDocs.id /]
 								      <a href="" onclick="return false" class="form-button button-history"><span class="glyphicon glyphicon-glyphicon glyphicon-list-alt" aria-hidden="true"></span> [@s.text name="form.buttons.history" /]</a>
 								    [/#if] 
 

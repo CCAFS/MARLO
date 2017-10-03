@@ -49,6 +49,8 @@ public class EditCapacityDevInterceptor extends AbstractInterceptor implements S
 
   @Override
   public String intercept(ActionInvocation invocation) throws Exception {
+
+
     parameters = invocation.getInvocationContext().getParameters();
     session = invocation.getInvocationContext().getSession();
 

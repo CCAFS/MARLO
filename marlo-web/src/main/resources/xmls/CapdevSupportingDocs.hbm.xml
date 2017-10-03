@@ -38,7 +38,7 @@
 		<property name="active" type="boolean">
 			<column name="is_active" />
 		</property>
-		<property name="activeSince" type="date">
+		<property name="activeSince" type="timestamp">
 			<column name="active_since" length="19" />
 		</property>
 		<property name="modificationJustification" type="string">
