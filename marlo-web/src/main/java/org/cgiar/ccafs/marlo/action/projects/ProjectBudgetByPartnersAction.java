@@ -304,7 +304,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     projectBudget.setBudgetType(budgetTypeManager.getBudgetTypeById(type));
     project.getBudgets().add(projectBudget);
 
-    return this.getIndexBudget(institutionId, year, type);
+    return this.getIndexBudget(institutionId, year, type, fundingSourceID);
   }
 
 
@@ -441,6 +441,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   }
 
 
+  @Override
   public boolean isPPA(Institution institution) {
     if (institution == null) {
       return false;
@@ -560,8 +561,8 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
- 	      reader.close();
- 	
+        reader.close();
+
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
@@ -569,7 +570,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
         Project projectDb = projectManager.getProjectById(project.getId());
         project.setProjectEditLeader(projectDb.isProjectEditLeader());
         project.setAdministrative(projectDb.getAdministrative());
-      
+
 
         if (project.getBudgets() != null) {
           for (ProjectBudget projectBudget : project.getBudgets()) {
