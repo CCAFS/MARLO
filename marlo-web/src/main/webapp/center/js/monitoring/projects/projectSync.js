@@ -20,6 +20,23 @@ function initSync() {
 
   // Unsync metadata
   $unSyncButtons.on("click", unSyncFundingSource);
+  
+  // Change sync type
+  $('.radioSyncType').on("change", changeSyncType);
+  
+}
+
+function changeSyncType(){
+  $fsSelected = $(this).parents('.fsSync');
+  var typeSelected = $(this).val();
+  if(typeSelected == 1){
+    // OCS
+    console.log('OCS');
+  }else if(typeSelected == 2){
+    // MARLO CRP
+    console.log('MARLO CRP');
+  }
+  
 }
 
 /**
@@ -180,19 +197,21 @@ function getOCSMetadata() {
   // Setting source
   if(source == 1) {
     // OCS
-    currentCode.toUpperCase();
+    currentCode =  currentCode.toUpperCase();
     serviceURL += '/ocsService.do'
   }else if(source == 2){
     // MARLO CRPs
-    currentCode.replace(/\D/g,''); // Remove all non-digits
+    currentCode = currentCode.replace(/\D/g,''); // Remove all non-digits
     serviceURL += '/projectSync.do'
+    
   }
   
  // Ajax to service
   $.ajax({
       'url': serviceURL,
       'data': {
-        ocsCode: currentCode
+        ocsCode: currentCode,
+        projectID: currentCode
       },
       beforeSend: function() {
 
