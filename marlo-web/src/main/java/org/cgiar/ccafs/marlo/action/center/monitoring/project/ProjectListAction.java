@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.action.center.monitoring.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CenterFundingSyncTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterAreaManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
@@ -27,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.impl.CenterProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
+import org.cgiar.ccafs.marlo.data.model.CenterFundingSyncType;
 import org.cgiar.ccafs.marlo.data.model.CenterLeader;
 import org.cgiar.ccafs.marlo.data.model.CenterLeaderTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
@@ -61,25 +63,29 @@ public class ProjectListAction extends BaseAction {
 
 
   private long areaID;
+
   private long syncTypeID;
+
+
   private String syncCode;
   private ICenterManager centerService;
   private ICenterProjectCrosscutingThemeManager projectCrosscutingService;
   private ICenterProjectFundingSourceManager centerProjectFudingSourceManager;
+  private CenterFundingSyncTypeManager fundingSyncTypeManager;
   private Center loggedCenter;
   private long programID;
   private ICenterProgramManager programService;
   private ProjectManager projectManager;
   private long projectID;
-
+  private List<CenterFundingSyncType> syncTypes;
   private List<CenterProject> projects;
+
   private CenterProjectManager projectService;
   private List<CenterArea> researchAreas;
   private ICenterAreaManager researchAreaService;
   private List<CenterProgram> researchPrograms;
   private CenterProgram selectedProgram;
   private CenterArea selectedResearchArea;
-
   private UserManager userService;
   private String justification;
 
@@ -91,7 +97,8 @@ public class ProjectListAction extends BaseAction {
   public ProjectListAction(APConfig config, ICenterManager centerService, ICenterProgramManager programService,
     CenterProjectManager projectService, UserManager userService, ICenterAreaManager researchAreaService,
     ICenterProjectCrosscutingThemeManager projectCrosscutingService, MarloOcsClient ocsClient,
-    ProjectManager projectManager, ICenterProjectFundingSourceManager centerProjectFudingSourceManager) {
+    ProjectManager projectManager, ICenterProjectFundingSourceManager centerProjectFudingSourceManager,
+    CenterFundingSyncTypeManager fundingSyncTypeManager) {
     super(config);
     this.centerService = centerService;
     this.programService = programService;
@@ -102,6 +109,7 @@ public class ProjectListAction extends BaseAction {
     this.ocsClient = ocsClient;
     this.projectManager = projectManager;
     this.centerProjectFudingSourceManager = centerProjectFudingSourceManager;
+    this.fundingSyncTypeManager = fundingSyncTypeManager;
   }
 
   @Override
@@ -211,7 +219,6 @@ public class ProjectListAction extends BaseAction {
 
   }
 
-
   /**
    * Add CRP project information in the center project Created.
    * 
@@ -278,6 +285,7 @@ public class ProjectListAction extends BaseAction {
     return SUCCESS;
   }
 
+
   public long getAreaID() {
     return areaID;
   }
@@ -307,11 +315,9 @@ public class ProjectListAction extends BaseAction {
     return researchAreas;
   }
 
-
   public List<CenterProgram> getResearchPrograms() {
     return researchPrograms;
   }
-
 
   public CenterProgram getSelectedProgram() {
     return selectedProgram;
@@ -322,12 +328,18 @@ public class ProjectListAction extends BaseAction {
     return selectedResearchArea;
   }
 
+
   public String getSyncCode() {
     return syncCode;
   }
 
+
   public long getSyncTypeID() {
     return syncTypeID;
+  }
+
+  public List<CenterFundingSyncType> getSyncTypes() {
+    return syncTypes;
   }
 
   @Override
@@ -435,6 +447,9 @@ public class ProjectListAction extends BaseAction {
       projects =
         new ArrayList<>(selectedProgram.getProjects().stream().filter(p -> p.isActive()).collect(Collectors.toList()));
 
+      syncTypes = new ArrayList<>(
+        fundingSyncTypeManager.findAll().stream().filter(fs -> fs.isActive()).collect(Collectors.toList()));
+
       String params[] = {loggedCenter.getAcronym(), selectedResearchArea.getId() + "", selectedProgram.getId() + ""};
       this.setBasePermission(this.getText(Permission.RESEARCH_PROGRAM_BASE_PERMISSION, params));
 
@@ -446,11 +461,11 @@ public class ProjectListAction extends BaseAction {
     this.areaID = areaID;
   }
 
-
   @Override
   public void setJustification(String justification) {
     this.justification = justification;
   }
+
 
   public void setLoggedCenter(Center loggedCenter) {
     this.loggedCenter = loggedCenter;
@@ -490,6 +505,10 @@ public class ProjectListAction extends BaseAction {
 
   public void setSyncTypeID(long syncTypeID) {
     this.syncTypeID = syncTypeID;
+  }
+
+  public void setSyncTypes(List<CenterFundingSyncType> syncTypes) {
+    this.syncTypes = syncTypes;
   }
 
 }

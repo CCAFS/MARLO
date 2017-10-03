@@ -30,6 +30,8 @@ import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
 /**
+ * Validate If the Project or OCS code is valid to continue the process to Sync.
+ * 
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 public class ValidateSyncCode extends BaseAction {

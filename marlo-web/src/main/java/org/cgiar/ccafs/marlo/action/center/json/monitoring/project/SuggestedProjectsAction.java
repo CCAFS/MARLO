@@ -37,6 +37,8 @@ import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
 /**
+ * Search the possibles OCS or Project codes to being a funding source in a center project
+ * 
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 public class SuggestedProjectsAction extends BaseAction {
