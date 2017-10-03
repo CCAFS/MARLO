@@ -2911,7 +2911,18 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         if (projectOutcome.getCrpProgramOutcome() != null) {
           outYear = "" + projectOutcome.getCrpProgramOutcome().getYear();
           outValue = "" + projectOutcome.getCrpProgramOutcome().getValue();
-          outStatement = projectOutcome.getCrpProgramOutcome().getDescription();
+          if (this.hasSpecificities(APConstants.CRP_IP_OUTCOME_INDICATOR)) {
+            outStatement = projectOutcome.getCrpProgramOutcome().getDescription();
+            if (projectOutcome.getCrpProgramOutcome().getIndicator() != null
+              && !projectOutcome.getCrpProgramOutcome().getIndicator().isEmpty()) {
+              outStatement += "<br><b>Indicator: </b>" + projectOutcome.getCrpProgramOutcome().getIndicator();
+            } else {
+              outStatement += "<br><b>Indicator:</b> ";
+            }
+          } else {
+            outStatement = projectOutcome.getCrpProgramOutcome().getDescription();
+          }
+
           if (projectOutcome.getCrpProgramOutcome().getSrfTargetUnit() != null) {
             outUnit = projectOutcome.getCrpProgramOutcome().getSrfTargetUnit().getName();
           }

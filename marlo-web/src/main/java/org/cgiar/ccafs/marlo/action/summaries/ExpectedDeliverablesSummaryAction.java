@@ -118,8 +118,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
     ResourceManager manager = new ResourceManager();
     manager.registerDefaults();
     try {
-      Resource reportResource =
-        manager.createDirectly(this.getClass().getResource("/pentaho/deliverables.prpt"), MasterReport.class);
+      Resource reportResource = manager
+        .createDirectly(this.getClass().getResource("/pentaho/deliverables_OutcomeIndicator.prpt"), MasterReport.class);
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
 
@@ -141,6 +141,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
       masterReport.getParameterValues().put("regionalAvalaible", this.hasProgramnsRegions());
       masterReport.getParameterValues().put("showDescription",
         this.hasSpecificities(APConstants.CRP_REPORTS_DESCRIPTION));
+      masterReport.getParameterValues().put("hasOutcomeIndicator",
+        this.hasSpecificities(APConstants.CRP_IP_OUTCOME_INDICATOR));
       // Set i8n for pentaho
       masterReport = this.addi8nParameters(masterReport);
       ExcelReportUtil.createXLSX(masterReport, os);
