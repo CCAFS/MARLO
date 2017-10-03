@@ -467,7 +467,9 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
               }
             }
           }
-          individual += responsibleppp.getUser().getComposedName();
+          if (responsibleppp.getUser() != null) {
+            individual += responsibleppp.getUser().getComposedName();
+          }
           managingCount++;
           if (responisble.getPartnerDivision() != null && responisble.getPartnerDivision().getAcronym() != null
             && !responisble.getPartnerDivision().getAcronym().isEmpty()) {
@@ -502,7 +504,10 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
                 }
               }
             }
-            individual += responsibleppp.getUser().getComposedName();
+            if (responsibleppp.getUser() != null) {
+              individual += responsibleppp.getUser().getComposedName();
+
+            }
             if (deliverablePartnership.getPartnerDivision() != null
               && deliverablePartnership.getPartnerDivision().getAcronym() != null
               && !deliverablePartnership.getPartnerDivision().getAcronym().isEmpty()) {
