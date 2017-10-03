@@ -624,11 +624,6 @@ public class ProjectDescriptionAction extends BaseAction {
       projectDB.setRegion(this.bolValue(project.getsRegion()));
       projectDB.setSuggestedName(project.getSuggestedName());
 
-      if (project.getProjectType().getId() != null) {
-        CenterProjectType projectType = projectTypeService.getProjectTypeById(project.getProjectType().getId());
-        projectDB.setProjectType(projectType);
-      }
-
       if (project.getProjectStatus().getId() != null) {
         CenterProjectStatus projectStatus =
           projectStatusService.getProjectStatusById(project.getProjectStatus().getId());
@@ -751,6 +746,7 @@ public class ProjectDescriptionAction extends BaseAction {
 
           fundingSourceSave.setCenterProject(project);
           fundingSourceSave.setCrp(crp);
+          fundingSourceSave.setSync(projectFundingSource.isSync());
           fundingSourceSave.setCenterFundingSourceType(fundingSourceType);
           fundingSourceSave.setCenterFundingSyncType(fundingSyncType);
           fundingSourceSave.setCode(projectFundingSource.getCode());

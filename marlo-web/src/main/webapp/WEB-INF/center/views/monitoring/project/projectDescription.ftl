@@ -429,10 +429,10 @@
     
     <div class="form-group row">
       <div class="col-md-4 metadataElement-fundingTypeId">
-        [@customForm.select name="${customName}.fundingSourceType.id" label=""  i18nkey="Funding source" listName="fundingSourceTypes" keyFieldName="id"  displayFieldName="name"  multiple=false required=true header=false className="metadataValue" editable=editable/]
+        [@customForm.select name="${customName}.centerFundingSourceType.id" label=""  i18nkey="Funding source type" listName="fundingSourceTypes" keyFieldName="id"  displayFieldName="name"  multiple=false required=true header=false className="metadataValue" editable=editable/]
       </div>
       <div class="col-md-4">
-        [@customForm.select name="${customName}.crp.id" label=""  i18nkey="CRP" listName="crps" keyFieldName="id"  displayFieldName="acronym"  multiple=false required=true header=false className=""  editable=editable/]
+        [@customForm.select name="${customName}.crp.id" label=""  i18nkey="CRP" listName="crps" keyFieldName="id"  displayFieldName="crpAcronymOrName"  multiple=false required=true header=false className=""  editable=editable/]
       </div>
     </div>
     <div class="form-group metadataElement-description">

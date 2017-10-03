@@ -381,9 +381,6 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
     // }
 
     String type = null;
-    if (project.getProjectType() != null) {
-      type = project.getProjectType().getName();
-    }
 
     String suggestedTitle = null;
     if (project.getSuggestedName() != null && !project.getSuggestedName().trim().isEmpty()) {

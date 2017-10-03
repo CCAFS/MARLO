@@ -77,9 +77,6 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
   private String sRegion;
 
   @Expose
-  private CenterProjectType projectType;
-
-  @Expose
   private String description;
 
   @Expose
@@ -290,10 +287,6 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
     return projectStatus;
   }
 
-  public CenterProjectType getProjectType() {
-    return projectType;
-  }
-
   public Boolean getRegion() {
     return region;
   }
@@ -462,10 +455,6 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
 
   public void setProjectStatus(CenterProjectStatus projectStatus) {
     this.projectStatus = projectStatus;
-  }
-
-  public void setProjectType(CenterProjectType projectType) {
-    this.projectType = projectType;
   }
 
   public void setRegion(Boolean region) {
