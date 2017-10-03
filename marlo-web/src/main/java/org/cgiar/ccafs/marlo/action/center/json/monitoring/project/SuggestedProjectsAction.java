@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.action.center.json.monitoring.project;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CenterFundingSyncTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -51,6 +52,7 @@ public class SuggestedProjectsAction extends BaseAction {
   private long syncTypeID;
   private String syncCode;
 
+  private FundingSourceManager fundingSourceManager;
   private CenterFundingSyncTypeManager fundingSyncTypeManager;
   private ProjectManager projectManager;
 
@@ -63,58 +65,62 @@ public class SuggestedProjectsAction extends BaseAction {
 
   @Inject
   public SuggestedProjectsAction(APConfig config, CenterFundingSyncTypeManager fundingSyncTypeManager,
-    ProjectManager projectManager, MarloOcsClient ocsClient) {
+    ProjectManager projectManager, MarloOcsClient ocsClient, FundingSourceManager fundingSourceManager) {
     super(config);
     this.fundingSyncTypeManager = fundingSyncTypeManager;
     this.projectManager = projectManager;
     this.ocsClient = ocsClient;
+    this.fundingSourceManager = fundingSourceManager;
   }
 
+  /**
+   * Check the Project ID suggestions according OCS agreements.
+   */
+  public void crpSuggestions() {
+    agreement = ocsClient.getagreement(syncCode);
+
+    Map<String, Object> dataProject = new HashMap<>();
+    dataProject.put("id", syncCode);
+    dataProject.put("name", agreement.getShortTitle());
+
+    if (fundingSourceManager.searchFundingSourcesByFinanceCode(syncCode) != null) {
+      List<FundingSource> fundingSources = fundingSourceManager.searchFundingSourcesByFinanceCode(syncCode).stream()
+        .filter(fs -> fs.isActive()).collect(Collectors.toList());
+      List<Map<String, Object>> dataSuggestions = new ArrayList<>();
+      for (FundingSource fundingSource : fundingSources) {
+        List<ProjectBudget> projectBudgets = fundingSource.getProjectBudgets().stream()
+          .filter(pb -> pb.isActive() && pb.getYear() == this.getCenterYear()).collect(Collectors.toList());
+        if (projectBudgets != null) {
+          for (ProjectBudget projectBudget : projectBudgets) {
+            Map<String, Object> dataSuggestion = new HashMap<>();
+            if (projectBudget.getProject().isActive()) {
+              Project project = projectBudget.getProject();
+              dataSuggestion.put("code", project.getId());
+              dataSuggestion.put("title", project.getTitle());
+              dataSuggestions.add(dataSuggestion);
+            }
+          }
+        }
+      }
+      dataProject.put("suggestions", dataSuggestions);
+    }
+    suggestedProjects.add(dataProject);
+  }
 
   @Override
   public String execute() throws Exception {
 
     this.suggestedProjects = new ArrayList<>();
 
-    if (syncTypeID == 2) {
+    switch (Math.toIntExact(syncTypeID)) {
 
-      long projectID = Long.parseLong(syncCode);
-      Project project = projectManager.getProjectById(projectID);
+      case 1:
+        this.crpSuggestions();
+        break;
 
-      Map<String, Object> dataProject = new HashMap<>();
-      dataProject.put("id", project.getId());
-      dataProject.put("name", project.getTitle());
-
-      List<ProjectBudget> projectBudgets = new ArrayList<>(project.getProjectBudgets().stream()
-        .filter(pb -> pb.isActive() && pb.getYear() == this.getCenterYear()).collect(Collectors.toList()));
-
-      List<FundingSource> fundingSources = new ArrayList<>();
-
-      for (ProjectBudget projectBudget : projectBudgets) {
-        FundingSource fundingSource = projectBudget.getFundingSource();
-        fundingSources.add(fundingSource);
-      }
-
-      if (!fundingSources.isEmpty()) {
-
-        HashSet<FundingSource> hashFundignSources = new HashSet<>();
-        hashFundignSources.addAll(fundingSources);
-        fundingSources = new ArrayList<>(hashFundignSources);
-
-        List<Map<String, Object>> dataDeliverables = new ArrayList<>();
-        for (FundingSource fundingSource : fundingSources) {
-          if (fundingSource.getFinanceCode() != null) {
-            agreement = ocsClient.getagreement(fundingSource.getFinanceCode());
-
-            if (agreement != null) {
-
-            }
-
-          }
-        }
-
-      }
-
+      case 2:
+        this.ocsSuggestions();
+        break;
 
     }
     return SUCCESS;
@@ -130,6 +136,55 @@ public class SuggestedProjectsAction extends BaseAction {
 
   public long getSyncTypeID() {
     return syncTypeID;
+  }
+
+  /**
+   * Check the OSC codes suggestions according MARLO CRP Projects.
+   */
+  public void ocsSuggestions() {
+
+    long projectID = Long.parseLong(syncCode);
+    Project project = projectManager.getProjectById(projectID);
+
+    Map<String, Object> dataProject = new HashMap<>();
+    dataProject.put("id", project.getId());
+    dataProject.put("name", project.getTitle());
+
+    List<ProjectBudget> projectBudgets = new ArrayList<>(project.getProjectBudgets().stream()
+      .filter(pb -> pb.isActive() && pb.getYear() == this.getCenterYear()).collect(Collectors.toList()));
+
+    List<FundingSource> fundingSources = new ArrayList<>();
+
+    for (ProjectBudget projectBudget : projectBudgets) {
+      FundingSource fundingSource = projectBudget.getFundingSource();
+      fundingSources.add(fundingSource);
+    }
+
+    if (!fundingSources.isEmpty()) {
+
+      HashSet<FundingSource> hashFundignSources = new HashSet<>();
+      hashFundignSources.addAll(fundingSources);
+      fundingSources = new ArrayList<>(hashFundignSources);
+
+      List<Map<String, Object>> dataSuggestions = new ArrayList<>();
+      for (FundingSource fundingSource : fundingSources) {
+        if (fundingSource.getFinanceCode() != null) {
+          agreement = ocsClient.getagreement(fundingSource.getFinanceCode());
+          Map<String, Object> dataSuggestion = new HashMap<>();
+          if (agreement != null) {
+            dataSuggestion.put("code", fundingSource.getFinanceCode());
+            dataSuggestion.put("title", agreement.getShortTitle());
+            dataSuggestions.add(dataSuggestion);
+          }
+
+        }
+      }
+
+      dataProject.put("suggestions", dataSuggestions);
+
+    }
+
+    suggestedProjects.add(dataProject);
   }
 
   @Override
