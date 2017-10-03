@@ -21,6 +21,8 @@ import org.cgiar.ccafs.marlo.data.manager.ICenterAreaManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectCrosscutingThemeManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProjectFundingSourceManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.impl.CenterProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Center;
@@ -30,8 +32,12 @@ import org.cgiar.ccafs.marlo.data.model.CenterLeaderTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectCrosscutingTheme;
+import org.cgiar.ccafs.marlo.data.model.CenterProjectFundingSource;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectStatus;
+import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.ocs.model.AgreementOCS;
+import org.cgiar.ccafs.marlo.ocs.ws.MarloOcsClient;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -55,31 +61,37 @@ public class ProjectListAction extends BaseAction {
 
 
   private long areaID;
-
+  private long syncTypeID;
+  private String syncCode;
   private ICenterManager centerService;
-
-
   private ICenterProjectCrosscutingThemeManager projectCrosscutingService;
-
+  private ICenterProjectFundingSourceManager centerProjectFudingSourceManager;
   private Center loggedCenter;
   private long programID;
   private ICenterProgramManager programService;
+  private ProjectManager projectManager;
   private long projectID;
+
   private List<CenterProject> projects;
   private CenterProjectManager projectService;
   private List<CenterArea> researchAreas;
-
   private ICenterAreaManager researchAreaService;
   private List<CenterProgram> researchPrograms;
   private CenterProgram selectedProgram;
   private CenterArea selectedResearchArea;
+
   private UserManager userService;
   private String justification;
+
+  // OCS Agreement Servcie Class
+  private MarloOcsClient ocsClient;
+  private AgreementOCS agreement;
 
   @Inject
   public ProjectListAction(APConfig config, ICenterManager centerService, ICenterProgramManager programService,
     CenterProjectManager projectService, UserManager userService, ICenterAreaManager researchAreaService,
-    ICenterProjectCrosscutingThemeManager projectCrosscutingService) {
+    ICenterProjectCrosscutingThemeManager projectCrosscutingService, MarloOcsClient ocsClient,
+    ProjectManager projectManager, ICenterProjectFundingSourceManager centerProjectFudingSourceManager) {
     super(config);
     this.centerService = centerService;
     this.programService = programService;
@@ -87,6 +99,9 @@ public class ProjectListAction extends BaseAction {
     this.userService = userService;
     this.researchAreaService = researchAreaService;
     this.projectCrosscutingService = projectCrosscutingService;
+    this.ocsClient = ocsClient;
+    this.projectManager = projectManager;
+    this.centerProjectFudingSourceManager = centerProjectFudingSourceManager;
   }
 
   @Override
@@ -126,6 +141,25 @@ public class ProjectListAction extends BaseAction {
 
     projectID = projectService.saveCenterProject(project);
 
+    /**
+     * Add Project sync information
+     */
+    Map<String, Object> parameters = this.getParameters();
+    syncTypeID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.CENTER_PROJECT_SYNC_TYPE))[0]));
+    syncCode = StringUtils.trim(((String[]) parameters.get(APConstants.CENTER_PROJECT_SYNC_CODE))[0]);
+
+
+    switch (Math.toIntExact(syncTypeID)) {
+      case 1:
+        this.addOcsProjectInformation(projectID);
+        break;
+      case 2:
+        if (syncCode.toUpperCase().contains("P")) {
+          syncCode = syncCode.toUpperCase().replaceFirst("P", "");
+        }
+        this.addCrpProjectInformation(projectID);
+        break;
+    }
 
     if (projectID > 0) {
       return SUCCESS;
@@ -133,6 +167,91 @@ public class ProjectListAction extends BaseAction {
       return NOT_FOUND;
     }
 
+
+  }
+
+  /**
+   * Add CRP project information in the center project Created.
+   * 
+   * @param centerProjectID
+   */
+  public void addCrpProjectInformation(long centerProjectID) {
+
+    long pID = Long.parseLong(syncCode);
+    Project project = projectManager.getProjectById(pID);
+
+    CenterProject centerProject = projectService.getCenterProjectById(centerProjectID);
+
+    centerProject.setName(project.getTitle());
+    centerProject.setDescription(project.getSummary());
+    centerProject.setStartDate(project.getStartDate());
+    centerProject.setEndDate(project.getEndDate());
+    centerProject.setProjectLeader(project.getLeaderPerson().getUser());
+
+    projectService.saveCenterProject(centerProject);
+
+    CenterProjectFundingSource fundingSource = new CenterProjectFundingSource();
+
+    fundingSource.setCenterProject(centerProject);
+    fundingSource.setCode("P" + syncCode);
+    fundingSource.setSync(true);
+    fundingSource.setSyncDate(new Date());
+    fundingSource.setCrp(project.getCrp());
+    fundingSource.setTitle(project.getTitle());
+    fundingSource.setDescription(project.getSummary());
+    fundingSource.setStartDate(project.getStartDate());
+    fundingSource.setEndDate(project.getEndDate());
+
+    fundingSource.setActive(true);
+    fundingSource.setCreatedBy(this.getCurrentUser());
+    fundingSource.setModifiedBy(this.getCurrentUser());
+    fundingSource.setActiveSince(new Date());
+
+    centerProjectFudingSourceManager.saveProjectFundingSource(fundingSource);
+
+  }
+
+
+  /**
+   * Add CRP project information in the center project Created.
+   * 
+   * @param centerProjectID
+   */
+  public void addOcsProjectInformation(long centerProjectID) {
+
+    agreement = ocsClient.getagreement(syncCode);
+
+    CenterProject centerProject = projectService.getCenterProjectById(centerProjectID);
+
+    centerProject.setName(agreement.getShortTitle());
+    centerProject.setDescription(agreement.getDescription());
+    centerProject.setStartDate(agreement.getStartDate());
+    centerProject.setEndDate(agreement.getEndDate());
+
+    projectService.saveCenterProject(centerProject);
+
+    CenterProjectFundingSource fundingSource = new CenterProjectFundingSource();
+
+    fundingSource.setCenterProject(centerProject);
+    fundingSource.setCode(syncCode);
+    fundingSource.setSync(true);
+    fundingSource.setSyncDate(new Date());
+
+    fundingSource.setTitle(agreement.getShortTitle());
+    fundingSource.setDescription(agreement.getDescription());
+    fundingSource.setStartDate(agreement.getStartDate());
+    fundingSource.setEndDate(agreement.getEndDate());
+    fundingSource.setExtensionDate(agreement.getExtensionDate());
+    fundingSource.setOriginalDonor(agreement.getOriginalDonor().getName());
+    fundingSource.setDirectDonor(agreement.getDirectDonor().getName());
+    fundingSource.setTotalAmount(Double.parseDouble(agreement.getGrantAmount()));
+
+    fundingSource.setActive(true);
+    fundingSource.setCreatedBy(this.getCurrentUser());
+    fundingSource.setModifiedBy(this.getCurrentUser());
+    fundingSource.setActiveSince(new Date());
+
+    centerProjectFudingSourceManager.saveProjectFundingSource(fundingSource);
 
   }
 
@@ -172,16 +291,13 @@ public class ProjectListAction extends BaseAction {
     return loggedCenter;
   }
 
-
   public long getProgramID() {
     return programID;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
-
 
   public List<CenterProject> getProjects() {
     return projects;
@@ -191,18 +307,28 @@ public class ProjectListAction extends BaseAction {
     return researchAreas;
   }
 
+
   public List<CenterProgram> getResearchPrograms() {
     return researchPrograms;
   }
+
 
   public CenterProgram getSelectedProgram() {
     return selectedProgram;
   }
 
+
   public CenterArea getSelectedResearchArea() {
     return selectedResearchArea;
   }
 
+  public String getSyncCode() {
+    return syncCode;
+  }
+
+  public long getSyncTypeID() {
+    return syncTypeID;
+  }
 
   @Override
   public void prepare() throws Exception {
@@ -320,6 +446,7 @@ public class ProjectListAction extends BaseAction {
     this.areaID = areaID;
   }
 
+
   @Override
   public void setJustification(String justification) {
     this.justification = justification;
@@ -355,6 +482,14 @@ public class ProjectListAction extends BaseAction {
 
   public void setSelectedResearchArea(CenterArea selectedResearchArea) {
     this.selectedResearchArea = selectedResearchArea;
+  }
+
+  public void setSyncCode(String syncCode) {
+    this.syncCode = syncCode;
+  }
+
+  public void setSyncTypeID(long syncTypeID) {
+    this.syncTypeID = syncTypeID;
   }
 
 }

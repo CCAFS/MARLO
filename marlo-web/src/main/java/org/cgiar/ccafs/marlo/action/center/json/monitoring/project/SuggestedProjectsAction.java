@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -47,6 +48,7 @@ public class SuggestedProjectsAction extends BaseAction {
   // Sync Variables
   private long syncTypeID;
   private String syncCode;
+
   private CenterFundingSyncTypeManager fundingSyncTypeManager;
   private ProjectManager projectManager;
 
@@ -57,7 +59,7 @@ public class SuggestedProjectsAction extends BaseAction {
   // return values List<Map>
   private List<Map<String, Object>> suggestedProjects;
 
-
+  @Inject
   public SuggestedProjectsAction(APConfig config, CenterFundingSyncTypeManager fundingSyncTypeManager,
     ProjectManager projectManager, MarloOcsClient ocsClient) {
     super(config);
