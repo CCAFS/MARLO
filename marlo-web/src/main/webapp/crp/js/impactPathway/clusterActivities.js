@@ -11,7 +11,7 @@ function init() {
 
   $('form select').select2({
       templateResult: formatState,
-      templateSelection: formatState,
+      templateSelection: formatStateSelection,
       width: '100%'
   });
 
@@ -219,7 +219,7 @@ function addKeyOutput() {
   $($item).find('input.keyOutputContribution').percentageInput();
   $item.find("select").select2({
       templateResult: formatState,
-      templateSelection: formatState,
+      templateSelection: formatStateSelection,
       width: '100%'
   });
   $item.show('slow');
@@ -289,8 +289,9 @@ function addOutcome(option) {
     contribution = verifyOutcomeContribution($list);
   }
   var v = $(option).text().length > 80 ? $(option).text().substr(0, 160) + ' ... ' : $(option).text();
-  $item.find(".outcomeStatement").attr("title", $(option).text()).tooltip();
-  $item.find(".outcomeStatement").html(v);
+  var outcomeText = $('.outcomeID-' + $(option).val());
+  $item.find(".outcomeStatement").attr("title", outcomeText).tooltip();
+  $item.find(".outcomeStatement").html(outcomeText);
   $item.find(".outcomeId").val(option.val());
   $item.find(".outcomeContribution").val(contribution);
   $list.append($item);
@@ -373,24 +374,26 @@ function checkOutcomes(block) {
   }
 }
 
-function formatState(state) {
-  if(state.text.length == 0) {
-    return;
-  }
+function formatStateSelection(state) {
   if(state.id != "-1") {
-    var text = state.text.split(/:(.+)?/);
-    if(typeof text[1] != "undefined") {
-      var $state = $("<span><strong>" + text[0] + ":</strong> " + text[1] + "</span>");
-      return $state;
-    } else {
-      var $state = $("<span>" + state.text + "</span>");
-      return $state;
-    }
+    var text = $("span.outcomeID-" + state.id).html();
+    var $state = $(text);
+    $state.find('.indicatorText').remove();
+    return $state;
   } else {
     var $state = $("<span>" + state.text + "</span>");
     return $state;
   }
+}
 
+function formatState(state) {
+  if(state.id != "-1") {
+    var text = $("span.outcomeID-" + state.id).html();
+    return $(text);
+  } else {
+    var $state = $("<span>" + state.text + "</span>");
+    return $state;
+  }
 }
 
 function notify(text) {

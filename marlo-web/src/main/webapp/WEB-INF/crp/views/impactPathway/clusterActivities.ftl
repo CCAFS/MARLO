@@ -104,6 +104,9 @@
   [@userItem element={} index=0 name="" userRole=roleCl.id template=true /]
 </ul>
 
+[#-- Template Outcome List --]
+[#include "/WEB-INF/crp/macros/outcomesListSelectMacro.ftl"]
+
 [#-- Key output Template --]
 [@keyOutputItem element={} index=0 name="${keyOutputsName}"  isTemplate=true /]
 
@@ -222,18 +225,20 @@
     
     <div class="blockContent" style="display:none">
       <hr />
-      [#-- Statement --]
-      <div class="form-group col-md-9">
-        [@customForm.textArea  name="${customName}.keyOutput" i18nkey="cluster.keyOutput.statement" value="${(element.keyOutput)!}" required=true className="limitWords-50 keyOutputInput" editable=editable /]
-        <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
-      </div>
-      [#-- Contribution --]
-      <div class="form-group col-md-3">
-          [@customForm.input name="${customName}.contribution" i18nkey="cluster.keyOutput.contribution" value="${(element.contribution?string['0.##'])!}" className="keyOutputContribution" type="text" disabled=!editable  required=true editable=editable /]
+      <div class="row">
+        [#-- Statement --]
+        <div class="form-group col-md-9">
+          [@customForm.textArea  name="${customName}.keyOutput" i18nkey="cluster.keyOutput.statement" value="${(element.keyOutput)!}" required=true className="limitWords-50 keyOutputInput" editable=editable /]
+          <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
+        </div>
+        [#-- Contribution --]
+        <div class="form-group col-md-3">
+            [@customForm.input name="${customName}.contribution" i18nkey="cluster.keyOutput.contribution" value="${(element.contribution?string['0.##'])!}" className="keyOutputContribution" type="text" disabled=!editable  required=true editable=editable /]
+        </div>
       </div>
             
       [#-- Outcomes list --]
-      <div class="col-md-12">
+      <div class="form-group">
         <label for="" class="${editable?string('editable', 'readOnly')}">[@s.text name="keyOutput.outcomesContributions" /]:</label>
         <div class="outcomesWrapper simpleBox form-group" listname="${customName}.${outcomesName}">
         [#if element.keyOutputOutcomes?has_content]
@@ -244,7 +249,7 @@
         [#--  <p class="text-center alertOutcome" style="display:${(element.keyOutputOutcomes?has_content)?string('none','block')}">[@s.text name="keyOutput.outcomesEmpty" /]</p> --]
         </div>
       </div>
-      <div class="form-group col-md-12">
+      <div class="form-group">
         [@customForm.select name="" label=""  i18nkey="keyOutput.selectOutcomes" listName="outcomes" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className=" outcomeList" disabled=!editable/]
       </div>
     </div>
@@ -262,9 +267,15 @@
       </div>
     [/#if]    
       [#-- Statement --]
-      <div class="form-group col-md-12">
-        <label style="display:block;" for="">Outcome statement</label>
-        <span title="${(element.crpProgramOutcome.composedName)!}" class="outcomeStatement">[@utils.wordCutter string=(element.crpProgramOutcome.composedName)!"undefined" maxPos=160 substr=" "/]</span>
+      <div class="form-group">
+        <span title="${(element.crpProgramOutcome.composedName)!}" class="outcomeStatement">
+          <p>
+            <strong>${(element.crpProgramOutcome.crpProgram.acronym)!} Outcome:</strong> ${(element.crpProgramOutcome.description)!}
+            [#if action.hasSpecificities('crp_ip_outcome_indicator')]
+            <i class="indicatorText"><br /><strong>Indicator: </strong>${(element.crpProgramOutcome.indicator)!'No Indicator'}</i>
+            [/#if]
+          </p>
+        </span>
         <input class="outcomeContributionId" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
         <input class="outcomeId" type="hidden" name="${customName}.crpProgramOutcome.id" value="${(element.crpProgramOutcome.id)!}"/>
         
