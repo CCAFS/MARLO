@@ -163,39 +163,42 @@ public class FundingSourceValidator extends BaseValidator {
      * @update Exclude the validation to W1W2
      * @author Julián Rodríguez CCAFS/CIAT
      * @date 06/09/2017
+     * @update Remove the validation to W1W2 *
+     * @author Julián Rodríguez
+     * @date 03/10/2017
      */
 
 
     if (fundingSource.getSynced() != null) {
       if (fundingSource.getSynced()) {
 
-        if (fundingSource.getBudgetType().getId() != APConstants.BUDGET_TYPE) {
+        // if (fundingSource.getBudgetType().getId() != APConstants.BUDGET_TYPE) {
 
-          Double grantAmount = fundingSource.getGrantAmount();
-          List<FundingSourceBudget> budgets = fundingSource.getBudgets();
-          double currentBudget = 0;
+        Double grantAmount = fundingSource.getGrantAmount();
+        List<FundingSourceBudget> budgets = fundingSource.getBudgets();
+        double currentBudget = 0;
 
-          for (FundingSourceBudget fundingSourceBudget : budgets) {
-            if (fundingSourceBudget.getBudget() != null) {
-              currentBudget += fundingSourceBudget.getBudget();
-            }
-
+        for (FundingSourceBudget fundingSourceBudget : budgets) {
+          if (fundingSourceBudget.getBudget() != null) {
+            currentBudget += fundingSourceBudget.getBudget();
           }
-
-          if (currentBudget > grantAmount) {
-
-
-            for (int i = 0; i < budgets.size(); i++) {
-              this.addMessage(action.getText("fundingSource.budgetWrongValue"));
-              action.getInvalidFields().put("input-fundingSource.budgets[" + i + "].budget",
-                InvalidFieldsMessages.WRONGVALUE);
-
-            }
-
-          }
-
 
         }
+
+        if (currentBudget > grantAmount) {
+
+
+          for (int i = 0; i < budgets.size(); i++) {
+            this.addMessage(action.getText("fundingSource.budgetWrongValue"));
+            action.getInvalidFields().put("input-fundingSource.budgets[" + i + "].budget",
+              InvalidFieldsMessages.WRONGVALUE);
+
+          }
+
+        }
+
+
+        // }
 
 
       }
