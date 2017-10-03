@@ -51,7 +51,8 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
   @Expose
   private String description;
 
-
+  @Expose
+  private String indicator;
   @Expose
   private Integer year;
 
