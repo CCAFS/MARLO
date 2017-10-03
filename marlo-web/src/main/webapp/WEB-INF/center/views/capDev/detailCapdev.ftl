@@ -241,11 +241,14 @@
 							<div class="col-md-4 group individual">
 								[@customForm.input name="capdev.numParticipants" i18nkey="capdev.form.numParticipants" type="text" help="capdev.help.numParticipants"  editable=editable className="numParticipants" /]
 							</div>
-							<div class="col-md-4 group individual">
+							<div class="col-md-3 group individual">
 								[@customForm.input name="capdev.numMen" i18nkey="capdev.form.numMen" help="capdev.help.numMen" type="text" className="numMen" editable=editable/]
 							</div>
-							<div class="col-md-4 group individual">
-								[@customForm.input name="capdev.numWomen" i18nkey="capdev.form.numWomen" help="capdev.help.numMen" type="text" className="numWomen" editable=editable/]
+							<div class="col-md-3 group individual">
+								[@customForm.input name="capdev.numWomen" i18nkey="capdev.form.numWomen" help="capdev.help.numWomen" type="text" className="numWomen" editable=editable/]
+							</div>
+							<div class="col-md-2 group individual">
+								[@customForm.input name="capdev.numOther" i18nkey="capdev.form.numOther" help="capdev.help.numOther" type="text" className="numOhter" editable=editable/]
 							</div>
 						</div>
 					</div>

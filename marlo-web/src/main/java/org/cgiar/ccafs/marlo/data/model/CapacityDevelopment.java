@@ -103,6 +103,9 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
   private Integer numWomen;
 
   @Expose
+  private Integer numOther;
+
+  @Expose
   private String otherDiscipline;
 
   @Expose
@@ -138,9 +141,9 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
     CenterProgram researchProgram, String title, CapacityDevelopmentType capdevType, int category, boolean active,
     Date activeSince, String modificationJustification, String ctFirstName, String ctLastName, String ctEmail,
     Date startDate, Date endDate, Long duration, String durationUnit, Boolean global, Boolean regional,
-    Integer numParticipants, Integer numMen, Integer numWomen, String otherDiscipline, String disciplineSuggested,
-    String otherTargetGroup, String targetGroupSuggested, String otherPartner, String partnerSuggeste,
-    Set<CapdevLocations> capdevLocations, Set<CapdevDiscipline> capdevDisciplines,
+    Integer numParticipants, Integer numMen, Integer numWomen, Integer numOther, String otherDiscipline,
+    String disciplineSuggested, String otherTargetGroup, String targetGroupSuggested, String otherPartner,
+    String partnerSuggeste, Set<CapdevLocations> capdevLocations, Set<CapdevDiscipline> capdevDisciplines,
     Set<CapdevTargetgroup> capdevTargetgroups, Set<CapdevParticipant> capdevParticipants,
     Set<CapdevOutputs> capdevOutputses, Set<CapdevPartners> capdevPartnerses,
     Set<CapdevSupportingDocs> capdevSupportingDocses) {
@@ -172,6 +175,7 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
     this.capdevParticipants = capdevParticipants;
     this.numMen = numMen;
     this.numWomen = numWomen;
+    this.numOther = numOther;
     this.otherDiscipline = otherDiscipline;
     this.disciplineSuggested = disciplineSuggested;
     this.otherTargetGroup = otherTargetGroup;
@@ -329,6 +333,10 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
     return numMen;
   }
 
+  public Integer getNumOther() {
+    return numOther;
+  }
+
   public Integer getNumParticipants() {
     return this.numParticipants;
   }
@@ -345,6 +353,7 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
     return otherPartner;
   }
 
+
   public String getOtherTargetGroup() {
     return otherTargetGroup;
   }
@@ -354,10 +363,10 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
     return partnerSuggested;
   }
 
-
   public CenterProject getProject() {
     return this.project;
   }
+
 
   public Boolean getRegional() {
     return regional;
@@ -556,6 +565,11 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
   }
 
 
+  public void setNumOther(Integer numOther) {
+    this.numOther = numOther;
+  }
+
+
   public void setNumParticipants(Integer numParticipants) {
     this.numParticipants = numParticipants;
   }
@@ -610,7 +624,6 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
     this.sectionStatuses = sectionStatuses;
   }
 
-
   public void setsGlobal(String sGlobal) {
     this.sGlobal = sGlobal;
   }
@@ -619,6 +632,7 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
   public void setsRegional(String sRegional) {
     this.sRegional = sRegional;
   }
+
 
   public void setStartDate(Date startDate) {
     this.startDate = startDate;

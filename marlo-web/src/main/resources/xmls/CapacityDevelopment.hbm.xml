@@ -89,6 +89,9 @@
 		<property name="numWomen" type="java.lang.Integer">
 			<column name="num_women" />
 		</property>
+		<property name="numOther" type="java.lang.Integer">
+			<column name="num_other" />
+		</property>
 		<property name="otherDiscipline" type="string">
 			<column name="other_discipline" length="2"/>
 		</property>
