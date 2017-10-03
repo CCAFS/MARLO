@@ -379,7 +379,7 @@
 
 [#macro radioFlat id name label="" disabled=false editable=true value="" checked=true cssClass=""]
   <div class="radioFlat radio-inline">
-    <input id="${id}" class="radio-input radioSyncType" type="radio" name="${name}" value="${value}" [#if checked]checked[/#if] />
+    <input id="${id}" class="radio-input ${cssClass}" type="radio" name="${name}" value="${value}" [#if checked]checked[/#if] />
     <label for="${id}" class="radio-label"> ${label} </label>
   </div>
 [/#macro]

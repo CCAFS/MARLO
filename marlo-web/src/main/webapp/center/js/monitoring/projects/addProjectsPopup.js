@@ -10,4 +10,25 @@ $(document).ready(function() {
 
   });
 
+  $('.radioSyncType').on('change', function() {
+    if($(this).hasClass('requiredCode')) {
+      $('.syncCodeBlock').show();
+    } else {
+      $('.syncCodeBlock').hide();
+    }
+  });
+
+  $("form").submit(function() {
+    $('.loading').fadeIn();
+    var syncType = $('.radioSyncType:checked').val();
+    console.log(syncType);
+    if(syncType != "-1") {
+      if(!$('input[name="syncCode"]').val()) {
+        notificationError("You must enter a valid OCS/Project Code or chosee Manually")
+        $('.loading').fadeOut(200);
+        event.preventDefault();
+      }
+    }
+  });
+
 });
