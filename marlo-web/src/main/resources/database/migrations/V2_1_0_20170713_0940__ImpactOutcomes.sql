@@ -109,14 +109,19 @@ INNER JOIN crp_program_outcomes outc ON ppp.outcome_id=outc.id
 )
 ;
 
+CREATE TEMPORARY TABLE
+IF NOT EXISTS table_project_outcomes AS (SELECT * FROM project_outcomes);
+
+TRUNCATE TABLE project_outcomes;
 TRUNCATE TABLE crp_program_outcomes;
 TRUNCATE TABLE crp_cluster_key_outputs_outcome ;
 TRUNCATE TABLE crp_outcome_sub_idos ;
 TRUNCATE TABLE crp_milestones ;
 TRUNCATE TABLE crp_assumptions ;
-TRUNCATE TABLE project_outcomes ;
 TRUNCATE TABLE project_milestones ;
 TRUNCATE TABLE project_nextusers ;
+
+
 
 
 ALTER TABLE `crp_program_outcomes`
