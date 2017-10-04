@@ -41,10 +41,6 @@ left JOIN phases ph ON ph.id = pp.id_phase
 
 
 
-CREATE TEMPORARY TABLE
-IF NOT EXISTS table_project_outcomes AS (SELECT * FROM project_outcomes);
-
-TRUNCATE TABLE project_outcomes;
 
 
 
