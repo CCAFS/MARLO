@@ -1,4 +1,4 @@
-var timeoutSyncCode;
+var timeoutSyncCode, validating;
 var $modal, $modalProjects, $syncCode;
 $(document).ready(function() {
 
@@ -7,6 +7,7 @@ $(document).ready(function() {
   $modal = $('#addProjectsModal');
   $syncCode = $('input[name="syncCode"]');
   $syncCode.attr('autocomplete', 'off');
+  validating = false;
 
   // This event fires immediately when the show instance method is called.
   $modal.on('show.bs.modal', function(e) {
@@ -36,11 +37,16 @@ $(document).ready(function() {
   });
 
   $("form").submit(function() {
+    if(validating){
+      event.preventDefault();
+      return
+    }
+    
     $('.loading').fadeIn();
     var syncType = $('.radioSyncType:checked').val();
     console.log(syncType);
     if(syncType != "-1") {
-      if(!$syncCode.val()) {
+      if(!$syncCode.val() || !($syncCode.hasClass('fieldChecked'))) {
         notificationError("You must enter a valid OCS/Project Code or chosee Manually")
         $('.loading').fadeOut(200);
         event.preventDefault();
@@ -88,6 +94,7 @@ function validateSyncCode() {
       beforeSend: function(xhr,opts) {
         $syncCode.removeClass('fieldChecked fieldError');
         $syncCode.addClass('input-loading');
+        validating = true;
       },
       success: function(data) {
         console.log(data)
@@ -101,6 +108,7 @@ function validateSyncCode() {
       },
       complete: function() {
         $syncCode.removeClass('input-loading');
+        validating = false;
       },
       error: function(e) {
       }
