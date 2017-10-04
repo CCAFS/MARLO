@@ -2,7 +2,7 @@
 
 [#assign recordsList = (action.getListLog(capdev))!{} /]
 
-[#if editable]
+
 
 
 	<div class="col-md-12">
@@ -10,14 +10,20 @@
 
 	        	<div class="buttons-content">  
 	        		[#if recordsList?has_content]
-				      [#import "/WEB-INF/center//global/macros/logHistory.ftl" as logHistory /]
-				      [@logHistory.logList list=recordsList itemName="capdevID" itemId=capdev.id /]
-				      <a href="" onclick="return false" class="form-button button-history"><span class="glyphicon glyphicon-glyphicon glyphicon-list-alt" aria-hidden="true"></span> [@s.text name="form.buttons.history" /]</a>
+					    [#import "/WEB-INF/center//global/macros/logHistory.ftl" as logHistory /]
+					    [@logHistory.logList list=recordsList itemName="capdevID" itemId=capdev.id /]
+					    <a href="" onclick="return false" class="form-button button-history"><span class="glyphicon glyphicon-glyphicon glyphicon-list-alt" aria-hidden="true"></span> [@s.text name="form.buttons.history" /]</a>
 				    [/#if] 
 
-		          	[@s.submit type="button" name="save" cssClass="button-save" ]<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> [@s.text name="form.buttons.save" /] [/@s.submit]
+				    [#if editable]
+					    <!-- save button -->
+			          	[@s.submit type="button" name="save" cssClass="button-save" ]<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> [@s.text name="form.buttons.save" /] [/@s.submit]
 		        	<div class="clearfix"></div>
-		        	
+
+		        	[#elseif canEdit]
+			        	<!-- Edit Button -->
+					    <a href="[@s.url][@s.param name="capdevID" value=capdevID /][@s.param name="edit" value="true"/][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> [@s.text name="form.buttons.edit" /]</a>
+		        	[/#if]
 	        	</div>
 
 	        	
@@ -25,7 +31,9 @@
 	        	
 			</div>
 	</div>
-[/#if]
+
+	
+
 
 	<div class="col-md-12">
 	[#-- Last update message --]

@@ -318,10 +318,11 @@
 						<div class="col-md-6">
 							[@customForm.select name="participant.institutions.id" listName="institutions" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.participant.Institution" className="" multiple=false placeholder="capdev.select" editable=editable /]
 
-						
-							<div class="note participantMessage">
-								<p>If you don't find the institution you are looking for, suggest it selecting <b>Other</b> </p>
-							</div>
+							[#if editable]
+								<div class="note participantMessage">
+									<p>If you don't find the institution you are looking for, suggest it selecting <b>Other</b> </p>
+								</div>
+							[/#if]
 
 							<div>
 
