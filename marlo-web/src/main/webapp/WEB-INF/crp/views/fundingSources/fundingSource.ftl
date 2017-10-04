@@ -189,7 +189,7 @@
       [#else]
       <div class="form-group row ">
         <div class="col-md-12">
-      [#if fundingSource.global]
+      [#if fundingSource.fundingSourceInfo.global]
         <label for="">[@s.text name="projectCofunded.globalDimensionYes" /]</label>
       [#else]
         <label for="">[@s.text name="projectCofunded.globalDimensionNo" /]</label>

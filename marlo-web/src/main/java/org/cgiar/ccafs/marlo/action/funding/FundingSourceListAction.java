@@ -229,7 +229,8 @@ public class FundingSourceListAction extends BaseAction {
          * allProjects.removeAll(myProjects);
          */
         myProjects = loggedCrp.getFundingSources().stream()
-          .filter(fs -> fs.isActive() && fs.getFundingSourceInfo(this.getActualPhase()).getPhase() != null
+          .filter(fs -> fs.isActive() && fs.getFundingSourceInfo(this.getActualPhase()) != null
+            && fs.getFundingSourceInfo(this.getActualPhase()).getPhase() != null
             && fs.getFundingSourceInfo(this.getActualPhase()).getPhase().equals(this.getActualPhase()))
           .collect(Collectors.toList());
 

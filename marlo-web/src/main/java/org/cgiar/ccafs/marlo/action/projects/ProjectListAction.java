@@ -448,7 +448,9 @@ public class ProjectListAction extends BaseAction {
         allProjects.removeAll(myProjects);
       }
 
-
+      for (Project project : allProjects) {
+        project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
+      }
       for (Project project : myProjects) {
         project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
         List<CrpProgram> programs = new ArrayList<>();
