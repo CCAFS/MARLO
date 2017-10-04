@@ -57,7 +57,6 @@ public class EditPartnerRequestAction extends BaseAction {
     this.partnerRequestManager = partnerRequestManager;
     this.institutionTypeManager = institutionTypeManager;
     this.locElementManager = locElementManager;
-    // TODO Auto-generated constructor stub
   }
 
 
@@ -93,6 +92,8 @@ public class EditPartnerRequestAction extends BaseAction {
         partnerRequest.setLocElement(locElement);
       }
       partnerRequest.setModifiedBy(this.getCurrentUser());
+      // TODO add modification justification
+      partnerRequest.setModificationJustification("TODO");
       partnerRequestManager.savePartnerRequest(partnerRequest);
     } catch (Exception e) {
       System.out.println(e.getMessage());

@@ -27,6 +27,9 @@ public class PartnerRequest implements java.io.Serializable {
   private User createdBy;
 
   @Expose
+  private User rejectedBy;
+
+  @Expose
   private InstitutionType institutionType;
 
   @Expose
@@ -49,10 +52,24 @@ public class PartnerRequest implements java.io.Serializable {
   private String modificationJustification;
 
   @Expose
+  private String rejectJustification;
+
+  @Expose
   private Date activeSince;
+
+  @Expose
+  private boolean headquater;
+
+  @Expose
+  private boolean office;
+
+  @Expose
+  private Institution institution;
+
 
   public PartnerRequest() {
   }
+
 
   public PartnerRequest(boolean active) {
     this.active = active;
@@ -88,13 +105,16 @@ public class PartnerRequest implements java.io.Serializable {
     return activeSince;
   }
 
+
   public String getCountryInfo() {
     return this.locElement.getName();
   }
 
+
   public String getCountryISO() {
     return this.locElement.getIsoAlpha2();
   }
+
 
   public User getCreatedBy() {
     return createdBy;
@@ -105,6 +125,9 @@ public class PartnerRequest implements java.io.Serializable {
     return id;
   }
 
+  public Institution getInstitution() {
+    return institution;
+  }
 
   public InstitutionType getInstitutionType() {
     return institutionType;
@@ -124,6 +147,7 @@ public class PartnerRequest implements java.io.Serializable {
     return modifiedBy;
   }
 
+
   public String getPartnerInfo() {
     if (this.acronym != null && !this.acronym.isEmpty()) {
       return this.acronym + " - " + this.partnerName;
@@ -131,17 +155,35 @@ public class PartnerRequest implements java.io.Serializable {
     return this.partnerName;
   }
 
-
   public String getPartnerName() {
     return partnerName;
   }
+
+  public User getRejectedBy() {
+    return rejectedBy;
+  }
+
+  public String getRejectJustification() {
+    return rejectJustification;
+  }
+
 
   public String getWebPage() {
     return webPage;
   }
 
+
   public boolean isActive() {
     return active;
+  }
+
+  public boolean isHeadquater() {
+    return headquater;
+  }
+
+
+  public boolean isOffice() {
+    return office;
   }
 
 
@@ -152,6 +194,7 @@ public class PartnerRequest implements java.io.Serializable {
   public void setAcronym(String acronym) {
     this.acronym = acronym;
   }
+
 
   public void setActive(boolean active) {
     this.active = active;
@@ -165,8 +208,17 @@ public class PartnerRequest implements java.io.Serializable {
     this.createdBy = createdBy;
   }
 
+
+  public void setHeadquater(boolean headquater) {
+    this.headquater = headquater;
+  }
+
   public void setId(Long id) {
     this.id = id;
+  }
+
+  public void setInstitution(Institution institution) {
+    this.institution = institution;
   }
 
   public void setInstitutionType(InstitutionType institutionType) {
@@ -177,7 +229,6 @@ public class PartnerRequest implements java.io.Serializable {
     this.locElement = locElement;
   }
 
-
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
@@ -186,8 +237,21 @@ public class PartnerRequest implements java.io.Serializable {
     this.modifiedBy = modifiedBy;
   }
 
+  public void setOffice(boolean office) {
+    this.office = office;
+  }
+
+
   public void setPartnerName(String partnerName) {
     this.partnerName = partnerName;
+  }
+
+  public void setRejectedBy(User rejectedBy) {
+    this.rejectedBy = rejectedBy;
+  }
+
+  public void setRejectJustification(String rejectJustification) {
+    this.rejectJustification = rejectJustification;
   }
 
   public void setWebPage(String webPage) {

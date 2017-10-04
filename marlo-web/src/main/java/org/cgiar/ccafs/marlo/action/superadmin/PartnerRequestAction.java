@@ -128,8 +128,8 @@ public class PartnerRequestAction extends BaseAction {
   public void prepare() throws Exception {
 
     if (partnerRequestManager.findAll() != null) {
-      partners = new ArrayList<>(
-        partnerRequestManager.findAll().stream().filter(pr -> pr.isActive()).collect(Collectors.toList()));
+      partners = new ArrayList<>(partnerRequestManager.findAll().stream().filter(pr -> pr.isActive() && !pr.isOffice())
+        .collect(Collectors.toList()));
     } else {
       partners = new ArrayList<>();
     }

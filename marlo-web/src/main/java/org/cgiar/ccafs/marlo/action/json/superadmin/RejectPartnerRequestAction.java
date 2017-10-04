@@ -54,8 +54,8 @@ public class RejectPartnerRequestAction extends BaseAction {
     try {
       PartnerRequest partnerRequest = partnerRequestManager.getPartnerRequestById(Long.parseLong(requestID));
       partnerRequest.setAcepted(new Boolean(false));
-      partnerRequest.setModificationJustification(justification);
-      partnerRequest.setModifiedBy(this.getCurrentUser());
+      partnerRequest.setRejectJustification(justification);
+      partnerRequest.setRejectedBy(this.getCurrentUser());
       partnerRequestManager.savePartnerRequest(partnerRequest);
       partnerRequestManager.deletePartnerRequest(partnerRequest.getId());
       // Send notification email
