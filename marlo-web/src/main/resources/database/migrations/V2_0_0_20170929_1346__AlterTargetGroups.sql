@@ -8,4 +8,4 @@ ADD COLUMN `modification_justification` text NULL AFTER `modified_by`;
 
 ALTER TABLE `target_groups` 
 ADD CONSTRAINT `target_group_created_fk` 	FOREIGN KEY (`created_by`)	REFERENCES `users` (`id`),
-ADD CONSTRAINT `target_group_modified_fk`	FOREIGN KEY (`modified_by`)	REFERENCES `marlo`.`users` (`id`);
+ADD CONSTRAINT `target_group_modified_fk`	FOREIGN KEY (`modified_by`)	REFERENCES `users` (`id`);
