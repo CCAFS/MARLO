@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,11 +55,12 @@ public class CrpProjectAction extends BaseAction {
     Project project = projectManager.getProjectById(projectID);
 
     if (project != null) {
+      SimpleDateFormat sdf = new SimpleDateFormat(APConstants.DATE_FORMAT);
       json.put("id", project.getId());
       json.put("description", project.getTitle());
       json.put("objectives", project.getSummary());
-      json.put("startDate", project.getStartDate());
-      json.put("endDate", project.getEndDate());
+      json.put("startDate", sdf.parse(project.getStartDate().toString()));
+      json.put("endDate", sdf.parse(project.getEndDate().toString()));
       json.put("crp", project.getCrp().getId());
     }
 
@@ -75,7 +77,7 @@ public class CrpProjectAction extends BaseAction {
     projectID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.PROJECT_ID))[0]));
   }
 
-  public void setJson(Map<String, Object> projectInfo) {
+  public void setJson(Map<String, Object> json) {
     this.json = json;
   }
 
