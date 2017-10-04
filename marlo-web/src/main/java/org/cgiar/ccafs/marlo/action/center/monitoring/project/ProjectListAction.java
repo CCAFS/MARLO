@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CenterFundingSyncTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterAreaManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterFundingSourceTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectCrosscutingThemeManager;
@@ -28,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.impl.CenterProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
+import org.cgiar.ccafs.marlo.data.model.CenterFundingSourceType;
 import org.cgiar.ccafs.marlo.data.model.CenterFundingSyncType;
 import org.cgiar.ccafs.marlo.data.model.CenterLeader;
 import org.cgiar.ccafs.marlo.data.model.CenterLeaderTypeEnum;
@@ -71,6 +73,7 @@ public class ProjectListAction extends BaseAction {
   private ICenterManager centerService;
   private ICenterProjectCrosscutingThemeManager projectCrosscutingService;
   private ICenterProjectFundingSourceManager centerProjectFudingSourceManager;
+  private ICenterFundingSourceTypeManager centerFundingTypeManager;
   private CenterFundingSyncTypeManager fundingSyncTypeManager;
   private Center loggedCenter;
   private long programID;
@@ -98,7 +101,7 @@ public class ProjectListAction extends BaseAction {
     CenterProjectManager projectService, UserManager userService, ICenterAreaManager researchAreaService,
     ICenterProjectCrosscutingThemeManager projectCrosscutingService, MarloOcsClient ocsClient,
     ProjectManager projectManager, ICenterProjectFundingSourceManager centerProjectFudingSourceManager,
-    CenterFundingSyncTypeManager fundingSyncTypeManager) {
+    CenterFundingSyncTypeManager fundingSyncTypeManager, ICenterFundingSourceTypeManager centerFundingTypeManager) {
     super(config);
     this.centerService = centerService;
     this.programService = programService;
@@ -110,6 +113,7 @@ public class ProjectListAction extends BaseAction {
     this.projectManager = projectManager;
     this.centerProjectFudingSourceManager = centerProjectFudingSourceManager;
     this.fundingSyncTypeManager = fundingSyncTypeManager;
+    this.centerFundingTypeManager = centerFundingTypeManager;
   }
 
   @Override
@@ -230,7 +234,7 @@ public class ProjectListAction extends BaseAction {
 
     CenterProject centerProject = projectService.getCenterProjectById(centerProjectID);
 
-    centerProject.setName(agreement.getShortTitle());
+    centerProject.setName(agreement.getDescription());
     centerProject.setDescription(agreement.getDescription());
     centerProject.setStartDate(agreement.getStartDate());
     centerProject.setEndDate(agreement.getEndDate());
@@ -244,7 +248,7 @@ public class ProjectListAction extends BaseAction {
     fundingSource.setSync(true);
     fundingSource.setSyncDate(new Date());
 
-    fundingSource.setTitle(agreement.getShortTitle());
+    fundingSource.setTitle(agreement.getDescription());
     fundingSource.setDescription(agreement.getDescription());
     fundingSource.setStartDate(agreement.getStartDate());
     fundingSource.setEndDate(agreement.getEndDate());
@@ -252,6 +256,29 @@ public class ProjectListAction extends BaseAction {
     fundingSource.setOriginalDonor(agreement.getOriginalDonor().getName());
     fundingSource.setDirectDonor(agreement.getDirectDonor().getName());
     fundingSource.setTotalAmount(Double.parseDouble(agreement.getGrantAmount()));
+
+    // Setting the budget Type
+    String fundingType = agreement.getFundingType();
+    long fundingtypeID = -1L;
+    switch (fundingType) {
+      case "BLR":
+        fundingtypeID = 3;
+        break;
+      case "W1/W2":
+        fundingtypeID = 1;
+        break;
+      case "W3R":
+        fundingtypeID = 2;
+        break;
+      case "W3U":
+        fundingtypeID = 2;
+        break;
+      default:
+        break;
+    }
+
+    CenterFundingSourceType fundingSourceType = centerFundingTypeManager.getFundingSourceTypeById(fundingtypeID);
+    fundingSource.setCenterFundingSourceType(fundingSourceType);
 
     fundingSource.setActive(true);
     fundingSource.setCreatedBy(this.getCurrentUser());
