@@ -8,7 +8,8 @@ function init() {
     width: "100%"
   });
 
-  $('.amount').currencyInput();
+  // Setting Currency Inputs
+  $('form input.currencyInput').currencyInput();
 
   datePickerConfig({
       "startDate": "#project\\.startDate",

@@ -56,7 +56,7 @@ public class CrpProjectAction extends BaseAction {
     if (project != null) {
       json.put("id", project.getId());
       json.put("description", project.getTitle());
-      json.put("summary", project.getSummary());
+      json.put("objectives", project.getSummary());
       json.put("startDate", project.getStartDate());
       json.put("endDate", project.getEndDate());
       json.put("crp", project.getCrp().getId());

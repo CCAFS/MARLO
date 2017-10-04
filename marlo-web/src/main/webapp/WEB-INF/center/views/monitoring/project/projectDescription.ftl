@@ -367,7 +367,7 @@
 [#macro fundingSourceMacro element name index=-1 isTemplate=false]  
   [#local customName = "${name}[${index}]" /]
   [#local isSynced = (element.sync)!false ]
-  [#local isOCS = (element.centerFundingSyncType.id == 1)!false ]
+  [#local isOCS = (element.centerFundingSyncType.id == 1)!true ]
   <div id="fundingSource-${isTemplate?string('template',(element.id)!)}" class="fundingSources fsSync simpleBox"  style="display:${isTemplate?string('none','block')}">
     [#-- Loading block --]
     <div class="loading syncBlock" style="display:none"></div>
@@ -428,11 +428,13 @@
     
     
     <div class="form-group row">
-      <div class="col-md-4 metadataElement-fundingTypeId">
+      <div class="col-md-4 metadataElement-fundingTypeId isOCSBlock" style="display:${isOCS?string('block','none')}">
+        <div class="syncedBlock unsyncVisibles" style="display:${isSynced?string('block','none')};"></div>
         [@customForm.select name="${customName}.centerFundingSourceType.id" label=""  i18nkey="Funding source type" listName="fundingSourceTypes" keyFieldName="id"  displayFieldName="name"  multiple=false required=true header=false className="metadataValue" editable=editable/]
       </div>
-      <div class="col-md-4">
-        [@customForm.select name="${customName}.crp.id" label=""  i18nkey="CRP" listName="crps" keyFieldName="id"  displayFieldName="crpAcronymOrName"  multiple=false required=true header=false className=""  editable=editable/]
+      <div class="col-md-4 metadataElement-crp isCRPProjectBlock" style="display:${isOCS?string('none','block')}">
+        <div class="syncedBlock unsyncVisibles" style="display:${isSynced?string('block','none')};"></div>
+        [@customForm.select name="${customName}.crp.id" label=""  i18nkey="CRP" listName="crps" keyFieldName="id"  displayFieldName="crpAcronymOrName"  multiple=false required=true header=false className="metadataValue"  editable=editable/]
       </div>
     </div>
     <div class="form-group metadataElement-description">
@@ -448,16 +450,23 @@
       <div class="col-md-4 metadataElement-endDate">
         [@customForm.input name="${customName}.endDate" i18nkey="End Date" className="metadataValue" disabled=!editable required=false readOnly=isSynced editable=editable /]
       </div>
-      <div class="col-md-4 metadataElement-extensionDate">
+      <div class="col-md-4 metadataElement-extensionDate isOCSBlock" style="display:${isOCS?string('block','none')}">
         [@customForm.input name="${customName}.extensionDate" i18nkey="Extension Date" className="metadataValue"  disabled=!editable required=false readOnly=isSynced editable=editable /]
       </div>
     </div>
-    <div class="form-group metadataElement-originalDonorName">
+    <div class="form-group isOCSBlock metadataElement-originalDonorName" style="display:${isOCS?string('block','none')}">
       [@customForm.input name="${customName}.originalDonor" i18nkey="Original Donor" className="metadataValue" disabled=!editable required=false readOnly=isSynced editable=editable /]
     </div>
-    <div class="form-group metadataElement-directDonorName">
+    <div class="form-group isOCSBlock metadataElement-directDonorName" style="display:${isOCS?string('block','none')}">
       [@customForm.input name="${customName}.directDonor" i18nkey="Direct Donor" className="metadataValue"  disabled=!editable required=false readOnly=isSynced editable=editable /]
     </div>
+    
+    <div class="form-group row isOCSBlock" style="display:${isOCS?string('block','none')}">
+      <div class="col-md-6 metadataElement-grantAmount"> 
+        [@customForm.input name="${customName}.totalAmount" i18nkey="Total amount (USD)" className="metadataValue currencyInput"  disabled=!editable required=false readOnly=isSynced editable=editable /]
+      </div>
+    </div>
+    
   </div>
 [/#macro]
 

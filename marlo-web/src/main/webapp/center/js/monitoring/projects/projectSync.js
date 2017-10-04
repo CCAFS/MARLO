@@ -31,10 +31,12 @@ function changeSyncType(){
   var typeSelected = $(this).val();
   if(typeSelected == 1){
     // OCS
-    console.log('OCS');
+    $fsSelected.find('.isOCSBlock').show();
+    $fsSelected.find('.isCRPProjectBlock').hide();
   }else if(typeSelected == 2){
     // MARLO CRP
-    console.log('MARLO CRP');
+    $fsSelected.find('.isCRPProjectBlock').show();
+    $fsSelected.find('.isOCSBlock').hide();
   }
   
 }
