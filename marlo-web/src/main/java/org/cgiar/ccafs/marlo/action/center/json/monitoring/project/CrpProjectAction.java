@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,7 +41,7 @@ public class CrpProjectAction extends BaseAction {
 
   private long projectID;
 
-  private Map<String, Object> json;
+  private Map<String, Object> projectInfo;
 
   @Inject
   public CrpProjectAction(APConfig config, ProjectManager projectManager) {
@@ -50,23 +51,26 @@ public class CrpProjectAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
-    json = new HashMap<String, Object>();
+    projectInfo = new HashMap<String, Object>();
     Project project = projectManager.getProjectById(projectID);
 
     if (project != null) {
-      json.put("id", project.getId());
-      json.put("description", project.getTitle());
-      json.put("summary", project.getSummary());
-      json.put("startDate", project.getStartDate());
-      json.put("endDate", project.getEndDate());
-      json.put("crp", project.getCrp().getId());
+
+      SimpleDateFormat sdf = new SimpleDateFormat(APConstants.DATE_FORMAT);
+
+      projectInfo.put("id", project.getId());
+      projectInfo.put("description", project.getTitle());
+      projectInfo.put("summary", project.getSummary());
+      projectInfo.put("startDate", sdf.parse(project.getStartDate().toString()));
+      projectInfo.put("endDate", sdf.parse(project.getEndDate().toString()));
+      projectInfo.put("crp", project.getCrp().getId());
     }
 
     return SUCCESS;
   }
 
-  public Map<String, Object> getJson() {
-    return json;
+  public Map<String, Object> getProjectInfo() {
+    return projectInfo;
   }
 
   @Override
@@ -75,8 +79,8 @@ public class CrpProjectAction extends BaseAction {
     projectID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.PROJECT_ID))[0]));
   }
 
-  public void setJson(Map<String, Object> projectInfo) {
-    this.json = json;
+  public void setProjectInfo(Map<String, Object> projectInfo) {
+    this.projectInfo = projectInfo;
   }
 
 }
