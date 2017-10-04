@@ -13,9 +13,6 @@ label {
 }
 
 .input-sm {
-  padding: 4px 10px;
-  height: 27px;
-  font-size: 13px;
 }
 
 select.input-sm {
@@ -3410,7 +3407,6 @@ padding: 0 4px 0 6px;width: 100px;}
 }
 
 .project-title {
-  height: 44px;
 }
 
 .coreProject_name {

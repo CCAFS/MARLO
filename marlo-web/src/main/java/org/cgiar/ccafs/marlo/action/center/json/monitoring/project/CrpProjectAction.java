@@ -40,7 +40,7 @@ public class CrpProjectAction extends BaseAction {
 
   private long projectID;
 
-  private Map<String, Object> projectInfo;
+  private Map<String, Object> json;
 
   @Inject
   public CrpProjectAction(APConfig config, ProjectManager projectManager) {
@@ -50,23 +50,23 @@ public class CrpProjectAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
-    projectInfo = new HashMap<String, Object>();
+    json = new HashMap<String, Object>();
     Project project = projectManager.getProjectById(projectID);
 
     if (project != null) {
-      projectInfo.put("id", project.getId());
-      projectInfo.put("description", project.getTitle());
-      projectInfo.put("summary", project.getSummary());
-      projectInfo.put("startDate", project.getStartDate());
-      projectInfo.put("endDate", project.getEndDate());
-      projectInfo.put("crp", project.getCrp().getId());
+      json.put("id", project.getId());
+      json.put("description", project.getTitle());
+      json.put("summary", project.getSummary());
+      json.put("startDate", project.getStartDate());
+      json.put("endDate", project.getEndDate());
+      json.put("crp", project.getCrp().getId());
     }
 
     return SUCCESS;
   }
 
-  public Map<String, Object> getProjectInfo() {
-    return projectInfo;
+  public Map<String, Object> getJson() {
+    return json;
   }
 
   @Override
@@ -75,8 +75,8 @@ public class CrpProjectAction extends BaseAction {
     projectID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.PROJECT_ID))[0]));
   }
 
-  public void setProjectInfo(Map<String, Object> projectInfo) {
-    this.projectInfo = projectInfo;
+  public void setJson(Map<String, Object> projectInfo) {
+    this.json = json;
   }
 
 }

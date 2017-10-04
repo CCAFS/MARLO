@@ -221,21 +221,25 @@ function getOCSMetadata() {
         syncing = true;
       },
       success: function(data) {
+        console.log(data);
+        
         if(data.json) {
           var agreement = data.json;
-          console.log(agreement);
           // Extension date validation
           if(!allowExtensionDate) {
-            agreement.endDate = agreement.extensionDate;
+            agreement.endDate = agreement.extensionDate || '';
           }
           // Principal Investigator
-          agreement.pInvestigator = agreement.researcher.name;
+          if(agreement.researcher) {
+            agreement.pInvestigator = agreement.researcher.name || '';
+          }
+          
           // Donors
           if(agreement.originalDonor) {
-            agreement.originalDonorName = agreement.originalDonor.name;
+            agreement.originalDonorName = agreement.originalDonor.name || '';
           }
           if(agreement.directDonor) {
-            agreement.directDonorName = agreement.directDonor.name;
+            agreement.directDonorName = agreement.directDonor.name || '';
           }
 
           // Validate extension date
@@ -272,7 +276,7 @@ function getOCSMetadata() {
           setMetadata(agreement);
 
         } else {
-          $fsSelected.find('.financeCode-message').text("Agreement " + currentCode + " not found");
+          $fsSelected.find('.financeCode-message').text("Sync code " + currentCode + " not found");
         }
       },
       complete: function() {
