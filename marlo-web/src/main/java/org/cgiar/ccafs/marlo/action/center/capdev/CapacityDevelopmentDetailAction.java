@@ -379,7 +379,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       participant.setLastName((String) data[i][2]);
       participant.setGender((String) data[i][3]);
 
-      if (reader.sustraerId((String) data[i][4]) != null) {
+      if (reader.sustraerID((String) data[i][4]) != null) {
         if (locElementService.getLocElementByISOCode((String) reader.sustraerID((String) data[i][4])) != null) {
           participant.setLocElementsByCitizenship(
             locElementService.getLocElementByISOCode((String) reader.sustraerID((String) data[i][4])));
@@ -394,7 +394,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
         }
 
       }
-      if (reader.sustraerId((String) data[i][6]) != null) {
+      if (reader.sustraerID((String) data[i][6]) != null) {
         if (institutionService
           .getInstitutionById(Long.parseLong((String) (reader.sustraerID((String) data[i][6])))) != null) {
           participant.setInstitutions(
@@ -402,7 +402,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
         }
 
       }
-      if (reader.sustraerId((String) data[i][7]) != null) {
+      if (reader.sustraerID((String) data[i][7]) != null) {
         if (locElementService.getLocElementByISOCode((String) reader.sustraerID((String) data[i][7])) != null) {
           participant.setLocElementsByCountryOfInstitucion(
             locElementService.getLocElementByISOCode((String) reader.sustraerID((String) data[i][7])));

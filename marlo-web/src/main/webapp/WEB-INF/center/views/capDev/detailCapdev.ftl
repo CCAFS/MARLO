@@ -498,6 +498,7 @@
         <th>Email</th>
         <th>Reference</th>
         <th>Fellowship</th>
+        <th>Institution Suggested</th>
       </tr>
     </thead>
     <tbody>
@@ -557,6 +558,11 @@
     				<td>${i.participant.fellowship.name}</td>
     			[#else]
     				<td>Not defined</td>
+    			[/#if]
+    			[#if i.participant.institutionsSuggested??]
+    				<td>${i.participant.institutionsSuggested}</td>
+    			[#else]
+    				<td></td>
     			[/#if]
     			
     		</tr>

@@ -18,12 +18,15 @@ package org.cgiar.ccafs.marlo.action.center.capdev;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.ICapacityDevelopmentService;
 import org.cgiar.ccafs.marlo.data.model.CapacityDevelopment;
+import org.cgiar.ccafs.marlo.data.model.CapdevParticipant;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
@@ -112,8 +115,23 @@ public class CapacityDevelopmentAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
     if (capdevService.findAll() != null) {
-      capDevs = capdevService.findAll().stream().filter(cdl -> cdl.isActive()).collect(Collectors.toList());
+
+      // se obtiene la lista actual de las capacitaciones activas
+      List<CapacityDevelopment> currentCapdevList =
+        capdevService.findAll().stream().filter(cdl -> cdl.isActive()).collect(Collectors.toList());
       Collections.sort(capDevs, (ra1, ra2) -> (int) (ra2.getId() - ra1.getId()));
+
+      for (CapacityDevelopment capdev : currentCapdevList) {
+        // se obtiene la lista de participantes para validar que no se obtega la lista de participantes activa para cada
+        // capacitacion
+        List<CapdevParticipant> participants = new ArrayList<>(
+          capdev.getCapdevParticipants().stream().filter(p -> p.isActive()).collect(Collectors.toList()));
+        Collections.sort(participants, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
+        Set<CapdevParticipant> capdevParticipants = new HashSet<CapdevParticipant>(participants);
+        capdev.setCapdevParticipants(capdevParticipants);
+
+        capDevs.add(capdev);
+      }
     }
 
 
