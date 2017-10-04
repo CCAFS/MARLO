@@ -191,7 +191,8 @@ public class DeliverableValidator extends BaseValidator {
               InvalidFieldsMessages.EMPTYFIELD);
 
           } else {
-            if (deliverable.getResponsiblePartner() != null) {
+            if (deliverable.getResponsiblePartner() != null
+              && deliverable.getResponsiblePartner().getProjectPartnerPerson() != null) {
 
 
               if (projectPartnerPersonManager
