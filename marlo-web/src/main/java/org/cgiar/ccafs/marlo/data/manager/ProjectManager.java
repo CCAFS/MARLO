@@ -55,6 +55,9 @@ public interface ProjectManager {
   public List<Project> findAll();
 
 
+  public List<Project> getCompletedProjects(long crpId);
+
+
   /**
    * This method gets a project object by a given project identifier.
    * 
@@ -62,7 +65,6 @@ public interface ProjectManager {
    * @return a Project object.
    */
   public Project getProjectById(long projectID);
-
 
   /**
    * Get the list of projects that the user can access and edit.

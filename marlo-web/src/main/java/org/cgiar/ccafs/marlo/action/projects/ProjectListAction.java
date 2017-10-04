@@ -392,6 +392,7 @@ public class ProjectListAction extends BaseAction {
    */
   public void loadFlagshipgsAndRegions(List<Project> list) {
     for (Project project : list) {
+
       List<CrpProgram> programs = new ArrayList<>();
       List<CrpProgram> regions = new ArrayList<>();
       for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
@@ -402,6 +403,28 @@ public class ProjectListAction extends BaseAction {
       }
       for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
         .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())
+          && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+        .collect(Collectors.toList())) {
+        regions.add(projectFocuses.getCrpProgram());
+      }
+      project.setFlagships(programs);
+      project.setRegions(regions);
+    }
+  }
+
+  public void loadFlagshipgsAndRegionsCurrentPhase(List<Project> list) {
+    for (Project project : list) {
+
+      List<CrpProgram> programs = new ArrayList<>();
+      List<CrpProgram> regions = new ArrayList<>();
+      for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
+        .filter(c -> c.isActive() && c.getPhase().equals(project.getProjectInfo().getPhase())
+          && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+        .collect(Collectors.toList())) {
+        programs.add(projectFocuses.getCrpProgram());
+      }
+      for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
+        .filter(c -> c.isActive() && c.getPhase().equals(project.getProjectInfo().getPhase())
           && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
         .collect(Collectors.toList())) {
         regions.add(projectFocuses.getCrpProgram());
@@ -476,21 +499,14 @@ public class ProjectListAction extends BaseAction {
       this.loadFlagshipgsAndRegions(myProjects);
 
     }
-    closedProjects = loggedCrp.getProjects().stream()
-      .filter(c -> c.isActive() && c.getProjecInfoPhase(this.getActualPhase()) != null
-        && (c.getProjecInfoPhase(this.getActualPhase()).getStatus() != null
-          && c.getProjecInfoPhase(this.getActualPhase()).getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
-        || c.getProjecInfoPhase(this.getActualPhase()).getStatus().intValue() == Integer
-          .parseInt(ProjectStatusEnum.Complete.getStatusId())))
-      .collect(Collectors.toList());
+    closedProjects = projectManager.getCompletedProjects(this.getCrpID());
 
     if (closedProjects != null) {
       myProjects.removeAll(closedProjects);
       if (allProjects != null) {
         allProjects.removeAll(closedProjects);
       }
-      this.loadFlagshipgsAndRegions(closedProjects);
+      this.loadFlagshipgsAndRegionsCurrentPhase(closedProjects);
     }
 
 

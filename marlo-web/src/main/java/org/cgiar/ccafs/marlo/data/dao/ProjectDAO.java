@@ -59,6 +59,8 @@ public interface ProjectDAO {
    */
   public List<Project> findAll();
 
+  public List<Project> getCompletedProjects(long crpId);
+
   /**
    * Get the list of permissions that the user can access and edit.
    * 

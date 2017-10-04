@@ -527,8 +527,14 @@ public class Project implements java.io.Serializable, IAuditLog {
 
         }
       } else {
-        for (ProjectPartner partner : projectPartners.stream().filter(c -> c.isActive() && c.getPhase().equals(phase))
-          .collect(Collectors.toList())) {
+        final Phase actualPhase;
+        if (projectInfo.getPhase() != null) {
+          actualPhase = projectInfo.getPhase();
+        } else {
+          actualPhase = phase;
+        }
+        for (ProjectPartner partner : projectPartners.stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(actualPhase)).collect(Collectors.toList())) {
           if (partner.isActive()) {
 
 

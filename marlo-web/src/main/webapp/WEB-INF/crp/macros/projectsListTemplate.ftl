@@ -220,7 +220,7 @@
           </td>
           [#-- Project Leader --]
           <td class=""> 
-            [#if project.projectInfo.leader?has_content]${(project.projectInfo.leader.institution.acronym)!project.projectInfo.leader.institution.name}[#else][@s.text name="projectsList.title.none" /][/#if]
+            [#if project.getLeader(action.getActualPhase())?has_content]${(project.getLeader(action.getActualPhase()).institution.acronym)!project.getLeader(action.getActualPhase()).institution.name}[#else][@s.text name="projectsList.title.none" /][/#if]
           </td>
           [#-- Flagship / Regions --]
           <td>
@@ -244,7 +244,7 @@
               <img src="${baseUrl}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
             </a>
           </td>
-          [#-- Delete Project--]
+          [#-- Delete Project--] 
           <td>
             [#if canEdit && isProjectNew && action.deletePermission(project.id) ]
               <a id="removeProject-${project.id}" class="removeProject" href="#" title="">

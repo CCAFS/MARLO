@@ -298,6 +298,14 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
     return false;
   }
 
+  public String getStatusName() {
+
+    if (status != null) {
+      return ProjectStatusEnum.getValue(status.intValue()).getStatus();
+    }
+    return "";
+  }
+
 
   public String getSummary() {
     return summary;

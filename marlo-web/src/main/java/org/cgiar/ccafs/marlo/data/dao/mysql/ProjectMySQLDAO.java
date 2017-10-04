@@ -19,9 +19,12 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.ProjectDAO;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.PropertiesManager;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -142,6 +145,26 @@ public class ProjectMySQLDAO implements ProjectDAO {
     }
     return null;
 
+  }
+
+  @Override
+  public List<Project> getCompletedProjects(long crpId) {
+    StringBuilder query = new StringBuilder();
+    query.append(
+      "select distinct p.id as projectId,pi.id as info  from projects p inner join projects_info pi on pi.project_id=p.id ");
+    query.append("where p.is_active=1 and p.crp_id =");
+    query.append(crpId);
+    query.append(" and pi.`status` in (" + ProjectStatusEnum.Cancelled.getStatusId() + " , "
+      + ProjectStatusEnum.Complete.getStatusId() + " )");
+    List<Map<String, Object>> list = dao.findCustomQuery(query.toString());
+
+    List<Project> projects = new ArrayList<Project>();
+    for (Map<String, Object> map : list) {
+      Project project = this.find(Long.parseLong(map.get("projectId").toString()));
+      project.setProjectInfo(dao.find(ProjectInfo.class, Long.parseLong(map.get("info").toString())));
+      projects.add(project);
+    }
+    return projects;
   }
 
   @Override

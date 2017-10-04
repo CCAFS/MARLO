@@ -63,6 +63,11 @@ public class ProjectManagerImpl implements ProjectManager {
   }
 
   @Override
+  public List<Project> getCompletedProjects(long crpId) {
+    return projectDAO.getCompletedProjects(crpId);
+  }
+
+  @Override
   public Project getProjectById(long projectID) {
     return projectDAO.find(projectID);
   }
