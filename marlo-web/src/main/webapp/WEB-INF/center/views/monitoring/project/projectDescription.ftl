@@ -59,11 +59,11 @@
             
             [#-- Project Title --]
             <div class="form-group metadataElement-description">
-              [@customForm.textArea name="project.name" i18nkey="projectDescription.name" required=true className="project-title metadataValue" editable=editable && action.hasPermission("title") /]
+              [@customForm.input name="project.name" i18nkey="projectDescription.name" required=true className="project-title metadataValue" editable=editable && action.hasPermission("title") /]
             </div>
             [#-- Project Suggested Title --]
             <div class="form-group">
-              [@customForm.textArea name="project.suggestedName" i18nkey="projectDescription.suggestedName" required=false className="project-title" required=true editable=editable && action.hasPermission("title") /]
+              [@customForm.input name="project.suggestedName" i18nkey="projectDescription.suggestedName" required=false className="project-title" required=true editable=editable && action.hasPermission("title") /]
             </div>
             [#-- Project Description --]
             <div class="form-group metadataElement-objectives">
