@@ -36,6 +36,11 @@ function init() {
     var $option = $(this).find("option:selected");
     var selectedValue = $option.val();
     var count = 0;
+    
+    if(selectedValue == "-1"){
+      return
+    }
+    
     // Count repeated donors
     $('select.donor').each(function(i, e){
       if (e.value == selectedValue) {
@@ -225,7 +230,7 @@ function keyupBudgetYear(){
   $('#grantTotalAmount .remaining').text(setCurrencyFormat(grantAmount - total));
   
   // Validate total of agreement and budget type
-  if ((grantAmount < total) && ($fundingType.val() != W1W2)){
+  if (grantAmount < total){
     $('#grantTotalAmount').addClass('fieldError').animateCss('shake');
   }else{
     $('#grantTotalAmount').removeClass('fieldError');
