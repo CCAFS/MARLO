@@ -103,7 +103,7 @@ public class FundingSourceListAction extends BaseAction {
     fundingSource.setActive(true);
     fundingSource.setActiveSince(new Date());
     fundingSource.setCrp(loggedCrp);
-
+    fundingSourceInfo.setPhase(this.getActualPhase());
 
     // project.setCrp(loggedCrp);
 
