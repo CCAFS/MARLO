@@ -210,7 +210,7 @@ public class ProjectSubmissionAction extends BaseAction {
         project
           .getCrp().getCrpPrograms().stream().filter(cp -> cp.getId() == project
             .getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram().getId())
-          .collect(Collectors.toList());
+        .collect(Collectors.toList());
       if (crpPrograms != null) {
         if (crpPrograms.size() > 1) {
           LOG.warn("Crp programs should be 1");
@@ -223,7 +223,7 @@ public class ProjectSubmissionAction extends BaseAction {
         }
         // CC will be also other Cluster Leaders
         for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
-          .filter(cl -> cl.isActive()).collect(Collectors.toList())) {
+          .filter(cl -> cl.isActive() && cl.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
           for (CrpClusterActivityLeader crpClusterActivityLeader : crpClusterOfActivity.getCrpClusterActivityLeaders()
             .stream().filter(cl -> cl.isActive()).collect(Collectors.toList())) {
             ccEmails.append(crpClusterActivityLeader.getUser().getEmail());
