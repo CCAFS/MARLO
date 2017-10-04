@@ -37,43 +37,60 @@ public class HibernateListener implements ServletContextListener {
 
   private String path = "/hibernate.cfg.xml";
 
+  private SessionFactory configSessionFactory(URL url) {
+    Configuration config = null;
+    config = new Configuration().configure(url);
+    PropertiesManager manager = new PropertiesManager();
+
+    config.setProperty("hibernate.connection.username", manager.getPropertiesAsString(APConfig.MYSQL_USER));
+    config.setProperty("hibernate.connection.password", manager.getPropertiesAsString(APConfig.MYSQL_PASSWORD));
+    String urlMysql = "jdbc:mysql://" + manager.getPropertiesAsString(APConfig.MYSQL_HOST) + ":"
+      + manager.getPropertiesAsString(APConfig.MYSQL_PORT) + "/"
+      + manager.getPropertiesAsString(APConfig.MYSQL_DATABASE) + "?autoReconnect=true&&useSSL=false";
+    config.setProperty("hibernate.connection.url", urlMysql);
+    config.setProperty("hibernate.current_session_context_class", "thread");
+    config.setProperty("hibernate.hikari.dataSource.url", urlMysql);
+    config.setProperty("hibernate.hikari.dataSource.user", manager.getPropertiesAsString(APConfig.MYSQL_USER));
+    config.setProperty("hibernate.hikari.dataSource.password", manager.getPropertiesAsString(APConfig.MYSQL_PASSWORD));
+    config.setProperty("hibernate.hikari.connectionTimeout", "60000");
+    // Minimum number of ideal connections in the pool
+    config.setProperty("hibernate.hikari.minimumIdle", "100");
+    // Maximum number of actual connection in the pool
+    config.setProperty("hibernate.hikari.maximumPoolSize", "2000");
+    // Maximum time that a connection is allowed to sit ideal in the pool
+    config.setProperty("hibernate.hikari.idleTimeout", "300000");
+    // config.setProperty("hibernate.c3p0.min_size", "5");
+    // System.out.println("url_mysql " + url_mysql);
+    // System.out.println(url.toString());
+
+    SessionFactory factory = config.buildSessionFactory();
+    return factory;
+
+
+    // System.out.println("Build factory " + factory);
+
+    // save the Hibernate session factory into serlvet context
+
+  }
+
   @Override
   public void contextDestroyed(ServletContextEvent event) {
     //
     if (factory != null) {
       factory.close();
     }
+
   }
+
 
   @Override
   public void contextInitialized(ServletContextEvent event) {
 
     try {
-
-      // System.out.println("Entering Hibernate Listener");
       URL url = HibernateListener.class.getResource(path);
-      config = new Configuration().configure(url);
-      PropertiesManager manager = new PropertiesManager();
-
-      config.setProperty("hibernate.connection.username", manager.getPropertiesAsString(APConfig.MYSQL_USER));
-      config.setProperty("hibernate.connection.password", manager.getPropertiesAsString(APConfig.MYSQL_PASSWORD));
-      String urlMysql = "jdbc:mysql://" + manager.getPropertiesAsString(APConfig.MYSQL_HOST) + ":"
-        + manager.getPropertiesAsString(APConfig.MYSQL_PORT) + "/"
-        + manager.getPropertiesAsString(APConfig.MYSQL_DATABASE) + "?autoReconnect=true&&useSSL=false";
-      config.setProperty("hibernate.connection.url", urlMysql);
-      config.setProperty("hibernate.current_session_context_class", "thread");
-      // config.setProperty("hibernate.c3p0.min_size", "5");
-      // System.out.println("url_mysql " + url_mysql);
-      // System.out.println(url.toString());
-
-      factory = config.buildSessionFactory();
-
-      // System.out.println("Build factory " + factory);
-
-      // save the Hibernate session factory into serlvet context
+      factory = this.configSessionFactory(url);
       event.getServletContext().setAttribute(KEY_NAME, factory);
-      // System.out.println(KEY_NAME + "puso el dato e session");
-      // System.out.println(event.getServletContext().getAttribute(KEY_NAME));
+
     } catch (Exception e) {
       e.printStackTrace();
       System.out.println(e.getMessage());

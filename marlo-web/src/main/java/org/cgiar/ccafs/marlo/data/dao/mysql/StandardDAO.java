@@ -175,12 +175,12 @@ public class StandardDAO {
       session = this.openSession();
 
 
-      if (!session.isOpen() || !session.isConnected() || session.connection().isClosed()) {
+      if (!session.isOpen() || !session.isConnected()) {
         session = this.openSession();
       }
       tx = this.initTransaction(session);
       this.commitTransaction(tx);
-      obj = (T) session.get(clazz, (Serializable) id);
+      obj = session.get(clazz, (Serializable) id);
 
 
     } catch (Exception e) {
@@ -469,7 +469,8 @@ public class StandardDAO {
 
     }
 
-    Session session = sessionFactory.openSession(interceptor);
+
+    Session session = sessionFactory.withOptions().interceptor(interceptor).openSession();
     CloseSession closeSession = new CloseSession();
     closeSession.setSession(session);
     closeSession.start();
@@ -502,7 +503,7 @@ public class StandardDAO {
     try {
       session = this.openSession();
       tx = this.initTransaction(session);
-      if (!session.isOpen() || !session.isConnected() || session.connection().isClosed()) {
+      if (!session.isOpen() || !session.isConnected()) {
         session = this.openSession();
         tx = this.initTransaction(session);
       }
@@ -613,7 +614,7 @@ public class StandardDAO {
 
       tx = this.initTransaction(session);
 
-      if (!session.isOpen() || !session.isConnected() || session.connection().isClosed()) {
+      if (!session.isOpen() || !session.isConnected()) {
         session = this.openSession();
         tx = this.initTransaction(session);
       }

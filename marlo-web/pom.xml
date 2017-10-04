@@ -25,7 +25,8 @@
     <poi.version>3.13</poi.version>
     <flyway.version>4.0.1</flyway.version>
     <org.json.version>20160212</org.json.version>
-    <hibbernate-core-version>3.6.3.Final</hibbernate-core-version>
+       <hibbernate-core-version>4.3.6</hibbernate-core-version>
+
     <jta-version>1.1</jta-version>
     <commons-logging-version>1.2</commons-logging-version>
     <xml-apis-version>1.4.01</xml-apis-version>
@@ -310,18 +311,20 @@
     </dependency>
     <!-- START Hibernate -->
     <!-- Hibernate Core -->
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-core</artifactId>
-      <version>${hibbernate-core-version}</version>
-    </dependency>
+     <!-- START Hibernate -->
+    <!-- Hibernate Core -->
+   <dependency>
+          <groupId>org.hibernate</groupId>
+          <artifactId>hibernate-core</artifactId>
+          <version>5.2.0.Final</version>
+      </dependency>
 
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-c3p0</artifactId>
-      <version>${hibbernate-core-version}</version>
-    </dependency>
-
+   
+<dependency>
+          <groupId>com.zaxxer</groupId>
+          <artifactId>HikariCP</artifactId>
+          <version>2.4.6</version>
+      </dependency>
     <dependency>
       <groupId>javassist</groupId>
       <artifactId>javassist</artifactId>
@@ -344,6 +347,7 @@
          <artifactId>logback-classic</artifactId>
          <version>${log-properties}</version>
       </dependency>
+    
     <!-- END Hibernate -->
     <!-- jasper -->
     <dependency>
