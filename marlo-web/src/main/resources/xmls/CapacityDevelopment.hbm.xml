@@ -117,42 +117,42 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CapdevLocations" />
 		</set>
-		<set name="capdevDisciplines" table="capdev_discipline" inverse="true"
+		<set name="capdevDiscipline" table="capdev_discipline" inverse="true"
 			lazy="true" fetch="select">
 			<key>
 				<column name="capdev_id" />
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CapdevDiscipline" />
 		</set>
-		<set name="capdevTargetgroups" table="capdev_targetgroup" inverse="true"
+		<set name="capdevTargetgroup" table="capdev_targetgroup" inverse="true"
 			lazy="true" fetch="select">
 			<key>
 				<column name="capdev_id" />
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CapdevTargetgroup" />
 		</set>
-		<set name="capdevParticipants" table="capdev_participant" inverse="true"
+		<set name="capdevParticipant" table="capdev_participant" inverse="true"
 			lazy="true" fetch="select">
 			<key>
 				<column name="capdev_id" />
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CapdevParticipant" />
 		</set>
-		<set name="capdevOutputses" table="capdev_outputs" inverse="true"
+		<set name="capdevOutputs" table="capdev_outputs" inverse="true"
 			lazy="true" fetch="select">
 			<key>
 				<column name="capdev_id" not-null="true" />
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CapdevOutputs" />
 		</set>
-		<set name="capdevPartnerses" table="capdev_partners" inverse="true"
+		<set name="capdevPartners" table="capdev_partners" inverse="true"
 			lazy="true" fetch="select">
 			<key>
 				<column name="capdev_id" not-null="true" />
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CapdevPartners" />
 		</set>
-		<set name="capdevSupportingDocses" table="capdev_supporting_docs"
+		<set name="capdevSupportingDocs" table="capdev_supporting_docs"
 			inverse="true" lazy="true" fetch="select">
 			<key>
 				<column name="capdev_id" />

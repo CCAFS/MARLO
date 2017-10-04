@@ -158,7 +158,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
   public String deleteListOfParticipants() throws Exception {
     capdev = capdevService.getCapacityDevelopmentById(capdevID);
-    final List<CapdevParticipant> listOfParticipants = new ArrayList<>(capdev.getCapdevParticipants());
+    final List<CapdevParticipant> listOfParticipants = new ArrayList<>(capdev.getCapdevParticipant());
     for (final CapdevParticipant obj : listOfParticipants) {
       obj.setActive(false);
       obj.setModifiedBy(this.getCurrentUser());
@@ -527,7 +527,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       Collections.sort(capdevTypes, (c1, c2) -> c1.getName().compareTo(c2.getName()));
 
       final List<CapdevParticipant> participants =
-        new ArrayList<>(capdev.getCapdevParticipants().stream().filter(p -> p.isActive()).collect(Collectors.toList()));
+        new ArrayList<>(capdev.getCapdevParticipant().stream().filter(p -> p.isActive()).collect(Collectors.toList()));
       Collections.sort(participants, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
 
       if (capdev.getCategory() == 1) {
@@ -648,7 +648,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       this.saveParticipant(participant);
 
       // verifica si la capdev tiene algun participante registrado, sino registra el capdevParticipant
-      if (capdevDB.getCapdevParticipants().isEmpty()) {
+      if (capdevDB.getCapdevParticipant().isEmpty()) {
         this.saveCapDevParticipan(participant, capdevDB);
       }
 

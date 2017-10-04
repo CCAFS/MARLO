@@ -438,25 +438,25 @@ public final class APConstants {
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapacityDevelopment.capdevLocations)";
 
   public static final String CAPDEV_PARTICIPANTS_RELATION =
-    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapacityDevelopment.capdevParticipants)";
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapacityDevelopment.capdevParticipant)";
 
   public static final String CAPDEV_DISCIPLINES_RELATION =
-    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapacityDevelopment.capdevDisciplines)";
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapacityDevelopment.capdevDiscipline)";
 
   public static final String CAPDEV_TARGETGROUPS_RELATION =
-    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapacityDevelopment.capdevTargetgroups)";
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapacityDevelopment.capdevTargetgroup)";
 
   public static final String CAPDEV_PARTNERS_RELATION =
-    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapacityDevelopment.capdevPartnerses)";
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapacityDevelopment.capdevPartners)";
 
   public static final String CAPDEV_OUTPUTS_RELATION =
-    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapacityDevelopment.capdevOutputses)";
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapacityDevelopment.capdevOutputs)";
 
   public static final String CAPDEV_SUPPORTTINGDOCS_RELATION =
-    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapacityDevelopment.capdevSupportingDocses)";
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapacityDevelopment.capdevSupportingDocs)";
 
   public static final String SUPPORTINGDOCS_DOCUMENTS_RALATION =
-    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapdevSupportingDocs.capdevSuppDocsDocumentses)";
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapdevSupportingDocs.capdevSuppDocsDocuments)";
 
   public static String getFilterBy() {
     return FILTER_BY;

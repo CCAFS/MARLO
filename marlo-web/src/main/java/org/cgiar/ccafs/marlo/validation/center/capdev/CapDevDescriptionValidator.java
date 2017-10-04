@@ -53,7 +53,7 @@ public class CapDevDescriptionValidator extends BaseValidator {
       disciplines.remove(0);
     }
     if (disciplines.isEmpty()
-      && capdev.getCapdevDisciplines().stream().filter(cd -> cd.isActive()).collect(Collectors.toList()).isEmpty()) {
+      && capdev.getCapdevDiscipline().stream().filter(cd -> cd.isActive()).collect(Collectors.toList()).isEmpty()) {
       this.addMessage(baseAction.getText("capdev.action.disciplines"));
       baseAction.getInvalidFields().put("list-capdev.disciplines",
         baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Disciplines"}));
@@ -74,7 +74,7 @@ public class CapDevDescriptionValidator extends BaseValidator {
       partners.remove(0);
     }
     if (partners.isEmpty()
-      && capdev.getCapdevPartnerses().stream().filter(cd -> cd.isActive()).collect(Collectors.toList()).isEmpty()) {
+      && capdev.getCapdevPartners().stream().filter(cd -> cd.isActive()).collect(Collectors.toList()).isEmpty()) {
       this.addMessage(baseAction.getText("capdev.action.partners"));
       baseAction.getInvalidFields().put("list-capdev.partners",
         baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Partners"}));
@@ -89,7 +89,7 @@ public class CapDevDescriptionValidator extends BaseValidator {
     }
 
     if (outputs.isEmpty()
-      && capdev.getCapdevOutputses().stream().filter(cd -> cd.isActive()).collect(Collectors.toList()).isEmpty()) {
+      && capdev.getCapdevOutputs().stream().filter(cd -> cd.isActive()).collect(Collectors.toList()).isEmpty()) {
       this.addMessage(baseAction.getText("capdev.action.outputs"));
       baseAction.getInvalidFields().put("list-capdev.outputs",
         baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Outputs"}));

@@ -55,7 +55,7 @@ public class CapdevSupportingDocs implements java.io.Serializable, IAuditLog {
   @Expose
   private String modificationJustification;
 
-  private Set<CapdevSuppDocsDocuments> capdevSuppDocsDocumentses = new HashSet<CapdevSuppDocsDocuments>(0);
+  private Set<CapdevSuppDocsDocuments> capdevSuppDocsDocuments = new HashSet<CapdevSuppDocsDocuments>(0);
 
   public CapdevSupportingDocs() {
   }
@@ -63,7 +63,7 @@ public class CapdevSupportingDocs implements java.io.Serializable, IAuditLog {
   public CapdevSupportingDocs(User modifiedBy, User createdBy, CenterDeliverableType centerDeliverableTypes,
     CenterDeliverableType deliverableSubtype, CapacityDevelopment capacityDevelopment, String title,
     Date publicationDate, boolean active, Date activeSince, String modificationJustification,
-    Set<CapdevSuppDocsDocuments> capdevSuppDocsDocumentses) {
+    Set<CapdevSuppDocsDocuments> capdevSuppDocsDocuments) {
     this.modifiedBy = modifiedBy;
     this.createdBy = createdBy;
     this.centerDeliverableTypes = centerDeliverableTypes;
@@ -74,7 +74,7 @@ public class CapdevSupportingDocs implements java.io.Serializable, IAuditLog {
     this.active = active;
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
-    this.capdevSuppDocsDocumentses = capdevSuppDocsDocumentses;
+    this.capdevSuppDocsDocuments = capdevSuppDocsDocuments;
   }
 
 
@@ -88,8 +88,8 @@ public class CapdevSupportingDocs implements java.io.Serializable, IAuditLog {
   }
 
 
-  public Set<CapdevSuppDocsDocuments> getCapdevSuppDocsDocumentses() {
-    return capdevSuppDocsDocumentses;
+  public Set<CapdevSuppDocsDocuments> getCapdevSuppDocsDocuments() {
+    return capdevSuppDocsDocuments;
   }
 
 
@@ -157,8 +157,8 @@ public class CapdevSupportingDocs implements java.io.Serializable, IAuditLog {
   }
 
 
-  public void setCapdevSuppDocsDocumentses(Set<CapdevSuppDocsDocuments> capdevSuppDocsDocumentses) {
-    this.capdevSuppDocsDocumentses = capdevSuppDocsDocumentses;
+  public void setCapdevSuppDocsDocuments(Set<CapdevSuppDocsDocuments> capdevSuppDocsDocuments) {
+    this.capdevSuppDocsDocuments = capdevSuppDocsDocuments;
   }
 
   public void setCenterDeliverableTypes(CenterDeliverableType centerDeliverableTypes) {

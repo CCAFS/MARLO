@@ -104,11 +104,11 @@ public class CapdevSupportingDocsAction extends BaseAction {
       capdevID = -1;
     }
     capdev = capdevService.getCapacityDevelopmentById(capdevID);
-    if (!capdev.getCapdevSupportingDocses().isEmpty()) {
+    if (!capdev.getCapdevSupportingDocs().isEmpty()) {
       final List<CapdevSupportingDocs> documentesDB = new ArrayList<>(
-        capdev.getCapdevSupportingDocses().stream().filter(d -> d.isActive()).collect(Collectors.toList()));
+        capdev.getCapdevSupportingDocs().stream().filter(d -> d.isActive()).collect(Collectors.toList()));
       Collections.sort(documentesDB, (r1, r2) -> r1.getId().compareTo(r2.getId()));
-      capdev.setCapdevSupportingDocses(new HashSet<CapdevSupportingDocs>(documentesDB));
+      capdev.setCapdevSupportingDocs(new HashSet<CapdevSupportingDocs>(documentesDB));
     }
   }
 

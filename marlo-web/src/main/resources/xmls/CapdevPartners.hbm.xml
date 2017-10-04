@@ -17,7 +17,7 @@
 			fetch="select">
 			<column name="created_by" />
 		</many-to-one>
-		<many-to-one name="institutions"
+		<many-to-one name="institution"
 			class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
 			<column name="institution_id" />
 		</many-to-one>

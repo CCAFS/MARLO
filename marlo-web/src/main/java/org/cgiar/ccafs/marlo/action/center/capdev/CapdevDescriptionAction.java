@@ -317,9 +317,6 @@ public class CapdevDescriptionAction extends BaseAction {
 
       if (history != null) {
         capdev = history;
-
-        System.out.println("disciplines " + capdev.getCapdevDisciplines().size());
-
       } else {
         this.transaction = null;
         this.setTransaction("-1");

@@ -21,7 +21,7 @@
 			class="org.cgiar.ccafs.marlo.data.model.CapacityDevelopment" fetch="select">
 			<column name="capdev_id" />
 		</many-to-one>
-		<many-to-one name="disciplines"
+		<many-to-one name="discipline"
 			class="org.cgiar.ccafs.marlo.data.model.Discipline" fetch="select">
 			<column name="discipline_id" />
 		</many-to-one>

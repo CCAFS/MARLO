@@ -45,7 +45,7 @@ public class CapacityDevelopmentType implements java.io.Serializable, IAuditLog 
   @Expose
   private String modificationJustification;
 
-  private Set<CapacityDevelopment> capacityDevelopments = new HashSet<CapacityDevelopment>(0);
+  private Set<CapacityDevelopment> capacityDevelopment = new HashSet<CapacityDevelopment>(0);
 
 
   public CapacityDevelopmentType() {
@@ -57,9 +57,9 @@ public class CapacityDevelopmentType implements java.io.Serializable, IAuditLog 
   }
 
   public CapacityDevelopmentType(String name, User modifiedBy, User createdBy, boolean active, Date activeSince,
-    String modificationJustification, Set<CapacityDevelopment> capacityDevelopments, String category) {
+    String modificationJustification, Set<CapacityDevelopment> capacityDevelopment, String category) {
     this.name = name;
-    this.capacityDevelopments = capacityDevelopments;
+    this.capacityDevelopment = capacityDevelopment;
     this.category = category;
     this.modifiedBy = modifiedBy;
     this.createdBy = createdBy;
@@ -73,7 +73,7 @@ public class CapacityDevelopmentType implements java.io.Serializable, IAuditLog 
   }
 
   public Set<CapacityDevelopment> getCapacityDevelopments() {
-    return this.capacityDevelopments;
+    return this.capacityDevelopment;
   }
 
   public String getCategory() {
@@ -130,8 +130,8 @@ public class CapacityDevelopmentType implements java.io.Serializable, IAuditLog 
   }
 
 
-  public void setCapacityDevelopments(Set<CapacityDevelopment> capacityDevelopments) {
-    this.capacityDevelopments = capacityDevelopments;
+  public void setCapacityDevelopment(Set<CapacityDevelopment> capacityDevelopment) {
+    this.capacityDevelopment = capacityDevelopment;
   }
 
 

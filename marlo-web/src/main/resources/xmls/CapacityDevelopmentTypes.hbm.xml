@@ -34,7 +34,7 @@
 		<property name="modificationJustification" type="string">
 			<column name="modification_justification" length="65535" />
 		</property>
-		<set name="capacityDevelopments" table="capacity_development"
+		<set name="capacityDevelopment" table="capacity_development"
 			inverse="true" lazy="true" fetch="select">
 			<key>
 				<column name="capdev_type" not-null="true" />

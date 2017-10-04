@@ -33,7 +33,7 @@ public class CapdevDiscipline implements java.io.Serializable, IAuditLog {
   private CapacityDevelopment capacityDevelopment;
 
   @Expose
-  private Discipline disciplines;
+  private Discipline discipline;
 
   @Expose
   private boolean active;
@@ -54,11 +54,11 @@ public class CapdevDiscipline implements java.io.Serializable, IAuditLog {
   }
 
   public CapdevDiscipline(User modifiedBy, User createdBy, CapacityDevelopment capacityDevelopment,
-    Discipline disciplines, boolean active, Date activeSince, String modificationJustification) {
+    Discipline discipline, boolean active, Date activeSince, String modificationJustification) {
     this.modifiedBy = modifiedBy;
     this.createdBy = createdBy;
     this.capacityDevelopment = capacityDevelopment;
-    this.disciplines = disciplines;
+    this.discipline = discipline;
     this.active = active;
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
@@ -77,8 +77,8 @@ public class CapdevDiscipline implements java.io.Serializable, IAuditLog {
   }
 
 
-  public Discipline getDisciplines() {
-    return this.disciplines;
+  public Discipline getDiscipline() {
+    return this.discipline;
   }
 
   @Override
@@ -129,8 +129,8 @@ public class CapdevDiscipline implements java.io.Serializable, IAuditLog {
   }
 
 
-  public void setDisciplines(Discipline disciplines) {
-    this.disciplines = disciplines;
+  public void setDisciplines(Discipline discipline) {
+    this.discipline = discipline;
   }
 
 

@@ -30,7 +30,7 @@ public class CapdevPartners implements java.io.Serializable, IAuditLog {
   private User createdBy;
 
   @Expose
-  private Institution institutions;
+  private Institution institution;
 
   @Expose
   private CapacityDevelopment capacityDevelopment;
@@ -53,11 +53,11 @@ public class CapdevPartners implements java.io.Serializable, IAuditLog {
     this.active = active;
   }
 
-  public CapdevPartners(User modifiedBy, User createdBy, Institution institutions,
+  public CapdevPartners(User modifiedBy, User createdBy, Institution institution,
     CapacityDevelopment capacityDevelopment, boolean active, Date activeSince, String modificationJustification) {
     this.modifiedBy = modifiedBy;
     this.createdBy = createdBy;
-    this.institutions = institutions;
+    this.institution = institution;
     this.capacityDevelopment = capacityDevelopment;
     this.active = active;
     this.activeSince = activeSince;
@@ -81,8 +81,8 @@ public class CapdevPartners implements java.io.Serializable, IAuditLog {
     return this.id;
   }
 
-  public Institution getInstitutions() {
-    return this.institutions;
+  public Institution getInstitution() {
+    return this.institution;
   }
 
 
@@ -131,8 +131,8 @@ public class CapdevPartners implements java.io.Serializable, IAuditLog {
   }
 
 
-  public void setInstitutions(Institution institutions) {
-    this.institutions = institutions;
+  public void setInstitutions(Institution institution) {
+    this.institution = institution;
   }
 
 

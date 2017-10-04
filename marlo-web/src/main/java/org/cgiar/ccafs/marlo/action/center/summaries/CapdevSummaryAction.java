@@ -332,8 +332,8 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
           }
         }
         Integer numSupportingDocs = null;
-        if (capdev.getCapdevSupportingDocses() != null) {
-          numSupportingDocs = capdev.getCapdevSupportingDocses().size();
+        if (capdev.getCapdevSupportingDocs() != null) {
+          numSupportingDocs = capdev.getCapdevSupportingDocs().size();
         }
 
         model.addRow(new Object[] {title, type, category, numParticipants, numMen, numWomen, numOther, researcharea,
@@ -376,7 +376,7 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
 
     final Map<LocElement, Integer> countries = new HashMap<>();
     for (final CapacityDevelopment capdev : capDevs) {
-      for (final CapdevParticipant participant : capdev.getCapdevParticipants()) {
+      for (final CapdevParticipant participant : capdev.getCapdevParticipant()) {
         if (participant.getParticipant().getLocElementsByCitizenship() != null) {
           if (countries.containsKey(participant.getParticipant().getLocElementsByCitizenship())) {
             final int quantity = countries.get(participant.getParticipant().getLocElementsByCitizenship()) + 1;
@@ -432,13 +432,13 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
 
     final Map<Discipline, Integer> disciplinas = new HashMap<>();
     for (final CapacityDevelopment capdev : capDevs) {
-      for (final CapdevDiscipline discipline : capdev.getCapdevDisciplines()) {
-        if (disciplinas.containsKey(discipline.getDisciplines())) {
-          final int quantity = disciplinas.get(discipline.getDisciplines()) + 1;
-          disciplinas.put(discipline.getDisciplines(), quantity);
+      for (final CapdevDiscipline discipline : capdev.getCapdevDiscipline()) {
+        if (disciplinas.containsKey(discipline.getDiscipline())) {
+          final int quantity = disciplinas.get(discipline.getDiscipline()) + 1;
+          disciplinas.put(discipline.getDiscipline(), quantity);
         } else {
 
-          disciplinas.put(discipline.getDisciplines(), 1);
+          disciplinas.put(discipline.getDiscipline(), 1);
         }
       }
     }
@@ -491,7 +491,7 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
       new Class[] {String.class, Integer.class, String.class});
 
     for (final CapacityDevelopment capdev : capDevs) {
-      for (final CapdevParticipant participant : capdev.getCapdevParticipants()) {
+      for (final CapdevParticipant participant : capdev.getCapdevParticipant()) {
         if (participant.getParticipant().getFellowship() != null) {
           model.addRow(new Object[] {participant.getParticipant().getFellowship().getName(), 1,
             participant.getParticipant().getFellowship().getName()});
@@ -525,7 +525,7 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
       new Class[] {String.class, Integer.class, String.class, String.class});
 
     for (final CapacityDevelopment capdev : capDevs) {
-      for (final CapdevParticipant participant : capdev.getCapdevParticipants()) {
+      for (final CapdevParticipant participant : capdev.getCapdevParticipant()) {
         if (participant.getParticipant().getHighestDegree() != null) {
           model.addRow(new Object[] {participant.getParticipant().getHighestDegree().getName(), 1,
             participant.getParticipant().getHighestDegree().getName(),
@@ -576,7 +576,7 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
 
     final Map<Institution, Integer> institucions = new HashMap<>();
     for (final CapacityDevelopment capdev : capDevs) {
-      for (final CapdevParticipant participant : capdev.getCapdevParticipants()) {
+      for (final CapdevParticipant participant : capdev.getCapdevParticipant()) {
         if (participant.getParticipant().getInstitutions() != null) {
           if (institucions.containsKey(participant.getParticipant().getInstitutions())) {
             final int quantity = institucions.get(participant.getParticipant().getInstitutions()) + 1;

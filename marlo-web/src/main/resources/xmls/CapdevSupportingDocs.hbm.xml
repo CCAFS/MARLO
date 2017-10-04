@@ -17,7 +17,7 @@
 			fetch="select">
 			<column name="created_by" />
 		</many-to-one>
-		<many-to-one name="centerDeliverableTypes"
+		<many-to-one name="centerDeliverableType"
 			class="org.cgiar.ccafs.marlo.data.model.CenterDeliverableType" fetch="select">
 			<column name="deliverable_type" />
 		</many-to-one>
@@ -44,7 +44,7 @@
 		<property name="modificationJustification" type="string">
 			<column name="modification_justification" length="65535" />
 		</property>
-		<set name="capdevSuppDocsDocumentses" table="capdev_supp_docs_documents"
+		<set name="capdevSuppDocsDocuments" table="capdev_supp_docs_documents"
 			inverse="true" lazy="true" fetch="select">
 			<key>
 				<column name="capdev_supporting_docs_id" />

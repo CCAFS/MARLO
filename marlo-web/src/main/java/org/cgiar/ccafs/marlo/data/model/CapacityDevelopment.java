@@ -126,12 +126,12 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
   private Set<CapdevLocations> capdevLocations = new HashSet<CapdevLocations>(0);
   private List<CapdevLocations> capDevCountries;
   private List<CapdevLocations> capDevRegions;
-  private Set<CapdevDiscipline> capdevDisciplines = new HashSet<CapdevDiscipline>(0);
-  private Set<CapdevTargetgroup> capdevTargetgroups = new HashSet<CapdevTargetgroup>(0);
-  private Set<CapdevParticipant> capdevParticipants = new HashSet<CapdevParticipant>(0);
-  private Set<CapdevOutputs> capdevOutputses = new HashSet<CapdevOutputs>(0);
-  private Set<CapdevPartners> capdevPartnerses = new HashSet<CapdevPartners>(0);
-  private Set<CapdevSupportingDocs> capdevSupportingDocses = new HashSet<CapdevSupportingDocs>(0);
+  private Set<CapdevDiscipline> capdevDiscipline = new HashSet<CapdevDiscipline>(0);
+  private Set<CapdevTargetgroup> capdevTargetgroup = new HashSet<CapdevTargetgroup>(0);
+  private Set<CapdevParticipant> capdevParticipant = new HashSet<CapdevParticipant>(0);
+  private Set<CapdevOutputs> capdevOutputs = new HashSet<CapdevOutputs>(0);
+  private Set<CapdevPartners> capdevPartners = new HashSet<CapdevPartners>(0);
+  private Set<CapdevSupportingDocs> capdevSupportingDocs = new HashSet<CapdevSupportingDocs>(0);
   private Set<CenterSectionStatus> sectionStatuses = new HashSet<CenterSectionStatus>(0);
 
   public CapacityDevelopment() {
@@ -143,10 +143,10 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
     Date startDate, Date endDate, Long duration, String durationUnit, Boolean global, Boolean regional,
     Integer numParticipants, Integer numMen, Integer numWomen, Integer numOther, String otherDiscipline,
     String disciplineSuggested, String otherTargetGroup, String targetGroupSuggested, String otherPartner,
-    String partnerSuggeste, Set<CapdevLocations> capdevLocations, Set<CapdevDiscipline> capdevDisciplines,
-    Set<CapdevTargetgroup> capdevTargetgroups, Set<CapdevParticipant> capdevParticipants,
-    Set<CapdevOutputs> capdevOutputses, Set<CapdevPartners> capdevPartnerses,
-    Set<CapdevSupportingDocs> capdevSupportingDocses) {
+    String partnerSuggeste, Set<CapdevLocations> capdevLocations, Set<CapdevDiscipline> capdevDiscipline,
+    Set<CapdevTargetgroup> capdevTargetgroup, Set<CapdevParticipant> capdevParticipant,
+    Set<CapdevOutputs> capdevOutputs, Set<CapdevPartners> capdevPartners,
+    Set<CapdevSupportingDocs> capdevSupportingDocs) {
     this.project = project;
     this.modifiedBy = modifiedBy;
     this.createdBy = createdBy;
@@ -170,9 +170,9 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
     this.regional = regional;
     this.numParticipants = numParticipants;
     this.capdevLocations = capdevLocations;
-    this.capdevDisciplines = capdevDisciplines;
-    this.capdevTargetgroups = capdevTargetgroups;
-    this.capdevParticipants = capdevParticipants;
+    this.capdevDiscipline = capdevDiscipline;
+    this.capdevTargetgroup = capdevTargetgroup;
+    this.capdevParticipant = capdevParticipant;
     this.numMen = numMen;
     this.numWomen = numWomen;
     this.numOther = numOther;
@@ -182,9 +182,9 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
     this.targetGroupSuggested = targetGroupSuggested;
     this.otherPartner = otherPartner;
     this.partnerSuggested = partnerSuggeste;
-    this.capdevOutputses = capdevOutputses;
-    this.capdevPartnerses = capdevPartnerses;
-    this.capdevSupportingDocses = capdevSupportingDocses;
+    this.capdevOutputs = capdevOutputs;
+    this.capdevPartners = capdevPartners;
+    this.capdevSupportingDocs = capdevSupportingDocs;
   }
 
 
@@ -209,8 +209,8 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
     return capDevCountries;
   }
 
-  public Set<CapdevDiscipline> getCapdevDisciplines() {
-    return capdevDisciplines;
+  public Set<CapdevDiscipline> getCapdevDiscipline() {
+    return capdevDiscipline;
   }
 
 
@@ -218,29 +218,29 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
     return capdevLocations;
   }
 
-  public Set<CapdevOutputs> getCapdevOutputses() {
-    return capdevOutputses;
+  public Set<CapdevOutputs> getCapdevOutputs() {
+    return capdevOutputs;
   }
 
-  public Set<CapdevParticipant> getCapdevParticipants() {
-    return capdevParticipants;
+  public Set<CapdevParticipant> getCapdevParticipant() {
+    return capdevParticipant;
   }
 
-  public Set<CapdevPartners> getCapdevPartnerses() {
-    return capdevPartnerses;
+  public Set<CapdevPartners> getCapdevPartners() {
+    return capdevPartners;
   }
 
   public List<CapdevLocations> getCapDevRegions() {
     return capDevRegions;
   }
 
-  public Set<CapdevSupportingDocs> getCapdevSupportingDocses() {
-    return capdevSupportingDocses;
+  public Set<CapdevSupportingDocs> getCapdevSupportingDocs() {
+    return capdevSupportingDocs;
   }
 
 
   public Set<CapdevTargetgroup> getCapdevTargetgroups() {
-    return capdevTargetgroups;
+    return capdevTargetgroup;
   }
 
 
@@ -445,8 +445,8 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
   }
 
 
-  public void setCapdevDisciplines(Set<CapdevDiscipline> capdevDisciplines) {
-    this.capdevDisciplines = capdevDisciplines;
+  public void setCapdevDiscipline(Set<CapdevDiscipline> capdevDiscipline) {
+    this.capdevDiscipline = capdevDiscipline;
   }
 
 
@@ -455,18 +455,18 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
   }
 
 
-  public void setCapdevOutputses(Set<CapdevOutputs> capdevOutputses) {
-    this.capdevOutputses = capdevOutputses;
+  public void setCapdevOutputses(Set<CapdevOutputs> capdevOutputs) {
+    this.capdevOutputs = capdevOutputs;
   }
 
 
-  public void setCapdevParticipants(Set<CapdevParticipant> capdevParticipants) {
-    this.capdevParticipants = capdevParticipants;
+  public void setCapdevParticipants(Set<CapdevParticipant> capdevParticipant) {
+    this.capdevParticipant = capdevParticipant;
   }
 
 
-  public void setCapdevPartnerses(Set<CapdevPartners> capdevPartnerses) {
-    this.capdevPartnerses = capdevPartnerses;
+  public void setCapdevPartners(Set<CapdevPartners> capdevPartners) {
+    this.capdevPartners = capdevPartners;
   }
 
 
@@ -475,13 +475,13 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
   }
 
 
-  public void setCapdevSupportingDocses(Set<CapdevSupportingDocs> capdevSupportingDocses) {
-    this.capdevSupportingDocses = capdevSupportingDocses;
+  public void setCapdevSupportingDocs(Set<CapdevSupportingDocs> capdevSupportingDocs) {
+    this.capdevSupportingDocs = capdevSupportingDocs;
   }
 
 
-  public void setCapdevTargetgroups(Set<CapdevTargetgroup> capdevTargetgroups) {
-    this.capdevTargetgroups = capdevTargetgroups;
+  public void setCapdevTargetgroup(Set<CapdevTargetgroup> capdevTargetgroup) {
+    this.capdevTargetgroup = capdevTargetgroup;
   }
 
 

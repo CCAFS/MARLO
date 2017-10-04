@@ -125,7 +125,7 @@ public class CapacityDevelopmentAction extends BaseAction {
         // se obtiene la lista de participantes para validar que no se obtega la lista de participantes activa para cada
         // capacitacion
         List<CapdevParticipant> participants = new ArrayList<>(
-          capdev.getCapdevParticipants().stream().filter(p -> p.isActive()).collect(Collectors.toList()));
+          capdev.getCapdevParticipant().stream().filter(p -> p.isActive()).collect(Collectors.toList()));
         Collections.sort(participants, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
         Set<CapdevParticipant> capdevParticipants = new HashSet<CapdevParticipant>(participants);
         capdev.setCapdevParticipants(capdevParticipants);

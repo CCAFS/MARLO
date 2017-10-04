@@ -182,9 +182,9 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
         Collections.sort(deliverablesSubtypesList, (ra1, ra2) -> ra1.getName().compareTo(ra2.getName()));
       }
 
-      if (capdevSupportingDocs.getCapdevSuppDocsDocumentses() != null) {
+      if (capdevSupportingDocs.getCapdevSuppDocsDocuments() != null) {
 
-        documents = capdevSupportingDocs.getCapdevSuppDocsDocumentses().stream().filter(d -> d.isActive())
+        documents = capdevSupportingDocs.getCapdevSuppDocsDocuments().stream().filter(d -> d.isActive())
           .collect(Collectors.toList());
 
         Collections.sort(documents, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
@@ -244,10 +244,10 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
   public void saveLinks(CapdevSupportingDocs capdevSupportingDocsDB) {
 
 
-    if ((capdevSupportingDocsDB.getCapdevSuppDocsDocumentses() != null)
-      && (capdevSupportingDocsDB.getCapdevSuppDocsDocumentses().size() > 0)) {
+    if ((capdevSupportingDocsDB.getCapdevSuppDocsDocuments() != null)
+      && (capdevSupportingDocsDB.getCapdevSuppDocsDocuments().size() > 0)) {
       final List<CapdevSuppDocsDocuments> documentsDB = new ArrayList<>(capdevSupportingDocsDB
-        .getCapdevSuppDocsDocumentses().stream().filter(d -> d.isActive()).collect(Collectors.toList()));
+        .getCapdevSuppDocsDocuments().stream().filter(d -> d.isActive()).collect(Collectors.toList()));
 
       for (final CapdevSuppDocsDocuments document : documentsDB) {
         if (!documents.contains(document)) {
