@@ -214,6 +214,10 @@ public class ProjectListAction extends BaseAction {
     fundingSource.setStartDate(project.getStartDate());
     fundingSource.setEndDate(project.getEndDate());
 
+    // Setting the sync type (2 = MARLO-CRP)
+    CenterFundingSyncType fundingSyncType = fundingSyncTypeManager.getCenterFundingSyncTypeById(2);
+    fundingSource.setCenterFundingSyncType(fundingSyncType);
+
     fundingSource.setActive(true);
     fundingSource.setCreatedBy(this.getCurrentUser());
     fundingSource.setModifiedBy(this.getCurrentUser());
@@ -224,7 +228,7 @@ public class ProjectListAction extends BaseAction {
   }
 
   /**
-   * Add CRP project information in the center project Created.
+   * Add OCS project information in the center project Created.
    * 
    * @param centerProjectID
    */
@@ -256,6 +260,10 @@ public class ProjectListAction extends BaseAction {
     fundingSource.setOriginalDonor(agreement.getOriginalDonor().getName());
     fundingSource.setDirectDonor(agreement.getDirectDonor().getName());
     fundingSource.setTotalAmount(Double.parseDouble(agreement.getGrantAmount()));
+
+    // Setting the sync type (1 = OCS CIAT)
+    CenterFundingSyncType fundingSyncType = fundingSyncTypeManager.getCenterFundingSyncTypeById(1);
+    fundingSource.setCenterFundingSyncType(fundingSyncType);
 
     // Setting the budget Type
     String fundingType = agreement.getFundingType();
