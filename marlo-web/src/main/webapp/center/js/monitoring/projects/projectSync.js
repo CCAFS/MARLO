@@ -190,10 +190,9 @@ function getOCSMetadata() {
   var serviceURL = baseURL;
   if(!currentCode || syncing) {
     notificationError("You must enter a finance code.");
-    return
-    
-
+    return
   }
+  
   // Setting source
   if(source == 1) {
     // OCS
@@ -203,7 +202,6 @@ function getOCSMetadata() {
     // MARLO CRPs
     currentCode = currentCode.replace(/\D/g,''); // Remove all non-digits
     serviceURL += '/projectSync.do'
-    
   }
   
  // Ajax to service
