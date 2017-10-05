@@ -24,8 +24,8 @@
   <property name="hikari.dataSource.prepStmtCacheSize">250</property>
   <property name="hikari.dataSource.prepStmtCacheSqlLimit">2048</property>
   <property name="hikari.dataSource.useServerPrepStmts">true</property>
-  <property name="hikari.maximumPoolSize">300</property>
-  <property name="hikari.idleTimeout">5000</property>
+  <property name="hikari.maximumPoolSize">5000</property>
+  <property name="hikari.idleTimeout">120</property>
 
 		<!-- Model Mappings -->
 		<mapping resource="xmls/DeliverableMetadataElements.hbm.xml" />

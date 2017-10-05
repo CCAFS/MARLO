@@ -52,17 +52,13 @@ public class HibernateListener implements ServletContextListener {
     config.setProperty("hibernate.hikari.dataSource.url", urlMysql);
     config.setProperty("hibernate.hikari.dataSource.user", manager.getPropertiesAsString(APConfig.MYSQL_USER));
     config.setProperty("hibernate.hikari.dataSource.password", manager.getPropertiesAsString(APConfig.MYSQL_PASSWORD));
-    config.setProperty("hibernate.hikari.connectionTimeout", "60000");
+    config.setProperty("hibernate.hikari.connectionTimeout", "120");
     // Minimum number of ideal connections in the pool
     config.setProperty("hibernate.hikari.minimumIdle", "100");
     // Maximum number of actual connection in the pool
-    config.setProperty("hibernate.hikari.maximumPoolSize", "2000");
+    config.setProperty("hibernate.hikari.maximumPoolSize", "5000");
     // Maximum time that a connection is allowed to sit ideal in the pool
-    config.setProperty("hibernate.hikari.idleTimeout", "300000");
-    config.setProperty("hibernate.bytecode.use_reflection_optimizer'", "false");
-    // config.setProperty("hibernate.c3p0.min_size", "5");
-    // System.out.println("url_mysql " + url_mysql);
-    // System.out.println(url.toString());
+
 
     SessionFactory factory = config.buildSessionFactory();
     return factory;
