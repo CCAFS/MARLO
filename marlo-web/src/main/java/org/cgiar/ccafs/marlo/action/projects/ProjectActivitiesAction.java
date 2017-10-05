@@ -142,7 +142,7 @@ public class ProjectActivitiesAction extends BaseAction {
           activityNew.setDescription(activity.getDescription());
           activityNew.setStartDate(activity.getStartDate());
           activityNew.setEndDate(activity.getEndDate());
-
+          activityNew.setPhase(this.getActualPhase());
           if (activity.getActivityStatus() != -1) {
             activityNew.setActivityStatus(activity.getActivityStatus());
           } else {
@@ -423,8 +423,8 @@ public class ProjectActivitiesAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
- 	      reader.close();
- 	
+        reader.close();
+
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
@@ -462,7 +462,7 @@ public class ProjectActivitiesAction extends BaseAction {
          * }
          * }
          */
-      
+
         this.setDraft(true);
       } else {
         this.setDraft(false);
