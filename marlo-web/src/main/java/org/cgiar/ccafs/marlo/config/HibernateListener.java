@@ -52,7 +52,6 @@ public class HibernateListener implements ServletContextListener {
     config.setProperty("hibernate.hikari.dataSource.password", manager.getPropertiesAsString(APConfig.MYSQL_PASSWORD));
     StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder().applySettings(config.getProperties());
     SessionFactory factory = config.buildSessionFactory(builder.build());
-
     return factory;
 
   }
