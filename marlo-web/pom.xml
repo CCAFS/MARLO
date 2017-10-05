@@ -111,6 +111,10 @@
             <groupId>asm</groupId>
             <artifactId>asm-commons</artifactId>
         </exclusion>
+          <exclusion>
+            <groupId>org.javassist</groupId>
+            <artifactId>javassist</artifactId>
+        </exclusion>
     </exclusions>
 </dependency>
     <dependency>
@@ -317,6 +321,12 @@
           <groupId>org.hibernate</groupId>
           <artifactId>hibernate-core</artifactId>
           <version>5.2.0.Final</version>
+          <exclusions>
+        <exclusion>
+            <groupId>org.javassist</groupId>
+            <artifactId>javassist</artifactId>
+        </exclusion>
+    </exclusions>
       </dependency>
 
    
