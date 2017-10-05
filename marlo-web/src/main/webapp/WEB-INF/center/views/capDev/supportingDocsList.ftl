@@ -115,10 +115,10 @@
 											<td class="removeCol">
 												[#if editable]
 										            <a  class="deleteDoc" href="#" data-href="[@s.url action='${centerSession}/deleteSupportingDoc'][@s.param name='capdevID']${capdev.id}[/@s.param] [@s.param name='supportingDocID']${supportDocs.id?c}[/@s.param] [@s.param name='edit' value="true" /][/@s.url]" data-toggle="modal" data-target="#confirm-delete">
-										               <img src="${baseUrlMedia}/images/global/trash.png" title="[@s.text name="capdev.removeCapdev" /]" /> 
+										               <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="capdev.removeCapdev" /]" /> 
 										            </a>
 									             [#else]
-									             	<img src="${baseUrlMedia}/images/global/trash_disable.png" title="[@s.text name="capdev.removeCapdev" /]" /> 
+									             	<img src="${baseUrl}/global/images/trash_disable.png" title="[@s.text name="capdev.removeCapdev" /]" /> 
 									             [/#if]
 								            </td>
 
@@ -192,7 +192,7 @@
 </div>
 
 
-[#include "/WEB-INF/center/global/pages/footer.ftl"]
+[#include "/WEB-INF/center/pages/footer.ftl"]
 
 
 

@@ -36,7 +36,7 @@
 
 		<div class="row">
 			<div class="helpMessage infoText col-md-12 capdevinfo">
-				<img class="col-md-2" src="${baseUrlMedia}/global/images/icon-help.png" />
+				<img class="col-md-2" src="${baseUrl}/global/images/icon-help.png" />
    				 <p class="col-md-10"> [@s.text name="capdev.help.list"][/@s.text] </p>
 			</div>
 		</div>
@@ -129,11 +129,11 @@
 					    <td class="removeCol">
 					    	[#if action.centerCanBeDeleted(i.id, i.class.name)!false]
 					    	<a id="removeCapdev-${i.id}" class="removeCapdev" href="#" data-href="[@s.url action='${centerSession}/deleteCapdev'][@s.param name='capdevID']${i.id}[/@s.param] [/@s.url]" data-toggle="modal" data-target="#confirm-delete-capdev">
-				               <img src="${baseUrlMedia}/images/global/trash.png" title="[@s.text name="capdev.removeCapdev" /]" /> 
+				               <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="capdev.removeCapdev" /]" /> 
 				            </a>
 				            [#else]
 				            
-				            	<img src="${baseUrlMedia}/images/global/trash_disable.png" title="[@s.text name="capdev.removeCapdev" /]" /> 
+				            	<img src="${baseUrl}/global/images/trash_disable.png" title="[@s.text name="capdev.removeCapdev" /]" /> 
 				            [/#if]
 					    	
 					    </td>
