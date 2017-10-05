@@ -322,10 +322,7 @@
           <artifactId>hibernate-core</artifactId>
           <version>5.2.0.Final</version>
           <exclusions>
-        <exclusion>
-            <groupId>org.javassist</groupId>
-            <artifactId>javassist</artifactId>
-        </exclusion>
+        
     </exclusions>
       </dependency>
 
@@ -335,7 +332,7 @@
           <artifactId>HikariCP</artifactId>
           <version>2.4.6</version>
       </dependency>
-    <dependency>
+ <dependency>
       <groupId>javassist</groupId>
       <artifactId>javassist</artifactId>
       <version>3.12.1.GA</version>
