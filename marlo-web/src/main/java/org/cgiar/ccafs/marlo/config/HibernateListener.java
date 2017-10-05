@@ -26,6 +26,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 
 public class HibernateListener implements ServletContextListener {
@@ -42,25 +43,17 @@ public class HibernateListener implements ServletContextListener {
     config = new Configuration().configure(url);
     PropertiesManager manager = new PropertiesManager();
 
-    config.setProperty("hibernate.connection.username", manager.getPropertiesAsString(APConfig.MYSQL_USER));
-    config.setProperty("hibernate.connection.password", manager.getPropertiesAsString(APConfig.MYSQL_PASSWORD));
     String urlMysql = "jdbc:mysql://" + manager.getPropertiesAsString(APConfig.MYSQL_HOST) + ":"
       + manager.getPropertiesAsString(APConfig.MYSQL_PORT) + "/"
-      + manager.getPropertiesAsString(APConfig.MYSQL_DATABASE) + "?autoReconnect=true&&useSSL=false";
-    config.setProperty("hibernate.connection.url", urlMysql);
+      + manager.getPropertiesAsString(APConfig.MYSQL_DATABASE);
     config.setProperty("hibernate.current_session_context_class", "thread");
     config.setProperty("hibernate.hikari.dataSource.url", urlMysql);
     config.setProperty("hibernate.hikari.dataSource.user", manager.getPropertiesAsString(APConfig.MYSQL_USER));
     config.setProperty("hibernate.hikari.dataSource.password", manager.getPropertiesAsString(APConfig.MYSQL_PASSWORD));
+    StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder().applySettings(config.getProperties());
+    SessionFactory factory = config.buildSessionFactory(builder.build());
 
-
-    SessionFactory factory = config.buildSessionFactory();
     return factory;
-
-
-    // System.out.println("Build factory " + factory);
-
-    // save the Hibernate session factory into serlvet context
 
   }
 
