@@ -59,6 +59,7 @@ public class HibernateListener implements ServletContextListener {
     config.setProperty("hibernate.hikari.maximumPoolSize", "2000");
     // Maximum time that a connection is allowed to sit ideal in the pool
     config.setProperty("hibernate.hikari.idleTimeout", "300000");
+    config.setProperty("hibernate.bytecode.use_reflection_optimizer'", "false");
     // config.setProperty("hibernate.c3p0.min_size", "5");
     // System.out.println("url_mysql " + url_mysql);
     // System.out.println(url.toString());
