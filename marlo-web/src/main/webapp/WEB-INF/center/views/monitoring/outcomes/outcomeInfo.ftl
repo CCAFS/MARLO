@@ -2,7 +2,11 @@
 [#assign title = "MARLO - ${(centerSession)!} outcome information" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["select2","jsUri"] /]
-[#assign customJS = ["${baseUrlMedia}/js/monitoring/outcomes/outcomeInfo.js","${baseUrlMedia}/js/global/autoSave.js" ] /]
+[#assign customJS = [
+  "${baseUrlMedia}/js/monitoring/outcomes/outcomeInfo.js",
+  "${baseUrl}/global/js/autoSave.js" 
+  ] 
+/]
 [#assign customCSS = [""] /]
 [#assign currentSection = "outcomes" /]
 
@@ -13,14 +17,13 @@
 
 
 
-[#include "/WEB-INF/center/global/pages/header.ftl" /]
-[#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
-[#import "/WEB-INF/center/global/macros/forms.ftl" as customForm /]
+[#include "/WEB-INF/center/pages/header.ftl" /]
+[#include "/WEB-INF/center/pages/main-menu.ftl" /]
 
 [#-- Help text --]
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.png" />
+    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.png" />
     <p class="col-md-10"> [@s.text name="monitoring.outcome.help"][/@s.text] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
@@ -160,10 +163,10 @@
 </section>
 
 [#-- Outcome Projects Popup --]
-[#include "/WEB-INF/center/global/macros/outcomeProjectsPopup.ftl" /]
+[#include "/WEB-INF/center/macros/outcomeProjectsPopup-center.ftl" /]
 
 [#-- Bilateral Co-Funded Project Popup --]
-[#include "/WEB-INF/center/global/macros/milestonePopup.ftl"]
+[#include "/WEB-INF/center/macros/milestonePopup-center.ftl"]
 
 [#-- Milestone macro --]
 [@milestoneMacro milestone={} name="outcome.monitorings[-1].milestones" index=-1 isTemplate=true /]
@@ -171,7 +174,7 @@
 [#-- Evidence macro --]
 [@evidenceMacro evidence={} name="outcome.monitorings[-1].evidences" index=-1 isTemplate=true /]
 
-[#include "/WEB-INF/center/global/pages/footer.ftl"]
+[#include "/WEB-INF/center/pages/footer.ftl"]
 
 [#macro milestoneMacro milestone name index isTemplate=false]
   [#local editable = ((editable) && (milestone.researchMilestone.active))!true /]

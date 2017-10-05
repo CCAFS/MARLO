@@ -1432,13 +1432,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   public String getHeaderPath() {
     if (this.getCurrentCrp() != null) {
-      return "";
+      return "crp/";
     }
 
     if (this.getCurrentCenter() != null) {
       return "center/";
     }
-    return "";
+    return null;
   }
 
   public long getIFPRIId() {
@@ -1685,13 +1685,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         List<Deliverable> openA = new ArrayList<>();
 
         if (this.isPlanningActive()) {
-          openA =
-            deliverables.stream()
-              .filter(a -> a.isActive() && (((a.getStatus() == null)
+          openA = deliverables.stream()
+
+            .filter(
+              a -> a.isActive() && (((a.getStatus() == null)
                 || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
                 || ((a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId()))
                   || (a.getStatus().intValue() == 0) || (a.getStatus().intValue() == -1)))))
-              .collect(Collectors.toList());
+            .collect(Collectors.toList());
+
         } else {
           openA = deliverables.stream()
             .filter(a -> a.isActive() && (((a.getStatus() == null)
@@ -2830,17 +2832,26 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+  public boolean isReportingActiveMenu() {
+
+
+    return Boolean.parseBoolean(this.getSession().get(APConstants.CRP_REPORTING_ACTIVE).toString());
+
+  }
+
   public boolean isSaveable() {
     return saveable;
   }
 
   public boolean isSubmit(long projectID) {
-    final Project project = projectManager.getProjectById(projectID);
-    final int year = this.getCurrentCycleYear();
-    final List<Submission> submissions = project
-      .getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
+
+    Project project = projectManager.getProjectById(projectID);
+    int year = this.getCurrentCycleYear();
+    List<Submission> submissions =
+      project.getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
         && (c.getYear().intValue() == year) && ((c.isUnSubmit() == null) || !c.isUnSubmit()))
-      .collect(Collectors.toList());
+
+        .collect(Collectors.toList());
     if (submissions.isEmpty()) {
       return false;
     }

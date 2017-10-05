@@ -2,8 +2,17 @@
 [#assign title = "Outputs List" /]
 [#assign currentSectionString = "program-${actionName?replace('/','-')}-${programID}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs","select2"] /]
-[#assign customJS = ["${baseUrlMedia}/js/global/usersManagement.js","${baseUrlMedia}/js/impactPathway/outputList.js", "${baseUrlMedia}/js/global/fieldsValidation.js"] /]
-[#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css","${baseUrlMedia}/css/impactPathway/outputList.css"] /]
+[#assign customJS = [
+  "${baseUrl}/global/js/usersManagement.js",
+  "${baseUrlMedia}/js/impactPathway/outputList.js", 
+  "${baseUrl}/global/js/fieldsValidation.js"
+  ] 
+/]
+[#assign customCSS = [
+  "${baseUrl}/global/css/customDataTable.css",
+  "${baseUrlMedia}/css/impactPathway/outputList.css"
+  ] 
+/]
 [#assign currentSection = "centerImpactPathway" /]
 [#assign currentStage = "outputs" /]
 
@@ -14,11 +23,10 @@
 [#assign leadersName = "leaders"/]
 [#assign editable = false /]
 
-[#include "/WEB-INF/center//global/pages/header.ftl" /]
-[#include "/WEB-INF/center//global/pages/main-menu.ftl" /]
-[#import "/WEB-INF/center//global/macros/utils.ftl" as utils /]
-[#import "/WEB-INF/center//global/macros/forms.ftl" as customForm /]
-[#import "/WEB-INF/center//views/impactPathway/outputListTemplate.ftl" as outputsList /]
+[#include "/WEB-INF/center/pages/header.ftl" /]
+[#include "/WEB-INF/center/pages/main-menu.ftl" /]
+[#import "/WEB-INF/global/macros/utils.ftl" as utils /]
+[#import "/WEB-INF/center/views/impactPathway/outputListTemplate.ftl" as outputsList /]
 [#--  Research Outputs Help Text--] 
 [@utils.helpInfos hlpInfo="researchOutputsList.help" /]
 [#--  marlo cluster of activities--]
@@ -136,6 +144,6 @@
 
 [@customForm.confirmJustificationOut action="deleteOutput.do" namespace="/${currentSection}" title="Remove Output" /]
 
-[#include "/WEB-INF/center//global/pages/footer.ftl" /]
+[#include "/WEB-INF/center/pages/footer.ftl" /]
 
 

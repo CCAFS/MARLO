@@ -1,11 +1,11 @@
 [#ftl]
-[#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css"] /]
+[#assign customCSS = ["${baseUrl}/global/css/customDataTable.css"] /]
 [#assign customCSS = ["${baseUrlMedia}/css/capDev/capacityDevelopment.css"] /]
 [#assign customJS = ["${baseUrlMedia}/js/capDev/capacityDevelopment.js"] /]
 
 
-[#include "/WEB-INF/center/global/pages/header.ftl" /]
-[#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
+[#include "/WEB-INF/center/pages/header.ftl" /]
+[#include "/WEB-INF/center/pages/main-menu.ftl" /]
 
 <script src="${baseUrl}/bower_components/jquery/dist/jquery.min.js"></script>
 <script src="${baseUrlMedia}/js/capDev/capacityDevelopment.js"></script>
@@ -180,7 +180,7 @@
 [@objectiveMacro element={} index=0 isTemplate=true /] 
 [@disciplineMacro element="" isTemplate=true/]
 
-[#include "/WEB-INF/center/global/pages/footer.ftl"]
+[#include "/WEB-INF/center/pages/footer.ftl"]
 
 
 

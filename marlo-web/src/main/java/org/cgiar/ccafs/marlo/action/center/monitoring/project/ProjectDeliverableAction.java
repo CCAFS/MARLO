@@ -285,9 +285,13 @@ public class ProjectDeliverableAction extends BaseAction {
       if (path.toFile().exists() && this.getCurrentUser().isAutoSave() && this.isEditable()) {
         BufferedReader reader = null;
         reader = new BufferedReader(new FileReader(path.toFile()));
-        final Gson gson = new GsonBuilder().create();
-        final JsonObject jReader = gson.fromJson(reader, JsonObject.class);
-        final AutoSaveReader autoSaveReader = new AutoSaveReader();
+
+        Gson gson = new GsonBuilder().create();
+        JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+        reader.close();
+
+        AutoSaveReader autoSaveReader = new AutoSaveReader();
+
 
         deliverable = (CenterDeliverable) autoSaveReader.readFromJson(jReader);
 
@@ -316,7 +320,7 @@ public class ProjectDeliverableAction extends BaseAction {
           deliverable.setOutputs(new ArrayList<>(outputs));
         }
 
-        reader.close();
+
         this.setDraft(true);
 
       } else {

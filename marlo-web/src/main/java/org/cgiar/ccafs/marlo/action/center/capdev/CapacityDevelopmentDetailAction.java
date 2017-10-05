@@ -539,7 +539,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       if (capdev.getCategory() == 2) {
         contact = capdev.getCtFirstName() + ", " + capdev.getCtLastName() + " " + capdev.getCtEmail();
         final Set<CapdevParticipant> capdevParticipants = new HashSet<CapdevParticipant>(participants);
-        capdev.setCapdevParticipants(capdevParticipants);
+        capdev.setCapdevParticipant(capdevParticipants);
 
       }
 

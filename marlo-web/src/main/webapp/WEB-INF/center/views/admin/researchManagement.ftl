@@ -2,7 +2,7 @@
 [#assign title = "Research Areas" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/global/usersManagement.js",
+  "${baseUrl}/global/js/usersManagement.js",
   "${baseUrlMedia}/js/admin/researchManagement.js"
 ] /]
 [#assign currentSection = "admin" /]
@@ -13,8 +13,8 @@
   {"label":"superadmin.researchManagement", "nameSpace":"", "action":""}
 ]/]
 
-[#include "/WEB-INF/center/global/pages/header.ftl" /]
-[#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
+[#include "/WEB-INF/center/pages/header.ftl" /]
+[#include "/WEB-INF/center/pages/main-menu.ftl" /]
 
 <section class="marlo-content">
   <div class="container"> 
@@ -63,7 +63,7 @@
 [#import "/WEB-INF/global/macros/usersPopup.ftl" as usersForm/]
 [@usersForm.searchUsers/]
 
-[#include "/WEB-INF/center/global/pages/footer.ftl" /]
+[#include "/WEB-INF/center/pages/footer.ftl" /]
 
 [#macro researchAreaMacro element name index id="researchArea" template=false]
   [#local customName = "${name}[${index}]" /]

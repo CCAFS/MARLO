@@ -72,7 +72,7 @@ public class CapacityDevelopmentType implements java.io.Serializable, IAuditLog 
     return activeSince;
   }
 
-  public Set<CapacityDevelopment> getCapacityDevelopments() {
+  public Set<CapacityDevelopment> getCapacityDevelopment() {
     return this.capacityDevelopment;
   }
 

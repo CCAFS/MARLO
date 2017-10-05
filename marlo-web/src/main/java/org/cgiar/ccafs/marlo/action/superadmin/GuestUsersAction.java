@@ -247,7 +247,7 @@ public class GuestUsersAction extends BaseAction {
     return SUCCESS;
   }
 
-  public void sendMailNewUser(User user, Crp crp) throws NoSuchAlgorithmException {
+  public void sendMailNewUser(User user, Crp loggedCrp) throws NoSuchAlgorithmException {
     String toEmail = user.getEmail();
     String ccEmail = null;
     String bbcEmails = this.config.getEmailNotification();
@@ -277,10 +277,11 @@ public class GuestUsersAction extends BaseAction {
     // Building the Email message:
     StringBuilder message = new StringBuilder();
     message.append(this.getText("email.dear", new String[] {user.getFirstName()}));
-
-    message.append(this.getText("email.newUser.part2",
-      new String[] {this.getText("global.sClusterOfActivities").toLowerCase(), config.getBaseUrl(), crp.getName(),
-        user.getEmail(), password, this.getText("email.support", new String[] {crpAdmins})}));
+    String crp = loggedCrp.getAcronym() != null && !loggedCrp.getAcronym().isEmpty() ? loggedCrp.getAcronym()
+      : loggedCrp.getName();
+    message.append(
+      this.getText("email.newUser.part2", new String[] {this.getText("global.sClusterOfActivities").toLowerCase(),
+        config.getBaseUrl(), crp, user.getEmail(), password, this.getText("email.support", new String[] {crpAdmins})}));
     message.append(this.getText("email.bye"));
 
     // Send pdf

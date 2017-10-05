@@ -129,7 +129,7 @@ public class CapdevDiscipline implements java.io.Serializable, IAuditLog {
   }
 
 
-  public void setDisciplines(Discipline discipline) {
+  public void setDiscipline(Discipline discipline) {
     this.discipline = discipline;
   }
 

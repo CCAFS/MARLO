@@ -325,6 +325,8 @@ public class CrpIndicatorsAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+ 	      reader.close();
+ 	
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
@@ -333,7 +335,7 @@ public class CrpIndicatorsAction extends BaseAction {
         liaisonInstitutionID = currentLiaisonInstitution.getId();
 
         this.setDraft(true);
-        reader.close();
+      
       } else {
 
         if (transaction == null) {

@@ -29,7 +29,6 @@ pusher.api.key=
 pusher.api.appid=
 pusher.api.privatekey=
 
-
 # ----------------------------------------------------
 #                   AutoSave Properties
 # ----------------------------------------------------
@@ -71,10 +70,18 @@ marlo.debug=false
 # ------------------------------------------------
 # Logger properties
 # ------------------------------------------------
-log.folder=C:/LOGS/marlo/
+log.folder=
 log.console=true
-log.file=true
+log.file=false
 #Production log only shows logs of type info, warn and error 
-log.production=true
+log.production=false
 #Test log shows logs of all types trace, debug, info, warn and error 
-log.test=false
+log.test=true
+# ----------------------------------------------------
+#                   OCS Link Service
+# ----------------------------------------------------
+#OCS Ws config
+ocs.link=link ws
+ocs.user=user ws
+ocs.password=password ws
+# ----------------------------------------------------

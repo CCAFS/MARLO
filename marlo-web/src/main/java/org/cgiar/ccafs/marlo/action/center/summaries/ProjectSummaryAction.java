@@ -624,7 +624,9 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
     final String projectSubmission = "";
 
     // set CIAT imgage URL from repo
-    final String imageUrl = this.getBaseUrl() + "center/images/global/centers/CIAT.png";
+
+    String imageUrl = this.getBaseUrl() + "/global/images/centers/CIAT.png";
+
 
     model.addRow(new Object[] {shortTitle, currentDate, projectSubmission, imageUrl});
     return model;

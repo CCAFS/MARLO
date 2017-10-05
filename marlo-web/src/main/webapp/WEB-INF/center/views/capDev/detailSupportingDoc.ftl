@@ -1,13 +1,13 @@
 [#ftl]
 
 [#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
-[#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css", 
+[#assign customCSS = ["${baseUrl}/global/css/customDataTable.css", 
 					  "${baseUrlMedia}/css/capDev/capacityDevelopment.css"] /]
 
 [#assign pageLibs = ["datatables.net", "datatables.net-bs","select2","flat-flags"] /]
 
 [#assign customJS = ["${baseUrlMedia}/js/capDev/supportingDocuments.js",
-					 "${baseUrlMedia}/js/global/fieldsValidation.js", 
+					 "${baseUrlMedia}/global/js/fieldsValidation.js", 
 					 "${baseUrlMedia}/js/capDev/capacityDevelopment.js"] /]
 
 [#assign currentStage = "supportingDocuments" /] 
@@ -17,8 +17,8 @@
   {"label":"capdevSupportingDocs", "nameSpace":"/capdev", "action":""}
 ]/]
 
-[#include "/WEB-INF/center/global/pages/header.ftl" /]
-[#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
+[#include "/WEB-INF/center/pages/header.ftl" /]
+[#include "/WEB-INF/center/pages/main-menu.ftl" /]
 
 
 
@@ -100,7 +100,7 @@
 				<div class="form-group row ">
 					<!-- supporting docs type -->
 					<div class="col-md-6">
-						 [@customForm.select name="capdevSupportingDocs.centerDeliverableTypes.id" listName="deliverablesList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.supportingDocs.type" className="capdevDeliverableType" placeholder="capdev.select" required=true editable=editable/]
+						 [@customForm.select name="capdevSupportingDocs.centerDeliverableType.id" listName="deliverablesList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.supportingDocs.type" className="capdevDeliverableType" placeholder="capdev.select" required=true editable=editable/]
 					</div>
 					<!-- supporting docs subtypes -->
 					<div class="col-md-6">
@@ -225,7 +225,7 @@
 
 
 
-[#include "/WEB-INF/center/global/pages/footer.ftl"]
+[#include "/WEB-INF/center/pages/footer.ftl"]
 
 
 

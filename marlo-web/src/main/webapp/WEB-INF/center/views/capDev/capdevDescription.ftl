@@ -1,11 +1,12 @@
 [#ftl]
 
-[#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css"] /]
-[#assign customCSS = ["${baseUrlMedia}/css/capDev/capacityDevelopment.css"] /]
+[#assign customCSS = ["${baseUrl}/global/css/customDataTable.css",
+											"${baseUrlMedia}/css/capDev/capacityDevelopment.css"] /]
 
 [#assign pageLibs = ["select2","flat-flags"] /]
-[#assign customJS = ["${baseUrlMedia}/js/capDev/capacityDevelopment.js"] /]
-[#assign customJS = ["${baseUrlMedia}/js/capDev/capdevDescription.js","${baseUrlMedia}/js/global/fieldsValidation.js"] /]
+[#assign customJS = ["${baseUrlMedia}/js/capDev/capdevDescription.js",
+											"${baseUrl}/global/js/fieldsValidation.js" ,
+											"${baseUrlMedia}/js/capDev/capacityDevelopment.js"] /]
 
 [#assign currentStage = "capdevDescription" /]
 
@@ -15,15 +16,14 @@
 ]/]
 
 
-[#include "/WEB-INF/center/global/pages/header.ftl" /]
-[#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
+[#include "/WEB-INF/center/pages/header.ftl" /]
+[#include "/WEB-INF/center/pages/main-menu.ftl" /]
 
 
 
 
 
-<script src="${baseUrl}/bower_components/jquery/dist/jquery.min.js"></script>
-<script src="${baseUrlMedia}/js/capDev/capacityDevelopment.js"></script>
+<!--<script src="${baseUrlMedia}/js/capDev/capacityDevelopment.js"></script>-->
 
 
 
@@ -31,7 +31,7 @@
 
 	<div class="row">
 		<div class="helpMessage infoText col-md-12 capdevinfo">
-			<img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.png" />
+			<img class="col-md-2" src="${baseUrl}/global/images/icon-help.png" />
     		<p class="col-md-10"> [@s.text name="capdev.help.description"][/@s.text] </p>
 		</div>
 	</div> 
@@ -82,8 +82,8 @@
 						</div>
 						<div id="disciplinesList" class="col-md-12  approachesList" >
 							<ul class="list">
-								[#if capdev.capdevDisciplines?has_content]
-								[#list capdev.capdevDisciplines as discipline]
+								[#if capdev.capdevDiscipline?has_content]
+								[#list capdev.capdevDiscipline as discipline]
 								[#if discipline.active]
 								<li id="" class="discipline clearfix col-md-3">
 									[#if editable]
@@ -92,7 +92,7 @@
 									<input class="id" type="hidden"  value="${(discipline.id)!-1}" />
 									<input class="disciplineId" type="hidden"  value="${(discipline.disciplines.id)!}" />
 									
-									<span class="name"> ${discipline.disciplines.name}</span>
+									<span class="name"> ${discipline.discipline.name}</span>
 									
 									<div class="clearfix"></div>
 								</li>
@@ -133,8 +133,8 @@
 
 						<div id="targetGroupsList" class="col-md-12 newCapdevField" >
 							<ul class="list">
-								[#if capdev.capdevTargetgroups?has_content]
-								[#list capdev.capdevTargetgroups as targetGroup]
+								[#if capdev.capdevTargetgroup?has_content]
+								[#list capdev.capdevTargetgroup as targetGroup]
 								[#if targetGroup.active]
 									<li id="" class="targetGroup clearfix col-md-3">
 										[#if editable]
@@ -213,16 +213,16 @@
 						
 						<div id="capdevPartnersList" class=" partnersList" >
 							<ul class="list">
-								[#if capdev.capdevPartnerses?has_content]
-								[#list capdev.capdevPartnerses as partner]
+								[#if capdev.capdevPartners?has_content]
+								[#list capdev.capdevPartners as partner]
 								[#if partner.active]
 									<li id="" class="capdevPartner clearfix col-md-12">
 										[#if editable]
 											<div class="removepartner-action removepartner removeIcon" title="Remove partner"></div>
 										[/#if]
-										<input class="id" type="hidden" name="capdev.capdevPartnerses[${partner_index}].id" value="${(partner.id)!-1}" />
-										<input class="partnerId" type="hidden" name="capdev.capdevPartnerses[${partner_index}].id" value="${(partner.id)!}" />
-										${(partner.institutions.name)!}
+										<input class="id" type="hidden" name="capdev.capdevPartners[${partner_index}].id" value="${(partner.id)!-1}" />
+										<input class="partnerId" type="hidden" name="capdev.capdevPartners[${partner_index}].id" value="${(partner.id)!}" />
+										${(partner.institution.name)!}
 										<div class="clearfix"></div>
 									</li>
 								[#else]
@@ -259,15 +259,15 @@
 
 						<div id="capdevOutputsList" class="outputsList" >
 							<ul class="list">
-								[#if capdev.capdevOutputses?has_content]
-								[#list capdev.capdevOutputses as output]
+								[#if capdev.capdevOutputs?has_content]
+								[#list capdev.capdevOutputs as output]
 								[#if output.active]
 									<li id="" class="capdevOutput clearfix col-md-12">
 										[#if editable]
 											<div class="removeOutput-action removeOutput removeIcon" title="Remove output"></div>
 										[/#if]
-										<input class="id" type="hidden" name="capdev.capdevOutputses[${output_index}].id" value="${(output.id)!-1}" />
-										<input class="outputId" type="hidden" name="capdev.capdevOutputses[${output_index}].id" value="${(output.id)!}" />
+										<input class="id" type="hidden" name="capdev.capdevOutputs[${output_index}].id" value="${(output.id)!-1}" />
+										<input class="outputId" type="hidden" name="capdev.capdevOutputs[${output_index}].id" value="${(output.id)!}" />
 										${(output.researchOutputs.title)!}
 										<div class="clearfix"></div>
 									</li>
@@ -355,7 +355,7 @@
 
 
 
-[#include "/WEB-INF/center/global/pages/footer.ftl"]
+[#include "/WEB-INF/center/pages/footer.ftl"]
 
 
 

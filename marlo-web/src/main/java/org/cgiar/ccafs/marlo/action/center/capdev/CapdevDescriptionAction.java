@@ -404,7 +404,7 @@ public class CapdevDescriptionAction extends BaseAction {
           if (discipline != null) {
             capdevDiscipline = new CapdevDiscipline();
             capdevDiscipline.setCapacityDevelopment(capdev);
-            capdevDiscipline.setDisciplines(discipline);
+            capdevDiscipline.setDiscipline(discipline);
             capdevDiscipline.setActive(true);
             capdevDiscipline.setActiveSince(new Date());
             capdevDiscipline.setCreatedBy(currentUser);
@@ -451,7 +451,7 @@ public class CapdevDescriptionAction extends BaseAction {
         if (institution != null) {
           capdevPartner = new CapdevPartners();
           capdevPartner.setCapacityDevelopment(capdev);
-          capdevPartner.setInstitutions(institution);;
+          capdevPartner.setInstitution(institution);;
           capdevPartner.setActive(true);
           capdevPartner.setActiveSince(new Date());
           capdevPartner.setCreatedBy(currentUser);

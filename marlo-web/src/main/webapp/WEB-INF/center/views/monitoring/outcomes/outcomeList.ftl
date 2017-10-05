@@ -2,8 +2,15 @@
 [#assign title = "MARLO - ${centerSession} - outcomes monitoring" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["select2","datatables.net", "datatables.net-bs"] /]
-[#assign customJS = ["${baseUrlMedia}/js/monitoring/outcomes/outcomesList.js" ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css","${baseUrlMedia}/css/impactPathway/outcomes.css"] /]
+[#assign customJS = [
+  "${baseUrlMedia}/js/monitoring/outcomes/outcomesList.js" 
+  ] 
+/]
+[#assign customCSS = [
+  "${baseUrl}/global/css/customDataTable.css",
+  "${baseUrlMedia}/css/impactPathway/outcomes.css"
+  ] 
+/]
 [#assign currentSection = "outcomes" /]
 
 
@@ -11,14 +18,13 @@
   {"label":"outcomesList", "nameSpace":"/monitoring", "action":"${(centerSession)!}/monitoringOutcomesList"}
 ]/]
 
-[#include "/WEB-INF/center/global/pages/header.ftl" /]
-[#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
-[#import "/WEB-INF/center/global/macros/forms.ftl" as customForm /]
+[#include "/WEB-INF/center/pages/header.ftl" /]
+[#include "/WEB-INF/center/pages/main-menu.ftl" /]
 [#import "/WEB-INF/center/views/impactPathway/outcomeListTemplate.ftl" as outcomesListMonitoring /]
 [#-- Help text --]
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.png" />
+    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.png" />
     <p class="col-md-10"> [@s.text name="monitoring.outcomeList.help"][/@s.text] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
@@ -51,6 +57,6 @@
 </section>
 
 [#-- Outcome Projects Popup --]
-[#include "/WEB-INF/center/global/macros/outcomeProjectsPopup.ftl" /]
+[#include "/WEB-INF/center/macros/outcomeProjectsPopup-center.ftl" /]
 
-[#include "/WEB-INF/center/global/pages/footer.ftl"]
+[#include "/WEB-INF/center/pages/footer.ftl"]

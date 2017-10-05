@@ -2,7 +2,7 @@
 
 
 
-[#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css",
+[#assign customCSS = ["${baseUrl}/global/css/customDataTable.css",
 					  "${baseUrlMedia}/css/capDev/capacityDevelopment.css"] /]
 
 
@@ -18,8 +18,8 @@
   {"label":"capdevSupportingDocs", "nameSpace":"/capdev", "action":""}
 ]/]
 
-[#include "/WEB-INF/center/global/pages/header.ftl" /]
-[#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
+[#include "/WEB-INF/center/pages/header.ftl" /]
+[#include "/WEB-INF/center/pages/main-menu.ftl" /]
 
 
 
@@ -73,7 +73,7 @@
 					
 
 					
-					[#if capdev.capdevSupportingDocses?has_content]
+					[#if capdev.capdevSupportingDocs?has_content]
 						<table class="supportDocsList" id="supportingDocs">
 							<thead>
 								<tr class="header">
@@ -85,7 +85,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								[#list capdev.capdevSupportingDocses as supportDocs]
+								[#list capdev.capdevSupportingDocs as supportDocs]
 									[#if supportDocs.active]
 										<tr>
 											<td>
@@ -99,8 +99,8 @@
 											    [/#if]
 										    </td>
 										    <td>
-											    [#if supportDocs.centerDeliverableTypes??]
-											    	${supportDocs.centerDeliverableTypes.name}
+											    [#if supportDocs.centerDeliverableType??]
+											    	${supportDocs.centerDeliverableType.name}
 											    [#else]
 											    	Not defined
 											    [/#if]
@@ -133,7 +133,7 @@
 							</tbody>
 						</table>
 					[/#if]
-						<p class="text-center inf" style="display:${(capdev.capdevSupportingDocses?has_content)?string('none','block')}">[@s.text name="capdev.notSupportDocuments" /]</p>	
+						<p class="text-center inf" style="display:${(capdev.capdevSupportingDocs?has_content)?string('none','block')}">[@s.text name="capdev.notSupportDocuments" /]</p>	
 
 					
 					[#if editable]

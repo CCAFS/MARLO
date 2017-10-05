@@ -1,14 +1,14 @@
 [#ftl]
 [#assign title = "Insert a partner" /]
 [#assign pageLibs = ["jquery", "noty","select2"] /]
-[#assign customJS = ["${baseUrlMedia}/js/global/partnersSave.js"] /]
-[#assign customCSS = ["${baseUrlMedia}/css/global/partnersSave.css"] /]
+[#assign customJS = ["${baseUrl}/global/js/partnersSave.js"] /]
+[#assign customCSS = ["${baseUrl}/global/css/partnersSave.css"] /]
 [#import "/WEB-INF/global/macros/forms.ftl" as customForm /]
 [#assign includeHeader = "false" /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "partners" /]
 
-[#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/crp/pages/header.ftl" /]
 
   <section> 
     <article>

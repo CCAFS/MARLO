@@ -72,7 +72,7 @@ function setCRP(crpSelected) {
   // Setting up the CRP-CENTER-PLATFORM value into a hidden input
   $('#crp-input').val(crpSelected);
 
-  $("#crpSelectedImage").attr("src", baseUrlMedia + "/images/global/crps/" + crpSelected + ".png");
+  $("#crpSelectedImage").attr("src", baseUrl + "/global/images/crps/" + crpSelected + ".png");
 
   // Show Second Form (Email, password & login button)
   $li.parents('.loginForm').find('.secondForm').slideDown();

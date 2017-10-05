@@ -2,8 +2,16 @@
 [#assign title = "Output Next-users" /]
 [#assign currentSectionString = "program-${actionName?replace('/','-')}-${programID}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs","select2"] /]
-[#assign customJS = ["${baseUrlMedia}/js/global/usersManagement.js", "${baseUrlMedia}/js/impactPathway/output.js", "${baseUrlMedia}/js/global/fieldsValidation.js"] /]
-[#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css","${baseUrlMedia}/css/impactPathway/outputList.css"] /]
+[#assign customJS = [
+  "${baseUrl}/global/js/usersManagement.js", 
+  "${baseUrlMedia}/js/impactPathway/output.js", 
+  "${baseUrl}/global/js/fieldsValidation.js"
+  ] 
+/]
+[#assign customCSS = [
+  "${baseUrl}/global/css/customDataTable.css",
+  "${baseUrlMedia}/css/impactPathway/outputList.css"] 
+/]
 [#assign currentSection = "impactPathway" /]
 [#assign currentStage = "outputs" /]
 
@@ -13,9 +21,9 @@
   {"label":"output", "nameSpace":"", "action":""}
 ]/]
 [#assign leadersName = "leaders"/]
-[#include "/WEB-INF/center/global/pages/header.ftl" /]
-[#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
-[#import "/WEB-INF/center/global/macros/utils.ftl" as utils /]
+[#include "/WEB-INF/center/pages/header.ftl" /]
+[#include "/WEB-INF/center/pages/main-menu.ftl" /]
+[#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 [#--  marlo cluster of activities--]
 <section class="marlo-content">
   <div class="container"> 
@@ -106,4 +114,4 @@
   </div>
 </section>
 
-[#include "/WEB-INF/center/global/pages/footer.ftl" /]
+[#include "/WEB-INF/center/pages/footer.ftl" /]

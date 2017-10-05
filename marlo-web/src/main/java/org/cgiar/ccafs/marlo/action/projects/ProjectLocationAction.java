@@ -543,6 +543,8 @@ public class ProjectLocationAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+ 	      reader.close();
+ 	
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
@@ -641,7 +643,7 @@ public class ProjectLocationAction extends BaseAction {
           }
           project.setCountryFS(coCountryFundingSources);
         }
-        reader.close();
+      
         this.prepareFundingList();
         this.setDraft(true);
       } else {

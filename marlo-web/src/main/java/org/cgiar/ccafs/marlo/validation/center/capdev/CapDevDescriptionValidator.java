@@ -63,7 +63,7 @@ public class CapDevDescriptionValidator extends BaseValidator {
       targetGroups.remove(0);
     }
     if (targetGroups.isEmpty()
-      && capdev.getCapdevTargetgroups().stream().filter(cd -> cd.isActive()).collect(Collectors.toList()).isEmpty()) {
+      && capdev.getCapdevTargetgroup().stream().filter(cd -> cd.isActive()).collect(Collectors.toList()).isEmpty()) {
       this.addMessage(baseAction.getText("capdev.action.targetgroup"));
       baseAction.getInvalidFields().put("list-capdev.targetgroup",
         baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Target Groups"}));

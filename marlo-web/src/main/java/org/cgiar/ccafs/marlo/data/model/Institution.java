@@ -64,15 +64,17 @@ public class Institution implements java.io.Serializable, IAuditLog {
   private Set<ProjectBudget> projectBudgets = new HashSet<ProjectBudget>(0);
 
   private Set<FundingSource> fundingSources = new HashSet<FundingSource>(0);
-
+  private Set<FundingSource> fundingSourcesDirectDonor = new HashSet<FundingSource>(0);
 
   private Set<ProjectPartnerPerson> projectPartnerPersons = new HashSet<>(0);
 
 
   private Set<InstitutionLocation> institutionsLocations = new HashSet<InstitutionLocation>(0);
+  private Set<Institution> branches = new HashSet<Institution>(0);
 
 
   private List<InstitutionLocation> locations;
+
 
   public Institution() {
   }
@@ -83,10 +85,9 @@ public class Institution implements java.io.Serializable, IAuditLog {
     this.added = added;
   }
 
-
   public Institution(InstitutionType institutionType, String name, String acronym, String websiteLink, Long programId,
     Long countryId, Date added, Set<CrpPpaPartner> crpPpaPartners, Set<ProjectPartnerPerson> projectPartnerPersons,
-    Set<FundingSource> fundingSources) {
+    Set<FundingSource> fundingSources, Set<FundingSource> fundingSourcesDirectDonor) {
     this.institutionType = institutionType;
     this.name = name;
     this.acronym = acronym;
@@ -98,6 +99,7 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
     this.projectPartnerPersons = projectPartnerPersons;
     this.fundingSources = fundingSources;
+    this.fundingSourcesDirectDonor = fundingSourcesDirectDonor;
   }
 
 
@@ -130,6 +132,11 @@ public class Institution implements java.io.Serializable, IAuditLog {
     return this.added;
   }
 
+
+  public Set<Institution> getBranches() {
+    return branches;
+  }
+
   public String getComposedName() {
     if (this.getAcronym() != null) {
       if (this.getAcronym().length() != 0) {
@@ -145,6 +152,7 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
 
   }
+
 
   public String getComposedNameLoc() {
     if (this.getAcronym() != null) {
@@ -165,8 +173,27 @@ public class Institution implements java.io.Serializable, IAuditLog {
     return crpPpaPartners;
   }
 
+
   public Set<FundingSource> getFundingSources() {
     return fundingSources;
+  }
+
+  public Set<FundingSource> getFundingSourcesDirectDonor() {
+    return fundingSourcesDirectDonor;
+  }
+
+  @Override
+  public Long getId() {
+    return this.id;
+  }
+
+
+  public Set<InstitutionLocation> getInstitutionsLocations() {
+    return institutionsLocations;
+  }
+
+  public InstitutionType getInstitutionType() {
+    return institutionType;
   }
 
   /*
@@ -191,20 +218,6 @@ public class Institution implements java.io.Serializable, IAuditLog {
    * }
    */
 
-  @Override
-  public Long getId() {
-    return this.id;
-  }
-
-  public Set<InstitutionLocation> getInstitutionsLocations() {
-    return institutionsLocations;
-  }
-
-  public InstitutionType getInstitutionType() {
-    return institutionType;
-  }
-
-
   public Set<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
   }
@@ -212,7 +225,6 @@ public class Institution implements java.io.Serializable, IAuditLog {
   public List<InstitutionLocation> getLocations() {
     return locations;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -239,7 +251,6 @@ public class Institution implements java.io.Serializable, IAuditLog {
     return null;
   }
 
-
   public String getName() {
     return this.name;
   }
@@ -249,13 +260,16 @@ public class Institution implements java.io.Serializable, IAuditLog {
     return this.programId;
   }
 
+
   public Set<ProjectBudget> getProjectBudgets() {
     return projectBudgets;
   }
 
+
   public Set<ProjectPartnerPerson> getProjectPartnerPersons() {
     return projectPartnerPersons;
   }
+
 
   public Set<ProjectPartner> getProjectPartners() {
     return projectPartners;
@@ -294,15 +308,23 @@ public class Institution implements java.io.Serializable, IAuditLog {
     this.added = added;
   }
 
+  public void setBranches(Set<Institution> branches) {
+    this.branches = branches;
+  }
+
 
   public void setCrpPpaPartners(Set<CrpPpaPartner> crpPpaPartners) {
     this.crpPpaPartners = crpPpaPartners;
   }
 
-
   public void setFundingSources(Set<FundingSource> fundingSources) {
     this.fundingSources = fundingSources;
   }
+
+  public void setFundingSourcesDirectDonor(Set<FundingSource> fundingSourcesDirectDonor) {
+    this.fundingSourcesDirectDonor = fundingSourcesDirectDonor;
+  }
+
 
   public void setId(Long id) {
     this.id = id;

@@ -239,7 +239,7 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
   }
 
 
-  public Set<CapdevTargetgroup> getCapdevTargetgroups() {
+  public Set<CapdevTargetgroup> getCapdevTargetgroup() {
     return capdevTargetgroup;
   }
 
@@ -455,12 +455,12 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
   }
 
 
-  public void setCapdevOutputses(Set<CapdevOutputs> capdevOutputs) {
+  public void setCapdevOutputs(Set<CapdevOutputs> capdevOutputs) {
     this.capdevOutputs = capdevOutputs;
   }
 
 
-  public void setCapdevParticipants(Set<CapdevParticipant> capdevParticipant) {
+  public void setCapdevParticipant(Set<CapdevParticipant> capdevParticipant) {
     this.capdevParticipant = capdevParticipant;
   }
 

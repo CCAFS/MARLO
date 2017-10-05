@@ -128,7 +128,7 @@ public class CapacityDevelopmentAction extends BaseAction {
           capdev.getCapdevParticipant().stream().filter(p -> p.isActive()).collect(Collectors.toList()));
         Collections.sort(participants, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
         Set<CapdevParticipant> capdevParticipants = new HashSet<CapdevParticipant>(participants);
-        capdev.setCapdevParticipants(capdevParticipants);
+        capdev.setCapdevParticipant(capdevParticipants);
 
         capDevs.add(capdev);
       }

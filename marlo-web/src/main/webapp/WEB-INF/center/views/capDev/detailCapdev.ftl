@@ -2,8 +2,7 @@
 
 [#assign title = "Capacity Development" /]
 
-[#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css"] /]
-[#assign customCSS = ["${baseUrlMedia}/css/capDev/capacityDevelopment.css"] /]
+[#assign customCSS = ["${baseUrl}/global/css/customDataTable.css","${baseUrlMedia}/css/capDev/capacityDevelopment.css"] /]
 
 [#assign pageLibs = ["select2","flat-flags"] /]
 [#assign customJS = ["${baseUrlMedia}/js/capDev/capacityDevelopment.js", "${baseUrlMedia}/js/global/fieldsValidation.js"] /]
@@ -15,8 +14,8 @@
   {"label":"capdevDetail", "nameSpace":"/capdev", "action":""}
 ]/]
 
-[#include "/WEB-INF/center/global/pages/header.ftl" /]
-[#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
+[#include "/WEB-INF/center/pages/header.ftl" /]
+[#include "/WEB-INF/center/pages/main-menu.ftl" /]
 
 
 
@@ -24,16 +23,15 @@
 
 
 
-<script src="${baseUrl}/bower_components/jquery/dist/jquery.min.js"></script>
-<script src="${baseUrlMedia}/js/capDev/capacityDevelopment.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.7.7/xlsx.core.min.js"></script>
+<!--<script src="${baseUrl}/bower_components/jquery/dist/jquery.min.js"></script>-->
+<!--<script src="${baseUrlMedia}/js/capDev/capacityDevelopment.js"></script>-->
 
 
 <div class="container"> 
 
 	<div class="row">
 		<div class="helpMessage infoText col-md-12 capdevinfo">
-				<img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.png" />
+				<img class="col-md-2" src="${baseUrlMedia}/global/images/icon-help.png" />
    				 <p class="col-md-10"> [@s.text name="capdev.help.detail"][/@s.text] </p>
 			</div>
 	</div> 
@@ -135,10 +133,10 @@
 				<!-- groups participants-->
 				<h4 class="form-group headTitle newCapdevField grupsParticipantsForm">Participants Information</h4>
 				<div class="form-group row grupsParticipantsForm simpleBox">
-					[#if capdev.capdevParticipants?has_content && capdev.capdevParticipants?size > 1] 
+					[#if capdev.capdevParticipant?has_content && capdev.capdevParticipant?size > 1] 
 						<div class="capdevParticipantsTable">
 							<div class="capdev-participantslist-title">List of participants</div>
-							[@capdevList capdev.capdevParticipants /]
+							[@capdevList capdev.capdevParticipant /]
 							<div class="col-md-12">
 								<div class="pull-right">
 									[#if editable]	
@@ -479,7 +477,7 @@
 
 
 
-[#include "/WEB-INF/center/global/pages/footer.ftl"]
+[#include "/WEB-INF/center/pages/footer.ftl"]
 
 
 

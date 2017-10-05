@@ -656,7 +656,7 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
 
     final Map<TargetGroup, Integer> targetGroupsMap = new HashMap<>();
     for (final CapacityDevelopment capdev : capDevs) {
-      for (final CapdevTargetgroup targetGroup : capdev.getCapdevTargetgroups()) {
+      for (final CapdevTargetgroup targetGroup : capdev.getCapdevTargetgroup()) {
         if (targetGroup.isActive()) {
           if (targetGroupsMap.containsKey(targetGroup.getTargetGroups())) {
             final int quantity = targetGroupsMap.get(targetGroup.getTargetGroups()) + 1;

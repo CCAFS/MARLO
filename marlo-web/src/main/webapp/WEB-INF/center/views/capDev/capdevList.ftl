@@ -1,8 +1,8 @@
 [#ftl]
 
 [#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
-[#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css", 
-					  "${baseUrlMedia}/css/capDev/capacityDevelopment.css"] /]
+[#assign customCSS = ["${baseUrl}/global/css/customDataTable.css", 
+					  					"${baseUrlMedia}/css/capDev/capacityDevelopment.css"] /]
 
 
 [#assign customJS = [
@@ -17,11 +17,11 @@
 ]/]
 
 
-[#include "/WEB-INF/center/global/pages/header.ftl" /]
-[#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
+[#include "/WEB-INF/center/pages/header.ftl" /]
+[#include "/WEB-INF/center/pages/main-menu.ftl" /]
 
 
-<script src="${baseUrl}/bower_components/jquery/dist/jquery.min.js"></script>
+<!--<script src="${baseUrl}/bower_components/jquery/dist/jquery.min.js"></script>-->
 
 
 
@@ -36,7 +36,7 @@
 
 		<div class="row">
 			<div class="helpMessage infoText col-md-12 capdevinfo">
-				<img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.png" />
+				<img class="col-md-2" src="${baseUrlMedia}/global/images/icon-help.png" />
    				 <p class="col-md-10"> [@s.text name="capdev.help.list"][/@s.text] </p>
 			</div>
 		</div>
@@ -118,10 +118,10 @@
 					    <td>
 					    	<div class="icon">
 					    		
-				    			<img src="${baseUrlMedia}/images/global/participants.png" class="[#if i.capdevParticipants?has_content && i.capdevParticipants?size  > 1]capDevIconEnable [#else]capDevIconDisable[/#if]" title="List of participants" />
+				    			<img src="${baseUrlMedia}/images/global/participants.png" class="[#if i.capdevParticipant?has_content && i.capdevParticipant?size  > 1]capDevIconEnable [#else]capDevIconDisable[/#if]" title="List of participants" />
 					    		
 						    	
-						    	<img src="${baseUrlMedia}/images/global/deliverable.png" class="[#if i.capdevSupportingDocses?has_content] capDevIconEnable [#else]capDevIconDisable[/#if]" title="Supporting documents" />
+						    	<img src="${baseUrlMedia}/images/global/deliverable.png" class="[#if i.capdevSupportingDocs?has_content] capDevIconEnable [#else]capDevIconDisable[/#if]" title="Supporting documents" />
 					    	</div>
 
 				    		
@@ -212,4 +212,4 @@
 
 
 
-[#include "/WEB-INF/center/global/pages/footer.ftl"]
+[#include "/WEB-INF/center/pages/footer.ftl"]

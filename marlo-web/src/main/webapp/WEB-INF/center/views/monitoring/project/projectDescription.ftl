@@ -3,11 +3,11 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = ["select2","flat-flags"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/global/fieldsValidation.js",
-  "${baseUrlMedia}/js/global/usersManagement.js", 
+  "${baseUrl}/global/js/fieldsValidation.js",
+  "${baseUrl}/global/js/usersManagement.js", 
   "${baseUrlMedia}/js/monitoring/projects/projectDescription.js",
   "${baseUrlMedia}/js/monitoring/projects/projectSync.js",
-  "${baseUrlMedia}/js/global/autoSave.js"
+  "${baseUrl}/global/js/autoSave.js"
   ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "description" /]
@@ -18,16 +18,16 @@
 ] /]
 
 
-[#include "/WEB-INF/center//global/pages/header.ftl" /]
-[#include "/WEB-INF/center//global/pages/main-menu.ftl" /]
+[#include "/WEB-INF/center/pages/header.ftl" /]
+[#include "/WEB-INF/center/pages/main-menu.ftl" /]
 [#-- Search users Interface --]
-[#import "/WEB-INF/center//global/macros/usersPopup.ftl" as usersForm/]
-[#import "/WEB-INF/center//global/macros/utils.ftl" as utilities /]
+[#import "/WEB-INF/global/macros/usersPopup.ftl" as usersForm/]
+[#import "/WEB-INF/global/macros/utils.ftl" as utilities /]
 
 [#-- Help text --]
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.png" />
+    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.png" />
     <p class="col-md-10"> [@s.text name="projectDescription.help"][/@s.text] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
@@ -177,7 +177,7 @@
                 <div class="form-group projectsGlobal">[@customForm.yesNoInput  label="projectDescription.globalDimensionQuestion" name="project.sGlobal" editable=editable inverse=false  cssClass="isGlobal" /] </div>
                 <hr />
                 [#else]
-                <div class="form-group"><label for="">[@s.text name="projectDescription.globalDimension${((project.sGlobal)!false)?string('Yes',No)}" /]</label></div>
+                <div class="form-group"><label for="">[@s.text name="projectDescription.globalDimension${((project.sGlobal == 'true')!false)?string('Yes','No')}" /]</label></div>
                 [/#if]
                 
                 [#-- YES/NO Regional Dimension --]
@@ -185,7 +185,7 @@
                 <div class="form-group projectsRegion">[@customForm.yesNoInput  label="projectDescription.regionalDimensionQuestion" name="project.sRegion" editable=editable inverse=false  cssClass="isRegional" /]</div>
                 <hr />
                 [#else]
-                <div class="form-group"><label for="">[@s.text name="projectDescription.regionallDimension${((project.sGlobal)!false)?string('Yes',No)}" /]</label></div>
+                <div class="form-group"><label for="">[@s.text name="projectDescription.regionallDimension${((project.sRegion == 'true')!false)?string('Yes','No')}" /]</label></div>
                 [/#if]
                 
                 [#-- REGIONAL SELECT --]
@@ -407,7 +407,7 @@
     </li>
 </ul>
   
-[#include "/WEB-INF/center//global/pages/footer.ftl"]
+[#include "/WEB-INF/center/pages/footer.ftl"]
 
 
 [#macro fundingSourceMacro element name index=-1 isTemplate=false]  

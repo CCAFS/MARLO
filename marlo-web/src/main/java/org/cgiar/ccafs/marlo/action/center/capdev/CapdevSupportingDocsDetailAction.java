@@ -172,8 +172,8 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
 
     if (capdevSupportingDocs != null) {
       capdev = capdevService.getCapacityDevelopmentById(capdevID);
-      if (capdevSupportingDocs.getCenterDeliverableTypes() != null) {
-        final Long deliverableTypeParentId = capdevSupportingDocs.getCenterDeliverableTypes().getId();
+      if (capdevSupportingDocs.getCenterDeliverableType() != null) {
+        final Long deliverableTypeParentId = capdevSupportingDocs.getCenterDeliverableType().getId();
 
         deliverablesSubtypesList = new ArrayList<>(centerDeliverableService.findAll().stream()
           .filter(
@@ -202,13 +202,14 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
       capdevsupportingDocsService.getCapdevSupportingDocsById(supportingDocID);
     capdevSupportingDocsDB.setTitle(capdevSupportingDocs.getTitle());
 
-    if (capdevSupportingDocs.getCenterDeliverableTypes().getId() != -1) {
-      capdevSupportingDocsDB.setCenterDeliverableTypes(capdevSupportingDocs.getCenterDeliverableTypes());
+
+    if (capdevSupportingDocs.getCenterDeliverableType().getId() != -1) {
+      capdevSupportingDocsDB.setCenterDeliverableType(capdevSupportingDocs.getCenterDeliverableType());
       if (capdevSupportingDocs.getDeliverableSubtype().getId() != -1) {
         capdevSupportingDocsDB.setDeliverableSubtype(capdevSupportingDocs.getDeliverableSubtype());
       }
     } else {
-      capdevSupportingDocsDB.setCenterDeliverableTypes(null);
+      capdevSupportingDocsDB.setCenterDeliverableType(null);
       capdevSupportingDocsDB.setDeliverableSubtype(null);
     }
     capdevSupportingDocsDB.setPublicationDate(capdevSupportingDocs.getPublicationDate());

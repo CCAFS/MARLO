@@ -93,7 +93,7 @@ public class CapdevSupportingDocs implements java.io.Serializable, IAuditLog {
   }
 
 
-  public CenterDeliverableType getCenterDeliverableTypes() {
+  public CenterDeliverableType getCenterDeliverableType() {
     return this.centerDeliverableTypes;
   }
 
@@ -161,7 +161,7 @@ public class CapdevSupportingDocs implements java.io.Serializable, IAuditLog {
     this.capdevSuppDocsDocuments = capdevSuppDocsDocuments;
   }
 
-  public void setCenterDeliverableTypes(CenterDeliverableType centerDeliverableTypes) {
+  public void setCenterDeliverableType(CenterDeliverableType centerDeliverableTypes) {
     this.centerDeliverableTypes = centerDeliverableTypes;
   }
 
