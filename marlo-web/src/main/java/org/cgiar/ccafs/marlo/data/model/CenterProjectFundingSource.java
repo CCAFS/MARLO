@@ -11,7 +11,9 @@ import com.google.gson.annotations.Expose;
  */
 public class CenterProjectFundingSource implements java.io.Serializable {
 
+
   private static final long serialVersionUID = 5708773221894420200L;
+
 
   @Expose
   private Long id;
@@ -68,6 +70,9 @@ public class CenterProjectFundingSource implements java.io.Serializable {
   private Date syncDate;
 
   @Expose
+  private boolean autoFill;
+
+  @Expose
   private boolean active;
 
   @Expose
@@ -91,11 +96,9 @@ public class CenterProjectFundingSource implements java.io.Serializable {
     return centerFundingSyncType;
   }
 
-
   public CenterProject getCenterProject() {
     return centerProject;
   }
-
 
   public String getCode() {
     return code;
@@ -177,6 +180,11 @@ public class CenterProjectFundingSource implements java.io.Serializable {
   }
 
 
+  public boolean isAutoFill() {
+    return autoFill;
+  }
+
+
   public boolean isSync() {
     return sync;
   }
@@ -186,8 +194,13 @@ public class CenterProjectFundingSource implements java.io.Serializable {
     this.active = active;
   }
 
+
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
+  }
+
+  public void setAutoFill(boolean autoFill) {
+    this.autoFill = autoFill;
   }
 
   public void setCenterFundingSourceType(CenterFundingSourceType centerFundingSourceType) {
