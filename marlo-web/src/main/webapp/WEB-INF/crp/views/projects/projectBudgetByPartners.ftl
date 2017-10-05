@@ -292,11 +292,14 @@
         <div class="row col-md-9">
         [#-- TODO: Allow to add funding sources when there is no aggregate (problem with permissions)  --]
         [#-- Added action.canSearchFunding to allow to modify gender depending on institution  --]
-        [#if (editable && isYearEditable(selectedYear) && (action.canEditFunding(((element.fundingSource.budgetType.id)!-1),(element.institution.id)!-1)||action.canSearchFunding(element.institution.id) ))|| isTemplate]
-          [@customForm.input name="${customName}.amount" i18nkey="budget.amount" showTitle=false className="currencyInput fundInput type-${(element.fundingSource.budgetType.id)!'none'}" required=true /]
+        [#if (editable && isYearEditable(selectedYear) && (action.canEditFunding(((element.fundingSource.budgetType.id)!-1),(element.institution.id)!-1) ))|| isTemplate]
+          [@customForm.input name="${customName}.amount"    i18nkey="budget.amount" showTitle=false className="currencyInput fundInput type-${(element.fundingSource.budgetType.id)!'none'}" required=true /]
         [#else]
+          
+           <div class="${customForm.changedField(customName+'.amount')}">
           <div class="input"><p>US$ <span>${((element.amount)!0)?number?string(",##0.00")}</span></p></div>
-          <input type="hidden" name="${customName}.amount" value="${(element.amount)!0}" />
+          <input type="hidden" name="${customName}.amount"  value="${(element.amount)!0}" />
+          </div>
         [/#if]
         </div>
       </div>
@@ -309,8 +312,10 @@
           [#if (editable && isYearEditable(selectedYear) && action.canSearchFunding(element.institution.id)) || isTemplate]
             [@customForm.input name="${customName}.genderPercentage" i18nkey="budget.genderPercentage" showTitle=false className="percentageInput type-${(element.fundingSource.budgetType.id)!'none'}" required=true   /]
           [#else]  
+            <div class="${customForm.changedField(customName+'.genderPercentage')}">
             <div class="input"><p><span>${((element.genderPercentage)!0)}%</span></p></div>
-            <input type="hidden" name="${customName}.genderPercentage" value="${(element.genderPercentage)!0}" />
+            <input type="hidden" name="${customName}.genderPercentage"  value="${(element.genderPercentage)!0}" />
+         </div>
           [/#if]
           </div>
         [/#if]
