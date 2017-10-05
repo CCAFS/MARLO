@@ -125,9 +125,13 @@ public class ProjectPartnerMySQLDAO implements ProjectPartnerDAO {
       projectPartnerAdd.setResponsibilities(projectPartner.getResponsibilities());
       projectPartnerAdd.setProject(projectPartner.getProject());
       dao.save(projectPartnerAdd);
-      projectPartnerAdd = dao.find(ProjectPartner.class, projectPartnerAdd.getId());
-      this.addPersons(projectPartner, projectPartnerAdd);
-      this.addOffices(projectPartner, projectPartnerAdd);
+
+      if (projectPartnerAdd.getId() != null) {
+        projectPartnerAdd = dao.find(ProjectPartner.class, projectPartnerAdd.getId());
+        this.addPersons(projectPartner, projectPartnerAdd);
+        this.addOffices(projectPartner, projectPartnerAdd);
+      }
+
     } else {
       if (phase.getEditable() != null && phase.getEditable()) {
         for (ProjectPartner projectPartnerPrev : partners) {

@@ -180,7 +180,7 @@ public class StandardDAO {
       }
       tx = this.initTransaction(session);
       this.commitTransaction(tx);
-      obj = session.get(clazz, (Serializable) id);
+      obj = (T) session.get(clazz, (Serializable) id);
 
 
     } catch (Exception e) {

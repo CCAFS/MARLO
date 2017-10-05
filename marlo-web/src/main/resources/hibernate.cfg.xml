@@ -16,15 +16,16 @@
     <property name="show_sql">false</property>
     <property name="use_sql_comments">false</property>
     <property name="generate_statistics">false</property>
+  
     
-    <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
-        <property name="hibernate.connection.provider_class">com.zaxxer.hikari.hibernate.HikariConnectionProvider</property>
-        <property name="hibernate.hikari.dataSourceClassName">com.mysql.jdbc.jdbc2.optional.MysqlDataSource</property>
-        <property name="hibernate.hikari.dataSource.cachePrepStmts">true</property>
-        <property name="hibernate.hikari.dataSource.prepStmtCacheSize">250</property>
-        <property name="hibernate.hikari.dataSource.prepStmtCacheSqlLimit">2048</property>
-        <property name="hibernate.hikari.dataSource.useServerPrepStmts">true</property>
-        <property name="hibernate.current_session_context_class">thread</property>
+   <!-- Hikari specific properties -->
+  <property name="connection.provider_class">com.zaxxer.hikari.hibernate.HikariConnectionProvider</property>
+  <property name="hikari.dataSource.cachePrepStmts">true</property>
+  <property name="hikari.dataSource.prepStmtCacheSize">250</property>
+  <property name="hikari.dataSource.prepStmtCacheSqlLimit">2048</property>
+  <property name="hikari.dataSource.useServerPrepStmts">true</property>
+  <property name="hikari.maximumPoolSize">300</property>
+  <property name="hikari.idleTimeout">5000</property>
 
 		<!-- Model Mappings -->
 		<mapping resource="xmls/DeliverableMetadataElements.hbm.xml" />
