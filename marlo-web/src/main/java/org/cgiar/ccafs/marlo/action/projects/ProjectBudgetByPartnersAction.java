@@ -298,7 +298,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     projectBudget.getFundingSource().getFundingSourceInfo(this.getActualPhase());
     project.getBudgets().add(projectBudget);
 
-    return this.getIndexBudget(institutionId, year, type);
+    return this.getIndexBudget(institutionId, year, type, fundingSourceID);
   }
 
 

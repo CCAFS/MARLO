@@ -210,7 +210,7 @@ public class ProjectSubmissionAction extends BaseAction {
         project
           .getCrp().getCrpPrograms().stream().filter(cp -> cp.getId() == project
             .getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram().getId())
-        .collect(Collectors.toList());
+          .collect(Collectors.toList());
       if (crpPrograms != null) {
         if (crpPrograms.size() > 1) {
           LOG.warn("Crp programs should be 1");
@@ -279,17 +279,19 @@ public class ProjectSubmissionAction extends BaseAction {
     }
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
-
+    String crp = loggedCrp.getAcronym() != null && !loggedCrp.getAcronym().isEmpty() ? loggedCrp.getAcronym()
+      : loggedCrp.getName();
     // subject
     String subject = null;
-    subject = this.getText("submit.email.subject", new String[] {loggedCrp.getName(),
-      String.valueOf(project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER))});
+    subject = this.getText("submit.email.subject",
+      new String[] {crp, String.valueOf(project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER))});
+
 
     // Building the email message
     StringBuilder message = new StringBuilder();
     String[] values = new String[6];
     values[0] = this.getCurrentUser().getFirstName();
-    values[1] = loggedCrp.getName();
+    values[1] = crp;
     values[2] = project.getProjecInfoPhase(this.getActualPhase()).getTitle();
     values[3] = String.valueOf(project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER));
     values[4] = String.valueOf(this.getActualPhase().getYear());

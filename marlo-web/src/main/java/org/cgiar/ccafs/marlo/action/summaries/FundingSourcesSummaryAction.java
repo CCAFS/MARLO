@@ -380,7 +380,7 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
         }
 
         if (regionalDimension.isEmpty()) {
-          regionalDimension = null;
+          regionalDimension = "No";
         }
 
         String specificCountries = "";
@@ -634,7 +634,7 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
       }
 
       if (regionalDimension.isEmpty()) {
-        regionalDimension = null;
+        regionalDimension = "No";
       }
 
       String specificCountries = "";
