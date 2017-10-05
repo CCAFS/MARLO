@@ -175,11 +175,13 @@
       [@channelExampleMacro name="ifpri" url="http://ebrary.ifpri.org/cdm/singleitem/collection/p15738coll5/id/5388/rec/1" /]
       [#-- ILRI examples & instructions --]
       [@channelExampleMacro name="ilri" url="http://data.ilri.org/portal/dataset/ccafsnyando" /]
+      [#-- CIMMYT examples & instructions --]
+      [@channelExampleMacro name="cimmyt" url="http://data.cimmyt.org/dvn/dv/cimmytswdvn/faces/study/StudyPage.xhtml?globalId=hdl:11529/10820&studyListingIndex=0_e53de710eb0cd382107c5579e996" /]
     [/#if]
   </div>
 </div>
 
-[#assign channelsArray = ["cgspace","dataverse","other","ifpri","ilri"] /] 
+[#assign channelsArray = ["cgspace","dataverse","other","ifpri","ilri","cimmyt"] /] 
 <div id="disseminationUrl" style="display:[#if (channelsArray?seq_contains(deliverable.dissemination.disseminationChannel))!false ]block[#else]none[/#if];">
   <div class="form-group" > 
     <div class="url-field">

@@ -300,7 +300,7 @@ function changeDisseminationChannel() {
   $(".exampleUrl-block").hide();
 
   var channelsList = [
-      "cgspace", "dataverse", "ifpri", "ilri"
+      "cgspace", "dataverse", "ifpri", "ilri", "cimmyt"
   ];
 
   if(channel != "-1") {
