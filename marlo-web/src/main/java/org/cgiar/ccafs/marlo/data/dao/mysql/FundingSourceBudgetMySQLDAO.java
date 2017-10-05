@@ -137,8 +137,11 @@ public class FundingSourceBudgetMySQLDAO implements FundingSourceBudgetDAO {
     Phase currentPhase = dao.find(Phase.class, fundingSourceBudget.getPhase().getId());
     if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
       if (fundingSourceBudget.getPhase().getNext() != null) {
-        this.saveFundingSourceBudgetPhase(fundingSourceBudget.getPhase().getNext(),
-          fundingSourceBudget.getFundingSource().getId(), fundingSourceBudget);
+        if (fundingSourceBudget.getYear() != null) {
+          this.saveFundingSourceBudgetPhase(fundingSourceBudget.getPhase().getNext(),
+            fundingSourceBudget.getFundingSource().getId(), fundingSourceBudget);
+        }
+
       }
     }
 
@@ -148,9 +151,9 @@ public class FundingSourceBudgetMySQLDAO implements FundingSourceBudgetDAO {
   public void saveFundingSourceBudgetPhase(Phase next, long fundingSourceID, FundingSourceBudget fundingSourceBudget) {
     Phase phase = dao.find(Phase.class, next.getId());
     if (phase.getEditable() != null && phase.getEditable()) {
-      List<FundingSourceBudget> budgets = phase.getFundingSourceBudgets().stream()
-        .filter(c -> c.isActive() && c.getFundingSource().getId().longValue() == fundingSourceID
-          && c.getYear().intValue() == fundingSourceBudget.getYear().intValue())
+      List<FundingSourceBudget> budgets = phase.getFundingSourceBudgets()
+        .stream().filter(c -> c.isActive() && c.getFundingSource().getId().longValue() == fundingSourceID
+          && c.getYear() != null && c.getYear().intValue() == fundingSourceBudget.getYear().intValue())
         .collect(Collectors.toList());
       if (budgets.isEmpty()) {
         FundingSourceBudget fundingSourceBudgetAdd = new FundingSourceBudget();
@@ -164,7 +167,10 @@ public class FundingSourceBudgetMySQLDAO implements FundingSourceBudgetDAO {
 
     }
     if (phase.getNext() != null) {
-      this.saveFundingSourceBudgetPhase(phase.getNext(), fundingSourceID, fundingSourceBudget);
+      if (fundingSourceBudget.getYear() != null) {
+        this.saveFundingSourceBudgetPhase(phase.getNext(), fundingSourceID, fundingSourceBudget);
+      }
+
     }
 
 

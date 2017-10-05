@@ -762,6 +762,9 @@ public class FundingSourceAction extends BaseAction {
         funginsSourceInfoDB.setFile(fundingSource.getFundingSourceInfo().getFile());
       }
 
+      fundingSourceDB.setModifiedBy(this.getCurrentUser());
+      funginsSourceInfoDB.setModifiedBy(this.getCurrentUser());
+
       fundingSourceManager.saveFundingSource(fundingSourceDB);
       fundingSourceInfoManager.saveFundingSourceInfo(funginsSourceInfoDB);
       /*

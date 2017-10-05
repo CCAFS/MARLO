@@ -97,12 +97,6 @@ public class FundingSourceListAction extends BaseAction {
         fundingSourceManager.searchFundingSources(queryParameter, year, this.getCrpID().longValue(), phase.getId()));
 
 
-      // add elements to al, including duplicates
-      Set<FundingSource> hs = new HashSet<>();
-      hs.addAll(fundingSources);
-      fundingSources.clear();
-      fundingSources.addAll(hs);
-
     }
 
     if (fundingSources != null) {
@@ -111,7 +105,11 @@ public class FundingSourceListAction extends BaseAction {
       fundingSources
         .sort((p1, p2) -> p1.getFundingSourceInfo().getTitle().compareTo(p2.getFundingSourceInfo().getTitle()));
     }
-
+    // add elements to al, including duplicates
+    Set<FundingSource> hs = new HashSet<>();
+    hs.addAll(fundingSources);
+    fundingSources.clear();
+    fundingSources.addAll(hs);
 
     for (FundingSource fundingSource : fundingSources) {
       if (fundingSource.isActive()) {
