@@ -427,6 +427,11 @@ public class ProgramImpactsAction extends BaseAction {
               }
             }
           }
+
+          selectedProgram = programService.getProgramById(programID);
+          selectedProgram.setImpacts(impacts);
+
+
           reader.close();
           this.setDraft(true);
         } else {
