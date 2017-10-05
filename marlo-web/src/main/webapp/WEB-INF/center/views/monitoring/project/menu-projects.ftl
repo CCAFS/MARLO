@@ -11,7 +11,7 @@
     
   ]/]
   
-  [#attempt]
+[#attempt]
   [#assign submission = (action.isSubmitCenterProject(projectID))! /]
   [#assign canSubmit = (action. hasPersmissionSubmitProject(projectID))!false /]
   [#assign completed = (action.isCompleteCenterProject(projectID))!false /]
@@ -76,6 +76,9 @@ error
     [@s.text name="form.buttons.submit" /]
   </a>
 [/#if]
+
+[#-- Discard Changes Popup --]
+[#include "/WEB-INF/global/macros/discardChangesPopup.ftl"]
 
 [#-- program Submit JS --]
 [#assign customJS = [ "${baseUrlMedia}/js/monitoring/projects/projectSubmit.js" ] + customJS  /]

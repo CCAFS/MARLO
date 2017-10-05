@@ -83,6 +83,9 @@ public class InstitutionsLeadersSummaryAction extends BaseAction implements Summ
     masterReport.getParameterValues().put("i8nType", this.getText("summaries.partners.type"));
     masterReport.getParameterValues().put("i8nCountry", this.getText("summaries.partners.country"));
     masterReport.getParameterValues().put("i8nProjects", this.getText("caseStudy.projects"));
+    masterReport.getParameterValues().put("i8nCoas", this.getText("deliverable.coas"));
+    masterReport.getParameterValues().put("i8nFlagships", this.getText("project.Flagships"));
+    masterReport.getParameterValues().put("i8nRegions", this.getText("project.Regions"));
 
     return masterReport;
   }
@@ -112,6 +115,7 @@ public class InstitutionsLeadersSummaryAction extends BaseAction implements Summ
       masterReport.getParameterValues().put("cycle", cycle);
       masterReport.getParameterValues().put("showDescription",
         this.hasSpecificities(APConstants.CRP_REPORTS_DESCRIPTION));
+      masterReport.getParameterValues().put("regionalAvalaible", this.hasProgramnsRegions());
       // Set i8n for pentaho
       masterReport = this.addi8nParameters(masterReport);
       ExcelReportUtil.createXLSX(masterReport, os);

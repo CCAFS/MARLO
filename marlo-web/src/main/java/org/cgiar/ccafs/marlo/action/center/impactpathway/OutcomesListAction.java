@@ -244,6 +244,7 @@ public class OutcomesListAction extends BaseAction {
         } catch (Exception ex) {
           User user = userService.getUser(this.getCurrentUser().getId());
 
+          // Check if the User is an Area Leader
           List<CenterLeader> userAreaLeads =
             new ArrayList<>(user.getResearchLeaders().stream()
               .filter(rl -> rl.isActive()
@@ -252,6 +253,7 @@ public class OutcomesListAction extends BaseAction {
           if (!userAreaLeads.isEmpty()) {
             areaID = userAreaLeads.get(0).getResearchArea().getId();
           } else {
+            // Check if the User is a Program Leader
             List<CenterLeader> userProgramLeads = new ArrayList<>(user.getResearchLeaders().stream()
               .filter(rl -> rl.isActive()
                 && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_PROGRAM_LEADER_TYPE.getValue())
@@ -259,12 +261,21 @@ public class OutcomesListAction extends BaseAction {
             if (!userProgramLeads.isEmpty()) {
               programID = userProgramLeads.get(0).getResearchProgram().getId();
             } else {
-              List<CenterProgram> rps = researchAreas.get(0).getResearchPrograms().stream().filter(r -> r.isActive())
-                .collect(Collectors.toList());
-              Collections.sort(rps, (rp1, rp2) -> rp1.getId().compareTo(rp2.getId()));
-              CenterProgram rp = rps.get(0);
-              programID = rp.getId();
-              areaID = rp.getResearchArea().getId();
+              // Check if the User is a Scientist Leader
+              List<CenterLeader> userScientistLeader = new ArrayList<>(user.getResearchLeaders().stream()
+                .filter(rl -> rl.isActive()
+                  && rl.getType().getId() == CenterLeaderTypeEnum.PROGRAM_SCIENTIST_LEADER_TYPE.getValue())
+                .collect(Collectors.toList()));
+              if (!userScientistLeader.isEmpty()) {
+                programID = userScientistLeader.get(0).getResearchProgram().getId();
+              } else {
+                List<CenterProgram> rps = researchAreas.get(0).getResearchPrograms().stream().filter(r -> r.isActive())
+                  .collect(Collectors.toList());
+                Collections.sort(rps, (rp1, rp2) -> rp1.getId().compareTo(rp2.getId()));
+                CenterProgram rp = rps.get(0);
+                programID = rp.getId();
+                areaID = rp.getResearchArea().getId();
+              }
             }
           }
         }
@@ -310,6 +321,8 @@ public class OutcomesListAction extends BaseAction {
       if (selectedProgram.getResearchTopics() != null) {
         researchTopics = new ArrayList<>(selectedProgram.getResearchTopics().stream()
           .filter(rt -> rt.isActive() && rt.getResearchTopic().trim().length() > 0).collect(Collectors.toList()));
+
+        Collections.sort(researchTopics, (ra1, ra2) -> ra1.getOrder().compareTo(ra2.getOrder()));
         try {
           topicID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.RESEARCH_TOPIC_ID)));
           if (topicID == -1) {

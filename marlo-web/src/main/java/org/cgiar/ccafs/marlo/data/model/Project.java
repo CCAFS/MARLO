@@ -987,9 +987,24 @@ public class Project implements java.io.Serializable, IAuditLog {
     return status;
   }
 
-
   public String getStatusJustification() {
     return statusJustification;
+  }
+
+  public Boolean getStatusJustificationRequired() {
+    // Alow for comments when the project is extended, cancelled or complete;
+    if (this.status != null) {
+      if ((this.status == Long.parseLong(ProjectStatusEnum.Extended.getStatusId()))
+        || (this.status == Long.parseLong(ProjectStatusEnum.Cancelled.getStatusId()))
+        || (this.status == Long.parseLong(ProjectStatusEnum.Complete.getStatusId()))) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public String getStatusName() {
+    return ProjectStatusEnum.getValue(new Long(this.status).intValue()).getStatus();
   }
 
   public Set<Submission> getSubmissions() {

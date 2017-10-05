@@ -43,8 +43,8 @@ $(document).ready(
             var option = $(this).find("option:selected");
 
             var url =
-                baseURL + "/impactPathway/" + centerSession + "/outcomesList.do?programID=" + programID + "&edit="
-                    + editable + "&topicID=" + option.val();
+                baseURL + "/centerImpactPathway/" + centerSession + "/outcomesList.do?programID=" + programID
+                    + "&edit=" + editable + "&topicID=" + option.val();
             window.location = url;
 
           });

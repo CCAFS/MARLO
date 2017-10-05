@@ -19,6 +19,9 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
+import org.cgiar.ccafs.marlo.data.model.Center;
+import org.cgiar.ccafs.marlo.data.model.CenterCustomParameter;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -43,12 +46,15 @@ public class ValidSessionCrpInterceptor extends AbstractInterceptor {
   private CrpManager crpManager;
   private CrpUserManager crpUserManager;
   private Crp loggedCrp;
+  private ICenterManager centerService;
 
 
   @Inject
-  public ValidSessionCrpInterceptor(CrpManager crpManager, CrpUserManager crpUserManager) {
+  public ValidSessionCrpInterceptor(CrpManager crpManager, CrpUserManager crpUserManager,
+    ICenterManager centerService) {
     this.crpManager = crpManager;
     this.crpUserManager = crpUserManager;
+    this.centerService = centerService;
   }
 
   private void changeSessionSection(Map<String, Object> session) {
@@ -66,16 +72,47 @@ public class ValidSessionCrpInterceptor extends AbstractInterceptor {
 
   @Override
   public String intercept(ActionInvocation invocation) throws Exception {
+    BaseAction action = (BaseAction) invocation.getAction();
+    action.setSwitchSession(false);
     Map<String, Object> session = invocation.getInvocationContext().getSession();
 
     loggedCrp = (Crp) session.get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+
 
     String[] actionMap = ActionContext.getContext().getName().split("/");
     if (actionMap.length > 1) {
       String enteredCrp = actionMap[0];
       Crp crp = crpManager.findCrpByAcronym(enteredCrp);
       if (crp != null) {
+        // Change center to crp session; check if the user don't have crp session
+        if (loggedCrp != null) {
+          loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+        } else {
+          loggedCrp = crp;
+
+          session.put(APConstants.SESSION_CRP, loggedCrp);
+
+          if (session.containsKey(APConstants.SESSION_CENTER)) {
+            Center center = (Center) session.get(APConstants.SESSION_CENTER);
+
+            // remove the center parameters
+            for (CenterCustomParameter parameter : center.getCenterCustomParameters()) {
+              if (parameter.isActive()) {
+                session.remove(parameter.getCenterParameter().getKey());
+              }
+            }
+            // Remove the center session
+            session.remove(APConstants.SESSION_CENTER);
+          }
+          // add the crp parameters
+          for (CustomParameter parameter : loggedCrp.getCustomParameters()) {
+            if (parameter.isActive()) {
+              session.put(parameter.getParameter().getKey(), parameter.getValue());
+            }
+          }
+
+          action.setSwitchSession(true);
+        }
         if (crp.equals(loggedCrp)) {
           this.changeSessionSection(session);
           return invocation.invoke();

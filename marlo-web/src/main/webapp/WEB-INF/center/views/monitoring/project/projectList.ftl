@@ -1,9 +1,9 @@
 [#ftl]
-[#assign title = "MiLE Projects" /]
+[#assign title = "MARLO Projects" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
 [#assign customJS = ["${baseUrlMedia}/js/monitoring/projects/projectsList.js" ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css"] /]
+[#assign customCSS = ["${baseUrl}/global/css/customDataTable.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = (filterBy)!"all" /]
 
@@ -12,14 +12,13 @@
   {"label":"projectsList", "nameSpace":"/monitoring", "action":"${(centerSession)!}/projectList"}
 ]/]
 
-[#include "/WEB-INF/center//global/pages/header.ftl" /]
-[#include "/WEB-INF/center//global/pages/main-menu.ftl" /]
-[#import "/WEB-INF/center//global/macros/forms.ftl" as customForm /]
-[#import "/WEB-INF/center//global/macros/projectsListTemplate.ftl" as projectList /]
+[#include "/WEB-INF/center/pages/header.ftl" /]
+[#include "/WEB-INF/center/pages/main-menu.ftl" /]
+[#import "/WEB-INF/center/macros/projectsListTemplate-center.ftl" as projectList /]
 [#-- Help text --]
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.png" />
+    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.png" />
     <p class="col-md-10"> [@s.text name="projectList.help"][/@s.text] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
@@ -35,13 +34,14 @@
       <div style="display:none">[@projectList.projectsList projects=projects canValidate=true canEdit=editable namespace="/monitoring" defaultAction="${(centerSession)!}/projectDescription" /]</div>
   
       [#-- Section Buttons --]
-
+      [#if canEdit]
       <div class="buttons">
         <div class="buttons-content">        
           <a class="addButton" href="[@s.url action='${(centerSession)!}/addNewProject'][@s.param name='programID']${selectedProgram.id?c}[/@s.param][/@s.url]">[@s.text name="Add project" /]</a>
           <div class="clearfix"></div>
         </div>
       </div>
+      [/#if]
 
 
       
@@ -53,4 +53,4 @@
 [@customForm.confirmJustificationProject action="deleteProject.do" namespace="/${currentSection}" title="Remove Project" /]
 
 
-[#include "/WEB-INF/center//global/pages/footer.ftl"]
+[#include "/WEB-INF/center/pages/footer.ftl"]

@@ -2,7 +2,11 @@
 [#assign title = "MARLO - ${(centerSession)!} outcome information" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["select2","jsUri"] /]
-[#assign customJS = ["${baseUrlMedia}/js/monitoring/outcomes/outcomeInfo.js","${baseUrlMedia}/js/global/autoSave.js" ] /]
+[#assign customJS = [
+  "${baseUrlMedia}/js/monitoring/outcomes/outcomeInfo.js",
+  "${baseUrl}/global/js/autoSave.js" 
+  ] 
+/]
 [#assign customCSS = [""] /]
 [#assign currentSection = "outcomes" /]
 
@@ -13,9 +17,18 @@
 
 
 
-[#include "/WEB-INF/center/global/pages/header.ftl" /]
-[#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
-[#import "/WEB-INF/center/global/macros/forms.ftl" as customForm /]
+[#include "/WEB-INF/center/pages/header.ftl" /]
+[#include "/WEB-INF/center/pages/main-menu.ftl" /]
+
+[#-- Help text --]
+<div class="container helpText viewMore-block">
+  <div class="helpMessage infoText">
+    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.png" />
+    <p class="col-md-10"> [@s.text name="monitoring.outcome.help"][/@s.text] </p>
+  </div> 
+  <div style="display:none" class="viewMore closed"></div>
+</div>
+
 <span id="programSelected" class="hidden">${selectedProgram.id}</span>
 
 <section class="container">
@@ -42,10 +55,13 @@
         <div class="col-md-6">
           <label for="">Outcome statement:  </label>
           <p>${(outcome.description)!}</p>
+          <input type="hidden" class="outcomeDescription" name="outcome.description" value="${(outcome.description)!}" />
         </div>
         <div class="col-md-2">
           <label for="">Expected for ${(outcome.targetYear)!"null"}:  </label>
           <p>${(outcome.value)!"Not Applicable"}</p>
+          <input type="hidden" class="outcomeValue" name="outcome.value" value="${(outcome.value)!}" />
+          <input type="hidden" class="outcomeTargetYear" name="outcome.targetYear" value="${(outcome.targetYear)!"null"}" />
         </div>
       </div> 
       [#-- View Porjects contributions --]
@@ -71,12 +87,17 @@
           <div class="col-md-2">
             [@customForm.input name="outcome.baseline" className="initialBaseLine" i18nkey="Initial Baseline" required=true editable=editable /]
           </div>
-          <div class="clearfix"></div>
+          
+          <div class="col-md-9 note center">
+            <span>[@s.text name="monitoring.outcome.help.baseline"/]</span>
+          </div>
+          
+          <div class="clearfix"></div>   
           [/#if]
           <div class="col-md-12">
-            <h5 class="sectionSubTitle">Milestones/ progress towards your outcome target contribution:</h5>
+            <h5 class="sectionSubTitle">Progress Towards Outcome Milestones:</h5>
             <div class="note left">
-              When writing your narrative, please consider if you have achieved changes in Attitudes, Skills, and Knowledge. Key words to express progress  measurement that may apply to your outcome may include: Change of Practice→ Use, Adaptation, Adoption → Sustainable use, Scaling out / Scaling up
+              [@s.text name="monitoring.outcome.help.yellow"/]
             </div>
             <br />
             [#-- MILESTONE LIST --]
@@ -98,11 +119,11 @@
             </div>
             [/#if]
           </div>
-            [#-- Milestone narrative --]
+            [#-- Outcome narrative --]
             <div class="col-md-12 form-group">
-            <h5 class="sectionSubTitle">Progress towards your long-term outcome target contribution:</h5>
+            <h5 class="sectionSubTitle">Progress Towards Long-Term Overall Outcome:</h5>
             <div class="form-group" style="margin-top: 15px;">
-              [@customForm.textArea name="outcome.monitorings[${outcome_index}].narrative" i18nkey="outcome.narrative.longTerm" required=true className="outcome-narrative limitWords-100" editable=editable /]
+              [@customForm.textArea name="outcome.monitorings[${outcome_index}].narrative" i18nkey="outcome.narrative.longTerm" help="outcome.tooltip" required=true className="outcome-narrative limitWords-100" editable=editable /]
             </div> 
             </div>
             <br />
@@ -116,13 +137,13 @@
                   [@evidenceMacro evidence=evidence name="outcome.monitorings[${outcome_index}].evidences" index=evidence_index /]
                 [/#list]
               [#else]
-                <p class="message text-center">[@s.text name="There are not Evicences associated to this outcome as of yet"/]</p>
+                <p class="message text-center">[@s.text name="Evidence has not been provided"/]</p>
               [/#if]
               
               </div>
               [#if editable]
               <div class="text-center">
-                <div class="button-green addEvidence"><span class="glyphicon glyphicon-plus-sign"></span>[@s.text name="Add a evidence" /]</div>
+                <div class="button-green addEvidence"><span class="glyphicon glyphicon-plus-sign"></span>[@s.text name="Add Evidence" /]</div>
               </div>
               [/#if]
             </div>
@@ -142,10 +163,10 @@
 </section>
 
 [#-- Outcome Projects Popup --]
-[#include "/WEB-INF/center/global/macros/outcomeProjectsPopup.ftl" /]
+[#include "/WEB-INF/center/macros/outcomeProjectsPopup-center.ftl" /]
 
 [#-- Bilateral Co-Funded Project Popup --]
-[#include "/WEB-INF/center/global/macros/milestonePopup.ftl"]
+[#include "/WEB-INF/center/macros/milestonePopup-center.ftl"]
 
 [#-- Milestone macro --]
 [@milestoneMacro milestone={} name="outcome.monitorings[-1].milestones" index=-1 isTemplate=true /]
@@ -153,7 +174,7 @@
 [#-- Evidence macro --]
 [@evidenceMacro evidence={} name="outcome.monitorings[-1].evidences" index=-1 isTemplate=true /]
 
-[#include "/WEB-INF/center/global/pages/footer.ftl"]
+[#include "/WEB-INF/center/pages/footer.ftl"]
 
 [#macro milestoneMacro milestone name index isTemplate=false]
   [#local editable = ((editable) && (milestone.researchMilestone.active))!true /]
@@ -166,7 +187,6 @@
     [#-- element id --]
      <input type="hidden" class="elementId" name="${milestoneCustomName}.id" value="${(milestone.id)!}" />
      <input type="hidden" class="mileStoneId" name="${milestoneCustomName}.researchMilestone.id" value="${(milestone.researchMilestone.id)!}"/>
-     <input type="hidden" class="activeId" name="${milestoneCustomName}.researchMilestone.active" value="${(milestone.researchMilestone.active)!}"/>
     [#-- Remove Button --]
     [#if editable=!editable]
       <div class="removeMilestone removeElement sm" title="Remove Milestone"></div>
@@ -174,7 +194,7 @@
     
     [#-- Milestone Statement --]
     <div class="form-group" style="margin-top: 15px;">
-      [@customForm.textArea name="${milestoneCustomName}.researchMilestone.title" i18nkey="outcome.milestone.index.statement" required=true className="milestone-statement limitWords-50" editable=false /]
+      [@customForm.textArea name="${milestoneCustomName}.researchMilestone.title" i18nkey="outcome.milestone.index.statement"  required=true className="milestone-statement limitWords-50" editable=false /]
     </div>
     
     <div class="row form-group target-block">   
@@ -183,7 +203,7 @@
       </div> 
       <div class="col-md-3 col-md-offset-3">
       [#if ((milestone.researchMilestone??) && !(milestone.researchMilestone.targetUnit.id == -1))!false]
-        [@customForm.input name="${milestoneCustomName}.researchMilestone.value" i18nkey="Expected Value" className="milestone-targetYear" required=false editable=false /]
+        [@customForm.input name="${milestoneCustomName}.researchMilestone.value" i18nkey="Expected Value"  className="milestone-targetYear" required=false editable=false /]
       [/#if]
       </div>
     </div>
@@ -205,7 +225,7 @@
     
     [#-- Milestone narrative --]
     <div class="form-group" style="margin-top: 15px;">
-      [@customForm.textArea name="${milestoneCustomName}.narrative" i18nkey="outcome.milestone.index.narrative" required=true className="milestone-narrative limitWords-100" editable=editable /]
+      [@customForm.textArea name="${milestoneCustomName}.narrative" i18nkey="outcome.milestone.index.narrative" help="outcome.tooltip" required=true className="milestone-narrative limitWords-100" editable=editable /]
     </div> 
     
   </div>

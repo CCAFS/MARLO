@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "Coordination" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
-[#assign customJS = ["${baseUrlMedia}/js/global/usersManagement.js", "${baseUrlMedia}/js/admin/management.js" ] /]
+[#assign customJS = ["${baseUrl}/global/js/usersManagement.js", "${baseUrlMedia}/js/admin/management.js" ] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "coordination" /]
 
@@ -10,8 +10,8 @@
   {"label":"superadmin.coordination", "nameSpace":"", "action":""}
 ]/]
 
-[#include "/WEB-INF/center/global/pages/header.ftl" /]
-[#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
+[#include "/WEB-INF/center/pages/header.ftl" /]
+[#include "/WEB-INF/center/pages/main-menu.ftl" /]
 
 <section class="marlo-content">
   <div class="container"> 
@@ -67,12 +67,12 @@
 </section>
 
 [#-- Search users Interface --]
-[#import "/WEB-INF/center/global/macros/usersPopup.ftl" as usersForm/]
+[#import "/WEB-INF/global/macros/usersPopup.ftl" as usersForm/]
 [@usersForm.searchUsers/]
 
 [@programCoordinator element={} name="coordinators" index=-1 template=true/]
 
-[#include "/WEB-INF/center/global/pages/footer.ftl" /]
+[#include "/WEB-INF/center/pages/footer.ftl" /]
 
 [#macro programCoordinator element name index template=false]
   [#local customName = "${name}[${index}]" /]
