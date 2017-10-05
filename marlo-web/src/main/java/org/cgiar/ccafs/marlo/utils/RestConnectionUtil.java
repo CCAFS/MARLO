@@ -96,7 +96,10 @@ public class RestConnectionUtil {
 
   public Element getXmlRestClient(String linkRequest) {
     HttpClient httpClient = HttpClientBuilder.create().build();
-    httpClient = this.verifiedClient(httpClient);
+
+    if (linkRequest.contains("https")) {
+      httpClient = this.verifiedClient(httpClient);
+    }
 
 
     HttpGet getRequest = new HttpGet(linkRequest);

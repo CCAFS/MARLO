@@ -42,6 +42,9 @@ public class MetadataApiFactory {
     if (clientType.equalsIgnoreCase("ilri")) {
       return new ILRIClientAPI();
     }
+    if (clientType.equalsIgnoreCase("cimmyt")) {
+      return new CIMMYTClientAPI();
+    }
     return null;
   }
 
