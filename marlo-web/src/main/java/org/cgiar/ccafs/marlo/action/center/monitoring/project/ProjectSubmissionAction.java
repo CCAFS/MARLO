@@ -163,7 +163,8 @@ public class ProjectSubmissionAction extends BaseAction {
     StringBuilder message = new StringBuilder();
     String[] values = new String[5];
     values[0] = this.getCurrentUser().getComposedCompleteName();
-    values[1] = loggedCenter.getName();
+    values[1] = loggedCenter.getAcronym() != null && !loggedCenter.getAcronym().isEmpty() ? loggedCenter.getAcronym()
+      : loggedCenter.getName();
     values[2] = project.getName();
     values[3] = String.valueOf(this.getCenterYear());
     values[4] = cycle.getName();

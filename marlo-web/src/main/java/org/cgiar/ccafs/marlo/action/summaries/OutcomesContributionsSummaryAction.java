@@ -105,6 +105,10 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
       this.getText("projectOutcomeMilestone.expectedValue"));
     masterReport.getParameterValues().put("i8nMilestoneExpectedNarrative",
       this.getText("outcome.expectedNarrativeMilestone"));
+    masterReport.getParameterValues().put("i8nOutcomesTitle",
+      this.getText("summaries.outcomesContributions.titleOutcomes"));
+    masterReport.getParameterValues().put("i8nMilestonesTitle",
+      this.getText("summaries.outcomesContributions.titleMilestones"));
     return masterReport;
   }
 

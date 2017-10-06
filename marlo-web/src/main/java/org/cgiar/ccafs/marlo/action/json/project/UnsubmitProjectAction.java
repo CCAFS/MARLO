@@ -212,10 +212,11 @@ public class UnsubmitProjectAction extends BaseAction {
 
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
-
+    String crp = project.getCrp().getAcronym() != null && !project.getCrp().getAcronym().isEmpty()
+      ? project.getCrp().getAcronym() : project.getCrp().getName();
     // subject
-    String subject = this.getText("unsubmit.email.subject", new String[] {project.getCrp().getName(),
-      String.valueOf(project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER))});
+    String subject = this.getText("unsubmit.email.subject",
+      new String[] {crp, String.valueOf(project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER))});
 
     // Building the email message
     StringBuilder message = new StringBuilder();
@@ -227,8 +228,9 @@ public class UnsubmitProjectAction extends BaseAction {
     }
     values[0] = plName;
     values[1] = this.getCurrentUser().getFirstName();
-    values[2] = project.getCrp().getName();
+    values[2] = crp;
     values[3] = projectInfo.getTitle();
+
     values[4] = String.valueOf(project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER));
     values[5] = String.valueOf(this.getCurrentCycleYear());
     values[6] = this.getCurrentCycle().toLowerCase();

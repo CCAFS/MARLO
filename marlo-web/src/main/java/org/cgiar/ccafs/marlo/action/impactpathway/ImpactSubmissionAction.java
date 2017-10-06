@@ -215,11 +215,13 @@ public class ImpactSubmissionAction extends BaseAction {
     subject = this.getText("impact.submit.email.subject",
       new String[] {crpProgram.getCrp().getName(), crpProgram.getAcronym()});
     // Building the email message
+    String crp = crpProgram.getCrp().getAcronym() != null && !crpProgram.getCrp().getAcronym().isEmpty()
+      ? crpProgram.getCrp().getAcronym() : crpProgram.getCrp().getName();
     StringBuilder message = new StringBuilder();
     String[] values = new String[4];
     values[0] = this.getCurrentUser().getFirstName();
     values[1] = crpProgram.getAcronym();
-    values[2] = crpProgram.getCrp().getName();
+    values[2] = crp;
     values[3] = crpProgram.getName();
 
     message.append(this.getText("impact.submit.email.message", values));
