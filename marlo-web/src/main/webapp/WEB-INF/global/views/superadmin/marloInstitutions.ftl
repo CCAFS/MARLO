@@ -1,11 +1,11 @@
 [#ftl]
 [#assign title = "MARLO Admin" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
-[#assign pageLibs = [ "flat-flags", "google-diff-match-patch", "jquery-pretty-text-diff"] /]
+[#assign pageLibs = [ "flat-flags", "google-diff-match-patch", "jquery-pretty-text-diff", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [ "${baseUrl}/global/js/superadmin/marloInstitutions.js" ] /]
 [#assign customCSS = [ 
   "${baseUrl}/global/css/superadmin/superadmin.css",
-  "${baseUrl}/global/css/customDataTable.css" 
+  "${baseUrl}/global/css/superadmin/marloInstitutions.css"
   ] 
 /]
 [#assign currentSection = "superadmin" /]
@@ -32,19 +32,26 @@
         [#include "/WEB-INF/global/views/superadmin/menu-superadmin.ftl" /]
       </div>
       <div class="col-md-9">
+        <br />
+        <div class="text-right">
+          <a class="btn btn btn-default" data-toggle="modal" data-target="#allInstitutions">
+            <span class="glyphicon glyphicon-list-alt"></span>  All Institutions & location offices
+          </a>
+        </div>
+      
         [#-- Requested Institutions--]
         <h4 class="sectionTitle">[@s.text name="marloRequestInstitution.title" /]</h4>  
         [@partnersList partners=partners  canEdit=editable namespace="/marloInstitutions" defaultAction="${(crpSession)!}/marloInstitutions"/]
         
         [#-- Requested Office Locations--]
         <h4 class="sectionTitle">Request Country office(s):</h4>  
-        [@officesRequest partners=partners  canEdit=editable namespace="/marloInstitutions" defaultAction="${(crpSession)!}/marloInstitutions"/]
+        <div class="simpleBox text-center">Comming...</div> 
       </div>
     </div>
   </div>
 </section>
 
-<!-- Modal -->
+[#-- Reject the request MODAL --]
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -55,9 +62,7 @@
       </div>
       <div class="modal-body">
         <div class="requestInfo">
-        
         </div>
-        
         <div class="form-group">
           [@customForm.textArea name="marloRequestInstitution.justification" required=true className="limitWords-30" /]
         </div>
@@ -65,6 +70,36 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
         <button type="button" class="btn btn-danger rejectButton"> <span class="glyphicon glyphicon-remove"></span> Reject</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+[#-- All institutions MODAL --]
+<div class="modal fade" id="allInstitutions" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">All Institutions & location offices</h4>
+      </div>
+      <div class="modal-body">
+        [#-- All institutions table --]
+        <table id="allInstitutionsTable" class="display table table-striped table-hover" width="100%">
+          <thead>
+            <tr>
+                <th>ID</th>
+                <th>Acronym</th>
+                <th>Name</th>
+                <th>Countries</th>
+                <th>Type</th> 
+            </tr>
+          </thead> 
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
