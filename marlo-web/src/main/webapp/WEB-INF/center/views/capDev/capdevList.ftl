@@ -118,10 +118,10 @@
 					    <td>
 					    	<div class="icon">
 					    		
-				    			<img src="${baseUrlMedia}/images/global/participants.png" class="[#if i.capdevParticipant?has_content && i.capdevParticipant?size  > 1]capDevIconEnable [#else]capDevIconDisable[/#if]" title="List of participants" />
+				    			<img src="${baseUrl}/center/images/capdev/participants.png" class="[#if i.capdevParticipant?has_content && i.capdevParticipant?size  > 1]capDevIconEnable [#else]capDevIconDisable[/#if]" title="List of participants" />
 					    		
 						    	
-						    	<img src="${baseUrlMedia}/images/global/deliverable.png" class="[#if i.capdevSupportingDocs?has_content] capDevIconEnable [#else]capDevIconDisable[/#if]" title="Supporting documents" />
+						    	<img src="${baseUrl}/center/images/capdev/deliverable.png" class="[#if i.capdevSupportingDocs?has_content] capDevIconEnable [#else]capDevIconDisable[/#if]" title="Supporting documents" />
 					    	</div>
 
 				    		
@@ -192,13 +192,13 @@
 				<div class="col-md-1"> Annexes:</div>
 
 				<div class="col-md-2">
-					<img src="${baseUrlMedia}/images/global/participants.png" class="capDevIconConvention" />
+					<img src="${baseUrl}/center/images/capdev/participants.png" class="capDevIconConvention" />
 					<div>Lista of participants</div>
 					
 				</div>
 
 				<div class="col-md-2">
-					<img src="${baseUrlMedia}/images/global/deliverable.png" class="capDevIconConvention" />
+					<img src="${baseUrl}/center/images/capdev/deliverable.png" class="capDevIconConvention" />
 					<div>Supporting documents</div>
 				</div>
 
