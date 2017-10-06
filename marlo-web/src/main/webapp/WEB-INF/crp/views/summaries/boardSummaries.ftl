@@ -74,6 +74,7 @@
             <span class="hidden forPlanningCycle forCycle"></span>
             <span class="hidden forReportingCycle forCycle"></span>
             [#-- predefined terms --]
+            [#if action.hasSpecificities('show_gender_keywords_summaries')]
             <label for="">Predefined terms:</label>
             <br />
             <div class="col-md-12">
@@ -81,6 +82,7 @@
             </div>
             <div class="clearfix"></div>
             <hr />
+            [/#if]
             [#-- content --]
             <div class="simpleBox wordContent">
               
