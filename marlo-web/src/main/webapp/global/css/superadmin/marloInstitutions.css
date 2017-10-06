@@ -8,3 +8,7 @@ i.flag-sm {
   /* border-radius: 2px; */
   box-shadow: 1px 1px 2px #c5c5c5;
 }
+
+#allInstitutions .modal-dialog{
+  width: 1000px;
+}
