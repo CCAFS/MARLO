@@ -89,25 +89,36 @@ public class FundingSourceInfoMySQLDAO implements FundingSourceInfoDAO {
 
   public void saveInfoPhase(Phase next, long fundingSourceID, FundingSourceInfo fundingSourceInfo) {
     Phase phase = dao.find(Phase.class, next.getId());
+    Calendar cal = Calendar.getInstance();
+    cal.setTime(fundingSourceInfo.getEndDate());
     if (phase.getEditable() != null && phase.getEditable()) {
       List<FundingSourceInfo> fundingSourcesInfos = phase.getFundingSourceInfo().stream()
         .filter(c -> c.getFundingSource().getId().longValue() == fundingSourceID).collect(Collectors.toList());
       if (!fundingSourcesInfos.isEmpty()) {
         for (FundingSourceInfo fundingSourceInfoPhase : fundingSourcesInfos) {
           fundingSourceInfoPhase.updateFundingSourceInfo(fundingSourceInfo);
-          dao.update(fundingSourceInfoPhase);
+
+          if (cal.get(Calendar.YEAR) < phase.getYear()) {
+
+            dao.delete(fundingSourceInfoPhase);
+          } else {
+            dao.update(fundingSourceInfoPhase);
+          }
+
         }
       } else {
         if (fundingSourceInfo.getEndDate() != null) {
-          Calendar cal = Calendar.getInstance();
-          cal.setTime(fundingSourceInfo.getEndDate());
+
           if (cal.get(Calendar.YEAR) >= phase.getYear()) {
             FundingSourceInfo fundingSourceInfoAdd = new FundingSourceInfo();
             fundingSourceInfoAdd.setFundingSource(fundingSourceInfo.getFundingSource());
             fundingSourceInfoAdd.updateFundingSourceInfo(fundingSourceInfo);
             fundingSourceInfoAdd.setPhase(phase);
             dao.save(fundingSourceInfoAdd);
+
           }
+
+
         }
       }
 

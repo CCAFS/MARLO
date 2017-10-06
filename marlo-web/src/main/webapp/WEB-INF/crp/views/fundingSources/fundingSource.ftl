@@ -357,7 +357,7 @@
               </td>
               <td class="col-md-5">
                 <a href="[@s.url action="${crpSession}/budgetByPartners" namespace="/projects"] [@s.param name="projectID" value="${(projectBudget.project.id)!}"/] [@s.param name='edit']true[/@s.param][/@s.url]">
-                  ${(projectBudget.project.title)!}
+                  ${(projectBudget.project.getProjectInfo(action.getActualPhase()).title)!}
                 </a>
               </td>
               <td> ${(projectBudget.institution.acronym)!(projectBudget.institution.name)} </td>
