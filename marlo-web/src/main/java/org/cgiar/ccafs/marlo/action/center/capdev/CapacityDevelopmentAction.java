@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.ICapacityDevelopmentService;
 import org.cgiar.ccafs.marlo.data.model.CapacityDevelopment;
 import org.cgiar.ccafs.marlo.data.model.CapdevParticipant;
+import org.cgiar.ccafs.marlo.data.model.CapdevSupportingDocs;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
@@ -122,7 +123,7 @@ public class CapacityDevelopmentAction extends BaseAction {
       Collections.sort(capDevs, (ra1, ra2) -> (int) (ra2.getId() - ra1.getId()));
 
       for (CapacityDevelopment capdev : currentCapdevList) {
-        // se obtiene la lista de participantes para validar que no se obtega la lista de participantes activa para cada
+        // se obtiene la lista de participantes para validar que se obtega la lista de participantes activa para cada
         // capacitacion
         List<CapdevParticipant> participants = new ArrayList<>(
           capdev.getCapdevParticipant().stream().filter(p -> p.isActive()).collect(Collectors.toList()));
@@ -130,8 +131,17 @@ public class CapacityDevelopmentAction extends BaseAction {
         Set<CapdevParticipant> capdevParticipants = new HashSet<CapdevParticipant>(participants);
         capdev.setCapdevParticipant(capdevParticipants);
 
+
+        // Se obtiene la lista de supporting documents que estan activos para cada capacitacion
+        List<CapdevSupportingDocs> supportingDocs = new ArrayList<>(
+          capdev.getCapdevSupportingDocs().stream().filter(s -> s.isActive()).collect(Collectors.toList()));
+        Set<CapdevSupportingDocs> capdevSupportingDocs = new HashSet<CapdevSupportingDocs>(supportingDocs);
+        capdev.setCapdevSupportingDocs(capdevSupportingDocs);
+
         capDevs.add(capdev);
       }
+
+
     }
 
 

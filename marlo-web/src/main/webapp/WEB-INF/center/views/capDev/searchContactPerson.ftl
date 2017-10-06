@@ -16,7 +16,7 @@
 				<div class="searchcontact-content clearfix">
 					<div class="col-md- searchcontact-input">
 						[@customForm.input name="" showTitle=false type="text"  className='contact' placeholder="capdev.adUsersplaceHolder"/]
-						<div class="col-md- search-loader" style="display:none;"><img src="${baseUrlMedia}/images/global/loading_2.gif"></div>
+						<div class="col-md- search-loader" style="display:none;"><img src="${baseUrl}/global/images/loading_2.gif"></div>
 					</div>  
 					<div class="col-md- search-button">[@s.text name="capdev.search" /]</div>
 				</div>

@@ -7,7 +7,7 @@
 [#assign pageLibs = ["datatables.net", "datatables.net-bs","select2","flat-flags"] /]
 
 [#assign customJS = ["${baseUrlMedia}/js/capDev/supportingDocuments.js",
-					 "${baseUrlMedia}/global/js/fieldsValidation.js", 
+					 "${baseUrl}/global/js/fieldsValidation.js", 
 					 "${baseUrlMedia}/js/capDev/capacityDevelopment.js"] /]
 
 [#assign currentStage = "supportingDocuments" /] 

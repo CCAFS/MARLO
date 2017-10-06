@@ -5,7 +5,7 @@
 [#assign customCSS = ["${baseUrl}/global/css/customDataTable.css","${baseUrlMedia}/css/capDev/capacityDevelopment.css"] /]
 
 [#assign pageLibs = ["select2","flat-flags"] /]
-[#assign customJS = ["${baseUrlMedia}/js/capDev/capacityDevelopment.js", "${baseUrlMedia}/js/global/fieldsValidation.js"] /]
+[#assign customJS = ["${baseUrlMedia}/js/capDev/capacityDevelopment.js", "${baseUrl}/global/js/fieldsValidation.js"] /]
 
 [#assign currentStage = "capdevIntervention" /]
 
@@ -23,15 +23,15 @@
 
 
 
-<!--<script src="${baseUrl}/bower_components/jquery/dist/jquery.min.js"></script>-->
-<!--<script src="${baseUrlMedia}/js/capDev/capacityDevelopment.js"></script>-->
+<script src="${baseUrl}/global/bower_components/jquery/dist/jquery.min.js"></script>
+<script src="${baseUrlMedia}/js/capDev/capacityDevelopment.js"></script>
 
 
 <div class="container"> 
 
 	<div class="row">
 		<div class="helpMessage infoText col-md-12 capdevinfo">
-				<img class="col-md-2" src="${baseUrlMedia}/global/images/icon-help.png" />
+				<img class="col-md-2" src="${baseUrl}/global/images/icon-help.png" />
    				 <p class="col-md-10"> [@s.text name="capdev.help.detail"][/@s.text] </p>
 			</div>
 	</div> 
@@ -207,7 +207,7 @@
 
 									<div id="filewarning" class="warning" style="display: none; margin-top: 10px;">
 									</div>
-									<div class="loader" style="display:none;"><img src="${baseUrlMedia}/images/global/loading_2.gif" width="80" height="30"></div>
+									<div class="loader" style="display:none;"><img src="${baseUrl}/global/images/loading_2.gif" width="80" height="30"></div>
 
 									<div class="modal fade bd-example-modal-lg" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
 									  <div class="modal-dialog modal-lg" role="document">
