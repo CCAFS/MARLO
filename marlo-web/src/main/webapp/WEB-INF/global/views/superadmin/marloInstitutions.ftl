@@ -35,6 +35,10 @@
         [#-- Requested Institutions--]
         <h4 class="sectionTitle">[@s.text name="marloRequestInstitution.title" /]</h4>  
         [@partnersList partners=partners  canEdit=editable namespace="/marloInstitutions" defaultAction="${(crpSession)!}/marloInstitutions"/]
+        
+        [#-- Requested Office Locations--]
+        <h4 class="sectionTitle">Request Country office(s):</h4>  
+        [@officesRequest partners=partners  canEdit=editable namespace="/marloInstitutions" defaultAction="${(crpSession)!}/marloInstitutions"/]
       </div>
     </div>
   </div>
@@ -155,6 +159,52 @@
           </form>
           
           <div class="clearfix"></div>
+        </li>
+      [/#list]
+    [#else]
+      <div class="text-center">
+        No partner requested yet.
+      </div>
+    [/#if]
+  </ul>
+  
+[/#macro]
+
+[#macro officesRequest partners={} canEdit=false  namespace="/" defaultAction=""]
+  <ul class="list-group">
+    [#if partners?has_content]
+      [#list partners as partner]
+        <li id="partnerRequestItem-${(partner.id)!}" class="list-group-item partnerRequestItem">
+          <div class="loading" style="display:none"></div>
+          
+          [#-- Partner name --]
+          <div class="requestInfo">
+            <div class="form-group">
+               <h4 style="font-family: 'Open Sans';">${partner.partnerInfo}</h4>
+               <hr />
+            </div>
+            
+            <div class="form-group">
+              [#-- Requested by --]
+              <p><strong>[@s.text name="Requested By" /]:</strong> <i>${(partner.createdBy.composedName?html)!'none'}</i></p>
+            </div>
+            
+          </div>
+          
+          [#-- Action --]
+          <div class="btn-group pull-right" role="group" aria-label="..."">
+            [#-- Accept --]
+            <a class="btn btn-success btn-sm" href="[@s.url namespace="" action="superadmin/addPartner"][@s.param name='requestID']${partner.id?c}[/@s.param][/@s.url]">
+              <span class="glyphicon glyphicon-ok"></span> Accept
+            </a>
+            [#-- Reject --]
+            <a class="btn btn-danger btn-sm rejectRequest partnerRequestId-${partner.id}" href="#">
+               <span class="glyphicon glyphicon-remove"></span> Reject
+            </a>
+          </div>
+          
+          <div class="clearfix"></div>
+          
         </li>
       [/#list]
     [#else]
