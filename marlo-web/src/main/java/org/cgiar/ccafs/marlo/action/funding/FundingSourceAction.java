@@ -845,6 +845,8 @@ public class FundingSourceAction extends BaseAction {
       relationsName.add(APConstants.FUNDING_SOURCES_INSTITUTIONS_RELATION);
       relationsName.add(APConstants.FUNDING_SOURCES_LOCATIONS_RELATION);
       relationsName.add(APConstants.FUNDING_SOURCES_INFO);
+      relationsName.add(APConstants.FUNDING_SOURCES_LOCATIONS_RELATION);
+      relationsName.add(APConstants.FUNDING_SOURCES_LOCATIONS_RELATION);
       fundingSourceDB = fundingSourceManager.getFundingSourceById(fundingSourceID);
       fundingSourceDB.setActiveSince(new Date());
       fundingSourceDB.setModifiedBy(this.getCurrentUser());

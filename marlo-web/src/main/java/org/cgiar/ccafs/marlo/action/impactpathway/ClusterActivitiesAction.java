@@ -648,8 +648,8 @@ public class ClusterActivitiesAction extends BaseAction {
 
 
           JsonObject jReader = gson.fromJson(reader, JsonObject.class);
- 	      reader.close();
- 	
+          reader.close();
+
 
           try {
             AutoSaveReader autoSaveReader = new AutoSaveReader();
@@ -692,7 +692,7 @@ public class ClusterActivitiesAction extends BaseAction {
             e.printStackTrace();
           }
 
-        
+
           this.setDraft(true);
         } else {
           this.setDraft(false);
@@ -709,8 +709,10 @@ public class ClusterActivitiesAction extends BaseAction {
             this.setCanEdit(false);
             this.setEditable(false);
           }
-
-          this.setSubmission(selectedProgram.getSubmissions().stream().collect(Collectors.toList()).get(0));
+          this.setSubmission(selectedProgram
+            .getSubmissions().stream().filter(c -> c.getYear() == this.getActualPhase().getYear()
+              && c.getCycle() != null && c.getCycle().equals(this.getActualPhase().getDescription()))
+            .collect(Collectors.toList()).get(0));
         }
       }
       if (this.isHttpPost()) {

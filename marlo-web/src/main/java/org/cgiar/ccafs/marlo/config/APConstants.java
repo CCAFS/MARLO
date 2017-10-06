@@ -139,11 +139,14 @@ public final class APConstants {
   public static final String TEMP_YEAR = "temp_year";
 
   public static final String FUNDING_SOURCES_INSTITUTIONS_RELATION =
-    "java.util.Set(org.cgiar.ccafs.marlo.data.model.FundingSource.fundingInstitutions)";
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.FundingSource.fundingSourceInstitutions)";
 
 
   public static final String FUNDING_SOURCES_LOCATIONS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.FundingSource.fundingSourceLocations)";
+
+  public static final String FUNDING_SOURCES_PROJECT_BUDGET_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.FundingSource.projectBudgets)";
 
   public static final String FUNDING_SOURCES_INFO =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.FundingSource.fundingSourceInfos)";

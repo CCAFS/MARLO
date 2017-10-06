@@ -503,16 +503,19 @@ public class BaseValidator {
    * @param crpProgram is a CrpProgram.
    * @param sectionName is the name of the section (description, partners, etc.).
    */
-  protected void saveMissingFieldsImpactPathway(CrpProgram crpProgram, String sectionName) {
+  protected void saveMissingFieldsImpactPathway(CrpProgram crpProgram, String sectionName, int year, String cyle) {
     // Reporting missing fields into the database.
-    int year = 0;
 
-    SectionStatus status = sectionStatusManager.getSectionStatusByCrpProgam(crpProgram.getId(), sectionName);
+    SectionStatus status =
+      sectionStatusManager.getSectionStatusByCrpProgam(crpProgram.getId(), sectionName, cyle, year);
     if (status == null) {
 
       status = new SectionStatus();
       status.setSectionName(sectionName);
+      status.setCycle(cyle);
+      status.setYear(year);
       status.setCrpProgram(crpProgram);
+
     }
     if (this.missingFields.length() > 0) {
       status.setMissingFields(this.missingFields.toString());
@@ -529,11 +532,10 @@ public class BaseValidator {
    * @param project is a Project.
    * @param sectionName is the name of the section (description, partners, etc.).
    */
-  protected void saveMissingFieldsProject(Project project, String sectionName) {
+  protected void saveMissingFieldsProject(Project project, String sectionName, String cycle, int year) {
     // Reporting missing fields into the database.
-    int year = 0;
 
-    SectionStatus status = sectionStatusManager.getSectionStatusByCrpProgam(project.getId(), sectionName);
+    SectionStatus status = sectionStatusManager.getSectionStatusByCrpProgam(project.getId(), sectionName, cycle, year);
     if (status == null) {
 
       status = new SectionStatus();

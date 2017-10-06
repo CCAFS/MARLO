@@ -91,9 +91,9 @@ public class SectionStatusMySQLDAO implements SectionStatusDAO {
   }
 
   @Override
-  public SectionStatus getSectionStatusByCrpProgam(long crpProgramID, String sectionName) {
+  public SectionStatus getSectionStatusByCrpProgam(long crpProgramID, String sectionName, String cylce, int year) {
     String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName
-      + "' and crp_program_id=" + crpProgramID;
+      + "' and crp_program_id=" + crpProgramID + " and cycle='" + cylce + "' and year=" + year;
     List<SectionStatus> list = dao.findAll(query);
     if (list.size() > 0) {
       return list.get(0);

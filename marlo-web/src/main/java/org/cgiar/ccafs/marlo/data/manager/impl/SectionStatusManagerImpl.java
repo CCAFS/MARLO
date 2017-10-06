@@ -71,8 +71,8 @@ public class SectionStatusManagerImpl implements SectionStatusManager {
   }
 
   @Override
-  public SectionStatus getSectionStatusByCrpProgam(long crpProgramID, String sectionName) {
-    return sectionStatusDAO.getSectionStatusByCrpProgam(crpProgramID, sectionName);
+  public SectionStatus getSectionStatusByCrpProgam(long crpProgramID, String sectionName, String cylce, int year) {
+    return sectionStatusDAO.getSectionStatusByCrpProgam(crpProgramID, sectionName, cylce, year);
   }
 
   @Override

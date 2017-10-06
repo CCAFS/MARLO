@@ -310,7 +310,7 @@ public class OutcomesAction extends BaseAction {
         crpProgramID = history.getId();
         selectedProgram = history;
         outcomes.addAll(history.getCrpProgramOutcomes().stream()
-          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) ;
+          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
 
         this.setEditable(false);
         this.setCanEdit(false);
@@ -420,8 +420,8 @@ public class OutcomesAction extends BaseAction {
 
 
           JsonObject jReader = gson.fromJson(reader, JsonObject.class);
- 	      reader.close();
- 	
+          reader.close();
+
 
           AutoSaveReader autoSaveReader = new AutoSaveReader();
 
@@ -444,7 +444,7 @@ public class OutcomesAction extends BaseAction {
             }
           }
 
-        
+
           this.setDraft(true);
         } else {
           this.loadInfo();
@@ -453,7 +453,10 @@ public class OutcomesAction extends BaseAction {
 
         String params[] = {loggedCrp.getAcronym(), selectedProgram.getId().toString()};
         this.setBasePermission(this.getText(Permission.IMPACT_PATHWAY_BASE_PERMISSION, params));
-        if (!selectedProgram.getSubmissions().stream().filter(c -> (c.isUnSubmit() == null || !c.isUnSubmit()))
+        if (!selectedProgram.getSubmissions().stream()
+          .filter(c -> c.getYear() == this.getActualPhase().getYear() && c.getCycle() != null
+            && c.getCycle().equals(this.getActualPhase().getDescription())
+            && (c.isUnSubmit() == null || !c.isUnSubmit()))
           .collect(Collectors.toList()).isEmpty()) {
           if (!(this.canAccessSuperAdmin() || this.canAcessCrpAdmin())) {
             this.setCanEdit(false);
@@ -461,7 +464,11 @@ public class OutcomesAction extends BaseAction {
           }
 
 
-          this.setSubmission(selectedProgram.getSubmissions().stream().collect(Collectors.toList()).get(0));
+          this.setSubmission(selectedProgram
+            .getSubmissions().stream().filter(c -> c.getYear() == this.getActualPhase().getYear()
+              && c.getCycle() != null && c.getCycle().equals(this.getActualPhase().getDescription()))
+            .collect(Collectors.toList()).get(0));
+          System.out.println(submit);
         }
 
       }

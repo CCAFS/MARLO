@@ -42,6 +42,8 @@ public class FundingSourceBudgetMySQLDAO implements FundingSourceBudgetDAO {
     fundingSourceBudgetAdd.setActive(true);
     fundingSourceBudgetAdd.setActiveSince(new Date());
     fundingSourceBudgetAdd.setCreatedBy(fundingSourceBudget.getCreatedBy());
+    fundingSourceBudgetAdd.setBudget(fundingSourceBudget.getBudget());
+    fundingSourceBudgetAdd.setModifiedBy(fundingSourceBudget.getCreatedBy());
     fundingSourceBudgetAdd.setModificationJustification(fundingSourceBudget.getModificationJustification());
     fundingSourceBudgetAdd.setYear(fundingSourceBudget.getYear());
     fundingSourceBudgetAdd.setPhase(phase);
@@ -157,11 +159,11 @@ public class FundingSourceBudgetMySQLDAO implements FundingSourceBudgetDAO {
         .collect(Collectors.toList());
       if (budgets.isEmpty()) {
         FundingSourceBudget fundingSourceBudgetAdd = new FundingSourceBudget();
-        this.cloneFundingSourceBudget(fundingSourceBudget, fundingSourceBudgetAdd, phase);
+        this.cloneFundingSourceBudget(fundingSourceBudgetAdd, fundingSourceBudget, phase);
         dao.save(fundingSourceBudgetAdd);
       } else {
         FundingSourceBudget fundingSourceBudgetAdd = budgets.get(0);
-        this.cloneFundingSourceBudget(fundingSourceBudget, fundingSourceBudgetAdd, phase);
+        this.cloneFundingSourceBudget(fundingSourceBudgetAdd, fundingSourceBudget, phase);
         dao.update(fundingSourceBudgetAdd);
       }
 

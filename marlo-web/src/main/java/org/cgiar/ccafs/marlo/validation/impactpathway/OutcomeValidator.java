@@ -81,7 +81,8 @@ public class OutcomeValidator extends BaseValidator
     if (!action.getFieldErrors().isEmpty()) {
       action.addActionError(action.getText("saving.fields.required"));
     }
-    this.saveMissingFieldsImpactPathway(program, "outcomes");
+    this.saveMissingFieldsImpactPathway(program, "outcomes", action.getActualPhase().getYear(),
+      action.getActualPhase().getDescription());
   }
 
 
