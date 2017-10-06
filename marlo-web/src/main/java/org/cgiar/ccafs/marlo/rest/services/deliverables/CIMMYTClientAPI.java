@@ -21,6 +21,8 @@ import org.cgiar.ccafs.marlo.rest.services.deliverables.model.MetadataModel;
 import org.cgiar.ccafs.marlo.utils.DateTypeAdapter;
 import org.cgiar.ccafs.marlo.utils.RestConnectionUtil;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -34,18 +36,52 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Get metadata from CIMMYT according to an URL.
+ * The parameters to find in the URL are globalId or identifier
+ * Missing Metadata Elements: language, open access, doi, country
+ * 
+ * @author avalencia
+ */
 public class CIMMYTClientAPI extends MetadataClientApi {
 
   private static final Logger LOG = LoggerFactory.getLogger(CIMMYTClientAPI.class);
 
-  // {0} is the identifier
+  /**
+   * Extract parameters from a given URL
+   * 
+   * @param url
+   * @return Map<key,List<values>>
+   */
+  public static Map<String, List<String>> getQueryParams(String url) {
+    try {
+      Map<String, List<String>> params = new HashMap<String, List<String>>();
+      String[] urlParts = url.split("\\?");
+      if (urlParts.length > 1) {
+        String query = urlParts[1];
+        for (String param : query.split("&")) {
+          String[] pair = param.split("=");
+          String key = URLDecoder.decode(pair[0], "UTF-8");
+          String value = "";
+          if (pair.length > 1) {
+            value = URLDecoder.decode(pair[1], "UTF-8");
+          }
+          List<String> values = params.get(key);
+          if (values == null) {
+            values = new ArrayList<String>();
+            params.put(key, values);
+          }
+          values.add(value);
+        }
+      }
+      return params;
+    } catch (UnsupportedEncodingException ex) {
+      throw new AssertionError(ex);
+    }
+  }
+
   private final String Dataverse_OAI_PMH_HANDLE =
     "http://data.cimmyt.org/dvn/OAIHandler?verb=GetRecord&metadataPrefix=oai_dc&identifier={0}";
-  private final String Dataverse_OAI_PMH_HANDLE_URL =
-    "http://data.cimmyt.org/dvn/OAIHandler?verb=GetRecord&metadataPrefix=oai_dc&identifier=";
-  // This should be the parameter
-  private final String Dataverse_OAI_PMH_URL =
-    "http://data.cimmyt.org/dvn/dv/csisadvn/faces/study/StudyPage.xhtml?globalId=";
 
   private RestConnectionUtil xmlReaderConnectionUtil;
   private Map<String, String> coverterAtrributes;
@@ -54,7 +90,6 @@ public class CIMMYTClientAPI extends MetadataClientApi {
     xmlReaderConnectionUtil = new RestConnectionUtil();
     coverterAtrributes = new HashMap<String, String>();
     coverterAtrributes.put("subject", "keywords");
-    coverterAtrributes.put("publicationDate", "date");
   }
 
   @Override
@@ -155,12 +190,14 @@ public class CIMMYTClientAPI extends MetadataClientApi {
               String rightsValue = rightsElement.getStringValue();
               jo.put(rightsElement.getName(), rightsValue);
 
-              // no language, no openacces no doi, no country, handle
               // get date
               Element dateElement = oai_dc.element("date");
               String dateValue = dateElement.getStringValue();
-              jo.put(dateElement.getName(), dateValue);
-
+              jo.put("publicationDate", dateValue);
+              // get handle
+              if (this.getId() != null) {
+                jo.put("handle", this.getId());
+              }
             }
           }
         }
@@ -174,19 +211,14 @@ public class CIMMYTClientAPI extends MetadataClientApi {
         data = data.replace(key, coverterAtrributes.get(key));
       }
       metadataModel = gson.fromJson(data, MetadataModel.class);
-      System.out.println(metadataModel.getPublicationDate());
       Author[] authorsArr = new Author[authors.size()];
       authorsArr = authors.toArray(authorsArr);
       metadataModel.setAuthors(authorsArr);
 
-    } catch (
-
-    Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       LOG.error(e.getLocalizedMessage());
-
     }
-
     return metadataModel;
 
   }
@@ -198,25 +230,28 @@ public class CIMMYTClientAPI extends MetadataClientApi {
    */
   @Override
   public String parseLink(String link) {
-    /*
-     * if the link contains http://data.cimmyt.org/dvn/OAIHandler?verb=GetRecord&metadataPrefix=oai_dc&identifier= we
-     * remove it from the link
-     */
-    if (link.contains(Dataverse_OAI_PMH_HANDLE_URL)) {
-      this.setId(link.replace(Dataverse_OAI_PMH_HANDLE_URL, ""));
+    Map<String, List<String>> map = CIMMYTClientAPI.getQueryParams(link);
+    if (map.containsKey("identifier")) {
+      List<String> handles = map.get("identifier");
+      for (String handle : handles) {
+        if (handle.contains("hdl")) {
+          this.setId(handle);
+        }
+      }
+      String handleURL = Dataverse_OAI_PMH_HANDLE.replace("{0}", this.getId());
+      return handleURL;
     }
-    /*
-     * if the link http://data.cimmyt.org/dvn/dv/csisadvn/faces/study/StudyPage.xhtml?globalId= we remove it from the
-     * link
-     */
-    if (link.contains(Dataverse_OAI_PMH_URL)) {
-      this.setId(link.replace(Dataverse_OAI_PMH_URL, ""));
+    if (map.containsKey("globalId")) {
+      List<String> handles = map.get("globalId");
+      for (String handle : handles) {
+        if (handle.contains("hdl")) {
+          this.setId(handle);
+        }
+      }
+      String handleURL = Dataverse_OAI_PMH_HANDLE.replace("{0}", this.getId());
+      return handleURL;
     }
-
-    String handleUrl = Dataverse_OAI_PMH_HANDLE.replace("{0}", this.getId());
-    RestConnectionUtil connection = new RestConnectionUtil();
-    Element elementHandle = connection.getXmlRestClient(handleUrl);
-    this.setId(elementHandle.element("id").getStringValue());
-    return handleUrl;
+    return null;
   }
 }
+
