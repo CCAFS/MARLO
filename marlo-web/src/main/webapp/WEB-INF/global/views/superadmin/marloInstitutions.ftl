@@ -92,7 +92,6 @@
                 <th>ID</th>
                 <th>Acronym</th>
                 <th>Name</th>
-                <th>Countries</th>
                 <th>Type</th> 
             </tr>
           </thead> 
