@@ -355,7 +355,7 @@
 
 
 
-[#include "/WEB-INF/center/pages/footer.ftl"]
+[#include "/WEB-INF/center/pages/footer.ftl" /]
 
 
 
