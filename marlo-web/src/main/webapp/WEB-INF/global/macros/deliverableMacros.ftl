@@ -226,7 +226,7 @@
 </div>
 <div class="form-group row">
   <div class="col-md-6">
-    [@deliverableMacros.metadataField title="date" encodedName="dc.date" type="input" require=false/]
+    [@deliverableMacros.metadataField title="publicationDate" encodedName="dc.date" type="input" require=false/]
   </div>
   <div class="col-md-6">
     [@deliverableMacros.metadataField title="language" encodedName="dc.language" type="input" require=false/]
@@ -577,7 +577,7 @@
   
   [#local customName = 'deliverable.metadataElements[${metadataIndex}]' /]
 
-  <div class="metadataElement metadataElement-${title?lower_case}">
+  <div class="metadataElement metadataElement-${title}">
     <input type="hidden" name="${customName}.id" value="${mElementID}" />
     <input type="hidden" class="hide" name="${customName}.hide" value="${mElementHide?string}" />
     <input type="hidden" name="${customName}.metadataElement.id" value="${metadataID}" />
