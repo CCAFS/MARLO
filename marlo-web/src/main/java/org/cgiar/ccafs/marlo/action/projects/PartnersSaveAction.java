@@ -209,14 +209,12 @@ public class PartnersSaveAction extends BaseAction {
 
     partnerRequest.setLocElement(locationManager.getLocElementById(Long.parseLong(countryId)));
     partnerRequest.setInstitutionType(institutionManager.getInstitutionTypeById(partnerTypeId));
+    partnerRequest.setOffice(false);
 
 
     if (partnerWebPage != null && !partnerWebPage.isEmpty()) {
       partnerRequest.setWebPage(partnerWebPage);
     }
-
-    partnerRequestManager.savePartnerRequest(partnerRequest);
-
 
     // message subject
     subject = "[MARLO-" + this.getCrpSession().toUpperCase() + "] Partner verification - " + institutionName;
@@ -252,17 +250,25 @@ public class PartnersSaveAction extends BaseAction {
       message.append(activityID);
       message.append(") - ");
       message.append(activityManager.getActivityById(activityID).getTitle());
+      partnerRequest
+        .setRequestSource("Activity: (" + activityID + ") - " + activityManager.getActivityById(activityID).getTitle());
     } else if (projectID > 0) {
       message.append("Project: (");
       message.append(projectID);
       message.append(") - ");
       message.append(projectManager.getProjectById(projectID).getTitle());
+      partnerRequest
+        .setRequestSource("Project: (" + projectID + ") - " + projectManager.getProjectById(projectID).getTitle());
     } else if (fundingSourceID > 0) {
       message.append("Funding Source: (");
       message.append(fundingSourceID);
       message.append(") - ");
       message.append(fundingSourceManager.getFundingSourceById(fundingSourceID).getTitle());
+      partnerRequest.setRequestSource("Funding Source: (" + fundingSourceID + ") - "
+        + fundingSourceManager.getFundingSourceById(fundingSourceID).getTitle());
     }
+
+    partnerRequestManager.savePartnerRequest(partnerRequest);
 
     message.append(".</br>");
     message.append("</br>");
@@ -271,7 +277,7 @@ public class PartnersSaveAction extends BaseAction {
       sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject, message.toString(),
         null, null, null, true);
     } catch (Exception e) {
-
+      System.out.println(e);
     }
     messageSent = true;
 

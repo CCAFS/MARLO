@@ -45,7 +45,7 @@
         
         [#-- Requested Office Locations--]
         <h4 class="sectionTitle">Request Country office(s):</h4>  
-        <div class="simpleBox text-center">Comming...</div> 
+        [@officesRequest partners=countryOffices  canEdit=editable namespace="/marloInstitutions" defaultAction="${(crpSession)!}/marloInstitutions"/]
       </div>
     </div>
   </div>
@@ -214,7 +214,7 @@
           [#-- Partner name --]
           <div class="requestInfo">
             <div class="form-group">
-               <h4 style="font-family: 'Open Sans';">${partner.partnerInfo}</h4>
+               <h4 style="font-family: 'Open Sans';">${partner.countryInfo}</h4>
                <hr />
             </div>
             

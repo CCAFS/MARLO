@@ -58,13 +58,13 @@ public class PartnerRequest implements java.io.Serializable {
   private Date activeSince;
 
   @Expose
-  private boolean headquater;
-
-  @Expose
   private boolean office;
 
   @Expose
   private Institution institution;
+
+  @Expose
+  private String requestSource;
 
 
   public PartnerRequest() {
@@ -74,6 +74,7 @@ public class PartnerRequest implements java.io.Serializable {
   public PartnerRequest(boolean active) {
     this.active = active;
   }
+
 
   public PartnerRequest(LocElement locElement, User modifiedBy, User createdBy, InstitutionType institutionType,
     String partnerName, String acronym, String webPage, Boolean acepted, boolean active,
@@ -94,7 +95,6 @@ public class PartnerRequest implements java.io.Serializable {
   public Boolean getAcepted() {
     return acepted;
   }
-
 
   public String getAcronym() {
     return acronym;
@@ -125,6 +125,7 @@ public class PartnerRequest implements java.io.Serializable {
     return id;
   }
 
+
   public Institution getInstitution() {
     return institution;
   }
@@ -137,7 +138,6 @@ public class PartnerRequest implements java.io.Serializable {
     return locElement;
   }
 
-
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -147,7 +147,6 @@ public class PartnerRequest implements java.io.Serializable {
     return modifiedBy;
   }
 
-
   public String getPartnerInfo() {
     if (this.acronym != null && !this.acronym.isEmpty()) {
       return this.acronym + " - " + this.partnerName;
@@ -155,9 +154,11 @@ public class PartnerRequest implements java.io.Serializable {
     return this.partnerName;
   }
 
+
   public String getPartnerName() {
     return partnerName;
   }
+
 
   public User getRejectedBy() {
     return rejectedBy;
@@ -167,6 +168,9 @@ public class PartnerRequest implements java.io.Serializable {
     return rejectJustification;
   }
 
+  public String getRequestSource() {
+    return requestSource;
+  }
 
   public String getWebPage() {
     return webPage;
@@ -177,11 +181,6 @@ public class PartnerRequest implements java.io.Serializable {
     return active;
   }
 
-  public boolean isHeadquater() {
-    return headquater;
-  }
-
-
   public boolean isOffice() {
     return office;
   }
@@ -191,14 +190,15 @@ public class PartnerRequest implements java.io.Serializable {
     this.acepted = acepted;
   }
 
+
   public void setAcronym(String acronym) {
     this.acronym = acronym;
   }
 
-
   public void setActive(boolean active) {
     this.active = active;
   }
+
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
@@ -206,11 +206,6 @@ public class PartnerRequest implements java.io.Serializable {
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
-  }
-
-
-  public void setHeadquater(boolean headquater) {
-    this.headquater = headquater;
   }
 
   public void setId(Long id) {
@@ -241,10 +236,10 @@ public class PartnerRequest implements java.io.Serializable {
     this.office = office;
   }
 
-
   public void setPartnerName(String partnerName) {
     this.partnerName = partnerName;
   }
+
 
   public void setRejectedBy(User rejectedBy) {
     this.rejectedBy = rejectedBy;
@@ -252,6 +247,10 @@ public class PartnerRequest implements java.io.Serializable {
 
   public void setRejectJustification(String rejectJustification) {
     this.rejectJustification = rejectJustification;
+  }
+
+  public void setRequestSource(String requestSource) {
+    this.requestSource = requestSource;
   }
 
   public void setWebPage(String webPage) {

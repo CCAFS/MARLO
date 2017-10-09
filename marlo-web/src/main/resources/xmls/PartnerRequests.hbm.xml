@@ -55,12 +55,12 @@
 		</property>
 		<many-to-one name="institution" class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
             <column name="institution_id" not-null="false" />
-        </many-to-one>
-		<property name="headquater" type="boolean">
-      <column name="is_headquarter" not-null="true" />
-    </property>
+    </many-to-one>
 		<property name="office" type="boolean">
       <column name="is_office" not-null="true" />
     </property>
+    <property name="requestSource" type="string">
+      <column name="request_source" length="65535" />
+    </property>    
 	</class>
 </hibernate-mapping>

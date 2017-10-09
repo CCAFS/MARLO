@@ -543,6 +543,7 @@
 			<result name="success" type="redirectAction">
 				<param name="actionName">${crpSession}/partnerSave</param>
 				<param name="projectID">${projectID}</param>
+				<param name="fundingSourceID">${fundingSourceID}</param>
 				<param name="messageSent">${messageSent}</param>
 			</result>
 		</action>

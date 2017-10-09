@@ -20,9 +20,13 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
+import org.cgiar.ccafs.marlo.data.manager.PartnerRequestManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,23 +52,28 @@ public class RequestCountryOfficeAction extends BaseAction {
   private String[] countries;
 
   private InstitutionManager institutionManager;
-
+  private ProjectManager projectManager;
   private LocElementManager locElementManager;
+  private PartnerRequestManager partnerRequestManager;
 
   private boolean messageSent;
 
   @Inject
   public RequestCountryOfficeAction(APConfig config, InstitutionManager institutionManager,
-    LocElementManager locElementManager) {
+    LocElementManager locElementManager, ProjectManager projectManager, PartnerRequestManager partnerRequestManager) {
     super(config);
     this.institutionManager = institutionManager;
     this.locElementManager = locElementManager;
+    this.projectManager = projectManager;
+    this.partnerRequestManager = partnerRequestManager;
   }
 
 
   @Override
   public String execute() throws Exception {
     try {
+
+
       sucess = new HashMap<String, Object>();
       String subject;
       StringBuilder message = new StringBuilder();
@@ -72,13 +81,24 @@ public class RequestCountryOfficeAction extends BaseAction {
       String countriesName = null;
 
       for (String string : countries) {
-
         if (countriesName == null) {
           countriesName = locElementManager.getLocElementByISOCode((string)).getName();
         } else {
           countriesName = countriesName + ", " + locElementManager.getLocElementByISOCode((string)).getName();
         }
-
+        // Add Partner Request information.
+        PartnerRequest partnerRequest = new PartnerRequest();
+        partnerRequest.setInstitution(institutionManager.getInstitutionById(institutionID));
+        partnerRequest
+          .setRequestSource("Project: (" + projectID + ") - " + projectManager.getProjectById(projectID).getTitle());
+        partnerRequest.setActive(true);
+        partnerRequest.setActiveSince(new Date());
+        partnerRequest.setCreatedBy(this.getCurrentUser());
+        partnerRequest.setModifiedBy(this.getCurrentUser());
+        partnerRequest.setModificationJustification("");
+        partnerRequest.setLocElement(locElementManager.getLocElementByISOCode((string)));
+        partnerRequest.setOffice(true);
+        partnerRequestManager.savePartnerRequest(partnerRequest);
       }
       String institutionName = institutionManager.getInstitutionById(institutionID).getName();
 
@@ -100,6 +120,8 @@ public class RequestCountryOfficeAction extends BaseAction {
       message.append(countriesName);
       message.append(".</br>");
       message.append("</br>");
+
+
       try {
         SendMailS sendMail = new SendMailS(this.config);
         sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject, message.toString(),

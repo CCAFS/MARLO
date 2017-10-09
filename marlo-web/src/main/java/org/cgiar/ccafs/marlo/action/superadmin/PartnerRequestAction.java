@@ -54,7 +54,11 @@ public class PartnerRequestAction extends BaseAction {
 
 
   private List<PartnerRequest> partners;
+  private List<PartnerRequest> countryOffices;
+
   private long requestID;
+
+
   private SendMailS sendMail;
 
   @Inject
@@ -112,6 +116,10 @@ public class PartnerRequestAction extends BaseAction {
     return countriesList;
   }
 
+  public List<PartnerRequest> getCountryOffices() {
+    return countryOffices;
+  }
+
   public List<InstitutionType> getInstitutionTypesList() {
     return institutionTypesList;
   }
@@ -130,8 +138,11 @@ public class PartnerRequestAction extends BaseAction {
     if (partnerRequestManager.findAll() != null) {
       partners = new ArrayList<>(partnerRequestManager.findAll().stream().filter(pr -> pr.isActive() && !pr.isOffice())
         .collect(Collectors.toList()));
+      countryOffices = new ArrayList<>(partnerRequestManager.findAll().stream()
+        .filter(pr -> pr.isActive() && pr.isOffice()).collect(Collectors.toList()));
     } else {
       partners = new ArrayList<>();
+      countryOffices = new ArrayList<>();
     }
     this.countriesList = locElementManager.findAll().stream()
       .filter(c -> c.isActive() && c.getLocElementType().getId().longValue() == 2).collect(Collectors.toList());
@@ -139,7 +150,6 @@ public class PartnerRequestAction extends BaseAction {
       .collect(Collectors.toList());
     countriesList.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
   }
-
 
   private void sendAcceptedNotficationEmail(PartnerRequest partnerRequest) {
     String toEmail = "";
@@ -166,6 +176,11 @@ public class PartnerRequestAction extends BaseAction {
     message.append(this.getText("email.getStarted"));
     message.append(this.getText("email.bye"));
     sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+  }
+
+
+  public void setCountryOffices(List<PartnerRequest> countryOffices) {
+    this.countryOffices = countryOffices;
   }
 
   public void setPartners(List<PartnerRequest> partners) {
