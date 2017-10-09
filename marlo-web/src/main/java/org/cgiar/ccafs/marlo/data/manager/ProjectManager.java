@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager;
 
 import org.cgiar.ccafs.marlo.data.manager.impl.ProjectManagerImpl;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 
@@ -58,6 +59,8 @@ public interface ProjectManager {
   public List<Project> getCompletedProjects(long crpId);
 
 
+  public List<CrpProgram> getPrograms(long projectID, int type, long idPhase);
+
   /**
    * This method gets a project object by a given project identifier.
    * 
@@ -65,6 +68,7 @@ public interface ProjectManager {
    * @return a Project object.
    */
   public Project getProjectById(long projectID);
+
 
   /**
    * Get the list of projects that the user can access and edit.

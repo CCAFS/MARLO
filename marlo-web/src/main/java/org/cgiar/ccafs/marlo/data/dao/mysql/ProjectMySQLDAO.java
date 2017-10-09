@@ -17,6 +17,7 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectDAO;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
@@ -165,6 +166,21 @@ public class ProjectMySQLDAO implements ProjectDAO {
       projects.add(project);
     }
     return projects;
+  }
+
+  @Override
+  public List<CrpProgram> getPrograms(long projectID, int type, long idPhase) {
+    StringBuilder builder = new StringBuilder();
+    builder.append(" select pr.* from project_focuses pf  inner join crp_programs pr on pf.program_id=pr.id");
+    builder.append(" where pf.project_id= " + projectID + " and pf.id_phase=" + idPhase + " and pr.program_type=" + type
+      + " and pf.is_active=1");
+    List<CrpProgram> list = new ArrayList<>();
+    List<Map<String, Object>> maps = dao.findCustomQuery(builder.toString());
+    for (Map<String, Object> map : maps) {
+      list.add(dao.find(CrpProgram.class, Long.parseLong(map.get("id").toString())));
+
+    }
+    return list;
   }
 
   @Override

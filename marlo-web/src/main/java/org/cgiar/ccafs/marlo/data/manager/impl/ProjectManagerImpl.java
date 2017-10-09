@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 
@@ -65,6 +66,11 @@ public class ProjectManagerImpl implements ProjectManager {
   @Override
   public List<Project> getCompletedProjects(long crpId) {
     return projectDAO.getCompletedProjects(crpId);
+  }
+
+  @Override
+  public List<CrpProgram> getPrograms(long projectID, int type, long idPhase) {
+    return projectDAO.getPrograms(projectID, type, idPhase);
   }
 
   @Override
@@ -123,6 +129,5 @@ public class ProjectManagerImpl implements ProjectManager {
 
     return projectDAO.save(project, sectionName, relationsName, phase);
   }
-
 
 }

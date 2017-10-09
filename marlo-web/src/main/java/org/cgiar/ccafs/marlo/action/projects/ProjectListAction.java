@@ -32,7 +32,6 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
-import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
@@ -393,44 +392,28 @@ public class ProjectListAction extends BaseAction {
   public void loadFlagshipgsAndRegions(List<Project> list) {
     for (Project project : list) {
 
-      List<CrpProgram> programs = new ArrayList<>();
-      List<CrpProgram> regions = new ArrayList<>();
-      for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-        .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())
-          && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-        .collect(Collectors.toList())) {
-        programs.add(projectFocuses.getCrpProgram());
-      }
-      for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-        .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())
-          && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
-        .collect(Collectors.toList())) {
-        regions.add(projectFocuses.getCrpProgram());
-      }
+      List<CrpProgram> programs = projectManager.getPrograms(project.getId(),
+        ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue(), this.getActualPhase().getId());
+      List<CrpProgram> regions = projectManager.getPrograms(project.getId(),
+        ProgramType.REGIONAL_PROGRAM_TYPE.getValue(), this.getActualPhase().getId());
+
       project.setFlagships(programs);
       project.setRegions(regions);
+
     }
   }
 
   public void loadFlagshipgsAndRegionsCurrentPhase(List<Project> list) {
     for (Project project : list) {
 
-      List<CrpProgram> programs = new ArrayList<>();
-      List<CrpProgram> regions = new ArrayList<>();
-      for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-        .filter(c -> c.isActive() && c.getPhase().equals(project.getProjectInfo().getPhase())
-          && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-        .collect(Collectors.toList())) {
-        programs.add(projectFocuses.getCrpProgram());
-      }
-      for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-        .filter(c -> c.isActive() && c.getPhase().equals(project.getProjectInfo().getPhase())
-          && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
-        .collect(Collectors.toList())) {
-        regions.add(projectFocuses.getCrpProgram());
-      }
+      List<CrpProgram> programs = projectManager.getPrograms(project.getId(),
+        ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue(), project.getProjectInfo().getPhase().getId());
+      List<CrpProgram> regions = projectManager.getPrograms(project.getId(),
+        ProgramType.REGIONAL_PROGRAM_TYPE.getValue(), project.getProjectInfo().getPhase().getId());
+
       project.setFlagships(programs);
       project.setRegions(regions);
+
     }
   }
 
@@ -476,24 +459,6 @@ public class ProjectListAction extends BaseAction {
       }
       for (Project project : myProjects) {
         project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
-        List<CrpProgram> programs = new ArrayList<>();
-        List<CrpProgram> regions = new ArrayList<>();
-        for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-          .filter(
-            c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
-              && c.getPhase().equals(this.getActualPhase()))
-          .collect(Collectors.toList())) {
-          programs.add(projectFocuses.getCrpProgram());
-        }
-        for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-          .filter(
-            c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()
-              && c.getPhase().equals(this.getActualPhase()))
-          .collect(Collectors.toList())) {
-          regions.add(projectFocuses.getCrpProgram());
-        }
-        project.setFlagships(programs);
-        project.setRegions(regions);
       }
 
       this.loadFlagshipgsAndRegions(myProjects);

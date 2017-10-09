@@ -91,13 +91,18 @@ public class ProjectInfoMySQLDAO implements ProjectInfoDAO {
   public void saveInfoPhase(Phase next, long projecID, ProjectInfo projectInfo) {
     Phase phase = dao.find(Phase.class, next.getId());
     Calendar cal = Calendar.getInstance();
-    cal.setTime(projectInfo.getEndDate());
+    if (projectInfo.getEndDate() != null) {
+      cal.setTime(projectInfo.getEndDate());
+    }
+
     if (phase.getEditable() != null && phase.getEditable()) {
       List<ProjectInfo> projectInfos = phase.getProjectInfos().stream()
         .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID).collect(Collectors.toList());
       if (!projectInfos.isEmpty()) {
         for (ProjectInfo projectInfoPhase : projectInfos) {
           projectInfoPhase.updateProjectInfo(projectInfo);
+
+
           if (cal.get(Calendar.YEAR) < phase.getYear()) {
 
             dao.delete(projectInfoPhase);

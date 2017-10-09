@@ -17,6 +17,7 @@
 package org.cgiar.ccafs.marlo.data.dao;
 
 import org.cgiar.ccafs.marlo.data.dao.mysql.ProjectMySQLDAO;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 
@@ -60,6 +61,8 @@ public interface ProjectDAO {
   public List<Project> findAll();
 
   public List<Project> getCompletedProjects(long crpId);
+
+  public List<CrpProgram> getPrograms(long projectID, int type, long idPhase);
 
   /**
    * Get the list of permissions that the user can access and edit.
