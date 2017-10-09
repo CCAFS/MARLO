@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.action.center.monitoring.project;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
+import org.cgiar.ccafs.marlo.data.manager.CenterFundingSyncTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterFundingSourceTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
@@ -34,6 +35,7 @@ import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterFundingSourceType;
+import org.cgiar.ccafs.marlo.data.model.CenterFundingSyncType;
 import org.cgiar.ccafs.marlo.data.model.CenterLeader;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
@@ -114,11 +116,13 @@ public class ProjectDescriptionAction extends BaseAction {
 
   private CrpManager crpService;
 
-
   private ICenterProjectTypeManager projectTypeService;
+
 
   private ICenterProjectStatusManager projectStatusService;
 
+
+  private CenterFundingSyncTypeManager centerFundingSyncTypeManager;
 
   private CenterArea selectedResearchArea;
 
@@ -129,6 +133,7 @@ public class ProjectDescriptionAction extends BaseAction {
 
   private List<CenterArea> researchAreas;
 
+
   private List<CenterProgram> researchPrograms;
 
   private List<CenterFundingSourceType> fundingSourceTypes;
@@ -137,9 +142,13 @@ public class ProjectDescriptionAction extends BaseAction {
 
   private List<TopicOutcomes> topicOutcomes;
 
+  private List<CenterFundingSyncType> syncTypes;
 
   private List<LocElement> regionLists;
+
   private List<LocElement> countryLists;
+
+
   private List<Crp> crps;
   private List<CenterProjectType> projectTypes;
   private List<CenterProjectStatus> status;
@@ -159,7 +168,7 @@ public class ProjectDescriptionAction extends BaseAction {
     ICenterProjectCrosscutingThemeManager projectCrosscutingThemeService,
     ICenterProjectLocationManager projectLocationService, LocElementManager locElementService,
     AuditLogManager auditLogService, CrpManager crpService, ICenterProjectTypeManager projectTypeService,
-    ICenterProjectStatusManager projectStatusService) {
+    ICenterProjectStatusManager projectStatusService, CenterFundingSyncTypeManager centerFundingSyncTypeManager) {
     super(config);
     this.centerService = centerService;
     this.projectService = projectService;
@@ -176,6 +185,7 @@ public class ProjectDescriptionAction extends BaseAction {
     this.crpService = crpService;
     this.projectTypeService = projectTypeService;
     this.projectStatusService = projectStatusService;
+    this.centerFundingSyncTypeManager = centerFundingSyncTypeManager;
   }
 
   public Boolean bolValue(String value) {
@@ -315,6 +325,10 @@ public class ProjectDescriptionAction extends BaseAction {
     return status;
   }
 
+  public List<CenterFundingSyncType> getSyncTypes() {
+    return syncTypes;
+  }
+
   public List<TopicOutcomes> getTopicOutcomes() {
     return topicOutcomes;
   }
@@ -335,6 +349,7 @@ public class ProjectDescriptionAction extends BaseAction {
     researchAreas = new ArrayList<>(
       loggedCenter.getResearchAreas().stream().filter(ra -> ra.isActive()).collect(Collectors.toList()));
     region = false;
+
     // Regions List
     regionLists = new ArrayList<>(locElementService.findAll().stream()
       .filter(le -> le.isActive() && le.getLocElementType() != null && le.getLocElementType().getId() == 1)
@@ -346,6 +361,7 @@ public class ProjectDescriptionAction extends BaseAction {
       .filter(le -> le.isActive() && le.getLocElementType() != null && le.getLocElementType().getId() == 2)
       .collect(Collectors.toList()));
     Collections.sort(countryLists, (c1, c2) -> c1.getName().compareTo(c2.getName()));
+
 
     try {
       projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_ID)));
@@ -387,8 +403,8 @@ public class ProjectDescriptionAction extends BaseAction {
         reader = new BufferedReader(new FileReader(path.toFile()));
         Gson gson = new GsonBuilder().create();
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
- 	      reader.close();
- 	
+        reader.close();
+
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         project = (CenterProject) autoSaveReader.readFromJson(jReader);
@@ -445,7 +461,7 @@ public class ProjectDescriptionAction extends BaseAction {
           }
         }
 
-      
+
         this.setDraft(true);
       } else {
         this.setDraft(false);
@@ -522,8 +538,7 @@ public class ProjectDescriptionAction extends BaseAction {
 
     List<CenterTopic> researchTopics = new ArrayList<>(
       selectedProgram.getResearchTopics().stream().filter(rt -> rt.isActive()).collect(Collectors.toList()));
-
-
+    // Assign the Program Impact APthway Outcomes List, order by Research Topics.
     for (CenterTopic researchTopic : researchTopics) {
       TopicOutcomes outcome = new TopicOutcomes();
       outcome.setTopic(researchTopic);
@@ -535,6 +550,13 @@ public class ProjectDescriptionAction extends BaseAction {
       }
 
       topicOutcomes.add(outcome);
+    }
+
+    // Fill the Funding Source Sync Types
+    if (centerFundingSyncTypeManager.findAll() != null) {
+      syncTypes = new ArrayList<>();
+      syncTypes =
+        centerFundingSyncTypeManager.findAll().stream().filter(fs -> fs.isActive()).collect(Collectors.toList());
     }
 
     String params[] =
@@ -588,7 +610,6 @@ public class ProjectDescriptionAction extends BaseAction {
     }
   }
 
-
   @Override
   public String save() {
     if (this.hasPermission("*")) {
@@ -596,22 +617,12 @@ public class ProjectDescriptionAction extends BaseAction {
       CenterProject projectDB = projectService.getCenterProjectById(projectID);
 
       projectDB.setName(project.getName());
-      projectDB.setOcsCode(project.getOcsCode());
       projectDB.setStartDate(project.getStartDate());
       projectDB.setEndDate(project.getEndDate());
-      projectDB.setExtensionDate(project.getExtensionDate());
       projectDB.setDescription(project.getDescription());
       projectDB.setGlobal(this.bolValue(project.getsGlobal()));
       projectDB.setRegion(this.bolValue(project.getsRegion()));
-      projectDB.setDirectDonor(project.getDirectDonor());
-      projectDB.setOriginalDonor(project.getOriginalDonor());
-      projectDB.setTotalAmount(project.getTotalAmount());
       projectDB.setSuggestedName(project.getSuggestedName());
-
-      if (project.getProjectType().getId() != null) {
-        CenterProjectType projectType = projectTypeService.getProjectTypeById(project.getProjectType().getId());
-        projectDB.setProjectType(projectType);
-      }
 
       if (project.getProjectStatus().getId() != null) {
         CenterProjectStatus projectStatus =
@@ -704,6 +715,7 @@ public class ProjectDescriptionAction extends BaseAction {
 
   }
 
+
   public void saveFundingSources(CenterProject projectDB) {
 
     if (projectDB.getProjectFundingSources() != null && projectDB.getProjectFundingSources().size() > 0) {
@@ -725,14 +737,27 @@ public class ProjectDescriptionAction extends BaseAction {
           CenterProjectFundingSource fundingSourceSave = new CenterProjectFundingSource();
 
           CenterFundingSourceType fundingSourceType =
-            fundingSourceService.getFundingSourceTypeById(projectFundingSource.getFundingSourceType().getId());
+            fundingSourceService.getFundingSourceTypeById(projectFundingSource.getCenterFundingSourceType().getId());
+          CenterFundingSyncType fundingSyncType = centerFundingSyncTypeManager
+            .getCenterFundingSyncTypeById(projectFundingSource.getCenterFundingSyncType().getId());
+
           CenterProject project = projectService.getCenterProjectById(projectID);
           Crp crp = crpService.getCrpById(projectFundingSource.getCrp().getId());
 
-          fundingSourceSave.setProject(project);
+          fundingSourceSave.setCenterProject(project);
           fundingSourceSave.setCrp(crp);
-          fundingSourceSave.setFundingSourceType(fundingSourceType);
+          fundingSourceSave.setSync(projectFundingSource.isSync());
+          fundingSourceSave.setCenterFundingSourceType(fundingSourceType);
+          fundingSourceSave.setCenterFundingSyncType(fundingSyncType);
+          fundingSourceSave.setCode(projectFundingSource.getCode());
           fundingSourceSave.setTitle(projectFundingSource.getTitle());
+          fundingSourceSave.setDescription(projectFundingSource.getDescription());
+          fundingSourceSave.setStartDate(projectFundingSource.getStartDate());
+          fundingSourceSave.setEndDate(projectFundingSource.getEndDate());
+          fundingSourceSave.setExtensionDate(projectFundingSource.getExtensionDate());
+          fundingSourceSave.setDirectDonor(projectFundingSource.getDirectDonor());
+          fundingSourceSave.setOriginalDonor(projectFundingSource.getOriginalDonor());
+          fundingSourceSave.setTotalAmount(projectFundingSource.getTotalAmount());
           fundingSourceSave.setActive(true);
           fundingSourceSave.setActiveSince(new Date());
           fundingSourceSave.setCreatedBy(this.getCurrentUser());
@@ -746,11 +771,12 @@ public class ProjectDescriptionAction extends BaseAction {
           CenterProjectFundingSource fundingSourcePrew =
             projectFundingSourceService.getProjectFundingSourceById(projectFundingSource.getId());
 
-          if (!fundingSourcePrew.getFundingSourceType().equals(projectFundingSource.getFundingSourceType())) {
+          if (!fundingSourcePrew.getCenterFundingSourceType()
+            .equals(projectFundingSource.getCenterFundingSourceType())) {
             hasChanges = true;
             CenterFundingSourceType fundingSourceType =
-              fundingSourceService.getFundingSourceTypeById(projectFundingSource.getFundingSourceType().getId());
-            fundingSourcePrew.setFundingSourceType(fundingSourceType);
+              fundingSourceService.getFundingSourceTypeById(projectFundingSource.getCenterFundingSourceType().getId());
+            fundingSourcePrew.setCenterFundingSourceType(fundingSourceType);
           }
 
           if (hasChanges) {
@@ -766,7 +792,6 @@ public class ProjectDescriptionAction extends BaseAction {
     }
 
   }
-
 
   public void saveLocations(CenterProject projectDB) {
 
@@ -891,6 +916,7 @@ public class ProjectDescriptionAction extends BaseAction {
 
   }
 
+
   public void setAreaID(long areaID) {
     this.areaID = areaID;
   }
@@ -943,10 +969,10 @@ public class ProjectDescriptionAction extends BaseAction {
     this.regionLists = regionLists;
   }
 
-
   public void setResearchAreas(List<CenterArea> researchAreas) {
     this.researchAreas = researchAreas;
   }
+
 
   public void setResearchPrograms(List<CenterProgram> researchPrograms) {
     this.researchPrograms = researchPrograms;
@@ -956,13 +982,17 @@ public class ProjectDescriptionAction extends BaseAction {
     this.selectedProgram = selectedProgram;
   }
 
-
   public void setSelectedResearchArea(CenterArea selectedResearchArea) {
     this.selectedResearchArea = selectedResearchArea;
   }
 
+
   public void setStatus(List<CenterProjectStatus> status) {
     this.status = status;
+  }
+
+  public void setSyncTypes(List<CenterFundingSyncType> syncTypes) {
+    this.syncTypes = syncTypes;
   }
 
   public void setTopicOutcomes(List<TopicOutcomes> topicOutcomes) {

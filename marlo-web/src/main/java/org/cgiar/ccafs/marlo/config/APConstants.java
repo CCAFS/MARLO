@@ -395,6 +395,8 @@ public final class APConstants {
   public static final String PROJECT_ID = "projectID";
   public static final String OUTPUT_NAME = "outputName";
   public static final String OCS_CODE_REQUEST_ID = "ocsCode";
+  public static final String CENTER_PROJECT_SYNC_CODE = "syncCode";
+  public static final String CENTER_PROJECT_SYNC_TYPE = "syncTypeID";
 
   // Relations Name
   public static final String RESEARCH_PROGRAM_IMPACT_RELATION =
