@@ -599,11 +599,17 @@ public class ProjectLocationAction extends BaseAction {
               co.setLocElement(locElementManager.getLocElementById(co.getLocElement().getId()));
               List<FundingSource> sources = fundingSourceManager.searchFundingSourcesByLocElement(projectID,
                 co.getLocElement().getId(), this.getCurrentCycleYear(), loggedCrp.getId());
+              for (FundingSource fundingSource : sources) {
+                fundingSource.getFundingSourceInfo(this.getActualPhase());
+              }
               co.setFundingSources(sources);
             } else {
               co.setLocElementType(locElementTypeManager.getLocElementTypeById(co.getLocElementType().getId()));
               List<FundingSource> sources = fundingSourceManager.searchFundingSourcesByLocElementType(projectID,
                 co.getLocElementType().getId(), this.getCurrentCycleYear(), loggedCrp.getId());
+              for (FundingSource fundingSource : sources) {
+                fundingSource.getFundingSourceInfo(this.getActualPhase());
+              }
               co.setFundingSources(sources);
             }
             if (!co.isSelected()) {
@@ -633,6 +639,9 @@ public class ProjectLocationAction extends BaseAction {
 
               List<FundingSource> sources = fundingSourceManager.searchFundingSourcesByLocElement(projectID,
                 co.getLocElement().getId(), this.getCurrentCycleYear(), loggedCrp.getId());
+              for (FundingSource fundingSource : sources) {
+                fundingSource.getFundingSourceInfo(this.getActualPhase());
+              }
               co.setFundingSources(new ArrayList<>(sources));
 
             } else {
@@ -717,16 +726,16 @@ public class ProjectLocationAction extends BaseAction {
     }
 
     for (CountryLocationLevel countryLocationLevel : project.getLocationsData()) {
-      // if (countryLocationLevel.getLocElements() != null) {
-      Collection<LocElement> similar = new HashSet<LocElement>(countryLocationLevel.getLocElements());
-      Collection<LocElement> different = new HashSet<LocElement>();
-      different.addAll(countryLocationLevel.getLocElements());
-      different.addAll(fsLocs);
-      similar.retainAll(fsLocs);
-      different.removeAll(similar);
+      if (countryLocationLevel.getLocElements() != null) {
+        Collection<LocElement> similar = new HashSet<LocElement>(countryLocationLevel.getLocElements());
+        Collection<LocElement> different = new HashSet<LocElement>();
+        different.addAll(countryLocationLevel.getLocElements());
+        different.addAll(fsLocs);
+        similar.retainAll(fsLocs);
+        different.removeAll(similar);
 
-      countryLocationLevel.getLocElements().removeAll(similar);
-      // }
+        countryLocationLevel.getLocElements().removeAll(similar);
+      }
 
 
     }
@@ -822,6 +831,9 @@ public class ProjectLocationAction extends BaseAction {
     fuHashSet.addAll(fundingSources);
 
     fundingSources = new ArrayList<>(fuHashSet);
+    for (FundingSource fundingSource : fundingSources) {
+      fundingSource.getFundingSourceInfo(this.getActualPhase());
+    }
 
     List<LocElement> locElements = new ArrayList<>();
     List<LocElementType> locElementTypes = new ArrayList<>();

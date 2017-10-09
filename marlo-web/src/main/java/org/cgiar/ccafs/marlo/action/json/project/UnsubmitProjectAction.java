@@ -170,7 +170,7 @@ public class UnsubmitProjectAction extends BaseAction {
         }
         // CC will be also other Cluster Leaders
         for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
-          .filter(cl -> cl.isActive()).collect(Collectors.toList())) {
+          .filter(cl -> cl.isActive() && cl.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
           for (CrpClusterActivityLeader crpClusterActivityLeader : crpClusterOfActivity.getCrpClusterActivityLeaders()
             .stream().filter(cl -> cl.isActive()).collect(Collectors.toList())) {
             ccEmails.append(crpClusterActivityLeader.getUser().getEmail());
