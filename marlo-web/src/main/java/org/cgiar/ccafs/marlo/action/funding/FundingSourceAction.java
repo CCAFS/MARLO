@@ -475,9 +475,14 @@ public class FundingSourceAction extends BaseAction {
 
         this.setDraft(true);
         FundingSource fundingSourceDB = fundingSourceManager.getFundingSourceById(fundingSourceID);
-        fundingSource.setProjectBudgetsList(
-          fundingSourceDB.getProjectBudgets().stream().filter(pb -> pb.isActive() && pb.getProject().isActive()
-            && pb.getPhase() != null && pb.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+
+        fundingSource.setProjectBudgetsList(fundingSourceDB.getProjectBudgets().stream()
+          .filter(pb -> pb.isActive() && pb.getProject().isActive() && pb.getPhase() != null
+            && pb.getPhase().equals(this.getActualPhase())
+            && pb.getProject().getProjecInfoPhase(this.getActualPhase()) != null)
+          .collect(Collectors.toList()));
+
+
         if (fundingSource.getFundingSourceInfo().getFile() != null) {
           if (fundingSource.getFundingSourceInfo().getFile().getId() != null) {
             fundingSource.getFundingSourceInfo()
@@ -530,6 +535,7 @@ public class FundingSourceAction extends BaseAction {
           }
         }
 
+
       } else {
         this.setDraft(false);
         fundingSource.setBudgets(fundingSource.getFundingSourceBudgets().stream()
@@ -538,9 +544,11 @@ public class FundingSourceAction extends BaseAction {
         fundingSource.setInstitutions(new ArrayList<>(fundingSource.getFundingSourceInstitutions().stream()
           .filter(pb -> pb.isActive() && pb.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
 
-        fundingSource.setProjectBudgetsList(
-          fundingSource.getProjectBudgets().stream().filter(pb -> pb.isActive() && pb.getProject().isActive()
-            && pb.getPhase() != null && pb.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+        fundingSource.setProjectBudgetsList(fundingSource.getProjectBudgets().stream()
+          .filter(pb -> pb.isActive() && pb.getProject().isActive() && pb.getPhase() != null
+            && pb.getPhase().equals(this.getActualPhase())
+            && pb.getProject().getProjecInfoPhase(this.getActualPhase()) != null)
+          .collect(Collectors.toList()));
 
         /*
          * Funding source Locations

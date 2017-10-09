@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.FundingSourceInfo;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -30,6 +31,7 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import com.opensymphony.xwork2.ActionInvocation;
@@ -131,7 +133,11 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
       phase = baseAction.getActualPhase();
       phase = phaseManager.getPhaseById(phase.getId());
       if (fundingSource.getFundingSourceInfo(phase) == null) {
-        throw new NullPointerException();
+        List<FundingSourceInfo> infos =
+          fundingSource.getFundingSourceInfos().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+        infos.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
+        baseAction.setActualPhase(infos.get(infos.size() - 1).getPhase());
+
       }
 
       // Set the variable that indicates if the user can edit the section
