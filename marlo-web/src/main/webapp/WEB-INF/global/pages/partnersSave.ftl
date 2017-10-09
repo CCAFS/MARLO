@@ -65,8 +65,8 @@
         
         [#-- Hidden input with message of success --]
         <input type="hidden" id="message.success" value="[@s.text name="partnersSave.successMessage" /]"/>
-        <input type="hidden" name="projectID" value="${projectID}"/>
-        <input type="hidden" name="fundingSourceID" value="${fundingSourceID}"/>
+        [#if projectID??]<input type="hidden" name="projectID" value="${projectID}"/>[/#if]
+        [#if fundingSourceID??]<input type="hidden" name="fundingSourceID" value="${fundingSourceID}"/>[/#if]
 
         <div class="clearfix"></div>
         <br />
@@ -89,7 +89,8 @@
           <br />
           [#-- Buttons --]
           <div class="text-center">
-            <a href="[@s.url][@s.param name="projectID" value=projectID /][/@s.url]" class="btn btn-primary">Request a new one</a>
+            [#if projectID?? && (projectID != 0)]<a href="[@s.url][@s.param name="projectID" value=projectID /][/@s.url]" class="btn btn-primary">Request a new one</a>[/#if]
+            [#if fundingSourceID?? && (fundingSourceID != 0)]<a href="[@s.url][@s.param name="fundingSourceID" value=fundingSourceID /][/@s.url]" class="btn btn-primary">Request a new one</a>[/#if]
             <a href="#" class="btn btn-danger" onClick="window.close()">Close</a>
           </div>
         </div>
