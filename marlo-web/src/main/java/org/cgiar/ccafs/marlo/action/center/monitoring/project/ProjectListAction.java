@@ -257,8 +257,12 @@ public class ProjectListAction extends BaseAction {
     fundingSource.setStartDate(agreement.getStartDate());
     fundingSource.setEndDate(agreement.getEndDate());
     fundingSource.setExtensionDate(agreement.getExtensionDate());
-    fundingSource.setOriginalDonor(agreement.getOriginalDonor().getName());
-    fundingSource.setDirectDonor(agreement.getDirectDonor().getName());
+    if (agreement.getOriginalDonor() != null) {
+      fundingSource.setOriginalDonor(agreement.getOriginalDonor().getName());
+    }
+    if (agreement.getDirectDonor() != null) {
+      fundingSource.setDirectDonor(agreement.getDirectDonor().getName());
+    }
     fundingSource.setTotalAmount(Double.parseDouble(agreement.getGrantAmount()));
 
     // Setting the sync type (1 = OCS CIAT)
