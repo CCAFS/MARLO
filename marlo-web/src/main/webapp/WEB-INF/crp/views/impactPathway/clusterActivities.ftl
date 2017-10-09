@@ -273,7 +273,7 @@
         <span title="${(element.crpProgramOutcome.composedName)!}" class="outcomeStatement">
           <strong>${(element.crpProgramOutcome.crpProgram.acronym)!} Outcome:</strong> ${(element.crpProgramOutcome.description)!}
           [#if action.hasSpecificities('crp_ip_outcome_indicator')]
-            [#if (element.crpProgramOutcome.indicator??)!false]<i class="indicatorText"><br /><strong>Indicator: </strong>${(element.crpProgramOutcome.indicator)!'No Indicator'}</i>[/#if]
+            [#if (element.crpProgramOutcome.indicator?has_content)!false]<i class="indicatorText"><br /><strong>Indicator: </strong>${(element.crpProgramOutcome.indicator)!'No Indicator'}</i>[/#if]
           [/#if]
         </span>
         <input class="outcomeContributionId" type="hidden" name="${customName}.id" value="${(element.id)!}"/>

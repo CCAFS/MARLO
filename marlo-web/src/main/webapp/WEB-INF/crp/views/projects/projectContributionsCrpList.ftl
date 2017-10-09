@@ -168,7 +168,7 @@
         <a href="${projectOutcomeUrl}">
           ${projectOutcome.crpProgramOutcome.description}
           [#if action.hasSpecificities('crp_ip_outcome_indicator')]
-            <i class="indicatorText"><br /><strong>Indicator: </strong>${(projectOutcome.crpProgramOutcome.indicator)!'No Indicator'}</i>
+            [#if (projectOutcome.crpProgramOutcome.indicator?has_content)!false]<i class="indicatorText"><br /><strong>Indicator: </strong>${(projectOutcome.crpProgramOutcome.indicator)!'No Indicator'}</i>[/#if]
           [/#if]
         </a>
       </td>
