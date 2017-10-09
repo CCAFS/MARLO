@@ -17,7 +17,6 @@
 package org.cgiar.ccafs.marlo.validation.impactpathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.model.CrpAssumption;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
@@ -155,13 +154,7 @@ public class OutcomeValidator extends BaseValidator
 
 
     }
-    if (action.hasSpecificities(APConstants.CRP_IP_OUTCOME_INDICATOR)) {
-      if (!(this.isValidString(outcome.getIndicator()) && this.wordCount(outcome.getIndicator()) <= 100)) {
-        this.addMessage(action.getText("outcome.action.indicator.required", params));
-        action.getInvalidFields().put("input-outcomes[" + i + "].indicator", InvalidFieldsMessages.EMPTYFIELD);
 
-      }
-    }
 
     if (outcome.getSrfTargetUnit() != null && outcome.getSrfTargetUnit().getId() != null
       && outcome.getSrfTargetUnit().getId().longValue() != -1) {
