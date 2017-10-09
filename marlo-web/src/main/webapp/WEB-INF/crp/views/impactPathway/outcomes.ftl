@@ -167,7 +167,7 @@
     [#-- Outcome Indicator --]
     [#if action.hasSpecificities('crp_ip_outcome_indicator')]
     <div class="form-group">
-      [@customForm.textArea name="${outcomeCustomName}.indicator"  i18nkey="outcome.inidicator" required=true className="outcome-inidicator limitWords-100" editable=editable /]
+      [@customForm.textArea name="${outcomeCustomName}.indicator"  i18nkey="outcome.inidicator" required=false className="outcome-inidicator limitWords-100" editable=editable /]
     </div>
     [/#if]
     

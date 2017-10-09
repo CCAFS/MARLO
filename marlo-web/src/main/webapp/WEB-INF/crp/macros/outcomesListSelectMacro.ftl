@@ -6,7 +6,7 @@
     <p>
       <strong>${outcome.crpProgram.acronym} Outcome:</strong> ${outcome.description}
       [#if action.hasSpecificities('crp_ip_outcome_indicator')]
-      <i class="indicatorText"><br /><strong>Indicator: </strong>${(outcome.indicator)!'No Indicator'}</i>
+        [#if outcome.indicator??]<i class="indicatorText"><br /><strong>Indicator: </strong>${(outcome.indicator)!'No Indicator'}</i>[/#if]
       [/#if]
     </p>
   </span>
