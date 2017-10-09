@@ -33,6 +33,7 @@ import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterObjectiveManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterRegionManager;
+import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
@@ -47,6 +48,7 @@ import org.cgiar.ccafs.marlo.data.model.CenterLeaderTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.CenterObjective;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterRegion;
+import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -105,6 +107,7 @@ public class ProgramImpactsAction extends BaseAction {
   private List<CenterBeneficiaryType> beneficiaryTypes;
   private CenterArea selectedResearchArea;
   private List<CenterProgram> researchPrograms;
+  private SrfSubIdoManager subIdoManager;
 
   private List<CenterObjective> researchObjectives;
   private CenterProgram selectedProgram;
@@ -121,7 +124,8 @@ public class ProgramImpactsAction extends BaseAction {
     ICenterImpactObjectiveManager impactObjectiveService, ProgramImpactsValidator validator,
     AuditLogManager auditLogService, ICenterRegionManager regionService,
     ICenterBeneficiaryTypeManager beneficiaryTypeService, ICenterImpactBeneficiaryManager impactBeneficiaryService,
-    ICenterBeneficiaryManager beneficiaryService, ICenterImpactStatementManager statementService) {
+    ICenterBeneficiaryManager beneficiaryService, ICenterImpactStatementManager statementService,
+    SrfSubIdoManager subIdoManager) {
     super(config);
     this.centerService = centerService;
     this.programService = programService;
@@ -137,6 +141,7 @@ public class ProgramImpactsAction extends BaseAction {
     this.impactBeneficiaryService = impactBeneficiaryService;
     this.beneficiaryService = beneficiaryService;
     this.statementService = statementService;
+    this.subIdoManager = subIdoManager;
   }
 
   @Override
@@ -375,13 +380,16 @@ public class ProgramImpactsAction extends BaseAction {
       if (selectedProgram != null) {
         Path path = this.getAutoSaveFilePath();
 
+        /*
+         * Check if the section has Auto-save file
+         */
         if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
           BufferedReader reader = null;
           reader = new BufferedReader(new FileReader(path.toFile()));
           Gson gson = new GsonBuilder().create();
           JsonObject jReader = gson.fromJson(reader, JsonObject.class);
- 	      reader.close();
- 	
+          reader.close();
+
           AutoSaveReader autoSaveReader = new AutoSaveReader();
 
           selectedProgram = (CenterProgram) autoSaveReader.readFromJson(jReader);
@@ -430,7 +438,7 @@ public class ProgramImpactsAction extends BaseAction {
               }
             }
           }
-        
+
           this.setDraft(true);
         } else {
           this.setDraft(false);
@@ -531,12 +539,17 @@ public class ProgramImpactsAction extends BaseAction {
           CenterImpactStatement impactStatement =
             statementService.getResearchImpactStatementById(researchImpact.getResearchImpactStatement().getId());
 
+
           if (impactStatement != null) {
             researchImpactNew.setResearchImpactStatement(impactStatement);
             researchImpactNew.setDescription(impactStatement.getName());
 
+            SrfSubIdo srfSubIdo = subIdoManager.getSrfSubIdoById(impactStatement.getSrfIdo().getId());
+            researchImpactNew.setSrfSubIdo(srfSubIdo);
+
           } else {
             researchImpactNew.setResearchImpactStatement(null);
+            researchImpactNew.setSrfSubIdo(null);
             researchImpactNew.setDescription(researchImpact.getDescription().trim());
           }
 
