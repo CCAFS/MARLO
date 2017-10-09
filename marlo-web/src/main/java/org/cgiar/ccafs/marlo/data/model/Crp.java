@@ -198,6 +198,10 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return createdBy;
   }
 
+  public String getCrpAcronymOrName() {
+    return (this.acronym != null && this.acronym.trim().length() > 0) ? this.acronym : this.name;
+  }
+
 
   public List<CrpPpaPartner> getCrpInstitutionsPartners() {
     return crpInstitutionsPartners;

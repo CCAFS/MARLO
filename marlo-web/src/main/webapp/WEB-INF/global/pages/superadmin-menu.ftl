@@ -39,27 +39,28 @@
             [#assign crpList = [] /]
           [/#attempt]
           [#if crpList?has_content]
+            <li text-align:center> -- CRPs -- </li>
             [#list crpList as crp]
               [#if crp.login]
-              <li class="[#if crpSession?? && crpSession == crp.acronym?lower_case ]currentSection[/#if]" >
+              <li class="[#if crpSession?? && crpSession == crp.acronym ]currentSection[/#if]" >
                 <a href="[@s.url namespace="/" action="${crp.acronym?lower_case}/crpDashboard" ][@s.param name="edit" value="true"/][/@s.url]" title="">${crp.acronym}</a>
               </li>
               [/#if]
             [/#list]              
-           [/#if]
-            <li text-align:center> --Centers-- </li>
-            [#if centersList?has_content]
+          [/#if]
+          [#if centersList?has_content]
+            <li text-align:center> -- Centers -- </li>
             [#list centersList as center]
               [#if center.login]
-              <li class="[#if centerSession?? && centerSession == center.acronym?lower_case ]currentSection[/#if]">
+              <li class="[#if centerSession?? && centerSession == center.acronym ]currentSection[/#if]">
                 <a href="[@s.url namespace="/" action="${center.acronym?lower_case}/centerDashboard" ][@s.param name="edit" value="true"/][/@s.url]">${center.name}</a>
               </li>
               [/#if]
             [/#list]              
-           [/#if]
+          [/#if]
           </ul>
           
-         </li>
+        </li>
          
          
          [/#if]
