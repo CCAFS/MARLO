@@ -2916,8 +2916,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
             if (projectOutcome.getCrpProgramOutcome().getIndicator() != null
               && !projectOutcome.getCrpProgramOutcome().getIndicator().isEmpty()) {
               outStatement += "<br><b>Indicator: </b>" + projectOutcome.getCrpProgramOutcome().getIndicator();
-            } else {
-              outStatement += "<br><b>Indicator:</b> ";
             }
           } else {
             outStatement = projectOutcome.getCrpProgramOutcome().getDescription();
