@@ -168,15 +168,15 @@
   <div class="col-md-8">
     [#if editable]
       [#-- CGSpace examples & instructions --]
-      [@channelExampleMacro name="cgspace" url="https://cgspace.cgiar.org/handle/10568/79435" /]
+      [@channelExampleMacro name="cgspace" url="https://cgspace.cgiar.org/handle/<b>10568/79435</b>" /]
       [#-- Dataverse examples & instructions --]
-      [@channelExampleMacro name="dataverse" url="https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/0ZEXKC" /]
+      [@channelExampleMacro name="dataverse" url="https://dataverse.harvard.edu/dataset.xhtml?persistentId=<b>doi:10.7910/DVN/0ZEXKC</b>" /]
       [#-- IFPRI examples & instructions --]
-      [@channelExampleMacro name="ifpri" url="http://ebrary.ifpri.org/cdm/singleitem/collection/p15738coll5/id/5388/rec/1" /]
+      [@channelExampleMacro name="ifpri" url="http://ebrary.ifpri.org/cdm/singleitem/<b>collection/p15738coll5/id/5388</b>/rec/1" /]
       [#-- ILRI examples & instructions --]
-      [@channelExampleMacro name="ilri" url="http://data.ilri.org/portal/dataset/ccafsnyando" /]
+      [@channelExampleMacro name="ilri" url="http://data.ilri.org/portal/dataset/<b>ccafsnyando</b>" /]
       [#-- CIMMYT examples & instructions --]
-      [@channelExampleMacro name="cimmyt" url="http://data.cimmyt.org/dvn/dv/cimmytswdvn/faces/study/StudyPage.xhtml?globalId=hdl:11529/10820&studyListingIndex=0_e53de710eb0cd382107c5579e996" /]
+      [@channelExampleMacro name="cimmyt" url="http://data.cimmyt.org/dvn/dv/cimmytswdvn/faces/study/StudyPage.xhtml?globalId=<b>hdl:11529/10820</b>" /]
     [/#if]
   </div>
 </div>
