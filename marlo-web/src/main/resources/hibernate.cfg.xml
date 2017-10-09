@@ -198,7 +198,8 @@
     <mapping resource="xmls/CenterProjectTypes.hbm.xml" />
     <mapping resource="xmls/CenterParameters.hbm.xml" />
     <mapping resource="xmls/CenterCustomParameters.hbm.xml" />
-    <mapping resource="xmls/CenterImpactStatement.hbm.xml" />   
+    <mapping resource="xmls/CenterImpactStatement.hbm.xml" />
+    <mapping resource="xmls/CenterFundingSyncTypes.hbm.xml" />   
 	</session-factory>
 </hibernate-configuration>
 

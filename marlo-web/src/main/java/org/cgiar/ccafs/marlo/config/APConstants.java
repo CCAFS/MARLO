@@ -92,6 +92,7 @@ public final class APConstants {
   public static final String CRP_IP_OUTCOME_INDICATOR = "crp_ip_outcome_indicator";
   // Email parameters to copy to FL FM CL
   public static final String CRP_EMAIL_CC_FL_FM_CL = "crp_email_cc_fl_fm_cl";
+  public static final String GENDER_KEYWORDS = "show_gender_keywords_summaries";
 
   public static final String CYCLE = "cycle";
   // Date Formats
@@ -395,6 +396,8 @@ public final class APConstants {
   public static final String PROJECT_ID = "projectID";
   public static final String OUTPUT_NAME = "outputName";
   public static final String OCS_CODE_REQUEST_ID = "ocsCode";
+  public static final String CENTER_PROJECT_SYNC_CODE = "syncCode";
+  public static final String CENTER_PROJECT_SYNC_TYPE = "syncTypeID";
 
   // Relations Name
   public static final String RESEARCH_PROGRAM_IMPACT_RELATION =
