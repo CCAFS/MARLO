@@ -470,3 +470,9 @@ function formatRepo(repo) {
 function formatRepoSelection(repo) {
   return repo.composedName;
 }
+
+function notificationError(message){
+  var notyOptions = jQuery.extend({}, notyDefaultOptions);
+  notyOptions.text = message;
+  noty(notyOptions);
+}

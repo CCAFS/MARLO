@@ -499,6 +499,22 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		
+		<action name="projectSync"
+      class="org.cgiar.ccafs.marlo.action.center.json.monitoring.project.CrpProjectAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
+    
+    <action name="validateSyncCode"
+      class="org.cgiar.ccafs.marlo.action.center.json.monitoring.project.ValidateSyncCode">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
 
 		<!-- ************************************************************************************************************** -->
 
