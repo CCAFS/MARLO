@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,11 +47,14 @@ public class SubIdosStatementAction extends BaseAction {
   private String idoStatementID;
   private List<Map<String, Object>> subIdos;
 
+
+  @Inject
   public SubIdosStatementAction(APConfig config, ICenterImpactStatementManager statementManager) {
     super(config);
 
     this.statementManager = statementManager;
   }
+
 
   @Override
   public String execute() throws Exception {
@@ -82,6 +86,10 @@ public class SubIdosStatementAction extends BaseAction {
     return SUCCESS;
   }
 
+  public List<Map<String, Object>> getSubIdos() {
+    return subIdos;
+  }
+
   @Override
   public void prepare() throws Exception {
     Map<String, Object> parameters = this.getParameters();
@@ -93,6 +101,10 @@ public class SubIdosStatementAction extends BaseAction {
 
     // If there is a parameter take its values
     idoStatementID = StringUtils.trim(((String[]) parameters.get(APConstants.IDO_ID))[0]);
+  }
+
+  public void setSubIdos(List<Map<String, Object>> subIdos) {
+    this.subIdos = subIdos;
   }
 
 }
