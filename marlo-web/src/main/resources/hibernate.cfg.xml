@@ -199,6 +199,15 @@
     <mapping resource="xmls/CenterParameters.hbm.xml" />
     <mapping resource="xmls/CenterCustomParameters.hbm.xml" />
     <mapping resource="xmls/CenterImpactStatement.hbm.xml" />
+    
+    <mapping resource="xmls/Agreement.hbm.xml"/>
+    <mapping resource="xmls/CountryAgreement.hbm.xml"/>
+    <mapping resource="xmls/CrpAgreement.hbm.xml"/>
+    <mapping resource="xmls/FundingSourceAgreement.hbm.xml"/>
+    <mapping resource="xmls/PlaAgreement.hbm.xml"/>
+    
+       
+    <mapping resource="xmls/CenterImpactStatement.hbm.xml" />
     <mapping resource="xmls/CenterFundingSyncTypes.hbm.xml" />   
 	</session-factory>
 </hibernate-configuration>

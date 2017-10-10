@@ -660,7 +660,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
 
               if (deliverableDissemination.getRestrictedUseAgreement() != null
                 && deliverableDissemination.getRestrictedUseAgreement() == true) {
-                restrictedAccess = "Restricted Use Agreement - Restricted access (if so, what are these periods?)";
+                restrictedAccess = "Restricted Use AgreementOCS - Restricted access (if so, what are these periods?)";
                 if (deliverableDissemination.getRestrictedAccessUntil() != null) {
                   restrictedAccess +=
                     "\nRestricted access until: " + deliverableDissemination.getRestrictedAccessUntil();
@@ -1299,7 +1299,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
 
               if (deliverableDissemination.getRestrictedUseAgreement() != null
                 && deliverableDissemination.getRestrictedUseAgreement() == true) {
-                restrictedAccess = "Restricted Use Agreement - Restricted access (if so, what are these periods?)";
+                restrictedAccess = "Restricted Use AgreementOCS - Restricted access (if so, what are these periods?)";
                 if (deliverableDissemination.getRestrictedAccessUntil() != null) {
                   restrictedAccess +=
                     "\nRestricted access until: " + deliverableDissemination.getRestrictedAccessUntil();

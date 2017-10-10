@@ -45,6 +45,7 @@ public final class APConstants {
 
   public static final String CRP_CUSTOM_FILE = "crp_custom_file";
   public static final String CRP_CUSTOM_GENDER = "crp_custom_gender";
+  public static final String CRP_STATUS_FUNDING_SOURCES = "crp_status_funding_sources";
   public static final String CRP_DIVISION_FS = "crp_division_fs";
   public static final String CRP_EMAIL_FUNDING_SOURCE = "crp_email_funding_source";
   public static final String CRP_FPL_ROLE = "crp_fpl_rol";
@@ -105,6 +106,8 @@ public final class APConstants {
   public static final int DELIVERABLE_QUALITY_ANSWER_NO = 3;
   public static final int DELIVERABLE_QUALITY_ANSWER_YES = 2;
   public static final int DELIVERABLE_QUALITY_ANSWER_YES_BUT_NO = 1;
+
+  public static final int BUDGET_TYPE = 1;
 
   public static final String DELIVERABLE_TYPE_ID = "deliverableTypeId";
   // Request variables
@@ -182,6 +185,7 @@ public final class APConstants {
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.otherContributions)";
 
   public static final String OUTCOME_REQUEST_ID = "outcomeID";
+  public static final String OCS_CODE_REQUEST_ID = "ocsCode";
   // Outlook institutional email
   public static final String OUTLOOK_EMAIL = "cgiar.org";
 
@@ -394,7 +398,6 @@ public final class APConstants {
   public static final String NEXT_USER_ID = "nextUserID";
   public static final String PROJECT_ID = "projectID";
   public static final String OUTPUT_NAME = "outputName";
-  public static final String OCS_CODE_REQUEST_ID = "ocsCode";
   public static final String CENTER_PROJECT_SYNC_CODE = "syncCode";
   public static final String CENTER_PROJECT_SYNC_TYPE = "syncTypeID";
 

@@ -428,6 +428,9 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
         totalBudget = projectBudget.getAmount();
 
         String directDonor = "";
+        if (fundingSource.getDirectDonor() != null) {
+          directDonor = fundingSource.getDirectDonor().getComposedName();
+        }
 
         // Funding sources locations
         String globalDimension = null;
@@ -665,6 +668,9 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
       }
 
       String directDonor = "";
+      if (fundingSource.getDirectDonor() != null) {
+        directDonor = fundingSource.getDirectDonor().getComposedName();
+      }
 
       // Funding sources locations
       String globalDimension = null;
