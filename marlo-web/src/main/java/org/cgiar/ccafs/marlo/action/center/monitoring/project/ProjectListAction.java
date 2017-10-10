@@ -254,9 +254,31 @@ public class ProjectListAction extends BaseAction {
 
     fundingSource.setTitle(agreement.getDescription());
     fundingSource.setDescription(agreement.getDescription());
-    fundingSource.setStartDate(agreement.getStartDate());
-    fundingSource.setEndDate(agreement.getEndDate());
-    fundingSource.setExtensionDate(agreement.getExtensionDate());
+
+    try {
+      fundingSource.setStartDate(agreement.getStartDate());
+    } catch (Exception e) {
+      // OCS sends a bad Date format
+      fundingSource.setStartDate(null);
+    }
+    try {
+      fundingSource.setEndDate(agreement.getEndDate());
+    } catch (Exception e) {
+      // OCS sends a bad Date format
+      fundingSource.setEndDate(null);
+    }
+    try {
+
+      if (agreement.getExtensionDate().after(agreement.getEndDate())) {
+        fundingSource.setExtensionDate(agreement.getExtensionDate());
+      } else {
+        fundingSource.setExtensionDate(null);
+      }
+    } catch (Exception e) {
+      // OCS sends a bad Date format
+      fundingSource.setExtensionDate(null);
+    }
+
     if (agreement.getOriginalDonor() != null) {
       fundingSource.setOriginalDonor(agreement.getOriginalDonor().getName());
     }
