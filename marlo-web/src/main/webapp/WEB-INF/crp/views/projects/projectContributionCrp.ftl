@@ -140,15 +140,15 @@
             [/#if]
             
             [#-- Cross-cutting contributions --]
-            [#if ((project.crossCuttingGender)!false) || ((project.crossCuttingYouth)!false)]
+            [#if ((project.projectInfo.crossCuttingGender)!false) || ((project.projectInfo.crossCuttingYouth)!false)]
             <h5 class="sectionSubTitle">Cross-cutting contributions</h5>
             <div class="form-group">
-              [#if (project.crossCuttingGender)!false]
+              [#if (project.projectInfo.crossCuttingGender)!false]
                 <div class="form-group">
                   [@customForm.textArea name="projectOutcome.genderDimenssion" required=true className="limitWords-100" editable=editable /]
                 </div>
               [/#if]
-              [#if (project.crossCuttingYouth)!false]
+              [#if (project.projectInfo.crossCuttingYouth)!false]
                 <div class="form-group">
                   [@customForm.textArea name="projectOutcome.youthComponent" required=true className="limitWords-100" editable=editable /]
                 </div> 

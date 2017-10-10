@@ -146,12 +146,12 @@
                     <p><label>[@s.text name="projectDescription.regions" /]:[@customForm.req required=editable && action.hasPermission("regions") /]</label></p>
                     [#if editable && action.hasPermission("regions")]
                       [@s.fielderror cssClass="fieldError" fieldName="project.regionsValue"/]
-                      <input type="checkbox" name="project.noRegional" value="true" id="projectNoRegional" class="checkboxInput" [#if (project.isNoRegional())!false ]checked="checked"[/#if] />
+                      <input type="checkbox" name="project.projectInfo.noRegional" value="true" id="projectNoRegional" class="checkboxInput" [#if (project.projectInfo.noRegional)!false ]checked="checked"[/#if] />
                       <label for="projectNoRegional" class="checkboxLabel"> <i>[@s.text name="project.noRegional" /]</i> </label>
                       [@s.checkboxlist name="project.regionsValue" list="regionFlagships" listKey="id" listValue="composedName" cssClass="checkboxInput rpInput" value="regionsIds" /]
                     [#else]
-                      [#if (project.isNoRegional())!false ]
-                        <input type="hidden" name="project.noRegional" value="true" />
+                      [#if (project.projectInfo.isNoRegional())!false ]
+                        <input type="hidden" name="project.projectInfo.noRegional" value="true" />
                         <p class="checked"> [@s.text name="project.projectInfo.noRegional" /]</p>
                       [/#if]
                       <input type="hidden" name="project.regionsValue" value="${(project.regionsValue)!}"/>
