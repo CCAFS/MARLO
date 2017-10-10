@@ -299,7 +299,7 @@ public class ProjectPartnerMySQLDAO implements ProjectPartnerDAO {
     for (ProjectPartnerPerson partnerPerson : projectPartnerPrev.getProjectPartnerPersons().stream()
       .filter(c -> c.isActive()).collect(Collectors.toList())) {
       if (projectPartner.getPartnerPersons() == null || projectPartner.getPartnerPersons().stream()
-        .filter(c -> c.getUser().getId().equals(partnerPerson.getUser().getId())
+        .filter(c -> partnerPerson.getUser() != null && c.getUser().getId().equals(partnerPerson.getUser().getId())
           && c.getContactType().equals(partnerPerson.getContactType()))
         .collect(Collectors.toList()).isEmpty()) {
         partnerPerson.setActive(false);

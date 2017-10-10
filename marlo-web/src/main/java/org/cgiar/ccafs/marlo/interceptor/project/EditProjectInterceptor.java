@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -165,13 +166,14 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
       if (baseAction.isReportingActive() && actionName.equalsIgnoreCase(ProjectSectionStatusEnum.BUDGET.getStatus())) {
         canEdit = false;
       }
-
-      if (phase.getProjectPhases().stream().filter(c -> c.isActive() && c.getProject().getId().longValue() == projectId)
-        .collect(Collectors.toList()).isEmpty()) {
+      List<ProjectPhase> projectPhases = phase.getProjectPhases().stream()
+        .filter(c -> c.isActive() && c.getProject().getId().longValue() == projectId).collect(Collectors.toList());
+      if (projectPhases.isEmpty()) {
         List<ProjectInfo> infos =
           project.getProjectInfos().stream().filter(c -> c.isActive()).collect(Collectors.toList());
         infos.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
-        baseAction.setActualPhase(infos.get(infos.size() - 1).getPhase());
+        baseAction.setActualPhase(infos.get(0).getPhase());
+        System.out.println(baseAction.getActualPhase().getDescription());
       }
       if (!baseAction.getActualPhase().getEditable()) {
         canEdit = false;
