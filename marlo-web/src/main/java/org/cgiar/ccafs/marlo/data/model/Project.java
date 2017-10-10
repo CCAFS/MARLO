@@ -247,6 +247,10 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   private List<ProjectOutcomePandr> outcomesPandr;
 
+  private double coreBudget;
+  private double w3Budget;
+  private double bilateralBudget;
+
 
   public Project() {
   }
@@ -280,6 +284,11 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   public Set<Activity> getActivities() {
     return activities;
+  }
+
+
+  public double getBilateralBudget() {
+    return bilateralBudget;
   }
 
 
@@ -382,6 +391,11 @@ public class Project implements java.io.Serializable, IAuditLog {
   }
 
 
+  public double getCoreBudget() {
+    return coreBudget;
+  }
+
+
   public double getCoreBudget(int year) {
 
     double total = 0;
@@ -446,14 +460,17 @@ public class Project implements java.io.Serializable, IAuditLog {
     return flagshipValue;
   }
 
+
   public List<ProjectHighlight> getHighligths() {
     return highligths;
   }
+
 
   @Override
   public Long getId() {
     return id;
   }
+
 
   public List<IpIndicator> getIndicators() {
     return indicators;
@@ -464,16 +481,13 @@ public class Project implements java.io.Serializable, IAuditLog {
     return ipProjectContributionOverviews;
   }
 
-
   public Set<IpProjectContribution> getIpProjectContributions() {
     return ipProjectContributions;
   }
 
-
   public Set<IpProjectIndicator> getIpProjectIndicators() {
     return ipProjectIndicators;
   }
-
 
   public ProjectPartner getLeader() {
 
@@ -604,17 +618,21 @@ public class Project implements java.io.Serializable, IAuditLog {
     return leverages;
   }
 
+
   public List<ProjectLeverage> getLeveragesClosed() {
     return leveragesClosed;
   }
+
 
   public List<ProjectLocation> getLocations() {
     return locations;
   }
 
+
   public List<CountryLocationLevel> getLocationsData() {
     return locationsData;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -622,7 +640,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
-
 
   @Override
   public String getModificationJustification() {
@@ -643,25 +660,22 @@ public class Project implements java.io.Serializable, IAuditLog {
     return otherContributions;
   }
 
+
   public List<OtherContribution> getOtherContributionsList() {
     return otherContributionsList;
   }
-
 
   public List<ProjectOutcome> getOutcomes() {
     return outcomes;
   }
 
-
   public List<ProjectOutcomePandr> getOutcomesPandr() {
     return outcomesPandr;
   }
 
-
   public List<IpElement> getOutputs() {
     return outputs;
   }
-
 
   public String getOverall() {
     return overall;
@@ -744,6 +758,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     return projectDeliverables;
   }
 
+
   public Set<ProjectFocus> getProjectFocuses() {
     return projectFocuses;
   }
@@ -781,7 +796,6 @@ public class Project implements java.io.Serializable, IAuditLog {
   public Set<ProjectInfo> getProjectInfos() {
     return projectInfos;
   }
-
 
   public Set<ProjectLeverage> getProjectLeverages() {
     return projectLeverages;
@@ -888,6 +902,11 @@ public class Project implements java.io.Serializable, IAuditLog {
   }
 
 
+  public double getW3Budget() {
+    return w3Budget;
+  }
+
+
   public double getW3Budget(int year) {
     double total = 0;
     for (ProjectBudget projectBudget : this.getProjectBudgets().stream()
@@ -932,6 +951,11 @@ public class Project implements java.io.Serializable, IAuditLog {
   }
 
 
+  public void setBilateralBudget(double bilateralBudget) {
+    this.bilateralBudget = bilateralBudget;
+  }
+
+
   public void setBudgets(List<ProjectBudget> budgets) {
     this.budgets = budgets;
   }
@@ -962,6 +986,11 @@ public class Project implements java.io.Serializable, IAuditLog {
   }
 
 
+  public void setCoreBudget(double coreBudget) {
+    this.coreBudget = coreBudget;
+  }
+
+
   public void setCountryFS(List<CountryFundingSources> countryFS) {
     this.countryFS = countryFS;
   }
@@ -986,14 +1015,15 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.crpActivities = crpActivities;
   }
 
+
   public void setCrpContributions(List<ProjectCrpContribution> crpContributions) {
     this.crpContributions = crpContributions;
   }
 
-
   public void setCustomID(String customID) {
     this.customID = customID;
   }
+
 
   public void setDeliverables(Set<Deliverable> deliverables) {
     this.deliverables = deliverables;
@@ -1211,7 +1241,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.regionsValue = regionsValue;
   }
 
-
   public void setScopes(List<ProjectScope> scopes) {
     this.scopes = scopes;
   }
@@ -1224,6 +1253,11 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   public void setSubmissions(Set<Submission> submissions) {
     this.submissions = submissions;
+  }
+
+
+  public void setW3Budget(double w3Budget) {
+    this.w3Budget = w3Budget;
   }
 
 

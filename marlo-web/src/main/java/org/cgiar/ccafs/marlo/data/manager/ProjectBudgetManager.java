@@ -97,6 +97,8 @@ public interface ProjectBudgetManager {
    */
   public double getReaminingAmount(long fundingSourceID, int year, double budget, long idPhase);
 
+  public double getTotalBudget(long projetId, long phaseID, int type, int year);
+
   /**
    * This method saves the information of the given projectBudget
    * 
@@ -106,5 +108,4 @@ public interface ProjectBudgetManager {
    *         or -1 is some error occurred.
    */
   public long saveProjectBudget(ProjectBudget projectBudget);
-
 }

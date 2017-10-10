@@ -88,10 +88,14 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
   }
 
   @Override
+  public double getTotalBudget(long projetId, long phaseID, int type, int year) {
+    return projectBudgetDAO.getTotalBudget(projetId, phaseID, type, year);
+  }
+
+
+  @Override
   public long saveProjectBudget(ProjectBudget projectBudget) {
 
     return projectBudgetDAO.save(projectBudget);
   }
-
-
 }

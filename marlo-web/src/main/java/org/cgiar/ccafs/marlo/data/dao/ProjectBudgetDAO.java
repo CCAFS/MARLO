@@ -91,6 +91,8 @@ public interface ProjectBudgetDAO {
   public List<ProjectBudget> getByParameters(long institutionID, int year, long budgetTypeId, long projectId,
     Integer coFinancing, long idPhase);
 
+  public double getTotalBudget(long projetId, long phaseID, int type, int year);
+
   /**
    * This method saves the information of the given projectBudget
    * 

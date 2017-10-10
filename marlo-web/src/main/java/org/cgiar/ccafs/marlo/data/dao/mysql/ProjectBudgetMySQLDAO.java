@@ -230,6 +230,22 @@ public class ProjectBudgetMySQLDAO implements ProjectBudgetDAO {
   }
 
   @Override
+  public double getTotalBudget(long projetId, long phaseID, int type, int year) {
+    String query = "select sum(pb.amount)'amount' from project_budgets pb where pb.project_id=" + projetId
+      + " and pb.id_phase=" + phaseID + " and pb.`year`=" + year + " and pb.budget_type=" + type;
+    List<Map<String, Object>> list = dao.findCustomQuery(query);
+    try {
+      if (list.size() > 0) {
+        Map<String, Object> result = list.get(0);
+        return Double.parseDouble(result.get("amount").toString());
+      }
+    } catch (Exception e) {
+      return 0;
+    }
+    return 0;
+  }
+
+  @Override
   public long save(ProjectBudget projectBudget) {
     if (projectBudget.getId() == null) {
       dao.save(projectBudget);

@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPhaseManager;
@@ -63,6 +64,8 @@ public class ProjectListAction extends BaseAction {
 
   // Managers
   private ProjectManager projectManager;
+  private ProjectBudgetManager projectBudgetManager;
+
   private ProjectInfoManager projectInfoManager;
   private CrpManager crpManager;
 
@@ -83,7 +86,8 @@ public class ProjectListAction extends BaseAction {
   @Inject
   public ProjectListAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
     LiaisonUserManager liaisonUserManager, LiaisonInstitutionManager liaisonInstitutionManager,
-    ProjectPhaseManager projectPhaseManager, PhaseManager phaseManager, ProjectInfoManager projectInfoManager) {
+    ProjectPhaseManager projectPhaseManager, PhaseManager phaseManager, ProjectInfoManager projectInfoManager,
+    ProjectBudgetManager projectBudgetManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -92,6 +96,7 @@ public class ProjectListAction extends BaseAction {
     this.liaisonUserManager = liaisonUserManager;
     this.projectInfoManager = projectInfoManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
+    this.projectBudgetManager = projectBudgetManager;
   }
 
 
@@ -399,6 +404,12 @@ public class ProjectListAction extends BaseAction {
 
       project.setFlagships(programs);
       project.setRegions(regions);
+      project.setCoreBudget(projectBudgetManager.getTotalBudget(project.getId(), this.getActualPhase().getId(), 1,
+        this.getActualPhase().getYear()));
+      project.setBilateralBudget(projectBudgetManager.getTotalBudget(project.getId(), this.getActualPhase().getId(), 3,
+        this.getActualPhase().getYear()));
+      project.setW3Budget(projectBudgetManager.getTotalBudget(project.getId(), this.getActualPhase().getId(), 2,
+        this.getActualPhase().getYear()));
 
     }
   }
@@ -462,7 +473,7 @@ public class ProjectListAction extends BaseAction {
       }
 
       this.loadFlagshipgsAndRegions(myProjects);
-
+      this.loadFlagshipgsAndRegions(allProjects);
     }
     closedProjects = projectManager.getCompletedProjects(this.getCrpID());
 
