@@ -91,7 +91,10 @@ public class ProgramImpactsAction extends BaseAction {
   private ICenterRegionManager regionService;
 
   private ICenterImpactStatementManager statementService;
+
+
   private ICenterBeneficiaryTypeManager beneficiaryTypeService;
+
   private ICenterImpactBeneficiaryManager impactBeneficiaryService;
   private ICenterAreaManager researchAreaService;
   private UserManager userService;
@@ -108,9 +111,10 @@ public class ProgramImpactsAction extends BaseAction {
   private CenterArea selectedResearchArea;
   private List<CenterProgram> researchPrograms;
   private SrfSubIdoManager subIdoManager;
-
+  private List<SrfSubIdo> subIdos;
   private List<CenterObjective> researchObjectives;
   private CenterProgram selectedProgram;
+
   private List<CenterImpact> impacts;
   private long programID;
   private long areaID;
@@ -242,10 +246,14 @@ public class ProgramImpactsAction extends BaseAction {
     return selectedResearchArea;
   }
 
+  public List<SrfSubIdo> getSubIdos() {
+    return subIdos;
+  }
 
   public String getTransaction() {
     return transaction;
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -447,6 +455,7 @@ public class ProgramImpactsAction extends BaseAction {
 
           if (impacts != null) {
             for (CenterImpact researchImpact : impacts) {
+
               researchImpact.setObjectives(new ArrayList<>());
               if (researchImpact.getResearchImpactObjectives() != null) {
                 for (CenterImpactObjective impactObjective : researchImpact.getResearchImpactObjectives().stream()
@@ -457,8 +466,16 @@ public class ProgramImpactsAction extends BaseAction {
               researchImpact.setBeneficiaries(new ArrayList<>(researchImpact.getResearchImpactBeneficiaries().stream()
                 .filter(rib -> rib.isActive()).collect(Collectors.toList())));
             }
+
+
           }
         }
+
+        if (subIdoManager.findAll() != null) {
+          subIdos = subIdoManager.findAll().stream().filter(si -> si.isActive() && !si.getSrfIdo().isIsCrossCutting())
+            .collect(Collectors.toList());
+        }
+
 
         if (regionService.findAll() != null) {
           regions = regionService.findAll().stream().filter(r -> r.isActive()).collect(Collectors.toList());
@@ -499,7 +516,6 @@ public class ProgramImpactsAction extends BaseAction {
     }
 
   }
-
 
   @Override
   public String save() {
@@ -831,13 +847,13 @@ public class ProgramImpactsAction extends BaseAction {
     this.loggedCenter = loggedCenter;
   }
 
+
   /**
    * @param programID the programID to set
    */
   public void setProgramID(long programID) {
     this.programID = programID;
   }
-
 
   /**
    * @param programID the programID to set
@@ -846,6 +862,7 @@ public class ProgramImpactsAction extends BaseAction {
     this.programID = programID;
   }
 
+
   public void setRegions(List<CenterRegion> regions) {
     this.regions = regions;
   }
@@ -853,7 +870,6 @@ public class ProgramImpactsAction extends BaseAction {
   public void setResearchAreas(List<CenterArea> researchAreas) {
     this.researchAreas = researchAreas;
   }
-
 
   public void setResearchObjectives(List<CenterObjective> researchObjectives) {
     this.researchObjectives = researchObjectives;
@@ -867,6 +883,7 @@ public class ProgramImpactsAction extends BaseAction {
     this.researchPrograms = researchPrograms;
   }
 
+
   /**
    * @param selectedProgram the selectedProgram to set
    */
@@ -879,6 +896,10 @@ public class ProgramImpactsAction extends BaseAction {
    */
   public void setSelectedResearchArea(CenterArea selectedResearchArea) {
     this.selectedResearchArea = selectedResearchArea;
+  }
+
+  public void setSubIdos(List<SrfSubIdo> subIdos) {
+    this.subIdos = subIdos;
   }
 
   public void setTransaction(String transaction) {
