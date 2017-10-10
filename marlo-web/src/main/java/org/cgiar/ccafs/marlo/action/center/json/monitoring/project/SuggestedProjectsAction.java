@@ -96,7 +96,7 @@ public class SuggestedProjectsAction extends BaseAction {
             if (projectBudget.getProject().isActive()) {
               Project project = projectBudget.getProject();
               dataSuggestion.put("code", project.getId());
-              dataSuggestion.put("title", project.getTitle());
+              // dataSuggestion.put("title", project.getTitle());
               dataSuggestions.add(dataSuggestion);
             }
           }
@@ -148,7 +148,7 @@ public class SuggestedProjectsAction extends BaseAction {
 
     Map<String, Object> dataProject = new HashMap<>();
     dataProject.put("id", project.getId());
-    dataProject.put("name", project.getTitle());
+    // dataProject.put("name", project.getTitle());
 
     List<ProjectBudget> projectBudgets = new ArrayList<>(project.getProjectBudgets().stream()
       .filter(pb -> pb.isActive() && pb.getYear() == this.getCenterYear()).collect(Collectors.toList()));
@@ -167,19 +167,19 @@ public class SuggestedProjectsAction extends BaseAction {
       fundingSources = new ArrayList<>(hashFundignSources);
 
       List<Map<String, Object>> dataSuggestions = new ArrayList<>();
-      for (FundingSource fundingSource : fundingSources) {
-        if (fundingSource.getFinanceCode() != null) {
-          agreement = ocsClient.getagreement(fundingSource.getFinanceCode());
-          Map<String, Object> dataSuggestion = new HashMap<>();
-          if (agreement != null) {
-            dataSuggestion.put("code", fundingSource.getFinanceCode());
-            dataSuggestion.put("title", agreement.getShortTitle());
-            dataSuggestions.add(dataSuggestion);
-          }
-
-        }
-      }
-
+      /*
+       * for (FundingSource fundingSource : fundingSources) {
+       * if (fundingSource.getFinanceCode() != null) {
+       * agreement = ocsClient.getagreement(fundingSource.getFinanceCode());
+       * Map<String, Object> dataSuggestion = new HashMap<>();
+       * if (agreement != null) {
+       * dataSuggestion.put("code", fundingSource.getFinanceCode());
+       * dataSuggestion.put("title", agreement.getShortTitle());
+       * dataSuggestions.add(dataSuggestion);
+       * }
+       * }
+       * }
+       */
       dataProject.put("suggestions", dataSuggestions);
 
     }
