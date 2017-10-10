@@ -207,6 +207,8 @@
     <mapping resource="xmls/PlaAgreement.hbm.xml"/>
     
        
+    <mapping resource="xmls/CenterImpactStatement.hbm.xml" />
+    <mapping resource="xmls/CenterFundingSyncTypes.hbm.xml" />   
 	</session-factory>
 </hibernate-configuration>
 

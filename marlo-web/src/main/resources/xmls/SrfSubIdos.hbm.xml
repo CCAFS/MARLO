@@ -46,6 +46,14 @@
 			<one-to-many
 				class="org.cgiar.ccafs.marlo.data.model.CrpSubIdosContribution" />
 		</set>
+		<set lazy="true" name="centerImpacts" table="center_impacts"
+      inverse="true" fetch="select">
+      <key>
+        <column name="subido_id" not-null="true" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.CenterImpact" />
+    </set>
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>

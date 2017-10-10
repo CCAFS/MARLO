@@ -120,6 +120,18 @@ public class FundingSourceMySQLDAO implements FundingSourceDAO {
   }
 
   @Override
+  public List<FundingSource> searchFundingSourcesByFinanceCode(String ocsCode) {
+    StringBuilder q = new StringBuilder();
+    q.append("from " + FundingSource.class.getName());
+    q.append(" where finance_code=" + ocsCode);
+
+
+    List<FundingSource> fundingSources = dao.findAll(q.toString());
+    return fundingSources;
+  }
+
+
+  @Override
   public List<FundingSource> searchFundingSourcesByInstitution(String query, long institutionID, int year, long crpID) {
     StringBuilder q = new StringBuilder();
     q.append("from " + FundingSource.class.getName());
