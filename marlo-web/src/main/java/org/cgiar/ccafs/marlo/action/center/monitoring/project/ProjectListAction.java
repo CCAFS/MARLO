@@ -268,7 +268,12 @@ public class ProjectListAction extends BaseAction {
       fundingSource.setEndDate(null);
     }
     try {
-      fundingSource.setExtensionDate(agreement.getExtensionDate());
+
+      if (agreement.getExtensionDate().after(agreement.getEndDate())) {
+        fundingSource.setExtensionDate(agreement.getExtensionDate());
+      } else {
+        fundingSource.setExtensionDate(null);
+      }
     } catch (Exception e) {
       // OCS sends a bad Date format
       fundingSource.setExtensionDate(null);
