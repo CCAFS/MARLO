@@ -193,37 +193,33 @@ public class ProjectListAction extends BaseAction {
     Project project = projectManager.getProjectById(pID);
 
     CenterProject centerProject = projectService.getCenterProjectById(centerProjectID);
+    /*
+     * centerProject.setName(project.getTitle());
+     * centerProject.setDescription(project.getSummary());
+     * centerProject.setStartDate(project.getStartDate());
+     * centerProject.setEndDate(project.getEndDate());
+     * centerProject.setProjectLeader(project.getLeaderPerson().getUser());
+     * projectService.saveCenterProject(centerProject);
+     * CenterProjectFundingSource fundingSource = new CenterProjectFundingSource();
+     * fundingSource.setCenterProject(centerProject);
+     * fundingSource.setCode("P" + syncCode);
+     * fundingSource.setSync(true);
+     * fundingSource.setSyncDate(new Date());
+     * fundingSource.setCrp(project.getCrp());
+     * fundingSource.setTitle(project.getTitle());
+     * fundingSource.setDescription(project.getSummary());
+     * fundingSource.setStartDate(project.getStartDate());
+     * fundingSource.setEndDate(project.getEndDate());
+     * // Setting the sync type (2 = MARLO-CRP)
+     * CenterFundingSyncType fundingSyncType = fundingSyncTypeManager.getCenterFundingSyncTypeById(2);
+     * fundingSource.setCenterFundingSyncType(fundingSyncType);
+     * fundingSource.setActive(true);
+     * fundingSource.setCreatedBy(this.getCurrentUser());
+     * fundingSource.setModifiedBy(this.getCurrentUser());
+     * fundingSource.setActiveSince(new Date());
+     * centerProjectFudingSourceManager.saveProjectFundingSource(fundingSource);
+     */
 
-    centerProject.setName(project.getTitle());
-    centerProject.setDescription(project.getSummary());
-    centerProject.setStartDate(project.getStartDate());
-    centerProject.setEndDate(project.getEndDate());
-    centerProject.setProjectLeader(project.getLeaderPerson().getUser());
-
-    projectService.saveCenterProject(centerProject);
-
-    CenterProjectFundingSource fundingSource = new CenterProjectFundingSource();
-
-    fundingSource.setCenterProject(centerProject);
-    fundingSource.setCode("P" + syncCode);
-    fundingSource.setSync(true);
-    fundingSource.setSyncDate(new Date());
-    fundingSource.setCrp(project.getCrp());
-    fundingSource.setTitle(project.getTitle());
-    fundingSource.setDescription(project.getSummary());
-    fundingSource.setStartDate(project.getStartDate());
-    fundingSource.setEndDate(project.getEndDate());
-
-    // Setting the sync type (2 = MARLO-CRP)
-    CenterFundingSyncType fundingSyncType = fundingSyncTypeManager.getCenterFundingSyncTypeById(2);
-    fundingSource.setCenterFundingSyncType(fundingSyncType);
-
-    fundingSource.setActive(true);
-    fundingSource.setCreatedBy(this.getCurrentUser());
-    fundingSource.setModifiedBy(this.getCurrentUser());
-    fundingSource.setActiveSince(new Date());
-
-    centerProjectFudingSourceManager.saveProjectFundingSource(fundingSource);
 
   }
 
@@ -407,7 +403,7 @@ public class ProjectListAction extends BaseAction {
             new ArrayList<>(user.getResearchLeaders().stream()
               .filter(rl -> rl.isActive()
                 && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue())
-              .collect(Collectors.toList()));
+            .collect(Collectors.toList()));
           if (!userAreaLeads.isEmpty()) {
             areaID = userAreaLeads.get(0).getResearchArea().getId();
           } else {
