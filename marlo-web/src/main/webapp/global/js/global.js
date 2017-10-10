@@ -16,9 +16,6 @@ var notyDefaultOptions = {
     ]
 };
 
-
-
-
 /**
  * Global javascript must be here.
  */
@@ -27,18 +24,18 @@ $(document).ready(function() {
   showHelpText();
 
   // Change CRP Phase event
-  $('.changePhase').on('click', function(){
+  $('.changePhase').on('click', function() {
     var phaseID = $(this).classParam('phase');
     changePhase(phaseID);
   });
- 
+
   /**
    * Execute an AJAX thar change the phase in the session
    * 
    * @param phaseID
    * @returns
    */
-  function changePhase(phaseID){
+  function changePhase(phaseID) {
     // Execute a change of phase
     $.ajax({
         url: baseURL + '/changePhase.do',
@@ -50,12 +47,12 @@ $(document).ready(function() {
         },
         success: function(data) {
         },
-        complete: function(){
+        complete: function() {
           location.reload();
         }
     });
   }
-  
+
   // Changes detected
   $('p.changesDetected strong').text($('.changedField').length);
 
@@ -112,6 +109,7 @@ $(document).ready(function() {
     if(justification.exists() && justification.val().trim().length == 0) {
       e.preventDefault();
       return
+
     }
     // Turn save button in saving button
     $(this).addClass('disabled animated flipInY');
@@ -309,16 +307,16 @@ $(document).ready(function() {
     });
 
   });
-  
+
   // Datatables language
   if($.fn.dataTable) {
-    $.extend( true, $.fn.dataTable.defaults, {
+    $.extend(true, $.fn.dataTable.defaults, {
       "language": {
         "infoFiltered": "(filtered from a total of _MAX_ entries)"
       }
     });
   }
-  
+
   // Cancel button
   $('#cancelButton').on('click', function() {
     $('button[name="cancel"]').trigger('click');
@@ -433,8 +431,8 @@ function isStatusOnGoing(statusId) {
 var placeholderText = 'Search the organization here...'
 var searchInstitutionsOptions = function(includePPA) {
   return searchInstitutionsOptionsData({
-    includePPA: includePPA,
-    projectPreSetting: projectPreSetting
+      includePPA: includePPA,
+      projectPreSetting: projectPreSetting
   });
 }
 
@@ -499,4 +497,10 @@ function formatRepo(repo) {
 
 function formatRepoSelection(repo) {
   return repo.composedName;
+}
+
+function notificationError(message) {
+  var notyOptions = jQuery.extend({}, notyDefaultOptions);
+  notyOptions.text = message;
+  noty(notyOptions);
 }

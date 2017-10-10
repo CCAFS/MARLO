@@ -41,12 +41,10 @@
         <label for="">Research Topic:<span class="red">*</span></label>
         <select name="researchTopics" id="researchTopics">
           <option value="-1" >View All</option>
-          
             [#list researchTopics as researchTopic]
               <option value="${researchTopic.id}"[#if (selectedResearchTopic.id)?has_content && (selectedResearchTopic.id== researchTopic.id)] selected="selected"[/#if]] >${researchTopic.researchTopic}</option>
             [/#list]
-           
-        </select>            
+        </select>
       </div>
       <div class="loadingBlock"></div>
       <div style="display:none">[@outcomesListMonitoring.outcomesListMonitoring outcomes=outcomes canValidate=true canEdit=editable namespace="/monitoring" defaultAction="${(centerSession)!}/monitoringOutcome" /]</div>
