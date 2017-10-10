@@ -1,3 +1,4 @@
+
 [#ftl]
 <div class="simpleBox">
   [#-- Title input --] 
@@ -157,7 +158,7 @@
 <div class="simpleBox">
   [#-- Does this deliverable have a cross-cutting dimension --]
   <div class="form-group">
-    <label for="">[@customForm.text name="deliverable.deliverableInfo.crossCuttingDimensions" readText=!editable/] [@customForm.req required=editable/]</label>
+    <label for="">[@customForm.text name="deliverable.crossCuttingDimensions" readText=!editable/] [@customForm.req required=editable/]</label>
     <div class="row">
       <div class="col-md-12">
         [#if editable]

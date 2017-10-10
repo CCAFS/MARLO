@@ -27,7 +27,7 @@ function init() {
   $('.helpMessage3').on("click", openDialog);
 
   // select name
-  $(".keyOutput").attr("name", "deliverable.crpClusterKeyOutput.id");
+  $(".keyOutput").attr("name", "deliverable.deliverableInfo.crpClusterKeyOutput.id");
   /* Events select */
   subTypes();
   keyOutputs();

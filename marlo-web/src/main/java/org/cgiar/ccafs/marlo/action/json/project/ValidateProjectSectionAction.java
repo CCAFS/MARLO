@@ -615,8 +615,10 @@ public class ValidateProjectSectionAction extends BaseAction {
 
   public List<DeliverablePartnership> otherPartners(Deliverable deliverable) {
     try {
-      List<DeliverablePartnership> list = deliverable.getDeliverablePartnerships().stream()
-        .filter(dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
+      List<DeliverablePartnership> list =
+        deliverable.getDeliverablePartnerships().stream()
+          .filter(dp -> dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase()) && dp.isActive()
+            && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
         .collect(Collectors.toList());
       return list;
     } catch (Exception e) {
@@ -706,8 +708,8 @@ public class ValidateProjectSectionAction extends BaseAction {
   public DeliverablePartnership responsiblePartner(Deliverable deliverable) {
     try {
       DeliverablePartnership partnership = deliverable.getDeliverablePartnerships().stream()
-        .filter(
-          dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
+        .filter(dp -> dp.getPhase().equals(this.getActualPhase()) && dp.isActive()
+          && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
         .collect(Collectors.toList()).get(0);
       return partnership;
     } catch (Exception e) {
@@ -998,8 +1000,12 @@ public class ValidateProjectSectionAction extends BaseAction {
         }
 
 
-        deliverable.setUsers(deliverable.getDeliverableUsers().stream().collect(Collectors.toList()));
-        deliverable.setCrps(deliverable.getDeliverableCrps().stream().collect(Collectors.toList()));
+        deliverable.setUsers(deliverable.getDeliverableUsers().stream()
+          .filter(c -> c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList()));
+        deliverable.setCrps(deliverable.getDeliverableCrps().stream()
+          .filter(c -> c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList()));
         deliverable.setFiles(new ArrayList<>());
         for (DeliverableDataSharingFile dataSharingFile : deliverable.getDeliverableDataSharingFiles()) {
 
