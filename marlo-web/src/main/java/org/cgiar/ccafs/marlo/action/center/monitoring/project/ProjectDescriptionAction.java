@@ -771,12 +771,14 @@ public class ProjectDescriptionAction extends BaseAction {
           CenterProjectFundingSource fundingSourcePrew =
             projectFundingSourceService.getProjectFundingSourceById(projectFundingSource.getId());
 
-          if (!fundingSourcePrew.getCenterFundingSourceType()
-            .equals(projectFundingSource.getCenterFundingSourceType())) {
-            hasChanges = true;
-            CenterFundingSourceType fundingSourceType =
-              fundingSourceService.getFundingSourceTypeById(projectFundingSource.getCenterFundingSourceType().getId());
-            fundingSourcePrew.setCenterFundingSourceType(fundingSourceType);
+          if (fundingSourcePrew.getCenterFundingSourceType() != null) {
+            if (!fundingSourcePrew.getCenterFundingSourceType()
+              .equals(projectFundingSource.getCenterFundingSourceType())) {
+              hasChanges = true;
+              CenterFundingSourceType fundingSourceType = fundingSourceService
+                .getFundingSourceTypeById(projectFundingSource.getCenterFundingSourceType().getId());
+              fundingSourcePrew.setCenterFundingSourceType(fundingSourceType);
+            }
           }
 
           if (hasChanges) {
