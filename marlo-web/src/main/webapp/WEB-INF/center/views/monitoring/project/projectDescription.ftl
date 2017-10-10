@@ -44,7 +44,7 @@
         [#-- Section Messages --]
         [#include "/WEB-INF/center/views/monitoring/project/messages-projects.ftl" /]
         <br />
-      
+    
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
         
           [#-- Back --]
@@ -53,13 +53,13 @@
             <span class="glyphicon glyphicon-circle-arrow-left"></span> Back to the project list
           </a>
         </div>
-          
+
             <h3 class="headTitle">${selectedProgram.name} - [@s.text name="projectDescription.title" /]</h3>  
             <div id="projectDescription" class="borderBox">
             
             [#-- Project Title --]
             <div class="form-group metadataElement-description">
-              [@customForm.input name="project.name" i18nkey="projectDescription.name" required=true className="project-title metadataValue" editable=editable && action.hasPermission("title") /]
+              [@customForm.input name="project.name" i18nkey="projectDescription.name" required=true className="project-title metadataValue" readOnly=project.sync editable=editable && action.hasPermission("title") /]
             </div>
             [#-- Project Suggested Title --]
             <div class="form-group">
