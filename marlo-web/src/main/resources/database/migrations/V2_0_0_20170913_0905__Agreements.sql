@@ -1,3 +1,4 @@
+SET FOREIGN_KEY_CHECKS=0;
 DROP TABLE IF EXISTS `agreements`;
 CREATE TABLE `agreements` (
 `id` varchar (20) not null,
