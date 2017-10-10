@@ -434,6 +434,15 @@ public class ProgramImpactsAction extends BaseAction {
                 impact.setBeneficiaries(new ArrayList<>(autoSaveIBeneficiaies));
               }
 
+              if (impact.getResearchImpactStatement() != null) {
+
+                CenterImpactStatement impactStatement =
+                  statementService.getResearchImpactStatementById(impact.getResearchImpactStatement().getId());
+
+                impact.setResearchImpactStatement(impactStatement);
+
+              }
+
               if (impact.getObjectiveValue() != null) {
                 String[] objectiveValues = impact.getObjectiveValue().split(",");
                 impact.setObjectives(new ArrayList<>());
@@ -560,7 +569,7 @@ public class ProgramImpactsAction extends BaseAction {
             researchImpactNew.setResearchImpactStatement(impactStatement);
             researchImpactNew.setDescription(impactStatement.getName());
 
-            SrfSubIdo srfSubIdo = subIdoManager.getSrfSubIdoById(impactStatement.getSrfIdo().getId());
+            SrfSubIdo srfSubIdo = subIdoManager.getSrfSubIdoById(researchImpact.getSrfSubIdo().getId());
             researchImpactNew.setSrfSubIdo(srfSubIdo);
 
           } else {
@@ -605,11 +614,25 @@ public class ProgramImpactsAction extends BaseAction {
               hasChanges = true;
               researchImpactRew.setResearchImpactStatement(impactStatement);
               researchImpactRew.setDescription(impactStatement.getName());
+
+
+            }
+
+            SrfSubIdo srfSubIdo = subIdoManager.getSrfSubIdoById(researchImpact.getSrfSubIdo().getId());
+
+            if (srfSubIdo != null) {
+              if (researchImpactRew.getSrfSubIdo() == null || !researchImpactRew.getSrfSubIdo().equals(srfSubIdo)) {
+                hasChanges = true;
+                researchImpactRew.setSrfSubIdo(srfSubIdo);
+              }
+            } else {
+              researchImpactRew.setSrfSubIdo(null);
             }
 
           } else {
             hasChanges = true;
             researchImpactRew.setResearchImpactStatement(null);
+            researchImpactRew.setSrfSubIdo(null);
 
             if (researchImpactRew.getDescription() == null
               || !researchImpactRew.getDescription().equals(researchImpact.getDescription().trim())) {
