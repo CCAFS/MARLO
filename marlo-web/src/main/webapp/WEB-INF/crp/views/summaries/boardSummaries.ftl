@@ -88,7 +88,7 @@
               
             </div>
             [#-- input --]
-            <label for="">Enter a key word, then click Enter. You can do this several times; note that the search will pull out the reports/deliverables that contain any of the key words entered</label>
+            <label for="">[@s.text name="summaries.board.report.searchTermsSummary" /]</label>
             <div class="row">
               <div class="col-md-9">
                 <input class="form-control inputTerm" type="text" />
