@@ -68,7 +68,7 @@
               <input class="hidden" type="radio" name="formOptions" id="searchTermsSummary" value="searchTermsSummary"/>
               <label for="">[@s.text name="summaries.board.report.genderContributionSummary" /] </label>
             </div>
-            <span class="description col-md-12">[@s.text name="summaries.board.report.genderContributionSummary.description" /] You can to add terms and generate the report, or simply generate the report without add terms.</span>
+            <span class="description col-md-12">[@s.text name="summaries.board.report.genderContributionSummary.description" /] </span>
             <div class="extraOptions col-md-12" style="display:none">
             <span class="hidden fileTypes excelType">searchTermsSummary-searchTermsSummary</span>
             <span class="hidden forPlanningCycle forCycle"></span>
@@ -88,10 +88,10 @@
               
             </div>
             [#-- input --]
-            <label for="">Write the term:</label>
+            <label for="">Enter a key word, then click Enter. You can do this several times; note that the search will pull out the reports/deliverables that contain any of the key words entered</label>
             <div class="row">
               <div class="col-md-9">
-                <input class="form-control inputTerm" type="text" placeholder="Press enter to add a new term " />
+                <input class="form-control inputTerm" type="text" />
               </div>
               <div class="col-md-3 pull right">
                 <a  style="display:none;" target="_blank" class="generateReport addButton pull-right" style="" href="#">[@s.text name="form.buttons.generate" /]</a>
