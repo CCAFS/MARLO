@@ -23,6 +23,10 @@
       fetch="select">
       <column name="impact_statement_id"/>
     </many-to-one>
+    <many-to-one name="srfSubIdo" class="org.cgiar.ccafs.marlo.data.model.SrfSubIdo"
+      fetch="select">
+      <column name="subido_id"/>
+    </many-to-one>
     <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
       fetch="select">
       <column name="modified_by" not-null="false" />

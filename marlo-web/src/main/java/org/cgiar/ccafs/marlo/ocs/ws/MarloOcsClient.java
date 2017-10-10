@@ -46,23 +46,19 @@ public class MarloOcsClient {
    * @return AgreementOCS object with all the info
    */
   public AgreementOCS getagreement(String agreementID) {
-    System.out.println("LLAMO AL SERVICE " + agreementID);
     AgreementOCS agreementOCS = new AgreementOCS();
     ExecutorService executor = Executors.newFixedThreadPool(MYTHREADS);
     // Run the services on parallel
     for (int i = 1; i <= 4; i++) {
-      WsThread worker = new WsThread(apConfig, i, agreementID, agreementOCS);
+      Runnable worker = new WsThread(apConfig, i, agreementID, agreementOCS);
       executor.execute(worker);
-
     }
     executor.shutdownNow();
     // Wait until all threads are finish
     while (!executor.isTerminated()) {
-      // LOG.info("Ws OCS waiting");
+      LOG.info("Ws OCS waiting");
     }
-    // executor.shutdown();
 
-    System.out.println("TERMINO AL SERVICE " + agreementID);
     if (agreementOCS.getId() == null) {
       return null;
     } else {

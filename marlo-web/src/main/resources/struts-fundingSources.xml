@@ -13,17 +13,9 @@
     </action>
     
     <action name="{crp}/fundingSource" class="org.cgiar.ccafs.marlo.action.funding.FundingSourceAction">
-        <interceptor-ref name="i18nFile" />
-        <interceptor-ref name="validCrp" />
-        <interceptor-ref name="requireUser" />
-        <interceptor-ref name="validSessionCrp" />
-        <interceptor-ref name="keepRedirectMessages" />
-        <interceptor-ref name="accessibleStage" />
-        <interceptor-ref name="trimInputs" />
-        <interceptor-ref name="editFunding" /> 
-	      <interceptor-ref name="defaultStack" />
+	       <interceptor-ref name="editFSStack" />
 	      <result name="input">/WEB-INF/crp/views/fundingSources/fundingSource.ftl</result>
-      <result name="success" type="redirectAction">
+        <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/fundingSource</param>
         <param name="fundingSourceID">${fundingSourceID}</param>
         <param name="edit">true</param>
