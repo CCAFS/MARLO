@@ -83,7 +83,7 @@ function initGraph(programID){
 	    	  $('#ipGraph-btnMax').attr('disabled','disabled');
 	    	  $('#ipGraph-btnPrint').attr('disabled','disabled');
 	    	  $( "#dialog-message" ).empty();
-	    	  $( "<div id=\"loading-dialog-message\" style=\"display:none;position:absolute; width:100%; height:100%;top: 45%;\"><img style=\"display: block; margin: 0 auto;\" src=\"../images/global/loading.gif\" alt=\"Loader\" /></div>" ).appendTo("#dialog-message");
+	    	  $( "<div id=\"loading-dialog-message\" style=\"display:none;position:absolute; width:100%; height:100%;top: 45%;\"><img style=\"display: block; margin: 0 auto;\" src=\"../global/images/loading.gif\" alt=\"Loader\" /></div>" ).appendTo("#dialog-message");
 	    	  reinitCytos();
 	    	  if (programID && !fullImpact) {
     	        callCytos(baseURL+"/json/json/prePlanningIpGraph.do?programID=" + programID, "ipGraph-content");

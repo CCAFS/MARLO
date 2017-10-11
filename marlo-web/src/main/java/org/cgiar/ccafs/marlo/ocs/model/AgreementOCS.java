@@ -71,7 +71,7 @@ public class AgreementOCS {
 
   @JSON(format = "yyyy-MM-dd")
   public Date getExtensionDate() {
-    try {
+     try {
       return extensionDate;
     } catch (Exception e) {
       return null;
