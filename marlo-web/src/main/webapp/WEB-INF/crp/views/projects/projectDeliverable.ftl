@@ -115,7 +115,7 @@
                   [#-- Compliance check (Data products only) --]
                   [@deliverableMacros.complianceCheck /]
                 </div>
-                <div class="fairComplian-block" style="display:${deliverable.requeriedFair()?string('block','none')}">
+                <div class="fairComplian-block" style="display:${deliverable.deliverableInfo.requeriedFair()?string('block','none')}">
                   [#-- Fair Compliant--] 
                   [@deliverableMacros.fairCompliant /]
                 </div>
