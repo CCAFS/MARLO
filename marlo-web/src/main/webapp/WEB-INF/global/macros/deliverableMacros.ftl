@@ -188,7 +188,6 @@
       [@customForm.input name="deliverable.dissemination.disseminationUrl" type="text" i18nkey="project.deliverable.dissemination.disseminationUrl"  placeholder="" className="deliverableDisseminationUrl" required=true readOnly=isSynced editable=editable /]
     </div>
     <div class="buttons-field">
-      
       [#if editable]
         [#local showSync = (channelsArray?seq_contains(deliverable.dissemination.disseminationChannel))!false ]
         <div id="fillMetadata" style="display:${showSync?string('block','none')};">

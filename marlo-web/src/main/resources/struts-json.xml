@@ -108,6 +108,13 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		<action name="ocsService"
+      class="org.cgiar.ccafs.marlo.action.json.global.OcsServiceAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
 		<action name="searchCountryListPL"
 			class="org.cgiar.ccafs.marlo.action.json.project.ProjectLocationCountryListAction">
 			<result type="json">
@@ -491,7 +498,7 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
-
+    <!-- 
 		<action name="ocsService"
 			class="org.cgiar.ccafs.marlo.action.center.json.global.OcsServiceAction">
 			<result type="json">
@@ -499,6 +506,7 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		 -->
 		
 		<action name="projectSync"
       class="org.cgiar.ccafs.marlo.action.center.json.monitoring.project.CrpProjectAction">
