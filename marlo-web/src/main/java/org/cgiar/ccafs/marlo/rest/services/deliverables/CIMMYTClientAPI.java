@@ -111,89 +111,100 @@ public class CIMMYTClientAPI extends MetadataClientApi {
             List<Element> elements2 = metadataOAI.elements();
             for (Element oai_dc : elements2) {
               // get authors
-              List<Element> authorsElements = oai_dc.elements("creator");
-              if (authorsElements != null && authorsElements.size() > 0) {
-                for (Element value : authorsElements) {
-                  Author author = new Author(value.getStringValue());
-                  String names[] = author.getFirstName().split(" ");
-                  // Name validations
-                  if (names.length > 0) {
-                    if (names.length == 1) {
-                      author.setFirstName(names[0]);
-                      authors.add(author);
-                    } else if (names.length == 2) {
-                      author.setFirstName(names[0]);
-                      author.setLastName(names[1]);
-                      authors.add(author);
-                    } else if (names.length == 3) {
-                      if (names[1].contains(".")) {
-                        author.setFirstName(names[0] + " " + names[1]);
-                        author.setLastName(names[2]);
-                        authors.add(author);
-                      } else {
+              if (oai_dc.elements("creator") != null) {
+                List<Element> authorsElements = oai_dc.elements("creator");
+                if (authorsElements != null && authorsElements.size() > 0) {
+                  for (Element value : authorsElements) {
+                    Author author = new Author(value.getStringValue());
+                    String names[] = author.getFirstName().split(" ");
+                    // Name validations
+                    if (names.length > 0) {
+                      if (names.length == 1) {
                         author.setFirstName(names[0]);
-                        author.setLastName(names[1] + " " + names[2]);
+                        authors.add(author);
+                      } else if (names.length == 2) {
+                        author.setFirstName(names[0]);
+                        author.setLastName(names[1]);
+                        authors.add(author);
+                      } else if (names.length == 3) {
+                        if (names[1].contains(".")) {
+                          author.setFirstName(names[0] + " " + names[1]);
+                          author.setLastName(names[2]);
+                          authors.add(author);
+                        } else {
+                          author.setFirstName(names[0]);
+                          author.setLastName(names[1] + " " + names[2]);
+                          authors.add(author);
+                        }
+                      } else {
+                        author.setFirstName(names[0] + " " + names[1]);
+                        String lastName = "";
+                        for (int i = 2; i < names.length; i++) {
+                          if (i + 1 == names.length) {
+                            lastName += names[i];
+                          } else {
+                            lastName += names[i] + " ";
+                          }
+                        }
+                        author.setLastName(lastName);
                         authors.add(author);
                       }
-                    } else {
-                      author.setFirstName(names[0] + " " + names[1]);
-                      String lastName = "";
-                      for (int i = 2; i < names.length; i++) {
-                        if (i + 1 == names.length) {
-                          lastName += names[i];
-                        } else {
-                          lastName += names[i] + " ";
-                        }
-                      }
-                      author.setLastName(lastName);
-                      authors.add(author);
                     }
                   }
                 }
               }
               // get citation and description
-              List<Element> descriptionsElements = oai_dc.elements("description");
-              if (descriptionsElements != null && descriptionsElements.size() > 0) {
+              if (oai_dc.elements("description") != null) {
+                List<Element> descriptionsElements = oai_dc.elements("description");
+                if (descriptionsElements != null && descriptionsElements.size() > 0) {
 
-                for (Element descriptionElement : descriptionsElements) {
-                  String description = descriptionElement.getStringValue();
-                  if (description != null && !description.isEmpty()) {
-                    String descriptionArray[] = description.split(" ");
-                    // is citation
-                    if (descriptionArray[0].equals("Citation:")) {
-                      jo.put("citation", description);
-                    } else {
-                      jo.put(descriptionElement.getName(), description);
+                  for (Element descriptionElement : descriptionsElements) {
+                    String description = descriptionElement.getStringValue();
+                    if (description != null && !description.isEmpty()) {
+                      String descriptionArray[] = description.split(" ");
+                      // is citation
+                      if (descriptionArray[0].equals("Citation:")) {
+                        jo.put("citation", description);
+                      } else {
+                        jo.put(descriptionElement.getName(), description);
+                      }
                     }
                   }
                 }
               }
               // get title
-              Element titleElement = oai_dc.element("title");
-              String titleValue = titleElement.getStringValue();
-              jo.put(titleElement.getName(), titleValue);
+              if (oai_dc.element("title") != null) {
+                Element titleElement = oai_dc.element("title");
+                String titleValue = titleElement.getStringValue();
+                jo.put(titleElement.getName(), titleValue);
+              }
               // get keywords
-              List<Element> subjectsElements = oai_dc.elements("subject");
-              if (subjectsElements != null && subjectsElements.size() > 0) {
-                String keyWords = "";
-                for (Element subjectElement : subjectsElements) {
-                  if (keyWords.isEmpty()) {
-                    keyWords += subjectElement.getStringValue();
-                  } else {
-                    keyWords += " " + subjectElement.getStringValue();
+              if (oai_dc.elements("subject") != null) {
+                List<Element> subjectsElements = oai_dc.elements("subject");
+                if (subjectsElements != null && subjectsElements.size() > 0) {
+                  String keyWords = "";
+                  for (Element subjectElement : subjectsElements) {
+                    if (keyWords.isEmpty()) {
+                      keyWords += subjectElement.getStringValue();
+                    } else {
+                      keyWords += " " + subjectElement.getStringValue();
+                    }
                   }
+                  jo.put(subjectsElements.get(0).getName(), keyWords);
                 }
-                jo.put(subjectsElements.get(0).getName(), keyWords);
               }
               // get rights
-              Element rightsElement = oai_dc.element("rights");
-              String rightsValue = rightsElement.getStringValue();
-              jo.put(rightsElement.getName(), rightsValue);
-
+              if (oai_dc.element("rights") != null) {
+                Element rightsElement = oai_dc.element("rights");
+                String rightsValue = rightsElement.getStringValue();
+                jo.put(rightsElement.getName(), rightsValue);
+              }
               // get date
-              Element dateElement = oai_dc.element("date");
-              String dateValue = dateElement.getStringValue();
-              jo.put("publicationDate", dateValue);
+              if (oai_dc.element("date") != null) {
+                Element dateElement = oai_dc.element("date");
+                String dateValue = dateElement.getStringValue();
+                jo.put("publicationDate", dateValue);
+              }
               // get handle
               if (this.getId() != null) {
                 jo.put("handle", this.getId());
