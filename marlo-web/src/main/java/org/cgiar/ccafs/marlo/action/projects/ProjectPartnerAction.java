@@ -1063,6 +1063,8 @@ public class ProjectPartnerAction extends BaseAction {
     if (this.hasPermission("canEdit")) {
 
       previousProject = projectManager.getProjectById(projectID);
+      ProjectPartnerPerson previousLeader = previousProject.getLeaderPerson(this.getActualPhase());
+      List<ProjectPartnerPerson> previousCoordinators = previousProject.getCoordinatorPersons(this.getActualPhase());
 
       for (ProjectPartner previousPartner : previousProject.getProjectPartners().stream()
         .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
@@ -1263,13 +1265,13 @@ public class ProjectPartnerAction extends BaseAction {
       }
 
       ProjectPartnerPerson leader = project.getLeaderPerson(this.getActualPhase());
+      System.out.println(leader.getUser().getFirstName());
       // Notify user if the project leader was created.
 
-      this.updateRoles(previousProject.getLeaderPerson((this.getActualPhase())), leader, plRole);
+      this.updateRoles(previousLeader, leader, plRole);
 
 
-      this.updateRoles(previousProject.getCoordinatorPersons(this.getActualPhase()),
-        project.getCoordinatorPersons(this.getActualPhase()), pcRole);
+      this.updateRoles(previousCoordinators, project.getCoordinatorPersons(this.getActualPhase()), pcRole);
       project = projectManager.getProjectById(projectID);
       project.setActiveSince(new Date());
       project.setCreatedBy(this.getCurrentUser());
@@ -1529,6 +1531,8 @@ public class ProjectPartnerAction extends BaseAction {
    */
   private void updateRoles(ProjectPartnerPerson previousPartnerPerson, ProjectPartnerPerson partnerPerson, Role role) {
     long roleId = role.getId();
+    System.out.println(partnerPerson.getUser().getFirstName());
+    System.out.println(previousPartnerPerson.getUser().getFirstName());
 
     String roleAcronym = role.getAcronym();
     if (previousPartnerPerson == null && partnerPerson != null) {
