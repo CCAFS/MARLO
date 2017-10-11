@@ -530,7 +530,8 @@ public class ProjectPartnerAction extends BaseAction {
             }
             // CC will be also other Cluster Leaders
             for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
-              .filter(cl -> cl.isActive()).collect(Collectors.toList())) {
+              .filter(cl -> cl.isActive() && cl.getPhase().equals(this.getActualPhase()))
+              .collect(Collectors.toList())) {
               for (CrpClusterActivityLeader crpClusterActivityLeader : crpClusterOfActivity
                 .getCrpClusterActivityLeaders().stream().filter(cl -> cl.isActive()).collect(Collectors.toList())) {
                 if (ccEmail.isEmpty()) {
@@ -658,7 +659,8 @@ public class ProjectPartnerAction extends BaseAction {
             }
             // CC will be also other Cluster Leaders
             for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
-              .filter(cl -> cl.isActive()).collect(Collectors.toList())) {
+              .filter(cl -> cl.isActive() && cl.getPhase().equals(this.getActualPhase()))
+              .collect(Collectors.toList())) {
               for (CrpClusterActivityLeader crpClusterActivityLeader : crpClusterOfActivity
                 .getCrpClusterActivityLeaders().stream().filter(cl -> cl.isActive()).collect(Collectors.toList())) {
                 if (ccEmail.isEmpty()) {
@@ -767,7 +769,7 @@ public class ProjectPartnerAction extends BaseAction {
               .addAll(historyComparator.getDifferencesList(projectPartnerContribution, transaction, specialList,
                 "project.partners[" + i + "].partnerContributors[" + k + "]", "project.partnerContributors", 2));
             k++;
-          } ;
+          };
 
           List<ProjectPartnerOverall> overalls =
             projectPartner.getProjectPartnerOveralls().stream().filter(c -> c.isActive()).collect(Collectors.toList());

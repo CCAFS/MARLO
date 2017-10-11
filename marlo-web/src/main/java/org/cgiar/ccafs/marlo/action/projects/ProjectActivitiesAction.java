@@ -173,7 +173,7 @@ public class ProjectActivitiesAction extends BaseAction {
               deliverableActivityNew.setModifiedBy(this.getCurrentUser());
               deliverableActivityNew.setModificationJustification("");
               deliverableActivityNew.setActiveSince(new Date());
-
+              deliverableActivityNew.setPhase(this.getActualPhase());
               Deliverable deliverable =
                 deliverableManager.getDeliverableById(deliverableActivity.getDeliverable().getId());
 
@@ -192,7 +192,7 @@ public class ProjectActivitiesAction extends BaseAction {
           activityUpdate.setModifiedBy(this.getCurrentUser());
           activityUpdate.setModificationJustification("");
           activityUpdate.setActiveSince(new Date());
-
+          activityUpdate.setPhase(this.getActualPhase());
           activityUpdate.setTitle(activity.getTitle());
           activityUpdate.setDescription(activity.getDescription());
           activityUpdate.setStartDate(activity.getStartDate());
@@ -236,6 +236,7 @@ public class ProjectActivitiesAction extends BaseAction {
                 deliverableActivityNew.setModifiedBy(this.getCurrentUser());
                 deliverableActivityNew.setModificationJustification("");
                 deliverableActivityNew.setActiveSince(new Date());
+                deliverableActivityNew.setPhase(this.getActualPhase());
 
                 Deliverable deliverable =
                   deliverableManager.getDeliverableById(deliverableActivity.getDeliverable().getId());
@@ -471,9 +472,10 @@ public class ProjectActivitiesAction extends BaseAction {
         project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
         if (project.getProjectActivities() != null) {
           for (Activity openActivity : project.getProjectActivities()) {
-            openActivity.setDeliverables(new ArrayList<DeliverableActivity>(openActivity.getDeliverableActivities()
-              .stream().filter(da -> da.isActive() && da.getPhase().equals(this.getActualPhase()))
-              .collect(Collectors.toList())));
+            openActivity
+              .setDeliverables(new ArrayList<DeliverableActivity>(openActivity.getDeliverableActivities().stream()
+                .filter(da -> da.isActive() && da.getPhase() != null && da.getPhase().equals(this.getActualPhase()))
+                .collect(Collectors.toList())));
           }
         }
         /*
