@@ -39,7 +39,6 @@ import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-import org.hibernate.util.DTDEntityResolver;
 
 public class RestConnectionUtil {
 
@@ -47,7 +46,7 @@ public class RestConnectionUtil {
   protected static Element getDocumentRoot(InputStreamReader stream) {
     try {
       SAXReader saxReader = new SAXReader();
-      saxReader.setEntityResolver(new DTDEntityResolver());
+      saxReader.setEntityResolver(new org.hibernate.internal.util.xml.DTDEntityResolver());
       saxReader.setMergeAdjacentText(true);
       return saxReader.read(stream).getRootElement();
     } catch (DocumentException de) {
