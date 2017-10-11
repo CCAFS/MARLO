@@ -11,28 +11,21 @@
       [#if phases?size > 1]
         [#list phases as phase]
           [#-- [#if (actualPhase.id == phase.id)](Current)[/#if] --]
-        
-          [#-- Timeline Event --]
-          [#if phase.isReporting()]
-            [#assign yearEvent = phase.year +1 /]
-            [#if (actualPhase.id == phase.id)][#assign currenPhaseIndex = phase_index +1 /][/#if]
-          [#else]
-            [#assign yearEvent = phase.year -1 /]
-            [#if (actualPhase.id == phase.id)][#assign currenPhaseIndex = phase_index - 1 /][/#if]
-          [/#if]
+             [#if (actualPhase.id == phase.id)][#assign currenPhaseIndex = phase_index  /][/#if]
+      
           {
               "text": {
                 "headline": "${(phase.description)!}  ${(phase.year)!} ",
               },
               "start_date": {
-                  "year": "${yearEvent}",
-                  "month": "${(phase.isReporting())?string('02','10')}",
-                  "day": "01"
+                  "year": "${phase.startDate.year}",
+                  "month": "${phase.startDate.month}",
+                  "day":  "${phase.startDate.day}"
               },
               "end_date": {
-                  "year": "${yearEvent}",
-                  "month": "${(phase.isReporting())?string('04','12')}",
-                  "day": "01"
+                   "year": "${phase.endDate.year}",
+                  "month": "${phase.endDate.month}",
+                  "day":  "${phase.endDate.day}"
               },
               "background": {
                 "color": "#${(phase.isReporting())?string('777','337ab7')}"
@@ -47,7 +40,7 @@
     var currenPhaseIndex = ${(currenPhaseIndex)!0};
 
   </script>
-  
+ 
   <div style="width: 100%;height: 80px;">
     <div class="loading timeline-loader" style="display:none"></div>
     <div id="timeline-phases" ></div>

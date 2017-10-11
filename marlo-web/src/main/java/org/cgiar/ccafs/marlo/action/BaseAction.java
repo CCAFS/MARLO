@@ -1642,7 +1642,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       List<Phase> phases = phaseManager.findAll().stream().filter(
         c -> c.getCrp().getId().longValue() == this.getCrpID().longValue() && c.getVisible() != null && c.getVisible())
         .collect(Collectors.toList());
-      phases.sort((p1, p2) -> new Integer(p1.getYear()).compareTo(new Integer(p2.getYear())));
+      phases.sort((p1, p2) -> p1.getStartDate().compareTo(p2.getStartDate()));
       this.getSession().put(APConstants.PHASES, phases);
       return phases;
     }
@@ -1656,7 +1656,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         .findAll().stream().filter(c -> c.getCrp().getId().longValue() == this.getCrpID().longValue()
           && c.getVisible() != null && c.getVisible() && c.getDescription().equals(APConstants.PLANNING))
         .collect(Collectors.toList());
-      phases.sort((p1, p2) -> new Integer(p1.getYear()).compareTo(new Integer(p2.getYear())));
+      phases.sort((p1, p2) -> p1.getStartDate().compareTo(p2.getStartDate()));
       this.getSession().put(APConstants.PHASES_IMPACT, phases);
       return phases;
     }
