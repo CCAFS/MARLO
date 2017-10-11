@@ -25,7 +25,7 @@
           [/#if]
           </div>
           <div class="col-md-6 syncCodeBlock" style="display:none"> 
-            [@customForm.input name="syncCode" i18nkey="Please enter an existing project/agreement code" disabled=!editable required=true /]
+            [@customForm.input name="syncCode" i18nkey="Please enter an existing project/agreement code" required=true /]
           </div>
         </div>
       </div>

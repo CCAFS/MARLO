@@ -11,7 +11,7 @@ $(document).ready(function() {
 
   // This event fires immediately when the show instance method is called.
   $modal.on('show.bs.modal', function(e) {
-
+    $('.radioSyncType:checked').trigger('change');
   });
 
   $('.radioSyncType').on('change', function() {
@@ -50,6 +50,7 @@ $(document).ready(function() {
         return 
       }else{
         if($syncCode.hasClass('fieldChecked')){
+          console.log('already checked');
           submitCreateProject();
         }else{
           validateSyncCode(true);
@@ -68,6 +69,10 @@ $(document).ready(function() {
 });
 
 function changeSyncCode(e) {
+  // Validate empty field
+  if(!($syncCode.val())){
+    $syncCode.removeClass('fieldChecked fieldError');
+  }
   if(timeoutSyncCode) {
     clearTimeout(timeoutSyncCode);
   }
