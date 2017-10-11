@@ -198,7 +198,7 @@ public class ProjectMySQLDAO implements ProjectDAO {
   public List<Map<String, Object>> getUserProjectsReporting(long userId, String crp) {
 
     StringBuilder builder = new StringBuilder();
-    builder.append("select DISTINCT project_id from user_permissions where crp_acronym='" + crp
+    builder.append("select DISTINCT project_id from user_permission where crp_acronym='" + crp
       + "' and project_id is not null and  permission_id  in (110,195)");
     List<Map<String, Object>> list =
       dao.excuteStoreProccedure(" call getPermissions(" + userId + ")", builder.toString());
