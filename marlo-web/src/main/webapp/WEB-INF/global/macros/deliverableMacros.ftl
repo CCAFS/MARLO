@@ -168,18 +168,20 @@
   <div class="col-md-8">
     [#if editable]
       [#-- CGSpace examples & instructions --]
-      [@channelExampleMacro name="cgspace" url="https://cgspace.cgiar.org/handle/10568/79435" /]
+      [@channelExampleMacro name="cgspace" url="https://cgspace.cgiar.org/handle/<b>10568/79435</b>" /]
       [#-- Dataverse examples & instructions --]
-      [@channelExampleMacro name="dataverse" url="https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/0ZEXKC" /]
+      [@channelExampleMacro name="dataverse" url="https://dataverse.harvard.edu/dataset.xhtml?persistentId=<b>doi:10.7910/DVN/0ZEXKC</b>" /]
       [#-- IFPRI examples & instructions --]
-      [@channelExampleMacro name="ifpri" url="http://ebrary.ifpri.org/cdm/singleitem/collection/p15738coll5/id/5388/rec/1" /]
+      [@channelExampleMacro name="ifpri" url="http://ebrary.ifpri.org/cdm/singleitem/<b>collection/p15738coll5/id/5388</b>/rec/1" /]
       [#-- ILRI examples & instructions --]
-      [@channelExampleMacro name="ilri" url="http://data.ilri.org/portal/dataset/ccafsnyando" /]
+      [@channelExampleMacro name="ilri" url="http://data.ilri.org/portal/dataset/<b>ccafsnyando</b>" /]
+      [#-- CIMMYT examples & instructions --]
+      [@channelExampleMacro name="cimmyt" url="http://data.cimmyt.org/dvn/dv/cimmytswdvn/faces/study/StudyPage.xhtml?globalId=<b>hdl:11529/10820</b>" /]
     [/#if]
   </div>
 </div>
 
-[#assign channelsArray = ["cgspace","dataverse","other","ifpri","ilri"] /] 
+[#assign channelsArray = ["cgspace","dataverse","other","ifpri","ilri","cimmyt"] /] 
 <div id="disseminationUrl" style="display:[#if (channelsArray?seq_contains(deliverable.dissemination.disseminationChannel))!false ]block[#else]none[/#if];">
   <div class="form-group" > 
     <div class="url-field">
@@ -223,7 +225,7 @@
 </div>
 <div class="form-group row">
   <div class="col-md-6">
-    [@deliverableMacros.metadataField title="date" encodedName="dc.date" type="input" require=false/]
+    [@deliverableMacros.metadataField title="publicationDate" encodedName="dc.date" type="input" require=false/]
   </div>
   <div class="col-md-6">
     [@deliverableMacros.metadataField title="language" encodedName="dc.language" type="input" require=false/]
@@ -574,7 +576,7 @@
   
   [#local customName = 'deliverable.metadataElements[${metadataIndex}]' /]
 
-  <div class="metadataElement metadataElement-${title?lower_case}">
+  <div class="metadataElement metadataElement-${title}">
     <input type="hidden" name="${customName}.id" value="${mElementID}" />
     <input type="hidden" class="hide" name="${customName}.hide" value="${mElementHide?string}" />
     <input type="hidden" name="${customName}.metadataElement.id" value="${metadataID}" />

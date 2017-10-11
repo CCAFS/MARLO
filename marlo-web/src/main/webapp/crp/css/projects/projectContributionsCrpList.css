@@ -80,3 +80,7 @@ ul.nav.nav-tabs.projectOutcomeYear-tabs>li.active {
 ul.nav.nav-tabs.projectOutcomeYear-tabs>li>a:hover {
     border-color: #eee #eee #fff;
 }
+
+i.indicatorText {
+  opacity: 0.7;
+}

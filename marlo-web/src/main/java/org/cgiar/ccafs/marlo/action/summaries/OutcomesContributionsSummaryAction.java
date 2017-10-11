@@ -119,6 +119,7 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
       this.getText("projectOutcomeMilestone.expectedValue"));
     masterReport.getParameterValues().put("i8nMilestoneExpectedNarrative",
       this.getText("outcome.expectedNarrativeMilestone"));
+    masterReport.getParameterValues().put("i8nOutcomeIndicator", this.getText("outcome.inidicator.readText"));
     masterReport.getParameterValues().put("i8nOutcomesTitle",
       this.getText("summaries.outcomesContributions.titleOutcomes"));
     masterReport.getParameterValues().put("i8nMilestonesTitle",
@@ -133,8 +134,8 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
     ResourceManager manager = new ResourceManager();
     manager.registerDefaults();
     try {
-      Resource reportResource = manager
-        .createDirectly(this.getClass().getResource("/pentaho/OutcomesContributionsSummary.prpt"), MasterReport.class);
+      Resource reportResource = manager.createDirectly(
+        this.getClass().getResource("/pentaho/OutcomesContributionsSummary_OutcomeIndicator.prpt"), MasterReport.class);
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       String center = loggedCrp.getAcronym();
       // Get datetime
@@ -312,22 +313,24 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
 
   private TypedTableModel getMasterTableModel(String center, String date) {
     // Initialization of Model
-    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "hasTargetUnit"},
-      new Class[] {String.class, String.class, Boolean.class});
+    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "hasTargetUnit", "hasOutcomeIndicator"},
+      new Class[] {String.class, String.class, Boolean.class, Boolean.class});
     Boolean hasTargetUnit = false;
     if (targetUnitList.size() > 0) {
       hasTargetUnit = true;
     }
-    model.addRow(new Object[] {center, date, hasTargetUnit});
+
+    model
+      .addRow(new Object[] {center, date, hasTargetUnit, this.hasSpecificities(APConstants.CRP_IP_OUTCOME_INDICATOR)});
     return model;
   }
 
   private TypedTableModel getMilestonesOutcomesTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"project_id", "flagship", "outcome", "project_url", "milestone", "expected_value", "expected_unit",
-        "narrative_target", "title"},
+        "narrative_target", "title", "outcomeIndicator"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, Long.class, String.class,
-        String.class, String.class},
+        String.class, String.class, String.class},
       0);
     for (CrpProgram crpProgram : loggedCrp.getCrpPrograms().stream().filter(cp -> cp.isActive())
       .collect(Collectors.toList())) {
@@ -340,12 +343,17 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
 
             if (projectMilestone.getProjectOutcome().isActive()) {
               String projectId = "", title = "", flagship = "", outcome = "", projectUrl = "", milestone = "",
-                expectedUnit = "", narrativeTarget = "";
+                expectedUnit = "", narrativeTarget = "", outcomeIndicator = null;
               Long expectedValue = -1L;
               projectId = projectMilestone.getProjectOutcome().getProject().getId().toString();
               title = projectMilestone.getProjectOutcome().getProject().getTitle();
               flagship = projectMilestone.getProjectOutcome().getCrpProgramOutcome().getCrpProgram().getAcronym();
               outcome = projectMilestone.getProjectOutcome().getCrpProgramOutcome().getDescription();
+              if (this.hasSpecificities(APConstants.CRP_IP_OUTCOME_INDICATOR)
+                && projectMilestone.getProjectOutcome().getCrpProgramOutcome().getIndicator() != null
+                && !projectMilestone.getProjectOutcome().getCrpProgramOutcome().getIndicator().isEmpty()) {
+                outcomeIndicator = projectMilestone.getProjectOutcome().getCrpProgramOutcome().getIndicator();
+              }
               projectUrl = "P" + projectMilestone.getProjectOutcome().getProject().getId().toString();
               milestone = crpMilestone.getComposedName();
               expectedValue = projectMilestone.getExpectedValue();
@@ -354,7 +362,7 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
               }
               narrativeTarget = projectMilestone.getNarrativeTarget();
               model.addRow(new Object[] {projectId, flagship, outcome, projectUrl, milestone, expectedValue,
-                expectedUnit, narrativeTarget, title});
+                expectedUnit, narrativeTarget, title, outcomeIndicator});
             }
           }
 
@@ -367,9 +375,9 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
   private TypedTableModel getProjectsOutcomesTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"project_id", "title", "flagship", "outcome", "expected_value", "expected_unit",
-        "expected_narrative", "project_url"},
+        "expected_narrative", "project_url", "outcomeIndicator"},
       new Class[] {String.class, String.class, String.class, String.class, BigDecimal.class, String.class, String.class,
-        String.class},
+        String.class, String.class},
       0);
     for (Project project : loggedCrp.getProjects().stream().filter(p -> p.isActive() && p.getStatus().intValue() == 2)
       .collect(Collectors.toList())) {
@@ -379,6 +387,7 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
         String title = "";
         String flagship = "";
         String outcome = "";
+        String outcomeIndicator = null;
         BigDecimal expectedValue = new BigDecimal(-1);
         String expectedUnit = "";
         String expectedNarrative = "";
@@ -390,6 +399,11 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
           if (projectOutcome.getCrpProgramOutcome().getCrpProgram() != null) {
             flagship = projectOutcome.getCrpProgramOutcome().getCrpProgram().getAcronym();
             outcome = projectOutcome.getCrpProgramOutcome().getDescription();
+            if (this.hasSpecificities(APConstants.CRP_IP_OUTCOME_INDICATOR)
+              && projectOutcome.getCrpProgramOutcome().getIndicator() != null
+              && !projectOutcome.getCrpProgramOutcome().getIndicator().isEmpty()) {
+              outcomeIndicator = projectOutcome.getCrpProgramOutcome().getIndicator();
+            }
           }
           expectedValue = projectOutcome.getExpectedValue();
           if (projectOutcome.getExpectedUnit() != null) {
@@ -398,7 +412,7 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
           expectedNarrative = projectOutcome.getNarrativeTarget();
         }
         model.addRow(new Object[] {projectId, title, flagship, outcome, expectedValue, expectedUnit, expectedNarrative,
-          projectUrl});
+          projectUrl, outcomeIndicator});
       }
     }
     return model;
