@@ -15,3 +15,5 @@ where description='Reporting';
 
 UPDATE phases set end_date=CONCAT((`year`+1),'-03-15')
 where description='Reporting';
+
+update custom_parameters  set `value`='2018' where parameter_id=15;
