@@ -30,7 +30,8 @@
         </div>
       </div>
       <div class="modal-footer">
-        [@s.submit type="button" name="submit" cssClass="btn btn-success"] Add Project [/@s.submit]
+        <span class="btn btn-success addProjectButton">Add Project </span>
+        [@s.submit type="button" name="submit" cssClass="btn btn-success hide"] [/@s.submit]
       </div>
       [/@s.form] 
     </div>
