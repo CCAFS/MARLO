@@ -893,6 +893,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return allYears;
   }
 
+  public String generatePermission(String permission, Map<String, Object> session, long crpID, String... params) {
+    Phase phase = this.getActualPhase(session, crpID);
+    String paramsRefactor[] = Arrays.copyOf(params, params.length);
+    paramsRefactor[0] = paramsRefactor[0] + ":" + phase.getDescription() + ":" + phase.getYear();
+    return this.getText(permission, paramsRefactor);
+
+  }
+
   public String generatePermission(String permission, String... params) {
     Phase phase = this.getActualPhase();
     String paramsRefactor[] = Arrays.copyOf(params, params.length);
