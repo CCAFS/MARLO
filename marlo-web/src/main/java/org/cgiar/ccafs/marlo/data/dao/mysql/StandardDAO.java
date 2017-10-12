@@ -109,8 +109,7 @@ public class StandardDAO {
       tx = this.initTransaction(session);
 
       long startTime = System.currentTimeMillis();
-      long stopTime = System.currentTimeMillis();
-      stopTime = stopTime - startTime;
+
 
       session.createSQLQuery(storeProccedure).executeUpdate();
       Query query = session.createSQLQuery(sqlQuery);
@@ -118,6 +117,8 @@ public class StandardDAO {
       query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
       List<Map<String, Object>> result = query.list();
       this.commitTransaction(tx);
+      long stopTime = System.currentTimeMillis();
+      stopTime = stopTime - startTime;
       LOG.info("excuete stp permissions " + stopTime + " ms");
       return result;
     } catch (Exception e) {
