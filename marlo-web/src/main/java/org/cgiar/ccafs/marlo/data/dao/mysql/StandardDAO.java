@@ -454,7 +454,7 @@ public class StandardDAO {
     Session session = sessionFactory.openSession();
     CloseSession closeSession = new CloseSession();
     closeSession.setSession(session);
-    closeSession.start();
+    // closeSession.start();
     return session;
 
   }
@@ -476,7 +476,7 @@ public class StandardDAO {
     Session session = sessionFactory.withOptions().interceptor(interceptor).openSession();
     CloseSession closeSession = new CloseSession();
     closeSession.setSession(session);
-    closeSession.start();
+    /// closeSession.start();
     return session;
 
 
