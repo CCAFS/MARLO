@@ -31,6 +31,8 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -44,6 +46,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -79,6 +82,9 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
   // Variables
   private Boolean showPIEmail;
   private Boolean showIfpriDivision;
+  private Boolean showSheet3;
+  private Set<Project> fundingSourceProjects = new HashSet<>();
+  private Set<Project> allProjects = new HashSet<>();
   private long startTime;
   private Boolean hasW1W2Co;
   // Managers
@@ -140,6 +146,12 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
     // Funding Sources by Projects
     masterReport.getParameterValues().put("i8nProjectID", this.getText("searchTerms.projectId"));
 
+    // Funding Sources no Projects
+    masterReport.getParameterValues().put("i8nSheet3Title", this.getText("summaries.fundingSource.sheet3Title"));
+    String prueba = this.getText("summaries.fundingSource.sheet3Title");
+    masterReport.getParameterValues().put("i8nSheet3Description",
+      this.getText("summaries.fundingSource.sheet3Description", new String[] {String.valueOf(this.getSelectedYear())}));
+
     return masterReport;
   }
 
@@ -190,6 +202,23 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
       this.fillSubreport((SubReport) hm.get("funding_sources"), "funding_sources");
       this.fillSubreport((SubReport) hm.get("funding_sources_projects"), "funding_sources_projects");
 
+      // Add all projects
+      if (this.getSelectedPhase() != null && this.getSelectedPhase().getProjectPhases().size() > 0) {
+        for (ProjectPhase projectPhase : this.getSelectedPhase().getProjectPhases().stream()
+          .filter(pf -> pf.isActive() && pf.getProject().isActive()).collect(Collectors.toList())) {
+          allProjects.add((projectPhase.getProject()));
+        }
+      }
+      // delete projects with FS
+      for (Project project : fundingSourceProjects) {
+        allProjects.remove(project);
+      }
+      this.setShowSheet3(!allProjects.isEmpty() ? true : false);
+      masterReport.getParameterValues().put("showSheet3", this.getShowSheet3());
+      if (this.getShowSheet3()) {
+        this.fillSubreport((SubReport) hm.get("funding_sources_no_projects"), "funding_sources_no_projects");
+      }
+
       ExcelReportUtil.createXLSX(masterReport, os);
       bytesXLSX = os.toByteArray();
       os.close();
@@ -219,7 +248,9 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
       case "funding_sources_projects":
         model = this.getFundingSourcesProjectsTableModel();
         break;
-
+      case "funding_sources_no_projects":
+        model = this.getFundingSourcesNoProjectsTableModel();
+        break;
     }
     sdf.addTable(query, model);
     subReport.setDataFactory(cdf);
@@ -250,6 +281,7 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
     return file;
   }
 
+
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
@@ -262,11 +294,82 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
 
   }
 
-
   public String getFundingSourceFileURL() {
     return config.getDownloadURL() + "/" + this.getFundingSourceUrlPath().replace('\\', '/');
   }
 
+  private TypedTableModel getFundingSourcesNoProjectsTableModel() {
+    TypedTableModel model = new TypedTableModel(
+      new String[] {"project_id", "title", "summary", "start_date", "end_date", "coas", "flagships"},
+      new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class},
+      0);
+    SimpleDateFormat dateFormatter = new SimpleDateFormat("MMM yyyy");
+    for (Project project : allProjects.stream().sorted((p1, p2) -> p1.getId().compareTo(p2.getId()))
+      .collect(Collectors.toList())) {
+      ProjectInfo projectInfo = project.getProjecInfoPhase(this.getSelectedPhase());
+      String projectId = project.getId().toString();
+      String projectTitle = null;
+      String projectSummary = null;
+      String startDate = null;
+      String endDate = null;
+      if (projectInfo != null) {
+        projectTitle =
+          projectInfo.getTitle() != null && !projectInfo.getTitle().trim().isEmpty() ? projectInfo.getTitle() : null;
+        projectSummary = projectInfo.getSummary() != null && !projectInfo.getSummary().trim().isEmpty()
+          ? projectInfo.getSummary() : null;
+        startDate = projectInfo.getStartDate() != null ? dateFormatter.format(projectInfo.getStartDate()) : null;
+        endDate = projectInfo.getEndDate() != null ? dateFormatter.format(projectInfo.getEndDate()) : null;
+      }
+      // set flagships and coas
+      String flagships = null;
+      String coas = null;
+      List<String> flagshipsList = new ArrayList<String>();
+      List<String> coasList = new ArrayList<String>();
+
+
+      // get Flagships related to the project sorted by acronym
+      for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
+        .sorted((o1, o2) -> o1.getCrpProgram().getAcronym().compareTo(o2.getCrpProgram().getAcronym()))
+        .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+          && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+        .collect(Collectors.toList())) {
+        flagshipsList.add(programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym());
+      }
+
+      // get CoAs related to the project sorted by acronym
+      if (project.getProjectClusterActivities() != null) {
+        for (ProjectClusterActivity projectClusterActivity : project.getProjectClusterActivities().stream()
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+          .collect(Collectors.toList())) {
+          coasList.add(projectClusterActivity.getCrpClusterOfActivity().getIdentifier());
+        }
+      }
+
+      // Remove duplicates
+      Set<String> flagshipsHash = new LinkedHashSet<String>(flagshipsList);
+      Set<String> coasHash = new LinkedHashSet<String>(coasList);
+      // Add flagships
+      for (String flagshipString : flagshipsHash.stream().collect(Collectors.toList())) {
+        if (flagships == null || flagships.isEmpty()) {
+          flagships = flagshipString;
+        } else {
+          flagships += "\n " + flagshipString;
+        }
+      }
+      // Add coas
+      for (String coaString : coasHash.stream().collect(Collectors.toList())) {
+        if (coas == null || coas.isEmpty()) {
+          coas = coaString;
+        } else {
+          coas += "\n " + coaString;
+        }
+      }
+
+
+      model.addRow(new Object[] {projectId, projectTitle, projectSummary, startDate, endDate, coas, flagships});
+    }
+    return model;
+  }
 
   private TypedTableModel getFundingSourcesProjectsTableModel() {
     TypedTableModel model = new TypedTableModel(
@@ -310,6 +413,8 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
         String coas = null;
 
         projectId = projectBudget.getProject().getId().toString();
+        // add to list of projects
+        fundingSourceProjects.add(projectBudget.getProject());
         if (projectId != null && !projectId.isEmpty()) {
           // get Flagships related to the project sorted by acronym
           for (ProjectFocus projectFocuses : projectBudget.getProject().getProjectFocuses().stream()
@@ -407,6 +512,7 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
     }
     return model;
   }
+
 
   private TypedTableModel getFundingSourcesTableModel() {
     TypedTableModel model = new TypedTableModel(
@@ -661,6 +767,7 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
     return model;
   }
 
+
   public String getFundingSourceUrlPath() {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + "fundingSourceFiles" + File.separator;
   }
@@ -673,7 +780,6 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
     return inputStream;
   }
 
-
   private TypedTableModel getMasterTableModel(String center, String date) {
     // Initialization of Model
     TypedTableModel model =
@@ -682,6 +788,11 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
     model.addRow(new Object[] {center, date, "Managing / PPA Partner", this.getSelectedYear(), showPIEmail});
     return model;
   }
+
+  public Boolean getShowSheet3() {
+    return showSheet3;
+  }
+
 
   @Override
   public void prepare() {
@@ -708,6 +819,10 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
     LOG.info(
       "Start report download: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
         + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: " + this.getSelectedCycle());
+  }
+
+  public void setShowSheet3(Boolean showSheet3) {
+    this.showSheet3 = showSheet3;
   }
 
 }
