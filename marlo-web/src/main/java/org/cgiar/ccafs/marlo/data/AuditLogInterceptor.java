@@ -32,7 +32,6 @@ import com.google.gson.GsonBuilder;
 import com.google.inject.Singleton;
 import org.hibernate.CallbackException;
 import org.hibernate.EmptyInterceptor;
-import org.hibernate.EntityMode;
 import org.hibernate.Session;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.ManyToOneType;
@@ -93,7 +92,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
     String[] propertyNames = classMetadata.getPropertyNames();
     for (String name : propertyNames) {
 
-      Object propertyValue = classMetadata.getPropertyValue(entity, name, EntityMode.POJO);
+      Object propertyValue = classMetadata.getPropertyValue(entity, name);
       Type propertyType = classMetadata.getPropertyType(name);
 
       if (propertyValue != null && (propertyType instanceof OrderedSetType || propertyType instanceof SetType)) {
@@ -132,7 +131,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
 
     String[] propertyNames = classMetadata.getPropertyNames();
     for (String name : propertyNames) {
-      Object propertyValue = classMetadata.getPropertyValue(entity, name, EntityMode.POJO);
+      Object propertyValue = classMetadata.getPropertyValue(entity, name);
 
       if (propertyValue != null && propertyValue instanceof IAuditLog) {
         Type propertyType = classMetadata.getPropertyType(name);
@@ -146,7 +145,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
             Object obj = dao.find(propertyType.getReturnedClass(), (Serializable) entityRelation.getId());
 
             this.loadRelations((IAuditLog) obj, false, 2);
-            classMetadata.setPropertyValue(entity, name, obj, EntityMode.POJO);
+            classMetadata.setPropertyValue(entity, name, obj);
           } else {
             if (!(name.equals("createdBy") || name.equals("modifiedBy"))) {
               IAuditLog entityRelation = (IAuditLog) propertyValue;
@@ -157,7 +156,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
               }
 
               // this.loadRelations((IAuditLog) obj, false);
-              classMetadata.setPropertyValue(entity, name, obj, EntityMode.POJO);
+              classMetadata.setPropertyValue(entity, name, obj);
             }
           }
 

@@ -233,7 +233,7 @@ public class PartnersSaveAction extends BaseAction {
     message.append(institutionTypeName);
     message.append(" </br>");
 
-    message.append("Country: ");
+    message.append("CountryOCS: ");
     message.append(countryName);
     message.append(" </br>");
 

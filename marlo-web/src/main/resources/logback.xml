@@ -75,7 +75,7 @@
   </logger>
    <logger name="org.hibernate" level="ERROR" />
   <logger name="org.hibernate.type" level="ERROR" />
- 
+ <logger name="com.zaxxer.hikari" level="ERROR" />
 
 
   

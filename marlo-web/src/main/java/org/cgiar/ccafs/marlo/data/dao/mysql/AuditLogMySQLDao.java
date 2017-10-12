@@ -39,7 +39,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.google.inject.Inject;
-import org.hibernate.EntityMode;
 import org.hibernate.Session;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.OrderedSetType;
@@ -166,7 +165,7 @@ public class AuditLogMySQLDao implements AuditLogDao {
 
     List<Auditlog> auditLogs = dao.findAll(
       "from " + Auditlog.class.getName() + " where ENTITY_NAME='class " + classAudit.getName() + "' and ENTITY_ID=" + id
-        + " and main=1 and DETAIL like 'Action: " + actionName + "%' order by CREATED_DATE desc LIMIT 11");
+        + " and main=1 and DETAIL like 'Action: " + actionName + "%' order by CREATED_DATE desc ");
     // " and principal=1 order by CREATED_DATE desc LIMIT 10");
     for (Auditlog auditlog : auditLogs) {
       auditlog.setUser(userDao.getUser(auditlog.getUserId()));
@@ -224,7 +223,7 @@ public class AuditLogMySQLDao implements AuditLogDao {
             this.loadRelationsForIAuditLog(relationObject, transactionID);
             relation.add(relationObject);
           }
-          classMetadata.setPropertyValue(iAuditLog, name, relation, EntityMode.POJO);
+          classMetadata.setPropertyValue(iAuditLog, name, relation);
         }
       }
       session.close();
