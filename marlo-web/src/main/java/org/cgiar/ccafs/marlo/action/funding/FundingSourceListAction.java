@@ -122,9 +122,10 @@ public class FundingSourceListAction extends BaseAction {
 
           FundingSourceInstitution fundingSourceInstitution = new FundingSourceInstitution();
           fundingSourceInstitution.setFundingSource(fundingSource);
-
+          fundingSourceInstitution.setPhase(this.getActualPhase());
           fundingSourceInstitution.setInstitution(institution);
           fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
+
         }
       } catch (Exception e) {
 

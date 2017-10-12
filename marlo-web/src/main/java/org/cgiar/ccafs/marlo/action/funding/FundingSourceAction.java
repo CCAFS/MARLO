@@ -542,7 +542,8 @@ public class FundingSourceAction extends BaseAction {
           .filter(pb -> pb.isActive() && pb.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
 
         fundingSource.setInstitutions(new ArrayList<>(fundingSource.getFundingSourceInstitutions().stream()
-          .filter(pb -> pb.isActive() && pb.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
+          .filter(pb -> pb.isActive() && pb.getPhase() != null && pb.getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList())));
 
         fundingSource.setProjectBudgetsList(fundingSource.getProjectBudgets().stream()
           .filter(pb -> pb.isActive() && pb.getProject().isActive() && pb.getPhase() != null
