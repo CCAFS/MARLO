@@ -119,8 +119,8 @@ public class ImpactRelationAction extends BaseAction {
       relations.add(dataProgram);
     }
     int i = 1;
-    for (CrpProgramOutcome crpProgramOutcome : crpProgram.getCrpProgramOutcomes().stream().filter(c -> c.isActive())
-      .collect(Collectors.toList())) {
+    for (CrpProgramOutcome crpProgramOutcome : crpProgram.getCrpProgramOutcomes().stream()
+      .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
 
       if (outcome == null
         || (outcome != null && outcome.getId().longValue() == crpProgramOutcome.getId().longValue())) {
@@ -284,7 +284,7 @@ public class ImpactRelationAction extends BaseAction {
       int i1 = 1;
       int j = 1;
       for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
-        .filter(c -> c.isActive()).collect(Collectors.toList())) {
+        .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
 
         HashMap<String, Object> dataDetailOutcome = new HashMap<>();
         dataDetailOutcome.put("id", "C" + crpClusterOfActivity.getId());
@@ -343,7 +343,7 @@ public class ImpactRelationAction extends BaseAction {
     int i1 = 1;
     int j = 1;
     for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
-      .filter(c -> c.isActive()).collect(Collectors.toList())) {
+      .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
 
       if (cluster == null
         || (cluster != null && crpClusterOfActivity.getId().longValue() == cluster.getId().longValue())) {
@@ -667,7 +667,7 @@ public class ImpactRelationAction extends BaseAction {
 
     List<CrpClusterKeyOutput> crpClusterKeyOutputs = new ArrayList<>();
     for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
-      .filter(c -> c.isActive()).collect(Collectors.toList())) {
+      .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
       crpClusterKeyOutputs.addAll(
         crpClusterOfActivity.getCrpClusterKeyOutputs().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
     }
@@ -677,7 +677,8 @@ public class ImpactRelationAction extends BaseAction {
   }
 
   public int getIndex(CrpProgram crpProgram, CrpProgramOutcome programOutcome) {
-    int index = crpProgram.getCrpProgramOutcomes().stream().filter(c -> c.isActive()).collect(Collectors.toList())
+    int index = crpProgram.getCrpProgramOutcomes().stream()
+      .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())
       .indexOf(programOutcome) + 1;
     return index;
   }
