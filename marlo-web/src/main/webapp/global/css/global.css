@@ -6203,6 +6203,7 @@ span.programTag {
 .footer{
 	background: #0b5da6 url("./../../global/images/footerBackground.png") repeat-x 0 0;
 	margin-top: 100px;
+	padding-bottom: 35px;
 }
 .footer:before {
 	background: url("./../../global/images/tract.png"),url("./../../global/images/tract.png"),url("./../../global/images/tract.png");
@@ -6216,14 +6217,20 @@ span.programTag {
 	background-position:center 0, center 56px,center 112px, center 168px, center 224px;
 }
 
+.footer ul{
+  margin: 0;
+  padding: 0;
+}
+.footer ul li{list-style: none;opacity: 0.7;line-height: 1.4em;}
+
 .infoLinks a {
     color: white;
 }
 
 .copyRight {
-    font-size: 0.7em;
+    font-size: 0.8em;
     padding-top: 20px;
-    text-align: center;
+    /* text-align: center; */
     padding-bottom: 10px;
 }
 
