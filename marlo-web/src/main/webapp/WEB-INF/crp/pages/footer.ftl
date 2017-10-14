@@ -27,7 +27,9 @@
         </div>
         [#-- Copyright --]
         <div class="copyRight">
-          <hr /><span>@ Copyright 2017 Current version ${action.getVersion()}</span>
+          <hr />
+          <span>  &#169; Copyright CIAT 2017 - Current version ${action.getVersion()}</span><br />
+          <span> <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">Some rights reserved</a></span>
         </div>
       </div>
     </footer>

@@ -118,6 +118,7 @@
       
       <h2 id="termsConditions">Terms and Conditions</h2>
       <div class="simpleBox">
+        [#--  
         <div>
           <strong>1. Terms</strong>
           <p>By accessing the website at https://marlo.cgiar.org, you are agreeing to be bound by these terms of service, all applicable laws and regulations, and agree that you are responsible for compliance with any applicable local laws. If you do not agree with any of these terms, you are prohibited from using or accessing this site. The materials contained in this website are protected by applicable copyright and trademark law.</p>
@@ -167,16 +168,15 @@
           <strong>8. Governing Law</strong>
           <p>These terms and conditions are governed by and construed in accordance with the laws of Palmira / Colombia and you irrevocably submit to the exclusive jurisdiction of the courts in that location.</p>
         </div>
+        --]
+        <p>Comming...</p>
       </div>
       
       <h2 id="copyRight">Copyright</h2>
       <div class="simpleBox">
-        <p>We are following the GNUv3 license which can be accessed in the following link:
-        https://www.gnu.org/licenses/gpl-3.0.en.html
-        </p>
-        <p>In addition, the following file is part of the source code in GitHub.
-        https://github.com/CCAFS/MARLO/blob/master/LICENSE
-        </p>
+        <a class="pull-right" href="https://www.gnu.org/licenses/gpl-3.0.en.html"><img class="" src="https://www.gnu.org/graphics/gplv3-127x51.png" alt="GPL" /></a>
+        <p>GNUv3 license</p>
+        <div class="clearfix"></div>
       </div>
       
       
