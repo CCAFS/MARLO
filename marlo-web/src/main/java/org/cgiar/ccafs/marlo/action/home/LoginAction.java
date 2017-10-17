@@ -73,10 +73,10 @@ public class LoginAction extends BaseAction {
   // Managers
   private UserManager userManager;
 
-  private final CrpManager crpManager;
-  private final ICenterManager centerManager;
-  private final ICenterUserManager centerUsermanager;
-  private final CrpUserManager crpUserManager;
+  private CrpManager crpManager;
+  private ICenterManager centerManager;
+  private ICenterUserManager centerUsermanager;
+  private CrpUserManager crpUserManager;
 
   @Inject
   public LoginAction(APConfig config, UserManager userManager, CrpManager crpManager, CrpUserManager crpUserManager,
@@ -106,7 +106,7 @@ public class LoginAction extends BaseAction {
   }
 
   private void getLoginMessages() {
-    final Session session = SecurityUtils.getSubject().getSession();
+    Session session = SecurityUtils.getSubject().getSession();
     if (session.getAttribute(APConstants.LOGIN_MESSAGE) != null) {
       switch ((String) session.getAttribute(APConstants.LOGIN_MESSAGE)) {
         case APConstants.LOGON_SUCCES:
@@ -170,8 +170,8 @@ public class LoginAction extends BaseAction {
 
       System.out.println(this.crp);
       // Check if is a valid user
-      final String userEmail = user.getEmail().trim().toLowerCase();
-      final User loggedUser = userManager.login(userEmail, user.getPassword());
+      String userEmail = user.getEmail().trim().toLowerCase();
+      User loggedUser = userManager.login(userEmail, user.getPassword());
       this.getLoginMessages();
       if (loggedUser != null) {
         switch (this.type) {
@@ -221,7 +221,7 @@ public class LoginAction extends BaseAction {
     // Obtain the only CRP Center CIAT
     // TODO: Modify CRP to represent Center
     // Crp loggedCrp = crpManager.findCrpByAcronym(this.crp);
-    final Center loggedCenter = centerManager.findCrpByAcronym(this.crp);
+    Center loggedCenter = centerManager.findCrpByAcronym(this.crp);
 
     // Validate if the user belongs to the selected crp
     if (loggedCenter != null) {
@@ -237,7 +237,7 @@ public class LoginAction extends BaseAction {
         this.getSession().put(APConstants.SESSION_CENTER, loggedCenter);
 
         // put the crp parameters in the session
-        for (final CenterCustomParameter parameter : loggedCenter.getCenterCustomParameters()) {
+        for (CenterCustomParameter parameter : loggedCenter.getCenterCustomParameters()) {
           if (parameter.isActive()) {
             this.getSession().put(parameter.getCenterParameter().getKey(), parameter.getValue());
           }
@@ -261,7 +261,7 @@ public class LoginAction extends BaseAction {
      * Save the user url with trying to enter the system to redirect after
      * loged.
      */
-    final String urlAction = ServletActionContext.getRequest().getHeader("Referer");
+    String urlAction = ServletActionContext.getRequest().getHeader("Referer");
     /*
      * take the ".do" pattern in the url to differentiate the main page.
      * also discard the "logout" url beacause this action close the user session.
@@ -278,7 +278,7 @@ public class LoginAction extends BaseAction {
   public String loginCrp(User loggedUser) {
 
     // Obtain the crp selected
-    final Crp loggedCrp = crpManager.findCrpByAcronym(this.crp);
+    Crp loggedCrp = crpManager.findCrpByAcronym(this.crp);
 
     // Validate if the user belongs to the selected crp
     if (loggedCrp != null) {
@@ -288,7 +288,7 @@ public class LoginAction extends BaseAction {
         this.getSession().put(APConstants.SESSION_USER, loggedUser);
         this.getSession().put(APConstants.SESSION_CRP, loggedCrp);
         // put the crp parameters in the session
-        for (final CustomParameter parameter : loggedCrp.getCustomParameters()) {
+        for (CustomParameter parameter : loggedCrp.getCustomParameters()) {
           if (parameter.isActive()) {
             this.getSession().put(parameter.getParameter().getKey(), parameter.getValue());
           }
@@ -327,7 +327,7 @@ public class LoginAction extends BaseAction {
      * Save the user url with trying to enter the system to redirect after
      * loged.
      */
-    final String urlAction = ServletActionContext.getRequest().getHeader("Referer");
+    String urlAction = ServletActionContext.getRequest().getHeader("Referer");
     /*
      * take the ".do" pattern in the url to differentiate the main page.
      * also discard the "logout" url beacause this action close the user session.
@@ -341,7 +341,7 @@ public class LoginAction extends BaseAction {
   }
 
   public String logout() {
-    final User user = (User) this.getSession().get(APConstants.SESSION_USER);
+    User user = (User) this.getSession().get(APConstants.SESSION_USER);
     if (user != null) {
       LOG.info("User {} logout succesfully", user.getEmail());
     }
@@ -349,9 +349,9 @@ public class LoginAction extends BaseAction {
     SecurityUtils.getSubject().logout();
 
     // Hack for cleaning cached authorization.
-    for (final Realm realm : ((RealmSecurityManager) SecurityUtils.getSecurityManager()).getRealms()) {
+    for (Realm realm : ((RealmSecurityManager) SecurityUtils.getSecurityManager()).getRealms()) {
       if (realm instanceof APCustomRealm) {
-        final APCustomRealm customRealm = (APCustomRealm) realm;
+        APCustomRealm customRealm = (APCustomRealm) realm;
         customRealm.clearCachedAuthorizationInfo(SecurityUtils.getSubject().getPrincipals());
       }
     }
@@ -361,12 +361,12 @@ public class LoginAction extends BaseAction {
 
   public String randomColor() {
 
-    final Random random = new Random(); // Probably really put this somewhere where it gets executed only once
-    final int red = random.nextInt(256);
-    final int green = random.nextInt(256);
-    final int blue = random.nextInt(256);
-    final Color color = new Color(red, green, blue);
-    final String hex = "#" + Integer.toHexString(color.getRGB()).substring(2);
+    Random random = new Random(); // Probably really put this somewhere where it gets executed only once
+    int red = random.nextInt(256);
+    int green = random.nextInt(256);
+    int blue = random.nextInt(256);
+    Color color = new Color(red, green, blue);
+    String hex = "#" + Integer.toHexString(color.getRGB()).substring(2);
     return hex;
   }
 

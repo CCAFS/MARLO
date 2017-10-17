@@ -18,9 +18,9 @@ function attachEvents() {
   // Remove a program impact
   $('.removeProgramImpact').on('click', removeProgramImpact);
 
-// Add a beneficiary
+  // Add a beneficiary
   $('.addBeneficiary').on('click', addBeneficiary);
-// Remove a beneficiary
+  // Remove a beneficiary
   $('.removeBeneficiary').on('click', removeBeneficiary);
 
   // When change of beneficiary type
@@ -51,11 +51,42 @@ function attachEvents() {
 
   $(".srfIdoSelect").on("change", function() {
     var option = $(this).find("option:selected");
-    if(option.val() == "-1") {
-      $(this).parents(".programImpact").find(".otherSrf").find("input").val("");
-      $(".otherSrf").show("slow");
+    var optionValue = option.val();
+    var $parent = $(this).parents(".programImpact");
+    var $impactSubIDOSelect = $parent.find(".impactSubIdo select");
+    if(optionValue == "-1") {
+      $parent.find(".otherSrf").find("input").val("");
+      $parent.find(".otherSrf").show("slow");
+      $parent.find(".impactSubIdo").hide("slow");
+
     } else {
-      $(".otherSrf").hide("slow");
+      $parent.find(".otherSrf").hide("slow");
+      $parent.find(".impactSubIdo").show("slow");
+
+      // Load SubIDOs from Web Service
+      $.ajax({
+          url: baseURL + '/impactSubIdo.do',
+          data: {
+            idoID: optionValue
+          },
+          beforeSend: function(xhr,opts) {
+            $parent.find(".loading").fadeIn();
+          },
+          success: function(data) {
+            $impactSubIDOSelect.empty();
+            $impactSubIDOSelect.addOption(-1, "Select an option...");
+            $.each(data.subIdos, function(i,subIdo) {
+              // Add subIdo option
+              $impactSubIDOSelect.addOption(subIdo.id, subIdo.description);
+            });
+            $impactSubIDOSelect.trigger("change.select2");
+          },
+          complete: function() {
+            $parent.find(".loading").fadeOut();
+          },
+          error: function(e) {
+          }
+      });
     }
   });
 }

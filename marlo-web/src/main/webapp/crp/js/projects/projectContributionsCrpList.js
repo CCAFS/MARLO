@@ -7,7 +7,7 @@ $(document).ready(function() {
 
   $('select').select2({
       templateResult: formatState,
-      templateSelection: formatState,
+      templateSelection: formatStateSelection,
       width: '100%'
   });
 
@@ -50,16 +50,27 @@ function addNewOutcome() {
   console.log(name)
 }
 
-function formatState(state) {
+function formatStateSelection(state) {
   if(state.id != "-1") {
-    var text = state.text.split(":");
-    var $state = $("<span><strong>" + text.shift() + ":</strong> " + text.join(':') + "</span>");
+    var text = $("span.outcomeID-" + state.id).html();
+    var $state = $(text);
+    $state.find('.indicatorText').remove();
     return $state;
   } else {
     var $state = $("<span>" + state.text + "</span>");
     return $state;
   }
-};
+}
+
+function formatState(state) {
+  if(state.id != "-1") {
+    var text = $("span.outcomeID-" + state.id).html();
+    return $(text);
+  } else {
+    var $state = $("<span>" + state.text + "</span>");
+    return $state;
+  }
+}
 
 /** Reporting functions * */
 

@@ -68,12 +68,13 @@
               <input class="hidden" type="radio" name="formOptions" id="searchTermsSummary" value="searchTermsSummary"/>
               <label for="">[@s.text name="summaries.board.report.genderContributionSummary" /] </label>
             </div>
-            <span class="description col-md-12">[@s.text name="summaries.board.report.genderContributionSummary.description" /] You can to add terms and generate the report, or simply generate the report without add terms.</span>
+            <span class="description col-md-12">[@s.text name="summaries.board.report.genderContributionSummary.description" /] </span>
             <div class="extraOptions col-md-12" style="display:none">
             <span class="hidden fileTypes excelType">searchTermsSummary-searchTermsSummary</span>
             <span class="hidden forPlanningCycle forCycle"></span>
             <span class="hidden forReportingCycle forCycle"></span>
             [#-- predefined terms --]
+            [#if action.hasSpecificities('show_gender_keywords_summaries')]
             <label for="">Predefined terms:</label>
             <br />
             <div class="col-md-12">
@@ -81,15 +82,16 @@
             </div>
             <div class="clearfix"></div>
             <hr />
+            [/#if]
             [#-- content --]
             <div class="simpleBox wordContent">
               
             </div>
             [#-- input --]
-            <label for="">Write the term:</label>
+            <label for="">[@s.text name="summaries.board.report.searchTermsSummary" /]</label>
             <div class="row">
               <div class="col-md-9">
-                <input class="form-control inputTerm" type="text" placeholder="Press enter to add a new term " />
+                <input class="form-control inputTerm" type="text" />
               </div>
               <div class="col-md-3 pull right">
                 <a  style="display:none;" target="_blank" class="generateReport addButton pull-right" style="" href="#">[@s.text name="form.buttons.generate" /]</a>
@@ -279,9 +281,9 @@
             </div>
             <span class="description col-md-12">[@s.text name="summaries.board.report.powb.description" /]</span>
             <div class="extraOptions" style="display:none"> 
-            <span class="hidden forPlanningCycle forCycle"></span>
-            <span class="hidden fileTypes excelType">budgetPerPartnersSummary-budgetPerPartnersSummary</span>
-            <span class="hidden specificYears">2016-2017-2018</span> 
+              <span class="hidden forPlanningCycle forCycle"></span>
+              <span class="hidden fileTypes excelType">budgetPerPartnersSummary-budgetPerPartnersSummary</span>
+              <span class="hidden specificYears">2017-2018</span> 
               <div class="pull-right">
                 <a style="display:none;" target="_blank" class="generateReport addButton pull-right" style="" href="#">[@s.text name="form.buttons.generate" /]</a>
               </div>
@@ -295,8 +297,9 @@
             </div>
             <span class="description col-md-12">[@s.text name="This report summarizes the project budget that is allocated to each CoA by source of funding (e.g. W1/W2, W3 and Bilateral)." /]</span>
             <div class="extraOptions" style="display:none"> 
-            <span class="hidden forPlanningCycle forCycle"></span>
-            <span class="hidden fileTypes excelType">budgetByCoAsSummary-budgetByCoAsSummary</span> 
+              <span class="hidden forPlanningCycle forCycle"></span>
+              <span class="hidden fileTypes excelType">budgetByCoAsSummary-budgetByCoAsSummary</span> 
+              <span class="hidden specificYears">2017-2018</span> 
               <div class="pull-right">
                 <a style="display:none;" target="_blank" class="generateReport addButton pull-right" style="" href="#">[@s.text name="form.buttons.generate" /]</a>
               </div>
@@ -311,8 +314,9 @@
             </div>
             <span class="description col-md-12">[@s.text name="This report provides a summary of the funding sources. The first tab lists each funding source, lead partner(s), project(s) to which it contributes, its annual budget, and allows you to see how much of the funding source budget has been allocated to projects. The second tab provides funding source information by managing partner. So in cases when more than one managing partner leads a funding source, this tab will show you how the funding source budget is allocated to the different managing partners." /]</span>
             <div class="extraOptions" style="display:none">
-            <span class="hidden forPlanningCycle forCycle"></span>
-            <span class="hidden fileTypes excelType">FundingSourcesSummary-FundingSourcesSummary</span> 
+              <span class="hidden forPlanningCycle forCycle"></span>
+              <span class="hidden fileTypes excelType">FundingSourcesSummary-FundingSourcesSummary</span>
+              <span class="hidden specificYears">2017-2018</span> 
               <div class="pull-right">
                 <a style="display:none;" target="_blank" class="generateReport addButton pull-right" style="" href="#">[@s.text name="form.buttons.generate" /]</a>
               </div>

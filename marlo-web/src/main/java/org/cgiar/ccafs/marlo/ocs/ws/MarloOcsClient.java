@@ -53,7 +53,7 @@ public class MarloOcsClient {
       Runnable worker = new WsThread(apConfig, i, agreementID, agreementOCS);
       executor.execute(worker);
     }
-    executor.shutdown();
+    executor.shutdownNow();
     // Wait until all threads are finish
     while (!executor.isTerminated()) {
       LOG.info("Ws OCS waiting");

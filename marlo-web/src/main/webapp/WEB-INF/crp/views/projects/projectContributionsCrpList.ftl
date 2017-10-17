@@ -49,7 +49,7 @@
             [#-- Your project contributes to the flagships --]
             <div class="form-group">
               <p>
-                <strong>Your Project contributes to the following Flagships:</strong>  
+                <strong>Your Project contributes to the following Flagships:</strong><br />
                 [#if project.flagships?has_content][#list project.flagships as element]<span class="programTag" style="border-color:${element.color}">${element.acronym}</span>[/#list][/#if]
                 <div class="clearfix"></div>
               </p>
@@ -84,7 +84,7 @@
               <div class="addNewOutcome">
                 <div class="outcomesListBlock">
                   <span id="outcomesSelectedIds" style="display:none">[#if project.outcomes?has_content][#list project.outcomes as e]${e.crpProgramOutcome.id}[#if e_has_next],[/#if][/#list][/#if]</span>  
-                  [@customForm.select name="outcomeId" label="" disabled=!canEdit i18nkey="projectContributionsCrpList.selectOutcome" listName="outcomes" keyFieldName="id" displayFieldName="composedName" className="" /]
+                  [@customForm.select name="outcomeId" label="" disabled=!canEdit i18nkey="projectContributionsCrpList.selectOutcome" listName="outcomes" keyFieldName="id" displayFieldName="name" className="" /]
                 </div>
                 <div class="addOutcomeBlock">
                   <a href="${baseUrl}/projects/${crpSession}/addNewProjectOuctome.do?projectID=${projectID}&outcomeId=-1">
@@ -146,6 +146,9 @@
     </div>  
 </section>
 
+[#-- Template Outcome List --]
+[#include "/WEB-INF/crp/macros/outcomesListSelectMacro.ftl"]
+
 [#-- Other contribution template --]
 [@otherContributionMacro element={} name="name" index=-1 template=true /]
 
@@ -162,7 +165,12 @@
       <td>
         [#-- Draft Tag --]
         [#if hasDraft]<strong class="text-info">[DRAFT]</strong>[/#if]
-        <a href="${projectOutcomeUrl}">${projectOutcome.crpProgramOutcome.description}</a>
+        <a href="${projectOutcomeUrl}">
+          ${projectOutcome.crpProgramOutcome.description}
+          [#if action.hasSpecificities('crp_ip_outcome_indicator')]
+            [#if (projectOutcome.crpProgramOutcome.indicator?has_content)!false]<i class="indicatorText"><br /><strong>Indicator: </strong>${(projectOutcome.crpProgramOutcome.indicator)!'No Indicator'}</i>[/#if]
+          [/#if]
+        </a>
       </td>
       [#-- Contribution Status --]
       <td class="text-center">
