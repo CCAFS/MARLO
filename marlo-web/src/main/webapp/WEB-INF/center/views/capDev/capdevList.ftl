@@ -21,7 +21,7 @@
 [#include "/WEB-INF/center/pages/main-menu.ftl" /]
 
 
-<!--<script src="${baseUrl}/bower_components/jquery/dist/jquery.min.js"></script>-->
+
 
 
 
