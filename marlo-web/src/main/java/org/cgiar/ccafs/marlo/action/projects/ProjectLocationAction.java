@@ -543,8 +543,8 @@ public class ProjectLocationAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
- 	      reader.close();
- 	
+        reader.close();
+
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
@@ -643,7 +643,7 @@ public class ProjectLocationAction extends BaseAction {
           }
           project.setCountryFS(coCountryFundingSources);
         }
-      
+
         this.prepareFundingList();
         this.setDraft(true);
       } else {
@@ -697,22 +697,24 @@ public class ProjectLocationAction extends BaseAction {
 
     if (project.getLocationsData() == null) {
       project.setLocationsData(new ArrayList<>());
+
+      // Fix Ull Collection when autosave gets the suggeste country - 10/13/2017
+      for (CountryLocationLevel countryLocationLevel : project.getLocationsData()) {
+
+        Collection<LocElement> similar = new HashSet<LocElement>(countryLocationLevel.getLocElements());
+        Collection<LocElement> different = new HashSet<LocElement>();
+        different.addAll(countryLocationLevel.getLocElements());
+        different.addAll(fsLocs);
+        similar.retainAll(fsLocs);
+        different.removeAll(similar);
+
+        countryLocationLevel.getLocElements().removeAll(similar);
+
+
+      }
     }
 
-    for (CountryLocationLevel countryLocationLevel : project.getLocationsData()) {
-      // if (countryLocationLevel.getLocElements() != null) {
-      Collection<LocElement> similar = new HashSet<LocElement>(countryLocationLevel.getLocElements());
-      Collection<LocElement> different = new HashSet<LocElement>();
-      different.addAll(countryLocationLevel.getLocElements());
-      different.addAll(fsLocs);
-      similar.retainAll(fsLocs);
-      different.removeAll(similar);
 
-      countryLocationLevel.getLocElements().removeAll(similar);
-      // }
-
-
-    }
     Collection<LocElement> fsLocsRegions = new ArrayList<>();
     for (CountryFundingSources locElement : project.getRegionFS()) {
       if (locElement.getLocElement() != null) {
