@@ -146,7 +146,7 @@ public class ProjectListAction extends BaseAction {
     projectCrosscutingTheme.setCapacityDevelopment(false);
     projectCrosscutingTheme.setBigData(false);
     projectCrosscutingTheme.setImpactAssessment(false);
-    projectCrosscutingTheme.setNa(true);
+    projectCrosscutingTheme.setNa(false);
 
     project.setProjectCrosscutingTheme(projectCrosscutingTheme);
     projectCrosscutingTheme.setProject(project);
