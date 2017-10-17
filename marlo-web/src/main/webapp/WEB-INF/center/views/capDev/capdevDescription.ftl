@@ -115,7 +115,7 @@
           [#if editable]
             <div class="row ">
               <div class="note participantMessage">
-                <p>If you don't find the discipline you are looking for, suggest it selecting <b>Other</b> then write the suggestion</p>
+                <p>If you cannot find the discipline you are looking for, suggest another one by clicking on the box <b>"Other"</b> </p>
               </div>
             </div>
             <div>
@@ -160,7 +160,7 @@
           [#if editable]
             <div class="row grupsParticipantsForm">
               <div class="note participantMessage">
-                <p>If you don't find the target group you are looking for, suggest it selecting <b>Other</b> then write the suggestion</p>
+                <p>If you cannot find the target group you are looking for, suggest another one by clicking on the box <b>"Other"</b> </p>
               </div>
             </div>
             <div class="grupsParticipantsForm">
@@ -240,7 +240,7 @@
           [#if editable]
             <div class="row grupsParticipantsForm">
               <div class="note participantMessage">
-                <p>If you don't find the partner you are looking for, suggest it selecting <b>Other</b> then write the suggestion</p>
+                <p>If you cannot find the partner you are looking for, suggest another one by clicking on the box <b>"Other"</b></p>
               </div>
             </div>
             <div class="grupsParticipantsForm">

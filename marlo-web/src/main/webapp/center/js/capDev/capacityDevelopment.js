@@ -231,7 +231,7 @@
 
 
 
-  //enable the duration unit field whe user press a key
+  //enable the duration unit field when user press a key
   $(".capdevDuration").on('keyup',function(){
     var query = $(this).val();
     if(query.length > 0) {

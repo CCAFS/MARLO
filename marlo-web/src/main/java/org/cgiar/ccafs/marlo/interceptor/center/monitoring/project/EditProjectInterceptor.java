@@ -113,8 +113,8 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
         }
 
         // Check the permission if user want to edit or save the form
-        if (editParameter || parameters.get("save") != null) {
-          hasPermissionToEdit = (baseAction.isAdmin()) ? true : baseAction
+        if (editParameter || (parameters.get("save") != null)) {
+          hasPermissionToEdit = (baseAction.canAccessSuperAdmin()) ? true : baseAction
             .hasPermission(baseAction.generatePermission(Permission.RESEARCH_PROGRAM_FULL_PRIVILEGES, params));
         }
 

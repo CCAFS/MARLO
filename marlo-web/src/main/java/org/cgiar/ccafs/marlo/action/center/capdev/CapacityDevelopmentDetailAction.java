@@ -537,7 +537,19 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
       }
       if (capdev.getCategory() == 2) {
-        contact = capdev.getCtFirstName() + ", " + capdev.getCtLastName() + " " + capdev.getCtEmail();
+        String ctFirstName = "";
+        String ctLastName = "";
+        String ctEmail = "";
+        if (capdev.getCtFirstName() != null) {
+          ctFirstName = capdev.getCtFirstName() + ", ";
+        }
+        if (capdev.getCtLastName() != null) {
+          ctLastName = capdev.getCtLastName();
+        }
+        if (capdev.getCtEmail() != null) {
+          ctEmail = capdev.getCtEmail();
+        }
+        contact = ctFirstName + ctLastName + " " + ctEmail;
         final Set<CapdevParticipant> capdevParticipants = new HashSet<CapdevParticipant>(participants);
         capdev.setCapdevParticipant(capdevParticipants);
 
@@ -670,12 +682,12 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
             if (reader.validarExcelFileData(uploadFile)) {
 
-              final Object[][] data = reader.readExcelFile(uploadFile);
+              Object[][] data = reader.readExcelFile(uploadFile);
               this.loadParticipantsList(data);
               capdevDB.setNumParticipants(participantList.size());
-              final int numMen = this.getNumMenParticipants(data);
-              final int numWomen = this.getNumWomenParticipants(data);
-              final int numOther = this.getNumOtherGender(data);
+              int numMen = this.getNumMenParticipants(data);
+              int numWomen = this.getNumWomenParticipants(data);
+              int numOther = this.getNumOtherGender(data);
               capdevDB.setNumMen(numMen);
               capdevDB.setNumWomen(numWomen);
               capdevDB.setNumOther(numOther);
@@ -687,7 +699,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       } else {
         capdevDB.setNumParticipants(capdev.getNumParticipants());
         if ((capdev.getNumMen() != null) && (capdev.getNumWomen() != null) && (capdev.getNumOther() != null)) {
-          final int totalParticipants = capdev.getNumMen() + capdev.getNumWomen() + capdev.getNumOther();
+          int totalParticipants = capdev.getNumMen() + capdev.getNumWomen() + capdev.getNumOther();
           if (capdev.getNumParticipants() == totalParticipants) {
             capdevDB.setNumMen(capdev.getNumMen());
             capdevDB.setNumWomen(capdev.getNumWomen());

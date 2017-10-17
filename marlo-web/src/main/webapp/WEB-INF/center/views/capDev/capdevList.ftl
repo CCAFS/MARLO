@@ -37,7 +37,7 @@
 		<div class="row">
 			<div class="helpMessage infoText col-md-12 capdevinfo">
 				<img class="col-md-2" src="${baseUrl}/global/images/icon-help.png" />
-   				 <p class="col-md-10"> [@s.text name="capdev.help.list"][/@s.text] </p>
+   				  [@s.text name="capdev.help.list"][/@s.text] 
 			</div>
 		</div>
 		<div class="row">
@@ -203,7 +203,7 @@
 				</div>
 
 				<div class="col-md-7">
-					If any icon is highlighted it mean that the capacity development intervention has any of those: list of participants or supporting documents, or has both.
+					If an icon is highlighted, it means that the capacity development intervention has any of those: list of participants or supporting documents, or has both.
 				</div>
 				
 			</div>

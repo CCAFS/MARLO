@@ -75,8 +75,8 @@ public class EditCapacityDevInterceptor extends AbstractInterceptor implements S
     boolean canEdit = false;
     boolean hasPermissionToEdit = false;
     boolean editParameter = false;
-    final BaseAction baseAction = (BaseAction) invocation.getAction();
-    final CapacityDevelopment capdev = capacityDevelopmentService.getCapacityDevelopmentById(capdevID);
+    BaseAction baseAction = (BaseAction) invocation.getAction();
+    CapacityDevelopment capdev = capacityDevelopmentService.getCapacityDevelopmentById(capdevID);
 
 
     if (capdev != null) {
@@ -85,19 +85,18 @@ public class EditCapacityDevInterceptor extends AbstractInterceptor implements S
 
       if (baseAction.canAccessSuperAdmin()) {
         canEdit = true;
-        hasPermissionToEdit = true;
       }
 
-      final User currentUser = (User) session.get(APConstants.SESSION_USER);
+      User currentUser = (User) session.get(APConstants.SESSION_USER);
 
       if (capdev.getCreatedBy().getId().equals(currentUser.getId())) {
         canEdit = true;
-        hasPermissionToEdit = true;
       }
 
 
       if (parameters.get(APConstants.EDITABLE_REQUEST) != null) {
-        final String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
+        String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
+        System.out.println("edit ==>" + stringEditable);
         editParameter = stringEditable.equals("true");
         // If the user is not asking for edition privileges we don't need to validate them.
         if (!editParameter) {
@@ -107,8 +106,10 @@ public class EditCapacityDevInterceptor extends AbstractInterceptor implements S
 
       // Check the permission if user want to edit or save the form
       if (editParameter || (parameters.get("save") != null)) {
-        // hasPermissionToEdit = (baseAction.isAdmin()) ? true :
-        // capdev.getCreatedBy().getId().equals(currentUser.getId());
+        System.out.println(baseAction.canAccessSuperAdmin());
+        hasPermissionToEdit =
+          (baseAction.canAccessSuperAdmin()) ? true : capdev.getCreatedBy().getId().equals(currentUser.getId());
+
       }
 
       // Set the variable that indicates if the user can edit the section

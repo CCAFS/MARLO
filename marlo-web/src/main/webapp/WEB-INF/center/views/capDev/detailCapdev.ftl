@@ -31,9 +31,9 @@
 
 	<div class="row">
 		<div class="helpMessage infoText col-md-12 capdevinfo">
-				<img class="col-md-2" src="${baseUrl}/global/images/icon-help.png" />
-   				 <p class="col-md-10"> [@s.text name="capdev.help.detail"][/@s.text] </p>
-			</div>
+			<img class="col-md-2" src="${baseUrl}/global/images/icon-help.png" />
+   			[@s.text name="capdev.help.detail"][/@s.text] 
+		</div>
 	</div> 
 
 	<div class="col-md-3 capDevMenu">
@@ -123,7 +123,7 @@
 
 					<div class="col-md-3 durationUnitSelect">
 						<input type="hidden" name="" value="${(capdev.durationUnit)!}" class="durationUnitaInput"/>
-						[@customForm.select name="capdev.durationUnit" listName="durationUnit" keyFieldName="value" displayFieldName="displayName" help="" i18nkey="capdev.form.durationUnit"  placeholder="capdev.select"  editable=editable className="dUnitSelect"/]
+						[@customForm.select name="capdev.durationUnit" listName="durationUnit" keyFieldName="value" displayFieldName="displayName" help="capdev.help.durationUnit" i18nkey="capdev.form.durationUnit"  placeholder="capdev.select"  editable=editable className="dUnitSelect"/]
 					</div>
 				</div>
 
@@ -253,7 +253,7 @@
 
 					<div class="row grupsParticipantsForm">
 						<div class="note participantMessage">
-							<p>If you don’t have a list of participants, please enter the number of participants, number of men and number of women</p>
+							<p>If you don’t have a list of participants, please enter the number of participants, specifying number of men,  number of women, or other</p>
 						</div>
 					</div>
 				</div>
@@ -318,7 +318,7 @@
 
 							[#if editable]
 								<div class="note participantMessage">
-									<p>If you don't find the institution you are looking for, suggest it selecting <b>Other</b> </p>
+									<p>If you cannot find the institution you are looking for, suggest another one by clicking on the box <b>"Other"</b></p>
 								</div>
 							[/#if]
 
@@ -350,7 +350,7 @@
 				
 
 				<!-- Regions and countries lists -->
-				<h4 class="headTitle newCapdevField">Location Information</h4>	
+				<h4 class="headTitle newCapdevField">Reach</h4>	
 				<div class=" newCapdevField form-group">
 					<div class="simpleBox">
 						
