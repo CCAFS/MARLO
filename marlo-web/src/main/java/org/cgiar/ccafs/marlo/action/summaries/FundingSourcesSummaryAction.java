@@ -509,8 +509,8 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
         totalBudget = projectBudget.getAmount();
 
         String directDonor = "";
-        if (fundingSource.getDirectDonor() != null) {
-          directDonor = fundingSource.getDirectDonor().getComposedName();
+        if (fundingSource.getFundingSourceInfo(this.getActualPhase()).getDonor() != null) {
+          directDonor = fundingSource.getFundingSourceInfo(this.getActualPhase()).getDonor().getComposedName();
         }
 
         // Funding sources locations

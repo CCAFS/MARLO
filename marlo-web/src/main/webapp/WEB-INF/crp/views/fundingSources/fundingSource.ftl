@@ -133,7 +133,7 @@
           <div class="col-md-12 metadataElement-directDonorName">
             <label for="">[@s.text name="projectCofunded.directDonor" /]:[@customForm.req required=editable /] </label>
             <span class="description"><i>([@s.text name="projectCofunded.directDonor.helpText" /])</i></span>
-            [@customForm.select name="fundingSource.directDonor.id" i18nkey="projectCofunded.directDonor" className="donor" showTitle=false listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" editable=editable /]
+            [@customForm.select name="fundingSource.fundingSourceInfo.donor.id" i18nkey="projectCofunded.directDonor" className="donor" showTitle=false listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" editable=editable /]
             <span class="text-warning metadataSuggested"></span> 
           </div>
         </div>

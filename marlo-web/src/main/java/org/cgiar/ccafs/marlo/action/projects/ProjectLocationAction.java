@@ -726,20 +726,20 @@ public class ProjectLocationAction extends BaseAction {
     }
 
     // Fix Ull Collection when autosave gets the suggeste country - 10/13/2017
-      for (CountryLocationLevel countryLocationLevel : project.getLocationsData()) {
+    for (CountryLocationLevel countryLocationLevel : project.getLocationsData()) {
 
-        Collection<LocElement> similar = new HashSet<LocElement>(countryLocationLevel.getLocElements());
-        Collection<LocElement> different = new HashSet<LocElement>();
-        different.addAll(countryLocationLevel.getLocElements());
-        different.addAll(fsLocs);
-        similar.retainAll(fsLocs);
-        different.removeAll(similar);
+      Collection<LocElement> similar = new HashSet<LocElement>(countryLocationLevel.getLocElements());
+      Collection<LocElement> different = new HashSet<LocElement>();
+      different.addAll(countryLocationLevel.getLocElements());
+      different.addAll(fsLocs);
+      similar.retainAll(fsLocs);
+      different.removeAll(similar);
 
-        countryLocationLevel.getLocElements().removeAll(similar);
+      countryLocationLevel.getLocElements().removeAll(similar);
 
 
-      }
     }
+
     Collection<LocElement> fsLocsRegions = new ArrayList<>();
     for (CountryFundingSources locElement : project.getRegionFS()) {
       if (locElement.getLocElement() != null) {
