@@ -1934,7 +1934,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
               }
               if (deliverableDissemination.getRestrictedUseAgreement() != null
                 && deliverableDissemination.getRestrictedUseAgreement() == true) {
-                restrictedAccess = "Restricted Use Agreement - Restricted access (if so, what are these periods?)";
+                restrictedAccess = "Restricted Use AgreementOCS - Restricted access (if so, what are these periods?)";
                 isLastTwoRestricted = true;
                 if (deliverableDissemination.getRestrictedAccessUntil() != null) {
                   restrictedDate =
@@ -2909,7 +2909,16 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         if (projectOutcome.getCrpProgramOutcome() != null) {
           outYear = "" + projectOutcome.getCrpProgramOutcome().getYear();
           outValue = "" + projectOutcome.getCrpProgramOutcome().getValue();
-          outStatement = projectOutcome.getCrpProgramOutcome().getDescription();
+          if (this.hasSpecificities(APConstants.CRP_IP_OUTCOME_INDICATOR)) {
+            outStatement = projectOutcome.getCrpProgramOutcome().getDescription();
+            if (projectOutcome.getCrpProgramOutcome().getIndicator() != null
+              && !projectOutcome.getCrpProgramOutcome().getIndicator().isEmpty()) {
+              outStatement += "<br><b>Indicator: </b>" + projectOutcome.getCrpProgramOutcome().getIndicator();
+            }
+          } else {
+            outStatement = projectOutcome.getCrpProgramOutcome().getDescription();
+          }
+
           if (projectOutcome.getCrpProgramOutcome().getSrfTargetUnit() != null) {
             outUnit = projectOutcome.getCrpProgramOutcome().getSrfTargetUnit().getName();
           }

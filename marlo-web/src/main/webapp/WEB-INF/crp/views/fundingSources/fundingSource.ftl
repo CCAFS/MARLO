@@ -4,29 +4,32 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload", "datatables.net", "datatables.net-bs","flat-flags"] /]
 [#assign customJS = [
   "${baseUrl}/global/js/fieldsValidation.js",
-  "${baseUrlMedia}/js/fundingSources/fundingSource.js", 
+  "${baseUrlMedia}/js/fundingSources/fundingSource.js",
+  "${baseUrlMedia}/js/fundingSources/syncFundingSource.js",
   "${baseUrl}/global/js/autoSave.js" 
-  ] 
+  ]
 /]
 [#assign customCSS = ["${baseUrlMedia}/css/fundingSources/fundingSource.css"] /]
 [#assign currentSection = "fundingSources" /]
-
 [#assign breadCrumb = [
   {"label":"fundingSourcesList", "nameSpace":"/fundingSources", "action":""}
 ]/]
 
+[#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 [#include "/WEB-INF/crp/pages/header.ftl" /]
 [#include "/WEB-INF/crp/pages/main-menu.ftl" /]
-
 [#assign startYear = ((fundingSource.fundingSourceInfo.startDate?string.yyyy)?number)!currentCycleYear /]
 [#assign endYear = ((fundingSource.fundingSourceInfo.endDate?string.yyyy)?number)!startYear /]
+[#assign extensionYear = ((fundingSource.extensionDate?string.yyyy)?number)!endYear /]
+[#assign hasInstitutions = fundingSource.institutions?has_content /]
+
     
 <section class="container">
-  <article class="fullBlock col-md-12" id="mainInformation">
+  <article class="" id="mainInformation">
   
   [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
   
-  <div class="col-md-12">
+  <div class="col-md-offset-1 col-md-10">
   
   [#-- Messages --]
   [#include "/WEB-INF/crp/views/fundingSources/messages-fundingSource.ftl" /]
@@ -35,8 +38,7 @@
     <div class="borderBox informationWrapper">
       [#-- Loading --]
       <div class="loading" style="display:none"></div>
-    
-      
+
       [#-- Project title --]
       <div class="form-group">
         <div class="row">
@@ -76,7 +78,7 @@
         </p>
       </div>
        
-      [#-- Agreement status and total budget --]
+      
       <div class="form-group">
         <div class="row">
           <div class="col-md-6">[@customForm.select name="fundingSource.fundingSourceInfo.status" i18nkey="projectCofunded.agreementStatus" className="agreementStatus"  listName="status" keyFieldName=""  displayFieldName="" header=false editable=editable /] </div>
@@ -99,41 +101,10 @@
               </div>
             [/#if]
           </div>
-        </div>
-      </div>
-      
-      [#-- CGIAR lead center --]
-      [#assign ifpriDivision = false /]
-      <div class="form-group row">
-        <div class="panel tertiary col-md-12">
-         <div class="panel-head"><label for=""> [@customForm.text name="fundingSource.leadPartner" readText=!editable /]:[@customForm.req required=editable /]</label></div>
-          <div id="leadPartnerList" class="panel-body" listname="deliverable.fundingSources"> 
-            <ul class="list">
-            [#if fundingSource.institutions?has_content]
-              [#list fundingSource.institutions as institutionLead]
-                [#-- Show if is a headquarter institution --]
-                [#if !(institutionLead.headquarter??)]
-                  <li id="" class="leadPartners clearfix col-md-6">
-                  [#if editable ]
-                    <div class="removeLeadPartner removeIcon" title="Remove Lead partner"></div>
-                  [/#if]
-                    <input class="id" type="hidden" name="fundingSource.institutions[${institutionLead_index}].id" value="${institutionLead.id}" />
-                    <input class="fId" type="hidden" name="fundingSource.institutions[${institutionLead_index}].institution.id" value="${institutionLead.institution.id}" />
-                    <span class="name">${(institutionLead.institution.composedName)!}</span>
-                    <div class="clearfix"></div>
-                    
-                    [#-- Check IFPRI Division --]
-                    [#if institutionLead.institution.id == action.getIFPRIId() ] [#assign ifpriDivision = true /] [/#if]
-                  </li>
-                [/#if]
-              [/#list]
-              [#else]
-              <p class="emptyText"> [@s.text name="No lead partner added yet." /]</p> 
-            [/#if]
-            </ul>
-            [#if editable ]
-              [@customForm.select name="fundingSource.leader.id" label=""  showTitle=false  i18nkey="" listName="institutions" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className="institution" editable=editable /]
-            [/#if] 
+          [#-- Agreement status --]
+          <div class="col-md-6 metadataElement-contractStatusId">
+            [@customForm.select name="fundingSource.status" i18nkey="projectCofunded.agreementStatus" className="agreementStatus metadataValue ${(action.hasSpecificities('crp_status_funding_sources')?string('','onlyOngoing'))!} "  listName="status" keyFieldName=""  displayFieldName="" header=false disabled=isSynced editable=editable /] 
+            [#if isSynced && editable]<input type="hidden" class="selectHiddenInput" name="fundingSource.status" value="${(fundingSource.status)!}" />[/#if]
           </div>
         </div>
       </div>
@@ -153,6 +124,19 @@
           <div class="col-md-6">[@customForm.input name="fundingSource.fundingSourceInfo.contactPersonName" i18nkey="projectCofunded.contactName" className="contactName" required=true editable=editable /]</div>
           <div class="col-md-6" style="display:${canSeePIEmail?string('block','none')}">[@customForm.input name="fundingSource.fundingSourceInfo.contactPersonEmail" i18nkey="projectCofunded.contactEmail" className="contactEmail" required=true editable=editable /]</div>
       </div>
+      
+      <br />
+        
+      <div class="form-group-donor">
+        [#-- Direct Donor --]
+        <div class="form-group row">
+          <div class="col-md-12 metadataElement-directDonorName">
+            <label for="">[@s.text name="projectCofunded.directDonor" /]:[@customForm.req required=editable /] </label>
+            <span class="description"><i>([@s.text name="projectCofunded.directDonor.helpText" /])</i></span>
+            [@customForm.select name="fundingSource.directDonor.id" i18nkey="projectCofunded.directDonor" className="donor" showTitle=false listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" editable=editable /]
+            <span class="text-warning metadataSuggested"></span> 
+          </div>
+        </div>
 
       [#-- Donor --]
       <div class="form-group">
@@ -161,20 +145,18 @@
             [@customForm.select name="fundingSource.fundingSourceInfo.institution.id" i18nkey="projectCofunded.donor" className="donor"  listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" required=true editable=editable /]
           </div>
         </div>
-        
+
         [#-- Request partner adition --]
         [#if editable]
         <p id="addPartnerText" class="helpMessage">
-          [@s.text name="projectPartners.addPartnerMessage.first" /]
+          [@s.text name="fundingSource.addDonorMessage.first" /]
           <a class="popup" href="[@s.url action='${crpSession}/partnerSave' namespace="/projects"][@s.param name='fundingSourceID']${fundingSource.id?c}[/@s.param][/@s.url]">
             [@s.text name="projectPartners.addPartnerMessage.second" /]
           </a>
         </p> 
         [/#if]
       </div>
-      
     </div>
-    
     <h4 class="headTitle">Location information</h4> 
     <div class="borderBox informationWrapper">
     [#-- GLOBAL DIMENSION --]
@@ -266,13 +248,15 @@
             <ul class="list">
             [#if fundingSource.fundingCountry?has_content]
               [#list fundingSource.fundingCountry as country]
-                  <li id="" class="country clearfix col-md-2">
+                  <li id="" class="country clearfix col-md-3">
                   [#if editable ]
-                    <div class="removeCountry removeIcon" title="Remove country"></div>
+                    <div class="removeCountry syncVisibles removeIcon" style="display:${isSynced?string('none', 'block')}" title="Remove country"></div>
                   [/#if]
                     <input class="id" type="hidden" name="fundingSource.fundingCountry[${country_index}].id" value="${(country.id)!-1}" />
                     <input class="cId" type="hidden" name="fundingSource.fundingCountry[${country_index}].locElement.isoAlpha2" value="${(country.locElement.isoAlpha2)!}" />
-                    <span class="name"><span> <i class="flag-sm flag-sm-${(country.locElement.isoAlpha2)!}"></i> ${(country.locElement.name)!} </span></span>
+                    <input class="cPercentage" type="hidden" name="fundingSource.fundingCountry[${country_index}].percentage" value="${(country.percentage)!}" />
+                    
+                    <span class="name"><span> <i class="flag-sm flag-sm-${(country.locElement.isoAlpha2)!}"></i> [@utils.wordCutter string=(country.locElement.name)!'' maxPos=15 /] </span></span>
                     <div class="clearfix"></div>
                   </li>
               [/#list]
@@ -281,27 +265,37 @@
             [/#if]
             </ul>
             [#if editable ]
-              [@customForm.select name="" label=""  showTitle=false  i18nkey="" listName="countryLists" keyFieldName="isoAlpha2"  displayFieldName="name"  multiple=false required=true  className="countriesSelect" editable=editable /]
+              <div class="syncVisibles" style="display:${isSynced?string('none', 'block')}">
+                [@customForm.select name="" label=""  showTitle=false  i18nkey="" listName="countryLists" keyFieldName="isoAlpha2"  displayFieldName="name"  multiple=false required=true  className="countriesSelect" editable=editable /]
+              </div>
             [/#if] 
           </div>
         </div>
       </div>
     </div>
     
+    [#-- Annual funding source contribution and Grand Amount --]
+    <h4 class="headTitle" >Annual funding source contribution</h4>
+    [#-- Grant total amount --]
+    <div id="grantTotalAmount" class="metadataElement-grantAmount" style="display:${isSynced?string('block', 'none')}">
+      <p><strong>Total Grant Amount:</strong> US$ <span class="amount">${((fundingSource.grantAmount)!0)?number?string(",##0.00")}</span></p>
+      [#-- Remainig budget --]
+      <small class="grayLabel"> <i>Total remaining budget: US$ <span class="remaining">0.00</span> </i></small>
+
+      <input type="hidden" class="metadataValue" name="fundingSource.grantAmount" value="${(fundingSource.grantAmount)!0}" />
+    </div>
     
-    <h4 class="headTitle">Annual funding source contribution</h4>
     <div class="contributionWrapper budgetByYears">
       [#-- Year Tabs --]
       <ul class="nav nav-tabs budget-tabs" role="tablist">
-        [#list startYear .. endYear as year]
+        [#list startYear .. extensionYear as year]
           <li class="[#if year == currentCycleYear]active[/#if]"><a href="#fundingYear-${year}" role="tab" data-toggle="tab">${year} </a></li>
         [/#list]
       </ul>
       [#-- Years Content --]
-      <div class="tab-content col-md-12 contributionContent">
-        [#list startYear .. endYear as year]
+      <div class="tab-content contributionContent">
+        [#list startYear .. extensionYear as year]
           <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="fundingYear-${year}">
-          
           
           [#attempt]
             [#assign budget = (action.getBudget(year))!{} /]
@@ -322,8 +316,8 @@
                 [@customForm.input name="fundingSource.budgets[${budgetIndex}].budget" i18nkey="projectCofunded.budgetYear" paramText="${year}" className="currencyInput" required=true editable=editable /]
               [#else]
               <div class="input">
-              	<p>US$ <span>${((budget.budget)!0)?number?string(",##0.00")}</p>
-              	 <input type="hidden" name="fundingSource.budgets[${budgetIndex}].budget" value="${(budget.budget)!0}"/>
+                <p>US$ <span>${((budget.budget)!0)?number?string(",##0.00")}</p>
+                 <input type="hidden" name="fundingSource.budgets[${budgetIndex}].budget" value="${(budget.budget)!0}"/>
               </div>
                 
               [/#if]
@@ -331,8 +325,12 @@
             <div class="clearfix"></div>
           </div>
           <br />
-          <h5 class="sectionSubTitle">[@s.text name="fundingSource.projectsAssigned" /]:</h5>
           
+          [#-- Remainig budget --]
+          <small class="grayLabel pull-right"> (${year} Remaining budget: US$ <span class="projectAmount">${((fundingSource.getRemaining(year))!0)?number?string(",##0.00")}</span>) </small>
+
+          [#-- Projects that this funding source is assigned to --]
+          <h5 class="sectionSubTitle">[@s.text name="fundingSource.projectsAssigned" /]:</h5>
           <table class="table">
           <thead>
            <tr>
@@ -387,7 +385,7 @@
 
 [#-- Funding Source list template --]
 <ul style="display:none">
-  <li id="leadPartnerTemplate" class="leadPartners clearfix col-md-6" style="display:none;">
+  <li id="leadPartnerTemplate" class="leadPartners clearfix" style="display:none;">
     <div class="removeLeadPartner removeIcon" title="Remove Lead partner"></div>
     <input class="id" type="hidden" name="fundingSource.institutions[-1].id" value="" />
     <input class="fId" type="hidden" name="fundingSource.institutions[-1].institution.id" value="" />
@@ -410,10 +408,12 @@
 
 [#-- Country element template --]
 <ul style="display:none">
-  <li id="countryTemplate" class="country clearfix col-md-2">
-      <div class="removeCountry removeIcon" title="Remove country"></div>
+  <li id="countryTemplate" class="country clearfix col-md-3">
+      <div class="removeCountry syncVisibles removeIcon" style="display:${isSynced?string('none', 'block')}" title="Remove country"></div>
       <input class="id" type="hidden" name="fundingSource.fundingCountry[-1].id" value="" />
       <input class="cId" type="hidden" name="fundingSource.fundingCountry[-1].locElement.isoAlpha2" value="" />
+      <input class="cPercentage" type="hidden" name="fundingSource.fundingCountry[-1].percentage" value="" />
+      
       <span class="name"></span>
       <div class="clearfix"></div>
     </li>

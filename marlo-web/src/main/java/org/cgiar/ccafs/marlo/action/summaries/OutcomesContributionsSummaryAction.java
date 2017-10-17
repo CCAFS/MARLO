@@ -222,22 +222,24 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
 
   private TypedTableModel getMasterTableModel(String center, String date) {
     // Initialization of Model
-    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "hasTargetUnit"},
-      new Class[] {String.class, String.class, Boolean.class});
+    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "hasTargetUnit", "hasOutcomeIndicator"},
+      new Class[] {String.class, String.class, Boolean.class, Boolean.class});
     Boolean hasTargetUnit = false;
     if (targetUnitList.size() > 0) {
       hasTargetUnit = true;
     }
-    model.addRow(new Object[] {center, date, hasTargetUnit});
+
+    model
+      .addRow(new Object[] {center, date, hasTargetUnit, this.hasSpecificities(APConstants.CRP_IP_OUTCOME_INDICATOR)});
     return model;
   }
 
   private TypedTableModel getMilestonesOutcomesTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"project_id", "flagship", "outcome", "project_url", "milestone", "expected_value", "expected_unit",
-        "narrative_target", "title"},
+        "narrative_target", "title", "outcomeIndicator"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, Long.class, String.class,
-        String.class, String.class},
+        String.class, String.class, String.class},
       0);
 
     for (Project project : this.getLoggedCrp().getProjects().stream()
@@ -264,6 +266,36 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
           expectedValue = projectMilestone.getExpectedValue();
           if (projectMilestone.getExpectedUnit() != null) {
             expectedUnit = projectMilestone.getExpectedUnit().getName();
+      for (CrpProgramOutcome crpProgramOutcome : crpProgram.getCrpProgramOutcomes().stream()
+        .filter(cpo -> cpo.isActive()).collect(Collectors.toList())) {
+        for (CrpMilestone crpMilestone : crpProgramOutcome.getCrpMilestones().stream().filter(cm -> cm.isActive())
+          .collect(Collectors.toList())) {
+          for (ProjectMilestone projectMilestone : crpMilestone.getProjectMilestones().stream()
+            .filter(pm -> pm.isActive()).collect(Collectors.toList())) {
+
+            if (projectMilestone.getProjectOutcome().isActive()) {
+              String projectId = "", title = "", flagship = "", outcome = "", projectUrl = "", milestone = "",
+                expectedUnit = "", narrativeTarget = "", outcomeIndicator = null;
+              Long expectedValue = -1L;
+              projectId = projectMilestone.getProjectOutcome().getProject().getId().toString();
+              title = projectMilestone.getProjectOutcome().getProject().getTitle();
+              flagship = projectMilestone.getProjectOutcome().getCrpProgramOutcome().getCrpProgram().getAcronym();
+              outcome = projectMilestone.getProjectOutcome().getCrpProgramOutcome().getDescription();
+              if (this.hasSpecificities(APConstants.CRP_IP_OUTCOME_INDICATOR)
+                && projectMilestone.getProjectOutcome().getCrpProgramOutcome().getIndicator() != null
+                && !projectMilestone.getProjectOutcome().getCrpProgramOutcome().getIndicator().isEmpty()) {
+                outcomeIndicator = projectMilestone.getProjectOutcome().getCrpProgramOutcome().getIndicator();
+              }
+              projectUrl = "P" + projectMilestone.getProjectOutcome().getProject().getId().toString();
+              milestone = crpMilestone.getComposedName();
+              expectedValue = projectMilestone.getExpectedValue();
+              if (projectMilestone.getExpectedUnit() != null) {
+                expectedUnit = projectMilestone.getExpectedUnit().getName();
+              }
+              narrativeTarget = projectMilestone.getNarrativeTarget();
+              model.addRow(new Object[] {projectId, flagship, outcome, projectUrl, milestone, expectedValue,
+                expectedUnit, narrativeTarget, title, outcomeIndicator});
+            }
           }
           narrativeTarget = projectMilestone.getNarrativeTarget();
           model.addRow(new Object[] {projectId, flagship, outcome, projectUrl, milestone, expectedValue, expectedUnit,

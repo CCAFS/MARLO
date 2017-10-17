@@ -4,7 +4,7 @@
   <table class="projectsList" id="projects">
     <thead>
       <tr class="header">
-        <th colspan="7">Funding Source information</th>
+        <th colspan="8">Funding Source information</th>
         <th colspan="2">Actions</th> 
       </tr>
       <tr class="subHeader">
@@ -15,6 +15,7 @@
         <th id="projectStatus">[@s.text name="projectsList.projectStatus" /]</th>
         <th id="leader" >[@s.text name="projectsList.institutions" /]</th>
         <th id="projectDonor" >[@s.text name="projectsList.projectDonor" /]</th>
+        <th id="projectDonor" >[@s.text name="projectsList.originalDonor" /]</th>
         <th id="fieldCheck" >[@s.text name="message.fieldsCheck.required" /]</th>
         <th id="projectDelete">[@s.text name="projectsList.delete" /]</th>
       </tr>
@@ -72,7 +73,12 @@
             [/#if]
           </td>
           
-          [#-- Donor --]
+          [#-- Direct Donor --]
+          <td class=""> 
+            ${(project.directDonor.composedNameLoc)!'Not defined'}
+          </td>
+          
+          [#-- Original Donor --]
           <td class=""> 
             ${(project.fundingSourceInfo.institution.composedNameLoc)!'Not defined'}
           </td>

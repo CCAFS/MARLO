@@ -34,6 +34,9 @@ public class DateConverter extends StrutsTypeConverter {
   @Override
   public Object convertFromString(Map context, String[] values, Class toClass) {
     if (values != null && values.length > 0 && values[0] != null && values[0].length() > 0) {
+      if (values[0].length() == 5) {
+        values[0] = values[0] + "-01";
+      }
       SimpleDateFormat sdf = new SimpleDateFormat(APConstants.DATE_FORMAT);
       try {
         return sdf.parse(values[0]);

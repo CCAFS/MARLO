@@ -564,7 +564,7 @@ public class FundingSourceAction extends BaseAction {
           fundingSource.setFundingCountry(new ArrayList<>(countries));
 
           List<FundingSourceLocation> regions = new ArrayList<>(fundingSource.getFundingSourceLocations()
-            .stream().filter(fl -> fl.isActive() && fl.getPhase().equals(this.getActualPhase())
+            .stream().filter(fl -> fl.isActive() && fl.getLocElement() != null && fl.getPhase().equals(this.getActualPhase())
               && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 1)
             .collect(Collectors.toList()));
 
@@ -579,7 +579,7 @@ public class FundingSourceAction extends BaseAction {
 
           regions = new ArrayList<>(fundingSource
             .getFundingSourceLocations().stream().filter(fl -> fl.isActive() && fl.getLocElementType() != null
-              && fl.getLocElement() == null && fl.getPhase().equals(this.getActualPhase()))
+              && fl.getLocElement() == null && fl.getLocElement() == null && fl.getPhase().equals(this.getActualPhase()))
             .collect(Collectors.toList()));
 
           if (regions.size() > 0) {
@@ -729,10 +729,10 @@ public class FundingSourceAction extends BaseAction {
       funginsSourceInfoDB.setModificationJustification("");
 
       // if donor has a select option, no option put donor null
-      if (fundingSource.getFundingSourceInfo().getInstitution().getId().longValue() != -1) {
-        funginsSourceInfoDB.setInstitution(fundingSource.getFundingSourceInfo().getInstitution());
+      if (fundingSource.getFundingSourceInfo().getDonor().getId().longValue() != -1) {
+        funginsSourceInfoDB.setDonor(fundingSource.getFundingSourceInfo().getDonor());
       } else {
-        funginsSourceInfoDB.setInstitution(null);
+        funginsSourceInfoDB.setDonor(null);
       }
 
 
@@ -946,6 +946,7 @@ public class FundingSourceAction extends BaseAction {
           fundingSourceLocationSave.setModificationJustification("");
           fundingSourceLocationSave.setFundingSource(fundingSourceDB);
           fundingSourceLocationSave.setPhase(this.getActualPhase());
+          fundingSourceLocationSave.setPercentage(fundingSourceLocation.getPercentage());
           if (!fundingSourceLocation.isScope()) {
             LocElement locElement = locElementManager.getLocElementById(fundingSourceLocation.getLocElement().getId());
 

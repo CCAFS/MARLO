@@ -1,12 +1,63 @@
+var allowExtensionDate, dateFormat, from, to, extension;
+var W1W2, ON_GOING;
+var $fundingType;
 $(document).ready(init);
 
 function init() {
-
-  /** Check region option * */
-  $("#regionList").find(".region").each(function(i,e){
-    var option=$("#regionSelect").find("option[value='"+$(e).find("input.rId").val()+"-"+$(e).find("input.regionScope").val()+"']");
-    option.prop('disabled', true);
-    // option.hide();
+  
+  // Setting constants
+  W1W2 = 1;
+  ON_GOING = 2;
+  
+  $fundingType = $(".type");
+  
+  // Check if (crp_funding_source_extension_date) parameter is true
+  allowExtensionDate = $('.allowExtensionDate').text() === "true";
+  
+  // Set Dateformat
+  dateFormat = "yy-mm-dd";
+  
+  // Dropdown
+  $('.dropdown-toggle').on('show.bs.dropdown', function () {
+    console.log('dropdown-toggle');
+  })
+  
+  // Check region option
+  $("#regionList").find(".region").each(
+      function(i,e) {
+        var option =
+            $("#regionSelect").find(
+                "option[value='" + $(e).find("input.rId").val() + "-" + $(e).find("input.regionScope").val() + "']");
+        option.prop('disabled', true);
+      });
+  
+  // Original Donor
+  $(".donor").on("change", function() {
+    var $option = $(this).find("option:selected");
+    var selectedValue = $option.val();
+    var count = 0;
+    
+    if(selectedValue == "-1"){
+      return
+    }
+    
+    // Count repeated donors
+    $('select.donor').each(function(i, e){
+      if (e.value == selectedValue) {
+        count++;
+      }
+    });
+    // Check if the donor is already selected
+    if (count > 1){
+      // Reset Select
+      $(this).val(-1);
+      $(this).trigger('select2:change');
+      // Noty Message
+      var message ="Donors must be different";
+      var notyOptions = jQuery.extend({}, notyDefaultOptions);
+      notyOptions.text = message;
+      noty(notyOptions);
+    }
   });
 
   // Agreement status & Donor
@@ -14,7 +65,7 @@ function init() {
     width: "100%"
   });
 
-  // Popup
+  // Activate Popup
   popups();
 
   // Add Data Table
@@ -31,39 +82,45 @@ function init() {
     $(this).trigger("change.select2");
   });
 
+  // Remove partner
   $(".removeLeadPartner").on("click", removeLeadPartner);
 
-// Country item
+  // Country item
   $(".countriesSelect").on("change", function() {
-    var option = $(this).find("option:selected");
-    if(option.val() != "-1") {
-      addCountry(option);
+    var $option = $(this).find("option:selected");
+    if($option.val() != "-1") {
+      var countryISO = $option.val();
+      var countryName = $option.text();
+      // Add Country
+      addCountry(countryISO, countryName);
+      // Reset select
+      $option.val("-1");
+      $option.trigger('change.select2');
     }
     // Remove option from select
-    option.remove();
+    $option.remove();
     $(this).trigger("change.select2");
   });
+  
+  // Remove country item
   $(".removeCountry").on("click", removeCountry);
 
-// REGION item
-// $("#regionSelect").select2('destroy');
+  // Region item
   $("#regionSelect").on("change", function() {
     var option = $(this).find("option:selected");
     if(option.val() != "-1") {
       addRegion(option);
       // Remove option from select
-      // option.remove();
-       option.prop('disabled', true);
-       $('#regionSelect').select2();
-      // $(this).trigger("change");
+      option.prop('disabled', true);
+      $('#regionSelect').select2();
     }
   });
+  
+  // Remove region item
   $(".removeRegion").on("click", removeRegion);
 
   // Setting Currency Inputs
   $('.currencyInput').currencyInput();
-  date("form .startDate", "form .endDate");
-
 
   /* Select2 multiple for country and region select */
   $('.countriesSelect').select2({
@@ -73,37 +130,25 @@ function init() {
       width: '100%'
   });
 
-  changeDonorByFundingType($(".type").val(), $(".donor"))
+  changeDonorByFundingType($fundingType.val(), $(".donor"))
 
   // Check Funding type
-  onChangeFundingType($(".type").val());
+  onChangeFundingType($fundingType.val());
 
   // Funding Window / Budget type
   $("select.type").select2({
-      templateResult: function(state) {
-        var name = state.text;
-        var desc = $('li.budgetTypeDescription-' + state.id).text();
-        var $state = $("<span><b>" + name + "</b><br><small class='selectDesc'>" + desc + "</small></span>");
-        return $state;
-      }
+    templateResult: budgetTypeTemplate
   });
-
-
+  
   // When select center as Funding Window
   var lastDonor = -1;
   $("select.type").on("change", function() {
-
-    var option = $(this).find("option:selected");
-    var url = baseURL + "/institutionsByBudgetType.do";
-    var data = {
-      budgetTypeID: option.val()
-    };
+    var $option = $(this).find("option:selected");
+    var optionValue = $option.val();
     // Change Donor list
-    ajaxService(url, data);
-
+    getInstitutionsBudgetByType(optionValue);
     // Event on change
-    onChangeFundingType(option.val());
-
+    onChangeFundingType(optionValue);
   });
 
   // Set file upload (blueimp-tmpl)
@@ -133,6 +178,7 @@ function init() {
       }
   });
 
+  // Remove file event
   $uploadBlock.find('.removeIcon').on('click', function() {
     $uploadBlock.find('.textMessage .contentResult').html("");
     $uploadBlock.find('.textMessage').hide();
@@ -140,9 +186,8 @@ function init() {
     $('input#fileID').val('');
   });
 
-  // Principal investigator auto-complete
+  // Add Principal investigator auto-complete
   addContactAutoComplete();
-
 
   // Disabled Auto save AJAX if click Save
   $('[name=save]').on('click', function(e) {
@@ -150,6 +195,7 @@ function init() {
     autoSaveActive = false;
   });
 
+  // General YES/NO event
   $(".button-label").on("click", function() {
     var valueSelected = $(this).hasClass('yes-button-label');
     var $input = $(this).parent().find('input');
@@ -158,7 +204,7 @@ function init() {
     $(this).addClass("radio-checked");
   });
 
-// Is this deliverable Open Access
+  // Is this funding source has regional dimension
   $(".isRegional .button-label").on("click", function() {
     var valueSelected = $(this).hasClass('yes-button-label');
     if(!valueSelected) {
@@ -167,27 +213,47 @@ function init() {
       $(".regionsBox").show("slow");
     }
   });
+  
+  // Check total grant amount
+  $('.currencyInput').on('keyup', keyupBudgetYear).trigger('keyup');
+}
+
+/**
+ * Validate the grand total amount doesn't exceed
+ */
+function keyupBudgetYear(){
+  var grantAmount = $('#grantTotalAmount input').val();
+  var total = 0
+  $('.currencyInput').each(function(i,e) {
+    total = total + removeCurrencyFormat(e.value || "0");
+  });
+  $('#grantTotalAmount .remaining').text(setCurrencyFormat(grantAmount - total));
+  
+  // Validate total of agreement and budget type
+  if (grantAmount < total){
+    $('#grantTotalAmount').addClass('fieldError').animateCss('shake');
+  }else{
+    $('#grantTotalAmount').removeClass('fieldError');
+  }
 }
 
 /**
  * Check Agreement status
- *
+ * 
  * @param {number} typeID - Funding budget type
  */
-function onChangeFundingType(typeID){
-  var W1W2 = 1;
-  var ON_GOING = 2;
-
+function onChangeFundingType(typeID) {
   // Change Agreement Status when is (W1W2 Type => 1)
   var $agreementStatus = $('select.agreementStatus');
+  var onlyOngoingStatus = $agreementStatus.hasClass('onlyOngoing');
   // 3 => Concept Note/Pipeline
   // 4 => Informally Confirmed
   var $options = $agreementStatus.find("option[value='3'], option[value='4']");
-  if(typeID == W1W2){
+  if((typeID == W1W2) || onlyOngoingStatus) {
     $agreementStatus.val(ON_GOING); // On-going
     $options.remove();
-  }else{
-    if($options.length==0){
+  } else {
+    if($options.length == 0) {
       $agreementStatus.addOption("3", "Concept Note/Pipeline");
       $agreementStatus.addOption("4", "Informally Confirmed");
     }
@@ -195,15 +261,19 @@ function onChangeFundingType(typeID){
   $agreementStatus.select2("destroy");
   $agreementStatus.select2();
 
-
   // Check W1/W2 - Tag
-  if(typeID == W1W2){
+  if(typeID == W1W2) {
     $('.w1w2-tag').show();
-  }else{
+  } else {
     $('.w1w2-tag').hide();
   }
 }
 
+/**
+ * This function initialize the contact person auto complete
+ * 
+ * @returns
+ */
 function addContactAutoComplete() {
   var autocompleteOptions = {
       source: searchSource,
@@ -224,8 +294,8 @@ function addContactAutoComplete() {
   }
 
   function selectUser(event,ui) {
-    $("input.contactName").val(ui.item.name);
-    $("input.contactEmail").val(ui.item.email);
+    $("input.contactName:not([readonly])").val(ui.item.name);
+    $("input.contactEmail:not([readonly])").val(ui.item.email);
     return false;
   }
 
@@ -237,7 +307,12 @@ function addContactAutoComplete() {
   $("input.contactEmail").autocomplete(autocompleteOptions).autocomplete("instance")._renderItem = renderItem;
 }
 
-// Add a new lead partner element
+/**
+ * Add a new lead partner element function
+ * 
+ * @param option means an option tag from the select
+ * @returns
+ */
 function addLeadPartner(option) {
   var canAdd = true;
   console.log(option.val());
@@ -276,6 +351,11 @@ function addLeadPartner(option) {
 
 }
 
+/**
+ * Remove lead partner function
+ * 
+ * @returns
+ */
 function removeLeadPartner() {
   var $list = $(this).parents('.list');
   var $item = $(this).parents('.leadPartners');
@@ -283,7 +363,7 @@ function removeLeadPartner() {
   var name = $item.find(".name").attr("title");
 
   var $select = $(".institution");
-  $item.hide(300, function() {
+  $item.hide(200, function() {
     $item.remove();
     checkLeadPartnerItems($list);
     updateLeadPartner($list);
@@ -293,6 +373,12 @@ function removeLeadPartner() {
   $select.trigger("change.select2");
 }
 
+/**
+ * Update indexes for "Managing partners" of funding source
+ * 
+ * @param $list List of lead partners
+ * @returns
+ */
 function updateLeadPartner($list) {
   // Hide All divisions block
   $('.divisionBlock').hide();
@@ -300,13 +386,36 @@ function updateLeadPartner($list) {
   $($list).find('.leadPartners').each(function(i,e) {
     // Show division block
     var institutionID = $(e).find('.fId').val();
-    $('.division-'+institutionID).show();
+    $('.division-' + institutionID).show();
     // Set funding sources indexes
     $(e).setNameIndexes(1, i);
   });
 }
 
+/**
+ * Check if there is any lead partners and show a text message
+ * 
+ * @param block Container with lead partners elements
+ * @returns
+ */
 function checkLeadPartnerItems(block) {
+  
+  // Check if CIAT is in the partners list
+  var CIAT_ID = 46;
+  console.log(">> "+$('input.fId').val());
+  if($('input.fId[value="'+CIAT_ID+'"]').exists()){
+    $('.buttons-field, .financeChannel, .extensionDateBlock').show();
+    allowExtensionDate = true;
+  }else{
+    $('.buttons-field, .financeChannel, .extensionDateBlock').hide();
+    allowExtensionDate = false;
+    if(isSynced){
+      unSyncFundingSource();
+    }
+  }
+  
+  refreshYears();
+  
   var items = $(block).find('.leadPartners').length;
   if(items == 0) {
     $(block).parent().find('p.emptyText').fadeIn();
@@ -315,22 +424,27 @@ function checkLeadPartnerItems(block) {
   }
 }
 
-/** COUNTRIES SELECT FUNCTIONS * */
-// Add a new country element
-function addCountry(option) {
+/**
+ * Add a new country to the Funding source locations
+ * 
+ * @param countryISO e.g CO
+ * @param countryName e.g Colombia
+ * @returns
+ */
+function addCountry(countryISO,countryName, percentage) {
   var canAdd = true;
-  console.log(option.val());
-  if(option.val() == "-1") {
+
+  if(countryISO == "-1") {
     canAdd = false;
   }
 
-  var $list = $(option).parents(".select").parents("#countryList").find(".list");
+  var $list = $("#countryList").find(".list");
   var $item = $("#countryTemplate").clone(true).removeAttr("id");
-  var v = $(option).text().length > 12 ? $(option).text().substr(0, 12) + ' ... ' : $(option).text();
+  var v = countryName.length > 12 ? countryName.substr(0, 12) + ' ... ' : countryName;
 
   // Check if is already selected
   $list.find('.country').each(function(i,e) {
-    if($(e).find('input.cId').val() == option.val()) {
+    if($(e).find('input.cId').val() == countryISO) {
       canAdd = false;
       return;
     }
@@ -340,21 +454,16 @@ function addCountry(option) {
   }
 
   // Set country parameters
-  $item.find(".name").attr("title", $(option).text());
-  var $state =
-    $('<span> <i class="flag-sm flag-sm-' + option.val() + '"></i>  ' + v + '</span>');
+  $item.find(".name").attr("title", countryName);
+  var $state = $('<span> <i class="flag-sm flag-sm-' + countryISO + '"></i>  ' + v + '</span>');
   $item.find(".name").html($state);
-  $item.find(".cId").val(option.val());
+  $item.find(".cId").val(countryISO);
+  $item.find(".cPercentage").val(percentage);
   $item.find(".id").val(-1);
   $list.append($item);
   $item.show('slow');
   updateCountryList($list);
   checkCountryList($list);
-
-  // Reset select
-  $(option).val("-1");
-  $(option).trigger('change.select2');
-
 }
 
 function removeCountry() {
@@ -394,251 +503,373 @@ function checkCountryList(block) {
 /** REGIONS SELECT FUNCTIONS * */
 // Add a new region element
 function addRegion(option) {
-var canAdd = true;
-if(option.val() == "-1") {
- canAdd = false;
-}
-var optionValue=option.val().split("-")[0];
-var optionScope=option.val().split("-")[1];
+  var canAdd = true;
+  if(option.val() == "-1") {
+    canAdd = false;
+  }
+  var optionValue = option.val().split("-")[0];
+  var optionScope = option.val().split("-")[1];
 
-var $list = $(option).parents("#regionList").find(".list");
-var $item = $("#regionTemplate").clone(true).removeAttr("id");
-var v = $(option).text().length > 20 ? $(option).text().substr(0, 20) + ' ... ' : $(option).text();
+  var $list = $(option).parents("#regionList").find(".list");
+  var $item = $("#regionTemplate").clone(true).removeAttr("id");
+  var v = $(option).text().length > 20 ? $(option).text().substr(0, 20) + ' ... ' : $(option).text();
 
-// Check if is already selected
-$list.find('.region').each(function(i,e) {
- if($(e).find('input.rId').val() == optionValue) {
-   canAdd = false;
-   return;
- }
-});
-if(!canAdd) {
- return;
-}
+  // Check if is already selected
+  $list.find('.region').each(function(i,e) {
+    if($(e).find('input.rId').val() == optionValue) {
+      canAdd = false;
+      return;
+    }
+  });
+  if(!canAdd) {
+    return;
+  }
 
-// Set region parameters
-$item.find(".name").attr("title", $(option).text());
-$item.find(".name").html($(option).text());
-$item.find(".rId").val(optionValue);
-$item.find(".regionScope").val(optionScope);
-$item.find(".id").val(-1);
-$list.append($item);
-$item.show('slow');
-updateRegionList($list);
-checkRegionList($list);
+  // Set region parameters
+  $item.find(".name").attr("title", $(option).text());
+  $item.find(".name").html($(option).text());
+  $item.find(".rId").val(optionValue);
+  $item.find(".regionScope").val(optionScope);
+  $item.find(".id").val(-1);
+  $list.append($item);
+  $item.show('slow');
+  updateRegionList($list);
+  checkRegionList($list);
 
-// Reset select
-// $(option).val("-1");
-// $(option).trigger('change.select2');
+  // Reset select
+  // $(option).val("-1");
+  // $(option).trigger('change.select2');
 
 }
 
 function removeRegion() {
-var $list = $(this).parents('.list');
-var $item = $(this).parents('.region');
-var value = $item.find(".rId").val();
-var scope = $item.find(".regionScope").val();
-var name = $item.find(".name").attr("title");
+  var $list = $(this).parents('.list');
+  var $item = $(this).parents('.region');
+  var value = $item.find(".rId").val();
+  var scope = $item.find(".regionScope").val();
+  var name = $item.find(".name").attr("title");
 
-var $select = $(".regionsSelect");
-$item.hide(300, function() {
- $item.remove();
- checkRegionList($list);
- updateRegionList($list);
-});
-var option= $select.find("option[value='"+value+"-"+scope+"']");
-console.log(option);
-option.prop('disabled', false);
-$('#regionSelect').select2();
-// Add region option again
-// $select.addOption(value, name);
-// $select.trigger("change.select2");
+  var $select = $(".regionsSelect");
+  $item.hide(300, function() {
+    $item.remove();
+    checkRegionList($list);
+    updateRegionList($list);
+  });
+  var option = $select.find("option[value='" + value + "-" + scope + "']");
+  console.log(option);
+  option.prop('disabled', false);
+  $('#regionSelect').select2();
+  // Add region option again
+  // $select.addOption(value, name);
+  // $select.trigger("change.select2");
 }
 
 function updateRegionList($list) {
-
-$($list).find('.region').each(function(i,e) {
- // Set regions indexes
- $(e).setNameIndexes(1, i);
-});
+  $($list).find('.region').each(function(i,e) {
+    // Set regions indexes
+    $(e).setNameIndexes(1, i);
+  });
 }
 
 function checkRegionList(block) {
-var items = $(block).find('.region').length;
-if(items == 0) {
- $(block).parent().find('p.emptyText').fadeIn();
-} else {
- $(block).parent().find('p.emptyText').fadeOut();
-}
+  var items = $(block).find('.region').length;
+  if(items == 0) {
+    $(block).parent().find('p.emptyText').fadeIn();
+  } else {
+    $(block).parent().find('p.emptyText').fadeOut();
+  }
 }
 
-function date(start,end) {
-  var dateFormat = "yy-mm-dd";
-  var from = $(start).datepicker({
+/**
+ * Set the JQuery UI Datepicker plugin for start, end and extension dates
+ * 
+ * @param start
+ * @param end
+ * @param extensionDate
+ * @returns
+ */
+function settingDate(start,end,extensionDate) {
+  
+  from = $(start).datepicker({
       dateFormat: dateFormat,
-      minDate: MIN_DATE,
-      maxDate: $(end).val() || MAX_DATE,
+      minDate: new Date(MIN_DATE),
+      maxDate: new Date($(end).val()) || new Date(MAX_DATE),
       changeMonth: true,
       numberOfMonths: 1,
       changeYear: true,
       onChangeMonthYear: function(year,month,inst) {
         var selectedDate = new Date(inst.selectedYear, inst.selectedMonth, 1);
-        if (budgetsConflicts(from.val().split('-')[0], inst.selectedYear - 1)){
+        if(budgetsConflicts(from.val().split('-')[0], inst.selectedYear - 1)) {
           $(this).datepicker("hide");
           return
         }
         $(this).datepicker('setDate', selectedDate);
+        $(this).next().html(getDateLabel(this));
+        $(this).datepicker("hide");
         if(selectedDate != "") {
           $(end).datepicker("option", "minDate", selectedDate);
         }
-        getYears();
+        refreshYears();
       }
   }).on("change", function() {
-    getYears();
+    // The change event is used for Sync
+    $(this).parent().find('.dateLabel').html(getDateLabel(this));
+    refreshYears();
   }).on("click", function() {
     if(!$(this).val()) {
       $(this).datepicker('setDate', new Date());
-      getYears();
+      refreshYears();
     }
   });
-
-  var to = $(end).datepicker({
+  
+  to = $(end).datepicker({
       dateFormat: dateFormat,
-      minDate: $(start).val() || MIN_DATE,
-      maxDate: MAX_DATE,
+      minDate: new Date($(start).val()) || new Date(MIN_DATE),
+      maxDate: new Date($(extensionDate).val()) || new Date(MAX_DATE),
       changeMonth: true,
       numberOfMonths: 1,
       changeYear: true,
       onChangeMonthYear: function(year,month,inst) {
         var selectedDate = new Date(inst.selectedYear, inst.selectedMonth + 1, 0);
-        if (budgetsConflicts(inst.selectedYear + 1, to.val().split('-')[0])){
+        if(budgetsConflicts(inst.selectedYear + 1, to.val().split('-')[0])) {
           $(this).datepicker("hide");
           return
         }
         $(this).datepicker('setDate', selectedDate);
+        $(this).next().html(getDateLabel(this));
+        $(this).datepicker("hide");
         if(selectedDate != "") {
           $(start).datepicker("option", "maxDate", selectedDate);
+          if(allowExtensionDate){
+            $(extensionDate).datepicker("option", "minDate", selectedDate);
+          }
         }
-        getYears();
+        refreshYears();
       }
   }).on("change", function() {
-    getYears();
+    // The change event is used for Sync
+    $(this).parent().find('.dateLabel').html(getDateLabel(this));
+    refreshYears();
   }).on("click", function() {
     if(!$(this).val()) {
       $(this).datepicker('setDate', new Date());
-      getYears();
+      refreshYears();
     }
   });
 
+  extension = $(extensionDate).datepicker({
+      dateFormat: dateFormat,
+      minDate: new Date($(to).val()) || new Date(MIN_DATE),
+      maxDate: new Date(MAX_DATE),
+      changeMonth: true,
+      numberOfMonths: 1,
+      changeYear: true,
+      onChangeMonthYear: function(year,month,inst) {
+        var selectedDate = new Date(inst.selectedYear, inst.selectedMonth + 1, 0);
+        console.log(selectedDate);
+        if(budgetsConflicts(inst.selectedYear + 1, extension.val().split('-')[0])) {
+          $(this).datepicker("hide");
+          return
+        }
+        $(this).datepicker('setDate', selectedDate);
+        $(this).next().html(getDateLabel(this));
+        $(this).datepicker("hide");
+        if(selectedDate != "") {
+           $(to).datepicker("option", "maxDate", selectedDate);
+        }
+         refreshYears();
+      }
+  }).on("change", function() {
+    // The change event is used for Sync
+    if(this.value){
+      $(this).parent().find('.dateLabel').html(getDateLabel(this));      
+    }
+    refreshYears();
+  }).on("click", function() {
+    if(!$(this).val()) {
+      $(this).datepicker('setDate', new Date());
+       refreshYears();
+    }
+  });
+  
+  // Event when a datelabel is clicked
+  $('.dateLabel').on('click', function(){
+    if(!isSynced) {
+      $(this).parent().find('input').datepicker("show");
+    }
+  });
+
+  // Clear Date
+  $('.clearDate').on('click', function(){
+    if(!isSynced) {
+      $(this).parent().find('input').val('');
+      $(this).parent().find('.dateLabel').text('');
+      refreshYears();
+    }
+  });
+  
   // Activate tab default
   if(!$('.budgetByYears .nav-tabs li.active').exists()) {
     $('.budgetByYears .nav-tabs li').last().addClass('active');
     $('.budgetByYears .tab-content .tab-pane').last().addClass('active');
   }
+}
 
-  function budgetsConflicts(lowEnd,highEnd) {
-    var yearConflicts = [];
-    // Getting conflicts
-    for(var i = parseInt(lowEnd); i <= parseInt(highEnd); i++) {
-      var projectsBudgets = $('#fundingYear-' + i).find('tr.projectBudgetItem').length;
-      if(projectsBudgets > 0) {
-        yearConflicts.push(i);
-      }
+/**
+ * Check for budget conflicts, date cannot be changed as this funding source has at least one budget allocation
+ * 
+ * @param lowEnd
+ * @param highEnd
+ * @returns
+ */
+function budgetsConflicts(lowEnd,highEnd) {
+  var yearConflicts = [];
+  // Getting conflicts
+  for(var i = parseInt(lowEnd); i <= parseInt(highEnd); i++) {
+    var projectsBudgets = $('#fundingYear-' + i).find('tr.projectBudgetItem').length;
+    if(projectsBudgets > 0) {
+      yearConflicts.push(i);
     }
+  }
 
-    if(yearConflicts.length > 0) {
-      // Noty Message
-      var message = "Date cannot be changed as this funding source has at least one budget allocation in <b>" + yearConflicts.join(', ') +"</b>";
-      var notyOptions = jQuery.extend({}, notyDefaultOptions);
-      notyOptions.text = message;
-      notyOptions.animation = {
+  if(yearConflicts.length > 0) {
+    // Noty Message
+    var message =
+        "Date cannot be changed as this funding source has at least one budget allocation in <b>"
+            + yearConflicts.join(', ') + "</b>";
+    var notyOptions = jQuery.extend({}, notyDefaultOptions);
+    notyOptions.text = message;
+    notyOptions.animation = {
         open: 'animated bounceInLeft', // Animate.css class names
         close: 'animated bounceOutLeft', // Animate.css class names
         easing: 'swing', // unavailable - no need
-        speed: 500 // unavailable - no need
-      };
-      $('.dateErrorBox').noty(notyOptions);
+        speed: 500
+    // unavailable - no need
+    };
+    $('.dateErrorBox').noty(notyOptions);
 
-      return true;
-    }
-    return false;
+    return true;
   }
-
-  function getYears() {
-    var startYear = (from.val().split('-')[0]) || currentCycleYear;
-    var endYear = (to.val().split('-')[0]) || startYear;
-    var years = [];
-
-    // Clear tabs & content
-    $('.budgetByYears .nav-tabs').empty();
-    $('.budgetByYears .tab-content .tab-pane').removeClass('active going');
-
-    var index = 0;
-    while(startYear <= endYear) {
-
-      // Build Tab
-      var tab = '<li>';
-      tab += '<a href="#fundingYear-' + startYear + '" data-toggle="tab">' + startYear + '</a>';
-      tab += '</li>';
-      // Append Tab
-      $('.budgetByYears .nav-tabs').append(tab);
-
-      if(!$('#fundingYear-' + startYear).exists()) {
-        // Build Content
-        var content = '<div class="tab-pane col-md-4 going" id="fundingYear-' + startYear + '">';
-        content += '<label for="">Budget for ' + startYear + ':</label>';
-        content += '<input type="hidden" name="fundingSource.budgets[-1].year" value="' + startYear + '">';
-        content +=
-            '<input type="text" name="fundingSource.budgets[-1].budget" class="currencyInput form-control input-sm col-md-4" />';
-        content += '</div>';
-
-        var $content = $(content);
-        // Set indexes
-        $content.setNameIndexes(1, index);
-        // Append Content
-        $('.budgetByYears .tab-content').append($content);
-
-        // Set currency format
-        $content.find('input.currencyInput').currencyInput();
-      }else{
-        // Set indexes
-        $('#fundingYear-' + startYear).setNameIndexes(1, index);
-        $('#fundingYear-' + startYear).addClass('going')
-      }
-
-      index++;
-      years.push(startYear++);
-    }
-
-    // Clear unused content names
-    $('.budgetByYears .tab-content .tab-pane').not('.going').each(function(i,content){
-      $(content).setNameIndexes(1, index+i);
-    });
-
-
-    // Set active tab & content
-    if(years.indexOf(parseInt(currentCycleYear)) == -1) {
-      $('.budgetByYears .nav-tabs li').last().addClass('active');
-      $('.budgetByYears .tab-content .tab-pane').last().addClass('active');
-    } else {
-      $('a[href="#fundingYear-' + currentCycleYear + '"]').parent().addClass('active');
-      $('#fundingYear-' + currentCycleYear).addClass('active');
-    }
-
-  }
-
-  function getDate(element) {
-    var date;
-    try {
-      date = $.datepicker.parseDate(dateFormat, element.value);
-    } catch(error) {
-      date = null;
-    }
-
-    return date;
-  }
+  return false;
 }
 
+
+/**
+ * @returns
+ */
+function refreshYears() {
+  var startYear, endYear, years;
+  
+  startYear = (from.val().split('-')[0]) || currentCycleYear;
+  if(allowExtensionDate){
+    endYear = (extension.val().split('-')[0]) || (to.val().split('-')[0]) || startYear;
+  }else{
+    endYear = (to.val().split('-')[0]) || startYear;
+  }
+  
+  var years = [];
+
+  // Clear tabs & content
+  $('.budgetByYears .nav-tabs').empty();
+  $('.budgetByYears .tab-content .tab-pane').removeClass('active going');
+
+  var index = 0;
+  while(startYear <= endYear) {
+
+    // Build Tab
+    var tab = '<li>';
+    tab += '<a href="#fundingYear-' + startYear + '" data-toggle="tab">' + startYear + '</a>';
+    tab += '</li>';
+    // Append Tab
+    $('.budgetByYears .nav-tabs').append(tab);
+
+    if(!$('#fundingYear-' + startYear).exists()) {
+      // CustomName
+      var customName = 'fundingSource.budgets[-1]';
+      // Build Content
+      var content =  '<div class="tab-pane going" id="fundingYear-' + startYear + '">';
+      content += '<div class="form-group row">';
+      content += '<div class="col-md-4">';
+      content += '<label for="">Budget for ' + startYear + ':</label>';
+      content += '<input type="hidden" name="' + customName + '.year" value="' + startYear + '">';
+      content +=
+          '<input type="text" name="' + customName + '.budget" class="currencyInput form-control input-sm" />';
+      content += '</div>';
+      content += '</div>';
+      content += '</div>';
+      
+      var $content = $(content);
+      // Set indexes
+      $content.setNameIndexes(1, index);
+      // Append Content
+      $('.budgetByYears .tab-content').append($content);
+
+      // Set currency format
+      $content.find('input.currencyInput').currencyInput();
+      
+      // Set Budget currency event that check the total grant amount
+      $content.find('.currencyInput').on('keyup', keyupBudgetYear);
+      
+    } else {
+      // Set indexes
+      $('#fundingYear-' + startYear).setNameIndexes(1, index);
+      $('#fundingYear-' + startYear).addClass('going')
+    }
+
+    index++;
+    years.push(startYear++);
+  }
+
+  // Clear unused content names
+  $('.budgetByYears .tab-content .tab-pane').not('.going').each(function(i,content) {
+    $(content).setNameIndexes(1, index + i);
+  });
+
+  // Set active tab & content
+  if(years.indexOf(parseInt(currentCycleYear)) == -1) {
+    $('.budgetByYears .nav-tabs li').last().addClass('active');
+    $('.budgetByYears .tab-content .tab-pane').last().addClass('active');
+  } else {
+    $('a[href="#fundingYear-' + currentCycleYear + '"]').parent().addClass('active');
+    $('#fundingYear-' + currentCycleYear).addClass('active');
+  }
+
+}
+
+/**
+ * Get date in format
+ * 
+ * @param element
+ * @returns
+ */
+function getDate(element) {
+  var date;
+  try {
+    date = $.datepicker.parseDate(dateFormat, element.value);
+  } catch(error) {
+    date = null;
+  }
+  return date;
+}
+
+/**
+ * Get date in MM yy format
+ * 
+ * @param element - An input with a Date value
+ * @returns String e.g. May 2017
+ */
+function getDateLabel(element){
+  var dateValue = $(element).val();
+  var year = dateValue.split('-')[0];
+  var month = dateValue.split('-')[1];
+  var day = dateValue.split('-')[2];
+  console.log($(element).val());
+  return $.datepicker.formatDate( "MM yy", new Date(year, month -1, day) );
+}
+
+/**
+ * Add Datatable plugin
+ */
 function addDataTable() {
   $('table').dataTable({
       "bPaginate": false, // This option enable the table pagination
@@ -662,12 +893,21 @@ function addDataTable() {
 
 }
 
-function ajaxService(url,data) {
+/**
+ * Get from the back-end a list of institutions
+ * 
+ * @param budgetTypeID
+ * @returns
+ */
+function getInstitutionsBudgetByType(budgetTypeID) {
   var $select = $(".donor");
+  var url = baseURL + "/institutionsByBudgetType.do";
   $.ajax({
       url: url,
       type: 'GET',
-      data: data,
+      data: {
+        budgetTypeID: budgetTypeID
+      },
       beforeSend: function() {
         $('.loading').show();
       },
@@ -677,8 +917,7 @@ function ajaxService(url,data) {
         $.each(m.institutions, function(i,e) {
           $select.addOption(e.id, e.name);
         });
-        changeDonorByFundingType(data.budgetTypeID, $select)
-
+        changeDonorByFundingType(budgetTypeID, $select);
       },
       error: function(e) {
         console.log(e);
@@ -686,14 +925,13 @@ function ajaxService(url,data) {
       complete: function() {
         $('.loading').hide();
         $select.trigger("change.select2");
-        console.log(data);
       }
   });
 }
 
 function changeDonorByFundingType(budgetType,$select) {
   var donorId = $select.find("option:selected").val();
-  if(donorId == "-1" && budgetType == "1") {
+  if((donorId == "-1") && (budgetType == "1")) {
     $select.val($(".cgiarConsortium").text()).trigger("change");
   }
 }
@@ -702,13 +940,19 @@ function formatState(state) {
   if(!state.id) {
     return state.text;
   }
-  var $state="";
-  if(state.element.value!="-1"){
-   $state =
-      $('<span> <i class="flag-sm flag-sm-' + state.element.value.toUpperCase() + '"></i>  ' + state.text + '</span>');
-  }else{
+  var $state = "";
+  if(state.element.value != "-1") {
     $state =
-      $('<span>' + state.text + '</span>');
+        $('<span> <i class="flag-sm flag-sm-' + state.element.value.toUpperCase() + '"></i>  ' + state.text + '</span>');
+  } else {
+    $state = $('<span>' + state.text + '</span>');
   }
   return $state;
 };
+
+function budgetTypeTemplate(state) {
+  var name = state.text;
+  var desc = $('li.budgetTypeDescription-' + state.id).text();
+  var $state = $("<span><b>" + name + "</b><br><small class='selectDesc'>" + desc + "</small></span>");
+  return $state;
+}

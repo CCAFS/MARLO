@@ -3,6 +3,7 @@
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <!-- Generated Oct 27, 2016 3:39:29 PM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
+
   <class name="org.cgiar.ccafs.marlo.data.model.FundingSource"
     table="funding_sources" optimistic-lock="version">
     <id name="id" type="java.lang.Long">
@@ -16,7 +17,7 @@
      <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
       fetch="select">
       <column name="modified_by" />
-    </many-to-one>
+</many-to-one>
     <many-to-one name="crp" class="org.cgiar.ccafs.marlo.data.model.Crp"
       fetch="select">
       <column name="crp_id" />
@@ -57,13 +58,52 @@
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.FundingSourceLocation" />
     </set>
-    <set name="sectionStatuses" table="section_statuses" inverse="true"
+  
+		<set name="fundingSourceBudgets" table="funding_source_budgets"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="funding_source_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.FundingSourceBudget" />
+		</set>
+		<set name="projectBudgets" table="project_budgets" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="funding_source_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectBudget" />
+		</set>
+		<set name="fundingSources" table="funding_sources" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="funding_source_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.FundingSource" />
+		</set>
+		<set name="fundingSourceInstitutions" table="funding_source_institutions"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="funding_source_id" not-null="true" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution" />
+		</set>
+		<set name="fundingSourceLocations" table="funding_source_locations"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="funding_source_id" not-null="true" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.FundingSourceLocation" />
+		</set>
+		<set name="sectionStatuses" table="section_statuses" inverse="true"
       lazy="true" fetch="select">
       <key>
         <column name="funding_source_id" />
       </key>
       <one-to-many class="org.cgiar.ccafs.marlo.data.model.SectionStatus" />
     </set>
+
     <set name="fundingSourceInfos" table="funding_sources_info" inverse="true"
       lazy="true" fetch="select">
       <key>
@@ -72,4 +112,5 @@
       <one-to-many class="org.cgiar.ccafs.marlo.data.model.FundingSourceInfo" />
     </set>
   </class>
+
 </hibernate-mapping>

@@ -202,7 +202,11 @@
     <mapping resource="xmls/CenterImpactStatement.hbm.xml" />   
     <mapping resource="xmls/DeliverablesInfo.hbm.xml" />       
     <mapping resource="xmls/CenterFundingSyncTypes.hbm.xml" />
-    
+     <mapping resource="xmls/Agreement.hbm.xml" />
+      <mapping resource="xmls/CountryAgreement.hbm.xml" />
+      <mapping resource="xmls/CrpAgreement.hbm.xml" />
+      <mapping resource="xmls/FundingSourceAgreement.hbm.xml" />
+      <mapping resource="xmls/PlaAgreement.hbm.xml" />
 	</session-factory>
 </hibernate-configuration>
 

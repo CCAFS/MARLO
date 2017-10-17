@@ -165,6 +165,13 @@
     <div class="form-group">
       [@customForm.textArea name="${outcomeCustomName}.description"  i18nkey="outcome.statement" required=true className="outcome-statement limitWords-100" editable=editable /]
     </div>
+    [#-- Outcome Indicator --]
+    [#if action.hasSpecificities('crp_ip_outcome_indicator')]
+    <div class="form-group">
+      [@customForm.textArea name="${outcomeCustomName}.indicator"  i18nkey="outcome.inidicator" required=false className="outcome-inidicator limitWords-100" editable=editable /]
+    </div>
+    [/#if]
+    
     <div class="row form-group target-block">
       [#-- Target Year --]
       <div class="col-md-4">[@customForm.input name="${outcomeCustomName}.year" value="${(outcome.year)!2022}" type="text" i18nkey="outcome.targetYear"  placeholder="outcome.inputTargetYear.placeholder" className="targetYear outcomeYear" required=true editable=editable /]</div>

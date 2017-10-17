@@ -474,6 +474,7 @@ public class StandardDAO {
 
 
     Session session = sessionFactory.withOptions().interceptor(interceptor).openSession();
+
     CloseSession closeSession = new CloseSession();
     closeSession.setSession(session);
     /// closeSession.start();

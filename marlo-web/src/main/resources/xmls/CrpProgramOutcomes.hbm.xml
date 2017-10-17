@@ -16,6 +16,9 @@
 		<property name="activeSince" type="timestamp">
 			<column name="active_since" length="19" not-null="true" />
 		</property>
+		<property name="indicator" type="string">
+      <column name="indicator" length="65535"  />
+    </property>
 		<property name="composeID" type="string">
       <column name="composed_id" length="20" />
     </property>

@@ -49,7 +49,7 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
 
   /* Donor */
   @Expose
-  private Institution institution;
+  private Institution donor;
 
   @Expose
   private Integer status;
@@ -86,7 +86,7 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     String financeCode, String contactPersonName, String contactPersonEmail, BudgetType type,
     String modificationJustification, FundingSource fundingSource, Phase phase) {
     this.modifiedBy = modifiedBy;
-    this.institution = institution;
+    this.donor = institution;
     this.description = description;
     this.startDate = startDate;
     this.endDate = endDate;
@@ -177,8 +177,8 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
   }
 
 
-  public Institution getInstitution() {
-    return institution;
+  public Institution getDonor() {
+    return donor;
   }
 
 
@@ -302,8 +302,8 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     this.id = id;
   }
 
-  public void setInstitution(Institution institution) {
-    this.institution = institution;
+  public void setDonor(Institution institution) {
+    this.donor = institution;
   }
 
   public void setModificationJustification(String modificationJustification) {
@@ -355,7 +355,7 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     this.setFile(fundingSourceInfoUpdate.getFile());
     this.setFinanceCode(fundingSourceInfoUpdate.getFinanceCode());
     this.setGlobal(fundingSourceInfoUpdate.isGlobal());
-    this.setInstitution(fundingSourceInfoUpdate.getInstitution());
+    this.setDonor(fundingSourceInfoUpdate.getDonor());
     this.setPartnerDivision(fundingSourceInfoUpdate.getPartnerDivision());
     this.setW1w2(fundingSourceInfoUpdate.getW1w2());
   }

@@ -146,12 +146,186 @@
     <div class="summariesContent col-md-9" style="min-height:550px;">
       <h3 class="headTitle text-center">Summaries</h3>
       <div class="loading" style="display:none"></div>
+<<<<<<< HEAD
       <div class="summariesOptions">
         [#list reportsTypes as reportType]
         <div id="${reportType.slug}-contentOptions" class="" style="display: [#if reportType_index != 0]none[/#if];">
           [#list reportType.reportsList as report]
             [@reportMacro report /]
           [/#list]
+=======
+      <form action="">
+      
+      <h4 class="col-md-12 selectReport-title">[@s.text name="summaries.board.selectReportType" /]</h4>
+      <div class="summariesOptions col-md-12">
+        [#-- -- -- Projects reports -- -- --]
+        <div id="projects-contentOptions">
+        
+        
+        [#-- Full Project Report (PDF) --]
+          <div class="summariesFiles borderBox col-md-12">
+            <div class="col-md-12 title-file">
+              <input type="radio" name="formOptions" id="projectPortfolio" value="reportingSummary" class="hidden"/>
+              <label for="">[@s.text name="summaries.board.report.projectPortfolio" /] </label>
+            </div>
+            <span class="description col-md-12">[@s.text name="summaries.board.report.projectPortfolio.description" /]</span>
+            <div class="extraOptions col-md-12" style="display:none">
+              <span class="hidden fileTypes pdfType">reportingSummary</span>
+              <span class="hidden forPlanningCycle forCycle"></span>
+              <span class="hidden forReportingCycle forCycle"></span>
+              <input type="hidden" id="projectID" name="projectID" value="" />
+              <div class="row">                
+                <div class="col-md-12">
+                  <a id="generateProject" style="display:none;" target="_blank" class="generateReport addButton pull-right" style="" href="#">[@s.text name="form.buttons.generate" /]</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          [#-- Gender Contribution Project Level Summary --]
+          <div class="summariesFiles borderBox col-md-12">
+            <div class="col-md-12 title-file">
+              <input class="hidden" type="radio" name="formOptions" id="searchTermsSummary" value="searchTermsSummary"/>
+              <label for="">[@s.text name="summaries.board.report.genderContributionSummary" /] </label>
+            </div>
+            <span class="description col-md-12">[@s.text name="summaries.board.report.genderContributionSummary.description" /] </span>
+            <div class="extraOptions col-md-12" style="display:none">
+            <span class="hidden fileTypes excelType">searchTermsSummary-searchTermsSummary</span>
+            <span class="hidden forPlanningCycle forCycle"></span>
+            <span class="hidden forReportingCycle forCycle"></span>
+            [#-- predefined terms --]
+            [#if action.hasSpecificities('show_gender_keywords_summaries')]
+            <label for="">Predefined terms:</label>
+            <br />
+            <div class="col-md-12">
+              <label for="gender">Gender <input id="gender" type="checkbox" class="notview" /></label>
+            </div>
+            <div class="clearfix"></div>
+            <hr />
+            [/#if]
+            [#-- content --]
+            <div class="simpleBox wordContent">
+              
+            </div>
+            [#-- input --]
+            <label for="">[@s.text name="summaries.board.report.searchTermsSummary" /]</label>
+            <div class="row">
+              <div class="col-md-9">
+                <input class="form-control inputTerm" type="text" />
+              </div>
+              <div class="col-md-3 pull right">
+                <a  style="display:none;" target="_blank" class="generateReport addButton pull-right" style="" href="#">[@s.text name="form.buttons.generate" /]</a>
+              </div>
+              
+            </div>
+            </div>
+          </div>
+          
+          [#-- Impact Pathways Contributions --] 
+          <div class="summariesFiles borderBox col-md-12">
+            <div class="col-md-12 title-file">
+              <input class="hidden" type="radio" name="formOptions" id="impactPathwayContributionsSummary" value="OutcomesContributionsSummary"/>
+              <label for="">[@s.text name="summaries.board.report.impactPathwayContributionsSummary" /]</label>
+            </div>
+            <span class="description col-md-12">[@s.text name="summaries.board.report.impactPathwayContributionsSummary.description" /]</span>
+            <div class="extraOptions" style="display:none"> 
+            <span class="hidden fileTypes excelType">OutcomesContributionsSummary-OutcomesContributionsSummary</span>
+            <span class="hidden forPlanningCycle forCycle"></span>
+            <div class="pull-right">
+              <a style="display:none;" target="_blank" class="generateReport addButton pull-right" style="" href="#">[@s.text name="form.buttons.generate" /]</a>
+            </div>
+            </div>
+          </div>
+        
+        [#-- caseStudies By Year Summary --] 
+          <div class="summariesFiles borderBox col-md-12" >
+            <div class="col-md-12 title-file">
+              <input class="hidden" type="radio" name="formOptions" id="impactPathwayContributionsSummary" value="caseStudiesByYearSummary"/>
+              <label for="">[@s.text name="summaries.board.report.outcomeCaseStudies" /]</label>
+            </div>
+            <span class="description col-md-12">[@s.text name="summaries.board.report.outcomeCaseStudies.description" /]</span>
+              <div class="extraOptions" style="display:none">
+              <span class="hidden fileTypes pdfType">caseStudySummary</span>
+              <span class="hidden fileTypes excelType">caseStudiesByYearSummary-caseStudiesByYearSummary</span>
+              <span class="hidden forReportingCycle forCycle"></span>
+              <span class="hidden specificYears">2015-2016</span>
+                <div class="pull-right">
+                  <a style="display:none;" target="_blank" class="generateReport addButton pull-right" style="" href="#">[@s.text name="form.buttons.generate" /]</a>
+                </div>
+            </div>
+          </div>
+          
+          [#-- PROJECT HIGHLIGHTS --]
+          <div class="summariesFiles borderBox col-md-12" >
+            <div class="col-md-12 title-file">
+              <input class="hidden" type="radio" name="formOptions" id="impactPathwayContributionsSummary" value="projectHighlightsPDFSummary"/>
+              <label for="">[@s.text name="summaries.board.report.projectHighlights" /]</label>
+            </div>
+            <span class="description col-md-12">[@s.text name="summaries.board.report.projectHighlights.description" /]</span>
+              <div class="extraOptions" style="display:none">
+              <span class="hidden fileTypes pdfType">projectHighlightsPDFSummary</span>
+              <span class="hidden fileTypes excelType">projectHighlightsExcelSummary-projectHighlightsExcelSummary</span>
+              <span class="hidden forReportingCycle forCycle"></span>
+              <span class="hidden specificYears">2015-2016</span>
+                <div class="pull-right">
+                  <a style="display:none;" target="_blank" class="generateReport addButton pull-right" style="" href="#">[@s.text name="form.buttons.generate" /]</a>
+                </div>
+            </div>
+          </div>
+          
+          [#-- PROJECT Leverages --]
+            [#if action.hasSpecificities("crp_leverages_module") ] 
+          <div class="summariesFiles borderBox col-md-12" >
+            <div class="col-md-12 title-file">
+           
+              <input class="hidden" type="radio" name="formOptions" id="impactPathwayContributionsSummary" value="LeveragesReportingSummary"/>
+              <label for="">[@s.text name="summaries.board.report.leverages" /]</label>
+            
+            </div>
+            <span class="description col-md-12">[@s.text name="summaries.board.report.leverages.description" /]</span>
+              <div class="extraOptions" style="display:none">
+              <span class="hidden fileTypes excelType">LeveragesReportingSummary-LeveragesReportingSummary</span>
+              <span class="hidden forReportingCycle forCycle"></span>
+              <span class="hidden specificYears">2015-2016</span>
+                <div class="pull-right">
+                  <a style="display:none;" target="_blank" class="generateReport addButton pull-right" style="" href="#">[@s.text name="form.buttons.generate" /]</a>
+                </div>
+            </div>
+          </div>
+            [/#if]
+          [#-- Synthesis by Outcome 
+          <div class="summariesFiles borderBox col-md-12" >
+            <div class="col-md-12 title-file">
+              <input class="hidden" type="radio" name="formOptions" id="impactPathwayContributionsSummary" value="OutcomeSynthesisReportingSummary"/>
+              <label for="">[@s.text name="summaries.board.report.synthesisByOutcome" /]</label>
+            </div>
+            <span class="description col-md-12">[@s.text name="summaries.board.report.synthesisByOutcome.description" /]</span>
+              <div class="extraOptions" style="display:none">
+              <span class="hidden fileTypes excelType">OutcomeSynthesisReportingSummary-OutcomeSynthesisReportingSummary</span>
+              <span class="hidden forReportingCycle forCycle"></span>
+                <div class="pull-right">
+                  <a style="display:none;" target="_blank" class="generateReport addButton pull-right" style="" href="#">[@s.text name="form.buttons.generate" /]</a>
+                </div>
+            </div>
+          </div>
+          --]
+          
+          [#-- caseStudies By Year Summary PDF
+          <div class="summariesFiles borderBox col-md-3 reportingCycle" style="display:none;">
+            <span title="[@s.text name="" /]" class="info-file fa fa-info-circle "></span>
+            <div class="col-md-12 title-file">
+              <input class="hidden" type="radio" name="formOptions" id="impactPathwayContributionsSummary" value="caseStudySummary"/>
+              <label for="">[@s.text name="Project outcomes case studies" /]</label>
+            </div>
+            <span class="fa fa-file-pdf-o col-md-12 pdfIcon"></span>
+              <div class="extraOptions" style="display:none"> 
+            </div>
+          </div>
+          --] 
+          
+        
+        
+>>>>>>> refs/remotes/origin/staging
         </div>
         [/#list] 
       </div>

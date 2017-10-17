@@ -165,7 +165,7 @@ public class AuditLogMySQLDao implements AuditLogDao {
 
     List<Auditlog> auditLogs = dao.findAll(
       "from " + Auditlog.class.getName() + " where ENTITY_NAME='class " + classAudit.getName() + "' and ENTITY_ID=" + id
-        + " and main=1 and DETAIL like 'Action: " + actionName + "%' order by CREATED_DATE desc LIMIT 11");
+        + " and main=1 and DETAIL like 'Action: " + actionName + "%' order by CREATED_DATE desc ");
     // " and principal=1 order by CREATED_DATE desc LIMIT 10");
     for (Auditlog auditlog : auditLogs) {
       auditlog.setUser(userDao.getUser(auditlog.getUserId()));

@@ -113,7 +113,9 @@ public class ImpactPathwayGraph extends BaseAction {
       dataDetailOutcome.put("color", "FFF");
       dataDetailOutcome.put("type", "O");
       dataDetailOutcome.put("parent", "F" + crpProgram.getId());
-
+      if (this.hasSpecificities(APConstants.CRP_IP_OUTCOME_INDICATOR)) {
+        dataDetailOutcome.put("indicator", crpProgramOutcome.getIndicator());
+      }
 
       dataOutcome.put("data", dataDetailOutcome);
 

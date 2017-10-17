@@ -115,7 +115,7 @@ public class BaseSummariesAction extends BaseAction {
   }
 
 
-  private void getFooterSubreports(HashMap<String, Element> hm, ReportFooter reportFooter) {
+  protected void getFooterSubreports(HashMap<String, Element> hm, ReportFooter reportFooter) {
 
     int elementCount = reportFooter.getElementCount();
     for (int i = 0; i < elementCount; i++) {

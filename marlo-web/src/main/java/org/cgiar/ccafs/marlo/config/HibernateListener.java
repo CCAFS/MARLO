@@ -13,7 +13,6 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-
 package org.cgiar.ccafs.marlo.config;
 
 
@@ -57,7 +56,9 @@ public class HibernateListener implements ServletContextListener {
     // Minimum number of ideal connections in the pool
     config.setProperty("hibernate.hikari.minimumIdle", "1000");
     // Maximum number of actual connection in the pool
+
     config.setProperty("hibernate.hikari.maximumPoolSize", "5000");
+
     // Maximum time that a connection is allowed to sit ideal in the pool
     config.setProperty("hibernate.hikari.idleTimeout", "5000");
     config.setProperty("hibernate.bytecode.use_reflection_optimizer'", "false");

@@ -725,8 +725,9 @@ public class ProjectLocationAction extends BaseAction {
       project.setLocationsData(new ArrayList<>());
     }
 
-    for (CountryLocationLevel countryLocationLevel : project.getLocationsData()) {
-      if (countryLocationLevel.getLocElements() != null) {
+    // Fix Ull Collection when autosave gets the suggeste country - 10/13/2017
+      for (CountryLocationLevel countryLocationLevel : project.getLocationsData()) {
+
         Collection<LocElement> similar = new HashSet<LocElement>(countryLocationLevel.getLocElements());
         Collection<LocElement> different = new HashSet<LocElement>();
         different.addAll(countryLocationLevel.getLocElements());
@@ -735,9 +736,9 @@ public class ProjectLocationAction extends BaseAction {
         different.removeAll(similar);
 
         countryLocationLevel.getLocElements().removeAll(similar);
+
+
       }
-
-
     }
     Collection<LocElement> fsLocsRegions = new ArrayList<>();
     for (CountryFundingSources locElement : project.getRegionFS()) {

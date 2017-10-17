@@ -53,6 +53,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
+import org.pentaho.reporting.engine.classic.core.Band;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
@@ -257,6 +258,61 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
   }
 
 
+  /**
+   * Get all subreports and store then in a hash map.
+   * If it encounters a band, search subreports in the band
+   * 
+   * @param hm List to populate with subreports found
+   * @param itemBand details section in pentaho
+   */
+  @Override
+  public void getAllSubreports(HashMap<String, Element> hm, ItemBand itemBand) {
+    int elementCount = itemBand.getElementCount();
+    for (int i = 0; i < elementCount; i++) {
+      Element e = itemBand.getElement(i);
+      // verify if the item is a SubReport
+      if (e instanceof SubReport) {
+        hm.put(e.getName(), e);
+        if (((SubReport) e).getElementCount() != 0) {
+          this.getAllSubreports(hm, ((SubReport) e).getItemBand());
+          // If report footer is not null check for subreports
+          if (((SubReport) e).getReportFooter().getElementCount() != 0) {
+            this.getFooterSubreports(hm, ((SubReport) e).getReportFooter());
+          }
+        }
+      }
+      // If is a band, find the subreport if exist
+      if (e instanceof Band) {
+        this.getBandSubreports(hm, (Band) e);
+      }
+    }
+  }
+
+  /**
+   * Get all subreports in the band.
+   * If it encounters a band, search subreports in the band
+   * 
+   * @param hm
+   * @param band
+   */
+  public void getBandSubreports(HashMap<String, Element> hm, Band band) {
+    int elementCount = band.getElementCount();
+    for (int i = 0; i < elementCount; i++) {
+      Element e = band.getElement(i);
+      if (e instanceof SubReport) {
+        hm.put(e.getName(), e);
+        // If report footer is not null check for subreports
+        if (((SubReport) e).getReportFooter().getElementCount() != 0) {
+          this.getFooterSubreports(hm, ((SubReport) e).getReportFooter());
+        }
+      }
+      if (e instanceof Band) {
+        this.getBandSubreports(hm, (Band) e);
+      }
+    }
+  }
+
+
   @Override
   public int getContentLength() {
     return bytesXLSX.length;
@@ -280,7 +336,6 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
     File file = new File(classLoader.getResource(fileName).getFile());
     return file;
   }
-
 
   @Override
   public String getFileName() {
@@ -395,8 +450,8 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
         && fundingSource.getFundingSourceInfo().getW1w2()) {
         fsWindow = "W1/W2 Co-Financing";
       }
-      if (fundingSource.getFundingSourceInfo().getInstitution() != null) {
-        donor = fundingSource.getFundingSourceInfo().getInstitution().getComposedName();
+      if (fundingSource.getFundingSourceInfo().getDonor() != null) {
+        donor = fundingSource.getFundingSourceInfo().getDonor().getComposedName();
       }
 
       for (ProjectBudget projectBudget : fundingSource.getProjectBudgets().stream()
@@ -454,6 +509,9 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
         totalBudget = projectBudget.getAmount();
 
         String directDonor = "";
+        if (fundingSource.getDirectDonor() != null) {
+          directDonor = fundingSource.getDirectDonor().getComposedName();
+        }
 
         // Funding sources locations
         String globalDimension = null;
@@ -566,8 +624,8 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
         piEmail = fundingSource.getFundingSourceInfo().getContactPersonEmail();
       }
       String donor = "";
-      if (fundingSource.getFundingSourceInfo().getInstitution() != null) {
-        donor = fundingSource.getFundingSourceInfo().getInstitution().getComposedName();
+      if (fundingSource.getFundingSourceInfo().getDonor() != null) {
+        donor = fundingSource.getFundingSourceInfo().getDonor().getComposedName();
       }
 
 
@@ -823,6 +881,7 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
 
   public void setShowSheet3(Boolean showSheet3) {
     this.showSheet3 = showSheet3;
+
   }
 
 }

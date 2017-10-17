@@ -862,7 +862,6 @@ img.icon {
   top: 0;
   left: 0;
 }
-
 .syncedBlock{
   background: #fff;
   width: 100%;
@@ -6618,6 +6617,24 @@ img.removeInput {
 img#crpSelectedImage {
   max-width: 300px;
   width: 100%;
+}
+
+/* Date Picker label*/
+.dateLabel {
+  display: block;
+  height: 1.8em;
+  line-height: 0.95em;
+  text-align: left;
+  background: url(../../global/images/calendar.png) no-repeat scroll 99% 2px;
+}
+
+.dateLabel.disabled {
+  background-color: #eee;
+  opacity: 1;
+}
+
+.clearDate{
+	cursor: pointer;
 }
 
 img.hint-img {

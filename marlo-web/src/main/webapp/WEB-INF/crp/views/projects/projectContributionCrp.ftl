@@ -60,7 +60,12 @@
           
           
             <div class="col-md-12">
+              [#-- Program Acronym - Outcome Year : Outcome Description --]
               <strong>${(projectOutcome.crpProgramOutcome.crpProgram.acronym)!} - Outcome ${(projectOutcome.crpProgramOutcome.year)!}</strong>: ${projectOutcome.crpProgramOutcome.description}
+              [#-- Outcome Indicator --]
+              [#if action.hasSpecificities('crp_ip_outcome_indicator')]
+                [#if (projectOutcome.crpProgramOutcome.indicator?has_content)!false]<p><strong>Indicator: </strong>${(projectOutcome.crpProgramOutcome.indicator)!'No indicator'}</p>[/#if]
+              [/#if]
             </div>
             <div class="clearfix"></div>
             [#if showOutcomeValue]

@@ -56,6 +56,8 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
   private Integer year;
 
   @Expose
+  private String indicator;
+  @Expose
   private BigDecimal value;
 
   private Set<CrpOutcomeSubIdo> crpOutcomeSubIdos = new HashSet<CrpOutcomeSubIdo>(0);
@@ -192,7 +194,9 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
   public Long getId() {
     return this.id;
   }
-
+  public String getIndicator() {
+    return indicator;
+  }
 
   @Override
   public String getLogDeatil() {
@@ -295,6 +299,9 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
 
   public void setId(Long id) {
     this.id = id;
+  }
+    public void setIndicator(String indicator) {
+    this.indicator = indicator;
   }
 
   public void setMilestones(List<CrpMilestone> milestones) {
