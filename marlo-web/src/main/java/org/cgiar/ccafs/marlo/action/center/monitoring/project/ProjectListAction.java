@@ -302,21 +302,24 @@ public class ProjectListAction extends BaseAction {
     // Setting the budget Type
     String fundingType = agreement.getFundingType();
     long fundingtypeID = -1L;
-    switch (fundingType) {
-      case "BLR":
-        fundingtypeID = 3;
-        break;
-      case "W1/W2":
-        fundingtypeID = 1;
-        break;
-      case "W3R":
-        fundingtypeID = 2;
-        break;
-      case "W3U":
-        fundingtypeID = 2;
-        break;
-      default:
-        break;
+    if (fundingType != null) {
+      switch (fundingType) {
+        case "BLR":
+          fundingtypeID = 3;
+          break;
+        case "W1/W2":
+          fundingtypeID = 1;
+          break;
+        case "W3R":
+          fundingtypeID = 2;
+          break;
+        case "W3U":
+          fundingtypeID = 2;
+          break;
+        default:
+          fundingtypeID = -1L;
+          break;
+      }
     }
 
     CenterFundingSourceType fundingSourceType = centerFundingTypeManager.getFundingSourceTypeById(fundingtypeID);
