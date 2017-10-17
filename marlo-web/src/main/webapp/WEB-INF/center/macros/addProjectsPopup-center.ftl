@@ -25,12 +25,13 @@
           [/#if]
           </div>
           <div class="col-md-6 syncCodeBlock" style="display:none"> 
-            [@customForm.input name="syncCode" i18nkey="Please enter an existing project/agreement code" disabled=!editable required=true /]
+            [@customForm.input name="syncCode" i18nkey="Please enter an existing project/agreement code" required=true /]
           </div>
         </div>
       </div>
       <div class="modal-footer">
-        [@s.submit type="button" name="submit" cssClass="btn btn-success"] Add Project [/@s.submit]
+        <span class="btn btn-success addProjectButton">Add Project </span>
+        [@s.submit type="button" name="submit" cssClass="btn btn-success hide"] [/@s.submit]
       </div>
       [/@s.form] 
     </div>

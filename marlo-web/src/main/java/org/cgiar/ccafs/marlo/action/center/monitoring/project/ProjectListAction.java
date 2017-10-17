@@ -199,6 +199,9 @@ public class ProjectListAction extends BaseAction {
     centerProject.setStartDate(project.getStartDate());
     centerProject.setEndDate(project.getEndDate());
     centerProject.setProjectLeader(project.getLeaderPerson().getUser());
+    centerProject.setSync(true);
+    centerProject.setSyncDate(new Date());
+    centerProject.setAutoFill(true);
 
     projectService.saveCenterProject(centerProject);
 
@@ -208,6 +211,7 @@ public class ProjectListAction extends BaseAction {
     fundingSource.setCode("P" + syncCode);
     fundingSource.setSync(true);
     fundingSource.setSyncDate(new Date());
+    fundingSource.setAutoFill(true);
     fundingSource.setCrp(project.getCrp());
     fundingSource.setTitle(project.getTitle());
     fundingSource.setDescription(project.getSummary());
@@ -242,6 +246,9 @@ public class ProjectListAction extends BaseAction {
     centerProject.setDescription(agreement.getDescription());
     centerProject.setStartDate(agreement.getStartDate());
     centerProject.setEndDate(agreement.getEndDate());
+    centerProject.setSync(true);
+    centerProject.setSyncDate(new Date());
+    centerProject.setAutoFill(true);
 
     projectService.saveCenterProject(centerProject);
 
@@ -251,6 +258,7 @@ public class ProjectListAction extends BaseAction {
     fundingSource.setCode(syncCode);
     fundingSource.setSync(true);
     fundingSource.setSyncDate(new Date());
+    fundingSource.setAutoFill(true);
 
     fundingSource.setTitle(agreement.getDescription());
     fundingSource.setDescription(agreement.getDescription());
