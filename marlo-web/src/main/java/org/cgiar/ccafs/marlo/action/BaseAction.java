@@ -1231,6 +1231,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return crpManager.findAll().stream().filter(c -> c.isMarlo()).collect(Collectors.toList());
   }
 
+
   /**
    * Get the crp that is currently save in the session, if the user access to the platform whit a diferent url, get the
    * current action to catch the crp
@@ -1336,6 +1337,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
     }
     return u;
+  }
+
+  /**
+   * This method return the Date Format from APConstants class
+   * 
+   * @return A dateformat (yyyy-MM-dd)
+   */
+  public String getDateFormat() {
+    return APConstants.DATE_FORMAT;
   }
 
   /**

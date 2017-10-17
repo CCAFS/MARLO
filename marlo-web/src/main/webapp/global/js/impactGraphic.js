@@ -210,7 +210,15 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
                   $(".panel-body ul").append("<label>" + e.label + ":</label><li>" + e.description + "</li>");
                 }
                 if(e.type == "O") {
-                  $(".panel-body ul").append("<label>" + e.label + ":</label><li>" + e.description + "</li>");
+                  var text;
+                  if(e.indicator) {
+                    text =
+                        "<label>" + e.label + ":</label><li>" + e.description + " <br/> <i>Indicator: " + e.indicator
+                            + "</i></li>";
+                  } else {
+                    text = "<label>" + e.label + ":</label><li>" + e.description + " </li>";
+                  }
+                  $(".panel-body ul").append(text);
                 }
                 if(e.type == "CoA") {
                   $(".panel-body ul").append("<label>" + e.label + ":</label><li>" + e.description + "</li>");

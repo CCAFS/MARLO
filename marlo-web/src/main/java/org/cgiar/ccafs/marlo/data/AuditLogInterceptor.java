@@ -32,7 +32,6 @@ import com.google.gson.GsonBuilder;
 import com.google.inject.Singleton;
 import org.hibernate.CallbackException;
 import org.hibernate.EmptyInterceptor;
-import org.hibernate.EntityMode;
 import org.hibernate.Session;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.ManyToOneType;
@@ -93,8 +92,8 @@ public class AuditLogInterceptor extends EmptyInterceptor {
     final String[] propertyNames = classMetadata.getPropertyNames();
     for (final String name : propertyNames) {
 
-      final Object propertyValue = classMetadata.getPropertyValue(entity, name, EntityMode.POJO);
-      final Type propertyType = classMetadata.getPropertyType(name);
+      Object propertyValue = classMetadata.getPropertyValue(entity, name);
+      Type propertyType = classMetadata.getPropertyType(name);
 
       if ((propertyValue != null) && ((propertyType instanceof OrderedSetType) || (propertyType instanceof SetType))) {
         final HashMap<String, Object> objects = new HashMap<>();
@@ -130,9 +129,9 @@ public class AuditLogInterceptor extends EmptyInterceptor {
     final ClassMetadata classMetadata = session.getSessionFactory().getClassMetadata(entity.getClass());
 
 
-    final String[] propertyNames = classMetadata.getPropertyNames();
-    for (final String name : propertyNames) {
-      final Object propertyValue = classMetadata.getPropertyValue(entity, name, EntityMode.POJO);
+    String[] propertyNames = classMetadata.getPropertyNames();
+    for (String name : propertyNames) {
+      Object propertyValue = classMetadata.getPropertyValue(entity, name);
 
       if ((propertyValue != null) && (propertyValue instanceof IAuditLog)) {
         final Type propertyType = classMetadata.getPropertyType(name);
@@ -146,7 +145,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
             final Object obj = dao.find(propertyType.getReturnedClass(), (Serializable) entityRelation.getId());
 
             this.loadRelations((IAuditLog) obj, false, 2);
-            classMetadata.setPropertyValue(entity, name, obj, EntityMode.POJO);
+            classMetadata.setPropertyValue(entity, name, obj);
           } else {
             if (!(name.equals("createdBy") || name.equals("modifiedBy"))) {
               final IAuditLog entityRelation = (IAuditLog) propertyValue;
@@ -157,7 +156,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
               }
 
               // this.loadRelations((IAuditLog) obj, false);
-              classMetadata.setPropertyValue(entity, name, obj, EntityMode.POJO);
+              classMetadata.setPropertyValue(entity, name, obj);
             }
           }
 

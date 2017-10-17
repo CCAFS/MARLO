@@ -360,9 +360,9 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
       endDate = formatter.format(project.getEndDate());
     }
     String extensionDate = null;
-    if (project.getExtensionDate() != null) {
-      extensionDate = formatter.format(project.getExtensionDate());
-    }
+    // if (project.getExtensionDate() != null) {
+    // extensionDate = formatter.format(project.getExtensionDate());
+    // }
     String principalInvestigator = null;
 
     if (project.getResearchProgram().getResearchLeaders() != null) {
@@ -376,14 +376,11 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
     }
 
     String ocsCode = null;
-    if ((project.getOcsCode() != null) && !project.getOcsCode().trim().isEmpty()) {
-      ocsCode = project.getOcsCode();
-    }
+    // if (project.getOcsCode() != null && !project.getOcsCode().trim().isEmpty()) {
+    // ocsCode = project.getOcsCode();
+    // }
 
     String type = null;
-    if (project.getProjectType() != null) {
-      type = project.getProjectType().getName();
-    }
 
     String suggestedTitle = null;
     if ((project.getSuggestedName() != null) && !project.getSuggestedName().trim().isEmpty()) {
@@ -396,19 +393,19 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
     }
 
     String originalDonor = null;
-    if ((project.getOriginalDonor() != null) && !project.getOriginalDonor().trim().isEmpty()) {
-      originalDonor = project.getOriginalDonor();
-    }
+    // if (project.getOriginalDonor() != null && !project.getOriginalDonor().trim().isEmpty()) {
+    // originalDonor = project.getOriginalDonor();
+    // }
 
     String customer = null;
-    if ((project.getDirectDonor() != null) && !project.getDirectDonor().trim().isEmpty()) {
-      customer = project.getDirectDonor();
-    }
+    // if (project.getDirectDonor() != null && !project.getDirectDonor().trim().isEmpty()) {
+    // customer = project.getDirectDonor();
+    // }
 
     Double totalAmount = null;
-    if (project.getTotalAmount() != null) {
-      totalAmount = project.getTotalAmount();
-    }
+    // if (project.getTotalAmount() != null) {
+    // totalAmount = project.getTotalAmount();
+    // }
     String globalDimension = null;
     if ((project.getGlobal() != null) && project.getGlobal()) {
       globalDimension = "&#9679 Yes";
@@ -572,9 +569,9 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
         crp = projectFundingSource.getCrp().getName();
       }
       String fundingSource = null;
-      if (projectFundingSource.getFundingSourceType() != null) {
-        fundingSource = projectFundingSource.getFundingSourceType().getName();
-      }
+      // if (projectFundingSource.getFundingSourceType() != null) {
+      // fundingSource = projectFundingSource.getFundingSourceType().getName();
+      // }
       String projectTitle = null;
       if ((projectFundingSource.getTitle() != null) && !projectFundingSource.getTitle().trim().isEmpty()) {
         projectTitle = projectFundingSource.getTitle();

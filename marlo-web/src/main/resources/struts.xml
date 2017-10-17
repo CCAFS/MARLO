@@ -210,6 +210,18 @@
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
 
+  <interceptor-stack name="editFSStack">
+        <interceptor-ref name="i18nFile" />
+        <interceptor-ref name="validCrp" />
+        <interceptor-ref name="requireUser" />
+        <interceptor-ref name="validSessionCrp" />
+        <interceptor-ref name="editFunding" />
+        <interceptor-ref name="keepRedirectMessages" />
+        <interceptor-ref name="accessibleStage" />
+        <interceptor-ref name="trimInputs" />
+        <interceptor-ref name="defaultStack" />
+      </interceptor-stack>
+
 			<interceptor-stack name="editSynthesisStack">
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />

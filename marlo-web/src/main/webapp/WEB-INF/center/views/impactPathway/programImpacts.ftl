@@ -89,6 +89,9 @@
     [/#if]  
     [/#if]
     
+    [#-- Loading --]
+    <div class="loading" style="display:none"></div>
+    
     <div class="leftHead">
       <span class="index">${index+1}</span>
       <span class="elementId">[@s.text name="programImpact.programImpact" /]</span>
@@ -98,10 +101,18 @@
     <input type="hidden" name="${customName}.id" value="${(element.id)!}"/>
     
     [#-- SRF Ido --]
+    [#assign isSRFSelected = (element.researchImpactStatement.id != -1)!false /]
     <div class="form-group">
       [@customForm.select name="${customName}.researchImpactStatement.id"  i18nkey="programImpact.ido" listName="idos" keyFieldName="id"  displayFieldName="name" required=true  className="srfIdoSelect"  editable=editable/]
     </div>
-     <div class="form-group otherSrf" style="display: [#if element.researchImpactStatement??][#if element.researchImpactStatement.id==-1]block[#else]none[/#if][#else]block[/#if]">[@customForm.input name="${customName}.description" i18nkey="programImpact.otherIdo" className="limitChar-150" required=true editable=editable /]</div> 
+    [#-- Customized Program Impact Statement --]
+    <div class="form-group otherSrf" style="display:${isSRFSelected?string('none','block')}">
+      [@customForm.input name="${customName}.description" i18nkey="programImpact.otherIdo" className="limitChar-150" required=true editable=editable /]
+    </div>
+    [#-- According to SLO/IDO selected, please select a SUB-IDO --]
+    <div class="form-group impactSubIdo" style="display:${isSRFSelected?string('block','none')}">
+      [@customForm.select name="${customName}.srfSubIdo.id"  i18nkey="programImpact.srfSubIdo" listName="${customName}.researchImpactStatement.srfIdo.srfSubIdos" keyFieldName="id"  displayFieldName="description" required=true  className="impactSubIdoSelect" editable=editable/]
+    </div> 
     
     [#-- Short name--]
     <div class="form-group">           
