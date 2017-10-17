@@ -11,7 +11,7 @@ $(document).ready(function() {
 
   // This event fires immediately when the show instance method is called.
   $modal.on('show.bs.modal', function(e) {
-
+    $('.radioSyncType:checked').trigger('change');
   });
 
   $('.radioSyncType').on('change', function() {
@@ -35,23 +35,33 @@ $(document).ready(function() {
       $syncCode.attr('placeholder', 'e.g. P56');
     }
   });
-
-  $("form").submit(function() {
+  
+  $('span.addProjectButton').on('click', function(){
     if(validating){
-      event.preventDefault();
       return
     }
     
-    $('.loading').fadeIn();
     var syncType = $('.radioSyncType:checked').val();
     console.log(syncType);
     if(syncType != "-1") {
-      if(!$syncCode.val() || !($syncCode.hasClass('fieldChecked'))) {
+      if(!$syncCode.val() ) { // || !($syncCode.hasClass('fieldChecked'))
         notificationError("You must enter a valid OCS/Project Code or chosee Manually")
         $('.loading').fadeOut(200);
-        event.preventDefault();
+        return 
+      }else{
+        if($syncCode.hasClass('fieldChecked')){
+          console.log('already checked');
+          submitCreateProject();
+        }else{
+          validateSyncCode(true);
+        }
       }
     }
+    
+  });
+
+  $("#addProjectsModal form").submit(function() {
+    $('.loading').fadeIn();
   });
 
   $syncCode.on('keyup change', changeSyncCode);
@@ -59,16 +69,20 @@ $(document).ready(function() {
 });
 
 function changeSyncCode(e) {
+  // Validate empty field
+  if(!($syncCode.val())){
+    $syncCode.removeClass('fieldChecked fieldError');
+  }
   if(timeoutSyncCode) {
     clearTimeout(timeoutSyncCode);
   }
   // Start a timer that will execute sync code validation function
   timeoutSyncCode = setTimeout(function() {
-    validateSyncCode();
+    validateSyncCode(false);
   }, 1000);
 }
 
-function validateSyncCode() {
+function validateSyncCode(createProject) {
   var syncCode = $syncCode.val();
   var syncTypeID = $('.radioSyncType:checked').val();
 
@@ -95,12 +109,18 @@ function validateSyncCode() {
         $syncCode.removeClass('fieldChecked fieldError');
         $syncCode.addClass('input-loading');
         validating = true;
+        $('span.addProjectButton').addClass('disabled');
       },
       success: function(data) {
         console.log(data)
         if(data.message.status) {
           $syncCode.addClass('fieldChecked');
           $syncCode.removeClass('fieldError');
+          
+          // Create Project
+          if(createProject){
+            submitCreateProject();
+          }
         } else {
           $syncCode.addClass('fieldError');
           $syncCode.removeClass('fieldChecked');
@@ -109,9 +129,14 @@ function validateSyncCode() {
       complete: function() {
         $syncCode.removeClass('input-loading');
         validating = false;
+        $('span.addProjectButton').removeClass('disabled');
       },
       error: function(e) {
       }
   });
 
+}
+
+function submitCreateProject(){
+  $("#addProjectsModal form button[name='submit']").trigger('click');
 }

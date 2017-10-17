@@ -62,6 +62,9 @@
         <property name="sync" type="boolean">
             <column name="sync" not-null="true" />
         </property>
+        <property name="autoFill" type="boolean">
+            <column name="auto_fill" />
+        </property>
         <property name="activeSince" type="timestamp">
             <column name="active_since" length="19" />
         </property>
