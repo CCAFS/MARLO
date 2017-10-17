@@ -85,14 +85,14 @@ public class EditCapacityDevInterceptor extends AbstractInterceptor implements S
 
       if (baseAction.canAccessSuperAdmin()) {
         canEdit = true;
-        // hasPermissionToEdit = true;
+        hasPermissionToEdit = true;
       }
 
       final User currentUser = (User) session.get(APConstants.SESSION_USER);
 
       if (capdev.getCreatedBy().getId().equals(currentUser.getId())) {
         canEdit = true;
-        // hasPermissionToEdit = true;
+        hasPermissionToEdit = true;
       }
 
 
@@ -107,7 +107,8 @@ public class EditCapacityDevInterceptor extends AbstractInterceptor implements S
 
       // Check the permission if user want to edit or save the form
       if (editParameter || (parameters.get("save") != null)) {
-        hasPermissionToEdit = (baseAction.isAdmin()) ? true : capdev.getCreatedBy().getId().equals(currentUser.getId());
+        // hasPermissionToEdit = (baseAction.isAdmin()) ? true :
+        // capdev.getCreatedBy().getId().equals(currentUser.getId());
       }
 
       // Set the variable that indicates if the user can edit the section
