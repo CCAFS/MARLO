@@ -31,6 +31,7 @@ import org.cgiar.ccafs.marlo.utils.SendMailS;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,7 +55,7 @@ public class PartnerRequestAction extends BaseAction {
 
 
   private List<PartnerRequest> partners;
-  private List<PartnerRequest> countryOffices;
+  HashMap<Institution, List<PartnerRequest>> countryOfficesList = new HashMap<Institution, List<PartnerRequest>>();
 
   private long requestID;
 
@@ -116,9 +117,10 @@ public class PartnerRequestAction extends BaseAction {
     return countriesList;
   }
 
-  public List<PartnerRequest> getCountryOffices() {
-    return countryOffices;
+  public HashMap<Institution, List<PartnerRequest>> getCountryOfficesList() {
+    return countryOfficesList;
   }
+
 
   public List<InstitutionType> getInstitutionTypesList() {
     return institutionTypesList;
@@ -132,24 +134,35 @@ public class PartnerRequestAction extends BaseAction {
     return requestID;
   }
 
+
   @Override
   public void prepare() throws Exception {
-
-    if (partnerRequestManager.findAll() != null) {
+    // Verify if exists active partnerRequest
+    if (partnerRequestManager.findAll().stream().filter(pr -> pr.isActive()) != null) {
       partners = new ArrayList<>(partnerRequestManager.findAll().stream().filter(pr -> pr.isActive() && !pr.isOffice())
         .collect(Collectors.toList()));
-      countryOffices = new ArrayList<>(partnerRequestManager.findAll().stream()
-        .filter(pr -> pr.isActive() && pr.isOffice()).collect(Collectors.toList()));
+      for (PartnerRequest officeRequest : partnerRequestManager.findAll().stream()
+        .filter(pr -> pr.isActive() && pr.isOffice() && pr.getInstitution() != null).collect(Collectors.toList())) {
+        if (countryOfficesList.containsKey(officeRequest.getInstitution())) {
+          countryOfficesList.get(officeRequest.getInstitution()).add(officeRequest);
+        } else {
+          List<PartnerRequest> requestList = new ArrayList<>();
+          requestList.add(officeRequest);
+          countryOfficesList.put(officeRequest.getInstitution(), requestList);
+        }
+      }
     } else {
       partners = new ArrayList<>();
-      countryOffices = new ArrayList<>();
+      countryOfficesList = new HashMap<Institution, List<PartnerRequest>>();
     }
+
     this.countriesList = locElementManager.findAll().stream()
       .filter(c -> c.isActive() && c.getLocElementType().getId().longValue() == 2).collect(Collectors.toList());
     this.institutionTypesList = institutionTypeManager.findAll().stream().filter(it -> it.isActive() && !it.getOld())
       .collect(Collectors.toList());
     countriesList.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
   }
+
 
   private void sendAcceptedNotficationEmail(PartnerRequest partnerRequest) {
     String toEmail = "";
@@ -178,9 +191,8 @@ public class PartnerRequestAction extends BaseAction {
     sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
   }
 
-
-  public void setCountryOffices(List<PartnerRequest> countryOffices) {
-    this.countryOffices = countryOffices;
+  public void setCountryOfficesList(HashMap<Institution, List<PartnerRequest>> countryOfficesList) {
+    this.countryOfficesList = countryOfficesList;
   }
 
   public void setPartners(List<PartnerRequest> partners) {

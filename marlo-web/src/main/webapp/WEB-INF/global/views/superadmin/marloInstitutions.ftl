@@ -131,6 +131,8 @@
               <p><strong>[@s.text name="Type" /]:</strong> <i>${partner.institutionType.name}</i></p>
               [#-- Country --]
               <p><strong>[@s.text name="Country" /]:</strong> <i class="flag-sm flag-sm-${(partner.countryISO?upper_case)!}"></i> <i>${partner.countryInfo}</i></p>
+              [#-- Requested Source --]
+              <p><strong>[@s.text name="Requested Source" /]:</strong> <i>${(partner.requestSource)}</i></p>
               [#-- Requested by --]
               <p><strong>[@s.text name="Requested By" /]:</strong> <i>${(partner.createdBy.composedName?html)!'none'}</i></p>
             </div>
@@ -214,11 +216,15 @@
           [#-- Partner name --]
           <div class="requestInfo">
             <div class="form-group">
-               <h4 style="font-family: 'Open Sans';">${partner.countryInfo}</h4>
+               <h4 style="font-family: 'Open Sans';">${partner.institution.composedName}</h4>
                <hr />
             </div>
             
             <div class="form-group">
+              [#-- Country --]
+              <p><strong>[@s.text name="Country" /]:</strong> <i class="flag-sm flag-sm-${(partner.countryISO?upper_case)!}"></i> <i>${partner.countryInfo}</i></p>
+              [#-- Requested Source --]
+              <p><strong>[@s.text name="Requested Source" /]:</strong> <i>${(partner.requestSource)}</i></p>
               [#-- Requested by --]
               <p><strong>[@s.text name="Requested By" /]:</strong> <i>${(partner.createdBy.composedName?html)!'none'}</i></p>
             </div>
