@@ -6266,3 +6266,7 @@ span.hint{
 img.hint-img {
   display: none !important;
 }
+
+table.ui-datepicker-calendar {
+     display: block !important; 
+}
