@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectCrosscutingThemeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectFundingSourceManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProjectLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.impl.CenterProjectManager;
@@ -37,8 +38,10 @@ import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectCrosscutingTheme;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectFundingSource;
+import org.cgiar.ccafs.marlo.data.model.CenterProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectStatus;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.ocs.model.AgreementOCS;
 import org.cgiar.ccafs.marlo.ocs.ws.MarloOcsClient;
@@ -72,6 +75,7 @@ public class ProjectListAction extends BaseAction {
   private String syncCode;
   private ICenterManager centerService;
   private ICenterProjectCrosscutingThemeManager projectCrosscutingService;
+  private ICenterProjectLocationManager projectLocationService;
   private ICenterProjectFundingSourceManager centerProjectFudingSourceManager;
   private ICenterFundingSourceTypeManager centerFundingTypeManager;
   private CenterFundingSyncTypeManager fundingSyncTypeManager;
@@ -101,7 +105,8 @@ public class ProjectListAction extends BaseAction {
     CenterProjectManager projectService, UserManager userService, ICenterAreaManager researchAreaService,
     ICenterProjectCrosscutingThemeManager projectCrosscutingService, MarloOcsClient ocsClient,
     ProjectManager projectManager, ICenterProjectFundingSourceManager centerProjectFudingSourceManager,
-    CenterFundingSyncTypeManager fundingSyncTypeManager, ICenterFundingSourceTypeManager centerFundingTypeManager) {
+    CenterFundingSyncTypeManager fundingSyncTypeManager, ICenterFundingSourceTypeManager centerFundingTypeManager,
+    ICenterProjectLocationManager projectLocationService) {
     super(config);
     this.centerService = centerService;
     this.programService = programService;
@@ -114,6 +119,7 @@ public class ProjectListAction extends BaseAction {
     this.centerProjectFudingSourceManager = centerProjectFudingSourceManager;
     this.fundingSyncTypeManager = fundingSyncTypeManager;
     this.centerFundingTypeManager = centerFundingTypeManager;
+    this.projectLocationService = projectLocationService;
   }
 
   @Override
@@ -202,6 +208,15 @@ public class ProjectListAction extends BaseAction {
     centerProject.setSync(true);
     centerProject.setSyncDate(new Date());
     centerProject.setAutoFill(true);
+
+    // Add Project Status
+    centerProject.setProjectStatus(new CenterProjectStatus(project.getStatus(), true));
+
+    // Add Crp Project CrossCutting to Center Project
+    this.crpCrossCuttingInformation(project, centerProject);
+
+    // Add Crp Project Locations to Center Project
+    this.crpProjectLocation(project, centerProject);
 
     projectService.saveCenterProject(centerProject);
 
@@ -333,6 +348,93 @@ public class ProjectListAction extends BaseAction {
     centerProjectFudingSourceManager.saveProjectFundingSource(fundingSource);
 
   }
+
+
+  /**
+   * Add CRP project Cross-cutting information in the center project Created.
+   * 
+   * @param project
+   * @param centerProject
+   */
+
+  public void crpCrossCuttingInformation(Project project, CenterProject centerProject) {
+
+    boolean hasChanges = false;
+
+    CenterProjectCrosscutingTheme crosscutingThemeSave =
+      projectCrosscutingService.getProjectCrosscutingThemeById(centerProject.getProjectCrosscutingTheme().getId());
+
+    if (project.getCrossCuttingGender() != null && project.getCrossCuttingGender()) {
+      hasChanges = true;
+      crosscutingThemeSave.setGender(true);
+    }
+
+    if (project.getCrossCuttingYouth() != null && project.getCrossCuttingYouth()) {
+      hasChanges = true;
+      crosscutingThemeSave.setYouth(true);
+    }
+
+    if (project.getCrossCuttingCapacity() != null && project.getCrossCuttingCapacity()) {
+      hasChanges = true;
+      crosscutingThemeSave.setCapacityDevelopment(true);
+    }
+
+    if (hasChanges) {
+      crosscutingThemeSave.setProject(centerProject);
+      projectCrosscutingService.saveProjectCrosscutingTheme(crosscutingThemeSave);
+    }
+
+
+  }
+
+
+  /**
+   * Add CRP project location information in the center project Created.
+   * 
+   * @param project
+   * @param centerProject
+   */
+
+  public void crpProjectLocation(Project project, CenterProject centerProject) {
+
+    List<ProjectLocation> projectLocations = new ArrayList<>(project.getProjectLocations().stream()
+      .filter(pl -> pl.isActive()
+        && (pl.getLocElement().getLocElementType().getId() == 1 || pl.getLocElement().getLocElementType().getId() == 2))
+      .collect(Collectors.toList()));
+
+    boolean haveRegion = false;
+
+
+    for (ProjectLocation projectLocation : projectLocations) {
+
+
+      CenterProjectLocation centerProjectLocation = new CenterProjectLocation();
+
+
+      centerProjectLocation.setActive(true);
+      centerProjectLocation.setActiveSince(new Date());
+      centerProjectLocation.setCreatedBy(this.getCurrentUser());
+      centerProjectLocation.setModifiedBy(this.getCurrentUser());
+      centerProjectLocation.setModificationJustification("");
+      centerProjectLocation.setProject(centerProject);
+
+      centerProjectLocation.setLocElement(projectLocation.getLocElement());
+
+      projectLocationService.saveProjectLocation(centerProjectLocation);
+
+      if (centerProjectLocation.getLocElement().getLocElementType().getId() == 1) {
+        haveRegion = true;
+      }
+
+    }
+
+    if (haveRegion) {
+      centerProject.setRegion(true);
+      projectService.saveCenterProject(centerProject);
+    }
+
+  }
+
 
   @Override
   public String delete() {
