@@ -90,6 +90,40 @@ $(document).ready(function() {
     $request.find('.editForm').slideUp();
     $request.find('.btn-group').slideDown();
   });
+  
+  // Accept office request
+  $('a.officesRequest').on('click', function(e) {
+    e.preventDefault();
+    var $request = $(this).parents('.officesRequestItem')
+    var formData = $request.find('form').serializeObject();
+    var action = $(this).classParam('action'); 
+    console.log(formData);
+    
+    var countriesSelected = $request.find('.officeRequest:checked');
+    // Validate if there are contries selected
+    if(countriesSelected.length == 0){
+      var notyOptions = jQuery.extend({}, notyDefaultOptions);
+      notyOptions.text = 'Please select at least one country';
+      noty(notyOptions);
+      return
+    }
+    
+    $.ajax({
+      url: baseURL + '/'+ action,
+      data: formData,
+      beforeSend: function() {
+        $request.find('.loading').fadeIn();
+      },
+      success: function(data) {
+        if(data.success) {
+          location.reload();
+        }
+      },
+      complete: function() {
+        $request.find('.loading').fadeOut();
+      }
+  });
+  });
 
   findSameness();
   

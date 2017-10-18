@@ -219,7 +219,7 @@
           <form action="">
           <div class="loading" style="display:none"></div>
           
-          [#local customName = "countryOfficesList[${partner_index}]"]
+          [#local customName = "countryOfficePOJO"]
           
           [#-- Hidden inputs --]
           <input type="hidden" name="${customName}.institution.id" value="${partner.institution.id}"/>
@@ -235,11 +235,12 @@
               <div class="items-list">
                 <ul>
                   [#list partner.partnerRequest as officeRequest]
-                    [#local customOfficeName = "${customName}.partnerRequest[${officeRequest_index}]"]
+                    [#local customOfficeName = "${customName}.partnerRequest"]
                     <li class="inputsFlat li-item officeCountryRequest">
-                      <input type="checkbox"  name="${customOfficeName}.id" id="officeRequest-${officeRequest.id}" value="${officeRequest.id}" />
+                      <input type="checkbox"  name="${customOfficeName}.id" id="officeRequest-${officeRequest.id}" class="officeRequest" value="${officeRequest.id}" />
                       <label class="checkbox-label" for="officeRequest-${officeRequest.id}">${officeRequest.locElement.name}</label>
                       <i class="pull-right flag-sm flag-sm-${(officeRequest.locElement.isoAlpha2?upper_case)!}"></i> 
+                      <p class="text-muted"><small><strong>[@s.text name="Requested By" /]:</strong> <i>${(officeRequest.createdBy.composedName?html)!'none'}</i></small></p>
                     </li>
                   [/#list]
                 </ul>
@@ -252,11 +253,11 @@
           [#-- Action --]
           <div class="btn-group pull-right" role="group" aria-label="..."">
             [#-- Accept --]
-            <a class="btn btn-success btn-sm" href="#">
+            <a class="btn btn-success btn-sm officesRequest action-acceptOfficesRequest.do" href="#">
               <span class="glyphicon glyphicon-ok"></span> Accept selected
             </a>
             [#-- Reject --]
-            <a class="btn btn-danger btn-sm rejectOfficeRequest partnerRequestId-${partner.institution.id}" href="#">
+            <a class="btn btn-danger btn-sm officesRequest action-rejectOfficesRequest.do" href="#">
                <span class="glyphicon glyphicon-remove"></span> Reject selected
             </a>
           </div>

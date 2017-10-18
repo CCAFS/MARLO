@@ -14,7 +14,11 @@ i.flag-sm {
 }
 
 .officeCountryRequest {
-  width: 32%;
+  width: 50%;
   margin-right: 1%;
-  float: left;
+  /* float: left; */
+}
+
+.officeCountryRequest p {
+  margin-left: 9px;
 }
