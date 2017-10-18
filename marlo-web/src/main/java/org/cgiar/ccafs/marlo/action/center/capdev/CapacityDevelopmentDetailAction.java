@@ -454,7 +454,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       final Map<String, Object> map = new HashMap<>();
       map.put("displayName", gender);
       map.put("value", gender);
-      durationUnit.add(map);
+      genders.add(map);
     }
 
 

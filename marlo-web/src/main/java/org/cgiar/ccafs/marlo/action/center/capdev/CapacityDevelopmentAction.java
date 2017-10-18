@@ -81,17 +81,25 @@ public class CapacityDevelopmentAction extends BaseAction {
     capdev.setCreatedBy(this.getCurrentUser());
     capdev.setModifiedBy(this.getCurrentUser());
 
+    /*
+     * projectID allows verified if the request to create a CapDev come from projects/capdev section or capacity
+     * development section
+     * if projectID > 0 the request come from projects section
+     * else the request come from capacity development section.
+     */
     projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_ID)));
-    CenterProject project = projectService.getCenterProjectById(projectID);
-    if (project != null) {
-      capdev.setProject(project);
+    CenterProject projectDB = projectService.getCenterProjectById(projectID);
+    if (projectDB != null) {
+      capdev.setProject(projectDB);
+      CenterProgram program = projectDB.getResearchProgram();
+      CenterArea researchArea = program.getResearchArea();
 
-      if (project.getResearchProgram() != null) {
-        CenterProgram program = project.getResearchProgram();
-        CenterArea researchArea = program.getResearchArea();
-        capdev.setResearchArea(researchArea);
-        capdev.setResearchProgram(program);
-      }
+      System.out.println("program " + program.getName());
+      System.out.println("area " + researchArea.getName());
+      capdev.setResearchArea(researchArea);
+      capdev.setResearchProgram(program);
+
+
     }
 
     capdevID = capdevService.saveCapacityDevelopment(capdev);
@@ -112,7 +120,14 @@ public class CapacityDevelopmentAction extends BaseAction {
     capdev.setModifiedBy(this.getCurrentUser());
     capdevService.saveCapacityDevelopment(capdev);
 
-    return SUCCESS;
+    if (projectID > 0) {
+
+      return REDIRECT;
+    } else {
+      return SUCCESS;
+    }
+
+
   }
 
 

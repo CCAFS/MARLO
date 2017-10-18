@@ -96,7 +96,6 @@ public class EditCapacityDevInterceptor extends AbstractInterceptor implements S
 
       if (parameters.get(APConstants.EDITABLE_REQUEST) != null) {
         String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
-        System.out.println("edit ==>" + stringEditable);
         editParameter = stringEditable.equals("true");
         // If the user is not asking for edition privileges we don't need to validate them.
         if (!editParameter) {
@@ -106,7 +105,6 @@ public class EditCapacityDevInterceptor extends AbstractInterceptor implements S
 
       // Check the permission if user want to edit or save the form
       if (editParameter || (parameters.get("save") != null)) {
-        System.out.println(baseAction.canAccessSuperAdmin());
         hasPermissionToEdit =
           (baseAction.canAccessSuperAdmin()) ? true : capdev.getCreatedBy().getId().equals(currentUser.getId());
 

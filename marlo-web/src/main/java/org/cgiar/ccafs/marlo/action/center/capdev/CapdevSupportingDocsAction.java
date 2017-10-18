@@ -43,6 +43,7 @@ public class CapdevSupportingDocsAction extends BaseAction {
 
   private CapacityDevelopment capdev;
   private long capdevID;
+  private long projectID;
   private long supportingDocID;
   private final CapdevSupportingDocsManager capdevsupportingDocsService;
   private final ICapacityDevelopmentService capdevService;
@@ -92,16 +93,23 @@ public class CapdevSupportingDocsAction extends BaseAction {
   }
 
 
+  public long getProjectID() {
+    return projectID;
+  }
+
   public long getSupportingDocID() {
     return supportingDocID;
   }
+
 
   @Override
   public void prepare() throws Exception {
     try {
       capdevID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CAPDEV_ID)));
+      projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_ID)));
     } catch (final Exception e) {
       capdevID = -1;
+      projectID = 0;
     }
     capdev = capdevService.getCapacityDevelopmentById(capdevID);
     if (!capdev.getCapdevSupportingDocs().isEmpty()) {
@@ -117,10 +125,15 @@ public class CapdevSupportingDocsAction extends BaseAction {
     this.capdev = capdev;
   }
 
-
   public void setCapdevID(long capdevID) {
     this.capdevID = capdevID;
   }
+
+
+  public void setProjectID(long projectID) {
+    this.projectID = projectID;
+  }
+
 
   public void setSupportingDocID(long supportingDocID) {
     this.supportingDocID = supportingDocID;

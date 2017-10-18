@@ -81,7 +81,7 @@
 					    </td>
 					    <td class="removeCol">
 					    	[#if action.centerCanBeDeleted(i.id, i.class.name)!false]
-					    	<a id="removeCapdev-${i.id}" class="removeCapdev" href="#" data-href="[@s.url action='${centerSession}/deleteCapdev'][@s.param name='capdevID']${i.id}[/@s.param] [/@s.url]" data-toggle="modal" data-target="#confirm-delete-capdev">
+					    	<a id="removeCapdev-${i.id}" class="removeCapdev" href="#" data-href="[@s.url namespace='/capdev' action='${centerSession}/deleteCapdev'][@s.param name='projectID']${projectID}[/@s.param][@s.param name='capdevID']${i.id}[/@s.param] [/@s.url]" data-toggle="modal" data-target="#confirm-delete-capdev">
 				               <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="capdev.removeCapdev" /]" /> 
 				            </a>
 				            [#else]

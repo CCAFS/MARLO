@@ -65,7 +65,7 @@
       </result>
       <result name="success" type="redirectAction">
 				<param name="actionName">${centerSession}/projectCapdev</param>
-				<param name="capdevID">${projectID}</param>
+				<param name="projectID">${projectID}</param>
 				<param name="edit">true</param>
 			</result>
     </action>
