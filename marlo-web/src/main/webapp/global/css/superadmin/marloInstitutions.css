@@ -12,3 +12,9 @@ i.flag-sm {
 #allInstitutions .modal-dialog{
   width: 1000px;
 }
+
+.officeCountryRequest {
+  width: 32%;
+  margin-right: 1%;
+  float: left;
+}

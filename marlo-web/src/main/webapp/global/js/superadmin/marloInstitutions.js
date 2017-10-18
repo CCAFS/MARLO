@@ -53,8 +53,9 @@ $(document).ready(function() {
     var name = $('input[name="name"]').val();
     var typeValue = $('select#type').val();
     var countryValue = $('select#country').val();
+    var modificationJustification = $('textarea[name="modificationJustification"]').val(); 
     
-    if(!name || (typeValue == "-1") || (countryValue == "-1")){
+    if(!name ||!modificationJustification || (typeValue == "-1") || (countryValue == "-1")){
       var notyOptions = jQuery.extend({}, notyDefaultOptions);
       notyOptions.text = 'The required(*) fields needs to be filled';
       noty(notyOptions);

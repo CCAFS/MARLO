@@ -45,7 +45,7 @@
         
         [#-- Requested Office Locations--]
         <h4 class="sectionTitle">Request Country office(s):</h4>
-        [@officesRequest partners=countryOffices  canEdit=editable namespace="/marloInstitutions" defaultAction="${(crpSession)!}/marloInstitutions"/]
+        [@officesRequest partners=countryOfficesList  canEdit=editable namespace="/marloInstitutions" defaultAction="${(crpSession)!}/marloInstitutions"/]
       </div>
     </div>
   </div>
@@ -192,8 +192,8 @@
             </div>
             <hr />
             <div class="form-group">
-              <label for="">Justification</label>
-              <textarea class="form-control input-sm" name="modificationJustification" id="" cols="30" rows="10">${(partner.modificationJustification)!}</textarea>
+              <label for="">Justification [@customForm.req required=true /]</label>
+              <textarea class="form-control input-sm" name="modificationJustification" id="" cols="30" rows="3">${(partner.modificationJustification)!}</textarea>
             </div>
             <button class="saveButton">Save</button>
             <button class="cancelButton">Cancel</button>
@@ -215,23 +215,36 @@
   <ul class="list-group">
     [#if partners?has_content]
       [#list partners as partner]
-        <li id="partnerRequestItem-${(partner.id)!}" class="list-group-item partnerRequestItem">
+        <li id="officesRequestItem-${(partner.institution.id)!}" class="list-group-item officesRequestItem">
+          <form action="">
           <div class="loading" style="display:none"></div>
+          
+          [#local customName = "countryOfficesList[${partner_index}]"]
+          
+          [#-- Hidden inputs --]
+          <input type="hidden" name="${customName}.institution.id" value="${partner.institution.id}"/>
           
           [#-- Partner name --]
           <div class="requestInfo">
             <div class="form-group">
-               <h4 style="font-family: 'Open Sans';">${partner.institution.composedName}</h4>
-               <hr />
+               <h4 style="font-family: 'Open Sans';">${partner.institution.composedName}</h4><hr />
             </div>
             
             <div class="form-group">
-              [#-- Country --]
-              <p><strong>[@s.text name="Country" /]:</strong> <i class="flag-sm flag-sm-${(partner.countryISO?upper_case)!}"></i> <i>${partner.countryInfo}</i></p>
-              [#-- Requested Source --]
-              <p><strong>[@s.text name="Requested Source" /]:</strong> <i>${(partner.requestSource)}</i></p>
-              [#-- Requested by --]
-              <p><strong>[@s.text name="Requested By" /]:</strong> <i>${(partner.createdBy.composedName?html)!'none'}</i></p>
+              [#-- Country Offices Request --]
+              <div class="items-list">
+                <ul>
+                  [#list partner.partnerRequest as officeRequest]
+                    [#local customOfficeName = "${customName}.partnerRequest[${officeRequest_index}]"]
+                    <li class="inputsFlat li-item officeCountryRequest">
+                      <input type="checkbox"  name="${customOfficeName}.id" id="officeRequest-${officeRequest.id}" value="${officeRequest.id}" />
+                      <label class="checkbox-label" for="officeRequest-${officeRequest.id}">${officeRequest.locElement.name}</label>
+                      <i class="pull-right flag-sm flag-sm-${(officeRequest.locElement.isoAlpha2?upper_case)!}"></i> 
+                    </li>
+                  [/#list]
+                </ul>
+              </div>
+              <div class="clearfix"></div>
             </div>
             
           </div>
@@ -239,17 +252,18 @@
           [#-- Action --]
           <div class="btn-group pull-right" role="group" aria-label="..."">
             [#-- Accept --]
-            <a class="btn btn-success btn-sm" href="[@s.url namespace="" action="superadmin/addPartner"][@s.param name='requestID']${partner.id?c}[/@s.param][/@s.url]">
-              <span class="glyphicon glyphicon-ok"></span> Accept
+            <a class="btn btn-success btn-sm" href="#">
+              <span class="glyphicon glyphicon-ok"></span> Accept selected
             </a>
             [#-- Reject --]
-            <a class="btn btn-danger btn-sm rejectRequest partnerRequestId-${partner.id}" href="#">
-               <span class="glyphicon glyphicon-remove"></span> Reject
+            <a class="btn btn-danger btn-sm rejectOfficeRequest partnerRequestId-${partner.institution.id}" href="#">
+               <span class="glyphicon glyphicon-remove"></span> Reject selected
             </a>
           </div>
           
           <div class="clearfix"></div>
           
+          </form>
         </li>
       [/#list]
     [#else]
