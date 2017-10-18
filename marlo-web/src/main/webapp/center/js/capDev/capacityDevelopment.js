@@ -125,7 +125,6 @@
           }
       });
 
-      console.log(gender)
 
      //set value for gender when is hostory is active
       var p = $(".genderSelect .selectList p");
@@ -167,25 +166,18 @@
 
     var regional = $(".regional p")
     var pValue = regional.html();
-    console.log(typeof(pValue))
-    console.log(pValue)
+    
     if(pValue === ' Yes'){
-      console.log("en el if del regional")
       $(".regionsBox").show("slow");
     }
   })();
-
-
-  
-
-    
 
 
       //set value for duartion unit field
     (function(){
       var durationUnit = $(".durationUnitaInput").val();
       
-      //console.log(durationUnit)
+      console.log(durationUnit)
       $(".durationUnitSelect select option").each(function() {
         if($(this).val() === durationUnit){
           $(this).attr( "selected" , true);
@@ -195,7 +187,7 @@
 
       //set value for duration unit when is hostory is active
       var p = $(".durationUnitSelect .selectList p");
-      if(durationUnit!= ""){
+      if(durationUnit != ""){
         p.html(durationUnit)
       }
 
@@ -224,9 +216,6 @@
         $(".suggestInstitution").show();
       }
     })();
-    
-
-
   }
 
 

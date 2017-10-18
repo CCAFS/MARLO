@@ -11,7 +11,7 @@
       <p>[@s.text name="capdev.message.historyVersion" ]  
           [@s.param]<span>${capdev.modifiedBy.composedName?html}</span>[/@s.param]
           [@s.param]<span>${capdev.activeSince?datetime}</span>[/@s.param]
-          [@s.param]<a href="[@s.url][@s.param name="capdevID" value=capdevID /][@s.param name="edit" value="true"/][/@s.url]">here</a>[/@s.param]
+          [@s.param]<a href="[@s.url][@s.param name="projectID" value=projectID /][@s.param name="capdevID" value=capdevID /][@s.param name="edit" value="true"/][/@s.url]">here</a>[/@s.param]
          [/@s.text]
       </p>
       [#-- Differences --]

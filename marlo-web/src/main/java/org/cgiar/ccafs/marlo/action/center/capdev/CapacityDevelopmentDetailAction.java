@@ -67,10 +67,15 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     Hours, Days, Weeks, Years
   }
 
+  public enum Genders {
+    Male, Female, Other
+  }
+
   private static final long serialVersionUID = 1L;
 
   private long capdevID;
   private int capdevCategory;
+  private long projectID;
   private CapacityDevelopment capdev;
   private List<LocElement> regionsList;
   private List<LocElement> countryList;
@@ -268,7 +273,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   public int getNumMenParticipants(Object[][] data) {
     int numMen = 0;
     for (final Object[] element : data) {
-      if (((String) element[3]).equalsIgnoreCase("M")) {
+      if (((String) element[3]).equalsIgnoreCase("Male")) {
         numMen++;
       }
     }
@@ -299,7 +304,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   public int getNumWomenParticipants(Object[][] data) {
     int numWomen = 0;
     for (final Object[] element : data) {
-      if (((String) element[3]).equalsIgnoreCase("F")) {
+      if (((String) element[3]).equalsIgnoreCase("Female")) {
         numWomen++;
 
       }
@@ -338,6 +343,11 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   }
 
 
+  public long getProjectID() {
+    return projectID;
+  }
+
+
   public List<LocElement> getRegionsList() {
     return regionsList;
   }
@@ -352,10 +362,10 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     return uploadFile;
   }
 
-
   public String getUploadFileContentType() {
     return uploadFileContentType;
   }
+
 
   public String getUploadFileName() {
     return uploadFileName;
@@ -440,21 +450,12 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
     // genders
     genders = new ArrayList<>();
-    final Map<String, Object> genderM = new HashMap<>();
-    genderM.put("displayName", "Male");
-    genderM.put("value", "M");
-
-    final Map<String, Object> genderF = new HashMap<>();
-    genderF.put("displayName", "Female");
-    genderF.put("value", "F");
-
-    final Map<String, Object> genderX = new HashMap<>();
-    genderX.put("displayName", "Other");
-    genderX.put("value", "Other");
-
-    genders.add(genderM);
-    genders.add(genderF);
-    genders.add(genderX);
+    for (final Genders gender : Genders.values()) {
+      final Map<String, Object> map = new HashMap<>();
+      map.put("displayName", gender);
+      map.put("value", gender);
+      durationUnit.add(map);
+    }
 
 
     // Unit duration
@@ -500,9 +501,12 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
     try {
       capdevID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CAPDEV_ID)));
+      projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_ID)));
     } catch (final Exception e) {
       capdevID = -1;
+      projectID = 0;
     }
+
 
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
 
@@ -644,10 +648,10 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     if (capdevDB.getCategory() == 1) {
 
       capdevDB.setNumParticipants(1);
-      if (participant.getGender().equals("M")) {
+      if (participant.getGender().equals("Male")) {
         capdevDB.setNumMen(1);
       }
-      if (participant.getGender().equals("F")) {
+      if (participant.getGender().equals("Female")) {
         capdevDB.setNumWomen(1);
       }
       if (participant.getGender().equals("Other")) {
@@ -950,6 +954,11 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
   public void setPreviewListHeader(List<String> previewListHeader) {
     this.previewListHeader = previewListHeader;
+  }
+
+
+  public void setProjectID(long projectID) {
+    this.projectID = projectID;
   }
 
 

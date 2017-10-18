@@ -16,10 +16,15 @@
 package org.cgiar.ccafs.marlo.action.center.capdev;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.ICapacityDevelopmentService;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProjectManager;
 import org.cgiar.ccafs.marlo.data.model.CapacityDevelopment;
 import org.cgiar.ccafs.marlo.data.model.CapdevParticipant;
 import org.cgiar.ccafs.marlo.data.model.CapdevSupportingDocs;
+import org.cgiar.ccafs.marlo.data.model.CenterArea;
+import org.cgiar.ccafs.marlo.data.model.CenterProgram;
+import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
@@ -45,14 +50,21 @@ public class CapacityDevelopmentAction extends BaseAction {
   private List<CapacityDevelopment> capDevs = new ArrayList<CapacityDevelopment>();
 
   private final ICapacityDevelopmentService capdevService;
+  private ICenterProjectManager projectService;
+
 
   private long capdevID;
   private int capdevCategory;
 
+  private long projectID;
+
   @Inject
-  public CapacityDevelopmentAction(APConfig config, ICapacityDevelopmentService capdevService) {
+  public CapacityDevelopmentAction(APConfig config, ICapacityDevelopmentService capdevService,
+    ICenterProjectManager projectService) {
     super(config);
     this.capdevService = capdevService;
+    this.projectService = projectService;
+
 
   }
 
@@ -61,12 +73,27 @@ public class CapacityDevelopmentAction extends BaseAction {
   public String add() {
 
     capdevCategory = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter("capdevCategory")));
+
     capdev = new CapacityDevelopment();
     capdev.setCategory(capdevCategory);
     capdev.setActive(true);
     capdev.setActiveSince(new Date());
     capdev.setCreatedBy(this.getCurrentUser());
     capdev.setModifiedBy(this.getCurrentUser());
+
+    projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_ID)));
+    CenterProject project = projectService.getCenterProjectById(projectID);
+    if (project != null) {
+      capdev.setProject(project);
+
+      if (project.getResearchProgram() != null) {
+        CenterProgram program = project.getResearchProgram();
+        CenterArea researchArea = program.getResearchArea();
+        capdev.setResearchArea(researchArea);
+        capdev.setResearchProgram(program);
+      }
+    }
+
     capdevID = capdevService.saveCapacityDevelopment(capdev);
     if (capdevID > 0) {
       return SUCCESS;
@@ -109,9 +136,14 @@ public class CapacityDevelopmentAction extends BaseAction {
   }
 
 
+  public long getProjectID() {
+    return projectID;
+  }
+
   public String list() {
     return SUCCESS;
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -171,6 +203,11 @@ public class CapacityDevelopmentAction extends BaseAction {
 
   public void setCapDevs(List<CapacityDevelopment> capDevs) {
     this.capDevs = capDevs;
+  }
+
+
+  public void setProjectID(long projectID) {
+    this.projectID = projectID;
   }
 
 

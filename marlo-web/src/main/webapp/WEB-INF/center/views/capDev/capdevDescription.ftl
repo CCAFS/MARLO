@@ -1,11 +1,13 @@
 [#ftl]
 
-[#assign customCSS = ["${baseUrl}/global/css/customDataTable.css"] /]
-[#assign customCSS = ["${baseUrlMedia}/css/capDev/capacityDevelopment.css"] /]
+
+[#assign customCSS = ["${baseUrlMedia}/css/capDev/capacityDevelopment.css",
+                      "${baseUrl}/global/css/customDataTable.css"] /]
 
 [#assign pageLibs = ["select2","flat-flags"] /]
-[#assign customJS = ["${baseUrlMedia}/js/capDev/capacityDevelopment.js"] /]
+
 [#assign customJS = [
+  "${baseUrlMedia}/js/capDev/capacityDevelopment.js",
   "${baseUrlMedia}/js/capDev/capdevDescription.js",
   "${baseUrl}/global/js/fieldsValidation.js"
   ] 
@@ -26,7 +28,6 @@
 
 
 
-<!--<script src="${baseUrlMedia}/js/capDev/capacityDevelopment.js"></script>-->
 
 
 
@@ -51,7 +52,11 @@
         
     <div class="col-md-12">
       <div class="pull-right">
-        <a class="" href="[@s.url action='${centerSession}/capdev' /] "><span class="glyphicon glyphicon-circle-arrow-left"></span>[@s.text name="capdev.gotoBack" /]</a> 
+        [#if projectID > 0]
+          <a class="" href="[@s.url namespace='/monitoring' action='${centerSession}/projectCapdev'] [@s.param name='projectID']${projectID?c}[/@s.param][@s.param name='edit' value="true" /] [/@s.url] "><span class="glyphicon glyphicon-circle-arrow-left"></span>[@s.text name="capdev.gotoBackProjects" /]</a>
+        [#else]
+          <a class="" href="[@s.url action='${centerSession}/capdev' /] "><span class="glyphicon glyphicon-circle-arrow-left"></span>[@s.text name="capdev.gotoBack" /]</a>
+        [/#if]
       </div>
     </div>
   
@@ -288,6 +293,7 @@
 
         <div style="display: none;">
             [@customForm.input name="capdevID" i18nkey="capdev.id" value="${capdev.id}"  type="text"  /]
+            [@customForm.input name="projectID" i18nkey="capdev.id" value="${projectID}"  type="text"  /]
         </div>
 
 
