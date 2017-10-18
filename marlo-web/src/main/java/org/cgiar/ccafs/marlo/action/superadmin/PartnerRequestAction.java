@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PartnerRequestManager;
+import org.cgiar.ccafs.marlo.data.model.CountryOfficePOJO;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
@@ -37,30 +38,32 @@ import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 
+
 /**
+ * PartnerRequestAction:
+ * 
  * @author Hermes Jiménez - CIAT/CCAFS
+ * @author avalencia - CCAFS
+ * @date Oct 18, 2017
+ * @time 3:45:12 PM
  */
 public class PartnerRequestAction extends BaseAction {
 
-
   private static final long serialVersionUID = -4592281983603538935L;
 
+  // Managers
   private PartnerRequestManager partnerRequestManager;
   private InstitutionManager institutionManager;
   private InstitutionTypeManager institutionTypeManager;
   private InstitutionLocationManager institutionLocationManager;
   private LocElementManager locElementManager;
-  private List<LocElement> countriesList;
-  private List<InstitutionType> institutionTypesList;
 
-
+  // Variables
+  private List<LocElement> countriesList = new ArrayList<>();
+  private List<InstitutionType> institutionTypesList = new ArrayList<>();
+  private List<CountryOfficePOJO> countryOfficesList = new ArrayList<>();
   private List<PartnerRequest> partners;
-  private HashMap<Institution, List<PartnerRequest>> countryOfficesList =
-    new HashMap<Institution, List<PartnerRequest>>();
-
   private long requestID;
-
-
   private SendMailS sendMail;
 
   @Inject
@@ -75,6 +78,7 @@ public class PartnerRequestAction extends BaseAction {
     this.institutionLocationManager = institutionLocationManager;
     this.sendMail = sendMail;
   }
+
 
   public String addPartner() {
     PartnerRequest partnerRequest = partnerRequestManager.getPartnerRequestById(requestID);
@@ -116,14 +120,14 @@ public class PartnerRequestAction extends BaseAction {
     return countriesList;
   }
 
-  public HashMap<Institution, List<PartnerRequest>> getCountryOfficesList() {
+  public List<CountryOfficePOJO> getCountryOfficesList() {
     return countryOfficesList;
   }
-
 
   public List<InstitutionType> getInstitutionTypesList() {
     return institutionTypesList;
   }
+
 
   public List<PartnerRequest> getPartners() {
     return partners;
@@ -133,34 +137,50 @@ public class PartnerRequestAction extends BaseAction {
     return requestID;
   }
 
+
+  /**
+   * @author avalencia - CCAFS
+   * @date Oct 18, 2017
+   * @time 3:46:44 PM Added countryOffices to a POJO instead of a HashMap
+   * @throws Exception
+   */
   @Override
   public void prepare() throws Exception {
+    HashMap<Institution, List<PartnerRequest>> countryOfficesHashMap = new HashMap<Institution, List<PartnerRequest>>();
     // Verify if exists active partnerRequest
     if (partnerRequestManager.findAll().stream().filter(pr -> pr.isActive()) != null) {
       partners = new ArrayList<>(partnerRequestManager.findAll().stream().filter(pr -> pr.isActive() && !pr.isOffice())
         .collect(Collectors.toList()));
       for (PartnerRequest officeRequest : partnerRequestManager.findAll().stream()
         .filter(pr -> pr.isActive() && pr.isOffice() && pr.getInstitution() != null).collect(Collectors.toList())) {
-        if (countryOfficesList.containsKey(officeRequest.getInstitution())) {
-          countryOfficesList.get(officeRequest.getInstitution()).add(officeRequest);
+        if (countryOfficesHashMap.containsKey(officeRequest.getInstitution())) {
+          countryOfficesHashMap.get(officeRequest.getInstitution()).add(officeRequest);
         } else {
           List<PartnerRequest> requestList = new ArrayList<>();
           requestList.add(officeRequest);
-          countryOfficesList.put(officeRequest.getInstitution(), requestList);
+          countryOfficesHashMap.put(officeRequest.getInstitution(), requestList);
         }
       }
     } else {
       partners = new ArrayList<>();
-      countryOfficesList = new HashMap<Institution, List<PartnerRequest>>();
+      countryOfficesHashMap = new HashMap<Institution, List<PartnerRequest>>();
     }
-
+    // Fill countryOfficeList with the HashMap
+    if (countryOfficesHashMap.size() > 0) {
+      for (Institution institution : countryOfficesHashMap.keySet()) {
+        CountryOfficePOJO countryOfficePojo =
+          new CountryOfficePOJO(institution, countryOfficesHashMap.get(institution));
+        countryOfficesList.add(countryOfficePojo);
+      }
+    } else {
+      countryOfficesList = new ArrayList<>();
+    }
     this.countriesList = locElementManager.findAll().stream()
       .filter(c -> c.isActive() && c.getLocElementType().getId().longValue() == 2).collect(Collectors.toList());
     this.institutionTypesList = institutionTypeManager.findAll().stream().filter(it -> it.isActive() && !it.getOld())
       .collect(Collectors.toList());
     countriesList.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
   }
-
 
   private void sendAcceptedNotficationEmail(PartnerRequest partnerRequest) {
     String toEmail = "";
@@ -189,9 +209,11 @@ public class PartnerRequestAction extends BaseAction {
     sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
   }
 
-  public void setCountryOfficesList(HashMap<Institution, List<PartnerRequest>> countryOfficesList) {
+
+  public void setCountryOfficesList(List<CountryOfficePOJO> countryOfficesList) {
     this.countryOfficesList = countryOfficesList;
   }
+
 
   public void setPartners(List<PartnerRequest> partners) {
     this.partners = partners;
