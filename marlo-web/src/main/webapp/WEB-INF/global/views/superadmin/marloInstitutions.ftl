@@ -44,7 +44,7 @@
         [@partnersList partners=partners  canEdit=editable namespace="/marloInstitutions" defaultAction="${(crpSession)!}/marloInstitutions"/]
         
         [#-- Requested Office Locations--]
-        <h4 class="sectionTitle">Request Country office(s):</h4>  
+        <h4 class="sectionTitle">Request Country office(s):</h4>
         [@officesRequest partners=countryOffices  canEdit=editable namespace="/marloInstitutions" defaultAction="${(crpSession)!}/marloInstitutions"/]
       </div>
     </div>
@@ -189,6 +189,11 @@
             <div class="form-group">
               <label for="">Web Page</label>
               <input type="text" class="form-control input-sm" name="webPage" value="${(partner.webPage)!}" />
+            </div>
+            <hr />
+            <div class="form-group">
+              <label for="">Justification</label>
+              <textarea class="form-control input-sm" name="modificationJustification" id="" cols="30" rows="10">${(partner.modificationJustification)!}</textarea>
             </div>
             <button class="saveButton">Save</button>
             <button class="cancelButton">Cancel</button>
