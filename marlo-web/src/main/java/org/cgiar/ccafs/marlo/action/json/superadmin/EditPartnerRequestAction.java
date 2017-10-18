@@ -47,6 +47,7 @@ public class EditPartnerRequestAction extends BaseAction {
   private String webPage;
   private String type;
   private String country;
+  private String modificationJustification;
   private boolean success;
 
 
@@ -91,9 +92,11 @@ public class EditPartnerRequestAction extends BaseAction {
         LocElement locElement = locElementManager.getLocElementByISOCode(country);
         partnerRequest.setLocElement(locElement);
       }
+      if (modificationJustification != null && !modificationJustification.isEmpty()) {
+        partnerRequest.setModificationJustification(modificationJustification);
+      }
+
       partnerRequest.setModifiedBy(this.getCurrentUser());
-      // TODO add modification justification
-      partnerRequest.setModificationJustification("TODO");
       partnerRequestManager.savePartnerRequest(partnerRequest);
     } catch (Exception e) {
       System.out.println(e.getMessage());
@@ -110,6 +113,11 @@ public class EditPartnerRequestAction extends BaseAction {
 
   public String getCountry() {
     return country;
+  }
+
+
+  public String getModificationJustification() {
+    return modificationJustification;
   }
 
 
@@ -137,6 +145,7 @@ public class EditPartnerRequestAction extends BaseAction {
     return success;
   }
 
+
   @Override
   public void prepare() throws Exception {
     success = true;
@@ -148,6 +157,7 @@ public class EditPartnerRequestAction extends BaseAction {
       webPage = StringUtils.trim(((String[]) parameters.get("institutionWebPage"))[0]);
       type = StringUtils.trim(((String[]) parameters.get(APConstants.INSTITUTION_TYPE_REQUEST_ID))[0]);
       country = StringUtils.trim(((String[]) parameters.get(APConstants.COUNTRY_REQUEST_ID))[0]);
+      modificationJustification = StringUtils.trim(((String[]) parameters.get(APConstants.JUSTIFICATION_REQUEST))[0]);
     } catch (Exception e) {
       System.out.println(e.getMessage());
       success = false;
@@ -160,6 +170,10 @@ public class EditPartnerRequestAction extends BaseAction {
 
   public void setCountry(String country) {
     this.country = country;
+  }
+
+  public void setModificationJustification(String modificationJustification) {
+    this.modificationJustification = modificationJustification;
   }
 
   public void setName(String name) {

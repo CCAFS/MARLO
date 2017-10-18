@@ -46,7 +46,6 @@ public class RejectPartnerRequestAction extends BaseAction {
     super(config);
     this.partnerRequestManager = partnerRequestManager;
     this.sendMail = sendMail;
-    // TODO Auto-generated constructor stub
   }
 
   @Override
@@ -101,26 +100,20 @@ public class RejectPartnerRequestAction extends BaseAction {
     String toEmail = "";
     // ToEmail: User who requested the partner
     toEmail = partnerRequest.getCreatedBy().getEmail();
-
     // CC Email: User who rejected the request
     String ccEmail = this.getCurrentUser().getEmail();
-
     // BBC: Our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
-
     // subject
     String subject =
       this.getText("marloRequestInstitution.reject.email.subject", new String[] {partnerRequest.getPartnerName()});
-
     // Building the email message
     StringBuilder message = new StringBuilder();
     message.append(this.getText("email.dear", new String[] {partnerRequest.getCreatedBy().getFirstName()}));
     message.append(this.getText("marloRequestInstitution.reject.email",
       new String[] {partnerRequest.getPartnerInfo(), justification}));
-
     message.append(this.getText("email.support.noCrpAdmins"));
     message.append(this.getText("email.bye"));
-
     sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
   }
 

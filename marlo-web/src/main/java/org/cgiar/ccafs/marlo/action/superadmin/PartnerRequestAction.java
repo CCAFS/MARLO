@@ -55,7 +55,8 @@ public class PartnerRequestAction extends BaseAction {
 
 
   private List<PartnerRequest> partners;
-  HashMap<Institution, List<PartnerRequest>> countryOfficesList = new HashMap<Institution, List<PartnerRequest>>();
+  private HashMap<Institution, List<PartnerRequest>> countryOfficesList =
+    new HashMap<Institution, List<PartnerRequest>>();
 
   private long requestID;
 
@@ -76,7 +77,6 @@ public class PartnerRequestAction extends BaseAction {
   }
 
   public String addPartner() {
-
     PartnerRequest partnerRequest = partnerRequestManager.getPartnerRequestById(requestID);
 
     Institution institution = new Institution();
@@ -110,7 +110,6 @@ public class PartnerRequestAction extends BaseAction {
     this.sendAcceptedNotficationEmail(partnerRequest);
 
     return SUCCESS;
-
   }
 
   public List<LocElement> getCountriesList() {
@@ -133,7 +132,6 @@ public class PartnerRequestAction extends BaseAction {
   public long getRequestID() {
     return requestID;
   }
-
 
   @Override
   public void prepare() throws Exception {
