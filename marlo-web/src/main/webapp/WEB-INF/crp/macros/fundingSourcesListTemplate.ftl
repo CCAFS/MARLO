@@ -75,7 +75,7 @@
           
           [#-- Direct Donor --]
           <td class=""> 
-            ${(project.directDonor.composedNameLoc)!'Not defined'}
+            ${(project.fundingSourceInfo.directDonor.composedNameLoc)!'Not defined'}
           </td>
           
           [#-- Original Donor --]

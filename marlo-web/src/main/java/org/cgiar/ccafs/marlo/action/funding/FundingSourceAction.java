@@ -563,8 +563,8 @@ public class FundingSourceAction extends BaseAction {
 
           fundingSource.setFundingCountry(new ArrayList<>(countries));
 
-          List<FundingSourceLocation> regions = new ArrayList<>(fundingSource.getFundingSourceLocations()
-            .stream().filter(fl -> fl.isActive() && fl.getLocElement() != null && fl.getPhase().equals(this.getActualPhase())
+          List<FundingSourceLocation> regions = new ArrayList<>(fundingSource.getFundingSourceLocations().stream()
+            .filter(fl -> fl.isActive() && fl.getLocElement() != null && fl.getPhase().equals(this.getActualPhase())
               && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 1)
             .collect(Collectors.toList()));
 
@@ -577,9 +577,9 @@ public class FundingSourceAction extends BaseAction {
             }
           }
 
-          regions = new ArrayList<>(fundingSource
-            .getFundingSourceLocations().stream().filter(fl -> fl.isActive() && fl.getLocElementType() != null
-              && fl.getLocElement() == null && fl.getLocElement() == null && fl.getPhase().equals(this.getActualPhase()))
+          regions = new ArrayList<>(fundingSource.getFundingSourceLocations().stream()
+            .filter(fl -> fl.isActive() && fl.getLocElementType() != null && fl.getLocElement() == null
+              && fl.getLocElement() == null && fl.getPhase().equals(this.getActualPhase()))
             .collect(Collectors.toList()));
 
           if (regions.size() > 0) {
@@ -729,12 +729,16 @@ public class FundingSourceAction extends BaseAction {
       funginsSourceInfoDB.setModificationJustification("");
 
       // if donor has a select option, no option put donor null
-      if (fundingSource.getFundingSourceInfo().getDonor().getId().longValue() != -1) {
-        funginsSourceInfoDB.setDonor(fundingSource.getFundingSourceInfo().getDonor());
+      if (fundingSource.getFundingSourceInfo().getDirectDonor().getId().longValue() != -1) {
+        funginsSourceInfoDB.setDirectDonor(fundingSource.getFundingSourceInfo().getDirectDonor());
       } else {
-        funginsSourceInfoDB.setDonor(null);
+        funginsSourceInfoDB.setDirectDonor(null);
       }
-
+      if (fundingSource.getFundingSourceInfo().getInstitution().getId().longValue() != -1) {
+        funginsSourceInfoDB.setInstitution(fundingSource.getFundingSourceInfo().getInstitution());
+      } else {
+        funginsSourceInfoDB.setInstitution(null);
+      }
 
       funginsSourceInfoDB.setTitle(fundingSource.getFundingSourceInfo().getTitle());
       funginsSourceInfoDB.setStatus(fundingSource.getFundingSourceInfo().getStatus());

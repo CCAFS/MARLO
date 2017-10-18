@@ -450,8 +450,8 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
         && fundingSource.getFundingSourceInfo().getW1w2()) {
         fsWindow = "W1/W2 Co-Financing";
       }
-      if (fundingSource.getFundingSourceInfo().getDonor() != null) {
-        donor = fundingSource.getFundingSourceInfo().getDonor().getComposedName();
+      if (fundingSource.getFundingSourceInfo().getDirectDonor() != null) {
+        donor = fundingSource.getFundingSourceInfo().getDirectDonor().getComposedName();
       }
 
       for (ProjectBudget projectBudget : fundingSource.getProjectBudgets().stream()
@@ -509,8 +509,8 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
         totalBudget = projectBudget.getAmount();
 
         String directDonor = "";
-        if (fundingSource.getFundingSourceInfo(this.getActualPhase()).getDonor() != null) {
-          directDonor = fundingSource.getFundingSourceInfo(this.getActualPhase()).getDonor().getComposedName();
+        if (fundingSource.getFundingSourceInfo(this.getActualPhase()).getDirectDonor() != null) {
+          directDonor = fundingSource.getFundingSourceInfo(this.getActualPhase()).getDirectDonor().getComposedName();
         }
 
         // Funding sources locations
@@ -624,8 +624,8 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
         piEmail = fundingSource.getFundingSourceInfo().getContactPersonEmail();
       }
       String donor = "";
-      if (fundingSource.getFundingSourceInfo().getDonor() != null) {
-        donor = fundingSource.getFundingSourceInfo().getDonor().getComposedName();
+      if (fundingSource.getFundingSourceInfo().getDirectDonor() != null) {
+        donor = fundingSource.getFundingSourceInfo().getDirectDonor().getComposedName();
       }
 
 

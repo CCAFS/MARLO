@@ -157,7 +157,7 @@ public class FundingSourceAddAction extends BaseAction {
 
     Institution institutionDonor =
       institutionManager.getInstitutionById(Long.parseLong(StringUtils.trim(((String[]) parameters.get(DONOR))[0])));
-    fundingSourceInfo.setDonor(institutionDonor);
+    fundingSourceInfo.setDirectDonor(institutionDonor);
 
     BudgetType budgetType =
       budgetTypeManager.getBudgetTypeById(Long.parseLong(StringUtils.trim(((String[]) parameters.get(TYPE))[0])));

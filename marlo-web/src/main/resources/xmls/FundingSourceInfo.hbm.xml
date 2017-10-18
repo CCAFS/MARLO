@@ -35,9 +35,13 @@
 			<column name="file" not-null="false" />
 		</many-to-one>
 		<many-to-one name="institution"
-			class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
-			<column name="donor" />
-		</many-to-one>
+      class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
+      <column name="donor" />
+    </many-to-one>
+    <many-to-one name="directDonor"
+      class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
+      <column name="direct_donor" />
+    </many-to-one>
 		<property name="status" type="java.lang.Integer">
 			<column name="status" />
 		</property>
@@ -71,5 +75,14 @@
 			class="org.cgiar.ccafs.marlo.data.model.FundingSource" fetch="select">
 			<column name="funding_source_id" not-null="true" />
 		</many-to-one>
+		<property name="synced" type="java.lang.Boolean">
+      <column name="sync"  default="0"/>
+    </property>
+    <property name="syncedDate" type="date">
+      <column name="syn_date" length="10" />
+    </property>
+    <property name="extensionDate" type="date">
+      <column name="extended_date" length="10" />
+    </property>
 	</class>
 </hibernate-mapping>

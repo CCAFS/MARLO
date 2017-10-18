@@ -49,10 +49,15 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
 
   /* Donor */
   @Expose
-  private Institution donor;
+  private Institution directDonor;
+
+  @Expose
+  private Institution institution;
+
 
   @Expose
   private Integer status;
+
 
   @Expose
   private BudgetType budgetType;
@@ -77,6 +82,14 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
 
   @Expose
   private FundingSource fundingSource;
+  @Expose
+  private Boolean synced;
+  @Expose
+  private Date syncedDate;
+
+  @Expose
+  private Date extensionDate;
+
 
   public FundingSourceInfo() {
   }
@@ -86,7 +99,7 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     String financeCode, String contactPersonName, String contactPersonEmail, BudgetType type,
     String modificationJustification, FundingSource fundingSource, Phase phase) {
     this.modifiedBy = modifiedBy;
-    this.donor = institution;
+    this.directDonor = institution;
     this.description = description;
     this.startDate = startDate;
     this.endDate = endDate;
@@ -133,6 +146,7 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     return budgetType;
   }
 
+
   public String getComposedName() {
     try {
       return "<b> (FS" + this.id + ") " + this.getBudgetType().getName() + "</b> - " + this.title;
@@ -140,7 +154,6 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
       return "<b> (FS" + this.id + ") </b> - " + this.title;
     }
   }
-
 
   public String getContactPersonEmail() {
     return contactPersonEmail;
@@ -150,14 +163,25 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     return contactPersonName;
   }
 
-
   public String getDescription() {
     return description;
   }
 
+
+  public Institution getDirectDonor() {
+    return directDonor;
+  }
+
+
   public Date getEndDate() {
     return endDate;
   }
+
+
+  public Date getExtensionDate() {
+    return extensionDate;
+  }
+
 
   public FileDB getFile() {
     return file;
@@ -166,6 +190,7 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
   public String getFinanceCode() {
     return financeCode;
   }
+
 
   public FundingSource getFundingSource() {
     return fundingSource;
@@ -177,10 +202,9 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
   }
 
 
-  public Institution getDonor() {
-    return donor;
+  public Institution getInstitution() {
+    return institution;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -201,7 +225,6 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     return u;
   }
 
-
   public PartnerDivision getPartnerDivision() {
     return partnerDivision;
   }
@@ -210,9 +233,11 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     return phase;
   }
 
+
   public Date getStartDate() {
     return startDate;
   }
+
 
   public Integer getStatus() {
     return status;
@@ -229,16 +254,22 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
 
   }
 
+  public Boolean getSynced() {
+    return synced;
+  }
+
+
+  public Date getSyncedDate() {
+    return syncedDate;
+  }
 
   public String getTitle() {
     return title;
   }
 
-
   public Boolean getW1w2() {
     return w1w2;
   }
-
 
   @Override
   public int hashCode() {
@@ -253,31 +284,40 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     return true;
   }
 
+
   public boolean isGlobal() {
     return global;
   }
+
 
   public void setBudgetType(BudgetType budgetType) {
     this.budgetType = budgetType;
   }
 
+
   public void setContactPersonEmail(String contactPersonEmail) {
     this.contactPersonEmail = contactPersonEmail;
   }
-
 
   public void setContactPersonName(String contactPersonName) {
     this.contactPersonName = contactPersonName;
   }
 
-
   public void setDescription(String description) {
     this.description = description;
   }
 
+  public void setDirectDonor(Institution institution) {
+    this.directDonor = institution;
+  }
 
   public void setEndDate(Date endDate) {
     this.endDate = endDate;
+  }
+
+
+  public void setExtensionDate(Date extensionDate) {
+    this.extensionDate = extensionDate;
   }
 
 
@@ -290,9 +330,11 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     this.financeCode = financeCode;
   }
 
+
   public void setFundingSource(FundingSource fundingSource) {
     this.fundingSource = fundingSource;
   }
+
 
   public void setGlobal(boolean global) {
     this.global = global;
@@ -302,8 +344,8 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     this.id = id;
   }
 
-  public void setDonor(Institution institution) {
-    this.donor = institution;
+  public void setInstitution(Institution institution) {
+    this.institution = institution;
   }
 
   public void setModificationJustification(String modificationJustification) {
@@ -318,18 +360,26 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     this.partnerDivision = partnerDivision;
   }
 
-
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
-
 
   public void setStartDate(Date startDate) {
     this.startDate = startDate;
   }
 
+
   public void setStatus(Integer status) {
     this.status = status;
+  }
+
+
+  public void setSynced(Boolean synced) {
+    this.synced = synced;
+  }
+
+  public void setSyncedDate(Date syncedDate) {
+    this.syncedDate = syncedDate;
   }
 
   public void setTitle(String title) {
@@ -355,7 +405,7 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     this.setFile(fundingSourceInfoUpdate.getFile());
     this.setFinanceCode(fundingSourceInfoUpdate.getFinanceCode());
     this.setGlobal(fundingSourceInfoUpdate.isGlobal());
-    this.setDonor(fundingSourceInfoUpdate.getDonor());
+    this.setDirectDonor(fundingSourceInfoUpdate.getDirectDonor());
     this.setPartnerDivision(fundingSourceInfoUpdate.getPartnerDivision());
     this.setW1w2(fundingSourceInfoUpdate.getW1w2());
   }

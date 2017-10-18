@@ -23,7 +23,6 @@ import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
-import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
@@ -32,7 +31,6 @@ import org.cgiar.ccafs.marlo.validation.BaseValidator;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
@@ -116,11 +114,11 @@ public class FundingSourceValidator extends BaseValidator {
     }
 
     // Validate the donor with id -1, beacause front end send this when there is not one selected
-    if (fundingSource.getFundingSourceInfo().getDonor() == null
-      || fundingSource.getFundingSourceInfo().getDonor().getId() == null
-      || fundingSource.getFundingSourceInfo().getDonor().getId().longValue() == -1) {
+    if (fundingSource.getFundingSourceInfo().getDirectDonor() == null
+      || fundingSource.getFundingSourceInfo().getDirectDonor().getId() == null
+      || fundingSource.getFundingSourceInfo().getDirectDonor().getId().longValue() == -1) {
       this.addMessage(action.getText("fundingSource.institution.id"));
-      action.getInvalidFields().put("input-fundingSource.fundingSourceInfo.institution.id",
+      action.getInvalidFields().put("input-fundingSource.fundingSourceInfo.directDonor.id",
         InvalidFieldsMessages.EMPTYFIELD);
     }
     if (!this.isValidString(fundingSource.getFundingSourceInfo().getContactPersonName())) {

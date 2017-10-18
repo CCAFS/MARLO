@@ -136,6 +136,7 @@ ALTER TABLE `crp_program_outcomes` ADD FOREIGN KEY (`id_phase`) REFERENCES `phas
 INSERT INTO crp_program_outcomes (
  
 description,
+indicator,
 `year`,
 `value`,
 target_unit_id,
@@ -150,6 +151,7 @@ id_phase
 ) SELECT 
 
 t2.description,
+t2.indicator,
 t2.`year`,
 t2.`value`,
 t2.target_unit_id,

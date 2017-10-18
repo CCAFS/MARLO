@@ -4,24 +4,24 @@ var $fundingType;
 $(document).ready(init);
 
 function init() {
-  
+
   // Setting constants
   W1W2 = 1;
   ON_GOING = 2;
-  
+
   $fundingType = $(".type");
-  
+
   // Check if (crp_funding_source_extension_date) parameter is true
   allowExtensionDate = $('.allowExtensionDate').text() === "true";
-  
+
   // Set Dateformat
   dateFormat = "yy-mm-dd";
-  
+
   // Dropdown
   $('.dropdown-toggle').on('show.bs.dropdown', function () {
     console.log('dropdown-toggle');
   })
-  
+
   // Check region option
   $("#regionList").find(".region").each(
       function(i,e) {
@@ -30,17 +30,17 @@ function init() {
                 "option[value='" + $(e).find("input.rId").val() + "-" + $(e).find("input.regionScope").val() + "']");
         option.prop('disabled', true);
       });
-  
+
   // Original Donor
   $(".donor").on("change", function() {
     var $option = $(this).find("option:selected");
     var selectedValue = $option.val();
     var count = 0;
-    
+
     if(selectedValue == "-1"){
       return
     }
-    
+
     // Count repeated donors
     $('select.donor').each(function(i, e){
       if (e.value == selectedValue) {
@@ -101,7 +101,7 @@ function init() {
     $option.remove();
     $(this).trigger("change.select2");
   });
-  
+
   // Remove country item
   $(".removeCountry").on("click", removeCountry);
 
@@ -115,7 +115,7 @@ function init() {
       $('#regionSelect').select2();
     }
   });
-  
+
   // Remove region item
   $(".removeRegion").on("click", removeRegion);
 
@@ -139,7 +139,7 @@ function init() {
   $("select.type").select2({
     templateResult: budgetTypeTemplate
   });
-  
+
   // When select center as Funding Window
   var lastDonor = -1;
   $("select.type").on("change", function() {
@@ -213,7 +213,7 @@ function init() {
       $(".regionsBox").show("slow");
     }
   });
-  
+
   // Check total grant amount
   $('.currencyInput').on('keyup', keyupBudgetYear).trigger('keyup');
 }
@@ -228,7 +228,7 @@ function keyupBudgetYear(){
     total = total + removeCurrencyFormat(e.value || "0");
   });
   $('#grantTotalAmount .remaining').text(setCurrencyFormat(grantAmount - total));
-  
+
   // Validate total of agreement and budget type
   if (grantAmount < total){
     $('#grantTotalAmount').addClass('fieldError').animateCss('shake');
@@ -239,7 +239,7 @@ function keyupBudgetYear(){
 
 /**
  * Check Agreement status
- * 
+ *
  * @param {number} typeID - Funding budget type
  */
 function onChangeFundingType(typeID) {
@@ -271,7 +271,7 @@ function onChangeFundingType(typeID) {
 
 /**
  * This function initialize the contact person auto complete
- * 
+ *
  * @returns
  */
 function addContactAutoComplete() {
@@ -309,7 +309,7 @@ function addContactAutoComplete() {
 
 /**
  * Add a new lead partner element function
- * 
+ *
  * @param option means an option tag from the select
  * @returns
  */
@@ -353,7 +353,7 @@ function addLeadPartner(option) {
 
 /**
  * Remove lead partner function
- * 
+ *
  * @returns
  */
 function removeLeadPartner() {
@@ -375,7 +375,7 @@ function removeLeadPartner() {
 
 /**
  * Update indexes for "Managing partners" of funding source
- * 
+ *
  * @param $list List of lead partners
  * @returns
  */
@@ -394,12 +394,12 @@ function updateLeadPartner($list) {
 
 /**
  * Check if there is any lead partners and show a text message
- * 
+ *
  * @param block Container with lead partners elements
  * @returns
  */
 function checkLeadPartnerItems(block) {
-  
+
   // Check if CIAT is in the partners list
   var CIAT_ID = 46;
   console.log(">> "+$('input.fId').val());
@@ -413,9 +413,9 @@ function checkLeadPartnerItems(block) {
       unSyncFundingSource();
     }
   }
-  
+
   refreshYears();
-  
+
   var items = $(block).find('.leadPartners').length;
   if(items == 0) {
     $(block).parent().find('p.emptyText').fadeIn();
@@ -426,7 +426,7 @@ function checkLeadPartnerItems(block) {
 
 /**
  * Add a new country to the Funding source locations
- * 
+ *
  * @param countryISO e.g CO
  * @param countryName e.g Colombia
  * @returns
@@ -582,14 +582,14 @@ function checkRegionList(block) {
 
 /**
  * Set the JQuery UI Datepicker plugin for start, end and extension dates
- * 
+ *
  * @param start
  * @param end
  * @param extensionDate
  * @returns
  */
 function settingDate(start,end,extensionDate) {
-  
+
   from = $(start).datepicker({
       dateFormat: dateFormat,
       minDate: new Date(MIN_DATE),
@@ -621,7 +621,7 @@ function settingDate(start,end,extensionDate) {
       refreshYears();
     }
   });
-  
+
   to = $(end).datepicker({
       dateFormat: dateFormat,
       minDate: new Date($(start).val()) || new Date(MIN_DATE),
@@ -682,7 +682,7 @@ function settingDate(start,end,extensionDate) {
   }).on("change", function() {
     // The change event is used for Sync
     if(this.value){
-      $(this).parent().find('.dateLabel').html(getDateLabel(this));      
+      $(this).parent().find('.dateLabel').html(getDateLabel(this));
     }
     refreshYears();
   }).on("click", function() {
@@ -691,7 +691,7 @@ function settingDate(start,end,extensionDate) {
        refreshYears();
     }
   });
-  
+
   // Event when a datelabel is clicked
   $('.dateLabel').on('click', function(){
     if(!isSynced) {
@@ -707,7 +707,7 @@ function settingDate(start,end,extensionDate) {
       refreshYears();
     }
   });
-  
+
   // Activate tab default
   if(!$('.budgetByYears .nav-tabs li.active').exists()) {
     $('.budgetByYears .nav-tabs li').last().addClass('active');
@@ -717,7 +717,7 @@ function settingDate(start,end,extensionDate) {
 
 /**
  * Check for budget conflicts, date cannot be changed as this funding source has at least one budget allocation
- * 
+ *
  * @param lowEnd
  * @param highEnd
  * @returns
@@ -759,14 +759,14 @@ function budgetsConflicts(lowEnd,highEnd) {
  */
 function refreshYears() {
   var startYear, endYear, years;
-  
+
   startYear = (from.val().split('-')[0]) || currentCycleYear;
   if(allowExtensionDate){
     endYear = (extension.val().split('-')[0]) || (to.val().split('-')[0]) || startYear;
   }else{
     endYear = (to.val().split('-')[0]) || startYear;
   }
-  
+
   var years = [];
 
   // Clear tabs & content
@@ -797,7 +797,7 @@ function refreshYears() {
       content += '</div>';
       content += '</div>';
       content += '</div>';
-      
+
       var $content = $(content);
       // Set indexes
       $content.setNameIndexes(1, index);
@@ -806,10 +806,10 @@ function refreshYears() {
 
       // Set currency format
       $content.find('input.currencyInput').currencyInput();
-      
+
       // Set Budget currency event that check the total grant amount
       $content.find('.currencyInput').on('keyup', keyupBudgetYear);
-      
+
     } else {
       // Set indexes
       $('#fundingYear-' + startYear).setNameIndexes(1, index);
@@ -838,7 +838,7 @@ function refreshYears() {
 
 /**
  * Get date in format
- * 
+ *
  * @param element
  * @returns
  */
@@ -854,7 +854,7 @@ function getDate(element) {
 
 /**
  * Get date in MM yy format
- * 
+ *
  * @param element - An input with a Date value
  * @returns String e.g. May 2017
  */
@@ -895,7 +895,7 @@ function addDataTable() {
 
 /**
  * Get from the back-end a list of institutions
- * 
+ *
  * @param budgetTypeID
  * @returns
  */
