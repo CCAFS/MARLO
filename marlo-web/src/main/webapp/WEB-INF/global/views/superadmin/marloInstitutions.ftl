@@ -222,7 +222,7 @@
           [#local customName = "countryOfficePOJO"]
           
           [#-- Hidden inputs --]
-          <input type="hidden" name="${customName}.institution.id" value="${partner.institution.id}"/>
+          <input type="hidden" class="institutionID" name="${customName}.institution.id" value="${partner.institution.id}"/>
           
           [#-- Partner name --]
           <div class="requestInfo">

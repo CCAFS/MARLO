@@ -95,12 +95,17 @@ $(document).ready(function() {
   $('a.officesRequest').on('click', function(e) {
     e.preventDefault();
     var $request = $(this).parents('.officesRequestItem')
-    var formData = $request.find('form').serializeObject();
-    var action = $(this).classParam('action'); 
-    console.log(formData);
-    
     var countriesSelected = $request.find('.officeRequest:checked');
-    // Validate if there are contries selected
+    
+    var formData = {
+      'countryOfficePOJO.institution.id': $request.find('input.institutionID').val(),
+      'countryOfficePOJO.ids' : countriesSelected.map(function() {return this.value;}).get().join()
+    }
+    console.log(formData);
+    var action = $(this).classParam('action'); 
+    
+
+    // Validate if there are countries selected
     if(countriesSelected.length == 0){
       var notyOptions = jQuery.extend({}, notyDefaultOptions);
       notyOptions.text = 'Please select at least one country';
