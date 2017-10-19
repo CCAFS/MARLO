@@ -101,6 +101,29 @@
       <interceptor-ref name="crpAdminStack" />
       <result name="input">/WEB-INF/crp/views/admin/marloInstitutions.ftl</result>
     </action>
+    
+    <action name="addPartner" method="addPartner"
+      class="org.cgiar.ccafs.marlo.action.superadmin.PartnerRequestAction">
+      <interceptor-ref name="superAdminStack" />
+      <result name="input">/WEB-INF/global/views/superadmin/marloInstitutions.ftl
+      </result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">marloInstitutions</param>
+        <param name="edit">true</param>
+      </result>
+    </action>
+    
+    <action name="acceptOfficesRequest" method="addCountryOffices"
+      class="org.cgiar.ccafs.marlo.action.superadmin.PartnerRequestAction">
+      <interceptor-ref name="superAdminStack" />
+      <result name="input">/WEB-INF/global/views/superadmin/marloInstitutions.ftl
+      </result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">marloInstitutions</param>
+        <param name="edit">true</param>
+      </result>
+    </action>
+    <!-- End Partners & Country offices requested -->
 
 	</package>
 
