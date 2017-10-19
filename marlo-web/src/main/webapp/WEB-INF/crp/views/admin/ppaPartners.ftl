@@ -2,7 +2,8 @@
 [#assign title = "PPA Partners" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = [ 
+[#assign customJS = [
+  "${baseUrl}/global/js/usersManagement.js", 
   "${baseUrlMedia}/js/admin/ppaPartners.js",
   "${baseUrl}/global/js/fieldsValidation.js" 
   ] 
@@ -74,6 +75,15 @@
   </div>
 </section>
 
+[#-- Search users Interface --]
+[#import "/WEB-INF/global/macros/usersPopup.ftl" as usersForm/]
+[@usersForm.searchUsers/]
+
+<ul style="display:none">
+  [#-- User template --]
+  [@userItem element={} index=-1 name="loggedCrp.crpInstitutionsPartners[-1].contactPoints" template=true /]
+</ul>
+
 [#-- Institutions array --]
 <ul style="display:none">
 [#list institutions as institution]
@@ -89,19 +99,19 @@
 
 [#macro intitutionMacro ppaPartner index=0 isTemplate=false]
   [#local customName = "loggedCrp.crpInstitutionsPartners[${index}]"]
-  <div id="institution-${isTemplate?string('template','')}" class="institution borderBox" style="display:${isTemplate?string('none','block')}">
+  <div id="institution-${isTemplate?string('template',index)}" class="institution ppaPartner borderBox" style="display:${isTemplate?string('none','block')}">
     [#-- Hidden inputs --]
     <input class="institutionId" type="hidden" name="${customName}.institution.id" value="${(ppaPartner.institution.id)!'null'}"/>
     <input class="id" type="hidden" name="${customName}.id" value="${(ppaPartner.id)!}"/>
     [#-- Remove --]
-    [#if editable && ppaPartner?hasContent && action.canBeDeleted(ppaPartner.id,ppaPartner.class.name) ]
-      <div class="removeIcon delete" title="Remove"></div>
+    [#if (ppaPartner?hasContent && action.canBeDeleted(ppaPartner.id,ppaPartner.class.name)) || !ppaPartner?hasContent ]
+      <div class="removeLink"><div class="delete removeElement removeLink" title="Remove"></div></div>
+    [#else]
+      <div class="removeLink"><div class="removeElement removeLink disable" title="Cannot be removed"></div></div>
     [/#if]
-    [#if  !ppaPartner?hasContent]
-      <div class="removeIcon delete" title="Remove"></div>
-    [/#if]
+    
     [#-- Title --]
-    <h5 class="title">${(ppaPartner.institution.composedName)!'Null'} </h5>
+    <h5 class="title sectionSubTitle">${(ppaPartner.institution.composedName)!'Null'} </h5>
     
     [#-- Contact Points --]
     <label for="">Contact Points:</label>
@@ -115,7 +125,6 @@
           [/#list]
         [/#if]
         </ul>
-        <p class="text-center usersMessage" style="display:${(ppaPartner.contactPoints??)?string('none','block')}">No Contact points assigned.</p>
       </div>
       [#-- Add person Button --]
       [#if editable]

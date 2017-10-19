@@ -17,6 +17,9 @@ function init() {
 }
 
 function attachEvents() {
+  
+  // Add User - Override function from userManagement.js
+  addUser = addUserItem;
 
   // Remove partner item
   $(".delete").on('click', removePartner);
@@ -70,7 +73,29 @@ function removePartner() {
 // Update index and position of property name
 function updateIndex() {
   $(partnerContent).find('.institution').each(function(i,item) {
-    $(item).find('.institutionId').attr('name', 'loggedCrp.crpInstitutionsPartners[' + i + '].institution.id');
-    $(item).find('.id').attr('name', 'loggedCrp.crpInstitutionsPartners[' + i + '].id');
+    $(item).setNameIndexes(1, i);
+    
+    $(item).find('.userItem').each(function(ui,user){
+      $(user).setNameIndexes(2, ui);
+    });
   });
+}
+
+function addUserItem(composedName,userId) {
+  $usersList = $elementSelected.parents('.ppaPartner').find(".items-list");
+  var $li = $("#user-template").clone(true).removeAttr("id");
+  var item = {
+      name: escapeHtml(composedName),
+      id: userId,
+      type: $elementSelected.parents('.usersBlock').find('.usersType').text(),
+      role: $elementSelected.parents('.usersBlock').find('.usersRole').text()
+  }
+  $li.find('.name').html(item.name);
+  $li.find('.user').val(item.id);
+
+  $usersList.find("ul").append($li);
+  $li.show('slow');
+  
+  updateIndex();
+  dialog.dialog("close");
 }

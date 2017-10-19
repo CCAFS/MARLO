@@ -814,6 +814,10 @@ img.icon {
   cursor: pointer;
 }
 
+.removeElement.disable {
+  opacity:0.4;
+}
+
 .removeElement.sm {
   padding: 10px 11px;
 }
