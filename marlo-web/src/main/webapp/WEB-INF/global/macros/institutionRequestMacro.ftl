@@ -122,18 +122,16 @@
             </div>
             
             [#-- Action --]
-          <div class="btn-group pull-right" role="group" aria-label="..."">
-            [#-- Accept --]
-            <a class="btn btn-success btn-sm officesRequest action-acceptOfficesRequest.do" href="#">
-              <span class="glyphicon glyphicon-ok"></span> Accept selected
-            </a>
-            [#-- Reject --]
-            <a class="btn btn-danger btn-sm rejectOfficeRequest institutionOfficeRequestId-${partner.institution.id}" data-toggle="modal" data-target="#rejectOfficeRequest">
-              <span class="glyphicon glyphicon-remove"></span>  Reject selected
-            </a>
-            
-            
-          </div>
+            <div class="btn-group pull-right" role="group" aria-label="..."">
+              [#-- Accept --]
+              <a class="btn btn-success btn-sm acceptOfficesRequest institutionOfficeRequestId-${partner.institution.id}" href="#">
+                <span class="glyphicon glyphicon-ok"></span> Accept selected
+              </a>
+              [#-- Reject --]
+              <a class="btn btn-danger btn-sm openRejectOfficeRequest institutionOfficeRequestId-${partner.institution.id}" data-toggle="modal" data-target="#rejectOfficeRequest">
+                <span class="glyphicon glyphicon-remove"></span>  Reject selected
+              </a>
+            </div>
             
             <div class="form-group">
               [#-- Country Offices Request --]

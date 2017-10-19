@@ -41,7 +41,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> 
-        <a class="btn btn-danger btn-sm officesRequest action-rejectOfficesRequest.do" href="#">
+        <a class="btn btn-danger btn-sm rejectOfficesRequest" href="#">
           <span class="glyphicon glyphicon-remove"></span> Reject selected
         </a>
         
