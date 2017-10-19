@@ -23,6 +23,9 @@ function attachEvents() {
 
   // Remove partner item
   $(".delete").on('click', removePartner);
+  
+  // Remove user item
+  $(".remove-userItem").on('click', removeUser);
 
   
   // Getting event of Select
@@ -66,6 +69,14 @@ function removePartner() {
   var $institution = $(this).parents(".institution");
   $institution.hide(500, function() {
     $institution.remove();
+    updateIndex();
+  });
+}
+
+function removeUser() {
+  var $user = $(this).parents(".userItem");
+  $user.hide(500, function() {
+    $user.remove();
     updateIndex();
   });
 }
