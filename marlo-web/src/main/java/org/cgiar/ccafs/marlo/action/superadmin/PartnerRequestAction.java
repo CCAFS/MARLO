@@ -16,6 +16,7 @@
 package org.cgiar.ccafs.marlo.action.superadmin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionTypeManager;
@@ -36,10 +37,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,6 +73,9 @@ public class PartnerRequestAction extends BaseAction {
   private List<PartnerRequest> partners;
   private long requestID;
   private SendMailS sendMail;
+  // Justification for reject office(s)
+  private String justification;
+
   /**
    * CountryOffices selected
    * 
@@ -93,10 +99,9 @@ public class PartnerRequestAction extends BaseAction {
     this.sendMail = sendMail;
   }
 
-
   /**
    * Add a list of office request and send an email to the users who requested the Countries (The full list of
-   * institutions is send to each user)
+   * locations is send to each user)
    * 
    * @author avalencia - CCAFS
    * @date Oct 18, 2017
@@ -124,7 +129,6 @@ public class PartnerRequestAction extends BaseAction {
             new InstitutionLocation(partnerRequest.getInstitution(), partnerRequest.getLocElement(), false);
           institutionLocationManager.saveInstitutionLocation(institutionLocation);
         } else {
-          // TODO: Send reject message or error message?
           String warningMessage = "The InstitutionLocation ID:"
             + institutionLocationManager
               .findByLocation(partnerRequest.getLocElement().getId(), partnerRequest.getInstitution().getId()).getId()
@@ -178,22 +182,28 @@ public class PartnerRequestAction extends BaseAction {
     return SUCCESS;
   }
 
-
   public List<LocElement> getCountriesList() {
     return countriesList;
   }
-
 
   public CountryOfficePOJO getCountryOfficePOJO() {
     return countryOfficePOJO;
   }
 
+
   public List<CountryOfficePOJO> getCountryOfficesList() {
     return countryOfficesList;
   }
 
+
   public List<InstitutionType> getInstitutionTypesList() {
     return institutionTypesList;
+  }
+
+
+  @Override
+  public String getJustification() {
+    return justification;
   }
 
   public List<PartnerRequest> getPartners() {
@@ -203,7 +213,6 @@ public class PartnerRequestAction extends BaseAction {
   public long getRequestID() {
     return requestID;
   }
-
 
   /**
    * @author avalencia - CCAFS
@@ -249,6 +258,46 @@ public class PartnerRequestAction extends BaseAction {
     countriesList.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
   }
 
+  /**
+   * Reject a list of office requests and send an email to the users who requested the Countries (The full list of
+   * locations is send to each user)
+   * 
+   * @author avalencia - CCAFS
+   * @date Oct 19, 2017
+   * @time 11:11:19 AM
+   * @return
+   */
+  public String rejectCountryOffices() {
+    try {
+      Map<String, Object> parameters = this.getParameters();
+      justification = StringUtils.trim(((String[]) parameters.get(APConstants.JUSTIFICATION_REQUEST))[0]);
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+      justification = "";
+    }
+
+    String[] partnerRequestIds = countryOfficePOJO.getIds().split(",");
+    if (countryOfficePOJO != null) {
+      Institution institution = institutionManager.getInstitutionById(countryOfficePOJO.getInstitution().getId());
+      Set<User> users = new HashSet<User>();
+      Set<LocElement> locElements = new HashSet<LocElement>();
+      for (String partnerRequestId : partnerRequestIds) {
+        PartnerRequest partnerRequest = partnerRequestManager.getPartnerRequestById(Long.valueOf(partnerRequestId));
+        // Store the list of user to send the email
+        users.add(partnerRequest.getCreatedBy());
+        locElements.add(partnerRequest.getLocElement());
+        partnerRequest.setAcepted(new Boolean(false));
+        partnerRequest.setActive(false);
+        partnerRequest.setRejectedBy(this.getCurrentUser());
+        partnerRequest.setRejectJustification(justification);
+        partnerRequestManager.savePartnerRequest(partnerRequest);
+      }
+      // Send notification email
+      this.sendRejectOfficeNotificationEmail(users, locElements, institution);
+    }
+    return SUCCESS;
+  }
+
   private void sendAcceptedNotficationEmail(PartnerRequest partnerRequest) {
     String toEmail = "";
     // ToEmail: User who requested the partner
@@ -275,7 +324,6 @@ public class PartnerRequestAction extends BaseAction {
     message.append(this.getText("email.bye"));
     sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
   }
-
 
   /**
    * Sends an email to all users who requested the office(s) for an specific institution
@@ -321,13 +369,54 @@ public class PartnerRequestAction extends BaseAction {
     }
   }
 
+  private void sendRejectOfficeNotificationEmail(Set<User> users, Set<LocElement> locElements,
+    Institution institution) {
+    // CC Email: User who accepted the request
+    String ccEmail = this.getCurrentUser().getEmail();
+
+    // BBC: Our gmail notification email.
+    String bbcEmails = this.config.getEmailNotification();
+
+    // subject
+    String subject =
+      this.getText("marloRequestInstitution.office.reject.email.subject", new String[] {institution.getComposedName()});
+    // Prepare loc elements to send in html format
+    String loc_elements = "";
+    for (LocElement locElement : locElements) {
+      loc_elements += "<li>" + locElement.getName() + "</li>";
+    }
+    // Send message to the users who requested the office(s)
+    for (User user : users) {
+      String toEmail = "";
+      // ToEmail: User who requested the partner
+      toEmail = user.getEmail();
+      // Building the email message
+      StringBuilder message = new StringBuilder();
+      message.append(this.getText("email.dear", new String[] {user.getFirstName()}));
+
+      message.append(
+        this.getText("marloRequestInstitution.office.reject.email", new String[] {loc_elements, justification}));
+
+      message.append(this.getText("email.support.noCrpAdmins"));
+      message.append(this.getText("email.getStarted"));
+      message.append(this.getText("email.bye"));
+      sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+    }
+  }
+
+
   public void setCountryOfficePOJO(CountryOfficePOJO countryOfficePOJO) {
     this.countryOfficePOJO = countryOfficePOJO;
   }
 
-
   public void setCountryOfficesList(List<CountryOfficePOJO> countryOfficesList) {
     this.countryOfficesList = countryOfficesList;
+  }
+
+
+  @Override
+  public void setJustification(String justification) {
+    this.justification = justification;
   }
 
 
