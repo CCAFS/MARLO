@@ -53,13 +53,14 @@ $(document).ready(function() {
     var name = $('input[name="name"]').val();
     var typeValue = $('select#type').val();
     var countryValue = $('select#country').val();
-    var modificationJustification = $('textarea[name="modificationJustification"]').val(); 
-    
-    if(!name ||!modificationJustification || (typeValue == "-1") || (countryValue == "-1")){
+    var modificationJustification = $('textarea[name="modificationJustification"]').val();
+
+    if(!name || !modificationJustification || (typeValue == "-1") || (countryValue == "-1")) {
       var notyOptions = jQuery.extend({}, notyDefaultOptions);
       notyOptions.text = 'The required(*) fields needs to be filled';
       noty(notyOptions);
       return
+
     }
 
     $.ajax({
@@ -90,48 +91,50 @@ $(document).ready(function() {
     $request.find('.editForm').slideUp();
     $request.find('.btn-group').slideDown();
   });
-  
+
   // Accept office request
   $('a.officesRequest').on('click', function(e) {
     e.preventDefault();
     var $request = $(this).parents('.officesRequestItem')
     var countriesSelected = $request.find('.officeRequest:checked');
-    
+
     var formData = {
-      'countryOfficePOJO.institution.id': $request.find('input.institutionID').val(),
-      'countryOfficePOJO.ids' : countriesSelected.map(function() {return this.value;}).get().join()
+        'countryOfficePOJO.institution.id': $request.find('input.institutionID').val(),
+        'countryOfficePOJO.ids': countriesSelected.map(function() {
+          return this.value;
+        }).get().join()
     }
     console.log(formData);
-    var action = $(this).classParam('action'); 
-    
+    var action = $(this).classParam('action');
 
     // Validate if there are countries selected
-    if(countriesSelected.length == 0){
+    if(countriesSelected.length == 0) {
       var notyOptions = jQuery.extend({}, notyDefaultOptions);
       notyOptions.text = 'Please select at least one country';
       noty(notyOptions);
       return
+
     }
-    
+
     $.ajax({
-      url: baseURL + '/'+ action,
-      data: formData,
-      beforeSend: function() {
-        $request.find('.loading').fadeIn();
-      },
-      success: function(data) {
-        if(data.success) {
-          location.reload();
+        url: baseURL + '/superadmin/' + action,
+        data: formData,
+        beforeSend: function() {
+          $request.find('.loading').fadeIn();
+        },
+        success: function(data) {
+          if(data.success) {
+            location.reload();
+          }
+        },
+        complete: function() {
+          $request.find('.loading').fadeOut();
         }
-      },
-      complete: function() {
-        $request.find('.loading').fadeOut();
-      }
-  });
+    });
   });
 
   findSameness();
-  
+
 });
 
 function findSameness() {

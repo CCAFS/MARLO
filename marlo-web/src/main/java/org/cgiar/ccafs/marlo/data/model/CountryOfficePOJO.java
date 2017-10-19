@@ -32,14 +32,25 @@ public class CountryOfficePOJO implements java.io.Serializable {
 
   private Institution institution;
   private List<PartnerRequest> partnerRequest;
+  /**
+   * Created to store the ids (separated by ,) of countryOffice selected
+   * 
+   * @author avalencia - CCAFS
+   * @date Oct 19, 2017
+   * @time 8:21:19 AM
+   */
+  private String ids;
+
 
   public CountryOfficePOJO() {
   }
+
 
   public CountryOfficePOJO(Institution institution, List<PartnerRequest> partnerRequest) {
     this.institution = institution;
     this.partnerRequest = partnerRequest;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -63,13 +74,20 @@ public class CountryOfficePOJO implements java.io.Serializable {
     return true;
   }
 
+  public String getIds() {
+    return ids;
+  }
+
+
   public Institution getInstitution() {
     return institution;
   }
 
+
   public List<PartnerRequest> getPartnerRequest() {
     return partnerRequest;
   }
+
 
   @Override
   public int hashCode() {
@@ -78,6 +96,12 @@ public class CountryOfficePOJO implements java.io.Serializable {
     result = prime * result + ((institution == null) ? 0 : institution.hashCode());
     return result;
   }
+
+
+  public void setIds(String ids) {
+    this.ids = ids;
+  }
+
 
   public void setInstitution(Institution institution) {
     this.institution = institution;
