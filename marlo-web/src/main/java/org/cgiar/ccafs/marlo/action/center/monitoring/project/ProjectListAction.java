@@ -134,6 +134,7 @@ public class ProjectListAction extends BaseAction {
     project.setDateCreated(new Date());
     project.setResearchProgram(selectedProgram);
     project.setProjectStatus(new CenterProjectStatus(new Long(2), true));
+    project.setAutoFill(false);
 
 
     CenterProjectCrosscutingTheme projectCrosscutingTheme = new CenterProjectCrosscutingTheme();

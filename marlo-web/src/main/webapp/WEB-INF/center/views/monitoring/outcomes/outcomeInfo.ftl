@@ -48,21 +48,24 @@
       [#-- Outcomes List --]
       <h3 class="headTitle text-center"></h3>
       <div class="simpleBox row">
-        <div class="col-md-4">
-          <label for="">Research topic:  </label>
-          <p>${selectedResearchTopic.researchTopic}</p>
-        </div>
-        <div class="col-md-6">
+        <div class="col-md-12">
           <label for="">Outcome statement:  </label>
           <p>${(outcome.description)!}</p>
           <input type="hidden" class="outcomeDescription" name="outcome.description" value="${(outcome.description)!}" />
         </div>
-        <div class="col-md-2">
+        <div class="col-md-12">
+          <label for="">Target Unit:  </label>
+          <p>${(outcome.targetUnit.name)!"Not Applicable"}</p>
+          <input type="hidden" class="outcomeTargetUnit" name="outcome.targetUnit" value="${(outcome.targetUnit.name)!"Not Applicable"}" />
+        </div>
+        [#if outcome.targetUnit?has_content]
+        <div class="col-md-12">
           <label for="">Expected for ${(outcome.targetYear)!"null"}:  </label>
           <p>${(outcome.value)!"Not Applicable"}</p>
           <input type="hidden" class="outcomeValue" name="outcome.value" value="${(outcome.value)!}" />
           <input type="hidden" class="outcomeTargetYear" name="outcome.targetYear" value="${(outcome.targetYear)!"null"}" />
         </div>
+        [/#if]
       </div> 
       [#-- View Porjects contributions --]
       <button type="button" class="btn btn-default btn-xs pull-right outcomeProjects-${outcome.id}" data-toggle="modal" data-target="#outcomeProjectsModal">
