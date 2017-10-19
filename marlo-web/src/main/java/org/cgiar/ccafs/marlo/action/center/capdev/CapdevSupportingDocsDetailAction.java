@@ -21,10 +21,14 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CapdevSuppDocsDocumentsManager;
 import org.cgiar.ccafs.marlo.data.manager.CapdevSupportingDocsManager;
 import org.cgiar.ccafs.marlo.data.manager.ICapacityDevelopmentService;
+import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableDocumentManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.model.CapacityDevelopment;
 import org.cgiar.ccafs.marlo.data.model.CapdevSuppDocsDocuments;
 import org.cgiar.ccafs.marlo.data.model.CapdevSupportingDocs;
+import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
+import org.cgiar.ccafs.marlo.data.model.CenterDeliverableDocument;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverableType;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.validation.center.capdev.CapdevSupportingDocsValidator;
@@ -51,31 +55,38 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
   private CapacityDevelopment capdev;
   private final CapdevSupportingDocsValidator validator;
   private CapdevSupportingDocs capdevSupportingDocs;
+  private CenterDeliverable supportingDoc;
   private List<CenterDeliverableType> deliverablesList;
   private List<CenterDeliverableType> deliverablesSubtypesList;
   private List<String> links;
   private List<Map<String, Object>> json;
-  private List<CapdevSuppDocsDocuments> documents;
-  private final CapdevSupportingDocsManager capdevsupportingDocsService;
-  private final CapdevSuppDocsDocumentsManager capdevSuppDocsDocumentsService;
-  private final ICenterDeliverableTypeManager centerDeliverableService;
-  private final ICapacityDevelopmentService capdevService;
+  private List<CenterDeliverableDocument> documents;
+  private CapdevSupportingDocsManager capdevsupportingDocsService;
+  private CapdevSuppDocsDocumentsManager capdevSuppDocsDocumentsService;
+  private ICenterDeliverableTypeManager centerDeliverableTypeService;
+  private ICapacityDevelopmentService capdevService;
+  private ICenterDeliverableManager centerDeliverableService;
+  private ICenterDeliverableDocumentManager centerDeliverableDocService;
 
   private String transaction;
   private final AuditLogManager auditLogService;
 
   @Inject
   public CapdevSupportingDocsDetailAction(APConfig config, CapdevSupportingDocsManager capdevsupportingDocsService,
-    ICenterDeliverableTypeManager centerDeliverableService,
+    ICenterDeliverableTypeManager centerDeliverableTypeService,
     CapdevSuppDocsDocumentsManager capdevSuppDocsDocumentsService, CapdevSupportingDocsValidator validator,
-    AuditLogManager auditLogService, ICapacityDevelopmentService capdevService) {
+    AuditLogManager auditLogService, ICapacityDevelopmentService capdevService,
+    ICenterDeliverableManager centerDeliverableService, ICenterDeliverableDocumentManager centerDeliverableDocService) {
     super(config);
     this.capdevsupportingDocsService = capdevsupportingDocsService;
-    this.centerDeliverableService = centerDeliverableService;
+    this.centerDeliverableTypeService = centerDeliverableTypeService;
     this.capdevSuppDocsDocumentsService = capdevSuppDocsDocumentsService;
     this.validator = validator;
     this.auditLogService = auditLogService;
     this.capdevService = capdevService;
+    this.centerDeliverableService = centerDeliverableService;
+    this.centerDeliverableDocService = centerDeliverableDocService;
+
   }
 
 
@@ -115,9 +126,11 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
     return deliverablesSubtypesList;
   }
 
-  public List<CapdevSuppDocsDocuments> getDocuments() {
+
+  public List<CenterDeliverableDocument> getDocuments() {
     return documents;
   }
+
 
   public List<Map<String, Object>> getJson() {
     return json;
@@ -126,6 +139,11 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
 
   public List<String> getLinks() {
     return links;
+  }
+
+
+  public CenterDeliverable getSupportingDoc() {
+    return supportingDoc;
   }
 
 
@@ -143,7 +161,7 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
   public void prepare() throws Exception {
     links = new ArrayList<>();
 
-    deliverablesList = new ArrayList<>(centerDeliverableService.findAll().stream()
+    deliverablesList = new ArrayList<>(centerDeliverableTypeService.findAll().stream()
       .filter(dl -> dl.isActive() && (dl.getDeliverableType() == null)).collect(Collectors.toList()));
     Collections.sort(deliverablesList, (ra1, ra2) -> ra1.getName().compareTo(ra2.getName()));
 
@@ -158,35 +176,35 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
 
       transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
-      final CapdevSupportingDocs history = (CapdevSupportingDocs) auditLogService.getHistory(transaction);
+      final CenterDeliverable history = (CenterDeliverable) auditLogService.getHistory(transaction);
 
       if (history != null) {
-        capdevSupportingDocs = history;
+        supportingDoc = history;
       } else {
         this.transaction = null;
         this.setTransaction("-1");
       }
     } else {
-      capdevSupportingDocs = capdevsupportingDocsService.getCapdevSupportingDocsById(supportingDocID);
+      // capdevSupportingDocs = capdevsupportingDocsService.getCapdevSupportingDocsById(supportingDocID);
+      supportingDoc = centerDeliverableService.getDeliverableById(supportingDocID);
     }
 
-    if (capdevSupportingDocs != null) {
+    if (supportingDoc != null) {
       capdev = capdevService.getCapacityDevelopmentById(capdevID);
-      if (capdevSupportingDocs.getCenterDeliverableType() != null) {
-        final Long deliverableTypeParentId = capdevSupportingDocs.getCenterDeliverableType().getId();
+      if (supportingDoc.getDeliverableType() != null) {
+        Long deliverableTypeParentId = supportingDoc.getDeliverableType().getId();
 
-        deliverablesSubtypesList = new ArrayList<>(centerDeliverableService.findAll().stream()
+        deliverablesSubtypesList = new ArrayList<>(centerDeliverableTypeService.findAll().stream()
           .filter(
             dt -> (dt.getDeliverableType() != null) && (dt.getDeliverableType().getId() == deliverableTypeParentId))
           .collect(Collectors.toList()));
         Collections.sort(deliverablesSubtypesList, (ra1, ra2) -> ra1.getName().compareTo(ra2.getName()));
       }
 
-      if (capdevSupportingDocs.getCapdevSuppDocsDocuments() != null) {
+      if (supportingDoc.getDeliverableDocuments() != null) {
 
-        documents = capdevSupportingDocs.getCapdevSuppDocsDocuments().stream().filter(d -> d.isActive())
-          .collect(Collectors.toList());
-
+        documents =
+          supportingDoc.getDeliverableDocuments().stream().filter(d -> d.isActive()).collect(Collectors.toList());
         Collections.sort(documents, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
       }
 
@@ -198,34 +216,31 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
 
   @Override
   public String save() {
-    final CapdevSupportingDocs capdevSupportingDocsDB =
-      capdevsupportingDocsService.getCapdevSupportingDocsById(supportingDocID);
-    capdevSupportingDocsDB.setTitle(capdevSupportingDocs.getTitle());
+    final CenterDeliverable supportingDocDB = centerDeliverableService.getDeliverableById(supportingDocID);
+    supportingDocDB.setName(supportingDoc.getName());
 
 
-    if (capdevSupportingDocs.getCenterDeliverableType().getId() != -1) {
-      capdevSupportingDocsDB.setCenterDeliverableType(capdevSupportingDocs.getCenterDeliverableType());
-      if (capdevSupportingDocs.getDeliverableSubtype().getId() != -1) {
-        capdevSupportingDocsDB.setDeliverableSubtype(capdevSupportingDocs.getDeliverableSubtype());
-      }
+    if (supportingDoc.getDeliverableType().getId() != -1) {
+      supportingDocDB.setDeliverableType(supportingDoc.getDeliverableType());
+
     } else {
-      capdevSupportingDocsDB.setCenterDeliverableType(null);
-      capdevSupportingDocsDB.setDeliverableSubtype(null);
+      supportingDocDB.setDeliverableType(null);
+
     }
-    capdevSupportingDocsDB.setPublicationDate(capdevSupportingDocs.getPublicationDate());
+    supportingDocDB.setStartDate(supportingDoc.getStartDate());
 
 
-    this.saveLinks(capdevSupportingDocsDB);
+    this.saveLinks(supportingDocDB);
 
     // Save Supporting Docs with History
     final List<String> relationsName = new ArrayList<>();
-    relationsName.add(APConstants.SUPPORTINGDOCS_DOCUMENTS_RALATION);
+    relationsName.add(APConstants.DELIVERABLE_DOCUMENT_RELATION);
 
 
-    capdevSupportingDocsDB.setActiveSince(new Date());
-    capdevSupportingDocsDB.setModifiedBy(this.getCurrentUser());
+    supportingDocDB.setActiveSince(new Date());
+    supportingDocDB.setModifiedBy(this.getCurrentUser());
 
-    capdevsupportingDocsService.saveCapdevSupportingDocs(capdevSupportingDocsDB, this.getActionName(), relationsName);
+    centerDeliverableService.saveDeliverable(supportingDocDB, this.getActionName(), relationsName);
 
 
     if (!this.getInvalidFields().isEmpty()) {
@@ -242,51 +257,52 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
   }
 
 
-  public void saveLinks(CapdevSupportingDocs capdevSupportingDocsDB) {
+  public void saveLinks(CenterDeliverable supportingDocDB) {
 
 
-    if ((capdevSupportingDocsDB.getCapdevSuppDocsDocuments() != null)
-      && (capdevSupportingDocsDB.getCapdevSuppDocsDocuments().size() > 0)) {
-      final List<CapdevSuppDocsDocuments> documentsDB = new ArrayList<>(capdevSupportingDocsDB
-        .getCapdevSuppDocsDocuments().stream().filter(d -> d.isActive()).collect(Collectors.toList()));
+    if ((supportingDocDB.getDeliverableDocuments() != null) && (supportingDocDB.getDeliverableDocuments().size() > 0)) {
+      List<CenterDeliverableDocument> documentsDB = new ArrayList<>(
+        supportingDocDB.getDeliverableDocuments().stream().filter(d -> d.isActive()).collect(Collectors.toList()));
 
-      for (final CapdevSuppDocsDocuments document : documentsDB) {
+      for (CenterDeliverableDocument document : documentsDB) {
         if (!documents.contains(document)) {
           // capdevSuppDocsDocumentsService.deleteCapdevSuppDocsDocuments(document.getId());
         }
       }
     }
 
-    if (!documents.isEmpty()) {
-      for (final CapdevSuppDocsDocuments document : documents) {
-        CapdevSuppDocsDocuments documentSave = null;
-        if (document.getId() == null) {
+    if (documents != null) {
+      if (!documents.isEmpty()) {
+        for (CenterDeliverableDocument document : documents) {
+          CenterDeliverableDocument documentSave = null;
+          if (document.getId() == null) {
 
-          documentSave = new CapdevSuppDocsDocuments();
-          documentSave.setActive(true);
-          documentSave.setActiveSince(new Date());
-          documentSave.setLink(document.getLink());
-          documentSave.setCapdevSupportingDocs(capdevSupportingDocsDB);
-          documentSave.setCreatedBy(this.getCurrentUser());
-          documentSave.setModifiedBy(this.getCurrentUser());
-          documentSave.setModificationJustification(null);
-          capdevSuppDocsDocumentsService.saveCapdevSuppDocsDocuments(documentSave);
-        } else {
-          boolean hasChanges = false;
-          final CapdevSuppDocsDocuments documentprevio =
-            capdevSuppDocsDocumentsService.getCapdevSuppDocsDocumentsById(document.getId());
-          if (!documentprevio.getLink().equals(document.getLink())) {
-            hasChanges = true;
-            documentprevio.setLink(document.getLink());
+            documentSave = new CenterDeliverableDocument();
+            documentSave.setActive(true);
+            documentSave.setActiveSince(new Date());
+            documentSave.setLink(document.getLink());
+            documentSave.setDeliverable(supportingDocDB);
+            documentSave.setCreatedBy(this.getCurrentUser());
+            documentSave.setModifiedBy(this.getCurrentUser());
+            documentSave.setModificationJustification(null);
+            centerDeliverableDocService.saveDeliverableDocument(documentSave);
+          } else {
+            boolean hasChanges = false;
+            final CenterDeliverableDocument documentprevio =
+              centerDeliverableDocService.getDeliverableDocumentById(document.getId());
+            if (!documentprevio.getLink().equals(document.getLink())) {
+              hasChanges = true;
+              documentprevio.setLink(document.getLink());
+            }
+
+            if (hasChanges) {
+              documentprevio.setActiveSince(new Date());
+              documentprevio.setModifiedBy(this.getCurrentUser());
+              documentprevio.setModificationJustification(null);
+              centerDeliverableDocService.saveDeliverableDocument(documentprevio);
+            }
+
           }
-
-          if (hasChanges) {
-            documentprevio.setActiveSince(new Date());
-            documentprevio.setModifiedBy(this.getCurrentUser());
-            documentprevio.setModificationJustification(null);
-            capdevSuppDocsDocumentsService.saveCapdevSuppDocsDocuments(documentprevio);
-          }
-
         }
       }
     }
@@ -320,7 +336,7 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
   }
 
 
-  public void setDocuments(List<CapdevSuppDocsDocuments> documents) {
+  public void setDocuments(List<CenterDeliverableDocument> documents) {
     this.documents = documents;
   }
 
@@ -332,6 +348,11 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
 
   public void setLinks(List<String> links) {
     this.links = links;
+  }
+
+
+  public void setSupportingDoc(CenterDeliverable supportingDoc) {
+    this.supportingDoc = supportingDoc;
   }
 
 
@@ -348,9 +369,7 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      validator.validate(this, capdevSupportingDocs, documents);
-
-
+      validator.validate(this, supportingDoc, documents);
     }
   }
 

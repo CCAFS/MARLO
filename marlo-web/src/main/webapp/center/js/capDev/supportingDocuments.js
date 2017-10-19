@@ -51,7 +51,7 @@ function block(){
   
   var type = $(".capdevDeliverableType").val();
   
-  if(type ==+ -1){
+  if(type == -1){
     $(".capdevDeliverableSubtype").attr('disabled', 'disabled');
   }
 

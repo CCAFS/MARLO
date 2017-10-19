@@ -24,10 +24,6 @@
 
 
 
-<script src="${baseUrl}/bower_components/jquery/dist/jquery.min.js"></script>
-<!-- <script src="${baseUrlMedia}/js/capDev/capacityDevelopment.js"></script>
-<script src="${baseUrlMedia}/js/capDev/supportingDocuments.js"></script> -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.7.7/xlsx.core.min.js"></script>
 
 
 <div class="container"> 
@@ -93,26 +89,29 @@
 				<!-- supporting documents -->
 				<div class="form-group row ">
 					<div class="col-md-12">
-						[@customForm.input name="capdevSupportingDocs.title" i18nkey="capdev.supportingDocs.title" type="text" help="" editable=editable   required=true /]
+						[@customForm.input name="supportingDoc.name" i18nkey="capdev.supportingDocs.title" type="text" help="" editable=editable   required=true /]
 					</div>
 					
 				</div>
 				<div class="form-group row ">
 					<!-- supporting docs type -->
 					<div class="col-md-6">
-						 [@customForm.select name="capdevSupportingDocs.centerDeliverableType.id" listName="deliverablesList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.supportingDocs.type" className="capdevDeliverableType" placeholder="capdev.select" required=true editable=editable/]
+						 [@customForm.select name="supportingDoc.deliverableType.deliverableType.id" listName="deliverablesList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.supportingDocs.type" className="capdevDeliverableType" placeholder="capdev.select" required=true editable=editable/]
 					</div>
 					<!-- supporting docs subtypes -->
 					<div class="col-md-6">
-						[@customForm.select name="capdevSupportingDocs.deliverableSubtype.id" listName="deliverablesSubtypesList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.supportingDocs.subType" className="capdevDeliverableSubtype" placeholder="capdev.select" required=true editable=editable/]
+						[@customForm.select name="supportingDoc.deliverableType.id"  listName="deliverablesSubtypesList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.supportingDocs.subType" className="capdevDeliverableSubtype" placeholder="capdev.select" required=true editable=editable/]
 					</div>
 				</div>
 
-				<div class="row">
-					<div class="col-md-12">
-						[@customForm.input name="capdevSupportingDocs.publicationDate" i18nkey="capdev.supportingDocs.publicationdate" type="text" help="" editable=editable required=true /]
-					</div>
-				</div>
+				<div class="form-group row">  
+	              <div class="col-md-6">
+	                [@customForm.input name="supportingDoc.startDate" i18nkey="Start date" type="text" disabled=!editable  required=true editable=editable /]
+	              </div> 
+	              <div class="col-md-6">
+	                [@customForm.input name="supportingDoc.endDate" i18nkey="End date" type="text" disabled=!editable required=false editable=editable /]
+	              </div>
+	            </div>
 					
 					
 
@@ -157,22 +156,18 @@
 				</div>
 
 
-				<input  type="hidden" name="capdevID" value="${capdevSupportingDocs.capacityDevelopment.id}" /> 
-				<input  type="hidden" name="supportingDocID" value="${capdevSupportingDocs.id}" /> 
+				<input  type="hidden" name="capdevID" value="${supportingDoc.capdev.id}" /> 
+				<input  type="hidden" name="supportingDocID" value="${supportingDoc.id}" /> 
 
 				<!-- buttons -->
-				[#assign recordsList = (action.getListLog(capdevSupportingDocs))!{} /]
-
-				
-
-
+				[#assign recordsList = (action.getListLog(supportingDoc))!{} /]
 					<div class="col-md-12">
 							<div class="buttons">
 
 					        	<div class="buttons-content">  
 					        		[#if recordsList?has_content]
 								      [#import "/WEB-INF/center//views/capDev/logHistory.ftl" as logHistory /]
-								      [@logHistory.logList list=recordsList itemName1="capdevID" itemName2="supportingDocID" itemId1=capdevSupportingDocs.capacityDevelopment.id itemId2=capdevSupportingDocs.id /]
+								      [@logHistory.logList list=recordsList itemName1="capdevID" itemName2="supportingDocID" itemId1=supportingDoc.capdev.id itemId2=supportingDoc.id /]
 								      <a href="" onclick="return false" class="form-button button-history"><span class="glyphicon glyphicon-glyphicon glyphicon-list-alt" aria-hidden="true"></span> [@s.text name="form.buttons.history" /]</a>
 								    [/#if] 
 

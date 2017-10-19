@@ -159,6 +159,13 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CapdevSupportingDocs" />
 		</set>
+		<set name="deliverables" table="center_deliverables" inverse="true" lazy="true"
+			fetch="select">
+			<key>
+				<column name="capdev_id"  />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterDeliverable" />
+		</set>
 		<set name="sectionStatuses" table="center_section_statuses"
 			inverse="true" lazy="true" fetch="select">
 			<key>

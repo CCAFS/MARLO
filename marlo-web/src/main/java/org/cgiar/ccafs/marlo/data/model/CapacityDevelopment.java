@@ -132,6 +132,7 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
   private Set<CapdevOutputs> capdevOutputs = new HashSet<CapdevOutputs>(0);
   private Set<CapdevPartners> capdevPartners = new HashSet<CapdevPartners>(0);
   private Set<CapdevSupportingDocs> capdevSupportingDocs = new HashSet<CapdevSupportingDocs>(0);
+  private Set<CenterDeliverable> deliverables = new HashSet<CenterDeliverable>(0);
   private Set<CenterSectionStatus> sectionStatuses = new HashSet<CenterSectionStatus>(0);
 
   public CapacityDevelopment() {
@@ -276,6 +277,10 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
     return this.ctLastName;
   }
 
+  public Set<CenterDeliverable> getDeliverables() {
+    return deliverables;
+  }
+
   public String getDisciplineSuggested() {
     return disciplineSuggested;
   }
@@ -323,11 +328,11 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
     return this.modificationJustification;
   }
 
+
   @Override
   public User getModifiedBy() {
     return modifiedBy;
   }
-
 
   public Integer getNumMen() {
     return numMen;
@@ -349,6 +354,7 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
     return otherDiscipline;
   }
 
+
   public String getOtherPartner() {
     return otherPartner;
   }
@@ -358,10 +364,10 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
     return otherTargetGroup;
   }
 
-
   public String getPartnerSuggested() {
     return partnerSuggested;
   }
+
 
   public CenterProject getProject() {
     return this.project;
@@ -520,6 +526,11 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
   }
 
 
+  public void setDeliverables(Set<CenterDeliverable> deliverables) {
+    this.deliverables = deliverables;
+  }
+
+
   public void setDisciplineSuggested(String disciplineSuggested) {
     this.disciplineSuggested = disciplineSuggested;
   }
@@ -614,7 +625,6 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
     this.researchArea = researchArea;
   }
 
-
   public void setResearchProgram(CenterProgram researchProgram) {
     this.researchProgram = researchProgram;
   }
@@ -623,6 +633,7 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
   public void setSectionStatuses(Set<CenterSectionStatus> sectionStatuses) {
     this.sectionStatuses = sectionStatuses;
   }
+
 
   public void setsGlobal(String sGlobal) {
     this.sGlobal = sGlobal;

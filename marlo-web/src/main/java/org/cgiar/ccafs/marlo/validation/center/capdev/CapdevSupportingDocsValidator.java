@@ -16,8 +16,8 @@
 package org.cgiar.ccafs.marlo.validation.center.capdev;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.data.model.CapdevSuppDocsDocuments;
-import org.cgiar.ccafs.marlo.data.model.CapdevSupportingDocs;
+import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
+import org.cgiar.ccafs.marlo.data.model.CenterDeliverableDocument;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
@@ -34,8 +34,7 @@ public class CapdevSupportingDocsValidator extends BaseValidator {
 
   }
 
-  public void validate(BaseAction baseAction, CapdevSupportingDocs capdevSupportingDocs,
-    List<CapdevSuppDocsDocuments> links) {
+  public void validate(BaseAction baseAction, CenterDeliverable supportingDoc, List<CenterDeliverableDocument> links) {
 
     baseAction.setInvalidFields(new HashMap<>());
 
@@ -43,24 +42,24 @@ public class CapdevSupportingDocsValidator extends BaseValidator {
       baseAction.addActionError(baseAction.getText("saving.fields.required"));
     }
 
-    this.validateSupportingDocs(baseAction, capdevSupportingDocs, links);
+    this.validateSupportingDocs(baseAction, supportingDoc, links);
   }
 
 
-  public void validateSupportingDocs(BaseAction baseAction, CapdevSupportingDocs capdevSupportingDocs,
-    List<CapdevSuppDocsDocuments> links) {
-    if (capdevSupportingDocs.getTitle().equalsIgnoreCase("")) {
+  public void validateSupportingDocs(BaseAction baseAction, CenterDeliverable supportingDoc,
+    List<CenterDeliverableDocument> links) {
+    if (supportingDoc.getName().equalsIgnoreCase("")) {
       this.addMessage(baseAction.getText("capdev.action.supportingDocs.title"));
-      baseAction.getInvalidFields().put("input-capdevSupportingDocs.title", InvalidFieldsMessages.EMPTYFIELD);
+      baseAction.getInvalidFields().put("input-supportingDoc.name", InvalidFieldsMessages.EMPTYFIELD);
     }
 
 
-    if (capdevSupportingDocs.getPublicationDate() == null) {
+    if (supportingDoc.getStartDate() == null) {
       this.addMessage(baseAction.getText("capdev.action.supportingDocs.publicationdate"));
-      baseAction.getInvalidFields().put("input-capdevSupportingDocs.publicationDate", InvalidFieldsMessages.EMPTYFIELD);
+      baseAction.getInvalidFields().put("input-supportingDoc.startDate", InvalidFieldsMessages.EMPTYFIELD);
     }
-    if (links.isEmpty() && capdevSupportingDocs.getCapdevSuppDocsDocuments().stream().filter(docs -> docs.isActive())
-      .collect(Collectors.toList()).isEmpty()) {
+    if (links.isEmpty() && (supportingDoc.getDeliverableDocuments().stream().filter(docs -> docs.isActive())
+      .collect(Collectors.toList()) == null)) {
       this.addMessage(baseAction.getText("capdev.action.supportingDocs.supportingDocs"));
       baseAction.getInvalidFields().put("list-capdev.supportingDocs",
         baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Supporting Documents"}));

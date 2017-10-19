@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.CapdevSupportingDocsManager;
 import org.cgiar.ccafs.marlo.data.manager.ICapacityDevelopmentService;
 import org.cgiar.ccafs.marlo.data.model.CapacityDevelopment;
 import org.cgiar.ccafs.marlo.data.model.CapdevSupportingDocs;
+import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
@@ -44,6 +45,8 @@ public class CapdevSupportingDocsAction extends BaseAction {
   private CapacityDevelopment capdev;
   private long capdevID;
   private long supportingDocID;
+  private List<CenterDeliverable> deliverables;
+
   private final CapdevSupportingDocsManager capdevsupportingDocsService;
   private final ICapacityDevelopmentService capdevService;
 
@@ -92,9 +95,15 @@ public class CapdevSupportingDocsAction extends BaseAction {
   }
 
 
+  public List<CenterDeliverable> getDeliverables() {
+    return deliverables;
+  }
+
+
   public long getSupportingDocID() {
     return supportingDocID;
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -110,8 +119,11 @@ public class CapdevSupportingDocsAction extends BaseAction {
       Collections.sort(documentesDB, (r1, r2) -> r1.getId().compareTo(r2.getId()));
       capdev.setCapdevSupportingDocs(new HashSet<CapdevSupportingDocs>(documentesDB));
     }
-  }
 
+    deliverables =
+      new ArrayList<>(capdev.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList()));
+    System.out.println(deliverables.size());
+  }
 
   public void setCapdev(CapacityDevelopment capdev) {
     this.capdev = capdev;
@@ -121,6 +133,12 @@ public class CapdevSupportingDocsAction extends BaseAction {
   public void setCapdevID(long capdevID) {
     this.capdevID = capdevID;
   }
+
+
+  public void setDeliverables(List<CenterDeliverable> deliverables) {
+    this.deliverables = deliverables;
+  }
+
 
   public void setSupportingDocID(long supportingDocID) {
     this.supportingDocID = supportingDocID;

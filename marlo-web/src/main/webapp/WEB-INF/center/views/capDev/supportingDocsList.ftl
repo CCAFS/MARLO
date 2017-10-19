@@ -20,14 +20,9 @@
 
 [#include "/WEB-INF/center/pages/header.ftl" /]
 [#include "/WEB-INF/center/pages/main-menu.ftl" /]
+[#import "/WEB-INF/center/views/capDev/supportingDocsListTemplate.ftl" as deliverableList /]
 
 
-
-
-
-<script src="${baseUrl}/bower_components/jquery/dist/jquery.min.js"></script>
-<!-- <script src="${baseUrlMedia}/js/capDev/capacityDevelopment.js"></script>
-<script src="${baseUrlMedia}/js/capDev/supportingDocuments.js"></script> -->
 
 
 
@@ -70,11 +65,11 @@
 				
 				<!-- supporting documents -->
 				
-				
+				<div>[@deliverableList.deliverableList deliverables=deliverables canValidate=true canEdit=true namespace="/capdev" defaultAction="${(centerSession)!}/detailSupportingDoc" /]</div>
 					
 
 					
-					[#if capdev.capdevSupportingDocs?has_content]
+					<!-- [#if capdev.capdevSupportingDocs?has_content]
 						<table class="supportDocsList" id="supportingDocs">
 							<thead>
 								<tr class="header">
@@ -133,8 +128,8 @@
 								
 							</tbody>
 						</table>
-					[/#if]
-						<p class="text-center inf" style="display:${(capdev.capdevSupportingDocs?has_content)?string('none','block')}">[@s.text name="capdev.notSupportDocuments" /]</p>	
+					[/#if] -->
+						<p class="text-center inf" style="display:${(deliverables?has_content)?string('none','block')}">[@s.text name="capdev.notSupportDocuments" /]</p>	
 
 					
 					[#if editable]
