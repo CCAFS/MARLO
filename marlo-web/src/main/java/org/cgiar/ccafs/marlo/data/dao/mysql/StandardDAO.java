@@ -17,7 +17,6 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.config.HibernateListener;
 import org.cgiar.ccafs.marlo.data.AuditLogInterceptor;
-import org.cgiar.ccafs.marlo.data.CloseSession;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 import org.cgiar.ccafs.marlo.data.model.Auditlog;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -452,9 +451,7 @@ public class StandardDAO {
     }
 
     Session session = sessionFactory.openSession();
-    CloseSession closeSession = new CloseSession();
-    closeSession.setSession(session);
-    // closeSession.start();
+
     return session;
 
   }
@@ -475,9 +472,7 @@ public class StandardDAO {
 
     Session session = sessionFactory.withOptions().interceptor(interceptor).openSession();
 
-    CloseSession closeSession = new CloseSession();
-    closeSession.setSession(session);
-    /// closeSession.start();
+
     return session;
 
 
