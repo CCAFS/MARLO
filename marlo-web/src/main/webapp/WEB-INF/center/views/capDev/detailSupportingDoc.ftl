@@ -60,7 +60,7 @@
 		      <p>[@s.text name="capdev.message.historyVersion" ]  
 		          [@s.param]<span>${capdev.modifiedBy.composedName?html}</span>[/@s.param]
 		          [@s.param]<span>${capdev.activeSince?datetime}</span>[/@s.param]
-		          [@s.param]<a href="[@s.url][@s.param name="capdevID" value=capdevID /][@s.param name="supportingDocID" value=supportingDocID /][@s.param name="edit" value="true"/][/@s.url]">here</a>[/@s.param]
+		          [@s.param]<a href="[@s.url][@s.param name="capdevID" value=capdevID /] [@s.param name="projectID" value=projectID /][@s.param name="supportingDocID" value=supportingDocID /][@s.param name="edit" value="true"/][/@s.url]">here</a>[/@s.param]
 		         [/@s.text]
 		      </p>
 		      [#-- Differences --]
@@ -76,7 +76,7 @@
 
 		<div class="col-md-12">
 			<div class="pull-right">
-				<a class="" href="[@s.url action='${centerSession}/supportingDocs'] [@s.param name='capdevID']${capdevID}[/@s.param] [@s.param name='edit' value="true" /][/@s.url]"><span class="glyphicon glyphicon-circle-arrow-left"></span>[@s.text name="capdev.supportingDocs.goBack" /]</a> 
+				<a class="" href="[@s.url action='${centerSession}/supportingDocs'] [@s.param name='capdevID']${capdevID}[/@s.param][@s.param name='projectID']${projectID}[/@s.param] [@s.param name='edit' value="true" /][/@s.url]"><span class="glyphicon glyphicon-circle-arrow-left"></span>[@s.text name="capdev.supportingDocs.goBack" /]</a> 
 			</div>
 		</div>
 		
@@ -174,7 +174,7 @@
 					        	<div class="buttons-content">  
 					        		[#if recordsList?has_content]
 								      [#import "/WEB-INF/center//views/capDev/logHistory.ftl" as logHistory /]
-								      [@logHistory.logList list=recordsList itemName1="capdevID" itemName2="supportingDocID" itemId1=capdevSupportingDocs.capacityDevelopment.id itemId2=capdevSupportingDocs.id /]
+								      [@logHistory.logList list=recordsList itemName1="capdevID" itemName2="supportingDocID"  itemName3="projectID" itemId1=capdevSupportingDocs.capacityDevelopment.id itemId2=capdevSupportingDocs.id itemId3=projectID/]
 								      <a href="" onclick="return false" class="form-button button-history"><span class="glyphicon glyphicon-glyphicon glyphicon-list-alt" aria-hidden="true"></span> [@s.text name="form.buttons.history" /]</a>
 								    [/#if] 
 
@@ -185,7 +185,7 @@
 
 						        	[#elseif canEdit]
 							        	<!-- Edit Button -->
-									    <a href="[@s.url][@s.param name="capdevID" value=capdevID /][@s.param name="supportingDocID" value=supportingDocID /][@s.param name="edit" value="true"/][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> [@s.text name="form.buttons.edit" /]</a>
+									    <a href="[@s.url][@s.param name="capdevID" value=capdevID /][@s.param name="projectID" value=projectID /][@s.param name="supportingDocID" value=supportingDocID /][@s.param name="edit" value="true"/][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> [@s.text name="form.buttons.edit" /]</a>
 						        	
 						        	[/#if]
 					        	</div>
