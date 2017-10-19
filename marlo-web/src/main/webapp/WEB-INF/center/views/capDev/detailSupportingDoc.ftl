@@ -158,6 +158,7 @@
 
 
 				<input  type="hidden" name="capdevID" value="${capdevSupportingDocs.capacityDevelopment.id}" /> 
+				<input  type="hidden" name="projectID" value="${projectID}" /> 
 				<input  type="hidden" name="supportingDocID" value="${capdevSupportingDocs.id}" /> 
 
 				<!-- buttons -->

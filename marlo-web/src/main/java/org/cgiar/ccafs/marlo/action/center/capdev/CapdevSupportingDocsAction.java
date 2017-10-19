@@ -112,11 +112,13 @@ public class CapdevSupportingDocsAction extends BaseAction {
       projectID = 0;
     }
     capdev = capdevService.getCapacityDevelopmentById(capdevID);
-    if (!capdev.getCapdevSupportingDocs().isEmpty()) {
-      final List<CapdevSupportingDocs> documentesDB = new ArrayList<>(
-        capdev.getCapdevSupportingDocs().stream().filter(d -> d.isActive()).collect(Collectors.toList()));
-      Collections.sort(documentesDB, (r1, r2) -> r1.getId().compareTo(r2.getId()));
-      capdev.setCapdevSupportingDocs(new HashSet<CapdevSupportingDocs>(documentesDB));
+    if (capdev.getCapdevSupportingDocs() != null) {
+      if (!capdev.getCapdevSupportingDocs().isEmpty()) {
+        final List<CapdevSupportingDocs> documentesDB = new ArrayList<>(
+          capdev.getCapdevSupportingDocs().stream().filter(d -> d.isActive()).collect(Collectors.toList()));
+        Collections.sort(documentesDB, (r1, r2) -> r1.getId().compareTo(r2.getId()));
+        capdev.setCapdevSupportingDocs(new HashSet<CapdevSupportingDocs>(documentesDB));
+      }
     }
   }
 

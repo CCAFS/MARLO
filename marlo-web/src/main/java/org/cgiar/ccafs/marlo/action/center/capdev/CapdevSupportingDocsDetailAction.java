@@ -48,6 +48,7 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
 
   private long supportingDocID;
   private long capdevID;
+  private long projectID;
   private CapacityDevelopment capdev;
   private final CapdevSupportingDocsValidator validator;
   private CapdevSupportingDocs capdevSupportingDocs;
@@ -129,6 +130,11 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
   }
 
 
+  public long getProjectID() {
+    return projectID;
+  }
+
+
   public long getSupportingDocID() {
     return supportingDocID;
   }
@@ -137,7 +143,6 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
   public String getTransaction() {
     return transaction;
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -150,9 +155,11 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
     try {
       supportingDocID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter("supportingDocID")));
       capdevID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CAPDEV_ID)));
+      projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_ID)));
     } catch (final Exception e) {
       supportingDocID = -1;
       capdevID = -1;
+      projectID = 0;
     }
 
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
@@ -195,6 +202,7 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
 
 
   }
+
 
   @Override
   public String save() {
@@ -332,6 +340,11 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
 
   public void setLinks(List<String> links) {
     this.links = links;
+  }
+
+
+  public void setProjectID(long projectID) {
+    this.projectID = projectID;
   }
 
 
