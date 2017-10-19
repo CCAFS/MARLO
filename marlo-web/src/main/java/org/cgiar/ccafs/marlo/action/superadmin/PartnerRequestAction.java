@@ -116,26 +116,31 @@ public class PartnerRequestAction extends BaseAction {
       Set<LocElement> locElements = new HashSet<LocElement>();
       for (String partnerRequestId : partnerRequestIds) {
         PartnerRequest partnerRequest = partnerRequestManager.getPartnerRequestById(Long.valueOf(partnerRequestId));
-        // Store the list of user to send the email
-        users.add(partnerRequest.getCreatedBy());
-        locElements.add(partnerRequest.getLocElement());
         partnerRequest.setAcepted(new Boolean(true));
         partnerRequest.setActive(false);
         partnerRequest.setModifiedBy(this.getCurrentUser());
-        InstitutionLocation institutionLocation = new InstitutionLocation();
-        if (institutionLocationManager.findByLocation(partnerRequest.getLocElement().getId(),
-          partnerRequest.getInstitution().getId()) == null) {
-          institutionLocation =
-            new InstitutionLocation(partnerRequest.getInstitution(), partnerRequest.getLocElement(), false);
-          institutionLocationManager.saveInstitutionLocation(institutionLocation);
+        // Store the list of user to send the email
+        users.add(partnerRequest.getCreatedBy());
+        // verify if the location has been added previously
+        if (locElements.contains(partnerRequest.getLocElement())) {
+          LOG.warn("LocElement duplicated: " + partnerRequest.getLocElement().getId() + " will be skipped");
         } else {
-          String warningMessage = "The InstitutionLocation ID:"
-            + institutionLocationManager
-              .findByLocation(partnerRequest.getLocElement().getId(), partnerRequest.getInstitution().getId()).getId()
-            + " already exist in the system.";
-          LOG.warn(warningMessage);
-          partnerRequest.setAcepted(new Boolean(false));
-          partnerRequest.setModificationJustification(warningMessage);
+          locElements.add(partnerRequest.getLocElement());
+          InstitutionLocation institutionLocation = new InstitutionLocation();
+          if (institutionLocationManager.findByLocation(partnerRequest.getLocElement().getId(),
+            partnerRequest.getInstitution().getId()) == null) {
+            institutionLocation =
+              new InstitutionLocation(partnerRequest.getInstitution(), partnerRequest.getLocElement(), false);
+            institutionLocationManager.saveInstitutionLocation(institutionLocation);
+          } else {
+            String warningMessage = "The InstitutionLocation ID:"
+              + institutionLocationManager
+                .findByLocation(partnerRequest.getLocElement().getId(), partnerRequest.getInstitution().getId()).getId()
+              + " already exist in the system.";
+            LOG.warn(warningMessage);
+            partnerRequest.setAcepted(new Boolean(false));
+            partnerRequest.setModificationJustification(warningMessage);
+          }
         }
         partnerRequestManager.savePartnerRequest(partnerRequest);
       }
