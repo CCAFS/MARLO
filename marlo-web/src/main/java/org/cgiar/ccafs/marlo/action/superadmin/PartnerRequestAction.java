@@ -73,8 +73,11 @@ public class PartnerRequestAction extends BaseAction {
   private List<PartnerRequest> partners;
   private long requestID;
   private SendMailS sendMail;
+  private boolean success;
+
   // Justification for reject office(s)
   private String justification;
+
 
   /**
    * CountryOffices selected
@@ -84,7 +87,6 @@ public class PartnerRequestAction extends BaseAction {
    * @time 8:22:32 AM
    */
   private CountryOfficePOJO countryOfficePOJO;
-
 
   @Inject
   public PartnerRequestAction(APConfig config, PartnerRequestManager partnerRequestManager,
@@ -109,43 +111,46 @@ public class PartnerRequestAction extends BaseAction {
    * @return
    */
   public String addCountryOffices() {
-    String[] partnerRequestIds = countryOfficePOJO.getIds().split(",");
-    if (countryOfficePOJO != null) {
-      Institution institution = institutionManager.getInstitutionById(countryOfficePOJO.getInstitution().getId());
-      Set<User> users = new HashSet<User>();
-      Set<LocElement> locElements = new HashSet<LocElement>();
-      for (String partnerRequestId : partnerRequestIds) {
-        PartnerRequest partnerRequest = partnerRequestManager.getPartnerRequestById(Long.valueOf(partnerRequestId));
-        partnerRequest.setAcepted(new Boolean(true));
-        partnerRequest.setActive(false);
-        partnerRequest.setModifiedBy(this.getCurrentUser());
-        // Store the list of user to send the email
-        users.add(partnerRequest.getCreatedBy());
-        // verify if the location has been added previously
-        if (locElements.contains(partnerRequest.getLocElement())) {
-          LOG.warn("LocElement duplicated: " + partnerRequest.getLocElement().getId() + " will be skipped");
-        } else {
-          locElements.add(partnerRequest.getLocElement());
-          InstitutionLocation institutionLocation = new InstitutionLocation();
-          if (institutionLocationManager.findByLocation(partnerRequest.getLocElement().getId(),
-            partnerRequest.getInstitution().getId()) == null) {
-            institutionLocation =
-              new InstitutionLocation(partnerRequest.getInstitution(), partnerRequest.getLocElement(), false);
-            institutionLocationManager.saveInstitutionLocation(institutionLocation);
+    try {
+      String[] partnerRequestIds = countryOfficePOJO.getIds().split(",");
+      if (countryOfficePOJO != null) {
+        Institution institution = institutionManager.getInstitutionById(countryOfficePOJO.getInstitution().getId());
+        Set<User> users = new HashSet<User>();
+        Set<LocElement> locElements = new HashSet<LocElement>();
+        for (String partnerRequestId : partnerRequestIds) {
+          PartnerRequest partnerRequest = partnerRequestManager.getPartnerRequestById(Long.valueOf(partnerRequestId));
+          partnerRequest.setAcepted(new Boolean(true));
+          partnerRequest.setActive(false);
+          partnerRequest.setModifiedBy(this.getCurrentUser());
+          // Store the list of user to send the email
+          users.add(partnerRequest.getCreatedBy());
+          // verify if the location has been added previously
+          if (locElements.contains(partnerRequest.getLocElement())) {
+            LOG.warn("LocElement duplicated: " + partnerRequest.getLocElement().getId() + " will be skipped");
           } else {
-            String warningMessage = "The InstitutionLocation ID:"
-              + institutionLocationManager
+            locElements.add(partnerRequest.getLocElement());
+            InstitutionLocation institutionLocation = new InstitutionLocation();
+            if (institutionLocationManager.findByLocation(partnerRequest.getLocElement().getId(),
+              partnerRequest.getInstitution().getId()) == null) {
+              institutionLocation =
+                new InstitutionLocation(partnerRequest.getInstitution(), partnerRequest.getLocElement(), false);
+              institutionLocationManager.saveInstitutionLocation(institutionLocation);
+            } else {
+              String warningMessage = "The InstitutionLocation ID:" + institutionLocationManager
                 .findByLocation(partnerRequest.getLocElement().getId(), partnerRequest.getInstitution().getId()).getId()
-              + " already exist in the system.";
-            LOG.warn(warningMessage);
-            partnerRequest.setAcepted(new Boolean(false));
-            partnerRequest.setModificationJustification(warningMessage);
+                + " already exist in the system.";
+              LOG.warn(warningMessage);
+              partnerRequest.setAcepted(new Boolean(false));
+              partnerRequest.setModificationJustification(warningMessage);
+            }
           }
+          partnerRequestManager.savePartnerRequest(partnerRequest);
         }
-        partnerRequestManager.savePartnerRequest(partnerRequest);
+        // Send notification email
+        this.sendAcceptedOfficeNotficationEmail(users, locElements, institution);
       }
-      // Send notification email
-      this.sendAcceptedOfficeNotficationEmail(users, locElements, institution);
+    } catch (Exception e) {
+      success = false;
     }
     return SUCCESS;
   }
@@ -191,15 +196,14 @@ public class PartnerRequestAction extends BaseAction {
     return countriesList;
   }
 
+
   public CountryOfficePOJO getCountryOfficePOJO() {
     return countryOfficePOJO;
   }
 
-
   public List<CountryOfficePOJO> getCountryOfficesList() {
     return countryOfficesList;
   }
-
 
   public List<InstitutionType> getInstitutionTypesList() {
     return institutionTypesList;
@@ -211,12 +215,18 @@ public class PartnerRequestAction extends BaseAction {
     return justification;
   }
 
+
   public List<PartnerRequest> getPartners() {
     return partners;
   }
 
+
   public long getRequestID() {
     return requestID;
+  }
+
+  public boolean isSuccess() {
+    return success;
   }
 
   /**
@@ -227,6 +237,7 @@ public class PartnerRequestAction extends BaseAction {
    */
   @Override
   public void prepare() throws Exception {
+    success = true;
     HashMap<Institution, List<PartnerRequest>> countryOfficesHashMap = new HashMap<Institution, List<PartnerRequest>>();
     // Verify if exists active partnerRequest
     if (partnerRequestManager.findAll().stream().filter(pr -> pr.isActive()) != null) {
@@ -274,31 +285,35 @@ public class PartnerRequestAction extends BaseAction {
    */
   public String rejectCountryOffices() {
     try {
-      Map<String, Object> parameters = this.getParameters();
-      justification = StringUtils.trim(((String[]) parameters.get(APConstants.JUSTIFICATION_REQUEST))[0]);
-    } catch (Exception e) {
-      System.out.println(e.getMessage());
-      justification = "";
-    }
-
-    String[] partnerRequestIds = countryOfficePOJO.getIds().split(",");
-    if (countryOfficePOJO != null) {
-      Institution institution = institutionManager.getInstitutionById(countryOfficePOJO.getInstitution().getId());
-      Set<User> users = new HashSet<User>();
-      Set<LocElement> locElements = new HashSet<LocElement>();
-      for (String partnerRequestId : partnerRequestIds) {
-        PartnerRequest partnerRequest = partnerRequestManager.getPartnerRequestById(Long.valueOf(partnerRequestId));
-        // Store the list of user to send the email
-        users.add(partnerRequest.getCreatedBy());
-        locElements.add(partnerRequest.getLocElement());
-        partnerRequest.setAcepted(new Boolean(false));
-        partnerRequest.setActive(false);
-        partnerRequest.setRejectedBy(this.getCurrentUser());
-        partnerRequest.setRejectJustification(justification);
-        partnerRequestManager.savePartnerRequest(partnerRequest);
+      try {
+        Map<String, Object> parameters = this.getParameters();
+        justification = StringUtils.trim(((String[]) parameters.get(APConstants.JUSTIFICATION_REQUEST))[0]);
+      } catch (Exception e) {
+        System.out.println(e.getMessage());
+        justification = "";
       }
-      // Send notification email
-      this.sendRejectOfficeNotificationEmail(users, locElements, institution);
+
+      String[] partnerRequestIds = countryOfficePOJO.getIds().split(",");
+      if (countryOfficePOJO != null) {
+        Institution institution = institutionManager.getInstitutionById(countryOfficePOJO.getInstitution().getId());
+        Set<User> users = new HashSet<User>();
+        Set<LocElement> locElements = new HashSet<LocElement>();
+        for (String partnerRequestId : partnerRequestIds) {
+          PartnerRequest partnerRequest = partnerRequestManager.getPartnerRequestById(Long.valueOf(partnerRequestId));
+          // Store the list of user to send the email
+          users.add(partnerRequest.getCreatedBy());
+          locElements.add(partnerRequest.getLocElement());
+          partnerRequest.setAcepted(new Boolean(false));
+          partnerRequest.setActive(false);
+          partnerRequest.setRejectedBy(this.getCurrentUser());
+          partnerRequest.setRejectJustification(justification);
+          partnerRequestManager.savePartnerRequest(partnerRequest);
+        }
+        // Send notification email
+        this.sendRejectOfficeNotificationEmail(users, locElements, institution);
+      }
+    } catch (Exception e) {
+      success = false;
     }
     return SUCCESS;
   }
@@ -409,15 +424,14 @@ public class PartnerRequestAction extends BaseAction {
     }
   }
 
-
   public void setCountryOfficePOJO(CountryOfficePOJO countryOfficePOJO) {
     this.countryOfficePOJO = countryOfficePOJO;
   }
 
+
   public void setCountryOfficesList(List<CountryOfficePOJO> countryOfficesList) {
     this.countryOfficesList = countryOfficesList;
   }
-
 
   @Override
   public void setJustification(String justification) {
@@ -429,8 +443,13 @@ public class PartnerRequestAction extends BaseAction {
     this.partners = partners;
   }
 
+
   public void setRequestID(long requestID) {
     this.requestID = requestID;
+  }
+
+  public void setSuccess(boolean success) {
+    this.success = success;
   }
 
 }

@@ -12,18 +12,18 @@ $(document).ready(function() {
     $modal.find('.requestInfo').html($request.find('.requestInfo').clone(true).addClass('grayBox'));
     $modal.modal('show');
   });
-  
+
   // Reject Request popup Event
   $('a.rejectOfficeRequest').on('click', function(e) {
     e.preventDefault();
     institutionOfficeRequestId = $(this).classParam('institutionOfficeRequestId');
 
     var $request = $(this).parents('.officesRequestItem');
-    
+
     var $countriesSelected = $request.find('.officeRequest:checked').map(function() {
       return $(this).parent().clone(true).find('label').text();
     }).get().join(', ');
-    
+
     $rejectOfficeRequest.find('.requestInfo').html($countriesSelected);
     // $rejectOfficeRequest.modal('show');
   });
@@ -76,6 +76,9 @@ $(document).ready(function() {
       notyOptions.text = 'The required(*) fields needs to be filled';
       noty(notyOptions);
       return
+
+      
+
     }
 
     $.ajax({
@@ -110,17 +113,17 @@ $(document).ready(function() {
   // Accept office request
   $('a.officesRequest').on('click', function(e) {
     e.preventDefault();
-    var $request = $('#officesRequestItem-'+ institutionOfficeRequestId)
+    var $request = $('#officesRequestItem-' + institutionOfficeRequestId)
     var countriesSelected = $request.find('.officeRequest:checked');
     var action = $(this).classParam('action');
     var formData = {
         'countryOfficePOJO.institution.id': $request.find('input.institutionID').val(),
-        'countryOfficePOJO.modificationJustification': $rejectOfficeRequest.find('textarea.modificationJustification').val(),
+        'justification': $rejectOfficeRequest.find('textarea.modificationJustification').val(),
         'countryOfficePOJO.ids': countriesSelected.map(function() {
           return this.value;
         }).get().join()
     }
-    
+
     console.log(formData);
 
     // Validate if there are countries selected
@@ -129,10 +132,13 @@ $(document).ready(function() {
       notyOptions.text = 'Please select at least one country';
       noty(notyOptions);
       return
+
+      
+
     }
 
     $.ajax({
-        url: baseURL + '/superadmin/' + action,
+        url: baseURL + '/' + action,
         data: formData,
         beforeSend: function() {
           $request.find('.loading').fadeIn();
