@@ -132,6 +132,16 @@
       </result>
 		</action>
 		
+		 <action name="rejectOfficesRequest" method="rejectCountryOffices"
+      class="org.cgiar.ccafs.marlo.action.superadmin.PartnerRequestAction">
+      <interceptor-ref name="superAdminStack" />
+      <result name="input">/WEB-INF/global/views/superadmin/marloInstitutions.ftl
+      </result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">marloInstitutions</param>
+        <param name="edit">true</param>
+      </result>
+    </action>
     <!-- End Partners & Country offices requested -->
 		
 
