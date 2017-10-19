@@ -173,9 +173,9 @@
       <div class="form-group row">
         [#-- Start Date --]
         <div class="col-md-4 metadataElement-startDate">
-          <label for="fundingSource.startDate">[@s.text name="fundingSource.fundingSourceInfo.startDate" /]:[@customForm.req required=editable && action.canEditFundingSourceBudget()  /]</label>
+          <label for="fundingSource.startDate">[@s.text name="fundingSource.startDate" /]:[@customForm.req required=editable && action.canEditFundingSourceBudget()  /]</label>
           [#if editable]
-            <input id="fundingSource.fundingSourceInfo.startDate" type="hidden" name="fundingSource.fundingSourceInfo.startDate" value="${(fundingSource.startDate?string["yyyy-MM-dd"])!}" class="form-control input-sm metadataValue startDateInput">
+            <input id="fundingSource.fundingSourceInfo.startDate" type="hidden" name="fundingSource.fundingSourceInfo.startDate" value="${(fundingSource.fundingSourceInfo.startDate?string["yyyy-MM-dd"])!}" class="form-control input-sm metadataValue startDateInput">
             <p class="dateLabel btn btn-default ${isSynced?string('disabled','')}">${(fundingSource.fundingSourceInfo.startDate?string["MMMM yyyy"])!}</p>
           [#else]
             <div class="input"><p>${(fundingSource.fundingSourceInfo.startDate?string["MMMM yyyy"])!}</p></div>
