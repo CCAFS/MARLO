@@ -78,12 +78,12 @@
               </div>
             </div>
             <div class="form-group">
-              <label for="">Web Page</label>
+              <label for="">Web Page: </label>
               <input type="text" class="form-control input-sm" name="webPage" value="${(partner.webPage)!}" />
             </div>
             <hr />
             <div class="form-group">
-              <label for="">Justification [@customForm.req required=true /]</label>
+              <label for="">Justification: [@customForm.req required=true /]</label>
               <textarea class="form-control input-sm" name="modificationJustification" id="" cols="30" rows="3">${(partner.modificationJustification)!}</textarea>
             </div>
             <button class="saveButton">Save</button>
@@ -121,6 +121,20 @@
                <h4 style="font-family: 'Open Sans';">${partner.institution.composedName}</h4><hr />
             </div>
             
+            [#-- Action --]
+          <div class="btn-group pull-right" role="group" aria-label="..."">
+            [#-- Accept --]
+            <a class="btn btn-success btn-sm officesRequest action-acceptOfficesRequest.do" href="#">
+              <span class="glyphicon glyphicon-ok"></span> Accept selected
+            </a>
+            [#-- Reject --]
+            <a class="btn btn-danger btn-sm rejectOfficeRequest institutionOfficeRequestId-${partner.institution.id}" data-toggle="modal" data-target="#rejectOfficeRequest">
+              <span class="glyphicon glyphicon-remove"></span>  Reject selected
+            </a>
+            
+            
+          </div>
+            
             <div class="form-group">
               [#-- Country Offices Request --]
               <div class="items-list">
@@ -131,27 +145,21 @@
                       <input type="checkbox"  name="${customOfficeName}.id" id="officeRequest-${officeRequest.id}" class="officeRequest" value="${officeRequest.id}" />
                       <label class="checkbox-label" for="officeRequest-${officeRequest.id}">${officeRequest.locElement.name}</label>
                       <i class="pull-right flag-sm flag-sm-${(officeRequest.locElement.isoAlpha2?upper_case)!}"></i> 
-                      <p class="text-muted"><small><strong>[@s.text name="Requested By" /]:</strong> <i>${(officeRequest.createdBy.composedName?html)!'none'}</i></small></p>
+                      <small>
+                        <br />
+                        <p class="text-muted" title="Requested in: ${(officeRequest.requestSource?html)!'none'}">
+                          <strong>[@s.text name="Requested By" /]:</strong> <i>${(officeRequest.createdBy.composedName?html)!'none'}</i>
+                        </p>
+                      </small>
                     </li>
                   [/#list]
                 </ul>
               </div>
               <div class="clearfix"></div>
             </div>
-            
           </div>
           
-          [#-- Action --]
-          <div class="btn-group pull-right" role="group" aria-label="..."">
-            [#-- Accept --]
-            <a class="btn btn-success btn-sm officesRequest action-acceptOfficesRequest.do" href="#">
-              <span class="glyphicon glyphicon-ok"></span> Accept selected
-            </a>
-            [#-- Reject --]
-            <a class="btn btn-danger btn-sm officesRequest action-rejectOfficesRequest.do" href="#">
-               <span class="glyphicon glyphicon-remove"></span> Reject selected
-            </a>
-          </div>
+          
           
           <div class="clearfix"></div>
           

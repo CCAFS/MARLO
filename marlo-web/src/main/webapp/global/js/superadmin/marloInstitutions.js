@@ -1,24 +1,40 @@
-var requesIDSelected;
+var requestID, institutionOfficeRequestId;
 $(document).ready(function() {
   var $modal = $('#myModal');
+  var $rejectOfficeRequest = $('#rejectOfficeRequest');
 
   // Reject Request popup Event
   $('a.rejectRequest').on('click', function(e) {
     e.preventDefault();
-    var requestID = $(this).classParam('partnerRequestId');
-    requesIDSelected = requestID;
+    requestID = $(this).classParam('partnerRequestId');
+
     var $request = $(this).parents('.partnerRequestItem');
     $modal.find('.requestInfo').html($request.find('.requestInfo').clone(true).addClass('grayBox'));
     $modal.modal('show');
   });
+  
+  // Reject Request popup Event
+  $('a.rejectOfficeRequest').on('click', function(e) {
+    e.preventDefault();
+    institutionOfficeRequestId = $(this).classParam('institutionOfficeRequestId');
+
+    var $request = $(this).parents('.officesRequestItem');
+    
+    var $countriesSelected = $request.find('.officeRequest:checked').map(function() {
+      return $(this).parent().clone(true).find('label').text();
+    }).get().join(', ');
+    
+    $rejectOfficeRequest.find('.requestInfo').html($countriesSelected);
+    // $rejectOfficeRequest.modal('show');
+  });
 
   // Reject Request button Event
   $modal.find('.rejectButton').on('click', function() {
-    var $request = $('#partnerRequestItem-' + requesIDSelected);
+    var $request = $('#partnerRequestItem-' + requestID);
     $.ajax({
         url: baseURL + '/rejectPartnerRequest.do',
         data: {
-            requestID: requesIDSelected,
+            requestID: requestID,
             justification: $modal.find('textarea').val(),
         },
         beforeSend: function() {
@@ -60,7 +76,6 @@ $(document).ready(function() {
       notyOptions.text = 'The required(*) fields needs to be filled';
       noty(notyOptions);
       return
-
     }
 
     $.ajax({
@@ -95,17 +110,18 @@ $(document).ready(function() {
   // Accept office request
   $('a.officesRequest').on('click', function(e) {
     e.preventDefault();
-    var $request = $(this).parents('.officesRequestItem')
+    var $request = $('#officesRequestItem-'+ institutionOfficeRequestId)
     var countriesSelected = $request.find('.officeRequest:checked');
-
+    var action = $(this).classParam('action');
     var formData = {
         'countryOfficePOJO.institution.id': $request.find('input.institutionID').val(),
+        'countryOfficePOJO.modificationJustification': $rejectOfficeRequest.find('textarea.modificationJustification').val(),
         'countryOfficePOJO.ids': countriesSelected.map(function() {
           return this.value;
         }).get().join()
     }
+    
     console.log(formData);
-    var action = $(this).classParam('action');
 
     // Validate if there are countries selected
     if(countriesSelected.length == 0) {
@@ -113,7 +129,6 @@ $(document).ready(function() {
       notyOptions.text = 'Please select at least one country';
       noty(notyOptions);
       return
-
     }
 
     $.ajax({
@@ -129,6 +144,7 @@ $(document).ready(function() {
         },
         complete: function() {
           $request.find('.loading').fadeOut();
+          $rejectOfficeRequest.find('textarea.modificationJustification').val('')
         }
     });
   });
