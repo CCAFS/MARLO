@@ -232,7 +232,6 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    */
   protected T update(T entity) {
     entity = (T) sessionFactory.getCurrentSession().merge(entity);
-    sessionFactory.getCurrentSession().saveOrUpdate(entity);
     return entity;
   }
 
@@ -246,7 +245,6 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
   protected T update(T entity, String actionName, List<String> relationsName) {
     this.addAuditLogFieldsToThreadStorage(entity, actionName, relationsName);
     entity = (T) sessionFactory.getCurrentSession().merge(entity);
-    sessionFactory.getCurrentSession().saveOrUpdate(entity);
     return entity;
   }
 }
