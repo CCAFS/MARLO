@@ -1,39 +1,33 @@
 [#ftl]
-[#assign title = "MARLO Admin" /]
+[#assign title = "MARLO Institutions" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = [ "flat-flags", "google-diff-match-patch", "jquery-pretty-text-diff", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [ 
-  "${baseUrl}/global/js/superadmin/marloInstitutions.js" 
+  "${baseUrl}/global/js/superadmin/marloInstitutions.js"
   ] 
 /]
 [#assign customCSS = [ 
   "${baseUrl}/global/css/superadmin/superadmin.css",
   "${baseUrl}/global/css/superadmin/marloInstitutions.css"
-  ] 
-/]
-[#assign currentSection = "superadmin" /]
+  ]
+ /]
+[#assign currentSection = "admin" /]
 [#assign currentStage = "institutions" /]
 
 [#assign breadCrumb = [
-  {"label":"superadmin", "nameSpace":"", "action":"marloBoard"},
+  {"label":"admin", "nameSpace":"", "action":"adminManagement"},
   {"label":"institutions", "nameSpace":"", "action":""}
 ]/]
 
 [#include "/WEB-INF/crp/pages/header.ftl" /]
+[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
 [#import "/WEB-INF/global/macros/institutionRequestMacro.ftl" as institutionRequest /]
-<hr />
-
-<div class="container">
-  [#include "/WEB-INF/global/pages/breadcrumb.ftl" /]
-</div>
-[#include "/WEB-INF/global/pages/generalMessages.ftl" /]
-[#import "/WEB-INF/global/macros/utils.ftl" as utilities/]
 
 <section class="marlo-content">
   <div class="container"> 
     <div class="row">
       <div class="col-md-3">
-        [#include "/WEB-INF/global/views/superadmin/menu-superadmin.ftl" /]
+        [#include "/WEB-INF/crp/views/admin/menu-admin.ftl" /]
       </div>
       <div class="col-md-9">
         <br />
@@ -50,6 +44,7 @@
         [#-- Requested Office Locations--]
         <h4 class="sectionTitle">Request Country office(s):</h4>
         [@institutionRequest.officesRequest partners=countryOfficesList  canEdit=editable namespace="/marloInstitutions" defaultAction="${(crpSession)!}/marloInstitutions"/]
+        
       </div>
     </div>
   </div>
