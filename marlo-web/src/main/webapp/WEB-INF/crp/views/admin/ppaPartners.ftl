@@ -36,11 +36,11 @@
       <div class="col-md-9">
         [@s.form action=actionName enctype="multipart/form-data" ]
         <h4 class="sectionTitle">[@s.text name="ppaPartners.title" /]</h4>
-        <div class=" borderBox formWrapper " listname="loggedCrp.crpInstitutionsPartners">
+        <div class=" formWrapper " listname="loggedCrp.crpInstitutionsPartners">
             [#-- PPA Partners --]
   	      	<div  id="partnerContent" class="" >
-  	      		[#list loggedCrp.crpInstitutionsPartners as ppaPartners]
-  	      			[@intitutionMacro ppaPartners=ppaPartners index=institution_index /]
+  	      		[#list loggedCrp.crpInstitutionsPartners as ppaPartner]
+  	      			[@intitutionMacro ppaPartner=ppaPartner index=institution_index /]
   	      	  [/#list]
   	      	</div>
   	      	[#--Select an institution --]
@@ -83,23 +83,65 @@
 
 
 [#-- Partner institution --]
-[@intitutionMacro ppaPartners={} isTemplate=true /]
+[@intitutionMacro ppaPartner={} isTemplate=true /]
 
 [#include "/WEB-INF/crp/pages/footer.ftl" /]
 
-[#macro intitutionMacro ppaPartners index=0 isTemplate=false]
-	<div id="institution-${isTemplate?string('template','')}" class="institution" style="display:${isTemplate?string('none','block')}">
-		[#-- Title --]
-		<span class="title ">${(ppaPartners.institution.composedName)!'Null'} </span>
-		[#-- Hidden inputs --]
-		<input class="institutionId" type="hidden" name="loggedCrp.crpInstitutionsPartners[${index}].institution.id" value="${(ppaPartners.institution.id)!'null'}"/>
-		<input class="id" type="hidden" name="loggedCrp.crpInstitutionsPartners[${index}].id" value="${(ppaPartners.id)!}"/>
-		[#if editable && ppaPartners?hasContent && action.canBeDeleted(ppaPartners.id,ppaPartners.class.name) ]
-		  <span class="glyphicon glyphicon-remove pull-right remove-userItem delete red" aria-hidden="true"></span>
-		[/#if]
-		[#if  !ppaPartners?hasContent]
-		  <span class="glyphicon glyphicon-remove pull-right remove-userItem delete red" aria-hidden="true"></span>
-		[/#if]
-	</div>
+[#macro intitutionMacro ppaPartner index=0 isTemplate=false]
+  [#local customName = "loggedCrp.crpInstitutionsPartners[${index}]"]
+  <div id="institution-${isTemplate?string('template','')}" class="institution borderBox" style="display:${isTemplate?string('none','block')}">
+    [#-- Hidden inputs --]
+    <input class="institutionId" type="hidden" name="${customName}.institution.id" value="${(ppaPartner.institution.id)!'null'}"/>
+    <input class="id" type="hidden" name="${customName}.id" value="${(ppaPartner.id)!}"/>
+    [#-- Remove --]
+    [#if editable && ppaPartner?hasContent && action.canBeDeleted(ppaPartner.id,ppaPartner.class.name) ]
+      <div class="removeIcon delete" title="Remove"></div>
+    [/#if]
+    [#if  !ppaPartner?hasContent]
+      <div class="removeIcon delete" title="Remove"></div>
+    [/#if]
+    [#-- Title --]
+    <h5 class="title">${(ppaPartner.institution.composedName)!'Null'} </h5>
+    
+    [#-- Contact Points --]
+    <label for="">Contact Points:</label>
+    <div class="usersBlock leaders form-group simpleBox" listname="${customName}.contactPoints">
+      [#-- List --]
+      <div class="items-list" listname="${customName}.contactPoints" >
+        <ul>
+        [#if ppaPartner.contactPoints??]
+          [#list ppaPartner.contactPoints as contactPoint]
+            [@userItem ppaPartner=contactPoint index=contactPoint_index name="${customName}.contactPoints"/]
+          [/#list]
+        [/#if]
+        </ul>
+        <p class="text-center usersMessage" style="display:${(ppaPartner.contactPoints??)?string('none','block')}">No Contact points assigned.</p>
+      </div>
+      [#-- Add person Button --]
+      [#if editable]
+      <div class="text-center">
+        <div class="searchUser button-green"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addPerson" /]</div>
+      </div>
+      [/#if]
+    </div>
+  </div>
 [/#macro]
 
+[#macro userItem element index name template=false]
+  [#assign userCustomName = "${name}[${index}]" /]
+  <li id="user-${template?string('template',index)}" class="user userItem" style="display:${template?string('none','block')}">
+    [#-- User Name --]
+    <span class="glyphicon glyphicon-user" aria-hidden="true"></span> <span class="name"> ${(element.user.getComposedName()?html)!'Unknown user'}</span>
+    [#-- Hidden inputs --]
+    <input class="user" type="hidden" name="${userCustomName}.user.id" value="${(element.user.id)!}"/>
+    <input class="id" type="hidden" name="${userCustomName}.id" value="${(element.id)!}"/>
+    [#-- Remove Button --]
+    [#if editable]
+      [#if template || action.canBeDeleted(element.id, element.class.name)!false]
+        <span class="glyphicon glyphicon-remove pull-right remove-userItem" aria-hidden="true"></span>
+      [#else]
+        <span class="glyphicon glyphicon-remove pull-right" style="color:#ccc" aria-hidden="true" title="Can not be deleted"></span>
+      [/#if]
+    [/#if]
+  </li>
+[/#macro]
