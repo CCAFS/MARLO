@@ -68,68 +68,7 @@
 				<div>[@deliverableList.deliverableList deliverables=deliverables canValidate=true canEdit=true namespace="/capdev" defaultAction="${(centerSession)!}/detailSupportingDoc" /]</div>
 					
 
-					
-					<!-- [#if capdev.capdevSupportingDocs?has_content]
-						<table class="supportDocsList" id="supportingDocs">
-							<thead>
-								<tr class="header">
-									<th>ID</th>
-									<th>Title</th>
-									<th>Type</th>
-									<th>Publication date</th>
-									<th>Remove</th>
-								</tr>
-							</thead>
-							<tbody>
-								[#list capdev.capdevSupportingDocs as supportDocs]
-									[#if supportDocs.active]
-										<tr>
-											<td>
-												<a href="[@s.url action='${centerSession}/detailSupportingDoc'][@s.param name='capdevID']${supportDocs.capacityDevelopment.id?c}[/@s.param][@s.param name='supportingDocID']${supportDocs.id?c}[/@s.param][@s.param name='edit' value="true" /][/@s.url]">S${supportDocs.id} </a>
-											</td>
-											<td>
-											    [#if supportDocs.title?has_content]
-											    	<a href="[@s.url action='${centerSession}/detailSupportingDoc'][@s.param name='capdevID']${supportDocs.capacityDevelopment.id?c}[/@s.param][@s.param name='supportingDocID']${supportDocs.id?c}[/@s.param][@s.param name='edit' value="true" /][/@s.url]">${supportDocs.title}</a>
-											    [#else]
-											    	<a href="[@s.url action='${centerSession}/detailSupportingDoc'][@s.param name='capdevID']${supportDocs.capacityDevelopment.id?c}[/@s.param][@s.param name='supportingDocID']${supportDocs.id?c}[/@s.param][@s.param name='edit' value="true" /][/@s.url]">Not defined</a>
-											    [/#if]
-										    </td>
-										    <td>
-											    [#if supportDocs.centerDeliverableType??]
-											    	${supportDocs.centerDeliverableType.name}
-											    [#else]
-											    	Not defined
-											    [/#if]
-										    </td>
-										    <td>
-											    [#if supportDocs.publicationDate??]
-											    	${supportDocs.publicationDate}
-											    [#else]
-											    	Not defined
-											    [/#if]
-										    </td>
-											<td class="removeCol">
-												[#if editable]
-										            <a  class="deleteDoc" href="#" data-href="[@s.url action='${centerSession}/deleteSupportingDoc'][@s.param name='capdevID']${capdev.id}[/@s.param] [@s.param name='supportingDocID']${supportDocs.id?c}[/@s.param] [@s.param name='edit' value="true" /][/@s.url]" data-toggle="modal" data-target="#confirm-delete">
-										               <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="capdev.removeCapdev" /]" /> 
-										            </a>
-									             [#else]
-									             	<img src="${baseUrl}/global/images/trash_disable.png" title="[@s.text name="capdev.removeCapdev" /]" /> 
-									             [/#if]
-								            </td>
-
-
-								            
-										</tr>
-									[/#if]
-
-								[/#list]
-
-								
-							</tbody>
-						</table>
-					[/#if] -->
-						<p class="text-center inf" style="display:${(deliverables?has_content)?string('none','block')}">[@s.text name="capdev.notSupportDocuments" /]</p>	
+				<p class="text-center inf" style="display:${(deliverables?has_content)?string('none','block')}">[@s.text name="capdev.notSupportDocuments" /]</p>	
 
 					
 					[#if editable]
