@@ -7,6 +7,11 @@ function init(){
     width: "100%"
     });
 
+
+
+  //event to filter the deliverables subtypes
+$(".capdevDeliverableType").on("change", changeDeliverableType);
+
 }
 
 
@@ -126,8 +131,10 @@ $('#confirm-delete').on('show.bs.modal', function(e) {
 });
 
 
-//event to filter the deliverables subtypes
-$(".capdevDeliverableType").on("change", function(){
+
+
+
+function changeDeliverableType(){
    var deliverableID = $(".capdevDeliverableType").val();
       if(deliverableID > 0){
          $.ajax({
@@ -160,4 +167,5 @@ $(".capdevDeliverableType").on("change", function(){
        $('.capdevDeliverableSubtype').append('<option value= -1>select option... </option>');
 
     }
-})
+
+}

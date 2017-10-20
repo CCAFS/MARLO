@@ -22,7 +22,8 @@
     datePickerConfig({
       "startDate": "#capdev\\.startDate",
       "endDate": "#capdev\\.endDate",
-      "publicationDate":"#capdevSupportingDocs\\.publicationDate"
+      "publicationStartDate":"#supportingDoc\\.startDate",
+      "publicationEndDate":"#supportingDoc\\.endDate"
     });
 
 
@@ -554,10 +555,10 @@
 
 
   function datePickerConfig(element) {
-    date($(element.startDate), $(element.endDate),$(element.publicationDate));
+    date($(element.startDate), $(element.endDate),$(element.publicationStartDate),$(element.publicationEndDate));
   }
 
-  function date(start,end,publicationDate) {
+  function date(start,end,publicationStartDate,publicationEndDate) {
     var dateFormat = "yy-mm-dd";
     var from = $(start).datepicker({
       dateFormat: dateFormat,
@@ -591,7 +592,23 @@
       }
     });
 
-    var to = $(publicationDate).datepicker({
+    var to = $(publicationStartDate).datepicker({
+      dateFormat: dateFormat,
+      minDate: '2010-01-01',
+      maxDate: '2030-12-31',
+      changeMonth: true,
+      numberOfMonths: 1,
+      changeYear: true,
+      onChangeMonthYear: function(year,month,inst) {
+        var selectedDate = new Date(inst.selectedYear, inst.selectedMonth + 1, 0);
+        $(this).datepicker('setDate', selectedDate);
+        if(selectedDate != "") {
+          $(start).datepicker("option", "maxDate", selectedDate);
+        }
+      }
+    });
+
+    var to = $(publicationEndDate).datepicker({
       dateFormat: dateFormat,
       minDate: '2010-01-01',
       maxDate: '2030-12-31',

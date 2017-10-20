@@ -192,13 +192,15 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
     if (supportingDoc != null) {
       capdev = capdevService.getCapacityDevelopmentById(capdevID);
       if (supportingDoc.getDeliverableType() != null) {
-        Long deliverableTypeParentId = supportingDoc.getDeliverableType().getId();
+        Long deliverableTypeParentId = supportingDoc.getDeliverableType().getDeliverableType().getId();
 
         deliverablesSubtypesList = new ArrayList<>(centerDeliverableTypeService.findAll().stream()
           .filter(
             dt -> (dt.getDeliverableType() != null) && (dt.getDeliverableType().getId() == deliverableTypeParentId))
           .collect(Collectors.toList()));
         Collections.sort(deliverablesSubtypesList, (ra1, ra2) -> ra1.getName().compareTo(ra2.getName()));
+
+        System.out.println(deliverablesSubtypesList.size());
       }
 
       if (supportingDoc.getDeliverableDocuments() != null) {
@@ -220,13 +222,24 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
     supportingDocDB.setName(supportingDoc.getName());
 
 
-    if (supportingDoc.getDeliverableType().getId() != -1) {
-      supportingDocDB.setDeliverableType(supportingDoc.getDeliverableType());
+    System.out.println(supportingDoc.getDeliverableType().getId());
 
-    } else {
-      supportingDocDB.setDeliverableType(null);
+    if (supportingDoc.getDeliverableType().getId() != null) {
+      if (supportingDoc.getDeliverableType().getId() != -1) {
+        CenterDeliverableType deliverableType =
+          centerDeliverableTypeService.getDeliverableTypeById(supportingDoc.getDeliverableType().getId());
+        supportingDocDB.setDeliverableType(deliverableType);
+      }
 
     }
+    // if (supportingDoc.getDeliverableType().getId() != -1) {
+    // supportingDocDB.setDeliverableType(supportingDoc.getDeliverableType());
+    //
+    // } else {
+    // supportingDocDB.setDeliverableType(null);
+    //
+    // }
+
     supportingDocDB.setStartDate(supportingDoc.getStartDate());
 
 
