@@ -398,6 +398,9 @@
 		<action name="glossary" class="org.cgiar.ccafs.marlo.action.BaseAction">
 			<result name="input">/WEB-INF/global/pages/glossary.ftl</result>
 		</action>
+		<action name="legalInformation" class="org.cgiar.ccafs.marlo.action.BaseAction">
+      <result name="input">/WEB-INF/global/pages/legalInformation.ftl</result>
+    </action>
 	</package>
 
 	<include file="struts-json.xml" />
