@@ -52,12 +52,12 @@
           
           [#-- Delete Deliverable--]
           <td class="text-center">
-            [#if canEdit && action.centerCanBeDeleted(deliverable.id, deliverable.class.name)!false]
-              <a id="removeDeliverable-${deliverable.id}" class="removeDeliverable" href="#" title="">
-                <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="projectsList.removeProject" /]" /> 
+            [#if editable]
+              <a  class="deleteDoc" href="#" data-href="[@s.url action='${centerSession}/deleteSupportingDoc'][@s.param name='capdevID']${capdev.id}[/@s.param] [@s.param name='supportingDocID']${deliverable.id?c}[/@s.param] [@s.param name='edit' value="true" /][/@s.url]" data-toggle="modal" data-target="#confirm-delete">
+                 <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="capdev.removeCapdev" /]" /> 
               </a>
             [#else]
-              <img src="${baseUrl}/global/images/trash_disable.png" title="[@s.text name="projectsList.cannotDelete" /]" />
+              <img src="${baseUrl}/global/images/trash_disable.png" title="[@s.text name="capdev.removeCapdev" /]" /> 
             [/#if]
           </td>
         </tr>  
@@ -66,4 +66,27 @@
     [/#if]
     </tbody>
   </table>
+
+  <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Confirm Delete</h4>
+                </div>
+            
+                <div class="modal-body">
+                    <p>You are about to delete one track, this procedure is irreversible.</p>
+                    <p>Do you want to proceed?</p>
+                    <p class="debug-url"></p>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <a class="btn btn-danger btn-ok">Delete</a>
+                </div>
+            </div>
+        </div>
+      </div>
 [/#macro]
