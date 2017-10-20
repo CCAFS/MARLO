@@ -25,6 +25,8 @@ import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectCrosscutingThemeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectFundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectLocationManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProjectPartnerManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProjectPartnerPersonManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.impl.CenterProjectManager;
@@ -39,9 +41,15 @@ import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectCrosscutingTheme;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectFundingSource;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectLocation;
+import org.cgiar.ccafs.marlo.data.model.CenterProjectPartner;
+import org.cgiar.ccafs.marlo.data.model.CenterProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectStatus;
+import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerContribution;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.ocs.model.AgreementOCS;
 import org.cgiar.ccafs.marlo.ocs.ws.MarloOcsClient;
@@ -78,6 +86,8 @@ public class ProjectListAction extends BaseAction {
   private ICenterProjectLocationManager projectLocationService;
   private ICenterProjectFundingSourceManager centerProjectFudingSourceManager;
   private ICenterFundingSourceTypeManager centerFundingTypeManager;
+  private ICenterProjectPartnerManager partnerService;
+  private ICenterProjectPartnerPersonManager partnerPersonService;
   private CenterFundingSyncTypeManager fundingSyncTypeManager;
   private Center loggedCenter;
   private long programID;
@@ -106,7 +116,8 @@ public class ProjectListAction extends BaseAction {
     ICenterProjectCrosscutingThemeManager projectCrosscutingService, MarloOcsClient ocsClient,
     ProjectManager projectManager, ICenterProjectFundingSourceManager centerProjectFudingSourceManager,
     CenterFundingSyncTypeManager fundingSyncTypeManager, ICenterFundingSourceTypeManager centerFundingTypeManager,
-    ICenterProjectLocationManager projectLocationService) {
+    ICenterProjectLocationManager projectLocationService, ICenterProjectPartnerManager partnerService,
+    ICenterProjectPartnerPersonManager partnerPersonService) {
     super(config);
     this.centerService = centerService;
     this.programService = programService;
@@ -120,6 +131,9 @@ public class ProjectListAction extends BaseAction {
     this.fundingSyncTypeManager = fundingSyncTypeManager;
     this.centerFundingTypeManager = centerFundingTypeManager;
     this.projectLocationService = projectLocationService;
+    this.partnerService = partnerService;
+    this.partnerPersonService = partnerPersonService;
+
   }
 
   @Override
@@ -218,6 +232,9 @@ public class ProjectListAction extends BaseAction {
 
     // Add Crp Project Locations to Center Project
     this.crpProjectLocation(project, centerProject);
+
+    // Add Crp Project Partners to Center Project
+    this.crpProjectPartners(project, centerProject);
 
     projectService.saveCenterProject(centerProject);
 
@@ -388,7 +405,6 @@ public class ProjectListAction extends BaseAction {
 
   }
 
-
   /**
    * Add CRP project location information in the center project Created.
    * 
@@ -433,6 +449,73 @@ public class ProjectListAction extends BaseAction {
       centerProject.setRegion(true);
       projectService.saveCenterProject(centerProject);
     }
+
+  }
+
+  /**
+   * Add CRP project partners information in the center project Created - Only the parters that collaborate by the
+   * center.
+   * 
+   * @param project
+   * @param centerProject
+   */
+  public void crpProjectPartners(Project project, CenterProject centerProject) {
+
+
+    List<ProjectPartner> projectPartners =
+      new ArrayList<>(project.getProjectPartners().stream().filter(pp -> pp.isActive()).collect(Collectors.toList()));
+
+    for (ProjectPartner projectPartner : projectPartners) {
+
+      // TODO fix the filter to work whit all centers (in the future)
+      List<ProjectPartnerContribution> contributions = new ArrayList<>(projectPartner.getProjectPartnerContributions()
+        .stream().filter(pc -> pc.isActive() && pc.getProjectPartnerContributor().getInstitution().getId() == 46)
+        .collect(Collectors.toList()));
+
+      for (ProjectPartnerContribution projectPartnerContribution : contributions) {
+
+
+        CenterProjectPartner partnerNew = new CenterProjectPartner();
+        partnerNew.setActive(true);
+        partnerNew.setActiveSince(new Date());
+        partnerNew.setCreatedBy(this.getCurrentUser());
+        partnerNew.setModifiedBy(this.getCurrentUser());
+        partnerNew.setModificationJustification("");
+        partnerNew.setProject(centerProject);
+
+        Institution institution = new Institution();
+        institution.setId(projectPartnerContribution.getProjectPartner().getInstitution().getId());
+        partnerNew.setInstitution(institution);
+
+        partnerService.saveProjectPartner(partnerNew);
+
+
+        List<ProjectPartnerPerson> partnerPerson = new ArrayList<>(projectPartnerContribution.getProjectPartner()
+          .getProjectPartnerPersons().stream().filter(pp -> pp.isActive()).collect(Collectors.toList()));
+
+        for (ProjectPartnerPerson projectPartnerPerson : partnerPerson) {
+
+          CenterProjectPartnerPerson partnerPersonNew = new CenterProjectPartnerPerson();
+          partnerPersonNew.setActive(true);
+          partnerPersonNew.setActiveSince(new Date());
+          partnerPersonNew.setCreatedBy(this.getCurrentUser());
+          partnerPersonNew.setModifiedBy(this.getCurrentUser());
+          partnerPersonNew.setModificationJustification("");
+
+          partnerPersonNew.setProjectPartner(partnerNew);
+
+          User user = userService.getUser(projectPartnerPerson.getUser().getId());
+          partnerPersonNew.setUser(user);
+
+          partnerPersonService.saveProjectPartnerPerson(partnerPersonNew);
+
+        }
+
+
+      }
+
+    }
+
 
   }
 
