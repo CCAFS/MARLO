@@ -71,6 +71,7 @@ public class CapdevDescriptionAction extends BaseAction {
   private CapacityDevelopment capdev;
   private final CapDevDescriptionValidator validator;
   private long capdevID;
+  private long projectID;
   private List<Discipline> disciplines;
   private List<TargetGroup> targetGroups;
   private List<CenterArea> researchAreas;
@@ -246,6 +247,10 @@ public class CapdevDescriptionAction extends BaseAction {
   }
 
 
+  public long getProjectID() {
+    return projectID;
+  }
+
   public List<CenterProject> getProjects() {
     return projects;
   }
@@ -254,10 +259,10 @@ public class CapdevDescriptionAction extends BaseAction {
     return researchAreas;
   }
 
+
   public List<CenterProgram> getResearchPrograms() {
     return researchPrograms;
   }
-
 
   public List<TargetGroup> getTargetGroups() {
     return targetGroups;
@@ -266,6 +271,7 @@ public class CapdevDescriptionAction extends BaseAction {
   public String getTransaction() {
     return transaction;
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -306,9 +312,12 @@ public class CapdevDescriptionAction extends BaseAction {
 
     try {
       capdevID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CAPDEV_ID)));
+      projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_ID)));
     } catch (final Exception e) {
       capdevID = -1;
+      projectID = 0;
     }
+
 
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
 
@@ -544,10 +553,10 @@ public class CapdevDescriptionAction extends BaseAction {
     this.otherDiscipline = otherDiscipline;
   }
 
-
   public void setOtherPartner(String otherPartner) {
     this.otherPartner = otherPartner;
   }
+
 
   public void setOtherTargetGroup(String otherTargetGroup) {
     this.otherTargetGroup = otherTargetGroup;
@@ -561,6 +570,11 @@ public class CapdevDescriptionAction extends BaseAction {
 
   public void setPartners(List<Institution> partners) {
     this.partners = partners;
+  }
+
+
+  public void setProjectID(long projectID) {
+    this.projectID = projectID;
   }
 
 
