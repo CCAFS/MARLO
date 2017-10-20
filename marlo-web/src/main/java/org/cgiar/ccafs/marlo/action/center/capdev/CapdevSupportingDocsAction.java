@@ -19,15 +19,13 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CapdevSupportingDocsManager;
 import org.cgiar.ccafs.marlo.data.manager.ICapacityDevelopmentService;
+import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableManager;
 import org.cgiar.ccafs.marlo.data.model.CapacityDevelopment;
-import org.cgiar.ccafs.marlo.data.model.CapdevSupportingDocs;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,27 +45,29 @@ public class CapdevSupportingDocsAction extends BaseAction {
   private long supportingDocID;
   private List<CenterDeliverable> deliverables;
 
-  private final CapdevSupportingDocsManager capdevsupportingDocsService;
-  private final ICapacityDevelopmentService capdevService;
+  private CapdevSupportingDocsManager capdevsupportingDocsService;
+  private ICapacityDevelopmentService capdevService;
+  private ICenterDeliverableManager centerDeliverableSErvice;
 
   @Inject
   public CapdevSupportingDocsAction(APConfig config, CapdevSupportingDocsManager capdevsupportingDocsService,
-    ICapacityDevelopmentService capdevService) {
+    ICapacityDevelopmentService capdevService, ICenterDeliverableManager centerDeliverableSErvice) {
     super(config);
     this.capdevsupportingDocsService = capdevsupportingDocsService;
     this.capdevService = capdevService;
+    this.centerDeliverableSErvice = centerDeliverableSErvice;
   }
 
   @Override
   public String add() {
-    final CapdevSupportingDocs capdevSupportingDocs = new CapdevSupportingDocs();
+    CenterDeliverable supportingDoc = new CenterDeliverable();
     capdev = capdevService.getCapacityDevelopmentById(capdevID);
-    capdevSupportingDocs.setCapacityDevelopment(capdev);
-    capdevSupportingDocs.setActive(true);
-    capdevSupportingDocs.setActiveSince(new Date());
-    capdevSupportingDocs.setCreatedBy(this.getCurrentUser());
-    capdevSupportingDocs.setModifiedBy(this.getCurrentUser());
-    supportingDocID = capdevsupportingDocsService.saveCapdevSupportingDocs(capdevSupportingDocs);
+    supportingDoc.setCapdev(capdev);
+    supportingDoc.setActive(true);
+    supportingDoc.setActiveSince(new Date());
+    supportingDoc.setCreatedBy(this.getCurrentUser());
+    supportingDoc.setModifiedBy(this.getCurrentUser());
+    supportingDocID = centerDeliverableSErvice.saveDeliverable(supportingDoc);
 
     return SUCCESS;
   }
@@ -75,12 +75,11 @@ public class CapdevSupportingDocsAction extends BaseAction {
 
   @Override
   public String delete() {
-    final long supportingDocID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter("supportingDocID")));
-    final CapdevSupportingDocs capdevSupportingDocs =
-      capdevsupportingDocsService.getCapdevSupportingDocsById(supportingDocID);
-    capdevSupportingDocs.setActive(false);
-    capdevSupportingDocs.setModifiedBy(this.getCurrentUser());
-    capdevsupportingDocsService.saveCapdevSupportingDocs(capdevSupportingDocs);
+    long supportingDocID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter("supportingDocID")));
+    CenterDeliverable supportingDoc = centerDeliverableSErvice.getDeliverableById(supportingDocID);
+    supportingDoc.setActive(false);
+    supportingDoc.setModifiedBy(this.getCurrentUser());
+    centerDeliverableSErvice.saveDeliverable(supportingDoc);
     return SUCCESS;
   }
 
@@ -113,16 +112,13 @@ public class CapdevSupportingDocsAction extends BaseAction {
       capdevID = -1;
     }
     capdev = capdevService.getCapacityDevelopmentById(capdevID);
-    if (!capdev.getCapdevSupportingDocs().isEmpty()) {
-      final List<CapdevSupportingDocs> documentesDB = new ArrayList<>(
-        capdev.getCapdevSupportingDocs().stream().filter(d -> d.isActive()).collect(Collectors.toList()));
-      Collections.sort(documentesDB, (r1, r2) -> r1.getId().compareTo(r2.getId()));
-      capdev.setCapdevSupportingDocs(new HashSet<CapdevSupportingDocs>(documentesDB));
+
+
+    if (capdev.getDeliverables() != null) {
+      deliverables =
+        new ArrayList<>(capdev.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList()));
     }
 
-    deliverables =
-      new ArrayList<>(capdev.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList()));
-    System.out.println(deliverables.size());
   }
 
   public void setCapdev(CapacityDevelopment capdev) {

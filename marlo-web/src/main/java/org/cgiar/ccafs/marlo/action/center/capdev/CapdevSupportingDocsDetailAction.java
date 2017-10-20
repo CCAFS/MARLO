@@ -25,7 +25,6 @@ import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableDocumentManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.model.CapacityDevelopment;
-import org.cgiar.ccafs.marlo.data.model.CapdevSuppDocsDocuments;
 import org.cgiar.ccafs.marlo.data.model.CapdevSupportingDocs;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverableDocument;
@@ -91,13 +90,12 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
 
 
   public String deleteDocumentLink() {
-    final Map<String, Object> parameters = this.getParameters();
-    final long documentID =
-      Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
-    final CapdevSuppDocsDocuments document = capdevSuppDocsDocumentsService.getCapdevSuppDocsDocumentsById(documentID);
+    Map<String, Object> parameters = this.getParameters();
+    long documentID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
+    CenterDeliverableDocument document = centerDeliverableDocService.getDeliverableDocumentById(documentID);
     document.setActive(false);
     document.setModifiedBy(this.getCurrentUser());
-    capdevSuppDocsDocumentsService.saveCapdevSuppDocsDocuments(document);
+    centerDeliverableDocService.saveDeliverableDocument(document);
     return SUCCESS;
   }
 
@@ -185,12 +183,12 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
         this.setTransaction("-1");
       }
     } else {
-      // capdevSupportingDocs = capdevsupportingDocsService.getCapdevSupportingDocsById(supportingDocID);
       supportingDoc = centerDeliverableService.getDeliverableById(supportingDocID);
     }
 
     if (supportingDoc != null) {
       capdev = capdevService.getCapacityDevelopmentById(capdevID);
+
       if (supportingDoc.getDeliverableType() != null) {
         Long deliverableTypeParentId = supportingDoc.getDeliverableType().getDeliverableType().getId();
 
@@ -232,13 +230,6 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
       }
 
     }
-    // if (supportingDoc.getDeliverableType().getId() != -1) {
-    // supportingDocDB.setDeliverableType(supportingDoc.getDeliverableType());
-    //
-    // } else {
-    // supportingDocDB.setDeliverableType(null);
-    //
-    // }
 
     supportingDocDB.setStartDate(supportingDoc.getStartDate());
 
