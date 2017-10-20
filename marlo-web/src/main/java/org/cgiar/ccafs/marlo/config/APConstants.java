@@ -67,6 +67,7 @@ public final class APConstants {
 
 
   public static final String CRP_PC_ROLE = "crp_pc_rol";
+  public static final String CRP_CP_ROLE = "crp_cp_role";
 
 
   public static final String CRP_FS_W1W2_COFINANCING = "crp_fs_w1w2_cofinancing";
