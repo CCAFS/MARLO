@@ -17,7 +17,7 @@
       <li>
         <ul> 
               <li id="menu-${item.action}" class="[#if item.slug == currentStage]currentSection[/#if] capdevmenu-links">
-                <a href="[@s.url action="${centerSession}/${item.action}"][@s.param name='capdevID']${capdevID}[/@s.param][@s.param name='edit' value="true" /][/@s.url]"  class="action-${centerSession}/${item.action}">
+                <a href="[@s.url action="${centerSession}/${item.action}"][@s.param name='projectID']${projectID}[/@s.param][@s.param name='capdevID']${capdevID}[/@s.param][@s.param name='edit' value="true" /][/@s.url]"  class="action-${centerSession}/${item.action}">
                   [@s.text name=item.name/]
                 </a>
               </li>

@@ -21,6 +21,7 @@
 			<result name="success" type="redirectAction">
 				<param name="actionName">${centerSession}/detailCapdev</param>
 				<param name="capdevID">${capdevID}</param>
+				<param name="projectID">${projectID}</param>
 				<param name="edit">true</param>
 			</result>
 		</action>
@@ -30,8 +31,13 @@
 			method="delete">
 			<result name="success" type="redirectAction">
 				<param name="actionName">${centerSession}/capdev</param>
-				
 			</result>
+			<result name="redirect" type="redirectAction">
+        <param name="actionName">${centerSession}/projectCapdev</param>
+        <param name="namespace">/monitoring</param>
+        <param name="projectID">${projectID}</param>
+        <param name="edit">true</param>
+      </result>
 		</action>
 
 		<action name="{center}/detailCapdev"
@@ -43,6 +49,7 @@
 				<param name="actionName">${centerSession}/detailCapdev</param>
 				<param name="capdevID">${capdevID}</param>
 				<param name="capdevCategory">${capdevCategory}</param>
+				<param name="projectID">${projectID}</param>
 				<param name="edit">true</param>
 			</result>
 		</action>
@@ -78,6 +85,7 @@
 			<result name="success" type="redirectAction">
 				<param name="actionName">${centerSession}/descriptionCapdev</param>
 				<param name="capdevID">${capdevID}</param>
+				<param name="projectID">${projectID}</param>
 				<param name="edit">true</param>
 			</result>
 		</action>
@@ -91,6 +99,7 @@
 			<result name="success" type="redirectAction">
 				<param name="actionName">${centerSession}/supportingDocs</param>
 				<param name="capdevID">${capdevID}</param>
+				<param name="projectID">${projectID}</param>
 				<param name="edit">true</param>
 			</result>
 		</action>
@@ -104,6 +113,7 @@
 			<result name="success" type="redirectAction">
 				<param name="actionName">${centerSession}/detailSupportingDoc</param>
 				<param name="capdevID">${capdevID}</param>
+				<param name="projectID">${projectID}</param>
 				<param name="supportingDocID">${supportingDocID}</param>
 				<param name="edit">true</param>
 			</result>
@@ -127,6 +137,7 @@
 			<result name="success" type="redirectAction">
 				<param name="actionName">${centerSession}/detailSupportingDoc</param>
 				<param name="capdevID">${capdevID}</param>
+				<param name="projectID">${projectID}</param>
 				<param name="supportingDocID">${supportingDocID}</param>
 				<param name="edit">true</param>
 			</result>

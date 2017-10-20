@@ -58,6 +58,18 @@
       </result>
     </action>
     
+    <action name="{center}/projectCapdev"
+      class="org.cgiar.ccafs.marlo.action.center.monitoring.project.ProjectCapdevAction">
+      <interceptor-ref name="centerProjectStack" />
+      <result name="input">/WEB-INF/center/views/monitoring/capdev/projectCapdev.ftl
+      </result>
+      <result name="success" type="redirectAction">
+				<param name="actionName">${centerSession}/projectCapdev</param>
+				<param name="projectID">${projectID}</param>
+				<param name="edit">true</param>
+			</result>
+    </action>
+    
     <action name="{center}/addNewProject" method="add"
       class="org.cgiar.ccafs.marlo.action.center.monitoring.project.ProjectListAction">
       <interceptor-ref name="centerImpactPathwayStack" />

@@ -1,5 +1,5 @@
 [#ftl] 
-[#macro logList list itemName1 itemName2 itemId1 itemId2] 
+[#macro logList list itemName1 itemName2 itemName3 itemId1 itemId2 itemId3] 
 [#if list?has_content]
   <div id="log-history" class="" title="${(title)!} History" style="display:none">
     <h3 class="simpleTitle"> [@s.text name="logHistory.title" /] <span>[@s.text name="logHistory.subTitle" /]</span></h3> 
@@ -26,7 +26,7 @@
           <td class="person">${log.user.composedName?html}</td>
           <td class="justification">${(log.modificationJustification)!'Prefilled if available'}</td>
           <td class="view text-center">
-            <a href="[@s.url][@s.param name=itemName1 value=itemId1 /][@s.param name=itemName2 value=itemId2 /][@s.param name="transactionId"]${log.transactionId}[/@s.param][/@s.url]">
+            <a href="[@s.url][@s.param name=itemName1 value=itemId1 /][@s.param name=itemName2 value=itemId2 /][@s.param name=itemName3 value=itemId3 /][@s.param name="transactionId"]${log.transactionId}[/@s.param][/@s.url]">
              <span class="glyphicon glyphicon-eye-open"></span> View 
             </a>
           </td>

@@ -48,7 +48,11 @@
 
 		<div class="col-md-12">
 			<div class="pull-right">
-				<a class="" href="[@s.url action='${centerSession}/capdev' /] "><span class="glyphicon glyphicon-circle-arrow-left"></span>[@s.text name="capdev.gotoBack" /]</a> 
+				[#if projectID > 0]
+		          <a class="" href="[@s.url namespace='/monitoring' action='${centerSession}/projectCapdev'] [@s.param name='projectID']${projectID?c}[/@s.param][@s.param name='edit' value="true" /] [/@s.url] "><span class="glyphicon glyphicon-circle-arrow-left"></span>[@s.text name="capdev.gotoBackProjects" /]</a>
+		        [#else]
+		          <a class="" href="[@s.url action='${centerSession}/capdev' /] "><span class="glyphicon glyphicon-circle-arrow-left"></span>[@s.text name="capdev.gotoBack" /]</a>
+		        [/#if]
 			</div>
 		</div>
 		
@@ -68,14 +72,14 @@
 				<div>[@deliverableList.deliverableList deliverables=deliverables canValidate=true canEdit=true namespace="/capdev" defaultAction="${(centerSession)!}/detailSupportingDoc" /]</div>
 					
 
-				<p class="text-center inf" style="display:${(deliverables?has_content)?string('none','block')}">[@s.text name="capdev.notSupportDocuments" /]</p>	
+
 
 					
 					[#if editable]
 						<div class="col-md-12 newCapdevField">
 							<div class="pull-right">
 								<div class="buttons-content">        
-									<a class="addButton" href="[@s.url action='${centerSession}/addSupportingDoc'][@s.param name='supportingDocID']${supportingDocID}[/@s.param] [@s.param name='capdevID']${capdevID}[/@s.param] [@s.param name='edit' value="true" /][/@s.url]">[@s.text name="capdev.addSupportingDoc" /]</a>
+									<a class="addButton" href="[@s.url action='${centerSession}/addSupportingDoc'][@s.param name='supportingDocID']${supportingDocID}[/@s.param] [@s.param name='capdevID']${capdevID}[/@s.param][@s.param name='projectID']${projectID}[/@s.param] [@s.param name='edit' value="true" /][/@s.url]">[@s.text name="capdev.addSupportingDoc" /]</a>
 									<div class="clearfix"></div>
 								</div>
 							</div>

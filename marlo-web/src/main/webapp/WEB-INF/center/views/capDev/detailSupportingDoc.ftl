@@ -24,14 +24,19 @@
 
 
 
+<script src="${baseUrl}/bower_components/jquery/dist/jquery.min.js"></script>
+<!-- <script src="${baseUrlMedia}/js/capDev/capacityDevelopment.js"></script>
+<script src="${baseUrlMedia}/js/capDev/supportingDocuments.js"></script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.7.7/xlsx.core.min.js"></script>
 
 
 <div class="container"> 
 
 	<div class="row">
-		<div class="col-md-12 capdevinfo">
-			help text
-		</div>
+		<div class="helpMessage infoText col-md-12 capdevinfo">
+      		<img class="col-md-2" src="${baseUrl}/global/images/icon-help.png" />
+        	[@s.text name="capdev.help.supportingDocs"][/@s.text]
+    	</div>
 	</div>
 	
 	<div class="col-md-3 capDevMenu">
@@ -55,7 +60,7 @@
 		      <p>[@s.text name="capdev.message.historyVersion" ]  
 		          [@s.param]<span>${capdev.modifiedBy.composedName?html}</span>[/@s.param]
 		          [@s.param]<span>${capdev.activeSince?datetime}</span>[/@s.param]
-		          [@s.param]<a href="[@s.url][@s.param name="capdevID" value=capdevID /][@s.param name="supportingDocID" value=supportingDocID /][@s.param name="edit" value="true"/][/@s.url]">here</a>[/@s.param]
+		          [@s.param]<a href="[@s.url][@s.param name="capdevID" value=capdevID /] [@s.param name="projectID" value=projectID /][@s.param name="supportingDocID" value=supportingDocID /][@s.param name="edit" value="true"/][/@s.url]">here</a>[/@s.param]
 		         [/@s.text]
 		      </p>
 		      [#-- Differences --]
@@ -71,7 +76,7 @@
 
 		<div class="col-md-12">
 			<div class="pull-right">
-				<a class="" href="[@s.url action='${centerSession}/supportingDocs'] [@s.param name='capdevID']${capdevID}[/@s.param] [@s.param name='edit' value="true" /][/@s.url]"><span class="glyphicon glyphicon-circle-arrow-left"></span>[@s.text name="capdev.supportingDocs.goBack" /]</a> 
+				<a class="" href="[@s.url action='${centerSession}/supportingDocs'] [@s.param name='capdevID']${capdevID}[/@s.param][@s.param name='projectID']${projectID}[/@s.param] [@s.param name='edit' value="true" /][/@s.url]"><span class="glyphicon glyphicon-circle-arrow-left"></span>[@s.text name="capdev.supportingDocs.goBack" /]</a> 
 			</div>
 		</div>
 		
@@ -89,29 +94,26 @@
 				<!-- supporting documents -->
 				<div class="form-group row ">
 					<div class="col-md-12">
-						[@customForm.input name="supportingDoc.name" i18nkey="capdev.supportingDocs.title" type="text" help="" editable=editable   required=true /]
+						[@customForm.input name="capdevSupportingDocs.title" i18nkey="capdev.supportingDocs.title" type="text" help="" editable=editable   required=true /]
 					</div>
 					
 				</div>
 				<div class="form-group row ">
 					<!-- supporting docs type -->
 					<div class="col-md-6">
-						 [@customForm.select name="supportingDoc.deliverableType.deliverableType.id" listName="deliverablesList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.supportingDocs.type" className="capdevDeliverableType" placeholder="capdev.select" required=true editable=editable/]
+						 [@customForm.select name="capdevSupportingDocs.centerDeliverableType.id" listName="deliverablesList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.supportingDocs.type" className="capdevDeliverableType" placeholder="capdev.select" required=true editable=editable/]
 					</div>
 					<!-- supporting docs subtypes -->
 					<div class="col-md-6">
-						[@customForm.select name="supportingDoc.deliverableType.id"  listName="deliverablesSubtypesList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.supportingDocs.subType" className="capdevDeliverableSubtype" placeholder="capdev.select" required=true editable=editable/]
+						[@customForm.select name="capdevSupportingDocs.deliverableSubtype.id" listName="deliverablesSubtypesList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.supportingDocs.subType" className="capdevDeliverableSubtype" placeholder="capdev.select" required=true editable=editable/]
 					</div>
 				</div>
 
-				<div class="form-group row">  
-	              <div class="col-md-6">
-	                [@customForm.input name="supportingDoc.startDate" i18nkey="Start date" type="text" disabled=!editable  required=true editable=editable /]
-	              </div> 
-	              <div class="col-md-6">
-	                [@customForm.input name="supportingDoc.endDate" i18nkey="End date" type="text" disabled=!editable required=false editable=editable /]
-	              </div>
-	            </div>
+				<div class="row">
+					<div class="col-md-12">
+						[@customForm.input name="capdevSupportingDocs.publicationDate" i18nkey="capdev.supportingDocs.publicationdate" type="text" help="" editable=editable required=true /]
+					</div>
+				</div>
 					
 					
 
@@ -156,18 +158,23 @@
 				</div>
 
 
-				<input  type="hidden" name="capdevID" value="${supportingDoc.capdev.id}" /> 
-				<input  type="hidden" name="supportingDocID" value="${supportingDoc.id}" /> 
+				<input  type="hidden" name="capdevID" value="${capdevSupportingDocs.capacityDevelopment.id}" /> 
+				<input  type="hidden" name="projectID" value="${projectID}" /> 
+				<input  type="hidden" name="supportingDocID" value="${capdevSupportingDocs.id}" /> 
 
 				<!-- buttons -->
-				[#assign recordsList = (action.getListLog(supportingDoc))!{} /]
+				[#assign recordsList = (action.getListLog(capdevSupportingDocs))!{} /]
+
+				
+
+
 					<div class="col-md-12">
 							<div class="buttons">
 
 					        	<div class="buttons-content">  
 					        		[#if recordsList?has_content]
 								      [#import "/WEB-INF/center//views/capDev/logHistory.ftl" as logHistory /]
-								      [@logHistory.logList list=recordsList itemName1="capdevID" itemName2="supportingDocID" itemId1=supportingDoc.capdev.id itemId2=supportingDoc.id /]
+								      [@logHistory.logList list=recordsList itemName1="capdevID" itemName2="supportingDocID"  itemName3="projectID" itemId1=capdevSupportingDocs.capacityDevelopment.id itemId2=capdevSupportingDocs.id itemId3=projectID/]
 								      <a href="" onclick="return false" class="form-button button-history"><span class="glyphicon glyphicon-glyphicon glyphicon-list-alt" aria-hidden="true"></span> [@s.text name="form.buttons.history" /]</a>
 								    [/#if] 
 
@@ -178,7 +185,7 @@
 
 						        	[#elseif canEdit]
 							        	<!-- Edit Button -->
-									    <a href="[@s.url][@s.param name="capdevID" value=capdevID /][@s.param name="supportingDocID" value=supportingDocID /][@s.param name="edit" value="true"/][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> [@s.text name="form.buttons.edit" /]</a>
+									    <a href="[@s.url][@s.param name="capdevID" value=capdevID /][@s.param name="projectID" value=projectID /][@s.param name="supportingDocID" value=supportingDocID /][@s.param name="edit" value="true"/][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> [@s.text name="form.buttons.edit" /]</a>
 						        	
 						        	[/#if]
 					        	</div>
