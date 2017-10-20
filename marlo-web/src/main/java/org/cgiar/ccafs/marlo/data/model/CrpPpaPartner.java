@@ -17,9 +17,9 @@ package org.cgiar.ccafs.marlo.data.model;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.Date;
+import java.util.List;
 
 import com.google.gson.annotations.Expose;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
 
@@ -48,6 +48,8 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
 
   private Crp crp;
 
+  private List<LiaisonUser> contactPoints;
+
 
   public CrpPpaPartner() {
   }
@@ -57,6 +59,7 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
     this.institution = institution;
     this.crp = crp;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -85,6 +88,10 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
+  public List<LiaisonUser> getContactPoints() {
+    return contactPoints;
+  }
+
   public User getCreatedBy() {
     return createdBy;
   }
@@ -110,6 +117,7 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -129,9 +137,16 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
     this.active = active;
   }
 
+
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
+
+
+  public void setContactPoints(List<LiaisonUser> contactPoints) {
+    this.contactPoints = contactPoints;
+  }
+
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
@@ -159,7 +174,7 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-      return id.toString();
+    return id.toString();
   }
 
 }

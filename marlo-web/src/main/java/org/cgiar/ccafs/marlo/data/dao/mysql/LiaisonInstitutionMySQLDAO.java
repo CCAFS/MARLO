@@ -80,6 +80,17 @@ public class LiaisonInstitutionMySQLDAO implements LiaisonInstitutionDAO {
 
 
   @Override
+  public LiaisonInstitution findByInstitutionAndCrp(long institutionId, long crpID) {
+    String query = "from " + LiaisonInstitution.class.getName() + " where institution_id=" + institutionId
+      + " and crp_id=" + crpID + "";
+    List<LiaisonInstitution> list = dao.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+  }
+
+  @Override
   public long save(LiaisonInstitution liaisonInstitution) {
     if (liaisonInstitution.getId() == null) {
       liaisonInstitution.setActive(true);

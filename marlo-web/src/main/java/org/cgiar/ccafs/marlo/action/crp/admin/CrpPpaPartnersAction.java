@@ -20,16 +20,22 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
@@ -42,27 +48,28 @@ public class CrpPpaPartnersAction extends BaseAction {
 
   private static final long serialVersionUID = -8561096521514225205L;
 
-
+  // Managers
   private InstitutionManager institutionManager;
-
   private CrpManager crpManager;
   private CrpPpaPartnerManager crpPpaPartnerManager;
+  private LiaisonUserManager liaisonUserManager;
+  private LiaisonInstitutionManager liaisonInstitutionManager;
 
-
+  // Variables
   private List<Institution> institutions;
-
   private List<Institution> crpInstitutions;
-
-
   private Crp loggedCrp;
 
   @Inject
   public CrpPpaPartnersAction(APConfig config, InstitutionManager institutionManager, CrpManager crpManager,
-    CrpPpaPartnerManager crpPpaPartnerManager) {
+    CrpPpaPartnerManager crpPpaPartnerManager, LiaisonUserManager liaisonUserManager,
+    LiaisonInstitutionManager liaisonInstitutionManager) {
     super(config);
     this.institutionManager = institutionManager;
     this.crpManager = crpManager;
     this.crpPpaPartnerManager = crpPpaPartnerManager;
+    this.liaisonUserManager = liaisonUserManager;
+    this.liaisonInstitutionManager = liaisonInstitutionManager;
   }
 
   public List<Institution> getCrpInstitutions() {
@@ -90,9 +97,22 @@ public class CrpPpaPartnersAction extends BaseAction {
         loggedCrp.getCrpPpaPartners().stream().filter(ppa -> ppa.isActive()).collect(Collectors.toList())));
       loggedCrp.getCrpInstitutionsPartners()
         .sort((p1, p2) -> p1.getInstitution().getName().compareTo(p2.getInstitution().getName()));
+      // Fill Managing/PPA Partners with contact persons
+      Set<CrpPpaPartner> crpPpaPartners = new HashSet<CrpPpaPartner>(0);
+      for (CrpPpaPartner crpPpaPartner : loggedCrp.getCrpInstitutionsPartners()) {
+        LiaisonInstitution liaisonInstitution = liaisonInstitutionManager
+          .getLiasonInstitutionByInstitutionId(crpPpaPartner.getInstitution().getId(), loggedCrp.getId());
+        if (liaisonInstitution != null && liaisonInstitution.isActive()) {
+          crpPpaPartner.setContactPoints(liaisonInstitution.getLiaisonUsers().stream()
+            .filter(lu -> lu.isActive() && lu.getUser() != null && lu.getUser().isActive() && lu.getCrp() != null
+              && lu.getCrp().equals(loggedCrp))
+            .sorted((lu1, lu2) -> lu1.getUser().getLastName().compareTo(lu2.getUser().getLastName()))
+            .collect(Collectors.toList()));
+        }
+        crpPpaPartners.add(crpPpaPartner);
+      }
+      loggedCrp.setCrpPpaPartners(crpPpaPartners);
     }
-
-
     institutions = institutionManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
     institutions.sort((i1, i2) -> i1.getName().compareTo(i2.getName()));
 
@@ -106,7 +126,44 @@ public class CrpPpaPartnersAction extends BaseAction {
   @Override
   public String save() {
     if (this.hasPermission("*")) {
-
+      /* Test */
+      for (CrpPpaPartner crpPpaPartner : loggedCrp.getCrpInstitutionsPartners()) {
+        CrpPpaPartner crpPpaPartner1 = crpPpaPartnerManager.getCrpPpaPartnerById(crpPpaPartner.getId());
+        System.out.println(crpPpaPartner1.getInstitution().getComposedName());
+        if (crpPpaPartner.getContactPoints() != null) {
+          for (LiaisonUser liaisonUser : crpPpaPartner.getContactPoints()) {
+            System.out.println("Contact Person: " + liaisonUser.getUser().getId());
+          }
+        } else {
+          System.out.println("No Contact Person");
+        }
+      }
+      Set<CrpPpaPartner> crpPpaPartners = new HashSet<CrpPpaPartner>(0);
+      for (CrpPpaPartner crpPpaPartner : loggedCrp.getCrpInstitutionsPartners()) {
+        LiaisonInstitution liaisonInstitution = liaisonInstitutionManager
+          .getLiasonInstitutionByInstitutionId(crpPpaPartner.getInstitution().getId(), loggedCrp.getId());
+        if (liaisonInstitution != null && liaisonInstitution.isActive()) {
+          crpPpaPartner.setContactPoints(liaisonInstitution.getLiaisonUsers().stream()
+            .filter(lu -> lu.isActive() && lu.getUser() != null && lu.getUser().isActive() && lu.getCrp() != null
+              && lu.getCrp().equals(loggedCrp))
+            .sorted((lu1, lu2) -> lu1.getUser().getLastName().compareTo(lu2.getUser().getLastName()))
+            .collect(Collectors.toList()));
+        }
+        crpPpaPartners.add(crpPpaPartner);
+      }
+      loggedCrp.setCrpPpaPartners(crpPpaPartners);
+      for (CrpPpaPartner crpPpaPartner : loggedCrp.getCrpInstitutionsPartners()) {
+        CrpPpaPartner crpPpaPartner1 = crpPpaPartnerManager.getCrpPpaPartnerById(crpPpaPartner.getId());
+        System.out.println("2 " + crpPpaPartner1.getInstitution().getComposedName());
+        if (crpPpaPartner.getContactPoints() != null) {
+          for (LiaisonUser liaisonUser : crpPpaPartner.getContactPoints()) {
+            System.out.println("2 Contact Person: " + liaisonUser.getUser().getId());
+          }
+        } else {
+          System.out.println("2 No Contact Person");
+        }
+      }
+      /* End Test */
       List<CrpPpaPartner> ppaPartnerReview;
 
       if (crpPpaPartnerManager.findAll() != null) {

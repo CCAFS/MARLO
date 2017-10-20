@@ -121,7 +121,7 @@
         <ul>
         [#if ppaPartner.contactPoints??]
           [#list ppaPartner.contactPoints as contactPoint]
-            [@userItem ppaPartner=contactPoint index=contactPoint_index name="${customName}.contactPoints"/]
+            [@userItem element=contactPoint index=contactPoint_index name="${customName}.contactPoints"/]
           [/#list]
         [/#if]
         </ul>

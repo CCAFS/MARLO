@@ -72,10 +72,14 @@ public class LiaisonInstitutionManagerImpl implements LiaisonInstitutionManager 
 
 
   @Override
+  public LiaisonInstitution getLiasonInstitutionByInstitutionId(Long institutionId, long crpID) {
+    return liaisonInstitutionDAO.findByInstitutionAndCrp(institutionId, crpID);
+  }
+
+  @Override
   public long saveLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
 
     return liaisonInstitutionDAO.save(liaisonInstitution);
   }
-
 
 }
