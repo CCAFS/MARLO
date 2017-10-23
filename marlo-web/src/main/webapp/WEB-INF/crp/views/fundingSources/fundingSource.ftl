@@ -423,13 +423,13 @@
     <div class="contributionWrapper budgetByYears">
       [#-- Year Tabs --]
       <ul class="nav nav-tabs budget-tabs" role="tablist">
-        [#list startYear .. extensionYear as year]
+        [#list startYear .. endYear as year]
           <li class="[#if year == currentCycleYear]active[/#if]"><a href="#fundingYear-${year}" role="tab" data-toggle="tab">${year} </a></li>
         [/#list]
       </ul>
       [#-- Years Content --]
       <div class="tab-content contributionContent">
-        [#list startYear .. extensionYear as year]
+        [#list startYear .. endYear as year]
           <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="fundingYear-${year}">
           
           [#attempt]

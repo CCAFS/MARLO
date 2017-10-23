@@ -752,7 +752,7 @@ public class ProjectPartnerAction extends BaseAction {
               .addAll(historyComparator.getDifferencesList(projectPartnerContribution, transaction, specialList,
                 "project.partners[" + i + "].partnerContributors[" + k + "]", "project.partnerContributors", 2));
             k++;
-          } ;
+          };
 
           List<ProjectPartnerOverall> overalls =
             projectPartner.getProjectPartnerOveralls().stream().filter(c -> c.isActive()).collect(Collectors.toList());
@@ -1047,6 +1047,8 @@ public class ProjectPartnerAction extends BaseAction {
     if (this.hasPermission("canEdit")) {
 
       previousProject = projectManager.getProjectById(projectID);
+      List<ProjectPartnerPerson> previousCoordinators = previousProject.getCoordinatorPersons();
+      ProjectPartnerPerson previousLeader = previousProject.getLeaderPerson();
 
       for (ProjectPartner previousPartner : previousProject.getProjectPartners().stream().filter(c -> c.isActive())
         .collect(Collectors.toList())) {
@@ -1247,10 +1249,10 @@ public class ProjectPartnerAction extends BaseAction {
       ProjectPartnerPerson leader = project.getLeaderPerson();
       // Notify user if the project leader was created.
 
-      this.updateRoles(previousProject.getLeaderPerson(), leader, plRole);
+      this.updateRoles(previousLeader, leader, plRole);
 
 
-      this.updateRoles(previousProject.getCoordinatorPersons(), project.getCoordinatorPersons(), pcRole);
+      this.updateRoles(previousCoordinators, project.getCoordinatorPersons(), pcRole);
       project = projectManager.getProjectById(projectID);
       project.setActiveSince(new Date());
       project.setModificationJustification(this.getJustification());
