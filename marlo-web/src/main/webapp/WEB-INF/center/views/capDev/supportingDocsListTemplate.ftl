@@ -15,7 +15,7 @@
     <tbody>
     [#if deliverables?has_content]
       [#list deliverables as deliverable]         
-        [#local deliverableUrl][@s.url namespace=namespace action=defaultAction][@s.param name='capdevID']${capdevID?c}[/@s.param][@s.param name='supportingDocID']${deliverable.id?c}[/@s.param][@s.param name='edit' value="true" /][/@s.url][/#local]
+        [#local deliverableUrl][@s.url namespace=namespace action=defaultAction][@s.param name='capdevID']${capdevID?c}[/@s.param][@s.param name='projectID']${projectID?c}[/@s.param][@s.param name='supportingDocID']${deliverable.id?c}[/@s.param][@s.param name='edit' value="true" /][/@s.url][/#local]
         <tr>
         [#-- ID --]
         <td class="deliverableId">

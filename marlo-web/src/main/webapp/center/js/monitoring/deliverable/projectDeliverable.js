@@ -22,6 +22,13 @@ function init() {
 
   // Change deliverable type
   $(".typeSelect").on("change", changeDeliverableType);
+
+
+// disable existing capdev intervention field
+  $(".capdevDeliverableRadio").on("change", enable_disable_capdev);
+
+  //enable  existing capdev intervention field
+  enable_disable_capdev();
 }
 
 /** FUNCTIONS documents * */
@@ -236,4 +243,17 @@ function changeDeliverableType() {
       }
   });
 
+}
+
+
+//enable or disable existing capdev intervention field
+function enable_disable_capdev(){
+  
+  if($('#no-radio').is(':checked')) { 
+    $(".capdevDeliverableSelect").attr('disabled', 'disabled');
+  }
+  else{
+    $('.capdevDeliverableSelect').removeAttr('disabled');
+    
+  }
 }

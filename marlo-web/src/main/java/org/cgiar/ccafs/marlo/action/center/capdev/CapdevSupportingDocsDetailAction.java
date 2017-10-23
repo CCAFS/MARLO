@@ -18,8 +18,6 @@ package org.cgiar.ccafs.marlo.action.center.capdev;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
-import org.cgiar.ccafs.marlo.data.manager.CapdevSuppDocsDocumentsManager;
-import org.cgiar.ccafs.marlo.data.manager.CapdevSupportingDocsManager;
 import org.cgiar.ccafs.marlo.data.manager.ICapacityDevelopmentService;
 import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableDocumentManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableManager;
@@ -53,7 +51,7 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
   private long capdevID;
   private long projectID;
   private CapacityDevelopment capdev;
-  private final CapdevSupportingDocsValidator validator;
+  private CapdevSupportingDocsValidator validator;
   private CapdevSupportingDocs capdevSupportingDocs;
   private CenterDeliverable supportingDoc;
   private List<CenterDeliverableType> deliverablesList;
@@ -61,8 +59,7 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
   private List<String> links;
   private List<Map<String, Object>> json;
   private List<CenterDeliverableDocument> documents;
-  private CapdevSupportingDocsManager capdevsupportingDocsService;
-  private CapdevSuppDocsDocumentsManager capdevSuppDocsDocumentsService;
+
   private ICenterDeliverableTypeManager centerDeliverableTypeService;
   private ICapacityDevelopmentService capdevService;
   private ICenterDeliverableManager centerDeliverableService;
@@ -72,15 +69,13 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
   private final AuditLogManager auditLogService;
 
   @Inject
-  public CapdevSupportingDocsDetailAction(APConfig config, CapdevSupportingDocsManager capdevsupportingDocsService,
-    ICenterDeliverableTypeManager centerDeliverableTypeService,
-    CapdevSuppDocsDocumentsManager capdevSuppDocsDocumentsService, CapdevSupportingDocsValidator validator,
-    AuditLogManager auditLogService, ICapacityDevelopmentService capdevService,
+  public CapdevSupportingDocsDetailAction(APConfig config, ICenterDeliverableTypeManager centerDeliverableTypeService,
+    CapdevSupportingDocsValidator validator, AuditLogManager auditLogService, ICapacityDevelopmentService capdevService,
     ICenterDeliverableManager centerDeliverableService, ICenterDeliverableDocumentManager centerDeliverableDocService) {
     super(config);
-    this.capdevsupportingDocsService = capdevsupportingDocsService;
+
     this.centerDeliverableTypeService = centerDeliverableTypeService;
-    this.capdevSuppDocsDocumentsService = capdevSuppDocsDocumentsService;
+
     this.validator = validator;
     this.auditLogService = auditLogService;
     this.capdevService = capdevService;
@@ -141,13 +136,13 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
   }
 
 
-  public CenterDeliverable getSupportingDoc() {
-    return supportingDoc;
+  public long getProjectID() {
+    return projectID;
   }
 
 
-  public long getProjectID() {
-    return projectID;
+  public CenterDeliverable getSupportingDoc() {
+    return supportingDoc;
   }
 
 
@@ -170,8 +165,11 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
 
     try {
       supportingDocID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter("supportingDocID")));
+      System.out.println(supportingDocID);
       capdevID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CAPDEV_ID)));
+      System.out.println(capdevID);
       projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_ID)));
+      System.out.println(projectID);
     } catch (final Exception e) {
       supportingDocID = -1;
       capdevID = -1;
@@ -181,7 +179,7 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
 
       transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
-      final CenterDeliverable history = (CenterDeliverable) auditLogService.getHistory(transaction);
+      CenterDeliverable history = (CenterDeliverable) auditLogService.getHistory(transaction);
 
       if (history != null) {
         supportingDoc = history;
@@ -205,7 +203,6 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
           .collect(Collectors.toList()));
         Collections.sort(deliverablesSubtypesList, (ra1, ra2) -> ra1.getName().compareTo(ra2.getName()));
 
-        System.out.println(deliverablesSubtypesList.size());
       }
 
       if (supportingDoc.getDeliverableDocuments() != null) {
@@ -227,8 +224,6 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
     final CenterDeliverable supportingDocDB = centerDeliverableService.getDeliverableById(supportingDocID);
     supportingDocDB.setName(supportingDoc.getName());
 
-
-    System.out.println(supportingDoc.getDeliverableType().getId());
 
     if (supportingDoc.getDeliverableType().getId() != null) {
       if (supportingDoc.getDeliverableType().getId() != -1) {
@@ -363,13 +358,13 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
   }
 
 
-  public void setSupportingDoc(CenterDeliverable supportingDoc) {
-    this.supportingDoc = supportingDoc;
+  public void setProjectID(long projectID) {
+    this.projectID = projectID;
   }
 
 
-  public void setProjectID(long projectID) {
-    this.projectID = projectID;
+  public void setSupportingDoc(CenterDeliverable supportingDoc) {
+    this.supportingDoc = supportingDoc;
   }
 
 
