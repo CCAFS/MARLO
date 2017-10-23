@@ -19,21 +19,30 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
+import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Role;
+import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.SendMailS;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -43,6 +52,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
+import org.apache.commons.lang3.RandomStringUtils;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -51,6 +61,24 @@ public class CrpPpaPartnersAction extends BaseAction {
 
 
   private static final long serialVersionUID = -8561096521514225205L;
+
+  /**
+   * Helper method to read a stream into memory.
+   * 
+   * @param stream
+   * @return
+   * @throws IOException
+   */
+  public static byte[] readFully(InputStream stream) throws IOException {
+    byte[] buffer = new byte[8192];
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+    int bytesRead;
+    while ((bytesRead = stream.read(buffer)) != -1) {
+      baos.write(buffer, 0, bytesRead);
+    }
+    return baos.toByteArray();
+  }
 
   // Managers
   private InstitutionManager institutionManager;
@@ -61,16 +89,21 @@ public class CrpPpaPartnersAction extends BaseAction {
   private UserRoleManager userRoleManager;
   private RoleManager roleManager;
   private Role cpRole;
+  private CrpUserManager crpUserManager;
 
+  private UserManager userManager;
   // Variables
   private List<Institution> institutions;
   private List<Institution> crpInstitutions;
   private Crp loggedCrp;
+  // Util
+  private SendMailS sendMail;
 
   @Inject
   public CrpPpaPartnersAction(APConfig config, InstitutionManager institutionManager, CrpManager crpManager,
     CrpPpaPartnerManager crpPpaPartnerManager, LiaisonUserManager liaisonUserManager,
-    LiaisonInstitutionManager liaisonInstitutionManager, UserRoleManager userRoleManager, RoleManager roleManager) {
+    LiaisonInstitutionManager liaisonInstitutionManager, UserRoleManager userRoleManager, RoleManager roleManager,
+    UserManager userManager, CrpUserManager crpUserManager, SendMailS sendMail) {
     super(config);
     this.institutionManager = institutionManager;
     this.crpManager = crpManager;
@@ -79,16 +112,20 @@ public class CrpPpaPartnersAction extends BaseAction {
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.userRoleManager = userRoleManager;
     this.roleManager = roleManager;
+    this.userManager = userManager;
+    this.crpUserManager = crpUserManager;
+    this.sendMail = sendMail;
   }
 
-  private void checkChangesCrpPpaPartnerContactPoints(CrpPpaPartner partner) {
+  private void checkChangesCrpPpaPartnerContactPoints(CrpPpaPartner partnerDB) {
     for (CrpPpaPartner crpPpaPartner : loggedCrp.getCrpInstitutionsPartners().stream()
-      .filter(c -> c.getId().longValue() == (partner.getId().longValue())).collect(Collectors.toList())) {
+      .filter(c -> c.getId().longValue() == (partnerDB.getId().longValue())).collect(Collectors.toList())) {
       // fill contactPoints
-      this.fillContactPoints(partner);
+      this.fillContactPoints(partnerDB);
       // Check disabled contact points
-      for (LiaisonUser liaisonUser : partner.getContactPoints()) {
-        if (!crpPpaPartner.getContactPoints().contains(liaisonUser)) {
+      for (LiaisonUser liaisonUser : partnerDB.getContactPoints()) {
+        if (crpPpaPartner.getContactPoints() == null || crpPpaPartner.getContactPoints().isEmpty()
+          || !crpPpaPartner.getContactPoints().contains(liaisonUser)) {
           // Disable liaisonUser, liaisonInstitution and UserRole
           if (liaisonUser.getUser() != null && liaisonUser.getUser().getId() != null && cpRole != null) {
             List<UserRole> userRoles = userRoleManager.getUserRolesByUserId(liaisonUser.getUser().getId()).stream()
@@ -102,17 +139,40 @@ public class CrpPpaPartnersAction extends BaseAction {
         }
       }
       // Check Added liaisonUsers
-      for (LiaisonUser liaisonUser : crpPpaPartner.getContactPoints()) {
-        // new User?
-        if (liaisonUser.getId() == null) {
-          System.out.println("liaison created TODO");
-        }
-        if (liaisonUser.getUser().getId() == null) {
-          System.out.println("user created TODO");
-        }
-        if (!partner.getContactPoints().contains(liaisonUser)) {
-          System.out.println("new user added TODO");
-          // Add liaisonUser, liaisonInstitution and UserRole
+      if (crpPpaPartner.getContactPoints() != null && !crpPpaPartner.getContactPoints().isEmpty()) {
+        for (LiaisonUser liaisonUser : crpPpaPartner.getContactPoints()) {
+          // new User?
+          if (liaisonUser.getId() == null || !partnerDB.getContactPoints().contains(liaisonUser)) {
+
+            LiaisonInstitution liaisonInstitution = liaisonInstitutionManager
+              .getLiasonInstitutionByInstitutionId(crpPpaPartner.getInstitution().getId(), loggedCrp.getId());
+            // Add LiaisonInstitution if don't exists
+            if (liaisonInstitution == null) {
+              liaisonInstitution = new LiaisonInstitution();
+              liaisonInstitution.setInstitution(crpPpaPartner.getInstitution());
+              liaisonInstitution.setCrp(loggedCrp);
+              liaisonInstitution.setActive(true);
+              liaisonInstitution.setName(crpPpaPartner.getInstitution().getName());
+              liaisonInstitution.setAcronym(crpPpaPartner.getInstitution().getAcronym());
+              liaisonInstitutionManager.saveLiaisonInstitution(liaisonInstitution);
+            }
+            // Add liaisonUser
+            LiaisonUser liaisonUserSave =
+              new LiaisonUser(liaisonInstitution, userManager.getUser(liaisonUser.getUser().getId()));
+            liaisonUserSave.setCrp(loggedCrp);
+            liaisonUserSave.setActive(true);
+            liaisonUserManager.saveLiaisonUser(liaisonUserSave);
+            // add userRole
+            if (cpRole != null) {
+              UserRole userRole = new UserRole(cpRole, liaisonUserSave.getUser());
+              userRoleManager.saveUserRole(userRole);
+            }
+            // If is new user active it
+            if (!liaisonUser.getUser().isActive()) {
+              this.notifyNewUserCreated(liaisonUser.getUser());
+            }
+            partnerDB.getContactPoints().add(liaisonUserSave);
+          }
         }
       }
     }
@@ -127,7 +187,8 @@ public class CrpPpaPartnersAction extends BaseAction {
       liaisonInstitutionManager.deleteLiaisonInstitution(liaisonInstitution.getId());
       // Disable LiaisonUsers
       if (liaisonInstitution.getLiaisonUsers() != null && !liaisonInstitution.getLiaisonUsers().isEmpty()) {
-        for (LiaisonUser liaisonUser : liaisonInstitution.getLiaisonUsers()) {
+        for (LiaisonUser liaisonUser : liaisonInstitution.getLiaisonUsers().stream().filter(lu -> lu.isActive())
+          .collect(Collectors.toList())) {
           // Delete CP UserRole
           if (liaisonUser.getUser() != null && liaisonUser.getUser().getId() != null && cpRole != null) {
             List<UserRole> userRoles = userRoleManager.getUserRolesByUserId(liaisonUser.getUser().getId()).stream()
@@ -144,6 +205,7 @@ public class CrpPpaPartnersAction extends BaseAction {
 
   }
 
+
   private void fillContactPoints(CrpPpaPartner crpPpaPartner) {
     LiaisonInstitution liaisonInstitution = liaisonInstitutionManager
       .getLiasonInstitutionByInstitutionId(crpPpaPartner.getInstitution().getId(), loggedCrp.getId());
@@ -158,7 +220,6 @@ public class CrpPpaPartnersAction extends BaseAction {
     }
   }
 
-
   public List<Institution> getCrpInstitutions() {
     return crpInstitutions;
   }
@@ -169,6 +230,94 @@ public class CrpPpaPartnersAction extends BaseAction {
 
   public Crp getLoggedCrp() {
     return loggedCrp;
+  }
+
+  /**
+   * This method will validate if the user is deactivated. If so, it will send an email indicating the credentials to
+   * access.
+   * 
+   * @param user is a User object that could be the leader.
+   */
+  private void notifyNewUserCreated(User user) {
+    user = userManager.getUser(user.getId());
+
+    if (!user.isActive()) {
+      String toEmail = user.getEmail();
+      String ccEmail = null;
+      String bbcEmails = this.config.getEmailNotification();
+      String subject = this.getText("email.newUser.subject", new String[] {user.getFirstName()});
+      // Setting the password
+      String password = this.getText("email.outlookPassword");
+      if (!user.isCgiarUser()) {
+        // Generating a random password.
+        password = RandomStringUtils.randomNumeric(6);
+        // Applying the password to the user.
+        user.setPassword(password);
+      }
+
+      // Building the Email message:
+      StringBuilder message = new StringBuilder();
+      message.append(this.getText("email.dear", new String[] {user.getFirstName()}));
+
+      // get CRPAdmin contacts
+      String crpAdmins = "";
+      long adminRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_ADMIN_ROLE));
+      Role roleAdmin = roleManager.getRoleById(adminRol);
+      List<UserRole> userRoles = roleAdmin.getUserRoles().stream()
+        .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
+      for (UserRole userRole : userRoles) {
+        if (crpAdmins.isEmpty()) {
+          crpAdmins += userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+        } else {
+          crpAdmins += ", " + userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+        }
+      }
+
+      message.append(this.getText("email.newUser.part1", new String[] {this.getText("email.newUser.listRoles"),
+        config.getBaseUrl(), user.getEmail(), password, this.getText("email.support", new String[] {crpAdmins})}));
+      message.append(this.getText("email.bye"));
+
+      // Saving the new user configuration.
+      user.setActive(true);
+      userManager.saveUser(user, this.getCurrentUser());
+      // Saving crpUser
+      CrpUser crpUser = new CrpUser(loggedCrp, user);
+      crpUser.setActive(true);
+      crpUser.setCreatedBy(this.getCurrentUser());
+      crpUser.setActiveSince(new Date());
+      crpUser.setModifiedBy(this.getCurrentUser());
+      crpUser.setModificationJustification("");
+      crpUserManager.saveCrpUser(crpUser);
+
+      // Send UserManual.pdf
+      String contentType = "application/pdf";
+      String fileName = "Introduction_To_MARLO_v2.1.pdf";
+      byte[] buffer = null;
+      InputStream inputStream = null;
+
+      try {
+        inputStream = this.getClass().getResourceAsStream("/manual/Introduction_To_MARLO_v2.1.pdf");
+        buffer = readFully(inputStream);
+      } catch (FileNotFoundException e) {
+        e.printStackTrace();
+      } catch (IOException e) {
+        e.printStackTrace();
+      } finally {
+        if (inputStream != null) {
+          try {
+            inputStream.close();
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
+        }
+      }
+
+      if (buffer != null && fileName != null && contentType != null) {
+        sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer, contentType, fileName, true);
+      } else {
+        sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+      }
+    }
   }
 
   @Override
@@ -208,43 +357,49 @@ public class CrpPpaPartnersAction extends BaseAction {
   public String save() {
     if (this.hasPermission("*")) {
       List<CrpPpaPartner> ppaPartnerReview;
-
-      // Check and Disable crpPPaPartner
-      if (crpPpaPartnerManager.findAll() != null) {
-
-        ppaPartnerReview = crpPpaPartnerManager.findAll();
-        for (CrpPpaPartner partner : ppaPartnerReview.stream().filter(ppa -> ppa.getCrp().equals(loggedCrp))
-          .collect(Collectors.toList())) {
-          partner = crpPpaPartnerManager.getCrpPpaPartnerById(partner.getId());
-          // Check if the CrpPpaPartner was disabled
-          if (!loggedCrp.getCrpInstitutionsPartners().contains(partner)) {
-            crpPpaPartnerManager.deleteCrpPpaPartner(partner.getId());
-            // Disable Contact Points of a CrpPpaPartner
-            this.disableCrpPpaPartnerContactPoints(partner);
-          } else {
-            // Check changes in the crpPpaPartner contactPoints
-            this.checkChangesCrpPpaPartnerContactPoints(partner);
-          }
-        }
-      }
-
-
+      // Check new institutions
       for (CrpPpaPartner partner : loggedCrp.getCrpInstitutionsPartners()) {
         if (partner.getId() == null) {
           partner.setCrp(loggedCrp);
-          partner.setInstitution(institutionManager.getInstitutionById(partner.getInstitution().getId()));
+          Institution institution = institutionManager.getInstitutionById(partner.getInstitution().getId());
+          partner.setInstitution(institution);
           partner.setActive(true);
           partner.setCreatedBy(this.getCurrentUser());
           partner.setModifiedBy(this.getCurrentUser());
           partner.setModificationJustification("");
           partner.setActiveSince(new Date());
           crpPpaPartnerManager.saveCrpPpaPartner(partner);
+          // save liaison institution if don't exists
+          LiaisonInstitution liaisonInstitution = liaisonInstitutionManager
+            .getLiasonInstitutionByInstitutionId(partner.getInstitution().getId(), loggedCrp.getId());
+          // Add LiaisonInstitution if don't exists
+          if (liaisonInstitution == null) {
+            liaisonInstitution = new LiaisonInstitution();
+            liaisonInstitution.setInstitution(institution);
+            liaisonInstitution.setCrp(loggedCrp);
+            liaisonInstitution.setActive(true);
+            liaisonInstitution.setName(partner.getInstitution().getName());
+            liaisonInstitution.setAcronym(partner.getInstitution().getAcronym());
+            liaisonInstitutionManager.saveLiaisonInstitution(liaisonInstitution);
+          }
         }
       }
-
-      if (loggedCrp.getCrpPpaPartners() != null) {
-        loggedCrp.setCrpInstitutionsPartners(new ArrayList<CrpPpaPartner>(
-          loggedCrp.getCrpPpaPartners().stream().filter(ppa -> ppa.isActive()).collect(Collectors.toList())));
+      // Check Changes add and/or disable crpPPaPartner and contact points
+      if (crpPpaPartnerManager.findAll() != null) {
+        ppaPartnerReview = crpPpaPartnerManager.findAll();
+        for (CrpPpaPartner partnerDB : ppaPartnerReview.stream().filter(ppa -> ppa.getCrp().equals(loggedCrp))
+          .collect(Collectors.toList())) {
+          partnerDB = crpPpaPartnerManager.getCrpPpaPartnerById(partnerDB.getId());
+          // Check if the CrpPpaPartner was disabled
+          if (!loggedCrp.getCrpInstitutionsPartners().contains(partnerDB)) {
+            // Disable Contact Points of a CrpPpaPartner
+            this.disableCrpPpaPartnerContactPoints(partnerDB);
+            crpPpaPartnerManager.deleteCrpPpaPartner(partnerDB.getId());
+          } else {
+            // Check changes in the crpPpaPartner contactPoints
+            this.checkChangesCrpPpaPartnerContactPoints(partnerDB);
+          }
+        }
       }
 
       Collection<String> messages = this.getActionMessages();
