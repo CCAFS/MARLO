@@ -354,9 +354,9 @@
 				<div class=" newCapdevField form-group">
 					<div class="simpleBox">
 						
-						<div class="form-group capdevDimension">[@customForm.yesNoInput  label="capdev.globalDimensionQuestion" name="capdev.sGlobal"  inverse=false  cssClass="global" editable=editable/] </div>
+						<div class="form-group capdevDimension">[@customForm.yesNoInput  label="capdev.globalDimensionQuestion" name="capdev.sGlobal" value="${(capdev.sGlobal)!'-1'}" inverse=false  cssClass="global" editable=editable/] </div>
 
-						<div class="form-group capdevDimension">[@customForm.yesNoInput  label="capdev.regionDimensionQuestion" name="capdev.sRegional"  inverse=false  cssClass="regional" editable=editable/] </div>
+						<div class="form-group capdevDimension">[@customForm.yesNoInput  label="capdev.regionDimensionQuestion" name="capdev.sRegional" value="${(capdev.sRegional)!'-1'}" inverse=false  cssClass="regional" editable=editable/] </div>
 
 						
 						<!-- regions-->

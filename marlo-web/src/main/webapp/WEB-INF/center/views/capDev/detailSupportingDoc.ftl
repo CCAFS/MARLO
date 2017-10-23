@@ -29,9 +29,10 @@
 <div class="container"> 
 
 	<div class="row">
-		<div class="col-md-12 capdevinfo">
-			help text
-		</div>
+		<div class="helpMessage infoText col-md-12 capdevinfo">
+      		<img class="col-md-2" src="${baseUrl}/global/images/icon-help.png" />
+        	[@s.text name="capdev.help.supportingDocs"][/@s.text]
+    	</div>
 	</div>
 	
 	<div class="col-md-3 capDevMenu">
