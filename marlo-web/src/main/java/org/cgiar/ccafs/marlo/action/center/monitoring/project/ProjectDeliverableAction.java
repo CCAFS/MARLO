@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.action.center.monitoring.project;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
+import org.cgiar.ccafs.marlo.data.manager.ICapacityDevelopmentService;
 import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableCrosscutingThemeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableDocumentManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableManager;
@@ -26,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectManager;
+import org.cgiar.ccafs.marlo.data.model.CapacityDevelopment;
 import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
@@ -48,6 +50,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -87,6 +90,8 @@ public class ProjectDeliverableAction extends BaseAction {
 
   private final ICenterProjectManager projectService;
 
+  private final ICapacityDevelopmentService capdevService;
+
   private final AuditLogManager auditLogService;
   private final CenterDeliverableValidator validator;
   private long deliverableID;
@@ -97,6 +102,7 @@ public class ProjectDeliverableAction extends BaseAction {
   private CenterArea selectedResearchArea;
   private CenterProgram selectedProgram;
   private Center loggedCenter;
+  private String is_capdev;
 
   private CenterDeliverable deliverable;
   private List<CenterArea> researchAreas;
@@ -104,6 +110,7 @@ public class ProjectDeliverableAction extends BaseAction {
   private List<CenterDeliverableType> deliverableSubTypes;
   private List<CenterDeliverableType> deliverableTypeParent;
   private List<CenterOutput> outputs;
+  private List<CapacityDevelopment> capdevs;
   private String transaction;
 
   @Inject
@@ -112,7 +119,7 @@ public class ProjectDeliverableAction extends BaseAction {
     ICenterProjectManager projectService, ICenterDeliverableDocumentManager deliverableDocumentService,
     CenterDeliverableValidator validator, ICenterDeliverableCrosscutingThemeManager deliverableCrosscutingService,
     ICenterDeliverableOutputManager deliverableOutputService, ICenterOutputManager outputService,
-    AuditLogManager auditLogService) {
+    AuditLogManager auditLogService, ICapacityDevelopmentService capdevService) {
     super(config);
     this.centerService = centerService;
     this.deliverableTypeService = deliverableTypeService;
@@ -124,6 +131,7 @@ public class ProjectDeliverableAction extends BaseAction {
     this.deliverableCrosscutingService = deliverableCrosscutingService;
     this.deliverableOutputService = deliverableOutputService;
     this.outputService = outputService;
+    this.capdevService = capdevService;
   }
 
   @Override
@@ -162,6 +170,10 @@ public class ProjectDeliverableAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+  public List<CapacityDevelopment> getCapdevs() {
+    return capdevs;
+  }
+
   public CenterDeliverable getDeliverable() {
     return deliverable;
   }
@@ -176,6 +188,10 @@ public class ProjectDeliverableAction extends BaseAction {
 
   public List<CenterDeliverableType> getDeliverableTypeParent() {
     return deliverableTypeParent;
+  }
+
+  public String getIs_capdev() {
+    return is_capdev;
   }
 
   public Center getLoggedCenter() {
@@ -206,6 +222,7 @@ public class ProjectDeliverableAction extends BaseAction {
     return project;
   }
 
+
   public long getProjectID() {
     return projectID;
   }
@@ -219,6 +236,7 @@ public class ProjectDeliverableAction extends BaseAction {
     return researchPrograms;
   }
 
+
   public CenterProgram getSelectedProgram() {
     return selectedProgram;
   }
@@ -228,11 +246,9 @@ public class ProjectDeliverableAction extends BaseAction {
     return selectedResearchArea;
   }
 
-
   public String getTransaction() {
     return transaction;
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -278,6 +294,12 @@ public class ProjectDeliverableAction extends BaseAction {
       areaID = selectedResearchArea.getId();
       researchPrograms = new ArrayList<>(
         selectedResearchArea.getResearchPrograms().stream().filter(rp -> rp.isActive()).collect(Collectors.toList()));
+
+      is_capdev = String.valueOf(deliverable.isCapdevD());
+      capdevs = capdevService.findAll().stream()
+        .filter(c -> (c.getProject() != null) && (c.getProject().getId() == project.getId()) && c.isActive())
+        .collect(Collectors.toList());
+      Collections.sort(capdevs, (ra1, ra2) -> (int) (ra2.getId() - ra1.getId()));
 
 
       final Path path = this.getAutoSaveFilePath();
@@ -406,9 +428,18 @@ public class ProjectDeliverableAction extends BaseAction {
 
       CenterDeliverable deliverableDB = deliverableService.getDeliverableById(deliverableID);
 
+      System.out.println("capdevD " + deliverable.isCapdevD());
+
       deliverableDB.setName(deliverable.getName());
       deliverableDB.setStartDate(deliverable.getStartDate());
       deliverableDB.setEndDate(deliverable.getEndDate());
+
+      deliverableDB.setCapdevD(deliverable.isCapdevD());
+      if (!deliverable.isCapdevD()) {
+        deliverableDB.setCapdev(null);
+      } else {
+        deliverableDB.setCapdev(deliverable.getCapdev());
+      }
 
 
       if (deliverable.getDeliverableType().getId() != null) {
@@ -427,6 +458,7 @@ public class ProjectDeliverableAction extends BaseAction {
 
       this.saveDocuments(deliverableDB);
       this.saveOutputs(deliverableDB);
+
 
       final List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.DELIVERABLE_DOCUMENT_RELATION);
@@ -589,9 +621,14 @@ public class ProjectDeliverableAction extends BaseAction {
     this.areaID = areaID;
   }
 
+  public void setCapdevs(List<CapacityDevelopment> capdevs) {
+    this.capdevs = capdevs;
+  }
+
   public void setDeliverable(CenterDeliverable deliverable) {
     this.deliverable = deliverable;
   }
+
 
   public void setDeliverableID(long deliverableID) {
     this.deliverableID = deliverableID;
@@ -605,6 +642,9 @@ public class ProjectDeliverableAction extends BaseAction {
     this.deliverableTypeParent = deliverableTypeParent;
   }
 
+  public void setIs_capdev(String is_capdev) {
+    this.is_capdev = is_capdev;
+  }
 
   public void setLoggedCenter(Center loggedCenter) {
     this.loggedCenter = loggedCenter;
@@ -634,17 +674,21 @@ public class ProjectDeliverableAction extends BaseAction {
     this.researchPrograms = researchPrograms;
   }
 
+
   public void setSelectedProgram(CenterProgram selectedProgram) {
     this.selectedProgram = selectedProgram;
   }
+
 
   public void setSelectedResearchArea(CenterArea selectedResearchArea) {
     this.selectedResearchArea = selectedResearchArea;
   }
 
+
   public void setTransaction(String transaction) {
     this.transaction = transaction;
   }
+
 
   @Override
   public void validate() {

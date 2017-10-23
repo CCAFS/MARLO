@@ -476,6 +476,16 @@ function urlify(text) {
   // return text.replace(urlRegex, '<a href="$1">$1</a>')
 }
 
+function urlifyComplete(text) {
+  var urlRegex = /(https?:\/\/[^\s]+)/g;
+  return text.replace(urlRegex, function(url) {
+    var l = getLocation(url);
+    return '<a href="' + url + '">' + url + '</a>';
+  })
+  // or alternatively
+  // return text.replace(urlRegex, '<a href="$1">$1</a>')
+}
+
 var getLocation = function(href) {
   var l = document.createElement("a");
   l.href = href;

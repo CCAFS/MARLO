@@ -42,6 +42,9 @@ public class CenterDeliverable implements java.io.Serializable, IAuditLog {
   @Expose
   private CapacityDevelopment capdev;
 
+  @Expose
+  private Boolean capdevD;
+
 
   @Expose
   private CenterDeliverableType deliverableType;
@@ -99,13 +102,14 @@ public class CenterDeliverable implements java.io.Serializable, IAuditLog {
 
 
   public CenterDeliverable(User modifiedBy, User createdBy, CenterProjectStatus projectStatus, CenterProject project,
-    CapacityDevelopment capdev, CenterDeliverableType deliverableType, String name, Date startDate, Date endDate,
-    boolean active, Date activeSince, String modificationJustification) {
+    CapacityDevelopment capdev, Boolean capdevD, CenterDeliverableType deliverableType, String name, Date startDate,
+    Date endDate, boolean active, Date activeSince, String modificationJustification) {
     this.modifiedBy = modifiedBy;
     this.createdBy = createdBy;
     this.projectStatus = projectStatus;
     this.project = project;
     this.capdev = capdev;
+    this.capdevD = capdevD;
     this.deliverableType = deliverableType;
     this.name = name;
     this.startDate = startDate;
@@ -243,6 +247,11 @@ public class CenterDeliverable implements java.io.Serializable, IAuditLog {
   }
 
 
+  public Boolean isCapdevD() {
+    return capdevD;
+  }
+
+
   public void setActive(boolean active) {
     this.active = active;
   }
@@ -257,6 +266,9 @@ public class CenterDeliverable implements java.io.Serializable, IAuditLog {
     this.capdev = capdev;
   }
 
+  public void setCapdevD(Boolean capdevD) {
+    this.capdevD = capdevD;
+  }
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
@@ -282,6 +294,7 @@ public class CenterDeliverable implements java.io.Serializable, IAuditLog {
     this.deliverableType = deliverableType;
   }
 
+
   public void setDocuments(List<CenterDeliverableDocument> documents) {
     this.documents = documents;
   }
@@ -289,7 +302,6 @@ public class CenterDeliverable implements java.io.Serializable, IAuditLog {
   public void setEndDate(Date endDate) {
     this.endDate = endDate;
   }
-
 
   public void setId(Long id) {
     this.id = id;
@@ -303,9 +315,11 @@ public class CenterDeliverable implements java.io.Serializable, IAuditLog {
     this.modifiedBy = modifiedBy;
   }
 
+
   public void setName(String name) {
     this.name = name;
   }
+
 
   public void setOutputs(List<CenterDeliverableOutput> outputs) {
     this.outputs = outputs;

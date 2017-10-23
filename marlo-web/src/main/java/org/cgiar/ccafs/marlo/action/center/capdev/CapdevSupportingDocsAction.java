@@ -42,6 +42,7 @@ public class CapdevSupportingDocsAction extends BaseAction {
 
   private CapacityDevelopment capdev;
   private long capdevID;
+  private long projectID;
   private long supportingDocID;
   private List<CenterDeliverable> deliverables;
 
@@ -99,17 +100,23 @@ public class CapdevSupportingDocsAction extends BaseAction {
   }
 
 
+  public long getProjectID() {
+    return projectID;
+  }
+
+
   public long getSupportingDocID() {
     return supportingDocID;
   }
-
 
   @Override
   public void prepare() throws Exception {
     try {
       capdevID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CAPDEV_ID)));
+      projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_ID)));
     } catch (final Exception e) {
       capdevID = -1;
+      projectID = 0;
     }
     capdev = capdevService.getCapacityDevelopmentById(capdevID);
 
@@ -120,6 +127,7 @@ public class CapdevSupportingDocsAction extends BaseAction {
     }
 
   }
+
 
   public void setCapdev(CapacityDevelopment capdev) {
     this.capdev = capdev;
@@ -133,6 +141,11 @@ public class CapdevSupportingDocsAction extends BaseAction {
 
   public void setDeliverables(List<CenterDeliverable> deliverables) {
     this.deliverables = deliverables;
+  }
+
+
+  public void setProjectID(long projectID) {
+    this.projectID = projectID;
   }
 
 

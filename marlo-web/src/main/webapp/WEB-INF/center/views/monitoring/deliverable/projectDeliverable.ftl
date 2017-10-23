@@ -156,6 +156,20 @@
           <div class="text-right">
             <div class="button-green addDocument"><span class="glyphicon glyphicon-plus-sign"></span>[@s.text name="Add a support document" /]</div>
           </div>
+
+          <div class="borderBox">
+            <div class="col-md-6">
+              <label for="">Is this a capacity development intervention:<span class="red">*</span></label>
+            </div>
+            <div class="col-md-3">
+              <label class = "full" for="yes-radio" title="Yes">Yes </label><input type="radio" class="capdevDeliverableRadio" id="yes-radio" name="deliverable.capdevD" value="true"  [#if is_capdev == "true"]checked[/#if]/>
+              <label class = "full" for="no-radio" title="No">No</label><input type="radio" class="capdevDeliverableRadio" id="no-radio" name="deliverable.capdevD" value="false" [#if is_capdev == "false"]checked[/#if]/>
+            </div>
+            <div class="col-md-8 capdevDeliverable">
+              [@customForm.select name="deliverable.capdev.id" listName="capdevs" keyFieldName="id" displayFieldName="title"  i18nkey="capdev.list"  placeholder="capdev.select" required=true editable=editable disabled=!editable className="capdevDeliverableSelect"/]
+            </div>
+          </div>
+
         </div>
       [#-- Section Buttons & hidden inputs--]
           [#include "/WEB-INF/center//views/monitoring/deliverable/buttons-deliverable.ftl" /]

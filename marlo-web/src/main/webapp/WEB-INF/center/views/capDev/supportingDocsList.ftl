@@ -48,7 +48,13 @@
 
 		<div class="col-md-12">
 			<div class="pull-right">
-				<a class="" href="[@s.url action='${centerSession}/capdev' /] "><span class="glyphicon glyphicon-circle-arrow-left"></span>[@s.text name="capdev.gotoBack" /]</a> 
+
+				[#if projectID > 0]
+					<a class="" href="[@s.url namespace='/monitoring' action='${centerSession}/projectCapdev'] [@s.param name='projectID']${projectID?c}[/@s.param][@s.param name='edit' value="true" /] [/@s.url] "><span class="glyphicon glyphicon-circle-arrow-left"></span>[@s.text name="capdev.gotoBackProjects" /]</a>
+		        [#else]
+		        	<a class="" href="[@s.url action='${centerSession}/capdev' /] "><span class="glyphicon glyphicon-circle-arrow-left"></span>[@s.text name="capdev.gotoBack" /]</a>
+		        [/#if]
+				 
 			</div>
 		</div>
 		
@@ -67,76 +73,14 @@
 				
 				<div>[@deliverableList.deliverableList deliverables=deliverables canValidate=true canEdit=true namespace="/capdev" defaultAction="${(centerSession)!}/detailSupportingDoc" /]</div>
 					
-
-					
-					<!-- [#if capdev.capdevSupportingDocs?has_content]
-						<table class="supportDocsList" id="supportingDocs">
-							<thead>
-								<tr class="header">
-									<th>ID</th>
-									<th>Title</th>
-									<th>Type</th>
-									<th>Publication date</th>
-									<th>Remove</th>
-								</tr>
-							</thead>
-							<tbody>
-								[#list capdev.capdevSupportingDocs as supportDocs]
-									[#if supportDocs.active]
-										<tr>
-											<td>
-												<a href="[@s.url action='${centerSession}/detailSupportingDoc'][@s.param name='capdevID']${supportDocs.capacityDevelopment.id?c}[/@s.param][@s.param name='supportingDocID']${supportDocs.id?c}[/@s.param][@s.param name='edit' value="true" /][/@s.url]">S${supportDocs.id} </a>
-											</td>
-											<td>
-											    [#if supportDocs.title?has_content]
-											    	<a href="[@s.url action='${centerSession}/detailSupportingDoc'][@s.param name='capdevID']${supportDocs.capacityDevelopment.id?c}[/@s.param][@s.param name='supportingDocID']${supportDocs.id?c}[/@s.param][@s.param name='edit' value="true" /][/@s.url]">${supportDocs.title}</a>
-											    [#else]
-											    	<a href="[@s.url action='${centerSession}/detailSupportingDoc'][@s.param name='capdevID']${supportDocs.capacityDevelopment.id?c}[/@s.param][@s.param name='supportingDocID']${supportDocs.id?c}[/@s.param][@s.param name='edit' value="true" /][/@s.url]">Not defined</a>
-											    [/#if]
-										    </td>
-										    <td>
-											    [#if supportDocs.centerDeliverableType??]
-											    	${supportDocs.centerDeliverableType.name}
-											    [#else]
-											    	Not defined
-											    [/#if]
-										    </td>
-										    <td>
-											    [#if supportDocs.publicationDate??]
-											    	${supportDocs.publicationDate}
-											    [#else]
-											    	Not defined
-											    [/#if]
-										    </td>
-											<td class="removeCol">
-												[#if editable]
-										            <a  class="deleteDoc" href="#" data-href="[@s.url action='${centerSession}/deleteSupportingDoc'][@s.param name='capdevID']${capdev.id}[/@s.param] [@s.param name='supportingDocID']${supportDocs.id?c}[/@s.param] [@s.param name='edit' value="true" /][/@s.url]" data-toggle="modal" data-target="#confirm-delete">
-										               <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="capdev.removeCapdev" /]" /> 
-										            </a>
-									             [#else]
-									             	<img src="${baseUrl}/global/images/trash_disable.png" title="[@s.text name="capdev.removeCapdev" /]" /> 
-									             [/#if]
-								            </td>
-
-
-								            
-										</tr>
-									[/#if]
-
-								[/#list]
-
-								
-							</tbody>
-						</table>
-					[/#if] -->
-						<p class="text-center inf" style="display:${(deliverables?has_content)?string('none','block')}">[@s.text name="capdev.notSupportDocuments" /]</p>	
+	
 
 					
 					[#if editable]
 						<div class="col-md-12 newCapdevField">
 							<div class="pull-right">
 								<div class="buttons-content">        
-									<a class="addButton" href="[@s.url action='${centerSession}/addSupportingDoc'][@s.param name='supportingDocID']${supportingDocID}[/@s.param] [@s.param name='capdevID']${capdevID}[/@s.param] [@s.param name='edit' value="true" /][/@s.url]">[@s.text name="capdev.addSupportingDoc" /]</a>
+									<a class="addButton" href="[@s.url action='${centerSession}/addSupportingDoc'][@s.param name='supportingDocID']${supportingDocID}[/@s.param] [@s.param name='capdevID']${capdevID}[/@s.param] [@s.param name='projectID']${projectID}[/@s.param][@s.param name='edit' value="true" /][/@s.url]">[@s.text name="capdev.addSupportingDoc" /]</a>
 									<div class="clearfix"></div>
 								</div>
 							</div>
@@ -189,17 +133,3 @@
 
 
 [#include "/WEB-INF/center/pages/footer.ftl"]
-
-
-
-
-
-
-
-
-
-
-
-
-
-

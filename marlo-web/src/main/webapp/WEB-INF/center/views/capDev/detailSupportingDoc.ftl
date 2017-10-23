@@ -56,7 +56,7 @@
 		      <p>[@s.text name="capdev.message.historyVersion" ]  
 		          [@s.param]<span>${capdev.modifiedBy.composedName?html}</span>[/@s.param]
 		          [@s.param]<span>${capdev.activeSince?datetime}</span>[/@s.param]
-		          [@s.param]<a href="[@s.url][@s.param name="capdevID" value=capdevID /][@s.param name="supportingDocID" value=supportingDocID /][@s.param name="edit" value="true"/][/@s.url]">here</a>[/@s.param]
+		          [@s.param]<a href="[@s.url][@s.param name="capdevID" value=capdevID /][@s.param name="projectID" value=projectID /][@s.param name="supportingDocID" value=supportingDocID /][@s.param name="edit" value="true"/][/@s.url]">here</a>[/@s.param]
 		         [/@s.text]
 		      </p>
 		      [#-- Differences --]
@@ -72,8 +72,9 @@
 
 		<div class="col-md-12">
 			<div class="pull-right">
-				<a class="" href="[@s.url action='${centerSession}/supportingDocs'] [@s.param name='capdevID']${capdevID}[/@s.param] [@s.param name='edit' value="true" /][/@s.url]"><span class="glyphicon glyphicon-circle-arrow-left"></span>[@s.text name="capdev.supportingDocs.goBack" /]</a> 
+				<a class="" href="[@s.url action='${centerSession}/supportingDocs'] [@s.param name='capdevID']${capdevID}[/@s.param] [@s.param name='projectID']${projectID}[/@s.param] [@s.param name='edit' value="true" /][/@s.url]"><span class="glyphicon glyphicon-circle-arrow-left"></span>[@s.text name="capdev.supportingDocs.goBack" /]</a> 
 			</div>
+			
 		</div>
 		
 		<div class="col-md-12">
@@ -157,8 +158,10 @@
 				</div>
 
 
-				<input  type="hidden" name="capdevID" value="${supportingDoc.capdev.id}" /> 
+				<input  type="hidden" name="capdevID" value="${capdev.id}" /> 
+				<input  type="hidden" name="projectID" value="${projectID}" /> 
 				<input  type="hidden" name="supportingDocID" value="${supportingDoc.id}" /> 
+
 
 				<!-- buttons -->
 				[#assign recordsList = (action.getListLog(supportingDoc))!{} /]
@@ -168,7 +171,7 @@
 					        	<div class="buttons-content">  
 					        		[#if recordsList?has_content]
 								      [#import "/WEB-INF/center//views/capDev/logHistory.ftl" as logHistory /]
-								      [@logHistory.logList list=recordsList itemName1="capdevID" itemName2="supportingDocID" itemId1=supportingDoc.capdev.id itemId2=supportingDoc.id /]
+								      [@logHistory.logList list=recordsList itemName1="capdevID" itemName2="supportingDocID" itemName3="projectID" itemId1=supportingDoc.capdev.id itemId2=supportingDoc.id  itemId3=projectID/]
 								      <a href="" onclick="return false" class="form-button button-history"><span class="glyphicon glyphicon-glyphicon glyphicon-list-alt" aria-hidden="true"></span> [@s.text name="form.buttons.history" /]</a>
 								    [/#if] 
 
@@ -222,20 +225,3 @@
 
 
 [#include "/WEB-INF/center/pages/footer.ftl"]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

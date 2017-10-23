@@ -2,10 +2,13 @@
 
 [#assign title = "Capacity Development" /]
 
-[#assign customCSS = ["${baseUrl}/global/css/customDataTable.css","${baseUrlMedia}/css/capDev/capacityDevelopment.css"] /]
+[#assign customCSS = ["${baseUrl}/global/css/customDataTable.css",
+					  "${baseUrlMedia}/css/capDev/capacityDevelopment.css"] /]
 
 [#assign pageLibs = ["select2","flat-flags"] /]
-[#assign customJS = ["${baseUrlMedia}/js/capDev/capacityDevelopment.js", "${baseUrl}/global/js/fieldsValidation.js"] /]
+
+[#assign customJS = ["${baseUrlMedia}/js/capDev/capacityDevelopment.js", 
+					 "${baseUrl}/global/js/fieldsValidation.js"] /]
 
 [#assign currentStage = "capdevIntervention" /]
 
@@ -17,14 +20,6 @@
 [#include "/WEB-INF/center/pages/header.ftl" /]
 [#include "/WEB-INF/center/pages/main-menu.ftl" /]
 
-
-
-
-
-
-
-<script src="${baseUrl}/global/bower_components/jquery/dist/jquery.min.js"></script>
-<script src="${baseUrlMedia}/js/capDev/capacityDevelopment.js"></script>
 
 
 <div class="container"> 
@@ -50,8 +45,16 @@
 	        [#include "/WEB-INF/center/views/capDev/messages-capdev.ftl" /]
 	        <br />
 
+
+
 			<div class="pull-right">
-				<a class="" href="[@s.url action='${centerSession}/capdev' /] "><span class="glyphicon glyphicon-circle-arrow-left"></span>[@s.text name="capdev.gotoBack" /]</a> 
+
+				[#if projectID > 0]
+					<a class="" href="[@s.url namespace='/monitoring' action='${centerSession}/projectCapdev'] [@s.param name='projectID']${projectID?c}[/@s.param][@s.param name='edit' value="true" /] [/@s.url] "><span class="glyphicon glyphicon-circle-arrow-left"></span>[@s.text name="capdev.gotoBackProjects" /]</a>
+		        [#else]
+		        	<a class="" href="[@s.url action='${centerSession}/capdev' /] "><span class="glyphicon glyphicon-circle-arrow-left"></span>[@s.text name="capdev.gotoBack" /]</a>
+		        [/#if]
+				 
 			</div>
 		
 		
@@ -61,20 +64,14 @@
 			<!-- Radio Buttons-->
 			
 			<div class="radio">
-			  <label><input  id="individual" type="radio" hidden="true" name="capdev.category" class="radioButton" value="${capdev.category}"  /></label>
+			  <label><input  id="individual" type="radio" hidden="true" name="capdev.category" class="radioButton" value="${(capdev.category)!}"  /></label>
 			</div>
 		
 		
 			<div class="radio">
-			  <label><input id="gruops" type="radio" hidden="true" name="capdev.category" class="radioButton"  value="${capdev.category}" /> </label>
+			  <label><input id="gruops" type="radio" hidden="true" name="capdev.category" class="radioButton"  value="${(capdev.category)!}" /> </label>
 			</div>	
 				
-					
-						
-					
-					
-				
-			
 
 			<div  class="fullForm borderBox" >
 				<!-- Title-->
@@ -123,7 +120,7 @@
 
 					<div class="col-md-3 durationUnitSelect">
 						<input type="hidden" name="" value="${(capdev.durationUnit)!}" class="durationUnitaInput"/>
-						[@customForm.select name="capdev.durationUnit" listName="durationUnit" keyFieldName="value" displayFieldName="displayName" help="capdev.help.durationUnit" i18nkey="capdev.form.durationUnit"  placeholder="capdev.select"  editable=editable className="dUnitSelect"/]
+						[@customForm.select name="capdev.durationUnit" listName="durationUnit" keyFieldName="value" value="'${(capdev.durationUnit)!}'" displayFieldName="displayName" help="capdev.help.durationUnit" i18nkey="capdev.form.durationUnit"  placeholder="capdev.select"  editable=editable className="dUnitSelect"/]
 					</div>
 				</div>
 
@@ -290,7 +287,7 @@
 						</div>
 						<div class="form-group col-md-6 genderSelect">
 							<input type="hidden" name="" value="${(participant.gender)!}" class="genderInput"/>
-							[@customForm.select name="participant.gender" listName="genders" keyFieldName="value" displayFieldName="displayName" help="" i18nkey="capdev.participant.gender"  placeholder="capdev.select" required=true editable=editable className=""/]
+							[@customForm.select name="participant.gender" value="'${(participant.gender)!}'" listName="genders" keyFieldName="value" displayFieldName="displayName" help="" i18nkey="capdev.participant.gender"  placeholder="capdev.select" required=true editable=editable className=""/]
 						</div>
 					</div>
 					<!-- participant citizenship and highest degree -->
@@ -425,6 +422,7 @@
 				<div style="display: none;">
 					[@customForm.input name="capdevID" i18nkey="capdev.id" value="${capdev.id}"  type="text" className="capdev-id" /]
 					[@customForm.input name="capdevCategory" i18nkey="capdev.category" value="${capdev.category}"  type="text"  /]
+					[@customForm.input name="projectID" i18nkey="capdev.category" value="${projectID}"  type="text"  /]
 				</div>
 
 
