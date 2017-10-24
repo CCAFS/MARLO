@@ -72,6 +72,7 @@ public class ValidateSyncCode extends BaseAction {
     message.put("code", syncCode);
 
     switch (Math.toIntExact(syncTypeID)) {
+      // Validate OCS Code
       case 1:
         agreement = ocsClient.getagreement(syncCode);
         if (agreement != null) {
@@ -87,14 +88,14 @@ public class ValidateSyncCode extends BaseAction {
           message.put("status", false);
         }
         break;
-
+      // Validate MARLO CRP Project
       case 2:
         long projectID = Long.parseLong(syncCode);
         Project project = projectManager.getProjectById(projectID);
         if (project != null) {
 
           CenterProjectFundingSource centerProjectFundingSource =
-            centerProjectFundingSourceManager.getProjectFundingSourceByCode(syncCode);
+            centerProjectFundingSourceManager.getProjectFundingSourceByCode("P" + syncCode);
           if (centerProjectFundingSource != null) {
             message.put("status", false);
           } else {
@@ -122,6 +123,7 @@ public class ValidateSyncCode extends BaseAction {
     syncTypeID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.CENTER_PROJECT_SYNC_TYPE))[0]));
     syncCode = StringUtils.trim(((String[]) parameters.get(APConstants.CENTER_PROJECT_SYNC_CODE))[0]);
 
+    // If Choose CRP replace/delete the "P" in the String to search easily the CRP MARLO Project.
     if (syncTypeID == 2) {
       if (syncCode.toUpperCase().contains("P")) {
         syncCode = syncCode.toUpperCase().replaceFirst("P", "");
