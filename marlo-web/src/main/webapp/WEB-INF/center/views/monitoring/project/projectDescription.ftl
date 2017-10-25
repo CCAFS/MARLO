@@ -374,14 +374,21 @@
 [#macro fundingSourceMacro element name index=-1 isTemplate=false]  
   [#local customName = "${name}[${index}]" /]
   [#local isSynced = (element.sync)!false ]
+  [#local isAutofill = (element.autoFill)!false ]
   [#local isOCS = (element.centerFundingSyncType.id == 1)!true ]
   <div id="fundingSource-${isTemplate?string('template',(element.id)!)}" class="fundingSources fsSync simpleBox"  style="display:${isTemplate?string('none','block')}">
     [#-- Loading block --]
     <div class="loading syncBlock" style="display:none"></div>
     
     [#-- Remove Button --]
-    [#if editable]<div class="removeFundingSource removeElement sm" title="Remove Milestone"></div>[/#if]
-
+    [#if editable]
+      [#if isAutofill]
+        <div class="removeFundingSource"></div>
+      [#else]
+        <div class="removeFundingSource removeElement sm" title="Remove Funding Source"></div>        
+      [/#if]       
+    [/#if]
+    
     [#-- Index --]
     <div class="leftHead sm">
       <span class="index">${index+1}</span>
