@@ -82,27 +82,61 @@
       <version>${struts2.version}</version>
       <exclusions>
           <!-- Ensure the Hibernate version of javassist is used -->
-          <exclusion>
-            <groupId>javassist</groupId>
-            <artifactId>javassist</artifactId>
-          </exclusion>
+            <exclusion>
+               <groupId>org.javassist</groupId>
+               <artifactId>javassist</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>javassist</groupId>
+               <artifactId>javassist</artifactId>
+            </exclusion>
       </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.struts</groupId>
       <artifactId>struts2-config-browser-plugin</artifactId>
       <version>${struts2.version}</version>
+      <exclusions>
+          <exclusion>
+            <groupId>org.javassist</groupId>
+            <artifactId>javassist</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>javassist</groupId>
+            <artifactId>javassist</artifactId>
+          </exclusion>
+       </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.struts</groupId>
       <artifactId>struts2-junit-plugin</artifactId>
       <version>${struts2.version}</version>
+        <exclusions>
+               <exclusion>
+               <groupId>org.javassist</groupId>
+               <artifactId>javassist</artifactId>
+            </exclusion>
+             <exclusion>
+               <groupId>javassist</groupId>
+               <artifactId>javassist</artifactId>
+            </exclusion>
+         </exclusions>
       <scope>test</scope>
     </dependency>
     <dependency>
    <groupId>org.apache.struts</groupId>
    <artifactId>struts2-java8-support-plugin</artifactId>
    <version>2.3.32</version>
+        <exclusions>
+               <exclusion>
+               <groupId>org.javassist</groupId>
+               <artifactId>javassist</artifactId>
+            </exclusion>
+             <exclusion>
+               <groupId>javassist</groupId>
+               <artifactId>javassist</artifactId>
+            </exclusion>
+         </exclusions>
 </dependency>
 <dependency>
     <groupId>org.apache.struts.xwork</groupId>
@@ -110,13 +144,21 @@
     <version>2.3.31</version>
     <exclusions>
         <exclusion>
-            <groupId>asm</groupId>
-            <artifactId>asm</artifactId>
-        </exclusion>
-        <exclusion>
-            <groupId>asm</groupId>
-            <artifactId>asm-commons</artifactId>
-        </exclusion>
+               <groupId>asm</groupId>
+               <artifactId>asm</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>asm</groupId>
+               <artifactId>asm-commons</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>org.javassist</groupId>
+               <artifactId>javassist</artifactId>
+            </exclusion>
+             <exclusion>
+               <groupId>javassist</groupId>
+               <artifactId>javassist</artifactId>
+            </exclusion>
     </exclusions>
 </dependency>
     <dependency>
@@ -205,12 +247,23 @@
     <groupId>org.apache.struts</groupId>
     <artifactId>struts2-convention-plugin</artifactId>
     <version>2.3.32</version>
+        
   </dependency>
   
   <dependency>
     <groupId>org.apache.struts</groupId>
     <artifactId>struts2-rest-plugin</artifactId>
     <version>2.3.32</version>
+        <exclusions>
+               <exclusion>
+               <groupId>org.javassist</groupId>
+               <artifactId>javassist</artifactId>
+            </exclusion>
+             <exclusion>
+               <groupId>javassist</groupId>
+               <artifactId>javassist</artifactId>
+            </exclusion>
+         </exclusions>
   </dependency>
 
     
@@ -228,6 +281,16 @@
       <groupId>org.apache.struts</groupId>
       <artifactId>struts2-json-plugin</artifactId>
       <version>${struts2-json.version}</version>
+        <exclusions>
+               <exclusion>
+               <groupId>org.javassist</groupId>
+               <artifactId>javassist</artifactId>
+            </exclusion>
+             <exclusion>
+               <groupId>javassist</groupId>
+               <artifactId>javassist</artifactId>
+            </exclusion>
+         </exclusions>
     </dependency>
     <!-- Java JSON Library -->
     <dependency>
@@ -321,13 +384,38 @@
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
       <version>${hibbernate-core-version}</version>
+      <exclusions>
+            <exclusion>
+               <groupId>org.javassist</groupId>
+               <artifactId>javassist</artifactId>
+            </exclusion>
+             <exclusion>
+               <groupId>javassist</groupId>
+               <artifactId>javassist</artifactId>
+            </exclusion>
+         </exclusions>
     </dependency>
 
     <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-c3p0</artifactId>
-      <version>${hibbernate-core-version}</version>
-    </dependency>
+         <groupId>com.zaxxer</groupId>
+         <artifactId>HikariCP</artifactId>
+         <version>2.4.6</version>
+         <exclusions>
+            <exclusion>
+               <groupId>org.javassist</groupId>
+               <artifactId>javassist</artifactId>
+            </exclusion>
+               <exclusion>
+               <groupId>javassist</groupId>
+               <artifactId>javassist</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+      <dependency>
+         <groupId>org.javassist</groupId>
+         <artifactId>javassist</artifactId>
+         <version>3.18.1-GA</version>
+      </dependency>
 
     <!-- Dependency needed for Hibernate -->
     <dependency>

@@ -359,13 +359,15 @@ public class ProjectOutcomeAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+ 	      reader.close();
+ 	
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         projectOutcome = (ProjectOutcome) autoSaveReader.readFromJson(jReader);
 
 
-        reader.close();
+      
         this.setDraft(true);
         project = projectManager.getProjectById(projectOutcome.getProject().getId());
         projectID = project.getId();

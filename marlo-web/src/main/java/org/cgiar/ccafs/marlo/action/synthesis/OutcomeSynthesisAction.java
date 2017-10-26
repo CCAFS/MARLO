@@ -299,6 +299,8 @@ public class OutcomeSynthesisAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+ 	      reader.close();
+ 	
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
@@ -307,7 +309,7 @@ public class OutcomeSynthesisAction extends BaseAction {
         programID = program.getId();
 
         this.setDraft(true);
-        reader.close();
+      
       } else {
         this.program.setSynthesisOutcome(program.getOutcomeSynthesis().stream()
           .filter(c -> c.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList()));

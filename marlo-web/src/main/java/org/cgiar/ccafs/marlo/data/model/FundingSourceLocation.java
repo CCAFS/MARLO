@@ -4,6 +4,7 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import com.google.gson.annotations.Expose;
@@ -40,15 +41,20 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
   @Expose
   private FundingSource fundingSource;
 
-
   @Expose
   private boolean active;
 
   @Expose
+  private BigDecimal percentage;
+
+
+  @Expose
   private Date activeSince;
+
 
   @Expose
   private String modificationJustification;
+
 
   private boolean scope;
 
@@ -104,7 +110,6 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
     return id;
   }
 
-
   public LocElement getLocElement() {
     return locElement;
   }
@@ -132,6 +137,11 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
   @Override
   public User getModifiedBy() {
     return modifiedBy;
+  }
+
+
+  public BigDecimal getPercentage() {
+    return percentage;
   }
 
 
@@ -191,15 +201,13 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
     this.modifiedBy = modifiedBy;
   }
 
-  public void setScope(boolean scope) {
-    this.scope = scope;
+  public void setPercentage(BigDecimal percentage) {
+    this.percentage = percentage;
   }
 
 
-  @Override
-  public String toString() {
-    return "FundingSourceLocation [id=" + id + ", locElement=" + locElement + ", locElementType=" + locElementType
-      + ", fundingSource=" + fundingSource + ", scope=" + scope + "]";
+  public void setScope(boolean scope) {
+    this.scope = scope;
   }
 
 

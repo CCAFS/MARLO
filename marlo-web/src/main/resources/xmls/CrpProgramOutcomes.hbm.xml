@@ -35,6 +35,9 @@
 		<property name="description" type="string">
 			<column name="description" length="65535" not-null="false" />
 		</property>
+		<property name="indicator" type="string">
+      <column name="indicator" length="65535"  />
+    </property>
 		<property name="year" type="java.lang.Integer">
 			<column name="year" not-null="false" />
 		</property>

@@ -31,7 +31,7 @@ $(document).ready(function() {
     $uploadBlock.find('.textMessage').hide();
     $uploadBlock.find('.fileUpload').show();
     $('input#fileID').val('');
-    $(".image img").attr("src", baseURL + "/images/global/defaultImage.png")
+    $(".image img").attr("src", baseURL + "/global/images/defaultImage.png")
   });
 
   // Attach Events
@@ -46,7 +46,7 @@ function attachEvents() {
   $('.fileUpload .remove').on('click', function(e) {
     var context = $(this).attr('id').split('-')[1];
     var $parent = $(this).parent();
-    $parent.parent().parent().find('img').attr('src', baseURL + '/images/global/defaultImage.png');
+    $parent.parent().parent().find('img').attr('src', baseURL + '/global/images/defaultImage.png');
     var $inputFile = $('[id$=' + context + '-template]').clone(true).removeAttr("id");
     $parent.parent().parent().append(' <input type="hidden" name="highlight.photo" value="-1" /> ');
     $parent.empty().append($inputFile);

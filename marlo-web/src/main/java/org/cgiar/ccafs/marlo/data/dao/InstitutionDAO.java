@@ -59,6 +59,14 @@ public interface InstitutionDAO {
    */
   public List<Institution> findAll();
 
+  /**
+   * This method gets a list of ppa institution that are active for the crp
+   * 
+   * @param crpId the crp id we want to search institutions
+   * @return a list from Institution null if no exist records
+   */
+  public List<Institution> findPPAInstitutions(long crpID);
+
 
   /**
    * This method saves the information of the given institution

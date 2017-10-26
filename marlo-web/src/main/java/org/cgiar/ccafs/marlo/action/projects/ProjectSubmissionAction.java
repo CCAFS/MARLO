@@ -100,8 +100,8 @@ public class ProjectSubmissionAction extends BaseAction {
     complete = false;
     if (this.hasPermission("submitProject")) {
       if (this.isCompleteProject(projectID)) {
-        List<Submission> submissions = project.getSubmissions()
-          .stream().filter(c -> c.getCycle().equals(APConstants.PLANNING)
+        List<Submission> submissions = project
+          .getSubmissions().stream().filter(c -> c.getCycle().equals(APConstants.PLANNING)
             && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
           .collect(Collectors.toList());
 
@@ -271,17 +271,18 @@ public class ProjectSubmissionAction extends BaseAction {
     }
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
-
+    String crp = loggedCrp.getAcronym() != null && !loggedCrp.getAcronym().isEmpty() ? loggedCrp.getAcronym()
+      : loggedCrp.getName();
     // subject
     String subject = null;
-    subject = this.getText("submit.email.subject", new String[] {loggedCrp.getAcronym(),
-      String.valueOf(project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER))});
+    subject = this.getText("submit.email.subject",
+      new String[] {crp, String.valueOf(project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER))});
 
     // Building the email message
     StringBuilder message = new StringBuilder();
     String[] values = new String[6];
     values[0] = this.getCurrentUser().getFirstName();
-    values[1] = loggedCrp.getAcronym();
+    values[1] = crp;
     values[2] = project.getTitle();
     values[3] = String.valueOf(project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER));
     values[4] = String.valueOf(this.getCurrentCycleYear());
@@ -366,10 +367,12 @@ public class ProjectSubmissionAction extends BaseAction {
     submission.setDateTime(new Date());
     submission.setProject(project);
 
-    submission = submissionManager.saveSubmission(submission);
+    long result = submissionManager.saveSubmission(submission).getId();
     this.setSubmission(submission);
-    if (submission.getId() > 0) {
+    if (result > 0) {
+      submission.setId(result);
       this.sendNotficationEmail();
+
     }
   }
 

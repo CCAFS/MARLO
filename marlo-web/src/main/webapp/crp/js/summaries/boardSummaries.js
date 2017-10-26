@@ -275,7 +275,7 @@ function generateReport(e) {
     $.each($selected.find(".specificYears").text().split("-"), function(i,e) {
       $select.addOption(e, e);
     });
-    $select.val($("span.reportingYear").text()).trigger("change");
+    // $select.val($("span.reportingYear").text()).trigger("change");
   }
   validateAllData();
 }

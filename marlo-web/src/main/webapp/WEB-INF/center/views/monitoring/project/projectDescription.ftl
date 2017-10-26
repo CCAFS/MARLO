@@ -3,11 +3,11 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = ["select2","flat-flags"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/global/fieldsValidation.js",
-  "${baseUrlMedia}/js/global/usersManagement.js", 
+  "${baseUrl}/global/js/fieldsValidation.js",
+  "${baseUrl}/global/js/usersManagement.js", 
   "${baseUrlMedia}/js/monitoring/projects/projectDescription.js",
   "${baseUrlMedia}/js/monitoring/projects/projectSync.js",
-  "${baseUrlMedia}/js/global/autoSave.js"
+  "${baseUrl}/global/js/autoSave.js"
   ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "description" /]
@@ -18,16 +18,16 @@
 ] /]
 
 
-[#include "/WEB-INF/center//global/pages/header.ftl" /]
-[#include "/WEB-INF/center//global/pages/main-menu.ftl" /]
+[#include "/WEB-INF/center/pages/header.ftl" /]
+[#include "/WEB-INF/center/pages/main-menu.ftl" /]
 [#-- Search users Interface --]
-[#import "/WEB-INF/center//global/macros/usersPopup.ftl" as usersForm/]
-[#import "/WEB-INF/center//global/macros/utils.ftl" as utilities /]
+[#import "/WEB-INF/global/macros/usersPopup.ftl" as usersForm/]
+[#import "/WEB-INF/global/macros/utils.ftl" as utilities /]
 
 [#-- Help text --]
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.png" />
+    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.png" />
     <p class="col-md-10"> [@s.text name="projectDescription.help"][/@s.text] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
@@ -44,72 +44,43 @@
         [#-- Section Messages --]
         [#include "/WEB-INF/center/views/monitoring/project/messages-projects.ftl" /]
         <br />
-      
+
+        [#assign projectSync = (project.sync)!false /]
+     
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
-        
+           
           [#-- Back --]
         <div class="pull-right">
           <a href="[@s.url action='${centerSession}/projectList'][@s.param name="programID" value=programID /][@s.param name="projectID" value=projectID /][@s.param name="edit" value=true /][/@s.url]">
             <span class="glyphicon glyphicon-circle-arrow-left"></span> Back to the project list
           </a>
         </div>
-          
-          <h3 class="headTitle">${selectedProgram.name} - [@s.text name="projectDescription.title" /]</h3>  
-          <div id="projectDescription" class="borderBox">
-          
-            [#-- Finance code --]
-            <div class="form-group row">
-              <div id="disseminationUrl" class="col-md-offset-6 col-md-6">
-                <div class="url-field">
-                  [@customForm.input name="project.ocsCode" i18nkey="projectDescription.ocsCode" className="financeCode" type="text" disabled=!editable  required=true editable=editable /]
-                  <span class="financeCode-message"></span>
-                </div>
-                <div class="buttons-field">
-                  [#if editable]
-                    [#assign isSynced = false ]
-                    <div id="fillMetadata">
-                      <input type="hidden" name="fundingSource.synced" value="${isSynced?string}" />
-                      [#-- Sync Button --]
-                      <div class="checkButton" style="display:${isSynced?string('none','block')};">[@s.text name="form.buttons.sync" /]</div>
-                      <div class="unSyncBlock" style="display:${isSynced?string('block','none')};">
-                        [#-- Update Button --]
-                        <div class="updateButton">[@s.text name="form.buttons.update" /]</div>
-                        [#-- Unsync Button --]
-                        <div class="uncheckButton">[@s.text name="form.buttons.unsync" /]</div>
-                      </div>
-                    </div>
-                  [/#if]
-                </div>
-              </div>
-              <div id="metadata-output"></div>
-            </div>
             
-            [#-- Principal Investigator --]
-            <div class="form-group row">
-              <div class="col-md-6">
-                [@customForm.input name="principalInvestigator" i18nkey="projectDescription.pl" type="text" disabled=!editable  required=true editable=false /]
-              </div>
+            <h3 class="headTitle">${selectedProgram.name} - [@s.text name="projectDescription.title" /]</h3>  
+            <div id="projectDescription" class="borderBox">
+            
+            [#-- Project Title --]
+            <div class="form-group metadataElement-description">
+              [@customForm.input name="project.name" i18nkey="projectDescription.name" required=true className="project-title metadataValue" readOnly=projectSync editable=editable && action.hasPermission("title") /]
+            </div>
+            [#-- Project Suggested Title --]
+            <div class="form-group">
+              [@customForm.input name="project.suggestedName" i18nkey="projectDescription.suggestedName" required=false className="project-title" required=true editable=editable && action.hasPermission("title") /]
+            </div>
+            [#-- Project Description --]
+            <div class="form-group metadataElement-objectives">
+              [@customForm.textArea name="project.description" i18nkey="projectDescription.description" required=true className="metadataValue" readOnly=projectSync editable=editable && action.hasPermission("title") /]
+            </div> 
+          
+           
+            <div class="form-group row">              
             [#-- Project Status --]  
               <div class="col-md-3">
                 [@customForm.select name="project.projectStatus.id" label=""  i18nkey="projectsList.status" listName="status" keyFieldName="id"  displayFieldName="name"  multiple=false required=true header=false className="" editable=editable/]
               </div>  
-            [#-- Project Type --]  
-              <div class="col-md-3">
-                [@customForm.select name="project.projectType.id" label=""  i18nkey="Type" listName="projectTypes" keyFieldName="id"  displayFieldName="name"  multiple=false required=true header=false className="" editable=editable/]
-              </div>
+   
             </div>   
-            [#-- Project Title --]
-            <div class="form-group metadataElement-description">
-              [@customForm.textArea name="project.name" i18nkey="projectDescription.name" required=true className="project-title metadataValue" editable=editable && action.hasPermission("title") /]
-            </div>
-            [#-- Project Suggested Title --]
-            <div class="form-group">
-              [@customForm.textArea name="project.suggestedName" i18nkey="projectDescription.suggestedName" required=false className="project-title" required=true editable=editable && action.hasPermission("title") /]
-            </div>
-            [#-- Project Description --]
-            <div class="form-group metadataElement-objectives">
-              [@customForm.textArea name="project.description" i18nkey="projectDescription.description" required=true className="metadataValue" editable=editable && action.hasPermission("title") /]
-            </div>            
+                       
             <div class="form-group row">  
               [#-- Start Date --]
               <div class="col-md-4 metadataElement-startDate">
@@ -119,11 +90,16 @@
               <div class="col-md-4 metadataElement-endDate">
                 [@customForm.input name="project.endDate" i18nkey="projectDescription.endDate" className="metadataValue" type="text" disabled=!editable required=false editable=editable /]
               </div>
-              [#-- Extension Date --]
-              <div class="col-md-4 metadataElement-extensionDate">
-                [@customForm.input name="project.extensionDate" i18nkey="projectDescription.extensionDate" className="metadataValue"  type="text" disabled=!editable required=false editable=editable /]
-              </div>
             </div>
+            
+            
+            [#-- Principal Investigator --]
+            <!--
+              <div class="col-md-12">
+                [@customForm.input name="principalInvestigator" i18nkey="projectDescription.pl" type="text" disabled=!editable  required=true editable=false /]
+              </div>
+              -->
+            
             <div class="form-group metadataElement-pInvestigator">
               [#-- Project contact --]
               <div class="partnerPerson-email userField" style="position: relative;">
@@ -135,36 +111,21 @@
               <span class="text-warning metadataSuggested"></span><br />
             </div>
             
-            [#-- Budget Information --]
-            <h4 class="headTitle">Budget Information</h4> 
-             [#-- Original Donor --]
-            <div class="form-group metadataElement-donorName">
-              [@customForm.input name="project.originalDonor" i18nkey="projectDescription.originalDonor" className="metadataValue" type="text" required=true  editable=editable/]
-            </div>
-            [#-- Customer Donor --]
-            <div class="form-group metadataElement-directDonorName">
-              [@customForm.input name="project.directDonor" i18nkey="projectDescription.customerDonor" type="text" required=false  editable=editable/]
-            </div>
-            [#-- Total Amount --]
-            <div class="form-group metadataElement-grantAmount">
-              [@customForm.input name="project.totalAmount" className="metadataValue amount" i18nkey="projectDescription.totalAmount" type="text" required=true  editable=editable/]
-            </div>
            
-            [#-- CRP Project Contributions --]
-            <div class="form-group ">
-              <label>[@s.text name="projectDescription.crpCont" /]</label>
-              <div class="borderBox fundingSourceList" listname="project.fundingSources">
+           
+            [#-- CRP Project Contributions List --]
+            <div class="form-group">
+              <label>[@s.text name="projectDescription.crpCont" /]:</label>
+              <div class="fundingSourceList" listname="project.fundingSources">
                 [#if project.fundingSources?has_content]
                   [#list project.fundingSources as fundingSource]
                     [@fundingSourceMacro element=fundingSource name="project.fundingSources"  index=fundingSource_index /]
                   [/#list]
                 [/#if]
-                <p class="text-center inf" style="display:${(project.fundingSources?has_content)?string('none','block')}">[@s.text name="projectDescription.notCrpCont" /]</p>
               </div>
+              [#-- Add contribution Button --]
               [#if editable]
-              <div class="text-right">
-                <div class="button-green addFundingSource"><span class="glyphicon glyphicon-plus-sign"></span>[@s.text name="Add Contribution" /]</div>
-              </div>
+                <div class="text-center"><div class="addFundingSource bigAddButton"><span class="glyphicon glyphicon-plus-sign"></span>[@s.text name="Add Contribution" /]</div></div>
               [/#if]
             </div>  
             
@@ -177,7 +138,7 @@
                 <div class="form-group projectsGlobal">[@customForm.yesNoInput  label="projectDescription.globalDimensionQuestion" name="project.sGlobal" editable=editable inverse=false  cssClass="isGlobal" /] </div>
                 <hr />
                 [#else]
-                <div class="form-group"><label for="">[@s.text name="projectDescription.globalDimension${((project.sGlobal)!false)?string('Yes',No)}" /]</label></div>
+                <div class="form-group"><label for="">[@s.text name="projectDescription.globalDimension${((project.sGlobal == 'true')!false)?string('Yes','No')}" /]</label></div>
                 [/#if]
                 
                 [#-- YES/NO Regional Dimension --]
@@ -185,7 +146,7 @@
                 <div class="form-group projectsRegion">[@customForm.yesNoInput  label="projectDescription.regionalDimensionQuestion" name="project.sRegion" editable=editable inverse=false  cssClass="isRegional" /]</div>
                 <hr />
                 [#else]
-                <div class="form-group"><label for="">[@s.text name="projectDescription.regionallDimension${((project.sGlobal)!false)?string('Yes',No)}" /]</label></div>
+                <div class="form-group"><label for="">[@s.text name="projectDescription.regionallDimension${((project.sRegion == 'true')!false)?string('Yes','No')}" /]</label></div>
                 [/#if]
                 
                 [#-- REGIONAL SELECT --]
@@ -402,24 +363,112 @@
     </li>
 </ul>
   
-[#include "/WEB-INF/center//global/pages/footer.ftl"]
+[#include "/WEB-INF/center/pages/footer.ftl"]
 
 
 [#macro fundingSourceMacro element name index=-1 isTemplate=false]  
-  [#assign fundingSourceCustomName = "${name}[${index}]" /]
-  <div id="fundingSource-${isTemplate?string('template',(element.id)!)}" class="fundingSources  borderBox row"  style="display:${isTemplate?string('none','block')}">
-    [#if editable]<div class="removeFundingSource removeIcon" title="Remove funding source"></div>[/#if] 
-    <input class="id" type="hidden" name="${fundingSourceCustomName}.id" value="${(element.id)!-1}" />     
-    <div class="col-md-4">
-      [@customForm.select name="${fundingSourceCustomName}.crp.id" label=""  i18nkey="CRP" listName="crps" keyFieldName="id"  displayFieldName="name"  multiple=false required=true header=false className="" editable=editable/]
+  [#local customName = "${name}[${index}]" /]
+  [#local isSynced = (element.sync)!false ]
+  [#local isOCS = (element.centerFundingSyncType.id == 1)!true ]
+  <div id="fundingSource-${isTemplate?string('template',(element.id)!)}" class="fundingSources fsSync simpleBox"  style="display:${isTemplate?string('none','block')}">
+    [#-- Loading block --]
+    <div class="loading syncBlock" style="display:none"></div>
+    
+    [#-- Remove Button --]
+    [#if editable]<div class="removeFundingSource removeElement sm" title="Remove Milestone"></div>[/#if]
+
+    [#-- Index --]
+    <div class="leftHead sm">
+      <span class="index">${index+1}</span>
+      <span class="elementId"> Funding Source</span>
     </div>
-    <div class="col-md-4">
-      [@customForm.select name="${fundingSourceCustomName}.fundingSourceType.id" label=""  i18nkey="Funding source" listName="fundingSourceTypes" keyFieldName="id"  displayFieldName="name"  multiple=false required=true header=false className="" editable=editable/]
+    <br />
+
+    [#-- Hidden inputs --]
+    <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!-1}" />    
+    
+    [#-- Finance code --]
+    <div class="form-group row">
+      <div class="col-md-6">
+        <div class="syncedBlock unsyncVisibles" style="display:${isSynced?string('block','none')};"></div>
+        <label for="">The project contains information from:[@customForm.req required=editable /]</label>
+        <div class="form-group">
+        [#if syncTypes??]
+          [#list syncTypes as syncType]
+            [#assign syncCustomID = "radio-${syncType.id}-${index}"]
+            <div class="radioFlat radio-inline">
+              <input id="${syncCustomID}" class="radio-input radioSyncType" type="radio" name="${customName}.centerFundingSyncType.id" value="${syncType.id}" [#if element.centerFundingSyncType??][#if (element.centerFundingSyncType.id == syncType.id)!false]checked[/#if][#else][#if syncType_index = 0]checked[/#if][/#if] />
+              <label for="${syncCustomID}" class="radio-label"> ${(syncType.syncName)!'{sync_name}'} </label>
+            </div>
+          [/#list]
+        [/#if]
+        </div>
+      </div>
+      <div id="disseminationUrl" class="col-md-6">
+        <div class="url-field">
+          [@customForm.input name="${customName}.code" i18nkey="Code" className="financeCode" type="text" disabled=!editable  required=true readOnly=isSynced  editable=editable /]
+          <span class="financeCode-message"></span>
+        </div>
+        <div class="buttons-field">
+          [#if editable]
+            <div class="fillMetadata">
+              <input type="hidden" name="${customName}.sync" value="${isSynced?string}" />
+              [#-- Sync Button --]
+              <div class="checkButton" style="display:${isSynced?string('none','block')};">[@s.text name="form.buttons.sync" /]</div>
+              <div class="unSyncBlock" style="display:${isSynced?string('block','none')};">
+                [#-- Update Button --]
+                <div class="updateButton">[@s.text name="form.buttons.update" /]</div>
+                [#-- Unsync Button --]
+                <div class="uncheckButton">[@s.text name="form.buttons.unsync" /]</div>
+              </div>
+            </div>
+          [/#if]
+        </div>
+      </div>
+      <div class="metadata-output"></div>
     </div>
-    <div class="col-md-12">
-      [@customForm.input name="${fundingSourceCustomName}.title" i18nkey="CRP Project Title" type="text" disabled=!editable required=false editable=editable /]
+    
+    
+    <div class="form-group row">
+      <div class="col-md-4 metadataElement-fundingTypeId isOCSBlock" style="display:${isOCS?string('block','none')}">
+        <div class="syncedBlock unsyncVisibles" style="display:${isSynced?string('block','none')};"></div>
+        [@customForm.select name="${customName}.centerFundingSourceType.id" label=""  i18nkey="Funding source type" listName="fundingSourceTypes" keyFieldName="id"  displayFieldName="name"  multiple=false required=true header=false className="metadataValue" editable=editable/]
+      </div>
+      <div class="col-md-4 metadataElement-crp isCRPProjectBlock" style="display:${isOCS?string('none','block')}">
+        <div class="syncedBlock unsyncVisibles" style="display:${isSynced?string('block','none')};"></div>
+        [@customForm.select name="${customName}.crp.id" label=""  i18nkey="CRP" listName="crps" keyFieldName="id"  displayFieldName="crpAcronymOrName"  multiple=false required=true header=false className="metadataValue"  editable=editable/]
+      </div>
     </div>
-    <div class="clearfix"></div>
+    <div class="form-group metadataElement-description">
+      [@customForm.input name="${customName}.title" i18nkey="Project Title" className="metadataValue" disabled=!editable required=false readOnly=isSynced editable=editable /]
+    </div>
+    <div class="form-group metadataElement-objectives">
+      [@customForm.textArea name="${customName}.description" i18nkey="Project Description" className="metadataValue" disabled=!editable required=false readOnly=isSynced editable=editable /]
+    </div>
+    <div class="form-group row">
+      <div class="col-md-4 metadataElement-startDate">
+        [@customForm.input name="${customName}.startDate" i18nkey="Start Date" className="metadataValue"  disabled=!editable  required=true readOnly=isSynced editable=editable /]
+      </div> 
+      <div class="col-md-4 metadataElement-endDate">
+        [@customForm.input name="${customName}.endDate" i18nkey="End Date" className="metadataValue" disabled=!editable required=false readOnly=isSynced editable=editable /]
+      </div>
+      <div class="col-md-4 metadataElement-extensionDate isOCSBlock" style="display:${isOCS?string('block','none')}">
+        [@customForm.input name="${customName}.extensionDate" i18nkey="Extension Date" className="metadataValue"  disabled=!editable required=false readOnly=isSynced editable=editable /]
+      </div>
+    </div>
+    <div class="form-group isOCSBlock metadataElement-originalDonorName" style="display:${isOCS?string('block','none')}">
+      [@customForm.input name="${customName}.originalDonor" i18nkey="Original Donor" className="metadataValue" disabled=!editable required=false readOnly=isSynced editable=editable /]
+    </div>
+    <div class="form-group isOCSBlock metadataElement-directDonorName" style="display:${isOCS?string('block','none')}">
+      [@customForm.input name="${customName}.directDonor" i18nkey="Direct Donor" className="metadataValue"  disabled=!editable required=false readOnly=isSynced editable=editable /]
+    </div>
+    
+    <div class="form-group row isOCSBlock" style="display:${isOCS?string('block','none')}">
+      <div class="col-md-6 metadataElement-grantAmount"> 
+        [@customForm.input name="${customName}.totalAmount" i18nkey="Total amount (USD)" className="metadataValue currencyInput"  disabled=!editable required=false readOnly=isSynced editable=editable /]
+      </div>
+    </div>
+    
   </div>
 [/#macro]
 

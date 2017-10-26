@@ -84,6 +84,14 @@ public interface FundingSourceDAO {
   public List<FundingSource> searchFundingSources(String query, int year, long crpID);
 
   /**
+   * This method get the list of FundingSource that use the specific finance code
+   * 
+   * @param ocsCode
+   * @return FundingSource List
+   */
+  public List<FundingSource> searchFundingSourcesByFinanceCode(String ocsCode);
+
+  /**
    * This method get the list of FundingSource that like a specifics parameters.
    * 
    * @param query - word parameter

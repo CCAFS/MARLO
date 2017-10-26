@@ -55,6 +55,14 @@ public interface InstitutionManager {
 
 
   /**
+   * This method gets a list of ppa institution that are active for the crp
+   * 
+   * @param crpId the crp id we want to search ppa institutions
+   * @return a list from Institution null if no exist records
+   */
+  public List<Institution> findPPAInstitutions(long crpID);
+
+  /**
    * This method gets a institution object by a given institution identifier.
    * 
    * @param institutionId is the institution identifier.

@@ -2,8 +2,17 @@
 [#assign title = "Impact Pathway - Research Topics" /]
 [#assign currentSectionString = "program-${actionName?replace('/','-')}-${programID}" /]
 [#assign pageLibs = ["cytoscape","cytoscape-panzoom","select2", "vanilla-color-picker"] /]
-[#assign customJS = ["${baseUrlMedia}/js/global/usersManagement.js", "${baseUrlMedia}/js/impactPathway/researchTopics.js", "${baseUrlMedia}/js/global/fieldsValidation.js", "${baseUrlMedia}/js/global/autoSave.js"] /]
-[#assign customCSS = [ "${baseUrlMedia}/css/impactPathway/clusterActivities.css" ] /]
+[#assign customJS = [
+  "${baseUrl}/global/js/usersManagement.js", 
+  "${baseUrlMedia}/js/impactPathway/researchTopics.js", 
+  "${baseUrl}/global/js/fieldsValidation.js", 
+  "${baseUrl}/global/js/autoSave.js"
+  ] 
+/]
+[#assign customCSS = [ 
+  "${baseUrlMedia}/css/impactPathway/clusterActivities.css" 
+  ] 
+/]
 [#assign currentSection = "impactPathway" /]
 [#assign currentStage = "researchTopics" /]
 
@@ -11,9 +20,9 @@
   {"label":"impactPathway", "nameSpace":"", "action":"topics"}
 ]/]
 [#assign leadersName = "leaders"/]
-[#include "/WEB-INF/center//global/pages/header.ftl" /]
-[#include "/WEB-INF/center//global/pages/main-menu.ftl" /]
-[#import "/WEB-INF/center//global/macros/utils.ftl" as utils /]
+[#include "/WEB-INF/center/pages/header.ftl" /]
+[#include "/WEB-INF/center/pages/main-menu.ftl" /]
+[#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 [#--  Research Topics Help Text--] 
 [@utils.helpInfos hlpInfo="researchTopics.help" /]
 [#--  marlo cluster of activities--]
@@ -68,7 +77,7 @@
 [#-- Outcome Template --]
 [@topicMacro element={} name="topics" index=-1 template=true /]
 
-[#include "/WEB-INF/center//global/pages/footer.ftl" /]
+[#include "/WEB-INF/center/pages/footer.ftl" /]
 
 [#-- MACROS --]
 [#macro topicMacro element name index template=false]

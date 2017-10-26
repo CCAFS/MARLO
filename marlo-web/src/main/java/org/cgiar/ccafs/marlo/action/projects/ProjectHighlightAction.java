@@ -333,11 +333,13 @@ public class ProjectHighlightAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+ 	      reader.close();
+ 	
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         highlight = (ProjectHighlight) autoSaveReader.readFromJson(jReader);
-        reader.close();
+      
 
         if (highlight.getCountries() != null) {
           for (ProjectHighlightCountry projectHighlightCountry : highlight.getCountries()) {

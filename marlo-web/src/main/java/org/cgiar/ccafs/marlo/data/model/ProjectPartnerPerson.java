@@ -89,9 +89,7 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
     if (obj == null) {
       return false;
     }
-    if (this.getClass() != obj.getClass()) {
-      return false;
-    }
+
     ProjectPartnerPerson other = (ProjectPartnerPerson) obj;
     if (id == null) {
       if (other.id != null) {

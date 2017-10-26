@@ -364,6 +364,8 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+ 	      reader.close();
+ 	
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
@@ -371,7 +373,7 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
         Project projectDb = projectManager.getProjectById(project.getId());
         project.setProjectEditLeader(projectDb.isProjectEditLeader());
         project.setAdministrative(projectDb.getAdministrative());
-        reader.close();
+      
 
         this.setDraft(true);
       } else {
