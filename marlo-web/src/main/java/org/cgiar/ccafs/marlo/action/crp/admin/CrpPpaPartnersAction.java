@@ -55,7 +55,11 @@ import com.google.inject.Inject;
 import org.apache.commons.lang3.RandomStringUtils;
 
 /**
+ * CrpPpaPartnersAction:
  * @author Hermes Jiménez - CIAT/CCAFS
+ * @author avalencia - CCAFS
+ * @date Oct 26, 2017
+ * @time 11:24:16 AM Add cpRole as a flag to avoid contact points
  */
 public class CrpPpaPartnersAction extends BaseAction {
 
@@ -117,67 +121,86 @@ public class CrpPpaPartnersAction extends BaseAction {
     this.sendMail = sendMail;
   }
 
+  /**
+   * Add cpRole as a flag to avoid contact points
+   * @author avalencia - CCAFS
+   * @date Oct 26, 2017
+   * @time 11:22:37 AM
+   * @param partnerDB
+   */
   private void checkChangesCrpPpaPartnerContactPoints(CrpPpaPartner partnerDB) {
     for (CrpPpaPartner crpPpaPartner : loggedCrp.getCrpInstitutionsPartners().stream()
       .filter(c -> c.getId().longValue() == (partnerDB.getId().longValue())).collect(Collectors.toList())) {
       // fill contactPoints
-      this.fillContactPoints(partnerDB);
+      if (cpRole != null) {
+        this.fillContactPoints(partnerDB);
+      }
       // Check disabled contact points
-      for (LiaisonUser liaisonUser : partnerDB.getContactPoints()) {
-        if (crpPpaPartner.getContactPoints() == null || crpPpaPartner.getContactPoints().isEmpty()
-          || !crpPpaPartner.getContactPoints().contains(liaisonUser)) {
-          // Disable liaisonUser, liaisonInstitution and UserRole
-          if (liaisonUser.getUser() != null && liaisonUser.getUser().getId() != null && cpRole != null) {
-            List<UserRole> userRoles = userRoleManager.getUserRolesByUserId(liaisonUser.getUser().getId()).stream()
-              .filter(ur -> ur.getRole().equals(cpRole)).collect(Collectors.toList());
-            for (UserRole userRole : userRoles) {
-              userRoleManager.deleteUserRole(userRole.getId());
+      if (cpRole != null) {
+        for (LiaisonUser liaisonUser : partnerDB.getContactPoints()) {
+          if (crpPpaPartner.getContactPoints() == null || crpPpaPartner.getContactPoints().isEmpty()
+            || !crpPpaPartner.getContactPoints().contains(liaisonUser)) {
+            // Disable liaisonUser, liaisonInstitution and UserRole
+            if (liaisonUser.getUser() != null && liaisonUser.getUser().getId() != null && cpRole != null) {
+              List<UserRole> userRoles = userRoleManager.getUserRolesByUserId(liaisonUser.getUser().getId()).stream()
+                .filter(ur -> ur.getRole().equals(cpRole)).collect(Collectors.toList());
+              for (UserRole userRole : userRoles) {
+                userRoleManager.deleteUserRole(userRole.getId());
+              }
             }
+            // Disable LiaisonUser
+            liaisonUserManager.deleteLiaisonUser(liaisonUser.getId());
           }
-          // Disable LiaisonUser
-          liaisonUserManager.deleteLiaisonUser(liaisonUser.getId());
         }
       }
       // Check Added liaisonUsers
-      if (crpPpaPartner.getContactPoints() != null && !crpPpaPartner.getContactPoints().isEmpty()) {
-        for (LiaisonUser liaisonUser : crpPpaPartner.getContactPoints()) {
-          // new User?
-          if (liaisonUser.getId() == null || !partnerDB.getContactPoints().contains(liaisonUser)) {
-
-            LiaisonInstitution liaisonInstitution = liaisonInstitutionManager
-              .getLiasonInstitutionByInstitutionId(crpPpaPartner.getInstitution().getId(), loggedCrp.getId());
-            // Add LiaisonInstitution if don't exists
-            if (liaisonInstitution == null) {
-              liaisonInstitution = new LiaisonInstitution();
-              liaisonInstitution.setInstitution(crpPpaPartner.getInstitution());
-              liaisonInstitution.setCrp(loggedCrp);
-              liaisonInstitution.setActive(true);
-              liaisonInstitution.setName(crpPpaPartner.getInstitution().getName());
-              liaisonInstitution.setAcronym(crpPpaPartner.getInstitution().getAcronym());
-              liaisonInstitutionManager.saveLiaisonInstitution(liaisonInstitution);
+      if (cpRole != null) {
+        if (crpPpaPartner.getContactPoints() != null && !crpPpaPartner.getContactPoints().isEmpty()) {
+          for (LiaisonUser liaisonUser : crpPpaPartner.getContactPoints()) {
+            // new User?
+            if (liaisonUser.getId() == null || !partnerDB.getContactPoints().contains(liaisonUser)) {
+              LiaisonInstitution liaisonInstitution = liaisonInstitutionManager
+                .getLiasonInstitutionByInstitutionId(crpPpaPartner.getInstitution().getId(), loggedCrp.getId());
+              // Add LiaisonInstitution if don't exists
+              if (liaisonInstitution == null) {
+                liaisonInstitution = new LiaisonInstitution();
+                liaisonInstitution.setInstitution(crpPpaPartner.getInstitution());
+                liaisonInstitution.setCrp(loggedCrp);
+                liaisonInstitution.setActive(true);
+                liaisonInstitution.setName(crpPpaPartner.getInstitution().getName());
+                liaisonInstitution.setAcronym(crpPpaPartner.getInstitution().getAcronym());
+                liaisonInstitutionManager.saveLiaisonInstitution(liaisonInstitution);
+              }
+              // Add liaisonUser
+              LiaisonUser liaisonUserSave =
+                new LiaisonUser(liaisonInstitution, userManager.getUser(liaisonUser.getUser().getId()));
+              liaisonUserSave.setCrp(loggedCrp);
+              liaisonUserSave.setActive(true);
+              liaisonUserManager.saveLiaisonUser(liaisonUserSave);
+              // add userRole
+              if (cpRole != null) {
+                UserRole userRole = new UserRole(cpRole, liaisonUserSave.getUser());
+                userRoleManager.saveUserRole(userRole);
+              }
+              // If is new user active it
+              if (!liaisonUser.getUser().isActive()) {
+                this.notifyNewUserCreated(liaisonUser.getUser());
+              }
+              partnerDB.getContactPoints().add(liaisonUserSave);
             }
-            // Add liaisonUser
-            LiaisonUser liaisonUserSave =
-              new LiaisonUser(liaisonInstitution, userManager.getUser(liaisonUser.getUser().getId()));
-            liaisonUserSave.setCrp(loggedCrp);
-            liaisonUserSave.setActive(true);
-            liaisonUserManager.saveLiaisonUser(liaisonUserSave);
-            // add userRole
-            if (cpRole != null) {
-              UserRole userRole = new UserRole(cpRole, liaisonUserSave.getUser());
-              userRoleManager.saveUserRole(userRole);
-            }
-            // If is new user active it
-            if (!liaisonUser.getUser().isActive()) {
-              this.notifyNewUserCreated(liaisonUser.getUser());
-            }
-            partnerDB.getContactPoints().add(liaisonUserSave);
           }
         }
       }
     }
   }
 
+  /**
+   * Add cpRole as a flag to avoid contact points
+   * @author avalencia - CCAFS
+   * @date Oct 26, 2017
+   * @time 11:23:00 AM
+   * @param partner
+   */
   private void disableCrpPpaPartnerContactPoints(CrpPpaPartner partner) {
     // Disable liaisonUser, liaisonInstitution and UserRoles
     LiaisonInstitution liaisonInstitution = liaisonInstitutionManager
@@ -186,7 +209,8 @@ public class CrpPpaPartnersAction extends BaseAction {
     if (liaisonInstitution != null && liaisonInstitution.isActive()) {
       liaisonInstitutionManager.deleteLiaisonInstitution(liaisonInstitution.getId());
       // Disable LiaisonUsers
-      if (liaisonInstitution.getLiaisonUsers() != null && !liaisonInstitution.getLiaisonUsers().isEmpty()) {
+      if (cpRole != null && liaisonInstitution.getLiaisonUsers() != null
+        && !liaisonInstitution.getLiaisonUsers().isEmpty()) {
         for (LiaisonUser liaisonUser : liaisonInstitution.getLiaisonUsers().stream().filter(lu -> lu.isActive())
           .collect(Collectors.toList())) {
           // Delete CP UserRole
@@ -206,10 +230,17 @@ public class CrpPpaPartnersAction extends BaseAction {
   }
 
 
+  /**
+   * Add cpRole as a flag to avoid contact points
+   * @author avalencia - CCAFS
+   * @date Oct 26, 2017
+   * @time 11:23:44 AM
+   * @param crpPpaPartner
+   */
   private void fillContactPoints(CrpPpaPartner crpPpaPartner) {
     LiaisonInstitution liaisonInstitution = liaisonInstitutionManager
       .getLiasonInstitutionByInstitutionId(crpPpaPartner.getInstitution().getId(), loggedCrp.getId());
-    if (liaisonInstitution != null && liaisonInstitution.isActive()) {
+    if (cpRole != null && liaisonInstitution != null && liaisonInstitution.isActive()) {
       crpPpaPartner.setContactPoints(liaisonInstitution.getLiaisonUsers().stream()
         .filter(lu -> lu.isActive() && lu.getUser() != null && lu.getUser().isActive() && lu.getCrp() != null
           && lu.getCrp().equals(loggedCrp))
@@ -218,6 +249,10 @@ public class CrpPpaPartnersAction extends BaseAction {
     } else {
       crpPpaPartner.setContactPoints(new ArrayList<LiaisonUser>());
     }
+  }
+
+  public Role getCpRole() {
+    return cpRole;
   }
 
   public List<Institution> getCrpInstitutions() {
@@ -320,12 +355,26 @@ public class CrpPpaPartnersAction extends BaseAction {
     }
   }
 
+  /**  
+   * Add cpRole as a flag to avoid contact points
+   * @author avalencia - CCAFS
+   * @date Oct 26, 2017
+   * @time 11:23:59 AM
+   * @throws Exception
+   */
   @Override
   public void prepare() throws Exception {
     super.prepare();
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+
     String params[] = {loggedCrp.getAcronym()};
+
+    // Check if the CRP has Contact Point and ContactPointRole, if not cpRole will be null (it will be used as a flag)
+    if (this.hasSpecificities(APConstants.CRP_HAS_CP)
+      && roleManager.getRoleById(Long.parseLong((String) this.getSession().get(APConstants.CRP_CP_ROLE))) != null) {
+      cpRole = roleManager.getRoleById(Long.parseLong((String) this.getSession().get(APConstants.CRP_CP_ROLE)));
+    }
 
     if (loggedCrp.getCrpPpaPartners() != null) {
       loggedCrp.setCrpInstitutionsPartners(new ArrayList<CrpPpaPartner>(
@@ -333,18 +382,17 @@ public class CrpPpaPartnersAction extends BaseAction {
       loggedCrp.getCrpInstitutionsPartners()
         .sort((p1, p2) -> p1.getInstitution().getName().compareTo(p2.getInstitution().getName()));
       // Fill Managing/PPA Partners with contact persons
-      Set<CrpPpaPartner> crpPpaPartners = new HashSet<CrpPpaPartner>(0);
-      for (CrpPpaPartner crpPpaPartner : loggedCrp.getCrpInstitutionsPartners()) {
-        this.fillContactPoints(crpPpaPartner);
-        crpPpaPartners.add(crpPpaPartner);
+      if (cpRole != null) {
+        Set<CrpPpaPartner> crpPpaPartners = new HashSet<CrpPpaPartner>(0);
+        for (CrpPpaPartner crpPpaPartner : loggedCrp.getCrpInstitutionsPartners()) {
+          this.fillContactPoints(crpPpaPartner);
+          crpPpaPartners.add(crpPpaPartner);
+        }
+        loggedCrp.setCrpPpaPartners(crpPpaPartners);
       }
-      loggedCrp.setCrpPpaPartners(crpPpaPartners);
     }
     institutions = institutionManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
     institutions.sort((i1, i2) -> i1.getName().compareTo(i2.getName()));
-    if (roleManager.getRoleById(Long.parseLong((String) this.getSession().get(APConstants.CRP_CP_ROLE))) != null) {
-      cpRole = roleManager.getRoleById(Long.parseLong((String) this.getSession().get(APConstants.CRP_CP_ROLE)));
-    }
 
 
     this.setBasePermission(this.getText(Permission.CRP_ADMIN_BASE_PERMISSION, params));
@@ -352,6 +400,7 @@ public class CrpPpaPartnersAction extends BaseAction {
       loggedCrp.getCrpInstitutionsPartners().clear();
     }
   }
+
 
   @Override
   public String save() {
@@ -415,6 +464,11 @@ public class CrpPpaPartnersAction extends BaseAction {
     } else {
       return NOT_AUTHORIZED;
     }
+  }
+
+
+  public void setCpRole(Role cpRole) {
+    this.cpRole = cpRole;
   }
 
   public void setCrpInstitutions(List<Institution> crpInstitutions) {

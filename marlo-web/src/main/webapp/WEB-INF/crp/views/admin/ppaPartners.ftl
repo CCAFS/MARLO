@@ -112,7 +112,8 @@
     
     [#-- Title --]
     <h5 class="title sectionSubTitle">${(ppaPartner.institution.composedName)!'Null'} </h5>
-    
+    [#-- Show contact points --]
+    [#if cpRole??]
     [#-- Contact Points --]
     <label for="">Contact Points:</label>
     <div class="usersBlock leaders form-group simpleBox" listname="${customName}.contactPoints">
@@ -133,6 +134,8 @@
       </div>
       [/#if]
     </div>
+    [/#if]
+    [#-- End show contact points --]
   </div>
 [/#macro]
 
