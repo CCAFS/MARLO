@@ -61,6 +61,11 @@ public class CenterProjectFundingSourceManager implements ICenterProjectFundingS
   }
 
   @Override
+  public CenterProjectFundingSource getProjectFundingSourceByCode(String code) {
+    return projectFundingSourceDAO.getProjectFundingSourceByCode(code);
+  }
+
+  @Override
   public CenterProjectFundingSource getProjectFundingSourceById(long projectFundingSourceID) {
 
     return projectFundingSourceDAO.find(projectFundingSourceID);
