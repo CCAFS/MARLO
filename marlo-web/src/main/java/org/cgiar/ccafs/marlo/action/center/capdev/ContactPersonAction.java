@@ -35,7 +35,7 @@ public class ContactPersonAction extends BaseAction {
   private static final long serialVersionUID = 1L;
 
   public static String getADFilter(String criteria) {
-    final String ldapFilterString = "(&(|" + "(sAMAccountName=*" + criteria + "*)" + "(cn=*" + criteria + "*)" + "(sn=*"
+    String ldapFilterString = "(&(|" + "(sAMAccountName=*" + criteria + "*)" + "(cn=*" + criteria + "*)" + "(sn=*"
       + criteria + "*)" + "(mailNickname=*" + criteria + "*)" + "(givenName=*" + criteria + "*))"
       + "(&(!(objectClass=computer))" + "(!(objectClass=contact))" + "(!(objectClass=printQueue))"
       + "(!(objectClass=group))" + "(!(objectClass=publicFolder))" + "(!(objectClass=connectionPoint))"
@@ -78,19 +78,18 @@ public class ContactPersonAction extends BaseAction {
     super.prepare();
   }
 
-
   public String searchADUser() throws Exception {
-    final Map<String, Object> parameters = this.getParameters();
-    final LDAPService service = new LDAPService();
-    final String queryParameter = StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]);
-    final List<LDAPUser> users = service.searchUsers(queryParameter);
+    Map<String, Object> parameters = this.getParameters();
+    LDAPService service = new LDAPService();
+    String queryParameter = StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]);
+    List<LDAPUser> users = service.searchUsers(queryParameter);
     this.users = new ArrayList<>();
 
 
     int idUser = 0;
-    for (final LDAPUser user : users) {
+    for (LDAPUser user : users) {
       idUser++;
-      final Map<String, Object> userMap = new HashMap<>();
+      Map<String, Object> userMap = new HashMap<>();
       userMap.put("idUser", idUser);
       userMap.put("firstName", user.getFirstName());
       userMap.put("lastName", user.getLastName());
@@ -102,6 +101,7 @@ public class ContactPersonAction extends BaseAction {
 
 
   }
+
 
   public void setUsers(List<Map<String, Object>> users) {
     this.users = users;

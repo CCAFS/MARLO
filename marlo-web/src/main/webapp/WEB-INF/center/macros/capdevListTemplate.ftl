@@ -74,7 +74,7 @@
 				    			<img src="${baseUrl}/center/images/capdev/participants.png" class="[#if i.capdevParticipant?has_content && i.capdevParticipant?size  > 1]capDevIconEnable [#else]capDevIconDisable[/#if]" title="List of participants" />
 					    		
 						    	
-						    	<img src="${baseUrl}/center/images/capdev/deliverable.png" class="[#if i.capdevSupportingDocs?has_content] capDevIconEnable [#else]capDevIconDisable[/#if]" title="Supporting documents" />
+						    	<img src="${baseUrl}/center/images/capdev/deliverable.png" class="[#if i.deliverables?has_content] capDevIconEnable [#else]capDevIconDisable[/#if]" title="Supporting documents" />
 					    	</div>
 
 				    		
