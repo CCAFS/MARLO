@@ -148,6 +148,7 @@ public class ProgramImpactsAction extends BaseAction {
     this.subIdoManager = subIdoManager;
   }
 
+  // Delete Auto-save File
   @Override
   public String cancel() {
 
@@ -179,6 +180,7 @@ public class ProgramImpactsAction extends BaseAction {
     return areaID;
   }
 
+  // Check Auto-save File
   private Path getAutoSaveFilePath() {
     String composedClassName = selectedProgram.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
