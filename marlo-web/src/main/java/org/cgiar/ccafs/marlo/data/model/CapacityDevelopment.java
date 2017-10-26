@@ -82,6 +82,9 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
   private String durationUnit;
 
   @Expose
+  private Participant participant;
+
+  @Expose
   private Boolean global;
 
   @Expose
