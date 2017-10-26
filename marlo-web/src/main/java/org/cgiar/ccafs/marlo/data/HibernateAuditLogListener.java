@@ -489,6 +489,7 @@ public class HibernateAuditLogListener
     try {
       parentId = id.toString();
     } catch (Exception e1) {
+      e1.printStackTrace();
       parentId = "";
     }
     for (Type type : types) {
@@ -498,7 +499,17 @@ public class HibernateAuditLogListener
 
         if (AuditLogContextProvider.getAuditLogContext().getRelationsNames().contains(type.getName())) {
           Set<IAuditLog> listRelation = new HashSet<>();
-          Set<Object> set = (Set<Object>) state[i];
+
+          /**
+           * We load and refresh the object to get the relations updated.
+           * Christian Garcia
+           */
+          Object reObject = sessionFactory.getCurrentSession()
+            .get(AuditLogContextProvider.getAuditLogContext().getEntityCanonicalName(), (Serializable) id);
+          sessionFactory.getCurrentSession().refresh(reObject);
+          ClassMetadata metadata = sessionFactory.getClassMetadata(reObject.getClass());
+          Object[] values = metadata.getPropertyValues(reObject);
+          Set<Object> set = (Set<Object>) values[i];
           if (set != null) {
             for (Object iAuditLog : set) {
               if (iAuditLog instanceof IAuditLog) {
@@ -517,6 +528,11 @@ public class HibernateAuditLogListener
                      * example.
                      * When issue #1124 is solved, this won't be a problem.
                      */
+                    /**
+                     * We load the object to get the id assigned
+                     * Christian Garcia
+                     */
+                    sessionFactory.getCurrentSession().refresh(audit);
                     Object obj = sessionFactory.getCurrentSession().get(className, (Serializable) audit.getId());
                     if (obj == null) {
                       /**

@@ -1149,6 +1149,7 @@ public class DeliverableAction extends BaseAction {
         deliverable.getQualityCheck().setFileDictionary(null);
         deliverable.getQualityCheck().setFileTools(null);
       }
+      deliverable.setCrpClusterKeyOutput(null);
     }
 
     try {
