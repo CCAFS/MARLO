@@ -48,21 +48,24 @@
       [#-- Outcomes List --]
       <h3 class="headTitle text-center"></h3>
       <div class="simpleBox row">
-        <div class="col-md-4">
-          <label for="">Research topic:  </label>
-          <p>${selectedResearchTopic.researchTopic}</p>
-        </div>
-        <div class="col-md-6">
+        <div class="col-md-12">
           <label for="">Outcome statement:  </label>
           <p>${(outcome.description)!}</p>
           <input type="hidden" class="outcomeDescription" name="outcome.description" value="${(outcome.description)!}" />
         </div>
-        <div class="col-md-2">
+        <div class="col-md-12">
+          <label for="">Target Unit:  </label>
+          <p>${(outcome.targetUnit.name)!"Not Applicable"}</p>
+          <input type="hidden" class="outcomeTargetUnit" name="outcome.targetUnit.name" value="${(outcome.targetUnit.name)!"Not Applicable"}" />
+        </div>
+        [#if outcome.targetUnit?has_content]
+        <div class="col-md-12">
           <label for="">Expected for ${(outcome.targetYear)!"null"}:  </label>
           <p>${(outcome.value)!"Not Applicable"}</p>
           <input type="hidden" class="outcomeValue" name="outcome.value" value="${(outcome.value)!}" />
           <input type="hidden" class="outcomeTargetYear" name="outcome.targetYear" value="${(outcome.targetYear)!"null"}" />
         </div>
+        [/#if]
       </div> 
       [#-- View Porjects contributions --]
       <button type="button" class="btn btn-default btn-xs pull-right outcomeProjects-${outcome.id}" data-toggle="modal" data-target="#outcomeProjectsModal">
@@ -83,17 +86,7 @@
           <div role="tabpanel" class="outcomeTab tab-pane [#if outcome.year == action.getCenterYear()]active[/#if]" id="outcomeYear-${outcome.year}">
           [#-- element id --]
           <input type="hidden" name="outcome.monitorings[${outcome_index}].id" value="${(outcome.id)!}" />
-          [#if outcome_index==0]
-          <div class="col-md-2">
-            [@customForm.input name="outcome.baseline" className="initialBaseLine" i18nkey="Initial Baseline" required=true editable=editable /]
-          </div>
           
-          <div class="col-md-9 note center">
-            <span>[@s.text name="monitoring.outcome.help.baseline"/]</span>
-          </div>
-          
-          <div class="clearfix"></div>   
-          [/#if]
           <div class="col-md-12">
             <h5 class="sectionSubTitle">Progress Towards Outcome Milestones:</h5>
             <div class="note left">
@@ -121,10 +114,18 @@
           </div>
             [#-- Outcome narrative --]
             <div class="col-md-12 form-group">
+            
             <h5 class="sectionSubTitle">Progress Towards Long-Term Overall Outcome:</h5>
+            <h5 class="message text-center">[@s.text name="outcome.narrative.longTerm"/]</h5>
             <div class="form-group" style="margin-top: 15px;">
-              [@customForm.textArea name="outcome.monitorings[${outcome_index}].narrative" i18nkey="outcome.narrative.longTerm" help="outcome.tooltip" required=true className="outcome-narrative limitWords-100" editable=editable /]
+              [@customForm.textArea name="outcome.monitorings[${outcome_index}].statusQuo" i18nkey="outcome.narrative.statusQuo"  required=true className="outcome-narrative limitWords-100" editable=editable /]
             </div> 
+            <div class="form-group" style="margin-top: 15px;">
+              [@customForm.textArea name="outcome.monitorings[${outcome_index}].ciatRole" i18nkey="outcome.narrative.ciatRole" required=true className="outcome-narrative limitWords-100" editable=editable /]
+            </div>
+            <div class="form-group" style="margin-top: 15px;">
+              [@customForm.textArea name="outcome.monitorings[${outcome_index}].whatChanged" i18nkey="outcome.narrative.whatChanged"  required=true className="outcome-narrative limitWords-100" editable=editable /]
+            </div>
             </div>
             <br />
             [#-- EVIDENCE OF USE --]
@@ -179,10 +180,15 @@
 [#macro milestoneMacro milestone name index isTemplate=false]
   [#local editable = ((editable) && (milestone.researchMilestone.active))!true /]
   [#assign milestoneCustomName = "${name}[${index}]" /]
-  <div id="milestone-${isTemplate?string('template', index)}" class="milestone borderBox" style="display:${isTemplate?string('none','block')}">
-    <div class="leftHead green sm">
-      <span class="index">${index+1}</span>
-      <span >[@s.text name="outcome.milestone.index.title"/]</span>
+  <div id="milestone-${isTemplate?string('template', index)}" class="panel-group" style="display:${isTemplate?string('none','block')}">
+  <div class="panel panel-default milestone borderBox">  
+    <div class="panel-heading">         
+              <a  data-toggle="collapse" href="#collapse-${(milestone.id)!}">
+                [#-- Milestone Statement --]
+                <div class="form-group" style="margin-top: 15px;">
+                [@customForm.textArea name="${milestoneCustomName}.researchMilestone.title" i18nkey="outcome.milestone.index.statement"  required=true className="milestone-statement limitWords-50" editable=false /]
+                </div>
+              </a>         
     </div>
     [#-- element id --]
      <input type="hidden" class="elementId" name="${milestoneCustomName}.id" value="${(milestone.id)!}" />
@@ -192,11 +198,8 @@
       <div class="removeMilestone removeElement sm" title="Remove Milestone"></div>
     [/#if]
     
-    [#-- Milestone Statement --]
-    <div class="form-group" style="margin-top: 15px;">
-      [@customForm.textArea name="${milestoneCustomName}.researchMilestone.title" i18nkey="outcome.milestone.index.statement"  required=true className="milestone-statement limitWords-50" editable=false /]
-    </div>
     
+    <div id="collapse-${(milestone.id)!}" class="panel-collapse collapse"> 
     <div class="row form-group target-block">   
       <div class="col-md-3 ">
         [@customForm.input name="${milestoneCustomName}.researchMilestone.targetUnit.name" i18nkey="Target Unit" className="milestone-targetYear" required=false editable=false /]
@@ -227,7 +230,8 @@
     <div class="form-group" style="margin-top: 15px;">
       [@customForm.textArea name="${milestoneCustomName}.narrative" i18nkey="outcome.milestone.index.narrative" help="outcome.tooltip" required=true className="milestone-narrative limitWords-100" editable=editable /]
     </div> 
-    
+    </div>
+  </div>
   </div>
 [/#macro]
 
