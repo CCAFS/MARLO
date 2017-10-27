@@ -40,8 +40,6 @@ public class APModule implements Module {
   // Logger
   private static final Logger LOG = LoggerFactory.getLogger(APModule.class);
 
-  private PropertiesManager properties;
-
   @Override
   public void configure(Binder binder) {
     // We are configuring google guice using annotation. However you can do it here if you want.
@@ -52,7 +50,7 @@ public class APModule implements Module {
     // In addition, we are using this place to configure other stuffs.
     ToStringBuilder.setDefaultStyle(ToStringStyle.MULTI_LINE_STYLE);
 
-    properties = new PropertiesManager();
+    PropertiesManager properties = new PropertiesManager();
 
     LOG.info("----- DATABASE CONNECTION -----");
     LOG.info(properties.getPropertiesAsString(APConfig.MYSQL_USER));

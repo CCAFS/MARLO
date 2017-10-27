@@ -61,19 +61,16 @@ public class HibernateSessionFactoryProvider implements Provider<SessionFactory>
       + manager.getPropertiesAsString(APConfig.MYSQL_PORT) + "/"
       + manager.getPropertiesAsString(APConfig.MYSQL_DATABASE) + "?autoReconnect=true&&useSSL=false";
     hibernateConfig.setProperty("hibernate.connection.url", urlMysql);
-    hibernateConfig.setProperty("hibernate.current_session_context_class", "thread");
 
-    hibernateConfig.setProperty("hibernate.connection.url", urlMysql);
-    hibernateConfig.setProperty("hibernate.current_session_context_class", "thread");
-    hibernateConfig.setProperty("hibernate.hikari.dataSource.url", urlMysql);
     hibernateConfig.setProperty("hibernate.hikari.dataSource.user", manager.getPropertiesAsString(APConfig.MYSQL_USER));
     hibernateConfig.setProperty("hibernate.hikari.dataSource.password",
       manager.getPropertiesAsString(APConfig.MYSQL_PASSWORD));
+    hibernateConfig.setProperty("hibernate.hikari.dataSource.url", urlMysql);
     hibernateConfig.setProperty("hibernate.hikari.connectionTimeout", "10000");
     // Minimum number of ideal connections in the pool
     hibernateConfig.setProperty("hibernate.hikari.minimumIdle", "1000");
     // Maximum number of actual connection in the pool
-    hibernateConfig.setProperty("hibernate.hikari.maximumPoolSize", "3500");
+    hibernateConfig.setProperty("hibernate.hikari.maximumPoolSize", "40");
     // Maximum time that a connection is allowed to sit ideal in the pool
     hibernateConfig.setProperty("hibernate.hikari.idleTimeout", "5000");
     hibernateConfig.setProperty("hibernate.bytecode.use_reflection_optimizer'", "false");
@@ -91,6 +88,9 @@ public class HibernateSessionFactoryProvider implements Provider<SessionFactory>
     ServiceRegistry serviceRegistry =
       new StandardServiceRegistryBuilder().applySettings(hibernateConfig.getProperties()).build();
     this.sessionFactory = hibernateConfig.buildSessionFactory(serviceRegistry);
+
+    LOG.debug("Finished building the Hibernate SessionFactory");
+
   }
 
   @Override
