@@ -492,6 +492,11 @@ public class HibernateAuditLogListener
       e1.printStackTrace();
       parentId = "";
     }
+    Object reObject = sessionFactory.getCurrentSession()
+      .get(AuditLogContextProvider.getAuditLogContext().getEntityCanonicalName(), (Serializable) id);
+    sessionFactory.getCurrentSession().refresh(reObject);
+    ClassMetadata metadata = sessionFactory.getClassMetadata(reObject.getClass());
+    Object[] values = metadata.getPropertyValues(reObject);
     for (Type type : types) {
       HashMap<String, Object> objects = new HashMap<>();
 
@@ -504,11 +509,7 @@ public class HibernateAuditLogListener
            * We load and refresh the object to get the relations updated.
            * Christian Garcia
            */
-          Object reObject = sessionFactory.getCurrentSession()
-            .get(AuditLogContextProvider.getAuditLogContext().getEntityCanonicalName(), (Serializable) id);
-          sessionFactory.getCurrentSession().refresh(reObject);
-          ClassMetadata metadata = sessionFactory.getClassMetadata(reObject.getClass());
-          Object[] values = metadata.getPropertyValues(reObject);
+
           Set<Object> set = (Set<Object>) values[i];
           if (set != null) {
             for (Object iAuditLog : set) {
@@ -532,9 +533,11 @@ public class HibernateAuditLogListener
                      * We load the object to get the id assigned
                      * Christian Garcia
                      */
-                    sessionFactory.getCurrentSession().refresh(audit);
+
                     Object obj = sessionFactory.getCurrentSession().get(className, (Serializable) audit.getId());
                     if (obj == null) {
+
+
                       /**
                        * This is likely to be that the entity has just been hard deleted (MARLO has a mixture of
                        * entities
@@ -546,6 +549,8 @@ public class HibernateAuditLogListener
                       listRelation.add(audit);
                       continue;
                     }
+
+
                     listRelation.add((IAuditLog) obj);
                     Set<HashMap<String, Object>> loadList = this.loadListOfRelations((IAuditLog) obj, sessionFactory);
                     for (HashMap<String, Object> hashMap : loadList) {

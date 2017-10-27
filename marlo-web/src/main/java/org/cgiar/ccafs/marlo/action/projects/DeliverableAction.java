@@ -505,16 +505,17 @@ public class DeliverableAction extends BaseAction {
     return partners;
   }
 
+
   public List<ProjectPartnerPerson> getPersons(long projectPartnerId) {
     List<ProjectPartnerPerson> projectPartnerPersons =
       projectPartnerPersonManager.findAllForProjectPartner(projectPartnerId);
     return projectPartnerPersons;
   }
 
-
   public Map<String, String> getPrograms() {
     return programs;
   }
+
 
   public Project getProject() {
     return project;
@@ -568,10 +569,10 @@ public class DeliverableAction extends BaseAction {
     return status;
   }
 
-
   public String getTransaction() {
     return transaction;
   }
+
 
   @Override
   public Boolean isDeliverableNew(long deliverableID) {
@@ -612,7 +613,6 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
-
   public Boolean isDeliverabletNew(long deliverableID) {
 
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
@@ -649,6 +649,7 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+
   @Override
   public boolean isPPA(Institution institution) {
     if (institution == null) {
@@ -668,6 +669,10 @@ public class DeliverableAction extends BaseAction {
     }
 
     return false;
+  }
+
+  public boolean isSelectedPerson(long projectPartnerPersonId, long projectPartner) {
+    return this.getSelectedPersons(projectPartner).contains(new Long(projectPartnerPersonId));
   }
 
   public List<DeliverablePartnership> otherPartners() {

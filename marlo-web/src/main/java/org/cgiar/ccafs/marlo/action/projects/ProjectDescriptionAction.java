@@ -469,8 +469,8 @@ public class ProjectDescriptionAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
- 	      reader.close();
- 	
+        reader.close();
+
         // instance class AutoSaveReader (made by US)
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
@@ -544,7 +544,7 @@ public class ProjectDescriptionAction extends BaseAction {
         }
         project.setFlagships(programs);
         project.setRegions(regions);
-      
+
 
         // We change this variable so that the user knows that he is working on a draft version
 
@@ -588,7 +588,8 @@ public class ProjectDescriptionAction extends BaseAction {
         List<ProjectClusterActivity> projectClusterActivities = new ArrayList<>();
         for (ProjectClusterActivity projectClusterActivity : project.getProjectClusterActivities().stream()
           .filter(c -> c.isActive()).collect(Collectors.toList())) {
-
+          projectClusterActivity.setCrpClusterOfActivity(crpClusterOfActivityManager
+            .getCrpClusterOfActivityById(projectClusterActivity.getCrpClusterOfActivity().getId()));
           projectClusterActivity.getCrpClusterOfActivity().setLeaders(projectClusterActivity.getCrpClusterOfActivity()
             .getCrpClusterActivityLeaders().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
           projectClusterActivities.add(projectClusterActivity);

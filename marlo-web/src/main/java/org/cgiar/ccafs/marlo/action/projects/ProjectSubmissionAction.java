@@ -100,8 +100,8 @@ public class ProjectSubmissionAction extends BaseAction {
     complete = false;
     if (this.hasPermission("submitProject")) {
       if (this.isCompleteProject(projectID)) {
-        List<Submission> submissions = project
-          .getSubmissions().stream().filter(c -> c.getCycle().equals(APConstants.PLANNING)
+        List<Submission> submissions = project.getSubmissions()
+          .stream().filter(c -> c.getCycle().equals(APConstants.PLANNING)
             && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
           .collect(Collectors.toList());
 
@@ -369,9 +369,11 @@ public class ProjectSubmissionAction extends BaseAction {
 
     long result = submissionManager.saveSubmission(submission).getId();
     this.setSubmission(submission);
+
     if (result > 0) {
       submission.setId(result);
       this.sendNotficationEmail();
+
 
     }
   }
