@@ -17,7 +17,9 @@ package org.cgiar.ccafs.marlo.action.center.json.monitoring.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProjectFundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.model.CenterProjectFundingSource;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.ocs.model.AgreementOCS;
 import org.cgiar.ccafs.marlo.ocs.ws.MarloOcsClient;
@@ -49,15 +51,18 @@ public class ValidateSyncCode extends BaseAction {
   private MarloOcsClient ocsClient;
   private AgreementOCS agreement;
 
+  private ICenterProjectFundingSourceManager centerProjectFundingSourceManager;
   private ProjectManager projectManager;
   // return value Map
   private Map<String, Object> message;
 
   @Inject
-  public ValidateSyncCode(APConfig config, ProjectManager projectManager, MarloOcsClient ocsClient) {
+  public ValidateSyncCode(APConfig config, ProjectManager projectManager, MarloOcsClient ocsClient,
+    ICenterProjectFundingSourceManager centerProjectFundingSourceManager) {
     super(config);
     this.projectManager = projectManager;
     this.ocsClient = ocsClient;
+    this.centerProjectFundingSourceManager = centerProjectFundingSourceManager;
   }
 
   @Override
@@ -67,20 +72,35 @@ public class ValidateSyncCode extends BaseAction {
     message.put("code", syncCode);
 
     switch (Math.toIntExact(syncTypeID)) {
+      // Validate OCS Code
       case 1:
         agreement = ocsClient.getagreement(syncCode);
         if (agreement != null) {
-          message.put("status", true);
+
+          CenterProjectFundingSource centerProjectFundingSource =
+            centerProjectFundingSourceManager.getProjectFundingSourceByCode(syncCode);
+          if (centerProjectFundingSource != null) {
+            message.put("status", false);
+          } else {
+            message.put("status", true);
+          }
         } else {
           message.put("status", false);
         }
         break;
-
+      // Validate MARLO CRP Project
       case 2:
         long projectID = Long.parseLong(syncCode);
         Project project = projectManager.getProjectById(projectID);
         if (project != null) {
-          message.put("status", true);
+
+          CenterProjectFundingSource centerProjectFundingSource =
+            centerProjectFundingSourceManager.getProjectFundingSourceByCode("P" + syncCode);
+          if (centerProjectFundingSource != null) {
+            message.put("status", false);
+          } else {
+            message.put("status", true);
+          }
         } else {
           message.put("status", false);
         }
@@ -103,6 +123,7 @@ public class ValidateSyncCode extends BaseAction {
     syncTypeID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.CENTER_PROJECT_SYNC_TYPE))[0]));
     syncCode = StringUtils.trim(((String[]) parameters.get(APConstants.CENTER_PROJECT_SYNC_CODE))[0]);
 
+    // If Choose CRP replace/delete the "P" in the String to search easily the CRP MARLO Project.
     if (syncTypeID == 2) {
       if (syncCode.toUpperCase().contains("P")) {
         syncCode = syncCode.toUpperCase().replaceFirst("P", "");
