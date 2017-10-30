@@ -77,7 +77,7 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
     builder.append("select DISTINCT project_id from user_permission where  crp_acronym='" + crp
       + "' and permission_id = 438 and project_id is not null");
     List<Map<String, Object>> list =
-      super.excuteStoreProccedure(" call getPermissions(" + userId + ")", builder.toString());
+      super.excuteStoreProcedure(" call getPermissions(" + userId + ")", builder.toString());
 
     return list;
   }

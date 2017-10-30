@@ -156,7 +156,7 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
     builder.append("select DISTINCT project_id from user_permission where crp_acronym='" + crp
       + "' and project_id is not null and  permission_id not in (438,462)");
     List<Map<String, Object>> list =
-      super.excuteStoreProccedure(" call getPermissions(" + userId + ")", builder.toString());
+      super.excuteStoreProcedure(" call getPermissions(" + userId + ")", builder.toString());
     return list;
   }
 
@@ -166,7 +166,7 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
     builder.append("select DISTINCT project_id from user_permission where crp_acronym='" + crp
       + "' and project_id is not null and  permission_id  in (110,195)");
     List<Map<String, Object>> list =
-      super.excuteStoreProccedure(" call getPermissions(" + userId + ")", builder.toString());
+      super.excuteStoreProcedure(" call getPermissions(" + userId + ")", builder.toString());
     return list;
   }
 

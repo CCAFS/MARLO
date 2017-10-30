@@ -66,16 +66,11 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    * 
    * @param sqlQuery is a string representing an SQL query.
    */
-  public List<Map<String, Object>> excuteStoreProccedure(String storeProccedure, String sqlQuery) {
-
-    long startTime = System.currentTimeMillis();
-    this.sessionFactory.getCurrentSession().createSQLQuery(storeProccedure).executeUpdate();
+  public List<Map<String, Object>> excuteStoreProcedure(String storeProcedure, String sqlQuery) {
+    this.sessionFactory.getCurrentSession().createSQLQuery(storeProcedure).executeUpdate();
     Query query = this.sessionFactory.getCurrentSession().createSQLQuery(sqlQuery);
     query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
     List<Map<String, Object>> result = query.list();
-    long stopTime = System.currentTimeMillis();
-    stopTime = stopTime - startTime;
-    LOG.info("excuete stp permissions " + stopTime + " ms");
     return result;
 
   }
