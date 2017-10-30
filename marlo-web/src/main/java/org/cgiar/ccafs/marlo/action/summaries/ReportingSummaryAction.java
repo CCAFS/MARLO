@@ -143,16 +143,21 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
   }
 
+  private Submission submission;
+
 
   // PDF bytes
   private byte[] bytesPDF;
+
 
   // Streams
   InputStream inputStream;
 
   // Parameters
   private long startTime;
+
   private Crp loggedCrp;
+
   private HashMap<Long, String> targetUnitList;
   private SrfTargetUnitManager srfTargetUnitManager;
   private Project project;
@@ -162,11 +167,11 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   private long projectID;
   private int year;
   private String cycle;
-
-
   // Managers
   private ProjectManager projectManager;
   private CrpProgramManager programManager;
+
+
   private GenderTypeManager genderTypeManager;
   private InstitutionManager institutionManager;
   private ProjectBudgetManager projectBudgetManager;
@@ -226,7 +231,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     masterReport.getParameterValues().put("BudgetPartnerWidth", width);
     return masterReport;
   }
-
 
   /**
    * Method to add i8n parameters to masterReport in Pentaho
@@ -712,7 +716,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return hm;
   }
 
-
   public boolean containsOutput(long outputID, long outcomeID) {
     if (project.getMogs() != null) {
       for (IpElement output : project.getMogs()) {
@@ -724,6 +727,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     }
     return false;
   }
+
 
   @Override
   public String execute() throws Exception {
@@ -925,6 +929,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         + ". CRP: " + this.loggedCrp.getAcronym() + ". Cycle: " + cycle + ". Time to generate: " + stopTime + "ms.");
     return SUCCESS;
   }
+
 
   private void fillSubreport(SubReport subReport, String query, List<Object> args) {
     CompoundDataFactory cdf = CompoundDataFactory.normalize(subReport.getDataFactory());
@@ -1736,14 +1741,14 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           && ((d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
             && (d.getYear() >= this.year
               || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() >= this.year)))
-            || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-              && (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))
-            || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
-              && (d.getYear() == this.year
-                || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))))
-          && (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-            || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-            || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
+          || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+            && (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))
+          || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+            && (d.getYear() == this.year
+              || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))))
+        && (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+          || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+          || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
         .collect(Collectors.toList()));
       deliverables.sort((p1, p2) -> p1.isRequieriedReporting(year).compareTo(p2.isRequieriedReporting(year)));
       HashSet<Deliverable> deliverablesHL = new HashSet<>();
@@ -2567,7 +2572,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return config.getDownloadURL() + "/" + this.getHighlightsImagesUrlPath().replace('\\', '/');
   }
 
-
   public String getHighlightsImagesUrlPath() {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project.getId() + File.separator
       + "hightlightsImage" + File.separator;
@@ -2577,6 +2581,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + projectID + File.separator
       + "hightlightsImage" + File.separator;
   }
+
 
   private String getHightlightImagePath(long projectID) {
     return config.getUploadsBaseFolder() + File.separator + this.getHighlightsImagesUrlPath(projectID) + File.separator;
@@ -2715,13 +2720,19 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       zone = "+0";
     }
     String currentDate = timezone.format(format) + "(GMT" + zone + ")";
-    // Filling submission
     List<Submission> submissions = new ArrayList<>();
-    for (Submission submission : project.getSubmissions().stream()
-      .filter(c -> c.getCycle().equals(cycle) && c.getYear() == year && c.getUnSubmitUser() == null)
-      .collect(Collectors.toList())) {
-      submissions.add(submission);
+    if (this.getSubmission() == null) {
+      for (Submission submission : project.getSubmissions().stream()
+        .filter(c -> c.getCycle().equals(cycle) && c.getYear() == year && c.getUnSubmitUser() == null)
+        .collect(Collectors.toList())) {
+        submissions.add(submission);
+      }
+    } else {
+      submissions.add(this.getSubmission());
     }
+    // Filling submission
+
+
     String submission = "";
     if (!submissions.isEmpty()) {
       if (submissions.size() > 1) {
@@ -2842,9 +2853,11 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   }
 
   private TypedTableModel getOtherContributionsDetailTableModel() {
-    TypedTableModel model = new TypedTableModel(
-      new String[] {"region", "indicator", "contribution_description", "target_contribution", "otherContributionyear"},
-      new Class[] {String.class, String.class, String.class, Integer.class, Integer.class}, 0);
+    TypedTableModel model =
+      new TypedTableModel(
+        new String[] {"region", "indicator", "contribution_description", "target_contribution",
+          "otherContributionyear"},
+        new Class[] {String.class, String.class, String.class, Integer.class, Integer.class}, 0);
     for (OtherContribution otherContribution : project.getOtherContributions().stream().filter(oc -> oc.isActive())
       .collect(Collectors.toList())) {
       String region = null, indicator = null, contributionDescription = null;
@@ -3325,7 +3338,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
-
   private TypedTableModel getProjectOutcomesTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"out_statement", "out_statement_current", "out_progress_current", "communication_current",
@@ -3390,6 +3402,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return config.getDownloadURL() + "/" + this.getProjectOutcomeUrlPath().replace('\\', '/');
   }
 
+
   public String getProjectOutcomeUrlPath() {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project.getId() + File.separator
       + "project_outcome" + File.separator;
@@ -3407,6 +3420,11 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       }
     }
     return model;
+  }
+
+  @Override
+  public Submission getSubmission() {
+    return submission;
   }
 
   public HashMap<Long, String> getTargetUnitList() {
@@ -3662,6 +3680,11 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
+  }
+
+  @Override
+  public void setSubmission(Submission submission) {
+    this.submission = submission;
   }
 
   public void setTargetUnitList(HashMap<Long, String> targetUnitList) {
