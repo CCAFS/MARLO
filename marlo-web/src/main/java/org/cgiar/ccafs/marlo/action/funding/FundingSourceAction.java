@@ -693,21 +693,21 @@ public class FundingSourceAction extends BaseAction {
        * this) and the save method would map the values from the FundingSourceDTO to the FundingSource hibernate entity.
        */
 
-      if (fundingSource.getInstitutions() != null) {
-        for (FundingSourceInstitution fundingSourceInstitution : fundingSource.getInstitutions()) {
-          fundingSourceInstitution
-            .setInstitution(institutionManager.getInstitutionById(fundingSourceInstitution.getInstitution().getId()));
-        }
-        fundingSource.getInstitutions().clear();
-      }
-
-      if (fundingSource.getFundingRegions() != null) {
-        fundingSource.getFundingRegions().clear();
-      }
-
-      if (fundingSource.getFundingCountry() != null) {
-        fundingSource.getFundingCountry().clear();
-      }
+      /*
+       * if (fundingSource.getInstitutions() != null) {
+       * for (FundingSourceInstitution fundingSourceInstitution : fundingSource.getInstitutions()) {
+       * fundingSourceInstitution
+       * .setInstitution(institutionManager.getInstitutionById(fundingSourceInstitution.getInstitution().getId()));
+       * }
+       * fundingSource.getInstitutions().clear();
+       * }
+       * if (fundingSource.getFundingRegions() != null) {
+       * fundingSource.getFundingRegions().clear();
+       * }
+       * if (fundingSource.getFundingCountry() != null) {
+       * fundingSource.getFundingCountry().clear();
+       * }
+       */
 
       fundingSource.setW1w2(null);
       fundingSource.setFile(null);
