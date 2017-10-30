@@ -715,6 +715,9 @@ public class FundingSourceAction extends BaseAction {
       fundingSource.setInstitution(null);
       fundingSource.setBudgets(null);
       fundingSource.setBudgetType(null);
+      fundingSource.setFundingRegions(null);
+      fundingSource.setFundingCountry(null);
+
       return;
     }
   }

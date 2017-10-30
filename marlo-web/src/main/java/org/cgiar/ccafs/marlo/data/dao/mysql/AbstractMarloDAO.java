@@ -82,7 +82,6 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    */
   public T find(Class<T> clazz, ID id) {
     T obj = (T) sessionFactory.getCurrentSession().get(clazz, id);
-    this.updateEntity(obj);
     return obj;
   }
 
@@ -248,8 +247,5 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
     return entity;
   }
 
-  protected T updateEntity(T entity) {
-    sessionFactory.getCurrentSession().update(entity);
-    return entity;
-  }
+
 }

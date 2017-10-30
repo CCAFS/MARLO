@@ -135,7 +135,7 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
   @Override
   public Project find(long id) {
     Project project = super.find(Project.class, id);
-    this.updateEntity(project);
+
     return project;
   }
 

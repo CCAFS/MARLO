@@ -492,11 +492,12 @@ public class HibernateAuditLogListener
       e1.printStackTrace();
       parentId = "";
     }
-    Object reObject = sessionFactory.getCurrentSession()
-      .get(AuditLogContextProvider.getAuditLogContext().getEntityCanonicalName(), (Serializable) id);
-    sessionFactory.getCurrentSession().refresh(reObject);
-    ClassMetadata metadata = sessionFactory.getClassMetadata(reObject.getClass());
-    Object[] values = metadata.getPropertyValues(reObject);
+    /**
+     * We load and refresh the object to get the relations updated.
+     * Christian Garcia
+     */
+
+
     for (Type type : types) {
       HashMap<String, Object> objects = new HashMap<>();
 
@@ -505,13 +506,16 @@ public class HibernateAuditLogListener
         if (AuditLogContextProvider.getAuditLogContext().getRelationsNames().contains(type.getName())) {
           Set<IAuditLog> listRelation = new HashSet<>();
 
-          /**
-           * We load and refresh the object to get the relations updated.
-           * Christian Garcia
-           */
 
-          Set<Object> set = (Set<Object>) values[i];
-          if (set != null) {
+          Set<Object> set = (Set<Object>) state[i];
+
+          if (set != null && !set.isEmpty()) {
+            Object reObject = sessionFactory.getCurrentSession()
+              .get(AuditLogContextProvider.getAuditLogContext().getEntityCanonicalName(), (Serializable) id);
+            sessionFactory.getCurrentSession().refresh(reObject);
+            ClassMetadata metadata = sessionFactory.getClassMetadata(reObject.getClass());
+            Object[] values = metadata.getPropertyValues(reObject);
+            set = (Set<Object>) values[i];
             for (Object iAuditLog : set) {
               if (iAuditLog instanceof IAuditLog) {
                 IAuditLog audit = (IAuditLog) iAuditLog;
