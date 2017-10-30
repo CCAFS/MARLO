@@ -82,6 +82,7 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    */
   public T find(Class<T> clazz, ID id) {
     T obj = (T) sessionFactory.getCurrentSession().get(clazz, id);
+    this.getSessionFactory().getCurrentSession().update(obj);
     return obj;
   }
 
