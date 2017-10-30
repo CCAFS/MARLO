@@ -25,7 +25,7 @@
               [#-- Requested Source --]
               <p><strong>[@s.text name="Requested Source" /]:</strong> <i>${(partner.requestSource)}</i></p>
               [#-- CRP --]
-              <p><strong>[@s.text name="CRP" /]:</strong> <i>${(partner.crp.acronym?html)!''}</i></p>
+              <p><strong>[@s.text name="CRP" /]:</strong> <i>${(partner.crp.acronym?html)!'Not Available'}</i></p>
               [#-- Requested by --]
               <p><strong>[@s.text name="Requested By" /]:</strong> <i>${(partner.createdBy.composedName?html)!'none'}</i></p>
             </div>

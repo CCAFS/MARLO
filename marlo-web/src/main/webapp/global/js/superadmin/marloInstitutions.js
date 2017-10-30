@@ -204,12 +204,10 @@ function findSameness() {
               var $li = $('<li title="' + partner.composedName + '">' + partner.composedName + '</li>');
               $(e).find('.sameness ul').append($li);
               // Text Difference
-              $li.prettyTextDiff({
-                  cleanup: false,
-                  originalContent: $(e).find('h4').text(),
-                  changedContent: partner.composedName,
-                  diffContainer: $li
-              });
+              /*
+               * $li.prettyTextDiff({ cleanup: false, originalContent: $(e).find('h4').text(), changedContent:
+               * partner.composedName, diffContainer: $li });
+               */
             });
           }
         },
