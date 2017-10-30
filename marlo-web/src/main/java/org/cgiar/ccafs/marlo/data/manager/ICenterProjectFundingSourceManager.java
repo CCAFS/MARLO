@@ -55,6 +55,14 @@ public interface ICenterProjectFundingSourceManager {
 
 
   /**
+   * This method gets a list of projectFundingSource search by code (sync code)
+   * 
+   * @param code - the sync code
+   * @return CenterProjectFundingSource object
+   */
+  public CenterProjectFundingSource getProjectFundingSourceByCode(String code);
+
+  /**
    * This method gets a projectFundingSource object by a given projectFundingSource identifier.
    * 
    * @param projectFundingSourceID is the projectFundingSource identifier.

@@ -83,10 +83,6 @@ public class CenterOutcome implements Serializable, IAuditLog {
   @Expose
   private boolean impactPathway;
 
-
-  @Expose
-  private BigDecimal baseline;
-
   @Expose
   private String shortName;
 
@@ -133,10 +129,6 @@ public class CenterOutcome implements Serializable, IAuditLog {
 
   public Date getActiveSince() {
     return activeSince;
-  }
-
-  public BigDecimal getBaseline() {
-    return baseline;
   }
 
   public String getComposedName() {
@@ -258,10 +250,6 @@ public class CenterOutcome implements Serializable, IAuditLog {
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
-  }
-
-  public void setBaseline(BigDecimal baseline) {
-    this.baseline = baseline;
   }
 
   public void setCreatedBy(User createdBy) {

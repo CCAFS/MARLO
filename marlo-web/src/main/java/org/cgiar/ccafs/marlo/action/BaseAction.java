@@ -61,6 +61,7 @@ import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
+import org.cgiar.ccafs.marlo.data.model.CenterProjectFundingSource;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterSectionStatus;
 import org.cgiar.ccafs.marlo.data.model.CenterSubmission;
@@ -805,7 +806,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public HistoryDifference changedField(String field) {
 
 
@@ -821,6 +821,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   /**
    * This method clears the cache and re-load the user permissions in the next iteration.
    */
@@ -829,10 +830,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       .clearCachedAuthorizationInfo(securityContext.getSubject().getPrincipals());
   }
 
-
   public String crpActivitesModule() {
     return APConstants.CRP_ACTIVITES_MODULE;
   }
+
 
   /* Override this method depending of the delete action. */
   public String delete() {
@@ -916,7 +917,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return allYears;
   }
 
-
   public Boolean getAutoSaveFilePath(String simpleName, String actionName, long id) {
     String composedClassName = simpleName;
     String actionFile = this.getCrpSession() + "_" + actionName;
@@ -925,6 +925,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return exist;
   }
 
+
   public String getBasePermission() {
     return basePermission;
   }
@@ -932,7 +933,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public String getBaseUrl() {
     return config.getBaseUrl();
   }
-
 
   public String getBaseUrlMedia() {
     if (this.getCurrentCrp() != null) {
@@ -951,6 +951,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     return Arrays.asList(CrpCategoryEnum.values());
   }
+
 
   /**
    * ***********************CENTER METHOD***************************************************************
@@ -979,7 +980,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return null;
   }
 
-
   /**
    * ************************ CENTER METHOD *********************
    * Get the center that is currently save in the session, if the user access to
@@ -1003,6 +1003,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return this.centerID;
   }
+
 
   /**
    * ***********************CENTER METHOD********************
@@ -1030,7 +1031,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return null;
   }
 
-
   /**
    * ***********************CENTER METHOD********************
    * This method gets the specific section status from the sectionStatuses array for a Output.
@@ -1057,6 +1057,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return null;
   }
+
 
   /**
    * ************************ CENTER METHOD *********************
@@ -1148,7 +1149,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return centerSubmission;
   }
 
-
   /**
    * ************************ CENTER METHOD *********************
    * return the actual center year
@@ -1160,14 +1160,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return Calendar.getInstance().get(Calendar.YEAR);
   }
 
+
   public long getCGIARInstitution() {
     return APConstants.INSTITUTION_CGIAR;
   }
 
-
   public APConfig getConfig() {
     return config;
   }
+
 
   public List<Crp> getCrpCategoryList(String category) {
     return crpManager.findAll().stream()
@@ -1217,7 +1218,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return crpManager.findAll().stream().filter(c -> c.isMarlo()).collect(Collectors.toList());
   }
 
-
   /**
    * Get the crp that is currently save in the session, if the user access to the platform whit a diferent url, get the
    * current action to catch the crp
@@ -1266,6 +1266,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return this.currentCenter;
   }
+
 
   public Crp getCurrentCrp() {
     if (session != null && !session.isEmpty()) {
@@ -1459,7 +1460,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return justification;
   }
 
-
   public String getLiasons() {
     String liasonsUsers = "";
     User u = userManager.getUser(this.getCurrentUser().getId());
@@ -1495,6 +1495,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return Locale.ENGLISH;
   }
 
+
   public String getNamespace() {
     return ServletActionContext.getActionMapping().getNamespace();
   }
@@ -1510,7 +1511,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return 0;
   }
-
 
   public List<Deliverable> getOpenDeliverables(List<Deliverable> deliverables) {
 
@@ -1545,6 +1545,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return openDeliverables;
 
   }
+
 
   public Map<String, Object> getParameters() {
     parameters = ActionContext.getContext().getParameters();
@@ -1687,7 +1688,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                     || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
                     || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
                       || a.getStatus().intValue() == 0 || a.getStatus().intValue() == -1))))
-            .collect(Collectors.toList());
+              .collect(Collectors.toList());
         } else {
           openA = deliverables.stream()
             .filter(a -> a.isActive()
@@ -1829,6 +1830,33 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return new ArrayList<>();
     }
     return submissions;
+  }
+
+  /**
+   ************************ CENTER METHOD *********************
+   * return true if the user can view the impactPathway
+   * *********************************************************
+   * Return the sync code if the center project has synchronized by another project
+   * 
+   * @param centerProjectID
+   * @return the Sync Code
+   */
+  public String getProjectSyncCode(long centerProjectID) {
+
+
+    CenterProject project = projectService.getCenterProjectById(centerProjectID);
+
+    if (project != null) {
+      if (project.isAutoFill()) {
+        CenterProjectFundingSource fundingSource = project.getProjectFundingSources().stream()
+          .filter(fs -> fs.isActive() && fs.isAutoFill()).collect(Collectors.toList()).get(0);
+        if (fundingSource != null) {
+          return fundingSource.getCode();
+        }
+      }
+    }
+
+    return "---";
   }
 
 
@@ -2847,7 +2875,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       project
         .getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
           && c.getYear().intValue() == year && (c.isUnSubmit() == null || !c.isUnSubmit()))
-      .collect(Collectors.toList());
+        .collect(Collectors.toList());
     if (submissions.isEmpty()) {
       return false;
     }

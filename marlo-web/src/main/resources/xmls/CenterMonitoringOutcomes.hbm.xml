@@ -24,9 +24,15 @@
 		<property name="year" type="int">
 			<column name="year" precision="4" scale="0" not-null="true" />
 		</property>
-		<property name="narrative" type="string">
-			<column name="narrative" length="65535" />
+		<property name="statusQuo" type="string">
+			<column name="status_quo" length="65535" />
 		</property>
+		<property name="ciatRole" type="string">
+      <column name="ciat_role" length="65535" />
+    </property>
+    <property name="whatChanged" type="string">
+      <column name="what_changed" length="65535" />
+    </property>
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>

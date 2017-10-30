@@ -68,6 +68,18 @@ public class CenterProjectFundingSourceDAO extends AbstractMarloDAO<CenterProjec
   }
 
   @Override
+  public CenterProjectFundingSource getProjectFundingSourceByCode(String code) {
+    StringBuilder q = new StringBuilder();
+    q.append("from " + CenterProjectFundingSource.class.getName() + " where code= '" + code + "'");
+    List<CenterProjectFundingSource> list = super.findAll(q.toString());
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+  }
+
+
+  @Override
   public List<CenterProjectFundingSource> getProjectFundingSourcesByUserId(long userId) {
     String query = "from " + CenterProjectFundingSource.class.getName() + " where user_id=" + userId;
     return super.findAll(query);
