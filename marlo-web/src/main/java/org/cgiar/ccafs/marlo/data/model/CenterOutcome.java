@@ -86,10 +86,6 @@ public class CenterOutcome implements Serializable, IAuditLog {
   private boolean impactPathway;
 
   @Expose
-  private BigDecimal baseline;
-
-
-  @Expose
   private String shortName;
 
   private Set<CenterMilestone> researchMilestones = new HashSet<CenterMilestone>(0);
@@ -136,12 +132,8 @@ public class CenterOutcome implements Serializable, IAuditLog {
     return activeSince;
   }
 
-  public BigDecimal getBaseline() {
-    return baseline;
-  }
-
   public String getComposedName() {
-    return "OC" + this.id + "- "+ (this.description != null ? this.description : "title not defined") ;
+    return "OC" + this.id + "- " + (this.description != null ? this.description : "title not defined");
   }
 
   public User getCreatedBy() {
@@ -175,6 +167,7 @@ public class CenterOutcome implements Serializable, IAuditLog {
     return milestones;
   }
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -258,10 +251,6 @@ public class CenterOutcome implements Serializable, IAuditLog {
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
-  }
-
-  public void setBaseline(BigDecimal baseline) {
-    this.baseline = baseline;
   }
 
 
