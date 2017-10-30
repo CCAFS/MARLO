@@ -822,8 +822,8 @@ public class FundingSourceAction extends BaseAction {
               fundingSourceBudgetBD.setActive(true);
               fundingSourceBudgetBD.setFundingSource(fundingSourceDB);
               // fundingSourceBudget.setCreatedBy(fundingSourceBudgetBD.getCreatedBy());
-              fundingSourceBudget.setModifiedBy(this.getCurrentUser());
-              fundingSourceBudget.setModificationJustification("");
+              fundingSourceBudgetBD.setModifiedBy(this.getCurrentUser());
+              fundingSourceBudgetBD.setModificationJustification("");
               // fundingSourceBudget.setActiveSince(fundingSourceDB.getActiveSince());
               fundingSourceBudgetBD = fundingSourceBudgetManager.saveFundingSourceBudget(fundingSourceBudgetBD);
               fundingSourceBudgetBD.setBudget(fundingSourceBudget.getBudget());
@@ -849,9 +849,10 @@ public class FundingSourceAction extends BaseAction {
           if (fundingSourceInstitution.getId() == null || fundingSourceInstitution.getId().longValue() == -1) {
 
             fundingSourceInstitution.setId(null);
-            fundingSourceInstitution.setFundingSource(fundingSource);
+            fundingSourceInstitution.setFundingSource(fundingSourceDB);
 
-            fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
+            fundingSourceInstitution =
+              fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
             instituionsEdited = true;
           }
 
