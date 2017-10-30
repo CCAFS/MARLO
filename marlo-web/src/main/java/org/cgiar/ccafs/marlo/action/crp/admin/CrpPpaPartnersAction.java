@@ -56,6 +56,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 
 /**
  * CrpPpaPartnersAction:
+ * 
  * @author Hermes Jiménez - CIAT/CCAFS
  * @author avalencia - CCAFS
  * @date Oct 26, 2017
@@ -123,6 +124,7 @@ public class CrpPpaPartnersAction extends BaseAction {
 
   /**
    * Add cpRole as a flag to avoid contact points
+   * 
    * @author avalencia - CCAFS
    * @date Oct 26, 2017
    * @time 11:22:37 AM
@@ -146,6 +148,7 @@ public class CrpPpaPartnersAction extends BaseAction {
                 .filter(ur -> ur.getRole().equals(cpRole)).collect(Collectors.toList());
               for (UserRole userRole : userRoles) {
                 userRoleManager.deleteUserRole(userRole.getId());
+                this.notifyRoleContactPointUnassigned(userRole, partnerDB);
               }
             }
             // Disable LiaisonUser
@@ -177,14 +180,15 @@ public class CrpPpaPartnersAction extends BaseAction {
               liaisonUserSave.setCrp(loggedCrp);
               liaisonUserSave.setActive(true);
               liaisonUserManager.saveLiaisonUser(liaisonUserSave);
+              // If is new user active it
+              if (!liaisonUser.getUser().isActive()) {
+                this.notifyNewUserCreated(liaisonUser.getUser());
+              }
               // add userRole
               if (cpRole != null) {
                 UserRole userRole = new UserRole(cpRole, liaisonUserSave.getUser());
                 userRoleManager.saveUserRole(userRole);
-              }
-              // If is new user active it
-              if (!liaisonUser.getUser().isActive()) {
-                this.notifyNewUserCreated(liaisonUser.getUser());
+                this.notifyRoleContactPointAssigned(userRole, crpPpaPartner);
               }
               partnerDB.getContactPoints().add(liaisonUserSave);
             }
@@ -196,6 +200,7 @@ public class CrpPpaPartnersAction extends BaseAction {
 
   /**
    * Add cpRole as a flag to avoid contact points
+   * 
    * @author avalencia - CCAFS
    * @date Oct 26, 2017
    * @time 11:23:00 AM
@@ -219,6 +224,7 @@ public class CrpPpaPartnersAction extends BaseAction {
               .filter(ur -> ur.getRole().equals(cpRole)).collect(Collectors.toList());
             for (UserRole userRole : userRoles) {
               userRoleManager.deleteUserRole(userRole.getId());
+              this.notifyRoleContactPointUnassigned(userRole, partner);
             }
           }
           // Disable LiaisonUser
@@ -229,9 +235,9 @@ public class CrpPpaPartnersAction extends BaseAction {
 
   }
 
-
   /**
    * Add cpRole as a flag to avoid contact points
+   * 
    * @author avalencia - CCAFS
    * @date Oct 26, 2017
    * @time 11:23:44 AM
@@ -355,8 +361,136 @@ public class CrpPpaPartnersAction extends BaseAction {
     }
   }
 
-  /**  
+  /**
+   * This method notify the user that is been assigned as Contact Point for an specific PPA / Managing Partner
+   * 
+   * @author avalencia - CCAFS
+   * @date Oct 30, 2017
+   * @time 9:33:38 AM
+   * @param userRoleAssigned is the user and role been assigned
+   * @param crpPpaPartner is the PPA / Managing Partner where is assigned
+   */
+  private void notifyRoleContactPointAssigned(UserRole userRoleAssigned, CrpPpaPartner crpPpaPartner) {
+    crpPpaPartner = crpPpaPartnerManager.getCrpPpaPartnerById(crpPpaPartner.getId());
+    // Email send to the user assigned
+    String toEmail = userRoleAssigned.getUser().getEmail();
+    // CC will be the user who is making the modification and the CRP Admins
+    String ccEmail = "";
+    if (this.getCurrentUser() != null) {
+      ccEmail = this.getCurrentUser().getEmail();
+    }
+
+    // Adding CRP Admins to CC
+    String crpAdmins = "";
+    String crpAdminsEmail = "";
+    long adminRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_ADMIN_ROLE));
+    Role roleAdmin = roleManager.getRoleById(adminRol);
+    List<UserRole> userRoles = roleAdmin.getUserRoles().stream()
+      .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
+    for (UserRole userRole : userRoles) {
+      if (crpAdmins.isEmpty()) {
+        crpAdmins += userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+        crpAdminsEmail += userRole.getUser().getEmail();
+      } else {
+        crpAdmins += ", " + userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+        crpAdminsEmail += ", " + userRole.getUser().getEmail();
+      }
+    }
+    if (!crpAdminsEmail.isEmpty()) {
+      if (ccEmail.isEmpty()) {
+        ccEmail += crpAdminsEmail;
+      } else {
+        ccEmail += ", " + crpAdminsEmail;
+      }
+    }
+
+    // BBC will be our gmail notification email.
+    String bbcEmails = this.config.getEmailNotification();
+    String crp = loggedCrp.getAcronym() != null && !loggedCrp.getAcronym().isEmpty() ? loggedCrp.getAcronym()
+      : loggedCrp.getName();
+
+    String subject =
+      this.getText("email.contactpoint.assigned.subject", new String[] {crpPpaPartner.getInstitution().getName(), crp});
+
+    StringBuilder message = new StringBuilder();
+    // Building the Email message:
+    message.append(this.getText("email.dear", new String[] {userRoleAssigned.getUser().getFirstName()}));
+    message.append(this.getText("email.contactpoint.assigned", new String[] {crpPpaPartner.getInstitution().getName(),
+      crp, this.getText("email.contactpoint.responsabilities")}));
+
+    message.append(this.getText("email.support", new String[] {crpAdmins}));
+    message.append(this.getText("email.getStarted"));
+    message.append(this.getText("email.bye"));
+
+    sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+  }
+
+  /**
+   * This method notify the user that is been unassigned as Contact Point for an specific PPA / Managing Partner
+   * 
+   * @author avalencia - CCAFS
+   * @date Oct 30, 2017
+   * @time 9:34:14 AM
+   * @param userRoleUnassigned is the user and role been unassigned
+   * @param crpPpaPartner is the PPA / Managing Partner where is assigned
+   */
+  private void notifyRoleContactPointUnassigned(UserRole userRoleUnassigned, CrpPpaPartner crpPpaPartner) {
+    // Email send to the user unassigned
+    String toEmail = userRoleUnassigned.getUser().getEmail();
+    // CC will be the user who is making the modification and the CRP Admins
+    String ccEmail = "";
+    if (this.getCurrentUser() != null) {
+      ccEmail = this.getCurrentUser().getEmail();
+    }
+
+    // Adding CRP Admins to CC
+    String crpAdmins = "";
+    String crpAdminsEmail = "";
+    long adminRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_ADMIN_ROLE));
+    Role roleAdmin = roleManager.getRoleById(adminRol);
+    List<UserRole> userRoles = roleAdmin.getUserRoles().stream()
+      .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
+    for (UserRole userRole : userRoles) {
+      if (crpAdmins.isEmpty()) {
+        crpAdmins += userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+        crpAdminsEmail += userRole.getUser().getEmail();
+      } else {
+        crpAdmins += ", " + userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+        crpAdminsEmail += ", " + userRole.getUser().getEmail();
+      }
+    }
+    if (!crpAdminsEmail.isEmpty()) {
+      if (ccEmail.isEmpty()) {
+        ccEmail += crpAdminsEmail;
+      } else {
+        ccEmail += ", " + crpAdminsEmail;
+      }
+    }
+
+
+    // BBC will be our gmail notification email.
+    String bbcEmails = this.config.getEmailNotification();
+    String crp = loggedCrp.getAcronym() != null && !loggedCrp.getAcronym().isEmpty() ? loggedCrp.getAcronym()
+      : loggedCrp.getName();
+
+    String subject = this.getText("email.contactpoint.unassigned.subject",
+      new String[] {crp, crpPpaPartner.getInstitution().getName()});
+
+    StringBuilder message = new StringBuilder();
+    // Building the Email message:
+    message.append(this.getText("email.dear", new String[] {userRoleUnassigned.getUser().getFirstName()}));
+    message.append(
+      this.getText("email.contactpoint.unassigned", new String[] {crp, crpPpaPartner.getInstitution().getName()}));
+
+    message.append(this.getText("email.support", new String[] {crpAdmins}));
+    message.append(this.getText("email.bye"));
+
+    sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+  }
+
+  /**
    * Add cpRole as a flag to avoid contact points
+   * 
    * @author avalencia - CCAFS
    * @date Oct 26, 2017
    * @time 11:23:59 AM

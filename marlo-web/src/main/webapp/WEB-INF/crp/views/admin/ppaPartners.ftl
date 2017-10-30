@@ -115,7 +115,7 @@
     [#-- Show contact points --]
     [#if cpRole??]
     [#-- Contact Points --]
-    <label for="">Contact Points:</label>
+    <label for="">Contact Point(s):</label>
     <div class="usersBlock leaders form-group simpleBox" listname="${customName}.contactPoints">
       [#-- List --]
       <div class="items-list" listname="${customName}.contactPoints" >
