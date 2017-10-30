@@ -24,6 +24,8 @@
               <p><strong>[@s.text name="Country" /]:</strong> <i class="flag-sm flag-sm-${(partner.countryISO?upper_case)!}"></i> <i>${partner.countryInfo}</i></p>
               [#-- Requested Source --]
               <p><strong>[@s.text name="Requested Source" /]:</strong> <i>${(partner.requestSource)}</i></p>
+              [#-- CRP --]
+              <p><strong>[@s.text name="CRP" /]:</strong> <i>${(partner.crp.acronym?html)!''}</i></p>
               [#-- Requested by --]
               <p><strong>[@s.text name="Requested By" /]:</strong> <i>${(partner.createdBy.composedName?html)!'none'}</i></p>
             </div>
@@ -143,12 +145,10 @@
                       <input type="checkbox"  name="${customOfficeName}.id" id="officeRequest-${officeRequest.id}" class="officeRequest" value="${officeRequest.id}" />
                       <label class="checkbox-label" for="officeRequest-${officeRequest.id}">${officeRequest.locElement.name}</label>
                       <i class="pull-right flag-sm flag-sm-${(officeRequest.locElement.isoAlpha2?upper_case)!}"></i> 
-                      <small>
-                        <br />
-                        <p class="text-muted" title="Requested in: ${(officeRequest.requestSource?html)!'none'}">
-                          <strong>[@s.text name="Requested By" /]:</strong> <i>${(officeRequest.createdBy.composedName?html)!'none'}</i>
-                        </p>
-                      </small>
+                      [#-- It was muted, its better to show in the form --]
+                      <br><strong>[@s.text name="Requested By" /]:</strong> <i>${(officeRequest.createdBy.composedName?html)!'none'}</i>
+                      <br><strong>[@s.text name="CRP" /]:</strong> <i>${(officeRequest.crp.acronym?html)!''}</i>
+                      
                     </li>
                   [/#list]
                 </ul>

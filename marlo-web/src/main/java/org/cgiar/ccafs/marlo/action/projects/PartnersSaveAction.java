@@ -20,6 +20,7 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.ActivityManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionTypeManager;
@@ -27,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PartnerRequestManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.ActivityPartner;
+import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
@@ -44,6 +46,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * PartnersSaveAction:
+ * @author avalencia - CCAFS
+ * @date Oct 30, 2017
+ * @time 11:43:29 AM: Add CRP
+ */
 public class PartnersSaveAction extends BaseAction {
 
   /**
@@ -63,12 +71,15 @@ public class PartnersSaveAction extends BaseAction {
   private ProjectManager projectManager;
   private FundingSourceManager fundingSourceManager;
   private PartnerRequestManager partnerRequestManager;
+  private CrpManager crpManager;
+
 
   // Model
   private List<LocElement> countriesList;
   private List<InstitutionType> institutionTypesList;
   private List<Institution> institutions;
   private long locationId;
+  private Crp loggedCrp;
 
   // private ActivityPartner activityPartner;
   private boolean messageSent;
@@ -83,7 +94,7 @@ public class PartnersSaveAction extends BaseAction {
   public PartnersSaveAction(APConfig config, LocElementManager locationManager,
     InstitutionTypeManager institutionManager, InstitutionManager institutionsManager, ActivityManager activityManager,
     ProjectManager projectManager, PartnerRequestManager partnerRequestManager,
-    FundingSourceManager fundingSourceManager) {
+    FundingSourceManager fundingSourceManager, CrpManager crpManager) {
     super(config);
     this.locationManager = locationManager;
     this.institutionManager = institutionManager;
@@ -92,6 +103,7 @@ public class PartnersSaveAction extends BaseAction {
     this.institutionsManager = institutionsManager;
     this.partnerRequestManager = partnerRequestManager;
     this.fundingSourceManager = fundingSourceManager;
+    this.crpManager = crpManager;
   }
 
   public int getActivityID() {
@@ -168,6 +180,13 @@ public class PartnersSaveAction extends BaseAction {
 
     institutions.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
     countriesList.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
+    // Get loggerCrp
+    try {
+      loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
+      loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    } catch (Exception e) {
+      LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
+    }
   }
 
 
@@ -206,6 +225,7 @@ public class PartnersSaveAction extends BaseAction {
 
     partnerRequest.setPartnerName(institutionName);
     partnerRequest.setAcronym(institutionAcronym);
+    partnerRequest.setCrp(loggedCrp);
 
     partnerRequest.setLocElement(locationManager.getLocElementById(Long.parseLong(countryId)));
     partnerRequest.setInstitutionType(institutionManager.getInstitutionTypeById(partnerTypeId));

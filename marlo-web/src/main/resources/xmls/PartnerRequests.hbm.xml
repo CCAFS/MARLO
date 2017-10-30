@@ -62,5 +62,9 @@
     <property name="requestSource" type="string">
       <column name="request_source" length="65535" />
     </property>    
+    <many-to-one name="crp" class="org.cgiar.ccafs.marlo.data.model.Crp"
+      fetch="select">
+      <column name="crp_id" />
+    </many-to-one>
 	</class>
 </hibernate-mapping>

@@ -61,6 +61,7 @@ $(document).ready(function() {
       notyOptions.text = 'The required(*) fields needs to be filled';
       noty(notyOptions);
       return
+
     }
 
     $.ajax({
@@ -103,7 +104,7 @@ $(document).ready(function() {
     }).get().join(', ');
     $rejectOfficeRequest.find('.requestInfo').html($countriesSelected);
   });
-  
+
   // Reject office request
   $('a.rejectOfficesRequest').on('click', function(e) {
     e.preventDefault();
@@ -122,6 +123,7 @@ $(document).ready(function() {
       notyOptions.text = 'Please fill out the justification field';
       noty(notyOptions);
       return
+
     }
     $.ajax({
         url: baseURL + '/rejectOfficesRequest.do',
@@ -140,7 +142,7 @@ $(document).ready(function() {
         }
     });
   });
-  
+
   // Accept office request
   $('a.acceptOfficesRequest').on('click', function(e) {
     e.preventDefault();
@@ -156,9 +158,10 @@ $(document).ready(function() {
     // Validate if there are countries selected
     if(countriesSelected.length == 0) {
       var notyOptions = jQuery.extend({}, notyDefaultOptions);
-      notyOptions.text = 'Please select at least one country';
+      notyOptions.text = 'Please select at least a country';
       noty(notyOptions);
       return
+
     }
     $.ajax({
         url: baseURL + '/acceptOfficesRequest.do',
@@ -172,7 +175,7 @@ $(document).ready(function() {
           }
         },
         complete: function() {
-          $request.find('.loading').fadeOut(); 
+          $request.find('.loading').fadeOut();
         }
     });
   });
