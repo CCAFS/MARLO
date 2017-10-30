@@ -715,8 +715,7 @@ public class FundingSourceAction extends BaseAction {
       fundingSource.setInstitution(null);
       fundingSource.setBudgets(null);
       fundingSource.setBudgetType(null);
-
-
+      return;
     }
   }
 
@@ -732,9 +731,11 @@ public class FundingSourceAction extends BaseAction {
       fundingSourceDB.setModificationJustification("");
       fundingSourceDB.setActiveSince(fundingSourceDB.getActiveSince());
 
+      Institution institution = fundingSource.getInstitution();
+
       // if Original donor has a select option, no option put donor null
       if (fundingSource.getInstitution().getId().longValue() != -1) {
-        fundingSourceDB.setInstitution(fundingSource.getInstitution());
+        fundingSourceDB.setInstitution(institution);
       } else {
         fundingSourceDB.setInstitution(null);
       }
@@ -807,27 +808,26 @@ public class FundingSourceAction extends BaseAction {
         fundingSource.getBudgets().removeIf(Objects::isNull);
 
         for (FundingSourceBudget fundingSourceBudget : fundingSource.getBudgets()) {
-          if (fundingSourceBudget != null) {
-            if (fundingSourceBudget.getId() == null) {
-              fundingSourceBudget.setActive(true);
-              fundingSourceBudget.setCreatedBy(this.getCurrentUser());
-              fundingSourceBudget.setModifiedBy(this.getCurrentUser());
-              fundingSourceBudget.setModificationJustification("");
-              fundingSourceBudget.setFundingSource(fundingSourceDB);
-              fundingSourceBudget.setActiveSince(new Date());
-              fundingSourceBudgetManager.saveFundingSourceBudget(fundingSourceBudget);
-            } else {
-              FundingSourceBudget fundingSourceBudgetBD =
-                fundingSourceBudgetManager.getFundingSourceBudgetById(fundingSourceBudget.getId());
-              fundingSourceBudgetBD.setActive(true);
-              fundingSourceBudgetBD.setFundingSource(fundingSourceDB);
-              // fundingSourceBudget.setCreatedBy(fundingSourceBudgetBD.getCreatedBy());
-              fundingSourceBudgetBD.setModifiedBy(this.getCurrentUser());
-              fundingSourceBudgetBD.setModificationJustification("");
-              // fundingSourceBudget.setActiveSince(fundingSourceDB.getActiveSince());
-              fundingSourceBudgetBD = fundingSourceBudgetManager.saveFundingSourceBudget(fundingSourceBudgetBD);
-              fundingSourceBudgetBD.setBudget(fundingSourceBudget.getBudget());
-            }
+
+          if (fundingSourceBudget.getId() == null) {
+            fundingSourceBudget.setActive(true);
+            fundingSourceBudget.setCreatedBy(this.getCurrentUser());
+            fundingSourceBudget.setModifiedBy(this.getCurrentUser());
+            fundingSourceBudget.setModificationJustification("");
+            fundingSourceBudget.setFundingSource(fundingSourceDB);
+            fundingSourceBudget.setActiveSince(new Date());
+            fundingSourceBudgetManager.saveFundingSourceBudget(fundingSourceBudget);
+          } else {
+            FundingSourceBudget fundingSourceBudgetBD =
+              fundingSourceBudgetManager.getFundingSourceBudgetById(fundingSourceBudget.getId());
+            fundingSourceBudgetBD.setActive(true);
+            fundingSourceBudgetBD.setFundingSource(fundingSourceDB);
+            // fundingSourceBudget.setCreatedBy(fundingSourceBudgetBD.getCreatedBy());
+            fundingSourceBudgetBD.setModifiedBy(this.getCurrentUser());
+            fundingSourceBudgetBD.setModificationJustification("");
+            // fundingSourceBudget.setActiveSince(fundingSourceDB.getActiveSince());
+            fundingSourceBudgetBD = fundingSourceBudgetManager.saveFundingSourceBudget(fundingSourceBudgetBD);
+            fundingSourceBudgetBD.setBudget(fundingSourceBudget.getBudget());
           }
 
 
