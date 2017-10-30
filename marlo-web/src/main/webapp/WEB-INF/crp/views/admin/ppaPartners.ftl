@@ -120,11 +120,12 @@
       [#-- List --]
       <div class="items-list" listname="${customName}.contactPoints" >
         <ul>
-        [#if ppaPartner.contactPoints??]
-          [#list ppaPartner.contactPoints as contactPoint]
-            [@userItem element=contactPoint index=contactPoint_index name="${customName}.contactPoints"/]
-          [/#list]
-        [/#if]
+          [#if ppaPartner.contactPoints?hasContent]
+            [#list ppaPartner.contactPoints as contactPoint]
+              [@userItem element=contactPoint index=contactPoint_index name="${customName}.contactPoints"/]
+            [/#list]
+          [/#if]
+          <li class="emptyItem text-center"> [@s.text name="ppaPartners.emptyContacPointMessage" /] </li>
         </ul>
       </div>
       [#-- Add person Button --]

@@ -86,7 +86,16 @@ function updateIndex() {
   $(partnerContent).find('.institution').each(function(i,item) {
     $(item).setNameIndexes(1, i);
     
-    $(item).find('.userItem').each(function(ui,user){
+    var $userItems = $(item).find('.userItem');
+    
+    // Check if are there contact points added
+    if($userItems.length == 0){
+      $(item).find('.emptyItem').slideDown();
+    }else{
+      $(item).find('.emptyItem').slideUp();
+    }
+    
+    $userItems.each(function(ui,user){
       $(user).setNameIndexes(2, ui);
     });
   });
