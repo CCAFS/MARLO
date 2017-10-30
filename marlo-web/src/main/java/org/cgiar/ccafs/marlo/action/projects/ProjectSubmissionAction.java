@@ -68,11 +68,13 @@ public class ProjectSubmissionAction extends BaseAction {
   private SendMailS sendMail;
   private LiaisonUserManager liasonUserManager;
   private Crp loggedCrp;
+
   private String cycleName;
   private RoleManager roleManager;
 
 
   private boolean complete;
+  private Submission currentSubmission;
 
 
   private long projectID;
@@ -108,9 +110,12 @@ public class ProjectSubmissionAction extends BaseAction {
         if (submissions.isEmpty()) {
           this.submitProject();
           complete = true;
+
         } else {
           this.setSubmission(submissions.get(0));
           complete = true;
+
+          currentSubmission = this.getSubmission();
         }
       }
 
@@ -119,6 +124,11 @@ public class ProjectSubmissionAction extends BaseAction {
 
       return NOT_AUTHORIZED;
     }
+  }
+
+
+  public Submission getCurrentSubmission() {
+    return currentSubmission;
   }
 
 
@@ -141,15 +151,14 @@ public class ProjectSubmissionAction extends BaseAction {
     return loggedCrp;
   }
 
-
   public Project getProject() {
     return project;
   }
 
+
   public long getProjectID() {
     return projectID;
   }
-
 
   public boolean isComplete() {
     return complete;
@@ -183,7 +192,8 @@ public class ProjectSubmissionAction extends BaseAction {
 
   }
 
-  private void sendNotficationEmail() {
+
+  private void sendNotficationEmail(Submission submission) {
     // Send email to the user that is submitting the project.
     // TO
     String toEmail = this.getCurrentUser().getEmail();
@@ -313,6 +323,7 @@ public class ProjectSubmissionAction extends BaseAction {
       reportingSummaryAction.setProjectID(projectID);
       reportingSummaryAction.setProject(projectManager.getProjectById(projectID));
       reportingSummaryAction.setCrpSession(loggedCrp.getAcronym());
+      reportingSummaryAction.setSubmission(submission);
       reportingSummaryAction.execute();
       // Getting the file data.
       //
@@ -334,9 +345,13 @@ public class ProjectSubmissionAction extends BaseAction {
     }
   }
 
-
   public void setComplete(boolean complete) {
     this.complete = complete;
+  }
+
+
+  public void setCurrentSubmission(Submission currentSubmission) {
+    this.currentSubmission = currentSubmission;
   }
 
   public void setCycleName(String cycleName) {
@@ -372,8 +387,8 @@ public class ProjectSubmissionAction extends BaseAction {
 
     if (result > 0) {
       submission.setId(result);
-      this.sendNotficationEmail();
-
+      this.sendNotficationEmail(submission);
+      currentSubmission = submission;
 
     }
   }
