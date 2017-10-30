@@ -62,6 +62,41 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
   }
 
   /**
+   * This method make a query that returns a not mapped object result from the model.
+   * 
+   * @param sqlQuery is a string representing an SQL query.
+   */
+  public List<Map<String, Object>> excuteStoreProccedure(String storeProccedure, String sqlQuery) {
+
+    long startTime = System.currentTimeMillis();
+    this.sessionFactory.getCurrentSession().createSQLQuery(storeProccedure).executeUpdate();
+    Query query = this.sessionFactory.getCurrentSession().createSQLQuery(sqlQuery);
+    query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+    List<Map<String, Object>> result = query.list();
+    long stopTime = System.currentTimeMillis();
+    stopTime = stopTime - startTime;
+    LOG.info("excuete stp permissions " + stopTime + " ms");
+    return result;
+
+  }
+  //
+  // /**
+  // * Performs either a save or update depending on if there is an identifier or not.
+  // *
+  // * @param entity
+  // * @return
+  // */
+  // public T save(T entity) {
+  // if (this.getId(entity) != null) {
+  // return this.update(entity);
+  //
+  // }
+  // return this.saveEntity(entity);
+  //
+  // }
+
+
+  /**
    * Pass String based hibernate query.
    * 
    * @param sqlQuery
@@ -85,7 +120,6 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
     this.getSessionFactory().getCurrentSession().update(obj);
     return obj;
   }
-
 
   protected List<T> findAll(Query hibernateQuery) {
     @SuppressWarnings("unchecked")
@@ -132,6 +166,7 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
 
   }
 
+
   /**
    * Allows clients to create the HibernateQuery and set parameters on it.
    * 
@@ -142,20 +177,6 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
   protected T findSingleResult(Class<T> clazz, Query hibernateQuery) {
     T object = clazz.cast(hibernateQuery.uniqueResult());
     return object;
-  }
-
-
-  /**
-   * This method make a query that returns a single object result from the model.
-   * This method was implemented in a generic way, so, the object to be returned will depend on how the method
-   * is being called.
-   * 
-   * @param hibernateQuery is a string representing an HQL query.
-   * @return a Object of <T>
-   */
-  protected T findSingleResult(Class<T> clazz, String hibernateQuery) {
-    Query query = sessionFactory.getCurrentSession().createQuery(hibernateQuery);
-    return this.findSingleResult(clazz, query);
   }
 
 
@@ -174,6 +195,20 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
   // }
 
   /**
+   * This method make a query that returns a single object result from the model.
+   * This method was implemented in a generic way, so, the object to be returned will depend on how the method
+   * is being called.
+   * 
+   * @param hibernateQuery is a string representing an HQL query.
+   * @return a Object of <T>
+   */
+  protected T findSingleResult(Class<T> clazz, String hibernateQuery) {
+    Query query = sessionFactory.getCurrentSession().createQuery(hibernateQuery);
+    return this.findSingleResult(clazz, query);
+  }
+
+
+  /**
    * Return the sessionFactory. DAOs are free to get this and use it to perform custom queries.
    * 
    * @return
@@ -181,22 +216,6 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
   SessionFactory getSessionFactory() {
     return this.sessionFactory;
   }
-
-  //
-  // /**
-  // * Performs either a save or update depending on if there is an identifier or not.
-  // *
-  // * @param entity
-  // * @return
-  // */
-  // public T save(T entity) {
-  // if (this.getId(entity) != null) {
-  // return this.update(entity);
-  //
-  // }
-  // return this.saveEntity(entity);
-  //
-  // }
 
 
   /**

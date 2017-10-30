@@ -152,16 +152,22 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
 
   @Override
   public List<Map<String, Object>> getUserProjects(long userId, String crp) {
-    String query = "select DISTINCT project_id from user_permissions where id=" + userId + " and crp_acronym='" + crp
-      + "' and project_id is not null and  permission_id not in (438,462)";
-    return super.findCustomQuery(query);
+    StringBuilder builder = new StringBuilder();
+    builder.append("select DISTINCT project_id from user_permission where crp_acronym='" + crp
+      + "' and project_id is not null and  permission_id not in (438,462)");
+    List<Map<String, Object>> list =
+      super.excuteStoreProccedure(" call getPermissions(" + userId + ")", builder.toString());
+    return list;
   }
 
   @Override
   public List<Map<String, Object>> getUserProjectsReporting(long userId, String crp) {
-    String query = "select DISTINCT project_id from user_permissions where id=" + userId + " and crp_acronym='" + crp
-      + "' and project_id is not null and  permission_id  in (110,195)";
-    return super.findCustomQuery(query);
+    StringBuilder builder = new StringBuilder();
+    builder.append("select DISTINCT project_id from user_permission where crp_acronym='" + crp
+      + "' and project_id is not null and  permission_id  in (110,195)");
+    List<Map<String, Object>> list =
+      super.excuteStoreProccedure(" call getPermissions(" + userId + ")", builder.toString());
+    return list;
   }
 
   @Override
