@@ -70,7 +70,7 @@ WHERE
       AND r.acronym != 'FM'
     )
   )
-UNION
+and u.id=v_user_id UNION
   SELECT
     `u`.`id` AS `id`,
     `r`.`acronym` AS `ro_acronym`,
@@ -109,7 +109,7 @@ UNION
       (`p`.`type` = 0)
       AND (`r`.`id` = 17)
     )
-  UNION
+  and u.id=v_user_id UNION
     SELECT
       `u`.`id` AS `id`,
       `r`.`acronym` AS `acronym`,
@@ -188,7 +188,7 @@ UNION
           `r`.`acronym` IN ('FPL', 'FPM')
         )
       )
-    UNION
+    and u.id=v_user_id UNION
       SELECT
         `u`.`id` AS `id`,
         `r`.`acronym` AS `acronym`,
@@ -278,7 +278,7 @@ and lus.crp_id=cp.id
             )
           )
         )
-      UNION
+      and u.id=v_user_id UNION
         SELECT
           `u`.`id` AS `id`,
           `r`.`acronym` AS `acronym`,
@@ -368,7 +368,7 @@ and lus.crp_id=cp.id
               )
             )
           )
-        UNION
+        and u.id=v_user_id UNION
           SELECT
             `u`.`id` AS `id`,
             `r`.`acronym` AS `acronym`,
@@ -448,7 +448,7 @@ and lus.crp_id=cp.id
               (`p`.`type` = 1)
               AND (`r`.`acronym` IN('CL'))
             )
-          UNION
+          and u.id=v_user_id UNION
             SELECT
               `u`.`id` AS `id`,
               `r`.`acronym` AS `acronym`,
@@ -531,7 +531,7 @@ and lus.crp_id=cp.id
                   )
                 )
               )
-            UNION
+            and u.id=v_user_id UNION
               SELECT
                 `u`.`id` AS `id`,
                 `r`.`acronym` AS `acronym`,
@@ -594,7 +594,7 @@ and lus.crp_id=cp.id
                   (`p`.`type` = 1 AND p.id = 2)
                   AND (`r`.`acronym` IN('PMU'))
                 )
-              UNION
+              and u.id=v_user_id UNION
                 SELECT
                   `u`.`id` AS `id`,
                   `r`.`acronym` AS `acronym`,
@@ -677,7 +677,7 @@ and lus.crp_id=cp.id
                     (`p`.`type` = 1)
                     AND (`r`.`acronym` = 'PL')
                   )
-                UNION
+                and u.id=v_user_id UNION
                   SELECT
                     `u`.`id` AS `id`,
                     `r`.`acronym` AS `acronym`,
@@ -760,7 +760,7 @@ and lus.crp_id=cp.id
                       (`p`.`type` = 1)
                       AND (`r`.`acronym` = 'PC')
                     )
-                  UNION
+                  and u.id=v_user_id UNION
                     SELECT
                       `u`.`id` AS `id`,
                       `r`.`acronym` AS `acronym`,
@@ -830,7 +830,7 @@ and lus.crp_id=cp.id
                       'RPM',
                       'RPL'
                     )
-                    UNION
+                    and u.id=v_user_id UNION
                       SELECT
                         u.id,
                         `ro`.`acronym` AS `acronym`,
@@ -862,7 +862,7 @@ and lus.crp_id=cp.id
                       WHERE
                         u.is_active = 1
                       AND per.id in (438,462)
-                      UNION
+                      and u.id=v_user_id UNION
                         SELECT
                           u.id,
                           `ro`.`acronym` AS `acronym`,
@@ -894,7 +894,7 @@ and lus.crp_id=cp.id
                           u.is_active = 1
                         AND per.id not in (438,462)
                         AND pro.is_active = 1
-                        UNION
+                        and u.id=v_user_id UNION
                           SELECT
                             u.id,
                             `ro`.`acronym` AS `acronym`,
@@ -926,7 +926,7 @@ and lus.crp_id=cp.id
                             u.is_active = 1
                           AND per.id in (438,462)
                           AND pro.is_active = 1
-                          UNION
+                          and u.id=v_user_id UNION
                             SELECT
                               `u`.`id` AS `id`,
                               `r`.`acronym` AS `acronym`,
@@ -1011,7 +1011,7 @@ and lus.crp_id=cp.id
                                 AND (`r`.`acronym` IN('CP'))
                               )
                             AND p.id IN (447, 206, 429)
-                            UNION
+                            and u.id=v_user_id UNION
                               SELECT
                                 `u`.`id` AS `id`,
                                 `r`.`acronym` AS `acronym`,
@@ -1078,7 +1078,7 @@ and lus.crp_id=cp.id
                                 OR pro.type IS NULL
                               )
                               AND r.`acronym` IN ('CP')
-                              UNION
+                              and u.id=v_user_id UNION
                                 SELECT
                                   `u`.`id` AS `id`,
                                   `r`.`acronym` AS `acronym`,
@@ -1141,7 +1141,7 @@ and lus.crp_id=cp.id
                                 WHERE
                                   `p`.`id` = 467
                                 AND r.`acronym` IN ('CP')
-                                UNION
+                                and u.id=v_user_id UNION
                                   SELECT
                                     `u`.`id` AS `id`,
                                     `r`.`acronym` AS `acronym`,
@@ -1196,7 +1196,7 @@ and lus.crp_id=cp.id
                                   WHERE
                                     `p`.`id` = 464
                                   AND r.`acronym` IN ('FPL', 'FPM', 'RPM', 'RPL')
-                                  UNION
+                                  and u.id=v_user_id UNION
                                     SELECT
                                       `u`.`id` AS `id`,
                                       `r`.`acronym` AS `acronym`,
@@ -1257,7 +1257,7 @@ and lus.crp_id=cp.id
                                       'RPL',
                                       'CP'
                                     )
-                                    UNION
+                                    and u.id=v_user_id UNION
                                       SELECT
                                         `u`.`id` AS `id`,
                                         `r`.`acronym` AS `acronym`,
@@ -1323,7 +1323,7 @@ and lus.crp_id=cp.id
                                         'FPM',
                                         'RPM',
                                         'RPL'
-                                      );
+                                      )    and u.id=v_user_id;
 
 
 END
