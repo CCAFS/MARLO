@@ -17,7 +17,14 @@
      >
      <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/crpDashboard</param>
-      </result>
+      </result>  
+    </action>
+    
+    <action name="test404" class="org.cgiar.ccafs.marlo.action.Test404">
+        <result name="input"  type="httpheader">
+          <param name="status">404</param>
+          <param name="errorMessage">Not Found</param>
+        </result>
     </action>
 
 		<action name="logout" class="org.cgiar.ccafs.marlo.action.home.LoginAction"
