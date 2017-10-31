@@ -31,12 +31,13 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
 
   @Expose
   private Institution institution;
+
+
   @Expose
   private boolean active;
 
   @Expose
   private User createdBy;
-
   @Expose
   private Date activeSince;
 
@@ -46,16 +47,13 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
   @Expose
   private String modificationJustification;
 
-  private Crp crp;
-
-  private GlobalUnit globalUnit;
-
+  private GlobalUnit crp;
 
   public CrpPpaPartner() {
   }
 
 
-  public CrpPpaPartner(Institution institution, Crp crp) {
+  public CrpPpaPartner(Institution institution, GlobalUnit crp) {
     this.institution = institution;
     this.crp = crp;
   }
@@ -88,17 +86,14 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
+
   public User getCreatedBy() {
     return createdBy;
   }
 
 
-  public Crp getCrp() {
+  public GlobalUnit getCrp() {
     return crp;
-  }
-
-  public GlobalUnit getGlobalUnit() {
-    return globalUnit;
   }
 
   @Override
@@ -110,13 +105,13 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
     return institution;
   }
 
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
+
 
   @Override
   public String getModificationJustification() {
@@ -128,11 +123,11 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
     return modifiedBy;
   }
 
-
   @Override
   public boolean isActive() {
     return active;
   }
+
 
   public void setActive(boolean active) {
     this.active = active;
@@ -146,12 +141,8 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
     this.createdBy = createdBy;
   }
 
-  public void setCrp(Crp crp) {
+  public void setCrp(GlobalUnit crp) {
     this.crp = crp;
-  }
-
-  public void setGlobalUnit(GlobalUnit globalUnit) {
-    this.globalUnit = globalUnit;
   }
 
   public void setId(Long id) {
