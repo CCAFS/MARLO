@@ -22,7 +22,7 @@ $(document).ready(function() {
         data: {
             requestID: requestID,
             justification: $modal.find('textarea').val(),
-            sendEmail : ($modal.find('sendEmailInput').is(':checked'))? true : false
+            sendNotification : ($modal.find('.sendEmailInput').is(':checked'))? true : false
         },
         beforeSend: function() {
           $modal.find('.loading').fadeIn();
@@ -114,6 +114,7 @@ $(document).ready(function() {
     var formData = {
         'countryOfficePOJO.institution.id': $request.find('input.institutionID').val(),
         'justification': $rejectOfficeRequest.find('textarea.modificationJustification').val(),
+        'sendNotification' : ($rejectOfficeRequest.find('.sendEmailInput').is(':checked'))? true : false,
         'countryOfficePOJO.ids': countriesSelected.map(function() {
           return this.value;
         }).get().join()

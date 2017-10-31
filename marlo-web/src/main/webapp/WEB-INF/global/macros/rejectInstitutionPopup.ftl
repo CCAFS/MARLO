@@ -12,12 +12,11 @@
         [#-- Request Info is filled by marloInstitutions.js --]
         <div class="requestInfo"></div>
         <div class="form-group">
-          [@customForm.textArea name="marloRequestInstitution.justification" required=true className="limitWords-30" /]
+          [@customForm.checkBoxFlat id="sendNotification" name="" label="Tick to send a justification email" value="true" checked=true cssClass="sendEmailInput"/]
         </div>
-        <hr />
         <div class="form-group">
-          [@customForm.checkBoxFlat id="sendEmail" name="marloRequestInstitution.sendEmail" label="Tick to send a justification email" value="true" checked=false cssClass="sendEmailInput"/]
-        </div>
+          [@customForm.textArea name="" required=true className="limitWords-30" /]
+        </div> 
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -37,10 +36,13 @@
         <h4 class="modal-title" id="myModalLabel">Reject selected Country office(s)</h4>
       </div>
       <div class="modal-body">
-        <div class="requestInfo">
+        [#-- Request Info is filled by marloInstitutions.js --]
+        <div class="requestInfo"></div>
+        <div class="form-group">
+          [@customForm.checkBoxFlat id="sendNotification" name="" label="Tick to send a justification email" value="true" checked=true cssClass="sendEmailInput"/]
         </div>
         <div class="form-group">
-          [@customForm.textArea name="marloRequestInstitution.justification" required=true className="modificationJustification limitWords-30" /]
+          [@customForm.textArea name="" required=true className="modificationJustification limitWords-30" /]
         </div>
       </div>
       <div class="modal-footer">
