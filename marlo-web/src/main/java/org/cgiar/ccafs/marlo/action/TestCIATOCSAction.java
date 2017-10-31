@@ -25,12 +25,13 @@ import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Action to Test the webservices that MARLO call it (OCS in special), if the service can not sends a positive response
+ * Action to Test CIAT-OCS service, if the service can not sends a positive
+ * response
  * struts force to send a 404 httpheader code.
  * 
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class TestOCSAction extends BaseAction {
+public class TestCIATOCSAction extends BaseAction {
 
 
   private static final long serialVersionUID = 1511557973574400249L;
@@ -44,7 +45,7 @@ public class TestOCSAction extends BaseAction {
   boolean fail;
 
   @Inject
-  public TestOCSAction(APConfig config, MarloOcsClient ocsClient) {
+  public TestCIATOCSAction(APConfig config, MarloOcsClient ocsClient) {
     super(config);
     this.ocsClient = ocsClient;
   }

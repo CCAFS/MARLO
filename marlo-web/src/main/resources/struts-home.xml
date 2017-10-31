@@ -19,7 +19,7 @@
 			</result>
 		</action>
 
-		<action name="testOCS" class="org.cgiar.ccafs.marlo.action.TestOCSAction">
+		<action name="testCIATOCS" class="org.cgiar.ccafs.marlo.action.TestCIATOCSAction">
 			<result name="success">/WEB-INF/global/pages/ocsMessage.ftl</result>
 			<result name="input" type="httpheader">
 				<param name="status">404</param>
