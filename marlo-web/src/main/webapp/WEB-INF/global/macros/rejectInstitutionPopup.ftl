@@ -38,8 +38,9 @@
       <div class="modal-body">
         [#-- Request Info is filled by marloInstitutions.js --]
         <div class="requestInfo"></div>
+        <hr />
         <div class="form-group">
-          [@customForm.checkBoxFlat id="sendNotification" name="" label="Tick to send the justification email" value="true" checked=true cssClass="sendEmailInput"/]
+          [@customForm.checkBoxFlat id="sendNotification-offices" name="" label="Tick to send the justification email" value="true" checked=true cssClass="sendEmailInput"/]
         </div>
         <div class="form-group">
           [@customForm.textArea name="marloRequestInstitution.justification" required=true className="modificationJustification limitWords-30" /]

@@ -103,6 +103,15 @@ $(document).ready(function() {
     var $countriesSelected = $request.find('.officeRequest:checked').map(function() {
       return $(this).parent().clone(true).find('label').text();
     }).get().join(', ');
+    
+    // Validate if there are countries selected
+    if($request.find('.officeRequest:checked').length == 0) {
+      var notyOptions = jQuery.extend({}, notyDefaultOptions);
+      notyOptions.text = 'Please select at least a country';
+      noty(notyOptions);
+      return
+    }
+    
     $rejectOfficeRequest.find('.requestInfo').html($countriesSelected);
   });
 
