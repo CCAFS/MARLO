@@ -148,6 +148,7 @@ $(document).ready(function() {
   // Accept office request
   $('a.acceptOfficesRequest').on('click', function(e) {
     e.preventDefault();
+    
     institutionOfficeRequestId = $(this).classParam('institutionOfficeRequestId');
     var $request = $('#officesRequestItem-' + institutionOfficeRequestId)
     var countriesSelected = $request.find('.officeRequest:checked');
@@ -163,8 +164,13 @@ $(document).ready(function() {
       notyOptions.text = 'Please select at least a country';
       noty(notyOptions);
       return
-
     }
+    
+    // Confirm Alert
+    if (!confirm('Are you sure you want to accept this request?')) {
+      return
+    }
+    
     $.ajax({
         url: baseURL + '/acceptOfficesRequest.do',
         data: formData,

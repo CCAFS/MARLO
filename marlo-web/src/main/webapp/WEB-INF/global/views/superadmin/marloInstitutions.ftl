@@ -44,11 +44,11 @@
         </div>
       
         [#-- Requested Institutions--]
-        <h4 class="sectionTitle">[@s.text name="marloRequestInstitution.title" /]</h4>  
+        <h4 class="sectionTitle">[@s.text name="marloRequestInstitution.title" /]:</h4>  
         [@institutionRequest.partnersList partners=partners  canEdit=editable namespace="/marloInstitutions" defaultAction="${(crpSession)!}/marloInstitutions"/]
         
         [#-- Requested Office Locations--]
-        <h4 class="sectionTitle">Request Country office(s):</h4>
+        <h4 class="sectionTitle">[@s.text name="marloRequestInstitution.titleOffices" /]:</h4>
         [@institutionRequest.officesRequest partners=countryOfficesList  canEdit=editable namespace="/marloInstitutions" defaultAction="${(crpSession)!}/marloInstitutions"/]
       </div>
     </div>
