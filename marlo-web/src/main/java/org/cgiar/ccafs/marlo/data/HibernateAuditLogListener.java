@@ -510,88 +510,89 @@ public class HibernateAuditLogListener
           Set<Object> set = null;
           try {
             set = (Set<Object>) state[i];
-          } catch (Exception e1) {
-            LOG.info("Could not load relations");
-          }
 
-          if (set != null && !set.isEmpty()) {
-            Object reObject = sessionFactory.getCurrentSession()
-              .get(AuditLogContextProvider.getAuditLogContext().getEntityCanonicalName(), (Serializable) id);
-            sessionFactory.getCurrentSession().refresh(reObject);
-            ClassMetadata metadata = sessionFactory.getClassMetadata(reObject.getClass());
-            Object[] values = metadata.getPropertyValues(reObject);
-            set = (Set<Object>) values[i];
-            for (Object iAuditLog : set) {
-              if (iAuditLog instanceof IAuditLog) {
-                IAuditLog audit = (IAuditLog) iAuditLog;
-                if (audit.isActive()) {
-                  try {
-                    String name = audit.getClass().getName();
-                    Class<?> className = Class.forName(name);
 
-                    /**
-                     * Ensure that lazy loaded collections are at least proxy instances (if not fetched).
-                     * If you are not getting all collections auditLogged it is because the Action classes are
-                     * persisting the detached entity and not copying across the managed collections (e.g. the ones
-                     * in our entities that are generally using Set). To overcome refactor the Action classes to copy
-                     * the List collections, which are full of detached entities, see OutcomeAction save method for an
-                     * example.
-                     * When issue #1124 is solved, this won't be a problem.
-                     */
-                    /**
-                     * We load the object to get the id assigned
-                     * Christian Garcia
-                     */
-
-                    Object obj = sessionFactory.getCurrentSession().get(className, (Serializable) audit.getId());
-                    if (obj == null) {
-
+            if (set != null && !set.isEmpty()) {
+              Object reObject = sessionFactory.getCurrentSession()
+                .get(AuditLogContextProvider.getAuditLogContext().getEntityCanonicalName(), (Serializable) id);
+              sessionFactory.getCurrentSession().refresh(reObject);
+              ClassMetadata metadata = sessionFactory.getClassMetadata(reObject.getClass());
+              Object[] values = metadata.getPropertyValues(reObject);
+              set = (Set<Object>) values[i];
+              for (Object iAuditLog : set) {
+                if (iAuditLog instanceof IAuditLog) {
+                  IAuditLog audit = (IAuditLog) iAuditLog;
+                  if (audit.isActive()) {
+                    try {
+                      String name = audit.getClass().getName();
+                      Class<?> className = Class.forName(name);
 
                       /**
-                       * This is likely to be that the entity has just been hard deleted (MARLO has a mixture of
-                       * entities
-                       * where some are soft deleted and others are hard deleted).
+                       * Ensure that lazy loaded collections are at least proxy instances (if not fetched).
+                       * If you are not getting all collections auditLogged it is because the Action classes are
+                       * persisting the detached entity and not copying across the managed collections (e.g. the ones
+                       * in our entities that are generally using Set). To overcome refactor the Action classes to copy
+                       * the List collections, which are full of detached entities, see OutcomeAction save method for an
+                       * example.
+                       * When issue #1124 is solved, this won't be a problem.
                        */
-                      LOG.info("IAuditLog obj with className: " + className + ", and id: " + audit.getId()
-                        + " can not be found");
-                      // Add the audit from the state object array
-                      listRelation.add(audit);
-                      continue;
-                    }
+                      /**
+                       * We load the object to get the id assigned
+                       * Christian Garcia
+                       */
+
+                      Object obj = sessionFactory.getCurrentSession().get(className, (Serializable) audit.getId());
+                      if (obj == null) {
 
 
-                    listRelation.add((IAuditLog) obj);
-                    Set<HashMap<String, Object>> loadList = this.loadListOfRelations((IAuditLog) obj, sessionFactory);
-                    for (HashMap<String, Object> hashMap : loadList) {
-                      HashSet<IAuditLog> relationAudit = (HashSet<IAuditLog>) hashMap.get(IAuditLog.ENTITY);
-                      for (IAuditLog iAuditLog2 : relationAudit) {
-                        Set<HashMap<String, Object>> loadListRelations =
-                          this.loadListOfRelations(iAuditLog2, sessionFactory);
-
-                        relations.addAll(loadListRelations);
+                        /**
+                         * This is likely to be that the entity has just been hard deleted (MARLO has a mixture of
+                         * entities
+                         * where some are soft deleted and others are hard deleted).
+                         */
+                        LOG.info("IAuditLog obj with className: " + className + ", and id: " + audit.getId()
+                          + " can not be found");
+                        // Add the audit from the state object array
+                        listRelation.add(audit);
+                        continue;
                       }
+
+
+                      listRelation.add((IAuditLog) obj);
+                      Set<HashMap<String, Object>> loadList = this.loadListOfRelations((IAuditLog) obj, sessionFactory);
+                      for (HashMap<String, Object> hashMap : loadList) {
+                        HashSet<IAuditLog> relationAudit = (HashSet<IAuditLog>) hashMap.get(IAuditLog.ENTITY);
+                        for (IAuditLog iAuditLog2 : relationAudit) {
+                          Set<HashMap<String, Object>> loadListRelations =
+                            this.loadListOfRelations(iAuditLog2, sessionFactory);
+
+                          relations.addAll(loadListRelations);
+                        }
+                      }
+
+
+                      relations.addAll(loadList);
+                    } catch (ClassNotFoundException e) {
+
+                      LOG.error(e.getLocalizedMessage());
                     }
-
-
-                    relations.addAll(loadList);
-                  } catch (ClassNotFoundException e) {
-
-                    LOG.error(e.getLocalizedMessage());
                   }
+
+
                 }
 
 
               }
-
+              if (!listRelation.isEmpty()) {
+                objects.put(IAuditLog.ENTITY, listRelation);
+                objects.put(IAuditLog.PRINCIPAL, "3");
+                objects.put(IAuditLog.RELATION_NAME, type.getName() + ":" + parentId);
+                relations.add(objects);
+              }
 
             }
-            if (!listRelation.isEmpty()) {
-              objects.put(IAuditLog.ENTITY, listRelation);
-              objects.put(IAuditLog.PRINCIPAL, "3");
-              objects.put(IAuditLog.RELATION_NAME, type.getName() + ":" + parentId);
-              relations.add(objects);
-            }
-
+          } catch (Exception e1) {
+            LOG.info("Could not load relations");
           }
         }
 

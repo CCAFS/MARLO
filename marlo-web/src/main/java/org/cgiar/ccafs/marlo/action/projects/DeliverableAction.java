@@ -1117,7 +1117,7 @@ public class DeliverableAction extends BaseAction {
         deliverable.getPublication().setNasr(null);
 
       }
-
+      deliverable.setDeliverableType(null);
       deliverable.setCrossCuttingGender(null);
       deliverable.setCrossCuttingCapacity(null);
       deliverable.setCrossCuttingNa(null);
