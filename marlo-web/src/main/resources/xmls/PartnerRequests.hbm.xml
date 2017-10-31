@@ -58,7 +58,7 @@
     </many-to-one>
 		<property name="office" type="boolean">
       <column name="is_office" not-null="true" />
-    </property>
+    </property>		
     <property name="requestSource" type="string">
       <column name="request_source" length="65535" />
     </property>    
@@ -66,5 +66,18 @@
       fetch="select">
       <column name="crp_id" />
     </many-to-one>
+    <many-to-one name="partnerRequest"
+      class="org.cgiar.ccafs.marlo.data.model.PartnerRequest" fetch="select">
+      <column name="partner_request_id" />
+    </many-to-one>
+    <property name="modified" type="boolean">
+      <column name="is_modified" not-null="false" />
+    </property>
+    <property name="aceptedDate" type="timestamp">
+      <column name="acepted_date" length="19" not-null="false" />
+    </property>
+    <property name="rejectedDate" type="timestamp">
+      <column name="rejected_date" length="19" not-null="false" />
+    </property>
 	</class>
 </hibernate-mapping>

@@ -16,15 +16,13 @@ import com.google.gson.annotations.Expose;
  * @author avalencia - CCAFS
  * @date Oct 30, 2017
  * @time 11:01:07 AM: Added Crp
+ * @time 2:44:06 PM: Added Self-Relationship to identify modified data
+ * @time 4:24:09 PM: Added modified boolean variable
+ * @date Oct 31, 2017
+ * @time 9:56:44 AM: Added acepted and rejected date
  */
 public class PartnerRequest implements java.io.Serializable {
 
-
-  /**
-   * @author avalencia - CCAFS
-   * @date Oct 30, 2017
-   * @time 11:00:59 AM
-   */
   private static final long serialVersionUID = 6550441704130583208L;
 
 
@@ -35,11 +33,13 @@ public class PartnerRequest implements java.io.Serializable {
   @Expose
   private LocElement locElement;
 
+
   @Expose
   private User modifiedBy;
 
   @Expose
   private User createdBy;
+
 
   @Expose
   private User rejectedBy;
@@ -47,12 +47,13 @@ public class PartnerRequest implements java.io.Serializable {
   @Expose
   private InstitutionType institutionType;
 
+
   @Expose
   private String partnerName;
 
+
   @Expose
   private String acronym;
-
 
   @Expose
   private String webPage;
@@ -72,6 +73,7 @@ public class PartnerRequest implements java.io.Serializable {
   @Expose
   private Date activeSince;
 
+
   @Expose
   private boolean office;
 
@@ -84,15 +86,24 @@ public class PartnerRequest implements java.io.Serializable {
   @Expose
   private Crp crp;
 
+  @Expose
+  private PartnerRequest partnerRequest;
+
+  @Expose
+  private Boolean modified;
+
+  @Expose
+  private Date aceptedDate;
+
+  @Expose
+  private Date rejectedDate;
 
   public PartnerRequest() {
   }
 
-
   public PartnerRequest(boolean active) {
     this.active = active;
   }
-
 
   public PartnerRequest(LocElement locElement, User modifiedBy, User createdBy, InstitutionType institutionType,
     String partnerName, String acronym, String webPage, Boolean acepted, boolean active,
@@ -109,11 +120,17 @@ public class PartnerRequest implements java.io.Serializable {
     this.modificationJustification = modificationJustification;
   }
 
+  public PartnerRequest(PartnerRequest partnerRequest) {
+    this.partnerRequest = partnerRequest;
+  }
 
   public Boolean getAcepted() {
     return acepted;
   }
 
+  public Date getAceptedDate() {
+    return aceptedDate;
+  }
 
   public String getAcronym() {
     return acronym;
@@ -162,9 +179,16 @@ public class PartnerRequest implements java.io.Serializable {
     return locElement;
   }
 
+
   public String getModificationJustification() {
     return modificationJustification;
   }
+
+
+  public Boolean getModified() {
+    return modified;
+  }
+
 
   public User getModifiedBy() {
     return modifiedBy;
@@ -178,19 +202,28 @@ public class PartnerRequest implements java.io.Serializable {
     return this.partnerName;
   }
 
+
   public String getPartnerName() {
     return partnerName;
   }
 
 
+  public PartnerRequest getPartnerRequest() {
+    return partnerRequest;
+  }
+
   public User getRejectedBy() {
     return rejectedBy;
   }
 
+  public Date getRejectedDate() {
+    return rejectedDate;
+  }
 
   public String getRejectJustification() {
     return rejectJustification;
   }
+
 
   public String getRequestSource() {
     return requestSource;
@@ -204,7 +237,6 @@ public class PartnerRequest implements java.io.Serializable {
     return active;
   }
 
-
   public boolean isOffice() {
     return office;
   }
@@ -213,15 +245,19 @@ public class PartnerRequest implements java.io.Serializable {
     this.acepted = acepted;
   }
 
+  public void setAceptedDate(Date aceptedDate) {
+    this.aceptedDate = aceptedDate;
+  }
+
 
   public void setAcronym(String acronym) {
     this.acronym = acronym;
   }
 
-
   public void setActive(boolean active) {
     this.active = active;
   }
+
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
@@ -235,6 +271,7 @@ public class PartnerRequest implements java.io.Serializable {
   public void setCrp(Crp crp) {
     this.crp = crp;
   }
+
 
   public void setId(Long id) {
     this.id = id;
@@ -252,8 +289,14 @@ public class PartnerRequest implements java.io.Serializable {
     this.locElement = locElement;
   }
 
+
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
+  }
+
+
+  public void setModified(Boolean modified) {
+    this.modified = modified;
   }
 
   public void setModifiedBy(User modifiedBy) {
@@ -268,9 +311,17 @@ public class PartnerRequest implements java.io.Serializable {
     this.partnerName = partnerName;
   }
 
+  public void setPartnerRequest(PartnerRequest partnerRequest) {
+    this.partnerRequest = partnerRequest;
+  }
 
   public void setRejectedBy(User rejectedBy) {
     this.rejectedBy = rejectedBy;
+  }
+
+
+  public void setRejectedDate(Date rejectedDate) {
+    this.rejectedDate = rejectedDate;
   }
 
   public void setRejectJustification(String rejectJustification) {
