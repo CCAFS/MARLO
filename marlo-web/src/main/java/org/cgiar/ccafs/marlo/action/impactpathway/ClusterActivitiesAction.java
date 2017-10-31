@@ -408,9 +408,11 @@ public class ClusterActivitiesAction extends BaseAction {
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
 
+    String crp = loggedCrp.getAcronym() != null && !loggedCrp.getAcronym().isEmpty() ? loggedCrp.getAcronym()
+      : loggedCrp.getName();
     // Subject
-    String subject = this.getText("email.cluster.assigned.subject",
-      new String[] {crpClusterPreview.getIdentifier(), loggedCrp.getName()});
+    String subject =
+      this.getText("email.cluster.assigned.subject", new String[] {crpClusterPreview.getIdentifier(), crp});
 
     // Message
     userAssigned = userManager.getUser(userAssigned.getId());
@@ -418,7 +420,7 @@ public class ClusterActivitiesAction extends BaseAction {
     // Building the Email message:
     message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
     message.append(this.getText("email.cluster.assigned", new String[] {crpClusterPreview.getIdentifier(),
-      crpClusterPreview.getDescription(), loggedCrp.getName(), this.getText("email.cluster.responsabilities")}));
+      crpClusterPreview.getDescription(), crp, this.getText("email.cluster.responsabilities")}));
     message.append(this.getText("email.support", new String[] {crpAdmins}));
     message.append(this.getText("email.getStarted"));
     message.append(this.getText("email.bye"));
@@ -480,9 +482,11 @@ public class ClusterActivitiesAction extends BaseAction {
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
 
+    String crp = loggedCrp.getAcronym() != null && !loggedCrp.getAcronym().isEmpty() ? loggedCrp.getAcronym()
+      : loggedCrp.getName();
     // Subject
-    String subject = this.getText("email.cluster.unassigned.subject",
-      new String[] {crpClusterOfActivity.getIdentifier(), loggedCrp.getName()});
+    String subject =
+      this.getText("email.cluster.unassigned.subject", new String[] {crpClusterOfActivity.getIdentifier(), crp});
 
 
     // Message
@@ -491,7 +495,7 @@ public class ClusterActivitiesAction extends BaseAction {
     // Building the Email message:
     message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
     message.append(this.getText("email.cluster.unassigned",
-      new String[] {crpClusterOfActivity.getIdentifier(), crpClusterOfActivity.getDescription(), loggedCrp.getName()}));
+      new String[] {crpClusterOfActivity.getIdentifier(), crpClusterOfActivity.getDescription(), crp}));
     message.append(this.getText("email.support", new String[] {crpAdmins}));
     message.append(this.getText("email.bye"));
 
@@ -646,6 +650,8 @@ public class ClusterActivitiesAction extends BaseAction {
 
 
           JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+          reader.close();
+
 
           try {
             AutoSaveReader autoSaveReader = new AutoSaveReader();
@@ -688,7 +694,7 @@ public class ClusterActivitiesAction extends BaseAction {
             e.printStackTrace();
           }
 
-          reader.close();
+
           this.setDraft(true);
         } else {
           this.setDraft(false);

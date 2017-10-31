@@ -182,7 +182,7 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
         manager.createDirectly(this.getClass().getResource("/pentaho/budgetByCoAsSummary.prpt"), MasterReport.class);
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
-      String center = loggedCrp.getName();
+      String center = loggedCrp.getAcronym();
 
       // Get datetime
       ZonedDateTime timezone = ZonedDateTime.now();
@@ -413,8 +413,13 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
 
     List<Project> projects = new ArrayList<>();
     Phase phase = phaseManager.findCycle(APConstants.PLANNING, year, loggedCrp.getId().longValue());
-    for (ProjectPhase projectPhase : phase.getProjectPhases()) {
-      projects.add((projectPhase.getProject()));
+    if (phase != null) {
+      for (ProjectPhase projectPhase : phase.getProjectPhases()) {
+        projects.add((projectPhase.getProject()));
+      }
+    }
+    if (projects.isEmpty()) {
+      projects = loggedCrp.getProjects().stream().filter(c -> c.isActive()).collect(Collectors.toList());
     }
     for (Project project : projects) {
 

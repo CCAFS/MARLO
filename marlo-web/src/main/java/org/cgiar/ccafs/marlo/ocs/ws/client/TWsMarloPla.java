@@ -1,17 +1,3 @@
-/*****************************************************************
- * This file is part of Managing Agricultural Research for Learning &
- * Outcomes Platform (MARLO).
- * MARLO is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * at your option) any later version.
- * MARLO is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License
- * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
- *****************************************************************/
 
 package org.cgiar.ccafs.marlo.ocs.ws.client;
 
@@ -32,6 +18,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;element name="agreementId" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="amountUsd" type="{http://www.w3.org/2001/XMLSchema}double" minOccurs="0"/>
  *         &lt;element name="description" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="partner" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="partnertext" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
@@ -43,10 +30,12 @@ import javax.xml.bind.annotation.XmlType;
  * </pre>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tWsMarloPla", propOrder = {"agreementId", "description", "partner", "partnertext", "plaId"})
+@XmlType(name = "tWsMarloPla",
+  propOrder = {"agreementId", "amountUsd", "description", "partner", "partnertext", "plaId"})
 public class TWsMarloPla {
 
   protected String agreementId;
+  protected Double amountUsd;
   protected String description;
   protected String partner;
   protected String partnertext;
@@ -61,6 +50,17 @@ public class TWsMarloPla {
    */
   public String getAgreementId() {
     return agreementId;
+  }
+
+  /**
+   * Gets the value of the amountUsd property.
+   * 
+   * @return
+   *         possible object is
+   *         {@link Double }
+   */
+  public Double getAmountUsd() {
+    return amountUsd;
   }
 
   /**
@@ -116,6 +116,17 @@ public class TWsMarloPla {
    */
   public void setAgreementId(String value) {
     this.agreementId = value;
+  }
+
+  /**
+   * Sets the value of the amountUsd property.
+   * 
+   * @param value
+   *        allowed object is
+   *        {@link Double }
+   */
+  public void setAmountUsd(Double value) {
+    this.amountUsd = value;
   }
 
   /**

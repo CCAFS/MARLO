@@ -54,7 +54,7 @@ public class AccessibleStageInterceptor extends AbstractInterceptor {
 
   @Override
   public String intercept(ActionInvocation invocation) throws Exception {
-    LOG.debug("=> AccessibleStageInterceptor");
+    LOG.debug("=> AccessibleCenterStageInterceptor");
 
     String stageName = ServletActionContext.getActionMapping().getNamespace();
     Map<String, Object> session = invocation.getInvocationContext().getSession();

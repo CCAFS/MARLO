@@ -84,6 +84,7 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
     this.topicValidator = topicValidator;
   }
 
+  @SuppressWarnings("incomplete-switch")
   @Override
   public String execute() throws Exception {
     if (existProgram && validSection) {
@@ -94,10 +95,10 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
         case TOPIC:
           this.validateTopic();
           break;
-        case OUTCOME:
+        case OUTCOMES:
           this.validateOutcome();
           break;
-        case OUTPUT:
+        case OUTPUTS:
           this.validateOutput();
           break;
       }
@@ -107,7 +108,7 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
     CenterProgram program = programServcie.getProgramById(programID);
 
     switch (ImpactPathwaySectionsEnum.getValue(sectionName)) {
-      case OUTCOME:
+      case OUTCOMES:
         section = new HashMap<String, Object>();
         section.put("sectionName", sectionName);
         section.put("missingFields", "");
@@ -147,7 +148,7 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
 
 
         break;
-      case OUTPUT:
+      case OUTPUTS:
         section = new HashMap<String, Object>();
         section.put("sectionName", sectionName);
         section.put("missingFields", "");
@@ -294,7 +295,7 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
             researchOutcome.setMilestones(new ArrayList<>(researchOutcome.getResearchMilestones().stream()
               .filter(rm -> rm.isActive()).collect(Collectors.toList())));
 
-            outcomeValidator.validate(this, researchOutcome, program, true);
+            outcomeValidator.validate(this, researchOutcome, program, false);
           }
         }
       }
@@ -324,7 +325,6 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
 
               researchOutput.setNextUsers(new ArrayList<>(researchOutput.getResearchOutputsNextUsers().stream()
                 .filter(nu -> nu.isActive()).collect(Collectors.toList())));
-
               outputValidator.validate(this, researchOutput, program, false);
             }
 

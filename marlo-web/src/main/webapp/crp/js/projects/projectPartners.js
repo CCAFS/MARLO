@@ -1,5 +1,5 @@
 var $removePartnerDialog, $projectPPAPartners;
-var canUpdatePPAPartners, allPPAInstitutions, partnerPersonTypes, leaderType, coordinatorType, defaultType;
+var canUpdatePPAPartners, allPPAInstitutions, partnerPersonTypes, leaderType, coordinatorType, defaultType, partnerRespRequired;
 var projectLeader;
 var lWordsResp = 100;
 
@@ -12,14 +12,15 @@ function init() {
   $projectPPAPartners = $('#projectPPAPartners');
   allPPAInstitutions = JSON.parse($('#allPPAInstitutions').val());
   canUpdatePPAPartners = ($("#canUpdatePPAPartners").val() === "true");
+  partnerRespRequired = ($("#partnerRespRequired").val() === "true");
   leaderType = 'PL';
   coordinatorType = 'PC';
   defaultType = 'CP';
   partnerPersonTypes = [
       coordinatorType, leaderType, defaultType, '-1'
   ];
+  
   if(editable) {
-
     // Getting the actual project leader
     projectLeader = jQuery.extend({}, getProjectLeader());
     // Remove PPA institutions from partner institution list when there is not privileges to update PPA Partners
@@ -31,7 +32,6 @@ function init() {
 
     // Activate the chosen to the existing partners
     addSelect2();
-
   }
   
   addUser = function(composedName,userId) {
@@ -108,7 +108,9 @@ function attachEvents() {
     var partner = new PartnerObject($(this).parents('.projectPartner'));
     // Update Partner Title
     partner.updateBlockContent();
-
+    
+    
+    // Get Countries from Institution ID
     $.ajax({
         url: baseURL + "/institutionBranchList.do",
         data: {
@@ -119,20 +121,25 @@ function attachEvents() {
         },
         success: function(data) {
           partner.clearCountries();
+          
           $(partner.countriesSelect).empty();
           $(partner.countriesSelect).addOption(-1, "Select a country...");
-          $.each(data.branches, function(index,branch) {
-            
-            if ((branch.name).indexOf("HQ") != "-1"){
-              partner.addCountry({
-                iso: branch.iso,
-                name: branch.name
-              });  
-            }else{
-              $(partner.countriesSelect).addOption(branch.iso, branch.name);
-            }
-            
-          });
+          
+          // Validate if the current partner is not selected, then add the countries
+          if (!($('input.institutionsList[value='+partner.institutionId+']').exists())){
+            $.each(data.branches, function(index,branch) {
+              
+              if ((branch.name).indexOf("HQ") != "-1"){
+                partner.addCountry({
+                  iso: branch.iso,
+                  name: branch.name
+                });  
+              }else{
+                $(partner.countriesSelect).addOption(branch.iso, branch.name);
+              }
+            });
+           }
+          
           $(partner.countriesSelect).trigger("change.select2");
         },
         complete: function() {
@@ -427,8 +434,9 @@ function updateProjectPPAPartnersLists(e) {
     // If there is one selected , show an error message
     if(count > 1) {
       var institutionName = $(e.target).find('option[value="' + e.target.value + '"]').text();
-      $fieldError.text(institutionName + ' is already selected').animateCss('flipInX');
-      e.target.value = -1;
+      var institutionName_saved = $('input.institutionsList[value='+e.target.value+']').parents('.projectPartner').find('.partnerTitle').text();
+      $fieldError.html('<i>"' +(institutionName || institutionName_saved) + '</i>" is already selected').animateCss('flipInX');
+      e.target.value = -1; 
     }
   }
 
@@ -605,13 +613,18 @@ function addContactEvent(e) {
   var partner = new PartnerObject($(this).parents('.projectPartner'));
   $(e.target).parent().before($newElement);
   $newElement.show("slow");
-  // applyWordCounter($newElement.find("textarea.resp"), lWordsResp);
   // Activate the select2 plugin for new partners created
   $newElement.find("select").select2({
       templateResult: formatState,
       width: '100%'
   });
+  
+  // Remove "No contact person added" message
+  $(e.target).parents('.contactsPerson').find('.noContactMessage').hide();
 
+  // Update PPA partners requirements
+  updateProjectPPAPartnersLists();
+  
   // Update indexes
   setProjectPartnersIndexes();
 }
@@ -925,10 +938,21 @@ function PartnerObject(partner) {
   };
   this.showPPAs = function() {
     $(this.ppaPartnersList).slideDown();
+    // $(partner).find('.partnerResponsabilities .requiredTag').hide();
+    $(partner).find('.contactsPerson .requiredTag').hide();
   };
   this.hidePPAs = function() {
-
     $(this.ppaPartnersList).slideUp();
+    
+    // Add a contact person by default
+    if($(this.persons).length <= 0){
+      console.log('asdfasdf');
+      $(partner).find('.addContact .addLink').trigger('click');
+    }
+    
+    // $(partner).find('.partnerResponsabilities .requiredTag').show();
+    $(partner).find('.contactsPerson .requiredTag').show();
+    
   };
   this.startLoader = function() {
     $(partner).find('.loading').fadeIn();
@@ -988,22 +1012,11 @@ function PartnerPersonObject(partnerPerson) {
 }
 
 function formatState(state) {
-  var text = "";
-  if(state.id == "PC") {
-    text =
-        "Responsible for helping the Project Leader to fill the information requested by the system. He/she will have the same privileges as the Project Leader with the exception that cannot officially submit the project into the platform.";
-  } else if(state.id == "PL") {
-    text =
-        "Responsible for the entire project. He/she must officially submit the project into the platform. Only one Project Leader per project is allowed.";
-  } else if(state.id == "CP") {
-    text =
-        "This person is a member of the project but does not have access to nor responsibilities in MARLO. It could also be a person who is responsible for a producing a deliverable and/or activity.";
-  }
   var $state =
       $("<span><b>"
           + state.text
           + "</b> <br><small style='margin-top:2px; font-size:80%; line-height:13px; display:block; font-style:italic;'>"
-          + text + "</small> </span>");
+          + $('span.contactPersonRole-'+ state.id).text() + "</small> </span>");
   return $state;
 
 };
@@ -1023,7 +1036,6 @@ function formatStateCountries(state) {
 };
 
 // Locations (Country Offices)
-
 function addLocElementCountry() {
   var $partner = $(this).parents('.projectPartner');
   var partner = new PartnerObject($partner);

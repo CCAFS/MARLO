@@ -361,6 +361,8 @@ public class MonitoringOutcomeAction extends BaseAction {
         reader = new BufferedReader(new FileReader(path.toFile()));
         Gson gson = new GsonBuilder().create();
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+        reader.close();
+
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         outcome = (CenterOutcome) autoSaveReader.readFromJson(jReader);
@@ -374,13 +376,31 @@ public class MonitoringOutcomeAction extends BaseAction {
               monitoringOutcomeService.getMonitoringOutcomeById(monitoringOutcome.getId());
             monitoringOutcome.setYear(outcome.getYear());
 
+
+            List<CenterMonitoringMilestone> centerMonitoringMilestones = new ArrayList<>();
+            if (monitoringOutcome.getMilestones() != null) {
+              for (CenterMonitoringMilestone centerMonitoringMilestone : monitoringOutcome.getMilestones()) {
+
+                CenterMilestone milestoneDb =
+                  milestoneService.getCenterMilestoneById(centerMonitoringMilestone.getResearchMilestone().getId());
+
+
+                centerMonitoringMilestone.getResearchMilestone().setActive(milestoneDb.isActive());
+
+                centerMonitoringMilestones.add(centerMonitoringMilestone);
+
+              }
+            }
+
+            monitoringOutcome.setMilestones(centerMonitoringMilestones);
+
             monitoringOutcomes.add(monitoringOutcome);
           }
 
           outcome.setMonitorings(new ArrayList<>(monitoringOutcomes));
         }
 
-        reader.close();
+
         this.setDraft(true);
 
       } else {
@@ -439,7 +459,6 @@ public class MonitoringOutcomeAction extends BaseAction {
       this.setInvalidFields(new HashMap<>());
 
       CenterOutcome outcomeDB = outcomeService.getResearchOutcomeById(outcomeID);
-      outcomeDB.setBaseline(outcome.getBaseline());
 
       outcomeService.saveResearchOutcome(outcomeDB);
 
@@ -466,7 +485,9 @@ public class MonitoringOutcomeAction extends BaseAction {
           }
 
 
-          monitoringOutcomeDB.setNarrative(monitoringOutcome.getNarrative());
+          monitoringOutcomeDB.setStatusQuo(monitoringOutcome.getStatusQuo());
+          monitoringOutcomeDB.setCiatRole(monitoringOutcome.getCiatRole());
+          monitoringOutcomeDB.setWhatChanged(monitoringOutcome.getWhatChanged());
           monitoringOutcomeService.saveMonitoringOutcome(monitoringOutcomeDB);
 
           this.saveEvidences(monitoringOutcomeDB, monitoringOutcome);

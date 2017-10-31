@@ -45,6 +45,7 @@ public final class APConstants {
 
   public static final String CRP_CUSTOM_FILE = "crp_custom_file";
   public static final String CRP_CUSTOM_GENDER = "crp_custom_gender";
+  public static final String CRP_STATUS_FUNDING_SOURCES = "crp_status_funding_sources";
   public static final String CRP_DIVISION_FS = "crp_division_fs";
   public static final String CRP_EMAIL_FUNDING_SOURCE = "crp_email_funding_source";
   public static final String CRP_FPL_ROLE = "crp_fpl_rol";
@@ -62,7 +63,7 @@ public final class APConstants {
   public static final String CRP_OPEN_REPORTING_DATE = "crp_open_reporting_date";
   // Crp Parameters
   public static final String CRP_PARAMETERS = "crp_parameters";
-  public static final String CRP_PARTNER_CONTRIBUTIONS = "crp_partner_contribution";
+  public static final String CRP_PARTNER_CONTRIBUTIONS = "crp_nonPPAPartner_resp_required";
 
 
   public static final String CRP_PC_ROLE = "crp_pc_rol";
@@ -85,12 +86,14 @@ public final class APConstants {
   public static final String CRP_SL_ROLE = "crp_sl_rol";
   public static final String CUSTOM_FILE = "global";
   public static final String CRP_OTHER_LOCATIONS = "crp_other_locations";
-
+  public static final String CRP_REPORTS_DESCRIPTION = "crp_reports_description";
   public static final String CUSTOM_LAGUAGE = "en";
   public static final String CRP_CLUSTER_LEADER = "crp_cluster_leader";
   public static final String CRP_NEXT_USERS = "crp_next_users";
+  public static final String CRP_IP_OUTCOME_INDICATOR = "crp_ip_outcome_indicator";
   // Email parameters to copy to FL FM CL
   public static final String CRP_EMAIL_CC_FL_FM_CL = "crp_email_cc_fl_fm_cl";
+  public static final String GENDER_KEYWORDS = "show_gender_keywords_summaries";
 
   public static final String CYCLE = "cycle";
   // Date Formats
@@ -104,6 +107,8 @@ public final class APConstants {
   public static final int DELIVERABLE_QUALITY_ANSWER_NO = 3;
   public static final int DELIVERABLE_QUALITY_ANSWER_YES = 2;
   public static final int DELIVERABLE_QUALITY_ANSWER_YES_BUT_NO = 1;
+
+  public static final int BUDGET_TYPE = 1;
 
   public static final String DELIVERABLE_TYPE_ID = "deliverableTypeId";
   // Request variables
@@ -132,6 +137,8 @@ public final class APConstants {
   public static final String FUNDING_SOURCES_BUDGETS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.FundingSource.fundingSourceBudgets)";
 
+  public static final String TEMP_CYCLE = "temp_cycle";
+  public static final String TEMP_YEAR = "temp_year";
 
   public static final String FUNDING_SOURCES_INSTITUTIONS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.FundingSource.fundingInstitutions)";
@@ -150,6 +157,7 @@ public final class APConstants {
   public static final long INSTITUTION_DONOR_TYPE = 5;
   public static final String INSTITUTION_REQUEST_ID = "institutionID";
   public static final String INSTITUTION_TYPE_REQUEST_ID = "institutionTypeID";
+  public static final String PARTNER_REQUEST_ID = "requestID";
   public static final String IPLIAISON_INDICATORS_REPORT =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution.crpIndicatorReportses)";
   public static final String IPPROGRAM_LESSONS_RELATION =
@@ -178,6 +186,7 @@ public final class APConstants {
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.otherContributions)";
 
   public static final String OUTCOME_REQUEST_ID = "outcomeID";
+  public static final String OCS_CODE_REQUEST_ID = "ocsCode";
   // Outlook institutional email
   public static final String OUTLOOK_EMAIL = "cgiar.org";
 
@@ -373,7 +382,13 @@ public final class APConstants {
   public static final String CENTER_LANGUAGE = "center_language";
   public static final String CENTER_CUSTOM_FILE = "center_custom_file";
   public static final String CENTER_COORD_ROLE = "center_coord_role";
+  public static final String CENTER_PROGRAM_TYPE = "center_program_type";
+  public static final String CENTER_IMPACT_PATHWAY_ACTIVE = "center_impact_pathway_active";
+  public static final String CENTER_MONITORING_ACTIVE = "center_monitoring_active";
+  public static final String CENTER_SUMMARIES_ACTIVE = "center_summaries_active";
+  public static final String CENTER_CAPDEV_ACTIVE = "center_summaries_active";
 
+  public static final String CENTER_DELIVERABLE_ID = "deliverableID";
   public static final String CENTER_PROGRAM_ID = "programID";
   public static final String CENTER_REQUEST = "center";
   public static final String CENTER_AREA_ID = "areaID";
@@ -384,7 +399,8 @@ public final class APConstants {
   public static final String NEXT_USER_ID = "nextUserID";
   public static final String PROJECT_ID = "projectID";
   public static final String OUTPUT_NAME = "outputName";
-  public static final String OCS_CODE_REQUEST_ID = "ocsCode";
+  public static final String CENTER_PROJECT_SYNC_CODE = "syncCode";
+  public static final String CENTER_PROJECT_SYNC_TYPE = "syncTypeID";
 
   // Relations Name
   public static final String RESEARCH_PROGRAM_IMPACT_RELATION =

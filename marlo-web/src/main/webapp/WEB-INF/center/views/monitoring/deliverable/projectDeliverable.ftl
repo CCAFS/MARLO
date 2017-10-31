@@ -2,7 +2,11 @@
 [#assign title = "Project Deliverable" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${deliverableID}" /]
 [#assign pageLibs = ["select2","jsUri"] /]
-[#assign customJS = ["${baseUrlMedia}/js/global/fieldsValidation.js","${baseUrlMedia}/js/global/usersManagement.js","${baseUrlMedia}/js/monitoring/deliverable/projectDeliverable.js","${baseUrlMedia}/js/global/autoSave.js"] /]
+[#assign customJS = [
+  "${baseUrl}/global/js/fieldsValidation.js",
+  "${baseUrl}/global/js/usersManagement.js",
+  "${baseUrlMedia}/js/monitoring/deliverable/projectDeliverable.js",
+  "${baseUrl}/global/js/autoSave.js"] /]
 [#assign customCSS = ["${baseUrlMedia}/css/deliverable/projectDeliverable.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "deliverables" /]
@@ -13,8 +17,18 @@
   {"label":"deliverables", "nameSpace":"/monitoring", "action":"${(centerSession)!}/deliverableList"}
 ] /]
 
-[#include "/WEB-INF/center//global/pages/header.ftl" /]
-[#include "/WEB-INF/center//global/pages/main-menu.ftl" /]
+[#include "/WEB-INF/center/pages/header.ftl" /]
+[#include "/WEB-INF/center/pages/main-menu.ftl" /]
+
+[#-- Help text --]
+<div class="container helpText viewMore-block">
+  <div class="helpMessage infoText">
+    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.png" />
+    <p class="col-md-10"> [@s.text name="deliverable.help"][/@s.text] </p>
+  </div> 
+  <div style="display:none" class="viewMore closed"></div>
+</div>
+
 <section class="container">
     <div class="row">
       [#-- Project Menu --]
@@ -37,7 +51,7 @@
                 <span class="glyphicon glyphicon-circle-arrow-left"></span> Back to the deliverables list
               </a>
             </small>  
-          <h3 class="headTitle">[@s.text name="Key deliverable information" /]</h3>
+          <h3 class="headTitle">${selectedProgram.name} - [@s.text name="Key deliverable information" /]</h3>
           <div id="projectDeliverable" class="borderBox">
             [#-- Deliverable title --]
             <div class="form-group ">  
@@ -155,7 +169,7 @@
 [@documentMacro element={} name="deliverable.documents"  index=-1 isTemplate=true /]
 [@outputMacro element={} name="deliverable.outputs"  index=-1 isTemplate=true /]
   
-[#include "/WEB-INF/center//global/pages/footer.ftl"]
+[#include "/WEB-INF/center/pages/footer.ftl"]
 
 
 [#macro documentMacro element name index=-1 isTemplate=false]

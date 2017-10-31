@@ -22,6 +22,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import com.google.inject.Inject;
+import org.apache.catalina.connector.ClientAbortException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +46,7 @@ public class UnhandledExceptionAction extends BaseAction {
     // Print the exception in the log
     LOG.error("There was an unexpected exception", exception);
     // Send email only if we are in production mode.
-    if (config.isProduction()) {
+    if (config.isProduction() && !(exception instanceof ClientAbortException)) {
       this.sendExceptionMessage();
     }
     return super.execute();
@@ -74,7 +75,8 @@ public class UnhandledExceptionAction extends BaseAction {
     message.append("has experienced an exception on the platform. </br>");
     message.append("This execption occurs in the server: " + config.getBaseUrl() + ".</br>");
     if (crp != null) {
-      message.append("In the CRP : " + crp.getAcronym() + ".</br>");
+      message.append("In the CRP : " + crp.getAcronym() != null && !crp.getAcronym().isEmpty() ? crp.getAcronym()
+        : crp.getName() + ".</br>");
     }
     message.append("The exception message was: </br></br>");
     message.append(writer.toString());

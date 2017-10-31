@@ -548,17 +548,19 @@ public class ProjectPartnerAction extends BaseAction {
     } else {
       projectRole = this.getText("email.project.assigned.PC");
     }
+    String crp = loggedCrp.getAcronym() != null && !loggedCrp.getAcronym().isEmpty() ? loggedCrp.getAcronym()
+      : loggedCrp.getName();
 
     String subject = this.getText("email.project.assigned.subject",
-      new String[] {projectRole, loggedCrp.getName(), project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)});
+      new String[] {projectRole, crp, project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)});
 
 
     // message
     StringBuilder message = new StringBuilder();
     // Building the Email message:
     message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
-    message.append(this.getText("email.project.assigned", new String[] {projectRole, loggedCrp.getName(),
-      project.getTitle(), project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)}));
+    message.append(this.getText("email.project.assigned", new String[] {projectRole, crp, project.getTitle(),
+      project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)}));
     if (role.getId() == plRole.getId()) {
       message.append(this.getText("email.project.leader.responsabilities"));
     } else {
@@ -669,9 +671,10 @@ public class ProjectPartnerAction extends BaseAction {
     } else {
       projectRole = this.getText("email.project.assigned.PC");
     }
-
+    String crp = loggedCrp.getAcronym() != null && !loggedCrp.getAcronym().isEmpty() ? loggedCrp.getAcronym()
+      : loggedCrp.getName();
     String subject = this.getText("email.project.unAssigned.subject",
-      new String[] {projectRole, loggedCrp.getName(), project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)});
+      new String[] {projectRole, crp, project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)});
 
 
     userUnassigned = userManager.getUser(userUnassigned.getId());
@@ -682,11 +685,11 @@ public class ProjectPartnerAction extends BaseAction {
     message.append(this.getText("email.dear", new String[] {userUnassigned.getFirstName()}));
 
     if (role.getId() == plRole.getId().longValue()) {
-      message.append(this.getText("email.project.leader.unAssigned", new String[] {projectRole, loggedCrp.getName(),
-        project.getTitle(), project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)}));
+      message.append(this.getText("email.project.leader.unAssigned", new String[] {projectRole, crp, project.getTitle(),
+        project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)}));
     } else {
-      message.append(this.getText("email.project.coordinator.unAssigned", new String[] {projectRole,
-        loggedCrp.getName(), project.getTitle(), project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)}));
+      message.append(this.getText("email.project.coordinator.unAssigned", new String[] {projectRole, crp,
+        project.getTitle(), project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)}));
     }
 
     message.append(this.getText("email.support", new String[] {crpAdmins}));
@@ -749,7 +752,7 @@ public class ProjectPartnerAction extends BaseAction {
               .addAll(historyComparator.getDifferencesList(projectPartnerContribution, transaction, specialList,
                 "project.partners[" + i + "].partnerContributors[" + k + "]", "project.partnerContributors", 2));
             k++;
-          } ;
+          };
 
           List<ProjectPartnerOverall> overalls =
             projectPartner.getProjectPartnerOveralls().stream().filter(c -> c.isActive()).collect(Collectors.toList());
@@ -802,6 +805,8 @@ public class ProjectPartnerAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+        reader.close();
+
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
@@ -871,7 +876,7 @@ public class ProjectPartnerAction extends BaseAction {
 
 
         }
-        reader.close();
+
         this.setDraft(true);
       } else {
 
@@ -1042,6 +1047,8 @@ public class ProjectPartnerAction extends BaseAction {
     if (this.hasPermission("canEdit")) {
 
       previousProject = projectManager.getProjectById(projectID);
+      List<ProjectPartnerPerson> previousCoordinators = previousProject.getCoordinatorPersons();
+      ProjectPartnerPerson previousLeader = previousProject.getLeaderPerson();
 
       for (ProjectPartner previousPartner : previousProject.getProjectPartners().stream().filter(c -> c.isActive())
         .collect(Collectors.toList())) {
@@ -1242,10 +1249,10 @@ public class ProjectPartnerAction extends BaseAction {
       ProjectPartnerPerson leader = project.getLeaderPerson();
       // Notify user if the project leader was created.
 
-      this.updateRoles(previousProject.getLeaderPerson(), leader, plRole);
+      this.updateRoles(previousLeader, leader, plRole);
 
 
-      this.updateRoles(previousProject.getCoordinatorPersons(), project.getCoordinatorPersons(), pcRole);
+      this.updateRoles(previousCoordinators, project.getCoordinatorPersons(), pcRole);
       project = projectManager.getProjectById(projectID);
       project.setActiveSince(new Date());
       project.setModificationJustification(this.getJustification());

@@ -672,14 +672,17 @@ public class Project implements java.io.Serializable, IAuditLog {
 
     if (partners != null) {
       for (ProjectPartner partner : partners) {
-        for (ProjectPartnerPerson person : partner.getPartnerPersons()) {
+        if (partner.getPartnerPersons() != null) {
+          for (ProjectPartnerPerson person : partner.getPartnerPersons()) {
 
-          if (person.getContactType().equals("PL")) {
-            return person;
+            if (person.getContactType().equals("PL")) {
+              return person;
+
+            }
 
           }
-
         }
+
       }
     } else {
       for (ProjectPartner partner : projectPartners.stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
@@ -984,9 +987,24 @@ public class Project implements java.io.Serializable, IAuditLog {
     return status;
   }
 
-
   public String getStatusJustification() {
     return statusJustification;
+  }
+
+  public Boolean getStatusJustificationRequired() {
+    // Alow for comments when the project is extended, cancelled or complete;
+    if (this.status != null) {
+      if ((this.status == Long.parseLong(ProjectStatusEnum.Extended.getStatusId()))
+        || (this.status == Long.parseLong(ProjectStatusEnum.Cancelled.getStatusId()))
+        || (this.status == Long.parseLong(ProjectStatusEnum.Complete.getStatusId()))) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public String getStatusName() {
+    return ProjectStatusEnum.getValue(new Long(this.status).intValue()).getStatus();
   }
 
   public Set<Submission> getSubmissions() {

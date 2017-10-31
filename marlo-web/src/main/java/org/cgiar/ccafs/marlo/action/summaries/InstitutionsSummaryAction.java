@@ -78,12 +78,15 @@ public class InstitutionsSummaryAction extends BaseAction implements Summary {
    * @return masterReport with i8n parameters added
    */
   private MasterReport addi8nParameters(MasterReport masterReport) {
-    masterReport.getParameterValues().put("i8nName", this.getText("leadPartner.name"));
-    masterReport.getParameterValues().put("i8nAcronym", this.getText("leadPartner.acronym"));
-    masterReport.getParameterValues().put("i8nWebSite", this.getText("leadPartner.webSite"));
-    masterReport.getParameterValues().put("i8nType", this.getText("leadPartner.type"));
-    masterReport.getParameterValues().put("i8nCountry", this.getText("projectPartners.country"));
+    masterReport.getParameterValues().put("i8nName", this.getText("summaries.partners.name"));
+    masterReport.getParameterValues().put("i8nAcronym", this.getText("summaries.partners.acronym"));
+    masterReport.getParameterValues().put("i8nWebSite", this.getText("summaries.partners.website"));
+    masterReport.getParameterValues().put("i8nType", this.getText("summaries.partners.type"));
+    masterReport.getParameterValues().put("i8nCountry", this.getText("summaries.partners.country"));
     masterReport.getParameterValues().put("i8nProjects", this.getText("caseStudy.projects"));
+    masterReport.getParameterValues().put("i8nCoas", this.getText("deliverable.coas"));
+    masterReport.getParameterValues().put("i8nFlagships", this.getText("project.Flagships"));
+    masterReport.getParameterValues().put("i8nRegions", this.getText("project.Regions"));
 
     return masterReport;
   }
@@ -110,6 +113,9 @@ public class InstitutionsSummaryAction extends BaseAction implements Summary {
       masterReport.getParameterValues().put("crp_id", idParam);
       masterReport.getParameterValues().put("date", currentDate);
       masterReport.getParameterValues().put("cycle", cycle);
+      masterReport.getParameterValues().put("showDescription",
+        this.hasSpecificities(APConstants.CRP_REPORTS_DESCRIPTION));
+      masterReport.getParameterValues().put("regionalAvalaible", this.hasProgramnsRegions());
       // Set i8n for pentaho
       masterReport = this.addi8nParameters(masterReport);
       ExcelReportUtil.createXLSX(masterReport, os);

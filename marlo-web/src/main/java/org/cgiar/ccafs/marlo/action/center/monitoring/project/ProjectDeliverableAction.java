@@ -243,7 +243,8 @@ public class ProjectDeliverableAction extends BaseAction {
       loggedCenter.getResearchAreas().stream().filter(ra -> ra.isActive()).collect(Collectors.toList()));
 
     try {
-      deliverableID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.DELIVERABLE_ID)));
+      deliverableID =
+        Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CENTER_DELIVERABLE_ID)));
     } catch (Exception e) {
       deliverableID = -1;
       projectID = -1;
@@ -286,6 +287,8 @@ public class ProjectDeliverableAction extends BaseAction {
         reader = new BufferedReader(new FileReader(path.toFile()));
         Gson gson = new GsonBuilder().create();
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+ 	      reader.close();
+ 	
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         deliverable = (CenterDeliverable) autoSaveReader.readFromJson(jReader);
@@ -314,7 +317,7 @@ public class ProjectDeliverableAction extends BaseAction {
           deliverable.setOutputs(new ArrayList<>(outputs));
         }
 
-        reader.close();
+      
         this.setDraft(true);
 
       } else {
@@ -336,18 +339,20 @@ public class ProjectDeliverableAction extends BaseAction {
         deliverable.setOutputs(
           deliverable.getDeliverableOutputs().stream().filter(o -> o.isActive()).collect(Collectors.toList()));
       }
+
+
+      if (deliverable.getDeliverableType() != null) {
+        Long deliverableTypeParentId = deliverable.getDeliverableType().getDeliverableType().getId();
+
+        deliverableSubTypes = new ArrayList<>(deliverableTypeService.findAll().stream()
+          .filter(dt -> dt.getDeliverableType() != null && dt.getDeliverableType().getId() == deliverableTypeParentId)
+          .collect(Collectors.toList()));
+      }
     }
 
     deliverableTypeParent = new ArrayList<>(deliverableTypeService.findAll().stream()
       .filter(dt -> dt.isActive() && dt.getDeliverableType() == null).collect(Collectors.toList()));
 
-    if (deliverable.getDeliverableType() != null) {
-      Long deliverableTypeParentId = deliverable.getDeliverableType().getDeliverableType().getId();
-
-      deliverableSubTypes = new ArrayList<>(deliverableTypeService.findAll().stream()
-        .filter(dt -> dt.getDeliverableType() != null && dt.getDeliverableType().getId() == deliverableTypeParentId)
-        .collect(Collectors.toList()));
-    }
 
     this.getProgramOutputs();
 
@@ -433,17 +438,27 @@ public class ProjectDeliverableAction extends BaseAction {
         path.toFile().delete();
       }
 
-      if (!this.getInvalidFields().isEmpty()) {
-        this.setActionMessages(null);
-        List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
-        for (String key : keys) {
-          this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+      // check if there is a url to redirect
+      if (this.getUrl() == null || this.getUrl().isEmpty()) {
+        // check if there are missing field
+        if (!this.getInvalidFields().isEmpty()) {
+          this.setActionMessages(null);
+          // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
+          List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+          for (String key : keys) {
+            this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+          }
+        } else {
+          this.addActionMessage("message:" + this.getText("saving.saved"));
         }
+        return SUCCESS;
       } else {
-        this.addActionMessage("message:" + this.getText("saving.saved"));
+        // No messages to next page
+        this.addActionMessage("");
+        this.setActionMessages(null);
+        // redirect the url select by user
+        return REDIRECT;
       }
-
-      return SUCCESS;
     } else {
       return NOT_AUTHORIZED;
     }

@@ -1,17 +1,3 @@
-/*****************************************************************
- * This file is part of Managing Agricultural Research for Learning &
- * Outcomes Platform (MARLO).
- * MARLO is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * at your option) any later version.
- * MARLO is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License
- * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
- *****************************************************************/
 
 package org.cgiar.ccafs.marlo.ocs.ws.client;
 
@@ -32,6 +18,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;element name="agreementId" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="centerAmount" type="{http://www.w3.org/2001/XMLSchema}double" minOccurs="0"/>
  *         &lt;element name="description" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="donor" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="donorText" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
@@ -40,6 +27,8 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="fundingType" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="grantAmount" type="{http://www.w3.org/2001/XMLSchema}double" minOccurs="0"/>
  *         &lt;element name="objectives" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="originalDonor" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="originalDonorText" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="researcher" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="researcherText" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="shortName" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
@@ -53,11 +42,13 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "tWsMarloAgree",
-  propOrder = {"agreementId", "description", "donor", "donorText", "endDate", "extentionDate", "fundingType",
-    "grantAmount", "objectives", "researcher", "researcherText", "shortName", "startDate", "status"})
+  propOrder = {"agreementId", "centerAmount", "description", "donor", "donorText", "endDate", "extentionDate",
+    "fundingType", "grantAmount", "objectives", "originalDonor", "originalDonorText", "researcher", "researcherText",
+    "shortName", "startDate", "status"})
 public class TWsMarloAgree {
 
   protected String agreementId;
+  protected Double centerAmount;
   protected String description;
   protected String donor;
   protected String donorText;
@@ -66,6 +57,8 @@ public class TWsMarloAgree {
   protected String fundingType;
   protected Double grantAmount;
   protected String objectives;
+  protected String originalDonor;
+  protected String originalDonorText;
   protected String researcher;
   protected String researcherText;
   protected String shortName;
@@ -81,6 +74,17 @@ public class TWsMarloAgree {
    */
   public String getAgreementId() {
     return agreementId;
+  }
+
+  /**
+   * Gets the value of the centerAmount property.
+   * 
+   * @return
+   *         possible object is
+   *         {@link Double }
+   */
+  public Double getCenterAmount() {
+    return centerAmount;
   }
 
   /**
@@ -172,6 +176,28 @@ public class TWsMarloAgree {
   }
 
   /**
+   * Gets the value of the originalDonor property.
+   * 
+   * @return
+   *         possible object is
+   *         {@link String }
+   */
+  public String getOriginalDonor() {
+    return originalDonor;
+  }
+
+  /**
+   * Gets the value of the originalDonorText property.
+   * 
+   * @return
+   *         possible object is
+   *         {@link String }
+   */
+  public String getOriginalDonorText() {
+    return originalDonorText;
+  }
+
+  /**
    * Gets the value of the researcher property.
    * 
    * @return
@@ -235,6 +261,17 @@ public class TWsMarloAgree {
    */
   public void setAgreementId(String value) {
     this.agreementId = value;
+  }
+
+  /**
+   * Sets the value of the centerAmount property.
+   * 
+   * @param value
+   *        allowed object is
+   *        {@link Double }
+   */
+  public void setCenterAmount(Double value) {
+    this.centerAmount = value;
   }
 
   /**
@@ -323,6 +360,28 @@ public class TWsMarloAgree {
    */
   public void setObjectives(String value) {
     this.objectives = value;
+  }
+
+  /**
+   * Sets the value of the originalDonor property.
+   * 
+   * @param value
+   *        allowed object is
+   *        {@link String }
+   */
+  public void setOriginalDonor(String value) {
+    this.originalDonor = value;
+  }
+
+  /**
+   * Sets the value of the originalDonorText property.
+   * 
+   * @param value
+   *        allowed object is
+   *        {@link String }
+   */
+  public void setOriginalDonorText(String value) {
+    this.originalDonorText = value;
   }
 
   /**

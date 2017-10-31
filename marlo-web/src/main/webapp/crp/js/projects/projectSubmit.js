@@ -111,35 +111,7 @@ $(document).ready(function() {
 
   });
 
-  // Pop up when exists a draft version $('header a, #mainMenu a, .subMainMenu a, #secondaryMenu a')
-  $('#secondaryMenu a').on('click', function(e) {
-    selectedUrl = $.trim($(this).attr("href"));
-    selectedAction = getClassParameter($(this), 'action');
-
-    // Prevent middle click
-    if(e.which == 2) {
-      return;
-    }
-
-    if((isChanged() || forceChange || draft) && editable && draft && selectedUrl && (myTurn == 1)) {
-      e.preventDefault();
-      $('#discardChanges').modal();
-    }
-  });
-
 });
-
-function acceptChanges() {
-  $('#redirectionUrl').val(selectedAction);
-  $('button[name="save"]').trigger('click');
-  $('#discardChanges').modal('hide');
-}
-
-function cancel() {
-  window.location.replace(selectedUrl);
-  window.location.href = selectedUrl;
-  $('#discardChanges').modal('hide');
-}
 
 function submitButtonEvent(e) {
   e.preventDefault();
@@ -276,7 +248,7 @@ function unSubmitButtonEvent(e) {
           Cancel: function() {
             $(this).dialog("close");
           },
-          unSubmit: function() {
+          "Request changes": function() {
             var $justification = $dialogContent.find("#justification-unSubmit");
             if($justification.val().length > 0 && $justification.val().trim().length != 0) {
               var url = baseURL + "/unsubmitProject.do";

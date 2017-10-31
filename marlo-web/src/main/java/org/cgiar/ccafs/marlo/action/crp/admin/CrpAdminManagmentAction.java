@@ -351,9 +351,10 @@ public class CrpAdminManagmentAction extends BaseAction {
 
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
+    String crp = loggedCrp.getAcronym() != null && !loggedCrp.getAcronym().isEmpty() ? loggedCrp.getAcronym()
+      : loggedCrp.getName();
 
-    String subject =
-      this.getText("email.flagship.assigned.subject", new String[] {crpProgram.getAcronym(), loggedCrp.getName()});
+    String subject = this.getText("email.flagship.assigned.subject", new String[] {crpProgram.getAcronym(), crp});
 
     crpProgram = crpProgramManager.getCrpProgramById(crpProgram.getId());
 
@@ -362,7 +363,7 @@ public class CrpAdminManagmentAction extends BaseAction {
     // Building the Email message:
     message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
     message.append(this.getText("email.flagship.assigned", new String[] {crpProgram.getAcronym(), crpProgram.getName(),
-      loggedCrp.getName(), this.getText("email.flagship.responsabilities")}));
+      crp, this.getText("email.flagship.responsabilities")}));
 
     message.append(this.getText("email.support", new String[] {crpAdmins}));
     message.append(this.getText("email.getStarted"));
@@ -441,9 +442,11 @@ public class CrpAdminManagmentAction extends BaseAction {
 
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
+    String crp = loggedCrp.getAcronym() != null && !loggedCrp.getAcronym().isEmpty() ? loggedCrp.getAcronym()
+      : loggedCrp.getName();
 
-    String subject = this.getText("email.flagshipmanager.assigned.subject",
-      new String[] {crpProgram.getAcronym(), loggedCrp.getName()});
+    String subject =
+      this.getText("email.flagshipmanager.assigned.subject", new String[] {crpProgram.getAcronym(), crp});
 
     crpProgram = crpProgramManager.getCrpProgramById(crpProgram.getId());
 
@@ -451,8 +454,8 @@ public class CrpAdminManagmentAction extends BaseAction {
     StringBuilder message = new StringBuilder();
     // Building the Email message:
     message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
-    message.append(this.getText("email.flagshipmanager.assigned",
-      new String[] {crpProgram.getAcronym(), crpProgram.getName(), loggedCrp.getName(),
+    message.append(
+      this.getText("email.flagshipmanager.assigned", new String[] {crpProgram.getAcronym(), crpProgram.getName(), crp,
         this.getText("email.flagshipmanager.responsabilities"), this.getText("email.flagshipmanager.note")}));
 
     message.append(this.getText("email.support", new String[] {crpAdmins}));
@@ -525,9 +528,10 @@ public class CrpAdminManagmentAction extends BaseAction {
 
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
-
-    String subject = this.getText("email.flagshipmanager.unassigned.subject",
-      new String[] {crpProgram.getAcronym(), loggedCrp.getName()});
+    String crp = loggedCrp.getAcronym() != null && !loggedCrp.getAcronym().isEmpty() ? loggedCrp.getAcronym()
+      : loggedCrp.getName();
+    String subject =
+      this.getText("email.flagshipmanager.unassigned.subject", new String[] {crpProgram.getAcronym(), crp});
     crpProgram = crpProgramManager.getCrpProgramById(crpProgram.getId());
 
     userRemoved = userManager.getUser(userRemoved.getId());
@@ -535,7 +539,7 @@ public class CrpAdminManagmentAction extends BaseAction {
     // Building the Email message:
     message.append(this.getText("email.dear", new String[] {userRemoved.getFirstName()}));
     message.append(this.getText("email.flagshipmanager.unassigned",
-      new String[] {crpProgram.getAcronym(), crpProgram.getName(), loggedCrp.getName()}));
+      new String[] {crpProgram.getAcronym(), crpProgram.getName(), crp}));
 
 
     message.append(this.getText("email.support", new String[] {crpAdmins}));
@@ -592,9 +596,9 @@ public class CrpAdminManagmentAction extends BaseAction {
 
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
-
-    String subject =
-      this.getText("email.flagship.unassigned.subject", new String[] {crpProgram.getAcronym(), loggedCrp.getName()});
+    String crp = loggedCrp.getAcronym() != null && !loggedCrp.getAcronym().isEmpty() ? loggedCrp.getAcronym()
+      : loggedCrp.getName();
+    String subject = this.getText("email.flagship.unassigned.subject", new String[] {crpProgram.getAcronym(), crp});
 
     crpProgram = crpProgramManager.getCrpProgramById(crpProgram.getId());
 
@@ -602,9 +606,8 @@ public class CrpAdminManagmentAction extends BaseAction {
     StringBuilder message = new StringBuilder();
     // Building the Email message:
     message.append(this.getText("email.dear", new String[] {userRemoved.getFirstName()}));
-    message
-      .append(this.getText("email.flagship.unassigned", new String[] {this.getText("programManagement.flagship.role"),
-        crpProgram.getAcronym(), crpProgram.getName(), loggedCrp.getName()}));
+    message.append(this.getText("email.flagship.unassigned", new String[] {
+      this.getText("programManagement.flagship.role"), crpProgram.getAcronym(), crpProgram.getName(), crp}));
     message.append(this.getText("email.support", new String[] {crpAdmins}));
     message.append(this.getText("email.bye"));
 
@@ -647,11 +650,12 @@ public class CrpAdminManagmentAction extends BaseAction {
     }
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
-
+    String crp = loggedCrp.getAcronym() != null && !loggedCrp.getAcronym().isEmpty() ? loggedCrp.getAcronym()
+      : loggedCrp.getName();
     // Subject
     String managementRoleAcronym = this.getText("programManagement.role.acronym");
-    String subject = this.getText("email.programManagement.assigned.subject",
-      new String[] {loggedCrp.getName(), managementRoleAcronym});
+    String subject =
+      this.getText("email.programManagement.assigned.subject", new String[] {crp, managementRoleAcronym});
 
     String managementRole =
       this.getText("programManagement.role") + " (" + this.getText("programManagement.role.acronym") + ")";
@@ -661,7 +665,7 @@ public class CrpAdminManagmentAction extends BaseAction {
     // Building the Email message:
     message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
     message.append(this.getText("email.programManagement.assigned",
-      new String[] {managementRole, loggedCrp.getName(), this.getText("email.programManagement.responsibilities")}));
+      new String[] {managementRole, crp, this.getText("email.programManagement.responsibilities")}));
     message.append(this.getText("email.support", new String[] {crpAdmins}));
     message.append(this.getText("email.getStarted"));
     message.append(this.getText("email.bye"));
@@ -702,16 +706,17 @@ public class CrpAdminManagmentAction extends BaseAction {
     }
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
-
+    String crp = loggedCrp.getAcronym() != null && !loggedCrp.getAcronym().isEmpty() ? loggedCrp.getAcronym()
+      : loggedCrp.getName();
     String subject = this.getText("email.programManagement.unassigned.subject",
-      new String[] {loggedCrp.getName(), this.getText("programManagement.role.acronym")});
+      new String[] {crp, this.getText("programManagement.role.acronym")});
 
     userAssigned = userManager.getUser(userAssigned.getId());
     StringBuilder message = new StringBuilder();
     // Building the Email message:
     message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
-    message.append(this.getText("email.programManagement.unassigned",
-      new String[] {this.getText("programManagement.role"), loggedCrp.getName()}));
+    message.append(
+      this.getText("email.programManagement.unassigned", new String[] {this.getText("programManagement.role"), crp}));
     message.append(this.getText("email.support", new String[] {crpAdmins}));
     message.append(this.getText("email.bye"));
 
@@ -1084,7 +1089,7 @@ public class CrpAdminManagmentAction extends BaseAction {
         crpProgram.setModificationJustification("");
         crpProgram.setActiveSince(crpProgramDb.getActiveSince());
         crpProgramManager.saveCrpProgram(crpProgram);
-        for (LiaisonInstitution liasonInstitution : crpProgram.getLiaisonInstitutions()) {
+        for (LiaisonInstitution liasonInstitution : crpProgramDb.getLiaisonInstitutions()) {
           liasonInstitution.setAcronym(crpProgram.getAcronym());
           liasonInstitution.setName(crpProgram.getName());
           liaisonInstitutionManager.saveLiaisonInstitution(liasonInstitution);

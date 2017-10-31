@@ -55,7 +55,7 @@ public class IPSubmissionAction extends BaseAction {
   private static final long serialVersionUID = 4882851743044518890L;
 
 
-  // LOG
+  /// LOG
   private static Logger LOG = LoggerFactory.getLogger(IPSubmissionAction.class);
   private ICenterSubmissionManager submissionService;
   private ICenterProgramManager programService;
@@ -192,7 +192,8 @@ public class IPSubmissionAction extends BaseAction {
     StringBuilder message = new StringBuilder();
     String[] values = new String[5];
     values[0] = this.getCurrentUser().getComposedCompleteName();
-    values[1] = loggedCenter.getName();
+    values[1] = loggedCenter.getAcronym() != null && !loggedCenter.getAcronym().isEmpty() ? loggedCenter.getAcronym()
+      : loggedCenter.getName();
     values[2] = program.getName();
     values[3] = String.valueOf(this.getCenterYear());
     values[4] = cycle.getName();

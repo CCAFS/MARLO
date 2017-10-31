@@ -59,6 +59,14 @@ public interface ICenterProjectFundingSourceDAO {
 
 
   /**
+   * This method gets a list of projectFundingSource search by code (sync code)
+   * 
+   * @param code - the sync code
+   * @return CenterProjectFundingSource object
+   */
+  public CenterProjectFundingSource getProjectFundingSourceByCode(String code);
+
+  /**
    * This method gets a list of projectFundingSources belongs of the user
    * 
    * @param userId - the user id

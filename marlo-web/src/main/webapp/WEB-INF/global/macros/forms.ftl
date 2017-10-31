@@ -5,8 +5,8 @@
   <div class="input ${changedField(name)}" style="display:${display?string('block','none')};">
     [#assign labelTitle][#if i18nkey==""][@s.text name="${name}"][@s.param]${paramText}[/@s.param][/@s.text][#else][@s.text name="${i18nkey}"][@s.param]${paramText}[/@s.param][/@s.text][/#if][/#assign]
     [#if showTitle]
-      <label for="${name}" class="${editable?string('editable', 'readOnly')}">${labelTitle}:[#if required && editable]<span class="red">*</span>[/#if]</label>
-      [#if help != ""]<img src="${baseUrlMedia}/images/global/icon-help2.png" title="[@s.text name="${help}"/]" />[/#if]
+      <label for="${name}" class="${editable?string('editable', 'readOnly')}">${labelTitle}:[@req required=required && editable /]</label>
+      [#if help != ""]<img src="${baseUrl}/global/images/icon-help2.png" title="[@s.text name="${help}"/]" />[/#if]
     [/#if]
     [#if errorField==""][@s.fielderror cssClass="fieldError" fieldName="${name}"/][#else][@s.fielderror cssClass="fieldError" fieldName="${errorfield}"/][/#if]
     [#if editable]
@@ -32,8 +32,12 @@
     [#assign customLabel][#if !editable]${customName}.readText[#else]${customName}[/#if][/#assign]
     [#assign customValue][#if value=="-NULL"][@s.property value="${name}"/][#else]${value}[/#if][/#assign]
   	[#if showTitle]
-      <label for="${name}" class="${editable?string('editable', 'readOnly')}"> [@s.text name="${customLabel}"][@s.param]${paramText}[/@s.param][/@s.text]:[#if required && editable]<span class="red">*</span>[/#if]</label>
-      [#if help != ""]<img src="${baseUrlMedia}/images/global/icon-help2.png" title="[@s.text name="${help}"/]" />[/#if]
+      <label for="${name}" class="${editable?string('editable', 'readOnly')}"> [@s.text name="${customLabel}"][@s.param]${paramText}[/@s.param][/@s.text]:[@req required=required && editable /]
+        [#if help != ""]
+          <img  class="hint-img" src="${baseUrl}/global/images/icon-help2.png" title="[@s.text name="${help}"/]" style="display:inline-block" />
+          <span class="hint" style="display:none" title="[@s.text name="${help}"/]"> [HINT] </span>
+        [/#if]
+      </label>
     [/#if]
     [#if errorfield==""][@s.fielderror cssClass="fieldError" fieldName="${name}"/][#else][@s.fielderror cssClass="fieldError" fieldName="${errorfield}"/][/#if]
     [#if editable]
@@ -62,9 +66,9 @@
     [#if editable]
       <label for="${name}" class="${editable?string('editable', 'readOnly')}">
         <input type="checkbox" id="${name}" class="${className}" name="${name}" value="${value}" [#if checked]checked="checked"[/#if] [#if disabled]disabled="disabled[/#if] />
-        [#if i18nkey==""]${label}[#else][@s.text name="${i18nkey}" /][/#if][#if required && editable]<span class="red">*</span>[/#if] 
+        [#if i18nkey==""]${label}[#else][@s.text name="${i18nkey}" /][/#if] [@req required=required && editable /]
         <input type="hidden" id="__checkbox_${name}" name="__checkbox_${name}" value="${value}" />
-        [#if help != ""]<img src="${baseUrlMedia}/images/global/icon-help2.png" title="[@s.text name="${help}"/]" />[/#if]
+        [#if help != ""]<img src="${baseUrl}/global/images/icon-help2.png" title="[@s.text name="${help}"/]" />[/#if]
       </label>
     [#else]
       [#if checked]<p class="checked">[#if i18nkey==""]${label}[#else][@s.text name="${i18nkey}.readText" /][/#if]</p>[/#if]
@@ -74,7 +78,7 @@
 
 [#macro checkboxGroup label name listName displayFieldName="" keyFieldName="" value="-NULL" i18nkey="" disabled=false required=false errorField="" checked=false display=true editable=true]
   <div class="checkbox ${changedField(name)}" [#if !display]style="display: none;"[/#if]>
-     [#if i18nkey==""]${label}[#else][@s.text name="${i18nkey}" /][/#if]:[#if required && editable]<span class="red">*</span>[/#if] 
+    [#if i18nkey==""]${label}[#else][@s.text name="${i18nkey}" /][/#if]:[@req required=required && editable /]
     [#if errorField==""][@s.fielderror cssClass="fieldError" fieldName="${name}"/][#else][@s.fielderror cssClass="fieldError" fieldName="${errorfield}"/][/#if]
     <div class="checkboxList">
     [#if value=="-NULL"]
@@ -100,7 +104,7 @@
 
 [#macro radioButtonGroup label name listName class="" displayFieldName="" keyFieldName="" value="-NULL" i18nkey="" disabled=false required=false errorField="" checked=false help="" display=true editable=true]
   <div class="radioGroup ${changedField(name)}" [#if !display]style="display: none;"[/#if]>
-    [#if i18nkey==""]${label}[#else][@s.text name="${i18nkey}" /][/#if]:[#if required && editable]<span class="red">*</span>[/#if]
+    [#if i18nkey==""]${label}[#else][@s.text name="${i18nkey}" /][/#if]:[@req required=required && editable /]
     [#if errorField==""][@s.fielderror cssClass="fieldError" fieldName="${name}"/][#else][@s.fielderror cssClass="fieldError" fieldName="${errorfield}"/][/#if]
     <div class="radiosList">
       [#if editable]
@@ -127,7 +131,7 @@
     [#if showTitle]
     <label for="">
         [#if labelTitle != ""]${labelTitle}:[/#if][@req required=required && editable /]
-        [#if help != ""]<img src="${baseUrlMedia}/images/global/icon-help2.png" title="[@s.text name="${help}"/]" />[/#if]
+        [#if help != ""]<img src="${baseUrl}/global/images/icon-help2.png" title="[@s.text name="${help}"/]" />[/#if]
     </label>
     [/#if]
     [#if errorField==""][@s.fielderror cssClass="fieldError" fieldName="${name}"/][#else][@s.fielderror cssClass="fieldError" fieldName="${errorfield}"/][/#if]
@@ -227,7 +231,7 @@
   
 [/#macro] 
  
-[#macro req required=true ][#if required]<span class="red">*</span>[/#if][/#macro]
+[#macro req required=true ]<span class="red requiredTag" style="display:${required?string('inline','none')};">*</span>[/#macro]
 
 [#macro confirmJustification action="" namespace="/" nameId="" title="" projectID=""]
   <div id="dialog-justification" title="${title}" style="display:none"> 
@@ -238,6 +242,71 @@
           <input class="nameId" name="${nameId}" type="hidden" value="-1" />
         [/#if]
         <input name="projectID" type="hidden" value="${projectID}" />
+        <!-- Allow form submission with keyboard without duplicating the dialog button -->
+        <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+      [/@s.form]
+    </div>  
+  </div>
+[/#macro]
+
+[#macro confirmJustificationOutcome action="" namespace="/" nameId="" title="" outcomeID=""]
+  <div id="dialog-justification" title="${title}" style="display:none"> 
+    <div class="dialog-content"> 
+      [@s.form action=action namespace="${namespace}" cssClass="pure-form"]
+        [@textArea name="justification" i18nkey="saving.justification.outcome" required=true className="justification"/]
+        [#if nameId != ""]
+          <input name="${nameId}" type="hidden" value="-1" />
+        [/#if]
+        <input name="outcomeID" type="hidden" value="${outcomeID}" />
+        <!-- Allow form submission with keyboard without duplicating the dialog button -->
+        <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+      [/@s.form]
+    </div>  
+  </div>
+[/#macro]
+
+
+[#macro confirmJustificationOut action="" namespace="/" nameId="" title="" outputID=""]
+  <div id="dialog-justification" title="${title}" style="display:none"> 
+    <div class="dialog-content"> 
+      [@s.form action=action namespace="${namespace}" cssClass="pure-form"]
+        [@textArea name="justification" i18nkey="saving.justification.output" required=true className="justification"/]
+        [#if nameId != ""]
+          <input name="${nameId}" type="hidden" value="-1" />
+        [/#if]
+        <input name="outputID" type="hidden" value="${outputID}" />
+        <!-- Allow form submission with keyboard without duplicating the dialog button -->
+        <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+      [/@s.form]
+    </div>  
+  </div>
+[/#macro]
+
+[#macro confirmJustificationProject action="" namespace="/" nameId="" title="" projectID=""]
+  <div id="dialog-justification" title="${title}" style="display:none"> 
+    <div class="dialog-content"> 
+      [@s.form action=action namespace="${namespace}" cssClass="pure-form"]
+        [@textArea name="justification" i18nkey="saving.justification.project" required=true className="justification"/]
+        [#if nameId != ""]
+          <input name="${nameId}" type="hidden" value="-1" />
+        [/#if]
+        <input name="projectID" type="hidden" value="${projectID}" />
+        <!-- Allow form submission with keyboard without duplicating the dialog button -->
+        <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+      [/@s.form]
+    </div>  
+  </div>
+[/#macro]
+
+[#macro confirmJustificationDeliverable action="" namespace="/" nameId="" title="" deliverableID=""]
+  <div id="dialog-justification" title="${title}" style="display:none"> 
+    <div class="dialog-content"> 
+      [@s.form action=action namespace="${namespace}" cssClass="pure-form"]
+        [@textArea name="justification" i18nkey="saving.justification.deliverable" required=true className="justification"/]
+        [#if nameId != ""]
+          <input name="${nameId}" type="hidden" value="-1" />
+        [/#if]
+        <input name="deliverableID" type="hidden" value="${deliverableID}" />
         <!-- Allow form submission with keyboard without duplicating the dialog button -->
         <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
       [/@s.form]
@@ -305,6 +374,13 @@
     [#else]
       <p style="text-align:center; display: inline-block"> [#if customValue=="true"]Yes[#elseif customValue == "false"]No[#else]Not selected[/#if]</p>
     [/#if]
+  </div>
+[/#macro]
+
+[#macro radioFlat id name label="" disabled=false editable=true value="" checked=true cssClass=""]
+  <div class="radioFlat radio-inline">
+    <input id="${id}" class="radio-input ${cssClass}" type="radio" name="${name}" value="${value}" [#if checked]checked[/#if] />
+    <label for="${id}" class="radio-label"> ${label} </label>
   </div>
 [/#macro]
 

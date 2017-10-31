@@ -331,6 +331,8 @@ public class SynthesisByMogAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+ 	      reader.close();
+ 	
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
@@ -339,7 +341,7 @@ public class SynthesisByMogAction extends BaseAction {
         programID = program.getId();
 
         this.setDraft(true);
-        reader.close();
+      
       } else {
         synthesis = new ArrayList<>(mogSynthesisManager.getMogSynthesis(programID).stream()
           .filter(sy -> sy.isActive() && sy.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList()));

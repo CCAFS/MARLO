@@ -56,9 +56,9 @@ public class CenterTopic implements Serializable, IAuditLog {
   @Expose
   private boolean active;
 
+
   @Expose
   private Date activeSince;
-
 
   @Expose
   private User createdBy;
@@ -67,10 +67,8 @@ public class CenterTopic implements Serializable, IAuditLog {
   @Expose
   private User modifiedBy;
 
-
   @Expose
   private String modificationJustification;
-
 
   @Expose
   private String color;
@@ -80,7 +78,12 @@ public class CenterTopic implements Serializable, IAuditLog {
   private String shortName;
 
 
+  @Expose
+  private Integer order;
+
+
   private Set<CenterOutcome> researchOutcomes = new HashSet<>(0);
+
 
   /**
    * 
@@ -128,15 +131,14 @@ public class CenterTopic implements Serializable, IAuditLog {
     return activeSince;
   }
 
-
   public String getColor() {
     return color;
   }
 
+
   public User getCreatedBy() {
     return createdBy;
   }
-
 
   /**
    * @return the id
@@ -155,19 +157,26 @@ public class CenterTopic implements Serializable, IAuditLog {
   }
 
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
-
 
   @Override
   public User getModifiedBy() {
     return modifiedBy;
   }
 
+
+  public Integer getOrder() {
+    return order;
+  }
+
+
   public Set<CenterOutcome> getResearchOutcomes() {
     return researchOutcomes;
   }
+
 
   /**
    * @return the researchProgram
@@ -187,7 +196,6 @@ public class CenterTopic implements Serializable, IAuditLog {
     return shortName;
   }
 
-
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -195,7 +203,6 @@ public class CenterTopic implements Serializable, IAuditLog {
     result = prime * result + ((id == null) ? 0 : id.hashCode());
     return result;
   }
-
 
   @Override
   public boolean isActive() {
@@ -212,14 +219,15 @@ public class CenterTopic implements Serializable, IAuditLog {
     this.activeSince = activeSince;
   }
 
+
   public void setColor(String color) {
     this.color = color;
   }
 
+
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
-
 
   /**
    * @param id the id to set
@@ -227,7 +235,6 @@ public class CenterTopic implements Serializable, IAuditLog {
   public void setId(Long id) {
     this.id = id;
   }
-
 
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
@@ -238,6 +245,10 @@ public class CenterTopic implements Serializable, IAuditLog {
     this.modifiedBy = modifiedBy;
   }
 
+
+  public void setOrder(Integer order) {
+    this.order = order;
+  }
 
   public void setResearchOutcomes(Set<CenterOutcome> researchOutcomes) {
     this.researchOutcomes = researchOutcomes;

@@ -26,3 +26,12 @@ i.flag-sm {
   padding: 0;
   margin-top: 5px;
 }
+
+p.fieldErrorInstitutions {
+  font-weight: bold;
+  color: red;
+}
+
+p.fieldErrorInstitutions i {
+  color: #e84444;
+}
