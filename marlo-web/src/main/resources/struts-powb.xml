@@ -8,7 +8,7 @@
     <!-- Delivery -->
     <action name="{crp}/delivery" class="org.cgiar.ccafs.marlo.action.powb.DeliveryAction">
       <interceptor-ref name="editSynthesisStack" />
-      <result name="input">/WEB-INF/views/powb/powbDelivery.ftl</result>
+      <result name="input">/WEB-INF/crp/views/powb/powbDelivery.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/delivery</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
@@ -19,7 +19,7 @@
     <!-- Budget -->
     <action name="{crp}/budget" class="org.cgiar.ccafs.marlo.action.powb.DeliveryAction">
       <interceptor-ref name="editSynthesisStack" />
-      <result name="input">/WEB-INF/views/powb/powbBudget.ftl</result>
+      <result name="input">/WEB-INF/crp/views/powb/powbBudget.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/budget</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
@@ -30,7 +30,7 @@
     <!-- Collaboration and Integration -->
     <action name="{crp}/collIntegration" class="org.cgiar.ccafs.marlo.action.powb.DeliveryAction">
       <interceptor-ref name="editSynthesisStack" />
-      <result name="input">/WEB-INF/views/powb/powbCollIntegration.ftl</result>
+      <result name="input">/WEB-INF/crp/views/powb/powbCollIntegration.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/collIntegration</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
@@ -41,7 +41,7 @@
     <!-- Management, Governance and Monitoring, Evaluation, Learning -->
     <action name="{crp}/manGovMonEvaLea" class="org.cgiar.ccafs.marlo.action.powb.DeliveryAction">
       <interceptor-ref name="editSynthesisStack" />
-      <result name="input">/WEB-INF/views/powb/powbManGovMonEvaLea.ftl</result>
+      <result name="input">/WEB-INF/crp/views/powb/powbManGovMonEvaLea.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/manGovMonEvaLea</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
@@ -52,7 +52,7 @@
     <!-- Expected Annual Milestones -->
     <action name="{crp}/expectedMilestones" class="org.cgiar.ccafs.marlo.action.powb.DeliveryAction">
       <interceptor-ref name="editSynthesisStack" />
-      <result name="input">/WEB-INF/views/powb/powbExpectedMilestones.ftl</result>
+      <result name="input">/WEB-INF/crp/views/powb/powbExpectedMilestones.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/expectedMilestones</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
@@ -63,7 +63,7 @@
     <!-- Outputs -->
     <action name="{crp}/outputs" class="org.cgiar.ccafs.marlo.action.powb.DeliveryAction">
       <interceptor-ref name="editSynthesisStack" />
-      <result name="input">/WEB-INF/views/powb/powbOutputs.ftl</result>
+      <result name="input">/WEB-INF/crp/views/powb/powbOutputs.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/outputs</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
@@ -74,7 +74,7 @@
     <!-- Contribution of W1W2 Funds -->
     <action name="{crp}/contFunds" class="org.cgiar.ccafs.marlo.action.powb.DeliveryAction">
       <interceptor-ref name="editSynthesisStack" />
-      <result name="input">/WEB-INF/views/powb/powbContFunds.ftl</result>
+      <result name="input">/WEB-INF/crp/views/powb/powbContFunds.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/contFunds</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
@@ -85,7 +85,7 @@
     <!-- Planned Budget -->
     <action name="{crp}/plannedBudget" class="org.cgiar.ccafs.marlo.action.powb.DeliveryAction">
       <interceptor-ref name="editSynthesisStack" />
-      <result name="input">/WEB-INF/views/powb/powbPlannedBudget.ftl</result>
+      <result name="input">/WEB-INF/crp/views/powb/powbPlannedBudget.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/plannedBudget</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
@@ -96,7 +96,7 @@
     <!-- Contribution to SRF Sub-IDOs -->
     <action name="{crp}/contSubIDOs" class="org.cgiar.ccafs.marlo.action.powb.DeliveryAction">
       <interceptor-ref name="editSynthesisStack" />
-      <result name="input">/WEB-INF/views/powb/powbContSubIDOs.ftl</result>
+      <result name="input">/WEB-INF/crp/views/powb/powbContSubIDOs.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/contSubIDOs</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
@@ -107,7 +107,7 @@
     <!-- Expected Annual Milestones -->
     <action name="{crp}/expectedMilestonestable" class="org.cgiar.ccafs.marlo.action.powb.DeliveryAction">
       <interceptor-ref name="editSynthesisStack" />
-      <result name="input">/WEB-INF/views/powb/powbExpectedMilestonestable.ftl</result>
+      <result name="input">/WEB-INF/crp/views/powb/powbExpectedMilestonestable.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/expectedMilestonestable</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
@@ -118,7 +118,7 @@
     <!-- Expected Key Outputs -->
     <action name="{crp}/expectedKeyOutputstable" class="org.cgiar.ccafs.marlo.action.powb.DeliveryAction">
       <interceptor-ref name="editSynthesisStack" />
-      <result name="input">/WEB-INF/views/powb/powbExpectedKeyOutputstable.ftl</result>
+      <result name="input">/WEB-INF/crp/views/powb/powbExpectedKeyOutputstable.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/expectedKeyOutputstable</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>

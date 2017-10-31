@@ -14,24 +14,24 @@
 ]/]
 
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities /]
-[#include "/WEB-INF/global/pages/header.ftl" /]
-[#include "/WEB-INF/global/pages/main-menu.ftl" /]
+[#include "/WEB-INF/crp/pages/header.ftl" /]
+[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
 
 [#-- Helptext --]
 [@utilities.helpBox name="powbDelivery.help" /]
     
 <section class="container">
   [#-- Program (Flagships and PMU) --]
-  [#include "/WEB-INF/views/powb/submenu-powb.ftl" /]
+  [#include "/WEB-INF/crp/views/powb/submenu-powb.ftl" /]
   
   <div class="row">
     [#-- POWB Menu --]
     <div class="col-md-3">
-      [#include "/WEB-INF/views/powb/menu-powb.ftl" /]
+      [#include "/WEB-INF/crp/views/powb/menu-powb.ftl" /]
     </div> 
     <div class="col-md-9">
       [#-- Section Messages --]
-      [#include "/WEB-INF/views/powb/messages-powb.ftl" /]
+      [#include "/WEB-INF/crp/views/powb/messages-powb.ftl" /]
       
       [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
          
@@ -120,10 +120,10 @@
         </div>
         
         [#-- Section Buttons & hidden inputs--]
-        [#include "/WEB-INF/views/powb/buttons-powb.ftl" /]
+        [#include "/WEB-INF/crp/views/powb/buttons-powb.ftl" /]
         
       [/@s.form] 
     </div> 
   </div> 
 </section>
-[#include "/WEB-INF/global/pages/footer.ftl"]
+[#include "/WEB-INF/crp/pages/footer.ftl"]
