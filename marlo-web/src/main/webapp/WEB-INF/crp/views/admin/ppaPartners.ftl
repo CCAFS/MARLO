@@ -99,15 +99,15 @@
 
 [#macro intitutionMacro ppaPartner index=0 isTemplate=false]
   [#local customName = "loggedCrp.crpInstitutionsPartners[${index}]"]
-  <div id="institution-${isTemplate?string('template',index)}" class="institution ppaPartner borderBox" style="display:${isTemplate?string('none','block')}">
+  <div id="institution-${isTemplate?string('template',index)}" class="institution ppaPartner borderBox ${(cpRole??)?string('','withOutCP')}" style="display:${isTemplate?string('none','block')}">
     [#-- Hidden inputs --]
     <input class="institutionId" type="hidden" name="${customName}.institution.id" value="${(ppaPartner.institution.id)!'null'}"/>
     <input class="id" type="hidden" name="${customName}.id" value="${(ppaPartner.id)!}"/>
     [#-- Remove --]
     [#if (ppaPartner?hasContent && action.canBeDeleted(ppaPartner.id,ppaPartner.class.name)) || !ppaPartner?hasContent ]
-      <div class="removeLink"><div class="delete removeElement removeLink" title="Remove"></div></div>
+      <div class="removeLink"><div class="delete removeElement sm removeLink" title="Remove"></div></div>
     [#else]
-      <div class="removeLink"><div class="removeElement removeLink disable" title="Cannot be removed"></div></div>
+      <div class="removeLink"><div class="removeElement sm removeLink disable" title="Cannot be removed"></div></div>
     [/#if]
     
     [#-- Title --]

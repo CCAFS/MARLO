@@ -8,3 +8,13 @@
     padding-left: 3%;
     cursor: pointer;
 }
+
+.withOutCP h5.title.sectionSubTitle {
+  border: 0;
+  padding: 0;
+  color: #a25e5e;
+}
+
+.withOutCP {
+  padding: 0px 17px;
+}
