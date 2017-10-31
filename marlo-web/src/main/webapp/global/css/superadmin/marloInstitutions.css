@@ -22,3 +22,7 @@ i.flag-sm {
 .officeCountryRequest p {
   margin-left: 9px;
 }
+
+.requestInfo p {
+  margin: 0;
+}

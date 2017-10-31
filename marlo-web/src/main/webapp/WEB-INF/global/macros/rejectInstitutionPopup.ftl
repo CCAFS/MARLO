@@ -9,10 +9,14 @@
         <h4 class="modal-title" id="myModalLabel">Reject the request</h4>
       </div>
       <div class="modal-body">
-        <div class="requestInfo">
-        </div>
+        [#-- Request Info is filled by marloInstitutions.js --]
+        <div class="requestInfo"></div>
         <div class="form-group">
           [@customForm.textArea name="marloRequestInstitution.justification" required=true className="limitWords-30" /]
+        </div>
+        <hr />
+        <div class="form-group">
+          [@customForm.checkBoxFlat id="sendEmail" name="marloRequestInstitution.sendEmail" label="Tick to send a justification email" value="true" checked=false cssClass="sendEmailInput"/]
         </div>
       </div>
       <div class="modal-footer">

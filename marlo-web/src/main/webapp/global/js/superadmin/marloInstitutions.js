@@ -16,11 +16,13 @@ $(document).ready(function() {
   // Reject Request button Event
   $modal.find('.rejectButton').on('click', function() {
     var $request = $('#partnerRequestItem-' + requestID);
+    
     $.ajax({
         url: baseURL + '/rejectPartnerRequest.do',
         data: {
             requestID: requestID,
             justification: $modal.find('textarea').val(),
+            sendEmail : ($modal.find('sendEmailInput').is(':checked'))? true : false
         },
         beforeSend: function() {
           $modal.find('.loading').fadeIn();
@@ -117,13 +119,13 @@ $(document).ready(function() {
           return this.value;
         }).get().join()
     }
+    
     // Validate if there are countries selected
     if(!formData.justification) {
       var notyOptions = jQuery.extend({}, notyDefaultOptions);
       notyOptions.text = 'Please fill out the justification field';
       noty(notyOptions);
       return
-
     }
     $.ajax({
         url: baseURL + '/rejectOfficesRequest.do',
