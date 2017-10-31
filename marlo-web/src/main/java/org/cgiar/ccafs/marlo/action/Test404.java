@@ -15,27 +15,46 @@
 
 package org.cgiar.ccafs.marlo.action;
 
+import org.cgiar.ccafs.marlo.ocs.model.AgreementOCS;
+import org.cgiar.ccafs.marlo.ocs.ws.MarloOcsClient;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import com.google.inject.Inject;
 
 /**
+ * Action to Test the webservices that MARLO call it (OCS in special), if the service can not sends a positive response
+ * struts force to send a 404 httpheader code.
+ * 
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 public class Test404 extends BaseAction {
 
   private static final long serialVersionUID = 1511557973574400249L;
 
+  // OCS Agreement Servcie Class
+  private MarloOcsClient ocsClient;
+  private AgreementOCS agreement;
+
   @Inject
-  public Test404(APConfig config) {
+  public Test404(APConfig config, MarloOcsClient ocsClient) {
     super(config);
+    this.ocsClient = ocsClient;
   }
 
 
   @Override
   public String execute() throws Exception {
-    System.out.println("Ejecuta");
-    return INPUT;
+
+    // Search an existing OCS code.
+    agreement = ocsClient.getagreement("D124");
+
+    if (agreement != null) {
+      return SUCCESS;
+    } else {
+      return INPUT;
+    }
+
+
   }
 
   @Override
