@@ -63,7 +63,6 @@ $(document).ready(function() {
       notyOptions.text = 'The required(*) fields needs to be filled';
       noty(notyOptions);
       return
-
     }
 
     $.ajax({

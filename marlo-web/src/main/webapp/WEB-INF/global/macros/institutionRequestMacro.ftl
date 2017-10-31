@@ -47,7 +47,7 @@
               <span class="glyphicon glyphicon-pencil"></span> Edit Request
             </a>
             [#-- Accept --]
-            <a class="btn btn-success btn-sm" href="[@s.url namespace="" action="superadmin/addPartner"][@s.param name='requestID']${partner.id?c}[/@s.param][/@s.url]">
+            <a class="btn btn-success btn-sm" onclick="return confirm('Are you sure you want to accept this partner request?');" href="[@s.url namespace="" action="superadmin/addPartner"][@s.param name='requestID']${partner.id?c}[/@s.param][/@s.url]">
               <span class="glyphicon glyphicon-ok"></span> Accept
             </a>
             [#-- Reject --]
