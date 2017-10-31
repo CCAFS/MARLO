@@ -253,7 +253,9 @@ public class PartnersSaveAction extends BaseAction {
     }
 
     // message subject
-    subject = "[MARLO-" + this.getCrpSession().toUpperCase() + "] Partner verification - " + institutionName;
+
+    subject = this.getText("marloRequestInstitution.email.subject",
+      new String[] {this.getCrpSession().toUpperCase(), institutionName});
     // Message content
     message.append(this.getCurrentUser().getFirstName() + " " + this.getCurrentUser().getLastName() + " ");
     message.append("(" + this.getCurrentUser().getEmail() + ") ");
@@ -269,7 +271,7 @@ public class PartnersSaveAction extends BaseAction {
     message.append(institutionTypeName);
     message.append(" </br>");
 
-    message.append("CountryOCS: ");
+    message.append("Headquarter country location: ");
     message.append(countryName);
     message.append(" </br>");
 

@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * RequestCountryOfficeAction:
+ * 
  * @author avalencia - CCAFS
  * @date Oct 30, 2017
  * @time 11:43:44 AM: Add CRP
@@ -93,12 +94,15 @@ public class RequestCountryOfficeAction extends BaseAction {
       StringBuilder message = new StringBuilder();
 
       String countriesName = null;
+      String countriesISO2Code = null;
 
       for (String string : countries) {
         if (countriesName == null) {
           countriesName = locElementManager.getLocElementByISOCode((string)).getName();
+          countriesISO2Code = string;
         } else {
           countriesName = countriesName + ", " + locElementManager.getLocElementByISOCode((string)).getName();
+          countriesISO2Code = countriesISO2Code + ", " + string;
         }
         // Add Partner Request information.
         PartnerRequest partnerRequest = new PartnerRequest();
@@ -117,11 +121,12 @@ public class RequestCountryOfficeAction extends BaseAction {
       }
       String institutionName = institutionManager.getInstitutionById(institutionID).getName();
 
-      subject = "[MARLO-" + this.getCrpSession().toUpperCase() + "] Add Office - " + institutionName;
+      subject = "[MARLO-" + this.getCrpSession().toUpperCase() + "] Add office location (" + countriesISO2Code + ") to "
+        + institutionName;
       // Message content
       message.append(this.getCurrentUser().getFirstName() + " " + this.getCurrentUser().getLastName() + " ");
       message.append("(" + this.getCurrentUser().getEmail() + ") ");
-      message.append("is requesting to add the following offices for the institution: ");
+      message.append("is requesting to add the following office location(s): ");
 
       message.append("</br></br>");
       message.append("Project : P");
