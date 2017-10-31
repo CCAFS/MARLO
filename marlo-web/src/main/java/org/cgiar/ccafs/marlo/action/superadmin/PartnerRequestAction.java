@@ -74,6 +74,7 @@ public class PartnerRequestAction extends BaseAction {
   private long requestID;
   private SendMailS sendMail;
   private boolean success;
+  private boolean sendNotification;
 
   // Justification for reject office(s)
   private String justification;
@@ -120,6 +121,7 @@ public class PartnerRequestAction extends BaseAction {
         for (String partnerRequestId : partnerRequestIds) {
           PartnerRequest partnerRequest = partnerRequestManager.getPartnerRequestById(Long.valueOf(partnerRequestId));
           partnerRequest.setAcepted(new Boolean(true));
+          partnerRequest.setAceptedDate(new Date());
           partnerRequest.setActive(false);
           partnerRequest.setModifiedBy(this.getCurrentUser());
           // Store the list of user to send the email
@@ -182,6 +184,7 @@ public class PartnerRequestAction extends BaseAction {
     institutionLocationManager.saveInstitutionLocation(institutionLocation);
 
     partnerRequest.setAcepted(new Boolean(true));
+    partnerRequest.setAceptedDate(new Date());
     partnerRequest.setActive(false);
     partnerRequest.setModifiedBy(this.getCurrentUser());
     partnerRequestManager.savePartnerRequest(partnerRequest);
@@ -240,9 +243,9 @@ public class PartnerRequestAction extends BaseAction {
     success = true;
     HashMap<Institution, List<PartnerRequest>> countryOfficesHashMap = new HashMap<Institution, List<PartnerRequest>>();
     // Verify if exists active partnerRequest
-    if (partnerRequestManager.findAll().stream().filter(pr -> pr.isActive()) != null) {
-      partners = new ArrayList<>(partnerRequestManager.findAll().stream().filter(pr -> pr.isActive() && !pr.isOffice())
-        .collect(Collectors.toList()));
+    if (partnerRequestManager.findAll() != null) {
+      partners = new ArrayList<>(partnerRequestManager.findAll().stream()
+        .filter(pr -> pr.isActive() && !pr.isOffice() && pr.getPartnerRequest() != null).collect(Collectors.toList()));
       for (PartnerRequest officeRequest : partnerRequestManager.findAll().stream()
         .filter(pr -> pr.isActive() && pr.isOffice() && pr.getInstitution() != null).collect(Collectors.toList())) {
         if (countryOfficesHashMap.containsKey(officeRequest.getInstitution())) {
@@ -288,6 +291,8 @@ public class PartnerRequestAction extends BaseAction {
       try {
         Map<String, Object> parameters = this.getParameters();
         justification = StringUtils.trim(((String[]) parameters.get(APConstants.JUSTIFICATION_REQUEST))[0]);
+        sendNotification = Boolean
+          .valueOf(StringUtils.trim(((String[]) parameters.get(APConstants.PARTNER_REQUEST_SEND_NOTIFICATION))[0]));
       } catch (Exception e) {
         System.out.println(e.getMessage());
         justification = "";
@@ -307,10 +312,13 @@ public class PartnerRequestAction extends BaseAction {
           partnerRequest.setActive(false);
           partnerRequest.setRejectedBy(this.getCurrentUser());
           partnerRequest.setRejectJustification(justification);
+          partnerRequest.setRejectedDate(new Date());
           partnerRequestManager.savePartnerRequest(partnerRequest);
         }
         // Send notification email
-        this.sendRejectOfficeNotificationEmail(users, locElements, institution);
+        if (sendNotification) {
+          this.sendRejectOfficeNotificationEmail(users, locElements, institution);
+        }
       }
     } catch (Exception e) {
       success = false;

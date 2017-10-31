@@ -48,9 +48,11 @@ import org.slf4j.LoggerFactory;
 
 /**
  * PartnersSaveAction:
+ * 
  * @author avalencia - CCAFS
  * @date Oct 30, 2017
  * @time 11:43:29 AM: Add CRP
+ * @time 4:25:29 PM: Add clone request to check if there are changes
  */
 public class PartnersSaveAction extends BaseAction {
 
@@ -217,23 +219,37 @@ public class PartnersSaveAction extends BaseAction {
 
     // Add Partner Request information.
     PartnerRequest partnerRequest = new PartnerRequest();
+    // Add a clone request to check if there are changes later
+    PartnerRequest partnerRequestModifications = new PartnerRequest();
     partnerRequest.setActive(true);
+    partnerRequestModifications.setActive(true);
     partnerRequest.setActiveSince(new Date());
+    partnerRequestModifications.setActiveSince(new Date());
     partnerRequest.setCreatedBy(this.getCurrentUser());
+    partnerRequestModifications.setCreatedBy(this.getCurrentUser());
     partnerRequest.setModifiedBy(this.getCurrentUser());
+    partnerRequestModifications.setModifiedBy(this.getCurrentUser());
     partnerRequest.setModificationJustification("");
+    partnerRequestModifications.setModificationJustification("");
 
     partnerRequest.setPartnerName(institutionName);
+    partnerRequestModifications.setPartnerName(institutionName);
     partnerRequest.setAcronym(institutionAcronym);
+    partnerRequestModifications.setAcronym(institutionAcronym);
     partnerRequest.setCrp(loggedCrp);
+    partnerRequestModifications.setCrp(loggedCrp);
 
     partnerRequest.setLocElement(locationManager.getLocElementById(Long.parseLong(countryId)));
+    partnerRequestModifications.setLocElement(locationManager.getLocElementById(Long.parseLong(countryId)));
     partnerRequest.setInstitutionType(institutionManager.getInstitutionTypeById(partnerTypeId));
+    partnerRequestModifications.setInstitutionType(institutionManager.getInstitutionTypeById(partnerTypeId));
     partnerRequest.setOffice(false);
+    partnerRequestModifications.setOffice(false);
 
 
     if (partnerWebPage != null && !partnerWebPage.isEmpty()) {
       partnerRequest.setWebPage(partnerWebPage);
+      partnerRequestModifications.setWebPage(partnerWebPage);
     }
 
     // message subject
@@ -272,12 +288,16 @@ public class PartnersSaveAction extends BaseAction {
       message.append(activityManager.getActivityById(activityID).getTitle());
       partnerRequest
         .setRequestSource("Activity: (" + activityID + ") - " + activityManager.getActivityById(activityID).getTitle());
+      partnerRequestModifications
+        .setRequestSource("Activity: (" + activityID + ") - " + activityManager.getActivityById(activityID).getTitle());
     } else if (projectID > 0) {
       message.append("Project: (");
       message.append(projectID);
       message.append(") - ");
       message.append(projectManager.getProjectById(projectID).getTitle());
       partnerRequest
+        .setRequestSource("Project: (" + projectID + ") - " + projectManager.getProjectById(projectID).getTitle());
+      partnerRequestModifications
         .setRequestSource("Project: (" + projectID + ") - " + projectManager.getProjectById(projectID).getTitle());
     } else if (fundingSourceID > 0) {
       message.append("Funding Source: (");
@@ -286,9 +306,14 @@ public class PartnersSaveAction extends BaseAction {
       message.append(fundingSourceManager.getFundingSourceById(fundingSourceID).getTitle());
       partnerRequest.setRequestSource("Funding Source: (" + fundingSourceID + ") - "
         + fundingSourceManager.getFundingSourceById(fundingSourceID).getTitle());
+      partnerRequestModifications.setRequestSource("Funding Source: (" + fundingSourceID + ") - "
+        + fundingSourceManager.getFundingSourceById(fundingSourceID).getTitle());
     }
 
     partnerRequestManager.savePartnerRequest(partnerRequest);
+    partnerRequestModifications.setPartnerRequest(partnerRequest);
+    partnerRequestModifications.setModified(false);
+    partnerRequestManager.savePartnerRequest(partnerRequestModifications);
 
     message.append(".</br>");
     message.append("</br>");

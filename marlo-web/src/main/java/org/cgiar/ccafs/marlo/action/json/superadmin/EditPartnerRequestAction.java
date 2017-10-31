@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.Date;
 import java.util.Map;
 
 import com.google.inject.Inject;
@@ -66,18 +67,23 @@ public class EditPartnerRequestAction extends BaseAction {
     success = true;
     try {
       PartnerRequest partnerRequest = partnerRequestManager.getPartnerRequestById(Long.parseLong(requestID));
+      boolean isEdited = false;
+
       if (name != null && !name.isEmpty()) {
         partnerRequest.setPartnerName(name);
+        isEdited = true;
       } else {
         partnerRequest.setPartnerName("");
       }
       if (acronym != null && !acronym.isEmpty()) {
         partnerRequest.setAcronym(acronym);
+        isEdited = true;
       } else {
         partnerRequest.setAcronym("");
       }
       if (webPage != null && !webPage.isEmpty()) {
         partnerRequest.setWebPage(webPage);
+        isEdited = true;
       } else {
         partnerRequest.setWebPage("");
       }
@@ -86,18 +92,25 @@ public class EditPartnerRequestAction extends BaseAction {
         if (typeID != null && typeID != 0) {
           InstitutionType institutionType = institutionTypeManager.getInstitutionTypeById(typeID);
           partnerRequest.setInstitutionType(institutionType);
+          isEdited = true;
         }
       }
       if (country != null && !country.isEmpty()) {
         LocElement locElement = locElementManager.getLocElementByISOCode(country);
         partnerRequest.setLocElement(locElement);
+        isEdited = true;
       }
       if (modificationJustification != null && !modificationJustification.isEmpty()) {
         partnerRequest.setModificationJustification(modificationJustification);
+        isEdited = true;
       }
-
-      partnerRequest.setModifiedBy(this.getCurrentUser());
-      partnerRequestManager.savePartnerRequest(partnerRequest);
+      // If the PartnerRequest is edited, save it
+      if (isEdited) {
+        partnerRequest.setModifiedBy(this.getCurrentUser());
+        partnerRequest.setModified(true);
+        partnerRequest.setActiveSince(new Date());
+        partnerRequestManager.savePartnerRequest(partnerRequest);
+      }
     } catch (Exception e) {
       System.out.println(e.getMessage());
       success = false;
