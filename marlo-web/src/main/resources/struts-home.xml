@@ -20,10 +20,7 @@
 		</action>
 
 		<action name="testOCS" class="org.cgiar.ccafs.marlo.action.TestOCSAction">
-			<result name="success" type="httpheader">
-				<param name="status">200</param>
-				<param name="errorMessage">Ok</param>
-			</result>
+			<result name="success">/WEB-INF/global/pages/ocsMessage.ftl</result>
 			<result name="input" type="httpheader">
 				<param name="status">404</param>
 				<param name="errorMessage">Not Found</param>
