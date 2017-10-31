@@ -1122,7 +1122,7 @@ public class DeliverableAction extends BaseAction {
       deliverable.setCrossCuttingCapacity(null);
       deliverable.setCrossCuttingNa(null);
       deliverable.setCrossCuttingYouth(null);
-
+      deliverable.setResponsiblePartner(null);
       if (deliverable.getCrps() != null) {
         deliverable.getCrps().clear();
       }

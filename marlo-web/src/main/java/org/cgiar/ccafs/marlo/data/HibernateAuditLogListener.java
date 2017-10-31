@@ -507,7 +507,12 @@ public class HibernateAuditLogListener
           Set<IAuditLog> listRelation = new HashSet<>();
 
 
-          Set<Object> set = (Set<Object>) state[i];
+          Set<Object> set = null;
+          try {
+            set = (Set<Object>) state[i];
+          } catch (Exception e1) {
+            LOG.info("Could not load relations");
+          }
 
           if (set != null && !set.isEmpty()) {
             Object reObject = sessionFactory.getCurrentSession()
