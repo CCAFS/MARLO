@@ -29,18 +29,22 @@ import com.google.gson.annotations.Expose;
  */
 public class CenterUser implements IAuditLog {
 
+
   private static final long serialVersionUID = 3078405268131406743L;
+
 
   @Expose
   private Long id;
+
   @Expose
   private Center researchCenter;
+
+  @Expose
+  private GlobalUnit globalUnit;
   @Expose
   private User user;
-
   @Expose
   private boolean active;
-
   @Expose
   private User createdBy;
 
@@ -69,6 +73,10 @@ public class CenterUser implements IAuditLog {
     return createdBy;
   }
 
+  public GlobalUnit getGlobalUnit() {
+    return globalUnit;
+  }
+
   @Override
   public Long getId() {
     return this.id;
@@ -81,6 +89,7 @@ public class CenterUser implements IAuditLog {
     return sb.toString();
   }
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -113,6 +122,10 @@ public class CenterUser implements IAuditLog {
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
+  }
+
+  public void setGlobalUnit(GlobalUnit globalUnit) {
+    this.globalUnit = globalUnit;
   }
 
   public void setId(Long id) {

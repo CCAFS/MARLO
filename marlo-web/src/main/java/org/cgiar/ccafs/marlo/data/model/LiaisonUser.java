@@ -33,8 +33,12 @@ public class LiaisonUser implements java.io.Serializable, IAuditLog {
    * 
    */
   private static final long serialVersionUID = -2344785951769472166L;
+
+
   @Expose
   private Long id;
+
+
   @Expose
   private LiaisonInstitution liaisonInstitution;
   @Expose
@@ -42,10 +46,10 @@ public class LiaisonUser implements java.io.Serializable, IAuditLog {
   @Expose
   private Crp crp;
   @Expose
+  private GlobalUnit globalUnit;
+  @Expose
   private boolean active;
-
   private Set<Project> projects = new HashSet<Project>(0);
-
 
   public LiaisonUser() {
   }
@@ -55,12 +59,12 @@ public class LiaisonUser implements java.io.Serializable, IAuditLog {
     this.user = user;
   }
 
+
   public LiaisonUser(LiaisonInstitution liaisonInstitution, User user, Set<Project> projectses) {
     this.liaisonInstitution = liaisonInstitution;
     this.user = user;
     this.projects = projectses;
   }
-
 
   public String getComposedName() {
     return user.getComposedName();
@@ -71,15 +75,19 @@ public class LiaisonUser implements java.io.Serializable, IAuditLog {
   }
 
 
+  public GlobalUnit getGlobalUnit() {
+    return globalUnit;
+  }
+
   @Override
   public Long getId() {
     return this.id;
   }
 
+
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -116,19 +124,24 @@ public class LiaisonUser implements java.io.Serializable, IAuditLog {
     return user;
   }
 
+
   @Override
   public boolean isActive() {
 
     return active;
   }
 
-
   public void setActive(boolean active) {
     this.active = active;
   }
 
+
   public void setCrp(Crp crp) {
     this.crp = crp;
+  }
+
+  public void setGlobalUnit(GlobalUnit globalUnit) {
+    this.globalUnit = globalUnit;
   }
 
   public void setId(Long id) {

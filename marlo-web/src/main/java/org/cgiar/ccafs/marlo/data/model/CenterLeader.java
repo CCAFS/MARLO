@@ -34,7 +34,6 @@ public class CenterLeader implements java.io.Serializable, IAuditLog {
   @Expose
   private Long id;
 
-
   @Expose
   private CenterProgram researchProgram;
 
@@ -44,8 +43,11 @@ public class CenterLeader implements java.io.Serializable, IAuditLog {
 
 
   @Expose
-  private CenterArea researchArea;
+  private GlobalUnit globalUnit;
 
+
+  @Expose
+  private CenterArea researchArea;
 
   @Expose
   private User user;
@@ -78,15 +80,6 @@ public class CenterLeader implements java.io.Serializable, IAuditLog {
   public CenterLeader() {
   }
 
-  /**
-   * @param researchArea
-   * @param user
-   */
-  public CenterLeader(CenterArea researchArea, User user) {
-    super();
-    this.researchArea = researchArea;
-    this.user = user;
-  }
 
   /**
    * @param researchCenter
@@ -98,14 +91,24 @@ public class CenterLeader implements java.io.Serializable, IAuditLog {
     this.user = user;
   }
 
+
+  /**
+   * @param researchArea
+   * @param user
+   */
+  public CenterLeader(CenterArea researchArea, User user) {
+    super();
+    this.researchArea = researchArea;
+    this.user = user;
+  }
+
   /**
    * @param researchProgram
    * @param researchCenter
    * @param researchArea
    * @param user
    */
-  public CenterLeader(CenterProgram researchProgram, Center researchCenter, CenterArea researchArea,
-    User user) {
+  public CenterLeader(CenterProgram researchProgram, Center researchCenter, CenterArea researchArea, User user) {
     super();
     this.researchProgram = researchProgram;
     this.researchCenter = researchCenter;
@@ -152,6 +155,10 @@ public class CenterLeader implements java.io.Serializable, IAuditLog {
     return createdBy;
   }
 
+  public GlobalUnit getGlobalUnit() {
+    return globalUnit;
+  }
+
   @Override
   public Long getId() {
     return this.id;
@@ -164,6 +171,7 @@ public class CenterLeader implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -186,7 +194,6 @@ public class CenterLeader implements java.io.Serializable, IAuditLog {
   public Center getResearchCenter() {
     return researchCenter;
   }
-
 
   /**
    * @return the researchProgram
@@ -216,12 +223,17 @@ public class CenterLeader implements java.io.Serializable, IAuditLog {
     this.active = active;
   }
 
+
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
+  }
+
+  public void setGlobalUnit(GlobalUnit globalUnit) {
+    this.globalUnit = globalUnit;
   }
 
 

@@ -16,27 +16,36 @@ public class CrpLocElementType implements java.io.Serializable, IAuditLog {
    */
   private static final long serialVersionUID = -5400709802535017070L;
 
+
   @Expose
   private Long id;
+
 
   @Expose
   private Crp crp;
 
   @Expose
-  private LocElementType locElementType;
+  private GlobalUnit globalUnit;
 
+  @Expose
+  private LocElementType locElementType;
 
   public CrpLocElementType() {
   }
-
 
   public CrpLocElementType(Crp crp, LocElementType locElementType) {
     this.crp = crp;
     this.locElementType = locElementType;
   }
 
+
   public Crp getCrp() {
     return crp;
+  }
+
+
+  public GlobalUnit getGlobalUnit() {
+    return globalUnit;
   }
 
   @Override
@@ -77,9 +86,13 @@ public class CrpLocElementType implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
   public void setCrp(Crp crp) {
     this.crp = crp;
+  }
+
+
+  public void setGlobalUnit(GlobalUnit globalUnit) {
+    this.globalUnit = globalUnit;
   }
 
 

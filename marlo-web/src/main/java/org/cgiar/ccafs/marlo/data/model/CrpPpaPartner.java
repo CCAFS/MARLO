@@ -19,17 +19,18 @@ import org.cgiar.ccafs.marlo.data.IAuditLog;
 import java.util.Date;
 
 import com.google.gson.annotations.Expose;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
 
+
   private static final long serialVersionUID = 9208364810110651075L;
+
+
   @Expose
   private Long id;
 
   @Expose
   private Institution institution;
-
   @Expose
   private boolean active;
 
@@ -45,8 +46,9 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
   @Expose
   private String modificationJustification;
 
-
   private Crp crp;
+
+  private GlobalUnit globalUnit;
 
 
   public CrpPpaPartner() {
@@ -57,6 +59,7 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
     this.institution = institution;
     this.crp = crp;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -89,8 +92,13 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
     return createdBy;
   }
 
+
   public Crp getCrp() {
     return crp;
+  }
+
+  public GlobalUnit getGlobalUnit() {
+    return globalUnit;
   }
 
   @Override
@@ -98,10 +106,10 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
     return this.id;
   }
 
-
   public Institution getInstitution() {
     return institution;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -110,15 +118,16 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
-
 
   @Override
   public User getModifiedBy() {
     return modifiedBy;
   }
+
 
   @Override
   public boolean isActive() {
@@ -141,6 +150,10 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
     this.crp = crp;
   }
 
+  public void setGlobalUnit(GlobalUnit globalUnit) {
+    this.globalUnit = globalUnit;
+  }
+
   public void setId(Long id) {
     this.id = id;
   }
@@ -159,7 +172,7 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-      return id.toString();
+    return id.toString();
   }
 
 }

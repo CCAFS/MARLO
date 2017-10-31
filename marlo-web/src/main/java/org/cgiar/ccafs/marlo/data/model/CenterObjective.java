@@ -37,6 +37,7 @@ public class CenterObjective implements Serializable, IAuditLog {
 
   private static final long serialVersionUID = -3618614156720044325L;
 
+
   /**
    * The id or identifier for the research objective.
    */
@@ -49,13 +50,15 @@ public class CenterObjective implements Serializable, IAuditLog {
   @Expose
   private String objective;
 
-
   @Expose
   private Center researchCenter;
 
   @Expose
-  private boolean active;
+  private GlobalUnit globalUnit;
 
+
+  @Expose
+  private boolean active;
 
   @Expose
   private Date activeSince;
@@ -93,7 +96,6 @@ public class CenterObjective implements Serializable, IAuditLog {
     this.researchCenter = researchCenter;
   }
 
-
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
@@ -116,6 +118,7 @@ public class CenterObjective implements Serializable, IAuditLog {
     return true;
   }
 
+
   public Date getActiveSince() {
     return activeSince;
   }
@@ -124,6 +127,11 @@ public class CenterObjective implements Serializable, IAuditLog {
   public User getCreatedBy() {
     return createdBy;
   }
+
+  public GlobalUnit getGlobalUnit() {
+    return globalUnit;
+  }
+
 
   /**
    * @return the id
@@ -140,6 +148,7 @@ public class CenterObjective implements Serializable, IAuditLog {
     return sb.toString();
   }
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -187,6 +196,10 @@ public class CenterObjective implements Serializable, IAuditLog {
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
+  }
+
+  public void setGlobalUnit(GlobalUnit globalUnit) {
+    this.globalUnit = globalUnit;
   }
 
 

@@ -27,9 +27,13 @@ import com.google.gson.annotations.Expose;
  */
 public class DeliverableType implements java.io.Serializable, IAuditLog {
 
+
   private static final long serialVersionUID = 2591192504126616140L;
+
+
   @Expose
   private Long id;
+
   @Expose
   private DeliverableType deliverableType;
   @Expose
@@ -38,17 +42,16 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
   private String description;
   @Expose
   private Integer timeline;
-
   @Expose
   private Boolean fair;
   @Expose
   private Crp crp;
 
-
+  @Expose
+  private GlobalUnit globalUnit;
   private Set<DeliverableType> deliverableTypes = new HashSet<DeliverableType>(0);
-
-
   private Set<Deliverable> deliverables = new HashSet<Deliverable>(0);
+
 
   public DeliverableType() {
   }
@@ -68,6 +71,7 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
     return crp;
   }
 
+
   public Set<Deliverable> getDeliverables() {
     return this.deliverables;
   }
@@ -86,6 +90,10 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
 
   public Boolean getFair() {
     return fair;
+  }
+
+  public GlobalUnit getGlobalUnit() {
+    return globalUnit;
   }
 
   @Override
@@ -151,6 +159,10 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
 
   public void setFair(Boolean fair) {
     this.fair = fair;
+  }
+
+  public void setGlobalUnit(GlobalUnit globalUnit) {
+    this.globalUnit = globalUnit;
   }
 
   public void setId(Long id) {

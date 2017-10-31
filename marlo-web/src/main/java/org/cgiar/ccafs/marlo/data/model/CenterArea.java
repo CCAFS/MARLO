@@ -42,7 +42,6 @@ public class CenterArea implements Serializable, IAuditLog {
   @Expose
   private Long id;
 
-
   @Expose
   private String name;
 
@@ -50,9 +49,13 @@ public class CenterArea implements Serializable, IAuditLog {
   @Expose
   private String acronym;
 
+
   @Expose
   private Center researchCenter;
 
+
+  @Expose
+  private GlobalUnit globalUnit;
 
   @Expose
   private boolean active;
@@ -76,7 +79,6 @@ public class CenterArea implements Serializable, IAuditLog {
 
 
   private Set<CenterProgram> researchPrograms = new HashSet<CenterProgram>(0);
-
 
   private Set<CenterLeader> researchLeaders = new HashSet<CenterLeader>(0);
 
@@ -104,6 +106,7 @@ public class CenterArea implements Serializable, IAuditLog {
     this.name = name;
   }
 
+
   /**
    * @param name
    * @param acronym
@@ -116,6 +119,7 @@ public class CenterArea implements Serializable, IAuditLog {
     this.name = name;
     this.acronym = acronym;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -139,7 +143,6 @@ public class CenterArea implements Serializable, IAuditLog {
     return true;
   }
 
-
   /**
    * @return the acronym
    */
@@ -156,20 +159,25 @@ public class CenterArea implements Serializable, IAuditLog {
     return color;
   }
 
-
   public User getCreatedBy() {
     return createdBy;
   }
+
+
+  public GlobalUnit getGlobalUnit() {
+    return globalUnit;
+  }
+
 
   @Override
   public Long getId() {
     return this.id;
   }
 
-
   public List<CenterLeader> getLeaders() {
     return leaders;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -178,6 +186,7 @@ public class CenterArea implements Serializable, IAuditLog {
     return sb.toString();
   }
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -236,7 +245,6 @@ public class CenterArea implements Serializable, IAuditLog {
     this.acronym = acronym;
   }
 
-
   public void setActive(boolean active) {
     this.active = active;
   }
@@ -252,13 +260,18 @@ public class CenterArea implements Serializable, IAuditLog {
   }
 
 
+  public void setCreatedBy(User createdBy) {
+    this.createdBy = createdBy;
+  }
+
+
   /*
    * (non-Javadoc)
    * @see org.cgiar.ccafs.marlo.data.IAuditLog#getId()
    */
 
-  public void setCreatedBy(User createdBy) {
-    this.createdBy = createdBy;
+  public void setGlobalUnit(GlobalUnit globalUnit) {
+    this.globalUnit = globalUnit;
   }
 
 

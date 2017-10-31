@@ -12,20 +12,22 @@ public class CenterCustomParameter implements java.io.Serializable {
 
   private static final long serialVersionUID = -3887098449470714236L;
 
+
   private Long id;
+
   private User modifiedBy;
+
   private CenterParameter centerParameter;
   private User createdBy;
   private Center researchCenter;
+  private GlobalUnit globalUnit;
   private String value;
   private boolean active;
   private Date activeSince;
   private String modificationJustification;
 
-
   public CenterCustomParameter() {
   }
-
 
   public Date getActiveSince() {
     return activeSince;
@@ -39,6 +41,11 @@ public class CenterCustomParameter implements java.io.Serializable {
 
   public User getCreatedBy() {
     return createdBy;
+  }
+
+
+  public GlobalUnit getGlobalUnit() {
+    return globalUnit;
   }
 
 
@@ -66,6 +73,7 @@ public class CenterCustomParameter implements java.io.Serializable {
     return value;
   }
 
+
   public boolean isActive() {
     return active;
   }
@@ -84,6 +92,10 @@ public class CenterCustomParameter implements java.io.Serializable {
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
+  }
+
+  public void setGlobalUnit(GlobalUnit globalUnit) {
+    this.globalUnit = globalUnit;
   }
 
   public void setId(Long id) {

@@ -33,6 +33,7 @@ public class CrpUser implements java.io.Serializable, IAuditLog {
    */
   private static final long serialVersionUID = -1140371637324045336L;
 
+
   @Expose
   private Long id;
 
@@ -40,15 +41,18 @@ public class CrpUser implements java.io.Serializable, IAuditLog {
   private Crp crp;
 
   @Expose
+  private GlobalUnit globalUnit;
+
+  @Expose
   private User user;
+
   @Expose
   private boolean active;
+
   @Expose
   private User createdBy;
-
   @Expose
   private Date activeSince;
-
   @Expose
   private User modifiedBy;
 
@@ -104,6 +108,10 @@ public class CrpUser implements java.io.Serializable, IAuditLog {
     return this.crp;
   }
 
+  public GlobalUnit getGlobalUnit() {
+    return globalUnit;
+  }
+
   @Override
   public Long getId() {
     return this.id;
@@ -116,6 +124,7 @@ public class CrpUser implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -148,6 +157,10 @@ public class CrpUser implements java.io.Serializable, IAuditLog {
 
   public void setCrp(Crp crps) {
     this.crp = crps;
+  }
+
+  public void setGlobalUnit(GlobalUnit globalUnit) {
+    this.globalUnit = globalUnit;
   }
 
   public void setId(Long id) {

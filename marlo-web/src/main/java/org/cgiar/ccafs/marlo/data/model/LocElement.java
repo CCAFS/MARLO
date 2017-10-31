@@ -29,6 +29,7 @@ import com.google.gson.annotations.Expose;
  */
 public class LocElement implements java.io.Serializable, IAuditLog {
 
+
   private static final long serialVersionUID = -5589133827714008187L;
 
 
@@ -38,6 +39,9 @@ public class LocElement implements java.io.Serializable, IAuditLog {
   @Expose
   private Crp crp;
 
+
+  @Expose
+  private GlobalUnit globalUnit;
 
   @Expose
   private String isoAlpha2;
@@ -52,12 +56,12 @@ public class LocElement implements java.io.Serializable, IAuditLog {
   @Expose
   private LocGeoposition locGeoposition;
 
+
   @Expose
   private String name;
 
   @Expose
   private LocElement locElement;
-
 
   @Expose
   private Boolean isSiteIntegration;
@@ -68,7 +72,6 @@ public class LocElement implements java.io.Serializable, IAuditLog {
 
   @Expose
   private User createdBy;
-
 
   @Expose
   private Date activeSince;
@@ -90,13 +93,14 @@ public class LocElement implements java.io.Serializable, IAuditLog {
 
   private Set<Institution> institutions = new HashSet<Institution>(0);
 
-  private Set<ProjectLocation> projectLocations = new HashSet<ProjectLocation>(0);
-  private Set<InstitutionLocation> institutionLocations = new HashSet<InstitutionLocation>(0);
 
+  private Set<ProjectLocation> projectLocations = new HashSet<ProjectLocation>(0);
+
+
+  private Set<InstitutionLocation> institutionLocations = new HashSet<InstitutionLocation>(0);
 
   public LocElement() {
   }
-
 
   public LocElement(LocElementType locElementTypes, LocGeoposition locGeopositions, String name, String isoAlpha2,
     LocElement locElement, Boolean isSiteIntegration, Set<CrpsSiteIntegration> crpsSitesIntegrations,
@@ -112,10 +116,12 @@ public class LocElement implements java.io.Serializable, IAuditLog {
     this.projectLocations = projectLocations;
   }
 
+
   public LocElement(LocElementType locElementTypes, String name) {
     this.locElementType = locElementTypes;
     this.name = name;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -155,6 +161,10 @@ public class LocElement implements java.io.Serializable, IAuditLog {
 
   public Set<CrpsSiteIntegration> getCrpsSitesIntegrations() {
     return this.crpsSitesIntegrations;
+  }
+
+  public GlobalUnit getGlobalUnit() {
+    return globalUnit;
   }
 
   @Override
@@ -206,16 +216,15 @@ public class LocElement implements java.io.Serializable, IAuditLog {
     return modificationJustification;
   }
 
-
   @Override
   public User getModifiedBy() {
     return modifiedBy;
   }
 
+
   public String getName() {
     return this.name;
   }
-
 
   public Set<ProjectLocation> getProjectLocations() {
     return projectLocations;
@@ -226,6 +235,7 @@ public class LocElement implements java.io.Serializable, IAuditLog {
   public boolean isActive() {
     return active;
   }
+
 
   public void setActive(boolean active) {
     this.active = active;
@@ -249,6 +259,10 @@ public class LocElement implements java.io.Serializable, IAuditLog {
 
   public void setCrpsSitesIntegrations(Set<CrpsSiteIntegration> crpsSitesIntegrations) {
     this.crpsSitesIntegrations = crpsSitesIntegrations;
+  }
+
+  public void setGlobalUnit(GlobalUnit globalUnit) {
+    this.globalUnit = globalUnit;
   }
 
   public void setId(Long id) {

@@ -31,8 +31,11 @@ public class LocElementType implements java.io.Serializable, IAuditLog {
   private Crp crp;
 
   @Expose
-  private boolean active;
+  private GlobalUnit globalUnit;
 
+
+  @Expose
+  private boolean active;
 
   @Expose
   private User createdBy;
@@ -43,7 +46,6 @@ public class LocElementType implements java.io.Serializable, IAuditLog {
 
   @Expose
   private User modifiedBy;
-
 
   @Expose
   private String modificationJustification;
@@ -62,17 +64,19 @@ public class LocElementType implements java.io.Serializable, IAuditLog {
 
   private Set<LocElement> locElements = new HashSet<LocElement>(0);
 
+
   private Set<LocElementType> locElementTypes = new HashSet<LocElementType>(0);
+
+
   private Set<CrpLocElementType> crpLocElementTypes = new HashSet<CrpLocElementType>(0);
 
-
   private Set<ProjectLocationElementType> projectLocationElementTypes = new HashSet<ProjectLocationElementType>(0);
-
-
   private List<LocElement> locationElements;
+
 
   public LocElementType() {
   }
+
 
   public LocElementType(LocElementType locElementType, String name, Set<LocElement> locElements,
     Set<LocElementType> locElementTypes, Set<ProjectLocationElementType> projectLocationElementTypes) {
@@ -111,13 +115,17 @@ public class LocElementType implements java.io.Serializable, IAuditLog {
     return createdBy;
   }
 
-
   public Crp getCrp() {
     return crp;
   }
 
   public Set<CrpLocElementType> getCrpLocElementTypes() {
     return crpLocElementTypes;
+  }
+
+
+  public GlobalUnit getGlobalUnit() {
+    return globalUnit;
   }
 
   public Boolean getHasCoordinates() {
@@ -145,13 +153,13 @@ public class LocElementType implements java.io.Serializable, IAuditLog {
     return this.locElementTypes;
   }
 
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
+
 
   @Override
   public String getModificationJustification() {
@@ -198,6 +206,10 @@ public class LocElementType implements java.io.Serializable, IAuditLog {
 
   public void setCrpLocElementTypes(Set<CrpLocElementType> crpLocElementTypes) {
     this.crpLocElementTypes = crpLocElementTypes;
+  }
+
+  public void setGlobalUnit(GlobalUnit globalUnit) {
+    this.globalUnit = globalUnit;
   }
 
   public void setHasCoordinates(Boolean hasCoordinates) {

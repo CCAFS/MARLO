@@ -17,15 +17,18 @@ public class Phase implements java.io.Serializable, IAuditLog {
    * 
    */
   private static final long serialVersionUID = -1603080182029677862L;
+
+
   private Long id;
+
   private Crp crp;
+  private GlobalUnit globalUnit;
   private String description;
   private int year;
   private Set<ProjectPhase> projectPhases = new HashSet<ProjectPhase>(0);
 
   public Phase() {
   }
-
 
   public Phase(Crp crp, String description, int year) {
     this.crp = crp;
@@ -40,12 +43,17 @@ public class Phase implements java.io.Serializable, IAuditLog {
     this.projectPhases = projectPhases;
   }
 
+
   public Crp getCrp() {
     return this.crp;
   }
 
   public String getDescription() {
     return this.description;
+  }
+
+  public GlobalUnit getGlobalUnit() {
+    return globalUnit;
   }
 
   @Override
@@ -93,6 +101,10 @@ public class Phase implements java.io.Serializable, IAuditLog {
 
   public void setDescription(String description) {
     this.description = description;
+  }
+
+  public void setGlobalUnit(GlobalUnit globalUnit) {
+    this.globalUnit = globalUnit;
   }
 
   public void setId(Long id) {

@@ -29,11 +29,16 @@ import com.google.gson.annotations.Expose;
  */
 public class CenterRole implements Serializable {
 
+
   private static final long serialVersionUID = 5596676652614917686L;
+
+
   @Expose
   private Long id;
 
   private Center researchCenter;
+  @Expose
+  private GlobalUnit globalUnit;
 
   @Expose
   private String description;
@@ -88,10 +93,14 @@ public class CenterRole implements Serializable {
     return this.acronym;
   }
 
-
   public String getDescription() {
     return this.description;
   }
+
+  public GlobalUnit getGlobalUnit() {
+    return globalUnit;
+  }
+
 
   public Long getId() {
     return this.id;
@@ -116,13 +125,17 @@ public class CenterRole implements Serializable {
     return result;
   }
 
-
   public void setAcronym(String acronym) {
     this.acronym = acronym;
   }
 
+
   public void setDescription(String description) {
     this.description = description;
+  }
+
+  public void setGlobalUnit(GlobalUnit globalUnit) {
+    this.globalUnit = globalUnit;
   }
 
   public void setId(Long id) {

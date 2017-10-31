@@ -20,6 +20,11 @@ public class CustomParameter implements java.io.Serializable {
 
 
   private Crp crp;
+
+
+  private GlobalUnit globalUnit;
+
+
   private Parameter parameter;
   private User modifiedBy;
   private User createdBy;
@@ -54,7 +59,6 @@ public class CustomParameter implements java.io.Serializable {
     this.modificationJustification = modificationJustification;
   }
 
-
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
@@ -79,13 +83,17 @@ public class CustomParameter implements java.io.Serializable {
     return activeSince;
   }
 
+
   public User getCreatedBy() {
     return createdBy;
   }
 
-
   public Crp getCrp() {
     return crp;
+  }
+
+  public GlobalUnit getGlobalUnit() {
+    return globalUnit;
   }
 
 
@@ -145,6 +153,11 @@ public class CustomParameter implements java.io.Serializable {
 
   public void setCrp(Crp crp) {
     this.crp = crp;
+  }
+
+
+  public void setGlobalUnit(GlobalUnit globalUnit) {
+    this.globalUnit = globalUnit;
   }
 
 
