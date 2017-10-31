@@ -27,7 +27,7 @@ import com.google.inject.Inject;
  * 
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class Test404 extends BaseAction {
+public class TestOCSAction extends BaseAction {
 
   private static final long serialVersionUID = 1511557973574400249L;
 
@@ -36,7 +36,7 @@ public class Test404 extends BaseAction {
   private AgreementOCS agreement;
 
   @Inject
-  public Test404(APConfig config, MarloOcsClient ocsClient) {
+  public TestOCSAction(APConfig config, MarloOcsClient ocsClient) {
     super(config);
     this.ocsClient = ocsClient;
   }

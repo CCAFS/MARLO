@@ -19,7 +19,7 @@
 			</result>
 		</action>
 
-		<action name="test404" class="org.cgiar.ccafs.marlo.action.Test404">
+		<action name="testOCS" class="org.cgiar.ccafs.marlo.action.TestOCSAction">
 			<result name="success" type="httpheader">
 				<param name="status">200</param>
 				<param name="errorMessage">Ok</param>
