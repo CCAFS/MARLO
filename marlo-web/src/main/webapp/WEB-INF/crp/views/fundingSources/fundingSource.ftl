@@ -23,6 +23,8 @@
 [#assign extensionYear = ((fundingSource.extensionDate?string.yyyy)?number)!endYear /]
 [#assign hasInstitutions = fundingSource.institutions?has_content /]
 
+[#assign isW1W2 = (fundingSource.budgetType.id == 1)!false /]
+[#assign w1w2TagValue = (fundingSource.w1w2)!false /]
     
 <section class="container">
   <article class="" id="mainInformation">
@@ -147,13 +149,11 @@
           </div>
           <input type="hidden" class="fundingSourceSyncedDate" name="fundingSource.syncedDate" value="${(fundingSource.syncedDate?string["yyyy-MM-dd"])!'2017-06-30'}" />
         </div>
-        
-        
+
       </div>
       
     </div>
     <div class="borderBox">
-
       [#-- Loading --]
       <div class="loading" style="display:none"></div>
 
@@ -224,12 +224,10 @@
         <div class="row">
           [#-- Funding Window --]
           <div class="col-md-6 metadataElement-fundingTypeId">
-            [@customForm.select name="fundingSource.budgetType.id" i18nkey="projectCofunded.type" className="type metadataValue" listName="budgetTypes" header=false required=true disabled=isSynced editable=editable && action.canEditType() /]
+            [@customForm.select name="fundingSource.budgetType.id" i18nkey="projectCofunded.type" className="type fundingType metadataValue" listName="budgetTypes" header=false required=true disabled=isSynced editable=editable && action.canEditType() /]
             [#if isSynced && editable && action.canEditType()]<input type="hidden" class="selectHiddenInput" name="fundingSource.budgetType.id" value="${(fundingSource.budgetType.id)!}" />[/#if]
             [#-- W1W2 Tag --]
             [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')]
-              [#assign isW1W2 = (fundingSource.budgetType.id == 1)!false /]
-              [#assign w1w2TagValue = (fundingSource.w1w2)!false /]
               <div class="w1w2-tag" style="display:${isW1W2?string('block','none')};">
                 <div class="checkbox dottedBox">
                   <label for="w1w2-tag-input">
@@ -266,7 +264,7 @@
           <div class="col-md-12 metadataElement-directDonorName">
             <label for="">[@s.text name="projectCofunded.directDonor" /]:[@customForm.req required=editable /] </label>
             <span class="description"><i>([@s.text name="projectCofunded.directDonor.helpText" /])</i></span>
-            [@customForm.select name="fundingSource.directDonor.id" i18nkey="projectCofunded.directDonor" className="donor" showTitle=false listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" editable=editable /]
+            [@customForm.select name="fundingSource.directDonor.id" i18nkey="projectCofunded.directDonor" className="donor" showTitle=false listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" disabled=isW1W2 editable=editable /]
             <span class="text-warning metadataSuggested"></span> 
           </div>
         </div>
