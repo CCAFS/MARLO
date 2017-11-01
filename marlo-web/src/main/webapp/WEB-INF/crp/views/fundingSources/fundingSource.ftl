@@ -122,7 +122,7 @@
               [#-- Finance Input --]
               <input type="text" name="fundingSource.financeCode" value="${(fundingSource.financeCode)!}" class="form-control input-sm financeCode optional" [#if isSynced]readonly="readonly"[/#if] placeholder="e.g. OCS Code">
               [#else]
-                <small>CIAT-OCS:</small> ${(fundingSource.financeCode)!}
+                <small style="display:${hasCIAT?string('block', 'none')}">CIAT-OCS:</small> ${(fundingSource.financeCode)!}
               [/#if]
             </div><!-- /input-group -->
             <span class="financeCode-message"></span>
