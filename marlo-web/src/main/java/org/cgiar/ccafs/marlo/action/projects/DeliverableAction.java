@@ -2007,10 +2007,16 @@ public class DeliverableAction extends BaseAction {
       deliverableDb.setStatus(deliverable.getStatus());
     }
 
-    DeliverableType deliverableType =
-      deliverableTypeManager.getDeliverableTypeById(deliverable.getDeliverableType().getId());
+    if (deliverable.getDeliverableType() != null && deliverable.getDeliverableType().getId() != null
+      && deliverable.getDeliverableType().getId().longValue() != -1) {
+      DeliverableType deliverableType =
+        deliverableTypeManager.getDeliverableTypeById(deliverable.getDeliverableType().getId());
 
-    deliverableDb.setDeliverableType(deliverableType);
+      deliverableDb.setDeliverableType(deliverableType);
+    } else {
+      deliverableDb.setDeliverableType(null);
+    }
+
 
     deliverableDb.setStatusDescription(deliverable.getStatusDescription());
 
@@ -2028,11 +2034,14 @@ public class DeliverableAction extends BaseAction {
    */
   private void updateDeliverableInPlanningPhase(Deliverable deliverablePrew) {
     if (this.isPlanningActive()) {
-      if (deliverable.getCrpClusterKeyOutput() != null) {
+      if (deliverable.getCrpClusterKeyOutput() != null && deliverable.getCrpClusterKeyOutput().getId() != null
+        && deliverable.getCrpClusterKeyOutput().getId().longValue() != -1) {
         CrpClusterKeyOutput keyOutput =
           crpClusterKeyOutputManager.getCrpClusterKeyOutputById(deliverable.getCrpClusterKeyOutput().getId());
 
         deliverablePrew.setCrpClusterKeyOutput(keyOutput);
+      } else {
+        deliverablePrew.setCrpClusterKeyOutput(null);
       }
 
       if (deliverable.getFundingSources() != null) {
